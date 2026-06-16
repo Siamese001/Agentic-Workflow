@@ -198,7 +198,7 @@ def test_migration_from_legacy_table_with_rows() -> None:
     conn.execute(
         "INSERT INTO routing_decision_events VALUES "
         "('trace_1', 1700000000.0, 'app_a', 'TIER_S', 'gate_x', NULL, 0, "
-        "'qwen-7b', 0.92, 0.0001, 1.0, 12, 1, 0, NULL, 'real')",
+        "'qwen-32b', 0.92, 0.0001, 1.0, 12, 1, 0, NULL, 'real')",
     )
     conn.execute(
         "INSERT INTO routing_decision_events VALUES "
@@ -252,7 +252,7 @@ def test_migration_idempotent() -> None:
     conn.execute(
         "INSERT INTO routing_decision_events VALUES "
         "('trace_dup', 1700000000.0, 'app_a', 'TIER_S', 'gate_x', NULL, 0, "
-        "'qwen-7b', 0.5, 0.0001, 1.0, 12, NULL, 0, NULL, NULL)",
+        "'qwen-32b', 0.5, 0.0001, 1.0, 12, NULL, 0, NULL, NULL)",
     )
     conn.commit()
     first = migrate_from_routing_decision_events(conn)

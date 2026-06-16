@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from typing import Any
 
 _JD_KEYWORD_PATTERN = re.compile(
@@ -96,11 +97,35 @@ _C01_SECTION_ALIASES: dict[str, str] = {
     "ibm_narrative": "narrative",
 }
 
+_PROFILE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "config"
+    / "domain_contract"
+    / "section_retrieval_profile.yaml"
+)
+
 
 def _c01_plan_key(section_id: str) -> str:
     if section_id in _SECTION_PLAN:
         return section_id
     return _C01_SECTION_ALIASES.get(section_id, section_id)
+
+
+def _section_retrieval_profile_row(section_id: str) -> dict[str, Any]:
+    """Read the C0.2 retrieval profile row used by the same section, if present."""
+    if not _PROFILE_PATH.is_file():
+        return {}
+    import yaml
+
+    doc = yaml.safe_load(_PROFILE_PATH.read_text(encoding="utf-8")) or {}
+    aliases = doc.get("section_id_aliases") or {}
+    canonical = str(aliases.get(section_id) or section_id) if isinstance(aliases, dict) else section_id
+    for row in doc.get("sections") or []:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get("section_id") or "") in (section_id, canonical):
+            return dict(row)
+    return {}
 
 
 def build_c01_retrieval_plan(
@@ -115,6 +140,7 @@ def build_c01_retrieval_plan(
     """C0.1 output: what to retrieve for this section (not proof)."""
     plan_key = _c01_plan_key(section_id)
     base = dict(_SECTION_PLAN.get(plan_key) or _SECTION_PLAN["executive_summary"])
+    profile_row = _section_retrieval_profile_row(section_id)
     targets = {
         "primary_targets": list(base.get("primary_targets") or []),
         "secondary_targets": list(base.get("secondary_targets") or []),
@@ -136,6 +162,12 @@ def build_c01_retrieval_plan(
         "jd_text_excerpt": jd_excerpt,
         "route_ref": route_ref,
         "retrieval_targets": targets,
+        "retrieval_profile_ref": str(
+            profile_row.get("retrieval_profile_id") or f"{_PROFILE_PATH.as_posix()}#{section_id}"
+        ),
+        "retrieval_profile_source": _PROFILE_PATH.as_posix(),
+        "retrieval_profile_query_fields": list(profile_row.get("query_fields") or []),
+        "retrieval_profile_fallback_queries": list(profile_row.get("fallback_queries") or []),
         "jd_as_proof": False,
         "generic_docs_as_truth": False,
     }

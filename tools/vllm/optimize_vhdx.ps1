@@ -6,7 +6,7 @@
 # done on 2026-04-24).
 #
 # Why needed: WSL2's VHDX is a sparse file but only shrinks via Optimize-VHD.
-# Stops Stack A vLLM mid-flight (wsl --shutdown is destructive to running
+# Stops WSL/Docker workloads mid-flight (wsl --shutdown is destructive to running
 # processes); restart manually after this script returns.
 #
 # Usage (in an elevated PowerShell):
@@ -65,7 +65,7 @@ if ($DryRun) {
     exit 0
 }
 
-Write-Host "`n[2/5] Stopping WSL (this kills Stack A vLLM if it's running)..." -ForegroundColor Cyan
+Write-Host "`n[2/5] Stopping WSL (this kills Docker vLLM if it's running)..." -ForegroundColor Cyan
 wsl --shutdown
 Start-Sleep -Seconds 5
 
@@ -101,6 +101,5 @@ Write-Host "    Reclaimed: $ReclaimedGB GB" -ForegroundColor Green
 
 Write-Host "`nNext steps (manual):" -ForegroundColor Yellow
 Write-Host "  1. wsl                                    # boot the distro"
-Write-Host "  2. systemctl --user start vllm            # restart Stack A"
-Write-Host "  3. systemctl --user enable vllm           # (optional) auto-start at boot"
+Write-Host "  2. bash ops_scripts/apps_rg/boot_local_qwen_vllm.sh  # restart Docker vLLM"
 Write-Host "  4. curl http://localhost:8000/v1/models   # verify"

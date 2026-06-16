@@ -76,7 +76,7 @@ class L0Router:
             write_authority_present=plan.write_authority_present,
             reason_codes=reason_codes,
             routing_timestamp=datetime.now(timezone.utc).isoformat(),
-            route_version="W6.0",
+            schema_version="W6.0",
             l5_certification_ref=getattr(plan, "l5_certification_ref", ""),
         )
 

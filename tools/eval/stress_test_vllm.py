@@ -10,8 +10,8 @@ Measures:
   - VRAM peak via nvidia-smi sampling
   - OOM detection
 
-Run inside WSL with the venv:
-  ~/.vllm_env/bin/python /mnt/c/Git/Agentic-Workflow/tools/eval/stress_test_vllm.py
+Run inside WSL against the canonical Docker vLLM endpoint:
+  python3 /mnt/c/Git/Agentic-Workflow-FRESH/tools/eval/stress_test_vllm.py
 """
 
 from __future__ import annotations

@@ -76,14 +76,14 @@ class QwenJudgeProvider:
     * ``provider_id`` — ``"qwen"``
     * ``cost_per_eval`` — ``0.0`` (local GPU, no billing)
     * ``model_id`` — resolved from ``QWEN_LOCAL_MODEL_ID`` SSOT (env override
-      via ``VLLM_MODEL_NAME``)
+      via ``QWEN_VLLM_MODEL``; ``VLLM_MODEL_NAME`` is compatibility-only)
     * ``judge(prompt, rubric_id)`` — async; returns the standard judge dict
       shape (``score``, ``reasoning``, ``rubric_id``, ``provider``,
       ``criteria_scores``, ``model``).
     """
 
     def __init__(self, model: str | None = None, app_name: str = "qwen_judge") -> None:
-        env_model = os.getenv("VLLM_MODEL_NAME")
+        env_model = os.getenv("QWEN_VLLM_MODEL") or os.getenv("VLLM_MODEL_NAME")
         self._model = model or env_model or QWEN_LOCAL_MODEL_ID
         self._app_name = app_name
 

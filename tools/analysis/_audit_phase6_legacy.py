@@ -19,10 +19,12 @@ __adg_consumer_mode__ = "inventory"
 import json
 import sqlite3
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 from collections import defaultdict
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite")
-OUT = Path(r"C:\Git\Agentic-Workflow\artifacts\audit_phase6_legacy.json")
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite"
+OUT = REPO_ROOT / "artifacts" / "audit_phase6_legacy.json"
 
 DEP_RELATIONS = (
     'imports', 'calls', 'references', 'flows_to', 'controls_flow',

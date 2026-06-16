@@ -58,6 +58,7 @@ import os
 import shutil
 import sys
 import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -66,7 +67,7 @@ from apps_rg.runtime.cli_section_execution_report import (
     emit_cli_section_execution_summary,
 )
 from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
-from apps_rg.runtime.runtime_proof_layout import find_repo_root
+from apps_rg.runtime.runtime_proof_layout import find_repo_root, is_integrated_whole_run_dir_name
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
 from apps_rg.runtime.section_execution_plan import (
     GENERATED_CONTENT_LANES,
@@ -454,6 +455,64 @@ _PINNED_SECTION_TEXT_FILES: tuple[tuple[str, str, str], ...] = (
     ("ibm_bullets", "ibm_bullets_output.txt", "IBM (Bullets)"),
     ("ibm_narrative", "ibm_narrative_output.txt", "IBM (Narrative)"),
 )
+_SECTION_PIN_MANIFEST_FILENAME = "section_pin_manifest.json"
+
+
+def _integrated_run_id_for_path(path: Path) -> str | None:
+    """Return the containing ``full_resume_<id>`` directory name, if any."""
+    try:
+        resolved = Path(path).resolve()
+    except OSError:
+        resolved = Path(path)
+    for candidate in (resolved, *resolved.parents):
+        if is_integrated_whole_run_dir_name(candidate.name):
+            return candidate.name
+    return None
+
+
+def _read_json_dict(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _write_section_pin_manifest(
+    pin_dir: Path,
+    *,
+    section_id: str,
+    source_artifact_dir: Path,
+) -> None:
+    source_run_id = _integrated_run_id_for_path(source_artifact_dir)
+    doc = {
+        "schema": "apps_rg.section_pin_manifest.v1",
+        "section_id": section_id,
+        "source_artifact_dir": source_artifact_dir.as_posix(),
+        "source_integrated_run_id": source_run_id,
+        "same_e2e_run_required": True,
+        "pinned_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    pin_dir.mkdir(parents=True, exist_ok=True)
+    (pin_dir / _SECTION_PIN_MANIFEST_FILENAME).write_text(
+        json.dumps(doc, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _pin_matches_requested_run(sec_dir: Path, expected_run_id: str) -> tuple[bool, str, dict[str, Any] | None]:
+    manifest_path = sec_dir / _SECTION_PIN_MANIFEST_FILENAME
+    manifest = _read_json_dict(manifest_path)
+    if not manifest:
+        return False, "missing_or_unreadable_section_pin_manifest", None
+    source_run_id = str(manifest.get("source_integrated_run_id") or "").strip()
+    if not source_run_id:
+        return False, "pin_has_no_source_integrated_run_id", manifest
+    if source_run_id != expected_run_id:
+        return False, f"pin_run_mismatch:{source_run_id}!={expected_run_id}", manifest
+    return True, "same_e2e_run", manifest
 
 
 def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
@@ -462,8 +521,10 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
     Each pinned dir is the result of ``--section <id> --attempts N --pin`` accepting at
     REAL_LLM with --accept allow|review. Assembly is mechanical: read the section's
     canonical text artifact, drop empty/missing sections with a clear note, write the
-    combined markdown plus a small status JSON. No re-validation of X2/X3 — the pin already
-    encoded the disposition.
+    combined markdown plus a small status JSON. A pin is only consumable by the same
+    integrated ``full_resume_<id>`` run that produced it; this prevents a section from a
+    prior run/day from being silently stitched into a fresh E2E run after API issues.
+    No re-validation of X2/X3 — the pin already encoded the disposition.
     """
     pin_root = repo_root / "artifacts" / "apps_rg" / "_pinned"
     out_dir = (
@@ -472,8 +533,29 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
         else (repo_root / "artifacts" / "apps_rg" / "_pinned" / "_assembled")
     )
     out_dir.mkdir(parents=True, exist_ok=True)
+    expected_run_id = _integrated_run_id_for_path(out_dir)
     md_lines: list[str] = []
-    status: dict[str, Any] = {"sections": {}, "missing": [], "assembled_at": out_dir.as_posix()}
+    status: dict[str, Any] = {
+        "sections": {},
+        "missing": [],
+        "invalid_pins": [],
+        "assembled_at": out_dir.as_posix(),
+        "expected_integrated_run_id": expected_run_id,
+        "same_e2e_run_required": True,
+    }
+    if not expected_run_id:
+        status["status"] = "blocked"
+        status["reason"] = "missing_e2e_run_context"
+        status_path = out_dir / "assemble_status.json"
+        status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+        print(
+            "PIN_ASSEMBLY_REFUSED reason=missing_e2e_run_context "
+            "artifact_dir_must_be_inside_full_resume_run",
+            file=sys.stderr,
+            flush=True,
+        )
+        print(f"assemble_status={status_path.as_posix()}", flush=True)
+        return 5
     for section_id, fname, label in _PINNED_SECTION_TEXT_FILES:
         sec_dir = pin_root / section_id
         text_path = sec_dir / fname
@@ -489,22 +571,48 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
             status["sections"][section_id] = {"present": False, "x3": x3_code}
             md_lines.append(f"## {label}\n\n_(no pinned artifact for `{section_id}`)_\n")
             continue
+        pin_ok, pin_reason, pin_manifest = _pin_matches_requested_run(sec_dir, expected_run_id)
+        if not pin_ok:
+            status["invalid_pins"].append(section_id)
+            status["sections"][section_id] = {
+                "present": True,
+                "usable": False,
+                "x3": x3_code,
+                "source": text_path.as_posix(),
+                "pin_reason": pin_reason,
+                "pin_manifest": pin_manifest,
+            }
+            md_lines.append(
+                f"## {label}\n\n_(pinned artifact for `{section_id}` refused: {pin_reason})_\n"
+            )
+            continue
         body = text_path.read_text(encoding="utf-8").strip()
         status["sections"][section_id] = {
             "present": True,
+            "usable": True,
             "x3": x3_code,
             "source": text_path.as_posix(),
             "chars": len(body),
+            "pin_reason": pin_reason,
         }
         md_lines.append(f"## {label}\n\n{body}\n")
     md = "# Resume (assembled from pinned sections)\n\n" + "\n".join(md_lines)
     md_path = out_dir / "resume_assembled.md"
     md_path.write_text(md, encoding="utf-8")
     status_path = out_dir / "assemble_status.json"
+    status["status"] = "blocked" if status["invalid_pins"] else "assembled"
     status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
     print(f"ASSEMBLED resume_md={md_path.as_posix()}", flush=True)
     print(f"ASSEMBLE_STATUS missing={','.join(status['missing']) or 'none'}", flush=True)
+    if status["invalid_pins"]:
+        print(
+            f"ASSEMBLE_INVALID_PINS sections={','.join(status['invalid_pins'])}",
+            file=sys.stderr,
+            flush=True,
+        )
     print(f"assemble_status={status_path.as_posix()}", flush=True)
+    if status["invalid_pins"]:
+        return 5
     return 0 if not status["missing"] else 4
 
 
@@ -1080,6 +1188,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                         rmtree(_pin_dst, ignore_errors=True)
                     try:
                         copytree(_pin_src, _pin_dst)
+                        _write_section_pin_manifest(
+                            _pin_dst,
+                            section_id=section_eff,
+                            source_artifact_dir=Path(_pin_src),
+                        )
                         print(
                             f"PINNED section={section_eff} -> {_pin_dst.as_posix()}",
                             flush=True,

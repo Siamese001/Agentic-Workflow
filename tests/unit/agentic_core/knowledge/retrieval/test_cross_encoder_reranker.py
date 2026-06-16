@@ -1,8 +1,8 @@
 """Unit tests for CrossEncoderReranker + BgeRerankerAdapter (Wave B / ADR-046).
 
-These tests do not load torch or the real bge-reranker-v2-m3 weights. The
-adapter is either mocked directly or injected through the public constructor
-so the full two-stage chain can be verified on CPU-only runners in <1s.
+These tests do not load torch or real CrossEncoder weights. The adapter is
+either mocked directly or injected through the public constructor so the full
+two-stage chain can be verified on CPU-only runners in <1s.
 
 Coverage:
     * BgeRerankerAdapter: lazy model load via singleton, score() normalizes
@@ -142,6 +142,7 @@ def test_adapter_raises_unavailable_when_sentence_transformers_missing(monkeypat
     sentence-transformers can't be imported. Emulated by making the
     import fail inside the lazy loader."""
     reset_for_testing()
+    monkeypatch.setattr(bga_module, "BGE_RERANKER_MODEL", "cross-encoder/test-model")
     # Force the lazy import inside _load_model to fail.
     real_import = __builtins__["__import__"] if isinstance(__builtins__, dict) else __builtins__.__import__
 
@@ -154,6 +155,14 @@ def test_adapter_raises_unavailable_when_sentence_transformers_missing(monkeypat
 
     adapter = BgeRerankerAdapter()
     with pytest.raises(CrossEncoderUnavailable, match="sentence-transformers required"):
+        adapter.score("q", ["a"])
+
+
+def test_adapter_disabled_without_explicit_reranker_model(monkeypatch):
+    reset_for_testing()
+    monkeypatch.setattr(bga_module, "BGE_RERANKER_MODEL", "")
+    adapter = BgeRerankerAdapter()
+    with pytest.raises(CrossEncoderUnavailable, match="BGE reranker disabled"):
         adapter.score("q", ["a"])
 
 

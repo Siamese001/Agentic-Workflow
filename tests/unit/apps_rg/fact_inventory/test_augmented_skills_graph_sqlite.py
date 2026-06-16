@@ -329,6 +329,30 @@ def test_c03_context_receipt_fields(sqlite_db: Path) -> None:
     assert isinstance(rec["section_eligibility"], list)
 
 
+def test_c03_sqlite_context_keeps_resume_skill_source_trace(sqlite_db: Path) -> None:
+    bundle = assemble_c03_graph_sqlite_context(
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        section_id="executive_summary",
+        selected_fact_ids=["fact_engineering_platform_001"],
+        repo_root=REPO,
+        db_path=sqlite_db,
+    )
+    fact_links = bundle["receipt"]["selected_fact_links"]
+    resume_skill_ids = {
+        str(link["skill_id"])
+        for link in fact_links
+        if link.get("claim_eligibility") and link.get("external_eligible")
+    }
+    rows_by_id = build_skill_rows_by_id(load_augmented_skills_graph(repo_root=REPO))
+    resume_sourced = [
+        rows_by_id[sid]
+        for sid in resume_skill_ids
+        if sid in rows_by_id and rows_by_id[sid].get("source_resume_files")
+    ]
+    assert resume_sourced, "C0.3 apps_rg context must resolve to actual resume-backed skills"
+    assert all(row.get("fact_id_links") for row in resume_sourced)
+
+
 def test_enrich_c03_bound_attaches_sqlite(sqlite_db: Path) -> None:
     doc = enrich_c03_bound_with_sqlite_context(
         {"section_id": "competencies", "c03_graphrag_bound_status": "BOUND"},

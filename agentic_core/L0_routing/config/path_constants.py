@@ -62,8 +62,7 @@ def consensus_majority_threshold(juror_count: int) -> float:
     return votes_needed / juror_count
 
 
-# NOTE: QWEN_14B_MODEL_ID was removed 2026-04-21 — its value "qwen/qwen-14b-chat"
-# never matched the actual deployed model. Canonical source is now:
+# Canonical local model identity lives in:
 #   agentic_core/L0_routing/config/model_registry.QWEN_LOCAL_MODEL_ID
 
 # Architecture layer constants - SSOT for layer naming

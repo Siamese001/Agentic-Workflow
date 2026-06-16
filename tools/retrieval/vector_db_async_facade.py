@@ -181,6 +181,12 @@ class VectorDBMCPServer:
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
+    async def _health_snapshot(self, _args: dict[str, Any]) -> ToolResultEnvelope:
+        try:
+            return _ok(self.service.format_health_snapshot())
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
+            return _error(_translate_error(exc))
+
     async def _readiness(self, _args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_readiness())

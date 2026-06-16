@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
 
@@ -42,6 +41,34 @@ def test_required_route_accepts_callable() -> None:
     checks = mod._check_required_routes(_transport_report({"memory": "CALLABLE"}), ["memory"])
 
     assert checks[0].status == "PASS"
+
+
+def test_vector_semantic_guard_warns_without_explicit_state(monkeypatch) -> None:
+    monkeypatch.delenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", raising=False)
+
+    check = mod._check_vector_semantic_guard(["vector_db"])
+
+    assert check is not None
+    assert check.status == "WARN"
+    assert "stats-only" in check.summary
+
+
+def test_vector_semantic_guard_fails_on_metadata_only(monkeypatch) -> None:
+    monkeypatch.setenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", "metadata_only")
+
+    check = mod._check_vector_semantic_guard(["vector_db"])
+
+    assert check is not None
+    assert check.status == "FAIL"
+
+
+def test_vector_semantic_guard_passes_on_ready(monkeypatch) -> None:
+    monkeypatch.setenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", "ready")
+
+    check = mod._check_vector_semantic_guard(["vector_db"])
+
+    assert check is not None
+    assert check.status == "PASS"
 
 
 def test_adg_sqlite_fallback_warns_when_snapshot_exists(monkeypatch, tmp_path: Path) -> None:

@@ -34,20 +34,19 @@ ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 DEFAULT_ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS = 90.0
-# Shared upper safety bound for ANY external section provider wall-clock budget. The competencies
-# lane's self-consistency pool + Claude selector + regen rounds legitimately need a long budget
-# (operators opt in via APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS / the wizard); this ceiling keeps
-# an honest budget from becoming an unbounded hang. Override: APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS.
-DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS = 1200.0
+# Shared upper safety bound for ANY external section provider wall-clock budget.
+# The competencies lane may opt into a longer-than-default budget, but it should
+# fail closed in minutes, not sit on an API call for an evaluation-era 1000s.
+DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS = 300.0
 
 
 def external_provider_timeout_max_s() -> float:
     """Shared ceiling (seconds) for external section provider wall-clock budgets.
 
-    SSOT for "how large a provider timeout may an E2E run opt into". Defaults to
-    ``DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS`` (1200s); a malformed/empty env value falls
-    back to that default rather than failing the run. Hard-bounded to [60, 3600]s so neither a
-    typo nor a hostile value can disable the bound entirely.
+    Defaults to ``DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS`` (300s); a
+    malformed/empty env value falls back to that default rather than failing the
+    run. Hard-bounded to [30, 300]s so neither a typo nor a hostile value can
+    turn a section call into an extended hang.
     """
     raw = os.environ.get("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "").strip()
     if not raw:
@@ -58,7 +57,7 @@ def external_provider_timeout_max_s() -> float:
         return DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS
     if val <= 0:
         return DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS
-    return max(60.0, min(val, 3600.0))
+    return max(30.0, min(val, 300.0))
 
 
 def resolve_external_section_timeout_s(
@@ -68,10 +67,10 @@ def resolve_external_section_timeout_s(
 ) -> float:
     """Resolve an external section provider call's effective wall-clock budget (seconds).
 
-    Truthful, centralized policy: an operator-set budget is honored verbatim (NOT silently
-    re-clamped to a small hidden ceiling) up to the shared ``external_provider_timeout_max_s``
-    bound. Invalid / non-positive requests fall back to ``default``. Replaces the prior
-    per-call ``_coerce_timeout_seconds`` that defaulted-but-never-bounded.
+    Centralized policy: an operator-set budget is honored up to the shared
+    ``external_provider_timeout_max_s`` bound. Invalid / non-positive requests
+    fall back to ``default``. Replaces the prior per-call
+    ``_coerce_timeout_seconds`` that defaulted-but-never-bounded.
     """
     ceiling = external_provider_timeout_max_s()
     try:
@@ -80,8 +79,7 @@ def resolve_external_section_timeout_s(
         val = float(default)
     if val <= 0:
         val = float(default)
-    # Only the upper ceiling is enforced. A small positive budget is honored verbatim (callers may
-    # pass a deliberately tiny timeout to prove fail-closed behavior); zero/negative already fell
+    # Small positive budgets are honored verbatim; zero/negative already fell
     # back to ``default`` above.
     return min(val, ceiling)
 
@@ -392,8 +390,7 @@ class ExternalProvider:
         timeout_seconds: int | float | None = None,
     ) -> ProviderResult:
         prompt = _prompt_text(compiled_prompt)
-        # W1: resolve the effective wall-clock budget through the shared, truthful policy — an
-        # operator-set budget is honored up to the shared ceiling, not silently shrunk.
+        # W1: resolve the effective wall-clock budget through the shared policy.
         provider_timeout_seconds = resolve_external_section_timeout_s(timeout_seconds)
         # W2: a caller-owned progress sink the streamed transport mutates in place, so a timeout
         # error can report how far the (now-abandoned) stream actually got.

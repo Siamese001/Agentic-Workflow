@@ -2,17 +2,16 @@
 
 Precedent: 2026-05-01 first live Scenario A run against
 Qwen/Qwen2.5-32B-Instruct-AWQ failed with vLLM 404 because
-LLMJudgeVeto hardcoded `model_id="Qwen2.5-7B-Instruct"` in both its
-default argument and in probe constructors. The correct model was
-advertised at GET /v1/models but was ignored. Fail-closed prevented a
-poisoned attestation; the fix below replaces hardcoding with runtime
-discovery.
+LLMJudgeVeto hardcoded a non-served model id in both its default argument
+and in probe constructors. The correct model was advertised at GET
+/v1/models but was ignored. Fail-closed prevented a poisoned attestation;
+the fix below replaces hardcoding with runtime discovery.
 
 Resolution precedence locked by these tests:
   1. Explicit `model_id=` constructor arg (back-compat for tests)
-  2. LOCAL_QWEN_MODEL env var (operator escape hatch)
+  2. QWEN_VLLM_MODEL / LOCAL_QWEN_MODEL env var (operator escape hatch)
   3. GET {endpoint}/v1/models first data[].id (preferred default)
-  4. _FALLBACK_MODEL_ID ("Qwen2.5-7B-Instruct") if all three above fail
+  4. _FALLBACK_MODEL_ID (catalog QWEN_LOCAL_MODEL_ID) if all three above fail
 
 Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 7 (P1)
 """
@@ -29,12 +28,14 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from tools.certification.safety.llm_judge_veto import LLMJudgeVeto  # noqa: E402
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
 def clean_env(monkeypatch):
     """Make sure no env-var drift between tests."""
     monkeypatch.delenv("LOCAL_QWEN_MODEL", raising=False)
+    monkeypatch.delenv("QWEN_VLLM_MODEL", raising=False)
     monkeypatch.delenv("LOCAL_QWEN_ENDPOINT", raising=False)
 
 
@@ -54,20 +55,20 @@ class TestPrecedenceTier1Explicit:
     def test_explicit_still_records_advertised_for_mismatch_detection(self):
         with patch.object(LLMJudgeVeto, "_discover_local_qwen_model",
                           return_value="Qwen/Qwen2.5-32B-Instruct-AWQ"):
-            veto = LLMJudgeVeto(provider="local_qwen", model_id="Qwen2.5-7B-Instruct")
+            veto = LLMJudgeVeto(provider="local_qwen", model_id="explicit/non-served-model")
             resolved = veto.resolved_model_id
             advertised = veto.advertised_model_id
             source = veto.model_id_source
-        assert resolved == "Qwen2.5-7B-Instruct"
+        assert resolved == "explicit/non-served-model"
         assert advertised == "Qwen/Qwen2.5-32B-Instruct-AWQ"
         assert source == "explicit"
 
 
 class TestPrecedenceTier2EnvVar:
-    """LOCAL_QWEN_MODEL env var overrides discovery + fallback."""
+    """QWEN_VLLM_MODEL / LOCAL_QWEN_MODEL env vars override discovery + fallback."""
 
     def test_env_wins_over_discovery(self, monkeypatch):
-        monkeypatch.setenv("LOCAL_QWEN_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
+        monkeypatch.setenv("QWEN_VLLM_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
         with patch.object(LLMJudgeVeto, "_discover_local_qwen_model",
                           return_value="Qwen/different-model"):
             veto = LLMJudgeVeto(provider="local_qwen")
@@ -80,7 +81,7 @@ class TestPrecedenceTier2EnvVar:
         assert advertised == "Qwen/different-model"
 
     def test_env_ignored_for_non_local_qwen_provider(self, monkeypatch):
-        monkeypatch.setenv("LOCAL_QWEN_MODEL", "should-not-apply")
+        monkeypatch.setenv("QWEN_VLLM_MODEL", "should-not-apply")
         veto = LLMJudgeVeto(provider="anthropic_haiku")
         # Anthropic has its own hardcoded id path
         assert veto.resolved_model_id == "claude-3-haiku-20240307"
@@ -113,13 +114,14 @@ class TestPrecedenceTier4Fallback:
             advertised = veto.advertised_model_id
             source = veto.model_id_source
         assert resolved == LLMJudgeVeto._FALLBACK_MODEL_ID
+        assert resolved == QWEN_LOCAL_MODEL_ID
         assert advertised is None
         assert source == "fallback"
 
 
 class TestNoHardcodingInDefault:
     """Regression guard: the default constructor must not silently return
-    the 7B id when a real endpoint is serving something else."""
+    a hardcoded id when a real endpoint is serving something else."""
 
     def test_default_arg_is_none_not_hardcoded_string(self):
         import inspect
@@ -127,7 +129,7 @@ class TestNoHardcodingInDefault:
         default = sig.parameters["model_id"].default
         assert default is None, (
             "LLMJudgeVeto.__init__ model_id default must be None. "
-            "A hardcoded default (e.g. 'Qwen2.5-7B-Instruct') produces "
+            "A hardcoded default model id produces "
             "poisoned attestations when the endpoint serves a different "
             "model. See 2026-05-01 Scenario A failure."
         )
@@ -145,7 +147,7 @@ class TestRequestBodyUsesResolvedId:
     raw _model_id field (which is None before resolution)."""
 
     def test_call_local_qwen_uses_resolved_id(self, monkeypatch):
-        monkeypatch.setenv("LOCAL_QWEN_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
+        monkeypatch.setenv("QWEN_VLLM_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
         veto = LLMJudgeVeto(provider="local_qwen")
         captured = {}
 

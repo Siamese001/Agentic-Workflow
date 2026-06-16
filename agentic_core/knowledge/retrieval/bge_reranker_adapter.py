@@ -1,24 +1,13 @@
-"""BGE Reranker v2-m3 adapter - sentence-transformers CrossEncoder wrapper.
+"""Optional CrossEncoder reranker adapter.
 
-Per Author-Gate decision 2026-04-24 (DECISION_CAPTURED type=architecture_choice,
-selected=bge-reranker-v2-m3, confidence=0.78). Thin adapter over
-``sentence_transformers.CrossEncoder`` for ``BAAI/bge-reranker-v2-m3`` with
-a module-level lazy singleton so the ~6-10s GPU warmup is paid once per
-process and subsequent calls amortize to ~10-80ms per candidate batch.
-
-Model sizing: 568M params, 1024-token ctx, multilingual, Apache-2.0.
-Loads in FP16 (~1.3GB VRAM) on a 32GB GPU.
-
-Failure modes: torch / sentence-transformers missing -> CrossEncoderUnavailable
-(caller falls back to heuristic). GPU OOM -> caller catches and shrinks
-batch_size or falls back.
+The active local retrieval path uses BAAI/bge-m3 embeddings only. Reranking is
+disabled unless a real CrossEncoder is explicitly configured through
+BGE_RERANKER_MODEL.
 """
 
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import (
-    BGE_RERANKER_MODEL_ID,
-)
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 
 import logging
 import os
@@ -32,7 +21,7 @@ class CrossEncoderUnavailable(RuntimeError):
     """torch + sentence-transformers required; at least one is missing."""
 
 
-BGE_RERANKER_MODEL: str = BGE_RERANKER_MODEL_ID
+BGE_RERANKER_MODEL: str = os.environ.get("BGE_RERANKER_MODEL", "").strip()
 BGE_RERANKER_MAX_LENGTH: int = 512
 BGE_RERANKER_ALLOW_DOWNLOAD: bool = os.environ.get("BGE_RERANKER_ALLOW_DOWNLOAD", "false").lower() == "true"
 
@@ -60,6 +49,16 @@ def _load_model() -> Any:
     global _MODEL
     if _MODEL is not None:
         return _MODEL
+    if not BGE_RERANKER_MODEL:
+        raise CrossEncoderUnavailable(
+            "BGE reranker disabled: set BGE_RERANKER_MODEL to a CrossEncoder "
+            "model id to enable optional reranking."
+        )
+    if BGE_RERANKER_MODEL == BGE_M3_MODEL_ID:
+        raise CrossEncoderUnavailable(
+            "BAAI/bge-m3 is an embedding model, not a CrossEncoder reranker. "
+            "Leave BGE_RERANKER_MODEL unset or configure a real CrossEncoder."
+        )
     with _MODEL_LOCK:
         if _MODEL is not None:
             return _MODEL

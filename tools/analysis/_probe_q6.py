@@ -2,9 +2,11 @@
 __adg_consumer_mode__ = "inventory"
 
 # Quick probe: check edge dst_id vs centrality node_id alignment.
-import sqlite3, json
+import sqlite3
+from pathlib import Path, json
 
-DB = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DB = str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite")
 con = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
 cur = con.cursor()
 

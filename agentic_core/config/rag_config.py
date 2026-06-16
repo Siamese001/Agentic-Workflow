@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
     BGE_M3_MODEL_ID,
-    BGE_RERANKER_MODEL_ID,
 )
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -192,7 +191,7 @@ class RetrievalConfig:
 
     strategy: str = "hybrid"  # hybrid | vector | bm25
     top_k: int = 15
-    enable_reranking: bool = True
+    enable_reranking: bool = False
     enable_caching: bool = True
     enable_hallucination_filter: bool = True
 
@@ -204,7 +203,7 @@ class RetrievalConfig:
     rrf_k: float = 60.0
 
     # Reranking
-    reranker_model: str = BGE_RERANKER_MODEL_ID
+    reranker_model: str = ""
     reranker_confidence_threshold: float = 0.75
     reranker_top_k: int = 10
 

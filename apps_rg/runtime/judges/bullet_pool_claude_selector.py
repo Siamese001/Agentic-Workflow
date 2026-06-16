@@ -58,20 +58,18 @@ POOL_SELECTOR_SYSTEM_PROMPT = (
 )
 
 # W3: the Claude pool selector is itself a live external call inside the competencies/employment
-# orchestration. It previously had a HIDDEN hardcoded ``urlopen(req, timeout=60)`` — far shorter
-# than the lane's own budget — so a slow selector timed out and the failure masqueraded as a
-# competencies GENERATION failure. Resolve its budget from its own env, bounded by the shared
-# external-provider ceiling. Default 300s (the selector reads a large pool but emits compact JSON).
-DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS = 300.0
+# orchestration. Keep the observability from the fix, but keep the default budget close to an
+# ordinary provider call. Operators can still opt in via env, bounded by the shared provider ceiling.
+DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS = 90.0
 SELECTOR_TIMING_RECEIPT_FILENAME = "bullet_pool_claude_selector_timing.json"
 
 
 def pool_selector_timeout_s() -> float:
     """Effective wall-clock budget (seconds) for the Claude pool selector HTTP call.
 
-    Reads ``APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS`` (default 300s), floored at 30s and bounded by
+    Reads ``APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS`` (default 90s), floored at 30s and bounded by
     the shared ``external_provider_timeout_max_s`` ceiling. A malformed value falls back to the
-    300s default rather than failing the call.
+    default rather than failing the call.
     """
     from apps_rg.runtime.providers.external_provider import external_provider_timeout_max_s
 

@@ -89,14 +89,14 @@ class TestSamplesFromTelemetry(unittest.TestCase):
     def test_full_session_lifecycle_to_samples(self) -> None:
         t = QwenInferenceTelemetry()
         sid = t.start_session("apps_eval")
-        t.record_request_start(sid, "apps_eval", "qwen-7b")
+        t.record_request_start(sid, "apps_eval", "qwen-32b")
         t.record_request_success(
-            sid, "apps_eval", "qwen-7b",
+            sid, "apps_eval", "qwen-32b",
             latency_ms=120.0, confidence=0.9, tokens_used=500,
         )
-        t.record_request_start(sid, "apps_eval", "qwen-7b")
+        t.record_request_start(sid, "apps_eval", "qwen-32b")
         t.record_request_success(
-            sid, "apps_eval", "qwen-7b",
+            sid, "apps_eval", "qwen-32b",
             latency_ms=80.0, confidence=0.85, tokens_used=300,
         )
         t.end_session(sid)
@@ -104,7 +104,7 @@ class TestSamplesFromTelemetry(unittest.TestCase):
         samples = samples_from_telemetry(t)
         self.assertEqual(len(samples), 2)
         self.assertTrue(all(s.app == "apps_eval" for s in samples))
-        self.assertTrue(all(s.model_id == "qwen-7b" for s in samples))
+        self.assertTrue(all(s.model_id == "qwen-32b" for s in samples))
         # Total tokens recorded = 500 + 300 = 800 across 2 requests = 400/req.
         # With 0.70 ratio: 280 input + 120 output per request.
         for sample in samples:

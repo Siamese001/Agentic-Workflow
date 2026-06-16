@@ -3,9 +3,14 @@
 # Self-contained, no separate verify-unlock loop, no script waits.
 # All output to artifacts/vhdx_optimize.log AND a marker file.
 
+param(
+    [string]$VhdxPath = $env:WSL_VHDX_PATH
+)
+
 $ErrorActionPreference = 'Stop'
-$logPath = "C:\Git\Agentic-Workflow\artifacts\vhdx_optimize.log"
-$markerDone = "C:\Git\Agentic-Workflow\artifacts\vhdx_optimize.done"
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$logPath = Join-Path $repoRoot "artifacts\vhdx_optimize.log"
+$markerDone = Join-Path $repoRoot "artifacts\vhdx_optimize.done"
 New-Item -ItemType Directory -Path (Split-Path $logPath) -Force | Out-Null
 Remove-Item $markerDone -ErrorAction SilentlyContinue
 
@@ -19,7 +24,10 @@ try {
         [Security.Principal.WindowsBuiltInRole]::Administrator)
     if (-not $IsElevated) { throw "Must run as Administrator." }
 
-    $Vhdx = "C:\Users\amita\AppData\Local\wsl\{358ed4de-0575-4f25-973c-dacd8fec83c2}\ext4.vhdx"
+    $Vhdx = $VhdxPath
+    if ([string]::IsNullOrWhiteSpace($Vhdx)) {
+        throw "Pass -VhdxPath or set WSL_VHDX_PATH to the ext4.vhdx path for the distro being compacted."
+    }
     if (-not (Test-Path $Vhdx)) { throw "VHDX not found at $Vhdx" }
 
     $BeforeBytes = (Get-Item $Vhdx).Length

@@ -4,7 +4,7 @@
     Launch apps_rg with automatic vLLM health check and startup.
 
 .DESCRIPTION
-    Ensures WSL is running, vLLM is healthy, starts vLLM if needed,
+    Ensures WSL is running, Docker vLLM is healthy, starts it if needed,
     waits for ready state, then runs apps_rg with provided arguments.
 
 .EXAMPLE
@@ -60,16 +60,13 @@ Write-Status "Checking vLLM health at $VLLM_URL..."
 $isHealthy = Test-VllmHealth
 
 if (-not $isHealthy) {
-    Write-Status "vLLM not responding. Checking if service is running in WSL..."
-
-    # Check if vllm service is active
-    $serviceStatus = wsl.exe bash -c "systemctl --user is-active vllm.service 2>/dev/null || echo 'inactive'"
-
-    if ($serviceStatus -eq "inactive" -or $serviceStatus -eq "failed" -or $serviceStatus -eq "unknown") {
-        Write-Status "Starting vLLM systemd service..."
-        wsl.exe bash -c "systemctl --user daemon-reload && systemctl --user start vllm.service"
-    } else {
-        Write-Status "Service reports: $serviceStatus"
+    Write-Status "vLLM not responding. Starting canonical Docker vLLM in WSL..."
+    $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $repoWsl = (wsl.exe wslpath -a $repoRoot).Trim()
+    wsl.exe bash -lc "cd '$repoWsl' && bash ops_scripts/apps_rg/boot_local_qwen_vllm.sh"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "boot_local_qwen_vllm.sh failed"
+        exit $LASTEXITCODE
     }
 
     # Wait for vLLM to be ready
@@ -89,8 +86,7 @@ if (-not $isHealthy) {
         # Show progress every 10 seconds
         if ($elapsed % 10 -eq 0) {
             Write-Status "Still waiting... ($elapsed s elapsed)"
-            # Check service logs for debugging
-            $logs = wsl.exe bash -c "journalctl --user -u vllm.service --since '10 seconds ago' --no-pager 2>/dev/null | tail -3"
+            $logs = wsl.exe bash -lc "docker logs --tail 3 local-qwen-vllm 2>/dev/null"
             if ($logs) {
                 Write-Status "Recent logs: $logs"
             }
@@ -99,7 +95,7 @@ if (-not $isHealthy) {
 
     if (-not $ready) {
         Write-Error "vLLM failed to become healthy within ${VLLM_HEALTH_TIMEOUT_SEC} seconds"
-        Write-Error "Check logs: wsl.exe journalctl --user -u vllm.service -f"
+        Write-Error "Check logs: wsl.exe bash -lc `"docker logs -f local-qwen-vllm`""
         exit 1
     }
 

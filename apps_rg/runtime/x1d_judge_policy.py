@@ -22,6 +22,7 @@ from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 # Explicit default for CI lane-dev boundary helpers — matches section_judge_policy.
 APPS_RG_E2E_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
+X1D_JUDGE_PREFLIGHT_AUTHORITY_SCOPE = "apps_rg_x1d_judge_preflight_not_core_x1_gate"
 
 _PROVIDER_TYPES: dict[str, str] = {
     "gemini_pro": "external_cloud_llm_judge",
@@ -171,6 +172,8 @@ def preflight_x1d_judge_policy(
     remediation_hint = " ".join(remediation_parts)
 
     return {
+        "authority_scope": X1D_JUDGE_PREFLIGHT_AUTHORITY_SCOPE,
+        "core_x1_gate_authority": False,
         "credential_vs_runtime_capability_disclaimer": (
             "Quorum preflight validates the same credential resolver as lane judges: "
             "resolve_x1d_provider_credentials (Gemini tries GOOGLE_API_KEY then deprecated GEMINI_API_KEY). "

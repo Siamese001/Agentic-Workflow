@@ -176,15 +176,13 @@ GPU_MEMORY_UTILIZATION: float = 0.85
 GPU_VRAM_GB: int = 32
 # Single-tier collapse (2026-04-25): vLLM serves Qwen2.5-32B-Instruct-AWQ
 # exclusively. Both "fast" and "strong" profiles now point at the SSOT model;
-# the difference between them is RESOURCE POLICY (max_model_len, max_num_seqs)
-# applied to the same physical model, NOT a different model. The historical
-# LOCAL_FAST_7B / LOCAL_STRONG_14B names are kept to avoid a wide blast-radius
-# rename (consumers in vllm_gateway_integration_types.py and tests pin them).
-LOCAL_FAST_7B_MODEL: str = QWEN_LOCAL_MODEL_ID  # was "Qwen/Qwen2.5-7B-Instruct" — model never served
+# the difference between them is resource policy applied to the same physical
+# model, not a different model.
+LOCAL_FAST_MODEL: str = QWEN_LOCAL_MODEL_ID
 LOCAL_FAST_7B_MAX_MODEL_LEN: int = 8192
 LOCAL_FAST_7B_MAX_NUM_SEQS: int = 4
 LOCAL_FAST_7B_GPU_MEMORY_UTILIZATION: float = GPU_MEMORY_UTILIZATION
-LOCAL_STRONG_14B_MODEL: str = QWEN_LOCAL_MODEL_ID  # was misnamed; value already pointed at 32B-AWQ
+LOCAL_STRONG_MODEL: str = QWEN_LOCAL_MODEL_ID
 LOCAL_STRONG_14B_MAX_MODEL_LEN: int = 24576
 LOCAL_STRONG_14B_MAX_NUM_SEQS: int = 24
 LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION: float = 0.92
@@ -275,14 +273,14 @@ class VLLMServingProfileInvalid(Exception):
 
 PROFILE_LOCAL_FAST_7B: VLLMServingProfile = VLLMServingProfile(
     profile_name="LOCAL_FAST_7B",
-    model=LOCAL_FAST_7B_MODEL,
+    model=LOCAL_FAST_MODEL,
     max_model_len=LOCAL_FAST_7B_MAX_MODEL_LEN,
     max_num_seqs=LOCAL_FAST_7B_MAX_NUM_SEQS,
     gpu_memory_utilization=LOCAL_FAST_7B_GPU_MEMORY_UTILIZATION,
 )
 PROFILE_LOCAL_STRONG_14B: VLLMServingProfile = VLLMServingProfile(
     profile_name="LOCAL_STRONG_14B",
-    model=LOCAL_STRONG_14B_MODEL,
+    model=LOCAL_STRONG_MODEL,
     max_model_len=LOCAL_STRONG_14B_MAX_MODEL_LEN,
     max_num_seqs=LOCAL_STRONG_14B_MAX_NUM_SEQS,
     gpu_memory_utilization=LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION,
@@ -372,12 +370,12 @@ __all__ = [
     "LOCAL_FAST_7B_GPU_MEMORY_UTILIZATION",
     "LOCAL_FAST_7B_MAX_MODEL_LEN",
     "LOCAL_FAST_7B_MAX_NUM_SEQS",
-    "LOCAL_FAST_7B_MODEL",
+    "LOCAL_FAST_MODEL",
     "LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION",
     "LOCAL_STRONG_14B_MAX_MODEL_LEN",
     "LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING",
     "LOCAL_STRONG_14B_MAX_NUM_SEQS",
-    "LOCAL_STRONG_14B_MODEL",
+    "LOCAL_STRONG_MODEL",
     "QWEN_SERVED_MODEL_MAX_LEN_CEILING",
     "PROFILE_LOCAL_FAST_7B",
     "PROFILE_LOCAL_STRONG_14B",

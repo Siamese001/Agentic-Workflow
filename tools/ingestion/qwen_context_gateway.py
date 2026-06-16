@@ -17,7 +17,8 @@ V1 scope
 --------
 * Route each contextualization request through ``QwenInferenceGateway.infer``.
 * Default model resolved from L0 ``model_registry`` SSOT
-  (``QWEN_LOCAL_MODEL_ID``, override via ``VLLM_MODEL_NAME`` env var).
+  (``QWEN_LOCAL_MODEL_ID``, override via ``QWEN_VLLM_MODEL`` env var;
+  ``VLLM_MODEL_NAME`` is compatibility-only).
 * Default endpoint resolved from L0 ``model_registry`` SSOT
   (``VLLM_BASE_URL``, override via ``VLLM_BASE_URL`` env var).
 * Module-level singleton gateway + single shared event loop per process

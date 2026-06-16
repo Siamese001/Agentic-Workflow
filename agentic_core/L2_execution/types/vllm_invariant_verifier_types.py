@@ -181,7 +181,7 @@ def verify_gateway_invariants(
     Verify architectural invariants at the gateway execution boundary.
 
     Args:
-        provider_selected: Selected provider (e.g., "Qwen2.5-7B-Instruct" or "gemini-2.5-pro").
+        provider_selected: Selected provider (e.g., "Qwen/Qwen2.5-32B-Instruct-AWQ" or "gemini-2.5-pro").
         local_request: Shaped local request (None if routed to Gemini).
         telemetry_dict: Telemetry dictionary with stable key ordering.
         fingerprint: Infrastructure fingerprint (None if not provided).

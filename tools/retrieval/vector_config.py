@@ -46,6 +46,7 @@ SEARCH_PER_COLLECTION_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_PE
 SEARCH_GLOBAL_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_GLOBAL_TIMEOUT", "60"))
 COUNT_CACHE_TTL: float = float(os.environ.get("VECTOR_DB_COUNT_CACHE_TTL", "60"))
 BACKGROUND_PREWARM_ENABLED: bool = os.environ.get("VECTOR_DB_ENABLE_STARTUP_PREWARM", "1").strip() == "1"
+MODEL_PREWARM_ENABLED: bool = os.environ.get("VECTOR_DB_ENABLE_MODEL_PREWARM", "0").strip() == "1"
 
 KNOWN_MODEL_DIMS: dict[str, int] = {
     BGE_M3_MODEL_ID: 1024,

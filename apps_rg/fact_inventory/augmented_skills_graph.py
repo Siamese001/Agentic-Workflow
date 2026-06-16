@@ -270,9 +270,12 @@ def build_verified_skill_inventory_projection(
                 if isinstance(row.get("allowed_phrases"), list)
                 else str(row.get("skill_id") or ""),
                 "source_fact_ids": links,
+                "source_resume_files": list(row.get("source_resume_files") or []),
                 "evidence_type": "augmented_skills_graph_projection",
                 "pillar": row.get("pillar"),
                 "subpillar": row.get("subpillar"),
+                "activation_status": row.get("activation_status"),
+                "support_level": row.get("support_level"),
                 "adjacent_skill_ids": list(adjacency_index.get(skill_id) or []),
             }
         )

@@ -107,10 +107,10 @@
         "model_id": {
           "type": "string",
           "enum": [
-            "BAAI/bge-reranker-v2-m3",
+            "disabled",
             "cross-encoder/ms-marco-MiniLM-L-12-v2"
           ],
-          "description": "Cross-encoder model to load"
+          "description": "Cross-encoder model to load; disabled by default because active retrieval uses BAAI/bge-m3 embeddings only"
         },
         "veto_threshold": {
           "type": "number",
@@ -148,7 +148,7 @@
         },
         "model_id": {
           "type": "string",
-          "description": "Model identifier (e.g., 'Qwen2.5-7B-Instruct' or 'claude-3-haiku')"
+          "description": "Model identifier (e.g., 'Qwen/Qwen2.5-32B-Instruct-AWQ' or 'claude-3-haiku')"
         },
         "rubric_path": {
           "type": "string",

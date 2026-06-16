@@ -46,7 +46,8 @@ from agentic_core.L5_safety.eval_spine.trace_grader import (
 _log = logging.getLogger(__name__)
 
 _BASE_URL_ENV = "VLLM_BASE_URL"
-_MODEL_ENV = "VLLM_MODEL_NAME"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
+_MODEL_ENV = "QWEN_VLLM_MODEL"  # guardian: allow-hardcoded-secret -- canonical local Qwen model env
+_MODEL_ENV_COMPAT = "VLLM_MODEL_NAME"  # guardian: allow-hardcoded-secret -- compatibility fallback
 _API_KEY_ENV = "VLLM_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _DEFAULT_TIMEOUT_S = 30.0
 _DEFAULT_MAX_TOKENS = 512
@@ -54,7 +55,7 @@ _DEFAULT_MAX_TOKENS = 512
 
 def _resolve_default_model() -> str:
     """Defer the L0 model registry import; fall back if registry absent."""
-    env_model = os.environ.get(_MODEL_ENV, "").strip()
+    env_model = os.environ.get(_MODEL_ENV, "").strip() or os.environ.get(_MODEL_ENV_COMPAT, "").strip()
     if env_model:
         return env_model
     try:

@@ -42,12 +42,29 @@ if [[ ! -x "${VENV}/bin/python" ]]; then
 fi
 
 "${VENV}/bin/python" -c "
+import json
 import torch
 from sentence_transformers import SentenceTransformer
 import httpx
 r = httpx.get('${VLLM_BASE_URL%/}/models', timeout=10)
 assert r.status_code == 200, r.status_code
+models = {row.get('id') for row in r.json().get('data', [])}
+assert '${QWEN_VLLM_MODEL}' in models, models
+payload = {
+    'model': '${QWEN_VLLM_MODEL}',
+    'messages': [{'role': 'user', 'content': 'Return exactly: WSL_QWEN_OK'}],
+    'max_tokens': 16,
+    'temperature': 0,
+}
+cr = httpx.post('${VLLM_BASE_URL%/}/chat/completions', json=payload, timeout=60)
+assert cr.status_code == 200, cr.text[:500]
+body = cr.json()
+assert body.get('model') == '${QWEN_VLLM_MODEL}', body.get('model')
+text = body['choices'][0]['message']['content'].strip()
+assert 'WSL_QWEN_OK' in text, text
 print('OK: torch', torch.__version__)
 print('OK: sentence_transformers import')
+print('OK: vLLM model ${QWEN_VLLM_MODEL}')
+print('OK: chat completion WSL_QWEN_OK')
 print('OK: apps_rg fix complete — use \$HOME/.cache/awf-venv-wsl/bin/python -m apps_rg ...')
 "

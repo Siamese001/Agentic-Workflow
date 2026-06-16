@@ -17,8 +17,10 @@ import sqlite3
 import sys
 from pathlib import Path
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite")
-OUT = Path(r"C:\Git\Agentic-Workflow\artifacts\audit_phase4_fanout.json")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite"
+OUT = REPO_ROOT / "artifacts" / "audit_phase4_fanout.json"
 
 # Forbidden caller→callee layer pairs (same as Phase 3)
 FORBIDDEN_LAYER_PAIRS: list[tuple[str, str]] = [

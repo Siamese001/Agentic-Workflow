@@ -36,6 +36,7 @@ VERDICT_PASS = "PASS"
 VERDICT_FAIL = "FAIL"
 VERDICT_WARN = "WARN"
 VERDICT_UNKNOWN = "UNKNOWN"
+APP_X2_QUALITY_AUTHORITY_SCOPE = "apps_rg_cross_section_product_quality_not_core_exit_matrix"
 
 GRAPH_COHERENCE_MIN_ACTIVE_SECTIONS = 3
 GRAPH_COHERENCE_MIN_UNIQUE_SKILLS = 4
@@ -54,6 +55,8 @@ class CrossSectionGateResult:
         return {
             "gate_id": self.gate_id,
             "verdict": self.verdict,
+            "authority_scope": APP_X2_QUALITY_AUTHORITY_SCOPE,
+            "core_x2_matrix_authority": False,
             "decisive_reason": self.decisive_reason,
             "threshold": self.threshold,
             "observed": self.observed,

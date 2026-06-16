@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import atexit
-import json
 import logging
 import threading
 import time
@@ -115,6 +114,11 @@ class ChromaVectorStore:
         if self._client_override is not None:
             return False
         return self._loader.is_loading()
+
+    def last_error(self) -> str | None:
+        if self._client_override is not None:
+            return None
+        return self._loader.last_error()
 
     @staticmethod
     def _client_is_alive(client: Any) -> bool:

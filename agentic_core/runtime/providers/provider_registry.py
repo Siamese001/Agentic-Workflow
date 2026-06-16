@@ -148,7 +148,7 @@ class ProviderRegistry:
           anthropic      -> ANTHROPIC_MODEL_ID  (env: ANTHROPIC_MODEL)
           openai         -> OPENAI_MODEL_ID     (env: OPENAI_MODEL)
           google_gemini  -> GEMINI_PRO_MODEL_ID (env: GEMINI_PRO_MODEL)
-          local_vllm     -> QWEN_LOCAL_MODEL_ID (env: VLLM_MODEL_NAME)
+          local_vllm     -> QWEN_LOCAL_MODEL_ID (env: QWEN_VLLM_MODEL, compat: VLLM_MODEL_NAME)
           other / null   -> raw_model_id as-is
         """
         if vendor == "anthropic":

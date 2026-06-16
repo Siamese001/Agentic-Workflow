@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download Qwen2.5-32B-Instruct-AWQ (~20 GB) into ~/models/ via huggingface-cli.
+# Download Qwen2.5-32B-Instruct-AWQ (~20 GB) into ~/models/.
 # Anonymous download (no token required for public AWQ repo).
 # Idempotent: hf_hub_download verifies blob hashes and resumes partial files.
 set -e
@@ -14,27 +14,35 @@ echo "Downloading $MODEL_REPO -> $DEST" | tee -a "$LOG"
 echo "Started: $(date)" | tee -a "$LOG"
 echo "" >> "$LOG"
 
-# Use the venv's huggingface-cli (Stack A's existing env)
-HFCLI=$HOME/.vllm_env/bin/huggingface-cli
-if [ ! -x "$HFCLI" ]; then
-  echo "Installing huggingface-cli into ~/.vllm_env..." | tee -a "$LOG"
-  $HOME/.vllm_env/bin/pip install -q huggingface_hub
-fi
+python3 - <<PY 2>&1 | tee -a "$LOG"
+import importlib.util
+import subprocess
+import sys
 
-# huggingface-cli download with --local-dir lands files directly in DEST
-# (bypasses the hub-cache symlink scheme that caused W3 woes earlier today)
-HF_HUB_ENABLE_HF_TRANSFER=0 \
-"$HFCLI" download \
-  "$MODEL_REPO" \
-  --local-dir "$DEST" \
-  --max-workers 4 \
-  >> "$LOG" 2>&1
+if importlib.util.find_spec("huggingface_hub") is None:
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "--user", "huggingface_hub"],
+        check=True,
+        timeout=300,
+    )
+PY
+
+HF_HUB_ENABLE_HF_TRANSFER=0 python3 - <<PY 2>&1 | tee -a "$LOG"
+from huggingface_hub import snapshot_download
+
+path = snapshot_download(
+    repo_id="$MODEL_REPO",
+    local_dir="$DEST",
+    max_workers=4,
+)
+print(f"snapshot_download={path}")
+PY
 
 echo "" >> "$LOG"
 echo "Finished: $(date)" >> "$LOG"
 
 # Verify all safetensors headers
-$HOME/.vllm_env/bin/python <<PY 2>&1 | tee -a "$LOG"
+python3 <<PY 2>&1 | tee -a "$LOG"
 import struct, json, glob, os
 ok = True
 for p in sorted(glob.glob("$DEST/*.safetensors")):

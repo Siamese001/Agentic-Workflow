@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
     ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
 )
 
 import json
@@ -40,7 +41,7 @@ class LLMJudgeVeto:
     # Local-qwen default endpoint; overridable via LOCAL_QWEN_ENDPOINT env.
     _DEFAULT_LOCAL_QWEN_ENDPOINT = "http://localhost:8000/v1"
     # Final fallback only if endpoint discovery and env override both fail.
-    _FALLBACK_MODEL_ID = "Qwen2.5-7B-Instruct"
+    _FALLBACK_MODEL_ID = QWEN_LOCAL_MODEL_ID
 
     def __init__(
         self,
@@ -56,7 +57,7 @@ class LLMJudgeVeto:
         # does not do network I/O and unit tests stay hermetic.
         # Resolution precedence:
         #   1. Explicit model_id argument (back-compat, tests)
-        #   2. Env var LOCAL_QWEN_MODEL  (operator escape hatch)
+        #   2. Env var QWEN_VLLM_MODEL / LOCAL_QWEN_MODEL (operator escape hatch)
         #   3. GET {endpoint}/v1/models  (discovery — preferred default)
         #   4. Hardcoded fallback _FALLBACK_MODEL_ID
         # The resolved id + (when discovery fires) the advertised id are
@@ -134,7 +135,7 @@ class LLMJudgeVeto:
                 self._advertised_model_id = self._discover_local_qwen_model()
             return
         # 2. Env var override.
-        env_override = os.environ.get("LOCAL_QWEN_MODEL")
+        env_override = os.environ.get("QWEN_VLLM_MODEL") or os.environ.get("LOCAL_QWEN_MODEL")
         if env_override and self._provider == "local_qwen":
             self._model_id = env_override
             self._model_id_source = "env"

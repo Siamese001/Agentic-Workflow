@@ -40,24 +40,24 @@ from .vector_config import (
     MAX_RESULTS,
     MAX_SEARCH_RESULTS,
     MODEL_LOAD_TIMEOUT,
+    MODEL_PREWARM_ENABLED,
     QUERY_COLLECTION_TIMEOUT,
-    SEARCH_PER_COLLECTION_TIMEOUT,
     SEARCH_GLOBAL_TIMEOUT,
+    SEARCH_PER_COLLECTION_TIMEOUT,
     validate_startup_config,
 )
 from .vector_errors import (
     VectorConflictError,
     VectorNotFoundError,
     VectorServiceError,
-    VectorUnavailableError,
     VectorValidationError,
 )
 from .vector_schemas import (
     CollectionInfoReport,
     CollectionStat,
     CollectionSummary,
-    EmbedTextReport,
     EmbeddingPreview,
+    EmbedTextReport,
     OperationReport,
     QueryCollectionReport,
     QueryHit,
@@ -478,6 +478,36 @@ class VectorRetrievalService:
             background_prewarm_enabled=BACKGROUND_PREWARM_ENABLED,
         )
 
+    def health_snapshot(self) -> dict[str, Any]:
+        """Return a fast, nonblocking readiness snapshot for governance probes."""
+        chroma_ready = self.store.is_loaded()
+        model_ready = self.embedder.is_loaded()
+        return {
+            "schema_version": "vector-db-health/v1",
+            "chroma": {
+                "ready": chroma_ready,
+                "loading": self.store.is_loading(),
+                "last_error": self.store.last_error(),
+                "path": str(CHROMA_PATH),
+            },
+            "embedding_model": {
+                "ready": model_ready,
+                "loading": self.embedder.is_loading(),
+                "last_error": self.embedder.last_error(),
+                "name": DEFAULT_EMBEDDING_MODEL,
+                "dimension": self.embedder.get_dimension() if model_ready else None,
+            },
+            "semantic_ready": chroma_ready and model_ready,
+            "background_prewarm_enabled": BACKGROUND_PREWARM_ENABLED,
+            "model_prewarm_enabled": MODEL_PREWARM_ENABLED,
+            "timeouts": {
+                "chroma_init_s": CHROMA_INIT_TIMEOUT,
+                "model_load_s": MODEL_LOAD_TIMEOUT,
+                "encode_s": EMBEDDING_ENCODE_TIMEOUT,
+                "query_s": QUERY_COLLECTION_TIMEOUT,
+            },
+        }
+
     # Convenience helpers for the adapter layer
     def format_create_collection(self, name: str, metadata: dict[str, Any] | None = None) -> str:
         return self.create_collection(name, metadata).message
@@ -540,6 +570,11 @@ class VectorRetrievalService:
 
     def format_readiness(self) -> str:
         return format_readiness(self.readiness())
+
+    def format_health_snapshot(self) -> str:
+        import json
+
+        return json.dumps(self.health_snapshot(), indent=2, sort_keys=True)
 
 
 _service_singleton: VectorRetrievalService | None = None

@@ -1,8 +1,17 @@
 # Helper: shut WSL down, wait, then check VHDX/log status.
 # Used to give the elevated optimize_vhdx.ps1 script a clear window to grab the VHDX.
 
-$logPath = "C:\Git\Agentic-Workflow\artifacts\vhdx_optimize.log"
-$vhdx = "C:\Users\amita\AppData\Local\wsl\{358ed4de-0575-4f25-973c-dacd8fec83c2}\ext4.vhdx"
+param(
+    [string]$VhdxPath = $env:WSL_VHDX_PATH
+)
+
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$logPath = Join-Path $repoRoot "artifacts\vhdx_optimize.log"
+$vhdx = $VhdxPath
+if ([string]::IsNullOrWhiteSpace($vhdx)) {
+    throw "Pass -VhdxPath or set WSL_VHDX_PATH to the ext4.vhdx path for the distro being compacted."
+}
+if (-not (Test-Path $vhdx)) { throw "VHDX not found at $vhdx" }
 
 Write-Host "Shutting down WSL to release VHDX lock..."
 wsl --shutdown

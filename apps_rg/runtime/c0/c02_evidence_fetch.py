@@ -13,6 +13,7 @@ from apps_rg.fact_inventory.candidate_fact_ledger import (
 )
 from apps_rg.runtime.c0.constants import (
     CLAIM_ELIGIBLE,
+    CONFIDENCE_HIGH,
     CONFIDENCE_PENDING,
     FORBIDDEN_PROOF_SOURCE_TYPES,
     NOT_PROOF,
@@ -108,6 +109,7 @@ def _atom_from_manifest_row(row: dict[str, Any], *, section_id: str) -> C02Atom 
 
 def _atoms_from_proof_pool(pool: SectionProofPool, *, section_id: str, ledger: dict[str, dict[str, Any]]) -> list[C02Atom]:
     atoms: list[C02Atom] = []
+    alias_map = dict((pool.proof_pool_metadata or {}).get("id_alias_map") or {})
     plan_facts = list((pool.selected_fact_plan or {}).get("facts") or [])
     for pf in plan_facts:
         if not isinstance(pf, dict):
@@ -115,10 +117,45 @@ def _atoms_from_proof_pool(pool: SectionProofPool, *, section_id: str, ledger: d
         fid = str(pf.get("candidate_fact_id") or pf.get("fact_id") or "").strip()
         if not fid or fid not in pool.allowed_fact_ids:
             continue
-        row = ledger.get(fid) or pf
+        ledger_fid = str(pf.get("ledger_candidate_fact_id") or alias_map.get(fid) or "").strip()
+        row = ledger.get(fid) or (ledger.get(ledger_fid) if ledger_fid else None) or pf
         atom = _atom_from_ledger_row(row if isinstance(row, dict) else pf, section_id=section_id)
+        atom["fact_id"] = fid
+        if ledger_fid:
+            atom["source_span_ref"] = f"ledger:{ledger_fid}"
         atom["source_type"] = SOURCE_PROOF_POOL
         atom["source_ref"] = pool.proof_pool_ref
+        atom["confidence"] = CONFIDENCE_HIGH
+        atom["proof_status"] = PROOF_ELIGIBLE
+        atom["requires_trace_audit"] = False
+        atoms.append(atom)
+    return atoms
+
+
+def _atoms_from_allowed_aliases(
+    pool: SectionProofPool,
+    *,
+    section_id: str,
+    ledger: dict[str, dict[str, Any]],
+) -> list[C02Atom]:
+    alias_map = dict((pool.proof_pool_metadata or {}).get("id_alias_map") or {})
+    atoms: list[C02Atom] = []
+    for fid in pool.allowed_fact_ids_ordered:
+        surface_id = str(fid or "").strip()
+        ledger_fid = str(alias_map.get(surface_id) or "").strip()
+        if not surface_id or not ledger_fid:
+            continue
+        row = ledger.get(ledger_fid)
+        if not isinstance(row, dict):
+            continue
+        atom = _atom_from_ledger_row(row, section_id=section_id)
+        atom["fact_id"] = surface_id
+        atom["source_type"] = SOURCE_PROOF_POOL
+        atom["source_ref"] = pool.proof_pool_ref
+        atom["source_span_ref"] = f"ledger:{ledger_fid}"
+        atom["confidence"] = CONFIDENCE_HIGH
+        atom["proof_status"] = PROOF_ELIGIBLE
+        atom["requires_trace_audit"] = False
         atoms.append(atom)
     return atoms
 
@@ -133,6 +170,8 @@ def fetch_c02_evidence_atoms(
     root = repo_root or REPO_ROOT
     ledger = _ledger_by_id(root)
     atoms = _atoms_from_proof_pool(pool, section_id=section_id, ledger=ledger)
+    if not atoms:
+        atoms = _atoms_from_allowed_aliases(pool, section_id=section_id, ledger=ledger)
     seen = {a["fact_id"] for a in atoms}
     for mrow in _load_manifest_rows(root):
         atom = _atom_from_manifest_row(mrow, section_id=section_id)

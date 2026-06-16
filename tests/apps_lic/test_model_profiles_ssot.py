@@ -31,8 +31,8 @@ def test_generator_model_resolves_from_yaml_ssot() -> None:
 
 
 def test_generator_model_env_override_wins(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_LIC_QWEN_MODEL", "Qwen/Qwen2.5-7B-Instruct-AWQ")
-    assert resolve_generator_model() == "Qwen/Qwen2.5-7B-Instruct-AWQ"
+    monkeypatch.setenv("APPS_LIC_QWEN_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
+    assert resolve_generator_model() == "Qwen/Qwen2.5-32B-Instruct-AWQ"
 
 
 def test_x1d_judge_resolves_to_independent_claude_not_qwen() -> None:

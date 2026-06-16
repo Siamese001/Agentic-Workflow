@@ -199,6 +199,12 @@ class DeferredLoader:
     def is_loading(self) -> bool:
         return self._loading
 
+    def last_error(self) -> str | None:
+        """Return the last loader error without waiting for the resource."""
+        if self._last_error is None:
+            return None
+        return f"{self._last_error.__class__.__name__}: {self._last_error}"
+
     def invalidate(self) -> None:
         """Drop the cached resource so the next ``get()`` rebuilds it.
 

@@ -2,7 +2,9 @@
 __adg_consumer_mode__ = "inventory"
 
 import sqlite3
-DB = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite"
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DB = str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite")
 con = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
 cur = con.cursor()
 

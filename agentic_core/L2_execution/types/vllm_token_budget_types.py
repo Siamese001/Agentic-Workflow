@@ -405,10 +405,8 @@ def run_preflight_budget_check(prompt: str, task_class: str, max_model_len: int)
 
 LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
 # Single-tier collapse (2026-04-25): vLLM serves Qwen2.5-32B-Instruct-AWQ
-# exclusively. The QWEN_7B_MODEL_ID/QWEN_14B_MODEL_ID names are preserved
-# as deprecated aliases pointing at the SSOT QWEN_LOCAL_MODEL_ID — both
-# return the same value. New code should import QWEN_LOCAL_MODEL_ID from
-# agentic_core.L0_routing.config.model_registry directly.
+# exclusively. Model identity is read from the L0 model registry only; this
+# module keeps token-budget policy constants, not per-size model IDs.
 from agentic_core.L0_routing.config.model_registry import (  # noqa: E402, PLC0415  # guardian: allow-layer-violation -- model_registry SSOT at L0 config
     QWEN_LOCAL_MAX_MODEL_LEN,
     QWEN_LOCAL_MODEL_ID,
@@ -419,12 +417,6 @@ QWEN_MAX_MODEL_LEN: int = QWEN_LOCAL_MAX_MODEL_LEN
 QWEN_7B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 QWEN_14B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 
-QWEN_7B_MODEL_ID: str = (
-    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was QWEN_7B_INSTRUCT_MODEL_ID — model never served)
-)
-QWEN_14B_MODEL_ID: str = (
-    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was misnamed; value already pointed at 32B-AWQ)
-)
 HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({"high"})
 FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({"low", "medium"})
 
@@ -556,9 +548,7 @@ __all__ = [
     "GEMINI_25_PRO_MODEL_ID",
     "HIGH_SEVERITY_LEVELS",
     "QWEN_14B_MAX_MODEL_LEN",
-    "QWEN_14B_MODEL_ID",
     "QWEN_7B_MAX_MODEL_LEN",
-    "QWEN_7B_MODEL_ID",
     "QWEN_LOCAL_MODEL_ID",
     "QWEN_MAX_MODEL_LEN",
     "SAFETY_MARGIN_TOKENS",

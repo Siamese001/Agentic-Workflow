@@ -64,8 +64,8 @@ def test_explicit_heuristic_mode(monkeypatch):
 
 def test_cross_encoder_mode_returns_cross_encoder(monkeypatch):
     """RERANKER=cross_encoder instantiates the two-stage chain. Does NOT
-    require the bge-reranker-v2-m3 weights to be downloaded — adapter
-    load is deferred until the first rerank() call."""
+    require CrossEncoder weights to be downloaded because adapter load is
+    deferred until the first rerank() call."""
     monkeypatch.setenv("RERANKER", "cross_encoder")
     reranker = get_reranker()
     assert isinstance(reranker, CrossEncoderReranker)

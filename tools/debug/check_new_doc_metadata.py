@@ -6,6 +6,9 @@ Temporary diagnostic script — safe to delete after C2.1 closeout.
 from __future__ import annotations
 
 import chromadb
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED = [
     "source_collection",
@@ -25,7 +28,7 @@ REQUIRED = [
     "file_path",
 ]
 
-c = chromadb.PersistentClient(path=r"C:\Git\Agentic-Workflow\data\cache\chromadb").get_collection(
+c = chromadb.PersistentClient(path=str(REPO_ROOT / "data" / "cache" / "chromadb")).get_collection(
     "repo_evidence"
 )
 res = c.get(

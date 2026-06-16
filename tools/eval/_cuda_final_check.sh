@@ -7,23 +7,15 @@ echo '=== Compute processes ==='
 nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv
 
 echo
-echo '=== torch + CUDA from inside Stack A venv ==='
-~/.vllm_env/bin/python <<'PY'
-import torch
-print("torch=" + torch.__version__)
-print("cuda_runtime=" + str(torch.version.cuda))
-print("cuda_available=" + str(torch.cuda.is_available()))
-print("device=" + torch.cuda.get_device_name(0))
-print("CC=" + str(torch.cuda.get_device_capability(0)))
-print("device_total_mem_GB=" + f"{torch.cuda.get_device_properties(0).total_memory/1e9:.2f}")
-PY
+echo '=== Docker vLLM container ==='
+docker ps --filter name=local-qwen-vllm --format '{{.Names}} {{.Status}}'
 
 echo
 echo '=== End-to-end inference latency ==='
 T0=$(date +%s.%N)
 RESP=$(curl -sf http://localhost:8000/v1/chat/completions \
   -H 'Content-Type: application/json' \
-  -d '{"model":"Qwen/Qwen2.5-14B-Instruct-AWQ","messages":[{"role":"user","content":"Reply with exactly: OK"}],"max_tokens":8,"temperature":0.0}')
+  -d '{"model":"Qwen/Qwen2.5-32B-Instruct-AWQ","messages":[{"role":"user","content":"Reply with exactly: OK"}],"max_tokens":8,"temperature":0.0}')
 T1=$(date +%s.%N)
 echo "$RESP" | python3 -c "
 import json, sys

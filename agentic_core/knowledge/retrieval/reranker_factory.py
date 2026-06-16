@@ -2,7 +2,7 @@
 
 Canonical entry point for all call sites that need a reranker. Resolves the
 ``RERANKER`` env var to either the fast heuristic SeniorLibrarianReranker or
-the higher-accuracy CrossEncoderReranker (bge-reranker-v2-m3), then returns
+an explicitly configured CrossEncoderReranker, then returns
 a process-level singleton of the chosen implementation.
 
 Env knob ``RERANKER`` values
@@ -10,7 +10,8 @@ Env knob ``RERANKER`` values
 * unset / "auto" (default) — heuristic only. Matches historical behavior so
   no existing code path changes output unless the operator opts in.
 * "heuristic" — explicit heuristic selection; same as default.
-* "cross_encoder" — two-stage chain (heuristic pre-filter + BGE cross-encoder).
+* "cross_encoder" — two-stage chain (heuristic pre-filter + CrossEncoder).
+  Requires ``BGE_RERANKER_MODEL`` to be set to a real CrossEncoder model id.
   Falls back to heuristic at runtime if the cross-encoder deps are missing
   (CrossEncoderReranker handles this gracefully via its own fallback path).
 * "none" / "off" — returns ``None`` so callers can conditionally skip rerank.

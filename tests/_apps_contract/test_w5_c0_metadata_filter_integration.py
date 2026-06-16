@@ -110,8 +110,8 @@ class TestQueryFactVectorsMetadataFilterIntegration:
         where_json = json.dumps(where_filter)
         assert "candidate_profile" in where_json or "project_evidence" in where_json
     
-    def test_where_clause_includes_employer_filter_when_present(self) -> None:
-        """EVIDENCE: When employer in app_payload, where clause includes employer filter."""
+    def test_where_clause_keeps_target_company_soft_when_present(self) -> None:
+        """Target company is a soft metadata score, not a hard Chroma filter."""
         mock_collection = MagicMock()
         mock_collection.query.return_value = {
             "ids": [["chunk1"]],
@@ -142,9 +142,12 @@ class TestQueryFactVectorsMetadataFilterIntegration:
         call_kwargs = mock_collection.query.call_args[1]
         where_filter = call_kwargs.get("where")
         
-        # Employer should be in where clause
+        # Target company must not be a hard where filter: fact_vectors contain
+        # candidate employers, while app payload contains the target employer.
         where_json = json.dumps(where_filter)
-        assert "Acme Corp" in where_json or "acme" in where_json.lower()
+        assert "apps_rg" in where_json
+        assert "Acme Corp" not in where_json
+        assert "acme" not in where_json.lower()
     
     def test_process_docs_never_in_source_classes(self) -> None:
         """EVIDENCE: process_docs is never included in source_class filter."""

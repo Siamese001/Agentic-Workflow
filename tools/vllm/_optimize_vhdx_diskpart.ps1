@@ -3,9 +3,14 @@
 # Steps: fstrim inside WSL -> stop Docker Desktop -> wsl --shutdown -> diskpart compact -> restart Docker
 # Writes artifacts\vhdx_optimize.done with results.
 
+param(
+    [string]$VhdxPath = $env:WSL_VHDX_PATH
+)
+
 $ErrorActionPreference = 'Stop'
-$logPath    = "C:\Git\Agentic-Workflow\artifacts\vhdx_optimize.log"
-$markerDone = "C:\Git\Agentic-Workflow\artifacts\vhdx_optimize.done"
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$logPath    = Join-Path $repoRoot "artifacts\vhdx_optimize.log"
+$markerDone = Join-Path $repoRoot "artifacts\vhdx_optimize.done"
 New-Item -ItemType Directory -Path (Split-Path $logPath) -Force | Out-Null
 Remove-Item $markerDone -ErrorAction SilentlyContinue
 
@@ -19,7 +24,10 @@ try {
         [Security.Principal.WindowsBuiltInRole]::Administrator)
     if (-not $IsElevated) { throw "Must run as Administrator." }
 
-    $Vhdx = "C:\Users\amita\AppData\Local\wsl\{358ed4de-0575-4f25-973c-dacd8fec83c2}\ext4.vhdx"
+    $Vhdx = $VhdxPath
+    if ([string]::IsNullOrWhiteSpace($Vhdx)) {
+        throw "Pass -VhdxPath or set WSL_VHDX_PATH to the ext4.vhdx path for the distro being compacted."
+    }
     if (-not (Test-Path $Vhdx)) { throw "VHDX not found at $Vhdx" }
 
     $BeforeBytes = (Get-Item $Vhdx).Length
@@ -87,8 +95,8 @@ try {
     }
 
     Write-Host ""
-    Write-Host "After Docker settles (~30s), restart Stack A vLLM:" -ForegroundColor Yellow
-    Write-Host "    wsl -- systemctl --user start vllm" -ForegroundColor Yellow
+    Write-Host "After Docker settles (~30s), restart canonical Docker vLLM:" -ForegroundColor Yellow
+    Write-Host "    wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && bash ops_scripts/apps_rg/boot_local_qwen_vllm.sh'" -ForegroundColor Yellow
 
 } catch {
     Write-Error $_

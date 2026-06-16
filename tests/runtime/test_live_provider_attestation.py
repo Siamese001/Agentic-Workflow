@@ -24,6 +24,7 @@ from tools.certification.evidence._live_provider_attestation import (  # noqa: E
     build_attestation_payload,
     write_attestation,
 )
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID  # noqa: E402
 
 
 @pytest.fixture
@@ -36,8 +37,8 @@ def rubric_file(tmp_path):
 def _canonical_kwargs(rubric):
     return dict(
         provider="local_qwen",
-        model_id="Qwen2.5-7B-Instruct",
-        model_version="Qwen2.5-7B-Instruct",
+        model_id=QWEN_LOCAL_MODEL_ID,
+        model_version=QWEN_LOCAL_MODEL_ID,
         rubric_path=rubric,
         raw_response='{"verdict":"SAFE","confidence":0.9}',
         response_hash_mode="paraphrase_tolerant",

@@ -24,6 +24,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.compose_semantic_cache_subclaims import (  # noqa: E402
     _validate_live_provider_attestation,
 )
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID  # noqa: E402
 
 
 def _canonical_att(**overrides):
@@ -31,8 +32,8 @@ def _canonical_att(**overrides):
         "schema_version": 1,
         "attestation_kind": "live_provider_allow_path",
         "provider": "local_qwen",
-        "model_id": "Qwen2.5-7B-Instruct",
-        "model_version": "Qwen2.5-7B-Instruct",
+        "model_id": QWEN_LOCAL_MODEL_ID,
+        "model_version": QWEN_LOCAL_MODEL_ID,
         "rubric_path": "config/certification/llm_judge_rubric.md",
         "rubric_hash_sha256": "a" * 64,
         "response_hash_sha256": "b" * 64,

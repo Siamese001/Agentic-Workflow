@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.shadow.l6_handoff_packet import (
+    L6_LEGACY_HANDOFF_AUTHORITY_SCOPE,
     repo_rel,
     summarize_x1d,
     summarize_x2,
@@ -20,6 +21,7 @@ from apps_rg.runtime.shadow.l6_handoff_packet import (
 
 L6_LEARNING_KIND = "l6_shadow_learning"
 L6_LEARNING_VERSION = "1"
+L6_LEARNING_AUTHORITY_SCOPE = "apps_rg_l6_shadow_learning_future_run_advisory"
 
 
 def _load_json(path: Path) -> Any | None:
@@ -61,6 +63,9 @@ def build_l6_shadow_learning_record(
         return {
             "artifact_kind": L6_LEARNING_KIND,
             "l6_learning_version": L6_LEARNING_VERSION,
+            "authority_scope": L6_LEARNING_AUTHORITY_SCOPE,
+            "handoff_authority_scope": L6_LEGACY_HANDOFF_AUTHORITY_SCOPE,
+            "future_run_only": True,
             "section_id": section_id,
             "lane_key": lane_key,
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -233,6 +238,9 @@ def build_l6_shadow_learning_record(
     return {
         "artifact_kind": L6_LEARNING_KIND,
         "l6_learning_version": L6_LEARNING_VERSION,
+        "authority_scope": L6_LEARNING_AUTHORITY_SCOPE,
+        "handoff_authority_scope": L6_LEGACY_HANDOFF_AUTHORITY_SCOPE,
+        "future_run_only": True,
         "section_id": section_id,
         "lane_key": lane_key,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -286,6 +294,7 @@ def build_l6_shadow_learning_record(
 
 __all__ = [
     "L6_LEARNING_KIND",
+    "L6_LEARNING_AUTHORITY_SCOPE",
     "L6_LEARNING_VERSION",
     "build_l6_shadow_learning_record",
 ]

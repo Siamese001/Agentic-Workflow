@@ -10,14 +10,13 @@ or a route contract consumed by audit_codex_mcp_transports.py.
 from __future__ import annotations
 
 import argparse
-from collections.abc import Sequence
-from dataclasses import asdict, dataclass
 import json
-from pathlib import Path
 import subprocess
 import sys
+from collections.abc import Sequence
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GOVERNANCE_DIR = Path(__file__).resolve().parent
@@ -27,10 +26,11 @@ if str(GOVERNANCE_DIR) not in sys.path:
 import audit_codex_mcp_transports  # noqa: E402
 import codex_hook_parity  # noqa: E402
 
-
 DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "vector_db")
 CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
 DUPLICATE_PROCESS_CLASSIFICATIONS = {"duplicate", "duplicate_launch_tree"}
+VECTOR_SEMANTIC_READY_VALUES = {"ready", "healthy", "true", "1", "semantic_ready"}
+VECTOR_SEMANTIC_NOT_READY_VALUES = {"metadata_only", "loading", "timeout", "unavailable", "false", "0"}
 
 
 @dataclass(frozen=True)
@@ -173,6 +173,37 @@ def _check_required_routes(report: dict[str, Any], required_routes: Sequence[str
     return checks
 
 
+def _check_vector_semantic_guard(required_routes: Sequence[str]) -> ReadinessCheck | None:
+    if "vector_db" not in required_routes:
+        return None
+    import os
+
+    raw = os.environ.get("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", "").strip().lower()
+    if raw in VECTOR_SEMANTIC_READY_VALUES:
+        return ReadinessCheck(
+            "mcp.vector_db.semantic",
+            "PASS",
+            "critical",
+            "vector_db semantic readiness is explicitly proven.",
+            raw,
+        )
+    if raw in VECTOR_SEMANTIC_NOT_READY_VALUES:
+        return ReadinessCheck(
+            "mcp.vector_db.semantic",
+            "FAIL",
+            "critical",
+            "vector_db is callable but semantic readiness is not proven ready.",
+            f"CODEX_MCP_VECTOR_DB_SEMANTIC_STATE={raw}",
+        )
+    return ReadinessCheck(
+        "mcp.vector_db.semantic",
+        "WARN",
+        "critical",
+        "vector_db semantic readiness was not supplied; stats-only MCP proof is not semantic readiness.",
+        "Set CODEX_MCP_VECTOR_DB_SEMANTIC_STATE=ready only after a fast health_snapshot/readiness probe proves semantic_ready=true.",
+    )
+
+
 def _check_adg(report: dict[str, Any], root: Path, allow_sqlite_fallback: bool) -> ReadinessCheck:
     servers = report.get("route_evidence", {}).get("servers", {})
     adg_state = servers.get("adg_sqlite", {}) if isinstance(servers, dict) else {}
@@ -250,6 +281,9 @@ def build_readiness_report(
     checks.append(_check_git_state(root, require_clean))
     checks.extend(_check_env(transport_report))
     checks.extend(_check_required_routes(transport_report, required_callable_routes))
+    vector_guard = _check_vector_semantic_guard(required_callable_routes)
+    if vector_guard is not None:
+        checks.append(vector_guard)
     checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
     checks.extend(_check_process_hygiene(transport_report, fail_duplicate_processes))
 

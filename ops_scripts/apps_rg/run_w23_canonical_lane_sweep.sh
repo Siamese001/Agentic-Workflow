@@ -18,9 +18,9 @@ if [[ -z "${BGE}" ]]; then
   done
 fi
 export APPS_RG_EMBEDDING_MODEL_PATH="${BGE}"
-# Do not force offline unless caller opts in; apps_rg still requires a local BGE path.
-export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-0}"
-export TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-0}"
+# Canonical local-model lane: use already-downloaded BGE-M3 and WSL Docker vLLM.
+export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}"
+export TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}"
 PY="${APPS_RG_WSL_VENV:-${HOME}/.cache/awf-venv-wsl}/bin/python"
 if [[ ! -x "${PY}" ]]; then
   PY=python3

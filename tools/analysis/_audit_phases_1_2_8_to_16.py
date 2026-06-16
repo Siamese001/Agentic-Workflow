@@ -23,10 +23,12 @@ import json
 import re
 import sqlite3
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 from collections import defaultdict, Counter
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite")
-ART = Path(r"C:\Git\Agentic-Workflow\artifacts")
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite"
+ART = REPO_ROOT / "artifacts"
 
 # CI gate coverage map — each entry maps (gate_name -> finding_categories it covers)
 # Used by Phase 16 to filter out findings already covered by CI.

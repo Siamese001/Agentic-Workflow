@@ -24,13 +24,10 @@ def competencies_vllm_preflight_timeout_s() -> float:
 def competencies_vllm_chat_timeout_s() -> int:
     """Chat/completions wall-clock budget for the competencies lane (transport only; not an X2 gate).
 
-    Honors ``APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS`` TRUTHFULLY. The prior hard 300s ceiling
-    silently clamped an explicit 1000s E2E budget down to 300s — yet competencies is not a
-    singleton call: it runs an 8-path self-consistency pool + Claude selector + possible regen
-    rounds, which legitimately needs the larger wall-clock. The only ceiling now is the SHARED
-    external-provider bound (``APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS``, default 1200s), so
-    an operator-set budget is recorded into ``provider_request.json`` and used verbatim up to that
-    safety bound. Default for unattended/normal runs stays a bounded 120s.
+    Honors ``APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS`` up to the shared
+    external-provider ceiling. Default for unattended/normal runs stays 120s;
+    explicit budgets are capped at 300s by default so a bad live provider call
+    fails closed instead of consuming a long agent run.
     """
     from apps_rg.runtime.providers.external_provider import external_provider_timeout_max_s
 

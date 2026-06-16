@@ -178,7 +178,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
     if judge_override in ("gemini", "google") and google_key:
         return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
     if judge_override in ("qwen", "vllm"):
-        return True, f"vllm ({os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
+        return True, f"vllm ({os.getenv('QWEN_VLLM_MODEL') or os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
 
     if not judge_override:
         if anthropic_key:
@@ -194,7 +194,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
         base_url = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
         resp = _httpx.get(f"{base_url}/v1/models", timeout=5.0)
         if resp.status_code == 200:
-            return True, f"vllm ({os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
+            return True, f"vllm ({os.getenv('QWEN_VLLM_MODEL') or os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
     except Exception:
         pass
 

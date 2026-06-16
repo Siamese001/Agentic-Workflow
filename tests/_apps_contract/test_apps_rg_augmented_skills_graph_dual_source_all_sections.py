@@ -75,6 +75,14 @@ def test_competencies_graph_projection_authoritative() -> None:
     assert any((s.get("adjacent_skill_ids") or []) for s in skills if isinstance(s, dict)), (
         "C03 1-hop adjacency must surface on at least one projected skill"
     )
+    resume_sourced = [
+        s
+        for s in skills
+        if isinstance(s, dict) and s.get("source_resume_files") and s.get("source_fact_ids")
+    ]
+    assert resume_sourced, "apps_rg graph projection must carry actual resume skill traces"
+    assert all(s.get("activation_status") for s in resume_sourced)
+    assert all(s.get("support_level") for s in resume_sourced)
 
 
 def test_unify_bullets_resolves_graph_skills_not_base_fallback_only() -> None:

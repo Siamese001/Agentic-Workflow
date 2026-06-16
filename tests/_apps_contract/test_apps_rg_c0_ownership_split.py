@@ -38,6 +38,17 @@ REPO = Path(__file__).resolve().parents[2]
 EVIDENCE_ROOM = REPO / "apps_rg/runtime/c0/evidence_room.py"
 C05_MODULE = REPO / "apps_rg/runtime/c0/c05_fec_packet.py"
 RUNTIME_PROOF = REPO / "artifacts/apps_rg/runtime_proofs/headline/c0_ownership_split_proof"
+FORBIDDEN_CORE_GRAPH_SKILL_IMPORT_PREFIXES = (
+    "apps_rg.fact_inventory",
+    "apps_rg.runtime.c03_graphrag_bound",
+    "apps_rg.runtime.c03_graph_sqlite_context",
+    "apps_rg.runtime.graph_skill_phrase_capsule",
+)
+FORBIDDEN_CORE_GRAPH_SKILL_LITERALS = (
+    "augmented_skills_graph",
+    "master_skills_arsenal",
+    "source_resume_files",
+)
 
 
 def _module_ast(path: Path) -> ast.Module:
@@ -53,6 +64,14 @@ def _import_names(tree: ast.Module) -> set[str]:
             for alias in node.names:
                 out.add(alias.name)
     return out
+
+
+def _agentic_core_python_files() -> list[Path]:
+    return [
+        p
+        for p in (REPO / "agentic_core").rglob("*.py")
+        if ",cover" not in p.name and "__pycache__" not in p.parts
+    ]
 
 
 class TestEvidenceRoomImportBoundary:
@@ -78,6 +97,40 @@ class TestEvidenceRoomImportBoundary:
     def test_evidence_room_no_core_retrieval_plan_builder(self) -> None:
         imports = _import_names(_module_ast(EVIDENCE_ROOM))
         assert "agentic_core.runtime.c0.c0_package_driven_grounding" not in imports
+
+    def test_legacy_dense_query_helper_not_public_c0_surface(self) -> None:
+        from apps_rg.runtime.bindings import c0_binding
+
+        assert "_query_fact_vectors_for_section" not in c0_binding.__all__
+
+    def test_generated_lanes_use_evidence_room_producer_when_enabled(self) -> None:
+        src = (
+            REPO / "apps_rg/runtime/spine/c0_fec_compose.py"
+        ).read_text(encoding="utf-8")
+        assert "section_c0_evidence_room_enabled(section_id)" in src
+        assert "bridge = run_section_c0_evidence_room(" in src
+
+
+class TestAgenticCoreGraphSkillBoundary:
+    """Core keeps generic C0.3 infrastructure; apps_rg keeps resume graph skills."""
+
+    def test_agentic_core_does_not_import_apps_rg_graph_skill_authorities(self) -> None:
+        offenders: list[str] = []
+        for path in _agentic_core_python_files():
+            imports = _import_names(_module_ast(path))
+            for module in imports:
+                if module.startswith(FORBIDDEN_CORE_GRAPH_SKILL_IMPORT_PREFIXES):
+                    offenders.append(f"{path.relative_to(REPO).as_posix()} imports {module}")
+        assert offenders == []
+
+    def test_agentic_core_does_not_embed_resume_graph_skill_authority_literals(self) -> None:
+        offenders: list[str] = []
+        for path in _agentic_core_python_files():
+            text = path.read_text(encoding="utf-8")
+            for literal in FORBIDDEN_CORE_GRAPH_SKILL_LITERALS:
+                if literal in text:
+                    offenders.append(f"{path.relative_to(REPO).as_posix()} contains {literal}")
+        assert offenders == []
 
 
 class TestChromaPolicy:

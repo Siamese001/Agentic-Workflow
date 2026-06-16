@@ -8,6 +8,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+L2_ENVELOPE_AUTHORITY_SCOPE = "apps_rg_l2_envelope_adapter_receipts"
+CANONICAL_L2_ARTIFACT_AUTHORITY_SCOPE = "agentic_core_runtime_sealed_l2_artifact"
+
 
 class ResultClass(str, Enum):
     SUCCESS = "SUCCESS"
@@ -107,6 +110,8 @@ class AttemptReceipt:
     generated_artifacts: tuple[str, ...] = ()
     proposed_state_diff: dict[str, Any] = field(default_factory=dict)
     quarantined_payload: str | None = None
+    authority_scope: str = L2_ENVELOPE_AUTHORITY_SCOPE
+    canonical_l2_artifact_authority: bool = False
 
     @staticmethod
     def new_id() -> str:
@@ -132,6 +137,8 @@ class HealReceipt:
     oscillation_status: str = ""
     snapshot_guard_status: str = "PASS"
     next_action: str = ""
+    authority_scope: str = L2_ENVELOPE_AUTHORITY_SCOPE
+    canonical_l2_artifact_authority: bool = False
 
     @staticmethod
     def new_id() -> str:
@@ -208,6 +215,8 @@ class PrepOutput:
     write_lock_assertion: WriteLockAssertion
     ready_for_validation: bool
     refusal_reason: str = ""
+    authority_scope: str = L2_ENVELOPE_AUTHORITY_SCOPE
+    canonical_l2_artifact_authority: bool = False
 
 
 @dataclass(frozen=True)
@@ -259,6 +268,8 @@ class ValidationOutput:
     validation_status: str
     approved_work_order: ApprovedWorkOrder | None = None
     sealed_rejection_packet: SealedRejectionPacket | None = None
+    authority_scope: str = L2_ENVELOPE_AUTHORITY_SCOPE
+    canonical_l2_artifact_authority: bool = False
 
 
 @dataclass(frozen=True)
@@ -316,6 +327,7 @@ __all__ = [
     "ApprovedWorkOrder",
     "AttemptReceipt",
     "BudgetSnapshot",
+    "CANONICAL_L2_ARTIFACT_AUTHORITY_SCOPE",
     "CapabilityScopeSummary",
     "CapabilitySpec",
     "DISALLOWED_REPAIRS",
@@ -326,6 +338,7 @@ __all__ = [
     "HealOutcomeStamp",
     "HealReceipt",
     "LineageRoot",
+    "L2_ENVELOPE_AUTHORITY_SCOPE",
     "PrepOutput",
     "RepairStatus",
     "ReplayBindings",

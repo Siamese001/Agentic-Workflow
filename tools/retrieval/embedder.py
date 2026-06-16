@@ -65,6 +65,11 @@ class EmbeddingRuntime:
             return False
         return self._loader.is_loading()
 
+    def last_error(self) -> str | None:
+        if self._model_override is not None:
+            return None
+        return self._loader.last_error()
+
     def ensure_ready(self) -> Any:
         if self._model_override is not None:
             return self._model_override

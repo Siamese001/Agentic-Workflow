@@ -158,7 +158,12 @@ class OptimizedVLLMClient:
         cache_size: int = 1000,
     ):
         resolved_url = base_url or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
-        resolved_model = model or os.getenv("VLLM_MODEL_NAME") or QWEN_LOCAL_MODEL_ID
+        resolved_model = (
+            model
+            or os.getenv("QWEN_VLLM_MODEL")
+            or os.getenv("VLLM_MODEL_NAME")
+            or QWEN_LOCAL_MODEL_ID
+        )
         self.base_url = resolved_url.rstrip("/")
         self.model = resolved_model
         self.max_concurrent = max_concurrent

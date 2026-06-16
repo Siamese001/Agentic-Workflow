@@ -164,3 +164,8 @@ class RouteContract:
                 f"RouteContract: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
                 "(AG-W0-5=fail_closed)"
             )
+
+    @property
+    def route_version(self) -> str:
+        """Backward-compatible alias for callers not yet migrated to schema_version."""
+        return self.schema_version

@@ -1242,6 +1242,8 @@ def _seal_l2_artifact(
     pr_refs = tuple(str(v) for v in (getattr(cpa, "slot_lineage_map", {}) or {}).values())
 
     audit_refs: list[str] = [
+        "authority_scope:apps_rg_l2_envelope_adapter_receipts",
+        "canonical_l2_artifact_authority:agentic_core_runtime_sealed_l2_artifact",
         f"attempt:{getattr(attempt_receipt, 'attempt_receipt_id', '')}",
         f"prep:{getattr(prep_output, 'prep_receipt_id', '')}",
         f"validation:{getattr(validation_output, 'validation_packet_id', '')}",

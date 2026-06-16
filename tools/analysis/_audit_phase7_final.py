@@ -12,10 +12,12 @@ Read-only. No code modifications.
 import json
 import sqlite3
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 from collections import defaultdict
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite")
-OUT = Path(r"C:\Git\Agentic-Workflow\artifacts\audit_phase7_final_report.json")
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite"
+OUT = REPO_ROOT / "artifacts" / "audit_phase7_final_report.json"
 
 # Layer criticality multipliers (from adg-canonical-invariants.md §6)
 LAYER_MULTIPLIER = {

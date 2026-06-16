@@ -93,10 +93,6 @@ def default_pricing_table() -> PricingTable:
                 input_usd_per_token=0.000_000_50,
                 output_usd_per_token=0.000_001_00,
             ),
-            "qwen-7b": ModelPricing(
-                input_usd_per_token=0.000_000_10,
-                output_usd_per_token=0.000_000_20,
-            ),
         },
     )
 

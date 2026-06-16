@@ -1,11 +1,13 @@
-"""C0.6 — one bounded weak-support refinement retry."""
+"""C0.6 — retired weak-support refinement shim.
+
+The live evidence room no longer performs receipt-only refinement. Until a real
+bounded C0.2 retry is implemented, this module is compatibility-only and must
+not claim that a retry happened.
+"""
 
 from __future__ import annotations
 
 from typing import Any
-
-from agentic_core.runtime.contracts.final_evidence_contract import SUPPORT_STATUS_WEAK
-
 
 def maybe_c06_weak_refine(
     *,
@@ -13,21 +15,14 @@ def maybe_c06_weak_refine(
     atoms: list[dict[str, Any]],
     retrieval_plan: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Single retry: broaden supporting targets only — no policy/auth changes."""
+    """Return atoms unchanged with an explicit retired/disabled receipt."""
+    del support_status, retrieval_plan
     receipt = {
         "schema_version": "c06_weak_refine_v1",
         "attempted": False,
-        "reason": "",
+        "disabled": True,
+        "reason": "retired_receipt_only_refine_use_bounded_c02_retry_when_implemented",
     }
-    if support_status != SUPPORT_STATUS_WEAK or len(atoms) >= 3:
-        return atoms, receipt
-    receipt["attempted"] = True
-    receipt["reason"] = "weak_support_broadened_retrieval_targets_once"
-    plan = dict(retrieval_plan.get("retrieval_targets") or {})
-    secondary = list(plan.get("secondary_targets") or [])
-    secondary.append("background_support_atoms")
-    plan["secondary_targets"] = secondary
-    retrieval_plan = {**retrieval_plan, "retrieval_targets": plan}
     return atoms, receipt
 
 

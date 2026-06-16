@@ -1,4 +1,8 @@
-"""C0.4 — rerank and stratify evidence atoms."""
+"""C0.4 — deterministic evidence stratification.
+
+Ordering/ranking signals are produced earlier by C0.2 hybrid retrieval. This
+phase assigns allowed/excluded strata and does not invoke a model reranker.
+"""
 
 from __future__ import annotations
 

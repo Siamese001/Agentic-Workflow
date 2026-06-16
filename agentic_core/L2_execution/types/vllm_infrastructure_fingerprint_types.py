@@ -6,7 +6,7 @@ infrastructure parameters. No GPU imports. No runtime probing in L2 tests.
 Used by Phase 3 telemetry path for deterministic replay sealing.
 
 Fingerprint fields (all strings):
-- model_name: e.g., "Qwen2.5-7B-Instruct"
+- model_name: e.g., "Qwen/Qwen2.5-32B-Instruct-AWQ"
 - model_revision_sha: git SHA or model identifier
 - vllm_version: vLLM package version
 - transformers_version: transformers package version
@@ -271,7 +271,7 @@ class VLLMInfrastructureFingerprint:
         Used by unit_min_deps tests to avoid runtime probing.
         """
         return cls(
-            model_name="Qwen2.5-7B-Instruct",
+            model_name="Qwen/Qwen2.5-32B-Instruct-AWQ",
             model_revision_sha="abc123def456",
             vllm_version="0.6.3",
             transformers_version="4.46.0",

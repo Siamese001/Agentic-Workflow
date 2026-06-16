@@ -9,6 +9,8 @@ from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
 
 SPINE_FEC_ARTIFACT = "final_evidence_contract.json"
 LEGACY_FEC_BRIDGE_ALIAS = "final_evidence_contract_bridge.json"
+LANE_X3_MIRROR_AUTHORITY_SCOPE = "apps_rg_lane_x3_mirror_not_core_exit_authority"
+CORE_EXIT_AUTHORITY_SCOPE = "agentic_core_exit_disposition_receipt"
 
 
 def _write_json(path: Path, doc: Any) -> None:
@@ -87,6 +89,11 @@ def persist_section_x3_mirror(
     x3_doc = _x3_to_doc(x3)
     if x3_doc_extra:
         x3_doc.update(x3_doc_extra)
+    x3_doc.setdefault("authority_scope", LANE_X3_MIRROR_AUTHORITY_SCOPE)
+    x3_doc.setdefault("artifact_authority_scope", LANE_X3_MIRROR_AUTHORITY_SCOPE)
+    x3_doc.setdefault("section_x3_mirror_only", True)
+    x3_doc.setdefault("core_exit_authority_ref", "exit_disposition_receipt.json")
+    x3_doc.setdefault("core_exit_authority_scope", CORE_EXIT_AUTHORITY_SCOPE)
     _write_json(artifact_dir / "x3_disposition.json", x3_doc)
     return x3_doc
 
@@ -110,6 +117,8 @@ def _run_section_spine_exit_eval(
         "x3_disposition": x3_doc,
         "x3_code": str(x3_doc.get("x3_code") or getattr(x3, "x3_code", "UNKNOWN")),
         "terminal_class": _terminal_class_from_x3(x3, x3_doc),
+        "x3_authority_scope": LANE_X3_MIRROR_AUTHORITY_SCOPE,
+        "core_exit_authority_scope": CORE_EXIT_AUTHORITY_SCOPE,
         "app_name": "apps_rg",
         "spine_mode": "section_spine_run",
     }
@@ -119,6 +128,8 @@ def _run_section_spine_exit_eval(
     runtime_payload["spine_exit_eval_disposition"] = str(
         getattr(getattr(exit_result, "disposition", None), "value", exit_result)
     )
+    runtime_payload["x3_authority_scope"] = LANE_X3_MIRROR_AUTHORITY_SCOPE
+    runtime_payload["canonical_exit_authority_scope"] = CORE_EXIT_AUTHORITY_SCOPE
     from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.spine.spine_span_emit import emit_spine_span_event
 
@@ -214,6 +225,8 @@ def finalize_section_lane_x3(
 
 __all__ = [
     "LEGACY_FEC_BRIDGE_ALIAS",
+    "CORE_EXIT_AUTHORITY_SCOPE",
+    "LANE_X3_MIRROR_AUTHORITY_SCOPE",
     "SPINE_FEC_ARTIFACT",
     "finalize_section_lane_x3",
     "finalize_section_spine_exit_after_sealed_l2",

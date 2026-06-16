@@ -11,8 +11,8 @@ escalation paths.
 
 Endpoint defaults to ``${VLLM_BASE_URL}/v1/chat/completions`` (vLLM exposes an
 OpenAI-compatible Chat Completions surface). Model defaults to
-``QWEN_LOCAL_MODEL_ID`` from the L0 model registry, with ``VLLM_MODEL_NAME``
-env override for parity with ``agentic_core/evaluation/judges/qwen_judge_provider.py``.
+``QWEN_LOCAL_MODEL_ID`` from the L0 model registry, with ``QWEN_VLLM_MODEL``
+env override. ``VLLM_MODEL_NAME`` remains a compatibility fallback.
 """
 
 from __future__ import annotations
@@ -37,7 +37,10 @@ def _resolve_default_model() -> str:
     the constant. Fall back to the legacy default if the registry is unavailable
     in the current build (e.g. minimal test environments).
     """
-    env_model = os.environ.get("VLLM_MODEL_NAME", "").strip()
+    env_model = (
+        os.environ.get("QWEN_VLLM_MODEL", "").strip()
+        or os.environ.get("VLLM_MODEL_NAME", "").strip()
+    )
     if env_model:
         return env_model
     try:
@@ -63,7 +66,8 @@ class QwenJudge(BaseHttpJudge):
 
     Model resolution (in order):
         constructor ``model`` arg
-        > ``VLLM_MODEL_NAME`` env var
+        > ``QWEN_VLLM_MODEL`` env var
+        > ``VLLM_MODEL_NAME`` compatibility env var
         > ``QWEN_LOCAL_MODEL_ID`` from L0 model registry
         > ``Qwen/Qwen2.5-32B-Instruct`` legacy fallback
 

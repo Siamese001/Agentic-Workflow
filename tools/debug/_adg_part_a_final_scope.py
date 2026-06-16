@@ -4,10 +4,12 @@ import sqlite3
 import json
 import re
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 from collections import Counter, defaultdict
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04212026_1441.sqlite")
-REPO = Path(r"C:\Git\Agentic-Workflow")
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04212026_1441.sqlite"
+REPO = REPO_ROOT
 con = sqlite3.connect(str(DB))
 
 # Full pattern-kind distribution on surface files

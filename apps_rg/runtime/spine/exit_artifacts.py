@@ -28,6 +28,9 @@ EXIT_SPINE_RECEIPT_ARTIFACT = "exit_spine_receipt.json"
 SECTION_X3_DISPOSITION_ARTIFACT = "x3_disposition.json"
 X2_GATE_OUTPUTS_ARTIFACT = "x2_gate_outputs.json"
 X1D_JUDGE_OUTPUTS_ARTIFACT = "x1d_llm_judge_outputs.json"
+LANE_X3_MIRROR_AUTHORITY_SCOPE = "apps_rg_lane_x3_mirror_not_core_exit_authority"
+APP_X2_QUALITY_AUTHORITY_SCOPE = "apps_rg_section_product_quality_not_core_exit_matrix"
+CORE_EXIT_AUTHORITY_SCOPE = "agentic_core_exit_disposition_receipt"
 
 OBSERVED_CHAIN_WITH_EXIT_RECEIPTS: tuple[str, ...] = (
     "CLI",
@@ -137,6 +140,7 @@ def build_exit_review_packet_for_section(
         "compiled_prompt_artifact_ref": compiled_ref,
         "fec_bridge_ref": fec_ref,
         "section_x3_disposition_ref": SECTION_X3_DISPOSITION_ARTIFACT,
+        "section_x3_authority_scope": LANE_X3_MIRROR_AUTHORITY_SCOPE,
         "section_x3_authoritative": False,
         "section_x3_mirror_only": True,
         "disposition_authority": DISPOSITION_AUTHORITY_LANE,
@@ -170,6 +174,7 @@ def build_section_exit_x1_result(
         "contract_type": "X1CheckoutResult",
         "section_id": section_id,
         "adaptation": "section_lane_mirror",
+        "authority_scope": "apps_rg_x1d_judge_preflight_not_core_x1_gate",
         "x1d_judge_outputs_ref": X1D_JUDGE_OUTPUTS_ARTIFACT if _artifact_exists(artifact_dir, X1D_JUDGE_OUTPUTS_ARTIFACT) else None,
         "judge_count": len(judges),
         "blocked_judge_count": len(blocked),
@@ -203,6 +208,8 @@ def build_section_exit_x2_result(
         "contract_type": "X2AggregationResult",
         "section_id": section_id,
         "adaptation": "section_lane_mirror",
+        "authority_scope": APP_X2_QUALITY_AUTHORITY_SCOPE,
+        "core_x2_matrix_authority": False,
         "x2_gate_outputs_ref": X2_GATE_OUTPUTS_ARTIFACT if path.is_file() else None,
         "gate_count": len(gates),
         "failed_gate_ids": [f for f in failed if f],
@@ -238,6 +245,7 @@ def build_exit_disposition_receipt_for_section(
             runtime_payload.get("l2_execution_packet_ref") or L2_EXECUTION_PACKET_ARTIFACT
         ),
         "section_x3_disposition_ref": SECTION_X3_DISPOSITION_ARTIFACT,
+        "section_x3_authority_scope": LANE_X3_MIRROR_AUTHORITY_SCOPE,
         "section_x3_authoritative": False,
         "section_x3_mirror_only": True,
         "disposition_authority": DISPOSITION_AUTHORITY_LANE,
@@ -246,6 +254,7 @@ def build_exit_disposition_receipt_for_section(
         "x3_code": str(x3_single.get("x3_code") or "UNKNOWN"),
         "canonical_exit_claimed": True,
         "canonical_exit_authority": "exit_disposition_receipt",
+        "canonical_exit_authority_scope": CORE_EXIT_AUTHORITY_SCOPE,
         "durable_commit_occurred": False,
         "uwg_commit_occurred": False,
         "runtime_exhaust_bundle_claimed": False,
@@ -291,8 +300,10 @@ def build_exit_spine_receipt(
         "exit_disposition_receipt_ref": EXIT_DISPOSITION_RECEIPT_ARTIFACT,
         "sealed_l2_artifact_ref": sealed_ref,
         "section_x3_disposition_ref": SECTION_X3_DISPOSITION_ARTIFACT,
+        "section_x3_authority_scope": LANE_X3_MIRROR_AUTHORITY_SCOPE,
         "section_x3_authoritative": False,
         "canonical_exit_authority_ref": EXIT_DISPOSITION_RECEIPT_ARTIFACT,
+        "canonical_exit_authority_scope": CORE_EXIT_AUTHORITY_SCOPE,
         "canonical_exit_claimed_on_exit_receipt": bool(exit_doc.get("canonical_exit_claimed")),
         "canonical_exit_claimed_on_sealed_l2": False,
         "durable_commit_occurred": False,
@@ -355,7 +366,9 @@ def emit_section_exit_spine_artifacts(
     runtime_payload["exit_disposition_receipt_ref"] = EXIT_DISPOSITION_RECEIPT_ARTIFACT
     runtime_payload["exit_spine_receipt_ref"] = EXIT_SPINE_RECEIPT_ARTIFACT
     runtime_payload["canonical_exit_authority_ref"] = EXIT_DISPOSITION_RECEIPT_ARTIFACT
+    runtime_payload["canonical_exit_authority_scope"] = CORE_EXIT_AUTHORITY_SCOPE
     runtime_payload["section_x3_authoritative"] = False
+    runtime_payload["section_x3_authority_scope"] = LANE_X3_MIRROR_AUTHORITY_SCOPE
 
     return {
         "exit_review_packet": p_erp,
@@ -368,11 +381,14 @@ def emit_section_exit_spine_artifacts(
 
 __all__ = [
     "EXIT_DISPOSITION_RECEIPT_ARTIFACT",
+    "APP_X2_QUALITY_AUTHORITY_SCOPE",
+    "CORE_EXIT_AUTHORITY_SCOPE",
     "EXIT_REVIEW_PACKET_ARTIFACT",
     "EXIT_SPINE_RECEIPT_ARTIFACT",
     "OBSERVED_CHAIN_WITH_EXIT_RECEIPTS",
     "SECTION_EXIT_X1_RESULT_ARTIFACT",
     "SECTION_EXIT_X2_RESULT_ARTIFACT",
+    "LANE_X3_MIRROR_AUTHORITY_SCOPE",
     "SectionExitSpinePreconditionError",
     "assert_section_exit_spine_preconditions",
     "build_exit_disposition_receipt_for_section",

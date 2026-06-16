@@ -3,7 +3,7 @@ echo "=== FINAL STATE $(date) ==="
 echo
 echo "--- SERVING ---"
 curl -sf http://localhost:8000/v1/models 2>/dev/null > /tmp/m.json
-$HOME/.vllm_env/bin/python <<'PY'
+python3 <<'PY'
 import json
 with open("/tmp/m.json") as f:
     m = json.load(f)["data"][0]
@@ -26,7 +26,7 @@ curl -sf http://localhost:8000/v1/chat/completions \
   -d '{"model":"Qwen/Qwen2.5-32B-Instruct-AWQ","messages":[{"role":"user","content":"In one short sentence: what is the speed of light?"}],"max_tokens":32,"temperature":0.0}' \
   > /tmp/r.json
 T1=$(date +%s.%N)
-$HOME/.vllm_env/bin/python <<'PY'
+python3 <<'PY'
 import json
 with open("/tmp/r.json") as f:
     r = json.load(f)

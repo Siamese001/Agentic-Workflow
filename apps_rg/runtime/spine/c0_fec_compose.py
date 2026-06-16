@@ -25,6 +25,8 @@ from apps_rg.runtime.section_spine_terminology import (
 FEC_BRIDGE_ARTIFACT = "final_evidence_contract.json"
 FEC_BRIDGE_RECEIPT = "c0_fec_compose_receipt.json"
 FEC_BRIDGE_MODE_SECTION = "spine_c0_fec_compose"
+FEC_BRIDGE_AUTHORITY_SCOPE = "apps_rg_c0_fec_bridge_shape_only_not_canonical_fec"
+CANONICAL_FEC_AUTHORITY_SCOPE = "agentic_core_runtime_final_evidence_contract"
 # Legacy receipt/compiled-prompt alias (W4/W5 tests, one-spine certification).
 FEC_BRIDGE_MODE_LEGACY = "section_fec_bridge"
 _ACCEPTED_FEC_BRIDGE_MODES = frozenset({FEC_BRIDGE_MODE_SECTION, FEC_BRIDGE_MODE_LEGACY})
@@ -255,6 +257,8 @@ def build_spine_c0_fec_artifact(
         "generated_at_utc": ts,
         "bridge_type": "FinalEvidenceContractBridge",
         "contract_type": "FinalEvidenceContractBridge",
+        "authority_scope": FEC_BRIDGE_AUTHORITY_SCOPE,
+        "artifact_authority_scope": FEC_BRIDGE_AUTHORITY_SCOPE,
         "fec_bridge_mode": FEC_BRIDGE_MODE_SECTION,
         "producer_stage": "section_fec_bridge",
         "consumer_stage": "section_PA",
@@ -275,6 +279,9 @@ def build_spine_c0_fec_artifact(
         "canonical_c0_3_claimed": False,
         "canonical_c0_5_claimed": False,
         "canonical_c0_5_fec": False,
+        "final_evidence_contract_authoritative": False,
+        "canonical_final_evidence_contract_ref": None,
+        "canonical_authority_scope": CANONICAL_FEC_AUTHORITY_SCOPE,
         "fec_shape_only": True,
         "section_c03_graph_binding": isinstance(c03, dict),
         "binding_kind": str(
@@ -329,6 +336,8 @@ def build_spine_c0_fec_receipt(bridge: SectionFecBridge) -> dict[str, Any]:
         "non_product_certified": bridge.non_product_certified,
         "product_certification": "NOT_CLAIMED",
         "fec_bridge_mode": FEC_BRIDGE_MODE_SECTION,
+        "authority_scope": FEC_BRIDGE_AUTHORITY_SCOPE,
+        "artifact_authority_scope": FEC_BRIDGE_AUTHORITY_SCOPE,
         "fec_bridge_status": "PASS" if precond_pass else "FAIL",
         "precondition_status": "PASS" if precond_pass else "FAIL",
         "final_evidence_contract_bridge_ref": FEC_BRIDGE_ARTIFACT,
@@ -447,6 +456,15 @@ def assert_section_pa_fec_preconditions(
             raise SectionFecBridgePreconditionError(
                 "section FEC bridge missing route_contract_ref"
             )
+        if str(bridge.get("contract_type") or "") == "FinalEvidenceContractBridge":
+            if bridge.get("final_evidence_contract_authoritative") is True:
+                raise SectionFecBridgePreconditionError(
+                    "FinalEvidenceContractBridge cannot claim canonical FEC authority"
+                )
+            if bool(bridge.get("canonical_c0_5_claimed")):
+                raise SectionFecBridgePreconditionError(
+                    "FinalEvidenceContractBridge cannot set canonical_c0_5_claimed"
+                )
 
 
 def resolve_pa_proof_authority_for_compile(
@@ -664,6 +682,18 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
             if isinstance(bridge, dict)
             else ""
         ),
+        "fec_authority_scope": (
+            str(bridge.get("authority_scope") or FEC_BRIDGE_AUTHORITY_SCOPE)
+            if isinstance(bridge, dict)
+            else CANONICAL_FEC_AUTHORITY_SCOPE
+            if runtime_payload.get("canonical_final_evidence_contract")
+            else ""
+        ),
+        "final_evidence_contract_authoritative": (
+            bool(bridge.get("final_evidence_contract_authoritative"))
+            if isinstance(bridge, dict)
+            else bool(runtime_payload.get("canonical_final_evidence_contract"))
+        ),
         "canonical_c0_5_claimed": (
             bool(bridge.get("canonical_c0_5_claimed"))
             if isinstance(bridge, dict)
@@ -689,6 +719,8 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
 
 __all__ = [
     "FEC_BRIDGE_ARTIFACT",
+    "CANONICAL_FEC_AUTHORITY_SCOPE",
+    "FEC_BRIDGE_AUTHORITY_SCOPE",
     "FEC_BRIDGE_MODE_SECTION",
     "FEC_BRIDGE_RECEIPT",
     "OBSERVED_CHAIN_WITH_FEC_BRIDGE",

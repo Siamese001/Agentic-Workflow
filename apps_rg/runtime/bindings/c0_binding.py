@@ -1628,10 +1628,11 @@ def _query_fact_vectors_for_section(
     metadata_profile: MetadataFilterProfile | None = None,
     timestamp_iso: str = "",
 ) -> SectionQueryResult:
-    """Query fact_vectors for a specific section.
+    """Compatibility helper for legacy metadata-filter tests.
     
-    This function uses Chroma query() for read-only retrieval.
-    Returns a SectionQueryResult with evidence_items attribute.
+    Product C0.2 retrieval uses ``_perform_bounded_section_retrieval``. This
+    helper remains importable for older W5 tests that assert Chroma where-clause
+    behavior, but it is not part of the product C0 public surface.
     """
     items: list[EvidenceItem] = []
     
@@ -2193,7 +2194,6 @@ __all__ = [
     "SectionRetrievalResult",
     "SectionQueryResult",
     "_perform_bounded_section_retrieval",
-    "_query_fact_vectors_for_section",
     # W5 Metadata Filter
     "MetadataFilterProfile",
     "MetadataFilterResult",

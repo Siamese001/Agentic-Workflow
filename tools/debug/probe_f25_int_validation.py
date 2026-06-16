@@ -13,10 +13,12 @@ from agentic_core.config.model_catalog import (
 import time
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-CHROMA_PATH = Path(r"C:\Git\Agentic-Workflow\data\cache\chromadb")
+CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION = "repo_evidence"
 MODEL = BGE_M3_MODEL_ID
 QUERY = "confidence-scored tiered healing dispatch routing tiers local rules model retry human escalation"

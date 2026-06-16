@@ -20,15 +20,24 @@ class TestModelRegistry:
         assert model_registry.QWEN_LOCAL_MODEL_ID == "Qwen/Qwen2.5-32B-Instruct-AWQ"
 
     def test_qwen_local_model_id_env_override(self):
-        """Test Qwen local model ID can be overridden by env var."""
+        """Test Qwen local model ID can be overridden by canonical env var."""
         with patch.dict(
-            "os.environ", {"VLLM_MODEL_NAME": "custom/qwen-model"}
+            "os.environ", {"QWEN_VLLM_MODEL": "custom/qwen-model"}
         ):
             # Reload module to pick up env var
             import importlib
 
             importlib.reload(model_registry)
             assert model_registry.QWEN_LOCAL_MODEL_ID == "custom/qwen-model"
+
+    def test_qwen_local_model_id_compat_env_override(self, monkeypatch):
+        """Test legacy VLLM_MODEL_NAME remains a compatibility fallback."""
+        monkeypatch.delenv("QWEN_VLLM_MODEL", raising=False)
+        with patch.dict("os.environ", {"VLLM_MODEL_NAME": "compat/qwen-model"}):
+            import importlib
+
+            importlib.reload(model_registry)
+            assert model_registry.QWEN_LOCAL_MODEL_ID == "compat/qwen-model"
 
     def test_vllm_base_url_default(self):
         """Test VLLM base URL default value."""

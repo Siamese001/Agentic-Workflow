@@ -2,9 +2,9 @@
 
 Mirrors the five INPUT FAMILY blocks from the spec (lines 217–324):
 
-    INPUT FAMILY 1: L1 PLAN CONTRACT
-    INPUT FAMILY 2: L0 ROUTE CONTRACT
-    INPUT FAMILY 3: C0 EVIDENCE CONTRACT
+    INPUT FAMILY 1: L1 PLAN PROJECTION
+    INPUT FAMILY 2: L0 ROUTE PROJECTION
+    INPUT FAMILY 3: C0 EVIDENCE PROJECTION
     INPUT FAMILY 4: GOVERNANCE ARTIFACTS
     INPUT FAMILY 5: USER + EXECUTION METADATA
 
@@ -14,7 +14,8 @@ spec verbatim. Helper :func:`upstream_bundle_from_dicts` builds an
 that already pass dicts to :func:`run_prompt_assembly_pipeline`.
 
 The classes are intentionally permissive (every field defaults) so partial
-contracts (e.g. WEAK_WITH_CAVEATS evidence) round-trip without raising.
+contracts (e.g. WEAK_WITH_CAVEATS evidence) round-trip without raising. They
+are Prompt Assembly projections, not the canonical runtime contract classes.
 """
 
 from __future__ import annotations
@@ -24,8 +25,8 @@ from typing import Any, Mapping
 
 
 @dataclass(frozen=True)
-class L1PlanContract:
-    """Spec INPUT FAMILY 1 — L1 plan contract."""
+class PAL1PlanProjection:
+    """Spec INPUT FAMILY 1 — Prompt Assembly view of the L1 plan contract."""
 
     plan_id: str = ""
     task_spec: str = ""
@@ -44,8 +45,8 @@ class L1PlanContract:
 
 
 @dataclass(frozen=True)
-class L0RouteContract:
-    """Spec INPUT FAMILY 2 — L0 route contract."""
+class PAL0RouteProjection:
+    """Spec INPUT FAMILY 2 — Prompt Assembly view of the L0 route contract."""
 
     route_id: str = ""
     execution_form: str = ""
@@ -69,8 +70,8 @@ class L0RouteContract:
 
 
 @dataclass(frozen=True)
-class C0EvidenceContract:
-    """Spec INPUT FAMILY 3 — C0 evidence contract."""
+class PAC0EvidenceProjection:
+    """Spec INPUT FAMILY 3 — Prompt Assembly view of the C0 evidence contract."""
 
     status: str = ""  # PASS | WEAK_WITH_CAVEATS | CONFLICTED | EMPTY | BLOCKED
     support_score: float = 0.0
@@ -137,9 +138,9 @@ class UserExecutionMetadata:
 class UpstreamInputBundle:
     """Aggregated upstream-input bundle (spec INTERNAL ARTIFACTS §1)."""
 
-    plan: L1PlanContract
-    route: L0RouteContract
-    evidence: C0EvidenceContract
+    plan: PAL1PlanProjection
+    route: PAL0RouteProjection
+    evidence: PAC0EvidenceProjection
     governance: GovernanceArtifacts
     execution: UserExecutionMetadata
 
@@ -159,12 +160,19 @@ def upstream_bundle_from_dicts(
 ) -> UpstreamInputBundle:
     """Build a typed :class:`UpstreamInputBundle` from dicts."""
     return UpstreamInputBundle(
-        plan=L1PlanContract(**_filter(L1PlanContract, plan_contract or {})),
-        route=L0RouteContract(**_filter(L0RouteContract, route_contract or {})),
-        evidence=C0EvidenceContract(**_filter(C0EvidenceContract, evidence_contract or {})),
+        plan=PAL1PlanProjection(**_filter(PAL1PlanProjection, plan_contract or {})),
+        route=PAL0RouteProjection(**_filter(PAL0RouteProjection, route_contract or {})),
+        evidence=PAC0EvidenceProjection(**_filter(PAC0EvidenceProjection, evidence_contract or {})),
         governance=GovernanceArtifacts(**_filter(GovernanceArtifacts, governance or {})),
         execution=UserExecutionMetadata(**_filter(UserExecutionMetadata, execution_metadata or {})),
     )
+
+
+# Backward-compatible aliases. New code should use the PA*Projection names so
+# these permissive views are not confused with canonical runtime contracts.
+L1PlanContract = PAL1PlanProjection
+L0RouteContract = PAL0RouteProjection
+C0EvidenceContract = PAC0EvidenceProjection
 
 
 __all__ = [
@@ -172,6 +180,9 @@ __all__ = [
     "GovernanceArtifacts",
     "L0RouteContract",
     "L1PlanContract",
+    "PAC0EvidenceProjection",
+    "PAL0RouteProjection",
+    "PAL1PlanProjection",
     "UpstreamInputBundle",
     "UserExecutionMetadata",
     "upstream_bundle_from_dicts",

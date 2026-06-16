@@ -40,7 +40,7 @@ def test_model_id_resolves_from_ssot() -> None:
 
 
 def test_model_override_wins() -> None:
-    assert QwenJudgeProvider(model="pinned/qwen-7b").model_id == "pinned/qwen-7b"
+    assert QwenJudgeProvider(model="pinned/qwen-32b").model_id == "pinned/qwen-32b"
 
 
 def test_clean_strips_markdown_fences() -> None:

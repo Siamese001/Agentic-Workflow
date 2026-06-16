@@ -2,11 +2,11 @@
 
 Covers the plan acceptance criteria WITHOUT touching the network:
 
-* W1 — truthful, centralized timeout policy (an operator-set budget is honored, not clamped to a
-  hidden 300s; the shared ceiling bounds it; invalid env falls back safely).
+* W1 — centralized timeout policy (operator-set budgets are honored up to a bounded ceiling;
+  invalid env falls back safely).
 * W2 — streamed Anthropic transport records progress/timing metadata; a slow-then-stalled call
   surfaces last-progress on timeout; a successful call still returns ``REAL_LLM``.
-* W3 — the Claude pool selector resolves its own timeout env (no hidden 60s) and writes an honest
+* W3 — the Claude pool selector resolves its own timeout env and writes an honest
   lifecycle receipt.
 * W4 — per-path progress receipt is written BEFORE the first path completes and updated per path.
 * W5/W6 — closeout mode is explicit/auditable and NEVER weakens the competencies contract (still 8
@@ -32,16 +32,14 @@ from apps_rg.runtime.providers.provider_gateway import ProviderProfile
 # --------------------------------------------------------------------------------------------------
 # W1 — timeout resolver
 # --------------------------------------------------------------------------------------------------
-def test_w1_resolver_honors_large_budget_not_clamped(monkeypatch):
+def test_w1_resolver_honors_budget_within_ceiling(monkeypatch):
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
-    # 1000s is honored verbatim (the old _coerce path would never clamp, but the bug was the
-    # competencies helper clamping to 300 — see test below). Resolver honors up to the ceiling.
-    assert resolve_external_section_timeout_s(1000) == 1000.0
+    assert resolve_external_section_timeout_s(180) == 180.0
 
 
 def test_w1_resolver_bounded_by_ceiling(monkeypatch):
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
-    assert resolve_external_section_timeout_s(99999) == 1200.0  # default ceiling
+    assert resolve_external_section_timeout_s(99999) == 300.0  # default ceiling
 
 
 def test_w1_resolver_invalid_falls_back_to_default(monkeypatch):
@@ -52,28 +50,29 @@ def test_w1_resolver_invalid_falls_back_to_default(monkeypatch):
 
 
 def test_w1_ceiling_env_override(monkeypatch):
-    monkeypatch.setenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "1500")
-    assert external_provider_timeout_max_s() == 1500.0
-    assert resolve_external_section_timeout_s(1400) == 1400.0
-    # Hard upper bound protects against a hostile/typo value.
+    monkeypatch.setenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "180")
+    assert external_provider_timeout_max_s() == 180.0
+    assert resolve_external_section_timeout_s(170) == 170.0
+    assert resolve_external_section_timeout_s(250) == 180.0
+
+    # Hard upper bound protects against a hostile/typo value turning into an extended hang.
     monkeypatch.setenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "999999")
-    assert external_provider_timeout_max_s() == 3600.0
+    assert external_provider_timeout_max_s() == 300.0
 
 
 def test_w1_ceiling_malformed_falls_back(monkeypatch):
     monkeypatch.setenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "garbage")
-    assert external_provider_timeout_max_s() == 1200.0
+    assert external_provider_timeout_max_s() == 300.0
 
 
-def test_w1_competencies_chat_timeout_not_clamped_to_300(monkeypatch):
-    """The core W1 bug: an explicit 1000s competencies budget was silently clamped to 300s."""
+def test_w1_competencies_chat_timeout_caps_extended_budget(monkeypatch):
     from apps_rg.runtime.providers.competencies_live_provider_gate import (
         competencies_vllm_chat_timeout_s,
     )
 
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
     monkeypatch.setenv("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", "1000")
-    assert competencies_vllm_chat_timeout_s() == 1000  # NOT 300
+    assert competencies_vllm_chat_timeout_s() == 300
 
     monkeypatch.delenv("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", raising=False)
     assert competencies_vllm_chat_timeout_s() == 120  # default for normal runs stays bounded
@@ -135,7 +134,7 @@ def test_w2_generate_success_returns_real_llm_and_surfaces_timing():
     res = prov.generate(compiled, token_budget=100, temperature=0.0, timeout_seconds=1000)
     assert res.runtime_generation_status == "REAL_LLM"
     assert res.provider_response["transport_timing"] == {"chunk_count": 3}
-    assert res.provider_response["effective_timeout_seconds"] == 1000.0
+    assert res.provider_response["effective_timeout_seconds"] == 300.0
 
 
 def test_w2_generate_timeout_surfaces_last_progress():
@@ -165,7 +164,7 @@ def test_w3_selector_timeout_env_resolved(monkeypatch):
 
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
     monkeypatch.delenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", raising=False)
-    assert sel.pool_selector_timeout_s() == 300.0  # default, NOT the old hidden 60
+    assert sel.pool_selector_timeout_s() == 90.0
 
     monkeypatch.setenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", "180")
     assert sel.pool_selector_timeout_s() == 180.0

@@ -56,6 +56,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
 )
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -65,7 +66,7 @@ SSOT_JSON = REPO_ROOT / "artifacts" / "discovery" / "agent_discovery_full.json"
 REPORT_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "qwen_vllm_healing_recommendations.md"
 
 VLLM_BASE_URL = "http://localhost:8000/v1"
-VLLM_MODEL = "qwen-14b-quantized"
+VLLM_MODEL = QWEN_LOCAL_MODEL_ID
 BMG_INDEX = "canon-healing-patterns"
 BMG_DIM = 1536
 
@@ -349,7 +350,7 @@ _VLLM_HELPER = '''\
             import openai
             client = openai.OpenAI(base_url="http://localhost:8000/v1", api_key="local")
             resp = client.chat.completions.create(
-                model="qwen-14b-quantized",
+                model=VLLM_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
                 temperature=0.2,
@@ -686,7 +687,7 @@ def build_report() -> str:
     md.append("import openai")
     md.append('client = openai.OpenAI(base_url="http://localhost:8000/v1", api_key="local")')
     md.append("resp = client.chat.completions.create(")
-    md.append('    model="qwen-14b-quantized",')
+    md.append(f'    model="{VLLM_MODEL}",')
     md.append('    messages=[{"role": "user", "content": prompt}],')
     md.append("    max_tokens=512,")
     md.append("    temperature=0.2,")

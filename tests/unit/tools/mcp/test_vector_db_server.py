@@ -7,8 +7,10 @@ disk state is touched.  All tests are async-native (pytest-asyncio).
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 import sys
+import threading
 import uuid
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -218,6 +220,49 @@ async def test_vector_stats_model_loaded_flag_false_before_embed(server):
 
     assert "Model loaded: False" in text, f"Expected 'Model loaded: False' in:\n{text}"
     assert "Embedding dimension: None" in text, f"Expected 'Embedding dimension: None' in:\n{text}"
+
+
+@pytest.mark.asyncio
+async def test_health_snapshot_is_fast_and_marks_semantic_not_ready_before_embed(server):
+    """health_snapshot must not load or wait on the embedding model."""
+    server.embedding_model = None
+    server.service.store.ensure_client()
+
+    result = await server._health_snapshot({})
+
+    assert not result.isError, result.content[0].text
+    payload = json.loads(result.content[0].text)
+    assert payload["schema_version"] == "vector-db-health/v1"
+    assert payload["chroma"]["ready"] is True
+    assert payload["embedding_model"]["ready"] is False
+    assert payload["semantic_ready"] is False
+    assert payload["model_prewarm_enabled"] is False
+
+
+def test_background_prewarm_skips_embedding_model_by_default(monkeypatch):
+    """Startup prewarm must not load the embedding model unless explicitly enabled."""
+    from tools.mcp import vector_db_server
+
+    chroma_ready = threading.Event()
+    model_called = threading.Event()
+
+    class FakeStore:
+        def ensure_client(self):
+            chroma_ready.set()
+
+    class FakeEmbedder:
+        def ensure_ready(self):
+            model_called.set()
+
+    fake_service = SimpleNamespace(store=FakeStore(), embedder=FakeEmbedder())
+    monkeypatch.setattr(vector_db_server, "BACKGROUND_PREWARM_ENABLED", True)
+    monkeypatch.setattr(vector_db_server, "MODEL_PREWARM_ENABLED", False)
+    monkeypatch.setattr(vector_db_server, "get_vector_service", lambda: fake_service)
+
+    vector_db_server._start_background_prewarm()
+
+    assert chroma_ready.wait(1.0)
+    assert not model_called.wait(0.1)
 
 
 # ---------------------------------------------------------------------------

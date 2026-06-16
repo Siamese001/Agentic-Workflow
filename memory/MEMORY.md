@@ -44,6 +44,11 @@
 
 ## Procedural patterns (this environment)
 
+- **Codex repo-local memory placement (2026-06-16):** Agentic Workflow-specific Codex memory artifacts
+  belong under `memory/codex/`, not only under the global user-profile path
+  `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,
+  `raw_memories.md`, rollout summaries, and repo-specific Codex skills. Keep global/user preferences
+  outside the repo; keep project-governance and project-run memory in this repo-owned `memory/` tree.
 - New `plans/*.md` files are **mint-gated** (`pre_write_plan_mint_gate.py`) — create only with explicit
   user authorization in-turn. Editing existing plan files is unrestricted.
 - Bash commands containing legacy execution tokens (`Windsurf`/`Cursor`) are **blocked** by

@@ -6,8 +6,10 @@ import json
 import sqlite3
 from pathlib import Path
 
-DB = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04252026_0521.sqlite")
-GRAPH = Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_graph_04252026_0520.sqlite")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+DB = REPO_ROOT / "artifacts" / "adg" / "adg_indexed_04252026_0521.sqlite"
+GRAPH = REPO_ROOT / "artifacts" / "adg" / "adg_graph_04252026_0520.sqlite"
 
 KEY_TABLES = [
     "nodes",

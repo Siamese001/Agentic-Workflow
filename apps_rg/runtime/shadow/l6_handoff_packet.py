@@ -11,6 +11,8 @@ from typing import Any, Mapping
 
 L6_PACKET_TYPE = "L6_SHADOW_HANDOFF_PACKET"
 L6_PACKET_VERSION = "1"
+L6_LEGACY_HANDOFF_AUTHORITY_SCOPE = "apps_rg_legacy_l6_shadow_summary_advisory"
+L6_GOVERNED_AUTHORITY_SCOPE = "agentic_core_l6_runtime_exhaust_shadow_eval"
 
 BULLET_LANE_IDS = frozenset({"unify_bullets", "ibm_bullets"})
 
@@ -293,6 +295,10 @@ def build_l6_shadow_handoff_dict(
     pkt: dict[str, Any] = {
         "packet_type": L6_PACKET_TYPE,
         "packet_version": L6_PACKET_VERSION,
+        "authority_scope": L6_LEGACY_HANDOFF_AUTHORITY_SCOPE,
+        "governed_l6_authority_scope": L6_GOVERNED_AUTHORITY_SCOPE,
+        "legacy_shadow_summary_only": True,
+        "future_run_only": True,
         "section_id": section_id,
         "run_id": run_id,
         "runtime_generation_status": rgs,
@@ -444,6 +450,8 @@ def build_l6_shadow_handoff_dict(
             x3_code=x3_from_exhaust or str(x3sum_final.get("x3_code") or ""),
         )
         pkt["governed_l6_handoff_envelope"] = governed_env
+        pkt["authority_scope"] = L6_GOVERNED_AUTHORITY_SCOPE
+        pkt["legacy_shadow_summary_only"] = False
         pkt["promotion_allowed"] = False
         pkt["promotion_status"] = governed_env["promotion_status"]
         from apps_rg.runtime.spine.l6_eval_before_learn_receipt import (
@@ -470,6 +478,8 @@ __all__ = [
     "IBM_REWRITE_POLICY_ID",
     "L6_PACKET_TYPE",
     "L6_PACKET_VERSION",
+    "L6_GOVERNED_AUTHORITY_SCOPE",
+    "L6_LEGACY_HANDOFF_AUTHORITY_SCOPE",
     "UNIFY_POOL_SELECTION_POLICY_ID",
     "UNIFY_REWRITE_POLICY_ID",
     "build_bullet_evidence_map",

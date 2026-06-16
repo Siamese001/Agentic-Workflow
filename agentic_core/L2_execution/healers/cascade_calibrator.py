@@ -199,7 +199,7 @@ def provider_label(*, tier: HealTier, gemini_subtier: str, target_model: str) ->
     if tier == HealTier.HIGH:
         return "deterministic"
     if tier == HealTier.MEDIUM:
-        # Defensive: if the operator overrode VLLM_MODEL_NAME to a non-Qwen
+        # Defensive: if the operator overrode QWEN_VLLM_MODEL to a non-Qwen
         # model, surface that in the provider label so calibration doesn't
         # silently mix populations.
         model_lc = (target_model or "").lower()

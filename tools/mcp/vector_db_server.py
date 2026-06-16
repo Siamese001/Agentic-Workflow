@@ -18,30 +18,26 @@ import threading
 import time
 from typing import Any
 
-from tools.mcp.mcp_bootstrap import (
-    REPO_ROOT,
-    create_mcp_server,
-    guard_single_instance,
-    mcp_process_identity,
-    run_server,
-)
+from tools.mcp.mcp_bootstrap import create_mcp_server, guard_single_instance, mcp_process_identity, run_server
 from tools.retrieval.vector_config import (
     BACKGROUND_PREWARM_ENABLED,
+    MODEL_PREWARM_ENABLED,
+)
+from tools.retrieval.vector_config import (
     validate_startup_config as _validate_startup_config,
 )
 
 # MCP-6 (2026-04-22): async facade moved to tools/retrieval/vector_db_async_facade.
 # Re-exported here with the original name for callers still using the old path.
-from tools.retrieval.vector_db_async_facade import (
+from tools.retrieval.vector_db_async_facade import (  # noqa: F401
     ToolResultEnvelope,
     VectorDBMCPServer,
-    _TextContent,
     _error,
     _ok,
+    _TextContent,
     _translate_error,
 )
 from tools.retrieval.vector_service import get_vector_service
-from tools.retrieval.vector_store import check_embedding_alignment as _check_embedding_alignment
 
 logger = logging.getLogger("vector_db_server")
 validate_startup = _validate_startup_config  # alias for readability
@@ -137,19 +133,24 @@ def vector_process_identity() -> dict[str, Any]:
 
 
 @mcp.tool()
+def health_snapshot() -> str:
+    return get_vector_service().format_health_snapshot()
+
+
+@mcp.tool()
 def readiness() -> str:
     return get_vector_service().format_readiness()
 
 
 def _start_background_prewarm() -> None:
-    """Fire off ChromaDB client + embedding model loading on a daemon thread.
+    """Fire off bounded startup prewarm on a daemon thread.
 
-    Without prewarm the first MCP query pays the full cold-load cost (~15-30s
-    for BAAI/bge-m3), which produces the appearance of a stall and interacts
-    badly with client-side cancellations. Prewarm makes first-query latency
-    deterministic.
+    Chroma prewarm is safe and fast enough to keep enabled by default. Model
+    prewarm is opt-in because loading BAAI/bge-m3 inside the MCP process can
+    monopolize the server and make health/readiness probes time out.
 
     Opt out with VECTOR_DB_ENABLE_STARTUP_PREWARM=0 (useful for tests).
+    Opt in model prewarm with VECTOR_DB_ENABLE_MODEL_PREWARM=1.
     """
     if not BACKGROUND_PREWARM_ENABLED:
         logger.info("PREWARM_SKIPPED: VECTOR_DB_ENABLE_STARTUP_PREWARM=0")
@@ -164,6 +165,10 @@ def _start_background_prewarm() -> None:
             logger.info("PREWARM_CHROMA_READY: %.2fs", t_chroma)
         except (RuntimeError, OSError) as exc:
             logger.warning("PREWARM_CHROMA_FAILED: %s", exc)
+
+        if not MODEL_PREWARM_ENABLED:
+            logger.info("PREWARM_MODEL_SKIPPED: VECTOR_DB_ENABLE_MODEL_PREWARM!=1")
+            return
 
         t1 = time.monotonic()
         try:

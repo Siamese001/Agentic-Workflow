@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -136,6 +137,31 @@ def test_prior_variant_defaults_pending_trace() -> None:
     ]
     assert rows[0]["embed_allowed"] is False
     assert rows[0]["confidence"] == CONFIDENCE_PENDING
+
+
+def test_c02_fetch_materializes_surface_alias_ids_from_ledger() -> None:
+    from apps_rg.runtime.c0.c02_evidence_fetch import fetch_c02_evidence_atoms
+
+    ledger_id = _first_high_ledger_fact()["candidate_fact_id"]
+    pool = _pool()
+    pool = replace(
+        pool,
+        selected_fact_plan={
+            "facts": [
+                {
+                    "fact_id": "bul_surface_001",
+                    "ledger_candidate_fact_id": ledger_id,
+                }
+            ]
+        },
+        allowed_fact_ids_ordered=["bul_surface_001"],
+        allowed_fact_ids={"bul_surface_001"},
+        proof_pool_metadata={"id_alias_map": {"bul_surface_001": ledger_id}},
+    )
+    c02 = fetch_c02_evidence_atoms(section_id="competencies", pool=pool, repo_root=REPO)
+    assert c02["atoms"]
+    assert c02["atoms"][0]["fact_id"] == "bul_surface_001"
+    assert c02["atoms"][0]["source_span_ref"].startswith("ledger:")
 
 
 @pytest.mark.skipif(not LEDGER.is_file(), reason="master ledger missing")
@@ -299,6 +325,23 @@ def test_c01_retrieval_plan_lane_aliases(section_id: str, primary_target: str) -
     assert primary_target in targets["primary_targets"]
     assert plan["section_id"] == section_id
     assert plan["jd_as_proof"] is False
+    assert plan["retrieval_profile_ref"].startswith("apps_rg.")
+    assert plan["retrieval_profile_query_fields"]
+
+
+def test_c06_weak_refine_is_retired_compatibility_shim() -> None:
+    from apps_rg.runtime.c0.c06_weak_refine import maybe_c06_weak_refine
+
+    atoms = [{"fact_id": "f1"}]
+    out, receipt = maybe_c06_weak_refine(
+        support_status="WEAK",
+        atoms=atoms,
+        retrieval_plan={"retrieval_targets": {"secondary_targets": []}},
+    )
+    assert out == atoms
+    assert receipt["schema_version"] == "c06_weak_refine_v1"
+    assert receipt["attempted"] is False
+    assert receipt["disabled"] is True
 
 
 def test_agentic_core_binding_import() -> None:

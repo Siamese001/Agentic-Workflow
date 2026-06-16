@@ -38,7 +38,6 @@ from agentic_core.config.model_catalog import (
     ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
     ANTHROPIC_LEGACY_HAIKU_3_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
-    QWEN_7B_INSTRUCT_MODEL_ID,
     QWEN_LOCAL_MODEL_ID,
 )
 
@@ -347,9 +346,8 @@ REJECTED_PROVIDERS_FOR_CERT: Final[frozenset[str]] = frozenset({
 
 REJECTED_MODELS_FOR_CERT: Final[frozenset[str]] = frozenset({
     QWEN_LOCAL_MODEL_ID,
-    QWEN_7B_INSTRUCT_MODEL_ID,
-    "Qwen2.5-7B-Instruct",
     "Qwen2.5-32B-Instruct-AWQ",
+    "Qwen/Qwen2.5-32B-Instruct-AWQ",
     ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
     ANTHROPIC_HAIKU_MODEL_ID,
 })
