@@ -37,6 +37,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
@@ -73,7 +74,7 @@ from apps_lic.types.recipient_archetype_mapping import (
 
 APPS_LIC_PA_CERT_REF: str = "pa-apps-lic-outreach-message-ag8-w5-f3c2e1"
 
-APPS_LIC_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+APPS_LIC_TARGET_MODEL: str = QWEN_LOCAL_MODEL_ID
 APPS_LIC_TARGET_PROVIDER: str = "vllm"
 APPS_LIC_PROVIDER_PROFILE: str = "qwen_vllm"
 
@@ -318,17 +319,66 @@ def _build_sender_proof_block(
     sender_proof_envelope: Mapping[str, Any] | None,
     length_budget: Mapping[str, Any] | None,
     jd_fields: Mapping[str, Any] | None = None,
+    message_intelligence_packet: Mapping[str, Any] | None = None,
 ) -> str:
     payload = {
         "sender_proof_envelope": dict(sender_proof_envelope or {}),
         "length_budget": dict(length_budget or {}),
         "jd_fields": dict(jd_fields or {}),
+        "message_intelligence_packet": _message_intelligence_payload(
+            message_intelligence_packet
+        ),
     }
     return (
         "C0.3 SENDER PROOF ENVELOPE (DATA ONLY - proof IDs are the only "
         "sender-claim authority):\n"
         + json.dumps(payload, indent=2, sort_keys=True, default=str)
     )
+
+
+def _message_intelligence_payload(
+    message_intelligence_packet: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if hasattr(message_intelligence_packet, "to_packet"):
+        packet = message_intelligence_packet.to_packet()  # type: ignore[attr-defined]
+        return dict(packet) if isinstance(packet, Mapping) else {}
+    return dict(message_intelligence_packet or {})
+
+
+def _message_intelligence_audit_refs(
+    message_intelligence_packet: Mapping[str, Any] | None,
+) -> tuple[str, ...]:
+    packet = _message_intelligence_payload(message_intelligence_packet)
+    if not packet:
+        return ()
+    return (
+        "mi_message_intelligence_packet:" + str(packet.get("packet_id") or ""),
+        "mi_trigger_mode:"
+        + str(
+            (packet.get("trigger_evaluation") or {}).get(
+                "recommended_personalization_mode",
+                "",
+            )
+            if isinstance(packet.get("trigger_evaluation"), Mapping)
+            else ""
+        ),
+        "mi_ask_style:"
+        + str(
+            (packet.get("ask_calibration") or {}).get("cta_style", "")
+            if isinstance(packet.get("ask_calibration"), Mapping)
+            else ""
+        ),
+    )
+
+
+def _message_intelligence_snapshot_refs(
+    message_intelligence_packet: Mapping[str, Any] | None,
+) -> tuple[str, ...]:
+    packet = _message_intelligence_payload(message_intelligence_packet)
+    refs = packet.get("source_refs") or ()
+    if not isinstance(refs, (list, tuple)):
+        return ()
+    return tuple(dict.fromkeys(str(ref) for ref in refs if str(ref)))
 
 
 def _sender_proof_audit_refs(
@@ -414,6 +464,7 @@ def pa_compose_apps_lic(
     *,
     sender_proof_envelope: Mapping[str, Any] | None = None,
     length_budget: Mapping[str, Any] | None = None,
+    message_intelligence_packet: Mapping[str, Any] | None = None,
 ) -> CompiledPromptArtifact:
     """Compile a typed CompiledPromptArtifact for L2 to execute.
 
@@ -505,7 +556,12 @@ def pa_compose_apps_lic(
     evidence_data_block = (
         _build_evidence_block(fec)
         + "\n\n"
-        + _build_sender_proof_block(sender_proof_envelope, effective_length_budget, jd_fields)
+        + _build_sender_proof_block(
+            sender_proof_envelope,
+            effective_length_budget,
+            jd_fields,
+            message_intelligence_packet,
+        )
     )
 
     blocks: tuple[PromptBlock, ...] = (
@@ -551,6 +607,10 @@ def pa_compose_apps_lic(
         "C03": (
             "C0_3_PROOF_GRAPH:"
             + str((sender_proof_envelope or {}).get("proof_packet_id") or "")
+        ),
+        "MI0": (
+            "C0_3_MESSAGE_INTELLIGENCE:"
+            + str(_message_intelligence_payload(message_intelligence_packet).get("packet_id") or "")
         ),
         "M0": f"provider_profile={APPS_LIC_PROVIDER_PROFILE}:model={APPS_LIC_TARGET_MODEL}",
         "SC": (
@@ -629,6 +689,9 @@ def pa_compose_apps_lic(
         "reasoning_policy": _component_hash(reasoning_policy),
         "c03_sender_proof_envelope": _component_hash(dict(sender_proof_envelope or {})),
         "c03_length_budget": _component_hash(dict(effective_length_budget)),
+        "message_intelligence_packet": _component_hash(
+            _message_intelligence_payload(message_intelligence_packet)
+        ),
         "recipient_archetype": _component_hash({
             "lic_recipient_class": recipient_class,
             "mapped_archetype": recipient_archetype,
@@ -693,9 +756,27 @@ def pa_compose_apps_lic(
         max_tokens=4096,
         temperature=0.82,
         replay_key=validated_request.replay_key,
-        audit_refs=_sender_proof_audit_refs(sender_proof_envelope, effective_length_budget, jd_fields),
+        audit_refs=tuple(
+            dict.fromkeys(
+                (
+                    *_sender_proof_audit_refs(
+                        sender_proof_envelope,
+                        effective_length_budget,
+                        jd_fields,
+                    ),
+                    *_message_intelligence_audit_refs(message_intelligence_packet),
+                )
+            )
+        ),
         gate_verdict_refs=_sender_proof_gate_refs(sender_proof_envelope),
-        snapshot_refs=_sender_proof_snapshot_refs(sender_proof_envelope),
+        snapshot_refs=tuple(
+            dict.fromkeys(
+                (
+                    *_sender_proof_snapshot_refs(sender_proof_envelope),
+                    *_message_intelligence_snapshot_refs(message_intelligence_packet),
+                )
+            )
+        ),
         l5_certification_ref=APPS_LIC_PA_CERT_REF,
     )
 

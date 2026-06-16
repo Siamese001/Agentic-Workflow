@@ -218,6 +218,31 @@ def _c03_context_from_prompt(
     return {}, {}, {}
 
 
+def _c03_message_intelligence_from_prompt(
+    prompt: Optional[CompiledPromptArtifact],
+) -> dict[str, Any]:
+    """Recover the optional C0.3 message-intelligence packet from PA."""
+    if prompt is None:
+        return {}
+    for block in prompt.prompt_blocks:
+        content = str(getattr(block, "content", "") or "")
+        marker_index = content.find("C0.3 SENDER PROOF ENVELOPE")
+        if marker_index < 0:
+            continue
+        json_index = content.find("{", marker_index)
+        if json_index < 0:
+            continue
+        try:
+            parsed = json.loads(content[json_index:])
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(parsed, Mapping):
+            continue
+        packet = parsed.get("message_intelligence_packet") or {}
+        return dict(packet) if isinstance(packet, Mapping) else {}
+    return {}
+
+
 def _recipient_class_from_fec(fec: FinalEvidenceContract) -> str:
     status = c0_recipient_class_status_from_fec(fec)
     recipient_class = c0_recipient_class_value_from_fec(fec).strip().upper()
@@ -264,6 +289,7 @@ def _invoke_hop_pipeline(
         str(fec.support_status or ""),
     )
     sender_proof_envelope, c03_length_budget, c03_jd_fields = _c03_context_from_prompt(prompt)
+    c03_message_intelligence_packet = _c03_message_intelligence_from_prompt(prompt)
     allowed_claim_ids = [
         str(item)
         for item in sender_proof_envelope.get("allowed_claim_ids", ())
@@ -289,6 +315,8 @@ def _invoke_hop_pipeline(
         "sender_proof_envelope": sender_proof_envelope,
         "c03_length_budget": c03_length_budget,
         "c03_jd_fields": c03_jd_fields,
+        "c03_message_intelligence_packet": c03_message_intelligence_packet,
+        "message_intelligence_packet": c03_message_intelligence_packet,
         "jd_fields": c03_jd_fields,
         "c03_allowed_claim_ids": allowed_claim_ids,
         "c0_support_status": str(fec.support_status or ""),
@@ -335,6 +363,7 @@ def _invoke_hop_pipeline(
                 ),
                 "c03_length_budget": c03_length_budget,
                 "c03_jd_fields": c03_jd_fields,
+                "c03_message_intelligence_packet": c03_message_intelligence_packet,
                 "jd_fields": c03_jd_fields,
                 "reasoning_policy": reasoning_policy,
                 "c0_support_status": str(fec.support_status or ""),

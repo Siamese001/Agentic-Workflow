@@ -40,6 +40,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agentic_core.config.model_catalog import ANTHROPIC_DEFAULT_MODEL_ID, QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.L0_routing.generic_route_policy_interpreter import (
@@ -90,8 +91,8 @@ _CACHE_POLICY_RELPATH: str = (
 
 # apps_lic allowed models: Qwen32B for draft generation; Claude Sonnet 4.6 for X1D judge.
 _ALLOWED_MODELS: tuple[str, ...] = (
-    "Qwen/Qwen2.5-32B-Instruct-AWQ",
-    "claude-sonnet-4-6",
+    QWEN_LOCAL_MODEL_ID,
+    ANTHROPIC_DEFAULT_MODEL_ID,
 )
 _ALLOWED_NETWORKS: tuple[str, ...] = ("localhost:8000", "api.anthropic.com")
 _ALLOWED_FILE_ROOTS: tuple[str, ...] = ("artifacts/apps_lic/",)

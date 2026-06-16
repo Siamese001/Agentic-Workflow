@@ -14,6 +14,10 @@ from apps_lic.engines.message_type_requirement_gate import (
     MessageRequirementGateResult,
     evaluate_message_requirements_from_store,
 )
+from apps_lic.engines.message_intelligence_packet import (
+    MessageIntelligencePacket,
+    build_message_intelligence_packet,
+)
 from apps_lic.engines.recipient_classification import (
     STATUS_DERIVED as RECIPIENT_CLASS_DERIVED,
     derive_recipient_class_from_store,
@@ -52,6 +56,7 @@ class C03SenderProofResult:
     sender_proof_packet: SenderProofGraphPacket
     pa_sender_proof_envelope: Mapping[str, Any]
     length_budget: LengthBudget
+    message_intelligence_packet: MessageIntelligencePacket
     source_snapshot_ids: tuple[str, ...]
     l5_certification_ref: str = APPS_LIC_C03_CERT_REF
 
@@ -61,6 +66,7 @@ class C03SenderProofResult:
             self.message_gate_result.status == STATUS_REQUIREMENTS_PASS
             and self.sender_proof_packet.status == STATUS_PROOF_GRAPH_READY
             and self.sender_proof_packet.ready
+            and self.message_intelligence_packet.ready
         )
 
     @property
@@ -78,6 +84,8 @@ class C03SenderProofResult:
             reasons.extend(self.message_gate_result.missing_fields)
         if self.sender_proof_packet.status != STATUS_PROOF_GRAPH_READY:
             reasons.extend(self.sender_proof_packet.reason_codes)
+        if not self.message_intelligence_packet.ready:
+            reasons.extend(self.message_intelligence_packet.blocking_reasons)
         return tuple(dict.fromkeys(str(reason) for reason in reasons if str(reason)))
 
     def to_receipt_payload(self) -> dict[str, Any]:
@@ -93,6 +101,7 @@ class C03SenderProofResult:
             "proof_packet_id": self.proof_packet_id,
             "allowed_claim_ids": list(self.sender_proof_packet.proof_ids),
             "length_budget": self.length_budget.to_packet(),
+            "message_intelligence_packet": self.message_intelligence_packet.to_packet(),
             "source_snapshot_ids": list(self.source_snapshot_ids),
             "blocking_reasons": list(self.blocking_reasons),
             "l5_certification_ref": self.l5_certification_ref,
@@ -109,6 +118,12 @@ def _campaign(validated_request: ValidatedRequest) -> Mapping[str, Any]:
     app_payload = validated_request.app_payload or {}
     campaign = app_payload.get("campaign") or {}
     return campaign if isinstance(campaign, Mapping) else {}
+
+
+def _routing_policy(validated_request: ValidatedRequest) -> Mapping[str, Any]:
+    app_payload = validated_request.app_payload or {}
+    routing_policy = app_payload.get("routing_policy") or {}
+    return routing_policy if isinstance(routing_policy, Mapping) else {}
 
 
 def _effective_channel(validated_request: ValidatedRequest) -> str:
@@ -222,12 +237,53 @@ def build_c03_sender_proof_for_pa(
         modifiers=message_gate.modifiers,
         channel=_effective_channel(validated_request),
     )
+    target_context = {}
+    jd_fields = {}
+    for doc in documents:
+        metadata = dict(doc.metadata)
+        if doc.namespace == "apps_lic_contact_facts":
+            target_context.setdefault("name", str(metadata.get("name") or ""))
+            target_context.setdefault("title", str(metadata.get("title") or ""))
+            target_context.setdefault("company", str(metadata.get("company") or ""))
+        elif doc.namespace == "apps_lic_company_facts":
+            target_context.setdefault("company", str(metadata.get("company") or ""))
+            target_context.setdefault("company_context", doc.fact_text)
+        elif doc.namespace == "apps_lic_company_trigger_facts":
+            target_context.setdefault(
+                "company_trigger",
+                str(metadata.get("trigger_text") or doc.fact_text),
+            )
+        elif doc.namespace == "apps_lic_role_ownership_facts":
+            target_context.setdefault(
+                "role_ownership_signal",
+                str(metadata.get("ownership_signal") or doc.fact_text),
+            )
+        elif doc.namespace == "apps_lic_jd_facts":
+            for key in ("position_name", "job_title", "requisition_number", "company", "role_family"):
+                value = str(metadata.get(key) or "").strip()
+                if value:
+                    jd_fields.setdefault(key, value)
+            if "company" in jd_fields:
+                target_context.setdefault("company", jd_fields["company"])
+    message_intelligence_packet = build_message_intelligence_packet(
+        recipient_class=recipient_derivation.derived_recipient_class,
+        message_type=message_gate.message_type,
+        channel=_effective_channel(validated_request),
+        outreach_mode=str(_routing_policy(validated_request).get("outreach_mode") or "cold"),
+        opportunity_documents=documents,
+        target_context=target_context,
+        jd_fields=jd_fields,
+        proof_packet=proof_packet,
+        campaign_objective=str(l1_plan.query_spec.get("campaign_objective", "") or ""),
+        desired_next_step=str(inputs.get(C03_DESIRED_NEXT_STEP_INPUT_KEY) or ""),
+    )
     source_snapshot_ids = tuple(
         dict.fromkeys(
             (
                 *(doc.source_snapshot_id for doc in documents),
                 *message_gate.source_snapshot_ids,
                 *proof_packet.source_snapshot_ids,
+                *message_intelligence_packet.source_refs,
             )
         )
     )
@@ -241,6 +297,7 @@ def build_c03_sender_proof_for_pa(
         sender_proof_packet=proof_packet,
         pa_sender_proof_envelope=envelope,
         length_budget=length_budget,
+        message_intelligence_packet=message_intelligence_packet,
         source_snapshot_ids=source_snapshot_ids,
     )
 

@@ -155,6 +155,34 @@ def test_w5_banned_generic_phrase_and_unsupported_sender_claims_block() -> None:
     assert "hope you're doing well" in BANNED_GENERIC_PHRASES
 
 
+def test_w5_pitchy_meeting_and_release_gate_phrasing_blocks() -> None:
+    rows = [
+        {
+            "id": "pitch",
+            "profile_id": "pitch",
+            "name": "Scott Hallworth",
+            "derived_class": "C_LEVEL",
+            "message_type": "trigger_based_insight",
+            "exit_disposition": "clear_draft",
+            "claims_used": ["sp_agentic_platform"],
+            "draft_text": (
+                "Hi Scott, AIG's agentic AI work under the GCDO connects claims, "
+                "underwriting, and governance. My relevant proof: designed and "
+                "operationalized a governed agentic AI platform for regulated "
+                "enterprise workflows. Is it worth 15 minutes to compare where AIG "
+                "should set that claims-and-underwriting release gate?"
+            ),
+        }
+    ]
+
+    report = validate_message_quality(rows)
+
+    assert report.passed is False
+    assert any(violation.gate_id == GATE_BANNED_GENERIC_PHRASE for violation in report.violations)
+    assert "is it worth 15 minutes" in BANNED_GENERIC_PHRASES
+    assert "release gate" in BANNED_GENERIC_PHRASES
+
+
 def test_w5_missing_jd_title_or_req_blocks_role_specific_recruiter_copy() -> None:
     rows = [
         {

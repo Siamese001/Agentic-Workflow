@@ -646,6 +646,31 @@ class TestTPA01_PAEmitsCPA:
         assert jd_fields["position_name"] == "VP, Global Head of Agentic AI Solutions"
         assert jd_fields["requisition_number"] == "JR2601998"
 
+    def test_c03_data_block_carries_message_intelligence_packet(self):
+        vr, l1, route, fec = _canonical_pipeline()
+        packet = {
+            "packet_id": "sha256:mi-test",
+            "company_insight": "AIG is scaling governed agentic AI.",
+            "role_context": "VP, Global Head of Agentic AI Solutions",
+            "value_proposition": "governed agentic AI platform execution",
+            "trigger_evaluation": {"recommended_personalization_mode": "company"},
+            "ask_calibration": {"cta_style": "low_friction_reciprocity_first"},
+            "source_refs": ["source:aig"],
+        }
+        cpa = pa_compose_apps_lic(
+            route,
+            l1,
+            fec,
+            vr,
+            message_intelligence_packet=packet,
+        )
+
+        assert "message_intelligence_packet" in cpa.prompt_blocks[2].content
+        assert cpa.slot_lineage_map["MI0"] == "C0_3_MESSAGE_INTELLIGENCE:sha256:mi-test"
+        assert "message_intelligence_packet" in cpa.component_hash_map
+        assert "mi_message_intelligence_packet:sha256:mi-test" in cpa.audit_refs
+        assert "source:aig" in cpa.snapshot_refs
+
     def test_target_model_set(self):
         vr, l1, route, fec = _canonical_pipeline()
         cpa = pa_compose_apps_lic(route, l1, fec, vr)

@@ -17,6 +17,11 @@ Two surfaces resolve through here:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
+
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -33,14 +38,14 @@ _MODEL_PROFILES_PATH = (
 _GENERATOR_FALLBACK = {
     "provider": "vllm",
     "provider_profile": "qwen_vllm",
-    "model": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "model": QWEN_LOCAL_MODEL_ID,
     "base_url": "http://localhost:8000/v1",
 }
 _X1D_JUDGE_FALLBACK = {
     "provider": "claude",
     "provider_profile": "claude_sonnet_4_6_x1d",
     "model": "Claude Sonnet 4.6",
-    "transport_model_id": "claude-sonnet-4-6",
+    "transport_model_id": ANTHROPIC_DEFAULT_MODEL_ID,
 }
 
 # Canonical X1D provider profile constant (consumed by reasoning_intensity so the

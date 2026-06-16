@@ -264,6 +264,9 @@ def test_role_specific_recruiter_request_packs_w4_w5_jd_policy_and_no_send() -> 
     assert request.jd_fields["position_name"] == "Director, AI Platforms"
     assert request.jd_fields["requisition_number"] == "JR-12345"
     assert request.proof_packet.proof_packet_id == proof_packet.proof_packet_id
+    assert request.message_intelligence_packet.packet_id.startswith("sha256:")
+    assert request.component_hash_map["message_intelligence_packet"] == request.message_intelligence_packet.packet_id
+    assert request.message_intelligence_packet.role_context == "Director, AI Platforms (JR-12345)"
     assert request.no_send_receipt == NO_SEND_RECEIPT
     assert request.no_durable_write_receipt == NO_DURABLE_WRITE_RECEIPT
     assert request.instruction_data_boundary_receipt == INSTRUCTION_DATA_BOUNDARY_RECEIPT
@@ -327,6 +330,59 @@ def test_ceo_trigger_gets_sc3_three_candidates_and_two_judge_depth_marker() -> N
     assert all("governance" in candidate.draft_text.lower() for candidate in batch.candidates)
     assert all("deployment caught my attention" not in candidate.draft_text for candidate in batch.candidates)
     assert all("I noticed AIG announced" in candidate.draft_text for candidate in batch.candidates)
+
+
+def test_inmail_uses_rich_packet_while_connection_request_stays_short() -> None:
+    store = _store_for(
+        title="Chief Digital Officer",
+        company={"company": "AIG", "context": "AIG is scaling governed agentic AI in regulated insurance."},
+        company_trigger={
+            "trigger_text": (
+                "AIG Assist scaled submission and FNOL automation across underwriting, "
+                "claims, operations, finance, and corporate functions."
+            ),
+            "url": "https://example.com/aig-assist",
+        },
+    )
+    _derivation, _gate, _proof_packet, inmail_request = _w6_request(
+        store,
+        message_type_hint="trigger_based_insight",
+        campaign_objective="Share an executive-native fit note about governed agentic AI.",
+        desired_next_step="a brief executive exchange",
+        channel="linkedin_inmail",
+    )
+    packet = inmail_request.message_intelligence_packet
+    inmail_candidate = generate_whole_message_candidates(inmail_request).candidates[0]
+
+    assert packet.to_packet()["schema_version"] == "apps_lic.message_intelligence_packet.v1"
+    assert packet.company_insight.startswith("AIG Assist scaled")
+    assert packet.ask_calibration.recommended_cta.endswith("?")
+    assert "15-minute" not in packet.ask_calibration.recommended_cta.lower()
+    assert inmail_candidate.subject_line
+    assert inmail_candidate.word_count >= inmail_request.length_budget.min_words
+    assert 4 <= inmail_candidate.sentence_count <= inmail_request.length_budget.max_sentences
+    assert inmail_candidate.draft_text.endswith("\n\nAmit")
+    lowered = inmail_candidate.draft_text.lower()
+    for banned in ("which maps to", "hard call", "not demo quality", "15-minute"):
+        assert banned not in lowered
+
+    _derivation, _gate, _proof_packet, connection_request = _w6_request(
+        store,
+        message_type_hint="trigger_based_insight",
+        campaign_objective="Send a short connection request.",
+        desired_next_step="connecting",
+        channel="linkedin_chat",
+    )
+    connection_candidate = generate_whole_message_candidates(connection_request).candidates[0]
+
+    assert connection_request.length_budget.route_family == "CONNECTION_REQ"
+    assert connection_candidate.char_count <= 300
+    assert connection_candidate.sentence_count <= 2
+    assert not connection_candidate.draft_text.endswith("\n\nAmit")
+    assert validate_whole_message_candidate(
+        connection_candidate,
+        request=connection_request,
+    ).status == STATUS_CANDIDATE_SHAPE_PASS
 
 
 def test_long_trigger_based_insight_candidate_stays_within_exec_length_budget() -> None:
