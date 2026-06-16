@@ -249,7 +249,7 @@ def test_section_provider_call_threads_payload_timeout_to_gateway(monkeypatch) -
     monkeypatch.setattr(
         section_provider_call_module,
         "build_section_provider_gateway",
-        lambda: _Gateway(),
+        lambda claude_model=None: _Gateway(),
     )
 
     result = section_provider_call_module.call_section_model_provider(

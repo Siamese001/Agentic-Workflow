@@ -49,6 +49,27 @@ def run_competencies_lane_execution(
     print_output: bool = True,
 ) -> dict[str, Any]:
     _ensure_helpers_hydrated()
+    import time as _time
+    from datetime import datetime as _dt, timezone as _tz
+
+    # W5: lane-level phase timing board. Checkpoint deltas across the major phases so a stuck or
+    # failed competencies run can answer "did it die before the provider, on a generation path, on
+    # the selector, on X2, on X3, or in L6?" without guessing from a console trickle. Best-effort;
+    # never affects control flow.
+    _phase_timings: list[dict[str, Any]] = []
+    _phase_clock = {"t": _time.monotonic()}
+
+    def _mark_phase(name: str) -> None:
+        now = _time.monotonic()
+        _phase_timings.append(
+            {
+                "phase": name,
+                "duration_s": round(now - _phase_clock["t"], 4),
+                "at": _dt.now(_tz.utc).isoformat(),
+            }
+        )
+        _phase_clock["t"] = now
+
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
@@ -57,6 +78,7 @@ def run_competencies_lane_execution(
         repo_root=REPO_ROOT,
         collect_employment_bullets_fn=collect_employment_bullets,
     )
+    _mark_phase("load_section_proof_for_lane")
     bullet_rows = pool.bullet_rows
     allowed_fact_ids = pool.allowed_fact_ids
     selected_fact_plan = pool.selected_fact_plan
@@ -133,6 +155,7 @@ def run_competencies_lane_execution(
         fact_lines=fact_lines,
         run_id=runtime_payload["run_id"],
     )
+    _mark_phase("compile_prompt")
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
@@ -234,6 +257,7 @@ def run_competencies_lane_execution(
     targeting_context["resume_support_blob_lower"] = c0_proof_blob
 
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    _mark_phase("prepare_l2_before_provider")
     result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
         section_lane=LANE_KEY,
         slot_kind="competencies",
@@ -250,6 +274,7 @@ def run_competencies_lane_execution(
         provider_profile=str(args.provider),
     )
     write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
+    _mark_phase("self_consistency_generation_and_selector")
     raw_model_output_original = raw_output
     provider_raw_output = raw_output
     if getattr(result, "apps_rg_qwen_preflight_blocked", False) if result else False:
@@ -448,6 +473,7 @@ def run_competencies_lane_execution(
             )
         raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
 
+    _mark_phase("deterministic_repairs")
     competencies = list((parsed or {}).get("competencies") or [])
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
     display_text = competencies_display_text(competencies)
@@ -547,6 +573,7 @@ def run_competencies_lane_execution(
             )
         ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+    _mark_phase("x1d")
 
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
 
@@ -644,6 +671,7 @@ def run_competencies_lane_execution(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
+    _mark_phase("x2")
 
     from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
 
@@ -701,6 +729,7 @@ def run_competencies_lane_execution(
     finalize_section_runtime_exhaust_before_l6(
         artifact_dir, "competencies", runtime_payload, repo_root=REPO_ROOT
     )
+    _mark_phase("x3_and_l2_finalize")
     l2_output["product_quality_status"] = product_quality_status
     l2_output["product_quality_reason"] = product_quality_reason
     attach_lane_proof_bundle_fields(
@@ -762,6 +791,21 @@ def run_competencies_lane_execution(
         max_tokens=l6_max,
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
+    _mark_phase("l6_shadow")
+    # W5: emit the phase timing board. lane_phases = surrounding-phase deltas; generation_selector
+    # _phases = per-round generation/selector durations surfaced from the bullet-lane orchestrator.
+    write_json(
+        artifact_dir / "competencies_runtime_timing.json",
+        {
+            "section_id": "competencies",
+            "run_id": str(runtime_payload.get("run_id") or ""),
+            "runtime_generation_status": runtime_generation_status,
+            "e2e_closeout_mode": bool((gen_meta or {}).get("e2e_closeout_mode")),
+            "max_regen_rounds_allowed": (gen_meta or {}).get("max_regen_rounds_allowed"),
+            "lane_phases": _phase_timings,
+            "generation_selector_phases": (gen_meta or {}).get("phase_timings") or [],
+        },
+    )
 
     section_agg["l6_shadow_eval_package_ref"] = _artifact_repo_rel(
         artifact_dir / "l6_shadow_eval_package.json",

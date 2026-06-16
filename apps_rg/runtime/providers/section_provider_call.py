@@ -15,6 +15,7 @@ from apps_rg.runtime.providers.availability_fallback import maybe_fallback_to_op
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.section_model_limits import resolve_section_generation_model
 
 
 @dataclass(frozen=True)
@@ -31,11 +32,19 @@ class _CompiledMessagesPrompt:
     run_id: str
 
 
-def build_section_provider_gateway() -> ProviderGateway:
+def build_section_provider_gateway(claude_model: str | None = None) -> ProviderGateway:
+    """Section provider gateway.
+
+    ``claude_model`` (when set) pins the EXTERNAL_CLAUDE provider's generation model for this
+    call — the per-section tier resolved via ``resolve_section_generation_model``. Empty/None
+    falls back to ``ExternalProvider``'s section-agnostic default (the SSOT ``default_model`` /
+    operator pin), preserving prior behavior for callers without a section.
+    """
     return ProviderGateway(
         {
             ProviderProfile.EXTERNAL_CLAUDE: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+                model=str(claude_model or ""),
             ),
             ProviderProfile.EXTERNAL_OPENAI: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_OPENAI,
@@ -73,6 +82,7 @@ def call_section_model_provider(
     run_id: str | None = None,
     temperature_override: float | None = None,
     token_budget: int | None = None,
+    section_id: str | None = None,
 ) -> ProviderResult:
     profile = normalize_provider_profile(provider_profile)
     compiled = _compiled_prompt_from_payload(provider_payload, run_id=run_id)
@@ -83,7 +93,16 @@ def call_section_model_provider(
         if temperature_override is not None
         else provider_payload.get("temperature", 0.45)
     )
-    result = build_section_provider_gateway().generate(
+    # Per-section model pin (SSOT): resolve the section from an explicit arg or the
+    # ``_reasoning_section_lane`` tag the lane stamped on the payload (``tag_reasoning_lane``),
+    # so competencies + the four narratives use their pinned Haiku tier while the rest use the
+    # Sonnet default — instead of every lane silently using the section-agnostic default. Only
+    # applied for the external Claude profile; an unknown/missing section resolves to the default.
+    claude_model: str | None = None
+    if profile == ProviderProfile.EXTERNAL_CLAUDE:
+        sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()
+        claude_model = resolve_section_generation_model(sid or None)
+    result = build_section_provider_gateway(claude_model=claude_model).generate(
         profile,
         compiled,
         token_budget=budget,

@@ -20,6 +20,20 @@ COMPETENCIES_CANDIDATE_CATEGORY_COUNT: Final[int] = CANDIDATE_CATEGORY_COUNT
 COMPETENCIES_REGEN_EXTRA_PATHS: Final[int] = 4
 
 DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE: Final[float] = 0.72
+# W6: closeout-mode regen cap when APPS_RG_E2E_CLOSEOUT_MODE=1 and no explicit regen-round env.
+DEFAULT_COMPETENCIES_CLOSEOUT_MAX_REGEN_ROUNDS: Final[int] = 1
+
+
+def e2e_closeout_mode_active() -> bool:
+    """True when the operator has explicitly opted into E2E closeout mode (APPS_RG_E2E_CLOSEOUT_MODE).
+
+    Closeout mode is an EXPLICIT, AUDITABLE bias toward finishing the full-resume E2E: it keeps the
+    8 final categories, graph authority, and X2/X3 fully intact, and only (optionally) caps regen
+    rounds so a long run converges. It is NEVER the product default — the strict product path is
+    unchanged unless this flag is set. Artifacts stamp ``e2e_closeout_mode`` so a closeout run is
+    distinguishable from a strict one.
+    """
+    return os.environ.get("APPS_RG_E2E_CLOSEOUT_MODE", "").strip().lower() in ("1", "true", "yes")
 
 
 @dataclass(frozen=True)
@@ -65,13 +79,26 @@ def competencies_regen_extra_path_count() -> int:
             return max(0, int(raw))
         except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
+    # W6: in closeout mode with no explicit override, suppress extra regen breadth so the run
+    # converges on the initial pool. Strict product default is unchanged.
+    if e2e_closeout_mode_active():
+        return 0
     return COMPETENCIES_REGEN_EXTRA_PATHS
 
 
 def max_competencies_regen_rounds() -> int:
     raw = os.environ.get("APPS_RG_COMPETENCIES_MAX_REGEN_ROUNDS", "").strip()
+    explicit_emp = os.environ.get("APPS_RG_EMPLOYMENT_BULLET_MAX_REGEN_ROUNDS", "").strip()
+    if not raw and not explicit_emp and e2e_closeout_mode_active():
+        # W6: closeout-mode cap when neither explicit regen env is set. Caps rounds (default 1) so a
+        # long competencies run converges; the strict product path (no closeout flag) is unchanged.
+        cap_raw = os.environ.get("APPS_RG_COMPETENCIES_CLOSEOUT_MAX_REGEN_ROUNDS", "").strip()
+        try:
+            return max(0, int(cap_raw)) if cap_raw else DEFAULT_COMPETENCIES_CLOSEOUT_MAX_REGEN_ROUNDS
+        except ValueError:
+            return DEFAULT_COMPETENCIES_CLOSEOUT_MAX_REGEN_ROUNDS
     if not raw:
-        raw = os.environ.get("APPS_RG_EMPLOYMENT_BULLET_MAX_REGEN_ROUNDS", "2").strip()
+        raw = explicit_emp or "2"
     try:
         return max(0, int(raw))
     except ValueError:
@@ -387,6 +414,7 @@ __all__ = [
     "CompetenciesSelectionGate",
     "build_competencies_targeting_context",
     "competencies_regen_extra_path_count",
+    "e2e_closeout_mode_active",
     "evaluate_competencies_selection_quality",
     "is_competencies_pool_generation",
     "max_competencies_regen_rounds",
