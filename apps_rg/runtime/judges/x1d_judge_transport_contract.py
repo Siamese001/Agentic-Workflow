@@ -38,12 +38,12 @@ from apps_rg.runtime.section_judge_policy import (
     REQUIRED_JUDGE_PROVIDER_KEYS,
     get_section_judge_policy,
 )
+from apps_rg.runtime.section_model_limits import runtime_limit_int
 
 PROOF_JUDGE_PROVIDER_KEYS: tuple[str, ...] = REQUIRED_JUDGE_PROVIDER_KEYS
 
-# Target unified env (transport-parity plan W2) — tests fail until implemented.
-UNIFIED_MAX_OUTPUT_TOKENS_ENV = "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
-UNIFIED_MAX_OUTPUT_TOKENS_DEFAULT = 4096
+UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH = "runtime_limits.judge.x1d_max_output_tokens"
+UNIFIED_MAX_OUTPUT_TOKENS_DEFAULT = runtime_limit_int("judge.x1d_max_output_tokens")
 
 GRADE_ONLY_OBJECTIVE_MARKERS: tuple[str, ...] = (
     "grade_only",
@@ -133,7 +133,8 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
             has_json_output_lock="json_object" in src,
             temperature_is_low=(
                 '"temperature": 0.1' in src
-                or 'model.startswith("gpt-5")' in src  # gpt-5: temperature omitted (not elevated)
+                or 'model.startswith("gpt-5")' in src
+                or "_is_openai_gpt5_chat_model" in src  # GPT-5 family: temperature omitted (not elevated)
             ),
             checks_truncation_stop_reason="finish_reason" in src,
         )
@@ -158,19 +159,25 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
 
 
 def audit_unified_token_budget_env() -> list[TransportViolation]:
-    """All providers should resolve max tokens from one env (W2 target)."""
+    """All providers should resolve max tokens from one YAML runtime limit."""
     violations: list[TransportViolation] = []
-    x1d_path = Path(__file__).with_name("executive_summary_x1d.py")
-    src = x1d_path.read_text(encoding="utf-8")
-    if UNIFIED_MAX_OUTPUT_TOKENS_ENV not in src:
+    try:
+        configured = runtime_limit_int("judge.x1d_max_output_tokens")
+    except Exception as exc:  # guardian: strict SSOT load surfaced as audit failure
         violations.append(
             TransportViolation(
-                code="missing_unified_x1d_max_output_tokens_env",
-                detail=(
-                    f"{UNIFIED_MAX_OUTPUT_TOKENS_ENV} not referenced in executive_summary_x1d.py; "
-                    "providers use separate GOOGLE/OPENAI/ANTHROPIC token envs."
-                ),
-                path=str(x1d_path),
+                code="missing_unified_x1d_max_output_tokens_ssot",
+                detail=f"{UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH} unreadable: {exc}",
+                path="apps_rg/config/provider_profiles.yaml",
+            )
+        )
+        configured = 0
+    if configured <= 0:
+        violations.append(
+            TransportViolation(
+                code="invalid_unified_x1d_max_output_tokens_ssot",
+                detail=f"{UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH} must be positive; got {configured}",
+                path="apps_rg/config/provider_profiles.yaml",
             )
         )
     budgets = {k: resolved_provider_max_output_tokens(k) for k in PROOF_JUDGE_PROVIDER_KEYS}
@@ -180,7 +187,7 @@ def audit_unified_token_budget_env() -> list[TransportViolation]:
             TransportViolation(
                 code="token_budget_spread_exceeds_2x",
                 detail=f"provider max_output_tokens map: {budgets}",
-                path=str(x1d_path),
+                path="apps_rg/runtime/judges/executive_summary_x1d.py",
             )
         )
     return violations
@@ -514,7 +521,7 @@ __all__ = [
     "ProviderTransportProfile",
     "TransportViolation",
     "UNIFIED_MAX_OUTPUT_TOKENS_DEFAULT",
-    "UNIFIED_MAX_OUTPUT_TOKENS_ENV",
+    "UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH",
     "assert_x1d_judge_transport_parity",
     "audit_gemini_schema_covers_required_fields",
     "audit_json_output_lock_all_providers",

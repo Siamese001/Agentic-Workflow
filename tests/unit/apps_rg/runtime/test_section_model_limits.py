@@ -1,12 +1,9 @@
 """Wave 4.2 — apps_rg untested-hotspot coverage.
 
 Covers ``apps_rg/runtime/section_model_limits.py``: the provider-neutral
-section-model identity/budget constants and the env-override resolver
-``external_claude_generation_model``.
+section-model identity/budget constants and the SSOT-backed resolver.
 """
 from __future__ import annotations
-
-import importlib
 
 import apps_rg.runtime.section_model_limits as sml
 from apps_rg.runtime.section_model_limits import (
@@ -36,8 +33,10 @@ class TestConstants:
             "SectionModelSSOTError",
             "external_claude_generation_model",
             "external_openai_generation_model",
-            "external_openai_generation_model_from_ssot",
             "resolve_section_generation_model",
+            "runtime_limit_float",
+            "runtime_limit_int",
+            "runtime_limit_str",
         }
 
 
@@ -45,28 +44,19 @@ class TestExternalClaudeGenerationModel:
     def test_default_when_unset(self) -> None:
         assert external_claude_generation_model({}) == DEFAULT_EXTERNAL_CLAUDE_MODEL
 
-    def test_env_override_applied(self) -> None:
+    def test_env_override_ignored(self) -> None:
         out = external_claude_generation_model({"APPS_RG_EXTERNAL_CLAUDE_MODEL": "claude-opus-4-8"})
-        assert out == "claude-opus-4-8"
+        assert out == DEFAULT_EXTERNAL_CLAUDE_MODEL
 
-    def test_blank_override_falls_back_to_default(self) -> None:
+    def test_blank_override_still_returns_default(self) -> None:
         assert external_claude_generation_model({"APPS_RG_EXTERNAL_CLAUDE_MODEL": "   "}) == (
             DEFAULT_EXTERNAL_CLAUDE_MODEL
         )
 
-    def test_whitespace_is_stripped(self) -> None:
+    def test_non_blank_override_still_ignored(self) -> None:
         out = external_claude_generation_model({"APPS_RG_EXTERNAL_CLAUDE_MODEL": "  claude-x  "})
-        assert out == "claude-x"
+        assert out == DEFAULT_EXTERNAL_CLAUDE_MODEL
 
-    def test_reads_os_environ_when_none(self, monkeypatch) -> None:
+    def test_does_not_read_os_environ_when_none(self, monkeypatch) -> None:
         monkeypatch.setenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", "claude-env-model")
-        assert external_claude_generation_model() == "claude-env-model"
-
-    def test_section_model_id_tracks_env_at_import(self, monkeypatch) -> None:
-        monkeypatch.setenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", "claude-reimport-model")
-        reloaded = importlib.reload(sml)
-        try:
-            assert reloaded.SECTION_MODEL_ID == "claude-reimport-model"
-        finally:
-            monkeypatch.delenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", raising=False)
-            importlib.reload(sml)
+        assert external_claude_generation_model() == DEFAULT_EXTERNAL_CLAUDE_MODEL

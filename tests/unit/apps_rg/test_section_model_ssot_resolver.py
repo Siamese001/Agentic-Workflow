@@ -3,8 +3,7 @@
 Guards the single-SSOT consolidation: model_by_section (Haiku cost tier) + default_model
 (Sonnet high-signal) in apps_rg/config/provider_profiles.yaml, resolved by
 section_model_limits.resolve_section_generation_model(section_id). environ={} is passed so the
-test is deterministic regardless of any operator APPS_RG_EXTERNAL_CLAUDE_MODEL pin in the
-process env.
+test is deterministic; env model pins are ignored by design.
 """
 from __future__ import annotations
 
@@ -29,7 +28,7 @@ def test_default_is_sonnet() -> None:
     assert resolve("some_unmapped_section", environ={}) == _SONNET
 
 
-def test_operator_env_pin_overrides_all_sections() -> None:
+def test_operator_env_pin_is_ignored() -> None:
     pin = {"APPS_RG_EXTERNAL_CLAUDE_MODEL": "claude-opus-4-8"}
-    assert resolve("competencies", environ=pin) == "claude-opus-4-8"
-    assert resolve("unify_bullets", environ=pin) == "claude-opus-4-8"
+    assert resolve("competencies", environ=pin) == _HAIKU
+    assert resolve("unify_bullets", environ=pin) == _SONNET

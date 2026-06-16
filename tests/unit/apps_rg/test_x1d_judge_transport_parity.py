@@ -33,7 +33,7 @@ from apps_rg.runtime.judges.grade_only_judge_packet import (
 )
 from apps_rg.runtime.judges.x1d_judge_transport_contract import (
     PROOF_JUDGE_PROVIDER_KEYS,
-    UNIFIED_MAX_OUTPUT_TOKENS_ENV,
+    UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH,
     audit_gemini_schema_covers_required_fields,
     audit_json_output_lock_all_providers,
     audit_openai_retry_system_escalation_only,
@@ -438,5 +438,5 @@ def test_gemini_retry_attempt_token_budget_matches_openai() -> None:
     assert g2 >= g1
 
 
-def test_unified_env_constant_documented() -> None:
-    assert UNIFIED_MAX_OUTPUT_TOKENS_ENV == "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
+def test_unified_token_budget_ssot_path_documented() -> None:
+    assert UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH == "runtime_limits.judge.x1d_max_output_tokens"

@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
-import os
 import re
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Mapping
 
-from agentic_core.config.google_ai_env import google_ai_pro_model_id
 from agentic_core.L0_routing.config.model_catalog import (
+    GEMINI_20_FLASH_MODEL_ID,
+    OPENAI_GPT3_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
     OPENAI_NON_CHAT_COMPLETIONS_MODELS,
 )
 
 from pathlib import Path
 
 from apps_rg.runtime.section_judge_policy import JudgeTier, get_section_judge_policy, normalize_section_id
+from apps_rg.runtime.section_model_limits import runtime_limit_str
 
 # Provider-profiles SSOT (apps_rg/config/provider_profiles.yaml). This module lives at
 # apps_rg/runtime/judges/, so parents[2] == apps_rg. The YAML ``judge_models`` block is the
@@ -45,7 +48,11 @@ def _tier_yaml_label(tier: JudgeTier) -> str:
 
 _FORBIDDEN_PROOF_MODEL_RE = re.compile(
     r"(?:^|[/_-])(flash|mini|haiku)(?:[/_-]|$)|"
-    r"gemini-2\.0-flash|gemini-1\.|gpt-4o-mini|gpt-3(?:\.|$|-|/)|(?:^|/)gpt-4o$",
+    rf"{re.escape(GEMINI_20_FLASH_MODEL_ID)}|"
+    r"gemini-[1]\.|"
+    rf"{re.escape(OPENAI_GPT4O_MINI_MODEL_ID)}|"
+    rf"{re.escape(OPENAI_GPT3_MODEL_ID)}(?:\.|$|-|/)|"
+    rf"(?:^|/){re.escape(OPENAI_GPT4O_MODEL_ID)}$",
     re.IGNORECASE,
 )
 
@@ -57,57 +64,9 @@ def openai_chat_completions_eligible(model_id: str) -> bool:
     """False when the model id is known to fail chat/completions (judge transport)."""
     return str(model_id or "").strip().lower() not in _OPENAI_NON_CHAT_COMPLETIONS_MODELS
 
-_ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
-    "gemini_pro": {
-        "env_primary": (
-            "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_GOOGLE_JUDGE_MODEL",
-            "APPS_RG_GEMINI_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-    },
-    "openai_chatgpt": {
-        "env_primary": (
-            "APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_OPENAI_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-        "reasoning_effort_env": "APPS_RG_OPENAI_JUDGE_REASONING_EFFORT",
-        "default_reasoning_effort": "high",
-    },
-    "anthropic_claude": {
-        "env_primary": (
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-    },
-}
-
-_STANDARD_PROFILE: dict[str, dict[str, Any]] = {
-    "gemini_pro": {
-        "env_primary": (
-            "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD",
-            "APPS_RG_GOOGLE_JUDGE_MODEL",
-            "APPS_RG_GEMINI_JUDGE_MODEL",
-        ),
-        "env_tier": ("GOOGLE_AI_PRO_MODEL",),
-    },
-    "openai_chatgpt": {
-        "env_primary": (
-            "APPS_RG_OPENAI_JUDGE_MODEL_STANDARD",
-            "APPS_RG_OPENAI_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-    },
-    "anthropic_claude": {
-        "env_primary": (
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD",
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-    },
-}
+_SUPPORTED_PROVIDER_KEYS = frozenset({"gemini_pro", "openai_chatgpt", "anthropic_claude"})
+_ENHANCED_PROFILE = {provider_key: {} for provider_key in _SUPPORTED_PROVIDER_KEYS}
+_STANDARD_PROFILE = {provider_key: {} for provider_key in _SUPPORTED_PROVIDER_KEYS}
 
 
 @dataclass(frozen=True)
@@ -134,12 +93,6 @@ def is_forbidden_proof_judge_model(model_id: str) -> bool:
     return bool(_FORBIDDEN_PROOF_MODEL_RE.search(mid))
 
 
-def _profile_for_tier(tier: JudgeTier) -> dict[str, dict[str, Any]]:
-    if tier in (JudgeTier.ENHANCED_REASONING,):
-        return _ENHANCED_PROFILE
-    return _STANDARD_PROFILE
-
-
 def _model_tier_label(tier: JudgeTier, model_id: str) -> str:
     if is_forbidden_proof_judge_model(model_id):
         return "advisory_weak"
@@ -158,12 +111,11 @@ def resolve_section_proof_judge_model(
     environ: Mapping[str, str] | None = None,
 ) -> SectionJudgeModelResolution:
     """Resolve proof judge model for a section; fail closed on missing or weak tiers."""
-    env = dict(os.environ if environ is None else environ)
+    _ = environ
     sid = normalize_section_id(section_id)
     policy = get_section_judge_policy(sid)
     tier = policy.judge_tier
-    profile = _profile_for_tier(tier).get(provider_key)
-    if not profile:
+    if provider_key not in _SUPPORTED_PROVIDER_KEYS:
         return SectionJudgeModelResolution(
             provider_key=provider_key,
             section_id=sid,
@@ -177,35 +129,17 @@ def resolve_section_proof_judge_model(
             proof_eligible_judge=False,
         )
 
-    candidates: list[tuple[str, str]] = []
-    for name in profile.get("env_primary") or ():
-        raw = str(env.get(name) or "").strip()
-        if raw:
-            candidates.append((raw, name))
-    for name in profile.get("env_tier") or ():
-        raw = str(env.get(name) or "").strip()
-        if raw:
-            candidates.append((raw, name))
-    if provider_key == "gemini_pro" and tier != JudgeTier.ENHANCED_REASONING:
-        pro_id, pro_src = google_ai_pro_model_id(env)
-        if pro_id and not any(c[0] == pro_id for c in candidates):
-            candidates.append((pro_id, pro_src or "profile_default"))
     yaml_tier = _yaml_judge_models().get(_tier_yaml_label(tier)) or {}
     yaml_model = yaml_tier.get(provider_key) if isinstance(yaml_tier, dict) else None
     if not yaml_model:
         raise SectionJudgeProfileSSOTError(
             f"Missing judge_models.{_tier_yaml_label(tier)}.{provider_key} in {_PROVIDER_PROFILES_PATH}"
         )
-    if not any(c[0] == str(yaml_model) for c in candidates):
-        candidates.append((str(yaml_model), "yaml_judge_models"))
+    candidates: list[tuple[str, str]] = [(str(yaml_model), "yaml_judge_models")]
 
     reasoning_effort: str | None = None
     if provider_key == "openai_chatgpt" and tier == JudgeTier.ENHANCED_REASONING:
-        effort_env = str(profile.get("reasoning_effort_env") or "APPS_RG_OPENAI_JUDGE_REASONING_EFFORT")
-        reasoning_effort = (
-            str(env.get(effort_env) or "").strip()
-            or str(profile.get("default_reasoning_effort") or "high")
-        )
+        reasoning_effort = runtime_limit_str("judge.openai_enhanced_reasoning_effort")
 
     for model_id, source in candidates:
         forbidden = is_forbidden_proof_judge_model(model_id)
@@ -240,7 +174,7 @@ def resolve_section_proof_judge_model(
         blocked=True,
         block_reason=(
             f"No proof-eligible judge model configured for section={sid} provider={provider_key} "
-            f"tier={tier.value}. Set env overrides or provider_profiles.yaml judge_models; "
+            f"tier={tier.value}. Set provider_profiles.yaml judge_models; "
             "flash/mini/haiku are advisory-only."
         ),
         proof_eligible_judge=False,
