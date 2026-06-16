@@ -101,7 +101,7 @@ x1d:
       threshold: 0.84
     evidence_claim_support_x1d:
       rubric_id: apps_lic.x1d.evidence_claim_support.v1
-      role: Evidence support, claim grounding, and specificity discipline.
+      role: "Non-metric claim support: verify each non-numeric claim traces to a supplied proof point and penalize vague or over-general phrasing. Numeric/metric grounding is enforced deterministically upstream by the graph-SSOT metric gate, so do not re-score metric support."
       threshold: 0.86
     ceo_attention_originality_x1d:
       rubric_id: apps_lic.x1d.ceo_originality.v1
@@ -109,7 +109,7 @@ x1d:
       threshold: 0.88
     ceo_evidence_overclaim_risk_x1d:
       rubric_id: apps_lic.x1d.ceo_evidence_overclaim.v1
-      role: CEO/C-level evidence support, overclaim risk, and no-fabrication review.
+      role: "CEO/C-level non-metric overclaim risk: penalize inflated framing of a real proof point and unverifiable strategic claims about the recipient or their company (no fabrication of strategic context). Numeric/metric grounding is enforced deterministically upstream by the graph-SSOT metric gate, so do not re-score metric support."
       threshold: 0.86
 
 risk_matrix:

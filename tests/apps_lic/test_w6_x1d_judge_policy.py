@@ -224,6 +224,26 @@ def test_w6_required_judge_mapping_by_recipient_class_and_message_type() -> None
     ) == (JUDGE_CEO_ORIGINALITY, JUDGE_CEO_EVIDENCE_RISK)
 
 
+def test_w6_rescoped_rubrics_defer_metric_grounding_to_deterministic_gate() -> None:
+    """W2 (graph-claim-gate-rescope): the two evidence judges are narrowed to the
+    NON-metric residual. The graph-SSOT metric gate (corpus-load + draft-level
+    GATE_GENERATED_METRIC_GROUNDED) deterministically owns numeric/metric grounding,
+    so these LLM judges defer that and focus on what only they can catch.
+    """
+    profiles = x1d_judge_profile_policy()
+    for judge_id in (JUDGE_EVIDENCE_SUPPORT, JUDGE_CEO_EVIDENCE_RISK):
+        role = profiles[judge_id].role.lower()
+        assert "metric" in role, (judge_id, profiles[judge_id].role)
+        assert "do not re-score" in role, (judge_id, profiles[judge_id].role)
+    # The re-scope must NOT drop either judge from the policy matrix.
+    assert required_x1d_judge_ids_for_context(
+        recipient_class="RECRUITER", message_type="role_specific",
+    ) == (JUDGE_EVIDENCE_SUPPORT,)
+    assert required_x1d_judge_ids_for_context(
+        recipient_class="CEO", message_type="trigger_based_insight",
+    ) == (JUDGE_CEO_ORIGINALITY, JUDGE_CEO_EVIDENCE_RISK)
+
+
 def test_w6_request_profiles_report_two_judges_for_hiring_manager_role_specific() -> None:
     request = _request(
         _store_for(
