@@ -109,6 +109,17 @@ def test_hook_blocks_worktree_folder_branch_mismatch():
     assert "worktree folder basename must exactly equal the local branch name" in proc.stdout
 
 
+def test_hook_blocks_app_worktree_branch_named_for_single_wave():
+    proc = _run_hook(
+        "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/claude-apps-rg-wave4-tests "
+        "-b claude-apps-rg-wave4-tests origin/main"
+    )
+
+    assert proc.returncode == 2
+    assert "not a wave-specific slice" in proc.stdout
+    assert "claude-apps-rg-hotspot-tests" in proc.stdout
+
+
 def test_hook_blocks_checkout_branch_creation_with_slash_namespace():
     proc = _run_hook("git checkout -b claude/zen-mcnulty-654733 origin/main")
 

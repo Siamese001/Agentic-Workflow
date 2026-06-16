@@ -148,6 +148,38 @@ def test_contract_accepts_app_branch_for_matching_app_edit(tmp_path: Path) -> No
     assert violations == []
 
 
+def test_contract_accepts_durable_app_hotspot_branch_for_later_waves(tmp_path: Path) -> None:
+    wt = tmp_path / "claude-apps-rg-hotspot-tests"
+    wt.mkdir()
+
+    violations = guard._contract_violations(
+        "claude-apps-rg-hotspot-tests", wt, app_token="apps-rg"
+    )
+
+    assert violations == []
+
+
+def test_contract_rejects_app_branch_named_for_single_wave(tmp_path: Path) -> None:
+    wt = tmp_path / "claude-apps-rg-wave4-tests"
+    wt.mkdir()
+
+    violations = guard._contract_violations(
+        "claude-apps-rg-wave4-tests", wt, app_token="apps-rg"
+    )
+
+    assert any("not a wave-specific slice" in v for v in violations)
+    assert any("claude-apps-rg-hotspot-tests" in v for v in violations)
+
+
+def test_contract_rejects_app_branch_with_only_generic_test_scope(tmp_path: Path) -> None:
+    wt = tmp_path / "claude-apps-rg-tests"
+    wt.mkdir()
+
+    violations = guard._contract_violations("claude-apps-rg-tests", wt, app_token="apps-rg")
+
+    assert any("not only generic test/change tokens" in v for v in violations)
+
+
 def test_contract_requires_app_segment_when_editing_app_file(tmp_path: Path) -> None:
     # High-signal, agent-owned, folder matches — but no apps-rg segment while editing apps_rg.
     wt = tmp_path / "claude-token-budget-fix"
