@@ -739,11 +739,11 @@ def run_post_w7_live_12_archetype_matrix(
     loaded_env_file = _load_env_file(env_file)
     old_provider_env = {key: os.environ.get(key) for key in LIVE_PROVIDER_ENV_KEYS}
     os.environ.pop("APPS_LIC_TEST_PROVIDER_STUB", None)
-    os.environ["APPS_LIC_REQUIRE_QWEN_VLLM"] = "1"
-    os.environ["APPS_LIC_RUN_LIVE_CLAUDE_X1D"] = (
-        "1" if str(os.environ.get("ANTHROPIC_API_KEY") or "").strip() else "0"
+    os.environ["APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID"] = "claude-opus-4-8"
+    os.environ["APPS_LIC_RUN_LIVE_GPT_X1D"] = (
+        "1" if str(os.environ.get("OPENAI_API_KEY") or "").strip() else "0"
     )
-    live_claude_x1d_enabled = os.environ["APPS_LIC_RUN_LIVE_CLAUDE_X1D"] == "1"
+    live_gpt_x1d_enabled = os.environ["APPS_LIC_RUN_LIVE_GPT_X1D"] == "1"
     judge_thresholds = {
         judge_id: profile.threshold
         for judge_id, profile in x1d_judge_profile_policy().items()
@@ -829,15 +829,15 @@ def run_post_w7_live_12_archetype_matrix(
 
     row_tuple = tuple(rows)
     summary = _build_summary(row_tuple, generated_at=datetime.now(timezone.utc).isoformat())
-    summary["provider_mode"] = "live_qwen_vllm_required"
+    summary["provider_mode"] = "live_claude_opus_4_8_primary_required"
     summary["x1d_provider_mode"] = (
-        "live_claude_required_when_x1d_required"
-        if live_claude_x1d_enabled
-        else "live_claude_unavailable_fail_closed"
+        "live_gpt_required_when_x1d_required"
+        if live_gpt_x1d_enabled
+        else "live_gpt_unavailable_fail_closed"
     )
     summary["env_file_loaded"] = str(loaded_env_file) if loaded_env_file else ""
     summary["stub_forbidden"] = True
-    summary["live_claude_x1d_enabled"] = live_claude_x1d_enabled
+    summary["live_gpt_x1d_enabled"] = live_gpt_x1d_enabled
 
     (output_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True),

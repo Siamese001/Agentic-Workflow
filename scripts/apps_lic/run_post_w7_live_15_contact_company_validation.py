@@ -2,8 +2,9 @@
 
 This runner uses public LinkedIn-indexed/current web search pulls collected on
 2026-06-08: 5 contacts each for AIG, Citi, and Neo4j. It does not scrape behind
-login, send messages, or call LinkedIn APIs. When ANTHROPIC_API_KEY is loaded
-from .env, required X1D judges run through live Claude.
+login, send messages, or call LinkedIn APIs. When ANTHROPIC_API_KEY and
+OPENAI_API_KEY are loaded from .env, generation uses Claude and required X1D
+judges run through live GPT.
 """
 
 from __future__ import annotations
@@ -57,8 +58,8 @@ DEFAULT_ENV_FILE_CANDIDATES = (
 )
 LIVE_PROVIDER_ENV_KEYS = (
     "APPS_LIC_TEST_PROVIDER_STUB",
-    "APPS_LIC_REQUIRE_QWEN_VLLM",
-    "APPS_LIC_RUN_LIVE_CLAUDE_X1D",
+    "APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID",
+    "APPS_LIC_RUN_LIVE_GPT_X1D",
 )
 
 
@@ -636,20 +637,20 @@ def _quality_violations(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any
                 violations.append({"profile_id": row["profile_id"], "reason": f"{field}_false"})
         if (
             row.get("c0_recipient_class_status") == "RECIPIENT_CLASS_DERIVED"
-            and row.get("generation_generator") != "qwen_vllm"
+            and row.get("generation_generator") != "claude_opus_4_8_primary"
         ):
             violations.append(
                 {
                     "profile_id": row["profile_id"],
-                    "reason": f"live_qwen_candidate_missing:{row.get('proof_mode')}",
+                    "reason": f"live_claude_candidate_missing:{row.get('proof_mode')}",
                 }
             )
         if row.get("draft_text"):
-            if row.get("generation_generator") != "qwen_vllm":
+            if row.get("generation_generator") != "claude_opus_4_8_primary":
                 violations.append(
                     {
                         "profile_id": row["profile_id"],
-                        "reason": f"draft_not_live_qwen:{row.get('generation_generator')}",
+                        "reason": f"draft_not_live_claude:{row.get('generation_generator')}",
                     }
                 )
             if "deterministic_test_provider_stub" in row.get("generation_qa_notes", []):
@@ -764,11 +765,11 @@ def run_post_w7_live_15_contact_company_validation(
     loaded_env_file = _load_env_file(env_file)
     old_provider_env = {key: os.environ.get(key) for key in LIVE_PROVIDER_ENV_KEYS}
     os.environ.pop("APPS_LIC_TEST_PROVIDER_STUB", None)
-    os.environ["APPS_LIC_REQUIRE_QWEN_VLLM"] = "1"
-    os.environ["APPS_LIC_RUN_LIVE_CLAUDE_X1D"] = (
-        "1" if str(os.environ.get("ANTHROPIC_API_KEY") or "").strip() else "0"
+    os.environ["APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID"] = "claude-opus-4-8"
+    os.environ["APPS_LIC_RUN_LIVE_GPT_X1D"] = (
+        "1" if str(os.environ.get("OPENAI_API_KEY") or "").strip() else "0"
     )
-    live_claude_x1d_enabled = os.environ["APPS_LIC_RUN_LIVE_CLAUDE_X1D"] == "1"
+    live_gpt_x1d_enabled = os.environ["APPS_LIC_RUN_LIVE_GPT_X1D"] == "1"
     rows: list[dict[str, Any]] = []
     try:
         for index, contact in enumerate(LIVE_CONTACTS, start=1):
@@ -808,15 +809,15 @@ def run_post_w7_live_15_contact_company_validation(
 
     row_tuple = tuple(rows)
     summary = _build_summary(row_tuple, generated_at=datetime.now(timezone.utc).isoformat())
-    summary["provider_mode"] = "live_qwen_vllm_required"
+    summary["provider_mode"] = "live_claude_opus_4_8_primary_required"
     summary["x1d_provider_mode"] = (
-        "live_claude_required_when_x1d_required"
-        if live_claude_x1d_enabled
-        else "live_claude_unavailable_fail_closed"
+        "live_gpt_required_when_x1d_required"
+        if live_gpt_x1d_enabled
+        else "live_gpt_unavailable_fail_closed"
     )
     summary["env_file_loaded"] = str(loaded_env_file) if loaded_env_file else ""
     summary["stub_forbidden"] = True
-    summary["live_claude_x1d_enabled"] = live_claude_x1d_enabled
+    summary["live_gpt_x1d_enabled"] = live_gpt_x1d_enabled
     (output_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True),
         encoding="utf-8",

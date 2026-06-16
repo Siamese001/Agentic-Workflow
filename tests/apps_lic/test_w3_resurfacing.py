@@ -44,7 +44,7 @@ class TestW3P1SignalTypes:
     
     def test_signal_source_enum(self):
         """Verify SignalSource enum values."""
-        from apps_lic.signals.types import SignalSource
+        from apps_lic.signals.types import SignalSource, SignalStrength
         
         assert SignalSource.LINKEDIN.value == "linkedin"
         assert SignalSource.CRUNCHBASE.value == "crunchbase"
@@ -173,7 +173,7 @@ class TestW3P1SignalDetector:
     def test_signal_detector_creation(self):
         """Verify SignalDetector can be instantiated."""
         from apps_lic.signals.detector import SignalDetector, SignalDetectorConfig
-        from apps_lic.signals.types import SignalSource
+        from apps_lic.signals.types import SignalSource, SignalStrength
         
         config = SignalDetectorConfig(
             enabled_sources=[SignalSource.RESEARCH],

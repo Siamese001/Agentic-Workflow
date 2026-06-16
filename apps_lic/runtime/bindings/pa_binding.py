@@ -37,7 +37,6 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
@@ -53,6 +52,11 @@ from agentic_core.runtime.contracts.route_contract import RouteContract
 from apps_lic.engines.recipient_classification import (
     CLASS_UNKNOWN,
     STATUS_DERIVED as RECIPIENT_CLASS_DERIVED,
+)
+from apps_lic.config.model_profiles import (
+    resolve_generator_model,
+    resolve_generator_provider,
+    resolve_generator_provider_profile,
 )
 from apps_lic.runtime.bindings.c0_binding import (
     c0_recipient_class_status_from_fec,
@@ -74,9 +78,9 @@ from apps_lic.types.recipient_archetype_mapping import (
 
 APPS_LIC_PA_CERT_REF: str = "pa-apps-lic-outreach-message-ag8-w5-f3c2e1"
 
-APPS_LIC_TARGET_MODEL: str = QWEN_LOCAL_MODEL_ID
-APPS_LIC_TARGET_PROVIDER: str = "vllm"
-APPS_LIC_PROVIDER_PROFILE: str = "qwen_vllm"
+APPS_LIC_TARGET_MODEL: str = resolve_generator_model()
+APPS_LIC_TARGET_PROVIDER: str = resolve_generator_provider()
+APPS_LIC_PROVIDER_PROFILE: str = resolve_generator_provider_profile()
 
 # PA enforces this budget to stay within the --max-model-len 8192 token window.
 _EVIDENCE_CHAR_BUDGET: int = 16_000

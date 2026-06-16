@@ -3,40 +3,31 @@
 #
 # Single source of truth for which model each apps_lic surface uses. This file
 # is authoritative; environment variables are DOCUMENTED OVERRIDES used for
-# local/ops deployment, never the source of truth. Precedence is env > yaml,
-# first matching env var wins. Audited against ~/env/.env: a Qwen generator pin
-# there is expected (apps_lic generation is local-Qwen by design); it must NOT
-# pin the X1D judge model, which is the independent Claude judge.
+# deployment, never the source of truth. Precedence is env > yaml, first matching
+# env var wins.
 schema_version: apps_lic.model_profiles.v1
 
 generator:
-  # HOP5 whole-message generation runs on local Qwen vLLM, fail-closed via
-  # APPS_LIC_REQUIRE_QWEN_VLLM=1.
+  # HOP5 whole-message generation runs on Claude Opus 4.8.
   role: linkedin_message_generation
-  provider: vllm
-  provider_profile: qwen_vllm
-  model: "Qwen/Qwen2.5-32B-Instruct-AWQ"
-  base_url: "http://localhost:8000/v1"
+  provider: claude
+  provider_profile: claude_opus_4_8_primary
+  model: "Claude Opus 4.8"
+  transport_model_id: "claude-opus-4-8"
   # Documented overrides (env > yaml; first match wins).
   model_env_overrides:
-    - APPS_LIC_QWEN_MODEL
-    - APPS_LIC_TARGET_MODEL
-    - QWEN_VLLM_MODEL
-  base_url_env_overrides:
-    - APPS_LIC_VLLM_BASE_URL
-    - VLLM_BASE_URL
+    - APPS_LIC_GENERATOR_MODEL
+  transport_model_id_env_overrides:
+    - APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID
 
 x1d_judge:
   # X1D judging is an INDEPENDENT judge (must not equal the generator), pinned to
-  # Claude Sonnet 4.6 per the frozen W0 contract. The deterministic Exit engine
-  # (validation_exit) consumes Claude X1DJudgeResult artifacts; this entry is the
-  # provider/model SSOT that reasoning_intensity and the Claude judge adapter
-  # resolve from so no surface can declare the retired qwen_vllm_x1d provider.
+  # GPT-5.5. The deterministic Exit engine consumes X1DJudgeResult artifacts.
   role: independent_message_quality_judge
-  provider: claude
-  provider_profile: claude_sonnet_4_6_x1d
-  model: "Claude Sonnet 4.6"
-  transport_model_id: "claude-sonnet-4-6"
+  provider: openai
+  provider_profile: gpt_5_5_x1d
+  model: "GPT-5.5"
+  transport_model_id: "gpt-5.5"
   # Documented override (env > yaml).
   transport_model_id_env_overrides:
     - APPS_LIC_X1D_JUDGE_TRANSPORT_MODEL_ID

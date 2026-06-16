@@ -1,31 +1,15 @@
-"""Route-specific AppsRgTargetingBrief contract + validator.
+"""Frontier-era targeting briefing contract + validator.
 
-This contract is **distinct** from the JSON ``CompanyBrief`` schema
-(``apps_rg/schemas/company_research.schema.json``). The default
-apps_research company-brief route still produces structured JSON with
-citations; the apps_rg targeting route instead produces a sealed plain
-markdown/text artifact (``company_brief_text``) suitable for direct
-consumption as a delegated manual_brief in apps_rg.
+This module intentionally keeps the old import path because legacy
+apps_research/apps_rg bridge code still imports it. The contract itself is no
+longer the Qwen-era 2.4k / 17-bullet micro-brief. It validates a reviewed
+briefing artifact whose job is to add company/contact signal that complements
+the JD while remaining targeting-only context for apps_rg and apps_lic.
 
-Why a separate contract
-------------------------
-- apps_rg consumes ``company_brief_text`` as plain text — no JSON, no
-  citation anchors, no source register.
-- The external app record (``AppsRgTargetingBrief``) may be structured for
-  provenance, but ``company_brief_text`` must validate as plain markdown.
-
-Hard validation rules (fail-closed)
------------------------------------
-- ``company_brief_text`` length <= 2400 chars (target 1700-1900).
-- <= 17 total ``- `` bullets.
-- Each bullet is a single line and < 90 chars.
-- Only the allowed section headers may appear.
-- No JSON, code fences, citations, links, source notes, tables,
-  sub-bullets, escaped HTML entities, or bracket placeholders.
-- JD facts may not be restated except on the single metadata line.
-
-A brief that fails any rule is **rejected** — the caller must surface a
-sealed BLOCKED/DEGRADED artifact, never a placeholder or generic brief.
+The validator rejects artifact shapes that are dangerous downstream:
+JSON/code blobs, placeholders, inline citations/links, source notes in the
+brief body, and verbatim JD restatement. Size limits are profile-specific so a
+rich apps_rg briefing can coexist with a compact apps_lic packet.
 """
 
 from __future__ import annotations
@@ -35,44 +19,78 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 
-MAX_TOTAL_CHARS = 2400
-TARGET_CHARS_LOW = 1700
-TARGET_CHARS_HIGH = 1900
-MAX_BULLETS = 17
-MAX_BULLET_CHARS = 90  # strict: each bullet must be < 90 chars
+@dataclass(frozen=True)
+class BriefingProfile:
+    """Budget and structure policy for a briefing consumer."""
 
-# Allowed section headers (the chosen-domain header is one of three variants).
-_FIXED_HEADERS = frozenset(
-    {
-        "=== STRATEGIC MANDATE ===",
-        "=== LEADERSHIP ===",
-        "=== BUSINESS CONTEXT (JD alignment hooks) ===",
-        "=== EXEC SUMMARY FRAMING (not proof) ===",
-    }
-)
-_DOMAIN_HEADERS = frozenset(
-    {
-        "=== EA, DATA & M&A ===",
-        "=== TECH & AI PLATFORM ===",
-        "=== FINANCIALS & TRAJECTORY ===",
-    }
-)
-ALLOWED_HEADERS = _FIXED_HEADERS | _DOMAIN_HEADERS
+    profile_id: str
+    max_total_chars: int
+    target_chars_low: int
+    target_chars_high: int
+    max_bullets: int
+    max_line_chars: int
+    min_section_count: int
 
-# Forbidden-content detectors.
+
+BRIEFING_PROFILES: dict[str, BriefingProfile] = {
+    "apps_rg": BriefingProfile(
+        profile_id="apps_rg",
+        max_total_chars=8000,
+        target_chars_low=4000,
+        target_chars_high=6500,
+        max_bullets=48,
+        max_line_chars=240,
+        min_section_count=4,
+    ),
+    "apps_lic": BriefingProfile(
+        profile_id="apps_lic",
+        max_total_chars=2500,
+        target_chars_low=1000,
+        target_chars_high=2000,
+        max_bullets=24,
+        max_line_chars=220,
+        min_section_count=3,
+    ),
+}
+
+DEFAULT_BRIEFING_PROFILE = "apps_rg"
+
+MAX_TOTAL_CHARS = BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE].max_total_chars
+TARGET_CHARS_LOW = BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE].target_chars_low
+TARGET_CHARS_HIGH = BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE].target_chars_high
+MAX_BULLETS = BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE].max_bullets
+MAX_BULLET_CHARS = BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE].max_line_chars
+
 _CODE_FENCE_RE = re.compile(r"```")
 _LINK_RE = re.compile(r"https?://|\]\(", re.IGNORECASE)
 _HTML_ENTITY_RE = re.compile(r"&#?\w+;")
-_BRACKET_PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9 _/]{2,}\]")  # [ROLE_TITLE], [TICKER]
+_BRACKET_PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9 _/]{2,}\]")
 _CITATION_RE = re.compile(r"\[\d+\]|\(\s*(?:source|src|ref)[:\s]", re.IGNORECASE)
 _SOURCE_NOTE_RE = re.compile(r"^\s*(?:source[s]?|citation[s]?|references?)\s*[:\-]", re.IGNORECASE)
-_SUB_BULLET_RE = re.compile(r"^\s+[-*]\s")  # indented bullet
+_SUB_BULLET_RE = re.compile(r"^\s+[-*]\s")
 _TABLE_PIPE_RE = re.compile(r"\|")
 _BULLET_RE = re.compile(r"^- ")
+_HEADER_RE = re.compile(r"^(?:#{1,3}\s+.+|===\s*.+?\s*===)$")
+
+_SIGNAL_TERMS = (
+    "strategy",
+    "mandate",
+    "pressure",
+    "leadership",
+    "stakeholder",
+    "platform",
+    "architecture",
+    "data",
+    "ai",
+    "recent",
+    "event",
+    "urgency",
+    "outreach",
+    "positioning",
+    "jd complement",
+    "role complement",
+)
 
 
 class BriefStatus(str, Enum):
@@ -86,11 +104,13 @@ class BriefStatus(str, Enum):
 
 @dataclass(frozen=True)
 class TargetingBriefValidation:
-    """Result of validating a candidate ``company_brief_text``."""
+    """Result of validating a candidate briefing artifact."""
 
     valid: bool
     char_count: int
     bullet_count: int
+    section_count: int = 0
+    profile: str = DEFAULT_BRIEFING_PROFILE
     violations: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
@@ -98,17 +118,18 @@ class TargetingBriefValidation:
             "valid": self.valid,
             "char_count": self.char_count,
             "bullet_count": self.bullet_count,
+            "section_count": self.section_count,
+            "profile": self.profile,
             "violations": list(self.violations),
         }
 
 
 @dataclass(frozen=True)
 class AppsRgTargetingBrief:
-    """Sealed route-specific targeting brief artifact.
+    """Sealed targeting brief artifact.
 
-    ``company_brief_text`` is the only field apps_rg consumes; the rest is
-    provenance for the external app record. A brief with
-    ``status != SEALED`` MUST NOT be treated as a usable briefing.
+    ``company_brief_text`` is targeting context only. It must not be treated as
+    resume proof or as source support for candidate claims.
     """
 
     status: BriefStatus
@@ -116,6 +137,8 @@ class AppsRgTargetingBrief:
     company_brief_text: str = ""
     char_count: int = 0
     bullet_count: int = 0
+    section_count: int = 0
+    profile: str = DEFAULT_BRIEFING_PROFILE
     violations: tuple[str, ...] = ()
     block_reason: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -131,26 +154,30 @@ class AppsRgTargetingBrief:
             "company_brief_text": self.company_brief_text,
             "char_count": self.char_count,
             "bullet_count": self.bullet_count,
+            "section_count": self.section_count,
+            "profile": self.profile,
             "violations": list(self.violations),
             "block_reason": self.block_reason,
             "metadata": dict(self.metadata),
         }
 
 
-def _jd_restatement_tokens(jd_text: str) -> set[str]:
-    """Salient JD tokens used to detect bullet-level JD restatement.
+def _resolve_profile(profile: str | None) -> BriefingProfile:
+    key = str(profile or DEFAULT_BRIEFING_PROFILE).strip().lower()
+    if key not in BRIEFING_PROFILES:
+        return BRIEFING_PROFILES[DEFAULT_BRIEFING_PROFILE]
+    return BRIEFING_PROFILES[key]
 
-    Returns lowercased multi-word phrases (>= 3 words, length-bounded) drawn
-    from the JD body. A targeting bullet that reproduces such a phrase
-    verbatim is treated as JD restatement.
-    """
+
+def _jd_restatement_tokens(jd_text: str) -> set[str]:
+    """Return salient 4-gram JD phrases for verbatim-copy detection."""
+
     tokens: set[str] = set()
     for raw_line in (jd_text or "").splitlines():
         line = raw_line.strip().lower()
         if len(line) < 12:
             continue
         words = re.findall(r"[a-z0-9]+", line)
-        # sliding 4-gram phrases give a strong verbatim-restatement signal
         for i in range(len(words) - 3):
             phrase = " ".join(words[i : i + 4])
             if len(phrase) >= 12:
@@ -158,41 +185,50 @@ def _jd_restatement_tokens(jd_text: str) -> set[str]:
     return tokens
 
 
+def _plain_header_text(line: str) -> str:
+    s = line.strip()
+    s = re.sub(r"^#{1,3}\s*", "", s)
+    s = re.sub(r"^===\s*|\s*===$", "", s)
+    return s.strip().lower()
+
+
 def validate_targeting_brief_text(
     text: str,
     *,
     jd_text: str = "",
+    profile: str = DEFAULT_BRIEFING_PROFILE,
 ) -> TargetingBriefValidation:
-    """Validate a candidate ``company_brief_text`` against the contract.
+    """Validate a briefing artifact for profile-specific downstream use."""
 
-    ``jd_text`` is optional; when supplied, bullets (not the metadata line)
-    that verbatim-restate a salient JD phrase are flagged.
-    """
+    cfg = _resolve_profile(profile)
     violations: list[str] = []
     body = (text or "").strip()
     char_count = len(body)
 
     if not body:
         return TargetingBriefValidation(
-            valid=False, char_count=0, bullet_count=0,
+            valid=False,
+            char_count=0,
+            bullet_count=0,
+            section_count=0,
+            profile=cfg.profile_id,
             violations=("empty_brief",),
         )
 
-    if char_count > MAX_TOTAL_CHARS:
-        violations.append(f"char_count_over_max:{char_count}>{MAX_TOTAL_CHARS}")
-
+    if char_count > cfg.max_total_chars:
+        violations.append(f"char_count_over_max:{char_count}>{cfg.max_total_chars}")
     if _CODE_FENCE_RE.search(body):
         violations.append("code_fence_present")
     if _HTML_ENTITY_RE.search(body):
         violations.append("html_entity_present")
-    # JSON: an object/array literal spanning the document is forbidden.
+
     stripped = body.lstrip()
     if stripped.startswith("{") or stripped.startswith("["):
         violations.append("json_literal_present")
 
     lines = body.splitlines()
     bullet_lines: list[str] = []
-    # The metadata line is the (first) line beginning and ending with "|".
+    section_headers: list[str] = []
     metadata_line_idx = -1
     for idx, raw in enumerate(lines):
         line = raw.rstrip()
@@ -200,28 +236,25 @@ def validate_targeting_brief_text(
         if metadata_line_idx < 0 and stripped_line.startswith("|") and stripped_line.endswith("|"):
             metadata_line_idx = idx
             continue
-        # Headers must be in the allow-list when they look like headers.
-        if stripped_line.startswith("===") or stripped_line.endswith("==="):
-            if stripped_line not in ALLOWED_HEADERS:
-                violations.append(f"disallowed_header:{stripped_line[:48]}")
+        if not stripped_line:
             continue
-        # Tables (pipes) anywhere other than the metadata line are forbidden.
+        if _HEADER_RE.match(stripped_line):
+            section_headers.append(stripped_line)
+            continue
         if _TABLE_PIPE_RE.search(line) and idx != metadata_line_idx:
             violations.append("table_pipe_present")
-        # Sub-bullets (indented bullets) are forbidden.
         if _SUB_BULLET_RE.match(raw):
             violations.append("sub_bullet_present")
         if _SOURCE_NOTE_RE.match(line):
             violations.append("source_note_present")
         if _BULLET_RE.match(line):
             bullet_lines.append(line)
+        if len(stripped_line) > cfg.max_line_chars:
+            violations.append(f"line_too_long:{len(stripped_line)}>{cfg.max_line_chars}")
 
-    # Per-bullet checks.
     jd_tokens = _jd_restatement_tokens(jd_text) if jd_text else set()
     for bullet in bullet_lines:
-        content = bullet[2:]  # strip leading "- "
-        if len(bullet) >= MAX_BULLET_CHARS:
-            violations.append(f"bullet_too_long:{len(bullet)}>={MAX_BULLET_CHARS}")
+        content = bullet[2:]
         if _LINK_RE.search(content):
             violations.append("link_present")
         if _CITATION_RE.search(content):
@@ -238,21 +271,32 @@ def validate_targeting_brief_text(
                     break
 
     bullet_count = len(bullet_lines)
-    if bullet_count > MAX_BULLETS:
-        violations.append(f"too_many_bullets:{bullet_count}>{MAX_BULLETS}")
+    if bullet_count > cfg.max_bullets:
+        violations.append(f"too_many_bullets:{bullet_count}>{cfg.max_bullets}")
 
-    # Bracket placeholders anywhere (including metadata line) are forbidden.
+    section_count = len(section_headers)
+    if section_count < cfg.min_section_count:
+        violations.append(f"too_few_sections:{section_count}<{cfg.min_section_count}")
+
+    header_blob = " ".join(_plain_header_text(h) for h in section_headers)
+    if section_headers and not any(term in header_blob for term in _SIGNAL_TERMS):
+        violations.append("no_additive_signal_sections")
+
+    if _LINK_RE.search(body):
+        violations.append("link_present")
+    if _CITATION_RE.search(body):
+        violations.append("citation_present")
     if _BRACKET_PLACEHOLDER_RE.search(body):
-        if "bracket_placeholder_present" not in violations:
-            violations.append("bracket_placeholder_present")
+        violations.append("bracket_placeholder_present")
 
-    # Deduplicate while preserving order.
     seen: set[str] = set()
     deduped = tuple(v for v in violations if not (v in seen or seen.add(v)))
     return TargetingBriefValidation(
         valid=not deduped,
         char_count=char_count,
         bullet_count=bullet_count,
+        section_count=section_count,
+        profile=cfg.profile_id,
         violations=deduped,
     )
 
@@ -262,29 +306,30 @@ def seal_targeting_brief(
     *,
     company_name: str,
     jd_text: str = "",
+    profile: str = DEFAULT_BRIEFING_PROFILE,
     metadata: dict[str, Any] | None = None,
 ) -> AppsRgTargetingBrief:
-    """Validate and seal a candidate brief, or return a REJECTED artifact.
+    """Validate and seal a candidate briefing, or return a non-sealed artifact."""
 
-    Never returns a SEALED brief with invalid or empty text. Callers that
-    receive a non-sealed brief must propagate BLOCKED/DEGRADED rather than
-    substituting a placeholder.
-    """
+    cfg = _resolve_profile(profile)
     body = (text or "").strip()
     if not body:
         return AppsRgTargetingBrief(
             status=BriefStatus.BLOCKED,
             company_name=company_name,
+            profile=cfg.profile_id,
             block_reason="empty_company_brief_text",
             metadata=dict(metadata or {}),
         )
-    result = validate_targeting_brief_text(body, jd_text=jd_text)
+    result = validate_targeting_brief_text(body, jd_text=jd_text, profile=cfg.profile_id)
     if not result.valid:
         return AppsRgTargetingBrief(
             status=BriefStatus.REJECTED,
             company_name=company_name,
             char_count=result.char_count,
             bullet_count=result.bullet_count,
+            section_count=result.section_count,
+            profile=cfg.profile_id,
             violations=result.violations,
             block_reason="contract_validation_failed",
             metadata=dict(metadata or {}),
@@ -295,6 +340,8 @@ def seal_targeting_brief(
         company_brief_text=body,
         char_count=result.char_count,
         bullet_count=result.bullet_count,
+        section_count=result.section_count,
+        profile=cfg.profile_id,
         metadata=dict(metadata or {}),
     )
 
@@ -304,26 +351,32 @@ def blocked_targeting_brief(
     company_name: str,
     block_reason: str,
     degraded: bool = False,
+    profile: str = DEFAULT_BRIEFING_PROFILE,
     metadata: dict[str, Any] | None = None,
 ) -> AppsRgTargetingBrief:
-    """Construct a sealed rejection/degraded artifact (no usable brief text)."""
+    """Construct a non-usable blocked/degraded artifact."""
+
+    cfg = _resolve_profile(profile)
     return AppsRgTargetingBrief(
         status=BriefStatus.DEGRADED if degraded else BriefStatus.BLOCKED,
         company_name=company_name,
+        profile=cfg.profile_id,
         block_reason=block_reason,
         metadata=dict(metadata or {}),
     )
 
 
 __all__ = [
-    "ALLOWED_HEADERS",
-    "AppsRgTargetingBrief",
-    "BriefStatus",
+    "BRIEFING_PROFILES",
+    "DEFAULT_BRIEFING_PROFILE",
     "MAX_BULLETS",
     "MAX_BULLET_CHARS",
     "MAX_TOTAL_CHARS",
     "TARGET_CHARS_HIGH",
     "TARGET_CHARS_LOW",
+    "AppsRgTargetingBrief",
+    "BriefStatus",
+    "BriefingProfile",
     "TargetingBriefValidation",
     "blocked_targeting_brief",
     "seal_targeting_brief",

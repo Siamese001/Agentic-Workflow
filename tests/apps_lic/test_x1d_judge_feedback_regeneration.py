@@ -4,13 +4,13 @@ from pathlib import Path
 
 from apps_lic.engines.message_type_requirement_gate import MESSAGE_ROLE_SPECIFIC
 from apps_lic.engines.validation_exit import (
-    ANTHROPIC_MESSAGES_API,
+    OPENAI_RESPONSES_API,
     DEFAULT_X1D_JUDGE_MODEL,
     DEFAULT_X1D_JUDGE_PROVIDER,
     EXIT_CLEAR_DRAFT,
     JUDGE_AVAILABLE,
     JUDGE_EVIDENCE_SUPPORT,
-    LIVE_CLAUDE_API_CALL,
+    LIVE_GPT_API_CALL,
     STATUS_X1D_BLOCKED,
     STATUS_X1D_REVIEW_REQUIRED,
     STATUS_X2_BLOCKED,
@@ -70,8 +70,8 @@ def _live_judge(
         score=score,
         passed=passed,
         availability_status=JUDGE_AVAILABLE,
-        transport_provenance=LIVE_CLAUDE_API_CALL,
-        transport_provider=ANTHROPIC_MESSAGES_API,
+        transport_provenance=LIVE_GPT_API_CALL,
+        transport_provider=OPENAI_RESPONSES_API,
         transport_call_id=f"test-call-{score}",
         raw_response_digest="sha256:" + "a" * 64,
         issues=(issue,),
@@ -177,7 +177,7 @@ def test_x1d_blocked_result_does_not_trigger_regeneration() -> None:
     assert initial.x1d_result.status == STATUS_X1D_BLOCKED
 
     def repair_runner(_req, _parent, _failed, _iteration):
-        raise AssertionError("blocked X1D must not call Qwen repair")
+        raise AssertionError("blocked X1D must not call frontier repair")
 
     result = run_x1d_judge_feedback_regeneration(
         request=request,
@@ -468,7 +468,7 @@ def test_w3_multi_judge_failure_can_use_two_iteration_window() -> None:
     ) == 2
 
 
-def test_qwen_repair_candidate_forces_terminal_amit_signature(monkeypatch) -> None:
+def test_frontier_repair_candidate_forces_terminal_amit_signature(monkeypatch) -> None:
     request, _batch, selected = _request_and_selected()
 
     def _fake_repair(**kwargs):
@@ -497,7 +497,7 @@ def test_qwen_repair_candidate_forces_terminal_amit_signature(monkeypatch) -> No
 
     monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (_live_judge(score=0.4, passed=False),),
@@ -508,7 +508,7 @@ def test_qwen_repair_candidate_forces_terminal_amit_signature(monkeypatch) -> No
     assert repaired.draft_text.endswith("\n\nAmit")
 
 
-def test_qwen_repair_applies_generic_citi_recruiter_feedback_plan(monkeypatch) -> None:
+def test_frontier_repair_applies_generic_citi_recruiter_feedback_plan(monkeypatch) -> None:
     request, _batch, selected = _request_and_selected()
     request = replace(
         request,
@@ -547,7 +547,7 @@ def test_qwen_repair_applies_generic_citi_recruiter_feedback_plan(monkeypatch) -
 
     monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (
@@ -572,7 +572,7 @@ def test_qwen_repair_applies_generic_citi_recruiter_feedback_plan(monkeypatch) -
     assert repaired.draft_text.endswith("\n\nAmit")
 
 
-def test_qwen_repair_applies_generic_neo4j_recruiter_feedback_plan(monkeypatch) -> None:
+def test_frontier_repair_applies_generic_neo4j_recruiter_feedback_plan(monkeypatch) -> None:
     request, _batch, selected = _request_and_selected()
     request = replace(
         request,
@@ -611,7 +611,7 @@ def test_qwen_repair_applies_generic_neo4j_recruiter_feedback_plan(monkeypatch) 
 
     monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (
@@ -671,7 +671,7 @@ def test_w6_unseen_company_repair_uses_generic_evidence_plan(monkeypatch) -> Non
 
     monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (
@@ -746,7 +746,7 @@ def test_w2_clean_rebuild_replaces_patchy_duplicate_signature_repair(monkeypatch
         },
     )
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (
@@ -814,7 +814,7 @@ def test_w2_clean_rebuild_prevents_same_as_parent_repair(monkeypatch) -> None:
 
     monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
 
-    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+    repaired = x1d_regen.frontier_judge_feedback_repair_candidate(
         request,
         selected,
         (

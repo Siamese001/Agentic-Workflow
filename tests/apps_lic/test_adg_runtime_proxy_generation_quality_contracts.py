@@ -15,7 +15,7 @@ from apps_lic.engines.message_quality import (
 )
 from apps_lic.engines.validation_exit import JUDGE_UNAVAILABLE
 from apps_lic.engines.whole_message_generation import generate_whole_message_candidates
-from apps_lic.engines.x1d_claude_judge_adapter import run_claude_x1d_judges
+from apps_lic.engines.x1d_gpt_judge_adapter import run_gpt_x1d_judges
 from apps_lic.policy.reasoning_intensity import (
     R3_STRICT,
     SC_3,
@@ -101,10 +101,8 @@ def test_provider_shortfall_emits_non_passing_no_candidate_draft(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("APPS_LIC_TEST_PROVIDER_STUB", raising=False)
-    monkeypatch.setenv("APPS_LIC_VLLM_BASE_URL", "http://127.0.0.1:9/v1")
-    monkeypatch.setenv("APPS_LIC_QWEN_TIMEOUT_SECONDS", "0.1")
-    monkeypatch.setenv("APPS_LIC_VLLM_HEALTHCHECK_ENABLED", "1")
-    monkeypatch.setenv("APPS_LIC_REQUIRE_QWEN_VLLM", "0")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setenv("APPS_LIC_GENERATOR_TIMEOUT_SECONDS", "0.1")
 
     draft = GenerationEngine().execute(_generation_context("Citi"))["draft_message"]
 
@@ -114,8 +112,8 @@ def test_provider_shortfall_emits_non_passing_no_candidate_draft(
     assert draft["candidate_count"] == 0
     assert draft["candidate_selection_strategy"] == "none_provider_unavailable"
     assert draft["claims_used"] == []
-    assert draft["unsupported_claims"] == ["qwen_vllm_unavailable"]
-    assert draft["generator"] == "qwen_vllm_unavailable"
+    assert draft["unsupported_claims"] == ["frontier_generator_unavailable"]
+    assert draft["generator"] == "frontier_generator_unavailable"
 
 
 def test_inmail_generation_expands_short_provider_body_to_budget_and_role_subject(
@@ -144,14 +142,14 @@ def test_inmail_generation_expands_short_provider_body_to_budget_and_role_subjec
         "claims_used": ["sp_agentic_platform"],
     }
 
-    def fake_qwen_generation(**_kwargs: object) -> str:
+    def fake_frontier_generation(**_kwargs: object) -> str:
         return json.dumps(provider_payload)
 
     monkeypatch.delenv("APPS_LIC_TEST_PROVIDER_STUB", raising=False)
     monkeypatch.setattr(
         GenerationEngine,
-        "_try_qwen_generation",
-        staticmethod(fake_qwen_generation),
+        "_try_frontier_generation",
+        staticmethod(fake_frontier_generation),
     )
     context = _generation_context("AIG")
     context["jd_fields"] = {
@@ -224,14 +222,14 @@ def test_connection_request_repairs_pitchy_provider_body_without_signature(
         ],
     }
 
-    def fake_qwen_generation(**_kwargs: object) -> str:
+    def fake_frontier_generation(**_kwargs: object) -> str:
         return json.dumps(provider_payload)
 
     monkeypatch.delenv("APPS_LIC_TEST_PROVIDER_STUB", raising=False)
     monkeypatch.setattr(
         GenerationEngine,
-        "_try_qwen_generation",
-        staticmethod(fake_qwen_generation),
+        "_try_frontier_generation",
+        staticmethod(fake_frontier_generation),
     )
     context = {
         "generation_prompt": (
@@ -339,7 +337,7 @@ def test_non_live_x1d_transport_cannot_clear_required_judges() -> None:
     )
     batch = generate_whole_message_candidates(request)
 
-    results = run_claude_x1d_judges(
+    results = run_gpt_x1d_judges(
         request,
         batch.candidates[0],
         transport=FakePassingTransport(),
@@ -348,6 +346,6 @@ def test_non_live_x1d_transport_cannot_clear_required_judges() -> None:
     assert results
     assert all(result.availability_status == JUDGE_UNAVAILABLE for result in results)
     assert all(
-        "non_live_claude_transport_rejected" in result.issues
+        "non_live_gpt_transport_rejected" in result.issues
         for result in results
     )

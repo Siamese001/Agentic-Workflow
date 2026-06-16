@@ -201,7 +201,7 @@ class AppsResearchBridge:
                     validate_targeting_brief_text,
                 )
 
-                validation = validate_targeting_brief_text(brief_text)
+                validation = validate_targeting_brief_text(brief_text, profile="apps_rg")
                 if not validation.valid:
                     is_blocked = True
                     block_reason = (

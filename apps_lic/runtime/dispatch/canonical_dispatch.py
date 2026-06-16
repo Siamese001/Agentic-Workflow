@@ -74,9 +74,9 @@ from apps_lic.policy.reasoning_intensity import (
     apply_evidence_support,
     policy_from_reason_codes,
 )
-from apps_lic.engines.x1d_claude_judge_adapter import (
-    AnthropicClaudeX1DTransport,
-    run_claude_x1d_judges,
+from apps_lic.engines.x1d_gpt_judge_adapter import (
+    OpenAIGPTX1DTransport,
+    run_gpt_x1d_judges,
 )
 from apps_lic.types.linkedin_route_envelope import resolve_linkedin_route_envelope
 
@@ -87,33 +87,33 @@ ROUTE_FAMILY_R5 = ROUTE_FAMILY_R5_FALLBACK
 _EXECUTION_MANAGED = "managed_workflow"
 _EXECUTION_TERMINAL = "terminal_fallback"
 _APPS_RESEARCH_DEPRECATED_REASON = "APPS_RESEARCH_DEPRECATED"
-_APPS_LIC_RUN_LIVE_CLAUDE_X1D = "APPS_LIC_RUN_LIVE_CLAUDE_X1D"
+_APPS_LIC_RUN_LIVE_GPT_X1D = "APPS_LIC_RUN_LIVE_GPT_X1D"
 
 
 def _live_x1d_judge_runner():
-    """Build the live Claude X1D judge runner for the spine.
+    """Build the live GPT X1D judge runner for the spine.
 
-    Live judging is ON BY DEFAULT whenever ``ANTHROPIC_API_KEY`` is present, so
-    the independent Claude judge gates every production run (without a judge the
+    Live judging is ON BY DEFAULT whenever ``OPENAI_API_KEY`` is present, so
+    the independent GPT judge gates every production run (without a judge the
     required X1D profiles are missing and Exit fail-closes to blocked). It is
     suppressed only when:
-      - explicitly disabled via ``APPS_LIC_RUN_LIVE_CLAUDE_X1D`` in
+      - explicitly disabled via ``APPS_LIC_RUN_LIVE_GPT_X1D`` in
         {0,false,no,off}; or
       - running under pytest without an explicit opt-in — the test suite must not
-        make live network calls; set ``APPS_LIC_RUN_LIVE_CLAUDE_X1D=1`` to force
+        make live network calls; set ``APPS_LIC_RUN_LIVE_GPT_X1D=1`` to force
         live judging under pytest.
     """
-    raw = str(os.environ.get(_APPS_LIC_RUN_LIVE_CLAUDE_X1D) or "").strip().lower()
+    raw = str(os.environ.get(_APPS_LIC_RUN_LIVE_GPT_X1D) or "").strip().lower()
     explicit_off = raw in {"0", "false", "no", "off"}
     explicit_on = raw in {"1", "true", "yes", "on"}
     if explicit_off:
         return None
-    if not str(os.environ.get("ANTHROPIC_API_KEY") or "").strip():
+    if not str(os.environ.get("OPENAI_API_KEY") or "").strip():
         return None
     if os.environ.get("PYTEST_CURRENT_TEST") and not explicit_on:
         return None
-    transport = AnthropicClaudeX1DTransport()
-    return lambda request, candidate: run_claude_x1d_judges(
+    transport = OpenAIGPTX1DTransport()
+    return lambda request, candidate: run_gpt_x1d_judges(
         request,
         candidate,
         transport=transport,

@@ -55,7 +55,6 @@ from apps_lic.engines.whole_message_generation import (
     validate_whole_message_candidate,
 )
 from apps_lic.engines.x1d_judge_policy import (
-    ANTHROPIC_MESSAGES_API,
     DEFAULT_X1D_JUDGE_MODEL,
     DEFAULT_X1D_JUDGE_PROVIDER,
     INDEPENDENT_JUDGE,
@@ -66,10 +65,11 @@ from apps_lic.engines.x1d_judge_policy import (
     JUDGE_LINKEDIN_TONE,
     JUDGE_LINKEDIN_TONE_NON_GENERIC,
     JUDGE_UNAVAILABLE,
-    LIVE_CLAUDE_API_CALL,
+    LIVE_GPT_API_CALL,
     MODIFIER_PROVIDER_BACKED_GENERATION,
     MODIFIER_SIMILARITY_GATE_FLAGGED,
     NON_INDEPENDENT_JUDGE,
+    OPENAI_RESPONSES_API,
     X1DJudgeProfilePolicy,
     required_x1d_judge_ids_for_context,
     x1d_judge_profile_policy,
@@ -822,12 +822,12 @@ def _is_independent_judge(result: X1DJudgeResult) -> bool:
     return result.provider != GENERATOR_PROVIDER_ID and result.model != GENERATOR_MODEL_ID
 
 
-def _is_live_claude_judge(result: X1DJudgeResult) -> bool:
+def _is_live_gpt_judge(result: X1DJudgeResult) -> bool:
     return (
         result.provider == DEFAULT_X1D_JUDGE_PROVIDER
         and result.model == DEFAULT_X1D_JUDGE_MODEL
-        and result.transport_provenance == LIVE_CLAUDE_API_CALL
-        and result.transport_provider == ANTHROPIC_MESSAGES_API
+        and result.transport_provenance == LIVE_GPT_API_CALL
+        and result.transport_provider == OPENAI_RESPONSES_API
         and bool(_clean(result.transport_call_id))
         and result.raw_response_digest.startswith("sha256:")
     )
@@ -842,7 +842,7 @@ def _normalize_judge_result(
     provider_ok = result.provider == profile.provider
     available = result.availability_status == JUDGE_AVAILABLE
     independent = _is_independent_judge(result)
-    live_claude = _is_live_claude_judge(result)
+    live_gpt = _is_live_gpt_judge(result)
     score_passed = result.score >= threshold
     passed = bool(
         result.passed
@@ -851,7 +851,7 @@ def _normalize_judge_result(
         and independent
         and model_ok
         and provider_ok
-        and live_claude
+        and live_gpt
     )
     return replace(
         result,
@@ -909,8 +909,8 @@ def evaluate_x1d(
         normalized.append(result)
         if result.availability_status != JUDGE_AVAILABLE:
             reasons.append(f"judge_unavailable:{profile.judge_id}")
-        if not _is_live_claude_judge(result):
-            reasons.append(f"non_live_claude_judge:{profile.judge_id}")
+        if not _is_live_gpt_judge(result):
+            reasons.append(f"non_live_gpt_judge:{profile.judge_id}")
         if result.independence_status != INDEPENDENT_JUDGE:
             reasons.append(f"non_independent_judge:{profile.judge_id}")
         if result.model != profile.model:
@@ -925,7 +925,7 @@ def evaluate_x1d(
     blocking_reason_prefixes = (
         "missing_required_judge:",
         "judge_unavailable:",
-        "non_live_claude_judge:",
+        "non_live_gpt_judge:",
         "non_independent_judge:",
         "wrong_judge_model:",
         "wrong_judge_provider:",
@@ -1075,9 +1075,11 @@ __all__ = [
     "JUDGE_LINKEDIN_TONE",
     "JUDGE_LINKEDIN_TONE_NON_GENERIC",
     "JUDGE_UNAVAILABLE",
+    "LIVE_GPT_API_CALL",
     "MODIFIER_PROVIDER_BACKED_GENERATION",
     "MODIFIER_SIMILARITY_GATE_FLAGGED",
     "NON_INDEPENDENT_JUDGE",
+    "OPENAI_RESPONSES_API",
     "STATUS_EXIT_ABSTAIN",
     "STATUS_EXIT_BLOCKED",
     "STATUS_EXIT_CLEAR_DRAFT",

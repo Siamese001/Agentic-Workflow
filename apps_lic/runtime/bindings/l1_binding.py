@@ -70,7 +70,7 @@ _OUTREACH_MESSAGE_TASK_PLAN: tuple[str, ...] = (
     "hop2_verify_grounding",     # verify evidence anchors + consent
     "hop3_personalize_signal",   # derive sender/lead personalization signals
     "hop4_retrieve_context",     # C0: retrieve company KB + lead context
-    "hop5_generate_draft",       # L2: Qwen32B draft generation
+    "hop5_generate_draft",       # L2: frontier32B draft generation
     "hop6_validate_draft",       # validate: structure + evidence + compliance
     "hop7_gate_decision",        # gate: pass / fail / escalate
     "hop8_qa_report",            # assemble QA/rubric report
@@ -78,7 +78,7 @@ _OUTREACH_MESSAGE_TASK_PLAN: tuple[str, ...] = (
 )
 
 _OUTREACH_MESSAGE_REQUIRED_CAPABILITIES: tuple[str, ...] = (
-    "llm.text_generation",            # Qwen32B primary model call
+    "llm.text_generation",            # frontier32B primary model call
     "retrieval.company_kb",           # C0 company knowledge base
     "retrieval.lead_profile",         # C0 verified lead profile lookup
     "prompt_assembly.template",       # PA template-driven prompt composition

@@ -40,7 +40,6 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from agentic_core.config.model_catalog import ANTHROPIC_DEFAULT_MODEL_ID, QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.L0_routing.generic_route_policy_interpreter import (
@@ -51,6 +50,10 @@ from agentic_core.L0_routing.generic_route_policy_interpreter import (
     derive_l3_required_from_profile,
     derive_cache_eligibility_from_policy,
     _check_fresh_context,
+)
+from apps_lic.config.model_profiles import (
+    resolve_generator_transport_model_id,
+    resolve_x1d_judge_transport_model_id,
 )
 
 
@@ -89,12 +92,12 @@ _CACHE_POLICY_RELPATH: str = (
     "apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json"
 )
 
-# apps_lic allowed models: Qwen32B for draft generation; Claude Sonnet 4.6 for X1D judge.
+# apps_lic allowed models: Claude Opus generation; GPT-5.5 X1D judge.
 _ALLOWED_MODELS: tuple[str, ...] = (
-    QWEN_LOCAL_MODEL_ID,
-    ANTHROPIC_DEFAULT_MODEL_ID,
+    resolve_generator_transport_model_id(),
+    resolve_x1d_judge_transport_model_id(),
 )
-_ALLOWED_NETWORKS: tuple[str, ...] = ("localhost:8000", "api.anthropic.com")
+_ALLOWED_NETWORKS: tuple[str, ...] = ("api.anthropic.com", "api.openai.com")
 _ALLOWED_FILE_ROOTS: tuple[str, ...] = ("artifacts/apps_lic/",)
 
 # Permitted tools (from capability_profiles.yaml)
@@ -395,7 +398,7 @@ def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
         model_generation_required=l1_plan.model_generation_required,
         write_authority_present=l1_plan.write_authority_present,
         sandbox_required=True,  # apps_lic requires no-network-egress sandbox
-        egress_policy_ref="egress-policy:vllm-generation+anthropic-x1d-judge+no-send",
+        egress_policy_ref="egress-policy:claude-generation+openai-x1d-judge+no-send",
         allowed_models=_ALLOWED_MODELS,
         allowed_tools=_ALLOWED_TOOLS,
         allowed_networks=_ALLOWED_NETWORKS,

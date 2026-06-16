@@ -1,9 +1,9 @@
 """HOP5 generation for LinkedIn recruiter outreach drafts.
 
-Generation is Qwen/vLLM-primary. The only deterministic generation path is the
-explicit ``APPS_LIC_TEST_PROVIDER_STUB=1`` mode used by tests. When Qwen/vLLM is
-unavailable outside that test mode, this engine emits a non-passing draft shape
-or raises when ``APPS_LIC_REQUIRE_QWEN_VLLM=1`` so downstream gates fail closed.
+Generation is Claude Opus-primary. The only deterministic generation path is the
+explicit ``APPS_LIC_TEST_PROVIDER_STUB=1`` mode used by tests. When the frontier
+provider is unavailable outside that test mode, this engine emits a non-passing
+draft shape so downstream gates fail closed.
 """
 
 from __future__ import annotations
@@ -15,16 +15,15 @@ import os
 import re
 from dataclasses import dataclass, replace
 from typing import Any, Mapping
-from urllib import request as urllib_request
 
 from apps_lic.engines.generation_subject_policy import (
     channel_from_length_budget,
     subject_required,
 )
 from apps_lic.config.model_profiles import (
-    resolve_generator_base_url,
     resolve_generator_model,
     resolve_generator_provider,
+    resolve_generator_transport_model_id,
 )
 from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
 from apps_lic.types.linkedin_route_envelope import (
@@ -34,11 +33,10 @@ from apps_lic.types.linkedin_route_envelope import (
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_BASE_URL = "http://localhost:8000/v1"
 # Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml).
 DEFAULT_MODEL = resolve_generator_model()
 DEFAULT_PROVIDER = resolve_generator_provider()
-DEFAULT_PROVIDER_PROFILE = "qwen_vllm"
+DEFAULT_PROVIDER_PROFILE = "claude_opus_4_8_primary"
 DEFAULT_TEMPERATURE = 0.82
 DEFAULT_TOP_P = 0.92
 DEFAULT_MAX_GENERATION_ATTEMPTS = 3
@@ -98,15 +96,13 @@ _GENERIC_DRAFT_PATTERNS = (
 
 @dataclass(frozen=True)
 class ProviderSettings:
-    """Resolved Qwen/vLLM settings for one generation attempt."""
+    """Resolved frontier generation settings for one generation attempt."""
 
-    base_url: str
     model: str
+    transport_model_id: str
     target_provider: str
     provider_profile: str
     timeout_seconds: float
-    require_qwen_vllm: bool
-    healthcheck_enabled: bool
     temperature: float
     top_p: float
     max_generation_attempts: int
@@ -169,7 +165,7 @@ class GenerationEngine:
             }
 
         for attempt in range(1, settings.max_generation_attempts + 1):
-            qwen_text = self._try_qwen_generation(
+            provider_text = self._try_frontier_generation(
                 prompt=prompt,
                 register=register,
                 recipient_class=recipient_class,
@@ -180,7 +176,7 @@ class GenerationEngine:
                 length_budget=length_budget,
             )
             draft = _draft_from_model_text(
-                qwen_text,
+                provider_text,
                 register=register,
                 recipient_class=recipient_class,
                 target_contact=target_contact,
@@ -193,9 +189,6 @@ class GenerationEngine:
             if draft:
                 draft["attempts"] = attempt
                 return {"draft_message": draft}
-
-        if settings.require_qwen_vllm:
-            raise RuntimeError("apps_lic_qwen_vllm_required_unavailable")
 
         return {
             "draft_message": {
@@ -210,9 +203,9 @@ class GenerationEngine:
                 "target_contact_company": str(target_contact.get("company_name", "") or ""),
                 "intended_next_step": "",
                 "claims_used": [],
-                "unsupported_claims": ["qwen_vllm_unavailable"],
+                "unsupported_claims": ["frontier_generator_unavailable"],
                 "omitted_claims": [],
-                "qa_notes": ["qwen_vllm_unavailable_no_test_stub"],
+                "qa_notes": ["frontier_generator_unavailable_no_test_stub"],
                 "register": register,
                 "template_signature": template_sig,
                 "attempts": 1,
@@ -227,7 +220,7 @@ class GenerationEngine:
                 "generation_temperature": settings.temperature,
                 "top_p": settings.top_p,
                 "max_generation_attempts": settings.max_generation_attempts,
-                "generator": "qwen_vllm_unavailable",
+                "generator": "frontier_generator_unavailable",
                 "provider_profile": settings.provider_profile,
                 "target_provider": settings.target_provider,
                 "model": settings.model,
@@ -235,7 +228,7 @@ class GenerationEngine:
         }
 
     @staticmethod
-    def _try_qwen_generation(
+    def _try_frontier_generation(
         *,
         prompt: str,
         register: str,
@@ -246,25 +239,25 @@ class GenerationEngine:
         allowed_claim_ids: tuple[str, ...],
         length_budget: Mapping[str, Any] | None = None,
     ) -> str:
-        """Run prompt through local Qwen/vLLM and return raw assistant text."""
+        """Run prompt through Claude Opus and return raw assistant text."""
         if not prompt.strip():
             return ""
 
-        if settings.healthcheck_enabled and not _healthcheck_vllm(settings):
-            _emit_hop5_marker(
-                accepted=False,
-                model_used=settings.model,
-                fallback_reason="vllm_healthcheck_failed",
-            )
-            return ""
-
         try:
-            import openai  # type: ignore  # noqa: PLC0415
+            import anthropic  # type: ignore  # noqa: PLC0415
         except ImportError:
             _emit_hop5_marker(
                 accepted=False,
                 model_used=settings.model,
-                fallback_reason="openai_sdk_unavailable",
+                fallback_reason="anthropic_sdk_unavailable",
+            )
+            return ""
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        if not api_key:
+            _emit_hop5_marker(
+                accepted=False,
+                model_used=settings.model,
+                fallback_reason="anthropic_api_key_unavailable",
             )
             return ""
 
@@ -316,17 +309,11 @@ class GenerationEngine:
         if max_words:
             length_instruction += f"Aim for no more than {max_words} words. "
         try:
-            client = openai.OpenAI(
-                base_url=settings.base_url,
-                api_key="not-needed",
+            client = anthropic.Anthropic(
+                api_key=api_key,
                 timeout=settings.timeout_seconds,
             )
-            resp = client.chat.completions.create(
-                model=settings.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
+            system_prompt = (
                             f"You draft LinkedIn outreach for Amit Ayer on channel {channel}. "
                             f"The target recipient category is {recipient_class}. "
                             "Amit is a candidate/senior AI engineering leader, not a vendor. "
@@ -360,16 +347,17 @@ class GenerationEngine:
                             "Avoid generic phrases: potential synergies, discuss opportunities, "
                             "I noticed your role, I believe my background aligns, given your expertise. "
                             f"Use a {register} register."
-                        ),
-                    },
-                    {"role": "user", "content": prompt},
-                ],
+            )
+            resp = client.messages.create(
+                model=settings.transport_model_id,
+                system=system_prompt,
+                messages=[{"role": "user", "content": prompt}],
                 temperature=settings.temperature,
                 top_p=settings.top_p,
                 max_tokens=settings.max_tokens,
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-over-vLLM raises heterogeneous transport/API errors; fail closed outside explicit test stub
-            _LOGGER.info("[apps_lic.generation_engine] qwen/vllm call failed: %s", exc)
+        except Exception as exc:  # guardian: allow-broad-exception -- Anthropic SDK raises heterogeneous transport/API errors; fail closed outside explicit test stub
+            _LOGGER.info("[apps_lic.generation_engine] frontier generation call failed: %s", exc)
             _emit_hop5_marker(
                 accepted=False,
                 model_used=settings.model,
@@ -377,7 +365,11 @@ class GenerationEngine:
             )
             return ""
 
-        text = (resp.choices[0].message.content or "") if resp.choices else ""
+        text = ""
+        for block in getattr(resp, "content", []) or []:
+            value = getattr(block, "text", None)
+            if value:
+                text += value
         if not text.strip():
             _emit_hop5_marker(
                 accepted=False,
@@ -401,7 +393,7 @@ def generate_judge_feedback_repair_draft(
     judge_results: tuple[Any, ...],
     iteration: int,
 ) -> dict[str, Any]:
-    """Generate one Qwen repair candidate from live X1D judge feedback."""
+    """Generate one frontier repair candidate from live X1D judge feedback."""
     if _truthy(os.environ.get("APPS_LIC_TEST_PROVIDER_STUB", "0")):
         return {}
     if not judge_results:
@@ -439,7 +431,7 @@ def generate_judge_feedback_repair_draft(
         allowed_claim_ids=allowed_claim_ids,
         iteration=iteration,
     )
-    qwen_text = GenerationEngine._try_qwen_generation(
+    provider_text = GenerationEngine._try_frontier_generation(
         prompt=repair_prompt,
         register="professional",
         recipient_class=str(getattr(request, "recipient_class", "") or ""),
@@ -450,7 +442,7 @@ def generate_judge_feedback_repair_draft(
         length_budget=getattr(request.length_budget, "to_packet")(),
     )
     draft = _draft_from_model_text(
-        qwen_text,
+        provider_text,
         register="professional",
         recipient_class=str(getattr(request, "recipient_class", "") or ""),
         target_contact=target_contact,
@@ -469,39 +461,35 @@ def generate_judge_feedback_repair_draft(
 
 
 def _resolve_provider_settings() -> ProviderSettings:
-    # Model + base URL resolve from the model-profile SSOT
+    # Model ids resolve from the model-profile SSOT
     # (config/domain_contract/model_profiles.yaml). Env vars are documented
     # overrides declared in that file, not the source of truth.
-    base_url = resolve_generator_base_url() or DEFAULT_BASE_URL
     model = resolve_generator_model() or DEFAULT_MODEL
+    transport_model_id = resolve_generator_transport_model_id()
     target_provider = (
         os.environ.get("APPS_LIC_TARGET_PROVIDER")
         or os.environ.get("APPS_LIC_PROVIDER_PROFILE")
         or DEFAULT_PROVIDER
     )
     provider_profile = os.environ.get("APPS_LIC_PROVIDER_PROFILE") or DEFAULT_PROVIDER_PROFILE
-    timeout_seconds = _float_env("APPS_LIC_QWEN_TIMEOUT_SECONDS", 120.0)
-    temperature = _float_env("APPS_LIC_QWEN_TEMPERATURE", DEFAULT_TEMPERATURE)
-    top_p = _float_env("APPS_LIC_QWEN_TOP_P", DEFAULT_TOP_P)
+    timeout_seconds = _float_env("APPS_LIC_GENERATOR_TIMEOUT_SECONDS", 120.0)
+    temperature = _float_env("APPS_LIC_GENERATOR_TEMPERATURE", DEFAULT_TEMPERATURE)
+    top_p = _float_env("APPS_LIC_GENERATOR_TOP_P", DEFAULT_TOP_P)
     return ProviderSettings(
-        base_url=base_url,
         model=model,
+        transport_model_id=transport_model_id or model,
         target_provider=target_provider,
         provider_profile=provider_profile,
         timeout_seconds=timeout_seconds,
-        require_qwen_vllm=_truthy(os.environ.get("APPS_LIC_REQUIRE_QWEN_VLLM", "0")),
-        healthcheck_enabled=_truthy(
-            os.environ.get("APPS_LIC_VLLM_HEALTHCHECK_ENABLED", "1")
-        ),
         temperature=_clamp_float(temperature, lo=0.0, hi=1.0),
         top_p=_clamp_float(top_p, lo=0.1, hi=1.0),
         max_generation_attempts=_clamp_int(
-            _int_env("APPS_LIC_QWEN_MAX_GENERATION_ATTEMPTS", DEFAULT_MAX_GENERATION_ATTEMPTS),
+            _int_env("APPS_LIC_GENERATOR_MAX_GENERATION_ATTEMPTS", DEFAULT_MAX_GENERATION_ATTEMPTS),
             lo=1,
             hi=3,
         ),
         max_tokens=_clamp_int(
-            _int_env("APPS_LIC_QWEN_MAX_TOKENS", DEFAULT_MAX_TOKENS),
+            _int_env("APPS_LIC_GENERATOR_MAX_TOKENS", DEFAULT_MAX_TOKENS),
             lo=300,
             hi=1500,
         ),
@@ -643,19 +631,6 @@ def _clamp_float(value: float, *, lo: float, hi: float) -> float:
 
 def _clamp_int(value: int, *, lo: int, hi: int) -> int:
     return max(lo, min(hi, int(value)))
-
-
-def _healthcheck_vllm(settings: ProviderSettings) -> bool:
-    endpoint = f"{settings.base_url.rstrip('/')}/models"
-    try:
-        with urllib_request.urlopen(
-            endpoint,
-            timeout=min(settings.timeout_seconds, 5.0),
-        ) as response:
-            return 200 <= int(response.status) < 500
-    except Exception as exc:  # guardian: allow-broad-exception -- urllib surfaces heterogeneous local transport failures; generation must fail closed
-        _LOGGER.info("[apps_lic.generation_engine] vllm healthcheck failed: %s", exc)
-        return False
 
 
 def _strip_json_fence(text: str) -> str:
@@ -1534,7 +1509,7 @@ def _draft_from_model_text(
         "generation_temperature": settings.temperature,
         "top_p": settings.top_p,
         "max_generation_attempts": settings.max_generation_attempts,
-        "generator": "qwen_vllm",
+        "generator": settings.provider_profile,
         "provider_profile": settings.provider_profile,
         "target_provider": settings.target_provider,
         "model": settings.model,

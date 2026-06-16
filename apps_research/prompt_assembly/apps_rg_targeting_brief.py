@@ -1,4 +1,4 @@
-"""apps_rg targeting brief prompt SSOT and builder for CompanyBriefEngine."""
+"""Briefing packet prompt SSOT and builder for CompanyBriefEngine."""
 
 from __future__ import annotations
 
@@ -40,6 +40,7 @@ def build_targeting_brief_prompt(
     jd_text: str,
     research_notes: str,
     target_entity: str,
+    output_profile: str = "apps_rg",
 ) -> str:
     """Render the SSOT prompt with JD and grounded research notes."""
     template = load_targeting_brief_prompt_template()
@@ -47,6 +48,7 @@ def build_targeting_brief_prompt(
         template.replace("{{jd_text}}", str(jd_text or "").strip() or "(no JD text provided)")
         .replace("{{research_notes}}", str(research_notes or "").strip() or "(no research notes)")
         .replace("{{target_entity}}", str(target_entity or "").strip() or "TBD")
+        .replace("{{output_profile}}", str(output_profile or "apps_rg").strip() or "apps_rg")
     )
 
 

@@ -1,6 +1,7 @@
-"""W4 Research Bridge Integration Tests
+"""W4 Research Bridge Compatibility Tests
 
-Integration tests for apps_research → apps_lic flow and C0 retrieval wiring.
+Compatibility tests for the deprecated apps_research bridge and current FEC
+producer wiring.
 """
 
 import pytest
@@ -20,13 +21,12 @@ class TestW4P1ResearchBridge:
         assert bridge._capability_ref == "apps_research.v1"
     
     def test_research_bridge_supported_capabilities(self):
-        """Verify supported capabilities list."""
+        """Verify the deprecated bridge advertises no live capabilities."""
         from apps_lic.integrations.apps_research_bridge import AppsResearchBridge
-        
+
         bridge = AppsResearchBridge()
-        
-        assert "apps_research.v1" in bridge.SUPPORTED_CAPABILITIES
-        assert "apps_research.v2" in bridge.SUPPORTED_CAPABILITIES
+
+        assert bridge.SUPPORTED_CAPABILITIES == frozenset()
     
     def test_research_bridge_fetch_method_exists(self):
         """Verify bridge has required fetch method."""
@@ -42,25 +42,8 @@ class TestW4P1ResearchBridge:
             AppsResearchBridge, ResearchResult
         )
         
-        # This will fail with NotImplementedError or exception wrapping
-        # because apps_research isn't actually wired in test context
         bridge = AppsResearchBridge()
-        
-        # Mock the invoke method to test the flow
-        def mock_invoke(*args, **kwargs):
-            class MockResult:
-                run_id = "test-run-001"
-                is_blocked = False
-                is_stale = False
-                age_days = 0.0
-                confidence_score = 0.85
-                evidence_items = []
-                
-            return MockResult()
-        
-        # Patch the internal method
-        bridge._invoke_apps_research = mock_invoke
-        
+
         result = bridge.fetch(
             recipient_class="RECRUITER",
             recipient_name="Jane Smith",
@@ -74,10 +57,12 @@ class TestW4P1ResearchBridge:
             run_id="run-001",
             trace_id="tr-001",
         )
-        
+
         assert isinstance(result, ResearchResult)
         assert result.request_id == "req-001"
         assert "tr-001" in result.trace_id  # trace_id gets prefixed but original is included
+        assert result.is_blocked is True
+        assert result.block_reason == "APPS_RESEARCH_DEPRECATED"
     
     def test_research_bridge_blocks_on_unsupported_capability(self):
         """Verify bridge blocks when capability not supported."""
@@ -103,23 +88,15 @@ class TestW4P1ResearchBridge:
         
         assert isinstance(result, ResearchResult)
         assert result.is_blocked is True
-        assert "Unsupported capability_ref" in result.block_reason
+        assert result.block_reason == "APPS_RESEARCH_DEPRECATED"
     
     def test_research_bridge_depth_profile_mapping(self):
-        """Verify recipient class maps to correct depth profile."""
+        """Verify deprecated bridge has no hidden apps_research invocation path."""
         from apps_lic.integrations.apps_research_bridge import AppsResearchBridge
-        
+
         bridge = AppsResearchBridge()
-        
-        # Test depth profile selection via _invoke_apps_research
-        # Since we can't easily test the internal call, we verify the logic
-        # by checking the method exists and has correct signature
-        import inspect
-        sig = inspect.signature(bridge._invoke_apps_research)
-        params = list(sig.parameters.keys())
-        
-        assert "recipient_class" in params
-        assert "company_name" in params
+
+        assert not hasattr(bridge, "_invoke_apps_research")
     
     def test_evidence_item_structure(self):
         """Verify EvidenceItem dataclass structure."""
@@ -178,8 +155,8 @@ class TestW4P2C0RetrievalWiring:
             FEC_SCHEMA_VERSION,
         )
         
-        assert PRODUCER_ID == "apps_lic.research_bridge"
-        assert FEC_SCHEMA_VERSION == "1.0.0"
+        assert PRODUCER_ID == "apps_lic.cert.fec_producer"
+        assert FEC_SCHEMA_VERSION == "1.1"
         assert callable(produce_fec)
     
     def test_fec_producer_template_path(self):
@@ -187,9 +164,9 @@ class TestW4P2C0RetrievalWiring:
         from apps_lic.cert.fec_producer import produce_fec, PRODUCER_ID
         
         context = {
-            "research_snippets": [
-                {"source": "linkedin", "content": "Company raised $50M", "confidence": 0.9},
-                {"source": "crunchbase", "content": "Series B funding", "confidence": 0.85},
+            "profile_data_sources": [
+                "linkedin:company-raised-50m",
+                "crunchbase:series-b-funding",
             ],
             "company_brief": {"funding_stage": "Series B"},
             "competitive_signals": [
@@ -200,8 +177,8 @@ class TestW4P2C0RetrievalWiring:
         fec = produce_fec(context)
         
         assert fec["producer"] == PRODUCER_ID
-        assert fec["grounded"] is True  # Has snippets
-        assert fec["evidence_sufficiency"] == "template_with_signals"
+        assert fec["grounded"] is True
+        assert fec["evidence_sufficiency"] == "grounded"
         assert len(fec["retrieval_sources"]) > 0
     
     def test_fec_producer_c0_path(self):
@@ -209,7 +186,7 @@ class TestW4P2C0RetrievalWiring:
         from apps_lic.cert.fec_producer import produce_fec
         
         context = {
-            "research_snippets": [],
+            "profile_data_sources": ["c0_retrieval:c0-001"],
             "company_brief": {},
             "competitive_signals": [],
             "c0_retrieval_sources": {
@@ -224,10 +201,7 @@ class TestW4P2C0RetrievalWiring:
         
         assert fec["grounded"] is True
         assert fec["evidence_sufficiency"] == "grounded"
-        assert any(
-            src.get("source_type") == "c0_retrieval"
-            for src in fec["retrieval_sources"]
-        )
+        assert "c0_retrieval:c0-001" in fec["retrieval_sources"]
     
     def test_fec_producer_no_evidence(self):
         """Verify FEC producer handles empty evidence gracefully."""
@@ -263,7 +237,7 @@ class TestW4P2C0RetrievalWiring:
         from apps_lic.cert.fec_producer import produce_fec
         
         context = {
-            "research_snippets": [{"source": "test", "content": "test", "confidence": 0.5}],
+            "profile_data_sources": ["test"],
         }
         
         fec = produce_fec(context)
@@ -275,8 +249,8 @@ class TestW4P2C0RetrievalWiring:
             "template_ids",
             "route_id",
             "evidence_sufficiency",
-            "_schema_version",
-            "_metadata",
+            "schema_version",
+            "compliance_check_status",
         ]
         
         for field in required_fields:

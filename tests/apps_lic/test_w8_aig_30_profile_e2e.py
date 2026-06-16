@@ -127,7 +127,7 @@ def test_w4_all_clear_mode_reports_six_remediations_not_pass(tmp_path: Path) -> 
 
 
 def test_w8_live_mode_without_anthropic_key_fails_closed(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
     run_aig_30_profile_e2e(
         mode=ACCEPTANCE_MODE_ALL_CLEAR_ELIGIBLE,

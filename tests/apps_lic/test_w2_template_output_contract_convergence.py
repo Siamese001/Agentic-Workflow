@@ -32,8 +32,8 @@ GENERATION_REQUIRED_FIELDS = {
 }
 
 PROVIDER_LITERAL_FRAGMENTS = {
-    "qwen_vllm",
-    "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "claude_opus_4_8_primary",
+    "Claude Opus 4.8",
 }
 
 

@@ -673,7 +673,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         gate_verdict: str = "",
         gate_reason: str = "",
     ) -> Dict[str, Any]:
-        """Synthesize the apps_rg targeting brief as a sealed plain-markdown artifact.
+        """Synthesize the apps_rg briefing packet as a sealed markdown artifact.
 
         The company is identified strictly from ``company_name`` (falls back to
         ``topic`` only when absent) so the JD/role never pollutes company
@@ -681,7 +681,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         Fail-closed: when grounding is insufficient (no research findings or a
         failing C0 gate) or the generated markdown does not satisfy the
-        :mod:`apps_research.types.apps_rg_targeting_brief_contract`, this method
+        frontier-era briefing contract, this method
         returns a synthesis dict WITHOUT ``apps_rg_targeting_brief_markdown`` and
         carries a ``targeting_brief_disposition`` (BLOCKED/DEGRADED) plus
         ``targeting_brief_block_reason``. The caller therefore never surfaces a
@@ -734,6 +734,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             markdown,
             company_name=company_name,
             jd_text=jd_text,
+            profile="apps_rg",
         )
         if not sealed.is_sealed:
             stub["targeting_brief_disposition"] = sealed.status.value
@@ -745,6 +746,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         stub["targeting_brief_disposition"] = BriefStatus.SEALED.value
         stub["targeting_brief_char_count"] = sealed.char_count
         stub["targeting_brief_bullet_count"] = sealed.bullet_count
+        stub["targeting_brief_section_count"] = sealed.section_count
         return stub
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:

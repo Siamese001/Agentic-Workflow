@@ -10,17 +10,11 @@ are overrides for ops/local deployment, never the source of truth.
 
 Two surfaces resolve through here:
 
-* the Qwen generator (HOP5 ``generation_engine``); and
-* the independent Claude Sonnet 4.6 X1D judge provider profile, which removes the
-  retired ``qwen_vllm_x1d`` declaration from ``reasoning_intensity``.
+* the Claude Opus generator (HOP5 ``generation_engine``); and
+* the independent GPT-5.5 X1D judge provider profile.
 """
 
 from __future__ import annotations
-
-from agentic_core.config.model_catalog import (
-    ANTHROPIC_DEFAULT_MODEL_ID,
-    QWEN_LOCAL_MODEL_ID,
-)
 
 import os
 from functools import lru_cache
@@ -36,21 +30,23 @@ _MODEL_PROFILES_PATH = (
 # Hard fallbacks mirror the YAML so a missing/garbled file never silently breaks
 # resolution; the YAML remains authoritative when present.
 _GENERATOR_FALLBACK = {
-    "provider": "vllm",
-    "provider_profile": "qwen_vllm",
-    "model": QWEN_LOCAL_MODEL_ID,
-    "base_url": "http://localhost:8000/v1",
+    "provider": "claude",
+    "provider_profile": "claude_opus_4_8_primary",
+    "model": "Claude Opus 4.8",
+    "transport_model_id": "claude-opus-4-8",
 }
 _X1D_JUDGE_FALLBACK = {
-    "provider": "claude",
-    "provider_profile": "claude_sonnet_4_6_x1d",
-    "model": "Claude Sonnet 4.6",
-    "transport_model_id": ANTHROPIC_DEFAULT_MODEL_ID,
+    "provider": "openai",
+    "provider_profile": "gpt_5_5_x1d",
+    "model": "GPT-5.5",
+    "transport_model_id": "gpt-5.5",
 }
 
-# Canonical X1D provider profile constant (consumed by reasoning_intensity so the
-# retired qwen_vllm_x1d string never appears on a live policy projection).
-CLAUDE_X1D_PROVIDER_PROFILE = str(_X1D_JUDGE_FALLBACK["provider_profile"])
+# Canonical provider profile constants consumed by runtime policy.
+FRONTIER_GENERATOR_PROVIDER_PROFILE = str(_GENERATOR_FALLBACK["provider_profile"])
+GPT_X1D_PROVIDER_PROFILE = str(_X1D_JUDGE_FALLBACK["provider_profile"])
+# Backward-compatible import name for older tests; value is now GPT, not Claude.
+CLAUDE_X1D_PROVIDER_PROFILE = GPT_X1D_PROVIDER_PROFILE
 
 
 @lru_cache(maxsize=1)
@@ -91,47 +87,57 @@ def _resolve(section_name: str, value_key: str, override_key: str, fallback: Map
 
 
 def resolve_generator_model() -> str:
-    """Effective Qwen generator model id (env override > yaml > fallback)."""
+    """Effective generator display model (env override > yaml > fallback)."""
     return _resolve("generator", "model", "model_env_overrides", _GENERATOR_FALLBACK)
 
 
+def resolve_generator_transport_model_id() -> str:
+    """Effective generator transport model id (env override > yaml > fallback)."""
+    return _resolve(
+        "generator",
+        "transport_model_id",
+        "transport_model_id_env_overrides",
+        _GENERATOR_FALLBACK,
+    )
+
+
 def resolve_generator_base_url() -> str:
-    """Effective Qwen generator base URL (env override > yaml > fallback)."""
-    return _resolve("generator", "base_url", "base_url_env_overrides", _GENERATOR_FALLBACK)
+    """Deprecated compatibility shim; apps_lic generation no longer uses base URLs."""
+    return ""
 
 
 def resolve_generator_provider() -> str:
-    """Effective Qwen generator provider token."""
+    """Effective generator provider token."""
     section = _section("generator")
     return str(section.get("provider") or _GENERATOR_FALLBACK["provider"])
 
 
 def resolve_generator_provider_profile() -> str:
-    """Effective Qwen generator provider profile."""
+    """Effective generator provider profile."""
     section = _section("generator")
     return str(section.get("provider_profile") or _GENERATOR_FALLBACK["provider_profile"])
 
 
 def resolve_x1d_judge_provider_profile() -> str:
-    """Effective independent X1D judge provider profile (Claude)."""
+    """Effective independent X1D judge provider profile."""
     section = _section("x1d_judge")
     return str(section.get("provider_profile") or _X1D_JUDGE_FALLBACK["provider_profile"])
 
 
 def resolve_x1d_judge_provider() -> str:
-    """Effective independent X1D judge provider token (claude)."""
+    """Effective independent X1D judge provider token."""
     section = _section("x1d_judge")
     return str(section.get("provider") or _X1D_JUDGE_FALLBACK["provider"])
 
 
 def resolve_x1d_judge_model() -> str:
-    """Effective independent X1D judge model label (Claude Sonnet 4.6)."""
+    """Effective independent X1D judge model label."""
     section = _section("x1d_judge")
     return str(section.get("model") or _X1D_JUDGE_FALLBACK["model"])
 
 
 def resolve_x1d_judge_transport_model_id() -> str:
-    """Effective Claude transport model id (env override > yaml > fallback)."""
+    """Effective X1D judge transport model id (env override > yaml > fallback)."""
     return _resolve(
         "x1d_judge",
         "transport_model_id",
@@ -142,11 +148,14 @@ def resolve_x1d_judge_transport_model_id() -> str:
 
 __all__ = [
     "CLAUDE_X1D_PROVIDER_PROFILE",
+    "FRONTIER_GENERATOR_PROVIDER_PROFILE",
+    "GPT_X1D_PROVIDER_PROFILE",
     "load_model_profiles",
     "resolve_generator_base_url",
     "resolve_generator_model",
     "resolve_generator_provider",
     "resolve_generator_provider_profile",
+    "resolve_generator_transport_model_id",
     "resolve_x1d_judge_model",
     "resolve_x1d_judge_provider",
     "resolve_x1d_judge_provider_profile",

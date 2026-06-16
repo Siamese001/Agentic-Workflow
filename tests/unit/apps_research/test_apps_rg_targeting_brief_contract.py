@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from apps_research.types.apps_rg_targeting_brief_contract import (
+    BRIEFING_PROFILES,
     MAX_BULLETS,
     BriefStatus,
     blocked_targeting_brief,
@@ -42,7 +43,8 @@ def test_valid_brief_passes() -> None:
     v = validate_targeting_brief_text(_VALID_BRIEF)
     assert v.valid, v.violations
     assert v.bullet_count <= MAX_BULLETS
-    assert v.char_count <= 2400
+    assert v.char_count <= BRIEFING_PROFILES["apps_rg"].max_total_chars
+    assert v.section_count >= BRIEFING_PROFILES["apps_rg"].min_section_count
 
 
 def test_seal_valid_brief() -> None:
@@ -52,15 +54,31 @@ def test_seal_valid_brief() -> None:
     assert sealed.company_brief_text
 
 
-def test_rejects_over_2400_chars() -> None:
-    big = _VALID_BRIEF + ("\n=== STRATEGIC MANDATE ===\n" + "x" * 2500)
-    v = validate_targeting_brief_text(big)
+def test_apps_rg_profile_accepts_richer_frontier_brief() -> None:
+    sections = []
+    for i in range(7):
+        sections.append(
+            f"## Strategy Signal {i}\n"
+            "- Verified company context complements the JD without repeating it.\n"
+            "- Operating pressure shapes role positioning for the downstream lane.\n"
+            "- Additional leadership, platform, and urgency signal remains targeting only.\n"
+        )
+    rich = _VALID_BRIEF + "\n\n" + "\n\n".join(sections)
+    v = validate_targeting_brief_text(rich)
+    assert v.valid, v.violations
+    assert v.char_count > 2400
+    assert v.char_count <= BRIEFING_PROFILES["apps_rg"].max_total_chars
+
+
+def test_apps_lic_profile_keeps_compact_packet_budget() -> None:
+    big = _VALID_BRIEF + ("\n## Outreach Signal\n" + "x" * 2500)
+    v = validate_targeting_brief_text(big, profile="apps_lic")
     assert not v.valid
     assert any("char_count_over_max" in x for x in v.violations)
 
 
 def test_rejects_too_many_bullets() -> None:
-    extra = "\n".join(f"- net new verified fact number {i}" for i in range(20))
+    extra = "\n".join(f"- net new verified fact number {i}" for i in range(55))
     text = "Co (C) - role brief\n| role | band | Reports to X (2026) |\n\n=== STRATEGIC MANDATE ===\n" + extra
     v = validate_targeting_brief_text(text)
     assert not v.valid
@@ -68,11 +86,11 @@ def test_rejects_too_many_bullets() -> None:
 
 
 def test_rejects_long_bullet() -> None:
-    long_bullet = "- " + ("a" * 95)
+    long_bullet = "- " + ("a" * 250)
     text = "Co (C) - role brief\n| role | band | Reports to X (2026) |\n\n=== STRATEGIC MANDATE ===\n" + long_bullet
     v = validate_targeting_brief_text(text)
     assert not v.valid
-    assert any("bullet_too_long" in x for x in v.violations)
+    assert any("line_too_long" in x for x in v.violations)
 
 
 def test_rejects_json() -> None:
@@ -117,12 +135,14 @@ def test_rejects_html_entity() -> None:
     assert "html_entity_present" in v.violations
 
 
-def test_rejects_disallowed_header() -> None:
+def test_allows_custom_additive_headers() -> None:
     v = validate_targeting_brief_text(
-        "=== SECRET SECTION ===\n- one verified company fact here\n"
+        "## Strategy Signal\n- one verified company fact here\n\n"
+        "## Leadership Signal\n- one verified leader fact here\n\n"
+        "## Platform Signal\n- one verified platform fact here\n\n"
+        "## Outreach Signal\n- one verified outreach angle here\n"
     )
-    assert not v.valid
-    assert any("disallowed_header" in x for x in v.violations)
+    assert v.valid, v.violations
 
 
 def test_rejects_sub_bullet_and_table() -> None:

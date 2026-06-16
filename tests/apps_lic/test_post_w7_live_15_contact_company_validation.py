@@ -65,7 +65,7 @@ def test_post_w7_live_summary_contract_names_secondary_gate() -> None:
             "no_l4_write_assertion": True,
             "no_connector_post_assertion": True,
             "c0_recipient_class_status": "RECIPIENT_CLASS_DERIVED",
-            "generation_generator": "qwen_vllm",
+            "generation_generator": "claude_opus_4_8_primary",
             "generation_qa_notes": [],
             "outcome_authorized": True,
             "proof_packet_id": f"proof_{company}_{index}",
@@ -128,7 +128,7 @@ def test_post_w7_live_runner_produces_15_canonical_rows(tmp_path: Path) -> None:
 def test_post_w7_live_runner_cli_writes_expected_artifacts(tmp_path: Path) -> None:
     _require_live_15_soak()
     env = os.environ.copy()
-    env.setdefault("APPS_LIC_QWEN_TIMEOUT_SECONDS", "20")
+    env.setdefault("APPS_LIC_GENERATOR_TIMEOUT_SECONDS", "20")
     completed = subprocess.run(
         [
             sys.executable,

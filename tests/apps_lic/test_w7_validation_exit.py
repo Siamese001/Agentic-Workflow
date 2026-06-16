@@ -15,7 +15,7 @@ from apps_lic.engines.message_type_requirement_gate import (
 from apps_lic.engines.recipient_classification import derive_recipient_class_from_store
 from apps_lic.engines.sender_proof_graph import build_sender_proof_graph_packet_from_store
 from apps_lic.engines.validation_exit import (
-    ANTHROPIC_MESSAGES_API,
+    OPENAI_RESPONSES_API,
     DEFAULT_X1D_JUDGE_MODEL,
     DEFAULT_X1D_JUDGE_PROVIDER,
     EXIT_BLOCKED,
@@ -34,7 +34,7 @@ from apps_lic.engines.validation_exit import (
     JUDGE_CEO_ORIGINALITY,
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_UNAVAILABLE,
-    LIVE_CLAUDE_API_CALL,
+    LIVE_GPT_API_CALL,
     NON_INDEPENDENT_JUDGE,
     STATUS_X1D_BLOCKED,
     STATUS_X1D_NOT_REQUIRED,
@@ -50,9 +50,9 @@ from apps_lic.engines.whole_message_generation import (
     build_whole_message_generation_request_from_store,
     generate_whole_message_candidates,
 )
-from apps_lic.engines.x1d_claude_judge_adapter import (
-    parse_claude_x1d_response,
-    run_claude_x1d_judges,
+from apps_lic.engines.x1d_gpt_judge_adapter import (
+    parse_gpt_x1d_response,
+    run_gpt_x1d_judges,
 )
 
 
@@ -162,8 +162,8 @@ def test_w7_config_freezes_validation_exit_policy() -> None:
     assert config["x1d"]["availability_policy"]["missing_or_unavailable_required_judge"] == "blocked"
     assert config["x1d"]["availability_policy"]["non_live_required_judge"] == "blocked"
     assert config["x1d"]["live_call_policy"]["required_for_clearance"] is True
-    assert config["x1d"]["live_call_policy"]["required_transport_provenance"] == LIVE_CLAUDE_API_CALL
-    assert config["x1d"]["live_call_policy"]["required_transport_provider"] == ANTHROPIC_MESSAGES_API
+    assert config["x1d"]["live_call_policy"]["required_transport_provenance"] == LIVE_GPT_API_CALL
+    assert config["x1d"]["live_call_policy"]["required_transport_provider"] == OPENAI_RESPONSES_API
     assert config["x1d"]["live_call_policy"]["required_raw_response_digest"] is True
     assert config["x1d"]["live_call_policy"]["mock_or_fake_transport_allowed"] is False
     assert config["x1d"]["preflight_policy"]["modes"] == ["fake", "live", "unavailable-expected"]
@@ -226,7 +226,7 @@ def test_role_specific_recruiter_sc2_blocks_direct_non_live_judge_artifact() -> 
     assert bundle.x1d_result.status == STATUS_X1D_BLOCKED
     assert bundle.x1d_result.judge_results[0].judge_id == JUDGE_EVIDENCE_SUPPORT
     assert bundle.x1d_result.judge_results[0].independence_status == INDEPENDENT_JUDGE
-    assert "non_live_claude_judge:evidence_claim_support_x1d" in bundle.x1d_result.reason_codes
+    assert "non_live_gpt_judge:evidence_claim_support_x1d" in bundle.x1d_result.reason_codes
 
 
 def test_ceo_trigger_blocks_direct_non_live_judge_artifacts() -> None:
@@ -273,8 +273,8 @@ def test_ceo_trigger_blocks_direct_non_live_judge_artifacts() -> None:
     assert two_judges.x1d_result.required_depth == "two"
     assert len(two_judges.x1d_result.required_profiles) == 2
     assert len(two_judges.x1d_result.judge_results) == 2
-    assert "non_live_claude_judge:ceo_attention_originality_x1d" in two_judges.x1d_result.reason_codes
-    assert "non_live_claude_judge:ceo_evidence_overclaim_risk_x1d" in two_judges.x1d_result.reason_codes
+    assert "non_live_gpt_judge:ceo_attention_originality_x1d" in two_judges.x1d_result.reason_codes
+    assert "non_live_gpt_judge:ceo_evidence_overclaim_risk_x1d" in two_judges.x1d_result.reason_codes
 
 
 def test_validation_exit_rejects_fake_claude_x1d_runner_hook_after_x2_passes() -> None:
@@ -305,7 +305,7 @@ def test_validation_exit_rejects_fake_claude_x1d_runner_hook_after_x2_passes() -
         }
 
     def live_runner(runner_request, runner_candidate):
-        return run_claude_x1d_judges(
+        return run_gpt_x1d_judges(
             runner_request,
             runner_candidate,
             transport=fake_transport,
@@ -324,8 +324,8 @@ def test_validation_exit_rejects_fake_claude_x1d_runner_hook_after_x2_passes() -
     assert {
         result.issues[0]
         for result in bundle.x1d_result.judge_results
-    } == {"non_live_claude_transport_rejected"}
-    assert "non_live_claude_judge:ceo_attention_originality_x1d" in bundle.x1d_result.reason_codes
+    } == {"non_live_gpt_transport_rejected"}
+    assert "non_live_gpt_judge:ceo_attention_originality_x1d" in bundle.x1d_result.reason_codes
 
 
 def test_claude_x1d_response_parser_marks_unparseable_output_unavailable() -> None:
@@ -344,12 +344,12 @@ def test_claude_x1d_response_parser_marks_unparseable_output_unavailable() -> No
     )
     assert request.reasoning_policy.x1d_llm_judge_depth == 2
     profile = required_x1d_profiles(request)[0]
-    required_profile = parse_claude_x1d_response("not json", profile=profile)
+    required_profile = parse_gpt_x1d_response("not json", profile=profile)
 
     assert required_profile.availability_status == JUDGE_UNAVAILABLE
     assert required_profile.passed is False
 
-    parsed = parse_claude_x1d_response(
+    parsed = parse_gpt_x1d_response(
         '{"score": 0.91, "passed": true, "issues": [], "required_repairs": []}',
         profile=profile,
     )
@@ -426,7 +426,7 @@ def test_x1d_provider_independence_and_availability_are_enforced() -> None:
     assert same_provider.x1d_result.status == STATUS_X1D_BLOCKED
     assert same_provider.x1d_result.judge_results[0].independence_status == NON_INDEPENDENT_JUDGE
     assert "non_independent_judge:evidence_claim_support_x1d" in same_provider.x1d_result.reason_codes
-    assert "non_live_claude_judge:evidence_claim_support_x1d" in same_provider.x1d_result.reason_codes
+    assert "non_live_gpt_judge:evidence_claim_support_x1d" in same_provider.x1d_result.reason_codes
 
     unavailable = run_validation_exit(
         request,

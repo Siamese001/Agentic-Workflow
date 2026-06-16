@@ -58,7 +58,7 @@ def test_w0_matrix_flags_executive_archetype_x1d_not_required_clearance() -> Non
         "no_l4_write_assertion": True,
         "no_connector_post_assertion": True,
         "c0_recipient_class_status": "RECIPIENT_CLASS_DERIVED",
-        "generation_generator": "qwen_vllm",
+        "generation_generator": "claude_opus_4_8_primary",
         "generation_qa_notes": [],
         "draft_text": "Hi Firat, test draft.\n\nAmit",
         "proof_packet_id": "proof:test",

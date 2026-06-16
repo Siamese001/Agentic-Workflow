@@ -569,9 +569,9 @@ x2_gate_contract:
 
 x1d_judge_contract:
   role: advisory_llm_quality_and_thoughtfulness_judge_after_x2
-  default_model: Claude Sonnet 4.6
+  default_model: GPT-5.5
   independence_required_from_generator: true
-  generator_may_be_vllm_qwen: true
+  generator_may_be_frontier_claude: true
   judge_must_be_separate_provider_or_model_for_x1d: true
   unavailable_behavior: review_required
   output_schema:

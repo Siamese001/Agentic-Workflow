@@ -33,7 +33,7 @@ THIN_P1_CANONICAL_FILES = {
     "apps_lic/runtime/bindings/l2_binding.py",
     "apps_lic/engines/generation_engine.py",
     "apps_lic/engines/message_quality.py",
-    "apps_lic/engines/x1d_claude_judge_adapter.py",
+    "apps_lic/engines/x1d_gpt_judge_adapter.py",
 }
 BEHAVIOR_PINNED_ZERO_COVER_FILES = {
     "apps_lic/utils/lic_agent_base_util.py",

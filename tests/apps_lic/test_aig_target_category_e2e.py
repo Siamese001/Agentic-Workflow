@@ -247,7 +247,7 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract() -> None
     ]
     assert qa["judge_scores"][JUDGE_EVIDENCE_SUPPORT] >= 0.5
     assert qa["judge_scores"][JUDGE_LINKEDIN_TONE] >= 0.5
-    # Originality is graded only by the live Claude X1D judge at Exit, so it is
+    # Originality is graded only by the live GPT X1D judge at Exit, so it is
     # not scored in the deterministic HOP8 scorecard.
     assert JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D not in qa["judge_scores"]
     assert qa["x2_deterministic_gate_count"] == 2

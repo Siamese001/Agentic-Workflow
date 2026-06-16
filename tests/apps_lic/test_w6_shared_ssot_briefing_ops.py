@@ -61,9 +61,10 @@ def test_apps_lic_consumes_briefing_file_via_manual_brief(tmp_path: Path) -> Non
     assert _load_manual_brief_text("") == ""
 
 
-def test_runbook_documents_qwen_fail_closed_and_no_drift_ops() -> None:
+def test_runbook_documents_frontier_fail_closed_and_no_drift_ops() -> None:
     text = RUNBOOK.read_text(encoding="utf-8")
-    assert "APPS_LIC_REQUIRE_QWEN_VLLM=1" in text
+    assert "Claude Opus 4.8" in text
+    assert "GPT-5.5" in text
     assert "fail-closed" in text.lower()
     assert "model_profiles.yaml" in text
     assert "cannot drift" in text  # shared SSOT ops note

@@ -1,7 +1,7 @@
 """Single SSOT for every apps_lic model name.
 
 `config/domain_contract/model_profiles.yaml` is the ONE source of truth for the
-Qwen generator model and the Claude X1D judge model/transport id. This test fails
+Claude Opus generator model and the GPT X1D judge model/transport id. This test fails
 if any other apps_lic surface — the wired engine constants OR the shadow copies in
 validation_exit.v1.yaml / the W0 contract — diverges from it.
 """
@@ -31,23 +31,23 @@ def _yaml(name: str) -> dict:
 
 def test_engine_constants_resolve_from_ssot() -> None:
     from apps_lic.engines import x1d_judge_policy as jp
-    from apps_lic.engines import x1d_claude_judge_adapter as ad
+    from apps_lic.engines import x1d_gpt_judge_adapter as ad
     from apps_lic.engines import whole_message_generation as wmg
     from apps_lic.engines import generation_engine as ge
 
     assert jp.DEFAULT_X1D_JUDGE_MODEL == resolve_x1d_judge_model()
     assert jp.DEFAULT_X1D_JUDGE_PROVIDER == resolve_x1d_judge_provider()
-    assert ad.DEFAULT_CLAUDE_TRANSPORT_MODEL_ID == resolve_x1d_judge_transport_model_id()
+    assert ad.DEFAULT_GPT_TRANSPORT_MODEL_ID == resolve_x1d_judge_transport_model_id()
     assert wmg.GENERATOR_MODEL_ID == resolve_generator_model()
     assert wmg.GENERATOR_PROVIDER_ID == resolve_generator_provider()
     assert ge.DEFAULT_MODEL == resolve_generator_model()
     assert ge.DEFAULT_PROVIDER == resolve_generator_provider()
 
 
-def test_generator_is_qwen_v25_core() -> None:
-    # Qwen 2.5 is the core apps_lic generation model.
+def test_generator_is_claude_opus_core() -> None:
+    # Claude Opus is the core apps_lic generation model.
     gen = resolve_generator_model()
-    assert "Qwen2.5" in gen and resolve_generator_provider() == "vllm"
+    assert gen == "Claude Opus 4.8" and resolve_generator_provider() == "claude"
 
 
 def test_validation_exit_yaml_mirrors_ssot() -> None:

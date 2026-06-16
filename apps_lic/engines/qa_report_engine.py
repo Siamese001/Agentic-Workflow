@@ -143,8 +143,8 @@ def _run_targeted_judges(
     refs: dict[str, list[str]] = {}
     x2_gate_summary: dict[str, dict[str, Any]] = {}
     # X1D semantic judging is owned by the independent Claude Exit path
-    # (validation_exit + x1d_claude_judge_adapter). The HOP8 scorecard never
-    # calls an LLM judge; the retired Qwen X1D judge is removed.
+    # (validation_exit + x1d_gpt_judge_adapter). The HOP8 scorecard never
+    # calls an LLM judge; provider-backed X1D judging is owned by Exit.
     x1d_outputs: dict[str, dict[str, Any]] = {}
 
     for judge_name in policy.get("x2_deterministic_gates", ()):
@@ -162,7 +162,7 @@ def _run_targeted_judges(
 
     if bool(policy.get("x1d_enabled", True)):
         for judge_name in policy.get("x1d_llm_judges", ()):
-            # Originality is graded only by the live Claude X1D judge at Exit,
+            # Originality is graded only by the live GPT X1D judge at Exit,
             # not in this deterministic scorecard.
             if judge_name == JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D:
                 continue

@@ -62,7 +62,7 @@ def test_default_policy_is_sc1_r1_with_x2_gates_and_x1d_judge() -> None:
         JUDGE_LINKEDIN_TONE,
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
-    # W1.1: X1D provider is the independent Claude judge, never qwen_vllm_x1d.
+    # W1.1: X1D provider is the independent GPT judge, never claude_opus_4_8_primary_x1d.
     assert policy["x1d_provider_profile"] == CLAUDE_X1D_PROVIDER_PROFILE
     assert policy["x1d_runs_after_x2"] is True
     assert policy["max_candidates"] == 1

@@ -221,7 +221,7 @@ def test_reasoning_and_judge_depth_match_v2_policy() -> None:
     assert policy["default"]["sc_level"] == "SC-1"
     assert policy["policy_by_message_and_recipient"]["general_intro"]["RECRUITER"]["x1d_llm_judges"] == 0
     assert policy["policy_by_message_and_recipient"]["trigger_based_insight"]["CEO"]["x1d_llm_judges"] == 2
-    assert judge["default_model"] == "Claude Sonnet 4.6"
+    assert judge["default_model"] == "GPT-5.5"
     assert judge["independence_required_from_generator"] is True
     assert judge["llm_judge_depth"]["ceo"] == 2
 

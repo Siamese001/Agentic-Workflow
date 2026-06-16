@@ -72,7 +72,7 @@ def test_deprecated_research_spine_short_circuits_without_execution(tmp_path: Pa
     assert not (result.artifact_dir / "l2_execution_receipt.json").exists()
 
 
-def test_manual_brief_r4_uses_qwen_stub_and_l2_hop(tmp_path: Path, monkeypatch) -> None:
+def test_manual_brief_r4_uses_frontier_stub_and_l2_hop(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     raw = build_cli_ingress_raw(
         manual_brief="Recruiter brief for AI engineering leadership roles.",
@@ -98,8 +98,8 @@ def test_manual_brief_r4_uses_qwen_stub_and_l2_hop(tmp_path: Path, monkeypatch) 
     assert draft["channel"] == "linkedin_inmail"
     assert draft["subject_line"]
     assert draft["recipient_class"] == "recruiter"
-    assert draft["provider_profile"] == "qwen_vllm"
-    assert draft["model"] == "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    assert draft["provider_profile"] == "claude_opus_4_8_primary"
+    assert draft["model"] == "Claude Opus 4.8"
     assert len(draft["message_text"]) <= 1900
     assert "—" not in draft["message_text"]
 
@@ -135,7 +135,6 @@ def test_l3_boundary_has_no_hop_or_research_execution() -> None:
 
 def test_provider_profile_documented_in_env_example() -> None:
     src = Path(".env.example").read_text(encoding="utf-8")
-    assert "APPS_LIC_PROVIDER_PROFILE=qwen_vllm" in src
-    assert "APPS_LIC_TARGET_PROVIDER=vllm" in src
-    assert "APPS_LIC_QWEN_MODEL=Qwen/Qwen2.5-32B-Instruct-AWQ" in src
+    assert "APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID=claude-opus-4-8" in src
+    assert "APPS_LIC_GENERATOR_MODEL=Claude Opus 4.8" in src
     assert "APPS_LIC_TEST_PROVIDER_STUB=0" in src

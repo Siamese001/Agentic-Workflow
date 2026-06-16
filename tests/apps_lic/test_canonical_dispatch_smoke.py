@@ -47,8 +47,10 @@ def test_canonical_spine_r4_managed_workflow(tmp_path: Path, monkeypatch) -> Non
 
     route = json.loads((result.artifact_dir / "route_contract.json").read_text(encoding="utf-8"))
     route_payload = route["payload"]
-    assert "claude-sonnet-4-6" in route_payload["allowed_models"]
+    assert "claude-opus-4-8" in route_payload["allowed_models"]
+    assert "gpt-5.5" in route_payload["allowed_models"]
     assert "api.anthropic.com" in route_payload["allowed_networks"]
+    assert "api.openai.com" in route_payload["allowed_networks"]
 
 
 def test_canonical_spine_r5_without_context_or_research(tmp_path: Path) -> None:

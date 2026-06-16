@@ -2,7 +2,7 @@
 
 This runner replays the committed AIG 30 fixture through deterministic W0/W4
 acceptance and artifact shaping. It does not scrape, call providers, or claim
-fake judge artifacts are live Claude proof.
+fake judge artifacts are live GPT proof.
 """
 
 from __future__ import annotations
@@ -53,7 +53,7 @@ from apps_lic.engines.x1d_preflight import (  # noqa: E402
     X1D_MODE_FAKE,
     X1D_MODE_LIVE,
     X1D_MODE_UNAVAILABLE_EXPECTED,
-    run_claude_x1d_preflight,
+    run_gpt_x1d_preflight,
 )
 
 
@@ -151,9 +151,9 @@ def _judge_preflight_packet(x1d_mode: str) -> dict[str, Any]:
             "availability_status": "unavailable",
             "clearance_allowed": False,
             "live_claude_proof": False,
-            "reason": "Fake mode is deterministic fixture replay only and cannot prove live Claude clearance.",
+            "reason": "Fake mode is deterministic fixture replay only and cannot prove live GPT clearance.",
         }
-    receipt = run_claude_x1d_preflight(mode=x1d_mode)
+    receipt = run_gpt_x1d_preflight(mode=x1d_mode)
     packet = receipt.to_packet()
     packet["live_claude_proof"] = bool(
         packet.get("preflight_status") == "CLAUDE_X1D_PREFLIGHT_READY"
@@ -213,7 +213,7 @@ def _judge_receipt_for_row(row: Mapping[str, Any], *, x1d_mode: str, judge_id: s
             "required_repairs": [] if rubric_passed else ["repair_required_before_review"],
             "clearance": "fail",
         },
-        "note": "Deterministic fixture receipt only; not accepted by W1 live Claude Exit clearance.",
+        "note": "Deterministic fixture receipt only; not accepted by W1 live GPT Exit clearance.",
     }
 
 

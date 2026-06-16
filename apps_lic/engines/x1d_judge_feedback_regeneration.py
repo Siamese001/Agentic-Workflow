@@ -1,6 +1,6 @@
 """Bounded X1D judge-feedback regeneration for apps_lic W5.
 
-This module orchestrates one controlled Qwen repair pass after live Claude X1D
+This module orchestrates one controlled Claude Opus repair pass after live GPT X1D
 review feedback. It does not change W4 receipts and does not make Exit
 provider-aware; it reruns the deterministic Exit engine against a repair
 candidate overlay.
@@ -49,8 +49,8 @@ STOP_X1D_NOT_REVIEW_REQUIRED = "x1d_not_review_required"
 STOP_X1D_BLOCKED_NO_REGENERATION = "x1d_blocked_no_regeneration"
 STOP_X2_FAILED_BEFORE_JUDGE_FEEDBACK = "x2_failed_before_judge_feedback"
 STOP_NO_SELECTED_CANDIDATE = "no_selected_candidate"
-STOP_QWEN_REPAIR_UNAVAILABLE = "qwen_repair_unavailable"
-STOP_QWEN_REPAIR_UNPARSEABLE = "qwen_repair_unparseable"
+STOP_FRONTIER_REPAIR_UNAVAILABLE = "frontier_repair_unavailable"
+STOP_FRONTIER_REPAIR_UNPARSEABLE = "frontier_repair_unparseable"
 STOP_REPAIR_SAME_AS_PARENT = "repair_same_as_parent"
 STOP_REPAIR_CANDIDATE_X2_FAILED = "repair_candidate_x2_failed"
 STOP_REPAIR_CANDIDATE_X1D_BLOCKED = "repair_candidate_x1d_blocked"
@@ -69,7 +69,7 @@ _REGEN_REASON_PREFIXES = (
 _BLOCKED_REASON_PREFIXES = (
     "missing_required_judge:",
     "judge_unavailable:",
-    "non_live_claude_judge:",
+    "non_live_gpt_judge:",
     "non_independent_judge:",
     "wrong_judge_model:",
     "wrong_judge_provider:",
@@ -106,7 +106,7 @@ class X1DFeedbackRegenerationAttempt:
     pre_repair_scores: tuple[dict[str, Any], ...]
     post_repair_scores: tuple[dict[str, Any], ...]
     stop_reason: str
-    qwen_repair_receipt: str
+    frontier_repair_receipt: str
     x2_status: str
     x1d_status: str
     repaired_candidate: dict[str, Any]
@@ -125,7 +125,7 @@ class X1DFeedbackRegenerationAttempt:
             "pre_repair_scores": list(self.pre_repair_scores),
             "post_repair_scores": list(self.post_repair_scores),
             "stop_reason": self.stop_reason,
-            "qwen_repair_receipt": self.qwen_repair_receipt,
+            "frontier_repair_receipt": self.frontier_repair_receipt,
             "x2_status": self.x2_status,
             "x1d_status": self.x1d_status,
             "repaired_candidate": dict(self.repaired_candidate),
@@ -251,7 +251,7 @@ def run_x1d_judge_feedback_regeneration(
             selected_candidate_id=selected_candidate_id,
         )
 
-    runner = repair_runner or qwen_judge_feedback_repair_candidate
+    runner = repair_runner or frontier_judge_feedback_repair_candidate
     current_batch = batch
     current_proof = initial_proof
     current_selected_id = current_proof.candidate_id or selected_candidate_id
@@ -273,7 +273,7 @@ def run_x1d_judge_feedback_regeneration(
         if repaired is None:
             return _result(
                 attempted=True,
-                stop_reason=STOP_QWEN_REPAIR_UNAVAILABLE,
+                stop_reason=STOP_FRONTIER_REPAIR_UNAVAILABLE,
                 proof=current_proof,
                 selected_candidate_id=current_selected_id,
                 attempts=tuple(attempts),
@@ -281,7 +281,7 @@ def run_x1d_judge_feedback_regeneration(
         if not repaired.draft_text.strip():
             return _result(
                 attempted=True,
-                stop_reason=STOP_QWEN_REPAIR_UNPARSEABLE,
+                stop_reason=STOP_FRONTIER_REPAIR_UNPARSEABLE,
                 proof=current_proof,
                 selected_candidate_id=current_selected_id,
                 attempts=tuple(attempts),
@@ -365,13 +365,13 @@ def run_x1d_judge_feedback_regeneration(
     )
 
 
-def qwen_judge_feedback_repair_candidate(
+def frontier_judge_feedback_repair_candidate(
     request: WholeMessageGenerationRequest,
     parent_candidate: WholeMessageCandidate,
     judge_results: tuple[X1DJudgeResult, ...],
     iteration: int,
 ) -> WholeMessageCandidate | None:
-    """Call Qwen repair generation and convert the draft payload to a candidate."""
+    """Call frontier repair generation and convert the draft payload to a candidate."""
     draft = generate_judge_feedback_repair_draft(
         request=request,
         parent_candidate=parent_candidate,
@@ -460,7 +460,7 @@ def qwen_judge_feedback_repair_candidate(
     if not model_call_ref:
         model_call_ref = f"mref:x1d-repair:{candidate_id}"
     if not provider_receipt:
-        provider_receipt = f"prov:qwen-repair:{candidate_id}"
+        provider_receipt = f"prov:frontier-repair:{candidate_id}"
     return WholeMessageCandidate(
         candidate_id=_repair_candidate_id(candidate_id, iteration),
         subject_line=subject_line,
@@ -2199,7 +2199,7 @@ def _attempt(
         pre_repair_scores=_score_packets(pre.x1d_result.judge_results),
         post_repair_scores=_score_packets(post.x1d_result.judge_results if post else ()),
         stop_reason=stop_reason,
-        qwen_repair_receipt=repaired.generation_receipt,
+        frontier_repair_receipt=repaired.generation_receipt,
         x2_status=post.x2_result.status if post else pre.x2_result.status,
         x1d_status=post.x1d_result.status if post else pre.x1d_result.status,
         repaired_candidate=repaired.to_packet(),
@@ -2366,6 +2366,6 @@ __all__ = [
     "RepairRunner",
     "X1DFeedbackRegenerationAttempt",
     "X1DFeedbackRegenerationResult",
-    "qwen_judge_feedback_repair_candidate",
+    "frontier_judge_feedback_repair_candidate",
     "run_x1d_judge_feedback_regeneration",
 ]

@@ -14,11 +14,11 @@ from apps_lic.engines.message_type_requirement_gate import (
     MESSAGE_ROLE_SPECIFIC,
 )
 from apps_lic.engines.validation_exit import (
-    ANTHROPIC_MESSAGES_API,
+    OPENAI_RESPONSES_API,
     DEFAULT_X1D_JUDGE_MODEL,
     DEFAULT_X1D_JUDGE_PROVIDER,
     JUDGE_AVAILABLE,
-    LIVE_CLAUDE_API_CALL,
+    LIVE_GPT_API_CALL,
 )
 from apps_lic.engines.whole_message_generation import (
     GENERATOR_MODEL_ID,
@@ -29,7 +29,7 @@ from apps_lic.engines.whole_message_generation import (
 from apps_lic.engines.x1d_judge_feedback_regeneration import (
     STOP_REPAIR_CANDIDATE_CLEAR,
 )
-from apps_lic.engines.x1d_claude_judge_adapter import AnthropicClaudeX1DTransport
+from apps_lic.engines.x1d_gpt_judge_adapter import OpenAIGPTX1DTransport
 import apps_lic.engines.x1d_judge_feedback_regeneration as x1d_regen
 from apps_lic.runtime.bindings.exit_binding import _build_exit_review_packet
 from apps_lic.runtime.bindings.l2_binding import APPS_LIC_L2_CERT_REF
@@ -120,7 +120,7 @@ def test_w5_live_x1d_runner_executes_required_judge_when_enabled(
 ) -> None:
     calls: list[dict[str, Any]] = []
 
-    def _passing_live_call(self: AnthropicClaudeX1DTransport, payload: dict[str, Any]) -> dict[str, Any]:
+    def _passing_live_call(self: OpenAIGPTX1DTransport, payload: dict[str, Any]) -> dict[str, Any]:
         _ = self
         calls.append(dict(payload))
         return {
@@ -131,15 +131,15 @@ def test_w5_live_x1d_runner_executes_required_judge_when_enabled(
             "model": DEFAULT_X1D_JUDGE_MODEL,
             "provider": DEFAULT_X1D_JUDGE_PROVIDER,
             "availability_status": JUDGE_AVAILABLE,
-            "transport_provenance": LIVE_CLAUDE_API_CALL,
-            "transport_provider": ANTHROPIC_MESSAGES_API,
+            "transport_provenance": LIVE_GPT_API_CALL,
+            "transport_provider": OPENAI_RESPONSES_API,
             "transport_call_id": "test-live-claude-x1d-call",
         }
 
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
-    monkeypatch.setenv("APPS_LIC_RUN_LIVE_CLAUDE_X1D", "1")
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-live-x1d")
-    monkeypatch.setattr(AnthropicClaudeX1DTransport, "__call__", _passing_live_call)
+    monkeypatch.setenv("APPS_LIC_RUN_LIVE_GPT_X1D", "1")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-ant-test-live-x1d")
+    monkeypatch.setattr(OpenAIGPTX1DTransport, "__call__", _passing_live_call)
 
     raw = build_cli_ingress_raw(
         manual_brief="Role-specific recruiter note for the AIG Agentic AI role.",
@@ -161,7 +161,7 @@ def test_w5_live_x1d_runner_executes_required_judge_when_enabled(
     assert manifest["w5_x1d_status"] == "X1D_VALIDATION_PASS"
 
 
-def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
+def test_w5_live_x1d_review_failure_runs_bounded_frontier_feedback_repair(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -169,7 +169,7 @@ def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
     repair_calls: list[dict[str, Any]] = []
 
     def _fail_then_pass_live_call(
-        self: AnthropicClaudeX1DTransport,
+        self: OpenAIGPTX1DTransport,
         payload: dict[str, Any],
     ) -> dict[str, Any]:
         _ = self
@@ -183,8 +183,8 @@ def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
                 "model": DEFAULT_X1D_JUDGE_MODEL,
                 "provider": DEFAULT_X1D_JUDGE_PROVIDER,
                 "availability_status": JUDGE_AVAILABLE,
-                "transport_provenance": LIVE_CLAUDE_API_CALL,
-                "transport_provider": ANTHROPIC_MESSAGES_API,
+                "transport_provenance": LIVE_GPT_API_CALL,
+                "transport_provider": OPENAI_RESPONSES_API,
                 "transport_call_id": "test-live-claude-x1d-fail",
             }
         return {
@@ -195,8 +195,8 @@ def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
             "model": DEFAULT_X1D_JUDGE_MODEL,
             "provider": DEFAULT_X1D_JUDGE_PROVIDER,
             "availability_status": JUDGE_AVAILABLE,
-            "transport_provenance": LIVE_CLAUDE_API_CALL,
-            "transport_provider": ANTHROPIC_MESSAGES_API,
+            "transport_provenance": LIVE_GPT_API_CALL,
+            "transport_provider": OPENAI_RESPONSES_API,
             "transport_call_id": "test-live-claude-x1d-pass",
         }
 
@@ -234,10 +234,10 @@ def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
         )
 
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
-    monkeypatch.setenv("APPS_LIC_RUN_LIVE_CLAUDE_X1D", "1")
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-live-x1d")
-    monkeypatch.setattr(AnthropicClaudeX1DTransport, "__call__", _fail_then_pass_live_call)
-    monkeypatch.setattr(x1d_regen, "qwen_judge_feedback_repair_candidate", _repair_candidate)
+    monkeypatch.setenv("APPS_LIC_RUN_LIVE_GPT_X1D", "1")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-ant-test-live-x1d")
+    monkeypatch.setattr(OpenAIGPTX1DTransport, "__call__", _fail_then_pass_live_call)
+    monkeypatch.setattr(x1d_regen, "frontier_judge_feedback_repair_candidate", _repair_candidate)
 
     raw = build_cli_ingress_raw(
         manual_brief="Role-specific recruiter note for the AIG Agentic AI role.",

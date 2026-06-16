@@ -32,7 +32,7 @@ apps_lic is the largest in-portfolio app: **97 files, 882KB**, with a multi-stag
 
 | Workload | Per-call (USD) | Per-day budget |
 |---|---:|---:|
-| Message-body composer LLM (default Qwen) | $0.0016 | $40 |
+| Message-body composer LLM (default frontier) | $0.0016 | $40 |
 | Voice-profile match (deterministic) | $0 | $0 |
 | Knowledge-base lookup (cached) | $0.00005 | $1 |
 | Total ceiling | — | **$60/day**, alert at 80% |

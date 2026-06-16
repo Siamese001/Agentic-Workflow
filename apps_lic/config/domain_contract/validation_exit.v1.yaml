@@ -52,8 +52,8 @@ x2_gates:
     - role_ownership_fit_gate
 
 x1d:
-  default_model: Claude Sonnet 4.6
-  default_provider: claude
+  default_model: GPT-5.5
+  default_provider: openai
   judge_temperature: 0.10
   depth_labels:
     none: 0
@@ -63,8 +63,8 @@ x1d:
     low_risk: optional
     normal: required_when_x1d_depth_gt_zero
     high_risk: required_for_every_judge
-    generator_provider: vllm
-    generator_model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    generator_provider: claude
+    generator_model: Claude Opus 4.8
   availability_policy:
     missing_or_unavailable_required_judge: blocked
     non_live_required_judge: blocked
@@ -72,12 +72,12 @@ x1d:
     failed_required_judge: review_required
   live_call_policy:
     required_for_clearance: true
-    required_transport_provenance: live_claude_api_call
-    required_transport_provider: anthropic_messages_api
+    required_transport_provenance: live_gpt_api_call
+    required_transport_provider: openai_responses_api
     required_raw_response_digest: true
     mock_or_fake_transport_allowed: false
   preflight_policy:
-    required_transport_model_id: claude-sonnet-4-6
+    required_transport_model_id: gpt-5.5
     modes:
       - fake
       - live
@@ -85,9 +85,9 @@ x1d:
     fake_mode_can_clear_exit: false
     unavailable_expected_mode_can_clear_exit: false
     live_mode_requires:
-      - ANTHROPIC_API_KEY
-      - anthropic_sdk
-      - claude-sonnet-4-6
+      - OPENAI_API_KEY
+      - openai_sdk
+      - gpt-5.5
       - minimal_rubric_json_parse
       - raw_response_digest
   rubric_profiles:

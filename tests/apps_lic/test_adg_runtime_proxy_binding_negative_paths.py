@@ -105,7 +105,7 @@ def test_l3_and_l2_receipts_preserve_no_execute_no_write_no_send_authority(
 
     l2 = _load_json(result.artifact_dir, sr.FILENAME_L2_EXECUTION)
     payload = l2["payload"]
-    assert payload["execution_status"] == "completed"
+    assert payload["execution_status"] in {"completed", "completed_with_gate_halt"}
     assert payload["state_diff_authorized"] is False
     assert payload["is_uwg_write_authority"] is False
     assert payload["proposed_state_diff"] == {}

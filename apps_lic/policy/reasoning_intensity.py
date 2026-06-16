@@ -11,7 +11,7 @@ import re
 from copy import deepcopy
 from typing import Any, Mapping
 
-from apps_lic.config.model_profiles import CLAUDE_X1D_PROVIDER_PROFILE
+from apps_lic.config.model_profiles import GPT_X1D_PROVIDER_PROFILE
 
 
 POLICY_REF = "apps_lic.policy.reasoning_intensity.v1"
@@ -38,7 +38,7 @@ JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D = (
 # X2/X1D reclassification (W1.2): X2 holds only deterministic checks
 # (schema/policy/no-send and the candidate-count selection gate). Every semantic
 # judgement — tone, evidence-support, safety/no-fabrication, originality — is an
-# LLM judgement owned by the independent Claude X1D path, never an X2 gate.
+# LLM judgement owned by the independent GPT X1D path, never an X2 gate.
 NORMAL_DEFAULT_X2_GATES = (JUDGE_SCHEMA_POLICY_NO_SEND,)
 
 DELIBERATE_X2_GATES = (
@@ -153,7 +153,7 @@ def default_reasoning_policy() -> dict[str, Any]:
         "x1d_llm_judge_depth": 1,
         "x1d_temperature": 0.1,
         "x1d_failure_policy": "quality_block_not_exit_override",
-        "x1d_provider_profile": CLAUDE_X1D_PROVIDER_PROFILE,
+        "x1d_provider_profile": GPT_X1D_PROVIDER_PROFILE,
         "max_candidates": 1,
         "validation_repair_passes": 1,
         "fail_closed_on_empty_evidence": True,
@@ -302,7 +302,7 @@ def compact_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
         data.get("x1d_failure_policy") or "quality_block_not_exit_override"
     )
     data["x1d_provider_profile"] = str(
-        data.get("x1d_provider_profile") or CLAUDE_X1D_PROVIDER_PROFILE
+        data.get("x1d_provider_profile") or GPT_X1D_PROVIDER_PROFILE
     )
     data = _sync_judge_axes(data)
     data["max_candidates"] = int(data.get("max_candidates") or 1)
@@ -429,7 +429,7 @@ def _is_executive_contact(lead: Mapping[str, Any]) -> bool:
 
 
 __all__ = [
-    "CLAUDE_X1D_PROVIDER_PROFILE",
+    "GPT_X1D_PROVIDER_PROFILE",
     "DEFAULT_X1D_LLM_JUDGES",
     "DELIBERATE_X1D_JUDGES",
     "NORMAL_DEFAULT_X1D_JUDGES",
