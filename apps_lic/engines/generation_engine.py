@@ -987,52 +987,22 @@ def _repair_proof_sentence(
     *,
     c_level_tight: bool = False,
 ) -> str:
-    allowed = set(allowed_claim_ids)
-    if "sp_agentic_platform" in allowed and "sp_platform_commercialization" in allowed:
-        if "sp_runtime_reliability" in allowed:
-            return (
-                "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
-                "combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces; "
-                "I also productized agentic AI primitives into reusable services, generating $22M in IP-led revenue and 20% margin expansion."
-            )
-        return (
-            "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
-            "combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces; "
-            "I also productized agentic AI primitives into reusable services, generating $22M in IP-led revenue and 20% margin expansion."
-        )
-    if (
-        c_level_tight
-        and "sp_platform_commercialization" in allowed
-        and "sp_runtime_reliability" in allowed
-    ):
-        return (
-            "I productized agentic AI primitives into reusable services, generating "
-            "$22M in IP-led revenue and 20% margin expansion, while pairing delivery with "
-            "evaluation gates, telemetry, and rollback controls."
-        )
-    if c_level_tight and "sp_platform_commercialization" in allowed:
-        return (
-            "I productized agentic AI primitives into reusable services, generating "
-            "$22M in IP-led revenue and 20% margin expansion."
-        )
-    if "sp_runtime_reliability" in allowed and "sp_platform_commercialization" in allowed:
-        return (
-            "I productized agentic AI primitives into reusable services, generating "
-            "$22M in IP-led revenue and 20% margin expansion, and strengthened evaluation gates, telemetry, "
-            "rollback controls, and AI CI/CD standards."
-        )
-    if "sp_runtime_reliability" in allowed:
-        return (
-            "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
-            "combining multi-agent orchestration and GraphRAG retrieval, and strengthened evaluation gates, "
-            "telemetry, rollback controls, and AI CI/CD standards."
-        )
-    if "sp_platform_commercialization" in allowed:
-        return (
-            "I productized agentic AI primitives into reusable services, generating "
-            "$22M in IP-led revenue and 20% margin expansion."
-        )
-    return _GOVERNED_PLATFORM_PROOF
+    """Compose the repair proof sentence ONLY from graph-grounded corpus claims.
+
+    The apps_rg graph is the sole fact source: every metric/outcome comes from
+    the metric-gated corpus ``claim_text``, never hardcoded here. Hardcoding the
+    proof prose historically re-injected a fabricated "$22M IP-led revenue / 20%
+    margin" that cleared every gate (the proof-id allowlist + LLM judge do not
+    validate metric VALUES). c_level outreach gets a tighter (≤2-clause) sentence.
+    """
+    from apps_lic.engines.standing_sender_knowledge import (  # noqa: PLC0415
+        graph_grounded_proof_sentence,
+    )
+
+    sentence = graph_grounded_proof_sentence(
+        allowed_claim_ids, max_claims=2 if c_level_tight else 3
+    )
+    return sentence or _GOVERNED_PLATFORM_PROOF
 
 
 def _claims_from_message_text(
@@ -1052,7 +1022,9 @@ def _claims_from_message_text(
         ("sp_runtime_reliability", "evaluation gates"),
         ("sp_runtime_reliability", "validation controls"),
         ("sp_runtime_reliability", "replayable traces"),
-        ("sp_platform_commercialization", "$22m in ip-led revenue"),
+        # Graph-grounded commercialization markers (no fabricated "$22M" metric).
+        ("sp_platform_commercialization", "net-new revenue"),
+        ("sp_platform_commercialization", "go-to-market"),
         ("sp_quant_governance_foundation", "governance foundation"),
     )
     for claim_id, marker in additions:

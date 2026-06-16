@@ -246,7 +246,7 @@ approved_sender_proof_points:
   - proof_id: sp_quant_governance_foundation
     permission: allow
     claim_strength: medium
-    claim_text: Brings actuarial and statistical training to risk-aware AI platform governance.
+    claim_text: Bring actuarial and statistical training to risk-aware AI platform governance.
     allowed_message_types:
       - general_intro
       - trigger_based_insight

@@ -37,6 +37,7 @@ from apps_lic.engines.recipient_classification import (
 )
 from apps_lic.engines.sender_proof_graph import (
     STATUS_CLAIMS_PASS,
+    validate_draft_metrics_against_packet,
     validate_l2_sender_claims_against_packet,
 )
 from apps_lic.engines.whole_message_generation import (
@@ -105,6 +106,7 @@ GATE_WHOLE_MESSAGE_SHAPE = "whole_message_shape_gate"
 GATE_INMAIL_SUBJECT = "inmail_subject_line_gate"
 GATE_CHANNEL_LENGTH = "message_type_recipient_length_gate"
 GATE_UNSUPPORTED_CLAIM = "unsupported_claim_gate"
+GATE_GENERATED_METRIC_GROUNDED = "generated_metric_graph_grounded_gate"
 GATE_CANDIDATE_SELECTION = "candidate_selection_gate"
 GATE_JD_REQUIRED = "jd_required_gate"
 GATE_POSITION_NAME = "position_name_required_gate"
@@ -579,6 +581,7 @@ def run_x2_validation(
         claims_ok = False
         claims_reason = "selected_candidate_missing"
         selected_id = ""
+        draft_metric_result = None
     else:
         selected_id = selected_candidate.candidate_id
         shape_validation = validate_whole_message_candidate(selected_candidate, request=request)
@@ -591,6 +594,10 @@ def run_x2_validation(
         )
         claims_ok = claim_validation.status == STATUS_CLAIMS_PASS
         claims_reason = "claims_within_c03_packet" if claims_ok else "unsupported_claim_ids_present"
+        draft_metric_result = validate_draft_metrics_against_packet(
+            selected_candidate.draft_text,
+            packet=request.proof_packet,
+        )
 
     gate_results.append(
         _gate(
@@ -627,6 +634,27 @@ def run_x2_validation(
             claims_ok,
             claims_reason,
             evidence_refs=(selected_id, request.proof_packet.proof_packet_id),
+        )
+    )
+
+    draft_metric_grounded = bool(draft_metric_result and draft_metric_result.grounded)
+    draft_metric_applicable = bool(draft_metric_result and draft_metric_result.applicable)
+    ungrounded_metric_tokens = (
+        draft_metric_result.ungrounded_metric_tokens if draft_metric_result else ()
+    )
+    gate_results.append(
+        _gate(
+            GATE_GENERATED_METRIC_GROUNDED,
+            draft_metric_grounded,
+            "draft_metrics_graph_grounded"
+            if draft_metric_grounded
+            else "draft_carries_ungrounded_metric:" + ",".join(ungrounded_metric_tokens),
+            evidence_refs=(
+                selected_id,
+                request.proof_packet.proof_packet_id,
+                *ungrounded_metric_tokens,
+            ),
+            applicable=draft_metric_applicable,
         )
     )
 

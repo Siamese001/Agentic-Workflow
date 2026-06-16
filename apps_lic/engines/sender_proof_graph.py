@@ -43,6 +43,8 @@ from apps_lic.engines.standing_sender_knowledge import (
     check_standing_sender_corpus_readiness,
 )
 from apps_lic.integrations.apps_rg_proof_bridge import (
+    claim_metrics_are_graph_grounded,
+    load_apps_rg_proof_index,
     proof_provenance_for,
     recipient_fit_weight,
 )
@@ -55,6 +57,10 @@ STATUS_PROOF_GRAPH_READINESS_ERROR = "SENDER_PROOF_GRAPH_READINESS_ERROR"
 
 STATUS_CLAIMS_PASS = "SENDER_PROOF_CLAIMS_PASS"
 STATUS_CLAIMS_BLOCKED = "SENDER_PROOF_CLAIMS_BLOCKED"
+
+STATUS_DRAFT_METRICS_GROUNDED = "SENDER_PROOF_DRAFT_METRICS_GROUNDED"
+STATUS_DRAFT_METRICS_UNGROUNDED = "SENDER_PROOF_DRAFT_METRICS_UNGROUNDED"
+STATUS_DRAFT_METRICS_NOT_APPLICABLE = "SENDER_PROOF_DRAFT_METRICS_NOT_APPLICABLE"
 
 PERMISSION_OMIT = "omit"
 PERMISSION_BLOCK = "block"
@@ -735,6 +741,75 @@ def validate_l2_sender_claims_against_packet(
     )
 
 
+@dataclass(frozen=True)
+class DraftMetricGroundingResult:
+    """Whether every metric in an L2-generated draft is graph-grounded."""
+
+    status: str
+    grounded: bool
+    applicable: bool
+    ungrounded_metric_tokens: tuple[str, ...]
+    checked_skill_ids: tuple[str, ...]
+    ssot_available: bool
+
+    def to_packet(self) -> dict[str, Any]:
+        return {
+            "schema_version": "apps_lic.draft_metric_grounding.v1",
+            "status": self.status,
+            "grounded": self.grounded,
+            "applicable": self.applicable,
+            "ungrounded_metric_tokens": list(self.ungrounded_metric_tokens),
+            "checked_skill_ids": list(self.checked_skill_ids),
+            "ssot_available": self.ssot_available,
+        }
+
+
+def validate_draft_metrics_against_packet(
+    draft_text: str,
+    *,
+    packet: SenderProofGraphPacket,
+) -> DraftMetricGroundingResult:
+    """Verify every metric in an L2-generated draft traces to the graph SSOT.
+
+    The apps_rg ``augmented_skills_graph`` is the SSOT for sender-claim metrics.
+    The corpus-load gate only grounds the curated proof-point ``claim_text``; this
+    checks the *generated* draft (the under-declaration / generator-drift case the
+    corpus gate cannot see), so a number the model introduces that the graph does
+    not back is blocked.
+
+    Fail-soft NOT_APPLICABLE when the shared SSOT is unavailable or the packet has
+    no graph-linked skills (nothing to ground against) — consistent with the
+    corpus-load gate, which skips when the shared graph is absent.
+    """
+    skill_ids = tuple(
+        dict.fromkeys(
+            str(sid).strip()
+            for point in packet.selected_proof_points
+            for sid in getattr(point, "apps_rg_skill_ids", ())
+            if str(sid).strip()
+        )
+    )
+    ssot_available = bool(load_apps_rg_proof_index().available)
+    if not ssot_available or not skill_ids:
+        return DraftMetricGroundingResult(
+            status=STATUS_DRAFT_METRICS_NOT_APPLICABLE,
+            grounded=True,
+            applicable=False,
+            ungrounded_metric_tokens=(),
+            checked_skill_ids=skill_ids,
+            ssot_available=ssot_available,
+        )
+    grounded, ungrounded = claim_metrics_are_graph_grounded(draft_text, skill_ids)
+    return DraftMetricGroundingResult(
+        status=STATUS_DRAFT_METRICS_GROUNDED if grounded else STATUS_DRAFT_METRICS_UNGROUNDED,
+        grounded=grounded,
+        applicable=True,
+        ungrounded_metric_tokens=tuple(ungrounded),
+        checked_skill_ids=skill_ids,
+        ssot_available=ssot_available,
+    )
+
+
 __all__ = [
     "PA_INSTRUCTION_DATA_BOUNDARY_RECEIPT",
     "PERMISSION_ALLOW",
@@ -751,10 +826,14 @@ __all__ = [
     "REASON_UNSUPPORTED_SENDER_CLAIM",
     "STATUS_CLAIMS_BLOCKED",
     "STATUS_CLAIMS_PASS",
+    "STATUS_DRAFT_METRICS_GROUNDED",
+    "STATUS_DRAFT_METRICS_NOT_APPLICABLE",
+    "STATUS_DRAFT_METRICS_UNGROUNDED",
     "STATUS_PROOF_GRAPH_BLOCKED",
     "STATUS_PROOF_GRAPH_NO_MATCH",
     "STATUS_PROOF_GRAPH_READINESS_ERROR",
     "STATUS_PROOF_GRAPH_READY",
+    "DraftMetricGroundingResult",
     "ProofPermissionDecision",
     "ProofRelevanceSignal",
     "SenderProofClaimValidationResult",
@@ -762,5 +841,6 @@ __all__ = [
     "build_pa_sender_proof_envelope",
     "build_sender_proof_graph_packet",
     "build_sender_proof_graph_packet_from_store",
+    "validate_draft_metrics_against_packet",
     "validate_l2_sender_claims_against_packet",
 ]

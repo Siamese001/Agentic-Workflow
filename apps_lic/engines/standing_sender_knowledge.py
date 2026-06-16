@@ -141,6 +141,74 @@ class StandingSenderCorpus:
         return {point.proof_id: point for point in self.proof_points}
 
 
+# Canonical ordering for composing a multi-claim proof sentence (most → least
+# load-bearing for outreach).
+_PROOF_SENTENCE_ORDER: tuple[str, ...] = (
+    "sp_agentic_platform",
+    "sp_runtime_reliability",
+    "sp_platform_commercialization",
+    "sp_cloud_ai_transformation",
+    "sp_quant_governance_foundation",
+)
+
+
+def graph_grounded_proof_clauses(
+    allowed_claim_ids: Iterable[str],
+    *,
+    corpus: "StandingSenderCorpus | None" = None,
+) -> tuple[tuple[str, str], ...]:
+    """``(proof_id, claim_text)`` for each allowed claim, from the grounded corpus.
+
+    The apps_rg graph is the SOLE fact source: every clause is a proof point's
+    metric-gated, graph-grounded ``claim_text``. Callers (generation + X1D repair)
+    MUST compose proof prose from this — never hardcode a metric, outcome, or
+    company name in engine code (that re-injects ungoverned facts the gates miss).
+    """
+    corpus = corpus or load_standing_sender_corpus()
+    by_id = corpus.proof_by_id()
+    allowed = {str(claim_id) for claim_id in allowed_claim_ids}
+    clauses: list[tuple[str, str]] = []
+    for proof_id in _PROOF_SENTENCE_ORDER:
+        if proof_id not in allowed:
+            continue
+        point = by_id.get(proof_id)
+        if point is None or point.permission != PERMISSION_ALLOW:
+            continue
+        text = str(point.claim_text or "").strip()
+        if text:
+            clauses.append((proof_id, text))
+    return tuple(clauses)
+
+
+def graph_grounded_proof_sentence(
+    allowed_claim_ids: Iterable[str],
+    *,
+    corpus: "StandingSenderCorpus | None" = None,
+    max_claims: int | None = None,
+    first_person: bool = True,
+) -> str:
+    """A first-person proof sentence composed ONLY from graph-grounded claims.
+
+    Returns "" when no allowed claim resolves (caller supplies a metric-free
+    fallback). This is the single seam through which any generated/repaired proof
+    sentence must source its facts — see graph_grounded_proof_clauses.
+    """
+    clauses = graph_grounded_proof_clauses(allowed_claim_ids, corpus=corpus)
+    if max_claims is not None:
+        clauses = clauses[: max(0, max_claims)]
+    if not clauses:
+        return ""
+    parts: list[str] = []
+    for index, (_proof_id, text) in enumerate(clauses):
+        body = text.rstrip(".")
+        if first_person:
+            body = (body[:1].lower() + body[1:]) if body[:1].isupper() else body
+            parts.append(("I " if index == 0 else "I also ") + body)
+        else:
+            parts.append(body)
+    return "; ".join(parts) + "."
+
+
 @dataclass(frozen=True)
 class SenderCorpusReadiness:
     """Readiness result for the standing sender corpus."""
@@ -521,6 +589,8 @@ __all__ = [
     "StandingSenderCorpus",
     "build_c03_sender_proof_packet",
     "check_standing_sender_corpus_readiness",
+    "graph_grounded_proof_clauses",
+    "graph_grounded_proof_sentence",
     "load_standing_sender_corpus",
     "select_sender_proof_points",
     "validate_sender_claims_before_l2",
