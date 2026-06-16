@@ -45,6 +45,10 @@ ALL_CANONICAL_SECTIONS: tuple[str, ...] = (
     "unify_narrative",
     "ibm_bullets",
     "ibm_narrative",
+    "insurtech_bullets",
+    "insurtech_narrative",
+    "ey_bullets",
+    "ey_narrative",
     "competencies",
 )
 
@@ -87,6 +91,30 @@ SECTION_NATIVE_C03_EXPANSION_MATRIX: dict[str, dict[str, Any]] = {
     },
     "ibm_narrative": {
         "wave": "W5",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "insurtech_bullets": {
+        "wave": "W6",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "insurtech_narrative": {
+        "wave": "W6",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "ey_bullets": {
+        "wave": "W6",
+        "native_c03_enabled": True,
+        "default_proof_source": "augmented_skills_graph",
+        "tests_required": True,
+    },
+    "ey_narrative": {
+        "wave": "W6",
         "native_c03_enabled": True,
         "default_proof_source": "augmented_skills_graph",
         "tests_required": True,
