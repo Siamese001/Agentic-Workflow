@@ -97,7 +97,21 @@ Codex-owned duplicate cohorts are blocked from cleanup unless the active host-at
 python scripts/governance/cleanup_duplicate_mcp_cohorts.py --apply --codex-attached-pid memory=<pid> --codex-attached-pid adg_sqlite=<pid> --codex-attached-pid vector_db=<pid> --json
 ```
 
-Attached PID proof must come from the Codex host or a future host-level diagnostic, not from newest/oldest process heuristics. If that proof is unavailable, restart or reload the Codex MCP host and rerun strict readiness instead of killing child processes.
+Attached PID proof must come from the active Codex tool transport, not from newest/oldest process heuristics. For repo-owned Python MCP servers, call the cheap process-identity tool first:
+
+| Server | Tool | PID proof field |
+| --- | --- | --- |
+| `memory` | `mcp__memory.mem_process_identity` | `process.cleanup_arg` |
+| `adg_sqlite` | `mcp__adg_sqlite.adg_process_identity` or `mcp__adg_sqlite.adg_runtime_info` | `process.cleanup_arg` or `data.process.cleanup_arg` |
+| `vector_db` | `mcp__vector_db.vector_process_identity` | `process.cleanup_arg` |
+
+Then pass each returned `cleanup_arg` value to the cleanup helper. Example:
+
+```bash
+python scripts/governance/cleanup_duplicate_mcp_cohorts.py --apply --codex-attached-pid memory=1234 --codex-attached-pid adg_sqlite=2345 --codex-attached-pid vector_db=3456 --json
+```
+
+If a process-identity tool is absent, the live MCP child is still serving older code. Restart or reload the Codex MCP host and rerun strict readiness instead of killing child processes.
 
 ## Hook Parity Contract
 

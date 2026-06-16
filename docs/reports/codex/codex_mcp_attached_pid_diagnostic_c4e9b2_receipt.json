@@ -1,0 +1,139 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-mcp-attached-pid-diagnostic-c4e9b2",
+  "generated_at": "2026-06-16T14:43:41.0836460-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "branch": "codex/mcp-lifecycle-guards",
+    "head": "a3bbf87948c3277316fa1ca755e0f0e2d1661a14",
+    "dirty_before": true,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Complete the host-side lifecycle next step by adding attached-PID diagnostics for guarded Codex MCP cleanup.",
+    "plan_id": "codex-mcp-attached-pid-diagnostic-c4e9b2",
+    "files_changed": [
+      "docs/codex-primary-execution.md",
+      "docs/reports/codex/codex_mcp_attached_pid_diagnostic_c4e9b2_receipt.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
+      "plans/codex-mcp-attached-pid-diagnostic-c4e9b2.md",
+      "tests/unit/tools/mcp/test_guard_single_instance.py",
+      "tools/adg/mcp/runtime.py",
+      "tools/adg/mcp/server.py",
+      "tools/mcp/mcp_bootstrap.py",
+      "tools/mcp/vector_db_server.py",
+      "tools/memory/adg_memory_server.py"
+    ]
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python -m py_compile tools/mcp/mcp_bootstrap.py tools/memory/adg_memory_server.py tools/mcp/vector_db_server.py tools/adg/mcp/server.py tools/adg/mcp/runtime.py scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/tools/mcp/test_guard_single_instance.py tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_backup.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest tests/unit/tools/mcp/test_guard_single_instance.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/tools/mcp/test_guard_single_instance.py tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_backup.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m py_compile tools/mcp/mcp_bootstrap.py tools/memory/adg_memory_server.py tools/mcp/vector_db_server.py tools/adg/mcp/server.py tools/adg/mcp/runtime.py scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_backup.py --repo-only",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-attached-pid-diagnostic-c4e9b2.md",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_run_receipt.py docs/reports/codex/codex_mcp_attached_pid_diagnostic_c4e9b2_receipt.json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-attached-pid-diagnostic-c4e9b2.md",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_run_receipt.py docs/reports/codex/codex_mcp_attached_pid_diagnostic_c4e9b2_receipt.json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "process identity diagnostic",
+        "status": "PASS",
+        "evidence": "mcp_process_identity returns server_id, pid, ppid, env key, env assignment, SERVER=PID argument, and cleanup_arg; Memory, ADG, and Vector expose cheap process identity tools."
+      },
+      {
+        "name": "focused pytest",
+        "status": "PASS",
+        "evidence": "Focused cleanup/readiness/verifier test set passed: 47 passed, 3 warnings."
+      },
+      {
+        "name": "codex verifiers",
+        "status": "PASS",
+        "evidence": "verify_codex_primary.py and verify_codex_backup.py --repo-only both passed."
+      },
+      {
+        "name": "artifact validators",
+        "status": "PASS",
+        "evidence": "Strict plan format, run receipt validation, and git diff whitespace checks passed after the plan enum correction."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "Transient verification failures occurred: the first focused pytest run selected parent command text as MCP siblings, and the first strict plan-format run rejected COMPLETE statuses.",
+    "root_cause": "guard_single_instance used broad substring matching across argv parts, and the new disk plan used informal COMPLETE enum values instead of the repo-required DONE values.",
+    "evidence": "pytest failed test_marker_inside_parent_shell_text_is_not_killed and test_marker_inside_python_ancestor_text_is_not_killed with GUARD_DETECTED logs for parent command records; check_plan_format_compliance.py reported ENUM failures for PLAN_STATUS, WAVE_STATUS, and PHASE_STATUS.",
+    "fix_or_next": "fix: Replace broad substring matching with direct argv module/path matching, change plan completion enums to DONE, and rerun focused tests plus strict artifact validators.",
+    "recurrence_guard": "Keep the parent-shell/python-ancestor guard tests, run focused cleanup/readiness tests for MCP lifecycle changes, and run the strict plan checker before closeout."
+  }
+}

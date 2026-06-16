@@ -29,6 +29,8 @@ The initial 2026-06-16 transport audit showed duplicate visible process cohorts 
 
 After a Codex restart, Memory, GitKraken, and ADG became callable again, but strict readiness still found duplicate Codex-owned cohorts for GitKraken, ADG, Memory, and Vector. `cleanup_duplicate_mcp_cohorts.py` now reports those Codex-owned duplicates but refuses `--apply` unless host-attached PID proof is supplied with `--codex-attached-pid <server>=<pid>`.
 
+Repo-owned Python MCP servers now expose attached-PID proof through `mcp__memory.mem_process_identity`, `mcp__adg_sqlite.adg_process_identity`, and `mcp__vector_db.vector_process_identity`. If those tools are absent in a live Codex session, the MCP child is still running older source and should be restarted or reloaded before cleanup. Use each tool's returned `process.cleanup_arg` as the corresponding cleanup argument.
+
 Process visibility is not callable proof. Strict preflight should use:
 
 ```bash

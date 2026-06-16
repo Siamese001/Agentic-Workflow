@@ -18,7 +18,13 @@ import threading
 import time
 from typing import Any
 
-from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, guard_single_instance, run_server
+from tools.mcp.mcp_bootstrap import (
+    REPO_ROOT,
+    create_mcp_server,
+    guard_single_instance,
+    mcp_process_identity,
+    run_server,
+)
 from tools.retrieval.vector_config import (
     BACKGROUND_PREWARM_ENABLED,
     validate_startup_config as _validate_startup_config,
@@ -122,6 +128,12 @@ def semantic_search(query: str, collections: list[str] | None = None, n_results:
 @mcp.tool()
 def vector_stats() -> str:
     return get_vector_service().format_vector_stats()
+
+
+@mcp.tool()
+def vector_process_identity() -> dict[str, Any]:
+    """Return process identity for Codex MCP attached-PID cleanup proof."""
+    return {"status": "ok", "process": mcp_process_identity("vector_db")}
 
 
 @mcp.tool()

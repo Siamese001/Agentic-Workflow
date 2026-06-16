@@ -55,6 +55,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from tools.mcp.mcp_bootstrap import create_mcp_server
+from tools.mcp.mcp_bootstrap import mcp_process_identity as _mcp_process_identity
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +204,12 @@ _register_standard_health(mcp, "memory", extra=_memory_health_extra)
 # ---------------------------------------------------------------------------
 # Core tools — API-compatible with @modelcontextprotocol/server-memory
 # ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def mem_process_identity() -> dict[str, Any]:
+    """Return process identity for Codex MCP attached-PID cleanup proof."""
+    return {"status": "ok", "process": _mcp_process_identity("memory")}
 
 
 @mcp.tool()

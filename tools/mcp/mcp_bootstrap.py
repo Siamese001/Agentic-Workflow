@@ -120,6 +120,23 @@ def run_server(mcp: FastMCP, *, transport: str = "stdio") -> None:
     mcp.run(transport=transport)
 
 
+def mcp_process_identity(server_id: str) -> dict[str, Any]:
+    """Return host-attachment proof fields for Codex MCP lifecycle cleanup."""
+    normalized = server_id.strip().lower().replace("-", "_")
+    pid = os.getpid()
+    env_key = f"CODEX_MCP_ATTACHED_{normalized.upper()}_PID"
+    return {
+        "server_id": normalized,
+        "pid": pid,
+        "ppid": os.getppid(),
+        "cwd": str(Path.cwd()),
+        "attached_pid_env_key": env_key,
+        "attached_pid_env": f"{env_key}={pid}",
+        "attached_pid_arg": f"{normalized}={pid}",
+        "cleanup_arg": f"--codex-attached-pid {normalized}={pid}",
+    }
+
+
 def register_standard_health(
     mcp: FastMCP,
     server_name: str,
@@ -153,7 +170,11 @@ def register_standard_health(
     tool_name = f"{server_name}_health"
 
     def _health() -> dict[str, Any]:
-        base: dict[str, Any] = {"status": "ok", "server": server_name}
+        base: dict[str, Any] = {
+            "status": "ok",
+            "server": server_name,
+            "process": mcp_process_identity(server_name),
+        }
         if extra is None:
             return base
         try:
@@ -162,7 +183,9 @@ def register_standard_health(
                 base.update(merged)
             return base
         except (OSError, RuntimeError, ValueError, TypeError, ImportError) as exc:
-            return {"status": "error", "server": server_name, "error": f"{type(exc).__name__}: {exc}"}
+            base["status"] = "error"
+            base["error"] = f"{type(exc).__name__}: {exc}"
+            return base
 
     _health.__name__ = tool_name
     _health.__doc__ = (
@@ -171,6 +194,31 @@ def register_standard_health(
         "Never raises; errors are surfaced via status='error' + error field."
     )
     mcp.tool()(_health)
+
+
+def _normalize_marker_text(value: str) -> str:
+    return value.strip().strip("\"'").lower().replace("\\", "/")
+
+
+def _match_cmdline_marker(cmdline: list[Any], markers: tuple[str, ...]) -> str | None:
+    """Match only direct argv entries for script/module MCP launches."""
+    normalized_markers = tuple(_normalize_marker_text(marker) for marker in markers)
+    for raw_part in cmdline:
+        part = _normalize_marker_text(str(raw_part))
+        for marker in normalized_markers:
+            if not marker:
+                continue
+            if "/" in marker:
+                part_without_suffix = part[:-3] if part.endswith(".py") else part
+                marker_without_suffix = marker[:-3] if marker.endswith(".py") else marker
+                if part_without_suffix == marker_without_suffix or part_without_suffix.endswith(
+                    f"/{marker_without_suffix}"
+                ):
+                    return marker
+                continue
+            if part == marker or part.endswith(f"/{marker}"):
+                return marker
+    return None
 
 
 def guard_single_instance(
@@ -197,11 +245,11 @@ def guard_single_instance(
         - Never raises; logs and returns
 
     Args:
-        script_marker: Substring (or sequence of substrings) uniquely
-            identifying this server's script in ``proc.cmdline``. When a
-            sequence is provided, a process is matched if ANY marker is a
-            substring of ANY cmdline part. Use a sequence when the server
-            can be invoked in multiple forms, e.g. both ``python -m
+        script_marker: Module or script-path marker uniquely identifying this
+            server's direct argv entry in ``proc.cmdline``. When a sequence is
+            provided, a process is matched if ANY marker is present as a direct
+            argv module/path argument. Use a sequence when the server can be
+            invoked in multiple forms, e.g. both ``python -m
             tools.adg.mcp.server`` (dot-separated) and ``python
             tools/adg/mcp/server.py`` (slash-separated).
         skip_env: Optional env var name. When set to ``"1"``, the guard is
@@ -259,15 +307,7 @@ def guard_single_instance(
             if proc.info["pid"] == my_pid:
                 continue
             cmdline = proc.info.get("cmdline") or []
-            matched_marker: str | None = None
-            for part in cmdline:
-                part_s = str(part)
-                for m in markers:
-                    if m in part_s:
-                        matched_marker = m
-                        break
-                if matched_marker is not None:
-                    break
+            matched_marker = _match_cmdline_marker(cmdline, markers)
             if matched_marker is None:
                 continue
 

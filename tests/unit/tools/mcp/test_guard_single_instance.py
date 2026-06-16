@@ -23,6 +23,18 @@ def _force_guard_kill_path(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("MCP_HEARTBEAT_DISABLE", "1")
 
 
+class _FakeMCP:
+    def __init__(self) -> None:
+        self.tools = {}
+
+    def tool(self):
+        def _decorator(func):
+            self.tools[func.__name__] = func
+            return func
+
+        return _decorator
+
+
 class _FakeProc:
     def __init__(self, pid: int, cmdline: list[str], name: str = "python.exe") -> None:
         self.info = {"pid": pid, "name": name, "cmdline": cmdline}
@@ -229,3 +241,62 @@ def test_psutil_missing_returns_silently(
         with caplog.at_level("WARNING"):
             mod.guard_single_instance("vector_db_server.py")
     assert any("GUARD_UNAVAILABLE" in r.message for r in caplog.records)
+
+
+def test_mcp_process_identity_contains_attached_pid_cleanup_fields(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(os, "getpid", lambda: 1234)
+    monkeypatch.setattr(os, "getppid", lambda: 99)
+
+    identity = mod.mcp_process_identity("vector-db")
+
+    assert identity == {
+        "server_id": "vector_db",
+        "pid": 1234,
+        "ppid": 99,
+        "cwd": str(tmp_path),
+        "attached_pid_env_key": "CODEX_MCP_ATTACHED_VECTOR_DB_PID",
+        "attached_pid_env": "CODEX_MCP_ATTACHED_VECTOR_DB_PID=1234",
+        "attached_pid_arg": "vector_db=1234",
+        "cleanup_arg": "--codex-attached-pid vector_db=1234",
+    }
+
+
+def test_register_standard_health_includes_process_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_mcp = _FakeMCP()
+    monkeypatch.setattr(os, "getpid", lambda: 222)
+    monkeypatch.setattr(os, "getppid", lambda: 111)
+
+    mod.register_standard_health(fake_mcp, "memory", extra=lambda: {"entity_count": 7})
+
+    health = fake_mcp.tools["memory_health"]()
+    assert health["status"] == "ok"
+    assert health["server"] == "memory"
+    assert health["entity_count"] == 7
+    assert health["process"]["server_id"] == "memory"
+    assert health["process"]["pid"] == 222
+    assert health["process"]["attached_pid_arg"] == "memory=222"
+
+
+def test_standard_health_error_retains_process_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_mcp = _FakeMCP()
+    monkeypatch.setattr(os, "getpid", lambda: 333)
+    monkeypatch.setattr(os, "getppid", lambda: 222)
+
+    def _extra() -> dict[str, object]:
+        raise RuntimeError("backend down")
+
+    mod.register_standard_health(fake_mcp, "memory", extra=_extra)
+
+    health = fake_mcp.tools["memory_health"]()
+    assert health["status"] == "error"
+    assert health["error"] == "RuntimeError: backend down"
+    assert health["process"]["pid"] == 333
+    assert health["process"]["attached_pid_arg"] == "memory=333"

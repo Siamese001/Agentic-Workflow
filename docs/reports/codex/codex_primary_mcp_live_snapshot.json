@@ -13,14 +13,16 @@
     "mcp__vector_db.readiness post-cleanup probe returned Transport closed",
     "mcp__vector_db.readiness post-restart probe reported Chroma ready and embedding model loading, then timed out on follow-up",
     "mcp__adg_sqlite.adg_health post-restart probe returned status=ok",
-    "scripts/governance/audit_codex_mcp_transports.py --json"
+    "scripts/governance/audit_codex_mcp_transports.py --json",
+    "Repo-owned MCP process identity tools added on branch codex/mcp-lifecycle-guards"
   ],
   "process_hygiene_observations": [
     "Memory and Vector DB had duplicate visible process cohorts during the initial 2026-06-16 audit.",
     "Follow-up manual cleanup cleared the duplicate OS cohorts; audit_codex_mcp_transports.py reported process_count=0 for both memory and vector_db, but Memory and Vector then returned Transport closed.",
     "After Codex restart, Memory, GitKraken, and ADG were callable again, but strict readiness still found duplicate Codex-owned cohorts for GitKraken, ADG, Memory, and Vector.",
     "cleanup_duplicate_mcp_cohorts.py now reports Codex-owned duplicates and refuses apply-mode cleanup unless host-attached PID proof is supplied.",
-    "Process visibility is not callable proof; strict readiness remains blocked while duplicate Codex-owned cohorts or unproven Vector readiness remain."
+    "Process visibility is not callable proof; strict readiness remains blocked while duplicate Codex-owned cohorts or unproven Vector readiness remain.",
+    "After repo-owned MCP servers restart onto the attached-PID diagnostic changes, mcp__memory.mem_process_identity, mcp__adg_sqlite.adg_process_identity, and mcp__vector_db.vector_process_identity return cleanup_arg proof for guarded Codex cleanup."
   ],
   "routes": [
     {

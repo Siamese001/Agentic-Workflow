@@ -16,6 +16,7 @@ from typing import Any
 
 from tools.adg.core.service import ADGService
 from tools.adg.mcp.health import HealthDiagnostics
+from tools.mcp.mcp_bootstrap import mcp_process_identity
 
 LOG_FILE = os.path.expanduser("~/adg_mcp_server.log")
 LOGGER_NAME = "adg_mcp"
@@ -318,6 +319,7 @@ class ADGServerRuntime:
             "status": "ok",
             "data": {
                 "pid": os.getpid(),
+                "process": mcp_process_identity("adg_sqlite"),
                 "startup_time": dt.datetime.fromtimestamp(self.startup_time).isoformat(),
                 "startup_nonce": self.startup_nonce,
                 "stack_fingerprints": self.stack_fingerprints,

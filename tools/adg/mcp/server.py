@@ -13,7 +13,7 @@ __adg_consumer_mode__ = "inventory"
 
 from typing import Any
 
-from tools.mcp.mcp_bootstrap import create_mcp_server
+from tools.mcp.mcp_bootstrap import create_mcp_server, mcp_process_identity
 from tools.adg.mcp.runtime import LOG
 from tools.adg.mcp import tool_handlers as handlers
 
@@ -146,6 +146,12 @@ def adg_runtime_info() -> dict[str, Any]:
     is serving. Use adg_reload for SQLite snapshot refresh only.
     """
     return handlers.adg_runtime_info()
+
+
+@mcp.tool()
+def adg_process_identity() -> dict[str, Any]:
+    """Return process identity for Codex MCP attached-PID cleanup proof."""
+    return {"status": "ok", "process": mcp_process_identity("adg_sqlite")}
 
 
 @mcp.tool()
