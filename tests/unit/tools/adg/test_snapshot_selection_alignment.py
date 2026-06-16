@@ -32,6 +32,7 @@ def test_latest_sqlite_ignores_invalid_timestamp_files(tmp_path, monkeypatch):
     _mk_sqlite(invalid_sentinel)
 
     monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
     resolved = latest_sqlite()
     assert resolved is not None
     assert resolved.name == "adg_indexed_04192026_0657.sqlite"
@@ -68,6 +69,7 @@ def test_sqlite_backend_connect_uses_latest_valid_snapshot(tmp_path, monkeypatch
     _mk_sqlite(invalid)
 
     monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
     backend = SQLiteBackend(use_graph_store=False)
     try:
         status = backend.get_status()
