@@ -2,11 +2,96 @@
   "openai": {
     "default": "gpt-5.5",
     "chat_judge": "gpt-5.5",
+    "small_classifier": "gpt-5-mini",
     "omit_temperature": [
       "gpt-5.5"
     ],
     "non_chat_completions": [
       "gpt-5.5-pro"
-    ]
+    ],
+    "families": {
+      "gpt5_prefix": "gpt-5"
+    },
+    "legacy": {
+      "gpt_4": "gpt-4",
+      "gpt_4_0613": "gpt-4-0613",
+      "gpt_4_32k": "gpt-4-32k",
+      "gpt_4_32k_0613": "gpt-4-32k-0613",
+      "gpt_4_turbo": "gpt-4-turbo",
+      "gpt_4o": "gpt-4o",
+      "gpt_4o_2024_08_06": "gpt-4o-2024-08-06",
+      "gpt_4o_mini": "gpt-4o-mini",
+      "gpt_4o_mini_2024_07_18": "gpt-4o-mini-2024-07-18",
+      "gpt_3": "gpt-3",
+      "gpt_35_turbo": "gpt-3.5-turbo",
+      "gpt_35_turbo_0613": "gpt-3.5-turbo-0613",
+      "gpt_35_turbo_16k": "gpt-3.5-turbo-16k",
+      "gpt_35_turbo_16k_0613": "gpt-3.5-turbo-16k-0613"
+    }
+  },
+  "anthropic": {
+    "default": "claude-sonnet-4-6",
+    "haiku": "claude-haiku-4-5",
+    "haiku_dated": "claude-haiku-4-5-20260101",
+    "sonnet": "claude-sonnet-4-6",
+    "sonnet_4_20250514": "claude-sonnet-4-20250514",
+    "sonnet_4_5": "claude-sonnet-4-5",
+    "sonnet_4_5_20250929": "claude-sonnet-4-5-20250929",
+    "sonnet_4_5_dot": "claude-sonnet-4.5",
+    "opus": "claude-opus-4-6",
+    "opus_4_5": "claude-opus-4-5",
+    "opus_4_7_dot": "claude-opus-4.7",
+    "haiku_4_5_dot": "claude-haiku-4.5",
+    "haiku_4_5_20251001": "claude-haiku-4-5-20251001",
+    "generic": {
+      "claude_3": "claude-3",
+      "instant": "claude-instant",
+      "opus": "claude-opus",
+      "fable": "claude-fable",
+      "haiku": "claude-haiku",
+      "sonnet": "claude-sonnet"
+    },
+    "legacy": {
+      "sonnet_35_latest": "claude-3-5-sonnet-latest",
+      "sonnet_35_20241022": "claude-3-5-sonnet-20241022",
+      "haiku_3": "claude-3-haiku",
+      "haiku_3_20240307": "claude-3-haiku-20240307"
+    }
+  },
+  "gemini": {
+    "flash": "gemini-3-flash-preview",
+    "pro": "gemini-3.1-pro-preview",
+    "legacy": {
+      "gemini_pro": "gemini-pro",
+      "flash_15": "gemini-1.5-flash",
+      "flash_15_002": "gemini-1.5-flash-002",
+      "pro_10": "gemini-1.0-pro",
+      "pro_15": "gemini-1.5-pro",
+      "pro_15_002": "gemini-1.5-pro-002",
+      "flash_20": "gemini-2.0-flash",
+      "flash_20_exp": "gemini-2.0-flash-exp",
+      "flash_25": "gemini-2.5-flash",
+      "pro_25": "gemini-2.5-pro",
+      "pro_3_preview": "gemini-3-pro-preview"
+    },
+    "families": {
+      "v2_prefix": "gemini-2",
+      "v3_prefix": "gemini-3"
+    }
+  },
+  "qwen": {
+    "local_32b_awq": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "local_32b_instruct": "Qwen/Qwen2.5-32B-Instruct",
+    "local_14b_awq": "Qwen/Qwen2.5-14B-Instruct-AWQ",
+    "local_14b_instruct": "Qwen/Qwen2.5-14B-Instruct",
+    "local_7b_instruct": "Qwen/Qwen2.5-7B-Instruct",
+    "vllm_label": "Qwen/vLLM"
+  },
+  "embedding": {
+    "bge_m3": "BAAI/bge-m3",
+    "bge_m3_v1": "BAAI/bge-m3-v1",
+    "bge_large_en_v1_5": "BAAI/bge-large-en-v1.5",
+    "bge_reranker_v2_m3": "BAAI/bge-reranker-v2-m3",
+    "bge_reranker_base": "BAAI/bge-reranker-base"
   }
 }
