@@ -99,6 +99,7 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
         "temperature": 0.21,
         "base_url": "https://provider.example.test/responses",
         "timeout_seconds": 6.5,
+        "progress_sink": {},
     }
 
 

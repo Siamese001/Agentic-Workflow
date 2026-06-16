@@ -50,7 +50,7 @@ def test_build_section_provider_gateway_registers_external_profiles() -> None:
 
 def test_call_section_model_provider_threads_messages_and_overrides(monkeypatch) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda: gateway)
+    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
 
     result = subject.call_section_model_provider(
         "claude",
@@ -92,7 +92,7 @@ def test_call_section_model_provider_falls_back_to_prompt_and_max_output_tokens(
     monkeypatch,
 ) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda: gateway)
+    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
 
     subject.call_section_model_provider(
         ProviderProfile.EXTERNAL_OPENAI,
@@ -118,7 +118,7 @@ def test_call_section_model_provider_falls_back_to_prompt_and_max_output_tokens(
 
 def test_call_section_model_provider_explicit_token_budget_wins(monkeypatch) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda: gateway)
+    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
 
     subject.call_section_model_provider(
         None,
