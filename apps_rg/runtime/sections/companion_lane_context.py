@@ -72,6 +72,8 @@ def load_companion_context() -> str:
                 chunk_lines.append(t)
         elif label in ("unify_bullets", "ibm_bullets"):
             for b in data.get("bullets") or []:
+                if not isinstance(b, dict):
+                    continue
                 chunk_lines.append(f"- {b.get('bullet_id')}: {b.get('bullet_text', '')}")
         if len(chunk_lines) > 1:
             parts.append("\n".join(chunk_lines))
