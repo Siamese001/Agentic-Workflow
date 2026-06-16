@@ -91,10 +91,6 @@ class EnvironmentConfig(BaseModel):
     OPENAI_MODEL: str = Field(default=_MR.OPENAI_MODEL_ID, description="OpenAI model name")
 
     # Thresholds and Limits
-    # NOTE: heal *confidence* floats are routed through
-    # `agentic_core/L2_execution/healers/routing_thresholds_ssot.py` via
-    # `HEALING_CONFIDENCE_HIGH` / `HEALING_CONFIDENCE_MEDIUM`. Integer score
-    # SSOT knobs remain under `agentic_core.L0_routing.config.path_constants`.
     RAG_SIMILARITY_THRESHOLD: float = Field(default=0.8, ge=0.0, le=1.0)
     GOVERNOR_SAFETY_THRESHOLD: float = Field(default=0.95, ge=0.0, le=1.0)
 

@@ -89,8 +89,8 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 
-class TestHealingRoutingSsot:
-    """Heal *float* cutoffs migrated out of ``path_constants`` — SSOT-backed."""
+class TestHealingRoutingDeprecation:
+    """Deprecated heal float cutoffs stay out of ``path_constants``."""
 
     def test_path_constants_does_not_expose_deprecated_float_aliases(self):
         import agentic_core.L0_routing.config.path_constants as pc
@@ -98,13 +98,6 @@ class TestHealingRoutingSsot:
         assert not hasattr(pc, "HEALING_CONFIDENCE_X")
         assert not hasattr(pc, "HEALING_CONFIDENCE_Y")
 
-    def test_heal_defaults_pair_ordering(self):
-        from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
-            DEFAULT_HEAL_CONFIDENCE_HIGH,
-            DEFAULT_HEAL_CONFIDENCE_MEDIUM,
-        )
-
-        assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
     def test_ssot_score_threshold_det(self):
         """Test SSOT_SCORE_THRESHOLD_DET is an int."""
         assert isinstance(SSOT_SCORE_THRESHOLD_DET, int)

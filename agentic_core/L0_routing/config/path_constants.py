@@ -32,14 +32,6 @@ from agentic_core.L0_routing.config.pipeline_constants import (
 
 # Configuration constants
 
-# ============================================================================
-# HEALING TIER THRESHOLDS (Moved from L2 to L0 - L0 can be imported by any layer)
-# ============================================================================
-
-# FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
-HEALING_CONFIDENCE_X: float = 0.80  # Upper threshold: conf > X  → DETERMINISTIC
-HEALING_CONFIDENCE_Y: float = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 Pro
-
 # SSOT score thresholds for integer-score routing (S = 3C+4B+3A+2N+4F)
 SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
 SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
@@ -676,4 +668,30 @@ def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
             ),
         }
     return None
+
+
+_PUBLIC_HELPERS: Final[frozenset[str]] = frozenset(
+    {
+        "apps_contract_glob",
+        "apps_test_integration_dir",
+        "apps_test_unit_dir",
+        "consensus_majority_threshold",
+        "get_all_apps_paths",
+        "get_apps_directories",
+        "get_validated_project_root",
+        "safe_path_join",
+        "validate_flat_directory",
+        "validate_path_within_project",
+    },
+)
+
+__all__ = sorted(
+    name
+    for name, value in globals().items()
+    if not name.startswith("_")
+    and (
+        name.isupper()
+        or name in _PUBLIC_HELPERS
+    )
+)
 

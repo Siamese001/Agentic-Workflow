@@ -42,12 +42,7 @@ def test_expected_constants_are_exported(path_constants):
 
 
 def test_threshold_relationships_are_sane(path_constants):
-    from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
-        DEFAULT_HEAL_CONFIDENCE_HIGH,
-        DEFAULT_HEAL_CONFIDENCE_MEDIUM,
-    )
-
-    assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
+    assert path_constants.SSOT_SCORE_THRESHOLD_DET < path_constants.SSOT_SCORE_THRESHOLD_QWEN
 
 def test_config_helpers_exist_and_are_callable(config_pkg):
     for name in ["get_validated_project_root", "get_apps_directories"]:

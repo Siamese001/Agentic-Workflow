@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""W0 artefact generator — heal/SIGNAL/router env knob inventory."""
+"""W0 artefact generator — retired confidence-router inventory."""
 
 from __future__ import annotations
 
@@ -10,26 +10,21 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "artifacts" / "reports" / "confidence_env_dead_keys_report.md"
 
 
-SECTION = """# Confidence routing env hygiene report
+SECTION = """# Retired confidence routing hygiene report
 
 _Generated_: `{ts}`
 _Generator_: `ops_scripts/maintenance/generate_confidence_env_dead_keys_report.py`
 
 This file is **inventory only** — it never edits operator `.env`.
 
-## Canonical heal band knobs
+## Current policy
 
-| Knob | SSOT reader |
-|---|---|
-| `HEALING_CONFIDENCE_HIGH` | `agentic_core/L2_execution/healers/routing_thresholds_ssot.py` |
-| `HEALING_CONFIDENCE_MEDIUM` | same |
-
-PRIMARY executor thresholds remain in `confidence_aware_executor.py` (`PRIMARY_*`).
+L2 E4 same-authority repair receipts are the kept healing path. Confidence
+router env knobs are retired and must not be added back to `.env` files.
 
 ## Deprecated / misleading names
 
-- Legacy floats `HEALING_CONFIDENCE_X` / `HEALING_CONFIDENCE_Y` were removed from
-  `path_constants.py`. Use the paired knobs above instead.
+- Legacy float aliases were removed from `path_constants.py`.
 - Any historic **SOVEREIGN**/**FLASH** tiers referenced in onboarding docs belong to
   different surfaces — see `.env.example` headers for partitioning.
 
@@ -37,14 +32,14 @@ PRIMARY executor thresholds remain in `confidence_aware_executor.py` (`PRIMARY_*
 
 | Area | Representative env knobs |
 |---|---|
-| Cascade fallbacks | `DISABLE_QWEN_FALLBACK`, `ROUTING_COST_DEMOTE_*` |
+| Cascade fallbacks | retired for app execution |
 | Posterior ledger | `ROUTING_POSTERIOR_*` |
-| Signal enhancer telemetry | `SIGNAL_*` (does **not** retarget heal floats) |
+| Signal enhancer telemetry | `SIGNAL_*` |
 
 ## Operator actions
 
-1. Review private `.env` for legacy aliases and remove duplicates.
-2. Keep heal bands paired via validated SSOT semantics (ordering + domain checks).
+1. Review private `.env` for retired confidence-router aliases and remove them.
+2. Keep app repair work on E4 same-authority receipt paths.
 """
 
 

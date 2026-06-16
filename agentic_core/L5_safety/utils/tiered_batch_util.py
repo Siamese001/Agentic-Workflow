@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L3_orchestration.healers.healing_tier_config import (
-    HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -181,6 +178,7 @@ _emit_invokes_eval("p1", "tiered_batch_util", "eval_call")
 _emit_proposal_commits_routing("p1", "tiered_batch_util", "routing_commit")
 
 Logger = logging.getLogger(__name__)
+DEFAULT_TIERED_BATCH_HEURISTIC_THRESHOLD = 0.80
 
 
 class TieredBatchProcessor:
@@ -201,7 +199,7 @@ class TieredBatchProcessor:
     def __init__(
         self,
         agent: Any,
-        heuristic_threshold: float = _HEALING_CONFIDENCE_X,
+        heuristic_threshold: float | None = None,
         checkpoint_file: str | Path = "tiered_checkpoint.json",
         use_semantic_cache: bool = True,
         rate_limit_delay: float = 1.0,
@@ -216,6 +214,8 @@ class TieredBatchProcessor:
             use_semantic_cache: Enable Redis/Pinecone caching
             rate_limit_delay: Seconds between LLM calls
         """
+        if heuristic_threshold is None:
+            heuristic_threshold = DEFAULT_TIERED_BATCH_HEURISTIC_THRESHOLD
         self.agent = agent
         self.heuristic_threshold = heuristic_threshold
         self.checkpoint_file = Path(checkpoint_file)
