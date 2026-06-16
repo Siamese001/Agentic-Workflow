@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -35,6 +36,21 @@ DEFAULT_PROTECTED = ("main", "master")
 DEFAULT_TOPIC = "apps-rg"
 DEFAULT_IDE_OWNER = "claude"
 AGENT_OWNERS = {"codex", "claude"}
+BRANCH_TOPIC_RE = re.compile(r"^[a-z0-9][a-z0-9-]*[a-z0-9]$")
+LOW_SIGNAL_GENERATED_RE = re.compile(r"^[a-z]+-[a-z]+-[0-9a-f]{6,}$")
+GENERIC_TOPIC_TOKENS = {
+    "branch",
+    "change",
+    "changes",
+    "fix",
+    "misc",
+    "task",
+    "temp",
+    "test",
+    "update",
+    "wip",
+    "work",
+}
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -98,6 +114,13 @@ def _worktree_dir_name(topic: str = DEFAULT_TOPIC) -> str:
 
 def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
     return _worktree_parent() / _worktree_dir_name(topic)
+
+
+def _worktree_root() -> Path | None:
+    rc, root = _git("rev-parse", "--show-toplevel")
+    if rc != 0 or not root:
+        return None
+    return Path(root).resolve()
 
 
 def _protected() -> set[str]:
@@ -176,6 +199,48 @@ def _owner_label() -> str:
     return "Codex" if _ide_owner() == "codex" else "Claude Code"
 
 
+def _topic_from_agent_branch(branch: str) -> str:
+    prefix = _branch_prefix()
+    if branch.startswith(prefix):
+        return branch[len(prefix) :]
+    return ""
+
+
+def _topic_is_high_signal(topic: str) -> bool:
+    if not topic or "/" in topic or "\\" in topic:
+        return False
+    if topic != topic.lower():
+        return False
+    if LOW_SIGNAL_GENERATED_RE.fullmatch(topic):
+        return False
+    tokens = [part for part in topic.split("-") if part]
+    if len(tokens) < 2:
+        return False
+    if topic in GENERIC_TOPIC_TOKENS:
+        return False
+    if all(token in GENERIC_TOPIC_TOKENS for token in tokens):
+        return False
+    return True
+
+
+def _contract_violations(branch: str, worktree_root: Path | None) -> list[str]:
+    violations: list[str] = []
+    prefix = _branch_prefix()
+    if "/" in branch or "\\" in branch:
+        violations.append("branch must not contain slash path separators")
+    if not branch.startswith(prefix):
+        violations.append(f"branch must start with `{prefix}` for this agent")
+    else:
+        topic = _topic_from_agent_branch(branch)
+        if not BRANCH_TOPIC_RE.fullmatch(topic):
+            violations.append("branch topic must use lowercase letters, numbers, and hyphens")
+        elif not _topic_is_high_signal(topic):
+            violations.append("branch topic must be high-signal, not a generated or generic name")
+    if worktree_root is not None and worktree_root.name != branch:
+        violations.append("worktree folder basename must exactly equal the local branch name")
+    return violations
+
+
 def _guidance(branch: str) -> str:
     wt_path = _worktree_path()
     new_branch = _branch_name()
@@ -202,6 +267,22 @@ def _guidance(branch: str) -> str:
     )
 
 
+def _naming_warning(branch: str, violations: list[str], worktree_root: Path | None) -> str:
+    root_detail = f" Current worktree root: `{worktree_root}`." if worktree_root else ""
+    return (
+        f"worktree-naming-contract: this session is on non-canonical branch '{branch}' "
+        f"because {'; '.join(violations)}.{root_detail}\n"
+        "Before editing, rename/move to an agent-owned high-signal branch whose worktree "
+        "folder basename matches exactly, e.g.:\n"
+        f"    git branch -m {_branch_name()}\n"
+        f"    git worktree move {worktree_root or '<old-path>'} {_worktree_path()}\n\n"
+        f"This {_owner_label()} context must use `{_branch_prefix()}<high-signal-topic>` "
+        "branches. Avoid slash namespaces, generated adjective-name hashes, and folders "
+        "whose basename differs from the branch. The PreToolUse edit guard will block "
+        "file edits until the naming contract is satisfied."
+    )
+
+
 def main() -> int:
     _read_payload()  # drain SessionStart stdin; contents are not needed.
 
@@ -212,7 +293,16 @@ def main() -> int:
     if rc != 0 or not branch:
         return 0  # not a git repo / git unavailable — fail-soft
     if branch not in _protected():
-        return 0  # already isolated
+        if branch == "HEAD":
+            return 0  # detached helper worktrees are not durable edit lanes
+        worktree_root = _worktree_root()
+        violations = _contract_violations(branch, worktree_root)
+        if not violations:
+            return 0  # already isolated and canonical
+        msg = _naming_warning(branch, violations, worktree_root)
+        sys.stderr.write("[HOOK] " + msg + "\n")
+        _emit_context(msg)
+        return 0
 
     msg = _guidance(branch)
     sys.stderr.write("[HOOK] " + msg + "\n")
