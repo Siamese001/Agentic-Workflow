@@ -1,14 +1,14 @@
 {
   "status": "PASS",
-  "timestamp": "2026-06-15T21:36:03.514844+00:00",
+  "timestamp": "2026-06-16T10:35:34.433653+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 52,
-    "passed_tests": 0,
+    "total_tests": 137,
+    "passed_tests": 87,
     "failed_tests": 0,
-    "skipped_tests": 52,
+    "skipped_tests": 50,
     "exit_status": 0,
     "failed_by_category": {
       "mro_integrity": [],
