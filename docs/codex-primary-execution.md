@@ -10,6 +10,7 @@ Codex is the primary local execution surface for this repository when Claude API
 | Shared governance rules during migration | `CLAUDE.md`, `AGENTS.md`, `.claude/rules/**`, `.claude/skills/**`, `.claude/settings.json` |
 | MCP configured-server truth | `.mcp.json` plus `.claude/mcp-notes.md` |
 | Codex live route evidence | `docs/reports/codex/codex_primary_mcp_live_snapshot.md` |
+| Hook parity and Codex hook preflight | `scripts/governance/codex_hook_parity.py` consuming `.claude/settings.json` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
 No parallel registry: do not copy `.claude` rule bodies, MCP server definitions, or hook logic into a Codex-only store. Codex should consume the repo-owned files and produce fresh execution evidence.
@@ -48,6 +49,7 @@ python scripts/governance/codex_readiness.py --require-clean-worktree --fail-dup
 The readiness gate checks:
 
 - Codex primary contract files are present.
+- The Claude hook matrix is registered and present for Codex preflight through `scripts/governance/codex_hook_parity.py`.
 - Git state is known, with optional clean-worktree enforcement.
 - `AGENTIC_REPO_ROOT`, `ADG_REDIS_URL`, and pytest plugin-autoload state are sane.
 - Required Codex routes have callable evidence when marked required.
@@ -64,6 +66,25 @@ CODEX_MCP_CALLABLE_ADG_SQLITE=closed_transport
 ```
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.
+
+## Hook Parity Contract
+
+Claude Code automatically runs hooks from `.claude/settings.json`; Codex does not. Codex-primary work must therefore treat `scripts/governance/codex_hook_parity.py` as the executable bridge to the Claude hook SSOT, not as a copied hook registry.
+
+Use the matrix/probe check before governed Codex runs:
+
+```bash
+python scripts/governance/codex_hook_parity.py --json check
+```
+
+Use explicit preflight when a Codex step is about to perform a governed tool action:
+
+```bash
+python scripts/governance/codex_hook_parity.py run-pre-tool Edit --file-path scripts/governance/codex_hook_parity.py
+python scripts/governance/codex_hook_parity.py run-stop artifacts/codex/candidate-final-response.txt
+```
+
+The parity runner validates the active Claude hook registrations for session start, user-prompt submit, pre-tool, post-tool, and stop hooks. Its bounded probes cover the branch/worktree edit guard, plan-mint gate, north-star relevance gate, and stop response-floor audit. Hook behavior remains authored only under `.claude/settings.json` and `.claude/hooks/**`.
 
 ## Run Receipt Contract
 
@@ -82,7 +103,7 @@ The receipt schema is `codex-run-receipt/v1`. It must record:
 - `verification.checks`.
 - `rca` when execution fails, blocks, or any command/check fails.
 
-Failure RCA fields are mandatory: `symptom`, `root_cause`, `evidence`, `fix_or_next`, and `recurrence_guard`.
+Failure RCA fields are mandatory: `symptom`, `root_cause`, `evidence`, `fix_or_next`, and `recurrence_guard`. `fix_or_next` must begin with `fix:` when the turn fixed the failure or `next:` when a follow-up remains.
 
 ## MCP Route Policy
 

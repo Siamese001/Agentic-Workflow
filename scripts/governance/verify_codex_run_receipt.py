@@ -11,6 +11,7 @@ import argparse
 from collections.abc import Mapping, Sequence
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 
@@ -19,6 +20,7 @@ EXECUTION_STATUSES = {"PASS", "PARTIAL", "FAIL", "BLOCKED"}
 CHECK_STATUSES = {"PASS", "FAIL", "SKIPPED", "BLOCKED"}
 FAILURE_STATUSES = {"FAIL", "BLOCKED"}
 RCA_FIELDS = ("symptom", "root_cause", "evidence", "fix_or_next", "recurrence_guard")
+FIX_OR_NEXT_RE = re.compile(r"^\s*(fix|next)\s*:", re.IGNORECASE)
 
 
 def _non_empty_str(value: Any) -> bool:
@@ -128,6 +130,9 @@ def _validate_rca(receipt: Mapping[str, Any], failures: list[str]) -> None:
     for field in RCA_FIELDS:
         if not _non_empty_str(rca.get(field)):
             failures.append(f"rca.{field}: expected non-empty string")
+    fix_or_next = rca.get("fix_or_next")
+    if _non_empty_str(fix_or_next) and not FIX_OR_NEXT_RE.match(str(fix_or_next)):
+        failures.append("rca.fix_or_next: expected to start with 'fix:' or 'next:'")
 
 
 def validate_receipt(receipt: Mapping[str, Any]) -> list[str]:

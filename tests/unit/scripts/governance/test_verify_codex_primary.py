@@ -21,12 +21,36 @@ def _write(path: Path, text: str = "placeholder") -> None:
 def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
+    hook_groups: dict[tuple[str, str], list[str]] = {}
+    for spec in mod.codex_hook_parity.REQUIRED_HOOKS:
+        _write(tmp_path / spec.target)
+        hook_groups.setdefault((spec.event, spec.matcher), []).append(spec.target)
+    settings_hooks: dict[str, list[dict]] = {}
+    for (event, matcher), targets in hook_groups.items():
+        group = {
+            "hooks": [
+                {
+                    "type": "command",
+                    "command": (
+                        f'"$CLAUDE_PROJECT_DIR/{target}"'
+                        if target.endswith(".sh")
+                        else f'python "$CLAUDE_PROJECT_DIR/{target}"'
+                    ),
+                }
+                for target in targets
+            ]
+        }
+        if matcher:
+            group["matcher"] = matcher
+        settings_hooks.setdefault(event, []).append(group)
+    _write(tmp_path / ".claude/settings.json", json.dumps({"hooks": settings_hooks}))
     _write(
         tmp_path / "AGENTS.md",
         "\n".join(
             [
                 "## Codex primary execution adapter",
                 "docs/codex-primary-execution.md",
+                "scripts/governance/codex_hook_parity.py",
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
@@ -38,6 +62,7 @@ def _valid_root(tmp_path: Path) -> Path:
         "\n".join(
             [
                 "Codex primary execution surface",
+                "scripts/governance/codex_hook_parity.py",
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
@@ -52,6 +77,7 @@ def _valid_root(tmp_path: Path) -> Path:
             [
                 "docs/codex-primary-execution.md",
                 "scripts/governance/verify_codex_primary.py",
+                "scripts/governance/codex_hook_parity.py",
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
             ]
