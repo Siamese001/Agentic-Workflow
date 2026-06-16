@@ -46,9 +46,20 @@ def test_remediation_can_render_codex_owned_worktree(monkeypatch: pytest.MonkeyP
     assert "codex-governance-hooks" in text
 
 
-def test_worktree_branch_prefix_override_normalizes_slash(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_branch_prefix_override_cannot_change_default_claude_owner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv("WORKTREE_IDE_OWNER", raising=False)
     monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "codex/")
+
+    assert guard._branch_name("governance-hooks") == "claude-governance-hooks"
+
+
+def test_branch_prefix_override_cannot_contradict_codex_owner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("WORKTREE_IDE_OWNER", "codex")
+    monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "claude/")
 
     assert guard._branch_name("governance-hooks") == "codex-governance-hooks"
 

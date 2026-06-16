@@ -22,7 +22,8 @@ Allow conditions (fail-soft / non-blocking):
 
 Self-contained: no dependency on ``lib.claude_hook_common`` (absent in some
 checkouts). Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master`` (csv).
-IDE owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
+Execution owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
+The branch prefix is derived only from that owner; ``WORKTREE_BRANCH_PREFIX`` is ignored.
 """
 
 from __future__ import annotations
@@ -178,11 +179,6 @@ def _ide_owner() -> str:
 
 
 def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip().lower()
-    if raw:
-        owner = raw.replace("/", "-").strip("-")
-        if owner in AGENT_OWNERS:
-            return f"{owner}-"
     return f"{_ide_owner()}-"
 
 
@@ -233,6 +229,10 @@ def _remediation_example(topic: str = DEFAULT_TOPIC) -> str:
         f"    git worktree add {_worktree_path(topic)} -b {_branch_name(topic)} origin/main\n"
         f"    cd {_worktree_path(topic)}"
     )
+
+
+def _owner_label() -> str:
+    return "Codex" if _ide_owner() == "codex" else "Claude Code"
 
 
 def _topic_from_agent_branch(branch: str) -> str:
@@ -317,8 +317,8 @@ def main() -> int:
         "Use or create a named sibling worktree for the durable workstream, with an "
         "agent-owned high-signal branch whose worktree folder basename matches exactly, e.g.:\n"
         f"{_remediation_example()}\n"
-        "Codex work should use `codex-<high-signal-topic>`; Claude Code work should use "
-        "`claude-<high-signal-topic>`. Avoid slash namespaces, timestamped `chat/*` "
+        f"This {_owner_label()} context must use `{_branch_prefix()}<high-signal-topic>` branches; "
+        "do not use the other agent's prefix. Avoid slash namespaces, timestamped `chat/*` "
         "branches, and generated adjective-name hashes. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an "
         "intentional on-primary change.)"
     )

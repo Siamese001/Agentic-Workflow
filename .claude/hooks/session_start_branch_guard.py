@@ -18,8 +18,8 @@ Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
 Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default
 ``<repo-parent>/<repo-name>-worktrees``).
-IDE owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
-Branch prefix override: ``WORKTREE_BRANCH_PREFIX=codex-|claude-``.
+Execution owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
+The branch prefix is derived only from that owner; ``WORKTREE_BRANCH_PREFIX`` is ignored.
 """
 
 from __future__ import annotations
@@ -66,11 +66,6 @@ def _ide_owner() -> str:
 
 
 def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip().lower()
-    if raw:
-        owner = raw.replace("/", "-").strip("-")
-        if owner in AGENT_OWNERS:
-            return f"{owner}-"
     return f"{_ide_owner()}-"
 
 
@@ -177,10 +172,15 @@ def _emit_context(message: str) -> None:
     sys.stdout.write(json.dumps(out))
 
 
+def _owner_label() -> str:
+    return "Codex" if _ide_owner() == "codex" else "Claude Code"
+
+
 def _guidance(branch: str) -> str:
     wt_path = _worktree_path()
     new_branch = _branch_name()
     trunk = _trunk_ref()
+    prefix = _branch_prefix()
     return (
         f"worktree-isolation: this session is on protected branch '{branch}'. "
         "Claude no longer auto-creates timestamped chat worktrees. Choose an existing "
@@ -188,11 +188,11 @@ def _guidance(branch: str) -> str:
         "(replace `apps-rg` with the durable topic name):\n"
         f"    git worktree add {wt_path} -b {new_branch} {trunk}\n"
         f"    cd {wt_path}\n\n"
-        "Use IDE-owned durable branches (`codex-<high-signal-topic>` from Codex, "
-        "`claude-<high-signal-topic>` from Claude Code) and make the worktree folder "
-        "basename exactly match the branch name, such as `codex-apps-rg` or "
-        "`claude-apps-rg`. Avoid `chat/<timestamp>` branches and generated "
-        "adjective-name hashes. "
+        f"This {_owner_label()} context must use `{prefix}<high-signal-topic>` branches; "
+        "do not use the other agent's prefix. Make the worktree folder basename exactly "
+        "match the branch name. Avoid `chat/<timestamp>` branches and generated "
+        "adjective-name hashes. Codex reuse of this helper must set "
+        "`WORKTREE_IDE_OWNER=codex` before branch names are generated. "
         "Edits to protected checkouts are still blocked by the PreToolUse edit guard.\n\n"
         f"{_worktree_summary()}\n\n"
         "Cleanup is explicit: run "
