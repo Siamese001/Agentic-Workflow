@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is the Codex-facing adapter. Claude Code's canonical operating contract is `CLAUDE.md`; Codex should mirror it through this file plus `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json`.
+Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts; `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json` remain the shared repo-owned governance inputs during the compatibility migration.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
@@ -103,15 +103,27 @@ Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integr
 
 Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](plans/governance-dedup-closeout-e8a4c2.md).
 
+## Codex primary execution adapter
+
+Codex is the primary local execution surface for this repo when Claude API limits or host instability make Claude-first runs unreliable. Repo-owned governance files remain the versioned rule inputs; Codex owns run readiness, execution evidence, and closeout receipts.
+
+- Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
+- Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
+- Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
+- Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
+- Do not create a Codex-only rule or MCP registry. Codex consumes repo-owned rules and records live route evidence under `docs/reports/codex/`.
+
 ## Codex backup adapter
 
-Codex is a backup execution surface, not a second governance SSOT. When using Codex in this repo:
+Legacy compatibility note: older docs and checks still use the "backup adapter" name. Treat that as compatibility terminology; new Codex work should follow the primary execution adapter above.
 
-- Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work.
-- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as the authoritative Claude Code governance sources.
+When using Codex in this repo:
+
+- Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
+- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as repo-owned governance inputs until the neutral contract migration is complete.
 - Do not copy `.cursor` rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
 - Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
 - If a Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
-- Validate the adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
+- Validate the compatibility adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
 
 Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).
