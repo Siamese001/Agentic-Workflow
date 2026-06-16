@@ -63,7 +63,7 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 5. Before artifact-heavy Windows `apps_eval`, `apps_rg`, or proof runs, follow `.claude/rules/windows-path-budget.md` and preflight the output root with `scripts/governance/check_windows_path_budget.py`.
 6. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/verify_codex_primary.py` for the primary lane and `scripts/governance/verify_codex_backup.py` as the compatibility check.
 7. Do not create a Codex-specific MCP registry. If a Claude MCP is unavailable in Codex, name the missing route and use the documented substitute or degraded fallback.
-8. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per `.claude/rules/001-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
+8. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per `.claude/rules/001-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
 
 ## Test
 

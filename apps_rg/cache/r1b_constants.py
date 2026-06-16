@@ -17,6 +17,10 @@ CHUNK_TYPE_UNIFY_NARRATIVE = "unify_narrative_output"
 CHUNK_TYPE_UNIFY_BULLETS = "unify_bullets_output"
 CHUNK_TYPE_IBM_NARRATIVE = "ibm_narrative_output"
 CHUNK_TYPE_IBM_BULLETS = "ibm_bullets_output"
+CHUNK_TYPE_INSURTECH_BULLETS = "insurtech_bullets_output"
+CHUNK_TYPE_INSURTECH_NARRATIVE = "insurtech_narrative_output"
+CHUNK_TYPE_EY_BULLETS = "ey_bullets_output"
+CHUNK_TYPE_EY_NARRATIVE = "ey_narrative_output"
 CHUNK_TYPE_AGGREGATION = "aggregation_summary"
 CHUNK_TYPE_CLAIM_LEDGER = "claim_ledger_entry"
 CHUNK_TYPE_SECTION_PROOF = "section_proof_summary"
@@ -30,6 +34,10 @@ SECTION_CHUNK_TYPES: frozenset[str] = frozenset(
         CHUNK_TYPE_UNIFY_BULLETS,
         CHUNK_TYPE_IBM_NARRATIVE,
         CHUNK_TYPE_IBM_BULLETS,
+        CHUNK_TYPE_INSURTECH_BULLETS,
+        CHUNK_TYPE_INSURTECH_NARRATIVE,
+        CHUNK_TYPE_EY_BULLETS,
+        CHUNK_TYPE_EY_NARRATIVE,
     }
 )
 
@@ -104,6 +112,10 @@ __all__ = [
     "CHUNK_TYPE_HEADLINE",
     "CHUNK_TYPE_IBM_BULLETS",
     "CHUNK_TYPE_IBM_NARRATIVE",
+    "CHUNK_TYPE_INSURTECH_BULLETS",
+    "CHUNK_TYPE_INSURTECH_NARRATIVE",
+    "CHUNK_TYPE_EY_BULLETS",
+    "CHUNK_TYPE_EY_NARRATIVE",
     "CHUNK_TYPE_SECTION_PROOF",
     "CHUNK_TYPE_UNIFY_BULLETS",
     "CHUNK_TYPE_UNIFY_NARRATIVE",

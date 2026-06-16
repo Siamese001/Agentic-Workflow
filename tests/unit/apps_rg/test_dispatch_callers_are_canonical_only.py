@@ -19,6 +19,7 @@ ALLOWED_DISPATCH_APPS_RG_RUN = frozenset(
 ALLOWED_CANONICAL_DISPATCH_PREFIXES = (
     "apps_rg/__main__.py",
     "agentic_core/runtime/entry/apps_rg_dispatch.py",
+    "apps_rg/runtime/dispatch/apps_rg_dispatch.py",
 )
 
 FORBIDDEN_CANONICAL_CALLER_SUFFIXES = (

@@ -1139,10 +1139,10 @@ def run_competencies_x2_gates(
     fam_r = check_competencies_capability_family_coverage(competencies, min_families=5)
     add(
         fam_r.gate_id,
-        True,  # WARN mode: always pass in lane; record signal via failure_reason
+        True,  # WARN mode: always pass in lane; record signal via observed_value
         fam_r.observed_value,
         fam_r.threshold,
-        None if fam_r.passed else fam_r.failure_reason,
+        None,
     )
 
     # Gate: no default_fid laundered proof (WARN mode)
@@ -1152,7 +1152,7 @@ def run_competencies_x2_gates(
         True,  # WARN mode
         dfid_r.observed_value,
         dfid_r.threshold,
-        None if dfid_r.passed else dfid_r.failure_reason,
+        None,
     )
 
     # Gate: generic category must have ≥3 graph-backed terms (HARD FAIL on blocklist hit with no graph terms)

@@ -264,12 +264,21 @@ def build_cross_section_graph_coherence_receipt(
         if not isinstance(meta, dict):
             meta = snap.get("proof_pool_metadata") if isinstance(snap.get("proof_pool_metadata"), dict) else {}
         claim_ledger = snap.get("claim_ledger") if isinstance(snap.get("claim_ledger"), list) else []
-        summary = build_graph_binding_materiality_summary(
-            section_id=sid,
-            proof_pool_metadata=meta,
-            candidate_output=snap,
-            claim_ledger=claim_ledger,
-            parsed_output=snap,
+        embedded_summary = (
+            snap.get("graph_binding_materiality_summary")
+            if isinstance(snap.get("graph_binding_materiality_summary"), Mapping)
+            else None
+        )
+        summary = (
+            dict(embedded_summary)
+            if embedded_summary is not None
+            else build_graph_binding_materiality_summary(
+                section_id=sid,
+                proof_pool_metadata=meta,
+                candidate_output=snap,
+                claim_ledger=claim_ledger,
+                parsed_output=snap,
+            )
         )
         if summary.get("status") == "NO_GRAPH_BINDING_METADATA":
             continue
@@ -280,9 +289,18 @@ def build_cross_section_graph_coherence_receipt(
         if summary.get("role_episode_active"):
             role_section_ids.add(sid)
 
-        payloads = [snap, claim_ledger]
+        payloads = [snap, claim_ledger, summary]
         unique_skill_ids.update(
-            _collect_values_for_keys(payloads, {"graph_skill_node_ids", "source_skill_ids", "skill_ids_used"})
+            _collect_values_for_keys(
+                payloads,
+                {
+                    "claim_support_graph_refs",
+                    "graph_node_refs",
+                    "graph_skill_node_ids",
+                    "skill_ids_used",
+                    "source_skill_ids",
+                },
+            )
         )
         unique_fact_ids.update(
             _collect_values_for_keys(payloads, {"source_fact_ids", "fact_ids", "cited_fact_ids"})

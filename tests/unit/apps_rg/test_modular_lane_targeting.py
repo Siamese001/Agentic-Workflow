@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from apps_rg.l2_recipe.modular_lane_adapter import (
     ModularLaneTargeting,
     build_modular_lane_argv,
@@ -43,16 +45,21 @@ def test_build_modular_lane_argv_includes_targeting_flags() -> None:
         jd_text="Do the thing.",
         briefing_text="Culture note.",
     )
-    argv = build_modular_lane_argv(provider="qwen_vllm", targeting=tgt)
+    argv = build_modular_lane_argv(provider="external_claude", targeting=tgt)
     assert argv[:4] == [
         "--provider",
-        "qwen_vllm",
+        "external_claude",
         "--allow-non-allow-exit-zero",
         "--target-company",
     ]
     assert argv[argv.index("--target-company") + 1] == "Acme Corp"
     assert argv[argv.index("--jd-text") + 1] == "Do the thing."
     assert argv[argv.index("--briefing") + 1] == "Culture note."
+
+
+def test_build_modular_lane_argv_rejects_retired_qwen_provider() -> None:
+    with pytest.raises(ValueError, match="Unsupported modular lane provider"):
+        build_modular_lane_argv(provider="qwen_vllm", targeting=None)
 
 
 def test_modular_lane_targeting_loads_manual_brief_file(tmp_path: Path) -> None:

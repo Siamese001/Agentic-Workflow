@@ -37,7 +37,8 @@ from apps_rg.runtime.orchestration.canonical_dispatch import (
 def test_generated_lanes_registry_includes_executive_summary() -> None:
     assert "executive_summary" in GENERATED_LANES
     assert "executive_summary" in ROLLUP_GENERATED_LANES
-    assert GENERATED_LANES.index("executive_summary") == 1
+    assert GENERATED_LANES.index("executive_summary") > GENERATED_LANES.index("ey_narrative")
+    assert GENERATED_LANES[-1] == "headline"
 
 
 def test_phase1_manual_brief_for_dispatch_prefers_filesystem_ref() -> None:
@@ -192,7 +193,7 @@ def test_phase1_attempts_executive_summary_under_modular_sections_root() -> None
             encoding="utf-8",
         )
         (run_dir / "provider_request.json").write_text(
-            json.dumps({"provider_requested": "qwen_vllm"}),
+            json.dumps({"provider_requested": "qwen_vllm", "provider_attempted": True}),
             encoding="utf-8",
         )
         (run_dir / "x3_disposition.json").write_text(

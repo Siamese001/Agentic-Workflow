@@ -59,6 +59,8 @@ def _aig_runtime_payload() -> dict:
             "claim_support_graph_refs": [
                 "skill_governed_agentic_systems_architecture",
                 "skill_exit_disposition_governance",
+                "skill_agentic_ai_solution_architecture",
+                "skill_insurance_ai_operating_model",
             ],
             "targeting_graph_refs": [
                 "pillar_agentic_ai_platforms",
@@ -135,6 +137,8 @@ def test_cross_section_and_package_closeout_reflect_graph_materiality(tmp_path: 
         section_id="executive_summary",
         runtime_payload=_aig_runtime_payload(),
     )
+    competencies_summary = dict(summary, section_id="competencies")
+    headline_summary = dict(summary, section_id="headline")
     final_resume = {
         "sections": [
             {
@@ -151,7 +155,15 @@ def test_cross_section_and_package_closeout_reflect_graph_materiality(tmp_path: 
                 "section_kind": "generated_lane",
                 "l2_output_snapshot": {
                     "competencies": ["Agentic AI platforms"],
-                    "graph_binding_materiality_summary": summary,
+                    "graph_binding_materiality_summary": competencies_summary,
+                },
+            },
+            {
+                "section_id": "headline",
+                "section_kind": "generated_lane",
+                "l2_output_snapshot": {
+                    "headline_line": "AIG agentic AI platform executive",
+                    "graph_binding_materiality_summary": headline_summary,
                 },
             },
         ]

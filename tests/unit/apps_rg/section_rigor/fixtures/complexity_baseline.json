@@ -3,49 +3,49 @@
   "linked_plan_id": "apps-rg-complexity-test-radar-605dcc",
   "audit_script_version": "section_complexity_reduction_audit",
   "audit_script_digest": "72ae388fb77f2d41",
-  "generated_at": "2026-05-25T10:12:10.509077+00:00",
+  "generated_at": "2026-06-16T16:07:58.971539+00:00",
   "sections": [
     {
       "section_id": "headline",
-      "tagged_runtime_loc": 3299,
-      "module_count": 6,
-      "loc": 3299
+      "tagged_runtime_loc": 5583,
+      "module_count": 11,
+      "loc": 5583
     },
     {
       "section_id": "executive_summary",
-      "tagged_runtime_loc": 15684,
-      "module_count": 29,
-      "loc": 15684
+      "tagged_runtime_loc": 25181,
+      "module_count": 43,
+      "loc": 25181
     },
     {
       "section_id": "competencies",
-      "tagged_runtime_loc": 5892,
-      "module_count": 14,
-      "loc": 5892
+      "tagged_runtime_loc": 7108,
+      "module_count": 15,
+      "loc": 7108
     },
     {
       "section_id": "unify_bullets",
-      "tagged_runtime_loc": 2215,
-      "module_count": 5,
-      "loc": 2215
+      "tagged_runtime_loc": 3078,
+      "module_count": 6,
+      "loc": 3078
     },
     {
       "section_id": "unify_narrative",
-      "tagged_runtime_loc": 1969,
+      "tagged_runtime_loc": 2268,
       "module_count": 5,
-      "loc": 1969
+      "loc": 2268
     },
     {
       "section_id": "ibm_bullets",
-      "tagged_runtime_loc": 2118,
-      "module_count": 5,
-      "loc": 2118
+      "tagged_runtime_loc": 3427,
+      "module_count": 6,
+      "loc": 3427
     },
     {
       "section_id": "ibm_narrative",
-      "tagged_runtime_loc": 2753,
-      "module_count": 9,
-      "loc": 2753
+      "tagged_runtime_loc": 3402,
+      "module_count": 10,
+      "loc": 3402
     }
   ],
   "modules": [
@@ -57,17 +57,42 @@
     {
       "section_id": "headline",
       "module_path": "apps_rg/runtime/sections/headline_lane.py",
-      "loc": 1854
+      "loc": 2294
     },
     {
       "section_id": "headline",
       "module_path": "apps_rg/runtime/sections/headline_pa.py",
-      "loc": 275
+      "loc": 314
+    },
+    {
+      "section_id": "headline",
+      "module_path": "apps_rg/runtime/sections/headline_positioning_evidence.py",
+      "loc": 332
+    },
+    {
+      "section_id": "headline",
+      "module_path": "apps_rg/runtime/sections/headline_positioning_registry.py",
+      "loc": 146
+    },
+    {
+      "section_id": "headline",
+      "module_path": "apps_rg/runtime/sections/headline_repair_policy.py",
+      "loc": 28
+    },
+    {
+      "section_id": "headline",
+      "module_path": "apps_rg/runtime/validators/headline_positioning_x2.py",
+      "loc": 357
+    },
+    {
+      "section_id": "headline",
+      "module_path": "apps_rg/runtime/validators/headline_quality_x2.py",
+      "loc": 355
     },
     {
       "section_id": "headline",
       "module_path": "apps_rg/runtime/validators/headline_x2.py",
-      "loc": 792
+      "loc": 1378
     },
     {
       "section_id": "headline",
@@ -77,52 +102,82 @@
     {
       "section_id": "headline",
       "module_path": "apps_rg/runtime/dispatch/headline_pa.py",
-      "loc": 5
+      "loc": 6
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_briefing.py",
-      "loc": 165
+      "loc": 145
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_candidate_pool.py",
+      "loc": 424
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_composition.py",
-      "loc": 765
+      "loc": 893
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_context_limits.py",
+      "loc": 231
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_evidence_capsule.py",
-      "loc": 469
+      "loc": 523
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_generation_grade_contract.py",
-      "loc": 132
+      "loc": 141
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_judge_regen_loop.py",
+      "loc": 439
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_judge_regen_thread.py",
+      "loc": 98
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
-      "loc": 990
+      "loc": 1864
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_judge_variance.py",
+      "loc": 126
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_lane.py",
-      "loc": 3105
+      "loc": 4132
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_lane_done_policy.py",
-      "loc": 159
+      "loc": 152
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_operator_disposition.py",
-      "loc": 146
+      "loc": 154
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_operator_reporting.py",
+      "loc": 333
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_pa.py",
-      "loc": 615
+      "loc": 592
     },
     {
       "section_id": "executive_summary",
@@ -131,23 +186,63 @@
     },
     {
       "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_publish_disposition.py",
+      "loc": 141
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py",
+      "loc": 28
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_regen_delta_policy.py",
+      "loc": 844
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_regen_dispatch.py",
+      "loc": 300
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_regen_incremental.py",
+      "loc": 235
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_regen_observability.py",
+      "loc": 419
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_regen_support.py",
+      "loc": 141
+    },
+    {
+      "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_repair_policy.py",
-      "loc": 127
+      "loc": 244
+    },
+    {
+      "section_id": "executive_summary",
+      "module_path": "apps_rg/runtime/sections/executive_summary_same_authority_regen_bridge.py",
+      "loc": 295
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_synthesis_contract.py",
-      "loc": 239
+      "loc": 440
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_synthesis_monotonic.py",
-      "loc": 208
+      "loc": 226
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_targeting_cap.py",
-      "loc": 466
+      "loc": 477
     },
     {
       "section_id": "executive_summary",
@@ -157,12 +252,12 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_targeting_publish.py",
-      "loc": 165
+      "loc": 218
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_token_budget.py",
-      "loc": 728
+      "loc": 1177
     },
     {
       "section_id": "executive_summary",
@@ -172,7 +267,7 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_voice_repair.py",
-      "loc": 284
+      "loc": 1715
     },
     {
       "section_id": "executive_summary",
@@ -182,7 +277,7 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/sections/executive_summary_x2_x1d_contract.py",
-      "loc": 381
+      "loc": 408
     },
     {
       "section_id": "executive_summary",
@@ -192,42 +287,42 @@
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/validators/executive_summary_x2.py",
-      "loc": 2229
+      "loc": 2952
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_judge_packet.py",
-      "loc": 580
+      "loc": 803
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_judge_profile.py",
-      "loc": 78
+      "loc": 52
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_x1d.py",
-      "loc": 1962
+      "loc": 1958
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_x1d_dimension_verdicts.py",
-      "loc": 351
+      "loc": 505
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/judges/executive_summary_x1d_gate_closure_map.py",
-      "loc": 175
+      "loc": 197
     },
     {
       "section_id": "executive_summary",
       "module_path": "apps_rg/runtime/dispatch/executive_summary_pa.py",
-      "loc": 37
+      "loc": 31
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/sections/competencies_capability_projection.py",
-      "loc": 917
+      "loc": 991
     },
     {
       "section_id": "competencies",
@@ -247,22 +342,22 @@
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/sections/competencies_lane_execution.py",
-      "loc": 858
+      "loc": 1004
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/sections/competencies_lane_runtime.py",
-      "loc": 1450
+      "loc": 1581
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/sections/competencies_pa.py",
-      "loc": 296
+      "loc": 344
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/sections/competencies_rigor.py",
-      "loc": 338
+      "loc": 348
     },
     {
       "section_id": "competencies",
@@ -281,93 +376,108 @@
     },
     {
       "section_id": "competencies",
+      "module_path": "apps_rg/runtime/validators/competencies_quality_x2.py",
+      "loc": 682
+    },
+    {
+      "section_id": "competencies",
       "module_path": "apps_rg/runtime/validators/competencies_x2.py",
-      "loc": 1149
+      "loc": 1270
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/judges/competencies_x1d.py",
-      "loc": 211
+      "loc": 214
     },
     {
       "section_id": "competencies",
       "module_path": "apps_rg/runtime/dispatch/competencies_pa.py",
-      "loc": 5
+      "loc": 6
+    },
+    {
+      "section_id": "unify_bullets",
+      "module_path": "apps_rg/runtime/sections/unify_bullets_graph_evidence.py",
+      "loc": 320
     },
     {
       "section_id": "unify_bullets",
       "module_path": "apps_rg/runtime/sections/unify_bullets_lane.py",
-      "loc": 1232
+      "loc": 1548
     },
     {
       "section_id": "unify_bullets",
       "module_path": "apps_rg/runtime/sections/unify_bullets_pa.py",
-      "loc": 123
+      "loc": 169
     },
     {
       "section_id": "unify_bullets",
       "module_path": "apps_rg/runtime/validators/unify_bullets_x2.py",
-      "loc": 766
+      "loc": 965
     },
     {
       "section_id": "unify_bullets",
       "module_path": "apps_rg/runtime/judges/unify_bullets_x1d.py",
-      "loc": 89
+      "loc": 70
     },
     {
       "section_id": "unify_bullets",
       "module_path": "apps_rg/runtime/dispatch/unify_bullets_pa.py",
-      "loc": 5
+      "loc": 6
     },
     {
       "section_id": "unify_narrative",
       "module_path": "apps_rg/runtime/sections/unify_narrative_lane.py",
-      "loc": 1176
+      "loc": 1233
     },
     {
       "section_id": "unify_narrative",
       "module_path": "apps_rg/runtime/sections/unify_narrative_pa.py",
-      "loc": 139
+      "loc": 203
     },
     {
       "section_id": "unify_narrative",
       "module_path": "apps_rg/runtime/validators/unify_narrative_x2.py",
-      "loc": 565
+      "loc": 740
     },
     {
       "section_id": "unify_narrative",
       "module_path": "apps_rg/runtime/judges/unify_narrative_x1d.py",
-      "loc": 84
+      "loc": 86
     },
     {
       "section_id": "unify_narrative",
       "module_path": "apps_rg/runtime/dispatch/unify_narrative_pa.py",
-      "loc": 5
+      "loc": 6
+    },
+    {
+      "section_id": "ibm_bullets",
+      "module_path": "apps_rg/runtime/sections/ibm_bullets_graph_evidence.py",
+      "loc": 331
     },
     {
       "section_id": "ibm_bullets",
       "module_path": "apps_rg/runtime/sections/ibm_bullets_lane.py",
-      "loc": 1175
+      "loc": 1788
     },
     {
       "section_id": "ibm_bullets",
       "module_path": "apps_rg/runtime/sections/ibm_bullets_pa.py",
-      "loc": 108
+      "loc": 161
     },
     {
       "section_id": "ibm_bullets",
       "module_path": "apps_rg/runtime/validators/ibm_bullets_x2.py",
-      "loc": 742
+      "loc": 1071
     },
     {
       "section_id": "ibm_bullets",
       "module_path": "apps_rg/runtime/judges/ibm_bullets_x1d.py",
-      "loc": 88
+      "loc": 70
     },
     {
       "section_id": "ibm_bullets",
       "module_path": "apps_rg/runtime/dispatch/ibm_bullets_pa.py",
-      "loc": 5
+      "loc": 6
     },
     {
       "section_id": "ibm_narrative",
@@ -377,17 +487,17 @@
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/sections/ibm_narrative_lane_defaults.py",
-      "loc": 28
+      "loc": 32
     },
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
-      "loc": 843
+      "loc": 945
     },
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/sections/ibm_narrative_lane_runtime.py",
-      "loc": 570
+      "loc": 820
     },
     {
       "section_id": "ibm_narrative",
@@ -397,22 +507,27 @@
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/sections/ibm_narrative_pa.py",
-      "loc": 264
+      "loc": 328
+    },
+    {
+      "section_id": "ibm_narrative",
+      "module_path": "apps_rg/runtime/sections/ibm_narrative_repair_policy.py",
+      "loc": 28
     },
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/validators/ibm_narrative_x2.py",
-      "loc": 813
+      "loc": 1011
     },
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/judges/ibm_narrative_x1d.py",
-      "loc": 81
+      "loc": 83
     },
     {
       "section_id": "ibm_narrative",
       "module_path": "apps_rg/runtime/dispatch/ibm_narrative_pa.py",
-      "loc": 5
+      "loc": 6
     }
   ],
   "thresholds": {

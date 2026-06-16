@@ -377,6 +377,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
         c03,
         track_expansion,
         allowed_fact_ids=allowed,
+        fallback_to_unfiltered_when_no_allowed_match=True,
     )
     graph_targeting_capsule = build_graph_targeting_capsule(
         track_expansion,

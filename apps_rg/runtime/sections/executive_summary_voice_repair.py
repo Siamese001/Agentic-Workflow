@@ -56,7 +56,7 @@ _FORMULAIC_S2_RE = re.compile(
 )
 _S5_STRESS_ECHO_RE = re.compile(r"\bstress-testing\b", re.IGNORECASE)
 _S4_PARTICIPIAL_AFTER_COMPLEMENT_RE = re.compile(
-    r"(Complementing that regulatory foundation,)\s+re-architecting\b",
+    r"((?:Complementing that regulatory foundation|In parallel),)\s+re-architecting\b",
     re.IGNORECASE,
 )
 _S5_META_COMMENTARY_RE = re.compile(

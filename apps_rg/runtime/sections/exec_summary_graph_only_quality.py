@@ -14,6 +14,7 @@ from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_judge_packet import enrich_allowed_fact_packet_for_judges
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     EXEC_SUMMARY_MAX_SENTENCES,
     EXEC_SUMMARY_MIN_SENTENCES,
     check_cross_fact_display_conflation,
@@ -39,6 +40,36 @@ _RELIability_UNPROVEN_RE = re.compile(
     r"\bimprov(?:ing|ed)\s+reliability\s+and\s+auditability\b",
     re.IGNORECASE,
 )
+
+
+def _word_count(text: str) -> int:
+    return len(re.findall(r"\S+", str(text or "")))
+
+
+def _trim_graph_only_word_budget(sentences: list[str]) -> list[str]:
+    """Tighten low-signal graph-only prose without dropping fact anchors."""
+    out = list(sentences)
+    if _word_count(" ".join(out)) <= EXEC_SUMMARY_MAX_WORDS:
+        return out
+    rewrites: tuple[tuple[str, str], ...] = (
+        ("digital innovation programs", "digital innovation"),
+        ("regulated enterprise scale", "regulated scale"),
+        ("cataloging, and ", ""),
+        (" and automated validation frameworks", " and validation frameworks"),
+        (" enabling real-time stress testing", " enabling stress testing"),
+        (
+            "when additional synthesis clauses are required for the six-sentence band",
+            "for six-sentence coverage",
+        ),
+    )
+    for old, new in rewrites:
+        if _word_count(" ".join(out)) <= EXEC_SUMMARY_MAX_WORDS:
+            break
+        for idx, sent in enumerate(out):
+            if old in sent:
+                out[idx] = sent.replace(old, new, 1)
+                break
+    return out
 
 
 def _facts_index(facts: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -72,8 +103,8 @@ def _percent_tokens_in_text(text: str) -> list[str]:
 def _thesis_platform_opener() -> str:
     """Thesis-led S1: SVP IT strategy identity without mechanism-inventory (X2-safe)."""
     return (
-        "Technology strategy executive who aligns enterprise IT direction, governed AI "
-        "platform delivery, and innovation programs for regulated enterprise scale."
+        "Technology strategy executive who aligns enterprise IT direction, governed agentic "
+        "AI platform delivery, and innovation programs for regulated enterprise scale."
     )
 
 
@@ -703,7 +734,10 @@ def build_graph_only_executive_summary_from_facts(
         if pad not in sentences:
             sentences.append(pad)
             ledger.append(_ledger_row(pad, pad_ids))
-        resume = " ".join(sentences[:EXEC_SUMMARY_MAX_SENTENCES]).strip()
+        sentences = sentences[:EXEC_SUMMARY_MAX_SENTENCES]
+        resume = " ".join(_trim_graph_only_word_budget(sentences)).strip()
+    else:
+        resume = " ".join(_trim_graph_only_word_budget(sentences)).strip()
     return resume, ledger
 
 

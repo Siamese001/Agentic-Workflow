@@ -30,12 +30,12 @@ def test_ingress_bounds_briefing_before_pool_consumption() -> None:
     assert ingress.ingress_digest
 
 
-def test_brown_briefing_passes_through_at_24k_ingress_default() -> None:
-    """Brown SSOT (~15.2k chars) must not be section-trimmed at default ingress (token budget is authority)."""
+def test_brown_briefing_passes_through_when_under_ingress_budget() -> None:
+    """Compact Brown SSOT must not be section-trimmed at default ingress."""
     brief = (REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md").read_text(
         encoding="utf-8"
     )
-    assert len(brief) > 12_000
+    assert len(brief) > 3_000
     ingress = prepare_executive_summary_targeting_ingress(
         jd_text="SVP IT Strategy",
         briefing_raw=brief,
@@ -45,7 +45,8 @@ def test_brown_briefing_passes_through_at_24k_ingress_default() -> None:
     receipt = ingress.briefing_selection_receipt
     assert receipt is None or int(receipt.get("briefing_excluded_chars") or 0) == 0
     assert len(ingress.briefing_text_bounded) >= len(brief.strip()) - 32
-    assert "Post-Merger Technology Integration" in ingress.briefing_text_bounded
+    assert "integration" in ingress.briefing_text_bounded.lower()
+    assert "R26_0000001653" in ingress.briefing_text_bounded
 
 
 def test_section_proof_loader_uses_briefing_override(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -122,7 +122,7 @@ When using Codex in this repo:
 - Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
 - Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as repo-owned governance inputs until the neutral contract migration is complete.
 - Do not copy `.cursor` rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
-- Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
+- Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
 - If a Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
 - Validate the compatibility adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
 

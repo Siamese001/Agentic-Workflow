@@ -17,7 +17,7 @@ The RCA block (rule 001 § Runtime failure ⇒ RCA mandatory):
     - symptom: ...
     - root_cause: ... [DIRECTLY OBSERVED | DERIVED | UNRESOLVED]
     - evidence: ...
-    - fix_or_next: ...
+    - fix_or_next: fix: ... OR next: ...
     - recurrence_guard: ...
 
 On REFACTORING turns (code files changed / an edit tool invoked) the response MUST carry the
@@ -93,6 +93,10 @@ _RCA_MARKER_RE = re.compile(r"(?im)^\s*(?:\*\*\s*)?(?:layered\s+)?rca\b")
 _RCA_ROOT_CAUSE_RE = re.compile(r"(?i)root[_ ]cause\s*:")
 _RCA_EVIDENCE_RE = re.compile(r"(?i)\bevidence\s*:")
 _RCA_FIXNEXT_RE = re.compile(r"(?i)(?:fix[_ ]or[_ ]next|fix|next[_ ]step|next)\s*:")
+_RCA_FIX_OR_NEXT_FIELD_RE = re.compile(
+    r"(?im)^\s*(?:[-*]\s*)?fix[_ ]or[_ ]next\s*:\s*(?P<value>.*)$"
+)
+_FIXNEXT_DISCRIMINATOR_RE = re.compile(r"(?i)^\s*(?:fix|next)\s*:\s*\S")
 _RCA_SYMPTOM_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?(?:immediate\s+)?symptom\s*:")
 
 # Layered RCA (refactoring turns) — the deep symptom -> root descent.
@@ -156,9 +160,10 @@ _ADG_RUN_RE: tuple[re.Pattern[str], ...] = (
 
 _REMEDY = (
     "Add an RCA: block to the response (symptom · root_cause[graded §20] · evidence · "
-    "fix_or_next[§7] · recurrence_guard). Never stamp PASS/PARTIAL over a runtime-failure "
-    "signal. SSOT: .claude/rules/001-runtime-seam-execution.md § Runtime failure ⇒ "
-    "RCA mandatory; constitutional §37."
+    "fix_or_next[§7, value starts with fix: or next:] · recurrence_guard). Never stamp "
+    "PASS/PARTIAL over a runtime-failure signal. SSOT: "
+    ".claude/rules/001-runtime-seam-execution.md § Runtime failure ⇒ RCA mandatory; "
+    "constitutional §37."
 )
 
 _SHALLOW_REMEDY = (
@@ -256,6 +261,19 @@ def _line_value(text: str, pattern: re.Pattern[str]) -> str:
     nl = text.find("\n", m.end())
     seg = text[m.end(): nl if nl != -1 else len(text)]
     return re.sub(r"\s+", " ", seg).strip().lower()
+
+
+def _fix_or_next_disambiguated(text: str) -> bool:
+    """Explicit fix_or_next fields must say whether this turn fixed it or leaves a next step."""
+    m = _RCA_FIX_OR_NEXT_FIELD_RE.search(text)
+    if not m:
+        return True
+    return bool(_FIXNEXT_DISCRIMINATOR_RE.match(m.group("value").strip()))
+
+
+def _action_value(text: str) -> str:
+    """Strip the optional fix:/next: discriminator before generic-next checks."""
+    return re.sub(r"(?i)^\s*(?:fix|next)\s*:\s*", "", text).strip()
 
 
 def _plan_activity_signals(text: str) -> list[str]:
@@ -451,6 +469,7 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
         has_rca
         and bool(_RCA_ROOT_CAUSE_RE.search(text))
         and (bool(_RCA_EVIDENCE_RE.search(text)) or bool(_RCA_FIXNEXT_RE.search(text)))
+        and _fix_or_next_disambiguated(text)
     )
     refactor_turn = _is_refactor_turn(text)
     has_outcome = bool(_OUTCOME_FRAME_RE.search(text))
@@ -550,7 +569,7 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
         missing_confidence = not bool(_LAYERED_CONFIDENCE_RE.search(text))
         # The next step must derive from the diagnosis; a bare platitude does not.
         next_txt = _line_value(text, _RCA_FIXNEXT_RE)
-        next_step_generic = bool(next_txt) and bool(_GENERIC_NEXT_FULL_RE.match(next_txt))
+        next_step_generic = bool(next_txt) and bool(_GENERIC_NEXT_FULL_RE.match(_action_value(next_txt)))
         if (
             depth < 2
             or symptom_equals_root

@@ -62,12 +62,12 @@ def test_finalize_runtime_proof_run_emits_compact_links_without_dropping_legacy(
     finalize_runtime_proof_run(
         repo,
         "headline",
-        "qwen_vllm",
+        "external_claude",
         ad,
         run_id="run-1",
         section_id="headline",
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="external_claude",
         provider_attempted=True,
     )
 

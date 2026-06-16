@@ -65,6 +65,26 @@ SECTION_DEDICATED_TEST_FRAGMENTS: dict[str, tuple[str, ...]] = {
         "tests/unit/apps_rg/test_section_prompt_product_shape_drift.py",
         "tests/unit/apps_rg/test_section_prompt_judge_lockstep.py",
     ),
+    "insurtech_bullets": (
+        "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
+        "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
+    ),
+    "ey_bullets": (
+        "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
+        "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
+    ),
+    "insurtech_narrative": (
+        "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
+        "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
+    ),
+    "ey_narrative": (
+        "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
+        "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
+    ),
 }
 
 

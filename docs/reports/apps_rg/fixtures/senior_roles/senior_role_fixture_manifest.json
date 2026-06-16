@@ -222,9 +222,9 @@
         "HYPERSCALER_MARKETPLACE_GTM"
       ],
       "weight_override": {
-        "track_actuarial_risk_derivatives": 0.05,
-        "track_data_tech_cloud_ml": 0.55,
-        "track_genai_agentic": 0.4
+        "track_actuarial_risk_derivatives": 0.03,
+        "track_data_tech_cloud_ml": 0.7,
+        "track_genai_agentic": 0.27
       },
       "expected_pillar_ids": [
         "pillar_applied_ai_partner_architecture",

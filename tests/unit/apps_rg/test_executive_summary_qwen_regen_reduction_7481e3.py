@@ -1,7 +1,7 @@
 """Unit tests — qwen-prompt-regen-reduction-7481e3 (W1–W5 hardening).
 
 Covers:
-  W1: E0 metric transposition + two positives on SVP lane
+  W1: E0 metric transposition + single current positive on SVP lane
   W2: SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR removed + stock-bridge rule stated once
   W3: S4 non-stock opener directive in I0 judge_alignment_contract
   W4: self_check reduced to 5 fields + JUDGE_REGEN_MAX_ATTEMPTS default = 3
@@ -87,24 +87,24 @@ class TestW1E0MetricTransposition:
         )
 
 
-class TestW1SVPLaneTwoPositives:
-    """W1: strategy_executive lane must emit exactly two positive examples."""
+class TestW1SVPLaneSinglePositive:
+    """W1: strategy_executive lane emits one current positive example."""
 
-    def test_svp_lane_positive_tuple_has_two_entries(self):
+    def test_svp_lane_positive_tuple_has_one_entry(self):
         from apps_rg.prompt_assembly.e0_examples import _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED
-        assert len(_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED) == 2, (
-            f"SVP lane must have exactly 2 positives; got {_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED}"
+        assert len(_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED) == 1, (
+            f"SVP lane must have exactly 1 positive; got {_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED}"
         )
 
-    def test_svp_lane_includes_credibility_implied(self):
+    def test_svp_lane_uses_strategy_positive_only(self):
         from apps_rg.prompt_assembly.e0_examples import _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED
-        assert "exec_summary_pos_credibility_implied_001" in _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED
+        assert _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED == ("exec_summary_pos_svp_it_strategy_001",)
 
-    def test_build_e0_svp_lane_emits_two_positive_blocks(self):
+    def test_build_e0_svp_lane_emits_one_positive_block(self):
         from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
         e0 = build_executive_summary_e0(strategy_executive=True)
         count = e0.count("<positive_example ")
-        assert count == 2, f"SVP E0 must contain exactly 2 positive_example blocks; got {count}"
+        assert count == 1, f"SVP E0 must contain exactly 1 positive_example block; got {count}"
 
     def test_build_e0_non_svp_lane_emits_three_positive_blocks(self):
         from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
@@ -112,11 +112,11 @@ class TestW1SVPLaneTwoPositives:
         count = e0.count("<positive_example ")
         assert count == 3, f"Non-SVP E0 must contain exactly 3 positive_example blocks; got {count}"
 
-    def test_e0_lane_note_mentions_two_positives(self):
+    def test_e0_lane_note_mentions_one_positive(self):
         from apps_rg.prompt_assembly.e0_examples import build_executive_summary_e0
         e0 = build_executive_summary_e0(strategy_executive=True)
-        assert "two structurally diverse" in e0 or "two" in e0, (
-            "SVP lane note must mention two positives."
+        assert "one judge-aligned" in e0, (
+            "SVP lane note must mention one current positive."
         )
 
     def test_e0_lane_note_warns_about_metric_placeholders(self):

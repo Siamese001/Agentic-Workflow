@@ -222,6 +222,15 @@ def test_target_quality_competencies_pass_rigor_gates():
             "source_fact_ids": ["bul_unify_005"],
         },
         {
+            "category_label": "LLMOps & Reliability",
+            "terms": [
+                _term("audit-grade observability"),
+                _term("evaluation gauntlet design"),
+                _term("telemetry reliability lifecycle"),
+            ],
+            "source_fact_ids": ["bul_unify_005"],
+        },
+        {
             "category_label": "Commercial & Operating Impact",
             "terms": [
                 _term("IP-led platform commercialization"),

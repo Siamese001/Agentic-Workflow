@@ -3,7 +3,7 @@
 W5 acceptance test (Bullet Proof Bundle Redesign):
 - Verifies x2_base_resume_ngram_overlap gate catches verbatim base resume copies.
 - Verifies organic bullets (synthesized from proof bundle) pass the gate.
-- Verifies IBM GRAPH_BULLET_EVIDENCE_PACK never contains claim_text prose.
+- Verifies IBM role-episode evidence packs never contain claim_text prose.
 """
 from __future__ import annotations
 
@@ -111,7 +111,7 @@ class TestIbmBaseResumeHydration:
 
 
 class TestIbmProofBundleNoProse:
-    """Verify the IBM GRAPH_BULLET_EVIDENCE_PACK contains no claim_text prose."""
+    """Verify the IBM role-episode evidence pack contains no claim_text prose."""
 
     def test_canonical_ibm_facts_not_in_pack(self) -> None:
         """The old 'CANONICAL IBM FACTS' header must not appear in the new pack."""
@@ -127,28 +127,32 @@ class TestIbmProofBundleNoProse:
         assert "CANONICAL IBM FACTS" not in pack
         assert "REWRITE_FROM_FACT_POOL" not in pack
 
-    def test_pack_contains_graph_bullet_evidence_pack_marker(self) -> None:
+    def test_pack_contains_role_episode_evidence_pack_marker(self) -> None:
         payload: dict = {
             "selected_fact_plan": {"selection_method": "test_method"},
             "allowed_fact_ids": [],
         }
         pack = format_ibm_graph_bullet_evidence_pack(payload)
-        assert "GRAPH_BULLET_EVIDENCE_PACK" in pack
+        assert "IBM_ROLE_EPISODE_EVIDENCE_PACK" in pack
+        assert "role_episode_bundle_id" in pack
 
-    def test_pack_contains_mechanism_vocab_and_locked_metrics(self) -> None:
+    def test_pack_contains_mechanism_vocab_and_promotable_metrics(self) -> None:
         payload: dict = {
             "selected_fact_plan": {"selection_method": "test_method"},
             "allowed_fact_ids": [],
         }
         pack = format_ibm_graph_bullet_evidence_pack(payload)
         # mechanism_vocab tokens present
-        assert "AI platforms" in pack
-        assert "cloud migration" in pack
-        assert "data lineage" in pack
-        # locked metrics present
-        assert "99.9% uptime" in pack
-        assert "50% latency reduction" in pack
-        assert "$15M incremental revenue" in pack
+        assert "AWS" in pack
+        assert "reference architecture" in pack
+        assert "decision support" in pack
+        assert "co-sell" in pack
+        # metric authority is graph-native; retired base-resume metrics are not promoted as proof.
+        assert "metric_ibm_stress_test_cycle_weeks_to_hours" in pack
+        assert "HOLD and DO_NOT_PROMOTE metrics are forbidden" in pack
+        assert "99.9% uptime" not in pack
+        assert "50% latency reduction" not in pack
+        assert "$15M incremental revenue" not in pack
 
     def test_pack_contains_all_five_slots(self) -> None:
         payload: dict = {

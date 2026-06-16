@@ -133,9 +133,9 @@ def test_trigger_skipped_when_x2_not_passed() -> None:
     assert receipt.get("reason") == "requires_real_llm_and_x2_pass"
 
 
-def test_judge_regen_max_attempts_default_three(monkeypatch) -> None:
+def test_judge_regen_max_attempts_default_one(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", raising=False)
-    assert judge_regen_max_attempts() == 3
+    assert judge_regen_max_attempts() == 1
 
 
 def test_all_model_backed_judges_pass_helpers() -> None:

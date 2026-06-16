@@ -629,11 +629,23 @@ def build_graph_binding_materiality_summary(
         )
     pp_meta_map = pp_meta if isinstance(pp_meta, Mapping) else {}
 
+    graph_context_present = bool(
+        allowed_fact_ids
+        or support_refs
+        or binding_skill_refs
+        or pillar_ids
+        or lineage_refs
+        or compressed
+        or str(fec_map.get("final_evidence_digest") or "").strip()
+        or str(payload.get("proof_pool_digest") or pp_meta_map.get("proof_pool_digest") or "").strip()
+    )
+
     graph_summary = {
         "schema": "apps_rg.graph_binding_materiality_summary.v1",
         "section_id": str(section_id or payload.get("section_id") or "").strip(),
         "authority": "C0.3 graph bindings and FinalEvidenceContract only",
         "jd_and_briefing_policy": "targeting_context_only_not_claim_proof",
+        "graph_context_present": graph_context_present,
         "allowed_fact_ids": allowed_fact_ids[:max_n],
         "allowed_fact_count": len(allowed_fact_ids),
         "claim_support_graph_refs": (support_refs or binding_skill_refs)[:max_n],
@@ -653,6 +665,12 @@ def build_graph_binding_materiality_summary(
     if legacy_summary:
         merged = dict(legacy_summary)
         merged.update(graph_summary)
+        if str(legacy_summary.get("status") or "") == "NO_GRAPH_BINDING_METADATA" and graph_context_present:
+            merged["status"] = "GRAPH_CONTEXT_PRESENT"
+            merged["judge_instruction"] = (
+                "graph context is available for PA/judge parity; candidate output still must cite "
+                "source facts or graph bindings when making claims"
+            )
         return merged
     return graph_summary
 

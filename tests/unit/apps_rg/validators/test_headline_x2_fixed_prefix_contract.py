@@ -98,7 +98,7 @@ def _failed_ids(gates: list[Any]) -> list[str]:
 
 
 def test_valid_canonical_derived_passes() -> None:
-    hl = "SVP Engineering | Lakehouse Microservices | AI Lifecycle Workflows | HPC Trading Architectures"
+    hl = "SVP Engineering | Agentic Runtime Catalogs | Distributed Computing Architectures | HPC Trading Workflows"
     gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
     assert _failed_ids(gates) == []
 
@@ -302,7 +302,7 @@ def test_snapshot_raw_jd_alignment_unaffected_by_normalize_structural_defaults()
 
 
 def test_mocked_runtime_with_passing_x2_still_not_x3_allow() -> None:
-    hl = "SVP Engineering | Lakehouse Microservices | AI Lifecycle Workflows | HPC Trading Architectures"
+    hl = "SVP Engineering | Agentic Runtime Catalogs | Distributed Computing Architectures | HPC Trading Workflows"
     kwargs = _base_kwargs(
         hl,
         runtime_generation_status="MOCKED",

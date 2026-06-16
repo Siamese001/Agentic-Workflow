@@ -20,9 +20,18 @@ from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 
-def test_lane_modules_match_seven_dispatch_modules() -> None:
-    assert len(LANE_DISPATCH_MODULES) == 7
-    assert LANE_DISPATCH_MODULES[0].endswith("headline_lane")
+def test_lane_modules_cover_current_dispatch_families() -> None:
+    assert LANE_DISPATCH_MODULES == (
+        "apps_rg.runtime.sections.headline_lane",
+        "apps_rg.runtime.sections.executive_summary_lane",
+        "apps_rg.runtime.sections.unify_bullets_lane",
+        "apps_rg.runtime.sections.unify_narrative_lane",
+        "apps_rg.runtime.sections.ibm_bullets_lane",
+        "apps_rg.runtime.sections.ibm_narrative_lane",
+        "apps_rg.runtime.sections.role_episode_lane",
+        "apps_rg.runtime.sections.competencies_lane",
+    )
+    assert len(LANE_DISPATCH_MODULES) < len(GENERATED_LANES)
 
 
 def test_ok_for_recipe_context_contract() -> None:
@@ -37,7 +46,7 @@ def test_ok_for_recipe_context_contract() -> None:
         failure_reason="",
         provider_call_count=0,
         locked_sections_provider_calls_detected=False,
-        lanes_executed=7,
+        lanes_executed=len(GENERATED_LANES),
         lane_outputs_valid=True,
         final_merge_attempted=True,
     )
@@ -89,7 +98,7 @@ def test_artifact_dir_outside_repo_rejected() -> None:
         )
 
 
-def test_section_provider_calls_has_seven_lanes() -> None:
+def test_section_provider_calls_has_current_generated_lanes() -> None:
     repo = find_repo_root()
     art = repo / "artifacts" / "apps_rg" / "runs" / f"phase0_pytest_{uuid.uuid4().hex[:10]}"
     art.mkdir(parents=True, exist_ok=True)
@@ -101,12 +110,12 @@ def test_section_provider_calls_has_seven_lanes() -> None:
         ModularResumeProfile(),
     )
     data = json.loads((art / res.section_provider_calls_ref).read_text(encoding="utf-8"))
-    assert len(data["records"]) == 7
+    assert len(data["records"]) == len(GENERATED_LANES)
     lanes = {r["section_lane"] for r in data["records"]}
     assert lanes == set(GENERATED_LANES)
 
 
-def test_lane_names_align_with_generated_lanes_order() -> None:
+def test_role_episode_dispatch_module_fans_out_to_generated_role_lanes() -> None:
     def _lane_tail(mod: str) -> str:
         tail = mod.rsplit(".", 1)[-1]
         if tail.endswith("_lane"):
@@ -114,4 +123,13 @@ def test_lane_names_align_with_generated_lanes_order() -> None:
         return tail.replace("_dispatch", "")
 
     tails = tuple(_lane_tail(m) for m in LANE_DISPATCH_MODULES)
-    assert tails == GENERATED_LANES
+    role_episode_lanes = {
+        lane for lane in GENERATED_LANES if lane.startswith(("insurtech_", "ey_"))
+    }
+    assert "role_episode" in tails
+    assert role_episode_lanes == {
+        "insurtech_bullets",
+        "insurtech_narrative",
+        "ey_bullets",
+        "ey_narrative",
+    }

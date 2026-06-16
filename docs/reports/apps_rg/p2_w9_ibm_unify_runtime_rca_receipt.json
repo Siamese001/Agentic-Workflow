@@ -1,6 +1,6 @@
 {
   "schema": "p2_w9_ibm_unify_runtime_rca_v1",
-  "generated_at": "2026-06-15T21:31:35Z",
+  "generated_at": "2026-06-16T16:16:30Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-W9-IBM-UNIFY-RUNTIME-CLOSEOUT",
   "unify_narrative_prior_blocker": "X3_ALLOW with proof_eligible=false: unify_narrative lane omitted compute_lane_proof_bundle and run_manifest proof_eligible (cli PASS_NONCERTIFYING_RUNTIME_PROOF).",
@@ -17,38 +17,11 @@
   "post_fix_live_rows": {
     "ibm_bullets": {
       "section": "ibm_bullets",
-      "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py -q tests -k apps_rg --tb=short",
       "status": "BLOCKED",
-      "exit_code": 0,
-      "latest_run_dir": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\apps-rg-wave2-tests\\artifacts\\apps_rg\\runtime_proofs\\contract_harness\\_graph_story_f69c182f8c67\\ibm_bullets",
-      "provider_classification": "REAL_LLM",
-      "x2_status": "FAIL",
-      "x3_disposition": "X3_BLOCK",
-      "proof_eligible": null,
-      "c03_graph_bound_status": "BOUND",
-      "c03_graph_hop_paths_count": 14,
+      "blocker": "no_latest_real_run_pointer",
+      "exit_code": null,
       "broad_skills_ledger_used_as_authority": false,
-      "fallback_to_broad_skills_ledger_possible": false,
-      "proof_pool_type": "augmented_skills_graph",
-      "command_output_path": "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/command_output.txt",
-      "artifact_paths": [
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/l2_output.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/l6_shadow_eval_package.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/x3_disposition.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/x2_gate_outputs.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/x1d_llm_judge_outputs.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/provider_request.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/command_output.txt",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/real_l2_generation_result.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/canonical_claim_ledger_v2.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/text_claim_coverage.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/parsed_output.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/runtime_payload.json",
-        "artifacts/apps_rg/runtime_proofs/contract_harness/_graph_story_f69c182f8c67/ibm_bullets/provider_response.json"
-      ],
-      "validator_status": "UNKNOWN",
-      "blocker": "x3_disposition=X3_BLOCK",
-      "live_x3_allow_claimed": false
+      "fallback_to_broad_skills_ledger_possible": false
     },
     "ibm_narrative": {
       "section": "ibm_narrative",
