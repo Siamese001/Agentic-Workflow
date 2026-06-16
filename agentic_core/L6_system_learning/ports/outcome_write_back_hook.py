@@ -7,7 +7,7 @@ update_qwen_confidence_prior() (for QWEN tier).
 Contracts:
 - MUST be synchronous and fast (no network I/O in hot path).
 - MUST emit structured telemetry on failure (never fully silent).
-- MUST NOT mutate ``HEALING_CONFIDENCE_HIGH`` / ``HEALING_CONFIDENCE_MEDIUM`` thresholds at runtime (SSOT resolves them).
+- MUST NOT mutate retired heal-confidence thresholds at runtime.
 - MUST NOT mutate healing_input or decision.
 - MUST always execute (no retry-count short-circuit).
   Forced escalation applies to routing only, not write-back.

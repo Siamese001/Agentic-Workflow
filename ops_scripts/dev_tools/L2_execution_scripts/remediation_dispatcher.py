@@ -151,16 +151,6 @@ def _make_execution_context(payload, target: str):
     )
 
 
-from agentic_core.L3_orchestration.healers.healing_tier_config import (
-    load_default_healing_tier_config,
-)
-from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import (
-    DefaultHealingProviderInvoker,
-    HealingProviderInvoker,
-    dispatch_healing,
-)
-from agentic_core.L3_orchestration.healers.healing_tier_types import FailureSignal
-
 from agentic_core.L2_execution.types.heal_contract_types import (
     CombinedHealResult,
     HealCheckResult,
@@ -288,7 +278,7 @@ OUTPUT_FILENAME = "combined_heal_result.json"
 # gated_by_confidence: minimum confidence score required before tier-2/3 LLM dispatch.
 # Healing operations below this threshold are downgraded to PLAN-ONLY to prevent
 # low-confidence mutations from propagating through the pipeline.
-MINIMUM_HEAL_CONFIDENCE: float = 0.30  # P(fix_correct) floor — tune via healing_tier_config
+MINIMUM_HEAL_CONFIDENCE: float = 0.30  # P(fix_correct) floor for retained audit guards.
 
 HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
@@ -734,9 +724,9 @@ def _tier_escalate(
     result: HealCheckResult,
     *,
     retry_count: int = 0,
-    invoker: HealingProviderInvoker | None = None,
+    invoker: Any | None = None,
 ) -> str:
-    """Escalate a FAILED heal result to the confidence-tier LLM system.
+    """Return the retired confidence-tier escalation decision.
 
     Guards:
       1. result.status must be FAILED (explicit check)
@@ -744,14 +734,15 @@ def _tier_escalate(
       3. (check_id, healer_name) must be in HEALER_ESCALATION_ALLOWLIST
       4. registered healer identity must match expected healer_name
 
-    Builds a FailureSignal from EscalationContext (never from raw notes),
-    calls dispatch_healing, and returns a deterministic audit note string.
+    The old provider escalation stack imported a deleted L3 healer config
+    module. E4 same-authority repair is the retained path; provider escalation
+    is now a deterministic skip.
 
     Args:
         check_id: The check_id that failed healing.
         result: The FAILED HealCheckResult from the healer.
         retry_count: Monotonic retry counter (drives tier selection).
-        invoker: Injectable provider invoker (default: DefaultHealingProviderInvoker).
+        invoker: Deprecated compatibility parameter; ignored.
 
     Returns:
         A deterministic audit note string, or a skip note if guards block.
@@ -775,74 +766,10 @@ def _tier_escalate(
             f"healer={escalation_ctx.healer_name} reason=not_in_allowlist"
         )
 
-    if invoker is None:
-        invoker = DefaultHealingProviderInvoker()
-
-    # Re-use the context we already created for the allowlist check
-    ctx = escalation_ctx
-
-    signal = FailureSignal(
-        source_agent="remediation_dispatcher",
-        failure_type=ctx.failure_type,
-        error_signature=ctx.check_id,
-        trace_id=ctx.trace_id,
-        context={"healer_name": ctx.healer_name, "summary": ctx.summary},
-        retry_count=ctx.retry_count,
-        blast_radius_estimate=ctx.blast_radius_estimate,
-    )
-    config = load_default_healing_tier_config()
-    decision, record = dispatch_healing(
-        signal.to_healing_input(),
-        config,
-        invoker=invoker,
-        agent_name="remediation_dispatcher",
-    )
-
-    # gated_by_confidence: block dispatch when confidence is below floor
-    if decision.heal_confidence < MINIMUM_HEAL_CONFIDENCE:
-        return (
-            f"tier_escalation_skipped: check_id={check_id} "
-            f"reason=confidence_below_floor "
-            f"confidence={decision.heal_confidence:.4f} "
-            f"floor={MINIMUM_HEAL_CONFIDENCE}"
-        )
-
-    # Determine decision reason
-    if ctx.retry_count >= 2:
-        decision_reason = EscalationDecisionReason.RETRY_COUNT_THRESHOLD.value
-    elif healer_pair in HEALER_ESCALATION_ALLOWLIST:
-        decision_reason = EscalationDecisionReason.POLICY_ALLOWLIST.value
-    else:
-        decision_reason = EscalationDecisionReason.EXPLICIT_FLAG.value
-
-    # Map tier to provider
-    provider_map = {
-        "QWEN_VLLM": "qwen_vllm",
-        "GEMINI_2_5_PRO": "gemini",
-        "LOCAL_AGENT": "local_agent",
-    }
-    provider = provider_map.get(decision.tier.value, "unknown")
-
-    # Create canonical payload
-    canonical_payload = CanonicalEscalationPayload(
-        provider=provider,
-        model_id=record.model_id,
-        decision_reason=decision_reason,
-        retry_count=ctx.retry_count,
-        allowlist_check_id=check_id,
-        allowlist_healer_name=escalation_ctx.healer_name,
-        authoritative_healer_name=escalation_ctx.healer_name,
-    )
-
-    # Include canonical payload in the note (separate from trace_id)
-    payload_str = canonical_payload.to_canonical_string()
     return (
-        f"tier_escalation: check_id={check_id} "
-        f"tier={decision.tier.value} "
-        f"model={record.model_id} "
-        f"confidence={decision.heal_confidence:.4f} "
-        f"trace_id={ctx.trace_id} "
-        f"payload={payload_str}"
+        f"tier_escalation_skipped: check_id={check_id} "
+        f"healer={escalation_ctx.healer_name} "
+        "reason=retired_confidence_provider_escalation"
     )
 
 
@@ -852,7 +779,7 @@ def _invoke_healer(
     *,
     repo_root: Path | None = None,
     apply: bool = False,
-    tier_invoker: HealingProviderInvoker | None = None,
+    tier_invoker: Any | None = None,
     retry_count: int = 0,
 ) -> HealCheckResult:
     """Invoke a registered healer safely, converting errors to FAILED results.

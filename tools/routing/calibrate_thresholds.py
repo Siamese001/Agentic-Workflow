@@ -1,16 +1,12 @@
 """Routing threshold calibration tool (Wave 6 P6.1).
 
-Reads HealClassifierTelemetry events from a JSONL feed and produces:
+Reads legacy HealClassifierTelemetry events from a JSONL feed and produces:
   - Per-tier Brier scores (calibration quality)
   - Platt-scaled threshold recommendations for HIGH / MEDIUM cutoffs
   - A summary report written to `docs/reports/routing_calibration/`
 
-The tool is pure-Python (no sklearn dependency) and is safe to run against
-an empty feed — with no data it returns a no-op report. Callers should
-regenerate thresholds by updating ``HEALING_CONFIDENCE_HIGH`` /
-``HEALING_CONFIDENCE_MEDIUM`` env defaults via
-``routing_thresholds_ssot.py`` (after SVP review)
-via a manual PR after reviewing the recommendation.
+The confidence-router path is retired for app execution. This tool is
+diagnostic only; it must not prescribe env updates or config changes.
 
 Usage (via `python -m tools.routing.calibrate_thresholds`):
 
@@ -198,22 +194,18 @@ def render_markdown(report: CalibrationReport) -> str:
         lines.append(f"| {tier} | {count} | {brier:.4f}{brier_marker} | {rate:.4f} |")
     lines.append("")
 
-    lines.append("## Recommended Thresholds")
+    lines.append("## Legacy Recommendations")
     lines.append("")
     lines.append(
-        f"- **HEALING_CONFIDENCE_HIGH** (HIGH cutoff, target success ≥ 0.85): "
+        f"- HIGH cutoff candidate (legacy classifier diagnostic, target success >= 0.85): "
         f"`{report.recommended_high_threshold}`"
     )
     lines.append(
-        f"- **HEALING_CONFIDENCE_MEDIUM** (MEDIUM cutoff, target success ≥ 0.50): "
+        f"- MEDIUM cutoff candidate (legacy classifier diagnostic, target success >= 0.50): "
         f"`{report.recommended_medium_threshold}`"
     )
     lines.append("")
-    lines.append(
-        "To apply after review: set paired env knobs `HEALING_CONFIDENCE_HIGH` / "
-        "`HEALING_CONFIDENCE_MEDIUM` (validated in "
-        "`agentic_core/L2_execution/healers/routing_thresholds_ssot.py`)."
-    )
+    lines.append("No operator action: confidence-router env/config knobs are retired.")
     lines.append("")
     lines.append("## Alerts")
     lines.append("")

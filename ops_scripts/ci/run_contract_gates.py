@@ -1087,11 +1087,10 @@ def main():
         ("RG-JD0 agentic_core JD SSOT boundary", "ops_scripts/ci/check_agentic_core_no_apps_rg_jd_ssot.py"),
         # RG-RESUME0 — apps_rg resume resolution / default resume SSOT must not appear under agentic_core/.
         ("RG-RESUME0 agentic_core resume SSOT boundary", "ops_scripts/ci/check_agentic_core_no_apps_rg_resume_ssot.py"),
-        # HEAL-SSOT — L2 heal-confidence band bounds must resolve via routing_thresholds_ssot;
-        # forbid legacy HEALING_CONFIDENCE_X/Y path_constants imports in prod code (tests exempt);
-        # docs + .env.example must not advertise SOVEREIGN_*_CONFIDENCE; env_key_consumer_map
-        # cites HEALING_CONFIDENCE_HIGH/MEDIUM. Bypass: HEAL_ROUTING_SSOT_BYPASS=1.
-        ("HEAL-SSOT heal confidence routing thresholds (fail-closed)", "ops_scripts/ci/check_heal_routing_threshold_ssot.py"),
+        # HEAL-DEPRECATION — keep L2 E4 same-authority repair, but reject
+        # retired confidence-router env/config surfaces in apps and env files.
+        # Bypass: HEAL_ROUTING_DEPRECATION_BYPASS=1.
+        ("HEAL-DEPRECATION retired confidence routing guard", "ops_scripts/ci/check_heal_routing_threshold_ssot.py"),
         # WG1 — ADG wiring gap detector (4 modes: registry-gaps,
         # instantiation-orphans, port-adapter-gaps, dead-imports).
         # Advisory by default (--gate flag not passed); activates blocking via

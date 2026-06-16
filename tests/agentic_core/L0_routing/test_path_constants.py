@@ -12,13 +12,9 @@ class TestPathConstants:
     """Test suite for path constants module."""
 
     def test_heal_confidence_defaults(self):
-        """High / medium paired SSOT defaults satisfy ordering invariant."""
-        from agentic_core.L2_execution.healers.routing_thresholds_ssot import (
-            DEFAULT_HEAL_CONFIDENCE_HIGH,
-            DEFAULT_HEAL_CONFIDENCE_MEDIUM,
-        )
-
-        assert DEFAULT_HEAL_CONFIDENCE_MEDIUM < DEFAULT_HEAL_CONFIDENCE_HIGH
+        """Deprecated heal confidence env aliases are not exposed here."""
+        assert not hasattr(path_constants, "HEALING_CONFIDENCE_X")
+        assert not hasattr(path_constants, "HEALING_CONFIDENCE_Y")
         assert hasattr(path_constants, "SSOT_SCORE_THRESHOLD_DET")
 
     def test_ssot_score_thresholds(self):
@@ -60,7 +56,6 @@ class TestPathConstants:
             "apps_lic",
             "apps_rg",
             "apps_eval",
-            "apps_exec",
             "apps_research",
             "apps_shared",
             "apps_underwriting_ai",

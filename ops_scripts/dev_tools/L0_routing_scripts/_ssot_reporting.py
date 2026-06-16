@@ -180,15 +180,10 @@ logger = logging.getLogger("UnifiedSovereign")
 DEFAULT_TIMEOUT = 10
 
 
-def _confidence_band_axes() -> tuple[float, float]:
-    """Return (HIGH cutoff, MEDIUM cutoff) from heal routing SSOT."""
+def _confidence_band_axes() -> tuple[None, None]:
+    """Confidence-router bands are retired; E4 repair receipts are authoritative."""
 
-    from agentic_core.L2_execution.healers.routing_thresholds_ssot import (  # noqa: PLC0415
-        load_healing_confidence_thresholds,
-    )
-
-    th = load_healing_confidence_thresholds()
-    return float(th.high), float(th.medium)
+    return None, None
 
 
 def assert_no_persistent_write(layer: str, operation: str) -> None:
@@ -660,11 +655,9 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
                 "min": round(min(conf_vals), 4) if conf_vals else None,
                 "avg": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None,
                 "max": round(max(conf_vals), 4) if conf_vals else None,
-                f"band_local_gte{int(_band_high * 100):03d}": sum(1 for c in conf_vals if c >= _band_high),
-                f"band_qwen_{int(_band_medium * 100):03d}_{int(_band_high * 100) - 1:03d}": sum(
-                    1 for c in conf_vals if _band_medium <= c < _band_high
-                ),
-                f"band_gemini_lt{int(_band_medium * 100):03d}": sum(1 for c in conf_vals if c < _band_medium),
+                "band_routing_deprecated": True,
+                "band_high": _band_high,
+                "band_medium": _band_medium,
             },
             "tier_routing": dict(tier_counts),
             "strategy_weights": ml.get("strategy_weights", {}),
