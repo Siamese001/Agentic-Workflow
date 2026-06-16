@@ -9,7 +9,7 @@ and exits without deleting anything. Cleanup is an explicit operator action:
 Hard safety envelope — a worktree is deleted ONLY when ALL hold:
   * its branch matches an ENABLED reap prefix. Default is ``chat/`` + ``feat/``. ``chat/*``
     worktrees must additionally live under the legacy chat-worktree root (``.chat-worktrees/``);
-    ``feat/*`` worktrees may live as registered siblings. Long-lived ``codex/``/``claude/`` worktrees
+    ``feat/*`` worktrees may live as registered siblings. Long-lived ``codex-``/``claude-`` worktrees
     and the primary checkout are NEVER eligible by default. An operator can opt other prefixes in
     via ``WORKTREE_REAP_BRANCH_PREFIXES``; those may live anywhere (sibling worktrees);
   * it does NOT carry a ``.keep-worktree`` marker file (universal opt-out — kept regardless);
@@ -143,7 +143,7 @@ def _min_age_seconds() -> int:
 # a ``feat/*`` worktree is a legacy delivery vehicle, so once its branch is merged into the
 # trunk and its tree is clean it is a *delivered leftover*. The
 # merged-into-trunk + clean-tree + grace-window guards below protect any in-progress/unmerged work,
-# so a ``feat/*`` you are still using is NEVER deleted. ``codex/``/``claude/`` can be opted in via
+# so a ``feat/*`` you are still using is NEVER deleted. ``codex-``/``claude-`` can be opted in via
 # ``WORKTREE_REAP_BRANCH_PREFIXES``; a ``.keep-worktree`` marker exempts any worktree regardless.
 _DEFAULT_REAP_PREFIXES: tuple[str, ...] = ("chat/", "feat/")
 

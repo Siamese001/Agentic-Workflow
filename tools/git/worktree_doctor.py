@@ -1,15 +1,16 @@
 """worktree-doctor — classify every git worktree and repair runtime links.
 
 The current model is explicit named sibling worktrees. Preferred durable lanes use
-IDE-owned ``codex/*`` or ``claude/*`` branches; ``work/*`` and ``feat/*`` are accepted
-legacy durable work; ``chat/*`` is legacy ephemeral work that should not be used for
-new work. This tool gives the visibility that prevents pileup without auto-deleting
-human-named branches:
+IDE-owned ``codex-*`` or ``claude-*`` branches whose worktree folder basename exactly
+matches the local branch name. ``codex/*``, ``claude/*``, ``work/*`` and ``feat/*``
+are legacy durable work; ``chat/*`` is legacy ephemeral work that should not be used
+for new work. This tool gives the visibility that prevents pileup without
+auto-deleting human-named branches:
 
   * ``report`` (default) — list every worktree, classify it (protected / ephemeral
-    ``chat/`` / durable ``codex/``, ``claude/``, ``work/`` or ``feat/`` /
-    non-canonical / detached), and recommend an action (stale-merged -> remove
-    explicitly / active).
+    ``chat/`` / durable ``codex-*`` or ``claude-*`` / legacy durable / non-canonical
+    / detached), and recommend an action (stale-merged -> remove explicitly /
+    active).
   * ``--link [<worktree>]`` — (re)create the gitignored runtime-cache junctions for a
     worktree that is missing them (the C0.2-on-fresh-worktree fix). Item #2 repair path.
   * ``--json`` — machine-readable classification.
@@ -29,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -45,10 +47,26 @@ except ImportError:  # pragma: no cover - fallback when package layout differs
     summarize = None  # type: ignore[assignment]
 
 PROTECTED = ("main", "master", "release")
-IDE_OWNER_PREFIXES = {"codex/": "codex", "claude/": "claude"}
-CANONICAL_PREFIXES = ("codex/", "claude/", "work/", "feat/", "chat/")
+IDE_OWNER_PREFIXES = {"codex-": "codex", "claude-": "claude"}
+LEGACY_OWNER_PREFIXES = {"codex/": "codex", "claude/": "claude"}
+CANONICAL_PREFIXES = ("codex-", "claude-")
+LEGACY_DURABLE_PREFIXES = ("codex/", "claude/", "work/", "feat/")
 EPHEMERAL_PREFIX = "chat/"
-DURABLE_PREFIXES = ("codex/", "claude/", "work/", "feat/")
+LOW_SIGNAL_GENERATED_RE = re.compile(r"^[a-z]+-[a-z]+-[0-9a-f]{6,}$")
+AGENT_BRANCH_RE = re.compile(r"^(?:codex|claude)-[a-z0-9][a-z0-9-]*[a-z0-9]$")
+GENERIC_TOPIC_TOKENS = {
+    "branch",
+    "change",
+    "changes",
+    "fix",
+    "misc",
+    "task",
+    "temp",
+    "test",
+    "update",
+    "wip",
+    "work",
+}
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -97,7 +115,49 @@ def _branch_owner(branch: str) -> str:
     for prefix, owner in IDE_OWNER_PREFIXES.items():
         if branch.startswith(prefix):
             return owner
+    for prefix, owner in LEGACY_OWNER_PREFIXES.items():
+        if branch.startswith(prefix):
+            return owner
     return "legacy" if branch.startswith(("work/", "feat/", "chat/")) else ""
+
+
+def _topic_from_agent_branch(branch: str) -> str:
+    for prefix in IDE_OWNER_PREFIXES:
+        if branch.startswith(prefix):
+            return branch[len(prefix) :]
+    return ""
+
+
+def _topic_is_high_signal(topic: str) -> bool:
+    if not topic or "/" in topic or "\\" in topic:
+        return False
+    if topic != topic.lower():
+        return False
+    if LOW_SIGNAL_GENERATED_RE.fullmatch(topic):
+        return False
+    tokens = [part for part in topic.split("-") if part]
+    if len(tokens) < 2:
+        return False
+    if topic in GENERIC_TOPIC_TOKENS:
+        return False
+    if all(token in GENERIC_TOPIC_TOKENS for token in tokens):
+        return False
+    return True
+
+
+def _contract_violations(branch: str, path: Path) -> list[str]:
+    violations: list[str] = []
+    if "/" in branch or "\\" in branch:
+        violations.append("branch contains a slash namespace")
+    if not AGENT_BRANCH_RE.fullmatch(branch):
+        violations.append("branch does not start with codex- or claude-")
+    else:
+        topic = _topic_from_agent_branch(branch)
+        if not _topic_is_high_signal(topic):
+            violations.append("branch topic is not high-signal")
+    if path.name != branch:
+        violations.append("worktree folder basename does not equal branch")
+    return violations
 
 
 def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = False) -> dict:
@@ -118,14 +178,22 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
 
         if detached:
             kind = "detached"
+            contract_violations: list[str] = []
         elif branch in PROTECTED:
             kind = "protected"
+            contract_violations = []
         elif branch.startswith(EPHEMERAL_PREFIX):
             kind = "ephemeral"
-        elif branch.startswith(DURABLE_PREFIXES):
+            contract_violations = _contract_violations(branch, path)
+        elif branch.startswith(CANONICAL_PREFIXES):
             kind = "durable"
+            contract_violations = _contract_violations(branch, path)
+        elif branch.startswith(LEGACY_DURABLE_PREFIXES):
+            kind = "legacy-durable"
+            contract_violations = _contract_violations(branch, path)
         else:
             kind = "non-canonical"
+            contract_violations = _contract_violations(branch, path)
 
         merged = clean = None
         if kind not in ("protected", "detached"):
@@ -147,6 +215,8 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
             action = "active — unmerged work (keep)"
         elif not clean:
             action = "active — uncommitted changes (keep)"
+        elif contract_violations:
+            action = "stale-merged naming violation — remove or rename/move explicitly"
         elif kind == "ephemeral":
             action = "stale-merged legacy chat worktree — remove explicitly"
         else:
@@ -162,7 +232,10 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
                 "merged": merged,
                 "clean": clean,
                 "keep_marker": keep,
-                "canonical": kind in ("protected", "ephemeral", "durable"),
+                "canonical": kind == "protected" or (
+                    kind == "durable" and not contract_violations
+                ),
+                "contract_violations": contract_violations,
                 "action": action,
             }
         )
@@ -186,11 +259,13 @@ def _render_table(result: dict) -> str:
         if r["keep_marker"]:
             flags.append("keep")
         if not r["canonical"]:
-            flags.append("non-canonical-prefix")
+            flags.append("naming-contract")
         flag_s = f" [{', '.join(flags)}]" if flags else ""
         owner = f"/{r['owner']}" if r.get("owner") in ("codex", "claude") else ""
         lines.append(f"  • {r['branch']}  ({r['kind']}{owner}){flag_s}")
         lines.append(f"      {r['path']}")
+        if r.get("contract_violations"):
+            lines.append(f"      ! {'; '.join(r['contract_violations'])}")
         lines.append(f"      → {r['action']}")
     # Advisory summary.
     stale = [r for r in rows if r["action"].startswith("stale-merged")]
@@ -203,9 +278,9 @@ def _render_table(result: dict) -> str:
     if noncanon:
         lines.append("")
         lines.append(
-            f"{len(noncanon)} non-canonical branch prefix(es) — preferred taxonomy is "
-            "codex/* or claude/* (IDE-owned durable), work/* or feat/* (legacy durable), "
-            "and chat/* (legacy ephemeral); migrate or set .keep-worktree."
+            f"{len(noncanon)} naming-contract violation(s) — preferred taxonomy is "
+            "codex-* or claude-* with the worktree folder basename exactly matching the "
+            "branch; codex/*, claude/*, work/*, feat/*, and chat/* are legacy."
         )
     return "\n".join(lines)
 

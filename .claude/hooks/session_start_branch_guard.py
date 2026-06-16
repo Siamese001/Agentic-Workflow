@@ -8,18 +8,18 @@ one timestamped worktree per chat. If a session starts on a protected branch
 (``main``/``master`` by default), this hook emits guidance for choosing or creating a
 named sibling worktree such as:
 
-    git worktree add ../Agentic-Workflow-FRESH-claude-apps-rg -b claude/apps-rg origin/main
+    git worktree add ../Agentic-Workflow-FRESH-worktrees/claude-apps-rg -b claude-apps-rg origin/main
 
 The hard enforcement remains in ``before_file_edit_branch_guard.py``: edits to a
-protected checkout are blocked, while edits inside any non-protected branch worktree
-are allowed.
+protected checkout are blocked, and editable worktrees must use the agent-owned
+same-name branch/folder contract.
 
 Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
-Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>``).
-Worktree directory prefix: ``WORKTREE_DIR_PREFIX=Agentic-Workflow-FRESH``.
+Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default
+``<repo-parent>/<repo-name>-worktrees``).
 IDE owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
-Branch prefix override: ``WORKTREE_BRANCH_PREFIX=codex/|claude/``.
+Branch prefix override: ``WORKTREE_BRANCH_PREFIX=codex-|claude-``.
 """
 
 from __future__ import annotations
@@ -34,6 +34,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
 DEFAULT_TOPIC = "apps-rg"
 DEFAULT_IDE_OWNER = "claude"
+AGENT_OWNERS = {"codex", "claude"}
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -65,13 +66,19 @@ def _ide_owner() -> str:
 
 
 def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or f"{_ide_owner()}/"
-    return raw if raw.endswith("/") else f"{raw}/"
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip().lower()
+    if raw:
+        owner = raw.replace("/", "-").strip("-")
+        if owner in AGENT_OWNERS:
+            return f"{owner}-"
+    return f"{_ide_owner()}-"
 
 
 def _worktree_parent() -> Path:
     override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
-    return Path(override) if override else REPO_ROOT.parent
+    if override:
+        return Path(override)
+    return REPO_ROOT.parent / f"{_primary_checkout_name()}-worktrees"
 
 
 def _primary_checkout_name() -> str:
@@ -86,22 +93,12 @@ def _primary_checkout_name() -> str:
     return REPO_ROOT.name
 
 
-def _worktree_dir_prefix() -> str:
-    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
-    return raw or _primary_checkout_name()
-
-
 def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
     return f"{_branch_prefix()}{topic}"
 
 
 def _worktree_dir_name(topic: str = DEFAULT_TOPIC) -> str:
-    prefix = _worktree_dir_prefix()
-    owner = _ide_owner()
-    owner_suffix = f"-{owner}"
-    if prefix == owner or prefix.endswith(owner_suffix):
-        return f"{prefix}-{topic}"
-    return f"{prefix}-{owner}-{topic}"
+    return _branch_name(topic)
 
 
 def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
@@ -191,10 +188,11 @@ def _guidance(branch: str) -> str:
         "(replace `apps-rg` with the durable topic name):\n"
         f"    git worktree add {wt_path} -b {new_branch} {trunk}\n"
         f"    cd {wt_path}\n\n"
-        "Use IDE-owned durable branches (`codex/<topic>` from Codex, "
-        "`claude/<topic>` from Claude Code) and matching C:/Git worktree directory "
-        "names such as `Agentic-Workflow-FRESH-codex-apps-rg` or "
-        "`Agentic-Workflow-FRESH-claude-apps-rg`. Avoid `chat/<timestamp>` branches. "
+        "Use IDE-owned durable branches (`codex-<high-signal-topic>` from Codex, "
+        "`claude-<high-signal-topic>` from Claude Code) and make the worktree folder "
+        "basename exactly match the branch name, such as `codex-apps-rg` or "
+        "`claude-apps-rg`. Avoid `chat/<timestamp>` branches and generated "
+        "adjective-name hashes. "
         "Edits to protected checkouts are still blocked by the PreToolUse edit guard.\n\n"
         f"{_worktree_summary()}\n\n"
         "Cleanup is explicit: run "
