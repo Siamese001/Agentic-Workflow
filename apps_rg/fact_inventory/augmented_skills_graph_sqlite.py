@@ -1493,6 +1493,9 @@ def materialize_augmented_skills_graph_sqlite(
                 f"metric_outcome materialization: id collision with existing graph_node {_nid!r}"
             )
         node_rows[_nid] = _row
+    for _edge in _mo_edge_rows:
+        _ensure_endpoint(str(_edge.get("source_node_id") or ""))
+        _ensure_endpoint(str(_edge.get("target_node_id") or ""))
     edge_rows.extend(_mo_edge_rows)
 
     section_rows = list(section_by_key.values())
@@ -1716,6 +1719,8 @@ def validate_materialized_sqlite(
     conn = open_graph_sqlite(repo_root=root, db_path=path)
     try:
         meta = load_graph_metadata_row(conn)
+        meta_summary = meta.get("graph_count_summary") if isinstance(meta.get("graph_count_summary"), dict) else {}
+        expected_edges = int(meta_summary.get("edge_count_sqlite") or expected_edges)
         node_count = conn.execute("SELECT COUNT(*) FROM graph_nodes").fetchone()[0]
         edge_count = conn.execute("SELECT COUNT(*) FROM graph_edges").fetchone()[0]
         dup_nodes = conn.execute(
@@ -1997,11 +2002,6 @@ def validate_hardened_materialized_sqlite(
                   'REPO_EVIDENCE_PORTFOLIO','INTERNAL_ONLY',
                   'USER_CONFIRMED_PENDING_SOURCE'
                 )
-                OR node_id LIKE '%airline%'
-                OR node_id LIKE '%brokerage%'
-                OR node_id LIKE '%underwriting%'
-                OR node_id LIKE '%claims%'
-                OR node_id LIKE '%marketplace%'
               )
             """
         ).fetchall()

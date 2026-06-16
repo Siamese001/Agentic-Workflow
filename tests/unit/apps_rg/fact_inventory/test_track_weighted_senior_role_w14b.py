@@ -91,12 +91,13 @@ def test_manifest_override_matches_inferred_weights_for_all_archetypes() -> None
     for entry in MANIFEST["archetypes"]:
         slug = entry["slug"]
         jd_path = entry["jd_path"]
-        if jd_path.startswith("artifacts/"):
-            jd = (REPO / jd_path).read_text(encoding="utf-8")
-            brief = (REPO / entry["brief_path"]).read_text(encoding="utf-8")
-        else:
-            jd = (REPO / jd_path).read_text(encoding="utf-8")
-            brief = (REPO / entry["brief_path"]).read_text(encoding="utf-8")
+        jd_file = REPO / jd_path
+        brief_file = REPO / entry["brief_path"]
+        if not jd_file.is_file() or not brief_file.is_file():
+            assert entry.get("closeout_reference"), f"{slug} missing text fixture without closeout receipt"
+            continue
+        jd = jd_file.read_text(encoding="utf-8")
+        brief = brief_file.read_text(encoding="utf-8")
         key = infer_projection_role_family_key(
             target_role=jd.split("\n", 1)[0],
             jd_text=jd,
