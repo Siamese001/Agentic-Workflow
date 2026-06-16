@@ -46,6 +46,10 @@ def test_shim_or_shadow_file_absent(rel_path: str) -> None:
 
 
 def test_r1b_core_receipt_gap_fixture_replaces_shim_fixture() -> None:
-    fixtures = REPO_ROOT / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w10b_fixtures"
-    assert (fixtures / "r1b_uwg_core_receipt_gap.json").is_file()
-    assert not (fixtures / "shim_vs_core_gap.json").is_file()
+    from apps_rg.cache.r1b_uwg_receipt_contract import document_r1b_uwg_core_receipt_gaps
+
+    gaps = document_r1b_uwg_core_receipt_gaps()
+    assert gaps["agentic_core_edit_required_for_full_parity"] is False
+    assert "R1bUwgPromotionGateway" in gaps["promotion_gateway_module"]
+    stale_fixture = REPO_ROOT / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w10b_fixtures" / "shim_vs_core_gap.json"
+    assert not stale_fixture.is_file()

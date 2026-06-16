@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.whole_run_entrypoint_preflight import (
     ENTRYPOINT_CANONICAL_DISPATCH,
@@ -18,27 +16,18 @@ from apps_rg.cache.whole_run_entrypoint_preflight import (
     build_entrypoint_audit_matrix,
     run_whole_run_cache_preflight,
 )
+from tests.unit.apps_rg.r1b_fixture_builders import (
+    r1b_match_request,
+    seed_admissible_r1b_store,
+)
 
 
 def _seed(store: R1BSemanticCacheStore) -> None:
-    repo = Path(__file__).resolve().parents[3]
-    w7 = repo / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
-    intent = json.loads((w7 / "historical_intent_record_admissible.json").read_text(encoding="utf-8"))
-    chunks = json.loads((w7 / "historical_output_chunks_admissible.json").read_text(encoding="utf-8"))
-    store.write_intent(HistoricalIntentRecord.from_dict(intent))
-    for row in chunks:
-        store.write_chunk(HistoricalOutputChunk.from_dict(row))
+    seed_admissible_r1b_store(store)
 
 
 def _req() -> dict:
-    return {
-        "target_company": "Synthetic Enterprise Corp.",
-        "target_role": "SVP Engineering",
-        "generation_mode": "strategic_tailor",
-        "resume_hash": "fixture_resume_digest",
-        "jd_hash": "fixture_jd_digest",
-        "brief_hash": "fixture_brief_digest",
-    }
+    return r1b_match_request()
 
 
 def _enable_r1b(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
