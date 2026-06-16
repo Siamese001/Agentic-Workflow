@@ -17,6 +17,10 @@ from apps_lic.engines.message_type_requirement_gate import (
     MODIFIER_USES_COMPANY_TRIGGER,
     MODIFIER_USES_JD,
 )
+from apps_lic.config.model_profiles import (
+    resolve_x1d_judge_model,
+    resolve_x1d_judge_provider,
+)
 from apps_lic.engines.recipient_classification import (
     CLASS_CEO,
     CLASS_CTO,
@@ -29,8 +33,10 @@ from apps_lic.engines.recipient_classification import (
 )
 
 
-DEFAULT_X1D_JUDGE_MODEL = "Claude Sonnet 4.6"
-DEFAULT_X1D_JUDGE_PROVIDER = "claude"
+# Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml);
+# no hardcoded model literal here.
+DEFAULT_X1D_JUDGE_MODEL = resolve_x1d_judge_model()
+DEFAULT_X1D_JUDGE_PROVIDER = resolve_x1d_judge_provider()
 JUDGE_AVAILABLE = "available"
 JUDGE_UNAVAILABLE = "unavailable"
 INDEPENDENT_JUDGE = "independent_judge"

@@ -24,6 +24,7 @@ from apps_lic.engines.generation_subject_policy import (
 from apps_lic.config.model_profiles import (
     resolve_generator_base_url,
     resolve_generator_model,
+    resolve_generator_provider,
 )
 from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
 from apps_lic.types.linkedin_route_envelope import (
@@ -33,8 +34,9 @@ from apps_lic.types.linkedin_route_envelope import (
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "http://localhost:8000/v1"
-DEFAULT_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
-DEFAULT_PROVIDER = "vllm"
+# Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml).
+DEFAULT_MODEL = resolve_generator_model()
+DEFAULT_PROVIDER = resolve_generator_provider()
 DEFAULT_PROVIDER_PROFILE = "qwen_vllm"
 DEFAULT_TEMPERATURE = 0.82
 DEFAULT_TOP_P = 0.92

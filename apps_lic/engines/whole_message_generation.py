@@ -60,6 +60,10 @@ from apps_lic.types.recipient_archetype_mapping import (
     resolve_recipient_template_policy,
 )
 from apps_lic.types.linkedin_route_envelope import CHANNEL_LINKEDIN_INMAIL
+from apps_lic.config.model_profiles import (
+    resolve_generator_model,
+    resolve_generator_provider,
+)
 
 
 STATUS_GENERATION_REQUEST_READY = "WHOLE_MESSAGE_GENERATION_REQUEST_READY"
@@ -79,8 +83,10 @@ R1_STANDARD = "R1_STANDARD"
 R2_DELIBERATE = "R2_DELIBERATE"
 R3_STRICT = "R3_STRICT"
 
-GENERATOR_MODEL_ID = "Qwen/Qwen2.5-32B-Instruct-AWQ"
-GENERATOR_PROVIDER_ID = "vllm"
+# Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml);
+# used by validation_exit's judge-independence check (judge model != generator model).
+GENERATOR_MODEL_ID = resolve_generator_model()
+GENERATOR_PROVIDER_ID = resolve_generator_provider()
 
 NO_DURABLE_WRITE_RECEIPT = "pass:w6_generation_contract_no_durable_write"
 NO_SEND_RECEIPT = "pass:draft_only_no_auto_send"
