@@ -100,35 +100,93 @@ class ExternalProvider:
     def _anthropic_messages_transport(self, request: dict[str, Any]) -> dict[str, Any]:
         prompt = str(request.get("prompt") or "")
         timeout_seconds = _coerce_timeout_seconds(request.get("timeout_seconds"))
+        # STREAM the Messages API (SSE). Non-streaming holds the connection idle for the whole
+        # server-side generation (~30s for a multi-thousand-token output); in the long-lived run
+        # process that idle connection is dropped and the read hangs until timeout, while a tiny
+        # output (no idle) and a fresh process both succeed. Streaming keeps tokens flowing, so the
+        # connection never idles and the read returns normally. (Diagnosed 2026-06-16: in-process
+        # probe — non-stream 2800-tok hangs; identical stream=True returns in ~34s/79 chunks.)
         body = {
             "model": str(request.get("model") or self.model),
             "max_tokens": int(request.get("max_tokens") or 900),
             "temperature": float(request.get("temperature") or 0.0),
             "system": "Return compact JSON only.",
             "messages": [{"role": "user", "content": prompt}],
+            "stream": True,
         }
         url = str(request.get("base_url") or self.base_url or DEFAULT_ANTHROPIC_MESSAGES_URL)
-        http_req = urllib.request.Request(
-            url,
-            data=json.dumps(body).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "x-api-key": str(self.environ.get(self.api_key_env_var) or ""),
-                "anthropic-version": "2023-06-01",
-            },
-            method="POST",
-        )
-        with urllib.request.urlopen(http_req, timeout=timeout_seconds) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "x-api-key": str(self.environ.get(self.api_key_env_var) or ""),
+            "anthropic-version": "2023-06-01",
+        }
+        data = json.dumps(body).encode("utf-8")
+        # Short per-read timeout + retry. In the long-lived run process a streamed connection can
+        # stall mid-stream (no data on an otherwise-open socket); cap each read and reconnect rather
+        # than block to the wall-clock. A fresh stream completes in ~34s, so a retry recovers.
+        per_read = float(os.environ.get("APPS_RG_STREAM_READ_TIMEOUT_S") or 18.0)
+        _attempts = int(os.environ.get("APPS_RG_STREAM_ATTEMPTS") or 8)
         text_parts: list[str] = []
-        for block in data.get("content") or []:
-            if isinstance(block, dict) and block.get("type") == "text":
-                text_parts.append(str(block.get("text") or ""))
+        resolved_model = str(body["model"])
+        usage: dict[str, Any] = {}
+        last_exc: Exception | None = None
+        for _attempt in range(_attempts):
+            text_parts = []
+            resolved_model = str(body["model"])
+            usage = {}
+            try:
+                http_req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                with urllib.request.urlopen(http_req, timeout=per_read) as resp:
+                    for raw_line in resp:
+                        line = raw_line.decode("utf-8", errors="replace").strip()
+                        if not line.startswith("data:"):
+                            continue
+                        payload = line[5:].strip()
+                        if not payload or payload == "[DONE]":
+                            continue
+                        try:
+                            event = json.loads(payload)
+                        except json.JSONDecodeError:
+                            continue
+                        etype = event.get("type")
+                        if etype == "message_start":
+                            msg = event.get("message") or {}
+                            resolved_model = str(msg.get("model") or resolved_model)
+                            if isinstance(msg.get("usage"), dict):
+                                usage.update(msg["usage"])
+                        elif etype == "content_block_delta":
+                            delta = event.get("delta") or {}
+                            if delta.get("type") == "text_delta":
+                                text_parts.append(str(delta.get("text") or ""))
+                        elif etype == "message_delta":
+                            if isinstance(event.get("usage"), dict):
+                                usage.update(event["usage"])
+                        elif etype == "message_stop":
+                            break
+                        elif etype == "error":
+                            err = event.get("error") or {}
+                            raise urllib.error.URLError(
+                                f"anthropic stream error: {err.get('type')}: {err.get('message')}"
+                            )
+            except urllib.error.HTTPError:
+                raise
+            except (TimeoutError, urllib.error.URLError, OSError) as exc:
+                last_exc = exc
+                if _attempt + 1 < _attempts:
+                    continue
+                raise
+            break
+        text = "".join(text_parts).strip()
         return {
-            "text": "\n".join(p for p in text_parts if p).strip(),
-            "model": data.get("model") or body["model"],
-            "raw_response": data,
+            "text": text,
+            "model": resolved_model,
+            "raw_response": {
+                "model": resolved_model,
+                "usage": usage,
+                "stream": True,
+                "content": [{"type": "text", "text": text}],
+            },
         }
 
     def _openai_responses_transport(self, request: dict[str, Any]) -> dict[str, Any]:
@@ -176,6 +234,12 @@ class ExternalProvider:
         *,
         timeout_seconds: float,
     ) -> dict[str, Any]:
+        # Optional global wall-clock floor (env). Workaround for a per-process download throttle
+        # seen in the long-lived run where streamed generations trickle far slower than in a fresh
+        # process; a larger budget lets them complete. Unset by default (no behavior change).
+        _floor = float(os.environ.get("APPS_RG_PROVIDER_WALLCLOCK_FLOOR_S") or 0.0)
+        if _floor > float(timeout_seconds):
+            timeout_seconds = _floor
         result_queue: queue.Queue[tuple[str, Any]] = queue.Queue(maxsize=1)
 
         def _runner() -> None:
