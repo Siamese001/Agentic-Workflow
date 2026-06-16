@@ -26,19 +26,28 @@ import os
 import time
 from typing import Callable, Dict, Optional
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_4_5_20251001_MODEL_ID,
+    ANTHROPIC_SONNET_4_5_20250929_MODEL_ID,
+    GEMINI_25_FLASH_MODEL_ID,
+    GEMINI_25_PRO_MODEL_ID,
+    OPENAI_GPT4O_MINI_VERSIONED_MODEL_ID,
+    OPENAI_GPT4O_VERSIONED_MODEL_ID,
+)
+
 from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
 
 _log = logging.getLogger(__name__)
 
-# Model IDs ΓÇö sourced from agentic_core/L0_routing/config/model_registry.py
-# but pinned locally to avoid an L0 cycle for a leaf adapter.
+# Model IDs are sourced from the catalog SSOT. This leaf adapter still avoids
+# routing through the heavier gateway, but the identifiers stay centralized.
 _DEFAULTS = {
-    "anthropic_generator": "claude-sonnet-4-5-20250929",
-    "anthropic_judge": "claude-haiku-4-5-20251001",
-    "openai_generator": "gpt-4o-2024-08-06",
-    "openai_judge": "gpt-4o-mini-2024-07-18",
-    "gemini_generator": "gemini-2.5-pro",
-    "gemini_judge": "gemini-2.5-flash",
+    "anthropic_generator": ANTHROPIC_SONNET_4_5_20250929_MODEL_ID,
+    "anthropic_judge": ANTHROPIC_HAIKU_4_5_20251001_MODEL_ID,
+    "openai_generator": OPENAI_GPT4O_VERSIONED_MODEL_ID,
+    "openai_judge": OPENAI_GPT4O_MINI_VERSIONED_MODEL_ID,
+    "gemini_generator": GEMINI_25_PRO_MODEL_ID,
+    "gemini_judge": GEMINI_25_FLASH_MODEL_ID,
 }
 
 

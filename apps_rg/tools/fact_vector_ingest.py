@@ -14,7 +14,8 @@ from typing import Any, Iterable
 
 import yaml
 
-BGE_M3_MODEL_ID = "BAAI/bge-m3"
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 BGE_M3_DIM = 1024
 
 

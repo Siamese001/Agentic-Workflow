@@ -15,10 +15,12 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 _logger = logging.getLogger(__name__)
 
 EMBEDDING_SETTINGS_RECEIPT_NAME = "apps_rg_embedding_settings.json"
-CANONICAL_BGE_HF_ID = "BAAI/bge-m3"
+CANONICAL_BGE_HF_ID = BGE_M3_MODEL_ID
 DEFAULT_EMBEDDING_MODEL_ID_SLUG = "bge-m3-v1"
 
 EmbeddingModelSource = Literal[

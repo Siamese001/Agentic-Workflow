@@ -19,6 +19,8 @@ import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 from apps_rg.runtime.cli_exit_codes import EXIT_CONFIG_ERROR, EXIT_SUCCESS
 
 REQUIRED = "required"
@@ -133,7 +135,7 @@ def _check_embedding_model() -> DoctorCheck:
             REQUIRED,
             f"BGE model '{getattr(settings, 'embedding_model_name', '')}' not resolved "
             f"(source={getattr(settings, 'embedding_model_source', '')})",
-            "Set APPS_RG_EMBEDDING_MODEL_PATH to the local BAAI/bge-m3 snapshot directory.",
+            f"Set APPS_RG_EMBEDDING_MODEL_PATH to the local {BGE_M3_MODEL_ID} snapshot directory.",
         )
     return DoctorCheck(
         "embedding_model",
