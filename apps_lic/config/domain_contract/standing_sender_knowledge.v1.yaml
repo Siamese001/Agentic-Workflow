@@ -182,7 +182,12 @@ approved_sender_proof_points:
   - proof_id: sp_platform_commercialization
     permission: allow
     claim_strength: strong
-    claim_text: Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue and expanding gross margins by 20%.
+    # Metric-grounded curation: curated prose, but every number is graph-SSOT.
+    # The linked GTM/revops skills ground "$10M net-new revenue"; the former
+    # "$22M IP-led revenue / 20% gross margin" was apps_lic-authored drift (the
+    # $22M belongs to a *technical* reusable-accelerators skill, the 20% to none)
+    # and is dropped. The load-time gate blocks any ungrounded metric here.
+    claim_text: Drove go-to-market and revenue-operations alignment for the platform, building the sales pipeline that delivered $10M in net-new revenue.
     allowed_message_types:
       - general_intro
       - role_specific
@@ -200,6 +205,11 @@ approved_sender_proof_points:
       - leadership
       - platform-economics
     apps_rg_skill_ids:
+      # Graph is SSOT: the claim is DEFINED by these genuine GTM/commercialization
+      # skills, not pre-authored. Their graph metric is "$10M net-new revenue"; the
+      # old apps_lic-authored "$22M IP-led revenue" (a *technical* reusable-
+      # accelerators metric, wrong family for this business-outcome proof) and the
+      # "20% gross margin" (ungrounded anywhere) are both dropped.
       - skill_partner_gtm_enablement
       - skill_revops_multi_channel_gtm_alignment
     source_ids:

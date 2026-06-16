@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any, Mapping
@@ -51,6 +52,12 @@ class ApprovedSkillProof:
     role_family_weights: Mapping[str, float] = field(default_factory=dict)
     pillar: str = ""
     domain: str = ""
+    # Graph-as-SSOT for claim language + metrics: the graph-approved claim
+    # fragments and phrase guardrails. Metrics ($amounts/%) live in the pillar's
+    # allowed_phrases (see AppsRgProofIndex.pillar_metric_phrases).
+    source_snippets: tuple[str, ...] = ()
+    allowed_phrases: tuple[str, ...] = ()
+    forbidden_phrases: tuple[str, ...] = ()
 
     def to_packet(self) -> dict[str, Any]:
         return {
@@ -66,6 +73,9 @@ class ApprovedSkillProof:
             "role_family_weights": dict(self.role_family_weights),
             "pillar": self.pillar,
             "domain": self.domain,
+            "source_snippets": list(self.source_snippets),
+            "allowed_phrases": list(self.allowed_phrases),
+            "forbidden_phrases": list(self.forbidden_phrases),
         }
 
 
@@ -82,6 +92,10 @@ class AppsRgProofIndex:
     skill_to_node: Mapping[str, str] = field(default_factory=dict)
     adjacency: Mapping[str, tuple[tuple[str, str, str, str], ...]] = field(default_factory=dict)
     fact_to_skills: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    # Graph-as-SSOT for metrics: pillar_id -> approved metric phrases (the only
+    # numbers a claim may carry) and approved claim snippets.
+    pillar_metric_phrases: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    pillar_claim_snippets: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
     load_error: str = ""
 
     @property
@@ -118,6 +132,25 @@ RECIPIENT_ROLE_FAMILIES: Mapping[str, tuple[str, ...]] = {
 
 def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+_METRIC_RE = re.compile(r"\$\s?\d|\d+(?:\.\d+)?\s?%|\b\d+(?:\.\d+)?\s?(?:m|mm|k|b|bn)\b", re.IGNORECASE)
+
+
+def _has_metric(text: Any) -> bool:
+    """True when a phrase carries a number/metric ($, %, k/m/b magnitude)."""
+    return bool(_METRIC_RE.search(str(text or "")))
+
+
+def metric_tokens(text: Any) -> tuple[str, ...]:
+    """Extract metric tokens ($amounts, %, magnitudes) from a claim string."""
+    return tuple(m.group(0).strip().lower() for m in _METRIC_RE.finditer(str(text or "")))
+
+
+def _clean_str_tuple(value: Any) -> tuple[str, ...]:
+    if not isinstance(value, (list, tuple)):
+        return ()
+    return tuple(str(v).strip() for v in value if str(v).strip())
 
 
 def _sha16(text: str) -> str:
@@ -202,7 +235,24 @@ def load_apps_rg_proof_index() -> AppsRgProofIndex:
             role_family_weights=role_weights,
             pillar=str(row.get("pillar") or ""),
             domain=str(row.get("domain") or ""),
+            source_snippets=_clean_str_tuple(row.get("source_snippets")),
+            allowed_phrases=_clean_str_tuple(row.get("allowed_phrases")),
+            forbidden_phrases=_clean_str_tuple(row.get("forbidden_phrases")),
         )
+
+    # Pillars carry the approved metric phrases + archive claim snippets (the
+    # graph SSOT for the numbers a claim may use).
+    pillar_metric_phrases: dict[str, tuple[str, ...]] = {}
+    pillar_claim_snippets: dict[str, tuple[str, ...]] = {}
+    for pillar in graph.get("pillars") or []:
+        if not isinstance(pillar, dict):
+            continue
+        pid = str(pillar.get("pillar_id") or pillar.get("id") or pillar.get("name") or "").strip()
+        if not pid:
+            continue
+        phrases = _clean_str_tuple(pillar.get("allowed_phrases"))
+        pillar_metric_phrases[pid] = tuple(p for p in phrases if _has_metric(p))
+        pillar_claim_snippets[pid] = _clean_str_tuple(pillar.get("archive_snippets"))
 
     digest = _sha16(json.dumps(graph.get("graph_metadata") or {}, sort_keys=True, default=str))
     return AppsRgProofIndex(
@@ -215,6 +265,8 @@ def load_apps_rg_proof_index() -> AppsRgProofIndex:
         skill_to_node=skill_to_node,
         adjacency={k: tuple(v) for k, v in adjacency.items()},
         fact_to_skills={k: tuple(dict.fromkeys(v)) for k, v in fact_to_skills.items()},
+        pillar_metric_phrases=pillar_metric_phrases,
+        pillar_claim_snippets=pillar_claim_snippets,
     )
 
 
@@ -389,6 +441,64 @@ def graph_weighted_skill_ids(
     return tuple(sid for _weight, sid in scored[: max(0, top_n)])
 
 
+def graph_claim_assets(apps_rg_skill_ids: tuple[str, ...] | list[str]) -> dict[str, Any]:
+    """Project the graph-approved claim assets for a set of apps_rg skills.
+
+    The apps_rg graph is the single SSOT for claim language + metrics: this
+    returns the graph's approved claim snippets (from the linked skills'
+    ``source_snippets`` and their pillars' ``archive_snippets``), the approved
+    metric phrases (the ONLY numbers a claim may carry — from pillar
+    ``allowed_phrases``), the forbidden phrases, and the source fact ids. apps_lic
+    must not author claim prose or metrics independently of this.
+    """
+    idx = load_apps_rg_proof_index()
+    sids = [str(s).strip() for s in apps_rg_skill_ids if str(s).strip()]
+    snippets: list[str] = []
+    metric_phrases: list[str] = []
+    forbidden: list[str] = []
+    fact_ids: list[str] = []
+    pillars: list[str] = []
+    available = idx.available
+    for sid in sids:
+        proof = idx.skills_by_id.get(sid)
+        if proof is None:
+            continue
+        snippets.extend(proof.source_snippets)
+        forbidden.extend(proof.forbidden_phrases)
+        metric_phrases.extend(p for p in proof.allowed_phrases if _has_metric(p))
+        fact_ids.extend(proof.fact_id_links)
+        if proof.pillar:
+            pillars.append(proof.pillar)
+            snippets.extend(idx.pillar_claim_snippets.get(proof.pillar, ()))
+            metric_phrases.extend(idx.pillar_metric_phrases.get(proof.pillar, ()))
+    return {
+        "ssot_available": available,
+        "graph_source": idx.graph_source,
+        "graph_version": idx.graph_version,
+        "claim_snippets": list(dict.fromkeys(snippets)),
+        "approved_metric_phrases": list(dict.fromkeys(metric_phrases)),
+        "forbidden_phrases": list(dict.fromkeys(forbidden)),
+        "source_fact_ids": list(dict.fromkeys(fact_ids)),
+        "pillars": list(dict.fromkeys(pillars)),
+    }
+
+
+def claim_metrics_are_graph_grounded(
+    claim_text: str,
+    apps_rg_skill_ids: tuple[str, ...] | list[str],
+) -> tuple[bool, tuple[str, ...]]:
+    """True iff every metric token in ``claim_text`` is graph-approved.
+
+    Returns (ok, ungrounded_tokens). The graph is the SSOT for metrics: a number
+    in a claim must appear in the graph's approved metric phrases for the linked
+    skills/pillars (apps_lic-only metrics are a drift and fail this check).
+    """
+    assets = graph_claim_assets(apps_rg_skill_ids)
+    approved = " ".join(assets["approved_metric_phrases"]).lower()
+    ungrounded = tuple(t for t in metric_tokens(claim_text) if t not in approved)
+    return (not ungrounded, ungrounded)
+
+
 __all__ = [
     "APPS_RG_GRAPH_SOURCE",
     "PERMISSION_ALLOW",
@@ -396,8 +506,11 @@ __all__ = [
     "RECIPIENT_ROLE_FAMILIES",
     "ApprovedSkillProof",
     "AppsRgProofIndex",
+    "claim_metrics_are_graph_grounded",
+    "graph_claim_assets",
     "graph_weighted_skill_ids",
     "load_apps_rg_proof_index",
+    "metric_tokens",
     "proof_provenance_for",
     "recipient_fit_weight",
     "shared_proof_ssot_matches",

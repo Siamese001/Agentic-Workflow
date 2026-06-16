@@ -198,6 +198,39 @@ def _graph_links_by_proof_id(document: Mapping[str, Any]) -> dict[str, tuple[Map
     return links_by_id
 
 
+def _assert_claim_metrics_graph_grounded(
+    proof_id: str, claim_text: str, apps_rg_skill_ids: tuple[str, ...]
+) -> None:
+    """Fail-closed if a curated claim asserts a metric the graph does not back.
+
+    Metric-grounded curation: the claim PROSE stays curated (distinct, well-formed),
+    but the graph is the SSOT for every NUMBER. A curated claim that smuggles in an
+    apps_lic-only metric (the historical "$22M IP-led revenue / 20% gross margin"
+    that the linked GTM skills never grounded) is a corpus-authoring error and must
+    not load silently. Skipped when the shared graph is unavailable (fail-soft).
+    """
+    if not apps_rg_skill_ids:
+        return
+    try:  # lazy import: the bridge loads the apps_rg graph
+        from apps_lic.integrations.apps_rg_proof_bridge import (  # noqa: PLC0415
+            claim_metrics_are_graph_grounded,
+            load_apps_rg_proof_index,
+        )
+
+        if not load_apps_rg_proof_index().available:
+            return
+        grounded, ungrounded = claim_metrics_are_graph_grounded(claim_text, apps_rg_skill_ids)
+    except Exception:  # guardian: allow-broad-exception -- shared SSOT optional; degrade to no-check
+        return
+    if not grounded:
+        raise ValueError(
+            f"Standing sender proof point {proof_id!r} asserts metric(s) "
+            f"{ungrounded} not grounded in the apps_rg graph SSOT for skills "
+            f"{apps_rg_skill_ids}. Graph is SSOT for all metrics — fix the claim "
+            f"to cite only graph-grounded numbers (or none)."
+        )
+
+
 def load_standing_sender_corpus(
     path: Path | str | None = None,
 ) -> StandingSenderCorpus:
@@ -223,10 +256,15 @@ def load_standing_sender_corpus(
     for raw in document.get("approved_sender_proof_points") or []:
         proof_id = str(raw.get("proof_id", "") or "")
         permission = str(raw.get("permission", "") or permissions.get(proof_id, "") or "")
+        apps_rg_skill_ids = tuple(str(item) for item in raw.get("apps_rg_skill_ids") or [])
+        # Metric-grounded curation: keep the curated claim prose, but the graph is
+        # SSOT for every number — block load if it asserts an ungrounded metric.
+        claim_text = str(raw.get("claim_text", "") or "")
+        _assert_claim_metrics_graph_grounded(proof_id, claim_text, apps_rg_skill_ids)
         proof_points.append(
             ApprovedSenderProofPoint(
                 proof_id=proof_id,
-                claim_text=str(raw.get("claim_text", "") or ""),
+                claim_text=claim_text,
                 claim_strength=str(raw.get("claim_strength", "") or ""),
                 allowed_message_types=tuple(str(item) for item in raw.get("allowed_message_types") or []),
                 allowed_recipient_classes=tuple(
@@ -236,9 +274,7 @@ def load_standing_sender_corpus(
                 skill_tags=tuple(str(item) for item in raw.get("skill_tags") or []),
                 graph_links=graph_links.get(proof_id, ()),
                 permission=permission,
-                apps_rg_skill_ids=tuple(
-                    str(item) for item in raw.get("apps_rg_skill_ids") or []
-                ),
+                apps_rg_skill_ids=apps_rg_skill_ids,
             )
         )
 
