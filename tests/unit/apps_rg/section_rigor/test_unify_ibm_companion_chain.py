@@ -162,18 +162,18 @@ def test_load_companion_unify_from_latest_successful_pointer(tmp_path: Path, mon
         encoding="utf-8",
     )
     (art / "provider_request.json").write_text(
-        json.dumps({"provider_requested": "qwen_vllm"}),
+        json.dumps({"provider_requested": "external_claude"}),
         encoding="utf-8",
     )
     finalize_runtime_proof_run(
         REPO,
         "unify_bullets",
-        "qwen_vllm",
+        "external_claude",
         art,
         run_id="unify_bullets_test_chain",
         section_id="unify_bullets",
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="external_claude",
         provider_attempted=True,
     )
     ptr = lane_root(REPO, "unify_bullets") / "latest_successful_real_run.json"

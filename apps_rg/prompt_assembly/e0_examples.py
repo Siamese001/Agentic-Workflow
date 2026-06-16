@@ -24,13 +24,10 @@ SECTION_EXAMPLES: dict[str, str] = {
 # Lanes that share the unify examples catalog.
 _UNIFY_LANE_SECTIONS = frozenset({"unify_bullets", "unify_narrative"})
 
-# SVP strategy lane: two structurally diverse positives (thesis-arc + credibility-implied).
-# Providing two avoids the single-example template-following trap where Qwen echoes metric
-# values verbatim from the sole positive. Both examples use domain-transposed or abstract
-# metrics — Qwen must retrieve real values from C0.
+# SVP strategy lane: one judge-aligned positive plus negative/repair examples.
+# Product-shape validators, not extra positives, police metric sourcing and prompt echo.
 _EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED = (
     "exec_summary_pos_svp_it_strategy_001",
-    "exec_summary_pos_credibility_implied_001",
 )
 
 _EXEC_SUMMARY_POSITIVE_COMPILE_IDS = (
@@ -184,12 +181,10 @@ def build_executive_summary_e0(
     ]
     if strategy_executive:
         parts.append(
-            "<e0_lane_note>SVP IT strategy lane: two structurally diverse judge-aligned positives — "
-            "thesis-arc (exec_summary_pos_svp_it_strategy_001) and credibility-implied arc "
-            "(exec_summary_pos_credibility_implied_001). Metric values in the positives are "
+            "<e0_lane_note>SVP IT strategy lane: one judge-aligned thesis-arc positive "
+            "(exec_summary_pos_svp_it_strategy_001). Metric values in the positive are "
             "domain-transposed placeholders ([X]M, [Y]%, [A]->[B]): do NOT copy them — retrieve "
-            "real values from C0 ALLOWED_SOURCE_FACT_IDS. "
-            "Copy density, register, and S1-S6 arc structure only. "
+            "real values from C0 ALLOWED_SOURCE_FACT_IDS. Copy density, register, and S1-S6 arc structure only. "
             "Negatives teach stack/recap failures.</e0_lane_note>"
         )
     for eid in positive_ids:

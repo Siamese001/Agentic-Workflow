@@ -64,8 +64,8 @@ def test_strategy_e0_single_svp_positive():
     e0 = build_executive_summary_e0(strategy_executive=True)
     assert e0.count("<positive_example ") == 1
     assert "exec_summary_pos_svp_it_strategy_001" in e0
-    assert "$22M" in e0
-    assert "40%" in e0
+    assert "$[X]M" in e0
+    assert "[Y]%" in e0
     assert "exec_summary_neg_employer_inventory_001" in e0
     assert "exec_summary_neg_thin_s6_recap_001" in e0
     assert "exec_summary_neg_first_person_001" in e0
