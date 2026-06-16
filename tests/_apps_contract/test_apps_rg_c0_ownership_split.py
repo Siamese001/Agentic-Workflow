@@ -133,6 +133,28 @@ class TestAgenticCoreGraphSkillBoundary:
         assert offenders == []
 
 
+class TestAgenticCoreGraphSkillBoundary:
+    """Core keeps generic C0.3 infrastructure; apps_rg keeps resume graph skills."""
+
+    def test_agentic_core_does_not_import_apps_rg_graph_skill_authorities(self) -> None:
+        offenders: list[str] = []
+        for path in _agentic_core_python_files():
+            imports = _import_names(_module_ast(path))
+            for module in imports:
+                if module.startswith(FORBIDDEN_CORE_GRAPH_SKILL_IMPORT_PREFIXES):
+                    offenders.append(f"{path.relative_to(REPO).as_posix()} imports {module}")
+        assert offenders == []
+
+    def test_agentic_core_does_not_embed_resume_graph_skill_authority_literals(self) -> None:
+        offenders: list[str] = []
+        for path in _agentic_core_python_files():
+            text = path.read_text(encoding="utf-8")
+            for literal in FORBIDDEN_CORE_GRAPH_SKILL_LITERALS:
+                if literal in text:
+                    offenders.append(f"{path.relative_to(REPO).as_posix()} contains {literal}")
+        assert offenders == []
+
+
 class TestChromaPolicy:
     def test_section_chroma_write_follows_product_skip_policy(self) -> None:
         assert section_chroma_write_in_c02() in (True, False)
