@@ -1,7 +1,7 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-06-15T21:31:38Z  
-**Plan:** graph-skills-hardening-f3a8c1  
+**Generated:** 2026-06-16T16:16:31Z
+**Plan:** graph-skills-hardening-f3a8c1
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
 ## Track weights
@@ -59,6 +59,6 @@
 
 ## agentic_core isolation
 
-- isolation_verdict: **ISOLATED_PREEXISTING_CHURN**
+- isolation_verdict: **CLEAN**
 - touched_by_this_wave: **False**
-- dirty_files: `['agentic_core/L0_routing/logs/guardian_report.json', 'agentic_core/L1_cognition/c0_context/preflight.py', 'agentic_core/L4_state/memory/runtime_adg/_trace_index.json', 'agentic_core/L6_system_learning/runtime_adg/manifest_hash.py', 'agentic_core/L6_system_learning/runtime_hitl_consumer.py', 'agentic_core/L6_system_learning/snapshot/__init__.py', 'agentic_core/L6_system_learning/span_contracts.py', 'agentic_core/runtime/prove_requirements/acceptance_validator.py', 'agentic_core/runtime/prove_requirements/artifact_payload_hasher.py', 'agentic_core/runtime/prove_requirements/proof_depth_ladder.py']`
+- dirty_files: `[]`
