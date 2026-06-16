@@ -51,7 +51,7 @@ _FULL_RCA = (
     "- symptom: `python -m apps_rg` lane ibm_bullets -> X3_BLOCK on metric anchor\n"
     "- root_cause: stale literal-token anchor rule [DIRECTLY OBSERVED]\n"
     "- evidence: artifacts/w2_b0/terminal_ret_packet.json\n"
-    "- fix_or_next: graph-determined ownership in ibm_bullets_generator.py\n"
+    "- fix_or_next: fix: graph-determined ownership in ibm_bullets_generator.py\n"
     "- recurrence_guard: test_ibm_bullets.py::test_held_metric_not_anchored\n"
 )
 
@@ -95,7 +95,7 @@ _SHALLOW_RCA = (
     "- symptom: the tests fail\n"
     "- root_cause: there is a bug in the code\n"
     "- evidence: artifacts/log.txt\n"
-    "- fix_or_next: fix the bug\n"
+    "- fix_or_next: next: fix the bug\n"
 )
 
 # Symptom restated as the root cause (no real descent), with layer+mechanism present.
@@ -178,6 +178,23 @@ class TestRuntimeRcaAudit:
         text = (
             "STATUS: FAIL\nCOMMANDS_RUN:\n- run -> exit 1\n"
             "RCA:\n- symptom: it broke\n- root_cause: unclear\n"  # no evidence / fix_or_next
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        assert any(r["kind"] == "incomplete_rca" for r in rows)
+        assert not any(r["kind"] == "missing_rca" for r in rows)
+
+    def test_violation_unqualified_fix_or_next(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: FAIL\nCOMMANDS_RUN:\n- run -> exit 1\n"
+            "RCA:\n"
+            "- symptom: lane ibm_bullets X3_BLOCK\n"
+            "- root_cause: stale literal anchor [DIRECTLY OBSERVED]\n"
+            "- evidence: artifacts/terminal_ret_packet.json\n"
+            "- fix_or_next: update anchor in ibm_bullets_graph_evidence.py\n"
+            "- recurrence_guard: test_ibm_bullets_anchor.py\n"
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         rows = _rows(rca_mod)
@@ -656,7 +673,7 @@ class TestStatusMatrix:
             "- symptom: see Outcome / Layered RCA: Immediate symptom\n"
             "- root_cause: see Outcome / Layered RCA: Root cause [DIRECTLY OBSERVED]\n"
             "- evidence: pytest traceback FileNotFoundError: tests/fixtures/old_case.json; see Outcome / Layered RCA: Evidence\n"
-            "- fix_or_next: see Outcome / Next\n"
+            "- fix_or_next: next: see Outcome / Next\n"
             "- recurrence_guard: rerun python -m pytest tests/unit/foo/test_bar.py -q\n"
             "ARTIFACTS:\n- NONE\n"
             "NOTES:\n- Consolidated RCA pointer receipt.\n"
@@ -714,7 +731,7 @@ class TestStatusMatrix:
             "- symptom: lane ibm_bullets X3_BLOCK\n"
             "- root_cause: stale literal anchor [DIRECTLY OBSERVED]\n"
             "- evidence: artifacts/terminal_ret_packet.json\n"
-            "- fix_or_next: update anchor in ibm_bullets_graph_evidence.py\n"
+            "- fix_or_next: fix: update anchor in ibm_bullets_graph_evidence.py\n"
             "- recurrence_guard: test_ibm_bullets_anchor.py\n"
         )
         assert _run(rca_mod, text, monkeypatch) == 0
@@ -780,7 +797,7 @@ class TestStatusMatrix:
             "- symptom: the tests fail\n"
             "- root_cause: there is a bug in the code\n"
             "- evidence: artifacts/log.txt\n"
-            "- fix_or_next: fix the bug\n"
+            "- fix_or_next: next: fix the bug\n"
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         kinds = {r["kind"] for r in _rows(rca_mod)}
