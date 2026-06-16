@@ -115,6 +115,10 @@ def generate_section(
     before transport.
     """
     selection = resolve_provider_profile()
+    # Capture the section lane BEFORE stripping internal ``_``-tags, then pass it through as an
+    # explicit ``section_id`` so the per-section model pin still applies on this path (the tag
+    # itself is stripped from the transport ``body``).
+    section_lane = str(payload.get("_reasoning_section_lane") or "").strip() or None
     body = {k: v for k, v in dict(payload).items() if not str(k).startswith("_")}
     return call_section_model_provider(
         selection.profile,
@@ -122,4 +126,5 @@ def generate_section(
         artifact_dir=Path(artifact_dir) if artifact_dir is not None else None,
         run_id=run_id,
         temperature_override=temperature_override,
+        section_id=section_lane,
     )
