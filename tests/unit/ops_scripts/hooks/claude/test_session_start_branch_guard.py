@@ -44,9 +44,20 @@ def test_codex_owner_sets_branch_and_worktree_directory(monkeypatch: pytest.Monk
     assert guard._worktree_path("governance-hooks").name == "codex-governance-hooks"
 
 
-def test_worktree_branch_prefix_override_normalizes_slash(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_branch_prefix_override_cannot_change_default_claude_owner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv("WORKTREE_IDE_OWNER", raising=False)
     monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "codex")
+
+    assert guard._branch_name("governance-hooks") == "claude-governance-hooks"
+
+
+def test_branch_prefix_override_cannot_contradict_codex_owner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("WORKTREE_IDE_OWNER", "codex")
+    monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "claude")
 
     assert guard._branch_name("governance-hooks") == "codex-governance-hooks"
 
@@ -84,7 +95,8 @@ def test_guidance_uses_named_worktree_not_chat(monkeypatch: pytest.MonkeyPatch) 
 
     assert "git worktree add" in msg
     assert "claude-apps-rg" in msg
-    assert "codex-apps-rg" in msg
+    assert "codex-apps-rg" not in msg
+    assert "do not use the other agent's prefix" in msg
     assert "chat/<timestamp>" in msg
     assert "auto-creates" in msg
 
