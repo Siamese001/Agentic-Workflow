@@ -122,7 +122,7 @@ class RehearsalSession:
 def record_rehearsal_outcomes(
     session: RehearsalSession,
     *,
-    bandit: "AppsQnaRouteBandit | None" = None,
+    bandit: AppsQnaRouteBandit | None = None,
 ) -> int:
     """Persist outcomes to the ledger AND update the bandit.
 
@@ -138,7 +138,7 @@ def record_rehearsal_outcomes(
         return count.
     """
     persisted = 0
-    for outcome in session.outcomes:
+    for outcome_index, outcome in enumerate(session.outcomes):
         event_id = emit_pack_lifecycle_event(
             event_kind=_INTERVIEW_OUTCOME_KIND,
             prediction={
@@ -146,6 +146,7 @@ def record_rehearsal_outcomes(
                 "interviewer": session.interviewer,
                 "asked_route": outcome.asked_route,
                 "card_id": outcome.card_id,
+                "outcome_index": outcome_index,
             },
             outcome={
                 "asked": outcome.asked,
@@ -201,7 +202,7 @@ def _ledger_db_path() -> Path | None:
 
 
 def replay_outcomes_into_bandit(
-    bandit: "AppsQnaRouteBandit",
+    bandit: AppsQnaRouteBandit,
     *,
     namespace: str | None = None,
     db_path: Path | None = None,
