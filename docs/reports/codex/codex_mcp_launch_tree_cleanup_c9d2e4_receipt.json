@@ -1,0 +1,114 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-mcp-launch-tree-cleanup-c9d2e4",
+  "generated_at": "2026-06-16T14:51:20.7422138-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "branch": "codex/mcp-lifecycle-guards",
+    "head": "bef09979f8436e5119093e34052de8f9ef924e8a",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Run the next readiness set and fix lifecycle guard gaps found by the cleanup dry-run.",
+    "plan_id": "codex-mcp-launch-tree-cleanup-c9d2e4",
+    "files_changed": [
+      "docs/reports/codex/codex_mcp_launch_tree_cleanup_c9d2e4_receipt.json",
+      "plans/codex-mcp-launch-tree-cleanup-c9d2e4.md",
+      "scripts/governance/audit_codex_mcp_transports.py",
+      "scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+      "tests/unit/scripts/governance/test_audit_codex_mcp_transports.py"
+    ]
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python -m py_compile scripts/governance/cleanup_duplicate_mcp_cohorts.py scripts/governance/audit_codex_mcp_transports.py scripts/governance/codex_readiness.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/cleanup_duplicate_mcp_cohorts.py --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/tools/mcp/test_guard_single_instance.py tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_backup.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-launch-tree-cleanup-c9d2e4.md",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_run_receipt.py docs/reports/codex/codex_mcp_launch_tree_cleanup_c9d2e4_receipt.json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_backup.py --repo-only",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "launch-tree cleanup grouping",
+        "status": "PASS",
+        "evidence": "cleanup_duplicate_mcp_cohorts.py groups Codex-owned candidates by topmost same-server root; a single context7 launch tree is no longer blocked."
+      },
+      {
+        "name": "GitKraken duplicate visibility",
+        "status": "PASS",
+        "evidence": "audit_codex_mcp_transports.py now classifies GitKraken as single-process-stdio-server and the live audit reports 5 duplicate GitKraken roots."
+      },
+      {
+        "name": "focused pytest",
+        "status": "PASS",
+        "evidence": "Focused cleanup/readiness/verifier test set passed: 50 passed, 3 warnings."
+      },
+      {
+        "name": "artifact and Codex validators",
+        "status": "PASS",
+        "evidence": "Strict plan format, receipt schema, git diff whitespace, verify_codex_primary.py, and verify_codex_backup.py --repo-only all passed."
+      }
+    ]
+  }
+}

@@ -37,6 +37,10 @@ SCRIPT_PATHS = [
 
 
 PROCESS_MARKERS = {
+    "GitKraken": {
+        "markers": ["gk.exe mcp"],
+        "expected": "single-process-stdio-server",
+    },
     "adg_sqlite": {
         "markers": [
             "tools.adg.mcp.server",
@@ -181,6 +185,8 @@ def _processes() -> dict[str, Any]:
             classification = "none"
         elif expected.startswith("dormant"):
             classification = "unexpected_live_process"
+        elif expected == "single-process-stdio-server":
+            classification = "single" if len(rows) == 1 else "duplicate"
         elif expected == "single-python-stdio-server":
             classification = "single" if len(rows) == 1 else "duplicate"
         elif expected == "single-npx-launch-tree":

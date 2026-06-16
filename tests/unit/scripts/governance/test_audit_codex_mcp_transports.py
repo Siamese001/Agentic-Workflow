@@ -43,6 +43,14 @@ def test_adg_launcher_marker_matches_current_mcp_command() -> None:
     assert any(marker.lower().replace("\\", "/") in normalized for marker in markers)
 
 
+def test_gitkraken_marker_registered_for_process_hygiene() -> None:
+    config = mod.PROCESS_MARKERS["GitKraken"]
+    normalized = "c:/users/amita/appdata/local/gitkrakencli/gk.exe mcp --readonly"
+
+    assert config["expected"] == "single-process-stdio-server"
+    assert any(marker.lower().replace("\\", "/") in normalized for marker in config["markers"])
+
+
 def test_plugin_substitute_classification_without_process_requirement() -> None:
     route = _route("notion", "plugin_substitute", "plugin_substitute")
     process_state = {"process_count": 0, "classification": "none"}
@@ -185,6 +193,48 @@ def test_codex_duplicate_cleanup_rejects_unknown_attached_pid() -> None:
     assert selection["status"] == "blocked"
     assert selection["target_pids"] == []
     assert selection["blocked"][0]["reason"] == "attached_pid_not_in_duplicate_group"
+
+
+def test_codex_cleanup_does_not_block_single_npx_launch_tree() -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0),
+        cleanup.ProcessRecord(11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0),
+        cleanup.ProcessRecord(12, 11, "cmd.exe", ("cmd.exe", "/d", "/s", "/c", "context7-mcp"), 103.0),
+        cleanup.ProcessRecord(13, 12, "node.exe", ("node.exe", "node_modules/@upstash/context7-mcp/dist/index.js"), 104.0),
+    ]
+
+    selection = cleanup.select_codex_guarded_targets(records)
+
+    assert selection["status"] == "no_codex_duplicates"
+    assert selection["duplicate_server_ids"] == []
+    assert selection["blocked"] == []
+    assert selection["target_pids"] == []
+
+
+def test_codex_cleanup_duplicate_npx_launch_tree_targets_unattached_tree() -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0),
+        cleanup.ProcessRecord(11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0),
+        cleanup.ProcessRecord(20, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 201.0),
+        cleanup.ProcessRecord(21, 20, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 202.0),
+    ]
+
+    blocked = cleanup.select_codex_guarded_targets(records)
+    selection = cleanup.select_codex_guarded_targets(records, {"context7": 21})
+
+    assert blocked["status"] == "blocked"
+    assert blocked["blocked"] == [
+        {
+            "server_id": "context7",
+            "reason": "attached_pid_required",
+            "candidate_pids": [10, 20],
+        }
+    ]
+    assert selection["status"] == "ready"
+    assert selection["blocked"] == []
+    assert selection["target_pids"] == [10, 11]
 
 
 def test_cleanup_apply_refuses_blocked_codex_duplicates(monkeypatch) -> None:

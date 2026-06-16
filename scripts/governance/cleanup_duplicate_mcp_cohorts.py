@@ -86,6 +86,23 @@ def _is_codex_owned(record: ProcessRecord, by_pid: dict[int, ProcessRecord]) -> 
     return any(_is_codex_parent(ancestor) for ancestor in _ancestor_chain(record, by_pid))
 
 
+def _matching_server_root(
+    record: ProcessRecord,
+    server_id: str,
+    by_pid: dict[int, ProcessRecord],
+) -> ProcessRecord:
+    """Return the topmost same-server ancestor for one launch tree."""
+    root = record
+    seen = {record.pid}
+    parent = by_pid.get(record.ppid)
+    while parent and parent.pid not in seen:
+        seen.add(parent.pid)
+        if _server_id(parent) == server_id:
+            root = parent
+        parent = by_pid.get(parent.ppid)
+    return root
+
+
 def _attached_pids_from_env() -> dict[str, int]:
     attached: dict[str, int] = {}
     for server_id in TARGET_SERVER_MARKERS:
@@ -195,43 +212,60 @@ def select_codex_guarded_targets(
     """
     attached_pids = attached_pids or {}
     by_pid = {record.pid: record for record in records}
-    groups: dict[str, list[ProcessRecord]] = {}
+    groups: dict[str, dict[int, list[ProcessRecord]]] = {}
     for record in records:
         server_id = _server_id(record)
         if not server_id or not _is_codex_owned(record, by_pid):
             continue
-        groups.setdefault(server_id, []).append(record)
+        root = _matching_server_root(record, server_id, by_pid)
+        groups.setdefault(server_id, {}).setdefault(root.pid, []).append(record)
 
     duplicate_groups = {
-        server_id: sorted(rows, key=lambda record: (record.create_time, record.pid))
-        for server_id, rows in groups.items()
-        if len(rows) > 1
+        server_id: {
+            root_pid: sorted(rows, key=lambda record: (record.create_time, record.pid))
+            for root_pid, rows in sorted(root_groups.items())
+        }
+        for server_id, root_groups in groups.items()
+        if len(root_groups) > 1
     }
     blocked: list[dict[str, Any]] = []
     targets: list[ProcessRecord] = []
-    for server_id, rows in sorted(duplicate_groups.items()):
-        pids = [record.pid for record in rows]
+    for server_id, root_groups in sorted(duplicate_groups.items()):
+        root_pids = sorted(root_groups)
         attached_pid = attached_pids.get(server_id)
         if attached_pid is None:
             blocked.append(
                 {
                     "server_id": server_id,
                     "reason": "attached_pid_required",
-                    "candidate_pids": pids,
+                    "candidate_pids": root_pids,
                 }
             )
             continue
-        if attached_pid not in pids:
+        attached_root_pid = next(
+            (
+                root_pid
+                for root_pid, rows in root_groups.items()
+                if attached_pid == root_pid or any(record.pid == attached_pid for record in rows)
+            ),
+            None,
+        )
+        if attached_root_pid is None:
             blocked.append(
                 {
                     "server_id": server_id,
                     "reason": "attached_pid_not_in_duplicate_group",
                     "attached_pid": attached_pid,
-                    "candidate_pids": pids,
+                    "candidate_pids": root_pids,
                 }
             )
             continue
-        targets.extend(record for record in rows if record.pid != attached_pid)
+        targets.extend(
+            record
+            for root_pid, rows in root_groups.items()
+            if root_pid != attached_root_pid
+            for record in rows
+        )
 
     if blocked:
         status = "blocked"
