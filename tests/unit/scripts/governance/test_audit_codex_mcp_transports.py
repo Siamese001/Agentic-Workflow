@@ -137,3 +137,87 @@ def test_cleanup_does_not_select_through_nested_claude_parent() -> None:
     assert selection["keep_parent_pid"] == 10
     assert selection["duplicate_parent_pids"] == []
     assert selection["target_pids"] == []
+
+
+def test_codex_duplicate_cleanup_blocks_without_attached_pid() -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
+        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+    ]
+
+    selection = cleanup.select_codex_guarded_targets(records)
+
+    assert selection["status"] == "blocked"
+    assert selection["target_pids"] == []
+    assert selection["blocked"] == [
+        {
+            "server_id": "memory",
+            "reason": "attached_pid_required",
+            "candidate_pids": [11, 12],
+        }
+    ]
+
+
+def test_codex_duplicate_cleanup_selects_only_unattached_pids() -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
+        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+    ]
+
+    selection = cleanup.select_codex_guarded_targets(records, {"memory": 11})
+
+    assert selection["status"] == "ready"
+    assert selection["target_pids"] == [12]
+    assert selection["blocked"] == []
+
+
+def test_codex_duplicate_cleanup_rejects_unknown_attached_pid() -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
+        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+    ]
+
+    selection = cleanup.select_codex_guarded_targets(records, {"memory": 99})
+
+    assert selection["status"] == "blocked"
+    assert selection["target_pids"] == []
+    assert selection["blocked"][0]["reason"] == "attached_pid_not_in_duplicate_group"
+
+
+def test_cleanup_apply_refuses_blocked_codex_duplicates(monkeypatch) -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
+        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+    ]
+    monkeypatch.setattr(cleanup, "_snapshot_processes", lambda: records)
+    monkeypatch.setattr(cleanup, "_attached_pids_from_env", lambda: {})
+    monkeypatch.setattr(
+        cleanup,
+        "_terminate_targets",
+        lambda target_pids: (_ for _ in ()).throw(AssertionError("termination should be blocked")),
+    )
+
+    assert cleanup.main(["--apply", "--json"]) == 2
+
+
+def test_cleanup_apply_with_attached_pid_targets_only_unattached(monkeypatch) -> None:
+    records = [
+        cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
+        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
+        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+    ]
+    terminated: list[list[int]] = []
+    monkeypatch.setattr(cleanup, "_snapshot_processes", lambda: records)
+    monkeypatch.setattr(cleanup, "_attached_pids_from_env", lambda: {})
+    monkeypatch.setattr(
+        cleanup,
+        "_terminate_targets",
+        lambda target_pids: terminated.append(target_pids) or {"remaining_target_pids": []},
+    )
+
+    assert cleanup.main(["--apply", "--codex-attached-pid", "memory=11", "--json"]) == 0
+    assert terminated == [[12]]

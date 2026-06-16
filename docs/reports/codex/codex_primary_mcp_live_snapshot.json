@@ -7,22 +7,27 @@
     "Codex live tool discovery on 2026-06-16",
     "mcp__memory.mem_recall_session_start live call before transport cleanup",
     "mcp__memory.memory_health post-cleanup probe returned Transport closed",
+    "mcp__memory.memory_health post-restart probe returned status=ok",
     "mcp__GitKraken.git_status live call",
     "mcp__vector_db.readiness live call before transport cleanup",
     "mcp__vector_db.readiness post-cleanup probe returned Transport closed",
+    "mcp__vector_db.readiness post-restart probe reported Chroma ready and embedding model loading, then timed out on follow-up",
+    "mcp__adg_sqlite.adg_health post-restart probe returned status=ok",
     "scripts/governance/audit_codex_mcp_transports.py --json"
   ],
   "process_hygiene_observations": [
     "Memory and Vector DB had duplicate visible process cohorts during the initial 2026-06-16 audit.",
-    "Follow-up cleanup cleared the duplicate OS cohorts; audit_codex_mcp_transports.py reported process_count=0 for both memory and vector_db.",
-    "Process visibility is not callable proof; post-cleanup Memory and Vector tool calls returned Transport closed and require Codex MCP host restart/reload before claiming callable readiness."
+    "Follow-up manual cleanup cleared the duplicate OS cohorts; audit_codex_mcp_transports.py reported process_count=0 for both memory and vector_db, but Memory and Vector then returned Transport closed.",
+    "After Codex restart, Memory, GitKraken, and ADG were callable again, but strict readiness still found duplicate Codex-owned cohorts for GitKraken, ADG, Memory, and Vector.",
+    "cleanup_duplicate_mcp_cohorts.py now reports Codex-owned duplicates and refuses apply-mode cleanup unless host-attached PID proof is supplied.",
+    "Process visibility is not callable proof; strict readiness remains blocked while duplicate Codex-owned cohorts or unproven Vector readiness remain."
   ],
   "routes": [
     {
       "server_id": "memory",
-      "codex_status": "transport_closed_after_cleanup",
-      "evidence": "mcp__memory.mem_recall_session_start returned durable entities earlier in the live session; post-cleanup mcp__memory.memory_health returned Transport closed and no Memory process cohort remained.",
-      "run_policy": "Required for memory-backed session recall/writeback when available; do not claim Memory MCP compliance again until the Codex MCP host restarts or reattaches the transport and a live health probe passes."
+      "codex_status": "callable_post_restart",
+      "evidence": "mcp__memory.mem_recall_session_start returned durable entities and mcp__memory.memory_health returned status=ok after Codex restart.",
+      "run_policy": "Required for memory-backed session recall/writeback when available; still fails strict readiness when duplicate Codex-owned cohorts are present."
     },
     {
       "server_id": "GitKraken",
@@ -32,15 +37,15 @@
     },
     {
       "server_id": "vector_db",
-      "codex_status": "transport_closed_after_cleanup",
-      "evidence": "mcp__vector_db.readiness reported Chroma ready earlier in the live session; post-cleanup mcp__vector_db.readiness returned Transport closed and no Vector process cohort remained.",
-      "run_policy": "Use for semantic retrieval only after readiness is healthy again; lexical rg fallback must be labeled non-semantic until the Codex MCP host restarts or reattaches the transport."
+      "codex_status": "warming_timeout_post_restart",
+      "evidence": "mcp__vector_db.readiness first reported Chroma ready and embedding model loading after restart, then a follow-up readiness call timed out.",
+      "run_policy": "Use for semantic retrieval only after readiness is healthy; lexical rg fallback must be labeled non-semantic."
     },
     {
       "server_id": "adg_sqlite",
-      "codex_status": "not_callable_in_live_discovery",
-      "evidence": "Tool discovery for adg_sqlite returned no callable tools in this Codex session.",
-      "run_policy": "Use direct SQLite against the newest artifacts/adg/adg_indexed_*.sqlite as a named degraded fallback until host MCP exposure is restored."
+      "codex_status": "callable_post_restart",
+      "evidence": "mcp__adg_sqlite.adg_health returned status=ok with SQLite healthy, Redis healthy, and snapshot 06152026_1043.",
+      "run_policy": "Use raw ADG MCP when exposed; direct SQLite remains the degraded fallback only when raw tools are absent."
     },
     {
       "server_id": "deepwiki",

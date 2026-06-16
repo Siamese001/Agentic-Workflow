@@ -1,0 +1,106 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-mcp-lifecycle-guards-b8f2a1",
+  "generated_at": "2026-06-16T14:15:28.7901397-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+    "branch": "codex/mcp-lifecycle-guards",
+    "head": "3d1b00c357c8d9dfd38f19cb9687ca6b3e2cb7b7",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Implement Codex MCP lifecycle cleanup guards and test them.",
+    "plan_id": "codex-mcp-lifecycle-guards-b8f2a1",
+    "files_changed": [
+      "docs/codex-primary-execution.md",
+      "docs/reports/codex/codex_mcp_lifecycle_guards_b8f2a1_receipt.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
+      "plans/codex-mcp-lifecycle-guards-b8f2a1.md",
+      "scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+      "tests/unit/scripts/governance/test_audit_codex_mcp_transports.py"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "git switch -c codex/mcp-lifecycle-guards",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m py_compile scripts/governance/cleanup_duplicate_mcp_cohorts.py scripts/governance/audit_codex_mcp_transports.py scripts/governance/codex_readiness.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_backup.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_backup.py --repo-only",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-lifecycle-guards-b8f2a1.md",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/cleanup_duplicate_mcp_cohorts.py --apply --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 2,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/codex_readiness.py --require-clean-worktree --fail-duplicate-processes --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "cleanup guard unit tests",
+        "status": "PASS",
+        "evidence": "Focused scripts/governance tests passed: 27 passed, 3 warnings."
+      },
+      {
+        "name": "live cleanup apply guard",
+        "status": "PASS",
+        "evidence": "cleanup_duplicate_mcp_cohorts.py --apply --json returned exit code 2 and refused Codex-owned cleanup without attached PID proof."
+      },
+      {
+        "name": "strict readiness",
+        "status": "BLOCKED",
+        "evidence": "Readiness passed contract/env/Memory/GitKraken/ADG checks but failed due dirty branch changes, Vector not proven callable, and duplicate Codex-owned process cohorts."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "Strict readiness remains blocked while live Codex-owned duplicate MCP cohorts exist and Vector readiness is not proven healthy.",
+    "root_cause": "The repo guard is implemented, but the Codex host still owns multiple MCP process cohorts and does not expose host-attached PID proof for safe process cleanup.",
+    "evidence": "cleanup_duplicate_mcp_cohorts.py dry-run and apply-mode guard reported Codex-owned duplicate cohorts for GitKraken, adg_sqlite, memory, and vector_db; codex_readiness.py failed duplicate-process and Vector callability checks.",
+    "fix_or_next": "next: restart or repair the Codex MCP host lifecycle so it spawns one attached cohort per server, or provide host-attached PID diagnostics before applying Codex-owned cleanup.",
+    "recurrence_guard": "Keep strict readiness with --fail-duplicate-processes before long Codex-primary runs, and refuse Codex-owned cleanup unless attached PID proof is supplied."
+  }
+}
