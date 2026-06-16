@@ -57,6 +57,47 @@ POOL_SELECTOR_SYSTEM_PROMPT = (
     "No markdown fences, no prose before or after the JSON object."
 )
 
+# W3: the Claude pool selector is itself a live external call inside the competencies/employment
+# orchestration. It previously had a HIDDEN hardcoded ``urlopen(req, timeout=60)`` — far shorter
+# than the lane's own budget — so a slow selector timed out and the failure masqueraded as a
+# competencies GENERATION failure. Resolve its budget from its own env, bounded by the shared
+# external-provider ceiling. Default 300s (the selector reads a large pool but emits compact JSON).
+DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS = 300.0
+SELECTOR_TIMING_RECEIPT_FILENAME = "bullet_pool_claude_selector_timing.json"
+
+
+def pool_selector_timeout_s() -> float:
+    """Effective wall-clock budget (seconds) for the Claude pool selector HTTP call.
+
+    Reads ``APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS`` (default 300s), floored at 30s and bounded by
+    the shared ``external_provider_timeout_max_s`` ceiling. A malformed value falls back to the
+    300s default rather than failing the call.
+    """
+    from apps_rg.runtime.providers.external_provider import external_provider_timeout_max_s
+
+    raw = os.environ.get("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", "").strip()
+    ceiling = external_provider_timeout_max_s()
+    if not raw:
+        return min(DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS, ceiling)
+    try:
+        return max(30.0, min(float(raw), ceiling))
+    except (TypeError, ValueError):
+        return min(DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS, ceiling)
+
+
+def _write_selector_timing_receipt(artifact_dir: Path | None, doc: dict[str, Any]) -> None:
+    """Honest selector lifecycle receipt — written for started/finished/error/timeout alike, so a
+    selector timeout is visibly distinct from a parse failure or a provider-unavailable block."""
+    if artifact_dir is None:
+        return
+    try:
+        (artifact_dir / SELECTOR_TIMING_RECEIPT_FILENAME).write_text(
+            json.dumps(doc, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    except OSError:  # guardian: allow-silent-swallow -- diagnostic receipt is best-effort, never fatal
+        pass
+
 
 @dataclass(frozen=True)
 class PoolSelectionResult:
@@ -706,6 +747,7 @@ def _call_anthropic_pool_selector(
     artifact_dir: Path | None,
 ) -> tuple[JudgeOutput, dict[str, Any] | None]:
     """Anthropic call for pool JSON (not GRADE_ONLY rubric schema)."""
+    import time
     import urllib.error
     import urllib.request
     from datetime import datetime, timezone
@@ -718,6 +760,7 @@ def _call_anthropic_pool_selector(
         _write_artifact,
     )
 
+    timeout_s = pool_selector_timeout_s()
     max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=1)
     payload = {
         "model": model,
@@ -726,6 +769,7 @@ def _call_anthropic_pool_selector(
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
+    started_wall = datetime.now(timezone.utc).isoformat()
     req_path = _artifact_path("anthropic_claude", "provider_request", artifact_base=artifact_dir)
     _write_artifact(
         req_path,
@@ -733,10 +777,30 @@ def _call_anthropic_pool_selector(
             "payload": payload,
             "input_hash": input_hash,
             "purpose": "bullet_pool_claude_selector",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "effective_timeout_seconds": timeout_s,
+            "timestamp": started_wall,
+        },
+    )
+    _write_selector_timing_receipt(
+        artifact_dir,
+        {
+            "phase": "started",
+            "started_at": started_wall,
+            "effective_timeout_seconds": timeout_s,
+            "model": model,
+            "input_hash": input_hash,
         },
     )
     if not _judge_live_https_allowed_under_pytest():
+        _write_selector_timing_receipt(
+            artifact_dir,
+            {
+                "phase": "blocked_pytest_network_disabled",
+                "started_at": started_wall,
+                "effective_timeout_seconds": timeout_s,
+                "outcome": "provider_unavailable",
+            },
+        )
         blocked = _pytest_network_disabled_blocked_output(
             provider_key="anthropic_claude",
             input_hash=input_hash,
@@ -755,11 +819,22 @@ def _call_anthropic_pool_selector(
         },
         method="POST",
     )
+    t0 = time.monotonic()
     try:
-        with urllib.request.urlopen(req, timeout=60) as response:
+        with urllib.request.urlopen(req, timeout=timeout_s) as response:
             raw_response = response.read().decode()
     except urllib.error.HTTPError as exc:
         body = exc.read().decode()
+        _write_selector_timing_receipt(
+            artifact_dir,
+            {
+                "phase": "error",
+                "outcome": "provider_http_error",
+                "http_status": exc.code,
+                "elapsed_s": round(time.monotonic() - t0, 4),
+                "effective_timeout_seconds": timeout_s,
+            },
+        )
         blocked = _make_blocked_output(
             "anthropic_claude",
             input_hash,
@@ -769,7 +844,44 @@ def _call_anthropic_pool_selector(
             model_name=model,
         )
         return blocked, None
+    except (TimeoutError, urllib.error.URLError, OSError) as exc:
+        # W3: a selector TIMEOUT is its own honest outcome, NOT a competencies generation failure.
+        elapsed = round(time.monotonic() - t0, 4)
+        is_timeout = isinstance(exc, TimeoutError) or "timed out" in str(exc).lower()
+        outcome = "selector_timeout" if is_timeout else "provider_transport_error"
+        _write_selector_timing_receipt(
+            artifact_dir,
+            {
+                "phase": "error",
+                "outcome": outcome,
+                "elapsed_s": elapsed,
+                "effective_timeout_seconds": timeout_s,
+                "error": f"{type(exc).__name__}: {exc}",
+            },
+        )
+        blocked = _make_blocked_output(
+            "anthropic_claude",
+            input_hash,
+            "BLOCKED_SELECTOR_TIMEOUT" if is_timeout else "BLOCKED_PROVIDER_UNAVAILABLE",
+            "BLOCKED_SELECTOR_TIMEOUT" if is_timeout else "BLOCKED_PROVIDER_UNAVAILABLE",
+            f"Anthropic pool selector {outcome} after {elapsed}s "
+            f"(budget {timeout_s}s): {type(exc).__name__}: {exc}",
+            model_name=model,
+        )
+        return blocked, None
 
+    completed_after_s = round(time.monotonic() - t0, 4)
+    _write_selector_timing_receipt(
+        artifact_dir,
+        {
+            "phase": "finished",
+            "outcome": "response_received",
+            "started_at": started_wall,
+            "completed_after_s": completed_after_s,
+            "effective_timeout_seconds": timeout_s,
+            "raw_output_chars": len(raw_response or ""),
+        },
+    )
     raw_path = _artifact_path("anthropic_claude", "provider_response_raw", artifact_base=artifact_dir)
     _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
     try:
@@ -1246,7 +1358,9 @@ def run_claude_bullet_pool_selection(
 
 __all__ = [
     "PoolSelectionResult",
+    "SELECTOR_TIMING_RECEIPT_FILENAME",
     "merge_bullet_selections",
     "merge_competency_selections",
+    "pool_selector_timeout_s",
     "run_claude_bullet_pool_selection",
 ]

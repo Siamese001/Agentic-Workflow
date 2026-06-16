@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import datetime, timezone
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -23,6 +25,7 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
+    e2e_closeout_mode_active,
     evaluate_competencies_selection_quality,
     max_competencies_regen_rounds,
     min_competencies_selection_score,
@@ -396,6 +399,9 @@ def _generate_competencies_graph_pool_lane(
     )
     regen_round = 0
     max_regen = 0 if judge_mode == "mocked" else max_competencies_regen_rounds()
+    # W5: per-round generation/selector phase timings, surfaced via meta so the lane execution can
+    # answer "did it die on a generation path or on the selector?" without console guessing.
+    phase_timings: list[dict[str, Any]] = []
 
     while True:
         batch = (
@@ -403,6 +409,8 @@ def _generate_competencies_graph_pool_lane(
             if regen_round == 0
             else regen_extra_path_count_for_lane(section_lane)
         )
+        _gen_started = datetime.now(timezone.utc).isoformat()
+        _gen_t0 = time.monotonic()
         new_paths, last_result = run_provider_self_consistency_paths(
             section_lane=section_lane,
             provider_payload=provider_payload,
@@ -416,6 +424,14 @@ def _generate_competencies_graph_pool_lane(
             append_artifacts=regen_round > 0,
             provider_profile=provider_profile,
         )
+        phase_timings.append(
+            {
+                "phase": f"self_consistency_generation_round_{regen_round}",
+                "started_at": _gen_started,
+                "duration_s": round(time.monotonic() - _gen_t0, 4),
+                "batch_paths": batch,
+            }
+        )
         new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
 
@@ -428,6 +444,8 @@ def _generate_competencies_graph_pool_lane(
                 f"Select exactly {gate.final_category_count} categories with score >= {min_score:.2f} and passes=true."
             )
 
+        _sel_started = datetime.now(timezone.utc).isoformat()
+        _sel_t0 = time.monotonic()
         pool = run_claude_bullet_pool_selection(
             section_id=section_lane,
             slot_kind="competencies",
@@ -438,6 +456,14 @@ def _generate_competencies_graph_pool_lane(
             mode=judge_mode,
             min_score_threshold=min_score,
             regen_note=regen_note,
+        )
+        phase_timings.append(
+            {
+                "phase": f"selector_round_{regen_round}",
+                "started_at": _sel_started,
+                "duration_s": round(time.monotonic() - _sel_t0, 4),
+                "selection_mode": pool.selection_mode,
+            }
         )
         gate = evaluate_competencies_selection_quality(
             selections=pool.selections,
@@ -483,6 +509,9 @@ def _generate_competencies_graph_pool_lane(
         "claude_selection_count": len(pool.selections),
         "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
         "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
+        "phase_timings": phase_timings,
+        "e2e_closeout_mode": e2e_closeout_mode_active(),
+        "max_regen_rounds_allowed": max_regen,
     }
     meta.update(summarize_selector_emptiness(pool=pool, gate=gate))
     if artifact_dir is not None:

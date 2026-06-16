@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -74,6 +76,43 @@ class SelfConsistencyPath:
     provider_result: ProviderResult | None
 
 
+PROGRESS_RECEIPT_FILENAME = "self_consistency_progress.json"
+
+
+def _flush_progress_receipt(
+    artifact_dir: Path | None,
+    section_lane: str,
+    rows: list[dict[str, Any]],
+) -> None:
+    """Flush the live per-path progress board to disk after EVERY path (not just the batch).
+
+    W4: ``self_consistency_paths.json`` is written only after the whole batch finishes, so a long
+    competencies pool run looks dead until the last path lands. This companion artifact is
+    rewritten after each path starts AND after each completes, so a stuck-looking run reveals
+    exactly which ``path_index`` is active / last completed without waiting for the batch.
+    Best-effort: a write failure never aborts generation.
+    """
+    if artifact_dir is None:
+        return
+    in_progress = sum(1 for r in rows if r.get("completed_at") is None)
+    doc = {
+        "section_lane": section_lane,
+        "path_count": len(rows),
+        "paths_in_progress": in_progress,
+        "paths_completed": len(rows) - in_progress,
+        "last_update": datetime.now(timezone.utc).isoformat(),
+        "paths": rows,
+    }
+    try:
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        (artifact_dir / PROGRESS_RECEIPT_FILENAME).write_text(
+            json.dumps(doc, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    except OSError:  # guardian: allow-silent-swallow -- diagnostic progress board is best-effort, never fatal
+        pass
+
+
 def run_provider_self_consistency_paths(
     *,
     section_lane: str,
@@ -97,8 +136,39 @@ def run_provider_self_consistency_paths(
     paths: list[SelfConsistencyPath] = []
     last_result: ProviderResult | None = None
 
+    # W4: live per-path progress board. On append/regen batches, carry prior rows forward so the
+    # board shows the full accumulated pool, not just the current batch.
+    progress_rows: list[dict[str, Any]] = []
+    if artifact_dir is not None and (append_artifacts or path_index_start > 0):
+        prior_path = artifact_dir / PROGRESS_RECEIPT_FILENAME
+        if prior_path.is_file():
+            try:
+                prior_doc = json.loads(prior_path.read_text(encoding="utf-8"))
+                if isinstance(prior_doc, dict) and isinstance(prior_doc.get("paths"), list):
+                    progress_rows = [r for r in prior_doc["paths"] if isinstance(r, dict)]
+            except (json.JSONDecodeError, OSError):
+                progress_rows = []
+
     for offset, temp in enumerate(temps):
         idx = path_index_start + offset
+        # Append a "started" row BEFORE the provider call and flush — a stuck path is now visible.
+        started_at = datetime.now(timezone.utc).isoformat()
+        t0 = time.monotonic()
+        progress_row: dict[str, Any] = {
+            "section_lane": section_lane,
+            "path_index": idx,
+            "temperature": temp,
+            "started_at": started_at,
+            "completed_at": None,
+            "duration_s": None,
+            "runtime_generation_status": "IN_PROGRESS",
+            "raw_output_chars": 0,
+            "parse_ok": None,
+            "provider_error": None,
+        }
+        progress_rows.append(progress_row)
+        _flush_progress_receipt(artifact_dir, section_lane, progress_rows)
+
         tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
         if section_lane == "unify_bullets":
             from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
@@ -144,6 +214,20 @@ def run_provider_self_consistency_paths(
                 provider_result=result,
             )
         )
+        # Update the row with the completed outcome and flush — last-completed is now observable.
+        progress_row.update(
+            {
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "duration_s": round(time.monotonic() - t0, 4),
+                "runtime_generation_status": result.runtime_generation_status,
+                "raw_output_chars": len(raw),
+                "parse_ok": parsed is not None,
+                "provider_error": (result.exact_provider_error or None)
+                if result.runtime_generation_status != "REAL_LLM"
+                else None,
+            }
+        )
+        _flush_progress_receipt(artifact_dir, section_lane, progress_rows)
 
     if artifact_dir is not None:
         _write_paths_artifact(
@@ -258,6 +342,7 @@ def patch_receipt_samples_executed(
 __all__ = [
     "BULLET_POOL_LANES",
     "EMPLOYMENT_BULLET_LANES",
+    "PROGRESS_RECEIPT_FILENAME",
     "SelfConsistencyPath",
     "bullet_lane_sc_enabled",
     "patch_receipt_samples_executed",
