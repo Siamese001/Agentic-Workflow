@@ -42,7 +42,14 @@ from agentic_core.config.google_ai_env import (
     google_ai_flash_model_id,
     google_ai_pro_model_id,
 )
-from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    BGE_M3_MODEL_ID,
+    GEMINI_FLASH_MODEL_ID as CATALOG_GEMINI_FLASH_MODEL_ID,
+    GEMINI_PRO_MODEL_ID as CATALOG_GEMINI_PRO_MODEL_ID,
+    OPENAI_DEFAULT_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID as CATALOG_QWEN_LOCAL_MODEL_ID,
+)
 
 
 # ============================================================================
@@ -62,7 +69,7 @@ DETERMINISTIC_MODEL_SENTINEL: Final[str] = "local_deterministic"
 # agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py:70
 QWEN_LOCAL_MODEL_ID: Final[str] = os.getenv(
     "VLLM_MODEL_NAME",
-    "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    CATALOG_QWEN_LOCAL_MODEL_ID,
 )
 """Identifier for the local Qwen model served by vLLM on VLLM_BASE_URL."""
 
@@ -91,7 +98,7 @@ Env override ``VLLM_MAX_MODEL_LEN`` must match the running container ``--max-mod
 # TIER: GEMINI_FLASH (cheap cloud, fast)
 # ============================================================================
 
-GEMINI_FLASH_MODEL_ID: Final[str] = google_ai_flash_model_id()[0]
+GEMINI_FLASH_MODEL_ID: Final[str] = google_ai_flash_model_id(default=CATALOG_GEMINI_FLASH_MODEL_ID)[0]
 """Identifier for the cheaper, faster Google AI model (``GOOGLE_AI_MODEL`` env; flash tier)."""
 
 
@@ -99,7 +106,7 @@ GEMINI_FLASH_MODEL_ID: Final[str] = google_ai_flash_model_id()[0]
 # TIER: GEMINI_PRO (expensive cloud, higher reasoning)
 # ============================================================================
 
-GEMINI_PRO_MODEL_ID: Final[str] = google_ai_pro_model_id()[0]
+GEMINI_PRO_MODEL_ID: Final[str] = google_ai_pro_model_id(default=CATALOG_GEMINI_PRO_MODEL_ID)[0]
 """Identifier for the higher-reasoning Google AI model (``GOOGLE_AI_PRO_MODEL`` env; pro tier).
 
 Default refreshed 2026-05-01 per operator directive. Previous default
@@ -123,7 +130,7 @@ env var for deployment-specific pinning.
 
 ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
     "ANTHROPIC_MODEL",
-    "claude-sonnet-4-6",
+    ANTHROPIC_DEFAULT_MODEL_ID,
 )
 """Identifier for the Anthropic juror in ConsensusEngine and W2b cert consensus.
 
@@ -183,7 +190,7 @@ raises the threshold to 3/4 without code changes.
 
 EMBEDDING_MODEL_ID: Final[str] = os.getenv(
     "EMBEDDING_MODEL",
-    "BAAI/bge-m3",
+    BGE_M3_MODEL_ID,
 )
 """Identifier for the bge-m3 embedding model used for semantic similarity."""
 

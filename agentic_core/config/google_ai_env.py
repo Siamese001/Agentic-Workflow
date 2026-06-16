@@ -17,6 +17,11 @@ from __future__ import annotations
 import os
 from typing import Final, Mapping
 
+from agentic_core.config.model_catalog import (
+    GEMINI_FLASH_MODEL_ID as CATALOG_GEMINI_FLASH_MODEL_ID,
+    GEMINI_PRO_MODEL_ID as CATALOG_GEMINI_PRO_MODEL_ID,
+)
+
 GOOGLE_API_KEY: Final[str] = "GOOGLE_API_KEY"
 GEMINI_API_KEY_LEGACY: Final[str] = "GEMINI_API_KEY"
 
@@ -59,7 +64,7 @@ def google_api_key(environ: Mapping[str, str] | None = None) -> tuple[str, str]:
 def google_ai_flash_model_id(
     environ: Mapping[str, str] | None = None,
     *,
-    default: str = "gemini-3-flash-preview",
+    default: str = CATALOG_GEMINI_FLASH_MODEL_ID,
 ) -> tuple[str, str]:
     return resolve_env_str(
         environ,
@@ -73,7 +78,7 @@ def google_ai_flash_model_id(
 def google_ai_pro_model_id(
     environ: Mapping[str, str] | None = None,
     *,
-    default: str = "gemini-3.1-pro-preview",
+    default: str = CATALOG_GEMINI_PRO_MODEL_ID,
 ) -> tuple[str, str]:
     return resolve_env_str(
         environ,
