@@ -3,7 +3,7 @@
 Deterministic pre-dispatch trim of **optional-only** prompt payload. Never silently alters the
 evidence contract or generation prompt shape (SRFS arc, I0 sovereign regions, R0 schema body,
 HIGH fact lines, INPUT_AUTHORITY). If optional trims cannot fit the budget, fail closed before
-Qwen — do not dispatch a shape-degraded prompt that causes downstream 3-sentence / SRFS gate failures.
+provider dispatch; do not dispatch a shape-degraded prompt that causes downstream gates to fail.
 """
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ FAIL_SHAPE_ALTERED = "EVIDENCE_CONTRACT_OR_PROMPT_SHAPE_ALTERED"
 
 # Backward-compatible alias (tests/imports).
 FIRST_PASS_INPUT_UTILIZATION_MAX = DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX
-_CONTEXT_SOURCE_ENV = "ENV_VLLM_MAX_MODEL_LEN"
+_CONTEXT_SOURCE_SSOT = "SSOT_PROVIDER_PROFILES_RUNTIME_LIMITS"
 _CONTEXT_SOURCE_SERVER = "SERVER_MODELS_METADATA"
 _CONTEXT_SOURCE_UNKNOWN = "UNKNOWN"
 TRIM_STRATEGY = "executive_summary_optional_trim_only_v2"
@@ -146,17 +146,16 @@ def _server_context_window_from_models_payload(
 
 
 def resolve_context_window_provenance(*, model: str | None = None) -> ContextWindowProvenance:
-    """Resolve context window with labeled provenance (W2.1). Auto-detect is opt-in only."""
-    env_window = resolve_provider_context_window()
+    """Resolve context window with labeled provenance."""
+    _ = model
+    ssot_window = resolve_provider_context_window()
 
-    # The Qwen/vLLM server ``/v1/models`` context-window probe was removed with the
-    # local-model provider; the context window is the operator-declared section budget.
     return ContextWindowProvenance(
-        provider_context_window=env_window,
-        provider_context_window_source=_CONTEXT_SOURCE_ENV,
+        provider_context_window=ssot_window,
+        provider_context_window_source=_CONTEXT_SOURCE_SSOT,
         server_context_window_verified=False,
         server_context_window_warning=(
-            "operator-declared section context window; not server-proven (local provider removed)"
+            "section context window resolved from apps_rg provider_profiles.yaml runtime_limits"
         ),
         server_observed_context_window=None,
     )
@@ -434,7 +433,7 @@ class RegenDispatchBudgetCheck:
     headroom_pct: float
     dispatch_allowed: bool
     block_reason: str | None
-    provider_context_window_source: str = _CONTEXT_SOURCE_ENV
+    provider_context_window_source: str = _CONTEXT_SOURCE_SSOT
     server_context_window_verified: bool = False
     server_context_window_warning: str | None = None
 
@@ -452,7 +451,7 @@ def regen_dispatch_allowed(
     provider_context_window: int | None = None,
     model: str | None = None,
 ) -> RegenDispatchBudgetCheck:
-    """Pre-dispatch budget check for regen/repair Qwen calls (advisory when regen caps disabled)."""
+    """Pre-dispatch budget check for regen/repair provider calls."""
     from apps_rg.runtime.sections.executive_summary_repair_policy import (
         regen_artificial_caps_enabled,
     )
@@ -462,7 +461,7 @@ def regen_dispatch_allowed(
         if provider_context_window is None
         else ContextWindowProvenance(
             provider_context_window=int(provider_context_window),
-            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            provider_context_window_source=_CONTEXT_SOURCE_SSOT,
             server_context_window_verified=False,
             server_context_window_warning="explicit provider_context_window override",
             server_observed_context_window=None,
@@ -977,13 +976,13 @@ def apply_executive_summary_token_budget_policy(
     requested_max_output_tokens: int,
     provider_context_window: int | None = None,
 ) -> tuple[SectionCompiledPrompt, dict[str, Any]]:
-    """Apply optional-only trims; block before Qwen if evidence/shape would change or budget still exceeded."""
+    """Apply optional-only trims; block before provider dispatch if evidence/shape would change."""
     provenance = (
         resolve_context_window_provenance(model=model)
         if provider_context_window is None
         else ContextWindowProvenance(
             provider_context_window=int(provider_context_window),
-            provider_context_window_source=_CONTEXT_SOURCE_ENV,
+            provider_context_window_source=_CONTEXT_SOURCE_SSOT,
             server_context_window_verified=False,
             server_context_window_warning="explicit provider_context_window override",
             server_observed_context_window=None,

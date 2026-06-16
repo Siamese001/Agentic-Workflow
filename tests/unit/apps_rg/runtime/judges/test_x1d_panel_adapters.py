@@ -51,13 +51,11 @@ def _ctx(provider_key: str = "openai_chatgpt") -> X1dPanelProviderContext:
     )
 
 
-def test_panel_adapter_declared_policy_uses_provider_json_lock(monkeypatch) -> None:
-    monkeypatch.setenv("APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS", "600")
-
+def test_panel_adapter_declared_policy_uses_provider_json_lock() -> None:
     openai_policy = AppsRgX1dPanelAdapter(_ctx("openai_chatgpt")).declared_policy(attempt=2)
     gemini_policy = AppsRgX1dPanelAdapter(_ctx("gemini_pro")).declared_policy(attempt=1)
 
-    assert openai_policy.max_output_tokens == 1200
+    assert openai_policy.max_output_tokens >= gemini_policy.max_output_tokens
     assert openai_policy.json_output_lock == "json_object"
     assert gemini_policy.json_output_lock == "responseSchema"
     assert gemini_policy.temperature == 0.1

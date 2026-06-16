@@ -5,8 +5,15 @@ from __future__ import annotations
 import re
 
 from apps_rg.runtime.sections.executive_summary_voice_repair import (
+    finalize_executive_summary_coherence,
     repair_generic_filler_prose,
     strip_unsupported_source_sensitive_prose,
+)
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    _resume_word_count,
+    build_sentence_claim_coverage,
+    check_claim_ledger_orphan_source_ids,
+    has_jd_phrase_copy,
 )
 
 _BAD_S5_S6 = (
@@ -243,3 +250,234 @@ def test_rebind_source_fact_ids_fail_open_on_ambiguity() -> None:
 
     # No prior rows -> [].
     assert _rebind_source_fact_ids_from_prior_rows("Any sentence at all here.", []) == []
+
+
+def test_graph_era_anthropic_exec_summary_repair_keeps_source_ids_and_budget() -> None:
+    """Regression for live Anthropic run w2_3b: graph-era ids were stripped to empty rows."""
+    display = (
+        "Enterprise technology executive who aligns governed agentic AI platform architecture, "
+        "partner alliance GTM execution, and cloud modernization depth into coherent strategy "
+        "for regulated enterprise ecosystems. "
+        "From that platform footprint, distributed cloud and data execution infrastructure was "
+        "designed with runtime resilience controls and policy-gated agent execution surfaces "
+        "that scale without sacrificing traceability. "
+        "From that operating base, partner co-sell motions and joint solution development across "
+        "hyperscaler alliances produced a 20% joint outcome and a multi-motion partner enablement "
+        "asset set. "
+        "IBM-AWS alliance architecture for regulated financial-services workloads established "
+        "reference architecture reuse patterns and cloud modernization waves that accelerated "
+        "client adoption readiness. "
+        "That alliance and platform discipline translated into IP-led of and 20% expansion while "
+        "the platform engineering team scaled from 8 to 28 specialists. "
+        "The same governed platform and partner architecture foundation positions a Partner "
+        "Solutions Architect team to embed with GSI and cloud partner ecosystems, enabling "
+        "production-grade AI deployments at enterprise scale."
+    )
+    ledger = [
+        {
+            "claim_text": (
+                "Enterprise technology executive aligning governed agentic AI platform architecture, "
+                "partner co-sell channel and alliance GTM execution, and distributed cloud "
+                "modernization depth into one regulated enterprise strategy."
+            ),
+            "source_fact_ids": [
+                "reb_unify_agentic_platform_architecture",
+                "reb_unify_partner_channel_cosell",
+                "reb_unify_distributed_ecosystem_engineering",
+            ],
+        },
+        {
+            "claim_text": (
+                "Designed and operated distributed cloud and data execution infrastructure with "
+                "runtime resilience controls and policy-gated agent execution surfaces."
+            ),
+            "source_fact_ids": [
+                "reb_unify_distributed_ecosystem_engineering",
+                "skill_sr_cloud_data_platform_engineering",
+                "skill_runtime_resilience_controls",
+                "metric_unify_policy_gated_agent_execution_surface",
+                "metric_unify_replayable_runtime_traceability",
+            ],
+        },
+        {
+            "claim_text": (
+                "Led partner co-sell motions and joint solution development across hyperscaler "
+                "alliances, producing a 20% joint revenue growth outcome."
+            ),
+            "source_fact_ids": [
+                "reb_unify_partner_channel_cosell",
+                "skill_partner_co_selling",
+                "skill_partner_joint_solution_development",
+                "skill_partner_cloud_vendor_joint_gtm",
+                "metric_ibm_20pct_joint_revenue_growth",
+                "metric_unify_partner_enablement_asset_set",
+                "metric_unify_partner_cosell_solution_motion_count",
+            ],
+        },
+        {
+            "claim_text": (
+                "Led IBM-AWS alliance co-sell motions and AWS modernization architecture for "
+                "regulated financial-services workloads."
+            ),
+            "source_fact_ids": [
+                "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "reb_ibm_aws_modernization_architecture",
+                "metric_ibm_regulated_reference_architecture_reuse",
+                "metric_ibm_onprem_to_aws_modernization_waves",
+                "reb_ibm_customer_success_value_realization",
+            ],
+        },
+        {
+            "claim_text": (
+                "Platform productization and IP-led revenue leadership generated $22M in IP-led "
+                "revenue growth and 20% gross margin expansion while the platform engineering "
+                "team scaled from 8 to 28 specialists."
+            ),
+            "source_fact_ids": [
+                "reb_unify_platform_commercialization_leadership",
+                "metric_unify_22m_ip_led_revenue",
+                "metric_unify_20pct_gross_margin_expansion",
+                "metric_unify_team_scaled_8_to_28",
+            ],
+        },
+        {
+            "claim_text": (
+                "The governed agentic platform architecture, partner GTM enablement depth, and "
+                "regulated cloud modernization lineage position a Partner Solutions Architect "
+                "team to embed with GSI and cloud partner ecosystems."
+            ),
+            "source_fact_ids": [
+                "reb_unify_agentic_platform_architecture",
+                "skill_partner_gtm_enablement",
+                "skill_partner_partner_led_ai_solutions",
+                "reb_insurtech_aws_migration_execution",
+                "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+            ],
+        },
+    ]
+    allowed = {sid for row in ledger for sid in row["source_fact_ids"]}
+    parsed = {"resume_display_text": display, "claim_ledger": ledger, "gap_notes": []}
+
+    out, receipt = finalize_executive_summary_coherence(
+        parsed,
+        selected_facts=[{"fact_id": fid} for fid in sorted(allowed)],
+        target_role="Manager of Applied AI Architecture, Partnerships",
+    )
+
+    text = str(out.get("resume_display_text") or "")
+    repaired_ledger = list(out.get("claim_ledger") or [])
+    coverage = build_sentence_claim_coverage(text, repaired_ledger, allowed)
+    orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(repaired_ledger, allowed)
+    jd_copy, phrase = has_jd_phrase_copy(text, "embed with GSI and cloud partner ecosystems")
+
+    assert receipt["judge_polish"]["applied"] is True
+    assert _resume_word_count(text) <= 140
+    assert "IP-led of" not in text
+    assert jd_copy is False, phrase
+    assert orphan_ok is True, orphan_reason
+    assert coverage["overall_pass"] is True
+    assert repaired_ledger[0]["source_fact_ids"]
+    assert repaired_ledger[4]["source_fact_ids"] == [
+        "reb_unify_platform_commercialization_leadership",
+        "metric_unify_22m_ip_led_revenue",
+        "metric_unify_20pct_gross_margin_expansion",
+        "metric_unify_team_scaled_8_to_28",
+    ]
+
+
+def test_graph_era_trim_repair_restores_metric_nouns_after_word_budget() -> None:
+    """Regression for w2_3c_exec: trim must not leave malformed metric fragments."""
+    display = (
+        "Platform engineering executive who aligns governed agentic AI architecture, alliance "
+        "co-sell programs, and regulated cloud modernization into partner-led growth agenda "
+        "for enterprise scale. "
+        "Distributed cloud and data infrastructure was designed with runtime resilience "
+        "controls and policy-gated execution surfaces that keep agent behavior traceable and "
+        "auditable. "
+        "IBM-AWS alliance co-sell motions and joint GTM enablement assets accelerated "
+        "financial-services modernization opportunities, contributing to 20% joint across "
+        "the partner channel. "
+        "In parallel, regulated cloud migration work engaged multiple insurance regulatory "
+        "bodies on data security and cloud adoption standards, grounding the modernization "
+        "program in controls-ready architecture patterns. "
+        "That commercial and regulatory foundation translated into in IP-led and 20% "
+        "expansion while the platform engineering team scaled from 8 to 28 specialists. "
+        "The same foundation positions a Partner Solutions Architect team to guide integrator "
+        "and hyperscaler ecosystems, codify reference architectures, and accelerate enterprise "
+        "AI adoption at scale."
+    )
+    ledger = [
+        {
+            "claim_text": "Executive identity combines agentic AI architecture, alliance co-sell, and regulated cloud modernization.",
+            "source_fact_ids": [
+                "reb_unify_agentic_platform_architecture",
+                "reb_unify_partner_channel_cosell",
+                "reb_ibm_aws_modernization_architecture",
+                "reb_insurtech_aws_migration_execution",
+            ],
+        },
+        {
+            "claim_text": "Distributed cloud and data infrastructure carried runtime resilience, policy-gated execution, and traceability.",
+            "source_fact_ids": [
+                "reb_unify_distributed_ecosystem_engineering",
+                "skill_runtime_resilience_controls",
+                "metric_unify_policy_gated_agent_execution_surface",
+                "metric_unify_replayable_runtime_traceability",
+            ],
+        },
+        {
+            "claim_text": "IBM-AWS alliance co-sell motions and joint GTM enablement contributed to 20% joint revenue growth.",
+            "source_fact_ids": [
+                "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "metric_unify_partner_enablement_asset_set",
+                "metric_ibm_alliance_cosell_operating_cadence",
+                "metric_ibm_ai_driven_sales_frameworks",
+                "metric_ibm_20pct_joint_revenue_growth",
+            ],
+        },
+        {
+            "claim_text": "Regulated cloud migration engaged multiple insurance regulatory bodies on data security and cloud adoption standards.",
+            "source_fact_ids": [
+                "reb_insurtech_aws_migration_execution",
+                "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+                "metric_insurtech_regulatory_bodies_engaged_count",
+                "skill_naic_data_security_model_law_readiness",
+            ],
+        },
+        {
+            "claim_text": "Platform productization generated $22M in IP-led revenue and 20% gross margin expansion while scaling the team from 8 to 28.",
+            "source_fact_ids": [
+                "reb_unify_platform_commercialization_leadership",
+                "metric_unify_22m_ip_led_revenue",
+                "metric_unify_20pct_gross_margin_expansion",
+                "metric_unify_team_scaled_8_to_28",
+            ],
+        },
+        {
+            "claim_text": "Partner architecture foundation positions Partner Solutions Architect leadership across integrator and hyperscaler ecosystems.",
+            "source_fact_ids": [
+                "reb_unify_agentic_platform_architecture",
+                "reb_unify_partner_channel_cosell",
+                "skill_partner_joint_solution_development",
+                "skill_partner_gtm_enablement",
+            ],
+        },
+    ]
+    allowed = {sid for row in ledger for sid in row["source_fact_ids"]}
+    out, _receipt = finalize_executive_summary_coherence(
+        {"resume_display_text": display, "claim_ledger": ledger, "gap_notes": []},
+        selected_facts=[{"fact_id": fid} for fid in sorted(allowed)],
+        target_role="Manager of Applied AI Architecture, Partnerships",
+    )
+
+    text = str(out.get("resume_display_text") or "")
+    repaired_ledger = list(out.get("claim_ledger") or [])
+    coverage = build_sentence_claim_coverage(text, repaired_ledger, allowed)
+
+    assert _resume_word_count(text) <= 140
+    assert "20% joint across" not in text
+    assert "20% joint revenue growth across" in text
+    assert "translated into in IP-led" not in text
+    assert "$22M in IP-led revenue and 20% gross margin expansion" in text
+    assert "into a partner-led growth agenda" in text
+    assert coverage["overall_pass"] is True

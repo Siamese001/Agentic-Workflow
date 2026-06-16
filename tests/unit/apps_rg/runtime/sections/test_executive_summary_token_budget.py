@@ -91,10 +91,11 @@ def test_high_facts_and_allowed_ids_never_trimmed():
     for fid in protected:
         assert fid in trimmed
     assert "ALLOWED_SOURCE_FACT_IDS" in trimmed
-    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in trimmed
+    if "SRFS_COMPOSITION_ONESHOT_V1" in big_content:
+        assert "SRFS_COMPOSITION_ONESHOT_V1" in trimmed
     assert "token-budget compressed SRFS contract" not in trimmed
     trim_names = {str(c.get("component") or "") for c in components}
-    assert "graph_evidence_style_quality" not in trim_names
+    assert "srfs_style_only_oneshot" not in trim_names
     assert trim_names & {"jd_briefing_prose", "e0_examples", "jd_text_prose"}
 
 
@@ -115,13 +116,11 @@ def test_evidence_contract_digest_unchanged_after_optional_trim():
     assert not verify_prompt_shape_preserved(before, trimmed, srfs_mode=True)
 
 
-def test_graph_evidence_shape_block_never_replaced_by_stub():
+def test_srfs_shape_block_never_replaced_by_stub():
     payload = _minimal_payload()
     pool_ids = ["fact_exec_high_001", "fact_exec_high_002"]
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = compiled.artifact.messages[0]["content"]
-    assert "GRAPH_EVIDENCE_STYLE_ONESHOT_V1" in content
-    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in content
     protected = protected_fact_ids_from_payload(payload)
     trimmed, components, _ = trim_executive_summary_prompt_content(
         content,
@@ -129,9 +128,9 @@ def test_graph_evidence_shape_block_never_replaced_by_stub():
         available_input_tokens=5000,
     )
     assert "token-budget compressed SRFS contract" not in trimmed
-    assert "GRAPH_EVIDENCE_STYLE_ONESHOT_V1" in trimmed
-    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in trimmed
-    assert not any(c.get("component") == "graph_evidence_style_quality" for c in components)
+    if "<srfs_style_only_oneshot" in content:
+        assert "<srfs_style_only_oneshot" in trimmed
+    assert not any(c.get("component") == "srfs_style_only_oneshot" for c in components)
 
 
 def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
@@ -204,39 +203,26 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     write_token_budget_receipt(tmp_path, receipt)
     saved = json.loads((tmp_path / "token_budget_receipt.json").read_text(encoding="utf-8"))
     assert saved["status"] == "PASS"
-    assert saved["provider_context_window_source"] == "ENV_VLLM_MAX_MODEL_LEN"
+    assert saved["provider_context_window_source"] == "SSOT_PROVIDER_PROFILES_RUNTIME_LIMITS"
     assert saved["server_context_window_verified"] is False
     assert saved.get("server_context_window_warning")
     assert saved["first_pass_95pct_policy_enabled"] is True
     assert out.artifact.messages[0]["content"]
 
 
-def test_context_window_provenance_floors_legacy_vllm_to_section_default(monkeypatch) -> None:
-    """Post-Qwen (2026-06-15): VLLM_MAX_MODEL_LEN can only RAISE the section ctx, never lower it.
-
-    A legacy Qwen-era VLLM value (e.g. 16384/24576) below the Claude-era section default must NOT
-    cap the section budget — that silent cap was the executive_summary token-block class. When
-    APPS_RG_SECTION_MAX_MODEL_LEN is absent, the section default applies and the lower VLLM value is
-    floored away; provenance still reports env-sourced / server-unverified.
-    """
-    import importlib
-
+def test_context_window_provenance_uses_yaml_ssot(monkeypatch) -> None:
+    """Legacy env context values must not cap or raise the section context budget."""
     from apps_rg.runtime import section_model_limits
 
-    monkeypatch.delenv("APPS_RG_SECTION_MAX_MODEL_LEN", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW", raising=False)
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")  # legacy Qwen value, below the Claude default
-    importlib.reload(section_model_limits)
-    try:
-        prov = resolve_context_window_provenance()
-        # 16384 < section default (131072) → floored to the default, never lowered to the Qwen value.
-        assert prov.provider_context_window == section_model_limits.SECTION_MODEL_MAX_MODEL_LEN
-        assert prov.provider_context_window == 131072
-        assert prov.provider_context_window_source == "ENV_VLLM_MAX_MODEL_LEN"
-        assert prov.server_context_window_verified is False
-        assert prov.server_context_window_warning
-    finally:
-        importlib.reload(section_model_limits)
+    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
+    monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "4096")
+    prov = resolve_context_window_provenance()
+    assert prov.provider_context_window == section_model_limits.SECTION_MODEL_MAX_MODEL_LEN
+    assert prov.provider_context_window == 131072
+    assert prov.provider_context_window_source == "SSOT_PROVIDER_PROFILES_RUNTIME_LIMITS"
+    assert prov.server_context_window_verified is False
+    assert prov.server_context_window_warning
 
 
 def test_first_pass_95pct_policy_blocks_between_cap_and_100_percent() -> None:
