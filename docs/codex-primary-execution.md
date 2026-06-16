@@ -8,12 +8,15 @@ Codex is the primary local execution surface for this repository when Claude API
 | --- | --- |
 | Local run state, readiness, verification, and closeout evidence | Codex primary execution surface |
 | Shared governance rules during migration | `CLAUDE.md`, `AGENTS.md`, `.claude/rules/**`, `.claude/skills/**`, `.claude/settings.json` |
+| Agentic Workflow project memory | `memory/MEMORY.md` plus Codex-specific project memory under `memory/codex/` |
 | MCP configured-server truth | `.mcp.json` plus `.claude/mcp-notes.md` |
 | Optional Codex live route evidence | `docs/reports/codex/` snapshots such as `codex_primary_mcp_live_snapshot.md` |
 | Hook parity and Codex hook preflight | `scripts/governance/codex_hook_parity.py` consuming `.claude/settings.json` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
 No parallel registry: do not copy `.claude` rule bodies, MCP server definitions, or hook logic into a Codex-only store. Codex should consume the repo-owned files and produce fresh execution evidence.
+
+For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
 ## Local Codex Skills
 

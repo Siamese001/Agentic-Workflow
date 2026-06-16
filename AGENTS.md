@@ -65,6 +65,8 @@ Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.claude
 
 First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Claude's current rule treats native file memory under `memory/` as canonical and the knowledge-graph MCP as optional. Detail: `.claude/rules/memory-management.md`, skill `memory-mcp`.
 
+Codex project-memory loader convention: for non-trivial work in this repo, read `memory/MEMORY.md` first and then `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task. Treat `C:\Users\amita\.codex\memories` as global/user memory only; do not make it the SSOT for Agentic Workflow project memory.
+
 ## Constitutional floor
 
 - Subprocess timeout always required — `subprocess.run(argv, shell=False, timeout=30)`. PowerShell is allowed as the primary Windows shell when commands remain bounded.
