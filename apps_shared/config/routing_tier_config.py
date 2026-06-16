@@ -7,6 +7,13 @@ Phase 2 - Resilient Routing Layer
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    GEMINI_25_FLASH_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_VERSIONED_MODEL_ID,
+)
+
 from dataclasses import dataclass
 from enum import Enum
 
@@ -251,9 +258,9 @@ DEFAULT_ROUTING_CONFIGS = {
         fallback_providers=[Provider.ANTHROPIC, Provider.GOOGLE],
         timeout_ms=120000,  # 2 minutes for reasoning tasks
         model_overrides={
-            Provider.OPENAI.value: "gpt-4o-2024-08-06",
-            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
-            Provider.GOOGLE.value: "gemini-2.5-flash",
+            Provider.OPENAI.value: OPENAI_GPT4O_VERSIONED_MODEL_ID,
+            Provider.ANTHROPIC.value: ANTHROPIC_DEFAULT_MODEL_ID,
+            Provider.GOOGLE.value: GEMINI_25_FLASH_MODEL_ID,
         },
     ),
     RoutingTier.SPEED: RouteConfig(
@@ -262,9 +269,9 @@ DEFAULT_ROUTING_CONFIGS = {
         fallback_providers=[Provider.OPENAI, Provider.ANTHROPIC],
         timeout_ms=30000,  # 30 seconds for speed tasks
         model_overrides={
-            Provider.GOOGLE.value: "gemini-2.5-flash",
-            Provider.OPENAI.value: "gpt-4o-mini",
-            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
+            Provider.GOOGLE.value: GEMINI_25_FLASH_MODEL_ID,
+            Provider.OPENAI.value: OPENAI_GPT4O_MINI_MODEL_ID,
+            Provider.ANTHROPIC.value: ANTHROPIC_DEFAULT_MODEL_ID,
         },
     ),
     RoutingTier.COST_OPTIMIZED: RouteConfig(
@@ -273,9 +280,9 @@ DEFAULT_ROUTING_CONFIGS = {
         fallback_providers=[Provider.GOOGLE, Provider.ANTHROPIC],
         timeout_ms=60000,
         model_overrides={
-            Provider.OPENAI.value: "gpt-4o-mini",
-            Provider.GOOGLE.value: "gemini-2.5-flash",
-            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
+            Provider.OPENAI.value: OPENAI_GPT4O_MINI_MODEL_ID,
+            Provider.GOOGLE.value: GEMINI_25_FLASH_MODEL_ID,
+            Provider.ANTHROPIC.value: ANTHROPIC_DEFAULT_MODEL_ID,
         },
     ),
     RoutingTier.BALANCED: RouteConfig(
@@ -284,9 +291,9 @@ DEFAULT_ROUTING_CONFIGS = {
         fallback_providers=[Provider.OPENAI, Provider.GOOGLE],
         timeout_ms=60000,
         model_overrides={
-            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
-            Provider.OPENAI.value: "gpt-4o-2024-08-06",
-            Provider.GOOGLE.value: "gemini-2.5-flash",
+            Provider.ANTHROPIC.value: ANTHROPIC_DEFAULT_MODEL_ID,
+            Provider.OPENAI.value: OPENAI_GPT4O_VERSIONED_MODEL_ID,
+            Provider.GOOGLE.value: GEMINI_25_FLASH_MODEL_ID,
         },
     ),
 }

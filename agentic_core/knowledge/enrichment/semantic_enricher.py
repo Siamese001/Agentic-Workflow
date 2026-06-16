@@ -14,6 +14,10 @@ Knowledge Object Schema:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4O_MINI_MODEL_ID,
+)
+
 import hashlib
 import json
 import logging
@@ -114,7 +118,7 @@ class SemanticEnricher:
         self,
         llm_client: Any | None = None,
         provider: str = "openai",
-        model: str = "gpt-4o-mini",
+        model: str = OPENAI_GPT4O_MINI_MODEL_ID,
     ):
         """Initialize semantic enricher.
 

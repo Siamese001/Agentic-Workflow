@@ -12,6 +12,10 @@ W1 implementation with:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_LARGE_EN_MODEL_ID,
+)
+
 import hashlib
 import importlib.util
 import logging
@@ -551,7 +555,7 @@ class EmbeddingServiceFactory:
         """Compute deterministic replay key with complete embedder metadata."""
         if not self._manifest or not self._normalized_pack_hash:
             return "uninitialized"
-        hf_repo = self._manifest.get("hf_repo", "BAAI/bge-large-en-v1.5")
+        hf_repo = self._manifest.get("hf_repo", BGE_LARGE_EN_MODEL_ID)
         revision = self._manifest.get("revision", "main")
         embedding_dim = self._manifest.get("embedding_dim", 1024)
         dtype = self._manifest.get("dtype", "float32")

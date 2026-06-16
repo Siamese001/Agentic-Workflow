@@ -5,6 +5,8 @@ Provides semantic memory capabilities with embedding-based retrieval.
 """
 
 import logging
+
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -169,7 +171,7 @@ logger = logging.getLogger(__name__)
 class EmbeddingProvider:
     """Provider for embeddings."""
 
-    def __init__(self, model: str = "BAAI/bge-m3"):
+    def __init__(self, model: str = BGE_M3_MODEL_ID):
         self.model = model
 
     def embed(self, text: str) -> list[float]:

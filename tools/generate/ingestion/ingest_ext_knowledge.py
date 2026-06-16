@@ -37,6 +37,10 @@ Collection: ext_raw  hnsw:space=cosine
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import hashlib
 import sys
@@ -69,7 +73,7 @@ _WAVE_B_EXT_RAW_FIELDS: dict = {
     "normative_scope": "unvetted",
     "invalid_for_normative_use": True,
 }
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 EMBEDDING_DIM = 1024
 BATCH_SIZE = 256
 CHUNK_CHARS = 2000

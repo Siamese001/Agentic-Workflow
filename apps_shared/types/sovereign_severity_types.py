@@ -5,6 +5,10 @@ No inline BaseModel definitions allowed outside schemas/.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    GEMINI_25_PRO_MODEL_ID,
+)
+
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
@@ -1157,7 +1161,7 @@ EnricherConfig = enricher_config
 class enforcement_rag_config:
     """configuration for RAG system (renamed to avoid conflict with existing RAGState)."""
 
-    MODEL: str = "gemini-2.5-pro"
+    MODEL: str = GEMINI_25_PRO_MODEL_ID
     max_tokens: int = 8192
     TEMPERATURE: float = 0.7
     api_max_retries: int = 7

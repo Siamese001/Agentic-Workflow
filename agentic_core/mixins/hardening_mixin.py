@@ -11,6 +11,20 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT35_TURBO_0613_MODEL_ID,
+    OPENAI_GPT35_TURBO_16K_0613_MODEL_ID,
+    OPENAI_GPT35_TURBO_16K_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    OPENAI_GPT4O_VERSIONED_MODEL_ID,
+    OPENAI_GPT4_0613_MODEL_ID,
+    OPENAI_GPT4_32K_0613_MODEL_ID,
+    OPENAI_GPT4_32K_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
@@ -344,17 +358,17 @@ class HardeningMixin:
         ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow- optional dependency
             return
         model_limits = {
-            "gpt-4": 8192,
-            "gpt-4-32k": 32768,
-            "gpt-4-0613": 8192,
-            "gpt-4-32k-0613": 32768,
-            "gpt-3.5-turbo": 4096,
-            "gpt-3.5-turbo-16k": 16384,
-            "gpt-3.5-turbo-0613": 4096,
-            "gpt-3.5-turbo-16k-0613": 16384,
-            "gpt-4o": 128000,
-            "gpt-4o-2024-08-06": 128000,
-            "gpt-4o-mini": 128000,
+            OPENAI_GPT4_MODEL_ID: 8192,
+            OPENAI_GPT4_32K_MODEL_ID: 32768,
+            OPENAI_GPT4_0613_MODEL_ID: 8192,
+            OPENAI_GPT4_32K_0613_MODEL_ID: 32768,
+            OPENAI_GPT35_TURBO_MODEL_ID: 4096,
+            OPENAI_GPT35_TURBO_16K_MODEL_ID: 16384,
+            OPENAI_GPT35_TURBO_0613_MODEL_ID: 4096,
+            OPENAI_GPT35_TURBO_16K_0613_MODEL_ID: 16384,
+            OPENAI_GPT4O_MODEL_ID: 128000,
+            OPENAI_GPT4O_VERSIONED_MODEL_ID: 128000,
+            OPENAI_GPT4O_MINI_MODEL_ID: 128000,
         }
         limit = max_tokens or model_limits.get(model, 4096)
         if tokens > limit:

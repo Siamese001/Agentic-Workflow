@@ -11,6 +11,8 @@ import json
 import os
 from pathlib import Path
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 ROOT = Path(__file__).resolve().parents[2]
 PROOFS = ROOT / "artifacts" / "apps_rg" / "runtime_proofs"
 LANES = (
@@ -319,7 +321,7 @@ def main() -> None:
             "wsl_w23_sweep": "ENVIRONMENT_BLOCKED",
             "wsl_block_reason": (
                 "HF hub offline policy in prior sweep script plus no discoverable "
-                "BAAI/bge-m3 snapshot under WSL HF_HOME; not a product regression."
+                f"{BGE_M3_MODEL_ID} snapshot under WSL HF_HOME; not a product regression."
             ),
         },
         "audit_proof_root": modular_root or prior.get("audit_proof_root"),

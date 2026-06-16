@@ -16,6 +16,10 @@ L2-proposes / Exit-clears / UWG-commits / L4-stores law.
 """
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import json
 from pathlib import Path
@@ -107,7 +111,7 @@ def build_c02_semantic_cache_payload(
         values = None
     if values is not None:
         intent_vector = {
-            "embedding_model": "BAAI/bge-m3",
+            "embedding_model": BGE_M3_MODEL_ID,
             "embedding_provider": "bge_local",
             "dimensions": len(values),
             "values": values,

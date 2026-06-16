@@ -18,6 +18,10 @@ Usage::
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    GEMINI_25_FLASH_MODEL_ID,
+)
+
 import importlib
 import json
 import logging
@@ -68,7 +72,7 @@ class GeminiJudgeProvider:
     Temperature is forced to 0.0 for maximum determinism.
     """
 
-    DEFAULT_MODEL = "gemini-2.5-flash"
+    DEFAULT_MODEL = GEMINI_25_FLASH_MODEL_ID
 
     def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client

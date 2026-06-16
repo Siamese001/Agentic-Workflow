@@ -10,6 +10,11 @@ Run:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+)
+
 import asyncio
 import copy
 import json
@@ -62,11 +67,11 @@ def demo_model_router() -> None:
             fact(f"task={tt.value:<10} complexity={cx}", cfg)
 
     step("record_usage simulates 4 LLM calls; get_stats aggregates cost")
-    router.record_usage(model_name="gpt-4o", input_tokens=1200,
+    router.record_usage(model_name=OPENAI_GPT4O_MODEL_ID, input_tokens=1200,
                         output_tokens=800, cost=0.012)
-    router.record_usage(model_name="gpt-4o", input_tokens=900,
+    router.record_usage(model_name=OPENAI_GPT4O_MODEL_ID, input_tokens=900,
                         output_tokens=600, cost=0.009)
-    router.record_usage(model_name="claude-3", input_tokens=2000,
+    router.record_usage(model_name=ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, input_tokens=2000,
                         output_tokens=1500, cost=0.027)
     router.record_usage(model_name="llama-3.1", input_tokens=3000,
                         output_tokens=2000, cost=0.000)

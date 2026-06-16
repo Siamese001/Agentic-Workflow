@@ -13,6 +13,10 @@ Rules:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import os
 import sys
@@ -27,7 +31,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 CHROMA_PATH = str(REPO_ROOT / "data" / "cache" / "chromadb")
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = BGE_M3_MODEL_ID
 COLLECTION = "ext_authority"
 TOP_K = 5
 OUT_PATH = REPO_ROOT / "artifacts" / "b5r_proof_raw.json"

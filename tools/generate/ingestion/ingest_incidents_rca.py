@@ -20,6 +20,10 @@ Collection: incidents_rca  hnsw:space=cosine
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import hashlib
 import sys
@@ -55,7 +59,7 @@ def _relative_to_repo(path: Path, repo_root: Path) -> str:
 REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "incidents_rca"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 EMBEDDING_DIM = 1024
 BATCH_SIZE = 256
 CHUNK_CHARS = 2000

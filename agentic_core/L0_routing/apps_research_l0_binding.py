@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 from agentic_core.runtime.contracts.route_contract import RouteContract
@@ -38,7 +39,7 @@ _CACHE_ELIGIBILITY: dict[str, bool] = {
 }
 
 # Allowed model: Qwen 32B AWQ on local vLLM
-_ALLOWED_MODELS: tuple[str, ...] = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
+_ALLOWED_MODELS: tuple[str, ...] = (QWEN_LOCAL_MODEL_ID,)
 
 
 def l0_route_apps_research(l1_plan: L1PlanContract) -> RouteContract:

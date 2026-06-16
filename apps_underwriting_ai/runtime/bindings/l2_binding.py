@@ -22,6 +22,8 @@ import os
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
+
 UW_L2_CERT_REF: str = "l2-apps-underwriting-ai-underwriting-decision-v1"
 
 _SKIP_LLM_ENV: str = "UW_DISPATCH_SKIP_LLM"
@@ -71,7 +73,7 @@ def _call_llm_for_rationale(compiled_prompt: dict[str, Any]) -> tuple[str, str]:
         import json as _json  # noqa: PLC0415
 
         payload = {
-            "model": compiled_prompt.get("target_model", "Qwen/Qwen2.5-32B-Instruct-AWQ"),
+            "model": compiled_prompt.get("target_model", QWEN_LOCAL_MODEL_ID),
             "messages": [
                 {"role": "system", "content": compiled_prompt.get("system_prompt", "")},
                 {"role": "user", "content": compiled_prompt.get("user_prompt", "")},

@@ -5,6 +5,10 @@
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 from dataclasses import dataclass
 import hashlib
 import logging
@@ -33,7 +37,7 @@ class TokenizerStage:
     **HITL-10C-001**: bge-m3 tokenizer (multilingual, 8192 ctx).
     """
 
-    DEFAULT_MODEL = "BAAI/bge-m3"  # HITL-10C-001 selection
+    DEFAULT_MODEL = BGE_M3_MODEL_ID  # HITL-10C-001 selection
     DEFAULT_MAX_LENGTH = 8192
     LOCAL_FILES_ONLY = os.environ.get("EMBEDDING_LOCAL_FILES_ONLY", "true").lower() == "true"
 

@@ -17,6 +17,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.config.model_catalog import OPENAI_GPT4_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -214,7 +215,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
             self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1
 
     # guardian: allow-type-erasure
-    async def llm_route(self, prompt: str, model: str = "gpt-4", **kwargs) -> dict:
+    async def llm_route(self, prompt: str, model: str = OPENAI_GPT4_MODEL_ID, **kwargs) -> dict:
         """
         Route LLM request with fallback and retry.
         [PHASE 3] Absorbed from llm_router_mcp_client.py

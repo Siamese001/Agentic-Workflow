@@ -39,6 +39,10 @@ import os
 import uuid
 from typing import TYPE_CHECKING
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_DATED_MODEL_ID,
+    OPENAI_SMALL_CLASSIFIER_MODEL_ID,
+)
 from apps_qna.integrations.spine_adapter import emit_pack_lifecycle_event
 
 if TYPE_CHECKING:
@@ -103,7 +107,7 @@ def _invoke_provider(prompt: str) -> str | None:
     try:
         if provider == "haiku":
             return _invoke_anthropic(prompt)
-        if provider in {"gpt-mini", "gpt-5-mini", "openai"}:
+        if provider in {"gpt-mini", OPENAI_SMALL_CLASSIFIER_MODEL_ID, "openai"}:
             return _invoke_openai(prompt)
     except (ImportError, RuntimeError, ValueError, OSError) as exc:
         _log.debug("intent LLM provider %s failed: %r", provider, exc)
@@ -126,7 +130,7 @@ def _invoke_anthropic(prompt: str) -> str | None:
         # Small, deterministic config — this is a classifier, not a chat.
         resp = client.messages.create(
             model=os.environ.get(
-                "APPS_QNA_INTENT_LLM_MODEL", "claude-haiku-4-5-20260101"
+                "APPS_QNA_INTENT_LLM_MODEL", ANTHROPIC_HAIKU_DATED_MODEL_ID
             ),
             max_tokens=16,
             temperature=0.0,
@@ -156,7 +160,7 @@ def _invoke_openai(prompt: str) -> str | None:
         client = openai.OpenAI(api_key=api_key)
         resp = client.chat.completions.create(
             model=os.environ.get(
-                "APPS_QNA_INTENT_LLM_MODEL", "gpt-5-mini"
+                "APPS_QNA_INTENT_LLM_MODEL", OPENAI_SMALL_CLASSIFIER_MODEL_ID
             ),
             max_tokens=16,
             temperature=0.0,

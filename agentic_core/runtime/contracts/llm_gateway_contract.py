@@ -2,6 +2,13 @@
 DS-1: LLM Gateway Contract Extension
 Extends SovereignLLMGateway contract with Gemini provider support.
 """
+
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID,
+    GEMINI_15_FLASH_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Literal
 from enum import Enum
@@ -194,24 +201,24 @@ class LLMGatewayContract:
         configs = {
             ProviderType.ANTHROPIC: ProviderConfig(
                 provider=ProviderType.ANTHROPIC,
-                model="claude-3-5-sonnet-20241022",
+                model=ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID,
                 api_key_env_var="ANTHROPIC_API_KEY",
             ),
             ProviderType.OPENAI: ProviderConfig(
                 provider=ProviderType.OPENAI,
-                model="gpt-4o",
+                model=OPENAI_GPT4O_MODEL_ID,
                 api_key_env_var="OPENAI_API_KEY",
             ),
             ProviderType.GEMINI: ProviderConfig(  # DS-1: Gemini config
                 provider=ProviderType.GEMINI,
-                model="gemini-1.5-flash",
+                model=GEMINI_15_FLASH_MODEL_ID,
                 api_key_env_var="GEMINI_API_KEY",
                 temperature=0.7,
                 max_tokens=4096,
             ),
             ProviderType.QWEN: ProviderConfig(
                 provider=ProviderType.QWEN,
-                model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+                model=QWEN_LOCAL_MODEL_ID,
                 api_key_env_var=None,  # Local vLLM, no API key needed
             ),
         }

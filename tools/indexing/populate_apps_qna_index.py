@@ -18,6 +18,10 @@ Environment:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import hashlib
 import json
@@ -49,7 +53,7 @@ SEED_PACKS_DIR = INDEX_BASE / "seed_packs" / "apps_qna_interview_cards"
 INDEXES_DIR = INDEX_BASE / "indexes" / "apps_qna_interview_cards"
 
 # Model config
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = BGE_M3_MODEL_ID
 EXPECTED_DIMS = 1024
 
 

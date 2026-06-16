@@ -32,6 +32,10 @@ Status ladder:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import importlib.util
 import os
 import sys
@@ -43,7 +47,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.certification.evidence import write_evidence, rel  # noqa: E402
 
-EXPECTED_MODEL_HF = "BAAI/bge-m3"
+EXPECTED_MODEL_HF = BGE_M3_MODEL_ID
 EXPECTED_DIMENSION = 1024
 REQUIRED_DEPS = (
     "FlagEmbedding",
@@ -54,7 +58,7 @@ REQUIRED_DEPS = (
     "numpy",
 )
 REMEDIATION_DOWNLOAD_CMD = (
-    "huggingface-cli download BAAI/bge-m3  "
+    f"huggingface-cli download {BGE_M3_MODEL_ID}  "
     "# or: BGE_ALLOW_MODEL_DOWNLOAD=true python -c "
     "'from agentic_core.embeddings.bge_runtime import bge_embed_query; "
     "bge_embed_query(\"warmup\")'"

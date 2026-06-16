@@ -20,7 +20,6 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-
 from apps_rg.runtime.cli_exit_codes import EXIT_CONFIG_ERROR, EXIT_SUCCESS
 
 REQUIRED = "required"
@@ -56,7 +55,7 @@ def _resolve_chroma_path() -> str:
 
 
 def _check_generation_provider_key() -> DoctorCheck:
-    """external_claude is the primary apps_rg generator; it reads ANTHROPIC_API_KEY."""
+    """external_claude is the sole apps_rg generator; it reads ANTHROPIC_API_KEY."""
     if os.environ.get("ANTHROPIC_API_KEY", "").strip():
         return DoctorCheck(
             "generation_provider_key", True, REQUIRED, "ANTHROPIC_API_KEY present"
@@ -65,7 +64,7 @@ def _check_generation_provider_key() -> DoctorCheck:
         "generation_provider_key",
         False,
         REQUIRED,
-        "ANTHROPIC_API_KEY missing (external_claude is the primary apps_rg generation provider)",
+        "ANTHROPIC_API_KEY missing (external_claude is the sole apps_rg generation provider)",
         "Set ANTHROPIC_API_KEY in .env (copy .env.example and fill it in).",
     )
 

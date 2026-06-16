@@ -12,6 +12,11 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -345,12 +350,12 @@ def test_provider_substitution_prohibition() -> bool:
     try:
         test_request = ProviderRequest(
             provider="openai",
-            model="gpt-4",
+            model=OPENAI_GPT4_MODEL_ID,
             agent_id="test_agent",
             request_id="test_123",
         )
         try:
-            validate_provider_request(test_request, "anthropic", "claude-sonnet-4-6")
+            validate_provider_request(test_request, "anthropic", ANTHROPIC_DEFAULT_MODEL_ID)
             return False
         except ProviderSubstitutionViolation as e:  # guardian: allow-log-and-swallow -- provider substitution violation: logged, return False indicates veto
             import logging
@@ -359,7 +364,7 @@ def test_provider_substitution_prohibition() -> bool:
                 "provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L345: %s", e
             )
         try:
-            validate_provider_request(test_request, "openai", "gpt-3.5-turbo")
+            validate_provider_request(test_request, "openai", OPENAI_GPT35_TURBO_MODEL_ID)
             return False
         except ProviderSubstitutionViolation as e:  # guardian: allow-log-and-swallow -- provider substitution violation: logged, return False indicates veto
             import logging
@@ -368,7 +373,7 @@ def test_provider_substitution_prohibition() -> bool:
                 "provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L350: %s", e
             )
         try:
-            validate_provider_request(test_request, "openai", "gpt-4")
+            validate_provider_request(test_request, "openai", OPENAI_GPT4_MODEL_ID)
         except (
             ProviderSubstitutionViolation
         ):  # review: ProviderSubstitutionViolation should be handled with specific context

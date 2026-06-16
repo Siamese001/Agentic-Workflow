@@ -5,6 +5,10 @@ Outreach engines, ensuring expensive operations are done once and reused
 everywhere through semantic similarity matching.
 """
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import logging
 import time
@@ -446,7 +450,7 @@ class L2VectorStore:
 class SimpleEmbedder:
     """Simple local embedding generator."""
 
-    def __init__(self, model_name: str = "BAAI/bge-m3"):
+    def __init__(self, model_name: str = BGE_M3_MODEL_ID):
         """Initialize embedder.
 
         Args:

@@ -22,6 +22,10 @@ Plan: docs/archive/windsurf/legacy-tree/plans/bge-m3-gap-closure-c8f3a2.md W1
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import logging
 import os
@@ -157,7 +161,7 @@ def _load_chroma_collection() -> Any | None:
         client = chromadb.PersistentClient(path=str(persist_dir))
         collection = client.get_collection(name=_CHROMA_COLLECTION_NAME)
         metadata = getattr(collection, "metadata", None) or {}
-        if metadata.get("embedding_model") != "BAAI/bge-m3" or not _metadata_dim_matches(metadata):
+        if metadata.get("embedding_model") != BGE_M3_MODEL_ID or not _metadata_dim_matches(metadata):
             _LOGGER.warning("apps_qna Chroma collection has incompatible metadata: %s", metadata)
             return None
         _CHROMA_COLLECTION_CACHE = collection

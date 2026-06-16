@@ -7,6 +7,10 @@ only when embeddings are disabled (tests / CI without weights).
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import logging
 import threading
 from typing import Any

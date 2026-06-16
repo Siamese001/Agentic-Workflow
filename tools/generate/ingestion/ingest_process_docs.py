@@ -41,6 +41,10 @@ Collection: process_docs  hnsw:space=cosine
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import hashlib
 import re
@@ -65,7 +69,7 @@ from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "process_docs"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 EMBEDDING_DIM = 1024
 BATCH_SIZE = 256
 CHUNK_CHARS = 2000

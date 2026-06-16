@@ -11,6 +11,10 @@ Temporary probe — safe to delete after C4.1 closeout.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import sys
 import time
@@ -30,7 +34,7 @@ from tools.eval.audit_wave_b_target_state import (  # noqa: E402
 )
 
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 OUT_MD = REPO_ROOT / "docs" / "reports" / "wave_c_freeze_gates.md"
 
 

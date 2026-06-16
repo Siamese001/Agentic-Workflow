@@ -5,11 +5,18 @@ Detects hardcoded constants in business logic that should be
 externalized to configuration files.
 
 Pattern Detection:
-- Hardcoded model names ("gpt-4", "gpt-3.5-turbo")
+- Hardcoded model names (OPENAI_GPT4_MODEL_ID, OPENAI_GPT35_TURBO_MODEL_ID)
 - Hardcoded timeouts and thresholds
 - Hardcoded API endpoints
 - Hardcoded magic numbers in business logic
 """
+
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_GENERIC_INSTANT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    OPENAI_GPT4_TURBO_MODEL_ID,
+)
 
 import ast
 import re
@@ -181,11 +188,11 @@ class MagicConfigDetector(AntiPatternDetector):
     # Model name patterns
     MODEL_PATTERNS = [
         r"gpt-[34]",
-        r"gpt-3\.5-turbo",
-        r"gpt-4-turbo",
-        r"gpt-4o",
+        re.escape(OPENAI_GPT35_TURBO_MODEL_ID),
+        OPENAI_GPT4_TURBO_MODEL_ID,
+        OPENAI_GPT4O_MODEL_ID,
         r"claude-[23]",
-        r"claude-instant",
+        ANTHROPIC_GENERIC_INSTANT_MODEL_ID,
         r"text-davinci",
         r"text-embedding",
     ]

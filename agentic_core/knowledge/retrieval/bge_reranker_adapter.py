@@ -16,6 +16,10 @@ batch_size or falls back.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_RERANKER_MODEL_ID,
+)
+
 import logging
 import os
 import threading
@@ -28,7 +32,7 @@ class CrossEncoderUnavailable(RuntimeError):
     """torch + sentence-transformers required; at least one is missing."""
 
 
-BGE_RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
+BGE_RERANKER_MODEL: str = BGE_RERANKER_MODEL_ID
 BGE_RERANKER_MAX_LENGTH: int = 512
 BGE_RERANKER_ALLOW_DOWNLOAD: bool = os.environ.get("BGE_RERANKER_ALLOW_DOWNLOAD", "false").lower() == "true"
 

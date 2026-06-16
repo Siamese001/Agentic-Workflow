@@ -26,6 +26,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from agentic_core.config.model_catalog import OPENAI_GPT4_MODEL_ID
+
 
 # Slot-rendering order is provider-agnostic; deviations live inside each adapter.
 _CANONICAL_RENDER_ORDER: tuple[str, ...] = (
@@ -174,11 +176,11 @@ class OpenAIAdapter:
     provider_id: str = "openai"
     version: str = "1.0.0"
 
-    def __init__(self, *, model_family: str = "gpt-4", markdown_output: bool = False):
+    def __init__(self, *, model_family: str = OPENAI_GPT4_MODEL_ID, markdown_output: bool = False):
         """Initialize adapter.
 
         Args:
-            model_family: Either 'gpt-4' (system role) or 'o-series' (developer role).
+            model_family: Either OPENAI_GPT4_MODEL_ID (system role) or 'o-series' (developer role).
             markdown_output: If True and model is o-series, prepends
                 'Formatting re-enabled' header (per OpenAI G4 caveat).
         """
@@ -367,7 +369,7 @@ def get_adapter(provider: str | None = None, **kwargs: Any) -> ProviderAdapter:
 
     Args:
         provider: Provider name. Common variants: 'anthropic', 'claude-3.5',
-                  'openai', 'gpt-4', 'o1', 'gemini', 'google'.
+                  'openai', OPENAI_GPT4_MODEL_ID, 'o1', 'gemini', 'google'.
                   None → PassthroughAdapter.
         **kwargs: Adapter-specific options (e.g. model_family, markdown_output
                   for OpenAIAdapter).
@@ -386,7 +388,7 @@ def get_adapter(provider: str | None = None, **kwargs: Any) -> ProviderAdapter:
                 if prov.startswith(("o1", "o3", "o4")):
                     kwargs.setdefault("model_family", "o-series")
                 else:
-                    kwargs.setdefault("model_family", "gpt-4")
+                    kwargs.setdefault("model_family", OPENAI_GPT4_MODEL_ID)
                 return adapter_cls(**kwargs)
             return adapter_cls()
     return PassthroughAdapter()

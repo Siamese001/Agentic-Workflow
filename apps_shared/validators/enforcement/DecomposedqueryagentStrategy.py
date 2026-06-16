@@ -4,6 +4,10 @@ This component breaks complex multi-hop questions into atomic sub-queries
 that can be answered by the retrieval system.
 """
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import asyncio
 import logging
 import re
@@ -189,7 +193,7 @@ class DecomposedQuery(BaseModel):
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
 
-    def __init__(self, name: str, model_name: str = "gpt-4"):
+    def __init__(self, name: str, model_name: str = OPENAI_GPT4_MODEL_ID):
         """Initialize the agent.
 
         Args:
@@ -209,7 +213,7 @@ class QueryDecomposer(SimpleAgentBase):
     """
 
     # guardian: allow-magic-config
-    def __init__(self, model_name: str = "gpt-4", max_sub_queries: int = 4):
+    def __init__(self, model_name: str = OPENAI_GPT4_MODEL_ID, max_sub_queries: int = 4):
         """Initialize the Query Decomposer.
 
         Args:
@@ -388,7 +392,7 @@ class QueryDecomposer(SimpleAgentBase):
             return [[] for _ in decomposed_query.sub_queries]
 
 
-async def decompose_query(query: str, model_name: str = "gpt-4") -> DecomposedQuery:
+async def decompose_query(query: str, model_name: str = OPENAI_GPT4_MODEL_ID) -> DecomposedQuery:
     """Decompose a query using default settings.
 
     Args:

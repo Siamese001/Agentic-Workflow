@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
     PromptBlock,
@@ -71,7 +72,7 @@ class PromptAssembler:
             user_instruction=self._build_user_instruction(evidence_contract),
             assembly_timestamp=datetime.now(timezone.utc).isoformat(),
             assembly_version="W6.0",
-            target_model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            target_model=QWEN_LOCAL_MODEL_ID,
             target_provider="vllm",
             evidence_digest=evidence_contract.compilation_hash,
             compilation_hash=compilation_hash,

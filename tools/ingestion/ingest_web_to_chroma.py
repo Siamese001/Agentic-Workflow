@@ -6,6 +6,10 @@ Ingests URLs from data/rag_seeds/agentic_best_practices_urls.txt, extracts clean
 chunks it, generates embeddings using BAAI/bge-m3, and stores results in ChromaDB.
 """
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import logging
 import re
@@ -76,7 +80,7 @@ class WebRAGIngestionPipeline:
         urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
         chroma_path: str = canonical_persist_dir_str(),
         collection_name: str = "agentic_best_practices",
-        model_name: str = "BAAI/bge-m3",
+        model_name: str = BGE_M3_MODEL_ID,
         debug_chunks: bool = False,
     ):
         """

@@ -11,7 +11,7 @@ Usage:
 
     # Track costs
     governor = CostGovernor(budget_limit=10.0)
-    cost = governor.track("gpt-4", input_tokens=1000, output_tokens=500)
+    cost = governor.track(OPENAI_GPT4_MODEL_ID, input_tokens=1000, output_tokens=500)
 """
 
 from __future__ import annotations
@@ -19,6 +19,13 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+    OPENAI_GPT4_TURBO_MODEL_ID,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -43,10 +50,10 @@ class ModelPricing:
 
 # Model pricing registry (can be extended)
 MODEL_PRICING: dict[str, ModelPricing] = {
-    "gpt-4": ModelPricing("gpt-4", 3e-05, 6e-05),
-    "gpt-4-turbo": ModelPricing("gpt-4-turbo", 1e-05, 3e-05),
-    "gpt-3.5-turbo": ModelPricing("gpt-3.5-turbo", 5e-06, 1.5e-05),
-    "claude-sonnet-4-6": ModelPricing("claude-sonnet-4-6", 3e-06, 1.5e-05),
+    OPENAI_GPT4_MODEL_ID: ModelPricing(OPENAI_GPT4_MODEL_ID, 3e-05, 6e-05),
+    OPENAI_GPT4_TURBO_MODEL_ID: ModelPricing(OPENAI_GPT4_TURBO_MODEL_ID, 1e-05, 3e-05),
+    OPENAI_GPT35_TURBO_MODEL_ID: ModelPricing(OPENAI_GPT35_TURBO_MODEL_ID, 5e-06, 1.5e-05),
+    ANTHROPIC_DEFAULT_MODEL_ID: ModelPricing(ANTHROPIC_DEFAULT_MODEL_ID, 3e-06, 1.5e-05),
     "default": ModelPricing("default", DEFAULT_COST_PER_TOKEN, DEFAULT_COST_PER_TOKEN),
 }
 

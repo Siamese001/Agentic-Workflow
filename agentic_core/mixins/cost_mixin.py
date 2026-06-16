@@ -18,6 +18,14 @@ SSOT PRINCIPLE:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    OPENAI_GPT4_TURBO_MODEL_ID,
+)
+
 import logging
 import threading
 import time
@@ -217,11 +225,11 @@ class RecursionLimitError(Exception):
 
 
 MODEL_PRICING: dict[str, dict[str, float]] = {
-    "gpt-4o": {"input": 0.0025, "output": 0.01},
-    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-    "gpt-4-turbo": {"input": 0.01, "output": 0.03},
-    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
-    "claude-sonnet-4-6": {"input": 0.003, "output": 0.015},
+    OPENAI_GPT4O_MODEL_ID: {"input": 0.0025, "output": 0.01},
+    OPENAI_GPT4O_MINI_MODEL_ID: {"input": 0.00015, "output": 0.0006},
+    OPENAI_GPT4_TURBO_MODEL_ID: {"input": 0.01, "output": 0.03},
+    OPENAI_GPT35_TURBO_MODEL_ID: {"input": 0.0005, "output": 0.0015},
+    ANTHROPIC_DEFAULT_MODEL_ID: {"input": 0.003, "output": 0.015},
     "default": {"input": 0.001, "output": 0.002},
 }
 

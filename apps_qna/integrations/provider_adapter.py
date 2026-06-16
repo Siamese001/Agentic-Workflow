@@ -22,7 +22,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    GEMINI_PRO_MODEL_ID,
+    OPENAI_DEFAULT_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
 
 
 @dataclass
@@ -225,10 +230,10 @@ _VLLM_MODEL_VAR = "VLLM_MODEL_NAME"
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
 _OPENAI_MODEL_VAR = "OPENAI_MODEL"
 
-_DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
-_DEFAULT_GOOGLE_AI_JUDGE_MODEL = "gemini-3.1-pro-preview"
+_DEFAULT_ANTHROPIC_MODEL = ANTHROPIC_DEFAULT_MODEL_ID
+_DEFAULT_GOOGLE_AI_JUDGE_MODEL = GEMINI_PRO_MODEL_ID
 _DEFAULT_OPENAI_MODEL = OPENAI_DEFAULT_MODEL_ID
-_DEFAULT_VLLM_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+_DEFAULT_VLLM_MODEL = QWEN_LOCAL_MODEL_ID
 
 
 def build_judge_provider_context_from_env() -> QnaProviderContext | None:

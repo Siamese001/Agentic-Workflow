@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
@@ -22,7 +24,7 @@ from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as 
 
 COLLECTION_NAME = "apps_qna_interview_cards"
 DEFAULT_INDEX_DIR = Path("C:/AgenticEmbeddings/indexes/apps_qna_interview_cards")
-EXPECTED_MODEL = "BAAI/bge-m3"
+EXPECTED_MODEL = BGE_M3_MODEL_ID
 EXPECTED_DIMS = 1024
 EXPECTED_DISTANCE = "cosine"
 DEFAULT_BATCH_SIZE = 32
@@ -87,9 +89,9 @@ def _load_and_validate(index_dir: Path) -> tuple[dict[str, Any], dict[str, Any],
     if index.get("distance_metric") != EXPECTED_DISTANCE:
         raise ValueError(f"distance_metric must be cosine, got {index.get('distance_metric')!r}")
     if manifest.get("embedder_id") != EXPECTED_MODEL or manifest.get("model_version") != EXPECTED_MODEL:
-        raise ValueError("manifest embedding model must be BAAI/bge-m3")
+        raise ValueError(f"manifest embedding model must be {BGE_M3_MODEL_ID}")
     if meta.get("embedder_id") != EXPECTED_MODEL or meta.get("model_version") != EXPECTED_MODEL:
-        raise ValueError("meta embedding model must be BAAI/bge-m3")
+        raise ValueError(f"meta embedding model must be {BGE_M3_MODEL_ID}")
     if int(manifest.get("dims", 0)) != EXPECTED_DIMS or int(meta.get("dims", 0)) != EXPECTED_DIMS:
         raise ValueError("manifest/meta dimensions must be 1024")
 

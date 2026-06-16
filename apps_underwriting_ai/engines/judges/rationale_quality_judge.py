@@ -63,6 +63,10 @@ Tested against the synthetic holdout at
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_SONNET_4_5_MODEL_ID,
+)
+
 import json
 import logging
 import os
@@ -95,7 +99,7 @@ Set to False to restore fail-open behavior (returns GRADER_UNKNOWN_SENTINEL → 
 GRADER_ID: str = "underwriting::rationale_quality_judge::v3"
 """Roster ID for this judge."""
 
-_LLM_MODEL: str = os.getenv("RATIONALE_JUDGE_LLM_MODEL", "claude-sonnet-4-5")
+_LLM_MODEL: str = os.getenv("RATIONALE_JUDGE_LLM_MODEL", ANTHROPIC_SONNET_4_5_MODEL_ID)
 """Anthropic model used by the v3 LLM path. Override via env var."""
 
 _LLM_MAX_TOKENS: int = 256

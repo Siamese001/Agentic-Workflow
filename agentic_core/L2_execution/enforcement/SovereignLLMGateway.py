@@ -17,6 +17,7 @@ from typing import Any, Protocol
 
 from tqdm import tqdm
 
+from agentic_core.config.model_catalog import OPENAI_GPT4_MODEL_ID
 from agentic_core.L2_execution.enforcement._adapter_registry import (
     get_adapter as _get_provider_adapter,
 )
@@ -963,7 +964,7 @@ def create_gateway(secret_key: bytes, **kwargs) -> SovereignLLMGateway:
     return SovereignLLMGateway(secret_key=secret_key, **kwargs)
 
 
-def create_openai_gateway(api_key: str, model: str = "gpt-4", **kwargs) -> SovereignLLMGateway:
+def create_openai_gateway(api_key: str, model: str = OPENAI_GPT4_MODEL_ID, **kwargs) -> SovereignLLMGateway:
     """Create gateway with OpenAI provider pre-configured."""
     gateway = create_gateway(**kwargs)
     config = ProviderConfig(

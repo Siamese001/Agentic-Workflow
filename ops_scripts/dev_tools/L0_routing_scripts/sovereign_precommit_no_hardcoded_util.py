@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import OPENAI_GPT4O_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -177,7 +178,7 @@ hardcoded_patterns: Any = [
     ("CHECKPOINT_INTERVAL\\s*=\\s*\\d+", "Checkpoint configuration"),
     ("SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+", "Threshold configuration"),
     ("BASE_GIT_PATH\\s*=\\s*[\"\\']", "Path configuration"),
-    ("gpt-4o[\"\\']", "Hardcoded model name"),
+    (fr"{re.escape(OPENAI_GPT4O_MODEL_ID)}[\"\\']", "Hardcoded model name"),
     ("o1-preview[\"\\']", "Hardcoded model name"),
 ]
 

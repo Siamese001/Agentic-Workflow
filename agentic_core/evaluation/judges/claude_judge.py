@@ -20,6 +20,10 @@ Design:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_SONNET_4_5_MODEL_ID,
+)
+
 import logging
 import os
 from typing import Any
@@ -46,7 +50,7 @@ class ClaudeJudge:
     adapter code.
     """
 
-    DEFAULT_MODEL = "claude-sonnet-4-5"
+    DEFAULT_MODEL = ANTHROPIC_SONNET_4_5_MODEL_ID
     MAX_TOKENS = 1024
 
     def __init__(

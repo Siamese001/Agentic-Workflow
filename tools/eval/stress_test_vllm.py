@@ -16,6 +16,10 @@ Run inside WSL with the venv:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    QWEN_LOCAL_MODEL_ID,
+)
+
 import argparse
 import asyncio
 import json
@@ -30,7 +34,7 @@ import aiohttp
 
 
 BASE_URL = "http://localhost:8000/v1"
-MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+MODEL = QWEN_LOCAL_MODEL_ID
 
 # Three prompt classes: short / medium / long, each with a target output size.
 PROMPT_CLASSES = [

@@ -6,6 +6,7 @@ import json
 import os
 from typing import Any
 
+from agentic_core.config.model_catalog import ANTHROPIC_LEGACY_SONNET_35_MODEL_ID
 from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
 from agentic_core.L3_orchestration.exit_eval.judges._base_http_judge import (
     BaseHttpJudge,
@@ -33,7 +34,7 @@ class AnthropicJudge(BaseHttpJudge):
     def __init__(
         self,
         *,
-        model: str = "claude-3-5-sonnet-latest",
+        model: str = ANTHROPIC_LEGACY_SONNET_35_MODEL_ID,
         api_key: str | None = None,
         endpoint: str = _DEFAULT_ENDPOINT,
         anthropic_version: str = _DEFAULT_VERSION,

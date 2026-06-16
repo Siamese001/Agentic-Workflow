@@ -1,3 +1,10 @@
+
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
 # /agentic_core/domain/entities.py
 # Core Domain Entities using Pydantic V2
 # Strategy: Pure data structures, no business logic
@@ -211,7 +218,7 @@ class AgentConfig(BaseEntity):
         frozen=True,  # Role is part of identity
     )
     model_name: str = Field(
-        default="gpt-4o",
+        default=OPENAI_GPT4O_MODEL_ID,
         description="LLM Model ID for the agent",
         frozen=False,  # Model can be upgraded
     )
@@ -295,7 +302,7 @@ class AgentConfig(BaseEntity):
         Validate model name against known patterns.
         HARDENED: Restrict to known safe model patterns.
         """
-        known_models = ["gpt-4o", "gpt-4", "gpt-3.5-turbo", "claude-sonnet-4-6"]
+        known_models = [OPENAI_GPT4O_MODEL_ID, OPENAI_GPT4_MODEL_ID, OPENAI_GPT35_TURBO_MODEL_ID, ANTHROPIC_DEFAULT_MODEL_ID]
         if v not in known_models:
             raise ValueError(f"Unknown model: {v}. Use one of: {known_models}")
         return v

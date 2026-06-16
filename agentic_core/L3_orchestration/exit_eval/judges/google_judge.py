@@ -17,13 +17,14 @@ import json
 import os
 from typing import Any
 
+from agentic_core.config.model_catalog import GEMINI_20_FLASH_MODEL_ID
 from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
 from agentic_core.L3_orchestration.exit_eval.judges._base_http_judge import (
     BaseHttpJudge,
     _HttpRequest,
 )
 
-_DEFAULT_MODEL = "gemini-2.0-flash"
+_DEFAULT_MODEL = GEMINI_20_FLASH_MODEL_ID
 _ENDPOINT_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent?key={key}"

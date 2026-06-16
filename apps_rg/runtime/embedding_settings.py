@@ -8,6 +8,10 @@ Terminology:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import logging
 import os

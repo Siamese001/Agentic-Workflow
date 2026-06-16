@@ -21,6 +21,7 @@ import json
 import os
 from typing import Any
 
+from agentic_core.config.model_catalog import QWEN_32B_INSTRUCT_MODEL_ID
 from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
 from agentic_core.L3_orchestration.exit_eval.judges._base_http_judge import (
     BaseHttpJudge,
@@ -43,8 +44,8 @@ def _resolve_default_model() -> str:
         from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
             QWEN_LOCAL_MODEL_ID,
         )
-    except ImportError:  # guardian: allow-default-fallback -- minimal envs may not ship the L0 model registry; the legacy public model id is the documented fallback used by the sibling QwenJudgeProvider in evaluation/judges/qwen_judge_provider.py
-        return "Qwen/Qwen2.5-32B-Instruct"
+    except ImportError:  # guardian: allow-default-fallback -- minimal envs may not ship the L0 model registry
+        return QWEN_32B_INSTRUCT_MODEL_ID
     return QWEN_LOCAL_MODEL_ID
 
 

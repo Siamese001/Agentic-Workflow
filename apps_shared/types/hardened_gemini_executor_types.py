@@ -8,6 +8,12 @@ Military-grade reliability for Google GenAI v1beta with:
 - Structured observability
 """
 
+from agentic_core.config.model_catalog import (
+    GEMINI_25_FLASH_MODEL_ID,
+    GEMINI_25_PRO_MODEL_ID,
+    GEMINI_3_PRO_PREVIEW_MODEL_ID,
+)
+
 import logging
 import time
 from dataclasses import dataclass, field
@@ -293,9 +299,9 @@ class HardenedGeminiConfig:
 
     # Model context limits (tokens)
     MODEL_LIMITS = {
-        "gemini-2.5-pro": 1048576,  # 1M tokens — canonical healing tier model
-        "gemini-2.5-flash": 1048576,  # 1M tokens
-        "gemini-3-pro-preview": 2097152,  # 2M tokens
+        GEMINI_25_PRO_MODEL_ID: 1048576,  # 1M tokens — canonical healing tier model
+        GEMINI_25_FLASH_MODEL_ID: 1048576,  # 1M tokens
+        GEMINI_3_PRO_PREVIEW_MODEL_ID: 2097152,  # 2M tokens
     }
 
     # Safety threshold (80% of limit)
@@ -304,7 +310,7 @@ class HardenedGeminiConfig:
     # guardian: allow-magic-config
     def __init__(
         self,
-        model: str = "gemini-3-pro-preview",
+        model: str = GEMINI_3_PRO_PREVIEW_MODEL_ID,
         temperature: float = 0.3,
         max_output_tokens: int = 8192,
         safety_threshold_ratio: float | None = None,
@@ -945,7 +951,7 @@ class HardenedGeminiExecutor:
 # Factory function for backward compatibility
 # guardian: allow-magic-config
 def create_hardened_gemini_executor(
-    model: str = "gemini-3-pro-preview",
+    model: str = GEMINI_3_PRO_PREVIEW_MODEL_ID,
     temperature: float = 0.3,
     **kwargs,
 ) -> HardenedGeminiExecutor:
@@ -986,7 +992,7 @@ def create_agent_executor(
     """
     if provider == Provider.GOOGLE and hardened:
         return create_hardened_gemini_executor(
-            model=model or "gemini-3-pro-preview",
+            model=model or GEMINI_3_PRO_PREVIEW_MODEL_ID,
             temperature=temperature,
             **kwargs,
         )

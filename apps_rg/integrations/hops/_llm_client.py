@@ -20,6 +20,15 @@ Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-rese
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_4_5_20251001_MODEL_ID,
+    ANTHROPIC_SONNET_4_5_20250929_MODEL_ID,
+    GEMINI_25_FLASH_MODEL_ID,
+    GEMINI_25_PRO_MODEL_ID,
+    OPENAI_GPT4O_MINI_VERSIONED_MODEL_ID,
+    OPENAI_GPT4O_VERSIONED_MODEL_ID,
+)
+
 import json
 import logging
 import os

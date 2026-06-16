@@ -36,6 +36,7 @@ import urllib.error
 import urllib.request
 from typing import Any, Mapping
 
+from agentic_core.config.model_catalog import QWEN_32B_INSTRUCT_MODEL_ID
 from agentic_core.L5_safety.eval_spine.judge_backends.null import NullBackend
 from agentic_core.L5_safety.eval_spine.trace_grader import (
     DimensionResult,
@@ -60,8 +61,8 @@ def _resolve_default_model() -> str:
         from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
             QWEN_LOCAL_MODEL_ID,
         )
-    except ImportError:  # guardian: allow-default-fallback -- minimal envs may not ship the L0 model registry; the legacy public model id is the documented fallback used by the sibling QwenJudge in L3_orchestration/exit_eval/judges/qwen_judge.py and the QwenJudgeProvider in evaluation/judges/qwen_judge_provider.py
-        return "Qwen/Qwen2.5-32B-Instruct"
+    except ImportError:  # guardian: allow-default-fallback -- minimal envs may not ship the L0 model registry
+        return QWEN_32B_INSTRUCT_MODEL_ID
     return QWEN_LOCAL_MODEL_ID
 
 

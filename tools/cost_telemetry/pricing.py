@@ -13,6 +13,14 @@ Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md 
 """
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_4_5_DOT_MODEL_ID,
+    ANTHROPIC_OPUS_4_7_DOT_MODEL_ID,
+    ANTHROPIC_SONNET_4_5_DOT_MODEL_ID,
+    GEMINI_25_FLASH_MODEL_ID,
+    GEMINI_25_PRO_MODEL_ID,
+)
+
 from dataclasses import dataclass, field
 from typing import Mapping
 
@@ -59,24 +67,24 @@ def default_pricing_table() -> PricingTable:
     return PricingTable(
         by_model={
             # Hosted Anthropic
-            "claude-sonnet-4.5": ModelPricing(
+            ANTHROPIC_SONNET_4_5_DOT_MODEL_ID: ModelPricing(
                 input_usd_per_token=0.000_003,
                 output_usd_per_token=0.000_015,
             ),
-            "claude-opus-4.7": ModelPricing(
+            ANTHROPIC_OPUS_4_7_DOT_MODEL_ID: ModelPricing(
                 input_usd_per_token=0.000_015,
                 output_usd_per_token=0.000_075,
             ),
-            "claude-haiku-4.5": ModelPricing(
+            ANTHROPIC_HAIKU_4_5_DOT_MODEL_ID: ModelPricing(
                 input_usd_per_token=0.000_001,
                 output_usd_per_token=0.000_005,
             ),
             # Hosted Google
-            "gemini-2.5-flash": ModelPricing(
+            GEMINI_25_FLASH_MODEL_ID: ModelPricing(
                 input_usd_per_token=0.000_000_30,
                 output_usd_per_token=0.000_002_50,
             ),
-            "gemini-2.5-pro": ModelPricing(
+            GEMINI_25_PRO_MODEL_ID: ModelPricing(
                 input_usd_per_token=0.000_001_25,
                 output_usd_per_token=0.000_010_00,
             ),

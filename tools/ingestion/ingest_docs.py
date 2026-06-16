@@ -9,6 +9,10 @@ Usage:
     python tools/ingestion/ingest_docs.py [--source-dir docs/] [--collection-name docs]
 """
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import fnmatch
 import hashlib
@@ -212,7 +216,7 @@ class DocumentChunker:
             source_sha=source_sha,
             canonical_digest="pending",
             layer=layer,
-            embedding_model=embedding_model or "BAAI/bge-m3",
+            embedding_model=embedding_model or BGE_M3_MODEL_ID,
             embedding_dim=embedding_dim or 1024,
         )
         contract.update(

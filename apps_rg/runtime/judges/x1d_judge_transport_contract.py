@@ -133,7 +133,6 @@ def build_provider_transport_profile(provider_key: str) -> ProviderTransportProf
             has_json_output_lock="json_object" in src,
             temperature_is_low=(
                 '"temperature": 0.1' in src
-                or 'model.startswith("gpt-5")' in src
                 or "_is_openai_gpt5_chat_model" in src  # GPT-5 family: temperature omitted (not elevated)
             ),
             checks_truncation_stop_reason="finish_reason" in src,
@@ -187,7 +186,7 @@ def audit_unified_token_budget_env() -> list[TransportViolation]:
             TransportViolation(
                 code="token_budget_spread_exceeds_2x",
                 detail=f"provider max_output_tokens map: {budgets}",
-                path="apps_rg/runtime/judges/executive_summary_x1d.py",
+                path=str(x1d_path),
             )
         )
     return violations

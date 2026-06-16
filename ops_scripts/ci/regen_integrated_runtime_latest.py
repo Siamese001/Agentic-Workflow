@@ -21,6 +21,10 @@ verdict, confidence) — schema v1, kind=live_provider_allow_path.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    QWEN_LOCAL_MODEL_ID,
+)
+
 import hashlib
 import json
 import os
@@ -150,7 +154,7 @@ def main() -> int:
     # verify_r1b_safe_reuse_integrated_runtime W2b §6 gate.
     attestation = build_attestation_payload(
         provider="local_qwen",
-        model_id=veto.resolved_model_id or "Qwen/Qwen2.5-32B-Instruct-AWQ",
+        model_id=veto.resolved_model_id or QWEN_LOCAL_MODEL_ID,
         model_version=veto.advertised_model_id or veto.resolved_model_id,
         rubric_path=CALIBRATED_RUBRIC,
         raw_response=raw_response,

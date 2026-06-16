@@ -33,6 +33,8 @@ import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 # Stable contract version string. Bump when a new REQUIRED field is added.
 CHUNK_METADATA_VERSION = "v1"
 
@@ -312,7 +314,7 @@ def coerce_to_v1(
     source_path: str | None = None,
     anchor: str,
     source_bytes: bytes | None = None,
-    embedding_model: str = "BAAI/bge-m3",
+    embedding_model: str = BGE_M3_MODEL_ID,
     embedding_dim: int = 1024,
 ) -> dict:
     """Mutate a legacy metadata dict in place so it satisfies the V1 contract.

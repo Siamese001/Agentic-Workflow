@@ -31,6 +31,17 @@ Attestation path (ONLY valid path for RTC-REQ-056 certification):
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    ANTHROPIC_GENERIC_HAIKU_MODEL_ID,
+    ANTHROPIC_HAIKU_MODEL_ID,
+    ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
+    ANTHROPIC_LEGACY_HAIKU_3_MODEL_ID,
+    GEMINI_PRO_MODEL_ID,
+    QWEN_7B_INSTRUCT_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
+
 import re
 from dataclasses import dataclass, field
 from typing import Final
@@ -127,22 +138,22 @@ GEMINI_JUROR: Final[JurorSpec] = JurorSpec(
     juror_id="google_gemini_3_1_pro_preview",
     provider_family="google_gemini",
     provider="gemini",
-    model_id="gemini-3.1-pro-preview",
+    model_id=GEMINI_PRO_MODEL_ID,
     env_key="GOOGLE_API_KEY",
     env_key_aliases=("GEMINI_API_KEY",),  # GEMINI_API_KEY deprecated — use GOOGLE_API_KEY
     model_env_override="GOOGLE_AI_MODEL",
-    model_aliases=("gemini-3.1-pro-preview",),
+    model_aliases=(GEMINI_PRO_MODEL_ID,),
 )
 
 ANTHROPIC_JUROR: Final[JurorSpec] = JurorSpec(
     juror_id="anthropic_claude_sonnet_4_6",
     provider_family="anthropic",
     provider="claude",
-    model_id="claude-sonnet-4-6",
+    model_id=ANTHROPIC_DEFAULT_MODEL_ID,
     env_key="ANTHROPIC_API_KEY",
     env_key_aliases=(),
     model_env_override="ANTHROPIC_MODEL",
-    model_aliases=("claude-sonnet-4-6",),
+    model_aliases=(ANTHROPIC_DEFAULT_MODEL_ID,),
 )
 
 OPENAI_JUROR: Final[JurorSpec] = JurorSpec(
@@ -335,12 +346,12 @@ REJECTED_PROVIDERS_FOR_CERT: Final[frozenset[str]] = frozenset({
 """Provider names that MUST be rejected with a specific reason code."""
 
 REJECTED_MODELS_FOR_CERT: Final[frozenset[str]] = frozenset({
-    "Qwen/Qwen2.5-32B-Instruct-AWQ",
-    "Qwen/Qwen2.5-7B-Instruct",
+    QWEN_LOCAL_MODEL_ID,
+    QWEN_7B_INSTRUCT_MODEL_ID,
     "Qwen2.5-7B-Instruct",
     "Qwen2.5-32B-Instruct-AWQ",
-    "claude-3-haiku-20240307",
-    "claude-haiku-4-5",
+    ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
+    ANTHROPIC_HAIKU_MODEL_ID,
 })
 """Model IDs that MUST be rejected with REJECT_QWEN_FOR_RTC_REQ_056 /
 REJECT_ANTHROPIC_HAIKU_FOR_RTC_REQ_056 / similar."""
@@ -379,7 +390,7 @@ def classify_rejected_model(model_id: str | None) -> str | None:
     # Normalized Qwen variants
     if "Qwen" in m or m.startswith("qwen"):
         return RejectReason.REJECT_QWEN_FOR_RTC_REQ_056
-    if m.startswith("claude-3-haiku") or m.startswith("claude-haiku"):
+    if m.startswith(ANTHROPIC_LEGACY_HAIKU_3_MODEL_ID) or m.startswith(ANTHROPIC_GENERIC_HAIKU_MODEL_ID):
         return RejectReason.REJECT_ANTHROPIC_HAIKU_FOR_RTC_REQ_056
     return None
 

@@ -4,6 +4,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4_TURBO_MODEL_ID,
+)
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -217,7 +221,7 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     Provider: ModelProvider = Field(default=ModelProvider.OPENAI, description="Model provider")
-    model_name: str = Field(default="gpt-4-turbo", description="Model name")
+    model_name: str = Field(default=OPENAI_GPT4_TURBO_MODEL_ID, description="Model name")
     api_key: str | None = Field(default=None, description="API key if required")
     temperature: float = Field(
         default=DEFAULT_GENERATION_TEMPERATURE,

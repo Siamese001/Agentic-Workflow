@@ -9,6 +9,10 @@
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import json
 import logging
@@ -436,7 +440,7 @@ def create_embedding_client(
             from agentic_core.embeddings.bge_runtime import _resolve_device
 
             device = _resolve_device()
-        client = _create_bge_m3_client(model or "BAAI/bge-m3", device)
+        client = _create_bge_m3_client(model or BGE_M3_MODEL_ID, device)
 
     else:
         raise ValueError(f"Unsupported embedding provider: {provider}")

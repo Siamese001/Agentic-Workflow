@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+    BGE_RERANKER_MODEL_ID,
+)
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -161,7 +166,7 @@ _emit_gated_by_confidence("p1", "rag_config", "confidence_gate")
 class EmbeddingConfig:
     """Embedding model configuration."""
 
-    model_name: str = "BAAI/bge-m3"
+    model_name: str = BGE_M3_MODEL_ID
     dimension: int = 1024  # BAAI/bge-m3 dimension
     batch_size: int = 32
     cache_enabled: bool = True
@@ -199,7 +204,7 @@ class RetrievalConfig:
     rrf_k: float = 60.0
 
     # Reranking
-    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_model: str = BGE_RERANKER_MODEL_ID
     reranker_confidence_threshold: float = 0.75
     reranker_top_k: int = 10
 

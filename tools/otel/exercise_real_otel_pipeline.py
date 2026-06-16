@@ -58,6 +58,8 @@ W1.future closure — real OTel emitter trace flow).
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import GEMINI_20_FLASH_EXP_MODEL_ID
+
 # Reads the canonical static snapshot (consumer-edge twin lookup) and writes
 # OTel-shape spans through the production runtime-ingest helper. Inventory-mode
 # from the static snapshot's perspective; proof-mode from the runtime store's.
@@ -195,7 +197,7 @@ def exercise_heal_router_otel(n: int = 3) -> EmitterStats:
                 gate_applied="NO_OVERRIDE",
                 gemini_subtier="",
                 cost_demoted=False,
-                target_model=f"gemini-2.0-flash-exp-{i}",
+                target_model=f"{GEMINI_20_FLASH_EXP_MODEL_ID}-{i}",
             )
             emitter.emit_route_span(
                 routing_trace_id=f"real-otel-route-{uuid.uuid4().hex[:12]}",

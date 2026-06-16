@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import logging
 from types import MappingProxyType
 from typing import Final
@@ -189,13 +195,13 @@ _AGENT_REGISTRY: dict[str, AgentExecutionProfile] = {
         agent_id="conversational_repair",
         reasoning_intensity=ReasoningIntensity.HIGH,
         execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("gpt-4", "gpt-3.5-turbo", "claude-sonnet-4-6"),
+        allowed_models=(OPENAI_GPT4_MODEL_ID, OPENAI_GPT35_TURBO_MODEL_ID, ANTHROPIC_DEFAULT_MODEL_ID),
     ),
     "cognitive_disposition": AgentExecutionProfile(
         agent_id="cognitive_disposition",
         reasoning_intensity=ReasoningIntensity.HIGH,
         execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("gpt-4", "claude-sonnet-4-6"),
+        allowed_models=(OPENAI_GPT4_MODEL_ID, ANTHROPIC_DEFAULT_MODEL_ID),
     ),
     # Wave 4: audit-only entries for V15ExecutionGateway.execute() callers
     "sovereign_base": AgentExecutionProfile(

@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -175,7 +179,7 @@ _emit_gated_by_confidence("p1", "cache_entry_types", "confidence_gate")
 
 Logger: Any = logging.getLogger(__name__)
 SIMILARITY_THRESHOLD = 0.92
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 EMBEDDING_DIM = 1024
 
 

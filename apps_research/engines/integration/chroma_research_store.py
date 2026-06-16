@@ -14,7 +14,7 @@ W5N (no-core track) invariants enforced here:
     chromadb_path is supplied; tests may inject a fake client via Protocol.
 
 W6 upgrade:
-  - _embed() now calls SentenceTransformer("BAAI/bge-m3") for real 1024-dim vectors.
+  - _embed() now calls SentenceTransformer(BGE_M3_MODEL_ID) for real 1024-dim vectors.
   - Zero-vector stub removed from the ChromaResearchStore path.
   - If sentence-transformers is missing, raises ImportError with install hint.
   - Model is lazy-loaded (class-level cache) to keep import-time side-effects low.
@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Protocol, runtime_checkable
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from apps_research.engines.research_retrieval_engine import RetrievedResearch
 
 _log = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ _log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 COLLECTION_NAME: str = "process_docs"
-EMBEDDING_MODEL: str = "BAAI/bge-m3"
+EMBEDDING_MODEL: str = BGE_M3_MODEL_ID
 EMBEDDING_DIMENSIONS: int = 1024
 
 live_wiring_deferred: bool = True
@@ -177,7 +178,7 @@ class ChromaResearchStore:
 
     @classmethod
     def _get_model(cls) -> Any:
-        """Lazy-load SentenceTransformer("BAAI/bge-m3").
+        """Lazy-load SentenceTransformer(BGE_M3_MODEL_ID).
 
         Raises ImportError with install hint if sentence-transformers is missing.
         """

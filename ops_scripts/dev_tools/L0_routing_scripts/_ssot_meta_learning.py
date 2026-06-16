@@ -5,6 +5,10 @@ Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_VERSION_ID,
+)
+
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -328,7 +332,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             pass
         state_mgr.state.setdefault("meta_learning", {})["bge_per_agent"] = _bge_per_agent
         state_mgr.state["meta_learning"]["bge_arch_counts"] = _bge_arch_counts
-        state_mgr.state["meta_learning"]["bge_model"] = "BAAI/bge-m3-v1"
+        state_mgr.state["meta_learning"]["bge_model"] = BGE_M3_VERSION_ID
         try:
             from agentic_core.L6_system_learning.healing_success_rate_store import get_default_store as _get_sr_store
 
@@ -503,7 +507,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 _faiss_base.mkdir(parents=True, exist_ok=True)
                 _faiss_disk_dir = _faiss_base / _faiss_idx
                 _vec_source_str = "bge-m3"
-                _model_ver = "BAAI/bge-m3-v1"
+                _model_ver = BGE_M3_VERSION_ID
                 _prior_vecs: list[list[float]] = []
                 _prior_metas: list[dict] = []
                 if _faiss_disk_dir.exists():

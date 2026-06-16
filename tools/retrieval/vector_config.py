@@ -6,11 +6,13 @@ import logging
 import os
 from pathlib import Path
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _raw_chroma_path = os.environ.get("VECTOR_DB_CHROMA_PATH", "")
 CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "data" / "cache" / "chromadb"
-DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "BAAI/bge-m3")
+DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", BGE_M3_MODEL_ID)
 ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0").strip() == "1"
 
 
@@ -46,7 +48,7 @@ COUNT_CACHE_TTL: float = float(os.environ.get("VECTOR_DB_COUNT_CACHE_TTL", "60")
 BACKGROUND_PREWARM_ENABLED: bool = os.environ.get("VECTOR_DB_ENABLE_STARTUP_PREWARM", "1").strip() == "1"
 
 KNOWN_MODEL_DIMS: dict[str, int] = {
-    "BAAI/bge-m3": 1024,
+    BGE_M3_MODEL_ID: 1024,
     "all-MiniLM-L6-v2": 384,
     "all-mpnet-base-v2": 768,
     "text-embedding-ada-002": 1536,

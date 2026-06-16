@@ -11,6 +11,13 @@ All constraints are frozen dataclasses (immutable).
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    BGE_M3_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+)
+
 from dataclasses import dataclass
 
 # =============================================================================
@@ -117,10 +124,10 @@ RAG_CONSTRAINTS: dict[str, IntConstraint] = {
 
 L1_MODEL_POINTER_CONSTRAINTS: dict[str, PointerConstraint] = {
     "cognition_model": PointerConstraint(
-        allowlist=frozenset({"gpt-4o", "gpt-4o-mini", "claude-sonnet-4-6"}),
+        allowlist=frozenset({OPENAI_GPT4O_MODEL_ID, OPENAI_GPT4O_MINI_MODEL_ID, ANTHROPIC_DEFAULT_MODEL_ID}),
     ),
     "embedding_model": PointerConstraint(
-        allowlist=frozenset({"text-embedding-3-small", "text-embedding-3-large", "BAAI/bge-m3"}),
+        allowlist=frozenset({"text-embedding-3-small", "text-embedding-3-large", BGE_M3_MODEL_ID}),
     ),
 }
 
@@ -156,7 +163,7 @@ EMBEDDING_GOVERNANCE_BOOL: dict[str, bool] = {
 
 EMBEDDING_GOVERNANCE_POINTER: dict[str, PointerConstraint] = {
     "active_embedder_id": PointerConstraint(
-        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small", "BAAI/bge-m3"}),
+        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small", BGE_M3_MODEL_ID}),
     ),
     "vector_pack_hash": PointerConstraint(
         allowlist=frozenset({"5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"}),

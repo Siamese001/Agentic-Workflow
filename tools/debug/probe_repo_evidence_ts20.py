@@ -6,6 +6,10 @@ Temporary diagnostic script — safe to delete after C2.1 closeout.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import time
 from pathlib import Path
 
@@ -14,7 +18,7 @@ from sentence_transformers import SentenceTransformer
 
 CHROMA_PATH = Path(r"C:\Git\Agentic-Workflow\data\cache\chromadb")
 COLLECTION = "repo_evidence"
-MODEL = "BAAI/bge-m3"
+MODEL = BGE_M3_MODEL_ID
 QUERY = "normative requirements specification for the agentic routing system"
 
 

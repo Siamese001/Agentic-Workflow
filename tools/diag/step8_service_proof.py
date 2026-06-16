@@ -1,5 +1,9 @@
 """Step 8: Retrieval service proof — call VectorRetrievalService directly."""
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import os
 import sys
 import time
@@ -7,7 +11,7 @@ import time
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TQDM_DISABLE"] = "1"
-os.environ["VECTOR_DB_EMBEDDING_MODEL"] = "BAAI/bge-m3"
+os.environ["VECTOR_DB_EMBEDDING_MODEL"] = BGE_M3_MODEL_ID
 os.environ["VECTOR_DB_CHROMA_PATH"] = "data/cache/chromadb"
 os.environ["VECTOR_DB_ALLOW_MODEL_DOWNLOAD"] = "0"
 

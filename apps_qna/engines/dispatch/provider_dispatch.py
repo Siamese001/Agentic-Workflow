@@ -30,6 +30,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    GEMINI_FLASH_MODEL_ID,
+    GEMINI_PRO_MODEL_ID,
+)
+
 _LOGGER = logging.getLogger(__name__)
   # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _ANTHROPIC_API_KEY_VAR = "ANTHROPIC_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
@@ -37,9 +43,9 @@ _GOOGLE_API_KEY_VAR = "GOOGLE_API_KEY"  # guardian: allow-hardcoded-secret -- P1
 _JUDGE_PROVIDER_VAR = "JUDGE_PROVIDER"
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
 
-_DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
-_DEFAULT_GEMINI_PRO_MODEL = "gemini-3.1-pro-preview"
-_DEFAULT_GEMINI_FLASH_MODEL = "gemini-3-flash-preview"
+_DEFAULT_ANTHROPIC_MODEL = ANTHROPIC_DEFAULT_MODEL_ID
+_DEFAULT_GEMINI_PRO_MODEL = GEMINI_PRO_MODEL_ID
+_DEFAULT_GEMINI_FLASH_MODEL = GEMINI_FLASH_MODEL_ID
 
 
 def _google_ai_flash_from_env() -> str:

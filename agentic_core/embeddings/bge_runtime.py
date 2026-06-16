@@ -12,6 +12,10 @@ No async, no factory sovereignty path, no external network calls after first loa
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import logging
 import os
 import threading
@@ -36,7 +40,7 @@ class BGEInstallError(RuntimeError):
 
 
 # ── Constants ──────────────────────────────────────────────────────────────
-BGE_MODEL: str = "BAAI/bge-m3"
+BGE_MODEL: str = BGE_M3_MODEL_ID
 BGE_QUERY_DIM: int = 1024
 BGE_ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("BGE_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
 

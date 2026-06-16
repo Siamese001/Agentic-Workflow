@@ -6,6 +6,11 @@ Direct OpenAI SDK wrapper — does NOT go through embedding_factory.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_LARGE_EN_MODEL_ID,
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import os
 from typing import Iterable
@@ -171,8 +176,8 @@ _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,
     "text-embedding-3-small": 1536,
     "text-embedding-ada-002": 1536,
-    "BAAI/bge-m3": 1024,
-    "BAAI/bge-large-en-v1.5": 1024,
+    BGE_M3_MODEL_ID: 1024,
+    BGE_LARGE_EN_MODEL_ID: 1024,
 }
 
 
@@ -244,7 +249,7 @@ class BGEEmbedder:
     Uses BAAI/bge-m3 (1024-dim) via bmg_embed_text.
     """
 
-    def __init__(self, model: str = "BAAI/bge-m3"):
+    def __init__(self, model: str = BGE_M3_MODEL_ID):
         self.model = model
         self._dim = _MODEL_DIMENSIONS.get(model, 1024)
 

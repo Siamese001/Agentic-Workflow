@@ -6,6 +6,10 @@
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 from dataclasses import dataclass
 import logging
 import os
@@ -37,7 +41,7 @@ class ModelLoader:
     **HITL-10C-001**: bge-m3 checkpoint (multilingual dense+sparse).
     """
 
-    DEFAULT_MODEL = "BAAI/bge-m3"  # HITL-10C-001 selection
+    DEFAULT_MODEL = BGE_M3_MODEL_ID  # HITL-10C-001 selection
     EMBEDDING_DIM = 1024
 
     def __init__(self, model_name: str | None = None, device: str | None = None) -> None:

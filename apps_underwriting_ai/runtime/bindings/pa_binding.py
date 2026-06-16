@@ -31,12 +31,13 @@ import hashlib
 import json
 from typing import Any
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from apps_underwriting_ai.runtime.contracts.underwriting_ingress_payload import (
     ValidatedUnderwritingRequest,
 )
 
 UW_PA_CERT_REF: str = "pa-apps-underwriting-ai-underwriting-decision-v1"
-UW_PA_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+UW_PA_TARGET_MODEL: str = QWEN_LOCAL_MODEL_ID
 UW_PA_TARGET_PROVIDER: str = "vllm"
 
 _SYSTEM_PREAMBLE_TEMPLATE = """\

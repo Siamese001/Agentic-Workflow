@@ -7,6 +7,8 @@ import re
 import sqlite3
 from typing import Any, Callable, Iterable
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 # W4.2: pluggable reranker hook.
 # Callable takes the deduped+fused result list and the original query text,
 # returns a re-ordered list of :class:`HybridSearchResult`. Implementations
@@ -498,7 +500,7 @@ class HybridSearchEngine:
                 from sentence_transformers import SentenceTransformer  # type: ignore
             except ImportError:  # guardian: allow-return-none-swallow -- SentenceTransformer unavailable: optional dep, caller treats None as no embedding
                 return None
-            self._bge_model = SentenceTransformer("BAAI/bge-m3")
+            self._bge_model = SentenceTransformer(BGE_M3_MODEL_ID)
         encoded = self._bge_model.encode(query)
         if hasattr(encoded, "tolist"):
             encoded = encoded.tolist()

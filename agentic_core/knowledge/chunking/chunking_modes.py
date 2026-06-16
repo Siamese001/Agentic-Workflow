@@ -11,6 +11,10 @@ Provides multiple chunking strategies for different document types.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import math
 import re
 from abc import ABC, abstractmethod
@@ -856,7 +860,7 @@ class ChunkingEngine:
         self,
         embedder: EmbedderFn | None = None,
         *,
-        model_name: str = "BAAI/bge-m3",
+        model_name: str = BGE_M3_MODEL_ID,
         breakpoint_type: BreakpointType = "percentile",
         breakpoint_threshold: float | None = None,
         buffer_size: int = 1,

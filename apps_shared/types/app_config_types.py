@@ -1,3 +1,7 @@
+
+from agentic_core.config.model_catalog import (
+    GEMINI_25_PRO_MODEL_ID,
+)
 import json
 import logging
 import os
@@ -485,7 +489,7 @@ class EnricherConfig:
 class RAGConfig:
     """configuration for RAG (Retrieval Augmented Generation) system."""
 
-    model: str = "gemini-2.5-pro"
+    model: str = GEMINI_25_PRO_MODEL_ID
     max_tokens: int = 8192
     temperature: float = 0.7
     api_max_retries: int = 7

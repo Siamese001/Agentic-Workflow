@@ -35,6 +35,7 @@ import os
 import re
 from typing import Any, Mapping
 
+from agentic_core.config.model_catalog import ANTHROPIC_DEFAULT_MODEL_ID
 from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
     GRADER_UNKNOWN_SENTINEL,
 )
@@ -47,7 +48,7 @@ _LOGGER = logging.getLogger(__name__)
   # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _ANTHROPIC_API_KEY_VAR = "ANTHROPIC_API_KEY"  # guardian: allow-hardcoded-secret -- P1 ADG burndown
 _ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
-_DEFAULT_MODEL = "claude-sonnet-4-6"
+_DEFAULT_MODEL = ANTHROPIC_DEFAULT_MODEL_ID
 _JUDGE_TIMEOUT_SECONDS = 30
 
 _RUBRIC_PROMPT = """\

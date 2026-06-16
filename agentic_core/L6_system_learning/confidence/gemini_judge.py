@@ -8,6 +8,10 @@ escape hatch (LJH2.2).
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    GEMINI_25_FLASH_MODEL_ID,
+)
+
 from typing import Any
 
 from .llm_judge import LLMJudge as _ConfidenceJudge
@@ -18,7 +22,7 @@ __all__ = ["GeminiJudge", "GeminiE2EJudge", "score_with_gemini", "evaluate_e2e"]
 class GeminiJudge:
     """Wrapper delegating to the canonical per-dim Gemini judge."""
 
-    def __init__(self, model: str = "gemini-2.5-flash") -> None:
+    def __init__(self, model: str = GEMINI_25_FLASH_MODEL_ID) -> None:
         self.model = model
         self._judge = _ConfidenceJudge(model=model)
 
@@ -29,7 +33,7 @@ class GeminiJudge:
 class GeminiE2EJudge:
     """End-to-end Gemini judge (input/output pair)."""
 
-    def __init__(self, model: str = "gemini-2.5-flash") -> None:
+    def __init__(self, model: str = GEMINI_25_FLASH_MODEL_ID) -> None:
         self.model = model
         self._judge = _ConfidenceJudge(model=model)
 

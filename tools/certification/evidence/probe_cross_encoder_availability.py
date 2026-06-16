@@ -10,6 +10,10 @@ Output: artifacts/certification/cross_encoder_availability_report.json
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_RERANKER_MODEL_ID,
+)
+
 import json
 import os
 import sys
@@ -22,7 +26,7 @@ ARTIFACT_PATH = ARTIFACT_DIR / "cross_encoder_availability_report.json"
 
 # Models we support as primary veto candidates
 SUPPORTED_MODELS = {
-    "BAAI/bge-reranker-v2-m3": {
+    BGE_RERANKER_MODEL_ID: {
         "params": "568M",
         "disk_gb": 1.4,
         "vram_gb_min": 2.0,
@@ -165,7 +169,7 @@ def _compute_recommendation(
             "reason": f"GPU available ({gpu_info['vram_total_gb']:.1f} GB) but no supported cross-encoder cached locally",
             "fallback": "Option C (LLM-judge) or download CE first (adds ~1.4 GB disk, W1p5 Wave C-B optional)",
             "confidence": "high",
-            "note": "To enable Option B, run: python -c \"from sentence_transformers import CrossEncoder; CrossEncoder('BAAI/bge-reranker-v2-m3')\"",
+            "note": "To enable Option B, run: python -c \"from sentence_transformers import CrossEncoder; CrossEncoder(BGE_RERANKER_MODEL_ID)\"",
         }
     
     if not has_loader:

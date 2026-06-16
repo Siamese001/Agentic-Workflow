@@ -10,6 +10,10 @@ D2: embeddings_enabled is always True — BGE is a mandatory system dependency.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass
@@ -229,7 +233,7 @@ class RetrievalProfile:
         """
         return cls(
             profile_id="retrieval-profile-v3",
-            primary_embedder_id="BAAI/bge-m3",
+            primary_embedder_id=BGE_M3_MODEL_ID,
             embedding_dim=1024,
             similarity_cutoff=0.75,
             top_k=10,

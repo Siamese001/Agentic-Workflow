@@ -7,6 +7,10 @@ chunks it, generates embeddings using BAAI/bge-m3, and stores results in ChromaD
 with source-type metadata categorization for improved retrieval filtering.
 """
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import logging
 import time
@@ -56,7 +60,7 @@ class EnhancedWebRAGIngestionPipeline:
         urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
         chroma_path: str = canonical_persist_dir_str(),
         collection_name: str = "agentic_best_practices",
-        model_name: str = "BAAI/bge-m3",
+        model_name: str = BGE_M3_MODEL_ID,
     ):
         """
         Initialize the enhanced RAG ingestion pipeline.

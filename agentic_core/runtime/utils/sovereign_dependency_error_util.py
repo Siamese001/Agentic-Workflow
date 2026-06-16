@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import logging
 import time
 import uuid
@@ -391,7 +395,7 @@ class SubatomicHop:
                 REASONING=VERDICT.reasoning,
                 tool_calls=[{"name": "execute_plan", "args": {"plan": VERDICT.chosen_plan}}],
             )
-            self.governor.track("gpt-4", 300, 150)
+            self.governor.track(OPENAI_GPT4_MODEL_ID, 300, 150)
             self.telemetry.record(
                 TraceEvent(
                     trace_id=ConfigurationService().trace_id,

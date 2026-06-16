@@ -24,6 +24,7 @@ from agentic_core.L4_state.contracts.vector_cache_layout import (
     VectorCacheLayout,
 )
 from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from tqdm import tqdm
 
 from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
@@ -31,7 +32,7 @@ from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 Logger = logging.getLogger(__name__)
 
 DEFAULT_SIMILARITY_THRESHOLD = 0.95
-DEFAULT_EMBEDDING_MODEL = "BAAI/bge-m3"
+DEFAULT_EMBEDDING_MODEL = BGE_M3_MODEL_ID
 L2_SEMANTIC_CACHE_COLLECTION = "l2_semantic_cache"
 BGE_M3_EMBEDDING_DIM = 1024
 

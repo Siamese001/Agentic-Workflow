@@ -11,6 +11,11 @@ Usage:
     threshold = AgentDefaults.get("PINECONE_RELEVANCE_THRESHOLD", 0.75)
 """
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import os
 from typing import Any
 
@@ -191,8 +196,8 @@ class AgentDefaults:
     SAFETY_THRESHOLD: float = 0.95
 
     # === Model Configuration ===
-    DEFAULT_MODEL: str = "gpt-4"
-    FALLBACK_MODEL: str = "gpt-3.5-turbo"
+    DEFAULT_MODEL: str = OPENAI_GPT4_MODEL_ID
+    FALLBACK_MODEL: str = OPENAI_GPT35_TURBO_MODEL_ID
 
     # === Circuit Breaker ===
     CIRCUIT_BREAKER_FAILURE_THRESHOLD: int = 5

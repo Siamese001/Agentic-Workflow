@@ -20,6 +20,11 @@ apps_rg so it runs even when those subsystems are broken.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_MODEL_ID,
+    ANTHROPIC_SONNET_4_5_MODEL_ID,
+)
+
 import argparse
 import os
 import sys
@@ -71,7 +76,11 @@ def _live_ping(model: str) -> tuple[bool, str]:
     except anthropic.AuthenticationError as exc:
         return False, f"authentication failed (key rejected by API): {exc}"
     except anthropic.NotFoundError as exc:
-        return False, f"model not found - try --model claude-haiku-4-5 or claude-sonnet-4-5: {exc}"
+        return (
+            False,
+            f"model not found - try --model {ANTHROPIC_HAIKU_MODEL_ID} "
+            f"or {ANTHROPIC_SONNET_4_5_MODEL_ID}: {exc}",
+        )
     except anthropic.APIError as exc:
         return False, f"API error: {exc!r}"
 
@@ -94,8 +103,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--model",
-        default="claude-haiku-4-5",
-        help="Anthropic model to ping (default: claude-haiku-4-5, cheapest)",
+        default=ANTHROPIC_HAIKU_MODEL_ID,
+        help=f"Anthropic model to ping (default: {ANTHROPIC_HAIKU_MODEL_ID}, cheapest)",
     )
     parser.add_argument(
         "--no-network",

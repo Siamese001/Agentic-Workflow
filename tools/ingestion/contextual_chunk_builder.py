@@ -28,6 +28,10 @@ module emits the prompt; the gateway adapter applies the cache marker.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_HAIKU_MODEL_ID,
+)
+
 import logging
 import os
 import re
@@ -51,7 +55,7 @@ _PROMPT_TEMPLATE = (
 
 # Default model: Haiku tier is sufficient per Anthropic guidance — start cheap,
 # earn upgrade via evals.
-DEFAULT_MODEL = "claude-haiku-4-5"
+DEFAULT_MODEL = ANTHROPIC_HAIKU_MODEL_ID
 DEFAULT_MAX_TOKENS = 150
 DEFAULT_TEMPERATURE = 0.0
 DEFAULT_TIMEOUT_S = 30

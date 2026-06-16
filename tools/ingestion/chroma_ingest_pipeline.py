@@ -30,6 +30,10 @@ Usage::
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import json
 import logging
@@ -46,7 +50,7 @@ _log = logging.getLogger(__name__)
 
 COLLECTION_NAME: str = "process_docs"
 DEFAULT_FACT_VECTORS_COLLECTION: str = "fact_vectors"
-EMBEDDING_MODEL: str = "BAAI/bge-m3"
+EMBEDDING_MODEL: str = BGE_M3_MODEL_ID
 EMBEDDING_DIMENSIONS: int = 1024
 
 
@@ -56,7 +60,7 @@ EMBEDDING_DIMENSIONS: int = 1024
 
 
 def _load_embedding_model() -> Any:
-    """Lazy-load SentenceTransformer("BAAI/bge-m3").
+    """Lazy-load SentenceTransformer(BGE_M3_MODEL_ID).
 
     Raises ImportError with install hint if sentence-transformers is missing.
     """
@@ -230,7 +234,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="chroma_ingest_pipeline",
         description=(
             "Dry-run-safe ingestion pipeline for the process_docs Chroma collection "
-            "(BAAI/bge-m3, 1024 dims). Default mode is --dry-run. "
+            f"({BGE_M3_MODEL_ID}, 1024 dims). Default mode is --dry-run. "
             "Pass --execute to write data."
         ),
     )

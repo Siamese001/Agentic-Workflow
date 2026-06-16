@@ -4,6 +4,10 @@ This module implements the reflection engine that forces nodes to grade their ow
 work before passing it downstream, preventing hallucination cascades.
 """
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4O_MINI_MODEL_ID,
+)
+
 import asyncio
 import json
 import logging
@@ -235,7 +239,7 @@ class ReflectionConfig(BaseModel):
     confidence_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
     enable_regex_cache: bool = True
     llm_provider: str = "openai"
-    llm_model: str = "gpt-4o-mini"  # Cost-effective model
+    llm_model: str = OPENAI_GPT4O_MINI_MODEL_ID  # Cost-effective model
     timeout: float = Field(default=30.0, ge=1.0)
 
 

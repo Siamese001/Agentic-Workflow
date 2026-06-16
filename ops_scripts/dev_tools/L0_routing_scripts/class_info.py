@@ -7,6 +7,11 @@ for migration to modern agentic_core structure.
 Run: python scripts/archive_migration_analysis.py
 """
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT3_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
+
 import ast
 import hashlib
 import json
@@ -407,8 +412,8 @@ def check_sovereignty_compliance(file_path: Path, content: str, classes: list[Cl
         "openai",
         "anthropic",
         "claude",
-        "gpt-4",
-        "gpt-3",
+        OPENAI_GPT4_MODEL_ID,
+        OPENAI_GPT3_MODEL_ID,
         "llm_client",
         "chat_completion",
     ]

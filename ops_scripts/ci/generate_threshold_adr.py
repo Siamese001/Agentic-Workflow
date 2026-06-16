@@ -24,6 +24,10 @@ Exit codes:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import json
 import sys
@@ -134,7 +138,7 @@ def _compose_adr_json(sweep: dict) -> dict:
         "recommended_threshold": recommended,
         "recommendation_status": sweep.get("overall_status"),
         "model": {
-            "identifier": "BAAI/bge-m3",
+            "identifier": BGE_M3_MODEL_ID,
             "provider": "bge-m3",
             "operation": "dense_cosine",
             "dim": 1024,

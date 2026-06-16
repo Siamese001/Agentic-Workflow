@@ -3,6 +3,12 @@
 Provides unified client interface for different LLM providers.
 """
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    GEMINI_PRO_LEGACY_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+)
+
 from enum import Enum
 from typing import Any
 
@@ -78,8 +84,8 @@ def get_default_model(provider: Provider) -> str:
         Default model name
     """
     defaults = {
-        Provider.OPENAI: "gpt-4o",
-        Provider.ANTHROPIC: "claude-sonnet-4-6",
-        Provider.GOOGLE: "gemini-pro",
+        Provider.OPENAI: OPENAI_GPT4O_MODEL_ID,
+        Provider.ANTHROPIC: ANTHROPIC_DEFAULT_MODEL_ID,
+        Provider.GOOGLE: GEMINI_PRO_LEGACY_MODEL_ID,
     }
     return defaults.get(provider, "unknown")

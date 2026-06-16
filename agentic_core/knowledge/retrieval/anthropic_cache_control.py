@@ -44,6 +44,15 @@ on already-rendered strings so it composes with any prompt-assembly path
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    ANTHROPIC_GENERIC_FABLE_MODEL_ID,
+    ANTHROPIC_GENERIC_HAIKU_MODEL_ID,
+    ANTHROPIC_GENERIC_OPUS_MODEL_ID,
+    ANTHROPIC_GENERIC_SONNET_MODEL_ID,
+    ANTHROPIC_HAIKU_MODEL_ID,
+)
+
 import logging
 from enum import Enum
 from typing import Any, Literal, Sequence
@@ -84,12 +93,12 @@ _DEFAULT_MIN_CACHEABLE_CHARS = 3500
 # ``claude-haiku-4-5`` resolves to 4096 before the generic ``claude-haiku``
 # (2048), and ``claude-sonnet-4-6`` (2048) before ``claude-sonnet`` (1024).
 MODEL_CACHE_FLOOR_TOKENS: tuple[tuple[str, int], ...] = (
-    ("claude-haiku-4-5", 4096),
-    ("claude-opus", 4096),
-    ("claude-sonnet-4-6", 2048),
-    ("claude-fable", 2048),
-    ("claude-haiku", 2048),
-    ("claude-sonnet", 1024),
+    (ANTHROPIC_HAIKU_MODEL_ID, 4096),
+    (ANTHROPIC_GENERIC_OPUS_MODEL_ID, 4096),
+    (ANTHROPIC_DEFAULT_MODEL_ID, 2048),
+    (ANTHROPIC_GENERIC_FABLE_MODEL_ID, 2048),
+    (ANTHROPIC_GENERIC_HAIKU_MODEL_ID, 2048),
+    (ANTHROPIC_GENERIC_SONNET_MODEL_ID, 1024),
 )
 
 

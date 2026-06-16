@@ -4,6 +4,12 @@ This module optimizes cost and latency by dynamically selecting the appropriate
 LLM based on task type, complexity, and budget constraints.
 """
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+)
+
 import asyncio
 import logging
 from dataclasses import dataclass, field
@@ -325,27 +331,27 @@ class ModelRouter:
     def _initialize_defaults(self) -> None:
         """Initialize default model configurations and task profiles."""
         # guardian: allow-magic-config
-        self._models["gpt-4o-mini"] = ModelConfig(
+        self._models[OPENAI_GPT4O_MINI_MODEL_ID] = ModelConfig(
             provider="openai",
-            model_name="gpt-4o-mini",
+            model_name=OPENAI_GPT4O_MINI_MODEL_ID,
             tier=ModelTier.FAST,
             max_tokens=4096,
             temperature=0.7,
             cost_per_1k_tokens=0.00015,
         )
         # guardian: allow-magic-config
-        self._models["gpt-4o"] = ModelConfig(
+        self._models[OPENAI_GPT4O_MODEL_ID] = ModelConfig(
             provider="openai",
-            model_name="gpt-4o",
+            model_name=OPENAI_GPT4O_MODEL_ID,
             tier=ModelTier.BALANCED,
             max_tokens=4096,
             temperature=0.7,
             cost_per_1k_tokens=0.005,
         )
         # guardian: allow-magic-config
-        self._models["claude-sonnet-4-6"] = ModelConfig(
+        self._models[ANTHROPIC_DEFAULT_MODEL_ID] = ModelConfig(
             provider="anthropic",
-            model_name="claude-sonnet-4-6",
+            model_name=ANTHROPIC_DEFAULT_MODEL_ID,
             tier=ModelTier.BALANCED,
             max_tokens=4096,
             temperature=0.7,

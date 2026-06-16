@@ -11,6 +11,10 @@ No ground-truth labels required — uses metadata signals and distance as proxie
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import json
 import re
@@ -24,7 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 
 # Distance below which a result is "relevant" (cosine, 0=identical, 2=opposite)
 RELEVANCE_THRESH = 0.50

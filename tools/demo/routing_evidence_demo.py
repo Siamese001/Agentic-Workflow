@@ -9,6 +9,11 @@ Run:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+)
+
 import contextlib
 import math
 import random
@@ -366,17 +371,17 @@ def demo_l2_cost_cascade() -> None:
     # gpt: honest; predicted == actual rate
     for _ in range(200):
         p = rng.random()
-        cal.observe(provider_id="gpt-4o", predicted_success=p,
+        cal.observe(provider_id=OPENAI_GPT4O_MODEL_ID, predicted_success=p,
                     actual_success=rng.random() < p)
     # claude: over-confident; claims 0.9 but truth=0.6 => Brier ≈ (0.9-0)²·0.4 + (0.9-1)²·0.6 = 0.33
     for _ in range(200):
-        cal.observe(provider_id="claude-3", predicted_success=0.9,
+        cal.observe(provider_id=ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, predicted_success=0.9,
                     actual_success=rng.random() < 0.6)
     # llama: under-confident; claims 0.5 but truth=0.85 => Brier ≈ (0.5-1)²·0.85 + (0.5-0)²·0.15 = 0.25
     for _ in range(200):
         cal.observe(provider_id="llama-3.1", predicted_success=0.5,
                     actual_success=rng.random() < 0.85)
-    for pid in ("gpt-4o", "claude-3", "llama-3.1"):
+    for pid in (OPENAI_GPT4O_MODEL_ID, ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, "llama-3.1"):
         s = cal.stats(pid)
         brier = s.sum_squared_error / max(1, s.n_observations)
         fact(
@@ -387,14 +392,14 @@ def demo_l2_cost_cascade() -> None:
 
     step("provider fingerprint gate — bind v3, verify v3 (ok) vs v4 (block)")
     gate = ProviderFingerprintGate()
-    gate.bind_snapshot(provider_id="claude-3", fingerprint="model_card_v3:sha=abc")
-    gate.verify(provider_id="claude-3", live_fingerprint="model_card_v3:sha=abc")
-    fact("verify(claude-3, v3)", "OK")
+    gate.bind_snapshot(provider_id=ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, fingerprint="model_card_v3:sha=abc")
+    gate.verify(provider_id=ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, live_fingerprint="model_card_v3:sha=abc")
+    fact(f"verify({ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID}, v3)", "OK")
     try:
-        gate.verify(provider_id="claude-3", live_fingerprint="model_card_v4:sha=xyz")
-        fact("verify(claude-3, v4)", "ERROR — should have blocked")
+        gate.verify(provider_id=ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID, live_fingerprint="model_card_v4:sha=xyz")
+        fact(f"verify({ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID}, v4)", "ERROR — should have blocked")
     except ProviderFingerprintMismatchError as e:
-        fact("verify(claude-3, v4)", f"BLOCKED: {e.__class__.__name__}")
+        fact(f"verify({ANTHROPIC_GENERIC_CLAUDE3_MODEL_ID}, v4)", f"BLOCKED: {e.__class__.__name__}")
 
     step("router feedback — demoted providers + fingerprint blocks gate cascade")
     print(f"   cascade tier excludes ⇒ {cal.demoted_providers()}")

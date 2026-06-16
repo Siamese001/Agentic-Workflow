@@ -6,6 +6,10 @@ Core D2 ``l2_semantic_cache`` / ``promote_to_long_term`` paths are never used he
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import hashlib
 import json
 import os

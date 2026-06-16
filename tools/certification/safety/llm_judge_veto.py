@@ -7,6 +7,10 @@ Fail-closed on timeout, parse error, or any exception.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
+)
+
 import json
 import os
 import re
@@ -147,7 +151,7 @@ class LLMJudgeVeto:
         # 4. Anthropic has its own hardcoded model in _call_anthropic_haiku;
         # record it here for introspection symmetry.
         if self._provider == "anthropic_haiku":
-            self._model_id = "claude-3-haiku-20240307"
+            self._model_id = ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID
             self._model_id_source = "anthropic_fixed"
             return
         # Final fallback.
@@ -283,7 +287,7 @@ Fail-closed: any other response format must be treated as UNSAFE."""
             import anthropic
             client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
             response = client.messages.create(
-                model="claude-3-haiku-20240307",
+                model=ANTHROPIC_LEGACY_HAIKU_3_20240307_MODEL_ID,
                 max_tokens=256,
                 temperature=self._temperature,
                 system="You are a safety judge. Respond only with valid JSON.",

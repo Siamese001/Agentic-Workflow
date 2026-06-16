@@ -12,11 +12,13 @@ import sys
 import time
 from pathlib import Path
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 OUT_PATH = REPO_ROOT / "docs" / "reports" / "wave_b_external_target_state_audit.md"
 
 REQUIRED_FIELDS = {
@@ -394,7 +396,7 @@ def run_audit() -> None:
     lines.append("")
     lines.append("**Date**: " + time.strftime("%Y-%m-%d") + "  ")
     lines.append("**Collection**: `ext_authority` only (323 chunks, Lane A=112, Lane B=211)  ")
-    lines.append("**Model**: BAAI/bge-m3 (1024-dim, cosine)  ")
+    lines.append(f"**Model**: {BGE_M3_MODEL_ID} (1024-dim, cosine)  ")
     lines.append("**Queries**: 20 semantically varied target-state topics  ")
     lines.append(
         "**Anti-drift rule**: Target state MUST come from ext_authority only. repo_evidence and ext_raw are EXCLUDED.  "

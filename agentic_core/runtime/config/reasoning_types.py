@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4O_MODEL_ID,
+)
+
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    BGE_M3_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+)
+
 "\nReasoning configuration for LLM generation.\n\nEXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py\nCANON COMPLIANCE: Sub-atomic split for line limit enforcement\n"
 import os
 from enum import Enum
@@ -27,7 +37,7 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = Field(
-        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o"),
+        default_factory=lambda: os.getenv("OPENAI_MODEL", OPENAI_GPT4O_MODEL_ID),
         description="LLM model name",
     )
     temperature: float = Field(
@@ -57,7 +67,7 @@ class RAGConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     enabled: bool = True
     vector_store_path: str = "data/vector_store"
-    embedding_model: str = "BAAI/bge-m3"
+    embedding_model: str = BGE_M3_MODEL_ID
     max_context_documents: int = Field(default=5, ge=1, le=50)
     similarity_threshold: float = Field(
         default_factory=lambda: float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.8")),
@@ -91,9 +101,9 @@ class GovernorConfig(BaseModel):
     max_requests_per_minute: int = Field(default=100, ge=1, le=10000)
     allowed_models: list[str] = Field(
         default_factory=lambda: [
-            os.getenv("OPENAI_MODEL", "gpt-4o"),
-            "gpt-4o-mini",
-            os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
+            os.getenv("OPENAI_MODEL", OPENAI_GPT4O_MODEL_ID),
+            OPENAI_GPT4O_MINI_MODEL_ID,
+            os.getenv("ANTHROPIC_MODEL", ANTHROPIC_DEFAULT_MODEL_ID),
         ],
     )
 

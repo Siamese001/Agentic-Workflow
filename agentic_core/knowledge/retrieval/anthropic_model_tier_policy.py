@@ -37,6 +37,13 @@ References:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    ANTHROPIC_HAIKU_MODEL_ID,
+    ANTHROPIC_OPUS_4_5_MODEL_ID,
+    ANTHROPIC_SONNET_4_5_MODEL_ID,
+)
+
 import logging
 import os
 from dataclasses import dataclass
@@ -55,10 +62,10 @@ Logger = logging.getLogger(__name__)
 # Canonical model names (stable public identifiers on the Anthropic API)
 # ---------------------------------------------------------------------------
 
-HAIKU_4_5 = "claude-haiku-4-5"
-SONNET_4_5 = "claude-sonnet-4-5"
-SONNET_4_6 = "claude-sonnet-4-6"
-OPUS_4_5 = "claude-opus-4-5"
+HAIKU_4_5 = ANTHROPIC_HAIKU_MODEL_ID
+SONNET_4_5 = ANTHROPIC_SONNET_4_5_MODEL_ID
+SONNET_4_6 = ANTHROPIC_DEFAULT_MODEL_ID
+OPUS_4_5 = ANTHROPIC_OPUS_4_5_MODEL_ID
 
 # Wave B Phase B1: local Qwen identifier, sourced from L0 model_registry SSOT.
 # Exported alongside Anthropic ids so callers can reference a single constant

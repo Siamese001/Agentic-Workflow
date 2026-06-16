@@ -10,10 +10,15 @@ No GPU libraries. No torch/vllm imports. L2 purity preserved.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    QWEN_7B_INSTRUCT_MODEL_ID,
+)
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
+from agentic_core.config.model_catalog import GEMINI_25_PRO_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -415,12 +420,11 @@ QWEN_7B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 QWEN_14B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 
 QWEN_7B_MODEL_ID: str = (
-    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was "Qwen/Qwen2.5-7B-Instruct" — model never served)
+    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was QWEN_7B_INSTRUCT_MODEL_ID — model never served)
 )
 QWEN_14B_MODEL_ID: str = (
     QWEN_LOCAL_MODEL_ID  # Deprecated alias (was misnamed; value already pointed at 32B-AWQ)
 )
-GEMINI_25_PRO_MODEL_ID: str = "gemini-2.5-pro"
 HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({"high"})
 FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({"low", "medium"})
 

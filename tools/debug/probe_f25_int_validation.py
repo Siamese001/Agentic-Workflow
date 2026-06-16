@@ -6,6 +6,10 @@ new ADR chunks. Temporary — delete after C2.2 closeout.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import time
 from pathlib import Path
 
@@ -14,7 +18,7 @@ from sentence_transformers import SentenceTransformer
 
 CHROMA_PATH = Path(r"C:\Git\Agentic-Workflow\data\cache\chromadb")
 COLLECTION = "repo_evidence"
-MODEL = "BAAI/bge-m3"
+MODEL = BGE_M3_MODEL_ID
 QUERY = "confidence-scored tiered healing dispatch routing tiers local rules model retry human escalation"
 NEW_DOC_PATH = "docs/architecture/healing_dispatch_routing_adr.md"
 

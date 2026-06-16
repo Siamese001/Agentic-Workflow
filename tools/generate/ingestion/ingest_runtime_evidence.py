@@ -22,6 +22,10 @@ Collection: runtime_evidence  hnsw:space=cosine
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import hashlib
 import json
@@ -51,7 +55,7 @@ def _ensure_repo_on_syspath(repo_root: Path) -> None:
 REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "runtime_evidence"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 EMBEDDING_DIM = 1024
 BATCH_SIZE = 256
 CHUNK_CHARS = 2000

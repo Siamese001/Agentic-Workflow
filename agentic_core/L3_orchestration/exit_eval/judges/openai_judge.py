@@ -6,6 +6,7 @@ import json
 import os
 from typing import Any
 
+from agentic_core.config.model_catalog import OPENAI_GPT4O_MINI_MODEL_ID
 from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
 from agentic_core.L3_orchestration.exit_eval.judges._base_http_judge import (
     BaseHttpJudge,
@@ -28,7 +29,7 @@ class OpenAIJudge(BaseHttpJudge):
     def __init__(
         self,
         *,
-        model: str = "gpt-4o-mini",
+        model: str = OPENAI_GPT4O_MINI_MODEL_ID,
         api_key: str | None = None,
         endpoint: str = _DEFAULT_ENDPOINT,
         timeout: float = 30.0,

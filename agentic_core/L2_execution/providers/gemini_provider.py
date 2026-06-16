@@ -8,9 +8,11 @@ import hashlib
 from typing import Dict, List, Optional, Any, Generator
 from dataclasses import dataclass
 
+from agentic_core.config.model_catalog import model_id
+
 # Gemini API configuration
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
-GEMINI_DEFAULT_MODEL = "gemini-1.5-flash"
+GEMINI_DEFAULT_MODEL = model_id("gemini.legacy.flash_15")
 GEMINI_TIMEOUT_SECONDS = 60
 
 
@@ -184,9 +186,9 @@ class GeminiProvider:
     PROVIDER_NAME = "gemini"
     DEFAULT_MODEL = GEMINI_DEFAULT_MODEL
     SUPPORTED_MODELS = [
-        "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-1.0-pro",
+        model_id("gemini.legacy.flash_15"),
+        model_id("gemini.legacy.pro_15"),
+        model_id("gemini.legacy.pro_10"),
     ]
     
     def __init__(self, api_key: Optional[str] = None):

@@ -21,6 +21,10 @@ Status ladder (match status -> subclaim verdict, computed by composer):
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import os
 import sys
 from pathlib import Path
@@ -32,7 +36,7 @@ from tools.certification.evidence import write_evidence, rel  # noqa: E402
 
 EXPECTED_MODEL_ID = "bge-m3-v1"
 EXPECTED_MODEL_PROVIDER = "bge-m3"
-EXPECTED_MODEL_HF_ID = "BAAI/bge-m3"
+EXPECTED_MODEL_HF_ID = BGE_M3_MODEL_ID
 EXPECTED_DIMENSION = 1024
 
 

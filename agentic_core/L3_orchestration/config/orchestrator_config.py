@@ -13,6 +13,7 @@ Defines OrchestratorConfig and related configuration dataclasses.
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.config.model_catalog import OPENAI_GPT4_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -106,7 +107,7 @@ class CognitiveConfig:
         enable_self_critique: Enable self-critique loop
     """
 
-    model: str = "gpt-4"
+    model: str = OPENAI_GPT4_MODEL_ID
     temperature: float = 0.7
     max_tokens: int = 4096
     enable_cot: bool = True

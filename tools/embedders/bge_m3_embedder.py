@@ -13,10 +13,12 @@ from typing import Protocol
 
 import numpy as np
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 _LOGGER = logging.getLogger(__name__)
 
 # Model configuration
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = BGE_M3_MODEL_ID
 EXPECTED_DIMS = 1024
 CACHE_DIR = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface"))
 

@@ -18,6 +18,12 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    GEMINI_25_PRO_MODEL_ID,
+    OPENAI_GPT4O_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -179,11 +185,11 @@ _emit_invokes_eval("p1", "provider_binding_fingerprint", "eval_call")
 _emit_proposal_commits_routing("p1", "provider_binding_fingerprint", "routing_commit")
 
 _CANONICAL_PROVIDERS: dict[str, str] = {
-    "anthropic": "claude-sonnet-4-6",
+    "anthropic": ANTHROPIC_DEFAULT_MODEL_ID,
     "deterministic": "LOCAL_AGENT",
-    "gemini": "gemini-2.5-pro",
-    "openai": "gpt-4o",
-    "qwen": "Qwen2.5-32B-Instruct-AWQ",
+    "gemini": GEMINI_25_PRO_MODEL_ID,
+    "openai": OPENAI_GPT4O_MODEL_ID,
+    "qwen": QWEN_LOCAL_MODEL_ID,
 }
 
 

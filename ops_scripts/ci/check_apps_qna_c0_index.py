@@ -18,6 +18,10 @@ Usage:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import argparse
 import json
 import sys
@@ -33,7 +37,7 @@ REQUIRED_FILES = ("index.json", "manifest.json", "meta.json")
 
 CHROMA_COLLECTION_NAME = "apps_qna_interview_cards"
 EXPECTED_SCHEMA_VERSION = "1"
-EXPECTED_MODEL = "BAAI/bge-m3"
+EXPECTED_MODEL = BGE_M3_MODEL_ID
 EXPECTED_DIMS = 1024
 EXPECTED_VECTOR_COUNT = 110
 EXPECTED_DISTANCE = "cosine"

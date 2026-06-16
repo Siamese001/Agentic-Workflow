@@ -1,5 +1,9 @@
 """Step 5: Embedding model load proof — time only the model load, no query."""
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import os
 import sys
 import time
@@ -8,7 +12,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TQDM_DISABLE"] = "1"
 
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = BGE_M3_MODEL_ID
 
 print(f"Model: {MODEL_NAME}")
 print(f"HF_HUB_OFFLINE: {os.environ.get('HF_HUB_OFFLINE')}")

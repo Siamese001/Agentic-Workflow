@@ -111,6 +111,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    OPENAI_GPT35_TURBO_MODEL_ID,
+    OPENAI_GPT4_MODEL_ID,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -268,9 +273,9 @@ class ResourceManagementGuardrail:
 
         # Cost rates
         self.cost_rates = {
-            "gpt-4": 0.03,  # per 1K tokens
-            "gpt-3.5-turbo": 0.002,
-            "claude-sonnet-4-6": 0.015,
+            OPENAI_GPT4_MODEL_ID: 0.03,  # per 1K tokens
+            OPENAI_GPT35_TURBO_MODEL_ID: 0.002,
+            ANTHROPIC_DEFAULT_MODEL_ID: 0.015,
             "default": 0.01,
         }
 

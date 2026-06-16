@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any, Literal
 
 from agentic_core.config.model_catalog import QWEN_VLLM_LABEL
-
 from apps_rg.runtime.briefing_resolution import _looks_like_filesystem_ref as _briefing_looks_like_path
 from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH
 from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH, _looks_like_filesystem_ref as _jd_looks_like_path

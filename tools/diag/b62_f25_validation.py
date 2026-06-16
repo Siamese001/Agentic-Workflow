@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import os
 import sys
@@ -11,7 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 CHROMA_PATH = os.path.join("data", "cache", "chromadb")
 COLLECTION = "ext_authority"
-MODEL = "BAAI/bge-m3"
+MODEL = BGE_M3_MODEL_ID
 TOP_K = 5
 B61_BASELINE_DIST = 0.5043
 

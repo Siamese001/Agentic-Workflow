@@ -471,8 +471,13 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
 
         candidates: list[str] = []
-        pro_model = google_ai_pro_model_env(legacy_default="gemini-3.1-pro-preview").strip()
-        flash_model = google_ai_flash_model_env(legacy_default="gemini-3-flash-preview").strip()
+        from agentic_core.config.model_catalog import (  # noqa: PLC0415
+            GEMINI_FLASH_MODEL_ID,
+            GEMINI_PRO_MODEL_ID,
+        )
+
+        pro_model = google_ai_pro_model_env(legacy_default=GEMINI_PRO_MODEL_ID).strip()
+        flash_model = google_ai_flash_model_env(legacy_default=GEMINI_FLASH_MODEL_ID).strip()
         if pro_model:
             candidates.append(pro_model)
         if flash_model and flash_model != pro_model:
@@ -815,8 +820,13 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
 
         candidates: list[str] = []
-        pro_model = google_ai_pro_model_env(legacy_default="gemini-3.1-pro-preview").strip()
-        flash_model = google_ai_flash_model_env(legacy_default="gemini-3-flash-preview").strip()
+        from agentic_core.config.model_catalog import (  # noqa: PLC0415
+            GEMINI_FLASH_MODEL_ID,
+            GEMINI_PRO_MODEL_ID,
+        )
+
+        pro_model = google_ai_pro_model_env(legacy_default=GEMINI_PRO_MODEL_ID).strip()
+        flash_model = google_ai_flash_model_env(legacy_default=GEMINI_FLASH_MODEL_ID).strip()
         if pro_model:
             candidates.append(pro_model)
         if flash_model and flash_model != pro_model:

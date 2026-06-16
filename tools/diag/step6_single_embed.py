@@ -1,5 +1,9 @@
 """Step 6: Single embedding proof — time one encode call only."""
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import os
 import time
 
@@ -7,7 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TQDM_DISABLE"] = "1"
 
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = BGE_M3_MODEL_ID
 QUERY = "How do AI systems implement deterministic response caching with policy-key short-circuit routing to avoid redundant LLM inference?"
 
 from sentence_transformers import SentenceTransformer

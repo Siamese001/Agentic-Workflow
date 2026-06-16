@@ -33,6 +33,8 @@ Usage:
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import BGE_RERANKER_MODEL_ID
+
 import argparse
 import hashlib
 import json
@@ -583,7 +585,8 @@ def render_markdown(
             "## Notes",
             "",
             "- **Embedder**: deterministic 256-dim bag-of-words (hash-bucketed). Swap for BGE-m3 via a pluggable embedder to match production numbers.",
-            "- **Reranker**: token-overlap + cosine composite. Stands in for `ms-marco-MiniLM-L-6-v2` / `BAAI/bge-reranker-v2-m3`.",
+            f"- **Reranker**: token-overlap + cosine composite. Stands in for "
+            f"`ms-marco-MiniLM-L-6-v2` / `{BGE_RERANKER_MODEL_ID}`.",
             "- **Hybrid**: Reciprocal Rank Fusion with k=60 (matches `hybrid_search_engine.RRF_K`).",
             "- **Parent-child hydration**: deduplicates ranked list by `metadata.parent_id` and returns the parent passage id for scoring.",
             "- **Gap from Sarkar blog**: blog used real `all-MiniLM-L6-v2` on RAGBench TechQA 50 queries. This harness is the plumbing — point `--fixture` at the real RAGBench JSONL and swap the embedder to match numbers.",

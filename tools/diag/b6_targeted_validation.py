@@ -7,6 +7,10 @@ Saves results to artifacts/b6_validation_raw.json.
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
+
 import json
 import sys
 import time
@@ -17,7 +21,7 @@ from tqdm import tqdm
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "ext_authority"
-EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_MODEL = BGE_M3_MODEL_ID
 TOP_K = 5
 
 # B5R2 direct-proof dist@1 baselines (from artifacts/b5r_proof_raw.json)

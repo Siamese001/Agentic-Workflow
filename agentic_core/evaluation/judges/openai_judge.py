@@ -13,6 +13,10 @@ outputs (MT-Bench, Patronus guidance).
 
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    OPENAI_GPT4O_MINI_MODEL_ID,
+)
+
 import importlib
 import logging
 import os
@@ -41,7 +45,7 @@ class OpenAIJudge:
     for structured output.
     """
 
-    DEFAULT_MODEL = "gpt-4o-mini"
+    DEFAULT_MODEL = OPENAI_GPT4O_MINI_MODEL_ID
 
     def __init__(self, openai_client: Any = None, model: str | None = None) -> None:
         self._client = openai_client
