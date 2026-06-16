@@ -99,7 +99,14 @@ def test_brown_allocation_not_legacy_six_pack() -> None:
         for f in plan.get("facts") or []
     ]
     assert not is_legacy_six_pack_ledger_order(ledger_ids)
-    assert "fact_exec_002" in ledger_ids
+    assert ledger_ids == [
+        "fact_engineering_platform_002",
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_003",
+        "fact_engineering_platform_004",
+        "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
+    ]
 
 
 def test_c0_pack_forbidden_substrings_blocked() -> None:

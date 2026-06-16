@@ -90,10 +90,11 @@ def test_selected_graph_plan_filters_headline_and_competency_prompt_bundles() ->
     format_competency_capability_evidence_pack(competency_payload)
     all_competency_ids = set(build_competency_capability_section_packet()["competency_bundle_ids"])
     filtered_competency_ids = set(competency_payload["competency_bundle_ids"])
-    assert filtered_competency_ids < all_competency_ids
+    assert filtered_competency_ids == all_competency_ids
+    assert competency_payload["competency_capability_section_packet"]["selected_graph_evidence_plan_applied"] is True
     assert "ccb_insurance_domain_erm" in filtered_competency_ids
-    assert "ccb_agentic_platforms" not in filtered_competency_ids
-    assert "ccb_partnerships_ecosystem_execution" not in filtered_competency_ids
+    assert "ccb_agentic_platforms" in filtered_competency_ids
+    assert "ccb_partnerships_ecosystem_execution" in filtered_competency_ids
 
     headline_plan = _build_plan(
         "headline",

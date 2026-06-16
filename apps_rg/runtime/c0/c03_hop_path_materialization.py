@@ -41,6 +41,7 @@ def materialize_c03_hop_paths(
     allowed_fact_ids: set[str] | None = None,
     max_dominant_facts: int = DEFAULT_MAX_DOMINANT_FACTS,
     incident_edge_refs_count: int | None = None,
+    fallback_to_unfiltered_when_no_allowed_match: bool = False,
 ) -> dict[str, Any]:
     """Build hop-path receipt fields from track-weighted expansion (competencies-style)."""
     if not isinstance(track_expansion, dict):
@@ -59,6 +60,10 @@ def materialize_c03_hop_paths(
         if allowed_fact_ids is not None
         else None
     )
+    if fallback_to_unfiltered_when_no_allowed_match and allowed is not None:
+        has_allowed_match = any(fact_id_in_allowed_pool(fid, allowed) for fid in hop_index)
+        if not has_allowed_match:
+            allowed = None
     canonical: dict[str, list[dict[str, str]]] = {}
     for fid in sorted(hop_index.keys()):
         key = fact_id_base(fid)
@@ -97,6 +102,7 @@ def attach_track_weighted_hop_paths_to_c03_bound(
     *,
     allowed_fact_ids: set[str] | None = None,
     max_dominant_facts: int = DEFAULT_MAX_DOMINANT_FACTS,
+    fallback_to_unfiltered_when_no_allowed_match: bool = False,
 ) -> dict[str, Any]:
     """Merge materialized hop paths onto lane c03 binding + FEC evidence items."""
     out = dict(c03_bound)
@@ -106,6 +112,7 @@ def attach_track_weighted_hop_paths_to_c03_bound(
         allowed_fact_ids=allowed_fact_ids,
         max_dominant_facts=max_dominant_facts,
         incident_edge_refs_count=incident_count,
+        fallback_to_unfiltered_when_no_allowed_match=fallback_to_unfiltered_when_no_allowed_match,
     )
     out.update(hop_doc)
 
