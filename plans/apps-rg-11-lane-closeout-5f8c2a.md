@@ -68,6 +68,10 @@ Result: `37 passed, 1 skipped`.
 - Do not run multi-target live matrices before the single-resume ship gate passes.
 - Do not treat `fact_ledger`, proof-pool rows, JD, briefing, or prior generated
   text as skills or metrics authority.
+- Do not let JD or briefing text mint skill eligibility, metric eligibility, or
+  proof authority. JD and briefing can express target demand only; eligible
+  skills and metrics must resolve to GraphDB-backed IDs before selection,
+  weighting, prompting, diagnostics, or enforcement.
 - Do not make prompt-only fixes count as W3/W4/W5 architectural closure.
 - Do not revive Notion as plan SSOT; Notion is a manual tracking mirror only.
 
@@ -135,6 +139,17 @@ Do not open W3/W4/W5 scope while B-SHIP is blocked.
 
 Goal: close the active SSOT proof with tests, not another broad migration.
 
+The authority rule is explicit:
+
+- GraphDB is the SSOT for selectable skills.
+- GraphDB is the SSOT for metric outcomes and metric weights.
+- JD and briefing inputs are targeting demand signals only. They may request or
+  emphasize skills, but they cannot create skill IDs, metric IDs, eligibility,
+  weights, proof, or traversal authority.
+- Prompt assembly, proof-pool lookup, graph utilization reporting, waterfall
+  diagnostics, and sliding-scale policy must consume GraphDB-approved skill and
+  metric IDs, not raw JD phrases.
+
 Acceptance tests must prove:
 
 - Skills authority resolves through `augmented_skills_graph`.
@@ -143,6 +158,8 @@ Acceptance tests must prove:
   proof, or traversal authority.
 - Proof-pool is transport/cache for GraphDB-approved IDs only.
 - JD and briefing terms remain targeting-only.
+- JD-specified skills align to GraphDB skill IDs through a traceable resolver;
+  unmatched JD skill demand fails closed or is reported as unresolved demand.
 - Unresolved graph skill or metric IDs fail closed.
 - apps_rg graph-skill authority does not move into `agentic_core`.
 
@@ -193,12 +210,28 @@ Acceptance:
 
 ## Wave S-PCT: Sliding-Scale Percent Policy
 
-Goal: use sliding scale as an anti-overfit composition control after B-SHIP.
+Goal: use sliding scale as a JD-aligned graph-skill composition control after
+B-SHIP.
+
+Sliding-scale percentages are not generic aesthetic balance. They must be
+computed against JD-derived skill demand after that demand has been resolved to
+GraphDB skill IDs:
+
+1. Extract JD skill demand by lane and role family.
+2. Resolve each demanded skill or skill family to GraphDB skill IDs.
+3. Compute selected-skill percentage, source concentration, metric
+   concentration, role-facet balance, and pillar balance against those resolved
+   IDs.
+4. Treat unresolved JD skill demand as a diagnostic failure until GraphDB
+   coverage is expanded or the demand is explicitly out of scope.
+5. Never let JD-only phrases bypass GraphDB eligibility.
 
 ### S1. Dry-Run Diagnostics
 
 Compute, but do not enforce:
 
+- JD-demand coverage percentage by lane.
+- selected GraphDB skill percentage against JD-resolved demand.
 - source concentration.
 - metric concentration.
 - role-facet and pillar balance.
@@ -208,6 +241,8 @@ Compute, but do not enforce:
 Acceptance:
 
 - Diagnostics emitted per lane.
+- Diagnostics identify JD-demanded GraphDB skills selected, missing, demoted, or
+  blocked, with percentages based on GraphDB IDs rather than raw phrase counts.
 - No selected skill IDs, selected metric IDs, ranking order, prompt inputs, lane
   status, generated text, or artifact hashes change because of dry-run diagnostics.
 
@@ -215,7 +250,9 @@ Acceptance:
 
 Only after S1 is stable:
 
-- block or rebalance over-concentrated pools before prompt assembly.
+- block or rebalance over-concentrated pools before prompt assembly when
+  GraphDB-approved selections overfit one source, metric family, pillar, or role
+  facet relative to JD-resolved skill demand.
 - emit `REBALANCE_REQUIRED` when active policy intervenes.
 - prove JD/briefing cannot create proof eligibility.
 
@@ -224,6 +261,9 @@ Acceptance:
 - Anthropic and Brown & Brown full E2E pass under active enforcement.
 - Sliding-scale interventions are visible in receipts and explainable in the
   waterfall report.
+- Enforcement receipts show the JD-demand percentages, resolved GraphDB skill
+  IDs, intervention reason, and unchanged rule that JD-only terms cannot create
+  proof eligibility.
 
 ## Definition Of Done
 
@@ -234,7 +274,8 @@ The plan is complete when:
 - `tools/apps_rg/render_run_summary.py` has rendered the successful run.
 - GraphDB skills/metrics SSOT tests pass.
 - A graph-skill utilization report exists for the successful run.
-- Sliding-scale diagnostics are either explicitly deferred or proven dry-run.
+- Sliding-scale diagnostics are either explicitly deferred or proven dry-run with
+  JD-demand percentages aligned to GraphDB skill IDs.
 - The old `typed-edge-role-facet-guardrails-a6f3d2` plan is treated as historical
   context, not active execution status.
 
