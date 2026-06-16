@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM, R1B_UWG_TARGET_SURFACE
 from apps_rg.cache.r1b_bge_embedding import chunk_vector_payload, intent_vector_payload
 from apps_rg.cache.r1b_intent_vector import intent_text_from_request, normalized_intent_digest
@@ -149,7 +151,7 @@ def _assert_bge_vector_for_chroma_upsert(payload: Mapping[str, Any], *, context:
     if dims != 1024 or "pseudo_digest" in model:
         raise RuntimeError(
             f"R1B Chroma upsert forbidden ({context}): dimensions={dims} embedding_model={model!r}; "
-            "require BAAI/bge-m3 (1024d) on product path"
+            f"require {BGE_M3_MODEL_ID} (1024d) on product path"
         )
 
 
@@ -191,7 +193,7 @@ def _upsert_governed_chroma(
             "read_surface": READ_SURFACE_NAME,
             "governed_projection": "true",
             "not_core_d2_l2_semantic_cache": "true",
-            "embedding_model": "BAAI/bge-m3",
+            "embedding_model": BGE_M3_MODEL_ID,
             "chroma_default_ef_forbidden": "true",
         },
     )

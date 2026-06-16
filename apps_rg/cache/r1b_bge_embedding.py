@@ -11,6 +11,8 @@ import logging
 import threading
 from typing import Any
 
+from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM
 
 _logger = logging.getLogger(__name__)
@@ -97,7 +99,7 @@ def intent_vector_payload(*, intent_text: str, digest: str) -> dict[str, Any]:
     if bge is not None:
         return {
             "subsystem": R1B_STORAGE_SUBSYSTEM,
-            "embedding_model": "BAAI/bge-m3",
+            "embedding_model": BGE_M3_MODEL_ID,
             "embedding_provider": "bge_local",
             "not_c0_fact_vectors": True,
             "not_chroma_default_ef": True,
@@ -129,7 +131,7 @@ def chunk_vector_payload(*, chunk_text: str, chunk_id: str) -> dict[str, Any]:
     if bge is not None:
         return {
             "chunk_id": chunk_id,
-            "embedding_model": "BAAI/bge-m3",
+            "embedding_model": BGE_M3_MODEL_ID,
             "dimensions": _BGE_DIM,
             "values": bge,
         }
