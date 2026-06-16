@@ -758,7 +758,7 @@ def _clean_rebuild_repair_text(
         and _asks_for_quantified_outcome(feedback)
     ):
         sentences.append(
-            "A second scale proof is architecture and commercial ownership of a $30M cloud and AI transformation portfolio for Fortune 500 financial institutions."
+            "A second scale proof is architecture and commercial ownership of cloud-native AI and analytics platforms for regulated financial environments."
         )
     sentences.append(
         _clean_rebuild_fit_sentence(
@@ -808,7 +808,7 @@ def _company_specific_clean_rebuild_text(
                     "I have built governed agent platforms with policy gates, evaluation traces, rollback paths, and reusable service patterns."
                 )
                 sentences.append(
-                    "The commercial bridge is reuse economics for regulated workflows: productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "The commercial bridge is reuse economics for regulated workflows: productized agentic AI services tied to $10M in net-new revenue."
                 )
                 sentences.append(
                     "Would 15 minutes to compare this against AIG's GenAI standards and agentic AI roadmap be useful?"
@@ -822,7 +822,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "For AIG, the value bridge is reusable insurance workflow controls; my proof is productizing agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "For AIG, the value bridge is reusable insurance workflow controls; my proof is productizing agentic AI services tied to $10M in net-new revenue."
                 )
             sentences.append(
                 "Would a brief executive exchange on which AIG workflow should pilot agent governance first be useful?"
@@ -841,10 +841,10 @@ def _company_specific_clean_rebuild_text(
             if (
                 "sp_platform_commercialization" in allowed_claim_ids
                 or "sp_platform_commercialization" in required_claim_ids
-                or any(marker in feedback for marker in ("commercial", "revenue", "margin", "22m", "$22m"))
+                or any(marker in feedback for marker in ("commercial", "revenue", "margin", "10m", "$10m"))
             ):
                 sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
                 )
             sentences.append("Would a brief fit review for the role be useful?")
             return " ".join(dict.fromkeys(sentences))
@@ -860,7 +860,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
                 )
             sentences.append(
                 "Would a brief exchange on where this belongs in AIG's AI operating model be useful?"
@@ -889,10 +889,10 @@ def _company_specific_clean_rebuild_text(
         if (
             "sp_platform_commercialization" in allowed_claim_ids
             or "sp_platform_commercialization" in required_claim_ids
-            or any(marker in feedback for marker in ("commercial", "revenue", "margin", "22m", "$22m"))
+            or any(marker in feedback for marker in ("commercial", "revenue", "margin", "10m", "$10m"))
         ):
             sentences.append(
-                "Commercial proof: productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
             )
         sentences.append(
             "Would a brief executive exchange be useful, or is the right data and AI owner someone else?"
@@ -910,7 +910,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "Commercially, I productized agentic AI services tied to $22M in IP-led revenue and 20% margin expansion."
+                    "Commercially, I productized agentic AI services tied to $10M in net-new revenue."
                 )
             sentences.append(
                 "That gives your recruiting screen concrete fit signal across responsible AI, data governance, and platform execution."
@@ -928,7 +928,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
                 )
             if "sp_runtime_reliability" in allowed_claim_ids:
                 sentences.append(
@@ -962,7 +962,7 @@ def _company_specific_clean_rebuild_text(
                 )
                 if "sp_platform_commercialization" in allowed_claim_ids:
                     sentences.append(
-                        "The commercialization proof is productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                        "The commercialization proof is productized agentic AI services tied to $10M in net-new revenue."
                     )
                 sentences.append(
                     "Would 15 minutes to pressure-test the operating model behind Citi Sky be useful?"
@@ -976,7 +976,7 @@ def _company_specific_clean_rebuild_text(
                     "My fit is building agentic platforms with policy-gated retrieval, evaluation evidence, traceability, and rollback paths."
                 )
                 sentences.append(
-                    "The quantified bridge is architecture and commercial ownership of a $30M cloud and AI transformation portfolio for Fortune 500 financial institutions."
+                    "The quantified bridge is architecture and commercial ownership of cloud-native AI and analytics platforms for regulated financial environments."
                 )
                 sentences.append(
                     "Would a low-friction exchange on scaling Citi Sky-style AI controls be useful?"
@@ -990,7 +990,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "The measurable proof is productizing agentic AI services into reusable offerings tied to $22M revenue and 20% margin expansion, without separating product velocity from control."
+                    "The measurable proof is productizing agentic AI services into reusable offerings tied to $10M in net-new revenue, without separating product velocity from control."
                 )
             sentences.append(
                 "Would a brief executive exchange on the operating controls behind Citi Sky be useful?"
@@ -1009,7 +1009,7 @@ def _company_specific_clean_rebuild_text(
         )
         if "sp_platform_commercialization" in allowed_claim_ids:
             sentences.append(
-                "The outcome proof is productized agentic AI services tied to $22M in IP-led revenue and 20% margin expansion."
+                "The outcome proof is productized agentic AI services tied to $10M in net-new revenue."
             )
         if plan.archetype == ARCHETYPE_RECRUITER:
             sentences.append(
@@ -1036,7 +1036,7 @@ def _company_specific_clean_rebuild_text(
             )
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "I also productized agentic AI services into reusable offerings tied to $22M in IP-led revenue and 20% margin expansion."
+                    "I also productized agentic AI services into reusable offerings tied to $10M in net-new revenue."
                 )
             sentences.append(
                 "Would a brief exchange on graph-backed agent reliability be useful, or is the right product owner someone else?"
@@ -1065,7 +1065,7 @@ def _company_specific_clean_rebuild_text(
             )
         if "sp_platform_commercialization" in allowed_claim_ids:
             sentences.append(
-                "I also productized agentic AI services into reusable offerings tied to $22M in IP-led revenue and 20% margin expansion."
+                "I also productized agentic AI services into reusable offerings tied to $10M in net-new revenue."
             )
         if (
             "sp_cloud_ai_transformation" in allowed_claim_ids
@@ -1075,7 +1075,7 @@ def _company_specific_clean_rebuild_text(
             )
         ):
             sentences.append(
-                "A second scale proof is architecture and commercial ownership of a $30M cloud and AI transformation portfolio for Fortune 500 financial institutions."
+                "A second scale proof is architecture and commercial ownership of cloud-native AI and analytics platforms for regulated financial environments."
             )
         if plan.archetype == ARCHETYPE_C_LEVEL:
             sentences.append(
@@ -1246,7 +1246,7 @@ def _compose_c_level_editorial_rebuild(
             ]
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "The $22M and 20% margin proof matters as operating leverage: reusable controls turning agentic AI services into scaled offerings, not demos."
+                    "The $10M net-new-revenue proof matters as operating leverage: reusable controls turning agentic AI services into scaled offerings, not demos."
                 )
             sentences.append(
                 "Would 15 minutes on release-gate design for AIG's agentic AI operating model be useful?"
@@ -1260,7 +1260,7 @@ def _compose_c_level_editorial_rebuild(
         ]
         if "sp_platform_commercialization" in allowed_claim_ids:
             sentences.append(
-                "The value bridge is insurance workflow reuse, backed by productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                "The value bridge is insurance workflow reuse, backed by productized agentic AI services tied to $10M in net-new revenue."
             )
         elif "sp_runtime_reliability" in allowed_claim_ids:
             sentences.append(
@@ -1304,7 +1304,7 @@ def _compose_c_level_editorial_rebuild(
             ]
             if "sp_platform_commercialization" in allowed_claim_ids:
                 sentences.append(
-                    "Commercially, the same platform discipline supported productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                    "Commercially, the same platform discipline supported productized agentic AI services tied to $10M in net-new revenue."
                 )
             sentences.append(
                 "Would 15 minutes on who owns Citi Sky's audit-to-support loop be useful?"
@@ -1325,7 +1325,7 @@ def _compose_c_level_editorial_rebuild(
             )
         if "sp_platform_commercialization" in allowed_claim_ids:
             sentences.append(
-                "Commercially, the same platform discipline supported productized agentic AI services tied to $22M revenue and 20% margin expansion."
+                "Commercially, the same platform discipline supported productized agentic AI services tied to $10M in net-new revenue."
             )
         sentences.append("Would 15 minutes on the Citi Sky governance loop be useful?")
         return " ".join(dict.fromkeys(sentences))
@@ -1556,9 +1556,9 @@ def _claims_from_repaired_text(
     if (
         "sp_platform_commercialization" in allowed_claim_ids
         and (
-            "$22m" in normalized
-            or "20% margin" in normalized
-            or "ip-led revenue" in normalized
+            "$10m" in normalized
+            or "net-new revenue" in normalized
+            or "go-to-market" in normalized
             or "productized" in normalized
         )
     ):
@@ -1685,7 +1685,7 @@ def _required_claim_ids_for_feedback(feedback: str) -> tuple[str, ...]:
             "sp_platform_commercialization",
             "platform_commercialization",
             "commercialization",
-            "22m",
+            "10m",
             "revenue",
             "margin",
             "commercial outcome",
@@ -1844,7 +1844,7 @@ def _c_level_editorial_copy_lint_issues(
             and any(marker in normalized_subject for marker in ("agentic", "release"))
         ):
             issues.append("c_level_copy_lint:subject_specificity")
-        if "$22m" in normalized_text and not any(
+        if "$10m" in normalized_text and not any(
             marker in normalized_text for marker in ("insurance", "claims", "underwriting")
         ):
             issues.append("c_level_copy_lint:metric_missing_insurance_context")
@@ -1855,7 +1855,7 @@ def _c_level_editorial_copy_lint_issues(
             marker in normalized_subject for marker in ("cio", "governance", "loop")
         ):
             issues.append("c_level_copy_lint:subject_specificity")
-        if "$22m" in normalized_text and not any(
+        if "$10m" in normalized_text and not any(
             marker in normalized_text
             for marker in ("citi sky", "banker-facing", "regulated", "governance")
         ):
@@ -1944,7 +1944,7 @@ def _surface_required_claims(
     for claim_id in required:
         if claim_id not in claims:
             claims.append(claim_id)
-        if claim_id == "sp_platform_commercialization" and "$22M" not in text and "$22m" not in text:
+        if claim_id == "sp_platform_commercialization" and "$10m" not in text.lower():
             text = _insert_before_cta(text, _scale_sentence(allowed_claim_ids=allowed_claim_ids))
         elif claim_id == "sp_runtime_reliability" and not re.search(
             r"\b(evaluation gates|rollback|replayable traces|validation controls)\b",
@@ -2087,7 +2087,7 @@ def _feedback_repair_intents(feedback: str) -> tuple[str, ...]:
                 "quantified",
                 "measurable",
                 "commercialization",
-                "22m",
+                "10m",
                 "revenue",
                 "margin",
                 "metric",
@@ -2224,7 +2224,7 @@ def _evidence_bridge_sentence(
 
 def _scale_sentence(*, allowed_claim_ids: set[str]) -> str:
     if "sp_platform_commercialization" in allowed_claim_ids:
-        return "The outcome signal I can support is productized agentic AI services tied to $22M in IP-led revenue and 20% margin expansion."
+        return "The outcome signal I can support is productized agentic AI services tied to $10M in net-new revenue."
     return "The scale signal I can support is regulated enterprise workflow delivery, with governance built into the platform rather than added after a demo."
 
 
