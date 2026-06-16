@@ -84,3 +84,8 @@ def test_retired_executive_summary_prompt_symbols_are_not_exported() -> None:
 def test_retired_selected_role_fact_set_modules_fail_closed(module_name: str) -> None:
     with pytest.raises(RuntimeError, match="SelectedRoleFactSet/SRFS"):
         importlib.import_module(module_name)
+
+
+def test_retired_fact_inventory_selected_role_fact_set_static_import_fails_closed() -> None:
+    with pytest.raises(RuntimeError, match="SelectedRoleFactSet/SRFS"):
+        from apps_rg.fact_inventory import selected_role_fact_set  # noqa: F401
