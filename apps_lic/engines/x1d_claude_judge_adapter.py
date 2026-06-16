@@ -25,13 +25,16 @@ from apps_lic.engines.validation_exit import (
     X1DJudgeResult,
     required_x1d_profiles,
 )
+from apps_lic.config.model_profiles import resolve_x1d_judge_transport_model_id
 from apps_lic.engines.whole_message_generation import (
     WholeMessageCandidate,
     WholeMessageGenerationRequest,
 )
 
 
-DEFAULT_CLAUDE_TRANSPORT_MODEL_ID = "claude-sonnet-4-6"
+# Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml);
+# this is the model id actually sent on the Anthropic Messages API call.
+DEFAULT_CLAUDE_TRANSPORT_MODEL_ID = resolve_x1d_judge_transport_model_id()
 DEFAULT_CLAUDE_MAX_TOKENS = 1200
 
 
