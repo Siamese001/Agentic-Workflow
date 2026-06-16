@@ -1,0 +1,177 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-primary-execution-7e4c2a",
+  "generated_at": "2026-06-16T00:00:00-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+    "branch": "codex/codex-primary-execution",
+    "head": "2074d917a9a435935a24f5cd9b68e32b081076df",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Implement Codex-primary execution recommendations, make personal Codex skills advisory bootstrap shims instead of verification SSOT, and address commit/readiness/MCP open items.",
+    "plan_id": "codex-primary-execution-7e4c2a",
+    "files_changed": [
+      "AGENTS.md",
+      "docs/codex-backup-adapter.md",
+      "docs/codex-primary-execution.md",
+      "docs/reports/codex/codex_primary_execution_7e4c2a_receipt.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
+      "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
+      "plans/codex-primary-execution-7e4c2a.md",
+      "scripts/governance/codex_readiness.py",
+      "scripts/governance/verify_codex_backup.py",
+      "scripts/governance/verify_codex_primary.py",
+      "scripts/governance/verify_codex_run_receipt.py",
+      "tests/unit/scripts/governance/test_codex_readiness.py",
+      "tests/unit/scripts/governance/test_verify_codex_backup.py",
+      "tests/unit/scripts/governance/test_verify_codex_primary.py",
+      "tests/unit/scripts/governance/test_verify_codex_run_receipt.py",
+      "C:/Users/amita/.codex/skills/agentic-workflow-governance/SKILL.md",
+      "C:/Users/amita/.codex/skills/agentic-workflow-verification/SKILL.md"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "git worktree add -b codex/codex-primary-execution C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution HEAD",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m py_compile scripts/governance/codex_readiness.py scripts/governance/verify_codex_primary.py scripts/governance/verify_codex_run_receipt.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_backup.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_backup.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_backup.py --require-personal-skills",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-primary-execution-7e4c2a.md",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/codex_readiness.py --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "mcp__memory.memory_health",
+        "cwd": "Codex MCP host",
+        "exit_code": null,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "mcp__vector_db.readiness",
+        "cwd": "Codex MCP host",
+        "exit_code": null,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "tool_search adg_sqlite adg_health adg_nodes_by_file adg_edge_fanout",
+        "cwd": "Codex MCP host",
+        "exit_code": 0,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/codex_readiness.py --require-clean-worktree --fail-duplicate-processes --json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "adg_sqlite",
+        "reason": "Raw ADG MCP was not callable in live Codex discovery.",
+        "substitute": "Direct SQLite fallback at C:/Git/Agentic-Workflow-FRESH/artifacts/adg/adg_indexed_06152026_1043.sqlite"
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "primary verifier",
+        "status": "PASS",
+        "evidence": "Codex primary execution verification passed."
+      },
+      {
+        "name": "compatibility verifier",
+        "status": "PASS",
+        "evidence": "Codex backup adapter verification passed."
+      },
+      {
+        "name": "focused unit tests",
+        "status": "PASS",
+        "evidence": "15 passed, 3 warnings."
+      },
+      {
+        "name": "readiness smoke",
+        "status": "PASS",
+        "evidence": "Initial readiness emitted status WARN with exit 0; follow-up transport audit showed no duplicate Memory/Vector processes."
+      },
+      {
+        "name": "duplicate process cleanup",
+        "status": "PASS",
+        "evidence": "audit_codex_mcp_transports.py reported memory.process_count=0 and vector_db.process_count=0 after cleanup."
+      },
+      {
+        "name": "Memory/Vector callable transport",
+        "status": "BLOCKED",
+        "evidence": "mcp__memory.memory_health and mcp__vector_db.readiness both returned Transport closed."
+      },
+      {
+        "name": "raw ADG MCP exposure",
+        "status": "BLOCKED",
+        "evidence": "Codex tool discovery returned zero callable adg_sqlite tools; direct SQLite fallback remains available."
+      },
+      {
+        "name": "strict readiness preflight",
+        "status": "BLOCKED",
+        "evidence": "Clean worktree and duplicate-process checks passed; required callable route checks failed for Memory, GitKraken, and Vector DB, with ADG using SQLite fallback."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "Memory and Vector tools were visible in Codex tool discovery but calls failed with Transport closed; raw ADG tools were not exposed.",
+    "root_cause": "The Codex MCP host did not have live attached stdio transports for those servers after process-cohort cleanup, and adg_sqlite was not exposed as a callable Codex tool in this session.",
+    "evidence": "mcp__memory.memory_health and mcp__vector_db.readiness failed with Transport closed; tool_search for adg_sqlite/adg_health returned zero tools; audit_codex_mcp_transports.py reported no duplicate Memory/Vector OS processes.",
+    "fix_or_next": "Restart or reload the Codex MCP host/session so Memory and Vector can respawn with attached transports, then expose adg_sqlite in the Codex host if raw ADG parity is required. Until then, use the documented SQLite ADG fallback.",
+    "recurrence_guard": "Do not manually kill Codex-owned MCP child processes in a live session unless the cleanup tool can identify and preserve the host-attached process; treat closed transports as a host restart gate."
+  }
+}

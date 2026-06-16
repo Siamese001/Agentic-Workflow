@@ -1,7 +1,9 @@
-"""Verify the thin Codex backup adapter for Agentic-Workflow.
+"""Verify the legacy Codex compatibility adapter for Agentic-Workflow.
 
-Claude Code governance remains authoritative; this verifier guards the Codex
-adapter against drift by checking live SSOT anchors and hook targets.
+Codex primary verification is repo-owned and does not depend on personal skills.
+This compatibility verifier guards repo anchors and hook targets. Personal
+Codex skills are bootstrap shims, so missing or drifted skill files are advisory
+by default and strict only when --require-personal-skills is supplied.
 """
 
 from __future__ import annotations
@@ -135,7 +137,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--repo-only",
         action="store_true",
-        help="Skip personal Codex skill checks. Intended for CI, where ~/.codex/skills is unavailable.",
+        help="Skip personal Codex skill checks entirely. Intended for CI.",
+    )
+    parser.add_argument(
+        "--require-personal-skills",
+        action="store_true",
+        help="Fail if personal Codex bootstrap skills are missing or drifted.",
     )
     return parser.parse_args(argv)
 
@@ -143,18 +150,25 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     failures: list[str] = []
+    warnings: list[str] = []
 
     failures.extend(str(path) for path in missing_paths(REQUIRED_REPO_FILES, REPO_ROOT))
-    if not args.repo_only:
-        failures.extend(str(path) for path in missing_paths(REQUIRED_CODEX_SKILLS, CODEX_SKILLS_ROOT))
 
     if not failures:
         failures.extend(missing_anchors(REQUIRED_ANCHORS, REPO_ROOT))
         failures.extend(stale_active_refs(list(REQUIRED_ANCHORS), REPO_ROOT))
         failures.extend(hook_target_failures(REPO_ROOT / ".claude/settings.json"))
-        if not args.repo_only:
-            failures.extend(missing_anchors(REQUIRED_SKILL_ANCHORS, CODEX_SKILLS_ROOT))
-            failures.extend(stale_active_refs(list(REQUIRED_SKILL_ANCHORS), CODEX_SKILLS_ROOT))
+
+    skill_issues: list[str] = []
+    if not args.repo_only:
+        skill_issues.extend(str(path) for path in missing_paths(REQUIRED_CODEX_SKILLS, CODEX_SKILLS_ROOT))
+        if not skill_issues:
+            skill_issues.extend(missing_anchors(REQUIRED_SKILL_ANCHORS, CODEX_SKILLS_ROOT))
+            skill_issues.extend(stale_active_refs(list(REQUIRED_SKILL_ANCHORS), CODEX_SKILLS_ROOT))
+        if args.require_personal_skills:
+            failures.extend(skill_issues)
+        else:
+            warnings.extend(skill_issues)
 
     if failures:
         print("Codex backup adapter verification FAILED")
@@ -166,8 +180,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"- repo: {REPO_ROOT}")
     if args.repo_only:
         print("- codex skills: skipped (--repo-only)")
+    elif args.require_personal_skills:
+        print(f"- codex skills: strict check passed at {CODEX_SKILLS_ROOT}")
     else:
-        print(f"- codex skills: {CODEX_SKILLS_ROOT}")
+        print(f"- codex skills: advisory check at {CODEX_SKILLS_ROOT}")
+        if warnings:
+            print("Codex skill advisory warnings:")
+            for warning in warnings:
+                print(f"- {warning}")
     return 0
 
 

@@ -1,0 +1,94 @@
+{
+  "schema_version": "codex-primary-mcp-snapshot/v1",
+  "generated_at": "2026-06-16",
+  "repo_root": "C:/Git/Agentic-Workflow-FRESH",
+  "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
+  "sources": [
+    "Codex live tool discovery on 2026-06-16",
+    "mcp__memory.mem_recall_session_start live call before transport cleanup",
+    "mcp__memory.memory_health post-cleanup probe returned Transport closed",
+    "mcp__GitKraken.git_status live call",
+    "mcp__vector_db.readiness live call before transport cleanup",
+    "mcp__vector_db.readiness post-cleanup probe returned Transport closed",
+    "scripts/governance/audit_codex_mcp_transports.py --json"
+  ],
+  "process_hygiene_observations": [
+    "Memory and Vector DB had duplicate visible process cohorts during the initial 2026-06-16 audit.",
+    "Follow-up cleanup cleared the duplicate OS cohorts; audit_codex_mcp_transports.py reported process_count=0 for both memory and vector_db.",
+    "Process visibility is not callable proof; post-cleanup Memory and Vector tool calls returned Transport closed and require Codex MCP host restart/reload before claiming callable readiness."
+  ],
+  "routes": [
+    {
+      "server_id": "memory",
+      "codex_status": "transport_closed_after_cleanup",
+      "evidence": "mcp__memory.mem_recall_session_start returned durable entities earlier in the live session; post-cleanup mcp__memory.memory_health returned Transport closed and no Memory process cohort remained.",
+      "run_policy": "Required for memory-backed session recall/writeback when available; do not claim Memory MCP compliance again until the Codex MCP host restarts or reattaches the transport and a live health probe passes."
+    },
+    {
+      "server_id": "GitKraken",
+      "codex_status": "callable_partial",
+      "evidence": "mcp__GitKraken.git_status returned repository status for C:/Git/Agentic-Workflow-FRESH.",
+      "run_policy": "Use GitKraken when exposed for status/PR surfaces; native git remains a degraded fallback for operations not exposed by the current tool subset."
+    },
+    {
+      "server_id": "vector_db",
+      "codex_status": "transport_closed_after_cleanup",
+      "evidence": "mcp__vector_db.readiness reported Chroma ready earlier in the live session; post-cleanup mcp__vector_db.readiness returned Transport closed and no Vector process cohort remained.",
+      "run_policy": "Use for semantic retrieval only after readiness is healthy again; lexical rg fallback must be labeled non-semantic until the Codex MCP host restarts or reattaches the transport."
+    },
+    {
+      "server_id": "adg_sqlite",
+      "codex_status": "not_callable_in_live_discovery",
+      "evidence": "Tool discovery for adg_sqlite returned no callable tools in this Codex session.",
+      "run_policy": "Use direct SQLite against the newest artifacts/adg/adg_indexed_*.sqlite as a named degraded fallback until host MCP exposure is restored."
+    },
+    {
+      "server_id": "deepwiki",
+      "codex_status": "not_callable_in_live_discovery",
+      "evidence": "Tool discovery for DeepWiki returned no callable tools in this Codex session.",
+      "run_policy": "Use GitHub, Tavily, web, or official docs only as cited degraded substitutes."
+    },
+    {
+      "server_id": "notion",
+      "codex_status": "plugin_substitute",
+      "evidence": "Codex Notion plugin route is documented as the accepted substitute for Plans/Backlog access.",
+      "run_policy": "Fetch schema before writes and use only manual Plans/Backlog operations; archived DBs remain filesystem SSOT."
+    },
+    {
+      "server_id": "playwright",
+      "codex_status": "substitute_callable",
+      "evidence": "Browser/node routes are available as Codex substitutes for UI verification.",
+      "run_policy": "Use Browser or node automation for Codex UI verification unless raw Playwright MCP parity is explicitly required."
+    },
+    {
+      "server_id": "context7",
+      "codex_status": "degraded_fallback",
+      "evidence": "Raw Context7 tools were not exposed as live Codex tools in this session.",
+      "run_policy": "Use primary official documentation with citations; do not claim Context7 use unless raw tools are exposed."
+    },
+    {
+      "server_id": "tavily",
+      "codex_status": "plugin_substitute",
+      "evidence": "Tavily plugin is available in Codex plugin discovery and TAVILY_API_KEY is configured.",
+      "run_policy": "Use for web search/extract/crawl/map when available; otherwise use normal web with source disclosure."
+    },
+    {
+      "server_id": "pytest_mcp",
+      "codex_status": "dormant_by_policy",
+      "evidence": ".claude/mcp-notes.md keeps pytest_mcp dormant; repo pytest policy uses python -m pytest.",
+      "run_policy": "Use python -m pytest with plugin autoload enabled unless pytest_mcp is explicitly re-added."
+    },
+    {
+      "server_id": "redis",
+      "codex_status": "dormant_cli_fallback",
+      "evidence": "Redis TCP is reachable; standalone Redis MCP is dormant by policy.",
+      "run_policy": "Use Redis as a hot projection only; mutate through ADG scripts, not ad hoc cache writes."
+    },
+    {
+      "server_id": "otel_mcp",
+      "codex_status": "dormant_on_demand",
+      "evidence": "OTel MCP is dormant/on-demand in .claude/mcp-notes.md and not exposed in this session.",
+      "run_policy": "Use only for runtime trace diagnostics when collector prerequisites are ready."
+    }
+  ]
+}
