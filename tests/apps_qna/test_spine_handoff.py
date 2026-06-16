@@ -197,7 +197,8 @@ def test_apps_qna_imports_validated_request() -> None:
     it without having to execute the module.
     """
     handoff_path = (
-        Path(__file__).resolve().parents[1]
+        Path(__file__).resolve().parents[2]
+        / "apps_qna"
         / "integrations"
         / "spine_handoff.py"
     )
@@ -210,7 +211,7 @@ def test_apps_qna_imports_validated_request() -> None:
 def test_apps_qna_spine_manifest_yaml_exists_and_declares_build_time_compiler() -> None:
     """The manifest must declare build_time_compiler explicitly."""
     manifest_path = (
-        Path(__file__).resolve().parents[1] / "spine_manifest.yaml"
+        Path(__file__).resolve().parents[2] / "apps_qna" / "spine_manifest.yaml"
     )
     assert manifest_path.is_file()
     data = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))

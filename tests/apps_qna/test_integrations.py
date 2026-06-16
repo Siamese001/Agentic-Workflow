@@ -23,14 +23,14 @@ from apps_qna.integrations.from_apps_research import (
     _claims_from_register,
     load_apps_research,
 )
+from apps_qna.integrations.from_apps_rg import (
+    empty_library,
+    load_experience_yaml,
+)
 from apps_qna.integrations.from_apps_shared import (
     load_competency_areas,
     load_executive_summary,
     load_master_resume,
-)
-from apps_qna.integrations.from_apps_rg import (
-    empty_library,
-    load_experience_yaml,
 )
 from apps_qna.integrations.from_jd import (
     _extract_keywords,
@@ -45,7 +45,6 @@ from apps_qna.integrations.wizard import (
     run_wizard,
     write_interview_yaml,
 )
-
 
 # ----------------- from_jd -----------------
 
@@ -160,7 +159,8 @@ def test_load_apps_research_picks_latest_when_trace_omitted(tmp_path: Path) -> N
             f"# {trace}\n\n## Executive Summary\nTrace {trace}\n", encoding="utf-8"
         )
     # Modify mtime so bbbb2222 is newest.
-    import os, time
+    import os
+    import time
     older = research_dir / "research_brief_aaaa1111.md"
     os.utime(older, (time.time() - 100, time.time() - 100))
 
@@ -373,25 +373,24 @@ def test_load_executive_summary(tmp_path: Path) -> None:
 
 
 def test_load_master_resume_real_svp_fixture_in_repo() -> None:
-    """The committed master_resume_svp.json is IDENTITY-ONLY → no experience facts.
+    """The committed master_resume_svp.json is IDENTITY-ONLY → facts come from the graph.
 
     Standing rule: the base resume carries no claims/bullets/metrics; experience
-    facts come from the apps_rg graph. So loading it yields an empty library.
-    TODO(apps_qna→graph): repoint load_master_resume at the graph-derived
-    ExperienceLibrary (tracked as a follow-up) — then this asserts >0 again.
+    facts come from the apps_rg augmented_skills_graph. Loading the identity-only
+    resume therefore degrades to the graph projection, which yields real points.
     """
     library = load_master_resume(Path("apps_shared/data/master_resume_svp.json"))
-    assert library.points == []  # identity-only resume has no bullet_pool
+    assert len(library.points) > 0  # graph-sourced experience facts
 
 
 def test_load_master_resume_real_legacy_fixture_in_repo() -> None:
-    """The identity-only master_resume.json must load cleanly with no fact points."""
+    """The identity-only master_resume.json loads cleanly and degrades to the graph."""
     path = Path("apps_shared/data/master_resume.json")
     if not path.is_file():
         pytest.skip("master_resume.json absent")
     library = load_master_resume(path)
-    # Identity-only: no bullet_pool → no experience points (facts come from graph).
-    assert library.points == []
+    # Identity-only base resume → experience points come from the apps_rg graph.
+    assert len(library.points) > 0
 
 
 # ----------------- wizard end-to-end -----------------
@@ -484,10 +483,9 @@ def test_wizard_uses_master_resume_by_default(tmp_path: Path) -> None:
         output_yaml=tmp_path / "out.yaml",
     )
     interview, _ = run_wizard(options, interactive=False)
-    # The committed master resume is IDENTITY-ONLY (no bullet_pool) → no experience
-    # facts (those come from the apps_rg graph). Wizard still auto-loads without error.
-    # TODO(apps_qna→graph): repoint to the graph-derived ExperienceLibrary.
-    assert interview.experience.points == []
+    # The committed base resume is IDENTITY-ONLY (no bullet_pool); the wizard
+    # auto-loads experience facts from the apps_rg augmented_skills_graph.
+    assert len(interview.experience.points) > 0
 
 
 def test_wizard_master_resume_explicit_path(tmp_path: Path) -> None:

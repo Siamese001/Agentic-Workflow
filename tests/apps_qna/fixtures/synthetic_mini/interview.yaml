@@ -88,9 +88,7 @@ research:
         - grounding contract
       usage_note: Use when discussing retrieval quality.
   likely_questions:
-    - route_id: apps_qna.live_interview_runtime_pack_v1
-      questions:
-        - How would you make an AI workflow safe enough for production?
+    []
 build_metadata:
   interview_slug: synthetic-mini
   built_at: "2026-06-08T00:00:00Z"

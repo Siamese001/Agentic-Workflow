@@ -48,6 +48,7 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from apps_qna.integrations.from_graph import role_context_map_from_graph
 from apps_qna.integrations.spine_adapter import classify_section_topic
 from apps_qna.types.qna_types import (
     ExperienceLibrary,
@@ -342,28 +343,38 @@ def _rank_points_by_signal(
 def _load_role_context_map(
     resume_path: Path,
 ) -> dict[str, str]:
-    """Build a lookup from ExperiencePoint.title (bullet label) -> role.context.
+    """Build a lookup from ExperiencePoint.title -> situation-framing context.
 
-    The role context is the prose that frames a bullet's situation. Without
-    it the projected STAR ``situation`` field is just the bullet text again,
-    which removes the role-level framing every interviewer expects.
+    GRAPH-FIRST. The base resume is identity-only (no
+    ``professional_experience[].context``); the situation context now derives
+    from the apps_rg graph (each skill's pillar description / domain), keyed by
+    the skill name that is the ExperiencePoint.title. The role context frames
+    the projected STAR ``situation`` field so it is not just the snippet again.
+
+    An explicit ``resume_path`` that still carries a legacy
+    ``professional_experience[].context`` block (test fixtures / legacy
+    resumes) is honored and MERGED on top of the graph context for backward
+    compatibility.
     """
-    if not resume_path.is_file():
-        return {}
-    try:
-        data = json.loads(resume_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return {}
-    label_to_context: dict[str, str] = {}
-    for role in data.get("professional_experience", []):
-        context = (role.get("context") or "").strip()
-        if not context:
-            continue
-        for bullet in role.get("bullet_pool", []):
-            if isinstance(bullet, dict):
-                label = (bullet.get("label") or "").strip()
-                if label:
-                    label_to_context[label] = context
+    # Graph-derived situation context (skill name -> pillar/domain prose).
+    label_to_context: dict[str, str] = dict(role_context_map_from_graph())
+
+    # Legacy/fixture override: a resume that still carries role.context wins
+    # for any bullet labels it defines.
+    if resume_path.is_file():
+        try:
+            data = json.loads(resume_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            data = {}
+        for role in data.get("professional_experience", []):
+            context = (role.get("context") or "").strip()
+            if not context:
+                continue
+            for bullet in role.get("bullet_pool", []):
+                if isinstance(bullet, dict):
+                    label = (bullet.get("label") or "").strip()
+                    if label:
+                        label_to_context[label] = context
     return label_to_context
 
 
