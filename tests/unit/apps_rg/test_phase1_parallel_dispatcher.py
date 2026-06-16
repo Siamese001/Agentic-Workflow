@@ -1,6 +1,11 @@
 """Phase-1 parallel lane dispatcher (plan f2a8c4)."""
 from __future__ import annotations
 
+from collections.abc import Iterator
+import os
+
+import pytest
+
 from apps_rg.runtime.orchestration.managed_section_lane_dispatcher import (
     dispatch_phase1_lanes_managed,
 )
@@ -11,6 +16,19 @@ from apps_rg.runtime.orchestration.section_lane_concurrency import (
     phase1_parallel_enabled,
 )
 from apps_rg.runtime.orchestration.section_lane_executor import LaneExecutionContext
+from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+
+
+@pytest.fixture(autouse=True)
+def _restore_modular_sections_root_env() -> Iterator[None]:
+    prior = os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV)
+    try:
+        yield
+    finally:
+        if prior is None:
+            os.environ.pop(MODULAR_R4_SECTIONS_ROOT_ENV, None)
+        else:
+            os.environ[MODULAR_R4_SECTIONS_ROOT_ENV] = prior
 
 
 def test_build_phase1_waves_wave0_is_upstream_proof_bearing() -> None:

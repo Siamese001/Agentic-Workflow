@@ -100,18 +100,30 @@ def build_lane_fec_bridge_for_audit(
     import os
     from pathlib import Path
 
-    os.environ.setdefault("APPS_RG_SECTION_SPINE_C0_SKIP", "1")
-    os.environ.setdefault("APPS_RG_C0_EVIDENCE_ROOM", "0")
-    spine = build_section_front_spine_from_args(
-        section_id=section_id,
-        args=_default_args(),
-        repo_root=Path(repo_root),
-    )
-    return build_spine_c0_fec_artifact(
-        section_id=section_id,
-        front_spine=spine,
-        pool=pool,
-    )
+    scoped_env = {
+        "APPS_RG_SECTION_SPINE_C0_SKIP": "1",
+        "APPS_RG_C0_EVIDENCE_ROOM": "0",
+    }
+    prior = {name: os.environ.get(name) for name in scoped_env}
+    try:
+        for name, value in scoped_env.items():
+            os.environ.setdefault(name, value)
+        spine = build_section_front_spine_from_args(
+            section_id=section_id,
+            args=_default_args(),
+            repo_root=Path(repo_root),
+        )
+        return build_spine_c0_fec_artifact(
+            section_id=section_id,
+            front_spine=spine,
+            pool=pool,
+        )
+    finally:
+        for name, value in prior.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
 
 
 def audit_all_d7_lanes(
