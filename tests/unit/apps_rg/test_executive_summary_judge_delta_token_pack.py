@@ -90,6 +90,7 @@ def test_verbatim_feedback_present_for_all_soft_fails() -> None:
 
 def test_regen_delta_section_order_constant() -> None:
     assert REGEN_DELTA_SECTION_ORDER == (
+        "incremental",
         "dimension",
         "judge_feedback",
         "floors",
@@ -99,13 +100,14 @@ def test_regen_delta_section_order_constant() -> None:
 
 def test_flatten_delta_sections_preserves_pack_order() -> None:
     sections = {
+        "incremental": ["- INC_A"],
         "dimension": ["- DIM_A"],
         "judge_feedback": ["- JUDGE_A", "- JUDGE_B"],
         "floors": ["- FLOOR_A"],
         "guards": ["- GUARD_A", "- GUARD_B"],
     }
     packed = _flatten_delta_sections(sections)
-    assert packed == ["- DIM_A", "- JUDGE_A", "- JUDGE_B", "- FLOOR_A", "- GUARD_A", "- GUARD_B"]
+    assert packed == ["- INC_A", "- DIM_A", "- JUDGE_A", "- JUDGE_B", "- FLOOR_A", "- GUARD_A", "- GUARD_B"]
 
 
 def test_compact_delta_lines_follow_dimension_before_verbatim_judges() -> None:

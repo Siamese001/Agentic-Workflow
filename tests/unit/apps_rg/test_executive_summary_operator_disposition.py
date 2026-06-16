@@ -101,7 +101,7 @@ def test_certified_exit_zero(tmp_path: Path) -> None:
 
 
 def test_x2_fail_not_draft_ready(tmp_path: Path) -> None:
-    rd = _write_run_artifacts(tmp_path, product_quality_status="FAIL")
+    rd = _write_run_artifacts(tmp_path, x3_code="X3_BLOCK", product_quality_status="FAIL")
     op = compute_executive_summary_operator_disposition(
         artifact_dir=rd,
         x3_loaded=json.loads((rd / "x3_disposition.json").read_text(encoding="utf-8")),

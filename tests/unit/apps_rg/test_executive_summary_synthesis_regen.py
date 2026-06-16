@@ -20,8 +20,11 @@ def test_synthesis_regen_max_attempts_default_is_two(monkeypatch) -> None:
     assert synthesis_regen_max_attempts() == SYNTHESIS_REGEN_MAX_ATTEMPTS == 2
 
 
-def test_synthesis_regen_max_attempts_env_clamped(monkeypatch) -> None:
+def test_synthesis_regen_max_attempts_env_clamped_only_when_caps_enabled(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", raising=False)
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN_MAX_ATTEMPTS", "9")
+    assert synthesis_regen_max_attempts() == 9
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
     assert synthesis_regen_max_attempts() == 3
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN_MAX_ATTEMPTS", "1")
     assert synthesis_regen_max_attempts() == 1
