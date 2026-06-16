@@ -332,23 +332,22 @@ def test_synthesize_into_library_fills_empty_banks() -> None:
 
 
 def test_synthesize_into_library_works_with_real_svp_resume() -> None:
-    """Smoke test against the actual master_resume_svp.json."""
+    """Smoke test against the IDENTITY-ONLY master_resume_svp.json.
+
+    The base resume carries no bullets/context (the apps_rg graph is the sole fact
+    source), so synthesis from it yields an empty library and no STAR stories.
+    TODO(apps_qna→graph): when load_master_resume is repointed at the graph-derived
+    ExperienceLibrary, restore the >0 stories assertions below.
+    """
     resume_path = Path("apps_shared/data/master_resume_svp.json")
     if not resume_path.is_file():
-        # In CI without the SVP variant, skip is acceptable.
         return
     library = load_master_resume(resume_path=resume_path)
-    assert library.points  # the SVP resume has at least one bullet
+    assert library.points == []  # identity-only resume, no experience facts
     result = synthesize_into_library(
         library,
         jd_text="Senior leader for AI platform with productization and team scaling.",
         resume_path=resume_path,
     )
-    assert len(result.star_bank.stories) > 0
-    # Stories must have role context populated from the resume's role.context.
-    for story in result.star_bank.stories:
-        assert story.situation
-        assert story.action
-        assert story.lesson
-    # RCA skeletons should exist for the legacy/migration bullets.
+    assert not result.star_bank.stories  # no facts → no STAR stories
     assert isinstance(result.rca_bank, list)

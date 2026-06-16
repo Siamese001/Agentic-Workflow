@@ -373,25 +373,25 @@ def test_load_executive_summary(tmp_path: Path) -> None:
 
 
 def test_load_master_resume_real_svp_fixture_in_repo() -> None:
-    """The committed apps_shared/data/master_resume_svp.json must load cleanly."""
+    """The committed master_resume_svp.json is IDENTITY-ONLY → no experience facts.
+
+    Standing rule: the base resume carries no claims/bullets/metrics; experience
+    facts come from the apps_rg graph. So loading it yields an empty library.
+    TODO(apps_qna→graph): repoint load_master_resume at the graph-derived
+    ExperienceLibrary (tracked as a follow-up) — then this asserts >0 again.
+    """
     library = load_master_resume(Path("apps_shared/data/master_resume_svp.json"))
-    # 4 active roles + early career = 5 roles, each with 1+ bullets;
-    # SVP variant has 6+5+3+3+1 = 18 bullets.
-    assert len(library.points) >= 15
-    # Spot-check: at least one bullet should carry the metric tag for $22M
-    metric_tags = {tag for p in library.points for tag in p.technical_depth_tags}
-    assert any("metric" in t for t in metric_tags)
+    assert library.points == []  # identity-only resume has no bullet_pool
 
 
 def test_load_master_resume_real_legacy_fixture_in_repo() -> None:
-    """The pre-existing apps_shared/data/master_resume.json must still load."""
+    """The identity-only master_resume.json must load cleanly with no fact points."""
     path = Path("apps_shared/data/master_resume.json")
     if not path.is_file():
-        pytest.skip("legacy master_resume.json absent")
+        pytest.skip("master_resume.json absent")
     library = load_master_resume(path)
-    # Legacy file uses string bullets — we expect non-empty points list, no tags
-    assert len(library.points) >= 5
-    assert all(isinstance(p.technical_depth_tags, list) for p in library.points)
+    # Identity-only: no bullet_pool → no experience points (facts come from graph).
+    assert library.points == []
 
 
 # ----------------- wizard end-to-end -----------------
@@ -484,8 +484,10 @@ def test_wizard_uses_master_resume_by_default(tmp_path: Path) -> None:
         output_yaml=tmp_path / "out.yaml",
     )
     interview, _ = run_wizard(options, interactive=False)
-    # The committed master resume has multiple roles with bullets — non-empty.
-    assert len(interview.experience.points) >= 5
+    # The committed master resume is IDENTITY-ONLY (no bullet_pool) → no experience
+    # facts (those come from the apps_rg graph). Wizard still auto-loads without error.
+    # TODO(apps_qna→graph): repoint to the graph-derived ExperienceLibrary.
+    assert interview.experience.points == []
 
 
 def test_wizard_master_resume_explicit_path(tmp_path: Path) -> None:
