@@ -9,7 +9,7 @@ Codex is the primary local execution surface for this repository when Claude API
 | Local run state, readiness, verification, and closeout evidence | Codex primary execution surface |
 | Shared governance rules during migration | `CLAUDE.md`, `AGENTS.md`, `.claude/rules/**`, `.claude/skills/**`, `.claude/settings.json` |
 | MCP configured-server truth | `.mcp.json` plus `.claude/mcp-notes.md` |
-| Codex live route evidence | `docs/reports/codex/codex_primary_mcp_live_snapshot.md` |
+| Optional Codex live route evidence | `docs/reports/codex/` snapshots such as `codex_primary_mcp_live_snapshot.md` |
 | Hook parity and Codex hook preflight | `scripts/governance/codex_hook_parity.py` consuming `.claude/settings.json` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
@@ -25,7 +25,7 @@ Primary verification is repo-owned:
 python scripts/governance/verify_codex_primary.py
 ```
 
-Legacy compatibility verification treats personal skills as advisory by default. Use strict mode only when auditing the workstation bootstrap layer itself:
+Legacy compatibility verification treats personal skills as advisory by default. Run it only when changing backup-adapter docs or workstation bootstrap skills; use strict mode only when auditing the workstation bootstrap layer itself:
 
 ```bash
 python scripts/governance/verify_codex_backup.py
@@ -84,7 +84,7 @@ python scripts/governance/codex_hook_parity.py run-pre-tool Edit --file-path scr
 python scripts/governance/codex_hook_parity.py run-stop artifacts/codex/candidate-final-response.txt
 ```
 
-The parity runner validates the active Claude hook registrations for session start, user-prompt submit, pre-tool, post-tool, and stop hooks. Its bounded probes cover the branch/worktree edit guard, plan-mint gate, north-star relevance gate, and stop response-floor audit. Hook behavior remains authored only under `.claude/settings.json` and `.claude/hooks/**`.
+The parity runner validates whatever hook registrations are active in `.claude/settings.json` and confirms their registered target files exist. It does not maintain a copied required-hook registry, so intentionally removed hooks do not require Codex-side rebaselining. Bounded probes are executable smoke tests for important guard behavior, not a second hook inventory. Hook behavior remains authored only under `.claude/settings.json` and `.claude/hooks/**`.
 
 ## Run Receipt Contract
 
@@ -127,9 +127,7 @@ Run the primary verifier after changing Codex execution docs or scripts:
 python scripts/governance/verify_codex_primary.py
 ```
 
-Keep the compatibility verifier green while older hooks still refer to the backup adapter name:
-It does not require personal Codex skills unless `--require-personal-skills`
-is supplied.
+The compatibility verifier is legacy/advisory for the backup-adapter name. Run it only when changing backup-adapter docs or personal bootstrap skills. It does not require personal Codex skills unless `--require-personal-skills` is supplied.
 
 ```bash
 python scripts/governance/verify_codex_backup.py

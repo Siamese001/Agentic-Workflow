@@ -78,60 +78,52 @@ def test_hook_allows_safe_command():
     assert proc.returncode == 0
 
 
-def test_hook_blocks_slash_namespace_worktree_branch():
+def test_hook_allows_slash_namespace_worktree_branch_creation():
     proc = _run_hook(
         "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/zen-mcnulty-654733 "
         "-b claude/zen-mcnulty-654733 origin/main"
     )
 
-    assert proc.returncode == 2
-    assert "branch must not contain slash path separators" in proc.stdout
-    assert "branch must start with `claude-`" in proc.stdout
+    assert proc.returncode == 0
 
 
-def test_hook_blocks_generated_low_signal_worktree_branch():
+def test_hook_allows_generated_low_signal_worktree_branch_creation():
     proc = _run_hook(
         "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/claude-zen-mcnulty-654733 "
         "-b claude-zen-mcnulty-654733 origin/main"
     )
 
-    assert proc.returncode == 2
-    assert "high-signal" in proc.stdout
+    assert proc.returncode == 0
 
 
-def test_hook_blocks_worktree_folder_branch_mismatch():
+def test_hook_allows_worktree_folder_branch_mismatch():
     proc = _run_hook(
         "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/zen-mcnulty-654733 "
         "-b claude-worktree-creation-guard origin/main"
     )
 
-    assert proc.returncode == 2
-    assert "worktree folder basename must exactly equal the local branch name" in proc.stdout
+    assert proc.returncode == 0
 
 
-def test_hook_blocks_app_worktree_branch_named_for_single_wave():
+def test_hook_allows_app_worktree_branch_named_for_single_wave():
     proc = _run_hook(
         "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/claude-apps-rg-wave4-tests "
         "-b claude-apps-rg-wave4-tests origin/main"
     )
 
-    assert proc.returncode == 2
-    assert "not a wave-specific slice" in proc.stdout
-    assert "claude-apps-rg-hotspot-tests" in proc.stdout
+    assert proc.returncode == 0
 
 
-def test_hook_blocks_checkout_branch_creation_with_slash_namespace():
+def test_hook_allows_checkout_branch_creation_with_slash_namespace():
     proc = _run_hook("git checkout -b claude/zen-mcnulty-654733 origin/main")
 
-    assert proc.returncode == 2
-    assert "branch must not contain slash path separators" in proc.stdout
+    assert proc.returncode == 0
 
 
-def test_hook_blocks_branch_rename_to_generated_name():
+def test_hook_allows_branch_rename_to_generated_name():
     proc = _run_hook("git branch -m claude-zen-mcnulty-654733")
 
-    assert proc.returncode == 2
-    assert "high-signal" in proc.stdout
+    assert proc.returncode == 0
 
 
 def test_hook_allows_canonical_worktree_branch_creation():
@@ -164,11 +156,10 @@ def test_hook_allows_canonical_branch_track_creation():
     assert proc.returncode == 0
 
 
-def test_hook_respects_codex_owner_for_branch_creation():
+def test_hook_does_not_police_branch_owner_for_shell_creation():
     proc = _run_hook(
         "git switch -c claude-worktree-creation-guard origin/main",
         env={"WORKTREE_IDE_OWNER": "codex"},
     )
 
-    assert proc.returncode == 2
-    assert "branch must start with `codex-`" in proc.stdout
+    assert proc.returncode == 0

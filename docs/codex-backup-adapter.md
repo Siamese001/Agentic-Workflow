@@ -28,11 +28,11 @@ Keep the Codex layer intentionally small:
 | `docs/codex-primary-execution.md` | Primary Codex execution contract, readiness gate, run receipt contract, and live route policy. |
 | `C:\Users\amita\.codex\skills\agentic-workflow-governance\SKILL.md` | Optional bootstrap shim that points Codex at the repo contract. Not a governance SSOT. |
 | `C:\Users\amita\.codex\skills\agentic-workflow-verification\SKILL.md` | Optional bootstrap shim for verification routing. Not required for normal repo verification. |
-| `scripts/governance/verify_codex_primary.py` | Checks that the Codex primary execution contract, readiness gate, run receipt validator, and live route snapshot exist. |
+| `scripts/governance/verify_codex_primary.py` | Checks that the Codex primary execution contract, readiness gate, run receipt validator, and registered hook targets exist. |
 | `scripts/governance/codex_hook_parity.py` | Consumes `.claude/settings.json` to validate and explicitly run Claude hook preflights from Codex. |
 | `scripts/governance/codex_readiness.py` | Read-only preflight for Codex-primary run quality, including git state, route evidence, env state, ADG fallback, and process hygiene. |
 | `scripts/governance/verify_codex_run_receipt.py` | Validates JSON Codex run receipts and requires RCA fields when a run fails or blocks. |
-| `scripts/governance/verify_codex_backup.py` | Checks legacy compatibility anchors. Personal Codex skills are advisory by default and strict only with `--require-personal-skills`. |
+| `scripts/governance/verify_codex_backup.py` | Legacy compatibility check for backup-adapter anchors. Personal Codex skills are advisory by default and strict only with `--require-personal-skills`. |
 | `scripts/governance/audit_codex_mcp_transports.py` | Read-only Codex transport audit for command/script readiness, placeholder leakage, and duplicate MCP process classification. |
 | `scripts/governance/check_windows_path_budget.py` | Codex-callable preflight for nested Windows artifact output roots. |
 
@@ -46,7 +46,7 @@ Codex MCP parity evidence belongs in reports, not in a second registry. Use:
 | `docs/reports/codex/codex_mcp_live_route_contract.md` | Live `.mcp.json` route contracts, substitutes, and blocked routes. |
 | `docs/reports/codex/codex_mcp_dormant_policy.md` | Dormant Redis/Tavily/pytest/OTel substitute and re-add policy. |
 | `docs/reports/codex/codex_mcp_transport_lifecycle_audit.md` | Transport health, duplicate-process, and placeholder preflight evidence. |
-| `docs/reports/codex/codex_primary_mcp_live_snapshot.md` | Current Codex-primary live route snapshot, including callable, degraded, and blocked routes. |
+| `docs/reports/codex/codex_primary_mcp_live_snapshot.md` | Optional Codex-primary live route snapshot, including callable, degraded, and blocked routes. Not required as a standing contract file. |
 | `docs/reports/codex/codex_claude_mcp_access_inventory_c6d4e2.md` | Current Codex-vs-Claude configured/process/callable inventory for plan `codex-claude-mcp-access-parity-c6d4e2`. |
 | `docs/reports/codex/codex_claude_mcp_access_contract_c6d4e2.md` | Route contract, no-parallel-registry invariants, and fallback wording for Codex MCP access. |
 | `docs/reports/codex/codex_claude_mcp_access_w4_proof_c6d4e2.md` | Final callable proof matrix and operating procedure for the Codex MCP access plan. |
@@ -62,7 +62,7 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 3. Do not edit during the planning phase.
 4. Prefer repo scripts and `.claude` guidance over ad hoc shell logic.
 5. Before artifact-heavy Windows `apps_eval`, `apps_rg`, or proof runs, follow `.claude/rules/windows-path-budget.md` and preflight the output root with `scripts/governance/check_windows_path_budget.py`.
-6. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/codex_hook_parity.py` to validate/run hook preflights from `.claude/settings.json`, `scripts/governance/verify_codex_primary.py` for the primary lane, and `scripts/governance/verify_codex_backup.py` as the compatibility check.
+6. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/codex_hook_parity.py` to validate/run hook preflights from `.claude/settings.json`, `scripts/governance/verify_codex_primary.py` for the primary lane, and `scripts/governance/verify_codex_backup.py` only for legacy compatibility checks.
 7. Do not create a Codex-specific MCP registry. If a Claude MCP is unavailable in Codex, name the missing route and use the documented substitute or degraded fallback.
 8. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per `.claude/rules/001-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
 
@@ -76,13 +76,13 @@ python scripts/governance/codex_hook_parity.py --json check
 python scripts/governance/codex_readiness.py --json
 ```
 
-Compatibility check:
+Legacy compatibility check, only for backup-adapter docs or workstation bootstrap skills:
 
 ```bash
 python scripts/governance/verify_codex_backup.py
 ```
 
-The script fails if a required repo-owned SSOT file is missing or if adapter files stop referencing expected governance anchors. Personal Codex skill drift is advisory by default.
+The script fails if a required repo-owned legacy anchor is missing. Personal Codex skill drift is advisory by default.
 In CI, use the repo-only mode to suppress personal skill checks entirely:
 
 ```bash

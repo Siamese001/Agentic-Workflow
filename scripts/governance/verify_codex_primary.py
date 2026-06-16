@@ -8,7 +8,6 @@ repository instead of a private Codex-only registry.
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 from collections.abc import Mapping, Sequence
 
@@ -22,8 +21,6 @@ REQUIRED_FILES = [
     "CLAUDE.md",
     "docs/codex-primary-execution.md",
     "docs/codex-backup-adapter.md",
-    "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
-    "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
     "scripts/governance/audit_codex_mcp_transports.py",
     "scripts/governance/check_windows_path_budget.py",
     "scripts/governance/codex_hook_parity.py",
@@ -47,7 +44,6 @@ REQUIRED_ANCHORS = {
         "scripts/governance/codex_readiness.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
-        "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
         "No parallel registry",
     ],
     "docs/codex-backup-adapter.md": [
@@ -74,26 +70,6 @@ def missing_anchors(anchor_map: Mapping[str, list[str]], root: Path) -> list[str
                 failures.append(f"{path}: missing anchor {anchor!r}")
     return failures
 
-
-def snapshot_failures(snapshot_path: Path) -> list[str]:
-    failures: list[str] = []
-    payload = json.loads(snapshot_path.read_text(encoding="utf-8"))
-    if payload.get("schema_version") != "codex-primary-mcp-snapshot/v1":
-        failures.append(f"{snapshot_path}: schema_version must be codex-primary-mcp-snapshot/v1")
-    routes = payload.get("routes")
-    if not isinstance(routes, list) or not routes:
-        failures.append(f"{snapshot_path}: routes must be a non-empty list")
-        return failures
-    for route in routes:
-        if not isinstance(route, dict):
-            failures.append(f"{snapshot_path}: every route must be an object")
-            continue
-        for field in ("server_id", "codex_status", "evidence", "run_policy"):
-            if not isinstance(route.get(field), str) or not route[field].strip():
-                failures.append(f"{snapshot_path}: route {route.get('server_id')!r} missing {field}")
-    return failures
-
-
 def validate(root: Path = REPO_ROOT) -> list[str]:
     failures: list[str] = []
     failures.extend(str(path) for path in missing_paths(REQUIRED_FILES, root))
@@ -101,7 +77,6 @@ def validate(root: Path = REPO_ROOT) -> list[str]:
         return failures
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
     failures.extend(codex_hook_parity.validate_hook_matrix(root))
-    failures.extend(snapshot_failures(root / "docs/reports/codex/codex_primary_mcp_live_snapshot.json"))
     return failures
 
 

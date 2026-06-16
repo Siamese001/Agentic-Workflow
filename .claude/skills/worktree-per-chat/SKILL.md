@@ -25,8 +25,9 @@ high-signal topic such as `claude-governance-hooks` stays valid. The per-file ed
 requirement from the path of the file being edited, so an app segment is mandated exactly when (and
 only when) an `apps_<x>` file is touched.
 
-The edit gate blocks Edit/Write to a protected checkout (`main`/`master`). SessionStart only advises;
-it does not create branches, create folders, push, or clean up worktrees.
+The edit gate blocks Edit/Write to a protected checkout (`main`/`master`). SessionStart and Bash
+branch/worktree commands are advisory; they do not create branches, create folders, push, clean up
+worktrees, or block branch creation. The hard safety boundary is the file-edit guard.
 
 **Wave reuse rule.** A wave is execution progress inside a durable workstream, not branch identity.
 Multiple waves for the same app/plan/scope must continue in the same named worktree branch. Do not
@@ -55,6 +56,7 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 | Match the worktree folder basename exactly to the local branch name | Windows folders cannot represent slash branch namespaces as a single basename |
 | Plan files are exempt; write them to the primary checkout's `plans/` | A plan in a worktree can miss the shared SSOT |
 | Cleanup is explicit | No SessionStart hook should delete branches or folders while a user is starting work |
+| Branch creation is advisory at the shell layer | The Bash hook should not force rebaselining or reminting; invalid edit lanes are caught when files are edited |
 
 ## Standard Procedure
 

@@ -18,13 +18,19 @@ def _write(path: Path, text: str = "") -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def _write_hook_settings(root: Path, *, skip_target: str = "") -> None:
+HOOK_SPECS: tuple[tuple[str, str, str], ...] = (
+    ("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/before_file_edit_branch_guard.py"),
+    ("PreToolUse", "Bash", ".claude/hooks/before_shell_execution.py"),
+    ("Stop", "", ".claude/hooks/stop_task_audit.py"),
+)
+
+
+def _write_hook_settings(root: Path, *, missing_target: str = "") -> None:
     groups: dict[tuple[str, str], list[str]] = {}
-    for spec in mod.REQUIRED_HOOKS:
-        if spec.target == skip_target:
-            continue
-        _write(root / spec.target, "print('hook')\n")
-        groups.setdefault((spec.event, spec.matcher), []).append(spec.target)
+    for event, matcher, target in HOOK_SPECS:
+        if target != missing_target:
+            _write(root / target, "print('hook')\n")
+        groups.setdefault((event, matcher), []).append(target)
 
     settings_hooks: dict[str, list[dict]] = {}
     for (event, matcher), targets in groups.items():
@@ -53,12 +59,25 @@ def test_validate_hook_matrix_accepts_required_settings(tmp_path: Path) -> None:
     assert mod.validate_hook_matrix(tmp_path) == []
 
 
-def test_validate_hook_matrix_reports_missing_registration(tmp_path: Path) -> None:
-    _write_hook_settings(tmp_path, skip_target=".claude/hooks/pre_write_north_star_gate.py")
+def test_validate_hook_matrix_allows_removed_hook_registration(tmp_path: Path) -> None:
+    _write_hook_settings(tmp_path)
+    settings = json.loads((tmp_path / ".claude/settings.json").read_text(encoding="utf-8"))
+    settings["hooks"]["PreToolUse"] = [
+        group
+        for group in settings["hooks"]["PreToolUse"]
+        if group.get("matcher") != "Bash"
+    ]
+    _write(tmp_path / ".claude/settings.json", json.dumps(settings))
+
+    assert mod.validate_hook_matrix(tmp_path) == []
+
+
+def test_validate_hook_matrix_reports_registered_missing_target(tmp_path: Path) -> None:
+    _write_hook_settings(tmp_path, missing_target=".claude/hooks/before_shell_execution.py")
 
     failures = mod.validate_hook_matrix(tmp_path)
 
-    assert any("pre_write_north_star_gate.py" in failure for failure in failures)
+    assert any("before_shell_execution.py" in failure for failure in failures)
 
 
 def test_matching_hooks_uses_tool_matcher(tmp_path: Path) -> None:
@@ -72,7 +91,7 @@ def test_matching_hooks_uses_tool_matcher(tmp_path: Path) -> None:
 
 
 def test_build_report_skips_probes_when_matrix_fails(tmp_path: Path) -> None:
-    _write(tmp_path / ".claude/settings.json", json.dumps({"hooks": {}}))
+    _write_hook_settings(tmp_path, missing_target=".claude/hooks/before_shell_execution.py")
 
     report = mod.build_report(tmp_path)
 

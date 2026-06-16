@@ -22,9 +22,13 @@ def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
     hook_groups: dict[tuple[str, str], list[str]] = {}
-    for spec in mod.codex_hook_parity.REQUIRED_HOOKS:
-        _write(tmp_path / spec.target)
-        hook_groups.setdefault((spec.event, spec.matcher), []).append(spec.target)
+    for event, matcher, target in (
+        ("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/before_file_edit_branch_guard.py"),
+        ("PreToolUse", "Bash", ".claude/hooks/before_shell_execution.py"),
+        ("Stop", "", ".claude/hooks/stop_task_audit.py"),
+    ):
+        _write(tmp_path / target)
+        hook_groups.setdefault((event, matcher), []).append(target)
     settings_hooks: dict[str, list[dict]] = {}
     for (event, matcher), targets in hook_groups.items():
         group = {
@@ -66,7 +70,6 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
-                "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
                 "No parallel registry",
             ]
         ),
@@ -81,22 +84,6 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
             ]
-        ),
-    )
-    _write(
-        tmp_path / "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
-        json.dumps(
-            {
-                "schema_version": "codex-primary-mcp-snapshot/v1",
-                "routes": [
-                    {
-                        "server_id": "memory",
-                        "codex_status": "callable",
-                        "evidence": "live call",
-                        "run_policy": "use memory",
-                    }
-                ],
-            }
         ),
     )
     return tmp_path

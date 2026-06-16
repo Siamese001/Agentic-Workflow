@@ -27,13 +27,6 @@ _PATH_RE = re.compile(r'([^\s"\']*\.(?:py|sh))')
 
 
 @dataclass(frozen=True)
-class HookSpec:
-    event: str
-    matcher: str
-    target: str
-
-
-@dataclass(frozen=True)
 class HookRegistration:
     event: str
     matcher: str
@@ -48,27 +41,6 @@ class HookRun:
     stdout: str = ""
     stderr: str = ""
     timed_out: bool = False
-
-
-REQUIRED_HOOKS: tuple[HookSpec, ...] = (
-    HookSpec("SessionStart", "", ".claude/hooks/session_start_branch_guard.py"),
-    HookSpec("SessionStart", "", ".claude/hooks/session-start.sh"),
-    HookSpec("UserPromptSubmit", "", ".claude/hooks/before_submit_prompt.py"),
-    HookSpec("PreToolUse", "AskUserQuestion", ".claude/hooks/before_ask_user_question.py"),
-    HookSpec("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/before_file_edit_branch_guard.py"),
-    HookSpec("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/pre_write_plan_mint_gate.py"),
-    HookSpec("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/pre_write_north_star_gate.py"),
-    HookSpec("PreToolUse", "Bash", ".claude/hooks/before_shell_execution.py"),
-    HookSpec("PreToolUse", "Read", ".claude/hooks/before_read_file.py"),
-    HookSpec("PreToolUse", "Grep", ".claude/hooks/before_grep.py"),
-    HookSpec("PreToolUse", "mcp__.*", ".claude/hooks/before_mcp_execution.py"),
-    HookSpec("PreToolUse", "Workflow", ".claude/hooks/pre_workflow_fanout_gate.py"),
-    HookSpec("PostToolUse", "Edit|Write|MultiEdit|NotebookEdit", ".claude/hooks/after_file_edit.py"),
-    HookSpec("PostToolUse", "AskUserQuestion", ".claude/hooks/after_ask_user_question.py"),
-    HookSpec("Stop", "", ".claude/hooks/stop_task_audit.py"),
-    HookSpec("Stop", "", ".claude/hooks/stop_runtime_rca_gate.py"),
-    HookSpec("Stop", "", ".claude/hooks/after_agent_governance_dispatch.py"),
-)
 
 
 def _read_json(path: Path) -> Mapping[str, Any]:
@@ -119,7 +91,11 @@ def load_registered_hooks(root: Path = REPO_ROOT) -> list[HookRegistration]:
 
 
 def validate_hook_matrix(root: Path = REPO_ROOT) -> list[str]:
-    """Return failures for missing settings registrations or hook target files."""
+    """Return failures for malformed settings registrations or missing hook targets.
+
+    ``.claude/settings.json`` is the hook matrix SSOT. Codex validates the
+    registered matrix; it does not maintain a copied required-hook registry.
+    """
     failures: list[str] = []
     settings_path = root / SETTINGS_REL
     if not settings_path.is_file():
@@ -129,19 +105,14 @@ def validate_hook_matrix(root: Path = REPO_ROOT) -> list[str]:
     except (OSError, json.JSONDecodeError) as exc:
         return [f"{settings_path}: unreadable hook matrix: {exc}"]
 
-    seen = {(hook.event, hook.matcher, hook.target) for hook in registrations}
     for hook in registrations:
         if not hook.target:
             failures.append(f"{settings_path}: hook command has no script target: {hook.command!r}")
-
-    for required in REQUIRED_HOOKS:
-        key = (required.event, required.matcher, required.target)
-        if key not in seen:
-            matcher = f" matcher={required.matcher!r}" if required.matcher else ""
-            failures.append(f"{settings_path}: missing {required.event}{matcher} -> {required.target}")
-        target_path = root / required.target
+            continue
+        target_path = root / hook.target
         if not target_path.is_file():
-            failures.append(f"{target_path}: required hook target missing")
+            matcher = f" matcher={hook.matcher!r}" if hook.matcher else ""
+            failures.append(f"{settings_path}: {hook.event}{matcher} target missing -> {hook.target}")
 
     return failures
 
