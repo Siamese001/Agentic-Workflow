@@ -2,8 +2,8 @@
 
 The single source of truth for the apps_rg external Claude generation model is
 ``apps_rg/config/provider_profiles.yaml`` (``external_claude_generator.default_model``).
-``section_model_limits.py`` resolves from it with the precedence:
-env ``APPS_RG_EXTERNAL_CLAUDE_MODEL`` -> YAML SSOT.
+``section_model_limits.py`` resolves from it directly. Environment variables do
+not override apps_rg generator model identity.
 
 Plan: config-drift wave 2 (model-ID SSOT). Guards against the prior latent drift
 where code duplicated the YAML value as a hardcoded literal that the docstring
@@ -43,22 +43,20 @@ def test_resolves_from_yaml_when_no_env() -> None:
 def test_ssot_reader_returns_yaml_value() -> None:
     assert sml._ssot_default_model() == _yaml_default_model()
     assert sml._ssot_default_model("external_openai_generator") == _yaml_openai_default_model()
-    assert sml.external_openai_generation_model_from_ssot() == _yaml_openai_default_model()
 
 
-def test_env_override_wins() -> None:
+def test_env_override_is_ignored() -> None:
     assert (
         sml.external_claude_generation_model({"APPS_RG_EXTERNAL_CLAUDE_MODEL": "claude-zzz-9"})
-        == "claude-zzz-9"
+        == _yaml_default_model()
     )
 
 
-def test_openai_env_override_wins() -> None:
+def test_openai_env_override_is_ignored() -> None:
     assert (
         sml.external_openai_generation_model({"APPS_RG_EXTERNAL_OPENAI_MODEL": "gpt-custom"})
-        == "gpt-custom"
+        == _yaml_openai_default_model()
     )
-    assert sml.external_openai_generation_model_from_ssot() == _yaml_openai_default_model()
 
 
 def test_missing_yaml_fails_closed(monkeypatch, tmp_path) -> None:

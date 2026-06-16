@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
+from pathlib import Path
+
+import yaml
 
 from apps_rg.runtime.judges.grade_only_judge_packet import build_grade_only_judge_packet
 from apps_rg.runtime.judges.section_judge_profile import (
@@ -16,6 +18,21 @@ from apps_rg.runtime.section_judge_policy import (
     policy_matrix_export,
 )
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import compute_lane_proof_bundle
+
+_SSOT = Path(__file__).resolve().parents[3] / "apps_rg" / "config" / "provider_profiles.yaml"
+
+
+def _yaml_judge_model(tier: str, provider_key: str) -> str:
+    data = yaml.safe_load(_SSOT.read_text(encoding="utf-8"))
+    return str(data["judge_models"][tier][provider_key])
+
+
+def _yaml_runtime_limit(path: str) -> str:
+    data = yaml.safe_load(_SSOT.read_text(encoding="utf-8"))
+    current = data["runtime_limits"]
+    for part in path.split("."):
+        current = current[part]
+    return str(current)
 
 
 class _FakeX3:
@@ -103,22 +120,25 @@ def test_forbidden_models_fail_proof_resolution() -> None:
         "gemini_pro",
         {"APPS_RG_GOOGLE_JUDGE_MODEL": "gemini-2.0-flash"},
     )
-    assert r.blocked or r.model_actual != "gemini-2.0-flash"
+    assert r.model_actual == _yaml_judge_model("standard", "gemini_pro")
+    assert r.model_source == "yaml_judge_models"
 
 
-def test_anthropic_judge_tier_specific_env() -> None:
+def test_anthropic_judge_tier_yaml_ssot_ignores_env() -> None:
     env = {
         "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED": "claude-opus-4-6",
         "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD": "claude-sonnet-4-6",
         "ANTHROPIC_MODEL": "claude-haiku-4-5",
     }
     enhanced = resolve_section_proof_judge_model("executive_summary", "anthropic_claude", env)
-    assert enhanced.model_actual == "claude-opus-4-6"
+    assert enhanced.model_actual == _yaml_judge_model("enhanced", "anthropic_claude")
+    assert enhanced.model_source == "yaml_judge_models"
     standard = resolve_section_proof_judge_model("headline", "anthropic_claude", env)
-    assert standard.model_actual == "claude-sonnet-4-6"
+    assert standard.model_actual == _yaml_judge_model("standard", "anthropic_claude")
+    assert standard.model_source == "yaml_judge_models"
 
 
-def test_openai_judge_tier_specific_env() -> None:
+def test_openai_judge_tier_yaml_ssot_ignores_env() -> None:
     assert openai_chat_completions_eligible("gpt-5.5") is True
     assert openai_chat_completions_eligible("gpt-5.5-pro") is False
     env = {
@@ -127,30 +147,30 @@ def test_openai_judge_tier_specific_env() -> None:
         "OPENAI_MODEL": "gpt-5.1",
     }
     enhanced = resolve_section_proof_judge_model("executive_summary", "openai_chatgpt", env)
-    assert enhanced.model_actual == "gpt-5.5"
-    # The env pin gpt-5.5-pro is chat-ineligible, so the resolver uses the
-    # provider_profiles.yaml judge_models SSOT.
+    assert enhanced.model_actual == _yaml_judge_model("enhanced", "openai_chatgpt")
     assert enhanced.model_source == "yaml_judge_models"
-    assert enhanced.reasoning_effort == "high"
+    assert enhanced.reasoning_effort == _yaml_runtime_limit("judge.openai_enhanced_reasoning_effort")
     standard = resolve_section_proof_judge_model("headline", "openai_chatgpt", env)
-    assert standard.model_actual == "gpt-5.5"
+    assert standard.model_actual == _yaml_judge_model("standard", "openai_chatgpt")
+    assert standard.model_source == "yaml_judge_models"
     assert standard.reasoning_effort is None
 
 
-def test_google_judge_tier_specific_env() -> None:
+def test_google_judge_tier_yaml_ssot_ignores_env() -> None:
     env = {
         "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED": "gemini-3.1-pro-preview",
         "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD": "gemini-2.5-pro",
         "GOOGLE_AI_PRO_MODEL": "gemini-2.5-flash",
     }
     enhanced = resolve_section_proof_judge_model("executive_summary", "gemini_pro", env)
-    assert enhanced.model_actual == "gemini-3.1-pro-preview"
-    assert enhanced.model_source == "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED"
+    assert enhanced.model_actual == _yaml_judge_model("enhanced", "gemini_pro")
+    assert enhanced.model_source == "yaml_judge_models"
     standard = resolve_section_proof_judge_model("headline", "gemini_pro", env)
-    assert standard.model_actual == "gemini-2.5-pro"
-    assert standard.model_source == "APPS_RG_GOOGLE_JUDGE_MODEL_STANDARD"
+    assert standard.model_actual == _yaml_judge_model("standard", "gemini_pro")
+    assert standard.model_source == "yaml_judge_models"
     bullet = resolve_section_proof_judge_model("ibm_bullets", "gemini_pro", env)
-    assert bullet.model_actual == "gemini-2.5-pro"
+    assert bullet.model_actual == _yaml_judge_model("standard", "gemini_pro")
+    assert bullet.model_source == "yaml_judge_models"
 
 
 def test_grade_only_judge_packet_shape() -> None:

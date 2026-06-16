@@ -24,7 +24,6 @@ profiles:
     provider_profile: external_openai
     provider_class: external_api
     default_model: gpt-5.5
-    model_env_var: APPS_RG_EXTERNAL_OPENAI_MODEL
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
     capabilities:
@@ -41,7 +40,6 @@ profiles:
     # default_model = high-signal default (all bullets + executive_summary + headline).
     # model_by_section = per-lane cost-tier overrides (competencies + all narratives -> Haiku).
     # Resolver: section_model_limits.resolve_section_generation_model(section_id).
-    # Operator pin APPS_RG_EXTERNAL_CLAUDE_MODEL (model_env_var) overrides ALL sections when set.
     default_model: claude-sonnet-4-6
     model_by_section:
       competencies: claude-haiku-4-5
@@ -49,7 +47,6 @@ profiles:
       ibm_narrative: claude-haiku-4-5
       insurtech_narrative: claude-haiku-4-5
       ey_narrative: claude-haiku-4-5
-    model_env_var: APPS_RG_EXTERNAL_CLAUDE_MODEL
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL
     api_key_env_var: ANTHROPIC_API_KEY
     capabilities:
@@ -105,10 +102,28 @@ judge_models:
   enhanced:
     gemini_pro: gemini-3.1-pro-preview
     openai_chatgpt: gpt-5.5
-    # W4: migrated from APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED (.env) — sonnet is the actual prior
-    # runtime value (cost tier); SSOT made honest. The .env override is removed.
     anthropic_claude: claude-sonnet-4-6
   standard:
     gemini_pro: gemini-2.5-pro
     openai_chatgpt: gpt-5.5
     anthropic_claude: claude-sonnet-4-6
+
+runtime_limits:
+  section_context_window: 131072
+  executive_summary:
+    scratch_max_output_tokens: 4096
+    regen_max_output_tokens: 4096
+    hard_cap_scratch_max_output_tokens: 8192
+    reserved_system_schema_tokens: 512
+    first_pass_input_utilization_max: 0.95
+    chars_per_token_estimate: 3
+    estimate_safety_multiplier: 1.12
+    briefing_input_share_fraction: 0.15
+    bullet_selector_input_share_fraction: 0.09
+  judge:
+    x1d_max_output_tokens: 4096
+    x1d_max_output_tokens_hard_cap: 8192
+    x1d_max_attempts: 3
+    retry_backoff_base_seconds: 0.5
+    retry_backoff_max_seconds: 4.0
+    openai_enhanced_reasoning_effort: high

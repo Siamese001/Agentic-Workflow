@@ -1,29 +1,15 @@
 """Provider-neutral section model limits and identity for apps_rg generation.
 
-Relocated from the retired ``qwen_vllm_health`` module (Qwen/vLLM removal). The
-context-window budget (``SECTION_MODEL_MAX_MODEL_LEN``) preserves the historical
-tuned value used by prompt-truncation budgeting; the model identity defaults to the
-apps_rg external Claude generation model so prompt-render manifests and X2 model-name
-proofs agree with the provider that actually serves section generation.
+The generator model identity and runtime context budget are read from
+``apps_rg/config/provider_profiles.yaml``. Environment variables may provide
+credentials and endpoints, but they do not select apps_rg generator models or
+runtime LLM budgets.
 """
 from __future__ import annotations
 
-import os
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Final
-
-# Section input-context budget — Claude era (post-Qwen-removal 2026-06-13; raised 2026-06-15).
-# The apps_rg generator is external Claude Sonnet 4.6 (~200k provider context). The old caps
-# (24576 Qwen container, then 32768) were Qwen-vLLM leftovers that repeatedly token-BLOCKED
-# executive_summary (its prompt + briefing + JD + C0 ~= 20k tokens hit the 95% cap at 24576/32768
-# → L2_BLOCK, no generation). Default raised 32768 → 131072 (128k): generous Claude-era headroom
-# (~6x exec_summary's need) with safe margin below Sonnet's 200k hard ceiling, so token caps no
-# longer block any section AND the briefing/JD are no longer truncated by a tiny budget.
-# Raising the CAP does not increase billed input — actual input is fixed by content; the cap only
-# stops the legacy budget from rejecting it. The legacy Qwen container --max-model-len (24576) is
-# the SSOT for apps_lic + agentic_core healers (VLLM_MAX_MODEL_LEN), NOT this constant.
-SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "131072"))
+from typing import Any, Final
 
 # Provider-profile SSOT path (apps_rg/config/provider_profiles.yaml). This module
 # lives at apps_rg/runtime/, so parents[1] == apps_rg.
@@ -36,17 +22,67 @@ class SectionModelSSOTError(RuntimeError):
     """Raised when apps_rg generation model SSOT cannot be loaded."""
 
 
-def _provider_profiles() -> dict:
+def _provider_config() -> dict[str, Any]:
     try:
         import yaml  # noqa: PLC0415
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
     except Exception as exc:  # guardian: strict SSOT load; caller must see the broken source
         raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    if not isinstance(data, dict):
+        raise SectionModelSSOTError(f"Invalid apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}")
+    return data
+
+
+def _provider_profiles() -> dict:
+    data = _provider_config()
     profiles = (data or {}).get("profiles") or {}
     if not isinstance(profiles, dict):
         raise SectionModelSSOTError(f"Missing profiles block in apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}")
     return profiles
+
+
+def _runtime_limits() -> dict[str, Any]:
+    data = _provider_config()
+    limits = data.get("runtime_limits") or {}
+    if not isinstance(limits, dict):
+        raise SectionModelSSOTError(f"Missing runtime_limits block in apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}")
+    return limits
+
+
+def _runtime_limit_value(path: str) -> Any:
+    current: Any = _runtime_limits()
+    for part in path.split("."):
+        if not isinstance(current, dict) or part not in current:
+            raise SectionModelSSOTError(f"Missing runtime_limits.{path} in {_PROVIDER_PROFILES_PATH}")
+        current = current[part]
+    return current
+
+
+def runtime_limit_int(path: str) -> int:
+    value = _runtime_limit_value(path)
+    try:
+        return int(value)
+    except (TypeError, ValueError) as exc:
+        raise SectionModelSSOTError(f"runtime_limits.{path} must be an int in {_PROVIDER_PROFILES_PATH}") from exc
+
+
+def runtime_limit_float(path: str) -> float:
+    value = _runtime_limit_value(path)
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise SectionModelSSOTError(f"runtime_limits.{path} must be a float in {_PROVIDER_PROFILES_PATH}") from exc
+
+
+def runtime_limit_str(path: str) -> str:
+    value = _runtime_limit_value(path)
+    if not isinstance(value, str) or not value.strip():
+        raise SectionModelSSOTError(f"runtime_limits.{path} must be a non-empty string in {_PROVIDER_PROFILES_PATH}")
+    return value.strip()
+
+
+SECTION_MODEL_MAX_MODEL_LEN: Final[int] = runtime_limit_int("section_context_window")
 
 
 def _ssot_default_model(profile_key: str = "external_claude_generator") -> str:
@@ -79,18 +115,13 @@ def resolve_section_generation_model(
     """THE single resolver for the apps_rg per-section generator model (SSOT-backed).
 
     Every apps_rg generation dispatch MUST route the model through this function so the
-    provider request carries the per-section model and no other source (agentic_core
-    ``reasoning_types`` default, ``.env``, or a hardcoded literal) can win.
+    provider request carries the per-section model and no other source can win.
 
     Precedence:
-      1. ``APPS_RG_EXTERNAL_CLAUDE_MODEL`` env pin (operator override — ALL sections)
-      2. ``provider_profiles.yaml`` ``external_claude_generator.model_by_section[section]``
-      3. ``provider_profiles.yaml`` ``external_claude_generator.default_model``
+      1. ``provider_profiles.yaml`` ``external_claude_generator.model_by_section[section]``
+      2. ``provider_profiles.yaml`` ``external_claude_generator.default_model``
     """
-    env = os.environ if environ is None else environ
-    pin = str(env.get("APPS_RG_EXTERNAL_CLAUDE_MODEL") or "").strip()
-    if pin:
-        return pin
+    _ = environ
     sid = str(section_id or "").strip().lower()
     if sid:
         by_section = _ssot_model_by_section()
@@ -102,8 +133,7 @@ def resolve_section_generation_model(
 def external_claude_generation_model(environ: Mapping[str, str] | None = None) -> str:
     """Section-agnostic default generator model (no per-section override).
 
-    Equivalent to ``resolve_section_generation_model(None)`` — returns the operator pin or
-    the SSOT ``default_model``. Callers that know their section MUST prefer
+    Equivalent to ``resolve_section_generation_model(None)``. Callers that know their section MUST prefer
     :func:`resolve_section_generation_model` so the per-section tier applies.
     """
     return resolve_section_generation_model(None, environ)
@@ -111,16 +141,13 @@ def external_claude_generation_model(environ: Mapping[str, str] | None = None) -
 
 def external_openai_generation_model(environ: Mapping[str, str] | None = None) -> str:
     """Section-agnostic OpenAI generator model from apps_rg provider_profiles.yaml."""
-    env = os.environ if environ is None else environ
-    pin = str(env.get("APPS_RG_EXTERNAL_OPENAI_MODEL") or "").strip()
-    if pin:
-        return pin
-    return external_openai_generation_model_from_ssot()
+    _ = environ
+    return _ssot_default_model("external_openai_generator")
 
 
 def external_openai_generation_model_from_ssot() -> str:
-    """OpenAI generator model pinned by provider_profiles.yaml, ignoring env overrides."""
-    return _ssot_default_model("external_openai_generator")
+    """Compatibility alias for provider fallback code during the SSOT migration."""
+    return external_openai_generation_model()
 
 
 # Canonical generation model identity for apps_rg sections — resolved from the external
@@ -138,6 +165,8 @@ __all__ = [
     "SectionModelSSOTError",
     "external_claude_generation_model",
     "external_openai_generation_model",
-    "external_openai_generation_model_from_ssot",
     "resolve_section_generation_model",
+    "runtime_limit_float",
+    "runtime_limit_int",
+    "runtime_limit_str",
 ]
