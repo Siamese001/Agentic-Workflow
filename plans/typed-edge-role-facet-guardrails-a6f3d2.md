@@ -14,6 +14,12 @@ supersedes: ["phase2-gtm-presales-remaining-f7a2c9"]
 
 # Typed Edge Role Facet Guardrails
 
+> **Superseded for active execution (2026-06-16):** use
+> [`apps-rg-11-lane-closeout-5f8c2a.md`](apps-rg-11-lane-closeout-5f8c2a.md)
+> as the active SSOT for finishing apps_rg. This file remains historical design
+> context for role facets, typed edges, sliding-scale composition, and waterfall
+> proof. Its embedded lane-board status is stale.
+
 Make GraphDB the skills and metrics SSOT, remove legacy candidate-fact authority noise before baseline, certify graph behavior before typed edges, add role-family facets, then add typed proof edges and sliding-scale composition guardrails with mandatory E2E waterfall evidence.
 
 > **plan_id discipline**: markers use `plan=typed-edge-role-facet-guardrails-a6f3d2`.
