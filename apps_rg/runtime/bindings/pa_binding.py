@@ -8,6 +8,8 @@ package-driven L2 spine via ``apps_rg.runtime.bindings.l2_binding`` (child plan 
 """
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
+
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_GOVERNED_PA_L2_EXIT,
     PLAN_SLUG,
@@ -57,7 +59,7 @@ __all__ = [
 
 PA_BOUNDARY_CERT_S3: str = "pa-s3-tiered-prompt-patching-apps-rg-resume-shipping"
 APPS_RG_PA_CERT_REF: str = "pa-apps-rg-resume-generation-w3"
-APPS_RG_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+APPS_RG_TARGET_MODEL: str = QWEN_LOCAL_MODEL_ID
 APPS_RG_TARGET_PROVIDER: str = "vllm_local"
 
 _PA_PROFILE_CACHE: dict[str, Any] = {}

@@ -8,6 +8,13 @@ Plan: apps-rg-l2-v4-envelope-adoption-e9f2b1 (W2–W7).
 """
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_SONNET_4_20250514_MODEL_ID,
+    GEMINI_20_FLASH_MODEL_ID,
+    OPENAI_GPT4O_MINI_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
+
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_GOVERNED_PA_L2_EXIT,
     PLAN_SLUG,
@@ -422,7 +429,7 @@ def _provider_profile_for_cpa(
         return ProviderProfile(
             profile_id="apps_rg_envelope_local_vllm",
             provider_kind=ProviderKind.LOCAL_VLLM,
-            model_id=mid or "Qwen/Qwen2.5-32B-Instruct-AWQ",
+            model_id=mid or QWEN_LOCAL_MODEL_ID,
             capabilities=("text_generation", "structured_json_generation"),
             sandbox_safe=True,
             requires_network=True,
@@ -433,7 +440,7 @@ def _provider_profile_for_cpa(
             return ProviderProfile(
                 profile_id="apps_rg_envelope_anthropic",
                 provider_kind=ProviderKind.EXTERNAL_API,
-                model_id=mid or "claude-sonnet-4-20250514",
+                model_id=mid or ANTHROPIC_SONNET_4_20250514_MODEL_ID,
                 api_key_env_var="ANTHROPIC_API_KEY",
                 vendor="anthropic",
                 capabilities=("text_generation", "structured_json_generation"),
@@ -444,7 +451,7 @@ def _provider_profile_for_cpa(
             return ProviderProfile(
                 profile_id="apps_rg_envelope_openai",
                 provider_kind=ProviderKind.EXTERNAL_API,
-                model_id=mid or "gpt-4o-mini",
+                model_id=mid or OPENAI_GPT4O_MINI_MODEL_ID,
                 api_key_env_var="OPENAI_API_KEY",
                 vendor="openai",
                 capabilities=("text_generation", "structured_json_generation"),
@@ -455,7 +462,7 @@ def _provider_profile_for_cpa(
             return ProviderProfile(
                 profile_id="apps_rg_envelope_gemini",
                 provider_kind=ProviderKind.EXTERNAL_API,
-                model_id=mid or "gemini-2.0-flash",
+                model_id=mid or GEMINI_20_FLASH_MODEL_ID,
                 api_key_env_var="GOOGLE_API_KEY",
                 vendor="google_gemini",
                 capabilities=("text_generation", "structured_json_generation"),
