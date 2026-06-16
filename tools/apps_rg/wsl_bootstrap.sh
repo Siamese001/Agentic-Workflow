@@ -18,8 +18,36 @@ fi
 echo "==> uv sync deps only (skip editable project build on /mnt/c)"
 uv sync --python 3.12 --no-install-project
 
-echo "==> CPU-only torch (smaller; BGE inference does not need CUDA in WSL)"
-uv pip install --python "${VENV_DIR}/bin/python" torch --index-url https://download.pytorch.org/whl/cpu
+TORCH_DEVICE="$(printf '%s' "${APPS_RG_WSL_TORCH_DEVICE:-auto}" | tr '[:upper:]' '[:lower:]')"
+TORCH_CPU_INDEX_URL="${APPS_RG_WSL_TORCH_CPU_INDEX_URL:-https://download.pytorch.org/whl/cpu}"
+TORCH_CUDA_INDEX_URL="${APPS_RG_WSL_TORCH_CUDA_INDEX_URL:-https://download.pytorch.org/whl/cu128}"
+
+case "${TORCH_DEVICE}" in
+  cpu)
+    TORCH_INDEX_URL="${TORCH_CPU_INDEX_URL}"
+    TORCH_LABEL="CPU"
+    ;;
+  cuda)
+    TORCH_INDEX_URL="${TORCH_CUDA_INDEX_URL}"
+    TORCH_LABEL="CUDA"
+    ;;
+  auto|"")
+    if command -v nvidia-smi >/dev/null 2>&1; then
+      TORCH_INDEX_URL="${TORCH_CUDA_INDEX_URL}"
+      TORCH_LABEL="CUDA"
+    else
+      TORCH_INDEX_URL="${TORCH_CPU_INDEX_URL}"
+      TORCH_LABEL="CPU"
+    fi
+    ;;
+  *)
+    echo "Unsupported APPS_RG_WSL_TORCH_DEVICE=${APPS_RG_WSL_TORCH_DEVICE}; expected auto, cuda, or cpu" >&2
+    exit 2
+    ;;
+esac
+
+echo "==> ${TORCH_LABEL} torch (override with APPS_RG_WSL_TORCH_DEVICE=cpu|cuda|auto)"
+uv pip install --python "${VENV_DIR}/bin/python" torch --index-url "${TORCH_INDEX_URL}"
 
 echo "==> import probe"
 "${VENV_DIR}/bin/python" "${REPO_ROOT}/tools/apps_rg/wsl_verify_import.py"

@@ -359,8 +359,18 @@ class EmbeddingServiceFactory:
 
     @staticmethod
     def _embedding_device() -> str:
-        """Return 'cuda' or 'cpu' based on EMBEDDING_DEVICE env var (default: cpu)."""
-        return os.environ.get("EMBEDDING_DEVICE", "cpu").lower()
+        """Return explicit EMBEDDING_DEVICE, else CUDA when available, else CPU."""
+        override = os.environ.get("EMBEDDING_DEVICE", "").strip().lower()
+        if override and override != "auto":
+            return override
+        try:
+            import torch  # noqa: PLC0415
+
+            if torch.cuda.is_available():
+                return "cuda"
+        except (ImportError, RuntimeError):
+            pass
+        return "cpu"
 
     @staticmethod
     def _build_gpu_index(cpu_matrix: np.ndarray) -> Any:

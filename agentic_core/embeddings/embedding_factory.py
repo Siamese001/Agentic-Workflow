@@ -446,7 +446,7 @@ def create_embedding_client(
     return client
 
 
-def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClient:
+def _create_bge_m3_client(model_name: str, device: str | None = None) -> EmbeddingClient:
     """
     Create BGE-M3 embedding client using sentence-transformers.
 
@@ -454,7 +454,8 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
 
     Args:
         model_name: HuggingFace model name (default: BAAI/bge-m3)
-        device: Device to run on (cpu, cuda, etc.)
+        device: Device to run on (cpu, cuda, etc.). When omitted, resolves from EMBEDDING_DEVICE
+            with CUDA autodetect and CPU fallback.
 
     Returns:
         EmbeddingClient instance for BGE-M3
@@ -466,6 +467,11 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
             "sentence-transformers is required for BGE-M3 embeddings. "
             "Install with: pip install sentence-transformers",
         ) from e
+
+    if device is None:
+        from agentic_core.embeddings.bge_runtime import _resolve_device  # noqa: PLC0415
+
+        device = _resolve_device()
 
     allow_download = os.environ.get("BGE_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
     model = SentenceTransformer(

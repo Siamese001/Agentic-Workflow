@@ -12,7 +12,29 @@ _raw_chroma_path = os.environ.get("VECTOR_DB_CHROMA_PATH", "")
 CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "data" / "cache" / "chromadb"
 DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "BAAI/bge-m3")
 ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0").strip() == "1"
-VECTOR_DB_DEVICE: str = os.environ.get("VECTOR_DB_DEVICE", "cpu")
+
+
+def _cuda_available() -> bool:
+    try:
+        import torch  # noqa: PLC0415
+
+        return bool(torch.cuda.is_available())
+    except (ImportError, RuntimeError):
+        return False
+
+
+def _resolve_vector_db_device() -> str:
+    """Resolve vector embedding device: explicit override, shared embedding override, CUDA, CPU."""
+    vector_override = os.environ.get("VECTOR_DB_DEVICE", "").strip().lower()
+    if vector_override and vector_override != "auto":
+        return vector_override
+    embedding_override = os.environ.get("EMBEDDING_DEVICE", "").strip().lower()
+    if embedding_override and embedding_override != "auto":
+        return embedding_override
+    return "cuda" if _cuda_available() else "cpu"
+
+
+VECTOR_DB_DEVICE: str = _resolve_vector_db_device()
 MODEL_LOAD_TIMEOUT: float = float(os.environ.get("VECTOR_DB_MODEL_LOAD_TIMEOUT", "120"))
 CHROMA_INIT_TIMEOUT: float = float(os.environ.get("VECTOR_DB_CHROMA_INIT_TIMEOUT", "30"))
 EMBEDDING_ENCODE_TIMEOUT: float = float(os.environ.get("VECTOR_DB_ENCODE_TIMEOUT", "20"))

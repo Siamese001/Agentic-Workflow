@@ -40,8 +40,12 @@ class ModelLoader:
     DEFAULT_MODEL = "BAAI/bge-m3"  # HITL-10C-001 selection
     EMBEDDING_DIM = 1024
 
-    def __init__(self, model_name: str | None = None, device: str = "cpu") -> None:
+    def __init__(self, model_name: str | None = None, device: str | None = None) -> None:
         self._model_name = model_name or self.DEFAULT_MODEL
+        if device is None:
+            from agentic_core.embeddings.bge_runtime import _resolve_device  # noqa: PLC0415
+
+            device = _resolve_device()
         self._device = device
         self._model: Any | None = None
         self._manifest: ModelManifest | None = None

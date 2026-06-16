@@ -1,17 +1,16 @@
 """Wave 2 tests — cross-encoder reranker + graded outcome binding.
 
 Covers:
-  * W2.1: ``apps_qna.router.reranker`` passthrough contract (env off),
+  * W2.1: ``apps_qna.router.reranker`` passthrough contract (explicit env off),
           §29 marker emission in both passthrough and live paths.
   * W2.2: graded ``update_outcome(score=...)`` on both
           ``AppsQnaRouteBandit`` and ``AppsQnaPasteBandit``; spine
           ``NamespaceBandit.update_graded`` + ``BetaPosterior.update_graded``.
   * W2.3: ``rank_routes_by_signal(rerank=True/False)`` contract —
-          passthrough when env off, fail-soft on reranker failure.
+          passthrough when explicitly disabled, fail-soft on reranker failure.
 
-Under normal test envs the reranker is OFF (``APPS_QNA_RERANKER`` unset),
-so the live cross-encoder path is not exercised here; an integration smoke
-with the flag ON can be added in a later wave.
+The reranker defaults ON; tests that assert bi-encoder passthrough set
+``APPS_QNA_RERANKER=0`` explicitly.
 """
 
 from __future__ import annotations
@@ -78,7 +77,7 @@ def _mock_registry() -> RouteRegistry:
 def test_reranker_passthrough_when_env_off(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """With APPS_QNA_RERANKER unset, reranker returns bi-encoder order."""
+    """With APPS_QNA_RERANKER=0, reranker returns bi-encoder order."""
     candidates = [
         RouteScore(
             route_id="architecture",
@@ -95,8 +94,7 @@ def test_reranker_passthrough_when_env_off(
             mode="embedding",
         ),
     ]
-    with patch.dict(os.environ, {}, clear=False):
-        os.environ.pop("APPS_QNA_RERANKER", None)
+    with patch.dict(os.environ, {"APPS_QNA_RERANKER": "0"}, clear=False):
         outcome = rerank_routes(
             query="architecture question",
             candidates=candidates,
@@ -115,6 +113,76 @@ def test_reranker_passthrough_when_env_off(
     assert len(marker_lines) == 1, captured.out
     assert "router=apps_qna_reranker" in marker_lines[0]
     assert "mode=bi_encoder_passthrough" in marker_lines[0]
+
+
+@pytest.mark.parametrize(
+    "module_name",
+    [
+        "apps_qna.router.reranker",
+        "apps_qna.engines.router.reranker",
+    ],
+)
+def test_reranker_gate_defaults_on_and_respects_opt_out(module_name: str) -> None:
+    mod = __import__(module_name, fromlist=["_reranker_enabled"])
+
+    with patch.dict(os.environ, {}, clear=False):
+        os.environ.pop("APPS_QNA_RERANKER", None)
+        assert mod._reranker_enabled() is True
+
+    with patch.dict(os.environ, {"APPS_QNA_RERANKER": "0"}, clear=False):
+        assert mod._reranker_enabled() is False
+
+
+def test_reranker_default_on_uses_cross_encoder_when_available(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    candidates = [
+        RouteScore(
+            route_id="architecture",
+            route_name="Architecture",
+            primary_card="05_ARCHITECTURE_CORE.md",
+            score=0.8,
+            mode="embedding",
+        ),
+        RouteScore(
+            route_id="executive_fit",
+            route_name="Executive Fit",
+            primary_card="13_EXECUTIVE_FIT.md",
+            score=0.5,
+            mode="embedding",
+        ),
+    ]
+
+    class FakeAdapter:
+        def score(self, query: str, candidate_texts: list[str]) -> list[float]:
+            assert query == "leadership architecture question"
+            assert candidate_texts == ["arch", "exec"]
+            return [0.1, 0.9]
+
+    with patch.dict(os.environ, {}, clear=False):
+        os.environ.pop("APPS_QNA_RERANKER", None)
+        with patch(
+            "agentic_core.knowledge.retrieval.bge_reranker_adapter.BgeRerankerAdapter",
+            return_value=FakeAdapter(),
+        ):
+            outcome = rerank_routes(
+                query="leadership architecture question",
+                candidates=candidates,
+                descriptors={"architecture": "arch", "executive_fit": "exec"},
+            )
+
+    assert outcome.mode == "cross_encoder"
+    assert outcome.rerank_delta == 2
+    assert [c.route_id for c in outcome.reranked] == [
+        "executive_fit",
+        "architecture",
+    ]
+    captured = capsys.readouterr()
+    marker_lines = [
+        line for line in captured.out.splitlines() if line.startswith("ROUTER_DECISION:")
+    ]
+    assert len(marker_lines) == 1, captured.out
+    assert "mode=cross_encoder" in marker_lines[0]
 
 
 def test_reranker_empty_candidates_emits_marker(
@@ -137,16 +205,16 @@ def test_reranker_empty_candidates_emits_marker(
 
 def test_rerank_candidate_scores_passthrough_roundtrips_tuples() -> None:
     """The tuple-based entrypoint preserves order under passthrough."""
-    os.environ.pop("APPS_QNA_RERANKER", None)
     tuples = [
         ("architecture", 0.8, "embedding"),
         ("executive_fit", 0.5, "embedding"),
     ]
-    reranked, mode, delta = rerank_candidate_scores(
-        query="anything",
-        candidates=tuples,
-        descriptors={"architecture": "arch", "executive_fit": "exec"},
-    )
+    with patch.dict(os.environ, {"APPS_QNA_RERANKER": "0"}, clear=False):
+        reranked, mode, delta = rerank_candidate_scores(
+            query="anything",
+            candidates=tuples,
+            descriptors={"architecture": "arch", "executive_fit": "exec"},
+        )
     assert mode == "bi_encoder_passthrough"
     assert delta == 0
     assert [t[0] for t in reranked] == ["architecture", "executive_fit"]
@@ -282,14 +350,14 @@ def test_rank_routes_by_signal_rerank_false_unchanged() -> None:
 
 
 def test_rank_routes_by_signal_default_rerank_true_passthrough_when_env_off() -> None:
-    """Default rerank=True is a no-op when APPS_QNA_RERANKER is unset."""
-    os.environ.pop("APPS_QNA_RERANKER", None)
+    """Default rerank=True is a no-op when APPS_QNA_RERANKER=0."""
     registry = _mock_registry()
-    out = rank_routes_by_signal(
-        registry=registry,
-        signal="architecture and components and system design",
-        top_n=3,
-    )
+    with patch.dict(os.environ, {"APPS_QNA_RERANKER": "0"}, clear=False):
+        out = rank_routes_by_signal(
+            registry=registry,
+            signal="architecture and components and system design",
+            top_n=3,
+        )
     assert len(out) > 0
     # Passthrough preserves the bi-encoder order => score-desc.
     scores = [row[1] for row in out]

@@ -17,10 +17,10 @@ because the two inputs never cross-attend.
 
 A cross-encoder reads both inputs as a single sequence and produces a
 relevance score directly. For a 9-route registry the added latency is
-~10-80 ms (reranker already warm, 568M-param model on GPU), which is
-acceptable for offline triage and eval work but inconvenient at real-time
-speeds — the reranker is therefore an opt-in pass invoked ONLY on the
-bi-encoder's top-K, not every route.
+~10-80 ms (reranker already warm, 568M-param model on GPU), so the
+reranker is enabled by default on the bi-encoder's top-K. Operators can
+disable it with ``APPS_QNA_RERANKER=0`` for CPU-only or latency-sensitive
+runs.
 
 Design contract
 ---------------
@@ -60,21 +60,15 @@ _log = logging.getLogger(__name__)
 _ROUTER_LAYER: str = "L0"
 _ROUTER_NAME: str = "apps_qna_reranker"
 
-# Env gate: set ``APPS_QNA_RERANKER=1`` to opt into the cross-encoder
-# pass at runtime. When unset, ``rerank_routes`` returns its input
-# unchanged (and logs at debug). This keeps the bi-encoder hot path
-# free of the ~10-80 ms cross-encoder cost unless a caller has explicitly
-# opted in for depth (eval harness, W2.3 seeding, etc.).
+# Env gate: cross-encoder reranking is on by default. Set
+# ``APPS_QNA_RERANKER=0`` (or false/no/off) to force bi-encoder passthrough.
 _ENV_ENABLE_RERANKER: str = "APPS_QNA_RERANKER"
+_ENV_RERANKER_OFF_VALUES: set[str] = {"0", "false", "no", "off", "disabled"}
 
 
 def _reranker_enabled() -> bool:
-    """True iff ``APPS_QNA_RERANKER`` env flag is on."""
-    return os.environ.get(_ENV_ENABLE_RERANKER, "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }
+    """True unless ``APPS_QNA_RERANKER`` is explicitly set to an off value."""
+    return os.environ.get(_ENV_ENABLE_RERANKER, "1").strip().lower() not in _ENV_RERANKER_OFF_VALUES
 
 
 @dataclass(frozen=True)

@@ -133,12 +133,9 @@ def rank_routes_by_signal(
     ``classify_section_topic``).
 
     W2.3 (``apps-qna-dag-enhancements-e4c7b2``): the bi-encoder ranking is
-    optionally refined by a cross-encoder reranker (``apps_qna.engines.router.reranker``).
-    The reranker pass is env-gated via ``APPS_QNA_RERANKER`` — when the
-    flag is unset, it returns the bi-encoder order unchanged and logs a
-    ``rerank_pass`` row with ``mode="bi_encoder_passthrough"`` and
-    ``rerank_delta=0`` to ``apps_qna_pack_lifecycle``. Callers can suppress
-    the reranker pass entirely by passing ``rerank=False``.
+    refined by a cross-encoder reranker (``apps_qna.engines.router.reranker``)
+    by default. Set ``APPS_QNA_RERANKER=0`` to force bi-encoder passthrough,
+    or pass ``rerank=False`` to suppress the reranker call entirely.
 
     When ``signal`` is empty or ``registry`` has no routes, returns an
     empty list — caller should fall back to a hand-curated default order.

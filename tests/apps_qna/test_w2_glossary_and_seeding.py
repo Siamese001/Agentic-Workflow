@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import textwrap
 
+import pytest
+
 from apps_qna.config.route_registry import Route, RouteRegistry
 from apps_qna.integrations.from_research_brief import (
     _accept_glossary_entry,
@@ -22,6 +24,11 @@ from apps_qna.router.route_seeding import (
     rank_routes_by_signal,
     seed_likely_questions_from_research,
 )
+
+
+@pytest.fixture(autouse=True)
+def _disable_reranker_for_bi_encoder_ranking_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_QNA_RERANKER", "0")
 
 
 def _mock_registry() -> RouteRegistry:

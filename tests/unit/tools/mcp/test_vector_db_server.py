@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import asyncio
 import re
+import sys
 import uuid
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import chromadb
@@ -186,18 +188,15 @@ async def test_add_documents_upsert_overwrites_on_duplicate_id(server, ephemeral
 
 
 @pytest.mark.asyncio
-async def test_vector_stats_disk_bytes_is_directory_not_partition(server, tmp_path, monkeypatch):
+async def test_vector_stats_disk_bytes_is_directory_not_partition(server, tmp_path):
     """disk_bytes must reflect directory contents, not partition-level usage."""
-    import tools.mcp.vector_db_server as mod
-
     # Write two small files into a temp dir to act as the chroma path
     fake_chroma = tmp_path / "chroma"
     fake_chroma.mkdir()
     (fake_chroma / "file_a.bin").write_bytes(b"x" * 1000)
     (fake_chroma / "file_b.bin").write_bytes(b"x" * 2000)
 
-    monkeypatch.setattr(mod, "CHROMA_PATH", fake_chroma)
-    monkeypatch.setattr(server.service.store, "chroma_path", fake_chroma)
+    server.service.store.chroma_path = fake_chroma
 
     result = await server._vector_stats({})
     assert not result.isError, result.content[0].text
@@ -355,38 +354,31 @@ def test_env_var_overrides_chroma_path(tmp_path, monkeypatch):
 
     import importlib
     import tools.retrieval.vector_config as vc_mod
-    import tools.mcp.vector_db_server as mod
 
     importlib.reload(vc_mod)
-    importlib.reload(mod)
     try:
-        assert mod.CHROMA_PATH == custom, f"Expected {custom}, got {mod.CHROMA_PATH}"
+        assert vc_mod.CHROMA_PATH == custom, f"Expected {custom}, got {vc_mod.CHROMA_PATH}"
     finally:
         monkeypatch.delenv("VECTOR_DB_CHROMA_PATH", raising=False)
         importlib.reload(vc_mod)
-        importlib.reload(mod)
 
 
 def test_env_var_overrides_embedding_model(monkeypatch):
     """VECTOR_DB_EMBEDDING_MODEL env var must override the default at import time.
 
-    DEFAULT_EMBEDDING_MODEL is defined in vector_config, not vector_db_server.
-    Both modules must be reloaded to pick up the env-var override.
+    DEFAULT_EMBEDDING_MODEL is defined in vector_config.
     """
     monkeypatch.setenv("VECTOR_DB_EMBEDDING_MODEL", "paraphrase-MiniLM-L3-v2")
 
     import importlib
     import tools.retrieval.vector_config as vc_mod
-    import tools.mcp.vector_db_server as mod
 
     importlib.reload(vc_mod)
-    importlib.reload(mod)
     try:
-        assert mod.DEFAULT_EMBEDDING_MODEL == "paraphrase-MiniLM-L3-v2"
+        assert vc_mod.DEFAULT_EMBEDDING_MODEL == "paraphrase-MiniLM-L3-v2"
     finally:
         monkeypatch.delenv("VECTOR_DB_EMBEDDING_MODEL", raising=False)
         importlib.reload(vc_mod)
-        importlib.reload(mod)
 
 
 def test_env_var_overrides_device(monkeypatch):
@@ -402,6 +394,49 @@ def test_env_var_overrides_device(monkeypatch):
     finally:
         monkeypatch.delenv("VECTOR_DB_DEVICE", raising=False)
         importlib.reload(vc_mod)
+
+
+def test_embedding_device_fills_vector_db_device_when_vector_override_unset(monkeypatch):
+    """EMBEDDING_DEVICE is the shared fallback when VECTOR_DB_DEVICE is unset."""
+    import importlib
+    import tools.retrieval.vector_config as vc_mod
+
+    with monkeypatch.context() as mp:
+        mp.delenv("VECTOR_DB_DEVICE", raising=False)
+        mp.setenv("EMBEDDING_DEVICE", "cuda")
+        importlib.reload(vc_mod)
+        assert vc_mod.VECTOR_DB_DEVICE == "cuda"
+    importlib.reload(vc_mod)
+
+
+def test_vector_db_device_defaults_to_cuda_when_torch_reports_cuda(monkeypatch):
+    """When no env override exists, vector DB embeddings should prefer CUDA."""
+    import importlib
+    import tools.retrieval.vector_config as vc_mod
+
+    fake_torch = SimpleNamespace(cuda=SimpleNamespace(is_available=lambda: True))
+    with monkeypatch.context() as mp:
+        mp.delenv("VECTOR_DB_DEVICE", raising=False)
+        mp.delenv("EMBEDDING_DEVICE", raising=False)
+        mp.setitem(sys.modules, "torch", fake_torch)
+        importlib.reload(vc_mod)
+        assert vc_mod.VECTOR_DB_DEVICE == "cuda"
+    importlib.reload(vc_mod)
+
+
+def test_vector_db_device_defaults_to_cpu_without_cuda(monkeypatch):
+    """CPU remains the fallback when CUDA is not available."""
+    import importlib
+    import tools.retrieval.vector_config as vc_mod
+
+    fake_torch = SimpleNamespace(cuda=SimpleNamespace(is_available=lambda: False))
+    with monkeypatch.context() as mp:
+        mp.delenv("VECTOR_DB_DEVICE", raising=False)
+        mp.delenv("EMBEDDING_DEVICE", raising=False)
+        mp.setitem(sys.modules, "torch", fake_torch)
+        importlib.reload(vc_mod)
+        assert vc_mod.VECTOR_DB_DEVICE == "cpu"
+    importlib.reload(vc_mod)
 
 
 # ---------------------------------------------------------------------------
@@ -579,11 +614,11 @@ def test_invalid_env_var_for_max_batch_falls_back_safely(monkeypatch):
     monkeypatch.setenv("VECTOR_DB_MAX_BATCH", "not_a_number")
 
     import importlib
-    import tools.mcp.vector_db_server as mod
+    import tools.retrieval.vector_config as vc_mod
 
-    importlib.reload(mod)
+    importlib.reload(vc_mod)
 
-    assert mod.MAX_EMBEDDING_BATCH_SIZE == 32, f"Expected default 32, got {mod.MAX_EMBEDDING_BATCH_SIZE}"
+    assert vc_mod.MAX_EMBEDDING_BATCH_SIZE == 32, f"Expected default 32, got {vc_mod.MAX_EMBEDDING_BATCH_SIZE}"
 
 
 @pytest.mark.asyncio
