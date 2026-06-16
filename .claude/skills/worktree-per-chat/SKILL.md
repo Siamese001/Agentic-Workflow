@@ -1,6 +1,6 @@
 ---
 name: worktree-per-chat
-description: Procedure for the named-workstream worktree isolation workflow: use registered sibling git worktrees whose folder basename exactly equals an agent-owned high-signal branch such as `codex-apps-rg` or `claude-governance-hooks`, never timestamped per-chat branches, and never edit the primary checkout on a protected branch.
+description: Named-workstream git worktree isolation. Use when starting durable editable work, before editing files, or when migrating a legacy branch — keep edits in a registered sibling git worktree whose folder basename exactly equals an agent-owned high-signal branch such as `codex-apps-rg` or `claude-governance-hooks`, never a timestamped per-chat branch, and never the primary checkout on a protected branch.
 metadata:
   enforcement_layer: deterministic
   enforcement_timing: before_work
