@@ -15,8 +15,14 @@ except Exception:  # guardian: allow-broad-exception -- hook fail-open if gate m
     shell_command_block_reason = None
 
 try:
-    from before_file_edit_branch_guard import _branch_prefix, _contract_violations, _remediation_example
+    from before_file_edit_branch_guard import (
+        _branch_app_wave_scope_violation,
+        _branch_prefix,
+        _contract_violations,
+        _remediation_example,
+    )
 except Exception:  # guardian: allow-broad-exception -- branch creation guard must fail open
+    _branch_app_wave_scope_violation = None
     _branch_prefix = None
     _contract_violations = None
     _remediation_example = None
@@ -120,6 +126,10 @@ def _branch_violation_reason(branch: str, worktree_path: str = "") -> str:
         return ""
     root = Path(worktree_path) if worktree_path else None
     violations = _contract_violations(branch, root)
+    if _branch_app_wave_scope_violation is not None:
+        wave_scope_violation = _branch_app_wave_scope_violation(branch)
+        if wave_scope_violation:
+            violations.append(wave_scope_violation)
     if not violations:
         return ""
     target = f" with worktree folder `{worktree_path}`" if worktree_path else ""

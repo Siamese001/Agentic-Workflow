@@ -49,6 +49,7 @@ DEFAULT_IDE_OWNER = "claude"
 AGENT_OWNERS = {"codex", "claude"}
 BRANCH_TOPIC_RE = re.compile(r"^[a-z0-9][a-z0-9-]*[a-z0-9]$")
 LOW_SIGNAL_GENERATED_RE = re.compile(r"^[a-z]+-[a-z]+-[0-9a-f]{6,}$")
+WAVE_SCOPE_TOKEN_RE = re.compile(r"^(?:w[0-9]+[a-z]?|wave[0-9]*[a-z]?|wave)$")
 # App-package directory shape: ``apps_rg`` / ``apps_lic`` (underscore) or ``apps01`` (numeric).
 APP_DIR_RE = re.compile(r"^apps(?:_[a-z0-9]+|[0-9]+)$")
 GENERIC_TOPIC_TOKENS = {
@@ -60,6 +61,7 @@ GENERIC_TOPIC_TOKENS = {
     "task",
     "temp",
     "test",
+    "tests",
     "update",
     "wip",
     "work",
@@ -268,6 +270,57 @@ def _topic_is_high_signal(topic: str) -> bool:
     return True
 
 
+def _is_wave_scope_token(token: str) -> bool:
+    return token.isdigit() or bool(WAVE_SCOPE_TOKEN_RE.fullmatch(token))
+
+
+def _scope_has_durable_token(scope: str) -> bool:
+    tokens = [part for part in scope.split("-") if part]
+    return any(
+        token not in GENERIC_TOPIC_TOKENS and not _is_wave_scope_token(token)
+        for token in tokens
+    )
+
+
+def _app_workstream_scope_violation(app_token: str, scope: str) -> str:
+    """Return a violation when an app branch uses wave-local scope instead of a durable workstream."""
+    app_pkg = app_token.replace("-", "_")
+    tokens = [part for part in scope.split("-") if part]
+    if any(_is_wave_scope_token(token) for token in tokens):
+        return (
+            f"app-scoped branch topic for `{app_pkg}/` must name the durable workstream, "
+            "not a wave-specific slice; reuse one branch across same-scope waves "
+            f"(e.g. `{_branch_prefix()}{app_token}-hotspot-tests`), and put wave numbers in "
+            "plan/commit metadata"
+        )
+    if not _scope_has_durable_token(scope):
+        return (
+            f"app-scoped branch topic for `{app_pkg}/` must include a durable workstream after "
+            f"`{app_token}-`, not only generic test/change tokens "
+            f"(e.g. `{_branch_prefix()}{app_token}-hotspot-tests`)"
+        )
+    return ""
+
+
+def _branch_app_wave_scope_violation(branch: str) -> str:
+    """Best-effort shell/create-time guard for app branches that encode a wave number."""
+    if "/" in branch or "\\" in branch or not branch.startswith(_branch_prefix()):
+        return ""
+    topic = _topic_from_agent_branch(branch)
+    parts = [part for part in topic.split("-") if part]
+    if len(parts) >= 3 and parts[0] == "apps":
+        app_token = "-".join(parts[:2])
+        scope = "-".join(parts[2:])
+    elif len(parts) >= 2 and APP_DIR_RE.fullmatch(parts[0]):
+        app_token = parts[0]
+        scope = "-".join(parts[1:])
+    else:
+        return ""
+    if not scope:
+        return ""
+    return _app_workstream_scope_violation(app_token, scope)
+
+
 def _app_token_for_path(file_path: str) -> str:
     """Return the hyphenated app segment (e.g. ``apps-rg``) when the target file lives under an
     ``apps_<x>`` package, else ``""``.
@@ -299,6 +352,12 @@ def _app_segment_violation(branch: str, app_token: str) -> str:
     topic = _topic_from_agent_branch(branch)
     needle = f"{app_token}-"
     if topic.startswith(needle) and topic[len(needle) :]:
+        workstream_violation = _app_workstream_scope_violation(
+            app_token,
+            topic[len(needle) :],
+        )
+        if workstream_violation:
+            return workstream_violation
         return ""
     app_pkg = app_token.replace("-", "_")
     return (

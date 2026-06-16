@@ -28,6 +28,12 @@ only when) an `apps_<x>` file is touched.
 The edit gate blocks Edit/Write to a protected checkout (`main`/`master`). SessionStart only advises;
 it does not create branches, create folders, push, or clean up worktrees.
 
+**Wave reuse rule.** A wave is execution progress inside a durable workstream, not branch identity.
+Multiple waves for the same app/plan/scope must continue in the same named worktree branch. Do not
+mint `codex-apps-rg-wave4-tests`, `codex-apps-rg-wave5-tests`, etc. Use one durable branch such as
+`codex-apps-rg-hotspot-tests` and record wave numbers in the plan, commit message, or receipt.
+Create a new worktree only when the app, subsystem, or durable objective changes.
+
 ## When to Invoke
 
 | User intent / trigger | Action |
@@ -44,6 +50,7 @@ it does not create branches, create folders, push, or clean up worktrees.
 | Never edit the primary checkout while it is on `main`/`master` | The PreToolUse edit gate blocks it; isolation is still the point |
 | Use durable, scope-bearing workstream names, not timestamped or generated adjective-name branches | Branches remain comprehensible and reusable across sessions |
 | Reuse an existing matching worktree; create a new one ONLY on a material scope change | One worktree per durable workstream, not one per chat -- prevents sibling-worktree sprawl |
+| Treat later waves in the same plan/workstream as the same scope | Wave numbers are progress metadata; per-wave worktree branches are sprawl |
 | Editing an `apps_<x>` file requires an `apps-<x>-<scope>` branch topic (`claude-apps-rg-…`); core/`agentic_core`/infra needs no app segment | The branch self-documents which app a change impacts; the edit guard ties it to the touched path |
 | Match the worktree folder basename exactly to the local branch name | Windows folders cannot represent slash branch namespaces as a single basename |
 | Plan files are exempt; write them to the primary checkout's `plans/` | A plan in a worktree can miss the shared SSOT |

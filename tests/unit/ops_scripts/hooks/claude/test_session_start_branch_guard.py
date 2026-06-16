@@ -99,6 +99,9 @@ def test_guidance_uses_named_worktree_not_chat(monkeypatch: pytest.MonkeyPatch) 
     assert "do not use the other agent's prefix" in msg
     assert "chat/<timestamp>" in msg
     assert "auto-creates" in msg
+    assert "per wave" in msg
+    assert "apps-rg-hotspot-tests" in msg
+    assert "apps-rg-wave4-tests" in msg
 
 
 def test_main_on_feature_branch_is_noop(monkeypatch: pytest.MonkeyPatch) -> None:
