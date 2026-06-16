@@ -572,6 +572,28 @@ def _resolve_redis_url() -> str:
     return os.getenv("ADG_REDIS_URL") or _REDIS_URL_LOCAL_FALLBACK
 
 
+def _latest_adg_snapshot_id(root: Path | None = None) -> str | None:
+    """Return the current ADG SQLite snapshot id, or None when no canonical snapshot exists."""
+    adg_dir = (root or repo_root) / "artifacts" / "adg"
+    try:
+        snapshots = sorted(
+            adg_dir.glob("adg_indexed_*.sqlite"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+    except OSError:
+        return None
+
+    for snapshot in snapshots:
+        snapshot_id = snapshot.stem.replace("adg_indexed_", "")
+        try:
+            datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+        except ValueError:
+            continue
+        return snapshot_id
+    return None
+
+
 def check_redis_up() -> bool:
     """
     Return True if the ADG_REDIS_URL Redis endpoint is reachable.
@@ -613,20 +635,27 @@ def _latest_adg_snapshot_id(root: Path) -> str:
 
 def check_redis_adg_hot() -> bool:
     """
-    Return True if the ADG hot cache sentinel key exists in Redis.
-    This means ADG was fully ingested into Redis and is ready for queries.
+    Return True if the current ADG SQLite snapshot's hot-cache sentinel exists.
 
     The sentinel is an OPTIONAL fast-path accelerator only — a cold result NEVER
     blocks (Redis is a non-authoritative hot cache; SQLite is the SSOT). Resolves the
     endpoint from the ADG_REDIS_URL SSOT to stay consistent with the ingest/MCP writer.
     Fail-open: any error returns False (cold — falls through to the advisory warning).
     """
+    snapshot_id = _latest_adg_snapshot_id(repo_root)
+    if not snapshot_id:
+        return False
+
     try:
         import redis
+    except ImportError:
+        return False
 
-        snapshot_id = _latest_adg_snapshot_id(repo_root)
-        if not snapshot_id:
-            return False
+    redis_error = getattr(redis, "RedisError", RuntimeError)
+    if not isinstance(redis_error, type) or not issubclass(redis_error, BaseException):
+        redis_error = RuntimeError
+
+    try:
         client = redis.from_url(
             _resolve_redis_url(),
             decode_responses=True,
@@ -634,7 +663,7 @@ def check_redis_adg_hot() -> bool:
             socket_timeout=2,
         )
         return bool(client.exists(f"adg:v1:{snapshot_id}:_hot"))
-    except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError, redis_error):
         return False
 
 
@@ -781,8 +810,9 @@ def main() -> int:
     # Actual tier outcome (files_edited, lines_changed, layers_touched) is bound
     # later by the post_commit/post_agent pipeline via bind_outcome().
     try:
-        from tools.ledgers.hook_helpers import emit_ledger_event
         import hashlib as _hashlib
+
+        from tools.ledgers.hook_helpers import emit_ledger_event
 
         prompt_hash = _hashlib.sha256(prompt.encode("utf-8", errors="ignore")).hexdigest()[:16]
         emit_ledger_event(

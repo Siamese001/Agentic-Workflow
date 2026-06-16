@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """ADG Redis Ingest — Bulk-load ADG SQLite snapshot into Redis hot cache.
 
-Reads the latest adg_indexed_*.sqlite from artifacts/adg/, walks all nodes
-and edges, and writes them into Redis using the same key scheme as RedisCache
-so ADGService.get_node() / get_edge_fanout() get cache hits immediately.
+Reads an explicit adg_indexed_*.sqlite path or the latest snapshot from
+artifacts/adg/, walks all nodes and edges, and writes them into Redis using the
+same key scheme as RedisCache so ADGService.get_node() / get_edge_fanout() get
+cache hits immediately.
 
 Key scheme (mirrors tools/adg/cache/redis_cache.py):
     adg:v1:<snapshot_id>:node:<node_id>          → HSET (node fields, pre-ingested)
@@ -14,6 +15,7 @@ Key scheme (mirrors tools/adg/cache/redis_cache.py):
 
 Usage:
     python tools/adg/adg_redis_ingest.py           # ingest latest snapshot
+    python tools/adg/adg_redis_ingest.py --sqlite artifacts/adg/adg_indexed_MMDDYYYY_HHMM.sqlite
     python tools/adg/adg_redis_ingest.py --force   # flush old snapshot first
     python tools/adg/adg_redis_ingest.py --check   # check if cache is hot (exit 0=hot, 1=cold)
     python tools/adg/adg_redis_ingest.py --dry-run # count rows, no writes
@@ -26,11 +28,13 @@ __adg_consumer_mode__ = "inventory"
 
 
 import argparse
-from datetime import datetime
+import hashlib
+import json
 import os
 import sqlite3
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -90,8 +94,54 @@ def _snapshot_id_from_path(sqlite_path: Path) -> str:
     return sqlite_path.stem.replace("adg_indexed_", "")
 
 
+def _resolve_sqlite_path(adg_dir: Path, sqlite_arg: Path | None) -> Path:
+    """Resolve and validate the ADG SQLite snapshot path for ingest/check."""
+    if sqlite_arg is None:
+        return _find_latest_sqlite(adg_dir)
+
+    sqlite_path = sqlite_arg.expanduser()
+    if not sqlite_path.is_absolute():
+        sqlite_path = (Path.cwd() / sqlite_path).resolve()
+    else:
+        sqlite_path = sqlite_path.resolve()
+
+    if not sqlite_path.exists() or not sqlite_path.is_file():
+        print(f"ERROR: ADG SQLite snapshot not found: {sqlite_path}", file=sys.stderr)
+        sys.exit(1)
+    if not sqlite_path.name.startswith("adg_indexed_") or sqlite_path.suffix != ".sqlite":
+        print(f"ERROR: Expected adg_indexed_*.sqlite, got: {sqlite_path}", file=sys.stderr)
+        sys.exit(1)
+    snapshot_id = _snapshot_id_from_path(sqlite_path)
+    try:
+        datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+    except ValueError:
+        print(f"ERROR: Invalid ADG snapshot timestamp in {sqlite_path.name}", file=sys.stderr)
+        sys.exit(1)
+    return sqlite_path
+
+
 def _redis_key(snapshot_id: str, base: str) -> str:
     return f"adg:{CACHE_VERSION}:{snapshot_id}:{base}"
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _redis_projection_digest(*, snapshot_id: str, sqlite_digest: str, nodes_written: int, edges_written: int) -> str:
+    payload = {
+        "cache_version": CACHE_VERSION,
+        "edge_count": edges_written,
+        "node_count": nodes_written,
+        "snapshot_id": snapshot_id,
+        "sqlite_digest": sqlite_digest,
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _connect_redis():
@@ -259,6 +309,13 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
 
         ingested_at = str(time.time())
         sqlite_mtime = str(sqlite_path.stat().st_mtime)
+        sqlite_digest = _file_sha256(sqlite_path)
+        redis_digest = _redis_projection_digest(
+            snapshot_id=snapshot_id,
+            sqlite_digest=sqlite_digest,
+            nodes_written=nodes_written,
+            edges_written=edges_written,
+        )
         meta_mapping = {
             "ingested_at": ingested_at,
             "timestamp": snapshot_id,
@@ -267,8 +324,29 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
             "edge_count": str(edges_written),
             "sqlite_mtime": sqlite_mtime,
             "snapshot_id": snapshot_id,
+            "sqlite_digest": sqlite_digest,
+            "redis_digest": redis_digest,
+            "cache_version": CACHE_VERSION,
+            "hot_key": sentinel_key,
         }
         _hset_mapping(client, "adg:meta", meta_mapping)
+        snapshot_payload = {
+            "cache_version": CACHE_VERSION,
+            "edge_count": edges_written,
+            "hot_key": sentinel_key,
+            "ingested_at": float(ingested_at),
+            "node_count": nodes_written,
+            "redis_digest": redis_digest,
+            "snapshot_id": snapshot_id,
+            "sqlite_digest": sqlite_digest,
+            "sqlite_mtime": float(sqlite_mtime),
+            "sqlite_path": str(sqlite_path),
+            "timestamp": snapshot_id,
+        }
+        client.set("adg:status", snapshot_id)
+        client.set("adg:snapshot", json.dumps(snapshot_payload, sort_keys=True))
+        client.set("adg:snapshot:sqlite_digest", sqlite_digest)
+        client.set("adg:snapshot:redis_digest", redis_digest)
 
         elapsed = time.monotonic() - t0
         print(f"[adg_redis_ingest] Done in {elapsed:.1f}s — cache is HOT ✓")
@@ -278,6 +356,8 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
             "snapshot_id": snapshot_id,
             "nodes_written": nodes_written,
             "edges_written": edges_written,
+            "sqlite_digest": sqlite_digest,
+            "redis_digest": redis_digest,
             "elapsed_seconds": round(elapsed, 2),
         }
     finally:
@@ -291,6 +371,11 @@ def main() -> int:
         "--force", action="store_true", help="Flush old snapshot keys and re-ingest even if cache is hot"
     )
     parser.add_argument(
+        "--sqlite",
+        type=Path,
+        help="Exact adg_indexed_*.sqlite snapshot to ingest/check; defaults to latest artifacts/adg snapshot",
+    )
+    parser.add_argument(
         "--check", action="store_true", help="Check if cache is hot (exit 0=hot, 1=cold, no writes)"
     )
     parser.add_argument("--dry-run", action="store_true", help="Count rows and report, no Redis writes")
@@ -300,7 +385,7 @@ def main() -> int:
         parser.error("--check cannot be combined with --force or --dry-run")
 
     adg_dir = ROOT / "artifacts" / "adg"
-    sqlite_path = _find_latest_sqlite(adg_dir)
+    sqlite_path = _resolve_sqlite_path(adg_dir, args.sqlite)
     snapshot_id = _snapshot_id_from_path(sqlite_path)
 
     client = _connect_redis()

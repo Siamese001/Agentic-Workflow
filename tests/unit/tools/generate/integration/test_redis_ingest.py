@@ -9,14 +9,16 @@ Covers:
 
 from __future__ import annotations
 
+import json
 import sqlite3
-import tempfile
+import subprocess
 from pathlib import Path
-from unittest.mock import MagicMock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tools.adg.adg_redis_ingest import ingest, _redis_key
+from tools.adg.adg_redis_ingest import _redis_key, _resolve_sqlite_path, ingest
 
 SNAPSHOT_ID = "test0001_1200"
 
@@ -156,3 +158,59 @@ class TestIngestFanoutFaninPrewarm:
         # e2: src=2, dst=3, rel=imports
         assert "e2" in sadd_log.get(_redis_key(SNAPSHOT_ID, "edge:2:imports"), set())
         assert "e2" in sadd_log.get(_redis_key(SNAPSHOT_ID, "fanin:3:imports"), set())
+
+    def test_metadata_keys_are_written_for_same_snapshot(self, temp_sqlite, mock_redis):
+        """Global Redis metadata must point at the exact ingested SQLite snapshot."""
+        client, _ = mock_redis
+        hsets: dict[str, dict[str, str]] = {}
+        sets: dict[str, str] = {}
+        client.hmset.side_effect = lambda key, mapping: hsets.setdefault(key, dict(mapping))
+        client.set.side_effect = lambda key, value: sets.setdefault(key, value)
+
+        result = ingest(temp_sqlite, client)
+
+        meta = hsets["adg:meta"]
+        assert result["snapshot_id"] == SNAPSHOT_ID
+        assert meta["snapshot_id"] == SNAPSHOT_ID
+        assert meta["timestamp"] == SNAPSHOT_ID
+        assert meta["sqlite_path"] == str(temp_sqlite)
+        assert len(meta["sqlite_digest"]) == 64
+        assert len(meta["redis_digest"]) == 64
+        assert sets["adg:status"] == SNAPSHOT_ID
+        snapshot = json.loads(sets["adg:snapshot"])
+        assert snapshot["snapshot_id"] == SNAPSHOT_ID
+        assert snapshot["sqlite_path"] == str(temp_sqlite)
+        assert snapshot["sqlite_digest"] == meta["sqlite_digest"]
+        assert sets["adg:snapshot:sqlite_digest"] == meta["sqlite_digest"]
+        assert sets["adg:snapshot:redis_digest"] == meta["redis_digest"]
+
+
+class TestRedisIngestSnapshotResolution:
+    def test_explicit_sqlite_path_wins_over_newer_artifact(self, tmp_path: Path):
+        """The explicit --sqlite target is authoritative even when another file is newer."""
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+        chosen = adg_dir / "adg_indexed_06162026_0827.sqlite"
+        newer = adg_dir / "adg_indexed_06162026_0900.sqlite"
+        chosen.write_bytes(b"chosen")
+        newer.write_bytes(b"newer")
+
+        assert _resolve_sqlite_path(adg_dir, chosen) == chosen.resolve()
+
+
+class TestGenerateFullAdgRedisIntegration:
+    def test_auto_ingest_pins_exact_sqlite_path(self, temp_sqlite, tmp_path: Path):
+        """generate_full_adg integration must not let ingest rediscover latest."""
+        from tools.generate.integration.redis_ingest import _auto_ingest_to_redis
+
+        completed = subprocess.CompletedProcess(args=[], returncode=0, stdout="ok\n", stderr="")
+        with (
+            patch("agentic_core.config.redis_config.get_adg_cache_config", return_value=SimpleNamespace(ingest_timeout=9)),
+            patch("subprocess.run", return_value=completed) as run,
+        ):
+            _auto_ingest_to_redis(tmp_path, temp_sqlite)
+
+        argv = run.call_args.args[0]
+        assert "--force" in argv
+        assert "--sqlite" in argv
+        assert argv[argv.index("--sqlite") + 1] == str(temp_sqlite)

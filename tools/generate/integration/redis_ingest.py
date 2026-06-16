@@ -41,7 +41,7 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
     try:
         # ruff: noqa: S603 - Python script is trusted, internal tool usage
         result = subprocess.run(
-            [sys.executable, str(ingest_script), "--force"],
+            [sys.executable, str(ingest_script), "--force", "--sqlite", str(sqlite_path)],
             cwd=str(ROOT),
             capture_output=True,
             text=True,

@@ -29,11 +29,9 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
 
-from pre_prompt_classifier import (
+from pre_prompt_classifier import (  # noqa: E402, I001
     _detect_adg_graph_intent,
     _detect_pytest_intent,
     _latest_adg_snapshot_id,
@@ -225,8 +223,6 @@ class TestCheckPlanExists:
 
 class TestCheckRedisUp:
     def test_connection_refused_returns_false(self):
-        import socket
-
         with patch("socket.create_connection", side_effect=ConnectionRefusedError):
             assert check_redis_up() is False
 
@@ -234,20 +230,15 @@ class TestCheckRedisUp:
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
-        import socket
 
         with patch("socket.create_connection", return_value=mock_conn):
             assert check_redis_up() is True
 
     def test_os_error_fails_open_returns_true(self):
-        import socket
-
         with patch("socket.create_connection", side_effect=OSError("Network unreachable")):
             assert check_redis_up() is True
 
     def test_timeout_os_error_fails_open_returns_true(self):
-        import socket
-
         with patch("socket.create_connection", side_effect=TimeoutError("timed out")):
             assert check_redis_up() is True
 
@@ -257,58 +248,57 @@ class TestCheckRedisUp:
 # ---------------------------------------------------------------------------
 
 
+def _touch_adg_snapshot(root: Path, snapshot_id: str = "06162026_0827") -> Path:
+    adg_dir = root / "artifacts" / "adg"
+    adg_dir.mkdir(parents=True)
+    snapshot = adg_dir / f"adg_indexed_{snapshot_id}.sqlite"
+    snapshot.write_bytes(b"sqlite")
+    return snapshot
+
+
 class TestCheckRedisAdgHot:
-    def test_sentinel_found_returns_true(self):
+    def test_current_snapshot_sentinel_found_returns_true(self, tmp_path: Path):
+        _touch_adg_snapshot(tmp_path)
         mock_client = MagicMock()
         mock_client.exists.return_value = 1
         mock_redis = MagicMock()
         mock_redis.from_url.return_value = mock_client
-        with patch.dict("sys.modules", {"redis": mock_redis}), patch(
-            "pre_prompt_classifier._latest_adg_snapshot_id",
-            return_value="abc123",
-        ):
+        with patch.dict("sys.modules", {"redis": mock_redis}), patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_redis_adg_hot() is True
-        mock_client.exists.assert_called_once_with("adg:v1:abc123:_hot")
+        mock_client.exists.assert_called_once_with("adg:v1:06162026_0827:_hot")
         mock_client.scan.assert_not_called()
 
-    def test_no_sentinel_returns_false(self):
+    def test_current_snapshot_sentinel_missing_returns_false(self, tmp_path: Path):
+        _touch_adg_snapshot(tmp_path)
         mock_client = MagicMock()
         mock_client.exists.return_value = 0
         mock_redis = MagicMock()
         mock_redis.from_url.return_value = mock_client
-        with patch.dict("sys.modules", {"redis": mock_redis}), patch(
-            "pre_prompt_classifier._latest_adg_snapshot_id",
-            return_value="abc123",
-        ):
+        with patch.dict("sys.modules", {"redis": mock_redis}), patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_redis_adg_hot() is False
+        mock_client.exists.assert_called_once_with("adg:v1:06162026_0827:_hot")
+        mock_client.scan.assert_not_called()
 
-    def test_no_snapshot_returns_false_without_redis_probe(self):
+    def test_missing_snapshot_returns_false_without_redis_probe(self, tmp_path: Path):
         mock_redis = MagicMock()
-        with patch.dict("sys.modules", {"redis": mock_redis}), patch(
-            "pre_prompt_classifier._latest_adg_snapshot_id",
-            return_value="",
-        ):
+        with patch.dict("sys.modules", {"redis": mock_redis}), patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_redis_adg_hot() is False
         mock_redis.from_url.assert_not_called()
 
-    def test_redis_import_error_returns_false(self):
+    def test_redis_import_error_returns_false(self, tmp_path: Path):
+        _touch_adg_snapshot(tmp_path)
         # Python 3.12+: sys.modules["redis"]=None raises on import; simulate
         # client failure after a stub redis module is loaded.
         mock_redis_mod = MagicMock()
         mock_redis_mod.from_url.side_effect = OSError("simulated redis unavailable")
-        with patch.dict("sys.modules", {"redis": mock_redis_mod}), patch(
-            "pre_prompt_classifier._latest_adg_snapshot_id",
-            return_value="abc123",
-        ):
+        with patch.dict("sys.modules", {"redis": mock_redis_mod}), patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_redis_adg_hot() is False
 
-    def test_connection_exception_returns_false(self):
+    def test_connection_exception_returns_false(self, tmp_path: Path):
+        _touch_adg_snapshot(tmp_path)
         mock_redis = MagicMock()
         mock_redis.from_url.side_effect = OSError("connection refused")
-        with patch.dict("sys.modules", {"redis": mock_redis}), patch(
-            "pre_prompt_classifier._latest_adg_snapshot_id",
-            return_value="abc123",
-        ):
+        with patch.dict("sys.modules", {"redis": mock_redis}), patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_redis_adg_hot() is False
 
     def test_latest_adg_snapshot_id_uses_newest_snapshot(self, tmp_path):
