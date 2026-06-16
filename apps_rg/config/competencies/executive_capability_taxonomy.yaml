@@ -98,7 +98,7 @@ backfill_capabilities:
     category_id: llmops_reliability
   - term: Evaluation gauntlet design
     category_id: llmops_reliability
-  - term: Reliability telemetry controls
+  - term: Telemetry reliability lifecycle
     category_id: llmops_reliability
   - term: Engineering organization scale-out
     category_id: engineering_delivery_leadership
@@ -106,7 +106,7 @@ backfill_capabilities:
     category_id: engineering_delivery_leadership
   - term: Platform engineering scale-out
     category_id: engineering_delivery_leadership
-  - term: IP-led platform commercialization
+  - term: IP-led commercialization strategy
     category_id: commercial_operating_impact
   - term: Operating model optimization
     category_id: commercial_operating_impact
