@@ -141,6 +141,8 @@ def test_template_yaml_includes_judge_alignment_contract():
     e0 = build_executive_summary_e0()
     assert "<judge_alignment_contract>" in raw
     assert "executive_strategy_thesis" in raw
+    assert "x2_exec_summary_no_sentence_fragment" in raw
+    assert "x2_claim_ledger_row_count_matches_sentence_count" in raw
     import apps_rg.runtime.sections.executive_summary_pa as pa
 
     pa_src = Path(pa.__file__).read_text(encoding="utf-8")
@@ -206,6 +208,10 @@ def test_compiled_graph_appendix_contains_pool_and_blocking_rules():
     assert "GRAPH_PROOF_POOL_APPENDIX" in content
     assert "fact_exec_graph_aa" in content and "fact_exec_graph_bb" in content
     assert "MEDIUM, LOW, and NEEDS_VERIFICATION" in content
+    assert "evidence_authority: in-memory augmented_skills_graph projection" in content
+    assert "each claim_ledger row must cite concrete values" in content
+    assert "x2_exec_summary_allowed_fact_utilization" in content
+    assert "Section ownership: named certifications" in content
     assert "JD_TEXT (targeting only" in content
     assert "NOT PROOF" in content
     assert "unsupported jd themes" in content.lower()

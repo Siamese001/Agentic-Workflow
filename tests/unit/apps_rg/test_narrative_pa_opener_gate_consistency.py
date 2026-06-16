@@ -36,3 +36,9 @@ def test_narrative_pa_prompts_do_not_suggest_forbidden_openers() -> None:
             f"{Path(module.__file__).name} suggests gate-forbidden opener(s): {bad} "
             f"(forbidden set: {sorted(_FORBIDDEN)})"
         )
+
+
+def test_ibm_narrative_pa_names_deterministic_gate_ids() -> None:
+    text = Path(ibm_narrative_pa.__file__).read_text(encoding="utf-8")
+    assert "x2_ibm_narrative_forbidden_opener" in text
+    assert "x2_narrative_technical_specificity_floor" in text
