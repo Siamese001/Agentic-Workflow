@@ -4,8 +4,8 @@ Hard enforcement for named worktree isolation. The branch is resolved from the
 **working tree that owns the file being edited** (git is run with ``cwd`` set to
 the target file's directory), so:
 
-* Edits inside a registered named workstream worktree (on any non-protected branch)
-  -> ALLOW.
+* Edits inside a registered named workstream worktree whose branch and folder both
+  satisfy the naming contract -> ALLOW.
 * Edits to the primary checkout while it is on a protected branch
   (``main``/``master``) -> BLOCK (exit 2) with a remediation pointing at the
   worktree. This nudges all mutation into an explicit named sibling worktree.
@@ -16,7 +16,8 @@ reports correctly when invoked from inside it.
 
 Allow conditions (fail-soft / non-blocking):
 * Not a git repo / git unavailable / no resolvable path.
-* Owning working tree on any non-protected branch.
+* Owning working tree on an agent-owned, high-signal branch such as
+  ``codex-worktree-naming-contract`` whose folder basename is exactly the branch name.
 * ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 
 Self-contained: no dependency on ``lib.claude_hook_common`` (absent in some
@@ -28,6 +29,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -36,6 +38,22 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
 DEFAULT_TOPIC = "apps-rg"
 DEFAULT_IDE_OWNER = "claude"
+AGENT_OWNERS = {"codex", "claude"}
+BRANCH_TOPIC_RE = re.compile(r"^[a-z0-9][a-z0-9-]*[a-z0-9]$")
+LOW_SIGNAL_GENERATED_RE = re.compile(r"^[a-z]+-[a-z]+-[0-9a-f]{6,}$")
+GENERIC_TOPIC_TOKENS = {
+    "branch",
+    "change",
+    "changes",
+    "fix",
+    "misc",
+    "task",
+    "temp",
+    "test",
+    "update",
+    "wip",
+    "work",
+}
 
 
 def _read_payload() -> dict:
@@ -120,6 +138,24 @@ def _branch_of(cwd: Path) -> str:
     return (proc.stdout or "").strip()
 
 
+def _worktree_root(cwd: Path) -> Path | None:
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if proc.returncode != 0:
+        return None
+    root = (proc.stdout or "").strip()
+    return Path(root).resolve() if root else None
+
+
 def _protected() -> set[str]:
     raw = os.environ.get("BRANCH_PER_CHAT_PROTECTED", "")
     if raw.strip():
@@ -142,8 +178,12 @@ def _ide_owner() -> str:
 
 
 def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or f"{_ide_owner()}/"
-    return raw if raw.endswith("/") else f"{raw}/"
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip().lower()
+    if raw:
+        owner = raw.replace("/", "-").strip("-")
+        if owner in AGENT_OWNERS:
+            return f"{owner}-"
+    return f"{_ide_owner()}-"
 
 
 def _primary_checkout_name() -> str:
@@ -169,14 +209,11 @@ def _primary_checkout_name() -> str:
     return REPO_ROOT.name
 
 
-def _worktree_dir_prefix() -> str:
-    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
-    return raw or _primary_checkout_name()
-
-
 def _worktree_parent() -> Path:
     override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
-    return Path(override) if override else REPO_ROOT.parent
+    if override:
+        return Path(override)
+    return REPO_ROOT.parent / f"{_primary_checkout_name()}-worktrees"
 
 
 def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
@@ -184,12 +221,7 @@ def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
 
 
 def _worktree_dir_name(topic: str = DEFAULT_TOPIC) -> str:
-    prefix = _worktree_dir_prefix()
-    owner = _ide_owner()
-    owner_suffix = f"-{owner}"
-    if prefix == owner or prefix.endswith(owner_suffix):
-        return f"{prefix}-{topic}"
-    return f"{prefix}-{owner}-{topic}"
+    return _branch_name(topic)
 
 
 def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
@@ -201,6 +233,48 @@ def _remediation_example(topic: str = DEFAULT_TOPIC) -> str:
         f"    git worktree add {_worktree_path(topic)} -b {_branch_name(topic)} origin/main\n"
         f"    cd {_worktree_path(topic)}"
     )
+
+
+def _topic_from_agent_branch(branch: str) -> str:
+    prefix = _branch_prefix()
+    if branch.startswith(prefix):
+        return branch[len(prefix) :]
+    return ""
+
+
+def _topic_is_high_signal(topic: str) -> bool:
+    if not topic or "/" in topic or "\\" in topic:
+        return False
+    if topic != topic.lower():
+        return False
+    if LOW_SIGNAL_GENERATED_RE.fullmatch(topic):
+        return False
+    tokens = [part for part in topic.split("-") if part]
+    if len(tokens) < 2:
+        return False
+    if topic in GENERIC_TOPIC_TOKENS:
+        return False
+    if all(token in GENERIC_TOPIC_TOKENS for token in tokens):
+        return False
+    return True
+
+
+def _contract_violations(branch: str, worktree_root: Path | None) -> list[str]:
+    violations: list[str] = []
+    prefix = _branch_prefix()
+    if "/" in branch or "\\" in branch:
+        violations.append("branch must not contain slash path separators")
+    if not branch.startswith(prefix):
+        violations.append(f"branch must start with `{prefix}` for this agent")
+    else:
+        topic = _topic_from_agent_branch(branch)
+        if not BRANCH_TOPIC_RE.fullmatch(topic):
+            violations.append("branch topic must use lowercase letters, numbers, and hyphens")
+        elif not _topic_is_high_signal(topic):
+            violations.append("branch topic must be high-signal, not a generated or generic name")
+    if worktree_root is not None and worktree_root.name != branch:
+        violations.append("worktree folder basename must exactly equal the local branch name")
+    return violations
 
 
 def main() -> int:
@@ -221,17 +295,31 @@ def main() -> int:
     if not branch:
         return 0  # fail-soft
     if branch not in _protected():
-        return 0  # owning worktree is isolated — allow
+        worktree_root = _worktree_root(cwd)
+        violations = _contract_violations(branch, worktree_root)
+        if not violations:
+            return 0  # owning worktree is isolated and follows the naming contract
+        root_detail = f" Current worktree root: `{worktree_root}`." if worktree_root else ""
+        reason = (
+            f"worktree-naming-contract: editing branch '{branch}' is blocked because "
+            f"{'; '.join(violations)}.{root_detail}\n"
+            "Rename/move the worktree so the branch and folder are identical, "
+            "scope-bearing, and agent-owned, e.g.:\n"
+            f"{_remediation_example()}\n"
+            "Use `git branch -m <new-name>` for the checked-out branch and "
+            "`git worktree move <old-path> <new-path>` for the folder."
+        )
+        sys.stderr.write(reason + "\n")
+        return 2
 
     reason = (
         f"worktree-isolation: editing a protected checkout on branch '{branch}' is blocked. "
         "Use or create a named sibling worktree for the durable workstream, with an "
-        "IDE-owned branch prefix and matching C:/Git directory name, e.g.:\n"
+        "agent-owned high-signal branch whose worktree folder basename matches exactly, e.g.:\n"
         f"{_remediation_example()}\n"
-        "Codex work should use `codex/<topic>` plus a `...-codex-<topic>` worktree "
-        "directory; Claude Code work should use `claude/<topic>` plus a "
-        "`...-claude-<topic>` worktree directory. Avoid timestamped `chat/*` "
-        "branches for new work. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an "
+        "Codex work should use `codex-<high-signal-topic>`; Claude Code work should use "
+        "`claude-<high-signal-topic>`. Avoid slash namespaces, timestamped `chat/*` "
+        "branches, and generated adjective-name hashes. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an "
         "intentional on-primary change.)"
     )
     sys.stderr.write(reason + "\n")

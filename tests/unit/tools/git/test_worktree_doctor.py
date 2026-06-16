@@ -1,7 +1,8 @@
 """Tests for tools/git/worktree_doctor.py classification + runtime-link repair.
 
 Builds a real temp git repo with chat/work/feat/codex/claude worktrees and verifies the doctor's
-classification, recommended actions, the .keep-worktree opt-out, and the --link path.
+classification, naming-contract checks, recommended actions, the .keep-worktree opt-out, and the
+--link path.
 """
 from __future__ import annotations
 
@@ -55,21 +56,25 @@ def test_classifies_kinds(repo: Path) -> None:
     _add_wt(repo, "chat-a", "chat/a")
     _add_wt(repo, "work-b", "work/b")
     _add_wt(repo, "feat-legacy", "feat/legacy")
-    _add_wt(repo, "codex-c", "codex/c")
-    _add_wt(repo, "claude-d", "claude/d")
+    _add_wt(repo, "codex-apps-rg", "codex-apps-rg")
+    _add_wt(repo, "claude-governance-hooks", "claude-governance-hooks")
+    _add_wt(repo, "codex-slash-legacy", "codex/slash-legacy")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     rows = _by_branch(result)
     assert rows["main"]["kind"] == "protected"
     assert rows["chat/a"]["kind"] == "ephemeral"
-    assert rows["work/b"]["kind"] == "durable"
-    assert rows["feat/legacy"]["kind"] == "durable"
-    assert rows["codex/c"]["kind"] == "durable"
-    assert rows["codex/c"]["owner"] == "codex"
-    assert rows["codex/c"]["canonical"] is True
-    assert rows["claude/d"]["kind"] == "durable"
-    assert rows["claude/d"]["owner"] == "claude"
-    assert rows["claude/d"]["canonical"] is True
-    assert rows["work/b"]["canonical"] is True
+    assert rows["work/b"]["kind"] == "legacy-durable"
+    assert rows["feat/legacy"]["kind"] == "legacy-durable"
+    assert rows["codex-apps-rg"]["kind"] == "durable"
+    assert rows["codex-apps-rg"]["owner"] == "codex"
+    assert rows["codex-apps-rg"]["canonical"] is True
+    assert rows["claude-governance-hooks"]["kind"] == "durable"
+    assert rows["claude-governance-hooks"]["owner"] == "claude"
+    assert rows["claude-governance-hooks"]["canonical"] is True
+    assert rows["codex/slash-legacy"]["kind"] == "legacy-durable"
+    assert rows["codex/slash-legacy"]["owner"] == "codex"
+    assert rows["codex/slash-legacy"]["canonical"] is False
+    assert rows["work/b"]["canonical"] is False
 
 
 def test_merged_clean_ephemeral_is_stale_explicit_cleanup(repo: Path) -> None:
@@ -107,15 +112,31 @@ def test_keep_marker_surfaced(repo: Path) -> None:
 
 def test_render_table_runs(repo: Path) -> None:
     _add_wt(repo, "chat-a", "chat/a")
-    _add_wt(repo, "codex-c", "codex/c")
+    _add_wt(repo, "codex-apps-rg", "codex-apps-rg")
     _add_wt(repo, "other-c", "other/c")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     text = doctor._render_table(result)
     assert "worktree-doctor" in text
     assert "durable/codex" in text
-    assert "non-canonical" in text
-    assert "codex/*" in text
-    assert "claude/*" in text
+    assert "naming-contract" in text
+    assert "codex-*" in text
+    assert "claude-*" in text
+
+
+def test_rejects_generated_low_signal_branch(repo: Path) -> None:
+    _add_wt(repo, "claude-pedantic-archimedes-7c4f6c", "claude-pedantic-archimedes-7c4f6c")
+    result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
+    row = _by_branch(result)["claude-pedantic-archimedes-7c4f6c"]
+    assert row["canonical"] is False
+    assert "branch topic is not high-signal" in row["contract_violations"]
+
+
+def test_rejects_folder_branch_mismatch(repo: Path) -> None:
+    _add_wt(repo, "wrong-folder", "codex-worktree-naming-contract")
+    result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
+    row = _by_branch(result)["codex-worktree-naming-contract"]
+    assert row["canonical"] is False
+    assert "worktree folder basename does not equal branch" in row["contract_violations"]
 
 
 def test_do_link_into_worktree(repo: Path, capsys: pytest.CaptureFixture) -> None:
