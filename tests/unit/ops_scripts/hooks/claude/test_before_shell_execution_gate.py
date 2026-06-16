@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,13 +52,17 @@ def test_reason_allows_safe_commands():
 
 # --- e2e: the live hook blocks/allows via subprocess (stdin JSON payload) --------------
 
-def _run_hook(command: str) -> subprocess.CompletedProcess[str]:
+def _run_hook(command: str, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+    run_env = os.environ.copy()
+    if env:
+        run_env.update(env)
     return subprocess.run(
         [sys.executable, str(HOOK)],
         input=json.dumps(payload),
         capture_output=True,
         text=True,
+        env=run_env,
         timeout=30,
     )
 
@@ -71,3 +76,88 @@ def test_hook_blocks_interactive_pager():
 def test_hook_allows_safe_command():
     proc = _run_hook("git status")
     assert proc.returncode == 0
+
+
+def test_hook_blocks_slash_namespace_worktree_branch():
+    proc = _run_hook(
+        "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/zen-mcnulty-654733 "
+        "-b claude/zen-mcnulty-654733 origin/main"
+    )
+
+    assert proc.returncode == 2
+    assert "branch must not contain slash path separators" in proc.stdout
+    assert "branch must start with `claude-`" in proc.stdout
+
+
+def test_hook_blocks_generated_low_signal_worktree_branch():
+    proc = _run_hook(
+        "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/claude-zen-mcnulty-654733 "
+        "-b claude-zen-mcnulty-654733 origin/main"
+    )
+
+    assert proc.returncode == 2
+    assert "high-signal" in proc.stdout
+
+
+def test_hook_blocks_worktree_folder_branch_mismatch():
+    proc = _run_hook(
+        "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/zen-mcnulty-654733 "
+        "-b claude-worktree-creation-guard origin/main"
+    )
+
+    assert proc.returncode == 2
+    assert "worktree folder basename must exactly equal the local branch name" in proc.stdout
+
+
+def test_hook_blocks_checkout_branch_creation_with_slash_namespace():
+    proc = _run_hook("git checkout -b claude/zen-mcnulty-654733 origin/main")
+
+    assert proc.returncode == 2
+    assert "branch must not contain slash path separators" in proc.stdout
+
+
+def test_hook_blocks_branch_rename_to_generated_name():
+    proc = _run_hook("git branch -m claude-zen-mcnulty-654733")
+
+    assert proc.returncode == 2
+    assert "high-signal" in proc.stdout
+
+
+def test_hook_allows_canonical_worktree_branch_creation():
+    proc = _run_hook(
+        "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/claude-worktree-creation-guard "
+        "-b claude-worktree-creation-guard origin/main"
+    )
+
+    assert proc.returncode == 0
+
+
+def test_hook_allows_detached_publish_worktree():
+    proc = _run_hook(
+        "git worktree add --detach "
+        "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-main-publish-worktree origin/main"
+    )
+
+    assert proc.returncode == 0
+
+
+def test_hook_allows_non_creation_branch_metadata_command():
+    proc = _run_hook("git branch --set-upstream-to origin/main claude/zen-mcnulty-654733")
+
+    assert proc.returncode == 0
+
+
+def test_hook_allows_canonical_branch_track_creation():
+    proc = _run_hook("git branch --track claude-worktree-creation-guard origin/main")
+
+    assert proc.returncode == 0
+
+
+def test_hook_respects_codex_owner_for_branch_creation():
+    proc = _run_hook(
+        "git switch -c claude-worktree-creation-guard origin/main",
+        env={"WORKTREE_IDE_OWNER": "codex"},
+    )
+
+    assert proc.returncode == 2
+    assert "branch must start with `codex-`" in proc.stdout

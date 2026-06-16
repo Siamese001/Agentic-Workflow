@@ -106,9 +106,14 @@ def test_main_on_feature_branch_is_noop(monkeypatch: pytest.MonkeyPatch) -> None
 
     def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
         calls.append(args)
-        return 0, "codex-apps-rg"
+        return 0, "claude-apps-rg"
 
     monkeypatch.setattr(guard, "_git", fake_git)
+    monkeypatch.setattr(
+        guard,
+        "_worktree_root",
+        lambda: Path(r"C:\Git\Agentic-Workflow-FRESH-worktrees\claude-apps-rg"),
+    )
     monkeypatch.setattr(sys, "stdin", io.StringIO("{}"))
 
     assert guard.main() == 0
@@ -140,4 +145,36 @@ def test_main_on_protected_branch_emits_context_but_never_creates_worktree(
     context = payload["hookSpecificOutput"]["additionalContext"]
     assert "git worktree add" in context
     assert "claude-apps-rg" in context
+    assert not any(call[:2] == ("worktree", "add") for call in calls)
+
+
+def test_main_on_noncanonical_branch_emits_warning_but_never_mutates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
+        calls.append(args)
+        if args == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "claude/zen-mcnulty-654733"
+        if args == ("rev-parse", "--show-toplevel"):
+            return 0, r"C:\Git\Agentic-Workflow-FRESH-worktrees\zen-mcnulty-654733"
+        if args == ("rev-parse", "--git-common-dir"):
+            return 0, r"C:\Git\Agentic-Workflow-FRESH\.git"
+        raise AssertionError(args)
+
+    monkeypatch.setattr(guard, "_git", fake_git)
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"session_id": "abc"})))
+    out = io.StringIO()
+    monkeypatch.setattr(sys, "stdout", out)
+
+    assert guard.main() == 0
+    payload = json.loads(out.getvalue())
+    context = payload["hookSpecificOutput"]["additionalContext"]
+    assert "worktree-naming-contract" in context
+    assert "claude/zen-mcnulty-654733" in context
+    assert "branch must not contain slash path separators" in context
+    assert "branch must start with `claude-`" in context
+    assert "worktree folder basename must exactly equal the local branch name" in context
+    assert "PreToolUse edit guard will block" in context
     assert not any(call[:2] == ("worktree", "add") for call in calls)
