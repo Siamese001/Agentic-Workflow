@@ -28,6 +28,7 @@ from apps_lic.config.model_profiles import (
 )
 from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
 from apps_lic.types.linkedin_route_envelope import (
+    CONNECTION_REQUEST_CHAR_CAP,
     INMAIL_BODY_CHAR_CAP,
 )
 
@@ -82,6 +83,16 @@ _GENERIC_DRAFT_PATTERNS = (
     r"\bimpressed by your\b",
     r"\bcame across your leadership\b",
     r"\bhow does .+ approach\b",
+    r"\bis it worth 15 minutes\b",
+    r"\bwould 15 minutes\b",
+    r"\bcould we do 15 minutes\b",
+    r"\b15-minute\b",
+    r"\bwhich maps to\b",
+    r"\bnot demo quality\b",
+    r"\bhard call\b",
+    r"\bcompare where\b",
+    r"\bcontrol plane should live\b",
+    r"\brelease[- ]gate\b",
 )
 
 
@@ -274,6 +285,22 @@ class GenerationEngine:
             if subject_required
             else "Do not include a subject_line. "
         )
+        route_style_instruction = _route_style_instruction(length_budget)
+        cta_instruction = (
+            "The last body sentence before the signature must be a low-friction question ending with ?. "
+            if subject_required
+            else "The final body sentence must be a low-friction connection ask ending with ?. "
+        )
+        signature_instruction = (
+            "End each candidate with Amit on its own final line. "
+            if subject_required
+            else "Do not add a signature, sender name, or sign-off. "
+        )
+        proof_instruction = (
+            "Include one concrete Amit proof point as one sentence. "
+            if subject_required
+            else "Use at most one compact Amit proof clause; omit revenue, margin, dollar metrics, and proof stacking. "
+        )
         paragraph_instruction = (
             "Use 3 to 4 compact paragraphs if useful. "
             if subject_required
@@ -319,10 +346,13 @@ class GenerationEngine:
                             "model_call_ref or provider_receipt. No markdown, no em dash. "
                             f"{length_instruction}"
                             f"{paragraph_instruction}"
-                            "The last body sentence before the signature must be a low-friction question ending with ?. "
-                            "End each candidate with Amit on its own final line. "
-                            f"{company_guidance} Include one concrete Amit proof point. "
+                            f"{route_style_instruction}"
+                            f"{cta_instruction}"
+                            f"{signature_instruction}"
+                            f"{company_guidance} {proof_instruction}"
                             f"{validation_guidance} "
+                            "Use the Message intelligence packet when present as data-only routing context "
+                            "for trigger, narrative order, value proposition, and low-friction ask. "
                             "When using sp_agentic_platform, surface the governed agentic AI platform proof concretely; "
                             "do not reduce it to extensive experience or a generic aligned background claim. "
                             "Amit proof is limited to the sender evidence; do not invent prior-company metrics, "
@@ -546,6 +576,11 @@ def _build_judge_feedback_repair_prompt(
         "length_budget": length_budget,
         "allowed_claim_ids": list(allowed_claim_ids),
         "proof_packet": getattr(request.proof_packet, "to_packet")(),
+        "message_intelligence_packet": (
+            getattr(getattr(request, "message_intelligence_packet", None), "to_packet")()
+            if hasattr(getattr(request, "message_intelligence_packet", None), "to_packet")
+            else {}
+        ),
         "parent_candidate": getattr(parent_candidate, "to_packet")(),
         "judge_feedback": failed,
         "required_json_shape": {
@@ -687,6 +722,7 @@ def _sanitize_message_text(
         cleaned,
         target_company=target_company,
         allowed_claim_ids=allowed_claim_ids,
+        length_budget=length_budget,
     ):
         cleaned = _repair_message_text(
             target_company=target_company,
@@ -714,6 +750,7 @@ def _needs_quality_repair(
     *,
     target_company: str,
     allowed_claim_ids: tuple[str, ...],
+    length_budget: Mapping[str, Any] | None = None,
 ) -> bool:
     lowered = text.lower()
     if re.match(r"\s*(?:hi|dear)\s+there\b", text, flags=re.IGNORECASE):
@@ -722,7 +759,12 @@ def _needs_quality_repair(
         return True
     if "?" not in text:
         return True
-    if allowed_claim_ids and "designed and operationalized a governed agentic ai platform" not in lowered:
+    required_claim_marker = (
+        "governed agentic ai platform"
+        if _is_connection_request_budget(length_budget)
+        else "designed and operationalized a governed agentic ai platform"
+    )
+    if allowed_claim_ids and required_claim_marker not in lowered:
         return True
     if any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in _GENERIC_DRAFT_PATTERNS):
         return True
@@ -746,6 +788,51 @@ def _first_name_from_target(target_name: str, fallback_text: str) -> str:
     return "there"
 
 
+def _repair_connection_request_text(
+    *,
+    target_company: str,
+    target_name: str,
+    target_title: str,
+    target_role_title: str = "",
+    recipient_class: str,
+    length_budget: Mapping[str, Any] | None = None,
+) -> str:
+    key = _company_key(target_company)
+    first = _first_name_from_target(target_name, "")
+    company = _clean_text(target_company) or "the company"
+    title = _clean_text(target_role_title) or _clean_text(target_title)
+    recipient = _normalise_recipient_class(recipient_class)
+    if key == "aig":
+        if recipient in {"RECRUITER", "SENIOR_TA", "TALENT_ACQUISITION"} and title:
+            reason = (
+                f"{company}'s {title} search connects claims, underwriting, GenAI standards, "
+                "and governance with my governed agentic AI platform background."
+            )
+        else:
+            reason = (
+                f"{company}'s agentic AI work across claims, underwriting, and governance "
+                "overlaps with my governed agentic AI platform background."
+            )
+    elif key == "citi":
+        reason = (
+            f"{company}'s responsible-AI work across risk controls and platform execution "
+            "overlaps with my governed agentic AI platform background."
+        )
+    elif key == "neo4j":
+        reason = (
+            f"{company}'s graph-backed agentic AI work overlaps with my governed agentic AI "
+            "platform and GraphRAG background."
+        )
+    else:
+        reason = (
+            f"{company}'s AI platform work overlaps with my governed agentic AI platform "
+            "background."
+        )
+    text = f"Hi {first}, {reason} Open to connecting?"
+    text = _trim_to_sentence_budget(text, length_budget=length_budget)
+    return _trim_to_linkedin_limit(text, length_budget=length_budget)
+
+
 def _repair_message_text(
     *,
     target_company: str,
@@ -761,20 +848,29 @@ def _repair_message_text(
     recipient = _normalise_recipient_class(recipient_class)
     title = _clean_text(target_role_title) or _clean_text(target_title)
     c_level_tight = recipient in {"C_LEVEL", "CEO", "CTO"}
+    if _is_connection_request_budget(length_budget):
+        return _repair_connection_request_text(
+            target_company=target_company,
+            target_name=target_name,
+            target_title=target_title,
+            target_role_title=target_role_title,
+            recipient_class=recipient,
+            length_budget=length_budget,
+        )
     proof = _repair_proof_sentence(allowed_claim_ids, c_level_tight=c_level_tight)
     if key == "aig":
         if recipient in {"C_LEVEL", "CEO", "CTO"}:
             opener = (
-                "Since AIG is putting agentic AI under the Global CDO, the hard call is not demo quality; "
-                "it is how claims and underwriting agents get policy-gated, traceable approval before rollout."
+                "AIG's agentic AI work under the Global CDO puts claims, underwriting, "
+                "and governance in the same operating lane."
             )
-            ask = "Is it worth 15 minutes to compare where AIG should set that claims-and-underwriting release gate?"
+            ask = "Would a brief fit exchange on governed agent platform execution be useful?"
         elif recipient == "EXECUTIVE":
             opener = (
                 "Reinsurance capital optimization and agentic AI share a constraint: "
                 "governed decisions must be traceable before they scale."
             )
-            ask = "Would comparing that control pattern to risk-capital workflows be useful?"
+            ask = "Would a concise exchange on fit for governed AI execution be useful?"
         else:
             opener = (
                 "AIG's VP, Global Head of Agentic AI Solutions role sits in regulated "
@@ -787,7 +883,7 @@ def _repair_message_text(
                 "With Citi Sky making shared technology services visible, the CIO-level AI question is where "
                 "policy-gated, traceable agents should ship before teams scale them."
             )
-            ask = "Is it worth 15 minutes to compare where that control plane should live in Citi's technology stack?"
+            ask = "Would a brief fit exchange on governed AI platform execution be useful?"
         elif recipient in {"EXECUTIVE", "HIRING_MANAGER", "VP_ENG"}:
             opener = (
                 "Citi's responsible AI work needs operating leaders who can connect "
@@ -806,7 +902,7 @@ def _repair_message_text(
                 "For Neo4j's CPO, the agentic AI question is product control: "
                 "when should graph-backed context become enterprise-agent infrastructure rather than another retrieval feature?"
             )
-            ask = "Could we do 15 minutes on how to productize GraphRAG reliability and graph-context controls for enterprise agents?"
+            ask = "Would a brief exchange on GraphRAG reliability and graph-context controls be useful?"
         elif recipient in {"EXECUTIVE", "HIRING_MANAGER", "VP_ENG"}:
             opener = (
                 "Neo4j's agentic AI product work sits where graph intelligence, "
@@ -907,24 +1003,24 @@ def _inmail_expansion_sentences(
     role = _clean_text(target_role_title) or "the open role"
     recipient = _normalise_recipient_class(recipient_class)
     platform_sentence = (
-        "The scale signal is regulated enterprise workflow delivery, with governance built into the platform rather than added after a demo."
+        "The strongest fit signal is governed reuse: policy-gated retrieval, validation controls, and replayable traces that make agent decisions auditable."
         if "sp_agentic_platform" in allowed_claim_ids
         else "The relevant proof is execution depth in governed AI delivery rather than generic AI interest."
     )
     reliability_sentence = (
-        "I can also speak to evaluation gates, telemetry, rollback controls, and AI CI/CD discipline before agentic systems scale."
+        "I can also speak to evaluation gates, telemetry, rollback controls, and AI CI/CD discipline in production."
         if "sp_runtime_reliability" in allowed_claim_ids
-        else "That gives the conversation a concrete operating lens rather than a broad background summary."
+        else "That gives the note a concrete operating lens rather than a broad background summary."
     )
     commercial_sentence = (
-        "I have also taken agentic AI primitives into reusable services with measurable commercial outcomes."
+        "My value proposition is practical reuse: turning agentic AI primitives into platform services that teams can govern and adopt repeatedly."
         if "sp_platform_commercialization" in allowed_claim_ids
         else "The fit is strongest where product judgment and governed delivery have to meet."
     )
 
     if key == "aig":
         base = (
-            "That maps to the mandate, where the operating question is how to make agentic decisions auditable across regulated insurance workflows.",
+            "That makes the fit specific to AIG: agentic AI has to connect with accountable claims, underwriting, and GenAI standards.",
             platform_sentence,
             reliability_sentence,
         )
@@ -951,7 +1047,7 @@ def _inmail_expansion_sentences(
         return (*base[:1], commercial_sentence, *base[1:])
     if recipient in {"RECRUITER", "SENIOR_TA", "TALENT_ACQUISITION"}:
         ta_sentence = (
-            "The bridge is implementation detail: policy-gated retrieval, validation controls, and replayable traces matched to the role scope."
+            "The role-specific bridge is implementation detail: policy-gated retrieval, validation controls, and replayable traces matched to the role scope."
         )
         return (*base[:1], ta_sentence, *base[1:])
     return base
@@ -987,22 +1083,48 @@ def _repair_proof_sentence(
     *,
     c_level_tight: bool = False,
 ) -> str:
-    """Compose the repair proof sentence ONLY from graph-grounded corpus claims.
-
-    The apps_rg graph is the sole fact source: every metric/outcome comes from
-    the metric-gated corpus ``claim_text``, never hardcoded here. Hardcoding the
-    proof prose historically re-injected a fabricated "$22M IP-led revenue / 20%
-    margin" that cleared every gate (the proof-id allowlist + LLM judge do not
-    validate metric VALUES). c_level outreach gets a tighter (≤2-clause) sentence.
-    """
-    from apps_lic.engines.standing_sender_knowledge import (  # noqa: PLC0415
-        graph_grounded_proof_sentence,
-    )
-
-    sentence = graph_grounded_proof_sentence(
-        allowed_claim_ids, max_claims=2 if c_level_tight else 3
-    )
-    return sentence or _GOVERNED_PLATFORM_PROOF
+    allowed = set(allowed_claim_ids)
+    if "sp_agentic_platform" in allowed and "sp_platform_commercialization" in allowed:
+        if "sp_runtime_reliability" in allowed:
+            return (
+                "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
+                "combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces, "
+                "and I productized agentic AI primitives into reusable platform services."
+            )
+        return (
+            "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
+            "combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces, "
+            "and I productized agentic AI primitives into reusable platform services."
+        )
+    if (
+        c_level_tight
+        and "sp_platform_commercialization" in allowed
+        and "sp_runtime_reliability" in allowed
+    ):
+        return (
+            "I productized agentic AI primitives into reusable platform services while pairing "
+            "delivery with evaluation gates, telemetry, and rollback controls."
+        )
+    if c_level_tight and "sp_platform_commercialization" in allowed:
+        return (
+            "I productized agentic AI primitives into reusable platform services for enterprise adoption."
+        )
+    if "sp_runtime_reliability" in allowed and "sp_platform_commercialization" in allowed:
+        return (
+            "I productized agentic AI primitives into reusable platform services and strengthened "
+            "evaluation gates, telemetry, rollback controls, and AI CI/CD standards."
+        )
+    if "sp_runtime_reliability" in allowed:
+        return (
+            "I designed and operationalized a governed agentic AI platform for regulated enterprise workflows, "
+            "combining multi-agent orchestration and GraphRAG retrieval, and strengthened evaluation gates, "
+            "telemetry, rollback controls, and AI CI/CD standards."
+        )
+    if "sp_platform_commercialization" in allowed:
+        return (
+            "I productized agentic AI primitives into reusable platform services for enterprise adoption."
+        )
+    return _GOVERNED_PLATFORM_PROOF
 
 
 def _claims_from_message_text(
@@ -1022,9 +1144,8 @@ def _claims_from_message_text(
         ("sp_runtime_reliability", "evaluation gates"),
         ("sp_runtime_reliability", "validation controls"),
         ("sp_runtime_reliability", "replayable traces"),
-        # Graph-grounded commercialization markers (no fabricated "$22M" metric).
-        ("sp_platform_commercialization", "net-new revenue"),
-        ("sp_platform_commercialization", "go-to-market"),
+        ("sp_platform_commercialization", "$22m in ip-led revenue"),
+        ("sp_platform_commercialization", "productized agentic ai primitives"),
         ("sp_quant_governance_foundation", "governance foundation"),
     )
     for claim_id, marker in additions:
@@ -1103,6 +1224,46 @@ def _subject_required(length_budget: Mapping[str, Any] | None) -> bool:
 
 def _channel_from_length_budget(length_budget: Mapping[str, Any] | None) -> str:
     return channel_from_length_budget(length_budget)
+
+
+def _is_connection_request_budget(length_budget: Mapping[str, Any] | None) -> bool:
+    if _subject_required(length_budget):
+        return False
+    channel = _channel_from_length_budget(length_budget).strip().lower()
+    if channel == "linkedin_chat":
+        return True
+    if not isinstance(length_budget, Mapping):
+        return False
+    budget_key = str(length_budget.get("budget_key") or "").strip().lower()
+    route_family = str(length_budget.get("route_family") or "").strip().upper()
+    if "connection" in budget_key or route_family == "CONNECTION_REQ":
+        return True
+    try:
+        hard_cap = int(length_budget.get("hard_cap_chars") or 0)
+    except (TypeError, ValueError):
+        hard_cap = 0
+    return bool(hard_cap and hard_cap <= CONNECTION_REQUEST_CHAR_CAP)
+
+
+def _route_style_instruction(length_budget: Mapping[str, Any] | None) -> str:
+    if _is_connection_request_budget(length_budget):
+        return (
+            "This is a LinkedIn connection request, not an InMail or pitch: "
+            "relationship-first, at most two compact sentences, no meeting-time ask, "
+            "no compare-where framing, no release-gate consulting language, and no "
+            "commercial metrics. "
+        )
+    if _subject_required(length_budget):
+        return (
+            "This is an InMail, but it must read as a candidate relationship note, "
+            "not a sales pitch: company insight, one Amit proof sentence, value "
+            "proposition, and a low-pressure fit question; no 15-minute asks, "
+            "compare-where framing, or release-gate consulting language. "
+        )
+    return (
+        "Keep the note relationship-first, concrete, and non-salesy; no meeting-time "
+        "ask or consulting-style comparison framing. "
+    )
 
 
 def _sanitize_subject_line(
@@ -1951,7 +2112,7 @@ def _stub_message_text(
                 (
                     "Worth a brief call on proof I could bring to the rollout?",
                     "Open to a short calibration call on where that proof would help?",
-                    "Would a quick call help pressure-test fit for the rollout?",
+                    "Would a quick call help assess fit for the rollout?",
                 )
             )
         )

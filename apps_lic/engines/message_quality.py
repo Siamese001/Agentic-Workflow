@@ -68,6 +68,20 @@ BANNED_GENERIC_PHRASES: tuple[str, ...] = (
     "exciting opportunity",
     "i think i'd be a great fit",
     "please let me know if you have any questions",
+    "is it worth 15 minutes",
+    "would 15 minutes",
+    "could we do 15 minutes",
+    "15-minute product-fit",
+    "compare where",
+    "compare this against",
+    "control plane should live",
+    "release-gate",
+    "release gate",
+    "pressure-test",
+    "pressure test",
+    "which maps to",
+    "not demo quality",
+    "hard call",
 )
 
 _EXEC_CLASSES = {
@@ -142,7 +156,7 @@ _CLASS_CTAS: dict[str, tuple[str, ...]] = {
         "Would a targeted resume review help decide whether to advance the conversation?",
     ),
     CLASS_SENIOR_TA: (
-        "Would a short discussion help pressure-test fit for this req and the broader AI talent plan?",
+        "Would a short discussion help assess fit for this req and the broader AI talent plan?",
         "Would it be useful to compare the profile against the search strategy behind the req?",
         "Worth a brief conversation if this role is part of a larger AI platform buildout?",
     ),

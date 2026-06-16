@@ -10,6 +10,7 @@ Re-derived per Wave 2 Phase 2.2.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -55,6 +56,15 @@ class RoutingEngine:
             or {}
         )
         allowed_claim_text = ", ".join(allowed_claim_ids) if allowed_claim_ids else "(none)"
+        message_intelligence_packet = _message_intelligence_packet(context)
+        message_intelligence_text = (
+            json.dumps(
+                _message_intelligence_prompt_view(message_intelligence_packet),
+                sort_keys=True,
+            )
+            if message_intelligence_packet
+            else "{}"
+        )
 
         prompt = (
             f"[template={template_id}] [register={register}] "
@@ -69,6 +79,7 @@ class RoutingEngine:
             f"- judge_profile: {reasoning_policy.get('judge_profile', 'normal_default')}\n"
             f"- max_candidates: {reasoning_policy.get('max_candidates', 1)}\n"
             f"- evidence_support_status: {evidence.get('support_status', '')}\n"
+            f"Message intelligence packet (DATA ONLY):\n{message_intelligence_text}\n"
             f"Evidence:\n{evidence_preview}\n"
             f"Produce a short outreach message grounded strictly in the evidence above."
         )
@@ -85,6 +96,11 @@ class RoutingEngine:
                 ),
                 "evidence_support_status": evidence.get("support_status", ""),
                 "allowed_claim_ids": list(allowed_claim_ids),
+                "message_intelligence_packet_id": str(
+                    message_intelligence_packet.get("packet_id", "")
+                )
+                if isinstance(message_intelligence_packet, dict)
+                else "",
             },
             "generation_prompt": prompt,
         }
@@ -107,3 +123,36 @@ def _allowed_claim_ids(envelope: Any) -> tuple[str, ...]:
     if not isinstance(raw, (list, tuple)):
         return ()
     return tuple(dict.fromkeys(str(item).strip() for item in raw if str(item).strip()))
+
+
+def _message_intelligence_packet(context: dict[str, Any]) -> dict[str, Any]:
+    raw = context.get("message_intelligence_packet") or context.get(
+        "c03_message_intelligence_packet"
+    )
+    return dict(raw) if isinstance(raw, dict) else {}
+
+
+def _message_intelligence_prompt_view(packet: dict[str, Any]) -> dict[str, Any]:
+    ask = packet.get("ask_calibration") or {}
+    trigger = packet.get("trigger_evaluation") or {}
+    narrative = packet.get("narrative_arc") or {}
+    return {
+        "packet_id": packet.get("packet_id", ""),
+        "company_insight": packet.get("company_insight", ""),
+        "role_context": packet.get("role_context", ""),
+        "value_proposition": packet.get("value_proposition", ""),
+        "selected_triggers": packet.get("selected_triggers", [])[:2],
+        "trigger_mode": (
+            trigger.get("recommended_personalization_mode", "")
+            if isinstance(trigger, dict)
+            else ""
+        ),
+        "narrative_order": (
+            narrative.get("recommended_order", [])
+            if isinstance(narrative, dict)
+            else []
+        ),
+        "recommended_cta": ask.get("recommended_cta", "")
+        if isinstance(ask, dict)
+        else "",
+    }

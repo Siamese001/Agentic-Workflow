@@ -175,6 +175,118 @@ def test_inmail_generation_expands_short_provider_body_to_budget_and_role_subjec
     assert generation_engine_module._word_count_text(draft["message_text"]) >= 95
     assert len(draft["message_text"]) <= 1900
     assert draft["message_text"].strip().endswith("?")
+    lowered = draft["message_text"].lower()
+    for forbidden in (
+        "is it worth 15 minutes",
+        "release gate",
+        "release-gate",
+        "compare where",
+        "$22m",
+        "20% margin",
+    ):
+        assert forbidden not in lowered
+
+
+def test_connection_request_repairs_pitchy_provider_body_without_signature(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    pitchy_body = (
+        "Hi Scott, Since AIG is putting agentic AI under the Global CDO, the hard call "
+        "is not demo quality; it is how claims and underwriting agents get policy-gated, "
+        "traceable approval before rollout. I designed and operationalized a governed "
+        "agentic AI platform for regulated enterprise workflows, combining multi-agent "
+        "orchestration, GraphRAG retrieval, policy gating, validation controls, and "
+        "replayable traces; I also productized agentic AI primitives into reusable "
+        "services, generating $22M in IP-led revenue and 20% margin expansion. Is it "
+        "worth 15 minutes to compare where AIG should set that claims-and-underwriting "
+        "release gate?\n\nAmit"
+    )
+    provider_payload = {
+        "message_text": pitchy_body,
+        "subject_line": "AIG release gate",
+        "selected_candidate_id": "1",
+        "candidates": [
+            {
+                "candidate_id": "1",
+                "draft_text": pitchy_body,
+                "subject_line": "AIG release gate",
+                "claims_used": [
+                    "sp_agentic_platform",
+                    "sp_runtime_reliability",
+                    "sp_platform_commercialization",
+                ],
+            }
+        ],
+        "claims_used": [
+            "sp_agentic_platform",
+            "sp_runtime_reliability",
+            "sp_platform_commercialization",
+        ],
+    }
+
+    def fake_qwen_generation(**_kwargs: object) -> str:
+        return json.dumps(provider_payload)
+
+    monkeypatch.delenv("APPS_LIC_TEST_PROVIDER_STUB", raising=False)
+    monkeypatch.setattr(
+        GenerationEngine,
+        "_try_qwen_generation",
+        staticmethod(fake_qwen_generation),
+    )
+    context = {
+        "generation_prompt": (
+            "Target contact: Scott Hallworth | Global Chief Data Officer | AIG\n"
+            "Sender proof allowed claim IDs: sp_agentic_platform, sp_runtime_reliability, "
+            "sp_platform_commercialization\n"
+            "[recipient_class=C_LEVEL]\n"
+            "Draft a LinkedIn connection request grounded only in the supplied company context."
+        ),
+        "sender_persona": {
+            "voice_register": "professional",
+            "recipient_class": "C_LEVEL",
+            "target_contact": {
+                "verified_name": "Scott Hallworth",
+                "title": "Global Chief Data Officer",
+                "company_name": "AIG",
+            },
+        },
+        "c03_allowed_claim_ids": [
+            "sp_agentic_platform",
+            "sp_runtime_reliability",
+            "sp_platform_commercialization",
+        ],
+        "reasoning_policy": _strict_policy(),
+        "c03_length_budget": {
+            "budget_key": "linkedin_chat_connection_request",
+            "hard_cap_chars": 300,
+            "max_sentences": 2,
+            "channel": "linkedin_chat",
+            "route_family": "CONNECTION_REQ",
+            "subject_required": False,
+        },
+    }
+
+    draft = GenerationEngine().execute(context)["draft_message"]
+    text = draft["message_text"]
+    lowered = text.lower()
+
+    assert draft["channel"] == "linkedin_chat"
+    assert draft["subject_line"] == ""
+    assert len(text) <= 300
+    assert text.strip().endswith("?")
+    assert not text.lower().endswith("amit")
+    assert "open to connecting?" in lowered
+    assert "governed agentic ai platform" in lowered
+    for forbidden in (
+        "hard call",
+        "15 minutes",
+        "release gate",
+        "release-gate",
+        "compare where",
+        "$22m",
+        "20% margin",
+    ):
+        assert forbidden not in lowered
 
 
 def test_message_quality_blocks_clear_draft_without_claim_ids() -> None:

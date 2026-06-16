@@ -1071,6 +1071,9 @@ def run_canonical_apps_lic_spine(
             validated_request=validated_request,
             sender_proof_envelope=c03.pa_sender_proof_envelope if c03 else None,
             length_budget=c03.length_budget.to_packet() if c03 else None,
+            message_intelligence_packet=(
+                c03.message_intelligence_packet.to_packet() if c03 else None
+            ),
         )
         pa_invoked = True
         pa_path = _sr.write_stage_receipt(

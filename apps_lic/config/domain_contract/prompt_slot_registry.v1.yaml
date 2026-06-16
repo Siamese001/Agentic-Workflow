@@ -21,6 +21,7 @@ render_order:
   - C0
   - E0
   - M0
+  - MI0
   - H0
   - Y0
   - A0
@@ -107,6 +108,19 @@ prompt_slots:
       - self_consistency_level
       - judge_profile
     description: Model-facing reasoning and generation approach constraints.
+  MI0:
+    name: message_intelligence_packet
+    authority_level: APP_EXTENSION
+    authority_rank: 45
+    source_family: apps_lic_extension
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - packet_id
+      - readiness
+      - source_refs
+    description: Data-only message intelligence packet lineage for whole-message generation.
   H0:
     name: healing_and_style_constraints
     authority_level: HEALING
@@ -266,3 +280,4 @@ core_compatibility:
     - A0
     - N0
     - L0
+    - MI0

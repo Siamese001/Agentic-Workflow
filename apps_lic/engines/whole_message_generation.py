@@ -39,6 +39,10 @@ from apps_lic.engines.message_type_requirement_gate import (
     STATUS_REQUIREMENTS_PASS,
     MessageRequirementGateResult,
 )
+from apps_lic.engines.message_intelligence_packet import (
+    MessageIntelligencePacket,
+    build_message_intelligence_packet,
+)
 from apps_lic.engines.recipient_classification import (
     CLASS_CEO,
     CLASS_CTO,
@@ -209,6 +213,7 @@ class WholeMessageGenerationRequest:
     target_context: Mapping[str, str]
     jd_fields: Mapping[str, str]
     proof_packet: SenderProofGraphPacket
+    message_intelligence_packet: MessageIntelligencePacket
     length_budget: LengthBudget
     reasoning_policy: ReasoningPolicy
     prompt_contract_id: str
@@ -237,6 +242,7 @@ class WholeMessageGenerationRequest:
             "jd_fields": dict(self.jd_fields),
             "proof_packet_id": self.proof_packet.proof_packet_id,
             "allowed_claim_ids": list(self.proof_packet.proof_ids),
+            "message_intelligence_packet": self.message_intelligence_packet.to_packet(),
             "length_budget": self.length_budget.to_packet(),
             "reasoning_policy": self.reasoning_policy.to_packet(),
             "prompt_contract_id": self.prompt_contract_id,
@@ -588,6 +594,18 @@ def build_whole_message_generation_request(
         modifiers=modifiers,
         send_mode=send_mode,
     )
+    message_intelligence_packet = build_message_intelligence_packet(
+        recipient_class=message_gate_result.recipient_class,
+        message_type=message_gate_result.message_type,
+        channel=channel,
+        outreach_mode=outreach_mode,
+        opportunity_documents=documents,
+        target_context=target_context,
+        jd_fields=jd_fields,
+        proof_packet=sender_proof_packet,
+        campaign_objective=campaign_objective,
+        desired_next_step=desired_next_step,
+    )
 
     blocking: list[str] = []
     if recipient_derivation.status != RECIPIENT_STATUS_DERIVED:
@@ -598,11 +616,14 @@ def build_whole_message_generation_request(
         blocking.append(REASON_SENDER_PROOF_NOT_READY)
     if send_mode not in _ALLOWED_SEND_MODES:
         blocking.append(REASON_SEND_MODE_FORBIDDEN)
+    if not message_intelligence_packet.ready:
+        blocking.extend(message_intelligence_packet.blocking_reasons)
 
     component_hash_map = {
         "recipient_class_derivation": recipient_derivation.evidence_packet_id,
         "message_requirement_gate": _sha256_canonical(message_gate_result.to_packet()),
         "sender_proof_graph": sender_proof_packet.proof_packet_id,
+        "message_intelligence_packet": message_intelligence_packet.packet_id,
         "length_budget": _sha256_canonical(length_budget.to_packet()),
         "reasoning_policy": _sha256_canonical(reasoning_policy.to_packet()),
         "source_snapshot_ids": _sha256_canonical(source_snapshot_ids),
@@ -619,6 +640,7 @@ def build_whole_message_generation_request(
         "jd_fields": jd_fields,
         "proof_packet_id": sender_proof_packet.proof_packet_id,
         "allowed_claim_ids": sender_proof_packet.proof_ids,
+        "message_intelligence_packet": message_intelligence_packet.to_packet(),
         "length_budget": length_budget.to_packet(),
         "reasoning_policy": reasoning_policy.to_packet(),
         "component_hash_map": component_hash_map,
@@ -640,6 +662,7 @@ def build_whole_message_generation_request(
         target_context=target_context,
         jd_fields=jd_fields,
         proof_packet=sender_proof_packet,
+        message_intelligence_packet=message_intelligence_packet,
         length_budget=length_budget,
         reasoning_policy=reasoning_policy,
         prompt_contract_id=_sha256_canonical(prompt_seed),
@@ -689,10 +712,100 @@ def _proof_claim_fragment(
     points = request.proof_packet.selected_proof_points
     if not points:
         return "I work on governed AI platforms for regulated enterprise settings", ()
-    point = points[variant_index % len(points)]
+    preferred_ids = (
+        ("sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization")
+        if str(request.channel or "").strip().lower() == CHANNEL_LINKEDIN_INMAIL
+        else ()
+    )
+    point = next(
+        (
+            candidate
+            for proof_id in preferred_ids
+            for candidate in points
+            if candidate.proof_id == proof_id
+        ),
+        points[variant_index % len(points)],
+    )
     claim = _clean(point.claim_text).rstrip(".")
     claim = re.sub(r"^(Designed|Strengthened|Productized|Architected|Brings)\b", lambda m: m.group(0).lower(), claim)
-    return f"My background: {claim}", (point.proof_id,)
+    lowered = claim.lower()
+    if lowered.startswith("brings "):
+        sentence = "I bring " + claim[7:]
+    elif lowered.startswith(("designed ", "strengthened ", "productized ", "architected ")):
+        sentence = f"I {claim}"
+    else:
+        sentence = f"My relevant proof is {claim}"
+    return sentence, (point.proof_id,)
+
+
+def _punctuated(sentence: str) -> str:
+    cleaned = _clean(sentence).rstrip()
+    if not cleaned:
+        return ""
+    return cleaned if cleaned[-1] in ".!?" else cleaned + "."
+
+
+def _route_requires_signature(request: WholeMessageGenerationRequest) -> bool:
+    return bool(getattr(request.length_budget, "signature_required", True))
+
+
+def _route_is_connection_request(request: WholeMessageGenerationRequest) -> bool:
+    return str(getattr(request.length_budget, "route_family", "") or "").upper() == "CONNECTION_REQ"
+
+
+def _finalize_message(request: WholeMessageGenerationRequest, text: str) -> str:
+    body = _clean(text)
+    if _route_requires_signature(request):
+        return _with_signature(body)
+    return body
+
+
+def _packet_trigger(request: WholeMessageGenerationRequest) -> str:
+    target_trigger = _clean(dict(request.target_context).get("company_trigger"))
+    if target_trigger:
+        return _short_trigger_signal(target_trigger, max_words=16)
+    packet = request.message_intelligence_packet
+    if packet.selected_triggers:
+        return _short_trigger_signal(packet.selected_triggers[0].description, max_words=16)
+    if packet.company_insight:
+        return _short_trigger_signal(packet.company_insight, max_words=16)
+    return ""
+
+
+def _packet_value_sentence(request: WholeMessageGenerationRequest) -> str:
+    value = _clean(request.message_intelligence_packet.value_proposition)
+    if not value:
+        return "That gives the note a concrete operating lens rather than a broad background summary."
+    return f"That makes the fit specific: {value}."
+
+
+def _packet_ask(
+    request: WholeMessageGenerationRequest,
+    *,
+    variant_index: int,
+) -> str:
+    if _route_is_connection_request(request):
+        return "Open to connecting?"
+    recommended = _clean(request.message_intelligence_packet.ask_calibration.recommended_cta)
+    recommended = recommended.replace(" — ", "; ").replace(" - ", "; ")
+    if recommended.endswith("?") and "15" not in recommended and "20" not in recommended:
+        return recommended
+    next_step = _clean(request.desired_next_step)
+    asks = (
+        f"Would {next_step} be useful?" if next_step else "Would a brief exchange be useful?",
+        f"Open to a short fit exchange?" if not next_step else f"Open to {next_step} if the fit is worth a closer look?",
+        "Would it be useful to compare notes briefly?",
+    )
+    return asks[variant_index % len(asks)]
+
+
+def _role_reference(request: WholeMessageGenerationRequest) -> str:
+    jd = dict(request.jd_fields)
+    position = _clean(jd.get("position_name") or jd.get("job_title"))
+    req = _clean(jd.get("requisition_number"))
+    if position and req:
+        return f"{position} ({req})"
+    return position or "the open role"
 
 
 def _render_candidate_text(
@@ -701,50 +814,109 @@ def _render_candidate_text(
     variant_index: int,
 ) -> tuple[str, tuple[str, ...]]:
     target = dict(request.target_context)
-    jd = dict(request.jd_fields)
     first = _first_name(target.get("name", ""))
     company = _clean(target.get("company")) or "your team"
     objective = _clean(request.campaign_objective)
-    next_step = _clean(request.desired_next_step) or "a quick conversation"
     proof_fragment, claims_used = _proof_claim_fragment(request, variant_index=variant_index)
-    position = _clean(jd.get("position_name") or jd.get("job_title"))
-    req = _clean(jd.get("requisition_number"))
-    trigger = _clean(target.get("company_trigger"))
+    role_ref = _role_reference(request)
+    trigger = _packet_trigger(request) or _clean(target.get("company_trigger"))
     referrer = _clean(target.get("referrer_name"))
     prior_thread = _clean(target.get("prior_thread_summary"))
+    value_sentence = _packet_value_sentence(request)
+    ask = _packet_ask(request, variant_index=variant_index)
 
-    asks = (
-        f"Would {next_step} be reasonable?",
-        f"Open to {next_step} if the fit is worth a closer look?",
-        f"Would it be useful to compare notes briefly?",
-    )
-    ask = asks[variant_index % len(asks)]
+    if _route_is_connection_request(request):
+        connection_context = (
+            f"{company}'s {role_ref} work"
+            if request.message_type == MESSAGE_ROLE_SPECIFIC
+            else f"{company}'s AI work"
+        )
+        if trigger:
+            connection_context = (
+                trigger
+                if trigger.lower().startswith(company.lower())
+                else f"{company}'s {trigger} signal"
+            )
+            connection_body = (
+                f"Hi {first}, {connection_context} caught my attention because it connects to my governed "
+                f"agentic AI platform background. {ask}"
+            )
+        else:
+            connection_body = (
+                f"Hi {first}, {connection_context} overlaps with my governed "
+                f"agentic AI platform background. {ask}"
+            )
+        return (
+            _finalize_message(
+                request,
+                connection_body,
+            ),
+            claims_used,
+        )
+
+    inmail = str(request.channel or "").strip().lower() == CHANNEL_LINKEDIN_INMAIL
+    if inmail:
+        if request.message_type == MESSAGE_ROLE_SPECIFIC:
+            opener = f"Hi {first}, I noticed {company}'s {role_ref} role."
+            context = (
+                f"The role signal is specific: {role_ref} appears to need governed AI platform delivery "
+                "with enough validation and traceability to work in regulated enterprise workflows."
+            )
+        elif request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
+            trigger_ref = _short_trigger_signal(trigger or f"{company}'s AI platform work", max_words=18).rstrip(".!?")
+            opener = f"Hi {first}, I noticed {trigger_ref}."
+            context = (
+                "The useful operating question is whether agent workflows can be policy-gated, "
+                "validated, and replayed before teams rely on them in regulated workflows."
+            )
+        elif request.message_type == MESSAGE_REFERRAL_ASK:
+            bridge = f"{referrer} suggested I reach out" if referrer else "A warm intro brought you to mind"
+            opener = f"Hi {first}, {bridge}."
+            context = "The relevant fit signal is governed AI platform execution with clean proof boundaries."
+        elif request.message_type == MESSAGE_FOLLOW_UP:
+            thread_ref = prior_thread or "our earlier exchange"
+            opener = f"Hi {first}, following up on {thread_ref}."
+            context = "The useful follow-up angle is fit against governed AI platform execution."
+        else:
+            opener = f"Hi {first}, I saw your work at {company}."
+            context = _punctuated(objective or "The relevant signal is governed AI platform execution.")
+        body = " ".join(
+            part
+            for part in (
+                _punctuated(opener),
+                _punctuated(context),
+                _punctuated(proof_fragment),
+                _punctuated(value_sentence),
+                ask,
+            )
+            if part
+        )
+        return _finalize_message(request, body), claims_used
 
     if request.message_type == MESSAGE_ROLE_SPECIFIC:
-        role_ref = position or "the open role"
-        req_ref = f" ({req})" if req else ""
         return (
-            _with_signature(
-                f"Hi {first}, I noticed {company}'s {role_ref} role{req_ref}. "
-                f"{proof_fragment}, which maps to the platform and governance work behind this kind of mandate. "
-                f"{ask}"
+            _finalize_message(
+                request,
+                f"Hi {first}, I noticed {company}'s {role_ref} role. "
+                f"{proof_fragment}. {ask}"
             ),
             claims_used,
         )
     if request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
         trigger_ref = _short_trigger_signal(trigger or f"{company}'s AI platform work").rstrip(".!?")
         return (
-            _with_signature(
+            _finalize_message(
+                request,
                 f"Hi {first}, I noticed {trigger_ref}. "
-                f"{proof_fragment}; the edge is making governance accelerate adoption. "
-                f"{ask}"
+                f"{proof_fragment} for governance-heavy AI delivery. {ask}"
             ),
             claims_used,
         )
     if request.message_type == MESSAGE_REFERRAL_ASK:
         bridge = f"{referrer} suggested I reach out" if referrer else "A warm intro brought you to mind"
         return (
-            _with_signature(
+            _finalize_message(
+                request,
                 f"Hi {first}, {bridge}. "
                 f"{proof_fragment}. "
                 f"{ask}"
@@ -754,7 +926,8 @@ def _render_candidate_text(
     if request.message_type == MESSAGE_FOLLOW_UP:
         thread_ref = prior_thread or "our earlier exchange"
         return (
-            _with_signature(
+            _finalize_message(
+                request,
                 f"Hi {first}, following up on {thread_ref}. "
                 f"{proof_fragment}. "
                 f"{ask}"
@@ -763,7 +936,8 @@ def _render_candidate_text(
         )
     if objective:
         return (
-            _with_signature(
+            _finalize_message(
+                request,
                 f"Hi {first}, I saw your work at {company} and wanted to connect around {objective}. "
                 f"{proof_fragment}. "
                 f"{ask}"
@@ -771,7 +945,8 @@ def _render_candidate_text(
             claims_used,
         )
     return (
-        _with_signature(
+        _finalize_message(
+            request,
             f"Hi {first}, I saw your work at {company} and wanted to connect. "
             f"{proof_fragment}. "
             f"{ask}"
@@ -875,7 +1050,7 @@ def validate_whole_message_candidate(
         issues.append(REASON_CANDIDATE_OVER_LENGTH)
     if not _has_low_friction_cta(candidate.draft_text):
         issues.append(REASON_CANDIDATE_MISSING_CTA)
-    if not _has_terminal_signature(candidate.draft_text):
+    if request.length_budget.signature_required and not _has_terminal_signature(candidate.draft_text):
         issues.append(REASON_CANDIDATE_MISSING_SIGNATURE)
     claim_validation = validate_l2_sender_claims_against_packet(
         candidate.claims_used,

@@ -53,6 +53,10 @@ FORBIDDEN_CTA_PATTERNS = frozenset({
     "discuss opportunities",
     "explore opportunities",
     "connect about opportunities",
+    "15-minute",
+    "15 minutes",
+    "20-minute",
+    "20 minutes",
 })
 
 
@@ -281,7 +285,7 @@ class ScopeCalibratedAskEngine:
         if outreach_mode == "followup":
             return (
                 CTA_STYLE_LIGHT_NUDGE,
-                "A brief note following up — happy to share more if useful.",
+                "A brief note following up; happy to share more if useful.",
                 False,
             )
 
@@ -295,7 +299,7 @@ class ScopeCalibratedAskEngine:
         if recipient_class in EXECUTIVE_CLASSES and outreach_mode == "cold":
             return (
                 CTA_STYLE_LOW_FRICTION_RECIPROCITY,
-                "Happy to share the one-paragraph version — would a 15-minute call work?",
+                "Happy to share the concise operating view; would a brief executive exchange be useful?",
                 True,  # reciprocity_first=True
             )
 
@@ -316,7 +320,7 @@ class ScopeCalibratedAskEngine:
         if recipient_class in EXECUTIVE_CLASSES:  # warm/referral
             return (
                 CTA_STYLE_MEDIUM_ASK,
-                "Would a 20-minute call work to explore whether there's a fit?",
+                "Would a brief exchange be useful to assess whether there is a fit?",
                 False,
             )
 
