@@ -131,8 +131,8 @@ def test_credential_dump_fixture_fails():
 
 
 def test_briefing_selection_manifest_no_silent_only_truncate(tmp_path: Path):
-    long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 400)
-    long_brief += "\n## Secondary notes\n" + ("additional context tail. " * 400)
+    long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 1_100)
+    long_brief += "\n## Secondary notes\n" + ("additional context tail. " * 1_100)
     selected, receipt = prepare_briefing_for_executive_summary(long_brief)
     assert receipt["briefing_original_chars"] > receipt["briefing_included_chars"]
     assert receipt["truncation_or_selection_reason"] == "ranked_section_selection"

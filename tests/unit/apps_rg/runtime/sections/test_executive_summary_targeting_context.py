@@ -50,11 +50,13 @@ def test_freeze_stores_material_targeting_bundle(brown_material: tuple[str, str]
     assert receipt["bundle_digest"] == bundle.bundle_digest
 
 
-def test_insurance_briefing_selection_prioritizes_post_merger(brown_material: tuple[str, str]) -> None:
+def test_insurance_briefing_selection_keeps_compact_brown_ssot_whole(brown_material: tuple[str, str]) -> None:
     _jd, brief = brown_material
-    _selected, receipt = prepare_briefing_for_executive_summary(
+    selected, receipt = prepare_briefing_for_executive_summary(
         brief,
         role_family_key="INSURANCE_BROKERAGE_IT_INNOVATION",
     )
     included = receipt.get("included_section_ids") or []
-    assert any("post_merger" in str(sid) for sid in included)
+    assert included == ["full_document"]
+    assert selected == brief
+    assert "integration" in selected.lower()

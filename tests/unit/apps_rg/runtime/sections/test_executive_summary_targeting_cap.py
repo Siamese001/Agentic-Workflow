@@ -177,16 +177,18 @@ def test_targeting_region_tokens_drop_on_brown_scale(monkeypatch: pytest.MonkeyP
     assert estimate_tokens_approximate(after) < estimate_tokens_approximate(before)
 
 
-def test_brown_markdown_briefing_cap_includes_post_merger_section():
+def test_brown_markdown_briefing_cap_includes_integration_theme():
     brief = (
         REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
     ).read_text(encoding="utf-8")
     capped = compress_targeting_briefing_body(brief, 2600)
-    assert "post-merger" in capped.lower() or "federated" in capped.lower()
+    assert "integration" in capped.lower() or "federated" in capped.lower()
     assert len(capped) > 1500
-    assert "Cultural Alignment" not in capped or capped.lower().index("post-merger") < capped.lower().index(
-        "cultural"
-    ) if "cultural" in capped.lower() else True
+    if "cultural" in capped.lower():
+        integration_idx = capped.lower().find("integration")
+        federated_idx = capped.lower().find("federated")
+        priority_idx = min(idx for idx in (integration_idx, federated_idx) if idx >= 0)
+        assert priority_idx < capped.lower().index("cultural")
 
 
 def test_default_targeting_caps_pass_full_brown_jd_and_briefing():
@@ -212,7 +214,8 @@ def test_default_targeting_caps_pass_full_brown_jd_and_briefing():
     assert "Skills & Experience to be Successful" in jd_out
     assert "R26_0000001653" in jd_out
     assert len(jd_out) >= len(jd.strip()) - len(_CAP_NOTICE) - 4
-    assert "Post-Merger Technology Integration" in br_out
+    assert "integration" in br_out.lower()
+    assert "R26_0000001653" in br_out
     assert len(br_out) >= len(brief.strip()) - len(_CAP_NOTICE) - 4
 
 
