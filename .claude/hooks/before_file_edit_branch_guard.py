@@ -20,6 +20,13 @@ Allow conditions (fail-soft / non-blocking):
   ``codex-worktree-naming-contract`` whose folder basename is exactly the branch name.
 * ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 
+App-scope segment: when the file being edited lives under an ``apps_<x>`` package
+(``apps_rg``/``apps_lic``/``apps01``/...), the branch topic MUST name that app as its first
+segment -> ``<owner>-apps-<x>-<scope>`` (e.g. ``claude-apps-rg-competencies-finish``). The app
+token is the package name with ``_`` normalised to ``-`` to fit the all-hyphen topic contract.
+Core / ``agentic_core`` / infrastructure / governance edits touch no ``apps_<x>`` file, so they
+require NO app segment (``claude-governance-hooks`` stays valid).
+
 Self-contained: no dependency on ``lib.claude_hook_common`` (absent in some
 checkouts). Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master`` (csv).
 Execution owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
@@ -42,6 +49,8 @@ DEFAULT_IDE_OWNER = "claude"
 AGENT_OWNERS = {"codex", "claude"}
 BRANCH_TOPIC_RE = re.compile(r"^[a-z0-9][a-z0-9-]*[a-z0-9]$")
 LOW_SIGNAL_GENERATED_RE = re.compile(r"^[a-z]+-[a-z]+-[0-9a-f]{6,}$")
+# App-package directory shape: ``apps_rg`` / ``apps_lic`` (underscore) or ``apps01`` (numeric).
+APP_DIR_RE = re.compile(r"^apps(?:_[a-z0-9]+|[0-9]+)$")
 GENERIC_TOPIC_TOKENS = {
     "branch",
     "change",
@@ -259,7 +268,48 @@ def _topic_is_high_signal(topic: str) -> bool:
     return True
 
 
-def _contract_violations(branch: str, worktree_root: Path | None) -> list[str]:
+def _app_token_for_path(file_path: str) -> str:
+    """Return the hyphenated app segment (e.g. ``apps-rg``) when the target file lives under an
+    ``apps_<x>`` package, else ``""``.
+
+    App-impacting edits must name the app in the branch topic (``<owner>-apps-<x>-<scope>``);
+    core / ``agentic_core`` / infrastructure edits are exempt and carry no app segment. The token is
+    derived from the first path component matching the app-package shape, with ``_`` normalised to
+    ``-`` so it composes with the all-hyphen branch-topic contract (``apps_rg`` -> ``apps-rg``).
+    """
+    if not file_path:
+        return ""
+    norm = file_path.replace("\\", "/")
+    for part in norm.split("/"):
+        if APP_DIR_RE.fullmatch(part):
+            return part.replace("_", "-")
+    return ""
+
+
+def _app_segment_violation(branch: str, app_token: str) -> str:
+    """If editing an app file, the branch topic must be ``apps-<x>-<scope>`` for that app.
+
+    Returns the violation string, or ``""`` when the branch already names the app (or no app
+    segment is required). Only meaningful for an agent-owned, slash-free branch.
+    """
+    if not app_token:
+        return ""
+    if "/" in branch or "\\" in branch or not branch.startswith(_branch_prefix()):
+        return ""  # other violations already cover prefix/slash; don't double-report
+    topic = _topic_from_agent_branch(branch)
+    needle = f"{app_token}-"
+    if topic.startswith(needle) and topic[len(needle) :]:
+        return ""
+    app_pkg = app_token.replace("-", "_")
+    return (
+        f"app-scoped edit under `{app_pkg}/` requires the branch topic to start with "
+        f"`{app_token}-<scope>` (e.g. `{_branch_prefix()}{app_token}-<high-signal-scope>`)"
+    )
+
+
+def _contract_violations(
+    branch: str, worktree_root: Path | None, app_token: str = ""
+) -> list[str]:
     violations: list[str] = []
     prefix = _branch_prefix()
     if "/" in branch or "\\" in branch:
@@ -272,6 +322,9 @@ def _contract_violations(branch: str, worktree_root: Path | None) -> list[str]:
             violations.append("branch topic must use lowercase letters, numbers, and hyphens")
         elif not _topic_is_high_signal(topic):
             violations.append("branch topic must be high-signal, not a generated or generic name")
+    app_violation = _app_segment_violation(branch, app_token)
+    if app_violation:
+        violations.append(app_violation)
     if worktree_root is not None and worktree_root.name != branch:
         violations.append("worktree folder basename must exactly equal the local branch name")
     return violations
@@ -296,16 +349,18 @@ def main() -> int:
         return 0  # fail-soft
     if branch not in _protected():
         worktree_root = _worktree_root(cwd)
-        violations = _contract_violations(branch, worktree_root)
+        app_token = _app_token_for_path(target)
+        violations = _contract_violations(branch, worktree_root, app_token)
         if not violations:
             return 0  # owning worktree is isolated and follows the naming contract
+        suggested_topic = f"{app_token}-<scope>" if app_token else DEFAULT_TOPIC
         root_detail = f" Current worktree root: `{worktree_root}`." if worktree_root else ""
         reason = (
             f"worktree-naming-contract: editing branch '{branch}' is blocked because "
             f"{'; '.join(violations)}.{root_detail}\n"
             "Rename/move the worktree so the branch and folder are identical, "
             "scope-bearing, and agent-owned, e.g.:\n"
-            f"{_remediation_example()}\n"
+            f"{_remediation_example(suggested_topic)}\n"
             "Use `git branch -m <new-name>` for the checked-out branch and "
             "`git worktree move <old-path> <new-path>` for the folder."
         )

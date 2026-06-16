@@ -16,6 +16,15 @@ agent branches must be `codex-<high-signal-scope>` or `claude-<high-signal-scope
 Worktrees still provide the file isolation that makes rebases and merges safe while the primary
 checkout carries unrelated work.
 
+**App-scope segment.** When the workstream edits files under an `apps_<x>` package
+(`apps_rg`/`apps_lic`/`apps01`/...), the branch topic must name that app first:
+`<owner>-apps-<x>-<scope>` (e.g. `claude-apps-rg-competencies-finish`). The app token is the
+package name with `_`→`-` (matching the all-hyphen topic contract). Core / `agentic_core` /
+infrastructure / governance work touches no `apps_<x>` file and needs no app segment — a plain
+high-signal topic such as `claude-governance-hooks` stays valid. The per-file edit guard derives the
+requirement from the path of the file being edited, so an app segment is mandated exactly when (and
+only when) an `apps_<x>` file is touched.
+
 The edit gate blocks Edit/Write to a protected checkout (`main`/`master`). SessionStart only advises;
 it does not create branches, create folders, push, or clean up worktrees.
 
@@ -23,7 +32,7 @@ it does not create branches, create folders, push, or clean up worktrees.
 
 | User intent / trigger | Action |
 |---|---|
-| Session starts with HEAD on `main`/`master` | Choose or create a named sibling worktree such as `<repo-parent>/<repo-name>-worktrees/codex-apps-rg` on `codex-apps-rg` |
+| Session starts with HEAD on `main`/`master` | REUSE the existing named worktree whose workstream matches; create a new sibling (e.g. `<repo-parent>/<repo-name>-worktrees/codex-apps-rg` on `codex-apps-rg`) ONLY on a material scope change |
 | Edit/Write refused (exit 2) citing the branch guard | Move the edit into an existing named worktree or create one explicitly |
 | "Where should this change go?" | Feature CODE -> named workstream worktree. Plan files (`plans/**`) -> primary checkout, regardless of branch |
 | Worktrees or branches piling up | Run `python .claude/hooks/prune_merged_chat_worktrees.py --dry-run`; delete only with explicit `--delete-merged` |
@@ -34,6 +43,8 @@ it does not create branches, create folders, push, or clean up worktrees.
 |---|---|
 | Never edit the primary checkout while it is on `main`/`master` | The PreToolUse edit gate blocks it; isolation is still the point |
 | Use durable, scope-bearing workstream names, not timestamped or generated adjective-name branches | Branches remain comprehensible and reusable across sessions |
+| Reuse an existing matching worktree; create a new one ONLY on a material scope change | One worktree per durable workstream, not one per chat -- prevents sibling-worktree sprawl |
+| Editing an `apps_<x>` file requires an `apps-<x>-<scope>` branch topic (`claude-apps-rg-…`); core/`agentic_core`/infra needs no app segment | The branch self-documents which app a change impacts; the edit guard ties it to the touched path |
 | Match the worktree folder basename exactly to the local branch name | Windows folders cannot represent slash branch namespaces as a single basename |
 | Plan files are exempt; write them to the primary checkout's `plans/` | A plan in a worktree can miss the shared SSOT |
 | Cleanup is explicit | No SessionStart hook should delete branches or folders while a user is starting work |
@@ -41,8 +52,8 @@ it does not create branches, create folders, push, or clean up worktrees.
 ## Standard Procedure
 
 1. Inspect existing worktrees: `git worktree list`.
-2. Reuse the appropriate named worktree if one exists.
-3. If needed, create one explicitly:
+2. REUSE the appropriate named worktree if one exists for this workstream -- this is the default. A follow-up chat on the same or overlapping scope continues in the SAME worktree.
+3. Create a new one explicitly ONLY when the scope materially changes (a different durable workstream):
 
    ```bash
    git worktree add ../Agentic-Workflow-FRESH-worktrees/codex-<topic> -b codex-<topic> origin/main
