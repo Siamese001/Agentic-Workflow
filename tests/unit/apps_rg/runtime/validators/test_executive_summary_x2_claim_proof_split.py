@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
-import json
+import importlib
 from pathlib import Path
+
+import pytest
 
 from apps_rg.fact_inventory.candidate_fact_ledger import load_master_candidate_fact_ledger
 from apps_rg.fact_inventory.claim_proof_split_policy import (
@@ -57,11 +59,18 @@ def test_row_sentence_match_prefers_display_claim_over_fact_claim_text() -> None
     assert x2._row_sentence_match_strength(sentence, row) >= 90
 
 
-def test_srfs_executive_summary_w2_facts_have_split() -> None:
-    srfs_path = REPO_ROOT / "artifacts/apps_rg/fact_inventory/selected_role_fact_set_active.json"
-    srfs = json.loads(srfs_path.read_text(encoding="utf-8"))
-    exec_rows = (srfs.get("selected_facts_by_section") or {}).get("executive_summary") or []
-    by_id = {str(r.get("candidate_fact_id")): r for r in exec_rows if isinstance(r, dict)}
+def test_retired_srfs_surface_not_claim_proof_authority() -> None:
+    with pytest.raises(RuntimeError, match="SRFS inventory surface is retired"):
+        importlib.import_module("apps_rg.fact_inventory.selected_role_fact_set")
+
+
+def test_executive_summary_w2_facts_have_split_in_candidate_ledger() -> None:
+    payload = load_master_candidate_fact_ledger(repo_root=REPO_ROOT)
+    by_id = {
+        str(row.get("candidate_fact_id")): row
+        for row in (payload.get("candidate_facts") or [])
+        if isinstance(row, dict)
+    }
     for fid in W2_FACT_IDS:
         row = by_id[fid]
         assert validate_claim_proof_row(row) == [], fid

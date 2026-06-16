@@ -13,5 +13,5 @@ def test_flatten_emits_not_completed_markers_when_sections_empty() -> None:
         }
     )
     assert "[NOT COMPLETED: headline — missing_or_empty_headline]" in text
-    assert "[NOT COMPLETED: insurtech — missing_locked_copy_section]" in text
+    assert "[NOT COMPLETED: insurtech — missing_generated_role_section]" in text
     assert "[NOT COMPLETED: competencies —" in text

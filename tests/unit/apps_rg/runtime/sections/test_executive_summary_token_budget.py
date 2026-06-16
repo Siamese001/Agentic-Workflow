@@ -91,10 +91,10 @@ def test_high_facts_and_allowed_ids_never_trimmed():
     for fid in protected:
         assert fid in trimmed
     assert "ALLOWED_SOURCE_FACT_IDS" in trimmed
-    assert "SRFS_COMPOSITION_ONESHOT_V1" in trimmed
+    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in trimmed
     assert "token-budget compressed SRFS contract" not in trimmed
     trim_names = {str(c.get("component") or "") for c in components}
-    assert "srfs_style_only_oneshot" not in trim_names
+    assert "graph_evidence_style_quality" not in trim_names
     assert trim_names & {"jd_briefing_prose", "e0_examples", "jd_text_prose"}
 
 
@@ -115,12 +115,13 @@ def test_evidence_contract_digest_unchanged_after_optional_trim():
     assert not verify_prompt_shape_preserved(before, trimmed, srfs_mode=True)
 
 
-def test_srfs_shape_block_never_replaced_by_stub():
+def test_graph_evidence_shape_block_never_replaced_by_stub():
     payload = _minimal_payload()
     pool_ids = ["fact_exec_high_001", "fact_exec_high_002"]
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = compiled.artifact.messages[0]["content"]
-    assert "<srfs_style_only_oneshot" in content
+    assert "GRAPH_EVIDENCE_STYLE_ONESHOT_V1" in content
+    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in content
     protected = protected_fact_ids_from_payload(payload)
     trimmed, components, _ = trim_executive_summary_prompt_content(
         content,
@@ -128,8 +129,9 @@ def test_srfs_shape_block_never_replaced_by_stub():
         available_input_tokens=5000,
     )
     assert "token-budget compressed SRFS contract" not in trimmed
-    assert "<srfs_style_only_oneshot" in trimmed
-    assert not any(c.get("component") == "srfs_style_only_oneshot" for c in components)
+    assert "GRAPH_EVIDENCE_STYLE_ONESHOT_V1" in trimmed
+    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in trimmed
+    assert not any(c.get("component") == "graph_evidence_style_quality" for c in components)
 
 
 def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
