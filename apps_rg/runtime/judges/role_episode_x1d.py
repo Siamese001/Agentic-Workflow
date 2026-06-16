@@ -9,7 +9,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.policy_backed_section_judges import run_policy_section_judges
 from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
 
-JUDGE_RUBRIC_VERSION = "role_episode_x1d_v1"
+JUDGE_RUBRIC_VERSION = "role_episode_x1d_v2"
 DEFAULT_THRESHOLD = 0.80
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/role_episode_x1d.py#ROLE_EPISODE_RUBRIC"
 
@@ -31,13 +31,14 @@ Rubric dimensions:
 Role-lane product shape:
 - Bullet lanes: exactly 3 bullets, one high-impact thought per bullet, no embedded newline.
 - Narrative lanes: exactly one sentence, no more than {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters.
-- Source namespaces: InsurTech uses reb_insurtech_* graph bundle ids; EY uses reb_ey_* graph bundle ids.
+- Source namespaces: InsurTech uses bul_insurtech_* source_fact_ids with reb_insurtech_* graph bundle ids;
+  EY uses bul_ey_* source_fact_ids with reb_ey_* graph bundle ids.
 - No first-person voice and no em dash in display text.
 
 Decisive failure triggers:
 - unsupported claim, missing source_fact_ids, or claim_ledger omission
 - JD, briefing, or target company used as proof of experience
-- wrong source namespace, cross-employer leakage, or mixed InsurTech/EY graph evidence
+- wrong source namespace, cross-employer leakage, mixed InsurTech/EY graph evidence, or missing bul_insurtech_*/bul_ey_* source_fact_ids
 - keyword stuffing, copied JD phrases, or ATS laundry-list phrasing
 - wrong output shape: not 3 bullets for bullet lanes or not exactly one sentence for narrative lanes
 """.strip()
