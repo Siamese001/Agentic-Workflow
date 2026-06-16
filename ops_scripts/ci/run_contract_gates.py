@@ -632,6 +632,15 @@ def main():
             "SECTION-X2-X1D generated-lane X2/X1D contract drift (fail-closed)",
             "ops_scripts/ci/check_section_x2_x1d_drift.py",
         ),
+        # APPS-RG-PROMPT-JUDGE-SYNC — focused pytest contract suite for the
+        # three-file prompt/judge update contract: product-shape SSOT,
+        # executable prompt source, and X1D rubric/alignment matrix.
+        # Fail-closed by default; bypass APPS_RG_PROMPT_JUDGE_SYNC_BYPASS=1.
+        (
+            "APPS-RG-PROMPT-JUDGE-SYNC apps_rg prompt/product-shape/X2/X1D sync (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_prompt_judge_sync.py",
+            "APPS-RG-PROMPT-JUDGE-SYNC",
+        ),
         # APPS-RG-REGISTRY-COVERAGE — non-numeric registry SSOT drift gate.
         # Fail-closed by default; advisory APPS_RG_REGISTRY_COVERAGE_ADVISORY=1;
         # bypass APPS_RG_REGISTRY_COVERAGE_BYPASS=1.
