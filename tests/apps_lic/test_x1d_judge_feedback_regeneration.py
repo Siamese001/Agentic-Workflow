@@ -772,7 +772,11 @@ def test_w2_clean_rebuild_replaces_patchy_duplicate_signature_repair(monkeypatch
     assert repaired.draft_text.count("Amit") == 1
     assert repaired.draft_text.endswith("\n\nAmit")
     assert "That maps to the mandate" not in repaired.draft_text
-    assert "$22M" in repaired.draft_text
+    # Graph-SSOT for metrics: the judge asked to "incorporate_22m_revenue", but $22M is the
+    # apps_lic-authored fabrication the corpus dropped. The rebuild surfaces the graph-grounded
+    # $10M and must never reinstate the fabricated number.
+    assert "$10M" in repaired.draft_text
+    assert "$22M" not in repaired.draft_text
     assert "sp_platform_commercialization" in repaired.claims_used
     assert repaired.word_count <= request.length_budget.max_words
     assert repaired.char_count <= request.length_budget.hard_cap_chars
@@ -886,7 +890,7 @@ def test_w5_clean_rebuild_varies_for_new_citi_trigger_and_cta_feedback() -> None
     assert "Citi Sky governance loop" in rebuilt
 
 
-def test_w5_clean_rebuild_surfaces_allowed_cloud_ai_metric_claim(monkeypatch) -> None:
+def test_w5_clean_rebuild_surfaces_cloud_ai_claim_without_fabricated_metric(monkeypatch) -> None:
     request, _batch, _selected = _request_and_selected()
     request = replace(
         request,
@@ -951,7 +955,11 @@ def test_w5_clean_rebuild_surfaces_allowed_cloud_ai_metric_claim(monkeypatch) ->
         allowed_claim_ids=allowed_claim_ids,
     )
 
-    assert "$30M cloud and AI transformation portfolio" in rebuilt
+    # Graph-SSOT for metrics: the cloud-AI skills approve NO metric phrase, so the rebuild
+    # surfaces the cloud-AI CLAIM but must NOT fabricate a "$30M portfolio" number (the prior
+    # apps_lic-authored metric the corpus dropped). Claim surfaced, zero fabricated metric.
+    assert "cloud-native AI and analytics platforms" in rebuilt
+    assert "$30M" not in rebuilt
     assert "sp_cloud_ai_transformation" in claims
     assert "not another retrieval feature" in rebuilt
     assert "VP Product, Agentic AI search be useful" not in rebuilt

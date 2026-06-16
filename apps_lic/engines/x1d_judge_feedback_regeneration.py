@@ -1566,7 +1566,13 @@ def _claims_from_repaired_text(
     if (
         "sp_cloud_ai_transformation" in allowed_claim_ids
         and (
-            "$30m" in normalized
+            # Graph-SSOT: the cloud-AI claim now emits its grounded descriptive content
+            # ("cloud-native AI and analytics platforms"); the legacy "$30M cloud and AI
+            # transformation portfolio" phrasing was apps_lic-authored fabrication the corpus
+            # dropped. Detect the grounded content, not the fabricated metric.
+            "cloud-native ai and analytics platforms" in normalized
+            or "cloud-native ai" in normalized
+            or "$30m" in normalized
             or "cloud and ai transformation" in normalized
             or "cloud/ai transformation" in normalized
             or "ai transformation portfolio" in normalized
