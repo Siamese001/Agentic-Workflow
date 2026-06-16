@@ -1,7 +1,9 @@
 """apps_lic Sender Credibility Engine (SE-P1b).
 
-Builds a ``SenderCredibilityCard`` from hash-bound claims sourced
-exclusively from ``master_resume.json``.
+Builds a ``SenderCredibilityCard`` from hash-bound claims sourced from the
+graph-grounded standing sender corpus (the apps_rg augmented_skills_graph is the
+sole source of claims/metrics). The base/master resume is identity-only; an
+explicitly-injected ``resume_data`` bullet_pool is honored for test fixtures.
 
 Contract
 --------
@@ -210,38 +212,38 @@ class SenderCredibilityEngine:
     # ------------------------------------------------------------------
 
     def _extract_claims(self) -> List[CredibilityClaim]:
-        """Extract CredibilityClaim objects from master_resume.json."""
+        """Extract CredibilityClaim objects.
+
+        The apps_rg graph is the SOLE source of credibility claims/metrics. The
+        base/master resume is identity-only (no bullets), so by default claims are
+        sourced from the graph-grounded standing sender corpus. The resume
+        bullet_pool path remains ONLY for explicitly-injected ``resume_data``
+        (test fixtures / back-compat); production resumes carry no bullets.
+        """
         claims: List[CredibilityClaim] = []
 
-        # Extract from professional_experience bullet_pools
-        for exp in self._resume.get("professional_experience", []):
-            for bullet in exp.get("bullet_pool", []):
-                label = bullet.get("label", "")
+        injected_bullets = [
+            bullet
+            for exp in self._resume.get("professional_experience", [])
+            for bullet in exp.get("bullet_pool", [])
+            if bullet.get("text")
+        ]
+        if injected_bullets:
+            for bullet in injected_bullets:
                 text = bullet.get("text", "")
-                tags = frozenset(bullet.get("tags", []))
-                if not text:
-                    continue
-                source_ref = _sha256_of(text)
                 claims.append(CredibilityClaim(
-                    label=label,
+                    label=bullet.get("label", ""),
                     text=text,
-                    source_ref=source_ref,
-                    tags=tags,
+                    source_ref=_sha256_of(text),
+                    tags=frozenset(bullet.get("tags", [])),
                 ))
+        else:
+            # Graph is the sole fact source for sender claims/metrics.
+            claims.extend(self._graph_grounded_claims())
 
-        # Extract from executive_summary as a single claim
-        summary = self._resume.get("executive_summary", "")
-        if summary:
-            claims.append(CredibilityClaim(
-                label="Executive Summary",
-                text=summary[:200] + "..." if len(summary) > 200 else summary,
-                source_ref=_sha256_of(summary),
-                tags=frozenset({"leadership", "agentic-platform", "governance"}),
-            ))
-
-        # Extract from certifications if present
-        for cert in self._resume.get("certifications", []):
-            text = cert if isinstance(cert, str) else cert.get("name", "")
+        # Certifications/credentials are IDENTITY (allowed to live in the resume).
+        for cert in self._resume.get("certifications_and_credentials", []):
+            text = cert.get("name", "") if isinstance(cert, dict) else str(cert)
             if text:
                 claims.append(CredibilityClaim(
                     label="Certification",
@@ -250,4 +252,32 @@ class SenderCredibilityEngine:
                     tags=frozenset({"credentials"}),
                 ))
 
+        return claims
+
+    def _graph_grounded_claims(self) -> List[CredibilityClaim]:
+        """Credibility claims sourced from the graph-grounded standing sender corpus.
+
+        Each approved proof point's ``claim_text`` is graph-linked and metric-gated
+        (every number traces to the apps_rg augmented_skills_graph), so no claim or
+        metric is authored from the base resume.
+        """
+        try:  # lazy import: avoids any import cycle with the corpus loader
+            from apps_lic.engines.standing_sender_knowledge import (  # noqa: PLC0415
+                load_standing_sender_corpus,
+            )
+
+            corpus = load_standing_sender_corpus()
+        except Exception:  # guardian: allow-broad-exception -- corpus optional; degrade to no graph claims
+            return []
+        claims: List[CredibilityClaim] = []
+        for point in corpus.approved_proof_points:
+            text = str(point.claim_text or "").strip()
+            if not text:
+                continue
+            claims.append(CredibilityClaim(
+                label=point.proof_id,
+                text=text,
+                source_ref=_sha256_of(text),
+                tags=frozenset(point.skill_tags),
+            ))
         return claims
