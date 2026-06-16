@@ -11,6 +11,14 @@ in the graph).
 
 from __future__ import annotations
 
+from apps_lic.engines.sender_proof_graph import (
+    STATUS_DRAFT_METRICS_GROUNDED,
+    STATUS_DRAFT_METRICS_NOT_APPLICABLE,
+    STATUS_DRAFT_METRICS_UNGROUNDED,
+    STATUS_PROOF_GRAPH_READY,
+    SenderProofGraphPacket,
+    validate_draft_metrics_against_packet,
+)
 from apps_lic.engines.standing_sender_knowledge import load_standing_sender_corpus
 from apps_lic.integrations.apps_rg_proof_bridge import (
     claim_metrics_are_graph_grounded,
@@ -95,3 +103,85 @@ def test_ungrounded_metric_blocks_corpus_load() -> None:
             "Generated $22M in IP-led revenue.",
             ("skill_partner_gtm_enablement", "skill_revops_multi_channel_gtm_alignment"),
         )
+
+
+# --- W1: deterministic draft-level metric-grounding gate ---------------------
+# The corpus-load gate above grounds the CURATED proof-point claim_text. These
+# cover the L2-GENERATED draft: a number the model introduces that the graph does
+# not back must be blocked, while benign text and the SSOT-absent path stay safe.
+
+
+def _proof_point(proof_id: str):
+    corpus = load_standing_sender_corpus()
+    return next((p for p in corpus.proof_points if p.proof_id == proof_id), None)
+
+
+def _packet_with(points) -> SenderProofGraphPacket:
+    """Minimal packet carrying just selected_proof_points.
+
+    validate_draft_metrics_against_packet only reads selected_proof_points (and
+    each point's apps_rg_skill_ids); the rest are inert defaults.
+    """
+    return SenderProofGraphPacket(
+        status=STATUS_PROOF_GRAPH_READY,
+        ready=True,
+        recipient_class="EXECUTIVE",
+        message_type="trigger_based_insight",
+        proof_packet_id="sha256:test_packet",
+        selected_proof_points=tuple(points),
+        permission_decisions=(),
+        omitted_claims=(),
+        blocked_claims=(),
+        proof_to_target_relevance_score={},
+        source_lineage={},
+        graph_links={},
+        claim_permission_map_hash="",
+        unsupported_claim_policy="block",
+        corpus_hash="",
+        source_snapshot_ids=(),
+        reason_codes=(),
+    )
+
+
+def test_draft_metric_gate_not_applicable_without_graph_skills() -> None:
+    """No graph-linked skills in the packet -> fail-soft NOT_APPLICABLE (never blocks)."""
+    result = validate_draft_metrics_against_packet(
+        "We delivered $999M and improved throughput 40%.",
+        packet=_packet_with(()),
+    )
+    assert not result.applicable
+    assert result.status == STATUS_DRAFT_METRICS_NOT_APPLICABLE
+    assert result.grounded  # NA must not block
+
+
+def test_draft_metric_gate_passes_graph_grounded_metric() -> None:
+    """A generated draft whose only metric is graph-approved ($10M) grounds."""
+    if not _ssot_available():
+        return
+    point = _proof_point("sp_platform_commercialization")
+    if point is None or not getattr(point, "apps_rg_skill_ids", ()):
+        return  # precondition: the point must carry graph-linked skills
+    result = validate_draft_metrics_against_packet(
+        "I built the GTM motion that delivered $10M in net-new revenue.",
+        packet=_packet_with((point,)),
+    )
+    assert result.applicable
+    assert result.status == STATUS_DRAFT_METRICS_GROUNDED
+    assert result.grounded
+
+
+def test_draft_metric_gate_blocks_generator_fabricated_metric() -> None:
+    """A generated draft that smuggles an ungrounded number ($22M) is blocked."""
+    if not _ssot_available():
+        return
+    point = _proof_point("sp_platform_commercialization")
+    if point is None or not getattr(point, "apps_rg_skill_ids", ()):
+        return
+    result = validate_draft_metrics_against_packet(
+        "I personally generated $22M in IP-led revenue last year.",
+        packet=_packet_with((point,)),
+    )
+    assert result.applicable
+    assert result.status == STATUS_DRAFT_METRICS_UNGROUNDED
+    assert not result.grounded
+    assert result.ungrounded_metric_tokens  # names the offending token(s)
