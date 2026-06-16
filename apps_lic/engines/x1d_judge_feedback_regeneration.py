@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
 from apps_lic.engines.generation_engine import generate_judge_feedback_repair_draft
+from apps_lic.engines.standing_sender_knowledge import graph_grounded_proof_sentence
 from apps_lic.engines.validation_exit import (
     STATUS_X1D_BLOCKED,
     STATUS_X1D_PASS,
@@ -544,31 +545,26 @@ def _allowed_claim_ids(request: WholeMessageGenerationRequest) -> set[str]:
 
 
 def _repair_subject_line(*, role: str, company: str, feedback: str) -> str:
+    """Subject derived from RUNTIME company + role + feedback signals.
+
+    No per-company literal branches: the company name and role are runtime values,
+    and the framing is chosen from generic feedback markers.
+    """
     company_phrase = company or "target company"
+    role_phrase = role or "the role"
     feedback_lower = feedback.lower()
-    company_lower = company_phrase.lower()
-    if "graph" in feedback_lower or company_lower == "neo4j":
-        subject = f"{company_phrase} Agentic AI product proof"
-    elif company_lower == "citi":
-        if any(marker in feedback_lower for marker in ("cio", "c_level", "ceo", "governance_foundation")):
-            subject = f"{company_phrase} Sky CIO governance loop"
-        elif "recruiter" in feedback_lower or "screen" in feedback_lower:
-            subject = f"{company_phrase} Head of AI Strategy fit proof"
-        elif "senior_ta" in feedback_lower or "fit_review" in feedback_lower:
-            subject = f"{company_phrase} AI strategy fit proof"
-        elif "cloud_ai_transformation" in feedback_lower or "quantified" in feedback_lower:
-            subject = f"{company_phrase} Sky scale proof"
-        else:
-            subject = f"{company_phrase} Sky production AI controls"
-    elif company_lower == "aig":
-        if any(marker in feedback_lower for marker in ("gcdo", "subject", "agentic", "c_level", "ceo")):
-            subject = f"{company_phrase} GCDO agentic operating proof"
-        else:
-            subject = f"{company_phrase} GCDO agent governance"
-    elif "agentic" in feedback_lower or "ai" in feedback_lower:
-        subject = f"{company_phrase} governed AI signal for {role}"
+    if any(marker in feedback_lower for marker in ("cio", "c_level", "ceo", "governance_foundation")):
+        subject = f"{company_phrase} {role_phrase} governance loop"
+    elif "recruiter" in feedback_lower or "screen" in feedback_lower:
+        subject = f"{company_phrase} {role_phrase} fit proof"
+    elif "senior_ta" in feedback_lower or "fit_review" in feedback_lower:
+        subject = f"{company_phrase} {role_phrase} fit proof"
+    elif "cloud_ai_transformation" in feedback_lower or "quantified" in feedback_lower:
+        subject = f"{company_phrase} {role_phrase} scale proof"
+    elif "graph" in feedback_lower or "agentic" in feedback_lower or "ai" in feedback_lower:
+        subject = f"{company_phrase} governed AI signal for {role_phrase}"
     else:
-        subject = f"{company_phrase} {role} fit"
+        subject = f"{company_phrase} {role_phrase} fit"
     return subject[:200].rstrip(" .")
 
 
@@ -661,8 +657,8 @@ def _clean_rebuild_subject_line(
         for marker in ("subject_line", "generic", "trigger", "hook", "claim_surface")
     ):
         recipient_class = str(getattr(request, "recipient_class", "") or "").strip()
-        if company.lower() == "citi" and recipient_class == ARCHETYPE_RECRUITER:
-            return "Citi Head of AI Strategy recruiter screen"
+        if recipient_class == ARCHETYPE_RECRUITER:
+            return f"{company} {role} recruiter screen"[:200].rstrip(" .")
         editorial_subject = _c_level_editorial_subject_line(
             company=company,
             request=request,
@@ -782,12 +778,15 @@ def _company_specific_clean_rebuild_text(
     required_claim_ids: set[str],
     feedback: str,
 ) -> str:
-    company_lower = company.lower()
-    if company_lower not in {"aig", "citi", "neo4j"}:
-        return ""
+    """Compose a runtime-derived company rebuild when the feedback warrants it.
+
+    The company framing (name, trigger, role) is sourced entirely from RUNTIME
+    inputs on ``target``/``plan`` — there are no per-company literal branches. The
+    proof prose is graph-grounded via ``graph_grounded_proof_sentence``; engine
+    code never hardcodes a metric, outcome, or target-company name here.
+    """
     if not _needs_company_specific_rebuild(feedback):
         return ""
-    sentences: list[str] = []
     c_level_editorial = _compose_c_level_editorial_rebuild(
         first_name=first_name,
         company=company,
@@ -798,294 +797,137 @@ def _company_specific_clean_rebuild_text(
     )
     if c_level_editorial:
         return c_level_editorial
-    if company_lower == "aig":
-        if plan.archetype == ARCHETYPE_C_LEVEL:
-            if any(marker in feedback for marker in ("value_bridge_generic", "revenue_proof", "cta_phrasing")):
-                sentences.append(
-                    f"Hi {first_name}, AIG's VP Global Head of Agentic AI Solutions role is the named trigger: GenAI standards have to become release rules for claims and underwriting agents."
-                )
-                sentences.append(
-                    "I have built governed agent platforms with policy gates, evaluation traces, rollback paths, and reusable service patterns."
-                )
-                sentences.append(
-                    "The commercial bridge is reuse economics for regulated workflows: productized agentic AI services tied to $10M in net-new revenue."
-                )
-                sentences.append(
-                    "Would 15 minutes to compare this against AIG's GenAI standards and agentic AI roadmap be useful?"
-                )
-                return " ".join(dict.fromkeys(sentences))
-            sentences.append(
-                f"Hi {first_name}, your GCDO remit makes AIG's agentic AI trigger specific: claims and underwriting agents need auditable evidence before release."
-            )
-            sentences.append(
-                "I've built governed agentic platforms with policy gates, evaluation traces, and rollback paths."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "For AIG, the value bridge is reusable insurance workflow controls; my proof is productizing agentic AI services tied to $10M in net-new revenue."
-                )
-            sentences.append(
-                "Would a brief executive exchange on which AIG workflow should pilot agent governance first be useful?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        if plan.archetype == ARCHETYPE_SENIOR_TA:
-            sentences.append(
-                f"Hi {first_name}, AIG's agentic AI role is an insurance operating build, not a generic AI strategy seat."
-            )
-            sentences.append(
-                "The fit signal is regulated workflow delivery: claims and underwriting teams need agent decisions they can inspect, test, and reverse."
-            )
-            sentences.append(
-                "My proof is governed platform execution with policy gates, validation controls, replayable traces, and rollback built in."
-            )
-            if (
-                "sp_platform_commercialization" in allowed_claim_ids
-                or "sp_platform_commercialization" in required_claim_ids
-                or any(marker in feedback for marker in ("commercial", "revenue", "margin", "10m", "$10m"))
-            ):
-                sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
-                )
-            sentences.append("Would a brief fit review for the role be useful?")
-            return " ".join(dict.fromkeys(sentences))
-        if plan.archetype == ARCHETYPE_EXECUTIVE:
-            sentences.append(
-                f"Hi {first_name}, AIG's agentic AI trigger is not a generic AI seat; it is an operating-model build under enterprise data leadership."
-            )
-            sentences.append(
-                "For a reinsurance executive, the useful signal is whether agent workflows can preserve risk judgment while claims, underwriting, and service teams inspect the evidence trail."
-            )
-            sentences.append(
-                "My proof is governed platform execution with validation controls, replayable traces, and rollback built into production delivery."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
-                )
-            sentences.append(
-                "Would a brief exchange on where this belongs in AIG's AI operating model be useful?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        if "specific_aig_trigger" in feedback or "insurance_domain_framing_generic" in feedback:
-            sentences.append(
-                f"Hi {first_name}, as AIG's GCDO, the agentic AI trigger is claims and underwriting agents that need evidence trails before release."
-            )
-        else:
-            sentences.append(
-                f"Hi {first_name}, AIG's agentic AI edge is insurance operations: claims, underwriting, and service agents must stay explainable, testable, and reversible."
-            )
+    return _runtime_company_rebuild_text(
+        first_name=first_name,
+        company=company,
+        target=target,
+        plan=plan,
+        allowed_claim_ids=allowed_claim_ids,
+        required_claim_ids=required_claim_ids,
+        feedback=feedback,
+    )
+
+
+def _runtime_company_rebuild_text(
+    *,
+    first_name: str,
+    company: str,
+    target: dict[str, Any],
+    plan: X1DFeedbackRepairPlan,
+    allowed_claim_ids: set[str],
+    required_claim_ids: set[str],
+    feedback: str,
+) -> str:
+    """Generic, runtime-derived company rebuild.
+
+    Order: (a) opening from runtime company + trigger + role, (b) a generic
+    sender-positioning sentence, (c) graph-grounded proof sentence(s), and
+    (d) an archetype/feedback-derived CTA. No target-company name, trigger, or
+    metric is hardcoded — every company-specific token comes from ``target`` /
+    ``plan`` and every proof clause from the graph corpus.
+    """
+    role = (plan.role or "the role").strip() or "the role"
+    trigger = str(
+        target.get("company_trigger") or target.get("company_context") or ""
+    ).strip()
+
+    sentences: list[str] = []
+    # (a) Opening from runtime company + trigger + role.
+    if trigger:
         sentences.append(
-            "My proof is governed platform execution with validation controls, replayable traces, and rollback built in."
+            f"Hi {first_name}, {company}'s {role} signal is concrete: {trigger.rstrip('.')[:200]}."
         )
-        if (
-            "sp_runtime_reliability" in allowed_claim_ids
-            or "sp_runtime_reliability" in required_claim_ids
-            or any(marker in feedback for marker in ("runtime", "reliability", "validation", "replayable", "rollback"))
-        ):
-            if not any(marker in feedback for marker in ("repetitive_phrasing", "redundant_phrasing", "adds_no_new_signal")):
-                sentences.append(
-                    "The reliability proof is production validation controls, replayable traces, and rollback paths inside agent workflows."
-                )
-        if (
-            "sp_platform_commercialization" in allowed_claim_ids
-            or "sp_platform_commercialization" in required_claim_ids
-            or any(marker in feedback for marker in ("commercial", "revenue", "margin", "10m", "$10m"))
-        ):
-            sentences.append(
-                "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
-            )
+    else:
         sentences.append(
-            "Would a brief executive exchange be useful, or is the right data and AI owner someone else?"
+            f"Hi {first_name}, {company}'s {role} mandate needs governed agentic AI delivery "
+            "that stays auditable before it scales."
         )
-    elif company_lower == "citi":
-        if plan.archetype == ARCHETYPE_RECRUITER:
-            sentences.append(
-                f"Hi {first_name}, Citi's Head of AI Strategy screen needs evidence that a candidate can make firmwide AI governable inside regulated finance."
-            )
-            sentences.append(
-                "Citi's responsible AI and Citi Sky expansion make the recruiting signal concrete: platform execution, risk controls, and data governance need to show up together."
-            )
-            sentences.append(
-                "My proof is governed agentic AI platform delivery with policy-gated retrieval, validation controls, replayable traces, and production release discipline."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "Commercially, I productized agentic AI services tied to $10M in net-new revenue."
-                )
-            sentences.append(
-                "That gives your recruiting screen concrete fit signal across responsible AI, data governance, and platform execution."
-            )
-            sentences.append(
-                "Could we do a short recruiting screen for Head of AI Strategy fit, or should I send this to another owner?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        if plan.archetype == ARCHETYPE_SENIOR_TA:
-            sentences.append(
-                f"Hi {first_name}, Citi's Head of AI Strategy search needs someone who can make firmwide AI governable inside regulated finance."
-            )
-            sentences.append(
-                "My fit signal is governed agentic platform execution with policy-gated retrieval, validation controls, replayable traces, and production release discipline."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "Commercial proof: productized agentic AI services tied to $10M in net-new revenue."
-                )
-            if "sp_runtime_reliability" in allowed_claim_ids:
-                sentences.append(
-                    "Runtime proof: evaluation gates and rollback paths built into agent workflows, not added after launch."
-                )
-            sentences.append(
-                "That maps to Citi Sky because adoption at bank scale needs evidence, ownership, and control before rollout."
-            )
-            sentences.append("Would a brief fit review for this search be useful?")
-            return " ".join(dict.fromkeys(sentences))
-        if any(
-            marker in feedback
-            for marker in (
-                "trigger_anchor",
-                "weak_trigger",
-                "citi_specific",
-                "citi_sky",
-                "dense_and_abstract",
-                "cta_is_weak",
-            )
-        ):
-            if "sp_quant_governance_foundation" in allowed_claim_ids:
-                sentences.append(
-                    f"Hi {first_name}, Citi Sky raises a CIO-level operating question: how do banker-facing AI workflows carry model controls, data lineage, and support ownership in the same loop?"
-                )
-                sentences.append(
-                    "My fit is building governed agentic platforms where policy gates and evaluation evidence turn AI usage into auditable operations."
-                )
-                sentences.append(
-                    "The governance foundation is risk-aware platform design: actuarial and statistical discipline applied to AI controls, not a standalone credential."
-                )
-                if "sp_platform_commercialization" in allowed_claim_ids:
-                    sentences.append(
-                        "The commercialization proof is productized agentic AI services tied to $10M in net-new revenue."
-                    )
-                sentences.append(
-                    "Would 15 minutes to pressure-test the operating model behind Citi Sky be useful?"
-                )
-                return " ".join(dict.fromkeys(sentences))
-            if "sp_cloud_ai_transformation" in allowed_claim_ids:
-                sentences.append(
-                    f"Hi {first_name}, Citi Sky makes the AI-owner question specific: responsible AI has to become governed delivery, not a strategy slogan."
-                )
-                sentences.append(
-                    "My fit is building agentic platforms with policy-gated retrieval, evaluation evidence, traceability, and rollback paths."
-                )
-                sentences.append(
-                    "The quantified bridge is architecture and commercial ownership of cloud-native AI and analytics platforms for regulated financial environments."
-                )
-                sentences.append(
-                    "Would a low-friction exchange on scaling Citi Sky-style AI controls be useful?"
-                )
-                return " ".join(dict.fromkeys(sentences))
-            sentences.append(
-                f"Hi {first_name}, Citi Sky is not just an AI adoption signal; it is a CIO operating test for model governance, data controls, and support ownership."
-            )
-            sentences.append(
-                "My differentiator is shipping governed agentic platforms where policy gates and evaluation evidence turn AI usage into auditable operations."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "The measurable proof is productizing agentic AI services into reusable offerings tied to $10M in net-new revenue, without separating product velocity from control."
-                )
-            sentences.append(
-                "Would a brief executive exchange on the operating controls behind Citi Sky be useful?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        if "opening_restates" in feedback or "not_original_insight" in feedback:
-            sentences.append(
-                f"Hi {first_name}, Citi Sky makes the CIO question concrete: can responsible-AI patterns become supported production controls across regulated banking, not just adoption messaging?"
-            )
-        else:
-            sentences.append(
-                f"Hi {first_name}, Citi Sky and global AI adoption put the operating problem at the center: production AI has to preserve auditability, support ownership, and rollback paths."
-            )
+
+    # (c) Graph-grounded proof sentence(s) — facts sourced ONLY from the corpus.
+    # Surface each relevant claim as its OWN short sentence so the metric proof
+    # survives the length-budget trim (a single multi-claim sentence is dropped
+    # whole when it overflows the word budget). The downstream sanitizer
+    # re-surfaces any required claim that still fits.
+    proof_claims = _rebuild_proof_claim_ids(
+        allowed_claim_ids=allowed_claim_ids,
+        required_claim_ids=required_claim_ids,
+        feedback=feedback,
+    )
+    proof_sentences = [
+        proof_sentence
+        for claim_id in proof_claims
+        if (proof_sentence := graph_grounded_proof_sentence((claim_id,)))
+    ]
+    if proof_sentences:
+        sentences.extend(proof_sentences)
+    else:
+        # (b) Generic sender-positioning fallback (not company-specific) used only
+        # when no allowed claim resolves to graph-grounded prose.
         sentences.append(
-            "My proof is governed agentic AI delivery in regulated environments, where retrieval, policy, evaluation, and traceability become release discipline rather than capability lists."
+            "My relevant work is governed agentic AI platform delivery with policy gates, "
+            "evaluation evidence, replayable traces, and rollback paths."
         )
-        if "sp_platform_commercialization" in allowed_claim_ids:
-            sentences.append(
-                "The outcome proof is productized agentic AI services tied to $10M in net-new revenue."
-            )
-        if plan.archetype == ARCHETYPE_RECRUITER:
-            sentences.append(
-                "For a recruiter screen, the signal is production AI governance plus measurable ownership, not just AI keywords."
-            )
-            sentences.append("Would a focused resume review be useful?")
-        else:
-            sentences.append(
-                "That is the bridge from AI strategy to systems a CIO can run through audit, risk, support, and global scale."
-            )
-            sentences.append(
-                "Would a brief exchange on turning Citi Sky-style adoption into production controls be useful?"
-            )
-    elif company_lower == "neo4j":
-        if (
-            plan.archetype == ARCHETYPE_C_LEVEL
-            and any(marker in feedback for marker in ("generic_for_cpo", "ceo_level", "cta_weak", "right_owner"))
-        ):
-            sentences.append(
-                f"Hi {first_name}, the CPO-level Neo4j question is whether graph context can become a governed control plane for enterprise agents, not just a stronger retrieval layer."
-            )
-            sentences.append(
-                "My fit is productizing agent reliability: evaluation gates, traceable context use, rollback paths, and product surfaces teams can trust."
-            )
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "I also productized agentic AI services into reusable offerings tied to $10M in net-new revenue."
-                )
-            sentences.append(
-                "Would a brief exchange on graph-backed agent reliability be useful, or is the right product owner someone else?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        if plan.archetype == ARCHETYPE_RECRUITER:
-            sentences.append(
-                f"Hi {first_name}, Neo4j's Agentic AI hiring signal needs a recruiter screen for candidates who can connect graph product work with governed enterprise AI delivery."
-            )
-            sentences.append(
-                "My fit is translating GraphRAG retrieval into production agent infrastructure with policy gates, traceable context use, and reliability controls."
-            )
-            sentences.append(
-                "That comes from regulated enterprise workflows where agent outputs had to be reviewable before teams trusted them."
-            )
-        else:
-            sentences.append(
-                f"Hi {first_name}, Neo4j's Agentic AI product push has a sharper tension than generic RAG: graph context has to become a governed reliability layer, not another retrieval feature."
-            )
-            sentences.append(
-                "My fit is translating GraphRAG retrieval into governed product infrastructure with evaluation gates, traceable context use, and rollback paths."
-            )
-        if "sp_runtime_reliability" in allowed_claim_ids:
-            sentences.append(
-                "The runtime proof is agent workflow reliability built into the product surface, not a separate compliance afterthought."
-            )
-        if "sp_platform_commercialization" in allowed_claim_ids:
-            sentences.append(
-                "I also productized agentic AI services into reusable offerings tied to $10M in net-new revenue."
-            )
-        if (
-            "sp_cloud_ai_transformation" in allowed_claim_ids
-            and (
-                "sp_cloud_ai_transformation" in required_claim_ids
-                or _asks_for_quantified_outcome(feedback)
-            )
-        ):
-            sentences.append(
-                "A second scale proof is architecture and commercial ownership of cloud-native AI and analytics platforms for regulated financial environments."
-            )
-        if plan.archetype == ARCHETYPE_C_LEVEL:
-            sentences.append(
-                "Would 15 minutes on governed agent productization be useful?"
-            )
-        elif plan.archetype == ARCHETYPE_RECRUITER:
-            sentences.append("Would a focused resume review or recruiter screen be useful?")
-        else:
-            sentences.append("Would a 15-minute product-fit conversation be useful?")
+
+    # (d) Archetype/feedback-derived CTA (prefer the campaign next step).
+    sentences.append(_runtime_rebuild_cta(company=company, plan=plan))
+
     return " ".join(dict.fromkeys(sentences))
+
+
+def _rebuild_proof_claim_ids(
+    *,
+    allowed_claim_ids: set[str],
+    required_claim_ids: set[str],
+    feedback: str,
+) -> tuple[str, ...]:
+    """Ordered, graph-grounded proof claim ids to surface in a rebuild.
+
+    Required claims that are also allowed lead; the commercialization claim is
+    surfaced when allowed/required or when the feedback asks for a quantified
+    outcome. ``sp_cloud_ai_transformation`` is only appended when the feedback
+    explicitly asks for a second quantified scale proof, matching the prior
+    behavior. The graph corpus owns the actual prose/metric.
+    """
+    ordered: list[str] = []
+
+    def _add(claim_id: str) -> None:
+        if claim_id in allowed_claim_ids and claim_id not in ordered:
+            ordered.append(claim_id)
+
+    # Required claims lead. The quantified commercialization metric comes next so
+    # the $10M proof survives the length-budget trim ahead of the qualitative
+    # platform/runtime claims (which the generic positioning sentence already
+    # covers). sp_cloud_ai_transformation is only surfaced on an explicit
+    # quantified-scale ask, matching prior behavior.
+    for claim_id in required_claim_ids:
+        _add(claim_id)
+    if (
+        "sp_platform_commercialization" in required_claim_ids
+        or _asks_for_quantified_outcome(feedback)
+        or any(marker in feedback for marker in ("commercial", "revenue", "margin", "10m", "$10m"))
+    ):
+        _add("sp_platform_commercialization")
+    if (
+        "sp_cloud_ai_transformation" in allowed_claim_ids
+        and (
+            "sp_cloud_ai_transformation" in required_claim_ids
+            or _asks_for_quantified_outcome(feedback)
+        )
+    ):
+        _add("sp_cloud_ai_transformation")
+    _add("sp_agentic_platform")
+    if "sp_runtime_reliability" in allowed_claim_ids or "sp_runtime_reliability" in required_claim_ids:
+        _add("sp_runtime_reliability")
+    return tuple(ordered)
+
+
+def _runtime_rebuild_cta(*, company: str, plan: X1DFeedbackRepairPlan) -> str:
+    """Archetype/feedback-derived CTA, runtime company-aware, no hardcoded names."""
+    if plan.archetype == ARCHETYPE_C_LEVEL:
+        return f"Would 15 minutes on {company}'s agentic AI operating model be useful?"
+    if plan.archetype == ARCHETYPE_RECRUITER:
+        return "Would a focused resume review or recruiter screen be useful?"
+    return "Would a brief 15-minute fit conversation be useful?"
 
 
 def _c_level_editorial_issue_families(feedback: str) -> frozenset[str]:
@@ -1164,37 +1006,45 @@ def _c_level_editorial_subject_line(
     request: WholeMessageGenerationRequest,
     feedback: str,
 ) -> str:
+    """C-level subject derived from RUNTIME company + role + feedback markers.
+
+    No per-company literals: the company name and role come from runtime context;
+    the framing word ("tradeoff"/"handoff"/"governance loop") is chosen from generic
+    feedback markers.
+    """
     if str(getattr(request, "recipient_class", "") or "").strip() != ARCHETYPE_C_LEVEL:
         return ""
-    company_lower = company.lower()
+    if not company:
+        return ""
+    jd = dict(getattr(request, "jd_fields", {}) or {})
+    role = str(jd.get("position_name") or jd.get("job_title") or "the role").strip() or "the role"
     feedback_lower = feedback.lower()
-    if company_lower == "aig" and any(
-        marker in feedback_lower for marker in ("tradeoff", "restates_jd", "external_signal")
-    ):
-        return "AIG GCDO release-evidence tradeoff"
-    if company_lower == "aig" and any(
+
+    def _subject(framing: str) -> str:
+        return f"{company} {role} {framing}"[:200].rstrip(" .")
+
+    if any(
         marker in feedback_lower
         for marker in (
+            "tradeoff",
+            "restates_jd",
+            "external_signal",
             "contextual_anchoring",
             "operating_model_decision",
             "formulaic",
             "release_evidence_not_differentiated",
         )
     ):
-        return "AIG GCDO release-evidence tradeoff"
-    if company_lower == "aig" and any(
-        marker in feedback_lower for marker in ("subject", "gcdo", "agentic", "trigger")
-    ):
-        return "AIG GCDO agentic operating proof"
-    if company_lower == "citi" and any(
+        return _subject("operating-model tradeoff")
+    if any(
         marker in feedback_lower
         for marker in ("handoff", "specific_citi_sky", "governance_gap", "observable_signal")
     ):
-        return "Citi Sky CIO governance handoff"
-    if company_lower == "citi" and any(
-        marker in feedback_lower for marker in ("subject", "cio", "citi", "governance")
+        return _subject("governance handoff")
+    if any(
+        marker in feedback_lower for marker in ("subject", "cio", "governance", "agentic", "trigger")
     ):
-        return "Citi Sky CIO governance loop"
+        return _subject("governance loop")
     return ""
 
 
@@ -1207,129 +1057,57 @@ def _compose_c_level_editorial_rebuild(
     allowed_claim_ids: set[str],
     feedback: str,
 ) -> str:
+    """C-level editorial rebuild composed from RUNTIME inputs only.
+
+    The opening is derived from the runtime ``company_trigger`` / ``company_context``;
+    the proof prose is graph-grounded. There are no per-company literal branches and
+    no hardcoded target-company name, trigger, or metric.
+    """
     if plan.archetype != ARCHETYPE_C_LEVEL:
         return ""
     families = _c_level_editorial_issue_families(feedback)
     if not families:
         return ""
-    company_lower = company.lower()
-    if company_lower == "aig":
-        if any(
-            marker in feedback
-            for marker in (
-                "value_bridge_lacks_insurance_specificity",
-                "cta_too_generic_for_c_level",
-                "trigger_framing_restates_jd",
-                "external_signal",
-                "concrete_decision_or_tradeoff",
-                "formulaic_insight_hook",
-                "metric_proof_sentence_feels_appended",
-                "c_level_sharpness",
-                "jim_specific",
-                "operating_model_gap",
-                "revenue_figures_dropped",
-                "release_control_gap",
-                "contextual_anchoring",
-                "operating_model_decision",
-                "formulaic_for_c_level",
-                "release_evidence_not_differentiated",
-            )
-        ):
-            sentences = [
-                (
-                    f"Hi {first_name}, I would frame AIG's GCDO signal as a release-gate problem: "
-                    "claims triage and underwriting agents cannot scale faster than their evidence trail."
-                ),
-                (
-                    "My governed-agent work maps there through policy checks, evaluation traces, rollback paths, and reusable release services."
-                ),
-            ]
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "The $10M net-new-revenue proof matters as operating leverage: reusable controls turning agentic AI services into scaled offerings, not demos."
-                )
-            sentences.append(
-                "Would 15 minutes on release-gate design for AIG's agentic AI operating model be useful?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        sentences = [
-            (
-                f"Hi {first_name}, AIG's GCDO trigger is concrete: agentic AI for "
-                "claims and underwriting needs release evidence before regulated decisions."
-            ),
-        ]
-        if "sp_platform_commercialization" in allowed_claim_ids:
-            sentences.append(
-                "The value bridge is insurance workflow reuse, backed by productized agentic AI services tied to $10M in net-new revenue."
-            )
-        elif "sp_runtime_reliability" in allowed_claim_ids:
-            sentences.append(
-                "The proof bridge is insurance release control: policy gates, evaluation evidence, and rollback paths built into governed agent workflows."
-            )
+    role = (plan.role or "the role").strip() or "the role"
+    trigger = str(
+        target.get("company_trigger") or target.get("company_context") or ""
+    ).strip()
+
+    sentences: list[str] = []
+    if trigger:
         sentences.append(
-            "My relevant work adds governed agentic AI platforms with policy gates, evaluation traces, rollback paths, and reusable service patterns."
+            f"Hi {first_name}, the {company} {role} signal is the operating question for a C-level "
+            f"owner: {trigger.rstrip('.')[:200]}."
         )
+    else:
         sentences.append(
-            "Would 15 minutes on evidence-backed release controls for AIG's agentic AI operating model be useful?"
+            f"Hi {first_name}, the {company} {role} signal raises a C-level operating question: "
+            "agentic AI has to carry model controls, data lineage, and audit evidence in the same loop before it scales."
         )
-        return " ".join(dict.fromkeys(sentences))
-    if company_lower == "citi":
-        if any(
-            marker in feedback
-            for marker in (
-                "medium_strength",
-                "medium_claim_strength",
-                "overreach",
-                "specific_citi_sky_detail",
-                "specific_hook_tied_to_citi_sky",
-                "governance_gap",
-                "observable_signal",
-                "global_bank",
-                "firmwide_ai_detail",
-            )
-        ):
-            sentences = [
-                (
-                    f"Hi {first_name}, Citi Sky's sharper signal is the operating handoff: "
-                    "responsible AI has to move from policy language into banker workflows."
-                ),
-                (
-                    "For a CIO, the hard edge is where AI controls, data lineage, risk review, "
-                    "and support ownership meet inside global technology services."
-                ),
-                (
-                    "My relevant work is governed agentic AI platform delivery with policy gates "
-                    "and evaluation evidence that made production AI usage auditable."
-                ),
-            ]
-            if "sp_platform_commercialization" in allowed_claim_ids:
-                sentences.append(
-                    "Commercially, the same platform discipline supported productized agentic AI services tied to $10M in net-new revenue."
-                )
-            sentences.append(
-                "Would 15 minutes on who owns Citi Sky's audit-to-support loop be useful?"
-            )
-            return " ".join(dict.fromkeys(sentences))
-        sentences = [
-            (
-                f"Hi {first_name}, Citi Sky creates a CIO-specific operating tension: "
-                "banker-facing AI can scale only if model controls, data lineage, and support ownership travel with each workflow."
-            ),
-            (
-                "My relevant work is governed agentic AI platform delivery where policy gates and evaluation evidence made AI usage auditable in production."
-            ),
-        ]
-        if "sp_quant_governance_foundation" in allowed_claim_ids:
-            sentences.append(
-                "The quant-governance proof is forward risk control: decision workflows that expose ownership and audit evidence before scale."
-            )
-        if "sp_platform_commercialization" in allowed_claim_ids:
-            sentences.append(
-                "Commercially, the same platform discipline supported productized agentic AI services tied to $10M in net-new revenue."
-            )
-        sentences.append("Would 15 minutes on the Citi Sky governance loop be useful?")
-        return " ".join(dict.fromkeys(sentences))
-    return ""
+    # Graph-grounded proof leads the body so the corpus metric survives the
+    # length-budget trim; the generic positioning sentence is only a fallback
+    # when no allowed claim resolves to graph-grounded prose.
+    proof_claims = _rebuild_proof_claim_ids(
+        allowed_claim_ids=allowed_claim_ids,
+        required_claim_ids=set(),
+        feedback=feedback,
+    )
+    proof_sentences = [
+        proof_sentence
+        for claim_id in proof_claims
+        if (proof_sentence := graph_grounded_proof_sentence((claim_id,)))
+    ]
+    if proof_sentences:
+        sentences.extend(proof_sentences)
+    else:
+        sentences.append(
+            "My relevant work is governed agentic AI platform delivery where policy gates and "
+            "evaluation evidence made production AI usage auditable."
+        )
+    sentences.append(
+        f"Would 15 minutes on {company}'s agentic AI operating model be useful?"
+    )
+    return " ".join(dict.fromkeys(sentences))
 
 
 def _needs_company_specific_rebuild(feedback: str) -> bool:
@@ -1395,28 +1173,14 @@ def _clean_rebuild_opening_sentence(
     target: dict[str, Any],
     feedback: str,
 ) -> str:
+    """Opening derived from the RUNTIME company trigger, with a generic fallback.
+
+    No per-company literal branches: when a runtime ``company_trigger`` /
+    ``company_context`` is present it drives the hook; otherwise a generic
+    company + role mandate sentence is used.
+    """
+    del feedback
     trigger = str(target.get("company_trigger") or target.get("company_context") or "").strip()
-    company_lower = company.lower()
-    if company_lower == "citi":
-        if "missing_citi_specific_trigger_hook" in feedback or "citi_specific_trigger" in feedback:
-            return (
-                f"Hi {first_name}, Citi's responsible AI, data governance, and global adoption work makes the CIO problem operational: "
-                "scale firmwide AI without losing auditability or platform control."
-            )
-        return (
-            f"Hi {first_name}, Citi's firmwide AI strategy in regulated finance makes the hard part "
-            "controlled rollout: useful agents need risk, audit, and governance evidence before they scale."
-        )
-    if company_lower == "neo4j":
-        if "recipient_specific" in feedback or "generic_graph" in feedback or "trigger_insight" in feedback:
-            return (
-                f"Hi {first_name}, Neo4j's Agentic AI product search makes the question specific: "
-                "how graph context becomes a reliability layer for enterprise agents, not another retrieval feature."
-            )
-        return (
-            f"Hi {first_name}, Neo4j's Agentic AI product leadership search makes graph context reliability "
-            "the product question for enterprise agents."
-        )
     if trigger:
         return f"Hi {first_name}, {trigger.rstrip('.')[:170]}."
     return (
@@ -1431,17 +1195,15 @@ def _clean_rebuild_evidence_sentence(
     company: str,
     feedback: str,
 ) -> str:
-    if (
-        company.lower() == "neo4j"
-        and any(
-            marker in feedback
-            for marker in (
-                "generic_capability_list",
-                "bridge_sentence_reads",
-                "claim_lacks_outcome",
-            )
+    del company
+    if any(
+        marker in feedback
+        for marker in (
+            "generic_capability_list",
+            "bridge_sentence_reads",
+            "claim_lacks_outcome",
         )
-    ):
+    ) and "sp_agentic_platform" in allowed_claim_ids:
         return (
             "My fit is translating GraphRAG retrieval into governed product infrastructure with evaluation gates, traceable context use, and rollback paths."
         )
@@ -1462,7 +1224,7 @@ def _clean_rebuild_fit_sentence(
     plan: X1DFeedbackRepairPlan,
     feedback: str,
 ) -> str:
-    company_lower = company.lower()
+    del company
     if plan.archetype == ARCHETYPE_RECRUITER:
         if "role_fit_bridge" in feedback or "recruiter_personalization" in feedback:
             return (
@@ -1471,13 +1233,9 @@ def _clean_rebuild_fit_sentence(
         return (
             f"For the {role} search, that gives a recruiter concrete screening signal beyond keyword overlap."
         )
-    if company_lower == "neo4j":
-        if _asks_for_quantified_outcome(feedback):
-            return (
-                f"For the {role} search, the candidate signal is shipping governed AI infrastructure with measurable transformation ownership."
-            )
+    if _asks_for_quantified_outcome(feedback):
         return (
-            f"For the {role} search, that is candidate fit around productizing trustworthy agent infrastructure, not advisory commentary."
+            f"For the {role} search, the candidate signal is shipping governed AI infrastructure with measurable transformation ownership."
         )
     return (
         f"For the {role} search, the fit is platform operating model depth rather than a generic AI strategy pitch."
@@ -1567,9 +1325,10 @@ def _claims_from_repaired_text(
         "sp_cloud_ai_transformation" in allowed_claim_ids
         and (
             # Graph-SSOT: the cloud-AI claim now emits its grounded descriptive content
-            # ("cloud-native AI and analytics platforms"); the legacy "$30M cloud and AI
-            # transformation portfolio" phrasing was apps_lic-authored fabrication the corpus
-            # dropped. Detect the grounded content, not the fabricated metric.
+            # ("cloud-native AI and analytics platforms"); the legacy cloud/AI
+            # transformation-portfolio dollar phrasing was apps_lic-authored fabrication the
+            # corpus dropped. Detect the grounded content, not the fabricated metric (the
+            # lowercase legacy-dollar marker below stays only for backward-compat recognition).
             "cloud-native ai and analytics platforms" in normalized
             or "cloud-native ai" in normalized
             or "$30m" in normalized
@@ -1834,38 +1593,39 @@ def _c_level_editorial_copy_lint_issues(
         return ()
     target = dict(getattr(request, "target_context", {}) or {})
     jd = dict(getattr(request, "jd_fields", {}) or {})
-    company = str(target.get("company") or jd.get("company") or "").strip().lower()
-    if company not in {"aig", "citi"}:
+    company = str(target.get("company") or jd.get("company") or "").strip()
+    role = str(jd.get("position_name") or jd.get("job_title") or "").strip()
+    if not company:
         return ()
+    company_lower = company.lower()
+    role_lower = role.lower()
     normalized_text = text.lower()
     normalized_subject = subject_line.lower()
     issues: list[str] = []
     for phrase in _C_LEVEL_EDITORIAL_BANNED_PHRASES:
         if phrase in normalized_text:
             issues.append("c_level_copy_lint:banned_phrase:" + phrase.replace(" ", "_"))
-    if company == "aig":
-        if not (
-            "aig" in normalized_subject
-            and "gcdo" in normalized_subject
-            and any(marker in normalized_subject for marker in ("agentic", "release"))
-        ):
-            issues.append("c_level_copy_lint:subject_specificity")
-        if "$10m" in normalized_text and not any(
-            marker in normalized_text for marker in ("insurance", "claims", "underwriting")
-        ):
-            issues.append("c_level_copy_lint:metric_missing_insurance_context")
-        if any(marker in normalized_text for marker in ("which aig workflow", "should pilot")):
-            issues.append("c_level_copy_lint:cta_presumes_workflow_selection")
-    elif company == "citi":
-        if "citi sky" not in normalized_subject or not any(
-            marker in normalized_subject for marker in ("cio", "governance", "loop")
-        ):
-            issues.append("c_level_copy_lint:subject_specificity")
-        if "$10m" in normalized_text and not any(
-            marker in normalized_text
-            for marker in ("citi sky", "banker-facing", "regulated", "governance")
-        ):
-            issues.append("c_level_copy_lint:metric_missing_citi_context")
+    # Runtime-derived subject specificity: the subject must carry the runtime
+    # company and an executive operating framing (role token or governance hook).
+    if not (
+        company_lower in normalized_subject
+        and (
+            (role_lower and role_lower in normalized_subject)
+            or any(
+                marker in normalized_subject
+                for marker in ("governance", "operating", "loop", "tradeoff", "handoff", "agentic", "release")
+            )
+        )
+    ):
+        issues.append("c_level_copy_lint:subject_specificity")
+    # Graph-grounded metric must sit next to runtime company/role context, never
+    # bare. (The $10M figure itself is corpus-sourced — see graph_grounded_proof_sentence.)
+    if "$10m" in normalized_text and not (
+        company_lower in normalized_text
+        or (role_lower and role_lower in normalized_text)
+        or any(marker in normalized_text for marker in ("regulated", "governance", "agentic ai"))
+    ):
+        issues.append("c_level_copy_lint:metric_missing_company_context")
     return tuple(dict.fromkeys(issues))
 
 

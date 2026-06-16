@@ -884,10 +884,23 @@ def test_w5_clean_rebuild_varies_for_new_citi_trigger_and_cta_feedback() -> None
         request=request,
         normalized_intents=intents,
     )
+    subject = x1d_regen._clean_rebuild_subject_line(
+        existing="Citi Head of AI Strategy fit",
+        request=request,
+        normalized_intents=intents,
+    )
 
-    assert "Citi Sky creates a CIO-specific operating tension" in rebuilt
-    assert "model controls, data lineage, and support ownership" in rebuilt
-    assert "Citi Sky governance loop" in rebuilt
+    # Runtime-derived invariant: the rebuild incorporates the runtime company and
+    # the provided company_trigger (which mentions "Citi Sky"), the jd role, a
+    # graph-grounded proof, and an executive CTA. No engine-hardcoded Citi copy.
+    assert "Citi" in rebuilt
+    assert "Citi Sky" in rebuilt  # sourced from the runtime company_trigger
+    assert "Head of AI Strategy - Firmwide AI" in rebuilt
+    assert "governed agentic AI platform for regulated enterprise workflows" in rebuilt
+    assert "Would 15 minutes on Citi's agentic AI operating model be useful?" in rebuilt
+    # Subject reflects runtime company + role + executive framing.
+    assert subject.startswith("Citi Head of AI Strategy - Firmwide AI")
+    assert "governance" in subject.lower()
 
 
 def test_w5_clean_rebuild_surfaces_cloud_ai_claim_without_fabricated_metric(monkeypatch) -> None:
@@ -961,7 +974,12 @@ def test_w5_clean_rebuild_surfaces_cloud_ai_claim_without_fabricated_metric(monk
     assert "cloud-native AI and analytics platforms" in rebuilt
     assert "$30M" not in rebuilt
     assert "sp_cloud_ai_transformation" in claims
-    assert "not another retrieval feature" in rebuilt
+    # Runtime-derived trigger: the opening hook is sourced from the provided
+    # company_trigger (graph intelligence as context infrastructure), not from an
+    # engine-hardcoded Neo4j phrase.
+    assert "Neo4j" in rebuilt
+    assert "graph intelligence as context infrastructure for enterprise agents" in rebuilt
+    assert "VP of Product Management, Agentic AI" in rebuilt
     assert "VP Product, Agentic AI search be useful" not in rebuilt
 
 
@@ -1102,11 +1120,18 @@ def test_w5_retry16_c_level_composer_replaces_bad_aig_copy(monkeypatch) -> None:
         request=request,
     )
 
-    assert "c_level_copy_lint:subject_specificity" in old_lint
-    assert "c_level_copy_lint:cta_presumes_workflow_selection" in old_lint
+    # The bad parent copy still trips the (now company-generic) copy lint via its
+    # banned executive-cliche phrases; the runtime-derived rebuild is clean.
+    assert any("banned_phrase" in issue for issue in old_lint)
     assert new_lint == ()
-    assert subject == "AIG GCDO agentic operating proof"
-    assert "insurance workflow reuse" in rebuilt
+    # Subject is runtime-derived from company + role + an executive framing word.
+    assert subject == "AIG VP, Global Head of Agentic AI Solutions governance loop"
+    # Rebuild incorporates the runtime company, the runtime trigger, a graph-grounded
+    # $10M proof, and an executive CTA — no engine-hardcoded AIG copy.
+    assert rebuilt.startswith("Hi Jim, the AIG VP, Global Head of Agentic AI Solutions signal")
+    assert "Global Chief Data Officer" in rebuilt  # from the runtime company_trigger
+    assert "$10M in net-new revenue" in rebuilt
+    assert "Would 15 minutes on AIG's agentic AI operating model be useful?" in rebuilt
     assert "which AIG workflow" not in rebuilt
     assert "brief executive exchange" not in rebuilt
     assert {"sp_agentic_platform", "sp_platform_commercialization", "sp_runtime_reliability"} <= set(claims)
@@ -1154,18 +1179,25 @@ def test_w5_retry16_c_level_composer_replaces_same_parent_citi_copy(monkeypatch)
         request=request,
     )
 
+    # The bad parent copy still trips the (now company-generic) copy lint via its
+    # banned phrases (e.g. "pressure-test"); the runtime-derived rebuild is clean.
     assert any("pressure-test" in issue for issue in old_lint)
     assert new_lint == ()
-    assert subject == "Citi Sky CIO governance loop"
-    assert "Citi Sky creates a CIO-specific operating tension" in rebuilt
-    assert "quant-governance proof is forward risk control" in rebuilt
+    # Subject is runtime-derived from company + role + an executive framing word.
+    assert subject == "Citi Head of AI Strategy - Firmwide AI governance loop"
+    # Rebuild incorporates the runtime company + trigger (which mentions "Citi Sky"),
+    # the jd role, a graph-grounded $10M proof, and an executive CTA. None of the old
+    # engine-hardcoded Citi copy or banned executive cliches survive.
+    assert rebuilt.startswith("Hi Brian, the Citi Head of AI Strategy - Firmwide AI signal")
+    assert "Citi Sky" in rebuilt  # sourced from the runtime company_trigger
+    assert "$10M in net-new revenue" in rebuilt
+    assert "Would 15 minutes on Citi's agentic AI operating model be useful?" in rebuilt
     assert "pressure-test" not in rebuilt
     assert "The governance foundation is" not in rebuilt
     assert "My fit is" not in rebuilt
     assert {
         "sp_agentic_platform",
         "sp_platform_commercialization",
-        "sp_quant_governance_foundation",
     } <= set(claims)
 
 
@@ -1209,7 +1241,7 @@ def test_w5_retry17_aig_second_stage_variant_changes_same_parent(monkeypatch) ->
         normalized_intents=intents,
     )
     subject = x1d_regen._clean_rebuild_subject_line(
-        existing="AIG GCDO agentic operating proof",
+        existing="AIG VP, Global Head of Agentic AI Solutions governance loop",
         request=request,
         normalized_intents=intents,
     )
@@ -1219,12 +1251,18 @@ def test_w5_retry17_aig_second_stage_variant_changes_same_parent(monkeypatch) ->
         request=request,
     )
 
+    # The second-stage rebuild diverges from the (fabricated-$22M) parent and is
+    # entirely runtime-derived: company + role + trigger + graph-grounded proof.
     assert x1d_regen._message_fingerprint(rebuilt) != x1d_regen._message_fingerprint(parent_text)
-    assert subject == "AIG GCDO release-evidence tradeoff"
-    assert "release-gate problem" in rebuilt
-    assert "claims triage and underwriting agents" in rebuilt
-    assert "reusable controls turning agentic AI services into scaled offerings" in rebuilt
-    assert "release-gate design for AIG's agentic AI operating model" in rebuilt
+    # "tradeoff" feedback drives the runtime company + role tradeoff subject framing.
+    assert subject == "AIG VP, Global Head of Agentic AI Solutions operating-model tradeoff"
+    assert rebuilt.startswith("Hi Jim, the AIG VP, Global Head of Agentic AI Solutions signal")
+    assert "Global Chief Data Officer" in rebuilt  # from the runtime company_trigger
+    assert "governed agentic AI platform for regulated enterprise workflows" in rebuilt
+    assert "Would 15 minutes on AIG's agentic AI operating model be useful?" in rebuilt
+    # The fabricated $22M / 20% margin parent metrics must never reappear.
+    assert "$22M" not in rebuilt
+    assert "20% margin" not in rebuilt
     assert lint == ()
 
 
@@ -1288,12 +1326,21 @@ def test_w5_retry17_citi_second_stage_variant_drops_medium_quant_claim(monkeypat
         request=request,
     )
 
+    # Runtime-derived rebuild diverges from the (fabricated-$22M) parent and is
+    # built from company + role + trigger + a graph-grounded proof.
     assert x1d_regen._message_fingerprint(rebuilt) != x1d_regen._message_fingerprint(parent_text)
-    assert subject == "Citi Sky CIO governance handoff"
-    assert "AI controls, data lineage, risk review" in rebuilt
-    assert "audit-to-support loop" in rebuilt
+    # "governance_gap"/"observable_signal" feedback drives the handoff framing on the
+    # runtime company + role subject.
+    assert subject == "Citi Head of AI Strategy - Firmwide AI governance handoff"
+    assert rebuilt.startswith("Hi Brian, the Citi Head of AI Strategy - Firmwide AI signal")
+    assert "Citi Sky" in rebuilt  # sourced from the runtime company_trigger
+    assert "Would 15 minutes on Citi's agentic AI operating model be useful?" in rebuilt
+    # The medium-strength quant-governance claim is dropped, and the fabricated
+    # parent metrics never reappear.
     assert "quant-governance" not in rebuilt
     assert "forward risk control" not in rebuilt
+    assert "$22M" not in rebuilt
+    assert "20% margin" not in rebuilt
     assert "sp_quant_governance_foundation" not in {
         claim_id for intent in intents for claim_id in intent.required_claim_ids
     }
