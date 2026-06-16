@@ -117,12 +117,13 @@ def _rel(path: Path) -> str:
 
 
 def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]:
-    """ADG-backed apps_* test reachability from ``covers`` edges.
+    """ADG-backed apps_* test reachability from test edges.
 
     ``coverage_by_path`` is coverage.py line/branch ingestion. It can be empty
-    for an app even when ADG has app nodes, hotspot MVs, and test ``covers``
-    edges. This table exposes the apps signal directly so the markdown report
-    does not imply that coverage_by_path is the only indicator.
+    for an app even when ADG has app nodes, hotspot MVs, and test reachability.
+    Count both explicit ``covers`` edges and test-file ``imports`` edges because
+    module imports prove static test ownership even when the covers linker emits
+    only the package root for import-alias syntax.
     """
     apps: dict[str, dict[str, Any]] = {}
 
@@ -136,7 +137,7 @@ def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]
                 "coverage_by_path_rows": set(),
                 "covered_paths": set(),
                 "covering_tests": set(),
-                "covers_edges": 0,
+                "test_reachability_edges": 0,
             },
         )
 
@@ -178,7 +179,7 @@ def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]
         SELECT e.source_file, dst.resolved_path, COUNT(*) AS edge_count
         FROM edges e
         JOIN nodes dst ON dst.id = e.dst_id
-        WHERE e.relation_type = 'covers'
+        WHERE e.relation_type IN ('covers', 'imports')
           AND e.source_file LIKE 'tests/%'
           AND dst.resolved_path LIKE 'apps_%/%.py'
         GROUP BY e.source_file, dst.resolved_path
@@ -190,7 +191,7 @@ def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]
         row = bucket(app)
         row["covered_paths"].add(str(dst_path))
         row["covering_tests"].add(str(source_file))
-        row["covers_edges"] += int(edge_count)
+        row["test_reachability_edges"] += int(edge_count)
 
     out: list[dict[str, Any]] = []
     for app, row in sorted(apps.items()):
@@ -204,7 +205,8 @@ def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]
                 "covered_paths": len(covered_paths),
                 "covering_tests": len(row["covering_tests"]),
                 "coverage_by_path_rows": len(row["coverage_by_path_rows"]),
-                "covers_edges": int(row["covers_edges"]),
+                "covers_edges": int(row["test_reachability_edges"]),
+                "test_reachability_edges": int(row["test_reachability_edges"]),
                 "hotspot_paths_without_covers": len(hotspot_paths - covered_paths),
             }
         )
@@ -222,7 +224,7 @@ def _top_uncovered_app_hotspots(
             SELECT DISTINCT dst.resolved_path AS path
             FROM edges e
             JOIN nodes dst ON dst.id = e.dst_id
-            WHERE e.relation_type = 'covers'
+            WHERE e.relation_type IN ('covers', 'imports')
               AND e.source_file LIKE 'tests/%'
               AND dst.resolved_path LIKE 'apps_%/%.py'
         )
@@ -328,8 +330,8 @@ def render(snapshot: Path) -> str:
         apps_covering_tests = sum(int(r["covering_tests"]) for r in apps_reachability)
         a(f"- **apps_* packages with ADG hotspot paths:** {apps_with_hotspots}")
         a(f"- **apps_* ADG hotspot paths:** {apps_hotspots}")
-        a(f"- **apps_* paths reached by test `covers` edges:** {apps_covered_paths}")
-        a(f"- **apps_* distinct covering tests (`covers` source_file):** {apps_covering_tests}")
+        a(f"- **apps_* paths reached by ADG test-reachability edges:** {apps_covered_paths}")
+        a(f"- **apps_* distinct covering tests:** {apps_covering_tests}")
         a("")
     a("> **W2 note:** P3 modules may have behavioral coverage in")
     a("> `tests/agentic_core/test_p3_w2_hotspot_behavior.py` without a basename match.")
@@ -339,13 +341,14 @@ def render(snapshot: Path) -> str:
     a("")
     a(
         "This table is ADG-backed. `coverage_by_path` is coverage.py line/branch ingestion; "
-        "`covers` edges are the ADG test-reachability indicator from `tests/%` to app paths. "
+        "`covers` and `imports` edges from `tests/%` are the ADG test-reachability indicator "
+        "for app paths. "
         "A zero `coverage_by_path` row count does not mean the app is absent from ADG."
     )
     a("")
     a(
-        "| App | ADG source paths | Hotspot paths | Paths reached by `covers` | "
-        "Distinct covering tests | `covers` edges | `coverage_by_path` rows | Hotspot paths without `covers` |"
+        "| App | ADG source paths | Hotspot paths | Paths reached by test reachability | "
+        "Distinct covering tests | Test-reachability edges | `coverage_by_path` rows | Hotspot paths without test reachability |"
     )
     a("|---|---:|---:|---:|---:|---:|---:|---:|")
     for row in apps_reachability:

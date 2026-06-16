@@ -39,6 +39,8 @@ def _fixture_conn() -> sqlite3.Connection:
             (3, "apps_rg/runtime/sections/untested_lane.py"),
             (4, "tests/unit/apps_lic/test_gateway.py"),
             (5, "apps_lic/runtime/gateway.py"),
+            (6, "tests/unit/apps_rg/runtime/providers/test_section_provider_call.py"),
+            (7, "apps_rg/runtime/providers/section_provider_call.py"),
         ],
     )
     con.executemany(
@@ -59,6 +61,12 @@ def _fixture_conn() -> sqlite3.Connection:
                 "covers",
                 "tests/unit/apps_lic/test_gateway.py",
             ),
+            (
+                6,
+                7,
+                "imports",
+                "tests/unit/apps_rg/runtime/providers/test_section_provider_call.py",
+            ),
         ],
     )
     con.executemany(
@@ -70,6 +78,7 @@ def _fixture_conn() -> sqlite3.Connection:
         [
             ("apps_rg/runtime/providers/provider_gateway.py", 17, 11, 28, 0.0014),
             ("apps_rg/runtime/sections/untested_lane.py", 10, 1, 11, 0.0010),
+            ("apps_rg/runtime/providers/section_provider_call.py", 9, 9, 18, 0.0008),
             ("apps_lic/runtime/gateway.py", 5, 3, 8, 0.0008),
         ],
     )
@@ -77,7 +86,7 @@ def _fixture_conn() -> sqlite3.Connection:
     return con
 
 
-def test_apps_adg_reachability_uses_covers_edges_not_coverage_by_path() -> None:
+def test_apps_adg_reachability_uses_test_edges_not_coverage_by_path() -> None:
     con = _fixture_conn()
 
     rows = {
@@ -85,11 +94,12 @@ def test_apps_adg_reachability_uses_covers_edges_not_coverage_by_path() -> None:
         for row in report._apps_adg_test_reachability(con)
     }
 
-    assert rows["apps_rg"]["adg_source_paths"] == 2
-    assert rows["apps_rg"]["hotspot_paths"] == 2
-    assert rows["apps_rg"]["covered_paths"] == 1
-    assert rows["apps_rg"]["covering_tests"] == 1
-    assert rows["apps_rg"]["covers_edges"] == 1
+    assert rows["apps_rg"]["adg_source_paths"] == 3
+    assert rows["apps_rg"]["hotspot_paths"] == 3
+    assert rows["apps_rg"]["covered_paths"] == 2
+    assert rows["apps_rg"]["covering_tests"] == 2
+    assert rows["apps_rg"]["covers_edges"] == 2
+    assert rows["apps_rg"]["test_reachability_edges"] == 2
     assert rows["apps_rg"]["coverage_by_path_rows"] == 0
     assert rows["apps_rg"]["hotspot_paths_without_covers"] == 1
 

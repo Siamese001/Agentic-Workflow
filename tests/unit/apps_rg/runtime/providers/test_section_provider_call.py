@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from apps_rg.runtime.providers import section_provider_call as subject
+import apps_rg.runtime.providers.section_provider_call as subject
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.provider_gateway import ProviderProfile
 
