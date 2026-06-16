@@ -67,7 +67,11 @@ resume_project_facts:
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[2]
   - fact_id: fact_platform_commercialization
-    fact_text: Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue and expanding gross margins by 20%.
+    # Graph is SSOT for metrics: the GTM/revops skills ground "$10M net-new
+    # revenue"; the prior "$22M IP-led revenue / 20% gross margin" was
+    # apps_lic-authored drift and is dropped here too (this section is currently
+    # not consumed by generation, but carries no ungrounded metric).
+    fact_text: Drove go-to-market and revenue-operations alignment for the platform, building the sales pipeline that delivered $10M in net-new revenue.
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[5]
   - fact_id: fact_cloud_ai_transformation
