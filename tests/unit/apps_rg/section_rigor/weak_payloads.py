@@ -24,6 +24,90 @@ def _fake_judges() -> list[dict[str, Any]]:
     ]
 
 
+def _role_episode_fact_id(section_id: str) -> str:
+    return f"fact_{section_id}_001"
+
+
+def _role_episode_bullet_prefix(section_id: str) -> str:
+    return "bul_insurtech" if section_id.startswith("insurtech") else "bul_ey"
+
+
+def _role_episode_bullet_l2(section_id: str, *, count: int = 3) -> dict[str, Any]:
+    fact_id = _role_episode_fact_id(section_id)
+    prefix = _role_episode_bullet_prefix(section_id)
+    bullets = [
+        {
+            "bullet_id": f"{prefix}_{idx:03d}",
+            "bullet_text": f"Delivered governed platform control outcome {idx} with audited adoption.",
+            "source_fact_ids": [fact_id],
+        }
+        for idx in range(1, count + 1)
+    ]
+    return {
+        "section_id": section_id,
+        "bullets": bullets,
+        "claim_ledger": [
+            {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]}
+            for b in bullets
+        ],
+    }
+
+
+def _role_episode_narrative_l2(section_id: str, *, text: str) -> dict[str, Any]:
+    fact_id = _role_episode_fact_id(section_id)
+    return {
+        "section_id": section_id,
+        "narrative_sentence": text,
+        "claim_ledger": [{"claim_text": text, "source_fact_ids": [fact_id]}],
+    }
+
+
+def _insurtech_bullets_weak_count():
+    from apps_rg.runtime.sections.role_episode_lane import run_insurtech_bullets_x2_gates
+
+    return run_insurtech_bullets_x2_gates(
+        l2=_role_episode_bullet_l2("insurtech_bullets", count=2),
+        allowed=[_role_episode_fact_id("insurtech_bullets")],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
+def _ey_bullets_weak_count():
+    from apps_rg.runtime.sections.role_episode_lane import run_ey_bullets_x2_gates
+
+    return run_ey_bullets_x2_gates(
+        l2=_role_episode_bullet_l2("ey_bullets", count=2),
+        allowed=[_role_episode_fact_id("ey_bullets")],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
+def _insurtech_narrative_weak_two_sentences():
+    from apps_rg.runtime.sections.role_episode_lane import run_insurtech_narrative_x2_gates
+
+    return run_insurtech_narrative_x2_gates(
+        l2=_role_episode_narrative_l2(
+            "insurtech_narrative",
+            text="Delivered governed controls. Expanded audited adoption.",
+        ),
+        allowed=[_role_episode_fact_id("insurtech_narrative")],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
+def _ey_narrative_weak_two_sentences():
+    from apps_rg.runtime.sections.role_episode_lane import run_ey_narrative_x2_gates
+
+    return run_ey_narrative_x2_gates(
+        l2=_role_episode_narrative_l2(
+            "ey_narrative",
+            text="Delivered governed controls. Expanded audited adoption.",
+        ),
+        allowed=[_role_episode_fact_id("ey_narrative")],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
 def _competencies_weak_generic_keywords():
     from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
 
@@ -1024,6 +1108,26 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
             "ibm_narrative",
             "x2_ibm_narrative_requires_finalized_bullets",
             _ibm_narrative_weak_requires_finalized,
+        ),
+        WeakFailCase(
+            "insurtech_bullets",
+            "x2_insurtech_bullets_bullet_count_3",
+            _insurtech_bullets_weak_count,
+        ),
+        WeakFailCase(
+            "ey_bullets",
+            "x2_ey_bullets_bullet_count_3",
+            _ey_bullets_weak_count,
+        ),
+        WeakFailCase(
+            "insurtech_narrative",
+            "x2_insurtech_narrative_exactly_one_sentence",
+            _insurtech_narrative_weak_two_sentences,
+        ),
+        WeakFailCase(
+            "ey_narrative",
+            "x2_ey_narrative_exactly_one_sentence",
+            _ey_narrative_weak_two_sentences,
         ),
     )
 
