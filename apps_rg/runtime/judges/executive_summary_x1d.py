@@ -4,6 +4,16 @@ Provider-backed judges with full normalization per X1D adapter spec.
 """
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import (
+    ANTHROPIC_DEFAULT_MODEL_ID,
+    ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID,
+    GEMINI_20_FLASH_MODEL_ID,
+    GEMINI_2_FAMILY_PREFIX,
+    GEMINI_25_PRO_MODEL_ID,
+    GEMINI_3_FAMILY_PREFIX,
+    OPENAI_GPT5_FAMILY_PREFIX,
+)
+
 import json
 import os
 import re
@@ -25,34 +35,29 @@ from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     ensure_dimension_verdicts,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
+from apps_rg.runtime.section_model_limits import runtime_limit_float, runtime_limit_int
 
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
 DEFAULT_THRESHOLD = 0.80
 VALID_SCORE_SCALES = frozenset({"0_to_1", "0_to_5"})
 JUDGE_REQUIRED_FIELDS = ("score_scale", "score", "threshold", "pass")
-UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV = "APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS"
+
+
+def _is_openai_gpt5_chat_model(model: str) -> bool:
+    return str(model or "").startswith(OPENAI_GPT5_FAMILY_PREFIX)
+
+
+def _uses_gemini_preview_endpoint(model: str) -> bool:
+    mid = str(model or "")
+    return "preview" in mid or mid.startswith(GEMINI_2_FAMILY_PREFIX) or mid.startswith(GEMINI_3_FAMILY_PREFIX)
 
 
 def _resolved_x1d_judge_max_output_tokens(*, attempt: int = 1) -> int:
-    """Unified judge output token budget (transport parity — Gemini, OpenAI, Anthropic).
-
-    Prefers ``APPS_RG_X1D_JUDGE_MAX_OUTPUT_TOKENS``. Legacy per-provider envs
-    (``APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS``, ``APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS``)
-    are fallbacks only when the unified env is unset.
-    """
-    raw = (
-        os.environ.get(UNIFIED_X1D_JUDGE_MAX_OUTPUT_TOKENS_ENV, "").strip()
-        or os.environ.get("APPS_RG_OPENAI_JUDGE_MAX_COMPLETION_TOKENS", "").strip()
-        or os.environ.get("APPS_RG_GOOGLE_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
-        or os.environ.get("APPS_RG_GEMINI_JUDGE_MAX_OUTPUT_TOKENS", "").strip()
-        or "4096"
-    )
-    try:
-        base = max(512, int(raw))
-    except ValueError:
-        base = 4096
-    return min(8192, base * min(max(1, attempt), 2))
+    """Unified judge output token budget from provider_profiles.yaml runtime_limits."""
+    base = max(512, runtime_limit_int("judge.x1d_max_output_tokens"))
+    hard_cap = max(base, runtime_limit_int("judge.x1d_max_output_tokens_hard_cap"))
+    return min(hard_cap, base * min(max(1, attempt), 2))
 
 
 GOOGLE_AI_JUDGE_MAX_OUTPUT_TOKENS = _resolved_x1d_judge_max_output_tokens(attempt=1)
@@ -67,15 +72,13 @@ def _resolved_openai_judge_max_completion_tokens(*, attempt: int = 1) -> int:
 
 
 def _x1d_judge_max_attempts() -> int:
-    raw = os.environ.get("APPS_RG_X1D_JUDGE_MAX_ATTEMPTS", "3").strip()
-    try:
-        return max(1, min(5, int(raw)))
-    except ValueError:
-        return 3
+    return max(1, min(5, runtime_limit_int("judge.x1d_max_attempts")))
 
 
 def _judge_retry_backoff_seconds(attempt: int) -> float:
-    return min(4.0, 0.5 * (2 ** max(0, attempt - 1)))
+    base = runtime_limit_float("judge.retry_backoff_base_seconds")
+    hard_cap = runtime_limit_float("judge.retry_backoff_max_seconds")
+    return min(hard_cap, base * (2 ** max(0, attempt - 1)))
 
 
 def _is_retriable_judge_output(output: JudgeOutput) -> bool:
@@ -260,28 +263,17 @@ PROVIDERS = {
         "env": "GOOGLE_API_KEY",
         # GEMINI_API_KEY is a deprecated legacy alias (same credential as Google AI Gemini).
         "env_fallbacks": ("GEMINI_API_KEY",),
-        "model_env": "APPS_RG_GOOGLE_JUDGE_MODEL",
-        "model_env_aliases": ("APPS_RG_GEMINI_JUDGE_MODEL",),
-        "fallback_env": "GOOGLE_AI_PRO_MODEL",
-        "fallback_env_aliases": ("GEMINI_PRO_MODEL", "GOOGLE_AI_MODEL", "GEMINI_MODEL"),
-        # Fail-soft last-resort fallback only. The judge-model SSOT is provider_profiles.yaml
-        # judge_models, resolved by section_judge_profile.resolve_section_proof_judge_model. Kept
-        # aligned to the YAML standard tier; gemini-2.0-flash was a forbidden flash-tier proof model.
-        "default_model": "gemini-2.5-pro",
+        "default_model": GEMINI_25_PRO_MODEL_ID,
     },
     "openai_chatgpt": {
         "provider_name": "OpenAI ChatGPT",
         "env": "OPENAI_API_KEY",
-        "model_env": "OPENAI_MODEL",
         "default_model": OPENAI_CHAT_JUDGE_MODEL_ID,
     },
     "anthropic_claude": {
         "provider_name": "Anthropic Claude",
         "env": "ANTHROPIC_API_KEY",
-        "model_env": "APPS_RG_ANTHROPIC_JUDGE_MODEL",  # Specific judge model env
-        "fallback_env": "ANTHROPIC_MODEL",  # Fallback to general model
-        # Fail-soft fallback only — SSOT is provider_profiles.yaml judge_models (standard: sonnet-4-6).
-        "default_model": "claude-sonnet-4-6",
+        "default_model": ANTHROPIC_DEFAULT_MODEL_ID,
     },
 }
 
@@ -387,7 +379,7 @@ def _resolve_gemini_model(
     resolution = resolve_section_proof_judge_model(section_id, "gemini_pro")
     if resolution.model_actual and not resolution.blocked:
         return resolution.model_actual, resolution.model_source
-    return str(meta.get("default_model", "gemini-2.0-flash")), "default"
+    return str(meta.get("default_model", GEMINI_20_FLASH_MODEL_ID)), "default"
 
 
 def _resolve_anthropic_model(
@@ -401,7 +393,7 @@ def _resolve_anthropic_model(
     resolution = resolve_section_proof_judge_model(section_id, "anthropic_claude")
     if resolution.model_actual and not resolution.blocked:
         return resolution.model_actual, resolution.model_source
-    default = str(meta.get("default_model", "claude-3-5-sonnet-20241022"))
+    default = str(meta.get("default_model", ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID))
     return default, "default"
 
 
@@ -899,8 +891,8 @@ def _call_openai(
             {"role": "user", "content": prompt},
         ],
     }
-    # gpt-5.x: max_completion_tokens only; temperature/reasoning rejected on current chat SKUs.
-    if model.startswith("gpt-5"):
+    # GPT-5 family: max_completion_tokens only; temperature/reasoning rejected on current chat SKUs.
+    if _is_openai_gpt5_chat_model(model):
         payload["max_completion_tokens"] = _resolved_openai_judge_max_completion_tokens(
             attempt=attempt
         )
@@ -931,7 +923,7 @@ def _call_openai(
             model_env_source=model_env_source,
             input_hash=input_hash,
             max_tokens=max_tokens,
-            response_format="json_object" if not model.startswith("gpt-5") else "gpt5_completion",
+            response_format="json_object" if not _is_openai_gpt5_chat_model(model) else "gpt5_completion",
         ),
     }
     if judge_receipt:
@@ -1094,22 +1086,15 @@ def _call_anthropic(
     *,
     model_source: str = "unknown",
     artifact_base: Path | None = None,
-    allow_model_fallback: bool | None = None,
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
     attempt: int = 1,
     packet_hash: str | None = None,
     canonical_contract_hash: str | None = None,
 ) -> JudgeOutput:
-    """Call Anthropic API with full artifact preservation and model fallback handling."""
+    """Call Anthropic API with full artifact preservation."""
     original_model = model
     fallback_model = None
-    
-    # Check for fallback permission (disabled on executive_summary GRADE_ONLY proof path)
-    if allow_model_fallback is None:
-        allow_fallback = os.environ.get("APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK", "").lower() == "true"
-    else:
-        allow_fallback = bool(allow_model_fallback)
     
     max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
     payload = {
@@ -1180,25 +1165,6 @@ def _call_anthropic(
                 "input_hash": input_hash
             })
             
-            if allow_fallback:
-                fallback_candidates = [
-                    os.environ.get("ANTHROPIC_MODEL", "").strip(),
-                    str(PROVIDERS["anthropic_claude"]["default_model"]),
-                ]
-                for fallback in fallback_candidates:
-                    if fallback and fallback != model:
-                        return _call_anthropic_fallback(
-                            api_key,
-                            prompt,
-                            fallback,
-                            input_hash,
-                            provider_key,
-                            original_model,
-                            fallback,
-                            "APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK=true after 404 not_found",
-                            artifact_base=artifact_base,
-                        )
-            
             return _make_blocked_output(
                 provider_key, input_hash, "BLOCKED_MODEL_NOT_FOUND",
                 "BLOCKED_MODEL_NOT_FOUND", f"Model not found: {model}",
@@ -1250,7 +1216,6 @@ def _call_anthropic(
                 provider_key,
                 model_source=model_source,
                 artifact_base=artifact_base,
-                allow_model_fallback=allow_model_fallback,
                 model_requested=model_requested,
                 judge_receipt=judge_receipt,
                 attempt=2,
@@ -1291,7 +1256,6 @@ def _call_anthropic(
                 provider_key,
                 model_source=model_source,
                 artifact_base=artifact_base,
-                allow_model_fallback=allow_model_fallback,
                 model_requested=model_requested,
                 judge_receipt=judge_receipt,
                 attempt=2,
@@ -1323,120 +1287,6 @@ def _call_anthropic(
         model_requested=model_requested,
     )
     return _attach_judge_receipt_fields(out, judge_receipt, model_requested=model_requested or model)
-
-
-def _call_anthropic_fallback(
-    api_key: str,
-    prompt: str,
-    model: str,
-    input_hash: str,
-    provider_key: str,
-    original_model: str,
-    fallback_model: str,
-    fallback_reason: str,
-    *,
-    artifact_base: Path | None = None,
-) -> JudgeOutput:
-    """Fallback call for Anthropic when original model not found."""
-    payload = {
-        "model": model,
-        "max_tokens": _resolved_x1d_judge_max_output_tokens(attempt=1),
-        "system": build_x1d_judge_system_prompt(compact=True),
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-    }
-
-    req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
-    _write_artifact(req_path, {
-        "payload": payload,
-        "input_hash": input_hash,
-        "original_model": original_model,
-        "fallback_model": fallback_model,
-        "fallback_reason": fallback_reason,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    })
-
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=json.dumps(payload).encode(),
-        headers={
-            "Content-Type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-        },
-        method="POST",
-    )
-
-    if not _judge_live_https_allowed_under_pytest():
-        return _pytest_network_disabled_blocked_output(
-            provider_key=provider_key,
-            input_hash=input_hash,
-            model=model,
-            service_label="Anthropic",
-        )
-
-    try:
-        with urllib.request.urlopen(req, timeout=60) as response:
-            raw_response = response.read().decode()
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode()
-        err_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
-        _write_artifact(err_path, {
-            "error": True,
-            "status_code": e.code,
-            "original_model": original_model,
-            "fallback_model": fallback_model,
-            "fallback_reason": fallback_reason,
-            "body": error_body,
-            "input_hash": input_hash,
-        })
-        return _make_blocked_output(
-            provider_key, input_hash, "BLOCKED_MODEL_NOT_FOUND",
-            "BLOCKED_MODEL_NOT_FOUND", f"Fallback model also failed: {e.code}: {error_body}",
-            raw_response_ref=str(err_path), model_name=model,
-            original_model=original_model, fallback_model=fallback_model
-        )
-
-    raw_path = _artifact_path(provider_key, "provider_response_raw", artifact_base=artifact_base)
-    _write_artifact(raw_path, {
-        "raw_response": raw_response,
-        "original_model": original_model,
-        "fallback_model": fallback_model,
-        "input_hash": input_hash,
-    })
-
-    try:
-        data = json.loads(raw_response)
-        text = _extract_anthropic_message_text(data)
-    except (json.JSONDecodeError, KeyError, TypeError) as exc:
-        parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
-        _write_artifact(parse_err_path, {
-            "error": "response_structure",
-            "detail": str(exc),
-            "raw_response_ref": str(raw_path),
-        })
-        return _make_blocked_output(
-            provider_key,
-            input_hash,
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            f"Fallback response parse error: {exc}",
-            raw_response_ref=str(raw_path),
-            model_name=model,
-            original_model=original_model,
-            fallback_model=fallback_model,
-        )
-
-    return _finish_judge_text_parse(
-        provider_key=provider_key,
-        input_hash=input_hash,
-        model_name=model,
-        raw_path=raw_path,
-        text=text,
-        original_model=original_model,
-        fallback_model=fallback_model,
-        artifact_base=artifact_base,
-    )
 
 
 def _finish_judge_text_parse(
@@ -1562,7 +1412,7 @@ def _call_gemini(
         "generationConfig": _gemini_generation_config(attempt=attempt),
     }
 
-    endpoint_version = "v1beta" if "preview" in model or model.startswith("gemini-2") or model.startswith("gemini-3") else "v1"
+    endpoint_version = "v1beta" if _uses_gemini_preview_endpoint(model) else "v1"
     url = f"https://generativelanguage.googleapis.com/{endpoint_version}/models/{model}:generateContent?key={api_key}"
 
     retries = _gemini_judge_max_retries()
@@ -1861,18 +1711,22 @@ def run_llm_judges(
             proof_eligible_judge = resolution.proof_eligible_judge
             model_tier = resolution.model_tier
         else:
-            model_source = "unknown"
-            if key == "gemini_pro":
-                model, model_source = _resolve_gemini_model(meta)
-            elif key == "anthropic_claude":
-                model, model_source = _resolve_anthropic_model(meta)
-            else:
-                model_env = meta.get("model_env", meta["env"].replace("_API_KEY", "_MODEL"))
-                model = os.environ.get(model_env, "").strip()
-                model_source = model_env if model else "unknown"
-                if not model:
-                    model = meta.get("default_model", "unknown")
-                    model_source = "default"
+            resolution = resolve_section_proof_judge_model(sid, key)
+            if resolution.blocked:
+                outputs.append(
+                    _make_blocked_output(
+                        key,
+                        input_hash,
+                        "BLOCKED_MODEL_CONFIG",
+                        "BLOCKED_MODEL_CONFIG",
+                        resolution.block_reason or "judge model unavailable",
+                        model_name=resolution.model_requested or "unconfigured",
+                    )
+                )
+                continue
+            model = resolution.model_actual
+            model_source = resolution.model_source
+            reasoning_effort = resolution.reasoning_effort
             model_requested = model
 
         receipt = dict(base_receipt) if base_receipt else None
@@ -1905,7 +1759,6 @@ def run_llm_judges(
                         key,
                         model_source=model_source,
                         artifact_base=artifact_base,
-                        allow_model_fallback=not use_grade_only_packet,
                         model_requested=model_requested,
                         judge_receipt=receipt,
                         attempt=1,

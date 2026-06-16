@@ -1,14 +1,6 @@
-"""SSOT defaults and resolvers for executive_summary Claude-era context limits.
-
-Defaults raised 2026-06-13 post-Qwen-removal: ctx 24576→32768, output 2048→4096,
-hard cap 4096→8192; ctx raised again 2026-06-15 32768→131072 (kill the Qwen token-cap
-class — VLLM_MAX_MODEL_LEN must not lower the section ctx). The legacy 24576/2048 numbers
-belonged to Qwen 32B-AWQ; the section now generates on external Claude (~200k provider ctx).
-"""
+"""SSOT defaults and resolvers for executive_summary context limits."""
 
 from __future__ import annotations
-
-import importlib
 
 import pytest
 
@@ -92,35 +84,24 @@ def test_available_input_tokens_formula() -> None:
     )
 
 
-def test_resolve_provider_context_window_uses_app_local_ssot(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Post-Qwen-removal (2026-06-13): the section ctx SSOT is APPS_RG_SECTION_MAX_MODEL_LEN
-    via section_model_limits.SECTION_MODEL_MAX_MODEL_LEN. VLLM_MAX_MODEL_LEN is the Qwen
-    container ctx SSOT and MUST NOT leak into the apps_rg section budget."""
-    # VLLM_MAX_MODEL_LEN being set to a small Qwen value must NOT cap section ctx.
+def test_resolve_provider_context_window_uses_yaml_ssot(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Env context variables must not override the YAML runtime limit."""
     monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "24576")
     monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "32768")
-    from apps_rg.runtime import section_model_limits
-
-    importlib.reload(section_model_limits)
-    importlib.reload(limits)
-    # Resolver returns app-local SSOT, ignoring the (smaller) Qwen container var.
-    assert limits.resolve_provider_context_window() == 32768
-    assert section_model_limits.SECTION_MODEL_MAX_MODEL_LEN == 32768
+    assert limits.resolve_provider_context_window() == _DEFAULT_CONTEXT_WINDOW
 
 
 def test_regen_output_capped_by_scratch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", "1024")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", "3000")
-    importlib.reload(limits)
-    assert limits.resolve_scratch_max_output_tokens() == 1024
-    assert limits.resolve_regen_max_output_tokens() == 1024
+    assert limits.resolve_scratch_max_output_tokens() == DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
+    assert limits.resolve_regen_max_output_tokens() == DEFAULT_REGEN_MAX_OUTPUT_TOKENS
 
 
-def test_legacy_qwen_output_envs_remain_supported(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_legacy_qwen_output_envs_are_ignored(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", "1536")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", "1024")
-    importlib.reload(limits)
-    assert limits.resolve_scratch_max_output_tokens() == 1536
-    assert limits.resolve_regen_max_output_tokens() == 1024
+    assert limits.resolve_scratch_max_output_tokens() == DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
+    assert limits.resolve_regen_max_output_tokens() == DEFAULT_REGEN_MAX_OUTPUT_TOKENS

@@ -68,11 +68,10 @@ def test_enhanced_google_uses_yaml_not_env() -> None:
     assert r.model_source == "yaml_judge_models"
 
 
-def test_executive_summary_x1d_documents_spine_fallback_metadata() -> None:
-    """Static: legacy x1d module lists spine fallbacks until X1D cleanup lands."""
+def test_executive_summary_x1d_has_no_model_env_fallback_metadata() -> None:
     from apps_rg.runtime.judges import executive_summary_x1d as mod
 
     src = Path(mod.__file__).read_text(encoding="utf-8")
-    assert "GOOGLE_AI_PRO_MODEL" in src
-    assert "OPENAI_MODEL" in src
-    assert "APPS_RG_GOOGLE_JUDGE_MODEL" in src or "APPS_RG_GEMINI_JUDGE_MODEL" in src
+    assert '"model_env"' not in src
+    assert '"fallback_env"' not in src
+    assert "APPS_RG_ANTHROPIC_ALLOW_MODEL_FALLBACK" not in src

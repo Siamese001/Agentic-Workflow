@@ -68,7 +68,7 @@ def test_token_budget_policy_on_compiled_prompt_produces_receipt(tmp_path: Path)
     doc = json.loads(path.read_text(encoding="utf-8"))
     assert doc["section"] == "executive_summary"
     assert doc["provider_context_window"] == ctx_window
-    assert doc["provider_context_window_source"] == "ENV_VLLM_MAX_MODEL_LEN"
+    assert doc["provider_context_window_source"] == "SSOT_PROVIDER_PROFILES_RUNTIME_LIMITS"
     assert doc["server_context_window_verified"] is False
     assert doc.get("first_pass_95pct_policy_enabled") is True
     assert doc["requested_max_output_tokens"] == 1024
@@ -96,10 +96,10 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
     assert receipt.get("evidence_contract_digest_before") == receipt.get("evidence_contract_digest_after")
     assert receipt.get("prompt_shape_preserved") is True
     assert receipt.get("shape_altering_trim_forbidden") is True
-    from apps_rg.runtime.providers.qwen_vllm_provider import build_qwen_request
+    from apps_rg.runtime.sections.section_generation import build_section_request
 
     messages = compiled.artifact.messages
-    req, _payload = build_qwen_request(
+    req, _payload = build_section_request(
         messages=messages,
         prompt_hash="abc",
         input_payload_hash="def",
