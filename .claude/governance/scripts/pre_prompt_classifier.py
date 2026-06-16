@@ -591,6 +591,26 @@ def check_redis_up() -> bool:
         return True  # fail-open: network unavailable, don't block
 
 
+def _latest_adg_snapshot_id(root: Path) -> str:
+    """Return the newest canonical ADG SQLite snapshot id, or empty when absent."""
+    try:
+        adg_dir = root / "artifacts" / "adg"
+        if not adg_dir.is_dir():
+            return ""
+        snapshots = sorted(
+            adg_dir.glob("adg_indexed_*.sqlite"),
+            key=lambda p: (p.stat().st_mtime, p.name),
+            reverse=True,
+        )
+    except OSError:
+        return ""
+    if not snapshots:
+        return ""
+    stem = snapshots[0].stem
+    prefix = "adg_indexed_"
+    return stem[len(prefix) :] if stem.startswith(prefix) else ""
+
+
 def check_redis_adg_hot() -> bool:
     """
     Return True if the ADG hot cache sentinel key exists in Redis.
@@ -604,22 +624,17 @@ def check_redis_adg_hot() -> bool:
     try:
         import redis
 
+        snapshot_id = _latest_adg_snapshot_id(repo_root)
+        if not snapshot_id:
+            return False
         client = redis.from_url(
             _resolve_redis_url(),
             decode_responses=True,
             socket_connect_timeout=2,
             socket_timeout=2,
         )
-        # Find any sentinel key matching adg:v1:*:_hot
-        cursor = 0
-        while True:
-            cursor, keys = client.scan(cursor=cursor, match="adg:v1:*:_hot", count=10)
-            if keys:
-                return True  # hot cache confirmed
-            if cursor == 0:
-                break
-        return False  # no sentinel found — cache is cold
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+        return bool(client.exists(f"adg:v1:{snapshot_id}:_hot"))
+    except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
         return False
 
 

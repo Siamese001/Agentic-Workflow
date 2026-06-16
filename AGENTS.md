@@ -109,6 +109,7 @@ Codex is the primary local execution surface for this repo when Claude API limit
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
+- Validate and run Claude hook preflights from Codex with `python scripts/governance/codex_hook_parity.py --json check`; `.claude/settings.json` and `.claude/hooks/**` remain the hook SSOT.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
 - Do not create a Codex-only rule or MCP registry. Codex consumes repo-owned rules and records live route evidence under `docs/reports/codex/`.

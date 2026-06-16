@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 from collections.abc import Mapping, Sequence
 
+import codex_hook_parity
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,6 +26,7 @@ REQUIRED_FILES = [
     "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
     "scripts/governance/audit_codex_mcp_transports.py",
     "scripts/governance/check_windows_path_budget.py",
+    "scripts/governance/codex_hook_parity.py",
     "scripts/governance/codex_readiness.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",
@@ -33,12 +36,14 @@ REQUIRED_ANCHORS = {
     "AGENTS.md": [
         "## Codex primary execution adapter",
         "docs/codex-primary-execution.md",
+        "scripts/governance/codex_hook_parity.py",
         "scripts/governance/codex_readiness.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
     ],
     "docs/codex-primary-execution.md": [
         "Codex primary execution surface",
+        "scripts/governance/codex_hook_parity.py",
         "scripts/governance/codex_readiness.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
@@ -48,6 +53,7 @@ REQUIRED_ANCHORS = {
     "docs/codex-backup-adapter.md": [
         "docs/codex-primary-execution.md",
         "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/codex_hook_parity.py",
         "scripts/governance/codex_readiness.py",
         "scripts/governance/verify_codex_run_receipt.py",
     ],
@@ -94,6 +100,7 @@ def validate(root: Path = REPO_ROOT) -> list[str]:
     if failures:
         return failures
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
+    failures.extend(codex_hook_parity.validate_hook_matrix(root))
     failures.extend(snapshot_failures(root / "docs/reports/codex/codex_primary_mcp_live_snapshot.json"))
     return failures
 

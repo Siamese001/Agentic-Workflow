@@ -74,13 +74,29 @@ def test_failed_check_requires_complete_rca() -> None:
         "symptom": "Verifier failed.",
         "root_cause": "",
         "evidence": "exit 1",
-        "fix_or_next": "Patch anchors.",
+        "fix_or_next": "fix: Patch anchors.",
         "recurrence_guard": "Unit test.",
     }
 
     failures = mod.validate_receipt(receipt)
 
     assert "rca.root_cause: expected non-empty string" in failures
+
+
+def test_failed_check_requires_fix_or_next_discriminator() -> None:
+    receipt = _valid_receipt()
+    receipt["verification"]["checks"][0]["status"] = "FAIL"
+    receipt["rca"] = {
+        "symptom": "Verifier failed.",
+        "root_cause": "Anchor missing.",
+        "evidence": "exit 1",
+        "fix_or_next": "Patch anchors.",
+        "recurrence_guard": "Unit test.",
+    }
+
+    failures = mod.validate_receipt(receipt)
+
+    assert "rca.fix_or_next: expected to start with 'fix:' or 'next:'" in failures
 
 
 def test_fallback_rows_require_substitute() -> None:

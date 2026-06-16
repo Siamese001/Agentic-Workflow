@@ -80,6 +80,19 @@ def test_duplicate_process_can_fail_strict_mode() -> None:
     assert checks[0].status == "FAIL"
 
 
+def test_hook_parity_failure_is_critical(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        mod.codex_hook_parity,
+        "validate_hook_matrix",
+        lambda root: ["missing hook"],
+    )
+
+    check = mod._check_hook_parity(tmp_path)
+
+    assert check.status == "FAIL"
+    assert check.severity == "critical"
+
+
 def test_summarize_prefers_failure_over_warning() -> None:
     checks = [
         mod.ReadinessCheck("a", "WARN", "advisory", "warn"),
