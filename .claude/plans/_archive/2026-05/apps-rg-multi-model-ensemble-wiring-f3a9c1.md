@@ -84,12 +84,12 @@ After reading `model_id` from YAML, resolve through `model_registry.py` env-var 
 | YAML `model_id` | Resolved from |
 |-----------------|---------------|
 | `"claude-sonnet-4-6"` | `ANTHROPIC_MODEL` env var (default `claude-sonnet-4-6`) |
-| `"gpt-5.4-mini"` | `OPENAI_MODEL` env var (default `gpt-5.4-mini`) |
+| `"gpt-5.5"` | `OPENAI_MODEL` env var (default `gpt-5.5`) |
 | `"gemini-3.1-pro-preview"` | `GEMINI_PRO_MODEL` env var (default `gemini-3.1-pro-preview`) |
 | `"Qwen/Qwen2.5-32B-Instruct-AWQ"` | `VLLM_MODEL_NAME` env var (default as-is) |
 
 The YAML value acts as a fallback default if the env var is unset, exactly matching the
-`os.getenv("OPENAI_MODEL", "gpt-5.4-mini")` pattern in `model_registry.py`.
+`os.getenv("OPENAI_MODEL", "gpt-5.5")` pattern in `model_registry.py`.
 
 ---
 

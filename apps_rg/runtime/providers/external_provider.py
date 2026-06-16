@@ -17,10 +17,15 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any, Mapping
 
+from agentic_core.L0_routing.config.model_catalog import OPENAI_OMIT_TEMPERATURE_MODELS
+
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
-from apps_rg.runtime.section_model_limits import external_claude_generation_model
+from apps_rg.runtime.section_model_limits import (
+    external_claude_generation_model,
+    external_openai_generation_model,
+)
 
 ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 
@@ -82,7 +87,7 @@ class ExternalProvider:
         self.model = model or (
             external_claude_generation_model(self.environ)
             if provider_profile == ProviderProfile.EXTERNAL_CLAUDE
-            else "gpt-5.4"
+            else external_openai_generation_model(self.environ)
         )
         self.api_key_env_var = api_key_env_var or (
             "ANTHROPIC_API_KEY"
@@ -196,8 +201,9 @@ class ExternalProvider:
             "model": str(request.get("model") or self.model),
             "input": prompt,
             "max_output_tokens": int(request.get("max_tokens") or 900),
-            "temperature": float(request.get("temperature") or 0.0),
         }
+        if str(body["model"]).strip() not in OPENAI_OMIT_TEMPERATURE_MODELS:
+            body["temperature"] = float(request.get("temperature") or 0.0)
         url = str(request.get("base_url") or self.base_url or DEFAULT_OPENAI_RESPONSES_URL)
         http_req = urllib.request.Request(
             url,

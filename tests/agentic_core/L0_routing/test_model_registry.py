@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L0_routing.config import model_registry
+from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
 
 
 class TestModelRegistry:
@@ -50,8 +51,8 @@ class TestModelRegistry:
         assert model_registry.GEMINI_PRO_MODEL_ID == "gemini-3.1-pro-preview"
 
     def test_openai_model_id(self):
-        """Test OpenAI model ID for consensus (refreshed 2026-05-01)."""
-        assert model_registry.OPENAI_MODEL_ID == "gpt-5.4-mini"
+        """Test OpenAI model ID for consensus resolves from the model catalog."""
+        assert model_registry.OPENAI_MODEL_ID == OPENAI_DEFAULT_MODEL_ID
 
     def test_anthropic_model_id(self):
         """Test Anthropic model ID for consensus."""
@@ -61,7 +62,7 @@ class TestModelRegistry:
         """Test default consensus jurors (3 jurors, refreshed 2026-05-01)."""
         jurors = model_registry.CONSENSUS_JURORS
         assert len(jurors) == 3
-        assert "gpt-5.4-mini" in jurors
+        assert OPENAI_DEFAULT_MODEL_ID in jurors
         assert "claude-sonnet-4-6" in jurors
         assert "gemini-3.1-pro-preview" in jurors
 
@@ -77,7 +78,7 @@ class TestModelRegistry:
 
     def test_consensus_jurors_env_override(self):
         """Test consensus jurors can be overridden by env var."""
-        custom_jurors = "gpt-5.4-mini,claude-sonnet-4-6,gemini-3.1-pro-preview,o3"
+        custom_jurors = f"{OPENAI_DEFAULT_MODEL_ID},claude-sonnet-4-6,gemini-3.1-pro-preview,o3"
         with patch.dict("os.environ", {"CONSENSUS_JURORS": custom_jurors}):
             import importlib
 

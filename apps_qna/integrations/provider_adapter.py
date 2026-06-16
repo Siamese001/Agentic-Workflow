@@ -22,6 +22,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
+
 
 @dataclass
 class QnaProviderContext:
@@ -225,7 +227,7 @@ _OPENAI_MODEL_VAR = "OPENAI_MODEL"
 
 _DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
 _DEFAULT_GOOGLE_AI_JUDGE_MODEL = "gemini-3.1-pro-preview"
-_DEFAULT_OPENAI_MODEL = "gpt-5.4-mini"
+_DEFAULT_OPENAI_MODEL = OPENAI_DEFAULT_MODEL_ID
 _DEFAULT_VLLM_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 
 

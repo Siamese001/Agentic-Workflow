@@ -210,7 +210,9 @@ class TestDefaultJurorsFromRegistry:
     def test_registered_model_pins_are_2026_05_01_fleet(self):
         assert GEMINI_JUROR.model_id == "gemini-3.1-pro-preview"
         assert ANTHROPIC_JUROR.model_id == "claude-sonnet-4-6"
-        assert OPENAI_JUROR.model_id == "gpt-5.4-mini"
+        from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
+
+        assert OPENAI_JUROR.model_id == OPENAI_DEFAULT_MODEL_ID
 
 
 # ---------------------------------------------------------------------------
@@ -287,9 +289,9 @@ class TestHashRawResponse:
 class TestJurorVerdictSerialization:
     def test_to_dict_has_all_fields(self):
         v = JurorVerdict(
-            juror_id="openai_gpt-5.4-mini",
+            juror_id=OPENAI_JUROR.juror_id,
             family="openai",
-            model_id="gpt-5.4-mini",
+            model_id=OPENAI_JUROR.model_id,
             verdict="SAFE",
             confidence=0.92,
             rationale="looks safe",
@@ -297,9 +299,9 @@ class TestJurorVerdictSerialization:
             raw_response_sha256="abc123",
         )
         d = v.to_dict()
-        assert d["juror_id"] == "openai_gpt-5.4-mini"
+        assert d["juror_id"] == OPENAI_JUROR.juror_id
         assert d["family"] == "openai"
-        assert d["model_id"] == "gpt-5.4-mini"
+        assert d["model_id"] == OPENAI_JUROR.model_id
         assert d["verdict"] == "SAFE"
         assert d["confidence"] == 0.92
         assert d["latency_ms"] == 1240.0

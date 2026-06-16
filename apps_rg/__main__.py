@@ -23,8 +23,9 @@ Résumé body generation is **modular section lanes only** (``APPS_RG_R4_GENERAT
 Offline batch orchestration is library-only under ``tests.helpers.offline_lane_orchestration`` (not product proof);
 there is no separate offline orchestrate module CLI.
 
-**L2 model execution (résumé body):** section lanes run on ``external_claude`` through
-``ProviderGateway`` (the sole accepted provider after Qwen removal, PR #256).
+**L2 model execution (résumé body):** section lanes run on primary ``external_claude``
+through ``ProviderGateway`` (with an internal OpenAI availability fallback after Qwen
+removal, PR #256).
 Section lanes and integrated runs require a **live** provider bundle (no offline contract stub)
 and **live X1D judges** (no ``--mock-judges`` on this CLI; pytest uses
 ``APPS_RG_TEST_HARNESS=1`` + ``APPS_RG_MOCK_JUDGES=1`` only).

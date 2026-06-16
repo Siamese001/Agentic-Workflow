@@ -8,6 +8,9 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from agentic_core.config.google_ai_env import google_ai_pro_model_id
+from agentic_core.L0_routing.config.model_catalog import (
+    OPENAI_NON_CHAT_COMPLETIONS_MODELS,
+)
 
 from pathlib import Path
 
@@ -15,22 +18,26 @@ from apps_rg.runtime.section_judge_policy import JudgeTier, get_section_judge_po
 
 # Provider-profiles SSOT (apps_rg/config/provider_profiles.yaml). This module lives at
 # apps_rg/runtime/judges/, so parents[2] == apps_rg. The YAML ``judge_models`` block is the
-# SSOT-of-record for per-tier judge models (config-ssot plan W3); the code profile_defaults
-# below remain as a fail-soft fallback and are kept EQUAL to the YAML by
-# tests/unit/apps_rg/test_judge_models_ssot.py.
+# SSOT-of-record for per-tier judge models.
 _PROVIDER_PROFILES_PATH = Path(__file__).resolve().parents[2] / "config" / "provider_profiles.yaml"
 
 
+class SectionJudgeProfileSSOTError(RuntimeError):
+    """Raised when apps_rg judge-model SSOT cannot be loaded."""
+
+
 def _yaml_judge_models() -> dict:
-    """Per-tier judge models from provider_profiles.yaml ``judge_models``; fail-soft -> {}."""
+    """Per-tier judge models from provider_profiles.yaml ``judge_models``."""
     try:
-        import yaml  # noqa: PLC0415 — optional dep; absence falls back to code profile_defaults
+        import yaml  # noqa: PLC0415
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
         jm = (data or {}).get("judge_models") or {}
-        return jm if isinstance(jm, dict) else {}
-    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; resolver must never fail on YAML
-        return {}
+    except Exception as exc:  # guardian: strict SSOT load; caller must see the broken source
+        raise SectionJudgeProfileSSOTError(f"Cannot load apps_rg judge-model SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    if not isinstance(jm, dict):
+        raise SectionJudgeProfileSSOTError(f"Invalid judge_models block in {_PROVIDER_PROFILES_PATH}")
+    return jm
 
 
 def _tier_yaml_label(tier: JudgeTier) -> str:
@@ -43,7 +50,7 @@ _FORBIDDEN_PROOF_MODEL_RE = re.compile(
 )
 
 # OpenAI ids that reject v1/chat/completions (completions-only product SKUs).
-_OPENAI_NON_CHAT_COMPLETIONS_MODELS = frozenset({"gpt-5.5-pro"})
+_OPENAI_NON_CHAT_COMPLETIONS_MODELS = OPENAI_NON_CHAT_COMPLETIONS_MODELS
 
 
 def openai_chat_completions_eligible(model_id: str) -> bool:
@@ -58,7 +65,6 @@ _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_GEMINI_JUDGE_MODEL",
         ),
         "env_tier": (),
-        "profile_defaults": ("gemini-3.1-pro-preview", "gemini-2.5-pro"),
     },
     "openai_chatgpt": {
         "env_primary": (
@@ -66,7 +72,6 @@ _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_OPENAI_JUDGE_MODEL",
         ),
         "env_tier": (),
-        "profile_defaults": ("gpt-5.5", "gpt-5.4"),
         "reasoning_effort_env": "APPS_RG_OPENAI_JUDGE_REASONING_EFFORT",
         "default_reasoning_effort": "high",
     },
@@ -76,9 +81,6 @@ _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_ANTHROPIC_JUDGE_MODEL",
         ),
         "env_tier": (),
-        # W4: sonnet first — the actual runtime value (was pinned via APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED
-        # in .env, now the SSOT). opus kept as further fail-soft fallbacks. Parity: [0] == YAML judge_models.
-        "profile_defaults": ("claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-5"),
     },
 }
 
@@ -90,7 +92,6 @@ _STANDARD_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_GEMINI_JUDGE_MODEL",
         ),
         "env_tier": ("GOOGLE_AI_PRO_MODEL",),
-        "profile_defaults": ("gemini-2.5-pro", "gemini-3.1-pro-preview"),
     },
     "openai_chatgpt": {
         "env_primary": (
@@ -98,7 +99,6 @@ _STANDARD_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_OPENAI_JUDGE_MODEL",
         ),
         "env_tier": (),
-        "profile_defaults": ("gpt-5.5", "gpt-5.4"),
     },
     "anthropic_claude": {
         "env_primary": (
@@ -106,7 +106,6 @@ _STANDARD_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_ANTHROPIC_JUDGE_MODEL",
         ),
         "env_tier": (),
-        "profile_defaults": ("claude-sonnet-4-6", "claude-sonnet-4-5"),
     },
 }
 
@@ -191,15 +190,14 @@ def resolve_section_proof_judge_model(
         pro_id, pro_src = google_ai_pro_model_id(env)
         if pro_id and not any(c[0] == pro_id for c in candidates):
             candidates.append((pro_id, pro_src or "profile_default"))
-    # YAML judge_models is the SSOT-of-record (config-ssot plan W3): inject it just before the
-    # code profile_defaults so it wins over the hardcoded tuple but still loses to env overrides.
-    # Values == profile_defaults[0] (pinned by test_judge_models_ssot.py) -> behavior-preserving.
     yaml_tier = _yaml_judge_models().get(_tier_yaml_label(tier)) or {}
     yaml_model = yaml_tier.get(provider_key) if isinstance(yaml_tier, dict) else None
-    if yaml_model and not any(c[0] == str(yaml_model) for c in candidates):
+    if not yaml_model:
+        raise SectionJudgeProfileSSOTError(
+            f"Missing judge_models.{_tier_yaml_label(tier)}.{provider_key} in {_PROVIDER_PROFILES_PATH}"
+        )
+    if not any(c[0] == str(yaml_model) for c in candidates):
         candidates.append((str(yaml_model), "yaml_judge_models"))
-    for default in profile.get("profile_defaults") or ():
-        candidates.append((str(default), "profile_default"))
 
     reasoning_effort: str | None = None
     if provider_key == "openai_chatgpt" and tier == JudgeTier.ENHANCED_REASONING:
@@ -242,7 +240,8 @@ def resolve_section_proof_judge_model(
         blocked=True,
         block_reason=(
             f"No proof-eligible judge model configured for section={sid} provider={provider_key} "
-            f"tier={tier.value}. Set env overrides or profile defaults; flash/mini/haiku are advisory-only."
+            f"tier={tier.value}. Set env overrides or provider_profiles.yaml judge_models; "
+            "flash/mini/haiku are advisory-only."
         ),
         proof_eligible_judge=False,
     )
@@ -250,6 +249,7 @@ def resolve_section_proof_judge_model(
 
 __all__ = [
     "SectionJudgeModelResolution",
+    "SectionJudgeProfileSSOTError",
     "is_forbidden_proof_judge_model",
     "openai_chat_completions_eligible",
     "resolve_section_proof_judge_model",

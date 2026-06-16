@@ -1,16 +1,16 @@
 """W2 SSOT parity guard (plan apps-rg-config-ssot-consolidation): provider_profiles.yaml
-``judge_models`` is the source-of-record for per-tier proof-judge models, and the code
-``profile_defaults[0]`` in section_judge_profile.py are kept EQUAL to it.
-
-Same migration pattern as test_section_model_limits_ssot.py (literal kept == YAML). This guards
-drift between the YAML SSOT and the code fallback until W4 repoints the resolver to read the YAML."""
+``judge_models`` is the source-of-record for per-tier proof-judge models."""
 from __future__ import annotations
 
 from pathlib import Path
 
 import yaml
 
-from apps_rg.runtime.judges.section_judge_profile import _ENHANCED_PROFILE, _STANDARD_PROFILE
+from apps_rg.runtime.judges.section_judge_profile import (
+    SectionJudgeProfileSSOTError,
+    _ENHANCED_PROFILE,
+    _STANDARD_PROFILE,
+)
 
 _YAML = Path(__file__).resolve().parents[3] / "apps_rg" / "config" / "provider_profiles.yaml"
 
@@ -27,16 +27,20 @@ def test_judge_models_block_present_and_complete():
         assert set(jm[tier]) >= {"gemini_pro", "openai_chatgpt", "anthropic_claude"}
 
 
-def test_yaml_enhanced_matches_code_profile_defaults():
+def test_code_profiles_do_not_carry_model_fallbacks():
+    """Profiles can carry env metadata, but model IDs live in provider_profiles.yaml."""
+    for profile in (*_ENHANCED_PROFILE.values(), *_STANDARD_PROFILE.values()):
+        assert "profile_defaults" not in profile
+
+
+def test_yaml_enhanced_covers_code_profile_providers():
     jm = _judge_models()["enhanced"]
-    for provider, prof in _ENHANCED_PROFILE.items():
-        assert jm[provider] == prof["profile_defaults"][0], f"enhanced/{provider} drift"
+    assert set(jm) >= set(_ENHANCED_PROFILE)
 
 
-def test_yaml_standard_matches_code_profile_defaults():
+def test_yaml_standard_covers_code_profile_providers():
     jm = _judge_models()["standard"]
-    for provider, prof in _STANDARD_PROFILE.items():
-        assert jm[provider] == prof["profile_defaults"][0], f"standard/{provider} drift"
+    assert set(jm) >= set(_STANDARD_PROFILE)
 
 
 def test_resolver_sources_enhanced_gemini_from_yaml_when_env_absent():
@@ -71,3 +75,14 @@ def test_w4_enhanced_anthropic_judge_migrated_to_sonnet():
     assert res.model_actual == "claude-sonnet-4-6"
     assert res.model_source == "yaml_judge_models"
     assert not res.blocked
+
+
+def test_missing_judge_model_ssot_entry_fails_closed(monkeypatch):
+    from apps_rg.runtime.judges import section_judge_profile as sjp
+
+    monkeypatch.setattr(sjp, "_yaml_judge_models", lambda: {"enhanced": {}, "standard": {}})
+    try:
+        sjp.resolve_section_proof_judge_model("executive_summary", "openai_chatgpt", environ={})
+    except SectionJudgeProfileSSOTError:
+        return
+    raise AssertionError("missing judge model SSOT entry did not fail closed")

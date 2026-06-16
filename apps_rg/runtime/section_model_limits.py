@@ -25,13 +25,6 @@ from typing import Final
 # the SSOT for apps_lic + agentic_core healers (VLLM_MAX_MODEL_LEN), NOT this constant.
 SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "131072"))
 
-# Fail-soft fallback ONLY. The SSOT for the apps_rg generation model is
-# apps_rg/config/provider_profiles.yaml (profiles.external_claude_generator.default_model);
-# this literal is used only when that YAML is unreadable so this foundational module
-# (imported by ~15 section lanes + the X2 validator) never fails to import. Kept equal
-# to the YAML value by tests/unit/apps_rg/test_section_model_limits_ssot.py.
-DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = "claude-sonnet-4-6"
-
 # Provider-profile SSOT path (apps_rg/config/provider_profiles.yaml). This module
 # lives at apps_rg/runtime/, so parents[1] == apps_rg.
 _PROVIDER_PROFILES_PATH: Final[Path] = (
@@ -39,40 +32,44 @@ _PROVIDER_PROFILES_PATH: Final[Path] = (
 )
 
 
-def _ssot_default_model() -> str | None:
-    """Return ``external_claude_generator.default_model`` from the provider-profiles
-    SSOT, or ``None`` when unavailable. Fail-soft — never raises."""
+class SectionModelSSOTError(RuntimeError):
+    """Raised when apps_rg generation model SSOT cannot be loaded."""
+
+
+def _provider_profiles() -> dict:
     try:
-        import yaml  # noqa: PLC0415 — optional dep; absence falls back to literal
+        import yaml  # noqa: PLC0415
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
-        profiles = (data or {}).get("profiles") or {}
-        model = (profiles.get("external_claude_generator") or {}).get("default_model")
-        if model:
-            return str(model).strip() or None
-        return None
-    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; foundational module must never fail to import
-        return None
+    except Exception as exc:  # guardian: strict SSOT load; caller must see the broken source
+        raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    profiles = (data or {}).get("profiles") or {}
+    if not isinstance(profiles, dict):
+        raise SectionModelSSOTError(f"Missing profiles block in apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}")
+    return profiles
+
+
+def _ssot_default_model(profile_key: str = "external_claude_generator") -> str:
+    """Return ``profiles.<profile_key>.default_model`` from provider_profiles.yaml."""
+    profiles = _provider_profiles()
+    model = (profiles.get(profile_key) or {}).get("default_model")
+    if not isinstance(model, str) or not model.strip():
+        raise SectionModelSSOTError(f"Missing default_model for profiles.{profile_key}: {_PROVIDER_PROFILES_PATH}")
+    return model.strip()
 
 
 def _ssot_model_by_section() -> dict[str, str]:
     """Per-section model overrides from the provider-profiles SSOT
-    (``external_claude_generator.model_by_section``). Fail-soft — ``{}`` when unavailable."""
-    try:
-        import yaml  # noqa: PLC0415 — optional dep; absence yields {} (default model)
-
-        data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
-        profiles = (data or {}).get("profiles") or {}
-        raw = (profiles.get("external_claude_generator") or {}).get("model_by_section") or {}
-        if not isinstance(raw, dict):
-            return {}
-        return {
-            str(k).strip().lower(): str(v).strip()
-            for k, v in raw.items()
-            if str(k).strip() and str(v).strip()
-        }
-    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; foundational module must never fail to import
+    (``external_claude_generator.model_by_section``)."""
+    profiles = _provider_profiles()
+    raw = (profiles.get("external_claude_generator") or {}).get("model_by_section") or {}
+    if not isinstance(raw, dict):
         return {}
+    return {
+        str(k).strip().lower(): str(v).strip()
+        for k, v in raw.items()
+        if str(k).strip() and str(v).strip()
+    }
 
 
 def resolve_section_generation_model(
@@ -89,7 +86,6 @@ def resolve_section_generation_model(
       1. ``APPS_RG_EXTERNAL_CLAUDE_MODEL`` env pin (operator override — ALL sections)
       2. ``provider_profiles.yaml`` ``external_claude_generator.model_by_section[section]``
       3. ``provider_profiles.yaml`` ``external_claude_generator.default_model``
-      4. ``DEFAULT_EXTERNAL_CLAUDE_MODEL`` literal fallback (YAML unreadable)
     """
     env = os.environ if environ is None else environ
     pin = str(env.get("APPS_RG_EXTERNAL_CLAUDE_MODEL") or "").strip()
@@ -100,7 +96,7 @@ def resolve_section_generation_model(
         by_section = _ssot_model_by_section()
         if sid in by_section:
             return by_section[sid]
-    return _ssot_default_model() or DEFAULT_EXTERNAL_CLAUDE_MODEL
+    return _ssot_default_model("external_claude_generator")
 
 
 def external_claude_generation_model(environ: Mapping[str, str] | None = None) -> str:
@@ -113,15 +109,35 @@ def external_claude_generation_model(environ: Mapping[str, str] | None = None) -
     return resolve_section_generation_model(None, environ)
 
 
+def external_openai_generation_model(environ: Mapping[str, str] | None = None) -> str:
+    """Section-agnostic OpenAI generator model from apps_rg provider_profiles.yaml."""
+    env = os.environ if environ is None else environ
+    pin = str(env.get("APPS_RG_EXTERNAL_OPENAI_MODEL") or "").strip()
+    if pin:
+        return pin
+    return external_openai_generation_model_from_ssot()
+
+
+def external_openai_generation_model_from_ssot() -> str:
+    """OpenAI generator model pinned by provider_profiles.yaml, ignoring env overrides."""
+    return _ssot_default_model("external_openai_generator")
+
+
 # Canonical generation model identity for apps_rg sections — resolved from the external
 # Claude generation profile (``provider_profiles.yaml`` -> external_claude_generator) so the
 # X2 ``x2_model_name_allowed`` proof and prompt-render manifests reference the real provider model.
 SECTION_MODEL_ID: Final[str] = external_claude_generation_model()
+DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = _ssot_default_model("external_claude_generator")
+DEFAULT_EXTERNAL_OPENAI_MODEL: Final[str] = _ssot_default_model("external_openai_generator")
 
 __all__ = [
     "DEFAULT_EXTERNAL_CLAUDE_MODEL",
+    "DEFAULT_EXTERNAL_OPENAI_MODEL",
     "SECTION_MODEL_ID",
     "SECTION_MODEL_MAX_MODEL_LEN",
+    "SectionModelSSOTError",
     "external_claude_generation_model",
+    "external_openai_generation_model",
+    "external_openai_generation_model_from_ssot",
     "resolve_section_generation_model",
 ]

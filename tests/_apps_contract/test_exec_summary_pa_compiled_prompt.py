@@ -407,14 +407,13 @@ def test_proof_judge_model_blocks_flash_and_mini_tiers():
     )
     assert not res.blocked
     assert res.model_requested == "gemini-3.1-pro-preview"
-    assert res.model_source == "profile_default"
+    assert res.model_source == "yaml_judge_models"
 
 
 def test_openai_gpt51_omits_reasoning_effort_param():
     from apps_rg.runtime.judges.executive_summary_x1d import _openai_reasoning_effort_supported
 
     assert not _openai_reasoning_effort_supported("gpt-5.1")
-    assert not _openai_reasoning_effort_supported("gpt-5.4")
     assert not _openai_reasoning_effort_supported("gpt-5.5")
     assert not _openai_reasoning_effort_supported("gpt-5.5-pro")
     assert _openai_reasoning_effort_supported("o3-mini")

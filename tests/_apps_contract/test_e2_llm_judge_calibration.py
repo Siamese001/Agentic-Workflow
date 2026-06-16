@@ -39,6 +39,8 @@ from typing import Any
 import pytest
 import yaml
 
+from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
+
 from scipy.stats import spearmanr
 
 # ---------------------------------------------------------------------------
@@ -172,7 +174,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
     if judge_override == "anthropic" and anthropic_key:
         return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
     if judge_override == "openai" and openai_key:
-        return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
+        return True, f"openai ({os.getenv('OPENAI_MODEL', OPENAI_DEFAULT_MODEL_ID)})"
     if judge_override in ("gemini", "google") and google_key:
         return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
     if judge_override in ("qwen", "vllm"):
@@ -182,7 +184,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
         if anthropic_key:
             return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
         if openai_key:
-            return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
+            return True, f"openai ({os.getenv('OPENAI_MODEL', OPENAI_DEFAULT_MODEL_ID)})"
         if google_key:
             return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
 

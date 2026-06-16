@@ -42,6 +42,7 @@ from agentic_core.config.google_ai_env import (
     google_ai_flash_model_id,
     google_ai_pro_model_id,
 )
+from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
 
 
 # ============================================================================
@@ -113,12 +114,11 @@ via ``GOOGLE_AI_PRO_MODEL`` env var for deployment-specific pinning.
 # certification consensus jury — see plan rtc-w2b-consensus-jury-rewrite-9a4c71)
 # ============================================================================
 
-OPENAI_MODEL_ID: Final[str] = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
+OPENAI_MODEL_ID: Final[str] = os.getenv("OPENAI_MODEL", OPENAI_DEFAULT_MODEL_ID)
 """Identifier for the OpenAI juror in ConsensusEngine and W2b cert consensus.
 
-Default refreshed 2026-05-01 per operator directive. Previous default
-``gpt-4o`` was stale relative to the current OpenAI fleet. Override via
-``OPENAI_MODEL`` env var for deployment-specific pinning.
+Default is read from config/model_catalog.json. Override via ``OPENAI_MODEL``
+env var for deployment-specific pinning.
 """
 
 ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
@@ -135,9 +135,8 @@ Default ``claude-sonnet-4-6`` confirmed current per operator directive
 # Wave H4 C2 (2026-04-21, plan consensus-validator-unification-5e9f3a):
 # Canonical juror set for ConsensusEngine. Defaults to the 3-juror strict-
 # majority configuration. Env-var CONSENSUS_JURORS allows comma-separated
-# override (e.g.
-# CONSENSUS_JURORS="gpt-5.4-mini,claude-sonnet-4-6,gemini-3.1-pro-preview")
-# without redeploy. Empty override → fallback to default.
+# override without redeploy. Empty override resolves to the catalog-backed
+# default juror set.
 def _resolve_consensus_jurors() -> tuple[str, ...]:
     raw = os.getenv("CONSENSUS_JURORS", "").strip()
     if raw:
@@ -164,8 +163,8 @@ CONSENSUS_JURORS: Final[tuple[str, ...]] = _resolve_consensus_jurors()
 """Canonical juror list for ConsensusEngine.
 
 Rationale for default selection (3 jurors, heterogeneous):
-  - OpenAI (gpt-5.4-mini) — dominant general-purpose reasoning baseline,
-    GPT-5 family, refreshed 2026-05-01
+  - OpenAI — catalog-backed dominant general-purpose reasoning baseline,
+    GPT-5 family
   - Anthropic (claude-sonnet-4-6) — alternative reasoning topology, known
     for catching logic bugs the OpenAI family misses
   - Google (gemini-3.1-pro-preview) — third diverse family, Gemini-3.1

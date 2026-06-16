@@ -6,7 +6,7 @@ three-juror LLM-as-Judge consensus panel defined here:
 
     1. google_gemini / gemini / gemini-3.1-pro-preview
     2. anthropic    / claude / claude-sonnet-4-6
-    3. openai       / openai / gpt-5.4-mini
+    3. openai       / openai / config/model_catalog.json openai.default
 
 This module is the ONE authoritative registry consumed by:
 
@@ -31,8 +31,11 @@ Attestation path (ONLY valid path for RTC-REQ-056 certification):
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Final
+
+from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
 
 
 # ---------------------------------------------------------------------------
@@ -88,6 +91,11 @@ ALLOW_DETERMINISTIC_STAGE_FOR_CERTIFICATION: Final[bool] = False
 # ---------------------------------------------------------------------------
 
 
+def _juror_id(provider: str, model_id: str) -> str:
+    suffix = re.sub(r"[^a-z0-9]+", "_", model_id.lower()).strip("_")
+    return f"{provider}_{suffix}"
+
+
 @dataclass(frozen=True)
 class JurorSpec:
     """Registry entry for one juror.
@@ -138,14 +146,14 @@ ANTHROPIC_JUROR: Final[JurorSpec] = JurorSpec(
 )
 
 OPENAI_JUROR: Final[JurorSpec] = JurorSpec(
-    juror_id="openai_gpt_5_4_mini",
+    juror_id=_juror_id("openai", OPENAI_DEFAULT_MODEL_ID),
     provider_family="openai",
     provider="openai",
-    model_id="gpt-5.4-mini",
+    model_id=OPENAI_DEFAULT_MODEL_ID,
     env_key="OPENAI_API_KEY",
     env_key_aliases=(),
     model_env_override="OPENAI_MODEL",
-    model_aliases=("gpt-5.4-mini",),
+    model_aliases=(OPENAI_DEFAULT_MODEL_ID,),
 )
 
 

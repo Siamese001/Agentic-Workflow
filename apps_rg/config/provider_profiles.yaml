@@ -23,6 +23,7 @@ profiles:
     profile_id: apps_rg::provider::external_openai_generator::v1
     provider_profile: external_openai
     provider_class: external_api
+    default_model: gpt-5.5
     model_env_var: APPS_RG_EXTERNAL_OPENAI_MODEL
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
@@ -97,11 +98,9 @@ profiles:
     api_key_env_var: null
     default: false
 
-# Per-tier x provider proof-judge models (config-ssot plan W2). SSOT-of-record for the apps_rg
-# judge model per tier. section_judge_profile.py profile_defaults[0] are kept EQUAL to these by
-# tests/unit/apps_rg/test_judge_models_ssot.py (same pattern as section_model_limits DEFAULT_*).
-# W4 repoints the resolver to read these (fail-soft to the code tuple) + removes the
-# APPS_RG_*_JUDGE_MODEL_* env overrides. Values == current profile_defaults[0] -> behavior-neutral.
+# Per-tier x provider proof-judge models. SSOT-of-record for the apps_rg judge model
+# per tier; section_judge_profile resolves this block directly and fails closed when
+# the SSOT is unreadable or incomplete.
 judge_models:
   enhanced:
     gemini_pro: gemini-3.1-pro-preview

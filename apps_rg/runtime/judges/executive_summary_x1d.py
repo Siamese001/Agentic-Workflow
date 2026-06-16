@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from agentic_core.L0_routing.config.model_catalog import OPENAI_CHAT_JUDGE_MODEL_ID
+
 from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     dimension_verdicts_json_schema_fragment,
     ensure_dimension_verdicts,
@@ -271,8 +273,7 @@ PROVIDERS = {
         "provider_name": "OpenAI ChatGPT",
         "env": "OPENAI_API_KEY",
         "model_env": "OPENAI_MODEL",
-        # Fail-soft fallback only — SSOT is provider_profiles.yaml judge_models (standard: gpt-5.5).
-        "default_model": "gpt-5.5",
+        "default_model": OPENAI_CHAT_JUDGE_MODEL_ID,
     },
     "anthropic_claude": {
         "provider_name": "Anthropic Claude",
@@ -846,7 +847,7 @@ def _make_model_backed_output(
 def _openai_reasoning_effort_supported(model: str) -> bool:
     """True only for OpenAI model families that accept reasoning.effort in chat completions."""
     mid = str(model or "").strip().lower()
-    # gpt-5.5 / gpt-5.5-pro chat endpoints reject the reasoning parameter (400 unknown_parameter).
+    # Catalog OpenAI chat judge models reject the reasoning parameter (400 unknown_parameter).
     return mid.startswith("o3") or mid.startswith("o4")
 
 

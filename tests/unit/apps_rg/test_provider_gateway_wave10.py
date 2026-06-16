@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -171,6 +172,45 @@ def test_external_provider_uses_injected_transport(monkeypatch) -> None:
     assert result.runtime_generation_status == "REAL_LLM"
     assert result.raw_model_output == "external output"
     assert result.provider_requested == "external_openai"
+
+
+def test_openai_responses_transport_omits_temperature_for_catalog_model(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return json.dumps({"output_text": "{\"ok\":true}", "model": "gpt-catalog"}).encode("utf-8")
+
+    def _urlopen(req, timeout):
+        captured["timeout"] = timeout
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        return _Response()
+
+    monkeypatch.setattr(external_provider_module.urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(
+        external_provider_module,
+        "OPENAI_OMIT_TEMPERATURE_MODELS",
+        frozenset({"gpt-catalog"}),
+    )
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model="gpt-catalog",
+        environ={"OPENAI_API_KEY": "test"},
+    )
+
+    response = provider._openai_responses_transport(
+        {"prompt": "Return JSON", "max_tokens": 20, "temperature": 0.4, "timeout_seconds": 5}
+    )
+
+    assert response["text"] == "{\"ok\":true}"
+    assert captured["body"]["model"] == "gpt-catalog"
+    assert "temperature" not in captured["body"]
 
 
 def test_section_provider_call_threads_payload_timeout_to_gateway(monkeypatch) -> None:

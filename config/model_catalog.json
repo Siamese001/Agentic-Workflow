@@ -1,0 +1,12 @@
+{
+  "openai": {
+    "default": "gpt-5.5",
+    "chat_judge": "gpt-5.5",
+    "omit_temperature": [
+      "gpt-5.5"
+    ],
+    "non_chat_completions": [
+      "gpt-5.5-pro"
+    ]
+  }
+}

@@ -593,6 +593,10 @@ def main():
             "ops_scripts/ci/check_apps_rg_model_ssot.py",
         ),
         (
+            "MODEL-LITERAL-SSOT provider model literal SSOT (fail-closed)",
+            "ops_scripts/ci/check_model_literal_ssot.py",
+        ),
+        (
             "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
             "ops_scripts/ci/check_apps_rg_dryrun.py",
         ),

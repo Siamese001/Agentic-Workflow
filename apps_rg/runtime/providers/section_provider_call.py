@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.providers.availability_fallback import maybe_fallback_to_openai_for_claude_availability
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
@@ -82,8 +83,15 @@ def call_section_model_provider(
         if temperature_override is not None
         else provider_payload.get("temperature", 0.45)
     )
-    return build_section_provider_gateway().generate(
+    result = build_section_provider_gateway().generate(
         profile,
+        compiled,
+        token_budget=budget,
+        temperature=temperature,
+        timeout_seconds=timeout_seconds,
+    )
+    return maybe_fallback_to_openai_for_claude_availability(
+        result,
         compiled,
         token_budget=budget,
         temperature=temperature,

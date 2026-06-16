@@ -33,8 +33,12 @@ from apps_rg.runtime.providers import (
     ProviderGatewayError,
     ProviderProfile,
 )
+from apps_rg.runtime.providers.availability_fallback import maybe_fallback_to_openai_for_claude_availability
 from apps_rg.runtime.providers.provider_contract import ProviderResult
-from apps_rg.runtime.section_model_limits import external_claude_generation_model
+from apps_rg.runtime.section_model_limits import (
+    external_claude_generation_model,
+    external_openai_generation_model,
+)
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
@@ -474,7 +478,7 @@ def _prompt_object(prompt_text: str, *, run_id: str, prompt_hash: str) -> Simple
 def _provider_gateway() -> ProviderGateway:
     claude_model = external_claude_generation_model()
     claude_url = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_BASE_URL", "")
-    openai_model = os.environ.get("APPS_RG_EXTERNAL_OPENAI_MODEL", "gpt-5.5")
+    openai_model = external_openai_generation_model()
     openai_url = os.environ.get("APPS_RG_EXTERNAL_OPENAI_BASE_URL", "")
     return ProviderGateway(
         {
@@ -933,6 +937,12 @@ def run_role_episode_lane_execution(
     try:
         provider_result = _provider_gateway().generate(
             str(args.provider),
+            compiled_obj,
+            token_budget=MAX_OUTPUT_TOKENS,
+            temperature=float(args.temperature),
+        )
+        provider_result = maybe_fallback_to_openai_for_claude_availability(
+            provider_result,
             compiled_obj,
             token_budget=MAX_OUTPUT_TOKENS,
             temperature=float(args.temperature),

@@ -11,9 +11,9 @@ Aggregation rules (per plan § 2.2):
   - 0/3 SAFE       -> block (mode=unanimous_unsafe)
   - Any ERROR      -> block (mode=incomplete) — fail-closed
 
-All juror model IDs are sourced from the L0 routing model registry
-SSOT (agentic_core.L0_routing.config.model_registry). No hardcoded
-model strings in this module.
+All juror model IDs are sourced from the RTC-REQ-056 panel registry; that
+registry reads shared provider defaults from config/model_catalog.json. No
+hardcoded model strings in this module.
 
 Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md § 2.
 Status: R2.1 foundation. Provider calls (OpenAI, Anthropic, Google)
@@ -88,7 +88,7 @@ def _env_key_aliases_for_juror(juror_family: str) -> tuple[str, ...]:
 class JurorVerdict:
     """Per-juror outcome record — serialized into attestation schema v2."""
 
-    juror_id: str  # e.g. "openai_gpt-5.4-mini"
+    juror_id: str
     family: str  # "openai" | "anthropic" | "google" | "local_qwen"
     model_id: str
     verdict: str  # SAFE | UNSAFE_DIFFERENT_INTENT | UNSAFE_POLICY_DRIFT | UNCERTAIN | ERROR

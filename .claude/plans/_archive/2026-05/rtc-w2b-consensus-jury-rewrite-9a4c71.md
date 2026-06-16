@@ -21,7 +21,7 @@ The original W2b (`rtc-w2b-live-provider-allow-proof-b24f8e.md`) shipped with an
 | Anthropic as tier | Used as veto fallback | Consensus juror only (per `model_registry.py:100-110`) |
 | Env var names | `LOCAL_QWEN_ENDPOINT`, `LOCAL_QWEN_MODEL` | `VLLM_BASE_URL`, `VLLM_MODEL_NAME` (SSOT) |
 | Model ids | Hardcoded strings in LLMJudgeVeto | Imported from `agentic_core.L0_routing.config.model_registry` |
-| Stale models | `claude-3-haiku-20240307` (2024), `gpt-4o` (old), `gemini-2.5-pro` (old) | User's 2026 pins: `gpt-5.4-mini`, `claude-sonnet-4-6`, `gemini-3.1-pro-preview` |
+| Stale models | `claude-3-haiku-20240307` (2024), `gpt-4o` (old), `gemini-2.5-pro` (old) | User's 2026 pins: `gpt-5.5`, `claude-sonnet-4-6`, `gemini-3.1-pro-preview` |
 
 Root cause: W2b was implemented without an Author-Gate. The provider choices were made by Cursor Agent in isolation without consulting the L0 routing SSOT.
 
@@ -39,7 +39,7 @@ Root cause: W2b was implemented without an Author-Gate. The provider choices wer
 
 | Juror | Registry env var | New default | API key env | Cost (rough) |
 |---|---|---|---|---|
-| OpenAI | `OPENAI_MODEL` | `gpt-5.4-mini` | `OPENAI_API_KEY` | ~$0.003/verdict |
+| OpenAI | `OPENAI_MODEL` | `gpt-5.5` | `OPENAI_API_KEY` | ~$0.003/verdict |
 | Anthropic | `ANTHROPIC_MODEL` | `claude-sonnet-4-6` (unchanged) | `ANTHROPIC_API_KEY` | ~$0.008/verdict |
 | Google | `GEMINI_PRO_MODEL` | `gemini-3.1-pro-preview` | `GOOGLE_API_KEY` | ~$0.010/verdict |
 | **Optional 4th** | n/a (local) | `QWEN_LOCAL_MODEL_ID` via `USE_CERT_JURY_QWEN=1` | vLLM endpoint up | $0 |
@@ -72,7 +72,7 @@ Current `live_provider_attestation.json` (schema v1) records single provider. Sc
     "dissent_count": 1
   },
   "per_juror": [
-    {"juror_id": "openai_gpt-5.4-mini", "verdict": "SAFE", "confidence": 0.92, "latency_ms": 1240, "raw_response_sha256": "..."},
+    {"juror_id": "openai_gpt_5_5", "verdict": "SAFE", "confidence": 0.92, "latency_ms": 1240, "raw_response_sha256": "..."},
     {"juror_id": "anthropic_claude-sonnet-4-6", "verdict": "SAFE", "confidence": 0.88, "latency_ms": 2100, "raw_response_sha256": "..."},
     {"juror_id": "google_gemini-3.1-pro-preview", "verdict": "UNCERTAIN", "confidence": 0.40, "latency_ms": 3500, "raw_response_sha256": "..."}
   ],

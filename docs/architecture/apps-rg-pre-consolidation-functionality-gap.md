@@ -621,7 +621,7 @@ Current state: orphaned.
 `@.env.example` defines but current pipeline does NOT consume:
 
 **Provider keys**:
-- `OPENAI_API_KEY`, `OPENAI_MODEL=gpt-5.4-mini`
+- `OPENAI_API_KEY`, `OPENAI_MODEL=gpt-5.5`
 - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-4-6`
 - `GOOGLE_API_KEY`, `GEMINI_API_KEY`
 - `GEMINI_MODEL=gemini-3-flash-preview`, `GEMINI_PRO_MODEL=gemini-3.1-pro-preview`, `GEMINI_FLASH_MODEL`
@@ -831,7 +831,7 @@ The thin one is the one actually wired to apps_rg today.
 - `get_instructor_client(provider)` — returns instructor-wrapped client
 - `get_litellm_completion(provider, messages)` — LiteLLM unified completion
 - `get_default_model(provider)` — returns canonical model per provider:
-  - OPENAI: `"gpt-4o"` ⚠️ stale (.env says `gpt-5.4-mini`)
+  - OPENAI: `"gpt-4o"` ⚠️ stale (.env says `gpt-5.5`)
   - ANTHROPIC: `"claude-sonnet-4-6"` ✓ matches .env
   - GOOGLE: `"gemini-pro"` ⚠️ stale (.env says `gemini-3-flash-preview`)
 
