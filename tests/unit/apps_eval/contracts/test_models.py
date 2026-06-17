@@ -16,15 +16,26 @@ import dataclasses
 import pytest
 
 from apps_eval.contracts.models import (
+    CURRENT_EVAL_RECORD_SCHEMA_VERSION,
+    CURRENT_RELEASE_GATE_SCHEMA_VERSION,
+    CURRENT_REGRESSION_FLYWHEEL_SCHEMA_VERSION,
+    CURRENT_TREND_DASHBOARD_SCHEMA_VERSION,
     ALLOWED_APPS,
     AppOutputSnapshot,
     CompletedEvalRecord,
     EvalRequest,
     EvalScenario,
+    EvalRunMetadata,
+    FixtureProvenance,
     GraderFinding,
     L6EvalHandoff,
     RegressionSummary,
+    RegressionFlywheelSummary,
+    ReleaseGateDecision,
     Scorecard,
+    TrendDashboardSummary,
+    TrendSample,
+    TrendSuiteSummary,
 )
 
 
@@ -47,6 +58,13 @@ def _scorecard(**overrides) -> Scorecard:
 class TestModuleConstants:
     def test_allowed_apps_set(self):
         assert ALLOWED_APPS == {"apps_rg", "apps_lic"}
+
+    def test_completed_eval_schema_version_is_explicit(self):
+        assert CURRENT_EVAL_RECORD_SCHEMA_VERSION.endswith(".v3")
+
+    def test_trend_schema_versions_are_explicit(self):
+        assert CURRENT_TREND_DASHBOARD_SCHEMA_VERSION.endswith(".v1")
+        assert CURRENT_RELEASE_GATE_SCHEMA_VERSION.endswith(".v1")
 
 
 class TestEvalRequest:
@@ -187,12 +205,15 @@ class TestGraderFinding:
         assert d["grader_id"] == "schema"
         assert d["passed"] is True
         assert d["evidence"] == {}
+        assert d["failure_mode"] == ""
 
 
 class TestScorecardAndRegression:
     def test_scorecard_dimension_scores_default(self):
         sc = _scorecard()
         assert sc.dimension_scores == {}
+        assert sc.failure_mode_counts == {}
+        assert sc.failure_family_counts == {}
         assert sc.to_dict()["verdict"] == "pass"
 
     def test_regression_summary_defaults(self):
@@ -200,12 +221,47 @@ class TestScorecardAndRegression:
         assert reg.verdict == "not_compared"
         assert reg.delta == 0.0
         assert reg.baseline_path == ""
+        assert reg.baseline_digest == ""
 
     def test_regression_to_dict(self):
         reg = RegressionSummary(compared=True, delta=-0.1, verdict="regression")
         d = reg.to_dict()
         assert d["compared"] is True
         assert d["verdict"] == "regression"
+
+
+class TestTrendContracts:
+    def test_trend_sample_to_dict(self):
+        sample = TrendSample(
+            record_id="rid",
+            suite_id="apps_rg.dev.resume_generation",
+            app_id="apps_rg",
+            split="dev",
+            created_at="2026-06-17T00:00:00Z",
+            score=1.0,
+            scorecard_verdict="pass",
+            regression_verdict="not_compared",
+            block_failures=0,
+        )
+        d = sample.to_dict()
+        assert d["record_id"] == "rid"
+        assert d["split"] == "dev"
+        assert d["failure_mode_counts"] == {}
+        assert d["failure_family_counts"] == {}
+
+    def test_suite_and_dashboard_defaults(self):
+        suite = TrendSuiteSummary(suite_id="apps_rg.dev.resume_generation", app_id="apps_rg", split="dev", sample_count=0)
+        dashboard = TrendDashboardSummary()
+        decision = ReleaseGateDecision()
+        assert suite.sample_count == 0
+        assert dashboard.artifact_paths == {}
+        assert dashboard.trend_dashboard_digest == ""
+        assert dashboard.suite_summaries == []
+        assert dashboard.to_dict()["artifact_paths"] == {}
+        assert dashboard.to_dict()["trend_dashboard_digest"] == ""
+        assert decision.status == "blocked"
+        assert decision.artifact_paths == {}
+        assert decision.to_dict()["schema_version"] == CURRENT_RELEASE_GATE_SCHEMA_VERSION
 
 
 class TestCompletedEvalRecord:
@@ -231,6 +287,70 @@ class TestCompletedEvalRecord:
         assert d["scorecard"]["verdict"] == "pass"
         assert isinstance(d["regression"], dict)
         assert d["regression"]["compared"] is False
+        assert d["schema_version"] == CURRENT_EVAL_RECORD_SCHEMA_VERSION
+        assert d["record_seed"] == {}
+        assert d["run_metadata"]["scorer_version"].endswith(".v2")
+        assert d["fixture_provenance"] == []
+        assert d["regression_flywheel"]["schema_version"] == CURRENT_REGRESSION_FLYWHEEL_SCHEMA_VERSION
+        assert d["regression_flywheel"]["current_failure_mode_counts"] == {}
+
+
+class TestRegressionFlywheelSummary:
+    def test_to_dict(self):
+        flywheel = RegressionFlywheelSummary(
+            compared=True,
+            baseline_path="/tmp/base.json",
+            baseline_digest="base",
+            current_score=0.9,
+            baseline_score=1.0,
+            delta=-0.1,
+            verdict="regression",
+            current_failure_mode_counts={"policy.x3_disposition_mismatch": 2},
+            current_failure_family_counts={"policy": 2},
+            dominant_failure_mode="policy.x3_disposition_mismatch",
+            dominant_failure_family="policy",
+            new_failure_modes=["policy.x3_disposition_mismatch"],
+            recovered_failure_modes=[],
+            repeated_failure_modes=["policy.x3_disposition_mismatch"],
+            scenario_hotspots=[{"scenario_id": "sc1", "failed_findings": 2, "block_failures": 2}],
+        )
+        d = flywheel.to_dict()
+        assert d["schema_version"] == CURRENT_REGRESSION_FLYWHEEL_SCHEMA_VERSION
+        assert d["compared"] is True
+        assert d["dominant_failure_mode"] == "policy.x3_disposition_mismatch"
+
+
+class TestProvenanceContracts:
+    def test_fixture_provenance_to_dict(self):
+        provenance = FixtureProvenance(
+            scenario_id="sc1",
+            fixture_path="/tmp/sc1",
+            scenario_definition_digest="a",
+            input_request_digest="b",
+            expected_digest="c",
+            snapshot_digest="d",
+        )
+        d = provenance.to_dict()
+        assert d["schema_version"].endswith(".v1")
+        assert d["scenario_id"] == "sc1"
+
+    def test_run_metadata_to_dict(self):
+        metadata = EvalRunMetadata(
+            project_version="1.0.0",
+            git_commit="abc",
+            python_version="3.11.0",
+            platform="win32",
+            cwd="/repo",
+            record_seed_digest="digest",
+            baseline_digest="base",
+            mode="snapshot",
+            deterministic_only=True,
+            compare_baseline=False,
+        )
+        d = metadata.to_dict()
+        assert d["project_name"] == "agentic-workflow"
+        assert d["git_commit"] == "abc"
+        assert d["record_seed_digest"] == "digest"
 
 
 class TestL6EvalHandoff:

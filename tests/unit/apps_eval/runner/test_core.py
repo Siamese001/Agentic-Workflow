@@ -21,7 +21,7 @@ from apps_eval.runner.core import (
 )
 
 
-def _finding(grader_id: str, passed: bool, severity: str = "block", score: float = 1.0):
+def _finding(grader_id: str, passed: bool, severity: str = "block", score: float = 1.0, failure_mode: str = ""):
     return GraderFinding(
         grader_id=grader_id,
         scenario_id="sc1",
@@ -29,6 +29,7 @@ def _finding(grader_id: str, passed: bool, severity: str = "block", score: float
         severity=severity,
         score=score,
         message="",
+        failure_mode=failure_mode,
     )
 
 
@@ -82,7 +83,7 @@ class TestCompareRecordToBaseline:
 class TestScore:
     def test_all_pass_no_block_failures(self):
         findings = [_finding("schema", True), _finding("provenance", True)]
-        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings)
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
         assert card.passed_findings == 2
         assert card.failed_findings == 0
         assert card.block_failures == 0
@@ -90,7 +91,7 @@ class TestScore:
 
     def test_block_failure_forces_fail_verdict(self):
         findings = [_finding("schema", False, severity="block", score=0.0)]
-        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings)
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
         assert card.block_failures == 1
         assert card.verdict == "fail"
 
@@ -99,13 +100,29 @@ class TestScore:
             _finding("schema", True),
             _finding("length_bounds", False, severity="warn", score=0.0),
         ]
-        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings)
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
         assert card.block_failures == 0
         assert card.passed_findings == 1
         assert card.failed_findings == 1
 
+    def test_failure_mode_rollup_counts_failed_findings(self):
+        findings = [
+            _finding("schema", False, failure_mode="contract.schema.required_output_keys_missing"),
+            _finding("length_bounds", False, severity="warn", score=0.0, failure_mode="quality.length_bounds_violation"),
+            _finding("provenance", True),
+        ]
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
+        assert card.failure_mode_counts == {
+            "contract.schema.required_output_keys_missing": 1,
+            "quality.length_bounds_violation": 1,
+        }
+        assert card.failure_family_counts == {
+            "contract": 1,
+            "quality": 1,
+        }
+
     def test_empty_findings_perfect_score(self):
-        card = _score("any_suite", "apps_rg", scenario_count=0, findings=[])
+        card = _score("any_suite", "apps_rg", scenario_count=0, findings=[], thresholds={})
         assert card.score == 1.0
         assert card.finding_count == 0
 
@@ -115,7 +132,7 @@ class TestScore:
             _finding("schema", True, score=0.0),
             _finding("provenance", True, score=0.5),
         ]
-        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings)
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
         assert card.dimension_scores["schema"] == pytest.approx(0.5)
         assert card.dimension_scores["provenance"] == pytest.approx(0.5)
 
@@ -124,5 +141,5 @@ class TestScore:
             _finding("schema", True),
             _finding("provenance", False, severity="warn", score=0.0),
         ]
-        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings)
+        card = _score("any_suite", "apps_rg", scenario_count=1, findings=findings, thresholds={})
         assert card.score == pytest.approx(0.5)
