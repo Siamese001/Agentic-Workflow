@@ -392,16 +392,49 @@ class CompanyBriefEngine(BaseResearchEngine):
         When ``apps_rg_targeting_brief_enabled`` (env or jd_context), emits
         apps_rg targeting markdown per ``apps_rg_targeting_brief_v1.md``.
         """
+        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
+            consumer_brief_template_id,
+        )
         from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
             apps_rg_targeting_brief_enabled,
         )
 
+        consumer_template_id = consumer_brief_template_id(jd_context=jd_context)
         if apps_rg_targeting_brief_enabled(jd_context=jd_context):
             return self._synthesize_apps_rg_targeting_brief(
                 topic=topic,
                 findings=findings,
                 jd_context=jd_context or {},
                 jd_anchor=jd_anchor,
+            )
+        if consumer_template_id in {
+            "downstream_research_substrate_v1",
+            "apps_lic_research_substrate_v1",
+        }:
+            consumer_keys = {
+                "downstream_research_substrate_v1": (
+                    "downstream_research_substrate_text",
+                    "downstream_research_substrate_disposition",
+                    "downstream_research_substrate_block_reason",
+                ),
+                "apps_lic_research_substrate_v1": (
+                    "apps_lic_research_substrate_text",
+                    "apps_lic_research_substrate_disposition",
+                    "apps_lic_research_substrate_block_reason",
+                ),
+            }
+            consumer_output_key, consumer_disposition_key, consumer_block_reason_key = (
+                consumer_keys[consumer_template_id]
+            )
+            return self._synthesize_consumer_brief(
+                topic=topic,
+                findings=findings,
+                jd_context=jd_context or {},
+                jd_anchor=jd_anchor,
+                template_id=consumer_template_id,
+                output_key=consumer_output_key,
+                disposition_key=consumer_disposition_key,
+                block_reason_key=consumer_block_reason_key,
             )
 
         prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
@@ -747,6 +780,63 @@ class CompanyBriefEngine(BaseResearchEngine):
         stub["targeting_brief_char_count"] = sealed.char_count
         stub["targeting_brief_bullet_count"] = sealed.bullet_count
         stub["targeting_brief_section_count"] = sealed.section_count
+        return stub
+
+    def _synthesize_consumer_brief(
+        self,
+        *,
+        topic: str,
+        findings: Dict[str, str],
+        jd_context: Dict[str, Any],
+        jd_anchor: Optional[Path],
+        template_id: str,
+        output_key: str,
+        disposition_key: str,
+        block_reason_key: str,
+        gate_verdict: str = "",
+        gate_reason: str = "",
+    ) -> Dict[str, Any]:
+        """Synthesize a compact downstream consumer brief."""
+        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
+            build_consumer_brief_prompt,
+            extract_jd_text,
+            format_research_findings,
+        )
+
+        company_name = str(jd_context.get("company_name") or "").strip() or topic
+        jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
+        research_notes = format_research_findings(findings)
+
+        stub = self._stub_synthesis(topic=company_name, jd_facets=[])
+        stub["synthesis_template"] = template_id
+        stub["consumer_brief_template_id"] = template_id
+        stub["consumer_brief_output_key"] = output_key
+
+        has_research = bool(research_notes.strip())
+        gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
+        if not has_research or gate_failed:
+            stub[disposition_key] = "BLOCKED"
+            stub[block_reason_key] = (
+                gate_reason
+                or ("c0_support_gate_failed" if gate_failed else "no_grounded_research_for_company")
+            )
+            return stub
+
+        prompt = build_consumer_brief_prompt(
+            template_id=template_id,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            target_entity=company_name,
+        )
+        text = self._call_llm_plain_markdown(prompt).strip()
+        if not text or text.upper().startswith("BLOCKED:"):
+            stub[disposition_key] = "BLOCKED"
+            stub[block_reason_key] = text[:120] if text else "synthesis_returned_empty"
+            return stub
+
+        stub[output_key] = text
+        stub["company_brief_text"] = text
+        stub[disposition_key] = "SEALED"
         return stub
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:

@@ -72,6 +72,7 @@ _SUB_BULLET_RE = re.compile(r"^\s+[-*]\s")
 _TABLE_PIPE_RE = re.compile(r"\|")
 _BULLET_RE = re.compile(r"^- ")
 _HEADER_RE = re.compile(r"^(?:#{1,3}\s+.+|===\s*.+?\s*===)$")
+_TITLE_LINE_RE = re.compile(r"\bbrief(?:ing)?\b", re.IGNORECASE)
 
 _SIGNAL_TERMS = (
     "strategy",
@@ -230,6 +231,7 @@ def validate_targeting_brief_text(
     bullet_lines: list[str] = []
     section_headers: list[str] = []
     metadata_line_idx = -1
+    counted_title_line = False
     for idx, raw in enumerate(lines):
         line = raw.rstrip()
         stripped_line = line.strip()
@@ -240,6 +242,18 @@ def validate_targeting_brief_text(
             continue
         if _HEADER_RE.match(stripped_line):
             section_headers.append(stripped_line)
+            continue
+        # Count the conventional title line as a structural section when it is
+        # present without a Markdown heading marker.
+        if (
+            not counted_title_line
+            and idx == 0
+            and not stripped_line.startswith("-")
+            and not stripped_line.startswith("|")
+            and _TITLE_LINE_RE.search(stripped_line)
+        ):
+            section_headers.append(stripped_line)
+            counted_title_line = True
             continue
         if _TABLE_PIPE_RE.search(line) and idx != metadata_line_idx:
             violations.append("table_pipe_present")
