@@ -18,9 +18,20 @@ def run_apps_lic_live(scenario_id: str, payload: dict[str, Any], artifact_dir: P
         recipient_class=str(payload.get("recipient_class", "recruiter")),
         channel=str(payload.get("channel", "linkedin")),
         outreach_mode=str(payload.get("outreach_mode", "cold")),
+        connection_status=str(payload.get("connection_status", "NOT_CONNECTED")),
+        premium_available=bool(payload.get("premium_available", True)),
+        route_override=str(payload.get("route_override", "")),
         manual_brief=str(payload.get("manual_brief", "")),
+        allow_research=bool(payload.get("allow_research", False)),
         lead_profile=payload.get("lead_profile") or {},
         campaign_objective=payload.get("campaign_objective"),
+        audience_segment=str(payload.get("audience_segment", "recruiting")),
+        governed_opportunity_facts=payload.get("governed_opportunity_facts"),
+        c0_required_namespaces=payload.get("c0_required_namespaces"),
+        message_type_hint=str(payload.get("message_type_hint", "")),
+        message_modifiers=payload.get("message_modifiers"),
+        application_status=str(payload.get("application_status", "")),
+        desired_next_step=str(payload.get("desired_next_step", "")),
     )
     result = run_canonical_apps_lic_spine(raw_ingress, artifact_dir=artifact_dir)
     if hasattr(result, "to_dict"):
