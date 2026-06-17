@@ -13,7 +13,7 @@ Design constraints
 - Stateless — no caching, no durable writes, no config mutations.
 - Fail-closed: any exception returns a structured error result; never raises.
 
-Plan: .windsurf/plans/agentic-spine-diagram-refinement-a3f7c2.md W5 P5.2
+Plan: .claude/plans/agentic-spine-diagram-refinement-a3f7c2.md W5 P5.2
 """
 
 from __future__ import annotations
@@ -266,9 +266,65 @@ def fetch_company_brief(
     )
 
 
+def _extract_brief_markdown(brief: dict[str, Any] | None) -> str:
+    """Return the first sealed markdown brief text from a research result."""
+    if not brief:
+        return ""
+    for key in (
+        "company_brief_text",
+        "apps_rg_targeting_brief_text",
+        "apps_rg_targeting_brief_markdown",
+        "apps_lic_research_substrate_text",
+        "apps_exec_executive_brief_text",
+    ):
+        text = str(brief.get(key) or "").strip()
+        if text:
+            return text
+    return ""
+
+
+def materialize_company_brief_markdown(
+    *,
+    company: str,
+    artifact_root: Path,
+    jd_path: Optional[Path] = None,
+    depth: str = "standard",
+    request_id: str = "",
+    run_id: str = "",
+    trace_root: str = "",
+) -> Path | None:
+    """Run apps_research and write a `briefing.md` beside the produced JSON."""
+    result = invoke_company_research(
+        company=company,
+        jd_path=jd_path,
+        depth=depth,
+        run_id=run_id,
+        request_id=request_id,
+        trace_root=trace_root,
+        artifact_dir=artifact_root,
+    )
+    if not result.success:
+        return None
+
+    brief_text = _extract_brief_markdown(result.brief)
+    if not brief_text:
+        return None
+
+    if result.artifact_path:
+        brief_path = Path(result.artifact_path).with_name("briefing.md")
+    else:
+        run_dir = artifact_root / f"research_{(result.run_id or run_id or 'brief')[:8]}"
+        run_dir.mkdir(parents=True, exist_ok=True)
+        brief_path = run_dir / "briefing.md"
+
+    brief_path.write_text(brief_text.rstrip() + "\n", encoding="utf-8")
+    return brief_path
+
+
 __all__ = [
     "ADAPTER_ID",
     "ResearchStepResult",
     "fetch_company_brief",
     "invoke_company_research",
+    "materialize_company_brief_markdown",
 ]

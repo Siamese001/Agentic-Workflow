@@ -79,6 +79,38 @@ def _read_optional_brief(path_or_url: str) -> str:
     return _read_optional_file(s)
 
 
+def _materialize_fallback_brief(
+    *,
+    target_company: str,
+    jd_path: Path | None,
+    request_id: str,
+    run_id: str,
+    trace_id: str,
+) -> str:
+    """Generate a repo-local briefing.md when the caller omitted a brief."""
+    if not str(target_company).strip():
+        return ""
+    try:
+        from apps_shared.adapters.research_l3_adapter import (
+            materialize_company_brief_markdown,
+        )
+    except ImportError:
+        return ""
+
+    repo_root = find_repo_root()
+    artifact_root = repo_root / "artifacts" / "apps_rg" / "generated_briefs"
+    brief_path = materialize_company_brief_markdown(
+        company=target_company,
+        jd_path=jd_path,
+        depth="standard",
+        request_id=request_id,
+        run_id=run_id,
+        trace_root=trace_id,
+        artifact_root=artifact_root,
+    )
+    return str(brief_path) if brief_path else ""
+
+
 def _resolve_lane_manual_brief(manual_brief: str) -> str:
     """Resolve briefing for section lanes (path, URI, inline, or lane resolver fallback)."""
     briefing = _read_optional_brief(manual_brief)
@@ -147,7 +179,24 @@ def build_raw_request_for_r4(
         "description": jd_resolved.description,
         "company": jd_resolved.company,
     }
+    resolved_manual_brief = str(manual_brief or "").strip()
     brief_text = _read_optional_brief(manual_brief)
+    if not brief_text:
+        fallback_jd_path: Path | None = None
+        for candidate in (jd_ref, jd_legacy):
+            if candidate and Path(candidate).is_file():
+                fallback_jd_path = Path(candidate)
+                break
+        generated_brief = _materialize_fallback_brief(
+            target_company=str(target_company),
+            jd_path=fallback_jd_path,
+            request_id="",
+            run_id="",
+            trace_id="",
+        )
+        if generated_brief:
+            resolved_manual_brief = generated_brief
+            brief_text = _read_optional_brief(generated_brief)
     rp = str(resume_path).strip()
     st = str(source_resume_text).strip()
     res_resolved = resolve_resume_for_lanes(
@@ -182,7 +231,7 @@ def build_raw_request_for_r4(
         "target_company": target_company,
         "target_role": target_role,
         "target_level": target_level,
-        "manual_brief": manual_brief or "",
+        "manual_brief": resolved_manual_brief,
         "generation_mode": generation_mode,
         "jd_payload": jd_payload,
         "jd_hash": jd_hash,

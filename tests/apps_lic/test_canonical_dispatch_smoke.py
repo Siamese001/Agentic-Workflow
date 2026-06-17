@@ -11,6 +11,7 @@ from apps_lic.runtime.dispatch.canonical_dispatch import (
     build_cli_ingress_raw,
     run_canonical_apps_lic_spine,
 )
+from apps_lic.runtime.profile_builder_adapter import parse_payload
 from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
@@ -65,3 +66,26 @@ def test_canonical_spine_r5_without_context_or_research(tmp_path: Path) -> None:
     assert result.exit_status == "blocked"
     assert result.outcome_authorized is False
     assert (result.artifact_dir / "exit_disposition_receipt.json").is_file()
+
+
+def test_parse_payload_materializes_missing_brief(tmp_path: Path, monkeypatch) -> None:
+    generated = tmp_path / "briefing.md"
+    generated.write_text("Generated company brief for Acme.\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "apps_lic.runtime.profile_builder_adapter._materialize_missing_brief",
+        lambda payload: str(generated),
+    )
+    envelope = parse_payload(
+        {
+            "recipient_class": "recruiter",
+            "channel": "linkedin",
+            "outreach_mode": "cold",
+            "target_company": "Acme",
+            "request_id": "req-lic-brief",
+            "run_id": "run-lic-brief",
+            "trace_id": "trace-lic-brief",
+        }
+    )
+    assert envelope is not None
+    assert envelope.payload.briefing_artifact_ref == str(generated)
+    assert envelope.payload.user_constraints["manual_brief"] == str(generated)

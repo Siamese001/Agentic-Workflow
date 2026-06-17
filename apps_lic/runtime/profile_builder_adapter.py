@@ -30,6 +30,54 @@ APPS_LIC_REQUIRED_FIELDS: tuple[str, ...] = (
 )
 
 
+def _resolve_target_company(payload: Mapping[str, Any]) -> str:
+    """Best-effort company lookup for auto-generated research brief materialization."""
+    for candidate in (
+        payload.get("target_company"),
+        (payload.get("company_profile") or {}).get("company_name") if isinstance(payload.get("company_profile"), Mapping) else None,
+        (payload.get("lead_profile") or {}).get("company_name") if isinstance(payload.get("lead_profile"), Mapping) else None,
+        (payload.get("entity_refs") or {}).get("company_profile", {}).get("company_name")
+        if isinstance((payload.get("entity_refs") or {}).get("company_profile"), Mapping)
+        else None,
+    ):
+        company = str(candidate or "").strip()
+        if company:
+            return company
+    return ""
+
+
+def _materialize_missing_brief(payload: Mapping[str, Any]) -> str:
+    """Generate a repo-local briefing.md when the caller omitted one."""
+    manual_brief = str(payload.get("manual_brief") or "").strip()
+    if manual_brief:
+        return manual_brief
+
+    company = _resolve_target_company(payload)
+    if not company:
+        return ""
+
+    try:
+        from apps_shared.adapters.research_l3_adapter import (
+            materialize_company_brief_markdown,
+        )
+    except ImportError:
+        return ""
+
+    repo_root = Path(__file__).resolve().parents[2]
+    artifact_root = repo_root / "artifacts" / "apps_lic" / "generated_briefs"
+    request_id = str(payload.get("request_id") or "")
+    run_id = str(payload.get("run_id") or "")
+    trace_id = str(payload.get("trace_id") or "")
+    brief_path = materialize_company_brief_markdown(
+        company=company,
+        artifact_root=artifact_root,
+        request_id=request_id,
+        run_id=run_id,
+        trace_root=trace_id,
+    )
+    return str(brief_path) if brief_path else ""
+
+
 def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
     """Convert a normalized payload dict into a typed RequestEnvelope for apps_lic."""
     if not isinstance(payload, dict):
@@ -46,8 +94,10 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
     user_constraints["recipient_class"] = recipient_class
     user_constraints["channel"] = channel
     user_constraints["outreach_mode"] = outreach_mode
-    if payload.get("manual_brief"):
-        user_constraints["manual_brief"] = payload["manual_brief"]
+    resolved_company = _resolve_target_company(payload)
+    manual_brief = _materialize_missing_brief(payload)
+    if manual_brief:
+        user_constraints["manual_brief"] = manual_brief
     if payload.get("manifest_id"):
         user_constraints["manifest_id"] = payload["manifest_id"]
     if payload.get("manifest_hash"):
@@ -57,12 +107,12 @@ def parse_payload(payload: Mapping[str, Any]) -> RequestEnvelope | None:
         ingress = AppsRgIngressPayload(
             app_id="apps_lic",
             task_class="outreach",
-            target_company=payload.get("target_company") or None,
+            target_company=resolved_company or None,
             target_role=payload.get("target_role") or recipient_class,
             target_level=payload.get("target_level") or None,
             briefing_artifact_ref=(
                 payload.get("briefing_artifact_ref")
-                or payload.get("manual_brief")
+                or manual_brief
                 or payload.get("manual_brief_path")
                 or None
             ),
