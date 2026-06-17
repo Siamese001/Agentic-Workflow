@@ -31,6 +31,7 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
+        "Codex must ask a plain-text clarifying question directly in the assistant response",
     ],
     "docs/codex-primary-execution.md": [
         "Codex primary execution surface",
@@ -39,7 +40,24 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
         "No parallel registry",
-        "Codex does not expose the Claude `AskUserQuestion` tool",
+        "Codex must ask a plain-text clarifying question directly in the assistant response",
+    ],
+}
+
+FORBIDDEN_PHRASES = {
+    "AGENTS.md": [
+        "CLAUDE.md",
+        "Claude hook parity",
+        "Claude-specific workflows",
+        "AskUserQuestion",
+        "request_user_input",
+    ],
+    "docs/codex-primary-execution.md": [
+        "AskUserQuestion",
+        "request_user_input",
+        "Claude hook parity",
+        "Claude-specific workflows",
+        "Codex-vs-Claude",
     ],
 }
 
@@ -58,12 +76,25 @@ def missing_anchors(anchor_map: Mapping[str, list[str]], root: Path) -> list[str
                 failures.append(f"{path}: missing anchor {anchor!r}")
     return failures
 
+
+def forbidden_phrase_failures(phrase_map: Mapping[str, list[str]], root: Path) -> list[str]:
+    failures: list[str] = []
+    for relative_path, phrases in phrase_map.items():
+        path = root / relative_path
+        text = path.read_text(encoding="utf-8")
+        for phrase in phrases:
+            if phrase in text:
+                failures.append(f"{path}: forbidden phrase {phrase!r}")
+    return failures
+
+
 def validate(root: Path = REPO_ROOT) -> list[str]:
     failures: list[str] = []
     failures.extend(str(path) for path in missing_paths(REQUIRED_FILES, root))
     if failures:
         return failures
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
+    failures.extend(forbidden_phrase_failures(FORBIDDEN_PHRASES, root))
     return failures
 
 
