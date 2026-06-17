@@ -1,6 +1,6 @@
 # Codex Primary Execution
 
-Codex is the primary local execution surface for this repository when Claude API rate limits or host instability make Claude-first runs unreliable. The repo-owned governance files remain the rule source of truth; Codex owns run readiness, execution evidence, and verification receipts.
+Codex is the primary local execution surface for this repository. The repo-owned governance files remain the rule source of truth; Codex owns run readiness, execution evidence, and verification receipts. Claude Code remains legacy compatibility only.
 
 ## Source Of Truth Split
 

@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts; `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json` remain the shared repo-owned governance inputs during the compatibility migration.
+Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts; `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json` remain the shared repo-owned governance inputs.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
@@ -12,7 +12,7 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 ## MCP Quick Reference
 
-> Stable IDs are the `mcpServers` keys in root `.mcp.json` (Claude Code project SSOT). Deprecated Cursor/Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session.
+> Stable IDs are the `mcpServers` keys in root `.mcp.json` (repo MCP SSOT). Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session.
 
 <!-- MCP-QUICK-REFERENCE:START -->
 
@@ -45,12 +45,12 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
-| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | Manual backlog reads such as "what's blocked" or "top backlog items". | Manual writes only when explicitly requested. No automatic plan/wave/status enforcement. |
-| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | Manual historical plan lookup only; disk is the plan SSOT. | No automatic writes. New plans stay disk-only under `plans/<slug>-<6hex>.md`. |
+| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. The DEFERRED_SCOPE/NEXT_STEP auto-post hooks were retired (enforcement-surface-consolidation-d8b3f6 W7); out-of-scope work now surfaces via native spawn_task (constitutional §24 / ADR-096). The deferred_scope_scorer P-Band engine is retained for batch backlog scoring. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `plans/<slug>-<6hex>.md` (repo-root SSOT; legacy `.claude/plans/` still valid). Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.md`. No Notion write. |
-| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated Cursor/Windsurf compatibility copies are non-authoritative. |
-| Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.mdc`. No Notion write. |
+| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated compatibility copies are non-authoritative. |
+| Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. (See .claude/rules/notion-archived-databases.md.) |
 | ADR Registry | ~~`e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`~~ | ~~`6ed25e12-bd92-4352-ac7a-3a971311f024`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write. |
 | Author-Gate Decision Ledger | ~~`5b60fdde-7259-491e-9f2d-e088f1f741ef`~~ | ~~`18bb9145-1320-4191-8b14-6c309776bcf5`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`. No Notion write. |
 
@@ -94,12 +94,12 @@ Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integr
 
 | Layer | Path | Notes |
 |-------|------|-------|
-| Always-on rules | `CLAUDE.md` + `.claude/rules/000-002*.md` | Claude Code contract plus compact always-on rule floor |
+| Always-on rules | `CLAUDE.md` + `.claude/rules/000-002*.md` | Repo governance contract plus compact always-on rule floor |
 | On-demand rules | `.claude/rules/*.md` | Load by task surface and file scope |
 | Skills | `.claude/skills/*/SKILL.md` | Progressive disclosure; per-server stubs redirect to `mcp-integration` §1–§13 |
 | Hooks | `.claude/settings.json` + `.claude/hooks/**` | Post-agent SSOT: `after_agent_governance_dispatch.py` |
-| Index | `.claude/rules/` + historical `.cursor/RULES_INDEX.md` references | Generated rule index references remain historical only |
-| Deprecated Cursor/Windsurf legacy | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit `.claude/**` SSOT files |
+| Index | `.claude/rules/` + historical rule-index references | Generated rule index references remain historical only |
+| Deprecated compatibility shims | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit `.claude/**` SSOT files |
 
 **Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Retired rule and skill names remain historical only.
 
@@ -107,7 +107,7 @@ Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/gov
 
 ## Codex primary execution adapter
 
-Codex is the primary local execution surface for this repo when Claude API limits or host instability make Claude-first runs unreliable. Repo-owned governance files remain the versioned rule inputs; Codex owns run readiness, execution evidence, and closeout receipts.
+Codex is the primary local execution surface for this repo. Repo-owned governance files remain the versioned rule inputs; Codex owns run readiness, execution evidence, and closeout receipts.
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
@@ -118,15 +118,15 @@ Codex is the primary local execution surface for this repo when Claude API limit
 
 ## Codex backup adapter
 
-Legacy compatibility note: older docs and checks still use the "backup adapter" name. Treat that as compatibility terminology; new Codex work should follow the primary execution adapter above.
+This section is legacy compatibility only. Older docs and checks still use the "backup adapter" name; treat that as compatibility terminology only, and follow the primary execution adapter above for new Codex work.
 
 When using Codex in this repo:
 
 - Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
-- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as repo-owned governance inputs until the neutral contract migration is complete.
-- Do not copy `.cursor` rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
+- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as repo-owned governance inputs; Codex consumes them directly and does not mirror them into a private registry.
+- Do not copy deprecated rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
 - Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
 - If a Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
-- Validate the compatibility adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
+- Validate the legacy compatibility check with `python scripts/governance/verify_codex_backup.py` after changing legacy docs or skills.
 
 Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).
