@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts. Primary enforcement is Codex-owned; legacy compatibility files are not consulted by the primary path.
+Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts. Primary enforcement is Codex-owned; legacy `CLAUDE.md` / `.claude/**` compatibility files are not consulted by the primary path.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
@@ -18,7 +18,7 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 | Server ID | Use For | Example Tools | Notes | Skill |
 |---|---|---|---|---|
-| `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. | [`gitkraken`](.claude/skills/gitkraken/SKILL.md) |
+| `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. The GitKraken CLI (`gk`) is the mandatory substitute proof path when the live MCP surface is not callable. | [`gitkraken`](.claude/skills/gitkraken/SKILL.md) |
 | `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Structural deps + T2/T3 plans; §22 graph layer (mv_*, P-views, semantic edges). | [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
 | `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`deepwiki`](.claude/skills/deepwiki/SKILL.md) |
 | `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`filesystem-mcp`](.claude/skills/filesystem-mcp/SKILL.md) |
@@ -35,7 +35,7 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 <!-- MCP-QUICK-REFERENCE:END -->
 
-Per-server `SKILL.md` files under `.claude/skills/<name>/` are **redirect stubs**; procedural SSOT is [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) sections §1–§13.
+Per-server `SKILL.md` files under `.claude/skills/<name>/` are legacy compatibility stubs only; primary routing is Codex-owned and documented in `AGENTS.md` and `docs/codex-primary-execution.md`.
 
 ## Notion Workspace Map
 
@@ -111,8 +111,23 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
-- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement does not depend on hook parity.
+- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement does not depend on Claude hook parity.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
 - Do not create a Codex-only rule or MCP registry. Codex consumes repo-owned rules and records live route evidence under `docs/reports/codex/`.
+
+## Codex backup adapter
+
+This section is legacy compatibility only. Older docs and checks still use the "backup adapter" name; treat that as compatibility terminology only, and follow the primary execution adapter above for new Codex work.
+
+When using Codex in this repo:
+
+- Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
+- Use `AGENTS.md`, `docs/codex-primary-execution.md`, root `.mcp.json`, and `scripts/governance/**` as repo-owned governance inputs; Codex consumes them directly and does not mirror them into a private registry. Legacy Claude compatibility files remain archival only.
+- Do not copy deprecated rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
+- Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
+- If a live route is unavailable, use the documented repo CLI/helper for that route; otherwise report the route unavailable and stop. Do not substitute Claude-specific workflows.
+- Validate the legacy compatibility check with `python scripts/governance/verify_codex_backup.py` after changing legacy docs or skills.
+
+Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).
