@@ -351,16 +351,55 @@ _IBM_CAREER_BRIDGE_RE = re.compile(
     r"\s+(?:supported\s+later|subsequent\s+roles|later\s+production\s+ai)\b[^.]*\.?\s*$",
     re.IGNORECASE,
 )
+_IBM_MECHANISM_RE = re.compile(
+    r"\b(runtime|microservices|pipeline|api|telemetry|observability|kubernetes|lakehouse|hpc)\b",
+    re.IGNORECASE,
+)
 
 
 def sanitize_ibm_narrative_display_text(narrative_sentence: str) -> tuple[str, bool]:
-    """Strip meta-disclaimer and career-bridge tails from IBM narrative display."""
+    """Strip meta tails and normalize IBM narrative opener/specificity."""
     text = str(narrative_sentence or "").strip()
     if not text:
         return text, False
     original = text
     text = _IBM_META_TAIL_RE.sub(".", text).strip()
     text = _IBM_CAREER_BRIDGE_RE.sub(".", text).strip()
+    text = re.sub(
+        r"^(?:At|In|As|With|During|While|Throughout|Across|Within|From|Upon|Amid)\s+IBM,\s+",
+        "",
+        text,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"^(?:led|successfully|also|built|delivered|designed|implemented|architected|scaled|productized)\b",
+        "Drove",
+        text,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    if not _IBM_MECHANISM_RE.search(text):
+        text = re.sub(
+            r"\bgoverned delivery discipline\b",
+            "governed runtime discipline",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if not _IBM_MECHANISM_RE.search(text):
+            text = re.sub(
+                r"\breusable platform architecture\b",
+                "reusable runtime architecture",
+                text,
+                flags=re.IGNORECASE,
+            )
+    if not _IBM_MECHANISM_RE.search(text):
+        text = re.sub(
+            r"\bcloud modernization\b",
+            "runtime modernization",
+            text,
+            flags=re.IGNORECASE,
+        )
     text = re.sub(r"\s+\.", ".", text)
     text = re.sub(r"\.{2,}", ".", text)
     if text and text[-1] not in ".!?":

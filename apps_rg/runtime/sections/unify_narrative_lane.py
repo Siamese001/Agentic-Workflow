@@ -70,6 +70,10 @@ from apps_rg.runtime.shadow.l6_shadow_learning import build_l6_shadow_learning_r
 from apps_rg.runtime.shadow.unify_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
 from apps_rg.runtime.sections.unify_bullets_lane import _legacy_unify_to_ledger_id_map
+from apps_rg.runtime.validators.narrative_mechanical_x2 import (
+    UNIFY_NARRATIVE_METRIC_PATTERNS,
+    count_narrative_metric_hits,
+)
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
@@ -265,6 +269,106 @@ def load_companion_unify_bullets_context() -> dict[str, Any]:
     )
 
 
+_UNIFY_FULL_METRIC_BUNDLE_HINTS = (
+    r"\$22m",
+    r"20%",
+    r"\b8\b",
+    r"\b28\b",
+    r"six months",
+    r"three weeks",
+)
+
+_UNIFY_METRIC_REWRITE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(
+            r"\s+and\s+(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+            r"(?:organization|team)\s+from\s+\d+\s+to\s+\d+[^.?!]*",
+            re.IGNORECASE,
+        ),
+        " and expanded the engineering team",
+    ),
+    (
+        re.compile(
+            r"\s+and\s+(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+            r"(?:organization|team)\b[^.?!]*",
+            re.IGNORECASE,
+        ),
+        " and expanded the engineering team",
+    ),
+    (
+        re.compile(
+            r"\b(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+            r"(?:organization|team)\s+from\s+\d+\s+to\s+\d+[^.?!]*",
+            re.IGNORECASE,
+        ),
+        "expanded the engineering team",
+    ),
+    (
+        re.compile(
+            r"\b(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+            r"(?:organization|team)\b[^.?!]*",
+            re.IGNORECASE,
+        ),
+        "expanded the engineering team",
+    ),
+    (re.compile(r"\s+from\s+\d+\s+to\s+\d+\b", re.IGNORECASE), " growth"),
+    (re.compile(r"\s+\$22\s*m(?:\s+revenue)?\b", re.IGNORECASE), " commercial expansion"),
+    (re.compile(r"20\s*%", re.IGNORECASE), " margin expansion"),
+    (re.compile(r"\bsix\s+months\b.*?\bthree\s+weeks\b", re.IGNORECASE), " cycle-time reduction"),
+)
+
+
+def _companion_unify_bullets_have_full_metrics(companion_text: str) -> bool:
+    c = str(companion_text or "").lower()
+    if not c.strip():
+        return False
+    return all(re.search(hint, c, re.IGNORECASE) for hint in _UNIFY_FULL_METRIC_BUNDLE_HINTS)
+
+
+def _collapse_unify_narrative_metric_recap(narrative: str, companion_text: str) -> str:
+    """Collapse metric recaps when companion bullets already carry the full metric bundle."""
+    s = str(narrative or "").strip()
+    if not s or not _companion_unify_bullets_have_full_metrics(companion_text):
+        return s
+    if count_narrative_metric_hits(s, metric_patterns=UNIFY_NARRATIVE_METRIC_PATTERNS) <= 1:
+        return s
+    before = s
+    for bad, good in _UNIFY_METRIC_REWRITE_RULES:
+        s = bad.sub(good, s)
+    s = re.sub(r"\s{2,}", " ", s)
+    s = re.sub(r"\s+([.,;:])", r"\1", s)
+    s = re.sub(r"\b(and|or)\s+(and|or)\b", r"\1", s, flags=re.IGNORECASE)
+    s = s.strip()
+    if s and s[-1] not in ".!?":
+        s += "."
+    if count_narrative_metric_hits(s, metric_patterns=UNIFY_NARRATIVE_METRIC_PATTERNS) <= 1:
+        return s
+
+    spans: list[tuple[int, int]] = []
+    for _label, pat in UNIFY_NARRATIVE_METRIC_PATTERNS:
+        if isinstance(pat, re.Pattern):
+            spans.extend((m.start(), m.end()) for m in pat.finditer(before))
+        else:
+            spans.extend((m.start(), m.end()) for m in re.finditer(re.escape(str(pat)), before, re.IGNORECASE))
+    spans.sort(key=lambda item: item[0])
+    if len(spans) < 2:
+        return s
+    cut = spans[1][0]
+    left = before[:cut].rstrip()
+    left = re.sub(
+        r"\s+(?:and|,)\s+(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+        r"(?:organization|team)\s*$",
+        "",
+        left,
+        flags=re.IGNORECASE,
+    )
+    left = re.sub(r"\s+(?:and|,)\s*$", "", left)
+    left = re.sub(r"\s{2,}", " ", left).strip(" ,;:")
+    if left and left[-1] not in ".!?":
+        left += "."
+    return left if left else s
+
+
 def build_prompt_messages(
     runtime_payload: dict[str, Any],
     companion_text: str = "",
@@ -338,6 +442,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 def normalize_unify_narrative_parsed(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
+    companion_text: str = "",
 ) -> dict[str, Any] | None:  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
     """Normalize narrative + ledger IDs only — never fabricate claim_ledger from narrative or all bullet IDs."""
     if not parsed:
@@ -350,6 +455,29 @@ def normalize_unify_narrative_parsed(
     if narrative and not narrative.endswith((".", "!", "?")):
         narrative += "."
     out["narrative_sentence"] = narrative
+    metric_collapsed = _collapse_unify_narrative_metric_recap(narrative, companion_text)
+    if metric_collapsed != narrative:
+        out["narrative_sentence"] = metric_collapsed
+        ledger = out.get("claim_ledger")
+        if isinstance(ledger, list):
+            for entry in ledger:
+                if not isinstance(entry, dict):
+                    continue
+                claim_text = str(entry.get("claim_text") or "").strip()
+                if not claim_text or claim_text == narrative:
+                    entry["claim_text"] = metric_collapsed
+        out.setdefault("change_log", [])
+        if isinstance(out["change_log"], list):
+            out["change_log"].append(
+                {
+                    "operation": "companion_metric_budget_deterministic_trim",
+                    "reason": "companion_bullets_carry_full_unify_metric_bundle",
+                }
+            )
+        out.setdefault("self_check", {})
+        if isinstance(out["self_check"], dict):
+            out["self_check"]["companion_metric_budget_trimmed"] = True
+        narrative = metric_collapsed
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
@@ -784,7 +912,11 @@ def run_unify_narrative_execution(
                     reason=parse_error or "parse_retry",
                     replaced_l2=False,
                 )
-        parsed = normalize_unify_narrative_parsed(parsed_in, runtime_payload) if parsed_in else None
+        parsed = (
+            normalize_unify_narrative_parsed(parsed_in, runtime_payload, companion_text=companion_text)
+            if parsed_in
+            else None
+        )
     elif not upstream_blocked:
         parsed = None
         parse_error = result.exact_provider_error or "provider blocked"

@@ -96,6 +96,30 @@ def test_composition_plan_brushstroke_skills_not_global_pool_dump() -> None:
     assert "skill_p2_gtm" not in str(b3.get("allowed_graph_skill_ids"))
 
 
+def test_commercialization_fact_stays_in_b4_business_role_fit() -> None:
+    facts = [
+        {
+            "fact_id": "reb_exec_identity_leadership",
+            "claim_text": "Executive leadership for regulated platform delivery.",
+        },
+        {
+            "fact_id": "reb_unify_platform_commercialization_leadership",
+            "claim_text": "Platform productization, IP-led revenue, margin expansion, team scale.",
+        },
+    ]
+    plan = build_executive_summary_composition_plan(
+        selected_facts=facts,
+        allowed_fact_ids={f["fact_id"] for f in facts},
+        target_role="SVP Engineering",
+        target_company="Acme",
+        proof_pool_metadata={},
+    )
+    b1 = next(b for b in plan["brushstrokes"] if b["brushstroke_role"] == "B1_executive_identity")
+    b4 = next(b for b in plan["brushstrokes"] if b["brushstroke_role"] == "B4_business_role_fit")
+    assert "reb_unify_platform_commercialization_leadership" not in b1["required_fact_ids"]
+    assert "reb_unify_platform_commercialization_leadership" in b4["required_fact_ids"]
+
+
 # --- Brushstroke COVERAGE mode (graph-era utilization scoping; W2.3->W3 bridge) ---
 
 _PLAN = {

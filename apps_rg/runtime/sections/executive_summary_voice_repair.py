@@ -1883,6 +1883,10 @@ def finalize_executive_summary_coherence(
         receipt["ledger_reconciled"] = True
     else:
         receipt["final_word_budget_trim_applied"] = False
+    prior_ledger = json.dumps(out.get("claim_ledger") or [], ensure_ascii=False, sort_keys=True)
+    out = _rebuild_claim_ledger_from_display(out)
+    if json.dumps(out.get("claim_ledger") or [], ensure_ascii=False, sort_keys=True) != prior_ledger:
+        receipt["ledger_reconciled"] = True
     return out, receipt
 
 

@@ -138,14 +138,14 @@ def _filter_required_display_fact_ids(role: str, req_ids: list[str]) -> list[str
 def _classify_fact_brushstroke_role(fact_id: str, claim_text: str) -> str:
     fid = _fact_id_base(fact_id).lower()
     low = claim_text.lower()
-    if any(x in fid for x in ("exec", "leadership")) or "organization" in low and "ml engineering" in low:
-        return "B1_executive_identity"
-    if any(x in fid for x in ("governance", "regulatory", "risk", "ccar", "basel", "lineage", "validation")):
-        return "B3_control_evidence_discipline"
     if any(x in fid for x in ("revenue", "sales", "commercial", "margin", "ops")):
         return "B4_business_role_fit"
     if any(x in fid for x in ("cert", "quant", "hpc", "actuarial")):
         return "B4_business_role_fit"
+    if any(x in fid for x in ("exec", "leadership")) or "organization" in low and "ml engineering" in low:
+        return "B1_executive_identity"
+    if any(x in fid for x in ("governance", "regulatory", "risk", "ccar", "basel", "lineage", "validation")):
+        return "B3_control_evidence_discipline"
     if any(
         tok in low
         for tok in (

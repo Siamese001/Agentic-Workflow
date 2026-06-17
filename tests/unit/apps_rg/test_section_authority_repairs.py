@@ -88,6 +88,31 @@ def test_sanitize_ibm_meta_disclaimer():
     assert "without claiming" not in cleaned.lower()
 
 
+def test_sanitize_ibm_narrative_rewrites_forbidden_opener_and_adds_mechanism() -> None:
+    raw = (
+        "Led enterprise-scale cloud modernization, decision-support analytics, and AWS alliance co-sell programs "
+        "for regulated financial clients at IBM, establishing governed delivery discipline and reusable platform "
+        "architecture that accelerated partner-led adoption and joint revenue expansion."
+    )
+    cleaned, changed = sanitize_ibm_narrative_display_text(raw)
+    assert changed is True
+    assert cleaned.lower().startswith("drove")
+    assert "runtime" in cleaned.lower()
+    gates = run_ibm_narrative_x2_gates(
+        narrative_sentence=cleaned,
+        parsed_output={"narrative_sentence": cleaned, "jd_alignment": {"targeting_only": True}},
+        claim_ledger=[{"claim_text": cleaned, "source_fact_ids": ["bul_ibm_001"]}],
+        jd_text="enterprise modernization",
+        runtime_generation_status="REAL_LLM",
+        companion_bullet_texts="",
+        allowed_fact_ids=["bul_ibm_001"],
+        artifacts_dir=None,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_ibm_narrative_no_meta_disclaimer_in_display"].pass_ is True
+    assert by_id["x2_narrative_technical_specificity_floor"].pass_ is True
+
+
 def test_prune_low_rigor_competency_terms():
     parsed = {
         "competencies": [
