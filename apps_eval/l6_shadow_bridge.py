@@ -18,7 +18,7 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
-from apps_eval.contracts import CompletedEvalRecord
+from apps_eval.contracts import CURRENT_EVAL_RECORD_SCHEMA_VERSION, CompletedEvalRecord
 
 L6_SHADOW_BRIDGE_ARTIFACT = "l6_shadow_bridge.json"
 L6_SHADOW_BRIDGE_SPANS_ARTIFACT = "l6_shadow_bridge_spans.json"
@@ -42,6 +42,15 @@ def _jsonable(value: object) -> object:
 def _hash_ref(value: object) -> str:
     raw = json.dumps(value, sort_keys=True, default=str)
     return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _write_json_artifact(path: Path, payload: Any) -> Path:
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
 
 
 def build_completed_eval_shadow_exhaust(
@@ -86,7 +95,7 @@ def build_completed_eval_shadow_exhaust(
                 "source_type": "apps_eval_completed_eval_record",
                 "source_ref": record_ref,
                 "source_hash": _hash_ref(record.to_dict()),
-                "source_schema_version": "apps_eval.completed_eval.v1",
+                "source_schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
                 "observed_stage": "EXIT",
                 "expected_stage_order": 7,
                 "lineage_parent_refs": [trace_root],
@@ -164,17 +173,30 @@ def emit_completed_eval_l6_shadow_bridge(
         "durable_write_attempted": False,
         "future_run_only": True,
     }
-    bridge_path = run_dir / L6_SHADOW_BRIDGE_ARTIFACT
-    bridge_path.write_text(
-        json.dumps(bridge, indent=2, sort_keys=True, default=str) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+    bridge_path = _write_json_artifact(run_dir / L6_SHADOW_BRIDGE_ARTIFACT, bridge)
     return {
         "l6_shadow_bridge": bridge_path.as_posix(),
         "l6_shadow_bridge_spans": span_paths["span_export_json"].as_posix(),
         "l6_shadow_bridge_spans_jsonl": span_paths["span_export_jsonl"].as_posix(),
     }
+
+
+def emit_driver_l6_shadow_bridge(
+    run_dir: Path,
+    *,
+    eval_id: str | None,
+    app_scorecards: list[Mapping[str, Any]],
+    output_refs: Mapping[str, str],
+) -> dict[str, str]:
+    """Write a lightweight downstream L6 bridge for trend/gate outputs."""
+    run_dir.mkdir(parents=True, exist_ok=True)
+    bridge = build_driver_l6_shadow_bridge_payload(
+        eval_id=eval_id,
+        app_scorecards=app_scorecards,
+        output_refs=output_refs,
+    )
+    bridge_path = _write_json_artifact(run_dir / L6_SHADOW_BRIDGE_ARTIFACT, bridge)
+    return {"l6_shadow_bridge": bridge_path.as_posix()}
 
 
 def build_driver_l6_shadow_bridge_payload(
@@ -205,5 +227,6 @@ __all__ = [
     "L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT",
     "build_completed_eval_shadow_exhaust",
     "build_driver_l6_shadow_bridge_payload",
+    "emit_driver_l6_shadow_bridge",
     "emit_completed_eval_l6_shadow_bridge",
 ]

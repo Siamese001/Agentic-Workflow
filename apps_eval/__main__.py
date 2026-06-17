@@ -13,6 +13,7 @@ from apps_eval.matrix import run_matrix
 from apps_eval.registry import OLD_SUITE_NAMES, load_apps_registry, load_suite, load_suites_registry
 from apps_eval.runner.core import compare_record_to_baseline, render_record, run_eval
 from apps_eval.scenarios import scaffold_apps_rg_scenario, validate_suite_fixtures
+from apps_eval.trends import emit_release_gate, emit_trend_dashboard
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -55,9 +56,37 @@ def _parser() -> argparse.ArgumentParser:
     promote.add_argument("--name", required=True)
     promote.add_argument("--baseline-dir", default="apps_eval/baselines")
     promote.add_argument("--allow-failing", action="store_true")
+    trend_dashboard = sub.add_parser("trend-dashboard")
+    trend_dashboard.add_argument("--records-root", default="artifacts/apps_eval/runs")
+    trend_dashboard.add_argument("--app", default="")
+    trend_dashboard.add_argument("--split", default="")
+    trend_dashboard.add_argument("--window-size", type=int, default=5)
+    trend_dashboard.add_argument("--history-limit", type=int, default=20)
+    trend_dashboard.add_argument("--out-dir", default="artifacts/apps_eval/trends")
+    trend_dashboard.add_argument("--emit-l6-shadow", action="store_true")
+    release_gate = sub.add_parser("release-gate")
+    release_gate.add_argument("--records-root", default="artifacts/apps_eval/runs")
+    release_gate.add_argument("--app", default="")
+    release_gate.add_argument("--split", default="")
+    release_gate.add_argument("--window-size", type=int, default=5)
+    release_gate.add_argument("--history-limit", type=int, default=20)
+    release_gate.add_argument("--min-samples", type=int, default=2)
+    release_gate.add_argument("--min-latest-pass-rate", type=float, default=1.0)
+    release_gate.add_argument("--min-window-pass-rate", type=float, default=1.0)
+    release_gate.add_argument("--max-latest-score-drop", type=float, default=0.05)
+    release_gate.add_argument("--out-dir", default="artifacts/apps_eval/trends")
+    release_gate.add_argument("--emit-l6-shadow", action="store_true")
     render = sub.add_parser("render")
     render.add_argument("--record", required=True)
     return parser
+
+
+def _release_gate_exit_code(status: str) -> int:
+    if status == "pass":
+        return 0
+    if status == "regression":
+        return 2
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -138,6 +167,34 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(path.as_posix())
         return 0
+    if args.command == "trend-dashboard":
+        dashboard = emit_trend_dashboard(
+            records_root=args.records_root,
+            app_id=args.app,
+            split=args.split,
+            window_size=int(args.window_size),
+            history_limit=int(args.history_limit),
+            out_dir=args.out_dir,
+            emit_l6_shadow=bool(args.emit_l6_shadow),
+        )
+        print(dashboard.artifact_paths["trend_dashboard"])
+        return 0
+    if args.command == "release-gate":
+        decision = emit_release_gate(
+            records_root=args.records_root,
+            app_id=args.app,
+            split=args.split,
+            window_size=int(args.window_size),
+            history_limit=int(args.history_limit),
+            min_samples=int(args.min_samples),
+            min_latest_pass_rate=float(args.min_latest_pass_rate),
+            min_window_pass_rate=float(args.min_window_pass_rate),
+            max_latest_score_drop=float(args.max_latest_score_drop),
+            out_dir=args.out_dir,
+            emit_l6_shadow=bool(args.emit_l6_shadow),
+        )
+        print(decision.artifact_paths["release_gate"])
+        return _release_gate_exit_code(decision.status)
     if args.command == "render":
         print(render_record(args.record), end="")
         return 0
