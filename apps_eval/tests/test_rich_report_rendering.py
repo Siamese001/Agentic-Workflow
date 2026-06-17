@@ -17,8 +17,13 @@ def test_report_contains_review_ready_sections(tmp_path: Path) -> None:
     )
     report = Path(record.artifact_paths["report"]).read_text(encoding="utf-8")
 
+    assert "## Run Context" in report
+    assert "## Failure Modes" in report
+    assert "## Fixture Provenance" in report
     assert "## Scenario Results" in report
     assert "## Dimension Scores" in report
     assert "## Regression" in report
+    assert "## Regression Flywheel" in report
+    assert "## Artifact Inventory" in report
     assert "## Review Guidance" in report
-    assert "`eval_record`" in report
+    assert "Record seed digest" in report

@@ -18,5 +18,5 @@ def test_apps_lic_dev_suite_passes_from_snapshots(tmp_path: Path) -> None:
     assert record.app_id == "apps_lic"
     assert record.scorecard.verdict == "pass"
     assert record.scorecard.block_failures == 0
-    for key in ["eval_record", "scorecard", "report", "manifest", "grader_findings", "regression"]:
+    for key in ["eval_record", "scorecard", "report", "manifest", "grader_findings", "regression", "regression_flywheel"]:
         assert Path(record.artifact_paths[key]).is_file()

@@ -38,3 +38,16 @@ def test_promote_baseline_rejects_failing_record(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError):
         promote_baseline(record_path, "apps_rg.dev.resume_generation", baseline_dir=tmp_path / "baselines")
+
+
+def test_load_baseline_rejects_legacy_schema(tmp_path: Path) -> None:
+    baseline_dir = tmp_path / "baselines"
+    baseline_dir.mkdir(parents=True, exist_ok=True)
+    legacy_baseline = baseline_dir / "apps_rg.dev.resume_generation.json"
+    legacy_baseline.write_text(
+        json.dumps({"record_id": "rid", "scorecard": {"score": 1.0}}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="schema_version mismatch"):
+        load_baseline("apps_rg.dev.resume_generation", baseline_dir)
