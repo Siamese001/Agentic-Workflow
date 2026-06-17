@@ -41,6 +41,7 @@ def _contains_term(blob: str, term: str) -> bool:
 class _BaseGrader:
     grader_id: str
     severity: str = "block"
+    failure_mode: str = ""
 
     def finding(self, fixture: EvalFixture, passed: bool, score: float, message: str, evidence: dict[str, Any] | None = None) -> GraderFinding:
         return GraderFinding(
@@ -50,13 +51,14 @@ class _BaseGrader:
             severity=self.severity,
             score=max(0.0, min(1.0, score)),
             message=message,
+            failure_mode="" if passed else self.failure_mode,
             evidence=evidence or {},
         )
 
 
 class SchemaGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("schema")
+        super().__init__("schema", failure_mode="contract.schema.required_output_keys_missing")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         required = list(fixture.expected.get("required_output_keys", []))
@@ -66,7 +68,7 @@ class SchemaGrader(_BaseGrader):
 
 class ArtifactPresenceGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("artifact_presence")
+        super().__init__("artifact_presence", failure_mode="contract.artifact.required_artifacts_missing")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         required = list(fixture.expected.get("required_artifacts", []))
@@ -77,7 +79,7 @@ class ArtifactPresenceGrader(_BaseGrader):
 
 class X3DispositionGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("x3_disposition")
+        super().__init__("x3_disposition", failure_mode="policy.x3_disposition_mismatch")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         expected = str(fixture.expected.get("expected_x3", ""))
@@ -87,7 +89,7 @@ class X3DispositionGrader(_BaseGrader):
 
 class ForbiddenContentGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("forbidden_content")
+        super().__init__("forbidden_content", failure_mode="policy.forbidden_content_detected")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         blob = _text_blob(snapshot.output).lower()
@@ -98,7 +100,7 @@ class ForbiddenContentGrader(_BaseGrader):
 
 class GroundedClaimGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("grounded_claim")
+        super().__init__("grounded_claim", failure_mode="grounding.claims_unsupported")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         if not fixture.expected.get("grounded_claims_required", True):
@@ -110,7 +112,7 @@ class GroundedClaimGrader(_BaseGrader):
 
 class ProvenanceGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("provenance")
+        super().__init__("provenance", failure_mode="provenance.evidence_refs_missing")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         refs = list(snapshot.provenance.get("evidence_refs", []))
@@ -122,7 +124,7 @@ class ProvenanceGrader(_BaseGrader):
 
 class SectionStructureGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("section_structure")
+        super().__init__("section_structure", failure_mode="structure.section_missing")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         required = list(fixture.expected.get("required_sections", []))
@@ -133,7 +135,7 @@ class SectionStructureGrader(_BaseGrader):
 
 class LengthBoundsGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("length_bounds", severity="warn")
+        super().__init__("length_bounds", severity="warn", failure_mode="quality.length_bounds_violation")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         bounds = fixture.expected.get("length_bounds", {})
@@ -147,7 +149,7 @@ class LengthBoundsGrader(_BaseGrader):
 
 class SideEffectGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("side_effect")
+        super().__init__("side_effect", failure_mode="safety.side_effect_detected")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         effects = snapshot.side_effects
@@ -160,7 +162,7 @@ class SideEffectGrader(_BaseGrader):
 
 class EscalationGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("escalation")
+        super().__init__("escalation", failure_mode="routing.escalation_mismatch")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         required = bool(fixture.expected.get("escalation_required", False))
@@ -171,7 +173,7 @@ class EscalationGrader(_BaseGrader):
 
 class DeterminismGrader(_BaseGrader):
     def __init__(self) -> None:
-        super().__init__("determinism")
+        super().__init__("determinism", failure_mode="determinism.snapshot_drift")
 
     def grade(self, fixture: EvalFixture, snapshot: AppOutputSnapshot) -> GraderFinding:
         actual = _canonical_hash(snapshot)

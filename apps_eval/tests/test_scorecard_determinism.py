@@ -19,3 +19,6 @@ def test_scorecard_is_stable_across_repeated_snapshot_runs(tmp_path: Path) -> No
     assert first.created_at == second.created_at == "1970-01-01T00:00:00Z"
     assert first.scorecard.to_dict() == second.scorecard.to_dict()
     assert first.scenario_results == second.scenario_results
+    assert first.record_seed == second.record_seed
+    assert first.run_metadata.record_seed_digest == second.run_metadata.record_seed_digest
+    assert first.regression_flywheel.to_dict() == second.regression_flywheel.to_dict()
