@@ -524,6 +524,8 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
     combined markdown plus a small status JSON. A pin is only consumable by the same
     integrated ``full_resume_<id>`` run that produced it; this prevents a section from a
     prior run/day from being silently stitched into a fresh E2E run after API issues.
+    The assembled status stays blocked until every expected pinned section is present,
+    so a partial pin set can be inspected but never mislabeled as a finished 11/11.
     No re-validation of X2/X3 — the pin already encoded the disposition.
     """
     pin_root = repo_root / "artifacts" / "apps_rg" / "_pinned"
@@ -600,7 +602,17 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
     md_path = out_dir / "resume_assembled.md"
     md_path.write_text(md, encoding="utf-8")
     status_path = out_dir / "assemble_status.json"
-    status["status"] = "blocked" if status["invalid_pins"] else "assembled"
+    complete = not status["missing"] and not status["invalid_pins"]
+    status["complete"] = complete
+    if complete:
+        status["status"] = "assembled"
+    else:
+        status["status"] = "blocked"
+        status["reason"] = (
+            "invalid_section_pin_set"
+            if status["invalid_pins"]
+            else "incomplete_section_pin_set"
+        )
     status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
     print(f"ASSEMBLED resume_md={md_path.as_posix()}", flush=True)
     print(f"ASSEMBLE_STATUS missing={','.join(status['missing']) or 'none'}", flush=True)

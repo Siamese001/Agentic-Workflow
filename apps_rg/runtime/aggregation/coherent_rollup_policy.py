@@ -12,9 +12,9 @@ from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
 
 POLICY_SCHEMA = "apps_rg.coherent_rollup_policy.v1"
 
-# Structural assembly may proceed when digests align under coherent_aggregation_pin even if
-# run_id date prefixes differ (per-lane latest proof-complete selection).
-SAME_RUN_POLICY_ACCEPT_MIXED_DATES_WHEN_PINNED = True
+# Structural assembly only proceeds when the current session's lanes are coherent.
+# Mixed-date pin reuse used to be accepted under coherent_aggregation_pin; that is now
+# blocked so stale per-lane pins cannot be stitched into a fresh full-run assembly.
 
 
 def _collect_proof_pool_fields(sealed_index: dict[str, Any]) -> tuple[dict[str, str], dict[str, str]]:
@@ -59,27 +59,19 @@ def evaluate_coherent_rollup_policy(
 
     same_date = bool(fingerprint.get("same_date_prefix_coherent"))
     pinned = bool(rollup_blob.get("coherent_aggregation_pin"))
-    mixed_run_acceptable = (
-        SAME_RUN_POLICY_ACCEPT_MIXED_DATES_WHEN_PINNED
-        and pinned
-        and pool_policy_coherent
-        and fingerprint.get("jd_digest_coherent") not in ("MISMATCH",)
-        and fingerprint.get("briefing_digest_coherent") not in ("MISMATCH",)
-    )
-
     if same_date:
         same_run_reason = "all lane run_id date prefixes match"
         structural_ok = preflight_pass
-    elif mixed_run_acceptable:
+    elif pinned:
         same_run_reason = (
-            "coherent_aggregation_pin=true: per-lane proof-complete runs selected with "
-            "unified JD/briefing/base digests; mixed run_id date prefixes ACCEPTED for structural assembly only"
+            "mixed run_id date prefixes are not accepted even under coherent_aggregation_pin — "
+            "require a single current-run session"
         )
-        structural_ok = preflight_pass
+        structural_ok = False
     else:
         same_run_reason = (
-            "mixed run_id date prefixes without coherent pin — require single orchestration pass "
-            "(regenerate all lanes under one orchestration_id)"
+            "mixed run_id date prefixes without coherent pin are not accepted — require a "
+            "single current-run session"
         )
         structural_ok = False
 
@@ -104,7 +96,8 @@ def evaluate_coherent_rollup_policy(
     if not pool_policy_coherent and pinned and len(unique_pool_refs) > 1:
         product_acceptable_pool_reason = (
             "Per-lane SRFS proof_pool_ref split (master ledger, exec_summary SRFS slice, base-resume "
-            "IBM scope) under coherent_aggregation_pin — product-acceptable when all pool receipts PASS."
+            "IBM scope) under coherent_aggregation_pin; mixed-date reuse is blocked for structural "
+            "assembly, so only current-run pins are eligible."
         )
 
     return {
@@ -117,9 +110,9 @@ def evaluate_coherent_rollup_policy(
         "same_run_policy": {
             "same_run_coherent": fingerprint.get("same_run_coherent"),
             "same_date_prefix_coherent": same_date,
-            "acceptable_for_structural_assembly": mixed_run_acceptable or same_date,
+            "acceptable_for_structural_assembly": same_date,
             "coherent_rollup_policy_reason": same_run_reason,
-            "require_single_orchestration_pass": not (mixed_run_acceptable or same_date),
+            "require_single_orchestration_pass": not same_date,
         },
         "digest_coherence": {
             "base_resume_digest": base_resume_digest,
