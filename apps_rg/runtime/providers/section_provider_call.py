@@ -96,7 +96,7 @@ def call_section_model_provider(
     # Per-section model pin (SSOT): resolve the section from an explicit arg or the
     # ``_reasoning_section_lane`` tag the lane stamped on the payload (``tag_reasoning_lane``),
     # so competencies + the four narratives use their pinned Haiku tier while the rest use the
-    # Sonnet default — instead of every lane silently using the section-agnostic default. Only
+    # Opus default — instead of every lane silently using the section-agnostic default. Only
     # applied for the external Claude profile; an unknown/missing section resolves to the default.
     claude_model: str | None = None
     if profile == ProviderProfile.EXTERNAL_CLAUDE:
