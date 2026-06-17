@@ -167,6 +167,7 @@ def _spawn(server_id: str, spec: dict[str, Any], dry_run: bool) -> dict[str, Any
             kwargs["creationflags"] = 0x00000008 | 0x00000200
         else:
             kwargs["start_new_session"] = True
+        # guardian: allow-popen-leak -- deliberate detached MCP server process; supervisor must not reap it.
         proc = subprocess.Popen(argv, **kwargs)  # noqa: S603  # argv is config-sourced, shell=False
         return {"server_id": server_id, "argv": argv, "pid": proc.pid, "status": "spawned"}
     except (OSError, subprocess.SubprocessError) as exc:

@@ -73,7 +73,7 @@ def _tracked_cursor_files() -> list[str]:
     # green on the very commit that removes .cursor (HEAD would still show it).
     out = subprocess.run(
         ["git", "ls-files", ".cursor"],
-        cwd=str(REPO_ROOT), capture_output=True, text=True, check=False,
+        cwd=str(REPO_ROOT), capture_output=True, text=True, check=False, timeout=30,
     )
     return [ln for ln in out.stdout.splitlines() if ln.strip()]
 
