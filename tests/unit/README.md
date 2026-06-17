@@ -45,6 +45,7 @@ tests/unit/
 │   ├── engines/
 │   ├── reasoning/
 │   ├── runtime/
+│   ├── scripts/
 │   ├── sequences/
 │   ├── signals/
 │   ├── tools/
@@ -142,7 +143,7 @@ The top-level `L2` and `L5` roots are intentionally absent. Their live suites li
 Keep:
 
 - Canonical layer roots under `tests/unit/agentic_core`
-- App suites under `tests/unit/apps_rg`, `tests/unit/apps_shared`, `tests/unit/apps_lic`, and `tests/unit/apps`
+- App suites under `tests/unit/apps_e2e`, `tests/unit/apps_eval`, `tests/unit/apps_exec`, `tests/unit/apps_qna`, `tests/unit/apps_research`, `tests/unit/apps_rfp`, `tests/unit/apps_underwriting_ai`, `tests/unit/apps_rg`, `tests/unit/apps_shared`, `tests/unit/apps_lic`, and `tests/unit/apps`
 - Small wrapper or smoke roots only if they are intentionally used by CI or path-based collection
 
 Delete:
