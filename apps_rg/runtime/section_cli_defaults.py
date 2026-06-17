@@ -107,7 +107,6 @@ EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 #   all bullets + all narratives -> 1 (gemini_pro); competencies -> 1 advisory (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
-    "professional_competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
     "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
     "insurtech_bullets": INSURTECH_BULLETS_DEFAULT_X1D_JUDGES,
@@ -123,7 +122,6 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
     "competencies": "single_advisory_taxonomy_judge_optional_for_proof",
-    "professional_competencies": "single_advisory_taxonomy_judge_optional_for_proof",
     "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",

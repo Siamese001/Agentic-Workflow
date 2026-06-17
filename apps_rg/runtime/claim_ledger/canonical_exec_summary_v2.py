@@ -120,7 +120,7 @@ def classify_ledger_parse_state(
                 return "SCHEMA_INVALID", "selected_fact_plan must be an object or omitted"
             return "OK", ""
 
-        if lane_profile in ("competencies", "professional_competencies"):
+        if lane_profile == "competencies":
             comps = parsed.get("competencies")
             if comps is not None and not isinstance(comps, list):
                 return "SCHEMA_INVALID", "competencies must be an array when present"

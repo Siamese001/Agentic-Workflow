@@ -52,8 +52,6 @@ class SectionJudgePolicy:
 _DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
 
-# Legacy proof-harness alias: the global proof provider set is the union of recalibrated
-# policy panels, not a separately maintained roster.
 REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = _DUAL_JUDGE_PANEL
 
 def _enhanced_providers() -> tuple[str, ...]:
@@ -200,18 +198,6 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
         grade_only_required=True,
         replacement_generation_allowed=False,
     ),
-    "professional_competencies": SectionJudgePolicy(
-        section_name="professional_competencies",
-        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
-        judge_required_for_proof=False,
-        judge_tier=JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY,
-        required_judge_providers=(),
-        proof_eligible_model_classes=frozenset(),
-        advisory_model_classes=frozenset({"standard_frontier", "advisory", "flash", "mini"}),
-        judge_packet_required=False,
-        grade_only_required=True,
-        replacement_generation_allowed=False,
-    ),
     "final_aggregate_resume": SectionJudgePolicy(
         section_name="final_aggregate_resume",
         generator_model_class=GeneratorModelClass.AGGREGATOR,
@@ -226,19 +212,15 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
 }
 
-_SECTION_ALIASES: dict[str, str] = {
-    "professional_competencies": "competencies",
-    # The assembly-time full-resume coherence judge is the final-aggregate judging
-    # surface under its runner's section id (run_full_resume_coherence_judges resolves
-    # gemini via this policy). Latent KeyError fired the FIRST time any integrated run
-    # survived aggregation preflight (patch_run_14, 2026-06-11).
+_SECTION_ID_NORMALIZATION_MAP: dict[str, str] = {
+    # The full-resume coherence runner resolves through the final-aggregate resume policy.
     "full_resume_coherence": "final_aggregate_resume",
 }
 
 
 def normalize_section_id(section_id: str) -> str:
     sid = (section_id or "").strip().lower().replace("-", "_")
-    return _SECTION_ALIASES.get(sid, sid)
+    return _SECTION_ID_NORMALIZATION_MAP.get(sid, sid)
 
 
 def get_section_judge_policy(section_id: str) -> SectionJudgePolicy:
@@ -250,8 +232,8 @@ def get_section_judge_policy(section_id: str) -> SectionJudgePolicy:
 
 
 def all_canonical_section_policies() -> dict[str, SectionJudgePolicy]:
-    """Return primary section keys (excludes alias duplicate professional_competencies)."""
-    return {k: v for k, v in _SECTION_POLICIES.items() if k != "professional_competencies"}
+    """Return the canonical section policy matrix."""
+    return dict(_SECTION_POLICIES)
 
 
 def policy_matrix_export() -> dict[str, dict[str, Any]]:

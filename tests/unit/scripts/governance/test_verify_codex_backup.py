@@ -22,16 +22,16 @@ def _repo_root(tmp_path: Path) -> Path:
     root = tmp_path / "repo"
     for relative in mod.REQUIRED_REPO_FILES:
         _write(root / relative)
-    _write(
-        root / "AGENTS.md",
-        "\n".join(
-            [
-                "## Codex backup adapter",
-                "CLAUDE.md",
-                "agentic-workflow-governance",
-                "scripts/governance/verify_codex_backup.py",
-                ".claude/rules/plan-first-enforcement.md",
-                ".claude/rules/plan-location.md",
+        _write(
+            root / "AGENTS.md",
+            "\n".join(
+                [
+                    "## Codex backup adapter",
+                    "legacy compatibility files are not consulted by the primary path",
+                    "agentic-workflow-governance",
+                    "scripts/governance/verify_codex_backup.py",
+                    ".claude/rules/plan-first-enforcement.md",
+                    ".claude/rules/plan-location.md",
             ]
         ),
     )
