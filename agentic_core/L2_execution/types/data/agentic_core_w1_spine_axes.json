@@ -5,31 +5,9 @@
     "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
     "runtime_proof_class": "NONE"
   },
-  "agentic_core_row_count": 118,
-  "true_agent_count": 87,
+  "agentic_core_row_count": 66,
+  "true_agent_count": 42,
   "rows": [
-    {
-      "class_name": "AdversarialProbeAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "AdversarialRedTeamerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
     {
       "class_name": "ArchitectureGovernorAgent",
       "file_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
@@ -40,17 +18,6 @@
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
       "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "ArchitectureGovernorValidatorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
     },
     {
       "class_name": "ASTValidatorAgent",
@@ -64,116 +31,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "AutonomousThreatEvolutionAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "AutonomyGuardianAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "BenchmarkingAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
-    },
-    {
-      "class_name": "BootstrapAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "BoundaryTestingAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "ChaosEngineeringAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "CodeDeduplicationAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "CodeDetectorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
-    },
-    {
-      "class_name": "CodeEnforcerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "CodeFormatterAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
-    },
-    {
       "class_name": "CodeHealerAgent",
       "file_path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
       "declared_layer": "L5",
@@ -183,28 +40,6 @@
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
       "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "CodeJanitorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
-    },
-    {
-      "class_name": "CodeValidatorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
     },
     {
       "class_name": "CognitiveDispositionAgent",
@@ -218,39 +53,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "ComplexityAnalyzerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "ConstitutionalReviewerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "CostGovernorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "NOT_AGENT",
-      "inventory_role": "GOVERNANCE_CERTIFIER_OR_VALIDATOR",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "NO"
-    },
-    {
       "class_name": "CoverageAgent",
       "file_path": "agentic_core/L3_orchestration/reasoning/CoverageAgent.py",
       "declared_layer": "L3",
@@ -260,17 +62,6 @@
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
       "assessment_truly_agent": "NO"
-    },
-    {
-      "class_name": "CredentialScannerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
     },
     {
       "class_name": "DagEngineAgent",
@@ -306,75 +97,9 @@
       "assessment_truly_agent": "NO"
     },
     {
-      "class_name": "DDDAlignmentAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "DependencyPruningAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "DocstringComplianceAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "DocumentationAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "DomainPlannerAgent",
       "file_path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
       "declared_layer": "L3",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "DuplicateCodeDetectorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "DynamicSealAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py",
-      "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
@@ -460,50 +185,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "GenerativeGuardAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "GitHygieneAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "GospelSyncAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/GospelSyncAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "GovernanceAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "HEALER_OR_DEV_AGENT",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "GravityLeakRepairAgent",
       "file_path": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
       "declared_layer": "L5",
@@ -568,39 +249,6 @@
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
       "assessment_truly_agent": "NO"
-    },
-    {
-      "class_name": "HygieneGuardianAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "IntegrityGateExecutorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "InterfaceBoundaryAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
     },
     {
       "class_name": "IOrchestratorAgent",
@@ -691,17 +339,6 @@
       "assessment_truly_agent": "NO"
     },
     {
-      "class_name": "L5SafetyExerciserAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "LocationHealerAgent",
       "file_path": "agentic_core/L5_safety/utils/location_healer_util.py",
       "declared_layer": "L5",
@@ -757,17 +394,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "NeuralAutoImmuneAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "ObservabilityProbeExecutorAgent",
       "file_path": "agentic_core/L6_observability/reasoning/observability_probe_executor.py",
       "declared_layer": "L6",
@@ -812,88 +438,11 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "PolicyNeuralAutoImmuneAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "PreCommitSovereignAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "PredictiveCostAuditorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "RedisSovereignAgent",
       "file_path": "agentic_core/L2_execution/reasoning/RedisSovereignAgent.py",
       "declared_layer": "L2",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "RedSentinelAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "RedTeamAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "RegressionOracleAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "ReportLocationAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "HEALER_OR_DEV_AGENT",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
@@ -977,30 +526,8 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "SafetyInspectorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "SecurityManagerAgent",
       "file_path": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "SelfUpdatingSafetyEngineAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
       "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
@@ -1013,17 +540,6 @@
       "class_name": "SemanticGatekeeperAgent",
       "file_path": "agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py",
       "declared_layer": "L3",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "SovereignActionPlaneAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py",
-      "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
@@ -1057,17 +573,6 @@
       "class_name": "SovereignRAGManager",
       "file_path": "agentic_core/knowledge/reasoning/SovereignRAGManagerAgent.py",
       "declared_layer": "knowledge",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "SprawlInspectorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py",
-      "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
@@ -1131,17 +636,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "StructuralEngineerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "StructuralValidatorAgent",
       "file_path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py",
       "declared_layer": "L5",
@@ -1169,17 +663,6 @@
       "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "StructureHealerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "HEALER_OR_DEV_AGENT",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
       "runtime_proof_class": "NONE",
       "spine_proof_ref": "",
@@ -1230,28 +713,6 @@
       "assessment_truly_agent": "YES"
     },
     {
-      "class_name": "TerritoryChangeHandlerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "TestGeneratorAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "ToolsmithAgent",
       "file_path": "agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
       "declared_layer": "L2",
@@ -1263,42 +724,9 @@
       "assessment_truly_agent": "NO"
     },
     {
-      "class_name": "TypeHintFixerAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "TypeMechanicAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py",
-      "declared_layer": "L5",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
       "class_name": "UnifiedAgent",
       "file_path": "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
       "declared_layer": "L3",
-      "agenthood_status": "TRUE_AGENT",
-      "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
-      "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",
-      "runtime_proof_class": "NONE",
-      "spine_proof_ref": "",
-      "assessment_truly_agent": "YES"
-    },
-    {
-      "class_name": "UnusedCleanupAgent",
-      "file_path": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py",
-      "declared_layer": "L5",
       "agenthood_status": "TRUE_AGENT",
       "inventory_role": "TRUE_AGENT_NOT_ON_PRODUCT_SPINE",
       "product_spine_invocation_status": "NOT_ARTIFACT_PROVEN",

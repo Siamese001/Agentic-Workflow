@@ -425,27 +425,12 @@ def _update_agent_execution(agent_name: str, layer: str, start_time: float, end_
 
 AGENT_LAYERS = {
     "NamingAgent": "L5 – Safety & Governance",
-    "AutonomyGuardian": "L5 – Safety & Governance",
     "LocationAgent": "L5 – Safety & Governance",
     "HierarchyAgent": "L5 – Safety & Governance",
-    "StructuralHealerAgent": "L5 – Safety & Governance",
-    "ComplianceOrchestratorAgent": "L5 – Safety & Governance",
-    "AutonomyGuardianAgent": "L5 – Safety & Governance",
     "ImportAgent": "L5 – Safety & Governance",
-    "CodeDeduplicationAgent": "L5 – Safety & Governance",
-    "CodeValidatorAgent": "L5 – Safety & Governance",
     "StructureEnforcerAgent": "L5 – Safety & Governance",
-    "GitHygieneAgent": "L5 – Safety & Governance",
-    "FileCleanupAgent": "L5 – Safety & Governance",
-    "CodeJanitorAgent": "L5 – Safety & Governance",
-    "CanonDependencySentinelAgent": "L5 – Safety & Governance",
-    "HygieneGuardianAgent": "L5 – Safety & Governance",
-    "StructuralEngineerAgent": "L2 – Execution & Tools",
-    "GovernanceAgent": "L1 – Cognition & Intelligence",
-    "DocumentationAgent": "L1 – Cognition & Intelligence",
     "CheckpointManagerAgent": "L4 – State & Memory",
     "PerformanceAnalystAgent": "L6 – observability & Metrics",
-    "BootstrapAgent": "L0 – Maintenance & Infrastructure",
     "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",
 }
 

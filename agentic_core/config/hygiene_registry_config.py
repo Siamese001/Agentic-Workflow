@@ -22,18 +22,16 @@ CORE_HYGIENE_AGENTS: dict[str, list[str]] = {
         "LocationAgent",
         "NamingAgent",
         "HierarchyAgent",
-        "CodeDeduplicationAgent",
-        "HygieneGuardianAgent",  # Now includes FileCleanupAgent logic (consolidated 2026-01-21)
+        # CodeDeduplicationAgent and HygieneGuardianAgent were retired in the
+        # old-L5 deprecation wave and should no longer be scheduled here.
     ],
     "tier_2_architectural": [
         "StructureEnforcerAgent",
         "FilesystemSSOTReconcilerAgent",
         "DDDAlignmentAgent",
-        "GitHygieneAgent",
         # FileCleanupAgent - ARCHIVED: Consolidated into HygieneGuardianAgent (2026-01-21)
     ],
     "tier_3_autonomy": [
-        "AutonomyGuardianAgent",
         # CodeJanitorAgent - ARCHIVED: Redundant with CodeValidatorAgent (2026-01-21)
     ],
 }
@@ -52,13 +50,9 @@ AGENT_DESCRIPTIONS: dict[str, str] = {
     "LocationAgent": "Root folder whitelist, depth enforcement, forbidden patterns",
     "NamingAgent": "Naming conventions, *Agent suffix enforcement",
     "HierarchyAgent": "L2/L3 structure creation, depth enforcement, orphan purging",
-    "CodeDeduplicationAgent": "Filename uniqueness, whole-file duplicate detection",
-    "HygieneGuardianAgent": "Empty files, orphaned __init__.py, backup/temp cleanup, repeated filenames, copy patterns (consolidated)",
     "StructureEnforcerAgent": "Gravity/layer import enforcement, hierarchy validation",
     "FilesystemSSOTReconcilerAgent": "Blueprint → Filesystem alignment, drift detection",
     "DDDAlignmentAgent": "DDD bounded context enforcement, cross-context import detection",
-    "GitHygieneAgent": "Stale branches, large files, uncommitted changes",
-    "AutonomyGuardianAgent": "Agent autonomy enforcement, heal_repository() requirement",
     # ARCHIVED AGENTS (kept for reference):
     # "FileCleanupAgent": "ARCHIVED - Consolidated into HygieneGuardianAgent (2026-01-21)",
     # "CodeJanitorAgent": "ARCHIVED - Redundant with CodeValidatorAgent (2026-01-21)",
