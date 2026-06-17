@@ -10,6 +10,20 @@ scorecards, baseline comparison, sealed eval records, and optional L6 handoff
 files. It does not own runtime authority, product state, post-run learning,
 drift memory, calibration workflow, or release decisions.
 
+Phase 2 adds a regression flywheel artifact (`regression_flywheel.json`) that
+rolls up failure-mode counts, hotspot scenarios, and baseline deltas so the
+harness can explain *why* a run failed, not just whether it failed.
+
+Phase 3 adds historical trend scanning and a fail-closed release gate over
+persisted `eval_record.json` files. The trend command writes both JSON and
+markdown dashboards; the gate command reuses the same snapshot and returns a
+distinct exit code for blocked versus regression outcomes.
+
+Phase 4 optionally writes a downstream L6 shadow bridge from `trend-dashboard`
+or `release-gate` with `--emit-l6-shadow`. The bridge is a read-only
+future-run-only sidecar that inventories the dashboard or gate outputs without
+mutating the current run.
+
 When `--emit-l6-handoff` is set, apps_eval also writes `l6_shadow_bridge.json`
 and span artifacts beside the eval record. The bridge is observer-only evidence
 for core L6 G28 audit-completeness and G29 learning-firewall checks; it cannot
@@ -51,6 +65,36 @@ Run every registered `apps_rg` development suite and review one matrix summary:
 ```bash
 python -m apps_eval run-matrix --app apps_rg --split dev --mode snapshot --deterministic-only
 ```
+
+Build a trend dashboard from historical records:
+
+```bash
+python -m apps_eval trend-dashboard --records-root artifacts/apps_eval/runs --app apps_rg --split dev
+```
+
+Emit the optional downstream L6 bridge alongside the dashboard artifacts:
+
+```bash
+python -m apps_eval trend-dashboard --records-root artifacts/apps_eval/runs --app apps_rg --split dev --emit-l6-shadow
+```
+
+Evaluate the release gate against the same history:
+
+```bash
+python -m apps_eval release-gate --records-root artifacts/apps_eval/runs --app apps_rg --split dev
+```
+
+Emit the optional downstream L6 bridge alongside the gate artifacts:
+
+```bash
+python -m apps_eval release-gate --records-root artifacts/apps_eval/runs --app apps_rg --split dev --emit-l6-shadow
+```
+
+Exit codes:
+
+- `0`: pass
+- `1`: blocked by insufficient evidence or threshold failure
+- `2`: regression detected
 
 Compare a record to a named baseline:
 
