@@ -152,6 +152,8 @@ Use live Codex callable routes when exposed. When a route is unavailable, report
 | `playwright` | Browser/node substitutes are acceptable for UI verification unless raw browser MCP parity is explicitly required. |
 | `deepwiki` and `context7` | Use official docs, GitHub, Tavily, or web only as named degraded substitutes until raw tools are exposed. |
 
+Codex does not expose the Claude `AskUserQuestion` tool. When a turn still needs user input, ask a plain-text clarifying question in the assistant response; `request_user_input` is only available in Plan mode and is not a repo-owned route.
+
 ## Verification
 
 Run the primary verifier after changing Codex execution docs or scripts:

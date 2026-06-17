@@ -35,7 +35,7 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 <!-- MCP-QUICK-REFERENCE:END -->
 
-Per-server `SKILL.md` files under `.claude/skills/<name>/` are legacy compatibility stubs only; primary routing is Codex-owned and documented in `AGENTS.md` and `docs/codex-primary-execution.md`.
+Per-server `SKILL.md` files under `.claude/skills/<name>/` are **redirect stubs**; procedural SSOT is [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) sections §1–§13.
 
 ## Notion Workspace Map
 
