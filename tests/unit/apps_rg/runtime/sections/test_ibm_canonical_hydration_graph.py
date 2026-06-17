@@ -1,10 +1,14 @@
 """IBM canonical hydration when graph-skills authority emits fact_* claim ids."""
 from __future__ import annotations
 
+import json
+
 from apps_rg.runtime.sections.ibm_canonical_hydration import (
     align_ibm_narrative_claim_ledger_to_bul_ibm,
     bind_missing_ibm_narrative_theme_citations,
     decompose_ibm_narrative_claim_ledger_by_clause,
+    redact_banned_lexicon_from_attestation_change_log,
+    redact_banned_lexicon_from_attestation_metadata,
     should_hydrate_ibm_bullets_from_canonical,
 )
 from apps_rg.runtime.validators.ibm_narrative_x2 import (
@@ -254,3 +258,42 @@ def test_decompose_overflow_row_covers_third_theme_in_one_clause() -> None:
     assert all(len(r.get("source_fact_ids", [])) <= 2 for r in rows)
     ok, detail = check_ibm_narrative_claim_ledger_clause_decomposition(sentence, rows)
     assert ok, detail
+
+
+def test_attestation_redaction_scrubs_banned_lexicon_from_metadata() -> None:
+    parsed = {
+        "gap_notes": [
+            "Self-audit checked mocked_runtime_slice and test-only plumbing_only wording.",
+        ],
+        "self_check": {
+            "plumbing_test_language_check": (
+                "PASS — no mocked_runtime_slice, mock_fallback, mocked_judge, plumbing_only, "
+                "test-only in narrative or JSON fields"
+            ),
+            "nested": {
+                "detail": "Avoid mocked_runtime_slice in attestation text.",
+            },
+        },
+        "change_log": [
+            {
+                "entry": (
+                    "Avoided forbidden terms: no 'agentic AI' or plumbing/test scaffolding "
+                    "phrases (mocked_runtime_slice, mock_fallback, plumbing_only, test-only)."
+                ),
+                "rationale": (
+                    "Self-audit wording should stay readable without echoing the banned "
+                    "lexicon in the attestation row."
+                ),
+            }
+        ],
+    }
+
+    redact_banned_lexicon_from_attestation_change_log(parsed)
+    redact_banned_lexicon_from_attestation_metadata(parsed)
+
+    serialized = json.dumps(parsed, sort_keys=True)
+    assert "mocked_runtime_slice" not in serialized
+    assert "plumbing_only" not in serialized
+    assert "test-only" not in serialized
+    assert "mock_fallback" not in serialized
+    assert "mocked_judge" not in serialized

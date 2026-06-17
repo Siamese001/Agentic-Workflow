@@ -252,6 +252,203 @@ def test_rebind_source_fact_ids_fail_open_on_ambiguity() -> None:
     assert _rebind_source_fact_ids_from_prior_rows("Any sentence at all here.", []) == []
 
 
+def test_rebuild_claim_ledger_binds_capstone_sentence_to_allowed_roots() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    sentence = (
+        "That governed foundation positions this leader to federate enterprise architecture "
+        "standards, accelerate post-merger integration playbooks, and incubate AI-enabled "
+        "innovation programs at scale."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": sentence,
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 1
+    assert ledger[0]["claim_text"] == sentence
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ibm_aws_modernization_architecture",
+        "reb_ibm_offering_accelerator_management",
+        "reb_unify_distributed_ecosystem_engineering",
+    ]
+
+
+def test_rebuild_claim_ledger_binds_current_intro_and_capstone_variants() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    intro = (
+        "Technology strategy executive who aligns governed cloud modernization, "
+        "enterprise architecture discipline, and innovation programs into IT direction "
+        "for regulated, enterprises."
+    )
+    closer = (
+        "Those proven capabilities in governed platform delivery, repeatable architecture "
+        "playbooks, and regulated-enterprise controls position this leader to federate "
+        "enterprise architecture standards."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": f"{intro} {closer}",
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 2
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ey_insurance_core_modernization",
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_ibm_aws_modernization_architecture",
+    ]
+    assert ledger[1]["source_fact_ids"] == [
+        "reb_ibm_aws_modernization_architecture",
+        "reb_ibm_offering_accelerator_management",
+        "reb_unify_distributed_ecosystem_engineering",
+    ]
+
+
+def test_rebuild_claim_ledger_binds_live_intro_variant_to_allowed_roots() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    intro = (
+        "Technology strategy executive who aligns governed cloud modernization, "
+        "insurance core architecture, and regulatory controls into enterprise IT direction "
+        "for regulated, organizations."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": intro,
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 1
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ey_insurance_core_modernization",
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_ibm_aws_modernization_architecture",
+    ]
+
+
+def test_rebuild_claim_ledger_binds_live_intro_and_capstone_variants() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    intro = (
+        "Technology strategy executive who aligns governed cloud modernization, "
+        "insurance core transformation, and regulatory lineage into enterprise IT direction "
+        "for complex, organizations."
+    )
+    closer = (
+        "That convergence of governed cloud delivery, insurance platform depth, and "
+        "regulatory analytics positions this leader to federate enterprise architecture "
+        "standards."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": f"{intro} {closer}",
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 2
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ey_insurance_core_modernization",
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_ibm_aws_modernization_architecture",
+    ]
+    assert ledger[1]["source_fact_ids"] == [
+        "reb_insurtech_aws_migration_execution",
+        "reb_insurtech_regulated_aws_control_implementation",
+        "reb_ibm_aws_modernization_architecture",
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+    ]
+
+
+def test_rebuild_claim_ledger_binds_post_polish_scrubbed_variants() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    intro = (
+        "Technology strategy executive who aligns governed cloud modernization, "
+        "insurance core architecture, and regulatory control discipline into enterprise IT direction "
+        "for regulated enterprises."
+    )
+    closer = (
+        "That governed architecture and accelerator foundation positions the enterprise to "
+        "federate innovation programs, standardize interoperability across acquired units, "
+        "and advance a multi-year IT strategy roadmap."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": f"{intro} {closer}",
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 2
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ey_insurance_core_modernization",
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_ibm_aws_modernization_architecture",
+    ]
+    assert ledger[1]["source_fact_ids"] == [
+        "reb_ibm_aws_modernization_architecture",
+        "reb_ibm_offering_accelerator_management",
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_insurtech_aws_migration_execution",
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+    ]
+
+
+def test_rebuild_claim_ledger_binds_latest_scrubbed_variants() -> None:
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebuild_claim_ledger_from_display,
+    )
+
+    intro = (
+        "Technology strategy executive who aligns governed cloud modernization, "
+        "insurance core architecture, and regulatory-grade controls into enterprise IT direction "
+        "for distributed, regulated organizations."
+    )
+    closer = (
+        "That convergence of cloud execution, core systems governance, and lineage-backed "
+        "operating models positions this leader to federate architecture standards, "
+        "accelerate post-merger integration programs."
+    )
+    out = _rebuild_claim_ledger_from_display(
+        {
+            "resume_display_text": f"{intro} {closer}",
+            "claim_ledger": [],
+        }
+    )
+    ledger = list(out.get("claim_ledger") or [])
+    assert len(ledger) == 2
+    assert ledger[0]["source_fact_ids"] == [
+        "reb_ey_insurance_core_modernization",
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_ibm_aws_modernization_architecture",
+    ]
+    assert ledger[1]["source_fact_ids"] == [
+        "reb_insurtech_aws_migration_execution",
+        "reb_insurtech_regulated_aws_control_implementation",
+        "reb_ibm_aws_modernization_architecture",
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+    ]
+
+
 def test_graph_era_anthropic_exec_summary_repair_keeps_source_ids_and_budget() -> None:
     """Regression for live Anthropic run w2_3b: graph-era ids were stripped to empty rows."""
     display = (
@@ -606,6 +803,7 @@ def test_finalize_preserves_allowed_source_ids_for_pinned_brown_summary() -> Non
 
     assert receipt["judge_polish"]["applied"] is True
     assert len(repaired_ledger) == 6
+    assert receipt["orphan_citations_stripped"] == []
     assert repaired_ledger[0]["source_fact_ids"] == ledger[0]["source_fact_ids"]
     assert repaired_ledger[5]["source_fact_ids"] == ledger[5]["source_fact_ids"]
     assert coverage["overall_pass"] is True, coverage

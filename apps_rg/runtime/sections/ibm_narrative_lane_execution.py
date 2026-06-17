@@ -354,6 +354,7 @@ def run_ibm_narrative_lane_execution(
                 from apps_rg.runtime.sections.ibm_canonical_hydration import (
                     bind_missing_ibm_narrative_theme_citations,
                     redact_banned_lexicon_from_attestation_change_log,
+                    redact_banned_lexicon_from_attestation_metadata,
                 )
 
                 _bound_theme_ids = bind_missing_ibm_narrative_theme_citations(
@@ -397,6 +398,8 @@ def run_ibm_narrative_lane_execution(
                         runtime_generation_status=runtime_generation_status,
                     )
                 )
+                redact_banned_lexicon_from_attestation_change_log(parsed)
+                redact_banned_lexicon_from_attestation_metadata(parsed)
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"

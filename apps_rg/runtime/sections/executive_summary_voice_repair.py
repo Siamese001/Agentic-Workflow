@@ -1005,6 +1005,71 @@ def _source_fact_ids_for_display_sentence(sentence: str) -> list[str]:
     # Platform identity (S1 / generic platform sentences).
     if "agentic ai platform" in low or "platform runtime" in low:
         return ["fact_engineering_platform_001"]
+    if (
+        "governed cloud modernization" in low
+        and (
+            (
+                "insurance core transformation" in low
+                and "regulatory lineage" in low
+            )
+            or (
+                "insurance core architecture" in low
+                and "regulatory" in low
+            )
+            or (
+                "enterprise architecture discipline" in low
+                and "innovation programs" in low
+            )
+            or (
+                "insurance core architecture" in low
+                and "regulatory controls" in low
+            )
+        )
+    ):
+        return [
+            "reb_ey_insurance_core_modernization",
+            "reb_insurtech_aws_guidewire_core_modernization",
+            "reb_ibm_aws_modernization_architecture",
+        ]
+    if (
+        "convergence of governed cloud delivery" in low
+        and "insurance platform depth" in low
+        and "regulatory analytics" in low
+        and "federate enterprise architecture standards" in low
+    ):
+        return [
+            "reb_insurtech_aws_migration_execution",
+            "reb_insurtech_regulated_aws_control_implementation",
+            "reb_ibm_aws_modernization_architecture",
+            "reb_unify_distributed_ecosystem_engineering",
+            "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+        ]
+    if (
+        "governed architecture and accelerator foundation" in low
+        and "federate innovation programs" in low
+        and "standardize interoperability across acquired units" in low
+        and "multi-year it strategy roadmap" in low
+    ):
+        return [
+            "reb_ibm_aws_modernization_architecture",
+            "reb_ibm_offering_accelerator_management",
+            "reb_unify_distributed_ecosystem_engineering",
+            "reb_insurtech_aws_migration_execution",
+            "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+        ]
+    if (
+        "convergence of cloud execution" in low
+        and "core systems governance" in low
+        and "lineage-backed operating models" in low
+        and "federate architecture standards" in low
+    ):
+        return [
+            "reb_insurtech_aws_migration_execution",
+            "reb_insurtech_regulated_aws_control_implementation",
+            "reb_ibm_aws_modernization_architecture",
+            "reb_unify_distributed_ecosystem_engineering",
+            "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+        ]
     if "enterprise technology leader" in low or "technology strategy executive" in low:
         if "governed ai platform" in low or "agentic ai" in low:
             return ["fact_engineering_platform_001"]
@@ -1021,6 +1086,15 @@ def _source_fact_ids_for_display_sentence(sentence: str) -> list[str]:
         return ["fact_engineering_platform_001"]
     if "without weakening basel iii" in low or "preserving lineage discipline" in low or "lineage discipline" in low:
         return ["fact_governance_003"]
+    if "federate enterprise architecture standards" in low and (
+        "repeatable architecture playbooks" in low
+        or "post-merger integration playbooks" in low
+    ):
+        return [
+            "reb_ibm_aws_modernization_architecture",
+            "reb_ibm_offering_accelerator_management",
+            "reb_unify_distributed_ecosystem_engineering",
+        ]
     # Generic S6 capstone fallback — innovation/incubation forward statements anchor to platform identity.
     if ("innovation incubation" in low or "architecture standards" in low) and (
         "platform" in low or "capabilities" in low

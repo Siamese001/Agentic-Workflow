@@ -244,6 +244,16 @@ def repair_headline_segment_citations_for_grounding(
     if not fact_text_map:
         return list(claim_ledger or []), receipt
 
+    selected_required_ids: set[str] = set()
+    if isinstance(parsed_output, dict):
+        sfp = parsed_output.get("selected_fact_plan")
+        if isinstance(sfp, dict):
+            selected_required_ids = {
+                str(fid).strip()
+                for fid in (sfp.get("required_fact_ids") or [])
+                if str(fid).strip()
+            }
+
     fact_tokens: dict[str, set[str]] = {
         fid: _tokenize_for_grounding(text) for fid, text in fact_text_map.items()
     }
@@ -254,7 +264,9 @@ def repair_headline_segment_citations_for_grounding(
             return current_ids
         remaining = set(seg_tokens)
         chosen: list[str] = []
-        candidate_fids = sorted(fact_text_map.keys())
+        candidate_fids = sorted(
+            fid for fid in fact_text_map.keys() if not selected_required_ids or fid in selected_required_ids
+        )
         while remaining:
             best_fid = None
             best_cover: set[str] = set()
@@ -295,16 +307,24 @@ def repair_headline_segment_citations_for_grounding(
         current_ids = [str(x).strip() for x in (existing.get("source_fact_ids") or []) if str(x).strip()]
         current_union = set().union(*(fact_tokens.get(fid, set()) for fid in current_ids))
         current_grounded = current_union & seg_tokens
+        disallowed_current_ids = [
+            fid for fid in current_ids if selected_required_ids and fid not in selected_required_ids
+        ]
         per_seg = {
             "segment": seg_clean,
             "before_cited": current_ids,
             "before_grounded_tokens": sorted(current_grounded),
         }
-        if seg_tokens and (len(current_grounded) * 2 < len(seg_tokens) or not current_grounded):
+        needs_repair = bool(seg_tokens) and (
+            len(current_grounded) * 2 < len(seg_tokens)
+            or not current_grounded
+            or bool(disallowed_current_ids)
+        )
+        if needs_repair:
             covering = _best_covering_fact_ids(seg_tokens, current_ids)
             after_union = set().union(*(fact_tokens.get(fid, set()) for fid in covering))
             after_grounded = after_union & seg_tokens
-            if covering != current_ids and len(after_grounded) > len(current_grounded):
+            if covering != current_ids and (len(after_grounded) > len(current_grounded) or disallowed_current_ids):
                 existing["source_fact_ids"] = covering
                 per_seg["after_cited"] = covering
                 per_seg["after_grounded_tokens"] = sorted(after_grounded)

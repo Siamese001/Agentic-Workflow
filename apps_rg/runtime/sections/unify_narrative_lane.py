@@ -323,6 +323,24 @@ _UNIFY_METRIC_REWRITE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bsix\s+months\b.*?\bthree\s+weeks\b", re.IGNORECASE), " cycle-time reduction"),
 )
 
+_UNIFY_COMPANION_COPY_REWRITE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(
+            r"\b(?:scaled|grew|expanded|built|doubled|increased)\s+engineering\s+from\s+\d+\s+to\s+\d+\b",
+            re.IGNORECASE,
+        ),
+        "supported significant engineering growth",
+    ),
+    (
+        re.compile(
+            r"\b(?:scaled|grew|expanded|built|doubled|increased)\s+the\s+engineering\s+"
+            r"(?:organization|team)\s+from\s+\d+\s+to\s+\d+\b",
+            re.IGNORECASE,
+        ),
+        "expanded the engineering team",
+    ),
+)
+
 
 def _companion_unify_bullets_have_full_metrics(companion_text: str) -> bool:
     c = str(companion_text or "").lower()
@@ -373,6 +391,21 @@ def _collapse_unify_narrative_metric_recap(narrative: str, companion_text: str) 
     if left and left[-1] not in ".!?":
         left += "."
     return left if left else s
+
+
+def _collapse_unify_narrative_companion_copy(narrative: str) -> str:
+    """Trim exact companion overlap without changing the underlying claim."""
+    s = str(narrative or "").strip()
+    if not s:
+        return s
+    for bad, good in _UNIFY_COMPANION_COPY_REWRITE_RULES:
+        s = bad.sub(good, s)
+    s = re.sub(r"\s{2,}", " ", s)
+    s = re.sub(r"\s+([.,;:])", r"\1", s)
+    s = s.strip()
+    if s and s[-1] not in ".!?":
+        s += "."
+    return s
 
 
 def build_prompt_messages(
@@ -484,6 +517,30 @@ def normalize_unify_narrative_parsed(
         if isinstance(out["self_check"], dict):
             out["self_check"]["companion_metric_budget_trimmed"] = True
         narrative = metric_collapsed
+    companion_collapsed = _collapse_unify_narrative_companion_copy(narrative)
+    if companion_collapsed != narrative:
+        old_narrative = narrative
+        out["narrative_sentence"] = companion_collapsed
+        ledger = out.get("claim_ledger")
+        if isinstance(ledger, list):
+            for entry in ledger:
+                if not isinstance(entry, dict):
+                    continue
+                claim_text = str(entry.get("claim_text") or "").strip()
+                if claim_text and claim_text == old_narrative:
+                    entry["claim_text"] = companion_collapsed
+        out.setdefault("change_log", [])
+        if isinstance(out["change_log"], list):
+            out["change_log"].append(
+                {
+                    "operation": "companion_ngram_overlap_deterministic_trim",
+                    "reason": "unify_narrative_no_companion_ngram_copy",
+                }
+            )
+        out.setdefault("self_check", {})
+        if isinstance(out["self_check"], dict):
+            out["self_check"]["companion_ngram_overlap_trimmed"] = True
+        narrative = companion_collapsed
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}

@@ -77,6 +77,88 @@ def test_recitation_passes_x2_grounding_gate_after_repair():
     assert ok, reason
 
 
+def test_recitation_stays_with_selected_required_fact_ids():
+    headline_line = "SVP Engineering | Microservices Modernization Architecture | Policy Governed Platforms | Regulated Cloud Delivery"
+    parsed = {
+        "selected_fact_plan": {
+            "facts": [
+                {
+                    "fact_id": "reb_ibm_aws_modernization_architecture",
+                    "claim_text": "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
+                },
+                {
+                    "fact_id": "reb_insurtech_aws_migration_execution",
+                    "claim_text": "Executed AWS migration execution classified workloads by cloud fit and completed migration waves",
+                },
+                {
+                    "fact_id": "reb_ey_insurance_core_modernization",
+                    "claim_text": "Built policy administration and insurance core modernization",
+                },
+                {
+                    "fact_id": "skill_p2_tech_reference_architecture",
+                    "claim_text": "reference architecture",
+                },
+                {
+                    "fact_id": "skill_sr_microservices_integration_platform",
+                    "claim_text": "microservices integration platform",
+                },
+                {
+                    "fact_id": "skill_insurance_policy_administration",
+                    "claim_text": "policy administration",
+                },
+                {
+                    "fact_id": "skill_aws_migration_readiness_assessment",
+                    "claim_text": "migration readiness assessment",
+                },
+                {
+                    "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                    "claim_text": "Distributed cloud and data execution infrastructure",
+                },
+            ],
+            "required_fact_ids": [
+                "reb_ibm_aws_modernization_architecture",
+                "reb_insurtech_aws_migration_execution",
+                "reb_ey_insurance_core_modernization",
+                "skill_p2_tech_reference_architecture",
+                "skill_sr_microservices_integration_platform",
+                "skill_insurance_policy_administration",
+                "skill_aws_migration_readiness_assessment",
+            ],
+        }
+    }
+    claim_ledger = [
+        {
+            "claim_text": "Microservices Modernization Architecture",
+            "source_fact_ids": [
+                "reb_ibm_aws_modernization_architecture",
+                "skill_p2_tech_reference_architecture",
+                "skill_sr_microservices_integration_platform",
+            ],
+        },
+        {
+            "claim_text": "Policy Governed Platforms",
+            "source_fact_ids": [
+                "reb_ey_insurance_core_modernization",
+                "skill_insurance_policy_administration",
+            ],
+        },
+        {
+            "claim_text": "Regulated Cloud Delivery",
+            "source_fact_ids": ["reb_unify_distributed_ecosystem_engineering"],
+        },
+    ]
+
+    repaired, receipt = repair_headline_segment_citations_for_grounding(
+        headline_line=headline_line,
+        parsed_output=parsed,
+        claim_ledger=claim_ledger,
+    )
+    assert receipt["any_changed"] is True
+    regulated_row = next(r for r in repaired if r["claim_text"] == "Regulated Cloud Delivery")
+    assert "reb_unify_distributed_ecosystem_engineering" not in regulated_row["source_fact_ids"]
+    assert set(regulated_row["source_fact_ids"]) <= set(parsed["selected_fact_plan"]["required_fact_ids"])
+
+
 def test_recitation_no_op_when_already_grounded():
     headline_line = "SVP Engineering | Databricks Lakehouse Workflows | AI Lifecycle Standardization | Microservices Telemetry"
     parsed = _plan([
