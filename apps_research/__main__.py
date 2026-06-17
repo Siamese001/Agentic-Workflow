@@ -99,7 +99,7 @@ def _parse_product_argv(argv: list[str]):
     parser.add_argument(
         "--jd",
         default=None,
-        help="Path to JD .txt/.json or inline text (enables apps_rg targeting brief synthesis)",
+        help="Path to JD .txt/.json or inline text (enables compact downstream brief synthesis)",
     )
     parser.add_argument(
         "--dry-run",
@@ -138,8 +138,8 @@ def _payload_from_args(args) -> dict:
             "jd_text": jd_text,
             "job_title": str(getattr(args, "target_role", "") or "").strip(),
             "company_name": (args.target_company or topic).strip(),
-            "output_format": "apps_rg_targeting_brief_v1",
-            "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
+            "output_format": "downstream_research_substrate_v1",
+            "synthesis_template": "downstream_research_substrate_v1",
         }
     return {
         "target_company": (args.target_company or topic).strip(),

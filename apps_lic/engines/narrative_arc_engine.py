@@ -25,8 +25,13 @@ Arc coherence requires hook→proof connection and proof→ask logical flow.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
+
+_CONFIG_PATH = Path(__file__).parent.parent / "config" / "arc_policy.yaml"
 
 
 @dataclass(frozen=True)
@@ -79,6 +84,128 @@ def _detect_recipient_bucket(recipient_class: str) -> str:
     if rc in recruiter_classes:
         return "recruiter"
     return "default"
+
+
+_DEFAULT_ARC_MATRIX: dict[tuple[str, str], str] = {
+    ("exec", "cold"): "asymmetric_insight",
+    ("exec", "warm"): "mutual_gain",
+    ("exec", "referral"): "social_proof",
+    ("exec", "known"): "warm_reconnect",
+    ("hiring", "cold"): "problem_solution",
+    ("hiring", "warm"): "mutual_gain",
+    ("hiring", "referral"): "social_proof",
+    ("hiring", "known"): "warm_reconnect",
+    ("recruiter", "cold"): "direct_ask",
+    ("recruiter", "warm"): "social_proof",
+    ("recruiter", "referral"): "social_proof",
+    ("recruiter", "known"): "warm_reconnect",
+    ("default", "cold"): "problem_solution",
+    ("default", "warm"): "mutual_gain",
+    ("default", "referral"): "social_proof",
+    ("default", "known"): "warm_reconnect",
+}
+
+
+@lru_cache(maxsize=1)
+def _load_config() -> dict:
+    try:
+        import yaml  # type: ignore[import]
+
+        with open(_CONFIG_PATH, "r", encoding="utf-8") as fh:
+            return yaml.safe_load(fh) or {}
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- optional config; fall through to defaults.
+        return {}
+
+
+def _selection_recipient_bucket(recipient_class: str) -> str:
+    """Bucket recipient classes for arc selection policy."""
+    rc = str(recipient_class or "").upper()
+    if rc in {"EXECUTIVE", "C_LEVEL", "CTO", "VP_ENG"}:
+        return "exec"
+    if rc == "HIRING_MANAGER":
+        return "hiring"
+    if rc in {"RECRUITER", "SENIOR_TA"}:
+        return "recruiter"
+    return "default"
+
+
+def _distance_bucket(relationship_distance: str) -> str:
+    """Normalize relationship distance into the arc policy distance bucket."""
+    rd = str(relationship_distance or "").strip().lower()
+    if rd in {"referral", "warm_referral"}:
+        return "referral"
+    if rd in {"warm", "follow_up"}:
+        return "warm"
+    if rd in {"known", "prior_contact"}:
+        return "known"
+    return "cold"
+
+
+def _flatten_arc_matrix(matrix: dict[str, dict[str, Any]] | None) -> dict[tuple[str, str], str]:
+    flattened: dict[tuple[str, str], str] = {}
+    if not isinstance(matrix, dict):
+        return flattened
+    for recipient_bucket, distance_map in matrix.items():
+        if not isinstance(distance_map, dict):
+            continue
+        for distance_bucket, arc_name in distance_map.items():
+            flattened[(str(recipient_bucket), str(distance_bucket))] = str(arc_name)
+    return flattened
+
+
+@dataclass(frozen=True)
+class ArcSelectionDecision:
+    """Immutable result of arc selection."""
+
+    arc_name: str
+    recipient_bucket: str
+    distance_bucket: str
+    enabled: bool
+    source: str
+
+
+class NarrativeArcEngine:
+    """Select a narrative arc name from the recipient/distance policy matrix."""
+
+    def __init__(self, config: dict | None = None) -> None:
+        self._config = _load_config() if config is None else config
+
+    def select(
+        self,
+        *,
+        recipient_class: str,
+        relationship_distance: str,
+    ) -> ArcSelectionDecision:
+        """Select the arc for a recipient/distance pair."""
+        rb = _selection_recipient_bucket(recipient_class)
+        db = _distance_bucket(relationship_distance)
+
+        if not os.environ.get("ARC_ENGINE_ENABLED"):
+            return ArcSelectionDecision(
+                arc_name="",
+                recipient_bucket=rb,
+                distance_bucket=db,
+                enabled=False,
+                source="disabled",
+            )
+
+        config_matrix = _flatten_arc_matrix(self._config.get("arc_matrix"))
+        key = (rb, db)
+        if key in config_matrix:
+            arc_name = config_matrix[key]
+            source = "config"
+        else:
+            arc_name = _DEFAULT_ARC_MATRIX.get(key, _DEFAULT_ARC_MATRIX[("default", "cold")])
+            source = "default"
+
+        return ArcSelectionDecision(
+            arc_name=arc_name,
+            recipient_bucket=rb,
+            distance_bucket=db,
+            enabled=True,
+            source=source,
+        )
 
 
 def _score_arc_coherence(
@@ -288,8 +415,11 @@ def should_block_draft_due_to_arc_breaks(
 
 
 __all__ = [
+    "ArcSelectionDecision",
+    "NarrativeArcEngine",
     "MessageSection",
     "NarrativeArc",
+    "_DEFAULT_ARC_MATRIX",
     "build_narrative_arc_context",
     "should_block_draft_due_to_arc_breaks",
 ]

@@ -10,6 +10,17 @@ Generates structured research artifacts from a topic + mode. Demonstrates autono
 - **Final Evidence Contract (FEC)** — `apps_research/cert/fec_producer.py` populates `ExitReviewPacket.final_evidence_contract` with `producer="apps_research"`, `grounded`, `retrieval_sources` (auto-flips to `True` when `c0_retrieval_sources` populates upstream), `template_ids`, `route_id`, `evidence_sufficiency`.
 - **ResearchGateValidator** — quality gates fire before emission: required sections present, no empty bodies, source register matches in-text citations, claim types attached.
 
+## Consumer Brief Customization
+
+The default `company_brief_synthesis_v1` path still produces the full research brief. For downstream reuse, `apps_research` now emits compact consumer-specific briefs with separate templates and section contracts:
+
+| Consumer | Template | Primary Use | Shape |
+|----------|----------|-------------|-------|
+| `apps_rg` | `downstream_research_substrate_v1` | Delegated downstream research substrate for app logic | Compact signal-first output, roughly 1,600 chars, no more than 14 bullets, sections: Research Summary, Key Findings, Source Attributions, Confidence Assessment, Reuse Policy |
+| `apps_lic` | `apps_lic_research_substrate_v1` | Outreach drafting, recipient positioning, and proof selection | Compact machine-friendly output, roughly 1,400 chars, no more than 12 bullets, sections: Research Summary, LIC Relevance, Key Findings, Source Attributions, Confidence Assessment, Reuse Policy |
+
+Both consumer briefs treat the JD as data, preserve only verified company facts, and block with `BLOCKED: COMPANY_NOT_IDENTIFIABLE` when the company cannot be verified.
+
 ## Quick Start
 
 ```bash

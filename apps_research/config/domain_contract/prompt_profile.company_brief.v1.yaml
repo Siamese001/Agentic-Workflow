@@ -28,8 +28,8 @@ template_resolution:
   default_template: company_brief_synthesis_v1
   
   downstream_consumer_templates:
-    apps_rg: apps_rg_targeting_brief_synthesis_v1
-    apps_lic: downstream_research_substrate_v1
+    apps_rg: downstream_research_substrate_v1
+    apps_lic: apps_lic_research_substrate_v1
   
   degraded_support_template: degraded_support_caveat_v1
   
