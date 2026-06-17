@@ -142,7 +142,7 @@ def adg_reopen_connections() -> dict[str, Any]:
 def adg_runtime_info() -> dict[str, Any]:
     """Return process-level runtime identity for verifying restarts.
 
-    A changed pid or nonce after a Windsurf MCP restart proves a fresh process
+    A changed pid or nonce after a legacy editor MCP restart proves a fresh process
     is serving. Use adg_reload for SQLite snapshot refresh only.
     """
     return handlers.adg_runtime_info()
@@ -221,7 +221,7 @@ def adg_p_view_query(view_name: str, limit: int = 100) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    # Guard against Windsurf double-spawn: two adg_sqlite processes would
+    # Guard against legacy editor double-spawn: two adg_sqlite processes would
     # both hold SQLite read locks on the ADG snapshot and can deadlock when
     # one tries to rotate snapshots. Added 2026-04-22 MCP standardization.
     # Bugfix 2026-04-23: pass BOTH dot-separated and slash-separated markers.

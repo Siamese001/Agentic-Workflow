@@ -198,7 +198,7 @@ python apps_rg/fact_inventory/validate_commercial_srfs_projection.py
 [skills_graph_phase2_section_projection_audit.json](docs/reports/apps_rg/skills_graph_phase2_section_projection_audit.json)
 
 **Files likely changed:**  
-- [phase2-gtm-presales-remaining-f7a2c9.md](.cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md) (Wave 0.5 section)  
+- [phase2-gtm-presales-remaining-f7a2c9.md](.claude/plans/phase2-gtm-presales-remaining-f7a2c9.md) (Wave 0.5 section)  
 - [phase2_senior_role_implementation_backlog.json](docs/reports/apps_rg/phase2_senior_role_implementation_backlog.json) (implementation backlog from audit SSOT)  
 - `docs/reports/apps_rg/fixtures/senior_roles/` (Wave 0.5b execution — sanitized JD/brief; **not** in plan-only pass)  
 - `apps_rg/config/domain_contract/master_role_family_taxonomy.yaml` (W0.5b — after backlog approval; **not** in plan-only pass)  
@@ -741,7 +741,7 @@ python -m apps_rg --section <SECTION> \
 3. SRFS: `binding_digest` matches targeting on every run; no stale active JSON.
 4. X2: zero failed gates on certification sections; Wave 3 substrate fix merged for exec_summary if exec in certification bundle.
 5. Human confirmations applied where MEDIUM used in output.
-6. Fortknox / RTC requirements if executive_summary in release bundle — invoke [fortknox-evidence](.cursor/skills/fortknox-evidence/SKILL.md) when scope includes certification compiler.
+6. Fortknox / RTC requirements if executive_summary in release bundle — invoke [fortknox-evidence](.claude/skills/fortknox-evidence/SKILL.md) when scope includes certification compiler.
 
 **Files likely changed:** CI manifest, certification receipts — out of Phase 2 graph scope unless explicitly in release wave.
 
@@ -853,9 +853,9 @@ Phase 2 GTM/pre-sales graph work is **complete** when all are true:
 | **PROOF_CLASSIFICATION** | `plan-update-only` |
 | **ORIGINAL_PLAN_PRESERVED** | yes (Waves 0–7 intent unchanged) |
 | **WAVE_0_5_ADDED** | yes |
-| **FILES_CHANGED** | [phase2-gtm-presales-remaining-f7a2c9.md](.cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md) |
+| **FILES_CHANGED** | [phase2-gtm-presales-remaining-f7a2c9.md](.claude/plans/phase2-gtm-presales-remaining-f7a2c9.md) |
 | **COMMANDS_RUN** | none |
-| **ARTIFACTS_WRITTEN** | [phase2-gtm-presales-remaining-f7a2c9.md](.cursor/plans/phase2-gtm-presales-remaining-f7a2c9.md), [phase2_senior_role_implementation_backlog.json](docs/reports/apps_rg/phase2_senior_role_implementation_backlog.json) (fixture `.txt` files deferred to W0.5b) |
+| **ARTIFACTS_WRITTEN** | [phase2-gtm-presales-remaining-f7a2c9.md](.claude/plans/phase2-gtm-presales-remaining-f7a2c9.md), [phase2_senior_role_implementation_backlog.json](docs/reports/apps_rg/phase2_senior_role_implementation_backlog.json) (fixture `.txt` files deferred to W0.5b) |
 
 **EXPLICIT_NON_CLAIMS:** Underwriting, claims, policy admin, billing, brokerage ownership, transaction banking, payments, liquidity, trade, investor/issuer services, fraud operations, Fed/regulator-facing work, marketplace co-sell, Databricks, Snowflake, GCP, Azure partner exclusivity, partner sales, airline ~$100M engagement, technical estimation/sizing methodology — unless source-backed and promoted.
 

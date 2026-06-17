@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-04-30
-**Plan**: `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.2)
+**Plan**: `.claude/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.2)
 **Tier**: B (advisory) at acceptance; flips to Tier A (fail-closed) in W5 P5.4
 **Supersedes**: planning fragment in `adg-ci-spine-delegation-gate-438b16.md` (now superseded by the unified plan)
 
@@ -92,12 +92,12 @@ Each entry MUST carry:
 ## Pairing — advisory rule
 
 This deterministic gate pairs with the (separate) advisory rule
-`core-vs-apps-routing.md` which guides Cursor Agent at author time. The rule is the
+`core-vs-apps-routing.md` which guides Codex at author time. The rule is the
 soft guidance; this gate is the hard fence.
 
 ## References
 
-- Plan: `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.2 + W5 P5.4)
+- Plan: `.claude/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.2 + W5 P5.4)
 - Constitutional §22, §28, §31
 - ADR-074 (Runtime Bucket as OTel View) — sibling ADG-derived gate pattern
 - Live evidence: `docs/reports/adg/apps_spine_delegation_gate_report.json`

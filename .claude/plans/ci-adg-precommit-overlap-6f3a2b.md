@@ -15,7 +15,7 @@ notion_url: https://app.notion.com/p/37827693f55c8107bfd5e5a7c6551700
 ## Context
 
 - **Situation.** GitHub Actions, ADG CI, and pre-commit are intentionally layered: local hooks catch cheap scoped regressions, while CI runs authoritative full-repo sweeps.
-- **Complication.** The overlap review found stale `.cursor/mcp.json` references after the completed `.cursor` -> `.claude` migration. Helper code already treats root `.mcp.json` as the live MCP SSOT, but local hook triggers and docs still name the deleted `.cursor/mcp.json`, making pre-commit blind to `.mcp.json` edits.
+- **Complication.** The overlap review found stale `.mcp.json` references after the completed `.cursor` -> `.claude` migration. Helper code already treats root `.mcp.json` as the live MCP SSOT, but local hook triggers and docs still name the deleted `.mcp.json`, making pre-commit blind to `.mcp.json` edits.
 - **Question.** How do we remove harmful redundancy without weakening deliberate two-lane coverage?
 - **Answer.** Keep deliberate pre-commit/CI mirrors, repair the stale MCP SSOT paths, and path-scope ADG PR execution so heavy ADG gates run when ADG-relevant surfaces change.
 
@@ -33,7 +33,7 @@ notion_url: https://app.notion.com/p/37827693f55c8107bfd5e5a7c6551700
 
 | Wave | Implementation |
 |---|---|
-| W1 | Update `.pre-commit-config.yaml`, `AGENTS.md`, `.claude/governance/scripts/sync_mcp_config.py`, MCP CI gate docstrings/messages, and ADG gate manifest path references from `.cursor/mcp.json` to `.mcp.json` where the live code already resolves root `.mcp.json`. |
+| W1 | Update `.pre-commit-config.yaml`, `AGENTS.md`, `.claude/governance/scripts/sync_mcp_config.py`, MCP CI gate docstrings/messages, and ADG gate manifest path references from `.mcp.json` to `.mcp.json` where the live code already resolves root `.mcp.json`. |
 | W2 | Add PR path filters to `.github/workflows/adg-ci-gates.yml` matching the existing push paths plus the workflow and root MCP config, reducing doc/config-only ADG runs while preserving ADG coverage. |
 | W3 | Run targeted MCP sync/schema/coverage checks, pre-commit hook-level checks where practical, YAML parsing for workflows, and `python scripts/governance/verify_codex_backup.py` if Codex backup docs or skills changed. |
 
@@ -48,7 +48,7 @@ Notion plan registration completed from Codex after lazy-loading the Notion writ
 ## Closeout
 
 - W1 aligned the active MCP enforcement surface to root `.mcp.json`: pre-commit hook triggers, root guidance, sync generator prose, MCP CI gate docstrings/messages, and the ADG gate manifest now name the live SSOT.
-- W1 also retired obsolete local pre-commit hooks for Cursor-era MCP schema/parity/sovereignty assumptions; the active root MCP contract is covered by sync integrity, AGENTS coverage, and autogen-block sync.
+- W1 also retired obsolete local pre-commit hooks for legacy editor-era MCP schema/parity/sovereignty assumptions; the active root MCP contract is covered by sync integrity, AGENTS coverage, and autogen-block sync.
 - W2 scoped `adg-ci-gates.yml` PR execution to ADG-relevant paths, matching push behavior while adding `config/**`, `.mcp.json`, and workflow/setup self-triggers.
 - W3 updated the Codex backup adapter verifier/doc and the personal Codex governance skill to point at `.claude`, `.mcp.json`, and `.claude/settings.json`.
 - W3 verification was run from Codex with available local tooling; see the Codex turn summary for pass/fail details and any environment-limited checks.

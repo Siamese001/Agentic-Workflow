@@ -13,7 +13,7 @@
 
 ## Context
 
-The `.claude/` governance layer — ported from the prior Cursor/Windsurf IDE configs — accumulated
+The `.claude/` governance layer — ported from the prior legacy editor/legacy editor IDE configs — accumulated
 **emulation machinery** that native Claude Code features now supersede: an Author-Gate
 packet/marker/ledger pipeline (native `AskUserQuestion`), `SR_*` plan markers (native plan mode),
 a mandatory memory-MCP ritual (native file memory), `DEFERRED_SCOPE:`/`NEXT_STEP:` marker → hook →

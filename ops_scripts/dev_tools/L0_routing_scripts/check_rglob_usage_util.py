@@ -11,7 +11,7 @@ Exit Codes:
     0: Pass - rglob count is within limits
     1: Fail - rglob count exceeds maximum allowed
 
-Author: Cursor
+Author: legacy editor
 Date: January 19, 2026
 Phase: 4.1 - Scaled Refactoring & CI Enforcement
 """

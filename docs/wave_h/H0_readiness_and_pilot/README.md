@@ -79,7 +79,7 @@ Residuals that do not block a bounded pilot when scope is constrained:
 
 Start a bounded H pilot now with:
 
-- 1–2 initial consumer use cases (`apps_research`, `apps_exec` support paths)
+- 1–2 initial consumer use cases (`apps_rg` and `apps_lic` support paths from `apps_research`)
 - safe-now and pilot-only card families only (no unstable canonical claims)
 - explicit “non-production dependency” posture
 - hard evaluation gates and rollback/no-go criteria

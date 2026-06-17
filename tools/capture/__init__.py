@@ -1,6 +1,6 @@
 """Hook-independent decision-marker capture pipeline.
 
-Bypasses Windsurf hooks entirely. Cursor Agent invokes ``append_marker.py`` via
+Bypasses legacy editor hooks entirely. Codex invokes ``append_marker.py`` via
 ``run_command`` at the end of every refactor-class response; a separate drain
 process (``queue_to_ledger.py``) writes accumulated markers into the SQLite
 decision ledger by reusing the existing capture-hook logic.
@@ -12,5 +12,5 @@ Components:
     see ``tools.refactor_decisions.ledger_paths``)
 
 See `.claude/rules/author-gate-enforcement.md` Silent-Marker Invariant for
-when Cursor Agent must emit markers.
+when Codex must emit markers.
 """

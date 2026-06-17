@@ -3,7 +3,7 @@
 **Status**: Superseded by compatibility-retention disposition
 **Date**: 2026-05-06
 **Phase**: W4 of apps-l7-deferred-scope-followup-a1d9e3
-**Deciders**: Cursor Agent
+**Deciders**: Codex
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260506T200000.sqlite`
 
 > **Current-state note (2026-06-15):** the six entrypoint files listed below
@@ -100,5 +100,5 @@ history and re-enables the existing certification callers.
 ## References
 
 - Related ADRs: ADR-017 (L7_AUDITABILITY mandate), ADR-081 (canonical hop pipeline), ADR-082 (apps folder taxonomy)
-- Related plans: `.windsurf/plans/apps-l7-deferred-scope-followup-a1d9e3.md`, `.windsurf/plans/apps-l7-w2-w4-followup-a2e8f4.md`
-- Related rules: `.windsurf/rules/adg-canonical-invariants.md` §17 (L7 mandatory)
+- Related plans: `.claude/plans/apps-l7-deferred-scope-followup-a1d9e3.md`, `.claude/plans/apps-l7-w2-w4-followup-a2e8f4.md`
+- Related rules: `.claude/rules/adg-canonical-invariants.md` §17 (L7 mandatory)

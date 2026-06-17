@@ -17,7 +17,7 @@ LAST_COMPLETED_WAVE: W5
 LAST_UPDATED: 2026-05-26
 NOTION_PAGE_ID: 36c27693-f55c-81bc-a4a3-de1022a6e532
 
-PLAN_CREATED: slug=exec-summary-anthropic-surgical-regen-f3c8d2 path=.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md status=Complete notion=36c27693-f55c-81bc-a4a3-de1022a6e532
+PLAN_CREATED: slug=exec-summary-anthropic-surgical-regen-f3c8d2 path=.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md status=Complete notion=36c27693-f55c-81bc-a4a3-de1022a6e532
 
 ---
 
@@ -96,7 +96,7 @@ WAVE_COMPLETE: YES
 
 **Acceptance**
 
-- [`.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md`](exec-summary-anthropic-surgical-regen-f3c8d2.md) exists with wave table at top.
+- [`.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md`](exec-summary-anthropic-surgical-regen-f3c8d2.md) exists with wave table at top.
 - Notion Plans row: `Status=Not Started`, `Exists On Disk=true`, `Plan File Path` set.
 
 ---

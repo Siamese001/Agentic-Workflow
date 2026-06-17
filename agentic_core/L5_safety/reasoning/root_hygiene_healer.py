@@ -557,7 +557,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
             ".flake8",
             ".mypy.ini",
             ".pre-commit-config.yaml",
-            # Windsurf workspace files
+            # legacy editor workspace files
             ".claude/rules",
             ".claude/rules.bak",
             ".windsurf.code-workspace",

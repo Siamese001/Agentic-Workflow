@@ -2,7 +2,7 @@
 """post_agent_mcp_hygiene_audit.py — Unified MCP Hygiene audit hook (W2.P5).
 
 Subcommands:
-  agent_response — **Cursor ``afterAgentResponse`` path** (W1.3): reads agent response
+  agent_response — **legacy editor ``afterAgentResponse`` path** (W1.3): reads agent response
     JSON/text from stdin; detects MCP-related surface; runs **advisory** serialization
     checks; logs under ``artifacts/governance/``. **Never blocks** (exit 0). **Never**
     invokes orphan process reap.
@@ -14,7 +14,7 @@ Subcommands:
 
   run_all — runs **preflight** only; **does not** run orphan_reap (safety).
 
-See also: ``.cursor/hooks/after_agent_governance_dispatch.py`` (chain invokes
+See also: ``.claude/governance/scripts/after_agent_governance_dispatch.py`` (chain invokes
 ``python ... post_agent_mcp_hygiene_audit.py agent_response``).
 """
 from __future__ import annotations
@@ -77,7 +77,7 @@ def _append_log(path: Path, row: dict[str, Any]) -> None:
 
 
 def _extract_agent_response_text(payload: object) -> str:
-    """Best-effort text from Cursor afterAgentResponse stdin (dict or string)."""
+    """Best-effort text from legacy editor afterAgentResponse stdin (dict or string)."""
     if isinstance(payload, str):
         return payload
     if isinstance(payload, dict):
@@ -244,7 +244,7 @@ def _cmd_run_all(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(prog="post_agent_mcp_hygiene_audit")
     sub = parser.add_subparsers(dest="cmd")
-    sub.add_parser("agent_response", help="Cursor afterAgentResponse stdin audit (advisory; no reap)")
+    sub.add_parser("agent_response", help="legacy editor afterAgentResponse stdin audit (advisory; no reap)")
     sub.add_parser("preflight", help="MCP preflight audit (stub)")
     sub.add_parser("orphan_reap", help="Orphan MCP process reaping (explicit opt-in; uses --kill)")
     sub.add_parser("run_all", help="Preflight only; does not reap")

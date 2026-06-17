@@ -68,7 +68,7 @@ The following six families were assigned `authority_class: CONSTITUTIONAL` becau
 - F11 (L5 is cross-cutting policy authority)
 - F12 (L6 supports future-run learning only)
 **Risk:** CONSTITUTIONAL is the strongest class. If E1c determines a family's normative weight is better expressed as GOVERNANCE or ARCHITECTURAL, the authority_class MUST be lowered accordingly in the canonical record.
-**Recommended E1c action:** For each of the six, locate the specific constitutional-tier source (`.windsurf/rules/constitutional.md`, AGENTS.md always-on) and record it as a `SRC-RULE-*` or `SRC-INT-*`. If no constitutional-tier source can be cited, downgrade to GOVERNANCE and log the downgrade.
+**Recommended E1c action:** For each of the six, locate the specific constitutional-tier source (`.claude/rules/constitutional.md`, AGENTS.md always-on) and record it as a `SRC-RULE-*` or `SRC-INT-*`. If no constitutional-tier source can be cited, downgrade to GOVERNANCE and log the downgrade.
 
 ### ARCHITECTURAL-grade families
 F04, F05, F06 assigned `ARCHITECTURAL`. Defensible as layer-charter claims. E1c confirms on source availability.

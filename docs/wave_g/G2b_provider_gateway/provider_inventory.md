@@ -19,7 +19,7 @@ External providers, local-only stubs, and the canonical gateway / router surface
 | P09 | **ChromaDB** (embedded local) | embedded sqlite/duckdb | `tools/retrieval/vector_store.py` + `agentic_core/L4_state/utils/client/chroma_client.py` | retrieval_layers, semantic_retriever, hybrid_search_engine, vector_db MCP | 39 (`import chromadb`) — **excluded from egress_points.yaml: embedded, not network** |
 | P10 | **OTel collector** (spans) | external http/grpc (optional) | `apps_shared/utils/open_telemetry_tracing_adapter_util.py` | observability adapters | 0 `opentelemetry-sdk` direct; env-driven only |
 | P11 | **Pinecone** (declared, not imported) | external https (stub) | none | none | **0** (`import pinecone` → zero matches) — B7-G2b-02 |
-| P12 | **deepwiki MCP** (external) | external https | `.windsurf/mcp_config.json` entry only | Cursor Agent IDE client | — |
+| P12 | **deepwiki MCP** (external) | external https | `.mcp.json` entry only | Codex IDE client | — |
 
 ## 2. Canonical gateway and router surfaces
 

@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2026-05-25  
-**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.cursor/plans/l6-reorg-deferred-followup-f3a9c2.md) W3 (closeout)  
+**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.claude/plans/l6-reorg-deferred-followup-f3a9c2.md) W3 (closeout)  
 **Spike:** [l6_category_a_shared_spike_20260525.md](../../reports/cursor/l6_category_a_shared_spike_20260525.md)
 
 ## Context

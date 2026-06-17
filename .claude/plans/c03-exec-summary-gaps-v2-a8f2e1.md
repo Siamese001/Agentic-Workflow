@@ -14,7 +14,7 @@ dod_exempt: false
 
 Close the gaps identified in the C0.3 implementation review against live proof run [exec_summary_20260526_211453](artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_211453): honest graph-binding vocabulary, fact utilization vs pool, brushstroke–skill linkage, receipt alignment, optional promotion transparency, and Brown runtime certification — **without** weakening pool-wins proof law or claiming spine canonical C0.3.
 
-**Supersedes / extends:** archived [c03-skills-graph-exec-summary-f9a2c4](.cursor/plans/_archive/2026-05/c03-skills-graph-exec-summary-f9a2c4.md) (W0–W5 COMPLETE, closeout PARTIAL on judge quality).
+**Supersedes / extends:** archived [c03-skills-graph-exec-summary-f9a2c4](.claude/plans/_archive/2026-05/c03-skills-graph-exec-summary-f9a2c4.md) (W0–W5 COMPLETE, closeout PARTIAL on judge quality).
 
 **Reference artifacts:** [c03_exec_summary_binding.md](docs/reports/apps_rg/c03_exec_summary_binding.md) · [c03_exec_summary_enhancement_closeout_receipt.md](docs/reports/apps_rg/c03_exec_summary_enhancement_closeout_receipt.md) · [proof_pool_c0_ssot_gap_review_plan.md](docs/reports/apps_rg/proof_pool_c0_ssot_gap_review_plan.md)
 
@@ -30,9 +30,9 @@ LAST_UPDATED: 2026-05-26
 NOTION_PAGE_ID: 36c27693-f55c-813b-87b8-f231ed2b6cf8
 NOTION_PLANS_ROW: page_id=36c27693-f55c-813b-87b8-f231ed2b6cf8
 NOTION_STATUS: Completed
-DISK_SSOT: .cursor/plans/c03-exec-summary-gaps-v2-a8f2e1.md
+DISK_SSOT: .claude/plans/c03-exec-summary-gaps-v2-a8f2e1.md
 
-PLAN_CREATED: slug=c03-exec-summary-gaps-v2-a8f2e1 path=.cursor/plans/c03-exec-summary-gaps-v2-a8f2e1.md status=Not Started notion_page=36c27693-f55c-813b-87b8-f231ed2b6cf8
+PLAN_CREATED: slug=c03-exec-summary-gaps-v2-a8f2e1 path=.claude/plans/c03-exec-summary-gaps-v2-a8f2e1.md status=Not Started notion_page=36c27693-f55c-813b-87b8-f231ed2b6cf8
 
 ---
 
@@ -284,7 +284,7 @@ DISCOVERED_SCOPE: plan=c03-exec-summary-gaps-v2-a8f2e1 wave=W0 gap="post-review 
 ## Marker Quick Reference
 
 ```
-PLAN_CREATED: slug=c03-exec-summary-gaps-v2-a8f2e1 path=.cursor/plans/c03-exec-summary-gaps-v2-a8f2e1.md status=Not Started
+PLAN_CREATED: slug=c03-exec-summary-gaps-v2-a8f2e1 path=.claude/plans/c03-exec-summary-gaps-v2-a8f2e1.md status=Not Started
 WAVE_START: plan=c03-exec-summary-gaps-v2-a8f2e1 wave=W0
 WAVE_COMPLETE: plan=c03-exec-summary-gaps-v2-a8f2e1 wave=W0 note="+docs, terminology, scope=vocabulary"
 ```

@@ -147,7 +147,7 @@ def take_snapshot(repo_root: Path, wave: int, agent: str) -> bool:
     print("\n[2/4] Backing up vector store...")
     vector_backed_up = backup_vector_store(repo_root, wave_vector_dir)
 
-    print("\n[3/4] Backing up Windsurf memory...")
+    print("\n[3/4] Backing up legacy editor memory...")
     memory_backed_up = backup_memory(repo_root, wave_memory_backup)
 
     print("\n[4/4] Creating manifest...")
@@ -210,7 +210,7 @@ def restore_snapshot(repo_root: Path, wave: int, execute_restore: bool = False) 
     else:
         print("  [SKIP] No vector store backup to restore")
 
-    print("\n[3/3] Restoring Windsurf memory...")
+    print("\n[3/3] Restoring legacy editor memory...")
     memory_file = windsurf_dir / "memory.jsonl"
     if manifest["backups"]["memory"] and wave_memory_backup.exists():
         print(f"  [{'OK' if execute_restore else 'PLAN'}] Restore memory from {wave_memory_backup}")

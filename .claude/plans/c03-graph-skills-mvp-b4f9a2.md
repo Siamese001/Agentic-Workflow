@@ -48,7 +48,7 @@ LAST_UPDATED: 2026-05-28
 
 ## Gap Register (Deferred)
 
-See plan attachment in Cursor plan file `c03_graph_skills_mvp_caa32b24` for X2-G1..ARCH-G1 follow-ups.
+See plan attachment in legacy editor plan file `c03_graph_skills_mvp_caa32b24` for X2-G1..ARCH-G1 follow-ups.
 
 ---
 

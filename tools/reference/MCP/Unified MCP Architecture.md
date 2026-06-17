@@ -6,7 +6,7 @@ If each door has its own hard check, MCP is safe.
 If one door borrows trust from another, MCP gets dangerous.
 
 [ USER / HOST APPLICATION ]
-(Claude Desktop, Cursor, Custom App with LLM Agent)
+(Claude Desktop, legacy editor, Custom App with LLM Agent)
               │
               ▼
    [ DISCOVERY & STARTUP STAGE ] ──────────────────────────────────────────┐

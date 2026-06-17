@@ -1,6 +1,6 @@
 # ADG gate ownership (bug-class SSOT)
 
-Plan: [adg-ci-unified-migration-a7f3b2.md](../../.cursor/plans/adg-ci-unified-migration-a7f3b2.md) · ADR: [ADR-081](../architecture/adr/ADR-081-adg-ci-unified-enforcement-planes.md)
+Plan: [adg-ci-unified-migration-a7f3b2.md](../../.claude/plans/adg-ci-unified-migration-a7f3b2.md) · ADR: [ADR-081](../architecture/adr/ADR-081-adg-ci-unified-enforcement-planes.md)
 
 | Bug class | Blocking owner (cert) | Plane | Also reports (advisory) |
 |-----------|----------------------|-------|-------------------------|

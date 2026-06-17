@@ -2,7 +2,7 @@
 
 Pure decision primitive extracted from ``post_agent_adg_audit.py``. The
 hook remains the PEP (reads stdin, writes to violation log, decides exit
-code). This module is the PDP: given observed facts about a Cursor Agent
+code). This module is the PDP: given observed facts about a Codex
 response, produce a verdict.
 
 Constitutional §28: the fallback ladder is
@@ -65,7 +65,7 @@ def classify_grep_for_deps(
     adg_snapshot_present: bool,
     bypass_set: bool,
 ) -> AdgFirstDecision:
-    """Classify a Cursor Agent response's ADG-first compliance.
+    """Classify a Codex response's ADG-first compliance.
 
     All inputs are booleans describing observed facts. Returns a single
     decision packet. Caller (PEP) is responsible for logging and exit-code

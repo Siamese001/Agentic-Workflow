@@ -3,10 +3,10 @@
 
 Background
 ----------
-When Windsurf restarts Cursor Agent or the user reloads the window, the OS-level
+When legacy editor restarts Codex or the user reloads the window, the OS-level
 MCP server processes (``tools/mcp/*.py``, ``tools/adg/mcp/server``, etc.)
 are not always terminated. They keep running with a dangling stdio pair,
-and the next Cursor Agent session spawns a FRESH set. Two (or more) concurrent
+and the next Codex session spawns a FRESH set. Two (or more) concurrent
 MCP fleets sharing the same workspace stdio pool cause:
 
     * Interleaved stdout across ``run_command`` invocations

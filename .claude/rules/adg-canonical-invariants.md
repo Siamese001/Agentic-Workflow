@@ -1,5 +1,5 @@
 
-<!-- Converted from `.claude/rules/adg-canonical-invariants.md`. Original Cursor trigger: `always_on`. -->
+<!-- Converted from `.claude/rules/adg-canonical-invariants.md`. Original legacy editor trigger: `always_on`. -->
 
 # ADG Canonical Invariants
 

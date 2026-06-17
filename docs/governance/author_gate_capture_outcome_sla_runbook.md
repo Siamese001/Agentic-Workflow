@@ -38,7 +38,7 @@ Outputs:
 1. Confirm the ledger file exists: `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite`.
 2. Run the binder for recent commits (example):
    `python .cursor/scripts/post_commit_outcome_binder.py --lookback 20`
-   (or the Windsurf mirror script if your hooks still reference it — DB target is the same SSOT path.)
+   (or the legacy editor mirror script if your hooks still reference it — DB target is the same SSOT path.)
 3. Ensure **CI receipt** env vars are set if you rely on **high** bind confidence
    (`AG_BIND_*` — see `tools/refactor_decisions/bind_confidence.py`).
 4. Re-run schema migration if columns are missing:

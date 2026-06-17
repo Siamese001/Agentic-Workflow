@@ -3,7 +3,7 @@
 _ssot_folder_check.py — SSOT folder routing helper (shared by hook + CI).
 
 Pure logic. No I/O at import. Safe to import from `pre_write_gate.py`
-(Cursor hook, runs on every write attempt) and from
+(legacy editor hook, runs on every write attempt) and from
 `ops_scripts/ci/check_ssot_folder_routing.py` (pre-commit gate, runs on
 staged files).
 
@@ -91,7 +91,7 @@ _NAME_ROUTING = [
     (re.compile(r"^purge_.+\.py$"), "ops_scripts/maintenance/"),
     (re.compile(r"^cleanup_.+\.py$"), "ops_scripts/maintenance/"),
 
-    # Cursor hook scripts
+    # legacy editor hook scripts
     (re.compile(r"^pre_(read|write|run|user_prompt|mcp_tool_use|author|prompt|agent|cursor_agent)_.+\.py$"),
      ".claude/governance/scripts/"),
     (re.compile(r"^post_(read|write|run|agent|cursor_agent|mcp|setup|commit)_.+\.py$"),
@@ -114,7 +114,7 @@ def _normalize(path: str) -> str:
     """Normalize a path to repo-relative POSIX form."""
     if not path:
         return ""
-    # Accept absolute paths from the hook payload (Cursor passes absolute);
+    # Accept absolute paths from the hook payload (legacy editor passes absolute);
     # strip any leading "C:\Git\Agentic-Workflow[-FRESH]/" or trailing repo root.
     p = path.replace("\\", "/")
     # Trim leading "./"
@@ -224,10 +224,10 @@ def _check_hook_script_misroute(rel: str) -> Violation | None:
             forbidden="hook-script-misroute",
             suggested=".claude/governance/scripts/",
             message=(
-                f"Filename '{filename}' looks like a Cursor hook script "
+                f"Filename '{filename}' looks like a legacy editor hook script "
                 f"(pre_*/post_* prefix) but is being written outside "
                 f".claude/governance/scripts/. Hook scripts MUST live in "
-                f".claude/governance/scripts/ to be discoverable by .cursor/hooks.json. "
+                f".claude/governance/scripts/ to be discoverable by .claude/settings.json. "
                 f"See .claude/rules/ssot-folder-enforcement.md."
             ),
         )

@@ -50,5 +50,5 @@ Until **T1–T4**, do not delete Fort Knox gates or hand-edit compiler output. R
 ## References
 
 - ADR-091 Fort Knox certification discipline
-- `.cursor/skills/fortknox-evidence/SKILL.md`
-- `.cursor/rules/001-cursor-runtime-seam-execution.mdc`
+- `.claude/skills/fortknox-evidence/SKILL.md`
+- `.claude/rules/001-cursor-runtime-seam-execution.mdc`

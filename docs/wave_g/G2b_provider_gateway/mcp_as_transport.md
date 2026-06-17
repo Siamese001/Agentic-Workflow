@@ -1,18 +1,18 @@
 # G2b — MCP as Transport
 
-Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingress/egress role and network actor.
+Every MCP server configured in `.mcp.json`, classified by ingress/egress role and network actor.
 
 **ADG snapshot**: `artifacts/adg/adg_indexed_04172026_0611.sqlite` (04172026_0611).
-**Config source**: `.windsurf/mcp_config.json` (12 servers).
+**Config source**: `.mcp.json` (12 servers).
 
 ## 1. Transport taxonomy
 
 | Transport type | Meaning |
 |---|---|
-| `stdio-loopback` | Windsurf launches a subprocess; Windsurf ↔ subprocess JSON-RPC over stdio. No network from the repo. |
+| `stdio-loopback` | legacy editor launches a subprocess; legacy editor ↔ subprocess JSON-RPC over stdio. No network from the repo. |
 | `stdio-loopback + external-egress` | stdio to subprocess; subprocess itself makes external HTTP to a third-party service. |
-| `https-external` | Windsurf ↔ remote MCP URL directly. No subprocess in the repo. |
-| `binary-subprocess` | Windsurf launches an external binary (not repo python). |
+| `https-external` | legacy editor ↔ remote MCP URL directly. No subprocess in the repo. |
+| `binary-subprocess` | legacy editor launches an external binary (not repo python). |
 
 ## 2. Per-server records
 
@@ -22,8 +22,8 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 - **Subprocess**: `python -u -m tools.adg.mcp.server`
 - **Repo entry point**: `tools/adg/mcp/server.py`
 - **External egress from the subprocess**: **none** (reads local SQLite, Redis cache at `localhost:6379`)
-- **Env keys injected by Windsurf**: `ADG_DIR`, `ADG_REDIS_URL`, `PYTHONPATH`, `PYTHONUNBUFFERED`
-- **Ingress**: Cursor Agent tool calls → stdio → ADG query
+- **Env keys injected by legacy editor**: `ADG_DIR`, `ADG_REDIS_URL`, `PYTHONPATH`, `PYTHONUNBUFFERED`
+- **Ingress**: Codex tool calls → stdio → ADG query
 - **Egress**: loopback (adg sqlite file + redis localhost)
 - **Auth**: none (stdio + localhost Redis, unauthenticated)
 - **Classification**: pure loopback
@@ -81,17 +81,17 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 - **Transport**: stdio-loopback **+ external-egress**
 - **Subprocess**: `python -u tools/mcp/enhanced_http_server.py` (FastMCP + register_http_tools)
 - **Repo entry point**: `tools/mcp/enhanced_http_server.py` → `tools/mcp/http_mcp/tools.py`
-- **External egress**: **yes, by design.** This is the MCP that Cursor Agent uses to make programmatic HTTP calls to arbitrary URLs (per constitutional MCP Authority rule: "enhanced_http is the sole authority for ALL programmatic HTTP calls").
+- **External egress**: **yes, by design.** This is the MCP that Codex uses to make programmatic HTTP calls to arbitrary URLs (per constitutional MCP Authority rule: "enhanced_http is the sole authority for ALL programmatic HTTP calls").
 - **HTTP client**: `aiohttp` (see `tools/mcp/http_mcp/client.py`)
 - **Retry posture** (per tool signatures): `retries: int = 3` default, `timeout: int = 30` default, `verify_ssl: bool = True`, `follow_redirects: bool = True`.
-- **Auth passthrough**: accepts `auth` argument in tool calls; no persistent credential storage. User / Cursor Agent supplies credentials per request.
+- **Auth passthrough**: accepts `auth` argument in tool calls; no persistent credential storage. User / Codex supplies credentials per request.
 - **Env keys read**: several `HTTP_*` constants via `tools/mcp/http_mcp/constants.py::env_truthy`.
-- **Classification**: ingress from Cursor Agent, egress to arbitrary URLs. **This is the only code path by which Cursor Agent is SUPPOSED to make HTTP calls; all repo-internal services should use canonical gateways (SovereignLLMGateway, EmbeddingSovereignAgent).**
+- **Classification**: ingress from Codex, egress to arbitrary URLs. **This is the only code path by which Codex is SUPPOSED to make HTTP calls; all repo-internal services should use canonical gateways (SovereignLLMGateway, EmbeddingSovereignAgent).**
 
 ### MCP-08 — `filesystem`
 
 - **Transport**: binary-subprocess (Node)
-- **Launcher**: `node .windsurf/scripts/filesystem_mcp_launcher.js <AGENTIC_REPO_ROOT>`
+- **Launcher**: `node .claude/governance/scripts/filesystem_mcp_launcher.js <AGENTIC_REPO_ROOT>`
 - **Server**: `@modelcontextprotocol/server-filesystem` (installed globally via npm)
 - **External egress**: **none** (pure local FS)
 - **Auth**: scope-locked to repo root (per `_comment` in mcp_config.json)
@@ -104,7 +104,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 - **External egress**: **yes** — Node subprocess makes HTTPS calls to `api.notion.com`
 - **Env keys injected**: `NOTION_TOKEN` (bearer token propagated from OS env)
 - **Auth**: `token_bearer_env` (NOTION_TOKEN)
-- **Classification**: stdio-loopback from Windsurf's perspective; external-egress from the subprocess. Treated as loopback in `egress_points.yaml` because the Node subprocess is the network actor (egress invisible to repo Python code).
+- **Classification**: stdio-loopback from legacy editor's perspective; external-egress from the subprocess. Treated as loopback in `egress_points.yaml` because the Node subprocess is the network actor (egress invisible to repo Python code).
 
 ### MCP-10 — `task_manager`
 
@@ -117,7 +117,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 ### MCP-11 — `GitKraken`
 
 - **Transport**: binary-subprocess
-- **Binary**: `${env:GITKRAKEN_GK_PATH} mcp --host=windsurf --source=gitlens --scheme=windsurf`
+- **Binary**: `${env:GITKRAKEN_GK_PATH} mcp --host=codex --source=gitlens --scheme=codex`
 - **External egress**: **conditional** — GitKraken binary may contact GitHub / GitLab / Azure / Bitbucket APIs for PR / issue operations. Credentials managed inside GitKraken, not via repo env vars.
 - **Auth**: managed by GitKraken binary; not visible to repo
 - **Classification**: binary-subprocess with opaque external egress. Out-of-scope for env-key catalogue.
@@ -126,7 +126,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 
 - **Transport**: **https-external**
 - **URL**: `https://mcp.deepwiki.com/mcp`
-- **External egress**: **yes** — Windsurf connects directly to the remote MCP endpoint. No repo subprocess involved.
+- **External egress**: **yes** — legacy editor connects directly to the remote MCP endpoint. No repo subprocess involved.
 - **Auth**: none (per config; may be unauthenticated service)
 - **Classification**: external. Recorded as `EGRESS-MCP-DEEPWIKI-01` in `egress_points.yaml`.
 
@@ -149,10 +149,10 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 
 ## 4. Key findings
 
-- **Repo Python code has no MCP-ingress path**. MCPs exist only to let Cursor Agent (Windsurf IDE) call into the repo's tools. The repo never acts as a client of its own MCP servers at runtime.
-- **11 of 12 MCP servers are locally-launched** by Windsurf: **9 via stdio-loopback** (`adg_sqlite`, `memory`, `vector_db`, `otel_mcp`, `redis`, `pytest_mcp`, `enhanced_http`, `notion`, `task_manager`) and **2 via binary-subprocess** (`filesystem` Node launcher, `GitKraken` gk.exe). Network actors are the subprocesses themselves, not repo Python.
+- **Repo Python code has no MCP-ingress path**. MCPs exist only to let Codex (legacy editor IDE) call into the repo's tools. The repo never acts as a client of its own MCP servers at runtime.
+- **11 of 12 MCP servers are locally-launched** by legacy editor: **9 via stdio-loopback** (`adg_sqlite`, `memory`, `vector_db`, `otel_mcp`, `redis`, `pytest_mcp`, `enhanced_http`, `notion`, `task_manager`) and **2 via binary-subprocess** (`filesystem` Node launcher, `GitKraken` gk.exe). Network actors are the subprocesses themselves, not repo Python.
 - **2 servers have by-design external egress from their subprocesses** (`enhanced_http`, `notion`). Both are sanctioned transport surfaces — `enhanced_http` is the constitutional sole-authority for programmatic HTTP (per MCP Authority rule); `notion` is a cooperative PM integration. Neither is part of the repo's LLM inference or embedding pipelines.
-- **`deepwiki` is the only pure-external MCP** (no subprocess; Windsurf ↔ remote URL). Repo code does not reference it.
+- **`deepwiki` is the only pure-external MCP** (no subprocess; legacy editor ↔ remote URL). Repo code does not reference it.
 - **`GitKraken` binary-subprocess** has opaque credentials and opaque egress to git-hosting providers. Out of scope for repo env-key catalogue; G4b may record as a side-channel integration surface.
 
 ## 5. MCP loopback vs real external egress — disambiguation
@@ -176,6 +176,6 @@ The catalogue in `egress_points.yaml` intentionally splits:
 
 ## 7. Hand-off
 
-- G3 should represent `enhanced_http` as an explicit named egress pipeline ("Cursor Agent HTTP passthrough") to avoid confusion with SovereignLLMGateway.
+- G3 should represent `enhanced_http` as an explicit named egress pipeline ("Codex HTTP passthrough") to avoid confusion with SovereignLLMGateway.
 - G4b should record MCP-injected env keys (`VECTOR_DB_*`, `REDIS_*`, `ADG_REDIS_URL`, `MEMORY_DB`, `NOTION_TOKEN`) as `mcp_runtime_env` class, distinct from repo-runtime env.
 - G7 traceability: map `enhanced_http` tool surface to v1.4 atom space — no current atom explicitly scopes "IDE programmatic HTTP"; B7 candidate deferred.

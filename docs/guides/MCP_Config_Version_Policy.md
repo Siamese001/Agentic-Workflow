@@ -3,7 +3,7 @@
 **Status**: ACTIVE  
 **Phase**: Wave 2 Phase 2.5 + H1 (2026-05-19)  
 **Enforcement**: CI gates + pre-commit (T6e2, T11) + editor sync hooks  
-**SSOT**: `.cursor/mcp.json` (Cursor project) · `.windsurf/mcp_config.json` (Windsurf mirror)
+**SSOT**: `.mcp.json` (legacy editor project) · `.mcp.json` (legacy editor mirror)
 
 ---
 
@@ -11,7 +11,7 @@
 
 Every change to MCP server configuration MUST be validated before the configuration is loaded by an editor. Unvalidated config changes can silently break all MCP tool calls for the session.
 
-**Cursor-first workflow:** edit `.cursor/mcp.json`, run sync, commit. Keep `.windsurf/mcp_config.json` aligned for Windsurf contributors (parity gate enforces canonical fleet).
+**legacy editor-first workflow:** edit `.mcp.json`, run sync, commit. Keep `.mcp.json` aligned for legacy editor contributors (parity gate enforces canonical fleet).
 
 ---
 
@@ -58,17 +58,17 @@ Filesystem server (Rule #0): `args` must be exactly `[<editor-launcher>, "${env:
 
 ## Enforcement Points
 
-### Layer 1 — Cursor project SSOT (primary)
+### Layer 1 — legacy editor project SSOT (primary)
 
 | Path | Role |
 |------|------|
-| `.cursor/mcp.json` | **Edit here** for Cursor Agent |
+| `.mcp.json` | **Edit here** for Codex |
 | `python .cursor/scripts/sync_mcp_config.py` | Refreshes AGENTS.md autogen blocks + global `~/.cursor/cursor/mcp.json` |
 | `ops_scripts/ci/check_mcp_config_sovereignty.py` | Rule #0 scope (both editor configs) |
 
-### Layer 2 — Windsurf mirror + global sync
+### Layer 2 — legacy editor mirror + global sync
 
-**Symlink (preferred):** `~/.codeium/windsurf/mcp_config.json` → `.windsurf/mcp_config.json`
+**Symlink (preferred):** `~/.codeium/windsurf/mcp_config.json` → `.mcp.json`
 
 **Fallback:** `post_write_mcp_config_sync.py` copies repo → global on save.
 
@@ -78,11 +78,11 @@ POSIX / Windows setup: `tools/setup/setup_symlinks.sh` · `tools/setup/setup_sym
 
 | Gate | Source | Detects |
 |------|--------|---------|
-| **T6b** | `check_mcp_sync_integrity.py` | `.cursor/mcp.json` ↔ AGENTS.md MCP Quick Reference |
+| **T6b** | `check_mcp_sync_integrity.py` | `.mcp.json` ↔ AGENTS.md MCP Quick Reference |
 | **T6c** | `check_agents_mcp_coverage.py` | Server keys vs AGENTS rows |
 | **T6d** | `check_agents_md_sync.py` | Autogen block drift |
 | **T6e2** | `check_mcp_config_schema.py --profile all` | Schema / §27 keys |
-| **T6e2c** | `check_mcp_editor_parity.py` | Cursor vs Windsurf fleet |
+| **T6e2c** | `check_mcp_editor_parity.py` | legacy editor vs legacy editor fleet |
 | **T11** | **`check_mcp_config_sovereignty.py`** | **Rule #0 filesystem scope** |
 | **T6e** | `check_exclusion_sync.py` | Exclusion drift |
 | **T6** | `_validate_pytest_config.py --strict` | Pytest config split |
@@ -91,44 +91,44 @@ Contract runner: `python ops_scripts/ci/run_contract_gates.py` (includes MCP-SCO
 
 ### Layer 4 — Complementary linting
 
-- `post_write_audit.py` — Windsurf MCP lint log (`artifacts/windsurf/mcp_lint_audit.jsonl`)
+- `post_write_audit.py` — legacy editor MCP lint log (`artifacts/windsurf/mcp_lint_audit.jsonl`)
 - `validate_mcp_config.py` — optional schema helper (if present)
 
 ---
 
-## Change Procedure (Cursor-first)
+## Change Procedure (legacy editor-first)
 
 ```
-1. Edit .cursor/mcp.json
-2. Align .windsurf/mcp_config.json (editor-specific deltas only: GitKraken host, Playwright id, launcher path)
+1. Edit .mcp.json
+2. Align .mcp.json (editor-specific deltas only: GitKraken host, Playwright id, launcher path)
 3. python .cursor/scripts/sync_mcp_config.py
 4. python ops_scripts/ci/check_mcp_config_sovereignty.py
 5. python ops_scripts/ci/check_mcp_editor_parity.py
-6. Commit .cursor/mcp.json, .windsurf/mcp_config.json, AGENTS.md (if autogen changed)
-7. Restart Cursor (and Windsurf if mirror edited)
+6. Commit .mcp.json, .mcp.json, AGENTS.md (if autogen changed)
+7. Restart legacy editor (and legacy editor if mirror edited)
 ```
 
-Windsurf-only contributors may edit `.windsurf/mcp_config.json` first, then port the same server entries to `.cursor/mcp.json` before merge.
+legacy editor-only contributors may edit `.mcp.json` first, then port the same server entries to `.mcp.json` before merge.
 
 ---
 
 ## Rollback Procedure
 
 ```
-1. git log .cursor/mcp.json .windsurf/mcp_config.json
-2. git checkout <good-sha> -- .cursor/mcp.json .windsurf/mcp_config.json
+1. git log .mcp.json .mcp.json
+2. git checkout <good-sha> -- .mcp.json .mcp.json
 3. python .cursor/scripts/sync_mcp_config.py
 4. python ops_scripts/ci/check_mcp_config_sovereignty.py
 5. Restart editors
 ```
 
-Audit trail: `artifacts/windsurf/mcp_lint_audit.jsonl` (Windsurf writes).
+Audit trail: `artifacts/windsurf/mcp_lint_audit.jsonl` (legacy editor writes).
 
 ---
 
 ## References
 
 - Filesystem operator guide: `docs/guides/filesystem_mcp_operations.md`
-- MCP config SSOT rule: `.cursor/rules/mcp-config-ssot.mdc`
+- MCP config SSOT rule: `.claude/rules/mcp-config-ssot.mdc`
 - H0 receipt: `docs/reports/cursor/mcp_scope0_h0_receipt.md`
 - Archive (YAML infra — do not restore): `tools/archive/mcp_yaml_infra_w5.2/`

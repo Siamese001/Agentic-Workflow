@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2026-05-25  
-**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.cursor/plans/l6-reorg-deferred-followup-f3a9c2.md) W1
+**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.claude/plans/l6-reorg-deferred-followup-f3a9c2.md) W1
 
 ## Decisions executed
 

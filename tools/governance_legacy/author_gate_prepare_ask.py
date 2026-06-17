@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot Author-Gate spec → packet → card → OPTIONS_JSON for Cursor ask_user_question.
+"""One-shot Author-Gate spec → packet → card → OPTIONS_JSON for legacy editor ask_user_question.
 
 Usage:
     echo '<spec-json>' | python tools/cursor/author_gate_prepare_ask.py

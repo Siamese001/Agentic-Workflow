@@ -168,7 +168,7 @@ def _default_resume_path() -> str:
 
 
 def _print_paths_for_cursor_workspace(artifact_dir_str: str) -> None:
-    """Emit repo-relative POSIX paths and file:// URIs (Cursor/VS Code friendly).
+    """Emit repo-relative POSIX paths and file:// URIs (legacy editor/VS Code friendly).
 
     Raw Windows ``artifact_dir=C:\\...`` strings often do not linkify in the
     integrated terminal or chat; workspace-relative ``artifacts/...`` and
@@ -935,7 +935,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             return 2
 
     # Wizard / cursor-prompts mode: if mandatory inputs are missing, write a
-    # sentinel line and exit 7 so the calling process (Cursor Agent IDE) can prompt
+    # sentinel line and exit 7 so the calling process (Codex IDE) can prompt
     # the user for the missing fields.
     mandatory_missing = []
     if section_eff not in section_lane_ids:

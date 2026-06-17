@@ -13,8 +13,8 @@
  *   - Fails fast with actionable diagnostics if Node, npm, or the package is missing.
  *   - Cleans up the child process deterministically on wrapper shutdown.
  *
- * Usage (invoked by Cursor from mcp.json):
- *   node .cursor/scripts/filesystem_mcp_launcher.js <allowed-directory> [additional-allowed-directory...]
+ * Usage (invoked from mcp.json):
+ *   node .claude/governance/scripts/filesystem_mcp_launcher.js <allowed-directory> [additional-allowed-directory...]
  *
  * Operator note: docs/guides/filesystem_mcp_operations.md
  */
@@ -98,7 +98,7 @@ if (!fs.existsSync(serverScript)) {
     "server-filesystem not found at: " +
       serverScript +
       "\n  Install with: npm install -g @modelcontextprotocol/server-filesystem@2026.1.14" +
-      "\n  Then restart Cursor." +
+      "\n  Then restart the editor." +
       "\n  See docs/guides/filesystem_mcp_operations.md"
   );
 }
@@ -164,7 +164,7 @@ for (const dir of allowedDirs) {
     die(
       "Allowed directory " + dir + " resolves inside a forbidden zone. " +
       "Filesystem MCP refuses to expose system dirs, user home, or /etc. " +
-      "Check .cursor/mcp.json and AGENTIC_REPO_ROOT. " +
+      "Check the repo MCP config and AGENTIC_REPO_ROOT. " +
       "See docs/guides/filesystem_mcp_operations.md"
     );
   }

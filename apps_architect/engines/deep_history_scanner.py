@@ -1,6 +1,6 @@
 """Historical pattern archaeology — deep-time plan scanning.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW3 DS-7.
+Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW3 DS-7.
 
 Extends PlanPatternEngine to support configurable depth beyond 30 days,
 including full-history scans and date-range filtering.

@@ -1,6 +1,6 @@
 """apps_shared.cert.exit_eval_hook — W2.P3 opt-in Exit invocation hook.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P3.
+Plan: ``.claude/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P3.
 
 Problem (audit BLOCKER #5): ``apps_qna`` and ``apps_underwriting_ai``
 cert routes declare ``execution_form: SINGLE_STEP`` + ``l3_required: false``.

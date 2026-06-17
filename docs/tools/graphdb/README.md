@@ -265,4 +265,4 @@ pytest tests/unit/tools/graphdb/ --cov=tools/graphdb --cov-report=term-missing
 
 - `docs/reference/GraphDB/Graph DB vs. Dependency Graph.md` — design rationale
 - `docs/reference/ADG/DEPENDENCY GRAPH vs GRAPHDB Design.md` — ADG architecture context
-- `.windsurf/plans/graphdb-enhancement-phase-a-4f2e8b.md` — Phase A design decisions
+- `.claude/plans/graphdb-enhancement-phase-a-4f2e8b.md` — Phase A design decisions

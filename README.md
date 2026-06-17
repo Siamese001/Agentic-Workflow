@@ -212,12 +212,16 @@ Eight apps built on the governed control plane. Every app ships the same governa
 | [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | [→](apps_eval/RUNBOOK.md) | [→](apps_eval/SLO.md) | [→](apps_eval/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
-| [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode, plus compact downstream briefs for `apps_rg` and `apps_lic` | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | [→](apps_rg/README.md) | [→](apps_rg/RUNBOOK.md) | [→](apps_rg/SLO.md) | [→](apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
 | [`apps_shared`](apps_shared/) | Shared adapters, validators, HOP executor, proof harness — library-only | [→](apps_shared/README.md) | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/validators/proof/THREAT_MODEL.md) |
 
 > `apps_exec` (Executive Brief Generator) was archived 2026-05-05 — see `archives/apps_exec_20260505/` for the snapshot.
+
+`apps_research` also exposes compact downstream consumer briefs:
+- `apps_rg` uses `downstream_research_substrate_v1`
+- `apps_lic` uses `apps_lic_research_substrate_v1`
 
 Consolidated SVP Engineering reviews live under [`docs/reports/`](docs/reports/) — see the per-app subfolders for the latest certification status.
 

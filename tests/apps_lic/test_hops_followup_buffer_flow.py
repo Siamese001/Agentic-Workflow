@@ -1,4 +1,4 @@
-"""End-to-end integration walk of HOP2/HOP3/HOP6/HOP9 follow-up wiring.
+"""End-to-end integration walk of HOP2/HOP3/HOP9 follow-up wiring.
 
 This test walks the data flow that the W1-W4 follow-up wiring
 introduced (2026-05-01) using a stub buffer + registry rather than a
@@ -7,40 +7,27 @@ INTERFACE between hops:
 
     HOP-2 emits company_triggers + best_company_trigger
     HOP-3 emits mutual_connection_priming_line
-    HOP-6 reads HOP-1 archetype + HOP-5 draft and exercises the new
-          LIC-E020/LIC-E021/LIC-E022 validators
     HOP-9 emits cadence_advice from the FollowupCadenceEngine
 
-Full HOP1-9 dataclass instantiation is deliberately out of scope —
-those agents pull config from agent_specs.json and require runtime
-factories. The pure validators / engines that the follow-up wiring
-delegates to are already 100% unit-tested. This file proves the WIRING
-contract: the dict shapes are stable across the buffer hop boundaries.
+Full HOP1-9 dataclass instantiation is deliberately out of scope.
+This file proves the WIRING contract: the dict shapes are stable across
+the buffer hop boundaries, and the live validators behave as expected.
 """
 
 from __future__ import annotations
 
-import pytest
-
-try:
-    from apps_lic.engines.HOP6ValidationAgent import HOP6ValidationAgent
-    from apps_lic.engines.company_trigger_extractor import (
-        extract_best_trigger,
-        extract_triggers,
-    )
-    from apps_lic.engines.mutual_connection_resolver import MutualConnectionResolver
-except ModuleNotFoundError:
-    pytest.skip(
-        "apps_lic.utils shadow prevents HOP engine imports in full-suite collection",
-        allow_module_level=True,
-    )
-
-
-def _hop6_check_unbound(name: str):
-    return getattr(HOP6ValidationAgent, name)
-
-
-_stub = type("Stub", (), {})()
+from apps_lic.engines.company_trigger_extractor import (
+    extract_best_trigger,
+    extract_triggers,
+)
+from apps_lic.engines.followup_cadence_engine import FollowupCadenceEngine
+from apps_lic.engines.mutual_connection_resolver import MutualConnectionResolver
+from apps_lic.types.cadence_state_types import CadenceAction, CadenceState, CadenceStateRecord
+from apps_lic.validators.archetype_message_length_validator import validate_length
+from apps_lic.validators.question_ending_validator import validate_question_ending
+from apps_lic.validators.spam_trigger_phrase_validator import (
+    validate_message_for_spam_triggers,
+)
 
 
 class TestHop2Wiring:
@@ -108,8 +95,8 @@ class TestHop3Wiring:
         assert "Warm Intro" in line
 
 
-class TestHop6ValidatorChain:
-    """HOP6 contract: archetype + draft text -> 6-rule validation report."""
+class TestLiveValidatorChain:
+    """Live validator contract: archetype + draft text -> validator results."""
 
     def test_clean_executive_message_passes_all_three_new_rules(self) -> None:
         clean_msg = (
@@ -117,43 +104,33 @@ class TestHop6ValidatorChain:
             "Curious whether your team is exploring agentic infrastructure "
             "for governance use-cases. Worth a brief chat?"
         )
-        length = _hop6_check_unbound("_check_archetype_length")(
-            _stub, clean_msg, "EXECUTIVE"
-        )
-        question = _hop6_check_unbound("_check_question_ending")(
-            _stub, clean_msg, "EXECUTIVE"
-        )
-        spam = _hop6_check_unbound("_check_spam_triggers")(_stub, clean_msg)
-        assert length["passed"] is True
-        assert question["passed"] is True
-        assert spam["passed"] is True
+        length = validate_length(clean_msg, "EXECUTIVE")
+        question = validate_question_ending(clean_msg, "EXECUTIVE")
+        spam = validate_message_for_spam_triggers(clean_msg)
+        assert length.is_valid is True
+        assert question.is_valid is True
+        assert spam.is_valid is True
 
     def test_pathological_message_triggers_all_three_rules(self) -> None:
         bad_msg = (
             "Hope this finds you well. Just wanted to circle back on "
             "synergies. Act now — last chance to book a call on calendly."
         ) + (" extra " * 60)  # blow past EXECUTIVE 400-char cap
-        length = _hop6_check_unbound("_check_archetype_length")(
-            _stub, bad_msg, "EXECUTIVE"
-        )
-        question = _hop6_check_unbound("_check_question_ending")(
-            _stub, bad_msg, "EXECUTIVE"
-        )
-        spam = _hop6_check_unbound("_check_spam_triggers")(_stub, bad_msg)
-        assert length["passed"] is False
-        assert length["severity"] == "HIGH"
-        assert question["passed"] is False
-        assert question["severity"] == "HIGH"
-        assert spam["passed"] is False  # critical (last chance) + high (act now / calendly)
-        assert spam["severity"] == "HIGH"
+        length = validate_length(bad_msg, "EXECUTIVE")
+        question = validate_question_ending(bad_msg, "EXECUTIVE")
+        spam = validate_message_for_spam_triggers(bad_msg)
+        assert length.is_valid is False
+        assert length.excess > 0
+        assert question.is_valid is False
+        assert question.required_for_archetype is True
+        assert spam.is_valid is False  # critical (last chance) + high (act now / calendly)
+        assert spam.total_hit_count >= 1
 
     def test_recruiter_archetype_relaxes_question_ending(self) -> None:
         msg = "Open to discussing a senior role at Acme."
-        question = _hop6_check_unbound("_check_question_ending")(
-            _stub, msg, "RECRUITER"
-        )
-        assert question["passed"] is True
-        assert question["severity"] == "MEDIUM"
+        question = validate_question_ending(msg, "RECRUITER")
+        assert question.is_valid is True
+        assert question.required_for_archetype is False
 
 
 class TestHop9CadenceWiring:
@@ -161,11 +138,6 @@ class TestHop9CadenceWiring:
 
     def test_initial_send_advice_when_no_state(self) -> None:
         from apps_lic.engines.followup_cadence_engine import FollowupCadenceEngine
-        from apps_lic.types.cadence_state_types import (
-            CadenceAction,
-            CadenceState,
-            CadenceStateRecord,
-        )
 
         record = CadenceStateRecord(
             campaign_id="camp", recipient_id="recip", current_state=CadenceState.INITIAL
@@ -176,11 +148,6 @@ class TestHop9CadenceWiring:
 
     def test_terminated_state_yields_no_action(self) -> None:
         from apps_lic.engines.followup_cadence_engine import FollowupCadenceEngine
-        from apps_lic.types.cadence_state_types import (
-            CadenceAction,
-            CadenceState,
-            CadenceStateRecord,
-        )
 
         record = CadenceStateRecord(
             campaign_id="c",

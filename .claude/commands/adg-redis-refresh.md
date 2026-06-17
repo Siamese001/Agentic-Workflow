@@ -107,7 +107,7 @@ python tools/adg/redis_health_check.py --verbose
 
 **Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding.
 
-**Option B — current MCP servers (preferred after Cursor restart picks up the config):**
+**Option B — current MCP servers (preferred after legacy editor restart picks up the config):**
 
 Use the current `redis` and `adg_sqlite` servers together:
 

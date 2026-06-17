@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cursor-decommission reference reporter (read-only).
+"""legacy editor-decommission reference reporter (read-only).
 
 Scans live repo trees for `.cursor/` references and classifies each line into:
 

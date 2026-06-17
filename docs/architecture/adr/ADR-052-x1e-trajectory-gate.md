@@ -52,7 +52,7 @@ Composition: **hybrid** (`aggregate_threshold: 0.70`). Hard sub-gates deny (X3A)
 
 ## Open items
 
-- `tool_selection_accuracy` requires a maintained plan-catalog. Owner: L1 cognition team. Tracked in plan `.windsurf/plans/x1e-trajectory-gate-catalog-TBD.md`.
+- `tool_selection_accuracy` requires a maintained plan-catalog. Owner: L1 cognition team. Tracked in plan `.claude/plans/x1e-trajectory-gate-catalog-TBD.md`.
 - `reasoning_coherence` judge calibration: initial SME κ ≥ 0.80 before production (grader spec §5.2).
 
 ## References

@@ -45,7 +45,7 @@ internal obligation that the implementation must satisfy when it is built.
 
 | Source | Relation |
 |--------|---------|
-| `.windsurf/rules/constitutional.md` | Supersedes these requirements where they conflict |
+| `.claude/rules/constitutional.md` | Supersedes these requirements where they conflict |
 | `docs/requirements/wave_c_handoff_contract.md` v2.0 | Frozen topology and route-purity constraints |
 | `docs/reports/wave_c_gap_map.md` | Evidence for each requirement's gap classification |
 | `docs/requirements/wave_b_target_state_registry.md` | Target-state baseline this doc internalises |
@@ -328,7 +328,7 @@ Implementations satisfying any requirement in this document MUST NOT regress the
 - Route purity — `query_router.py` domain-to-collection mappings frozen
 - Metadata contract — 14 required fields per `wave_b_metadata_contract.md`
 - `evidence_shaper.py` normative filter semantics — per AGEN-0105
-- Constitutional hard constraints — per `.windsurf/rules/constitutional.md`
+- Constitutional hard constraints — per `.claude/rules/constitutional.md`
 
 ## 8. Validation
 
@@ -353,5 +353,5 @@ executed in Wave D via:
 - `docs/requirements/wave_b_metadata_contract.md` — ingestion metadata contract
 - `docs/requirements/agentic_requirements_registry_spec.md` — registry format specification (schema only)
 - `docs/requirements/registry/` — per-requirement YAML records (future Wave D expansion)
-- `.windsurf/rules/constitutional.md` — constitutional floor (supersedes this document on conflict)
-- `.windsurf/plans/wave_c_plan.md` — Wave C execution plan
+- `.claude/rules/constitutional.md` — constitutional floor (supersedes this document on conflict)
+- `.claude/plans/wave_c_plan.md` — Wave C execution plan

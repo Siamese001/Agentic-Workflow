@@ -32,7 +32,7 @@ W1_BROWN_ARTIFACT_DIR: artifacts/apps_rg/runtime_proofs/executive_summary/real/e
 PARENT_PLAN: graph-skills-quality-enhancement-c4e8a1
 DEFERRED_REGISTER: docs/reports/apps_rg/graph_skills_deferred_scope_register_20260526.md
 
-PLAN_CREATED: slug=graph-skills-deferred-followup-d7f2a8 path=.cursor/plans/graph-skills-deferred-followup-d7f2a8.md status=Not Started notion_page=36c27693-f55c-8131-a2c2-f2ad66da13b4
+PLAN_CREATED: slug=graph-skills-deferred-followup-d7f2a8 path=.claude/plans/graph-skills-deferred-followup-d7f2a8.md status=Not Started notion_page=36c27693-f55c-8131-a2c2-f2ad66da13b4
 
 NOTION_PAGE_ID: 36c27693-f55c-8131-a2c2-f2ad66da13b4
 NOTION_PLAN_URL: https://www.notion.so/graph-skills-deferred-followup-d7f2a8-36c27693f55c8131a2c2f2ad66da13b4

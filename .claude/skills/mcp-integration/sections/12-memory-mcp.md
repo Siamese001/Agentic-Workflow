@@ -1,6 +1,6 @@
 ## §12 — Memory MCP
 
-**In-house.** Persistent SQLite-backed knowledge graph. Survives Cursor restarts.
+**In-house.** Persistent SQLite-backed knowledge graph. Survives legacy editor restarts.
 
 ### When To Use
 

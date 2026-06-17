@@ -2,8 +2,8 @@
 
 **Status**: Accepted
 **Date**: 2026-04-29
-**Deciders**: User (architectural correction), Cursor Agent (validation + implementation)
-**Plan**: `.windsurf/plans/three-bucket-otel-view-5db409.md`
+**Deciders**: User (architectural correction), Codex (validation + implementation)
+**Plan**: `.claude/plans/three-bucket-otel-view-5db409.md`
 **Supersedes**: parts of ADR-030 (Runtime ADG Ingest Contract) — see "Relationship to ADR-030" below.
 
 ## Context
@@ -164,8 +164,8 @@ confirming `v_runtime_proof` populates from the live `runtime_adg_store`.
 
 ## References
 
-- Plan: `.windsurf/plans/three-bucket-otel-view-5db409.md`
-- Predecessor plan: `.windsurf/plans/adg-three-bucket-authority-model-7e2a91.md`
+- Plan: `.claude/plans/three-bucket-otel-view-5db409.md`
+- Predecessor plan: `.claude/plans/adg-three-bucket-authority-model-7e2a91.md`
 - Three-bucket model spec: `docs/architecture/adr/ADG_THREE_BUCKET_AUTHORITY_MODEL.md`
 - Audit: `docs/reports/adg/ADG_THREE_BUCKET_AUTHORITY_AUDIT.json`
 - ADR-030: Runtime ADG Ingest Contract (preserved)

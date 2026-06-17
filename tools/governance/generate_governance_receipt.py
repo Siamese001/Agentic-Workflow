@@ -180,7 +180,7 @@ def _build_receipt(plan_slug: str, test_result: dict) -> dict:
         "core_agnosticism_enforced": True,
         "enforcement_layers_active": [
             "AGENTS.md (7 files)",
-            "Windsurf rules (4 rules)",
+            "legacy editor rules (4 rules)",
             "Skills (5 skills)",
             "Workflows (4 workflows)",
             "Hooks/scripts (5 scripts)",

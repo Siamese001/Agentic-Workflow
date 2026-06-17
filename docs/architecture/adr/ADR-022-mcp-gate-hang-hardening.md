@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-19
 **Status:** Accepted
-**Deciders:** Engineering + Cursor Agent pair session
+**Deciders:** Engineering + Codex pair session
 **Supersedes:** None (extends ADR-021)
 **Impact Layers:** L_TOOLS, L_OPS, L_SHARED
 **Filename:** ADR-022-mcp-gate-hang-hardening.md
@@ -15,7 +15,7 @@ Eliminate all catastrophic hang paths in `pre_mcp_gate.py` and unify `session_st
 
 MCP productivity was being killed by three interacting issues:
 
-1. **5-minute synchronous hang risk**: `check_adg_gate` and `check_memory_gate` called `_auto_generate_adg(repo_root)`, which spawned `python tools/generate_full_adg.py` with `timeout=300`. Any ADG tool call when `artifacts/adg/adg_indexed_*.sqlite` was missing would block Cursor Agent for up to 5 minutes inside a pre-hook.
+1. **5-minute synchronous hang risk**: `check_adg_gate` and `check_memory_gate` called `_auto_generate_adg(repo_root)`, which spawned `python tools/generate_full_adg.py` with `timeout=300`. Any ADG tool call when `artifacts/adg/adg_indexed_*.sqlite` was missing would block Codex for up to 5 minutes inside a pre-hook.
 2. **Session-state drift**: Each of the three hook scripts (`pre_mcp_gate`, `post_mcp_audit`, `pre_prompt_classifier`) derived `_session_id` differently. `pre_mcp_gate` fell back to `"default"`; the other two fell back to `os.getppid()`. When `VSCODE_PID` was inherited inconsistently by hook subprocesses on Windows, the three hooks read/wrote different `session_state_*.json` files. Result: the memory-first gate re-blocked every turn because `post_mcp_audit` wrote `memory_recalled=True` to one file and `pre_mcp_gate` read `False` from another.
 3. **Gate ceremony friction**: Every non-recovery tool call ran through the memory-first gate plus the pytest sequencing gate (TTL 300s) plus per-server health probes. Even pure read-only tools (`adg_find_node`, `redis_keys`, `API-query-data-source`) were blocked until `mem_recall_session_start` ran first.
 
@@ -90,7 +90,7 @@ Call sites updated in:
 
 ### Sync Gates (existing, no new script)
 
-Two pre-existing gates validate AGENTS.md ↔ `.windsurf/mcp_config.json` consistency, both now wired into `.pre-commit-config.yaml`:
+Two pre-existing gates validate AGENTS.md ↔ `.mcp.json` consistency, both now wired into `.pre-commit-config.yaml`:
 
 - `@c:\Git\Agentic-Workflow\ops_scripts\ci\check_mcp_sync_integrity.py` — strict content comparison (hook id `mcp-sync-integrity` / T6b)
 - `@c:\Git\Agentic-Workflow\ops_scripts\ci\check_agents_mcp_coverage.py` — coverage check (hook id `agents-mcp-coverage` / T6c, added this session)
@@ -109,11 +109,11 @@ Two pre-existing gates validate AGENTS.md ↔ `.windsurf/mcp_config.json` consis
 
 ## References
 
-- ADR-021 — Windsurf hooks cannot auto-recover red MCP servers (supersedes in spirit the auto-generation fallback idea)
-- `.windsurf/scripts/_session_id_shared.py` — canonical session_id derivation
+- ADR-021 — legacy editor hooks cannot auto-recover red MCP servers (supersedes in spirit the auto-generation fallback idea)
+- `.claude/governance/scripts/_session_id_shared.py` — canonical session_id derivation
 - `artifacts/windsurf/mcp_health/20260419_1126.json` — pre-hardening MCP sweep evidence
 - `docs/reports/plans/mcp-gate-hang-hardening-2026-04-19.md` — full RCA and implementation log
-- Memory MCP entities: `DebugSession:2026-04-19-MCPHooksAndPytest`, `ProceduralPattern:WindsurfHookSessionIdConsistency`, `ProceduralPattern:PytestMCPDiscoveryServialCollection`
+- Memory MCP entities: `DebugSession:2026-04-19-MCPHooksAndPytest`, `ProceduralPattern:legacy editorHookSessionIdConsistency`, `ProceduralPattern:PytestMCPDiscoveryServialCollection`
 
 ## Operational Knobs
 

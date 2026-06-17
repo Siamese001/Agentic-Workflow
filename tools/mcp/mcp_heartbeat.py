@@ -6,11 +6,11 @@ Closes the GUARD_CLEAN hardening deferred item from
 Problem
 -------
 `guard_single_instance()` unconditionally terminates every sibling process
-that matches its script marker. When Windsurf opens/closes several windows
+that matches its script marker. When legacy editor opens/closes several windows
 in quick succession, each new window's GUARD_CLEAN kills the previous
 window's MCP servers, then the new window may itself close before its
 servers finish bootstrapping \u2014 leaving zero live MCP servers across all
-Windsurf instances. This is the split-brain failure mode recorded in the
+legacy editor instances. This is the split-brain failure mode recorded in the
 RCA: 2026-04-23 saw all 7 Python MCP servers dead after 5 window restarts.
 
 Fix

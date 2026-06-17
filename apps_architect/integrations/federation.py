@@ -1,6 +1,6 @@
 """Multi-repo pattern federation — DS-6.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW5 DS-6.
+Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW5 DS-6.
 
 Enables cross-repo pattern sharing: export patterns to JSON, import from
 remote repos, and merge federated collections.

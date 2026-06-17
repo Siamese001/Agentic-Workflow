@@ -1,6 +1,6 @@
 """Delta computation engine — compares patterns against repo reality.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P2.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P2.
 
 Compares a PatternCollection (from scanners) against the current repo state
 to detect drift, missing patterns, stale patterns, and new patterns.

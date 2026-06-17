@@ -145,7 +145,7 @@ def main() -> int:
 
             manifest_key = str(relative_path).replace("\\", "/")
             if source.key == "windsurf":
-                recovered_key = f".windsurf/plans/{manifest_key}"
+                recovered_key = f".claude/plans/{manifest_key}"
             elif source.key == "windsurf-docs":
                 recovered_key = f"docs/reports/plans/{manifest_key}"
             else:

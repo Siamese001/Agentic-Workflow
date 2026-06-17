@@ -1,6 +1,6 @@
 # P2-W1A — Competencies default graph authority (ledger removed)
 
-**Generated:** 2026-06-16T16:16:30Z
+**Generated:** 2026-06-17T16:09:51Z
 
 GAP-P2-1 (broad_skills_ledger as competencies product authority) closed by P2-W1A.
 

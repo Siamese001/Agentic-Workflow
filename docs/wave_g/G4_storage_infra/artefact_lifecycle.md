@@ -150,10 +150,10 @@ See `vector_collections.md` for full detail.
 - `artifacts/ci/`, `artifacts/ci_gates/`, `artifacts/guardian_analysis/`, `artifacts/import_health/`, `artifacts/ssot_scans/`, `artifacts/structure/`, `artifacts/audits/`.
 - Accumulate per CI run.
 
-### 5.6 Windsurf telemetry
+### 5.6 legacy editor telemetry
 
 - `artifacts/windsurf/`: 14 files / 0.4 MB. Includes `adg_first_violations.jsonl` (append-only).
-- Authored by `.windsurf/scripts/post_*` hooks.
+- Authored by `.claude/governance/scripts/post_*` hooks.
 
 ### 5.7 Anomaly watchlist
 

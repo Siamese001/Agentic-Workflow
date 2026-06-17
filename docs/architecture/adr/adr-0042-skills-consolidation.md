@@ -9,7 +9,7 @@
 
 ## Context
 
-The Windsurf skill system had grown organically to 32 individual skill directories under `.windsurf/skills/`. This created several operational challenges:
+The legacy editor skill system had grown organically to 32 individual skill directories under `.claude/skills/`. This created several operational challenges:
 
 1. **Cognitive Overload**: 32 skills made it difficult for developers to know which skill to invoke
 2. **Overlapping Responsibilities**: Multiple skills addressed similar concerns (e.g., 3 different graph-related skills)
@@ -59,7 +59,7 @@ The Windsurf skill system had grown organically to 32 individual skill directori
 
 1. **Operational Simplicity**: Reduce moving parts from 32 → 5 canonical entrypoints
 2. **Dependency Hygiene**: Eliminate overlapping enforcement mechanisms
-3. **Archival over Deletion**: Preserve history in `tools/archive/.windsurf/skills/`
+3. **Archival over Deletion**: Preserve history in `tools/archive/.claude/skills/`
 4. **Documentation**: Maintain clear consolidation mapping in `RULES_INDEX.md`
 5. **Zero-Regression**: All CI gates must pass; functionality preserved
 
@@ -75,10 +75,10 @@ The Windsurf skill system had grown organically to 32 individual skill directori
 
 ### Archive Strategy
 
-All 30 non-canonical skills archived to `tools/archive/.windsurf/skills/`:
+All 30 non-canonical skills archived to `tools/archive/.claude/skills/`:
 - 27 skills replaced by consolidated skills
 - 17 CI-specific/utility skills (not consolidated but archived for reference)
-- Full manifest: `tools/archive/.windsurf/skills/manifests/consolidation-archive-20260403.json`
+- Full manifest: `tools/archive/.claude/skills/manifests/consolidation-archive-20260403.json`
 
 ---
 
@@ -109,7 +109,7 @@ All 30 non-canonical skills archived to `tools/archive/.windsurf/skills/`:
 ## Implementation
 
 ### Wave 1 — Archive (Complete)
-- Created `tools/archive/.windsurf/skills/` structure
+- Created `tools/archive/.claude/skills/` structure
 - Archived 30 individual skills with full directory contents
 - Created consolidation manifest JSON
 
@@ -135,9 +135,9 @@ All 30 non-canonical skills archived to `tools/archive/.windsurf/skills/`:
 ## References
 
 - **Plan**: `docs/reports/plans/skills-consolidation-438efb.md`
-- **Archive Manifest**: `tools/archive/.windsurf/skills/manifests/consolidation-archive-20260403.json`
+- **Archive Manifest**: `tools/archive/.claude/skills/manifests/consolidation-archive-20260403.json`
 - **Updated Index**: `.windsurf/RULES_INDEX.md`
-- **Updated Rules**: `.windsurf/rules/.windsurfrules`
+- **Updated Rules**: `.claude/rules/.windsurfrules`
 
 ---
 

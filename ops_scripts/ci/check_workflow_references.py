@@ -37,7 +37,7 @@ DELETED_REFERENCES = {
     "uwg-block-smoke",
     "Guardian Tests (Mandatory)",
     "Author-Gate Harness HITL",
-    "old Windsurf Governance Health Check",
+    "old legacy editor Governance Health Check",
 }
 
 OLD_GUARDIAN_MODULES = {

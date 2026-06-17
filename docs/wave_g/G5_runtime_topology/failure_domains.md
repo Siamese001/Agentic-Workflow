@@ -49,7 +49,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 ## Domain FD-06 — MCP transport and launcher domain
 
-- Scope: Windsurf MCP lifecycle, stdio protocol hygiene, filesystem launcher watchdog, external endpoint bridges.
+- Scope: legacy editor MCP lifecycle, stdio protocol hygiene, filesystem launcher watchdog, external endpoint bridges.
 - Typical failures: subprocess startup timeout, stdout protocol pollution, zombie duplicate MCP processes.
 - Blast radius: tool-specific outages up to full IDE tooling degradation.
 - Key probes: MCP tool responsiveness, launcher readiness marker, server-specific health tools.
@@ -63,7 +63,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 ## Domain FD-08 — Governance/hook/CI enforcement domain
 
-- Scope: `.windsurf/hooks.json` gate chain, operator workflows, GitHub Actions runtime posture workflows.
+- Scope: `.claude/settings.json` gate chain, operator workflows, GitHub Actions runtime posture workflows.
 - Typical failures: over-blocking gate, stale gate logic, CI gate regressions.
 - Blast radius: can halt deployment flow or tool execution despite healthy runtime services.
 - Key probes: hook script exit diagnostics, workflow job statuses, gate artifact outputs.

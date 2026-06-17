@@ -7,7 +7,7 @@ upstream_artefacts:
   - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
   - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
   - docs/wave_g/G4b_control_plane/config_knob_catalogue.yaml
-  - .windsurf/mcp_config.json
+  - .mcp.json
 snapshot_timestamp: "04182026_0814"
 process_count: 27
 processes:
@@ -224,7 +224,7 @@ processes:
   - id: PROC-FILESYSTEM-MCP
     process_name: filesystem MCP server launcher
     launch_mode: windsurf_mcp_autostart
-    entrypoint: node .windsurf/scripts/filesystem_mcp_launcher.js <repo_root>
+    entrypoint: node .claude/governance/scripts/filesystem_mcp_launcher.js <repo_root>
     process_type: binary subprocess
     transport_mode: node wrapper stdio
     depends_on: [PROC-NODE-GLOBAL-NPM]
@@ -334,9 +334,9 @@ processes:
     notes: Optional companion service for semantic-cache observability.
 
   - id: PROC-HOOK-ENFORCERS
-    process_name: Windsurf hook gate chain
+    process_name: legacy editor hook gate chain
     launch_mode: IDE lifecycle hooks
-    entrypoint: .windsurf/hooks.json -> pre_* / post_* python scripts
+    entrypoint: .claude/settings.json -> pre_* / post_* python scripts
     process_type: CI/hook/operator trigger surface
     transport_mode: hook subprocess execution
     depends_on: [PROC-ADG-SQLITE-MCP]

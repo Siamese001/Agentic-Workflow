@@ -12,8 +12,8 @@ Steps (in order; any failure stops before push):
   3. ``git fetch origin <trunk>``.
   4. ``git rebase origin/<trunk>`` (abort + guidance on conflict).
   5. Optional ``--test "<cmd>"`` retest — push is skipped if it fails.
-  6. Deliver: ``--mode pr`` (default; ``gh pr create``) or ``--mode push``
-     (``git push origin HEAD:<trunk>`` — direct-to-trunk, opt-in).
+  6. Deliver: ``--mode pr`` (default; GitKraken MCP-only, this helper refuses to auto-create PRs)
+     or ``--mode push`` (``git push origin HEAD:<trunk>`` — direct-to-trunk, opt-in).
   7. Reap (``--mode push`` only; default on, ``--no-reap`` to skip): after a clean push the
      branch == trunk tip (merged), so remove this worktree + delete the branch (local ``-d`` +
      best-effort remote). Run from the primary checkout — never from inside the worktree being
@@ -82,6 +82,23 @@ def _fail(msg: str) -> int:
     return 1
 
 
+def _have_gk_cli() -> bool:
+    try:
+        proc = subprocess.run(
+            ["gk", "mcp", "--list-tools"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    if proc.returncode != 0:
+        return False
+    output = f"{proc.stdout}\n{proc.stderr}"
+    return all(token in output for token in ("pull_request_create", "git_status", "git_add_or_commit", "git_push"))
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Safely deliver a feature worktree to the trunk.")
     ap.add_argument("--worktree", default=None, help="worktree path (default: cwd)")
@@ -118,6 +135,11 @@ def main(argv: list[str] | None = None) -> int:
             "refusing to run in the primary checkout. Deliver from the feature worktree "
             "(the primary often carries concurrent uncommitted work)."
         )
+    if not _have_gk_cli():
+        return _fail(
+            "GitKraken CLI/MCP is required for delivery automation. Expose the GitKraken route "
+            "before using this helper."
+        )
 
     trunk_branch = args.trunk
     trunk_ref = f"origin/{trunk_branch}"
@@ -134,10 +156,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print("  [dry-run] would: require-clean → rebase → "
               + (f"retest({args.test}) → " if args.test else "")
-              + ("open PR (explicit cleanup after merge via prune_merged_chat_worktrees.py)" if args.mode == "pr"
+              + ("hand off to GitKraken MCP for PR creation (explicit cleanup after merge via prune_merged_chat_worktrees.py)" if args.mode == "pr"
                  else f"push HEAD:{trunk_branch}"
                       + (" → reap worktree + delete branch" if args.reap else " (--no-reap: keep)")))
         return 0
+
+    if args.mode == "pr":
+        return _fail(
+            "PR delivery is GitKraken MCP-only. This shell helper no longer opens PRs or falls "
+            "back to gh."
+        )
 
     # 2. Clean tree.
     rc, st, _ = _git("status", "--porcelain", cwd=top)
@@ -191,29 +219,10 @@ def main(argv: list[str] | None = None) -> int:
     rc, out, err = _git("push", "-u", "origin", branch, cwd=top)
     if rc != 0:
         return _fail(f"push of '{branch}' failed: {err or out}")
-    if not _have_gh():
-        print(
-            "  branch pushed. `gh` not found — open the PR manually:\n"
-            f"    https://github.com/  (compare {branch} → {trunk_branch})"
-        )
-        return 0
-    try:
-        pr = subprocess.run(
-            ["gh", "pr", "create", "--fill", "--base", trunk_branch, "--head", branch],
-            cwd=str(top),
-            capture_output=True,
-            text=True,
-            timeout=120,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        return _fail(f"gh pr create failed to launch: {exc}")
-    sys.stdout.write(pr.stdout or "")
-    sys.stderr.write(pr.stderr or "")
-    if pr.returncode != 0:
-        return _fail("gh pr create returned non-zero — open the PR manually.")
-    print(f"deliver-worktree: PR opened for '{branch}' → {trunk_branch}. ✓")
-    return 0
+    return _fail(
+        "PR delivery must be performed through the GitKraken MCP tool surface. This helper "
+        "only supports push mode."
+    )
 
 
 def _reap_after_push(top: Path, branch: str, trunk_branch: str) -> None:
@@ -251,15 +260,6 @@ def _reap_after_push(top: Path, branch: str, trunk_branch: str) -> None:
     # not exist (no-op then). Fail-soft — never blocks.
     _git("push", "origin", "--delete", branch, cwd=primary)
     print(f"deliver-worktree: reaped worktree {top} + branch '{branch}'. ✓")
-
-
-def _have_gh() -> bool:
-    try:
-        subprocess.run(["gh", "--version"], capture_output=True, timeout=15, check=False)
-        return True
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

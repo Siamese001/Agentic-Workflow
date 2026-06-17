@@ -14,7 +14,7 @@ When ADG MCP is unavailable or returns an error, the correct response is to fix 
 1. Run `/mcp-failure-rca` workflow
 2. Check `~/adg_mcp_server.log` for error details
 3. Remove `tools/adg/core/__pycache__` if stale
-4. Restart ADG MCP server in Cursor (Ctrl+Shift+P → Restart MCP)
+4. Restart ADG MCP server in legacy editor (Ctrl+Shift+P → Restart MCP)
 5. Re-run `mcp__adg_sqlite__adg_health` to confirm recovery
 6. Record failure + recovery in `artifacts/adg/mcp_health_report.json`
 

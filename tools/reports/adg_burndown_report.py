@@ -15,8 +15,8 @@ from ``tools/generate/generate_full_adg.py``, ``tools/adg/run_full_adg_audit.py`
 
   * artifacts/adg/adg_burndown_report.md
   * docs/reports/adg/adg_burndown_report.md
-  * **stdout** — full markdown for inline Cursor chat (see ``.claude/rules/adg-post-run-burndown.mdc``)
-  * **Cursor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
+  * **stdout** — full markdown for inline legacy editor chat (see ``.claude/rules/adg-post-run-burndown.mdc``)
+  * **legacy editor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
 
 Set ``ADG_BURNDOWN_INLINE_BYPASS=1`` to suppress stdout markdown (files still written).
 Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files still written).
@@ -444,7 +444,7 @@ def emit_mandatory_adg_burndown_report(
     fail_closed: bool = True,
     print_inline: bool = True,
 ) -> int:
-    """Write burndown markdown to disk and stdout (Cursor inline display).
+    """Write burndown markdown to disk and stdout (legacy editor inline display).
 
     Called automatically from ``generate_full_adg`` and ``run_full_adg_audit``
     so every ADG run produces a human-readable CI burndown report.
@@ -453,7 +453,7 @@ def emit_mandatory_adg_burndown_report(
         gate_results: ``adg_gate_results_<ts>.json`` (defaults to newest).
         burndown: ``adg_burndown_table.json`` (defaults to artifacts/adg/).
         fail_closed: When True, return 2 if inputs are missing; else 0 with warning.
-        print_inline: When True, emit full markdown to stdout for Cursor Agent chat.
+        print_inline: When True, emit full markdown to stdout for Codex chat.
 
     Returns:
         0 on success, 2 when inputs missing (if fail_closed), 2 on write errors.
@@ -497,7 +497,7 @@ def emit_mandatory_adg_burndown_report(
             if not md.endswith("\n"):
                 sys.stdout.write("\n")
             print(
-                "[adg_burndown_report] inline markdown emitted to stdout for Cursor display",
+                "[adg_burndown_report] inline markdown emitted to stdout for legacy editor display",
                 file=sys.stderr,
             )
         elif _inline_burndown_bypassed():

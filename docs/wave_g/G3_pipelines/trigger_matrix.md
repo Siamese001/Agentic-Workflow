@@ -5,7 +5,7 @@ Every catalogued pipeline (from `pipeline_catalogue.yaml`) mapped to its trigger
 **Canonical trigger taxonomy — 9 classes**, split into two bands:
 
 - **6 pipeline-fired classes** used as `kind:` values in `pipeline_catalogue.yaml` — `cli`, `app_entry`, `mcp_tool`, `workflow`, `import`, `internal_call`.
-- **3 infrastructural classes** that affect pipeline execution but are not `kind:` values in the YAML — `hook` (Windsurf pre/post hooks), `ci` (GitHub CI workflows), `operator` (env-var kill-switches, HITL approvals).
+- **3 infrastructural classes** that affect pipeline execution but are not `kind:` values in the YAML — `hook` (legacy editor pre/post hooks), `ci` (GitHub CI workflows), `operator` (env-var kill-switches, HITL approvals).
 
 Earlier drafts used `api` and `cli_or_test` as trigger kinds. Per G3.1 reconciliation, `api` → `internal_call` (programmatic API call from another caller) and `cli_or_test` → `cli` (tests invoke the CLI entry). Test triggering is covered under §5 as a CI/test surface that fires the `cli` band.
 
@@ -58,18 +58,18 @@ Per G2b `mcp_as_transport.md`:
 | `memory.mem_recall_session_start` / `create_entities` / `add_observations` / `search_nodes` / `mem_cleanup_stale` / `mem_import_adg_context` | PIPE-MEMORY-LIFECYCLE |
 | `adg_sqlite.adg_health` / `adg_node` / `adg_nodes_by_file` / `adg_edge_fanin` / `adg_edge_fanout` | (infra probe — not a pipeline) |
 | `pytest_mcp.run_tests` / `discover_tests` / `analyze_test_coverage` | (test-triggered; see §5 below) |
-| `enhanced_http.http_get` / `http_post` / `batch_requests` | **Cursor Agent-driven programmatic HTTP** (no repo-side pipeline; per constitutional rule) |
+| `enhanced_http.http_get` / `http_post` / `batch_requests` | **Codex-driven programmatic HTTP** (no repo-side pipeline; per constitutional rule) |
 | `otel_mcp.otel_trace` / `otel_anomalies` / `otel_policy_decisions` | PIPE-OBSERVABILITY (read side) |
 | `redis.*` | (infra probe) |
-| `notion.API-*` | Cursor Agent ↔ Notion (outside repo runtime) |
-| `GitKraken.*` | Cursor Agent ↔ git host (outside repo runtime) |
-| `deepwiki.*` | Cursor Agent ↔ external MCP URL |
-| `task_manager.*` | Cursor Agent ↔ task tracker (outside repo) |
-| `filesystem.*` | Cursor Agent ↔ local FS (outside repo runtime) |
+| `notion.API-*` | Codex ↔ Notion (outside repo runtime) |
+| `GitKraken.*` | Codex ↔ git host (outside repo runtime) |
+| `deepwiki.*` | Codex ↔ external MCP URL |
+| `task_manager.*` | Codex ↔ task tracker (outside repo) |
+| `filesystem.*` | Codex ↔ local FS (outside repo runtime) |
 
 ## 4. Workflow triggers
 
-From `.windsurf/workflows/*.md`:
+From `docs/archive/windsurf/legacy-tree/workflows/*.md`:
 
 | Workflow | Pipeline |
 |---|---|
@@ -78,9 +78,9 @@ From `.windsurf/workflows/*.md`:
 | `/adg-test-triage-gate` | PIPE-JUDGE-EVAL (ADG fan-in triage) |
 | `/adg-timeout-recovery` | PIPE-HEALING (timeout subset) |
 | `/memory-purge-sync` | PIPE-MEMORY-LIFECYCLE |
-| `/structured-reasoning` | (meta — governs Cursor Agent, not runtime) |
+| `/structured-reasoning` | (meta — governs Codex, not runtime) |
 | `/mcp-failure-rca` | (meta — RCA workflow) |
-| `/hitl-decision-gate` | (meta — Cursor Agent HITL before tool calls) |
+| `/hitl-decision-gate` | (meta — Codex HITL before tool calls) |
 
 ## 5. Test / CI triggers
 
@@ -100,7 +100,7 @@ From `.windsurf/workflows/*.md`:
 |---|---|---|
 | `pre_mcp_gate` | blocks all MCP calls until `mem_recall_session_start` runs | indirectly PIPE-MEMORY-LIFECYCLE s01 |
 | `pre_run_gate.py` | blocks PowerShell commands before subprocess | no direct pipeline |
-| `pre_prompt_classifier.py` | injects SR_MANDATE for T2/T3 tasks | meta — governs Cursor Agent |
+| `pre_prompt_classifier.py` | injects SR_MANDATE for T2/T3 tasks | meta — governs Codex |
 | `post_cursor_agent_adg_audit.py` | retroactive ADG-first violation detection | writes to `artifacts/windsurf/adg_first_violations.jsonl` |
 | `import apps_rg` (module-load side effect) | runs `bootstrap_runtime.py` | PIPE-APP-BOOTSTRAP-RG |
 | `import apps_exec` (module-load side effect) | runs `_optional_agentic_core.py` | PIPE-APP-BOOTSTRAP-EXEC |
@@ -135,7 +135,7 @@ Per G2 §Class 3, these stages have runtime-variable shape:
 |---|---|---|
 | CLI | low | explicit, audited, in shell history |
 | app_entry (`python -m apps_*`) | low | user-initiated |
-| mcp_tool | medium | Cursor Agent can trigger at will; enhanced_http egresses arbitrarily |
+| mcp_tool | medium | Codex can trigger at will; enhanced_http egresses arbitrarily |
 | workflow | low | user-initiated |
 | import side-effect | **medium** | test runners trigger bootstrap shims unexpectedly; G1b adapter patterns B+D |
 | internal_call | low | observable via trace |
@@ -152,4 +152,4 @@ Per G2 §Class 3, these stages have runtime-variable shape:
   - 3 infrastructural (do not appear as `kind:`): `hook`, `ci`, `operator`.
 - **Biggest surface**: `internal_call` (most pipelines are fired from within other pipelines — consistent with layered runtime).
 - **Highest-risk surface**: operator env-var kill-switches (`EGRESS_GUARD_DISABLED`, `DISABLE_RUNTIME_MUTATION_GUARD`, `ADG_SKIP_*`).
-- **Only autonomous external-egress trigger**: `enhanced_http` MCP tool (Cursor Agent → any URL).
+- **Only autonomous external-egress trigger**: `enhanced_http` MCP tool (Codex → any URL).

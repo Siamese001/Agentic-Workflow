@@ -147,7 +147,7 @@ ARCHIVES_DIR: Final[str] = "archives"
 # W5.4 (2026-04-23) — SSOT for top-churn hardcoded paths (123 sites across
 # ~100 files per tools/debug/_w5_ssot_hardcoding_probe.py). These constants
 # are the canonical migration targets for hardcoded literal paths used by:
-# ADG tooling (adg_indexed_*.sqlite lives here), Windsurf hooks & plans,
+# ADG tooling (adg_indexed_*.sqlite lives here), legacy editor hooks & plans,
 # documentation reports, and ADR storage.
 ARTIFACTS_DIR: Final[str] = "artifacts"
 ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
@@ -173,7 +173,7 @@ TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 REPORTS_DIR: Final[str] = "reports"
 
-# Cursor-decommission compatibility aliases. The names remain for older imports,
+# legacy editor-decommission compatibility aliases. The names remain for older imports,
 # but values point at the current SSOT locations.
 CURSOR_PLANS_DIR: Final[str] = PLANS_DIR
 CURSOR_STATE_DIR: Final[str] = ".claude/state"
@@ -439,9 +439,20 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
         ".vscode",
         "docs/archive/windsurf/legacy-tree",
         "__pycache__",
+        ".cache",
         ".mypy_cache",
         ".pytest_cache",
         ".ruff_cache",
+        ".tmp",
+        ".eggs",
+        "_build",
+        "archive",
+        "archives",
+        "env",
+        "site-packages",
+        "temp",
+        "tmp",
+        "venv_stable",
         "node_modules",
         "venv",
         "build",

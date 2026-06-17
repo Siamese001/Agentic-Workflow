@@ -1,6 +1,6 @@
 """CLI interface for apps_architect.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P3.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P3.
 
 Commands:
     python -m apps_architect scan --days 30 --output json

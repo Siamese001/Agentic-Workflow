@@ -253,6 +253,6 @@ related_contracts:
   - REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
 
 references:
-  - .windsurf/rules/judge-calibration-cadence.md
+  - .claude/rules/judge-calibration-cadence.md
   - First-principles design conversation 2026-04-29 §EvaluationRubric Schema
   - apps_eval as cross-app judge consumer

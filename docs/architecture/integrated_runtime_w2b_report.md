@@ -1,6 +1,6 @@
 # Integrated-Runtime W2b Report — Live-Provider ALLOW-Path Proof
 
-**Plan:** `.windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md`
+**Plan:** `.claude/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md`
 **Branch:** `rtc-w2b-live-provider-allow-proof-b24f8e` (layered on `rtc-w2-clean`)
 **Predecessor:** W2 — `docs/architecture/integrated_runtime_w2_report.md`
 **Date:** 2026-05-01

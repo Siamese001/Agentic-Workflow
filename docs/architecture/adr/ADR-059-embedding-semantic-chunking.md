@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Knowledge / Retrieval working group
 **Impact Layers**: `agentic_core.knowledge.chunking`, `tools/eval`
-**Plan**: `.windsurf/plans/rag-semantic-chunker-gap-c4f1a8.md`
+**Plan**: `.claude/plans/rag-semantic-chunker-gap-c4f1a8.md`
 
 ## Context
 
@@ -111,7 +111,7 @@ are 100 and 2000 characters respectively.
 
 - ADR-045 — Contextual Retrieval (Anthropic)
 - ADR-046 — Rerank Revival
-- Plan: `.windsurf/plans/rag-semantic-chunker-gap-c4f1a8.md`
+- Plan: `.claude/plans/rag-semantic-chunker-gap-c4f1a8.md`
 - Report: `docs/reports/rag/ragbench_ablation_20260424.md`
 - External: Sarkar (2026) "The Right Chunk, Wrong Context Problem" —
   https://arnabksarkar.github.io/blogs/rag-part1.html

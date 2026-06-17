@@ -2,12 +2,12 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-22
-- **Deciders**: Cursor Agent (paired with user)
+- **Deciders**: Codex (paired with user)
 - **Related**:
   - Constitutional §22 (graph-layer evidence)
-  - `@c:/Git/Agentic-Workflow/.windsurf/rules/adg-graph-layer-enforcement.md`
-  - `@c:/Git/Agentic-Workflow/.windsurf/rules/adg-canonical-invariants.md`
-- **Plan**: `@c:/Git/Agentic-Workflow/.windsurf/plans/adg-pipeline-e2e-5287a1.md`
+  - `@c:/Git/Agentic-Workflow/.claude/rules/adg-graph-layer-enforcement.md`
+  - `@c:/Git/Agentic-Workflow/.claude/rules/adg-canonical-invariants.md`
+- **Plan**: `@c:/Git/Agentic-Workflow/.claude/plans/adg-pipeline-e2e-5287a1.md`
 - **Implementation commits**: `9fb93f698c` (W1), `7c3addc712` + `252f7dd1a3` + `4875fa1a3c` (W2), `dbef291670` + `11ee7a8644` + `21bfe4db8e` (W3), `8509bf0dd3` + `7b129ddf08` (W4)
 
 ## Context

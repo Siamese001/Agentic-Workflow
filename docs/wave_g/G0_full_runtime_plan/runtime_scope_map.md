@@ -93,7 +93,7 @@ For each:
 - `agentic_core/config/` and `agentic_core/runtime/config/` — runtime knob surfaces.
 - Per-app `config/` directories.
 - `.env` key inventory (names, consumers, defaults if declared).
-- `.windsurf/rules/`, `AGENTS.md`, `.windsurf/skills/`, `.windsurf/workflows/` — governance/control surfaces read at agent startup.
+- `.claude/rules/`, `AGENTS.md`, `.claude/skills/`, `docs/archive/windsurf/legacy-tree/workflows/` — governance/control surfaces read at agent startup.
 - Prompt surfaces: `agentic_core/prompt_governance/`, `apps_shared/prompts/`, per-app prompt directories.
 - Feature flags / runtime toggles wherever they live.
 
@@ -103,12 +103,12 @@ For each:
 ### 9. Deployment / MCP / hooks / ops-scripts / CI topology
 
 **In scope**
-- MCP server inventory: `tools/mcp/` (enhanced_http, pytest, redis, vector_db), `tools/adg/mcp/` (adg_sqlite), plus all entries in `.windsurf/mcp_config.json` (stable server IDs mapped to live transports).
-- `.windsurf/hooks.json` — pre/post MCP gates, command gates, memory-first gate.
+- MCP server inventory: `tools/mcp/` (enhanced_http, pytest, redis, vector_db), `tools/adg/mcp/` (adg_sqlite), plus all entries in `.mcp.json` (stable server IDs mapped to live transports).
+- `.claude/settings.json` — pre/post MCP gates, command gates, memory-first gate.
 - `ops_scripts/` — CI gates (`ops_scripts/ci/`), dev tools, governance, maintenance, verification.
 - `.github/` — CI workflows, actions, issue templates.
 - Startup/shutdown paths: MCP server launch, Redis/vector-DB lifecycle, process boundaries.
-- Operator workflows: `.windsurf/workflows/*.md`.
+- Operator workflows: `docs/archive/windsurf/legacy-tree/workflows/*.md`.
 
 **Out of scope**
 - External CI provider internals (GitHub Actions engine itself).

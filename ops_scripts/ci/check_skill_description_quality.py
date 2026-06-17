@@ -3,7 +3,7 @@
 CI gate: check_skill_description_quality.py
 
 W4 cursor-governance-two-tier — progressive-disclosure hygiene for
-``.claude/skills/<name>/SKILL.md`` (Cursor SSOT).
+``.claude/skills/<name>/SKILL.md`` (legacy editor SSOT).
 
 Enforces (beyond check_skill_frontmatter.py):
   1. Description length in a concise band (default 60–420 chars).

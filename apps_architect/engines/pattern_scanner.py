@@ -1,6 +1,6 @@
 """Pattern scanner — orchestrates ADG queries into typed Pattern objects.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P1.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P1.
 """
 
 from __future__ import annotations

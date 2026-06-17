@@ -94,21 +94,21 @@ Exit of G4: `storage_catalogue.yaml` covers every store surface in `repo_surface
 
 ### Step 8 — Execute G4b (parallel to G4 after G1)
 
-- Map `.windsurf/rules/`, `.windsurf/skills/`, `AGENTS.md` to enforcers where they exist (and mark doctrine-only where they don't).
+- Map `.claude/rules/`, `.claude/skills/`, `AGENTS.md` to enforcers where they exist (and mark doctrine-only where they don't).
 - Catalogue every config knob with plane / default / consumer / scope / reload policy.
 - Cross-reference with G2b env map.
 - Inventory prompt surfaces.
 
-Exit of G4b: every rule in `.windsurf/rules/` is mapped; every config knob is catalogued; every env key has consumer + plane; every prompt file is located.
+Exit of G4b: every rule in `.claude/rules/` is mapped; every config knob is catalogued; every env key has consumer + plane; every prompt file is located.
 
 ### Step 9 — Execute G5 (parallel to G4/G4b)
 
-- Build MCP server registry from `.windsurf/mcp_config.json` cross-referenced with `tools/mcp/` and `tools/adg/mcp/`.
-- Map `.windsurf/hooks.json` to hook scripts.
+- Build MCP server registry from `.mcp.json` cross-referenced with `tools/mcp/` and `tools/adg/mcp/`.
+- Map `.claude/settings.json` to hook scripts.
 - Inventory `ops_scripts/**` with one-line role per script (group by subfolder).
 - Map `.github/` workflows + `.pre-commit-config.yaml` + `pytest.ini`.
 - Document startup/shutdown sequence.
-- Index `.windsurf/workflows/*.md` as operator playbook.
+- Index `docs/archive/windsurf/legacy-tree/workflows/*.md` as operator playbook.
 
 Exit of G5: every MCP server has transport + launch command; every ops script has a role.
 

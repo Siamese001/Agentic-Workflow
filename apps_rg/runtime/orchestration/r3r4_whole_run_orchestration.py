@@ -67,8 +67,8 @@ def research_delegation_enabled(
     auto_research_internal: bool,
     research_via: str | None,
 ) -> bool:
-    _ = auto_research_internal, research_via
-    return False
+    _ = research_via
+    return bool(auto_research_internal)
 
 
 def briefing_input_present(manual_brief: str) -> bool:

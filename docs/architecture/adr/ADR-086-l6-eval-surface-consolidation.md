@@ -2,7 +2,7 @@
 
 **Status:** Accepted (M1 executed 2026-05-25)  
 **Date:** 2026-05-25  
-**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.cursor/plans/l6-reorg-deferred-followup-f3a9c2.md) W1.3 / W4  
+**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.claude/plans/l6-reorg-deferred-followup-f3a9c2.md) W1.3 / W4  
 **Parent:** [l6_w4_passive_drift_20260525.md](../../reports/cursor/l6_w4_passive_drift_20260525.md) GAP-6
 
 ## Context

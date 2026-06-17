@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-post_mcp_audit.py — Cursor post_mcp_tool_use advisory telemetry hook (Phase 1.7).
+post_mcp_audit.py — legacy editor post_mcp_tool_use advisory telemetry hook (Phase 1.7).
 
 Reads JSON payload from stdin. Payload fields:
   tool_info.mcp_server_name  — name of MCP server called

@@ -22,7 +22,7 @@ for r in cur.execute(
     "  GROUP_CONCAT(DISTINCT layer) AS layers "
     "FROM nodes WHERE entity_type='symbol' AND adg_name LIKE 'ADG::Symbol::%' "
     "AND layer IS NOT NULL AND layer != '' "
-    "AND adg_name NOT LIKE '%.WindsurfMCP%' "  # exclude MCP artifacts
+    "AND adg_name NOT LIKE '%.legacy editorMCP%' "  # exclude MCP artifacts
     "GROUP BY short_name "
     "HAVING COUNT(DISTINCT resolved_path) >= 3 "
     "ORDER BY file_count DESC LIMIT 20"

@@ -78,7 +78,7 @@ def is_implementation_command(command: str) -> bool:
 
 def get_recently_modified_files(minutes: int = 30) -> List[str]:
     """Get files modified in the last N minutes."""
-    # Check environment variable set by Windsurf or other tools
+    # Check environment variable set by legacy editor or other tools
     windsurf_files = os.environ.get('WINDSURF_FILES', '')
     if windsurf_files:
         return [f.strip() for f in windsurf_files.split(',') if f.strip()]

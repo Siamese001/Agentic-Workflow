@@ -1,7 +1,7 @@
 """In-response DEFERRED_SCOPE capture helper.
 
-Bypass for Cursor 2.0.67 bug where `post_agent_response` hooks silently
-stop firing mid-session. Cursor Agent invokes this directly via `run_command`
+Bypass for legacy editor 2.0.67 bug where `post_agent_response` hooks silently
+stop firing mid-session. Codex invokes this directly via `run_command`
 in the same response that emits DEFERRED_SCOPE markers, guaranteeing
 capture without depending on the broken hook channel.
 
@@ -18,7 +18,7 @@ Usage
 
 Under the hood
 --------------
-Wraps each marker in the Cursor payload shape
+Wraps each marker in the legacy editor payload shape
 `{"tool_info": {"response": "<marker>"}}` and invokes
 `post_agent_deferred_scope_capture.py` — same code path the hook chain
 would run. Result: same Notion row, same scorer, same JSONL log, same

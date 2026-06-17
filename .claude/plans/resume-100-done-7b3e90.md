@@ -2,7 +2,7 @@
 
 **Plan slug:** resume-100-done-7b3e90
 **Status:** PARTIAL — unify_bullets X3_ALLOW; binding architecture fixed live; remaining sections judge-bound or content-quality-bound (see runtime_bundle_certification.md)
-**Owner loop:** Cursor L2 executor (apps_rg)
+**Owner loop:** legacy editor L2 executor (apps_rg)
 **Provider:** qwen_vllm live (Qwen2.5-32B-Instruct-AWQ @ localhost:8000) — confirmed reachable.
 
 ## Goal

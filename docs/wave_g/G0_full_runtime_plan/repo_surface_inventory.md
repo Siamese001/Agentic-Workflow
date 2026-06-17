@@ -100,13 +100,13 @@ Each app's `config/`, `engines/`, `reasoning/`, `integrations/`, `services/`, `o
 | `ops_scripts/verification/` | Verification | G5 | Post-change checks |
 | `ops_scripts/enforcement/`, `environment/`, `review/`, `security/`, `setup/`, `tools/` | Sparse sub-areas | G5 | Small |
 | `.github/` | GitHub Actions | G5 | Workflows, actions, issue/PR templates |
-| `.windsurf/rules/` | Rule SSOT | G4b, G5 | Constitutional + global + conditional |
-| `.windsurf/hooks.json` | Hook registry | G5 | Memory-first gate, pre/post MCP, pre-run |
-| `.windsurf/mcp_config.json` | MCP registry | G5 | Stable server IDs + transports + env |
-| `.windsurf/skills/` | Skills | G4b | Auto-invoked doctrine |
-| `.windsurf/workflows/` | Workflows | G5 | Slash-commands |
-| `.windsurf/scripts/` | Windsurf helpers | G5 | Post-write sync scripts, etc. |
-| `.windsurf/plans/` | Plans SSOT | G0 reuses, not owned | Not re-inventoried by G |
+| `.claude/rules/` | Rule SSOT | G4b, G5 | Constitutional + global + conditional |
+| `.claude/settings.json` | Hook registry | G5 | Memory-first gate, pre/post MCP, pre-run |
+| `.mcp.json` | MCP registry | G5 | Stable server IDs + transports + env |
+| `.claude/skills/` | Skills | G4b | Auto-invoked doctrine |
+| `docs/archive/windsurf/legacy-tree/workflows/` | Workflows | G5 | Slash-commands |
+| `.claude/governance/scripts/` | legacy editor helpers | G5 | Post-write sync scripts, etc. |
+| `.claude/plans/` | Plans SSOT | G0 reuses, not owned | Not re-inventoried by G |
 
 ## 5. Config / prompts / control plane
 

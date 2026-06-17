@@ -1,7 +1,7 @@
 """Token-telemetry handler - per-turn token-cost telemetry.
 
 In-process equivalent of `.claude/governance/scripts/post_agent_token_telemetry.py`.
-Logs a row to `artifacts/governance/turn_budget.jsonl` for every Cursor Agent response.
+Logs a row to `artifacts/governance/turn_budget.jsonl` for every Codex response.
 """
 
 from __future__ import annotations

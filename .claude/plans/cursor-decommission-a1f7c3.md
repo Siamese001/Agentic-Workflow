@@ -18,11 +18,11 @@ decision_ref: "DECISION_CAPTURED architecture_choice selected=full_relocation_ze
 > handled by [cursor-windsurf-codeium-decommission-dec0de](cursor-windsurf-codeium-decommission-dec0de.md)
 > — complementary, not superseded.
 
-# Cursor Decommission — Full Relocation to `.claude/` SSOT
+# legacy editor Decommission — Full Relocation to `.claude/` SSOT
 
 ## Context (SCQA)
 
-- **Situation.** Cursor is no longer used. `CLAUDE.md` already declares `.claude/` the
+- **Situation.** legacy editor is no longer used. `CLAUDE.md` already declares `.claude/` the
   always-on SSOT, but the repo still carries a large `.cursor/` tree (~3,300 files) that
   splits into three classes: dead mirrors, live runtime data, and the live governance
   script engine that `.claude/hooks/` shells into.
@@ -52,7 +52,7 @@ decision_ref: "DECISION_CAPTURED architecture_choice selected=full_relocation_ze
 | `workflows/**` | 25 | **Dead mirror** of `.claude/commands/` (24) | delete |
 | `agents/**` | 4 | **Dead mirror** of `.claude/agents/` (4) | delete |
 | `mcp.json` | 1 | **Dead mirror** of root `.mcp.json` | delete + drop sync |
-| `hooks/**`, `hooks.json` | 17 | **Dead** Cursor-native hook registration | delete |
+| `hooks/**`, `hooks.json` | 17 | **Dead** repo-native hook registration | delete |
 | `reminders/`, `decisions/`, `windsurf_compat/`, `_zero_loss_originals/`, `*MIGRATION*`, `*RECEIPT*`, `RULES_INDEX*` | ~20 | **Historical** | archive to `docs/archive/cursor/` then delete |
 
 External references to rewrite: **~110 code** (`tools/` 405 mention-files, `ops_scripts/` 258, `agentic_core/` 44, `tests/` 223 — most are comments/docstrings; runtime path reads are the ~110 that matter) + **49 pre-commit globs** + `.claude/settings.json` (1 direct call) + `.claude/hooks/*.py` (`SCRIPTS = REPO_ROOT/".cursor"/"scripts"`).
@@ -81,7 +81,7 @@ External references to rewrite: **~110 code** (`tools/` 405 mention-files, `ops_
 | P0.3 | Generate exhaustive reference map artifact | 1 artifact | Separate runtime reads from comments | ~16k | Not Started |
 | P0.4 | Add `legacy_reference_allowlist` shim entries for in-flight waves | 1 | Avoid CI self-block mid-migration | ~8k | Not Started |
 | P1.1 | Delete `.cursor/{rules,skills,workflows,agents}` mirrors | 186 del | Confirm no runtime read first | ~14k | Not Started |
-| P1.2 | Delete `.cursor/{mcp.json,hooks.json,hooks/}` + drop `sync_mcp_config` Cursor arm | ~18 del + 2 edit | MCP sync gate logic | ~10k | Not Started |
+| P1.2 | Delete `.cursor/{mcp.json,hooks.json,hooks/}` + drop `sync_mcp_config` legacy editor arm | ~18 del + 2 edit | MCP sync gate logic | ~10k | Not Started |
 | P1.3 | Repoint pre-commit globs (`rules/`, `skills/`) to `.claude/` | ~8 edits | 49-line glob block | ~6k | Not Started |
 | P2.1 | `git mv .cursor/plans .claude/plans` | 2148 | History preservation | ~20k | Not Started |
 | P2.2 | Rewrite `plan-location.md` + `plan-governance` skill + `plan_registration` helpers | ~6 | SSOT path string is everywhere | ~22k | Not Started |
@@ -129,8 +129,8 @@ Centralize first:
 `.cursor/rules` hits in `tools/`+`ops_scripts/` are all comment/docstring citations —
 verified by sampling). Delete them; repoint the handful of pre-commit gates
 (`validate_hitl_rules`, `check_always_on_token_budget`, skill-frontmatter validator)
-from `.cursor/rules|skills` to `.claude/rules|skills`. Delete `.cursor/mcp.json` +
-`hooks.json` + `hooks/` and remove the Cursor arm of `sync_mcp_config.py`
+from `.cursor/rules|skills` to `.claude/rules|skills`. Delete `.mcp.json` +
+`hooks.json` + `hooks/` and remove the legacy editor arm of `sync_mcp_config.py`
 (root `.mcp.json` is already SSOT).
 
 ### W2–W4 — Relocate live data (leaf-first)

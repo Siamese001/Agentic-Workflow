@@ -12,7 +12,7 @@
 - **Target close:** 2026-04-28 (one-week SLA)
 - **Closed:** 2026-06-15 status reconciliation
 - **Escalation if no response by close:** owner of
-  `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` proceeds with a
+  `.claude/plans/runtime-hitl-exit-control-c4e7b3.md` proceeds with a
   documented interim decision; final reviewer sign-off still required before
   W7 compliance hardening ships.
 
@@ -87,6 +87,6 @@ Closed actions:
 
 - ADR: `docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md`
 - Contract: `docs/contracts/L5_exit_control_hitl.md`
-- Plan (blocked): `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md`
-- Related (harness, distinct): `.windsurf/plans/harness-enforcement-rename-a8f21c.md`
+- Plan (blocked): `.claude/plans/runtime-hitl-exit-control-c4e7b3.md`
+- Related (harness, distinct): `.claude/plans/harness-enforcement-rename-a8f21c.md`
 - v30 source: `docs/reference/_notes/agentic_process_mapping_v34.md` §[5]

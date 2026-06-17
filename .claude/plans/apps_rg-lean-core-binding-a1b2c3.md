@@ -8,7 +8,7 @@
 **Created:** 2026-06-07  
 **Revised:** 2026-06-07  
 **Rebaselined:** 2026-06-07 (statuses re-derived from files on disk)  
-**Plan File:** `.cursor/plans/apps_rg-lean-core-binding-a1b2c3.md`
+**Plan File:** `.claude/plans/apps_rg-lean-core-binding-a1b2c3.md`
 
 ---
 

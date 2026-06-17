@@ -6,7 +6,7 @@ description: Enforce progress display requirements for all long-running operatio
 
 # Progress Display Enforcement Workflow
 
-This workflow enforces the constitutional requirement for progress displays on all operations exceeding 5 seconds, as specified in §5.3 of the Cursor rules.
+This workflow enforces the constitutional requirement for progress displays on all operations exceeding 5 seconds, as specified in §5.3 of the legacy editor rules.
 
 ## When to Use
 

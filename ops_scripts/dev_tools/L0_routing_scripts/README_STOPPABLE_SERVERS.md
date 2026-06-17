@@ -182,9 +182,9 @@ taskkill /PID <pid> /F
 
 ---
 
-## Integration with Windsurf Tasks
+## Integration with legacy editor Tasks
 
-All servers can now be safely used in Windsurf tasks with automatic cleanup:
+All servers can now be safely used in legacy editor tasks with automatic cleanup:
 
 ```json
 {
@@ -195,7 +195,7 @@ All servers can now be safely used in Windsurf tasks with automatic cleanup:
 }
 ```
 
-The task can be stopped cleanly via Windsurf's task manager without leaving orphaned processes.
+The task can be stopped cleanly via legacy editor's task manager without leaving orphaned processes.
 
 ---
 

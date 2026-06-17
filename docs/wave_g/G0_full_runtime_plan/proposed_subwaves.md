@@ -112,7 +112,7 @@ Legend:
 ## G4b — Config / prompts / rules / env / feature-flag control plane
 
 - **Scope**: Every knob that tunes runtime behaviour at start or request time. Organized into four planes: (i) constitutional rules + AGENTS.md, (ii) config files (YAML/JSON/TOML), (iii) env vars + feature flags, (iv) prompts / prompt-governance surfaces.
-- **Surfaces**: `.windsurf/rules/`, `.windsurf/skills/`, `AGENTS.md`, `config/`, `agentic_core/config/`, `agentic_core/runtime/config/`, `apps_*/config/`, `.env` (key names), `agentic_core/prompt_governance/`, `apps_shared/prompts/`, any `os.getenv` consumer surfaced by G2b.
+- **Surfaces**: `.claude/rules/`, `.claude/skills/`, `AGENTS.md`, `config/`, `agentic_core/config/`, `agentic_core/runtime/config/`, `apps_*/config/`, `.env` (key names), `agentic_core/prompt_governance/`, `apps_shared/prompts/`, any `os.getenv` consumer surfaced by G2b.
 - **Outputs**:
   - `G4b_control_plane/README.md`
   - `G4b_control_plane/rules_and_skills_map.md` (rule → enforcer)
@@ -120,13 +120,13 @@ Legend:
   - `G4b_control_plane/env_and_flags.md` (env keys + feature flags with consumers)
   - `G4b_control_plane/prompt_surface_map.md` (prompt files + governance rules)
 - **Reuses from E/F**: F11.01 (L5 authority), F11.04 (L5 binds UWG), SRC-RULE-001 / SRC-RULE-002 / SRC-INT-001 / SRC-INT-004.
-- **Stop**: Every rule in `.windsurf/rules/` is mapped to an enforcer. Every top-level config file has consumers listed. Every `.env` key name appears in `env_and_flags.md`.
+- **Stop**: Every rule in `.claude/rules/` is mapped to an enforcer. Every top-level config file has consumers listed. Every `.env` key name appears in `env_and_flags.md`.
 - **Risks**: (a) prompt governance may be distributed across core and apps. (b) some rules are doctrine-only with no code enforcer — flag explicitly. (c) env vars used only in CI workflows.
 
 ## G5 — Deployment / MCP / hooks / ops-scripts / CI topology
 
 - **Scope**: The operational envelope: MCP servers (process lifecycle), hooks, ops scripts, CI workflows, pre-commit, pytest orchestration. Deployment here is "what runs where when an operator starts the system", not cloud IaC.
-- **Surfaces**: `tools/mcp/`, `tools/adg/mcp/`, `.windsurf/mcp_config.json`, `.windsurf/hooks.json`, `.windsurf/scripts/`, `.windsurf/workflows/`, `ops_scripts/`, `.github/`, `pyproject.toml`, `pytest.ini`, `conftest.py`, `.pre-commit-config.yaml`.
+- **Surfaces**: `tools/mcp/`, `tools/adg/mcp/`, `.mcp.json`, `.claude/settings.json`, `.claude/governance/scripts/`, `docs/archive/windsurf/legacy-tree/workflows/`, `ops_scripts/`, `.github/`, `pyproject.toml`, `pytest.ini`, `conftest.py`, `.pre-commit-config.yaml`.
 - **Outputs**:
   - `G5_deployment_ops/README.md`
   - `G5_deployment_ops/mcp_server_registry.yaml` (server → transport → launch cmd → env → lifecycle)
@@ -136,7 +136,7 @@ Legend:
   - `G5_deployment_ops/startup_shutdown.md` (process start → health → shutdown)
   - `G5_deployment_ops/operator_playbook_index.md` (workflow slash-commands)
 - **Reuses from E/F**: SRC-RULE-001 / SRC-RULE-002 + any ADR-003 wiring touching CI.
-- **Stop**: Every MCP server in `.windsurf/mcp_config.json` appears in `mcp_server_registry.yaml` with transport and launch command. Every `ops_scripts/*` script has a one-line role.
+- **Stop**: Every MCP server in `.mcp.json` appears in `mcp_server_registry.yaml` with transport and launch command. Every `ops_scripts/*` script has a one-line role.
 - **Risks**: (a) global MCP config is ~/.codeium shadow; in-repo is source — note this divergence explicitly. (b) hooks.json vs .bak; ignore .bak. (c) some ops scripts are orphaned — mark "no known caller".
 
 ## G6 — Taxonomy cleanup / special-surface normalization

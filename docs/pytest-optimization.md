@@ -1,6 +1,6 @@
 # Pytest Parallel Optimization for Ryzen 9950X3D
 
-## Quick Commands (Windsurf Terminal)
+## Quick Commands (legacy editor Terminal)
 
 ### Full Parallel (32 workers)
 ```bash
@@ -54,7 +54,7 @@ python -m pytest tests/ -m serial -n0 -v
 python -m pytest tests/ -m "not serial" -n 32
 ```
 
-## Windsurf-Specific Considerations
+## legacy editor-Specific Considerations
 
 1. **Terminal Buffer**: Long parallel output may truncate. Use `--tb=short` or `--tb=no`
 2. **Progress Display**: Add `-rN` to suppress summary, or use `pytest-rich` plugin

@@ -9,7 +9,7 @@ _REPO_ROOT = str(Path(__file__).resolve().parents[3])
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-# Purge any apps_lic shadow registered from tests/unit/apps_lic/__init__.py
+# Purge any accidental apps_lic shadow registered from this legacy flat test root
 # so imports like `from apps_lic.config.X import Y` resolve to the real package
 _TESTS_ROOT = str(Path(__file__).resolve().parents[2])
 _to_purge = [

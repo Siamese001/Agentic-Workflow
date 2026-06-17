@@ -2,10 +2,10 @@
 
 ## Launch Command
 
-The otel_mcp server is launched by Windsurf via the MCP config. The canonical entry is in both:
+The otel_mcp server is launched by legacy editor via the MCP config. The canonical entry is in both:
 
-- `.cursor/mcp.json` (repo-local reference)
-- `C:/Users/amita/.codeium/windsurf/mcp_config.json` (global Windsurf config)
+- `.mcp.json` (repo-local reference)
+- `C:/Users/amita/.codeium/windsurf/mcp_config.json` (global legacy editor config)
 
 ### Exact Config Entry
 
@@ -83,7 +83,7 @@ python -c "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ 
 1. Verify `PYTHONPATH` is set in the MCP config `env` block.
 2. Verify `cwd` points to the repo root.
 3. Check that `mcp` package is installed: `pip install mcp`
-4. Check stderr in Windsurf MCP logs for import errors.
+4. Check stderr in legacy editor MCP logs for import errors.
 
 ### Lifecycle contract unavailable warning
 

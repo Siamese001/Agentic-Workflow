@@ -1,6 +1,6 @@
 """tools.ledgers.hook_helpers — Convenience surface for post-hook writer calls.
 
-Each Windsurf post-hook adds ONE import + ONE call at its main-analysis tail:
+Each legacy editor post-hook adds ONE import + ONE call at its main-analysis tail:
 
     from tools.ledgers.hook_helpers import emit_ledger_event
     emit_ledger_event(

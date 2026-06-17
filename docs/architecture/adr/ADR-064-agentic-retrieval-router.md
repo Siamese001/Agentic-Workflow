@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L0_routing/`, `agentic_core/L1_cognition/reasoning/`, `agentic_core/knowledge/engine/rag_orchestrator.py`, `config/retrieval/`
-**Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.2
+**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.2
 **Relates-to**: ADR-046, ADR-055, ADR-056, ADR-057, ADR-058, ADR-060, ADR-061, ADR-062, ADR-063 — this is the **integration ADR** that ties them together at query time.
 
 **Current-state note (2026-06-15):** Implemented by `agentic_core/L1_cognition/reasoning/retrieval_router.py`, including intent classes, strategy plans, query-transform/reranker/reflective/dim-tier/hydration routing, override hints, and closed-loop tests.
@@ -127,7 +127,7 @@ Adopt a **two-tier agentic router** at the L0/L1 boundary that maps each query t
 ### Non-Goals
 
 - Replacing the ADR-058 §W3.2 transform-routing rubric. ADR-064 generalizes it; the rubric remains the authoritative description for the transforms axis specifically.
-- Replacing the L0 prompt-classifier. That handles **prompt tier** (T0/T1/T2/T3) for the broader Cursor Agent harness. ADR-064 handles **retrieval intent** for queries entering the retriever. Different concerns; both deterministic.
+- Replacing the L0 prompt-classifier. That handles **prompt tier** (T0/T1/T2/T3) for the broader Codex harness. ADR-064 handles **retrieval intent** for queries entering the retriever. Different concerns; both deterministic.
 - ML training a router. Tier 1 is rules; Tier 2 is YAML-encoded statistics. Genuine learned routing is a separate ADR if/when telemetry justifies it.
 - Cross-corpus join planning. Each plan queries N collections in parallel; result fusion is ADR-056's RRF / late-interaction work. Router does not plan joins.
 
@@ -172,4 +172,4 @@ Rollback: `ROUTER_DISABLE=1`. Orchestrator falls back to the hardcoded path. Rou
 - LlamaIndex `RouterQueryEngine` (2023+)
 - Anthropic, *How we built our agent* (2024) — Tier-1 deterministic + Tier-2 learned routing pattern
 - In-repo: `agentic_core/L1_cognition/reasoning/query_router.py`, `agentic_core/knowledge/retrieval/retrieval_plan.py`
-- Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

@@ -4,7 +4,7 @@
 **Date**: 2026-04-23
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: L5 (primary), runtime entry (new), L6 (via telemetry sink)
-**Plan**: `.windsurf/plans/request-intake-envelope-gaps-3f9a12.md`
+**Plan**: `.claude/plans/request-intake-envelope-gaps-3f9a12.md`
 
 ---
 
@@ -115,7 +115,7 @@ Negative / follow-ups:
 
 ## References
 
-* `.windsurf/plans/request-intake-envelope-gaps-3f9a12.md` — gap register and
+* `.claude/plans/request-intake-envelope-gaps-3f9a12.md` — gap register and
   wave plan this ADR closes.
 * `docs/reference/_notes/agentic_process_mapping_v34.md` §[1]
 * `docs/reference/01_Request_Intake/01_request_intake.md`

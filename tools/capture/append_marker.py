@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """append_marker.py — Append a single decision marker to the local capture queue.
 
-Used by Cursor Agent as a `run_command` invocation at the end of any refactor-class
+Used by Codex as a `run_command` invocation at the end of any refactor-class
 response, to record DECISION_CAPTURED / DEFERRED_SCOPE / NEXT_STEP markers
-without depending on the Windsurf post-cursor-agent hook chain.
+without depending on the legacy editor post-cursor-agent hook chain.
 
 Usage:
     python tools/capture/append_marker.py --marker "DECISION_CAPTURED: type=..., ..."
@@ -34,7 +34,7 @@ from pathlib import Path
 # In-process serialization for concurrent append_marker calls. Windows file
 # IO does not provide POSIX-style atomic-append-under-PIPE_BUF, so we serialize
 # explicitly. For multi-process atomicity the OS append-mode write is enough
-# in practice (one process per run_command invocation), but if Cursor Agent ever
+# in practice (one process per run_command invocation), but if Codex ever
 # fans out concurrent run_commands a portalocker-style file lock would be
 # the next step.
 _APPEND_LOCK = threading.Lock()
@@ -143,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not lines:
         print("[append_marker] WARN: no recognizable markers found", file=sys.stderr)
-        return 0  # fail-open; caller (Cursor Agent) shouldn't see this as fatal
+        return 0  # fail-open; caller (Codex) shouldn't see this as fatal
 
     ok_count = 0
     for ln in lines:

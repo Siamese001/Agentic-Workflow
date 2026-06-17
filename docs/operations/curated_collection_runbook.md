@@ -206,7 +206,7 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 
 ### F6: POLICY category wins drop (UWG / C0 / determinism queries)
 **Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.  
-**Cause**: `.windsurf/rules/constitutional.md` or `global_rules.md` were removed or significantly rewritten.  
+**Cause**: `.claude/rules/constitutional.md` or `global_rules.md` were removed or significantly rewritten.  
 **Fix**: These are in `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py` and are marked `required=True`. Dry-run will catch removals. If content changed, re-run ingestion.
 
 ### F8: POLICY-05 regressed (constitutional hard constraints query)

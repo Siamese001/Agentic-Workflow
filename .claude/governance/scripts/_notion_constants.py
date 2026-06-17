@@ -1,4 +1,4 @@
-"""SSOT-derived NOTION API/database constants for Cursor Agent hooks and scripts.
+"""SSOT-derived NOTION API/database constants for Codex hooks and scripts.
 
 All `.claude/governance/scripts/*.py` and `tools/*.py` scripts that hit Notion's
 REST API MUST import from this module instead of redefining literals.

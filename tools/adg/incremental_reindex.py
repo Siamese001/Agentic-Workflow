@@ -2,7 +2,7 @@
 
 Goal: when a single Python file changes on disk, patch its outgoing
 ``imports`` edges in a shadow copy of the current ADG snapshot — without
-running the full pipeline. This gives Cursor Agent (and runtime callers) a
+running the full pipeline. This gives Codex (and runtime callers) a
 "live" view of the graph for the file just edited, within seconds of
 the edit.
 

@@ -112,7 +112,7 @@ def _check_locked_files(adg_dir: Path | None = None) -> None:
             print("[ERROR] Automatic lock release cannot close connections from another process.")
             print("[ERROR]")
             print("[ERROR] REQUIRED ACTION: call adg_close_connections() MCP tool")
-            print("[ERROR] Fallback: restart Windsurf if MCP close tool unavailable")
+            print("[ERROR] Fallback: restart legacy editor if MCP close tool unavailable")
             print("[ERROR]")
             print("[ERROR] ADG generation aborted - file locks prevent archive cleanup")
             sys.exit(1)

@@ -4,7 +4,7 @@
 Queries otel_mcp's `spans_by_agent` for each apps_* agent class and
 persists the observed span name set to
 ``artifacts/observability/last_observed_spans.json``. Run nightly via
-cron / GitHub Actions / Windsurf scheduled task.
+cron / GitHub Actions / legacy editor scheduled task.
 
 Pairs with `ops_scripts/ci/check_l3_runtime_reconciliation.py` — that
 gate consumes this file's output to detect manifest/runtime drift.
@@ -14,7 +14,7 @@ Usage:
   # Direct (requires otel_mcp installed in current Python env):
   python ops_scripts/observability/poll_otel_spans.py --time-window-hours 168
 
-  # MCP-mediated (production — Windsurf hook environment):
+  # MCP-mediated (production — legacy editor hook environment):
   python ops_scripts/observability/poll_otel_spans.py --via-mcp --time-window-hours 168
 
 The MCP path is best-effort. When unavailable (e.g. in CI without

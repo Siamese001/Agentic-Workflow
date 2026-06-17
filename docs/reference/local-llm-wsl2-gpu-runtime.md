@@ -1,5 +1,5 @@
 
-<!-- Converted from `.claude/rules/local-llm-wsl2-gpu.md`. Original Cursor trigger: `model_decision`. -->
+<!-- Converted from `.claude/rules/local-llm-wsl2-gpu.md`. Original legacy editor trigger: `model_decision`. -->
 
 # Local LLM Runtime — WSL2/Docker, not Windows
 

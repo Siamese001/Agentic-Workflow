@@ -2,7 +2,7 @@
 
 **Status**: Accepted  
 **Date**: 2026-05-09  
-**Plan**: `.windsurf/plans/w6-emit-contract-enrichment-d8b2a4.md` (W0–W9)  
+**Plan**: `.claude/plans/w6-emit-contract-enrichment-d8b2a4.md` (W0–W9)  
 **Supersedes**: None  
 **Related**: ADR-043 (L1PlanContract v2), ADR-049 (L5 v4 governance), ADR-083 (apps_rg PA boundary)
 
@@ -121,7 +121,7 @@ Total runtime_contracts suite: **221 passing** (P9.4 final sweep).
 
 ## 6. References
 
-- Plan: `.windsurf/plans/w6-emit-contract-enrichment-d8b2a4.md`
+- Plan: `.claude/plans/w6-emit-contract-enrichment-d8b2a4.md`
 - Gate: `ops_scripts/ci/check_w6_emit_contract_enrichment.py`
 - Posture module: `agentic_core/runtime/contracts/posture.py`
 - L5 verify: `agentic_core/L5_safety/contracts/verify.py`

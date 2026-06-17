@@ -5,7 +5,7 @@ to support multiple apps at once without each cloning ~700 LOC. Used by
 any `apps_*` package that wants to reach
 `SPINE_COMPLETE_CERTIFIED` under the two-gate certification model.
 
-Plan: `.windsurf/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` W1.
+Plan: `.claude/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` W1.
 """
 from __future__ import annotations
 

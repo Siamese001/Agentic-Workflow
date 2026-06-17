@@ -405,5 +405,5 @@ To amend this binding law:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0.0 | 2026-06-07 | Initial binding law for lean-core refactor | Cursor Agent |
-| 1.1.0 | 2026-06-07 | Hardening revision: Rules 14-16 added (no aliases, import ratchet, symbol verification) | Cursor Agent |
+| 1.0.0 | 2026-06-07 | Initial binding law for lean-core refactor | Codex |
+| 1.1.0 | 2026-06-07 | Hardening revision: Rules 14-16 added (no aliases, import ratchet, symbol verification) | Codex |

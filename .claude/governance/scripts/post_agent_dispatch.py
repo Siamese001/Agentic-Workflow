@@ -63,7 +63,7 @@ NATIVE_HANDLERS: list[tuple[str, Callable[[ParsedResponse, Path], None]]] = [
 # ---------------------------------------------------------------------------
 # Legacy wrappers (Phase B — preserve standalone scripts; eliminate spawn cost)
 #
-# Order matches `.cursor/hooks.json` post_agent_response chain so the
+# Order matches `.claude/settings.json` post_agent_response chain so the
 # dispatcher's behavior is observably identical to the standalone chain.
 # ---------------------------------------------------------------------------
 

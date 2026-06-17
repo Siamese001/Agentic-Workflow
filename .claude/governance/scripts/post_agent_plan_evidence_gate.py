@@ -2,7 +2,7 @@
 """
 post_agent_plan_evidence_gate.py — Stop-equivalent plan evidence gate (P2).
 
-Reads the Cursor Agent response from stdin. When the response edited or created
+Reads the Codex response from stdin. When the response edited or created
 any ``.claude/plans/*.md`` file, runs the canonical graph-layer evidence
 check (``ops_scripts/ci/check_graph_layer_evidence.py``) against that plan
 file immediately — closing the loop for plans that would otherwise only
@@ -10,7 +10,7 @@ be validated at commit time.
 
 Rationale: Kumar (https://ranjankumar.in/hooks-policy-as-code-agent-enforcement)
 — "Does the Stop hook verify that required output artifacts exist if the
-task produces them?" — Windsurf has no Stop hook, but post_agent_response
+task produces them?" — legacy editor has no Stop hook, but post_agent_response
 is the closest equivalent.
 
 Behavior:
@@ -40,7 +40,7 @@ _PLANS_DIR = _ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 _LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl"
 _BYPASS_ENV = "PLAN_EVIDENCE_GATE_BYPASS"
 
-# Matches any plan file path mentioned in a Cursor Agent response (edit/write tool
+# Matches any plan file path mentioned in a Codex response (edit/write tool
 # invocations reference them). Absolute, backslash, or forward-slash forms.
 _PLAN_PATH_RE = re.compile(
     r"[\\/\.]windsurf[\\/]plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",

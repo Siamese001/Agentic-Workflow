@@ -1,9 +1,4 @@
-"""Lazy public exports for reasoning agents.
-
-Do not eagerly import heavy agent modules at package import time. Several of
-them pull optional repo-only dependencies; eager imports make unrelated tests
-and consumers fail during collection.
-"""
+"""Lazy public exports for live reasoning agents."""
 
 from __future__ import annotations
 
@@ -11,13 +6,25 @@ from importlib import import_module
 from typing import Any
 
 _EXPORTS: dict[str, tuple[str, str]] = {
-    "OutreachLearningAgent": (
-        "apps_lic.reasoning.OutreachLearningAgent",
-        "OutreachLearningAgent",
+    "GovernanceShieldAgent": (
+        "apps_lic.reasoning.GovernanceShieldAgent",
+        "GovernanceShieldAgent",
     ),
-    "OutreachValidationExecutorAgent": (
-        "apps_lic.reasoning.OutreachValidationExecutorAgent",
-        "OutreachValidationExecutorAgent",
+    "LicHealingOrchestrator": (
+        "apps_lic.reasoning.LicHealingOrchestrator",
+        "LicHealingOrchestrator",
+    ),
+    "LicReflectionAgent": (
+        "apps_lic.reasoning.LicReflectionAgent",
+        "LicReflectionAgent",
+    ),
+    "LICValidationExecutor": (
+        "apps_lic.reasoning.LICValidationExecutor",
+        "LICValidationExecutor",
+    ),
+    "MessageComplianceAgent": (
+        "apps_lic.reasoning.MessageComplianceAgent",
+        "MessageComplianceAgent",
     ),
 }
 

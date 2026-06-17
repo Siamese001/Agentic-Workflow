@@ -2,7 +2,7 @@
 
 **Purpose**: Classify test failures into repair classes before making any code edits.
 
-**Location**: Referenced by `.windsurf/rules/adg-repair-discipline.md` and `.windsurf/rules/.windsurfrules` §2.5
+**Location**: Referenced by `.claude/rules/adg-repair-discipline.md` and `.claude/rules/.windsurfrules` §2.5
 
 ---
 
@@ -157,6 +157,6 @@ Check 5: Contract changed?
 
 ## See Also
 
-- `.windsurf/rules/adg-repair-discipline.md` — ADG-controlled repair loop
-- `.windsurf/rules/.windsurfrules` §2.5 — Repair classification and evidence requirements
-- `.windsurf/rules/hitl-enforcement.md` §1.4 — Test modification strategy HITL prompt
+- `.claude/rules/adg-repair-discipline.md` — ADG-controlled repair loop
+- `.claude/rules/.windsurfrules` §2.5 — Repair classification and evidence requirements
+- `.claude/rules/hitl-enforcement.md` §1.4 — Test modification strategy HITL prompt

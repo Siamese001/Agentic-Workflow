@@ -1,12 +1,12 @@
-# Cursor — Local Qwen vLLM Docker boot (operator SSOT)
+# legacy editor — Local Qwen vLLM Docker boot (operator SSOT)
 
 > **Last updated:** 2026-05-26  
 > **Briefing note (one-pager):** [briefing_local_qwen_docker_boot_20260526.md](briefing_local_qwen_docker_boot_20260526.md)  
 > **Compose SSOT:** [`docker-compose.qwen.yml`](../../docker-compose.qwen.yml)  
 > **Topology:** [`docs/architecture/qwen-vllm-topology.md`](../architecture/qwen-vllm-topology.md)  
-> **VRAM / Blackwell quirks:** [`.cursor/rules/local-llm-wsl2-gpu.mdc`](../../.cursor/rules/local-llm-wsl2-gpu.mdc)
+> **VRAM / Blackwell quirks:** [`.claude/rules/local-llm-wsl2-gpu.mdc`](../../.claude/rules/local-llm-wsl2-gpu.mdc)
 
-Use this runbook before live `qwen_vllm` / `python -m apps_rg` work in Cursor on **Windows + Docker Desktop + WSL2**.
+Use this runbook before live `qwen_vllm` / `python -m apps_rg` work in legacy editor on **Windows + Docker Desktop + WSL2**.
 
 ---
 

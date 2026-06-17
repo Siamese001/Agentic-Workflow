@@ -7,11 +7,6 @@
       "name": "ADG::Module::agentic_core/prompt_governance/contracts/__init__.py"
     },
     {
-      "node_id": 1696,
-      "file_path": "agentic_core/prompt_governance/optimization/__init__.py",
-      "name": "ADG::Module::agentic_core/prompt_governance/optimization/__init__.py"
-    },
-    {
       "node_id": 1716,
       "file_path": "agentic_core/prompt_governance/security/utils/__init__.py",
       "name": "ADG::Module::agentic_core/prompt_governance/security/utils/__init__.py"
@@ -77,16 +72,6 @@
       "node_id": 1695,
       "file_path": "agentic_core/prompt_governance/meta_prompts/__init__.py",
       "name": "ADG::Module::agentic_core/prompt_governance/meta_prompts/__init__.py"
-    },
-    {
-      "node_id": 1697,
-      "file_path": "agentic_core/prompt_governance/optimization/optimization_strategy.py",
-      "name": "ADG::Module::agentic_core/prompt_governance/optimization/optimization_strategy.py"
-    },
-    {
-      "node_id": 1700,
-      "file_path": "agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py",
-      "name": "ADG::Module::agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py"
     },
     {
       "node_id": 1709,

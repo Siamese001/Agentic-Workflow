@@ -4,16 +4,16 @@ Deferred from `docs/reports/plans/rca-otel-mcp-transport-closed-2026-04-23.md`.
 
 Problem
 -------
-Cursor's MCP supervisor does not auto-respawn dead stdio subprocess
+The local MCP supervisor does not auto-respawn dead stdio subprocess
 servers. Once an `adg_sqlite` / `otel_mcp` / `redis` / `memory` / `pytest_mcp` /
-`vector_db` server dies (OOM, GUARD_CLEAN cursor_agent, unhandled exception),
+`vector_db` server dies (OOM, GUARD_CLEAN local_agent, unhandled exception),
 the client-side handle stays registered but points to a corpse. The next
 tool call surfaces `transport closed` seemingly out of nowhere.
 
 Behavior
 --------
 Scans the live process table for each Python MCP server marker defined in
-`.cursor/mcp.json`. Reports which are alive, which are dead, and
+`.mcp.json`. Reports which are alive, which are dead, and
 prints a one-line remediation hint when any are dead. Exit code:
 
     0 - all configured Python MCP servers have at least one live process
@@ -21,7 +21,7 @@ prints a one-line remediation hint when any are dead. Exit code:
     2 - config unreadable
 
 This is ADVISORY only; it never kills or restarts anything. It is safe
-to run repeatedly and is intended to be invoked at Cursor Agent session
+to run repeatedly and is intended to be invoked at local session
 start (or before any T2/T3 MCP-dependent work).
 
 Usage
@@ -82,7 +82,7 @@ def _load_python_mcp_servers() -> dict[str, str]:
 def _list_python_processes() -> list[str]:
     """Return each python.exe process's command line (one string per PID)."""
     if sys.platform != "win32":
-        # POSIX fallback — best-effort; not exercised in the Cursor config
+        # POSIX fallback — best-effort; not exercised in the repo config
         # where this is used, but keeps the probe portable.
         try:
             out = subprocess.run(
@@ -139,7 +139,7 @@ def _format_human(report: dict[str, Any]) -> str:
     if report.get("dead"):
         lines.append("")
         lines.append(
-            "HINT: reload the Cursor window to respawn dead MCP servers. "
+            "HINT: reload the host window to respawn dead MCP servers. "
             "See docs/reports/plans/rca-otel-mcp-transport-closed-2026-04-23.md."
         )
     return "\n".join(lines)

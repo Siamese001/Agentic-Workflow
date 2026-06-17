@@ -430,11 +430,6 @@ Each group below lists the paths exactly as they appear in `component_inventory.
 - `agentic_core/knowledge/gates/__init__.py`
 - `agentic_core/knowledge/gates/scope_metadata_resolver.py`
 
-### `agentic_core/prompt_governance/optimization/` (2)
-
-- `agentic_core/prompt_governance/optimization/__init__.py`
-- `agentic_core/prompt_governance/optimization/optimization_strategy.py`
-
 ### `agentic_core/L0_routing/__init__.py/` (1)
 
 - `agentic_core/L0_routing/__init__.py`
@@ -602,10 +597,6 @@ Each group below lists the paths exactly as they appear in `component_inventory.
 ### `agentic_core/prompt_governance/meta_prompts/` (1)
 
 - `agentic_core/prompt_governance/meta_prompts/__init__.py`
-
-### `agentic_core/prompt_governance/registry/` (1)
-
-- `agentic_core/prompt_governance/registry/backups/__init__.py`
 
 ### `agentic_core/prompt_governance/validation/` (1)
 

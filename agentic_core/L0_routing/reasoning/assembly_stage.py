@@ -60,7 +60,7 @@ def _get_context_contract_validator():
 
 
 def _validate_slot_order(*args, **kwargs):
-    from agentic_core.prompt_governance.validation.validate_assembly import validate_slot_order
+    from agentic_core.prompt_governance.scripts.validate_assembly import validate_slot_order
 
     return validate_slot_order(*args, **kwargs)
 

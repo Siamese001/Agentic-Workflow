@@ -2,7 +2,7 @@
 
 ADG snapshot: `artifacts/adg/adg_indexed_04172026_0611.sqlite` (04172026_0611).
 
-This document records only defaults directly observable in source code or `.windsurf/mcp_config.json` env blocks. If not observable, value is `unknown`.
+This document records only defaults directly observable in source code or `.mcp.json` env blocks. If not observable, value is `unknown`.
 
 ## 1. Reload behavior taxonomy
 
@@ -66,7 +66,7 @@ This document records only defaults directly observable in source code or `.wind
 
 ## 5. MCP-injected env (not read by repo process directly)
 
-From `.windsurf/mcp_config.json` env blocks:
+From `.mcp.json` env blocks:
 
 | Key | MCP server(s) | Reload behavior | Runtime consequence |
 |---|---|---|---|

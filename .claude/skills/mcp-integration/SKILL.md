@@ -83,7 +83,7 @@ Read **only** the section file matching the user intent — do not load all sect
 
 ## Hard rules (all servers)
 
-1. **Native Cursor tools first** for single-file read/write in workspace.
+1. **Native legacy editor tools first** for single-file read/write in workspace.
 2. **ADG structural queries** → `adg-sqlite` MCP (never grep-for-deps).
 3. **Web search** → Tavily only ([§8](sections/08-tavily-research.md)).
 4. **Redis is projection** — SQLite ADG snapshot is canonical ([§2](sections/02-redis-cache.md)).

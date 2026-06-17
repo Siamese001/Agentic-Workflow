@@ -317,7 +317,7 @@ def synthesize_governance(snapshot: Path) -> tuple[list[str], list[str]]:
     )
     talking_points.append(
         "Author-Gate decisions emit `DECISION_CAPTURED:` markers consumed by "
-        "the post-Cursor Agent hook chain into the decision ledger; novel decisions "
+        "the post-Codex hook chain into the decision ledger; novel decisions "
         "are flagged `precedent=none` for future calibration"
     )
 

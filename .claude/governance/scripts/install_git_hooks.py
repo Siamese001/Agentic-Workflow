@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-install_git_hooks.py — Opt-in installer for Cursor-managed git hooks.
+install_git_hooks.py — Opt-in installer for legacy editor-managed git hooks.
 
 Currently installs:
     - post-commit: invokes .claude/governance/scripts/post_commit_outcome_binder.py --head
@@ -160,7 +160,7 @@ def uninstall() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Install/verify Cursor git hooks.")
+    parser = argparse.ArgumentParser(description="Install/verify legacy editor git hooks.")
     parser.add_argument("--check", action="store_true", help="Verify hook is installed")
     parser.add_argument("--uninstall", action="store_true", help="Remove managed hook")
     args = parser.parse_args()

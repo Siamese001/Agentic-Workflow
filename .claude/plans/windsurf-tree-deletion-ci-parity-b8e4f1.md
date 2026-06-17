@@ -12,7 +12,7 @@ dod_exempt: false
 
 # `.windsurf/` folder deprecation and deletion — CI parity plan
 
-Retire the read-only `.windsurf/` mirror tree after Cursor-only operation (~11+ days) and CI path migration from [windsurf-gha-cutover-d9f2a7](windsurf-gha-cutover-d9f2a7.md). **`.cursor/` remains SSOT.** Full tree deletion is **not** safe today.
+Retire the read-only `.windsurf/` mirror tree after legacy editor-only operation (~11+ days) and CI path migration from [windsurf-gha-cutover-d9f2a7](windsurf-gha-cutover-d9f2a7.md). **`.cursor/` remains SSOT.** Full tree deletion is **not** safe today.
 
 > **plan_id discipline:** `plan_id` matches filename stem `windsurf-tree-deletion-ci-parity-b8e4f1`.
 
@@ -30,7 +30,7 @@ CURRENT_WAVE: NONE
 LAST_COMPLETED_WAVE: NONE  
 LAST_UPDATED: 2026-05-25
 
-PLAN_CREATED: slug=windsurf-tree-deletion-ci-parity-b8e4f1 path=.cursor/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md status=Not Started
+PLAN_CREATED: slug=windsurf-tree-deletion-ci-parity-b8e4f1 path=.claude/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md status=Not Started
 
 NOTION_PAGE_ID: 36b27693-f55c-81e7-beca-d0c788365473  
 NOTION_PAGE_URL: https://www.notion.so/windsurf-tree-deletion-ci-parity-b8e4f1-36b27693f55c81e7becad0c788365473
@@ -41,8 +41,8 @@ DELETION_READINESS_TODAY: false — [windsurf_deletion_readiness.json](../../art
 
 ## Context (SCQA)
 
-- **Situation** — `.windsurf/` holds ~958 files (~11 MB): 544 plans, 165 scripts, 76 skills, hooks/MCP mirror, state. `.cursor/` is active SSOT (~2,693 files). User runs Cursor only (11+ days). [windsurf-gha-cutover-d9f2a7](windsurf-gha-cutover-d9f2a7.md) already migrated live CI/workflows off `.windsurf/` paths.
-- **Complication** — Constitutional gates still require `.windsurf/hooks.json`, `.windsurf/mcp_config.json`, `check_windsurf_config_schema.py`, dual-write `artifacts/windsurf/`, and 700+ tests under `tests/**/windsurf/`. Deleting the tree without gate migration breaks CI.
+- **Situation** — `.windsurf/` holds ~958 files (~11 MB): 544 plans, 165 scripts, 76 skills, hooks/MCP mirror, state. `.cursor/` is active SSOT (~2,693 files). User runs legacy editor only (11+ days). [windsurf-gha-cutover-d9f2a7](windsurf-gha-cutover-d9f2a7.md) already migrated live CI/workflows off `.windsurf/` paths.
+- **Complication** — Constitutional gates still require `.claude/settings.json`, `.mcp.json`, `check_windsurf_config_schema.py`, dual-write `artifacts/windsurf/`, and 700+ tests under `tests/**/windsurf/`. Deleting the tree without gate migration breaks CI.
 - **Question** — How do we deprecate then delete `.windsurf/` without breaking governance?
 - **Answer** — Three modes: **A** mirror-only (today) → **B** slim stub → **C** `git rm -r .windsurf/` after gate proof and 7-day soak.
 
@@ -74,7 +74,7 @@ python ops_scripts/ci/check_windsurf_deletion_readiness.py
 | **B — Slim stub** | `DEPRECATED.md` + optional `rules/README.md` | After W4 gate migration |
 | **C — Full delete** | Directory removed | After B + `deletion_safe: true` + 7-day CI green |
 
-**Operator assumption:** Cursor-only IDE on this repo; Windsurf IDE not used for authoring.
+**Operator assumption:** legacy editor-only IDE on this repo; legacy editor IDE not used for authoring.
 
 ---
 
@@ -108,13 +108,13 @@ python ops_scripts/ci/check_windsurf_deletion_readiness.py
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W0.1 | Operator confirms Cursor-only; branch protection audit | 🔲 TODO |
+| W0.1 | Operator confirms legacy editor-only; branch protection audit | 🔲 TODO |
 | W0.2 | `rewrite_windsurf_refs_to_cursor.py --dry-run` clean | 🔲 TODO |
 | W1.1 | Retarget `check_skill_frontmatter` → `.cursor/skills` | 🔲 TODO |
-| W1.2 | Retarget `check_hook_consolidation` → `.cursor/hooks.json` | 🔲 TODO |
+| W1.2 | Retarget `check_hook_consolidation` → `.claude/settings.json` | 🔲 TODO |
 | W1.3 | Retarget plan/AG gates off `.windsurf/scripts` | 🔲 TODO |
 | W1.4 | `.pre-commit-config.yaml` — MCP hooks cursor-only | 🔲 TODO |
-| W2.1 | Dedupe `.windsurf/plans/` vs `.cursor/plans/` | 🔲 TODO |
+| W2.1 | Dedupe `.claude/plans/` vs `.claude/plans/` | 🔲 TODO |
 | W2.2 | Remove mirrored scripts/skills/workflows | 🔲 TODO |
 | W2.3 | Ledger SSOT `.cursor/state/refactor_decisions/` only | 🔲 TODO |
 | W3.1 | Stop dual-write in `_governance_paths.py` | 🔲 TODO |
@@ -135,7 +135,7 @@ python ops_scripts/ci/check_cursor_governance_mirror_health.py
 python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
 ```
 
-**Acceptance:** Operator confirms no Windsurf IDE authoring; dry-run shows zero unexpected `.windsurf` refs outside `_archive` / `_legacy_*`.
+**Acceptance:** Operator confirms no legacy editor IDE authoring; dry-run shows zero unexpected `.windsurf` refs outside `_archive` / `_legacy_*`.
 
 ---
 
@@ -144,12 +144,12 @@ python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
 | File | Change |
 |------|--------|
 | `ops_scripts/ci/check_skill_frontmatter.py` | `SKILLS_ROOT` → `.cursor/skills` |
-| `ops_scripts/ci/check_hook_consolidation.py` | `HOOKS_JSON_PATH` → `.cursor/hooks.json` |
+| `ops_scripts/ci/check_hook_consolidation.py` | `HOOKS_JSON_PATH` → `.claude/settings.json` |
 | `ops_scripts/ci/check_decision_required.py` | triggers → `.cursor/schemas/` |
 | `ops_scripts/ci/check_agentic_core_addition.py` | schema → `.cursor/schemas/` |
 | `ops_scripts/ci/run_contract_gates.py` | skills_dir → `.cursor/skills` |
 | `ops_scripts/ci/check_apps_test_surface_parity.py` | scripts → `.cursor/scripts` |
-| `.pre-commit-config.yaml` | Remove `.windsurf/mcp_config.json` triggers |
+| `.pre-commit-config.yaml` | Remove `.mcp.json` triggers |
 
 **Tool:** `python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py`
 
@@ -157,7 +157,7 @@ python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
 
 ## W2 — Duplicate content retirement
 
-- `.windsurf/plans/` — diff vs `.cursor/plans/` + `_archive/windsurf_legacy/`; delete windsurf-only dupes.
+- `.claude/plans/` — diff vs `.claude/plans/` + `_archive/windsurf_legacy/`; delete windsurf-only dupes.
 - `.windsurf/scripts|skills|workflows/` — delete after `.cursor/` parity confirmed.
 - Notion: `python tools/notion/migrate_plan_paths_windsurf_to_cursor.py` if any `.windsurf/plans` paths remain.
 
@@ -175,7 +175,7 @@ python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
 
 | Gate | Target |
 |------|--------|
-| `check_windsurf_config_schema.py` | Validate `.cursor/hooks.json` + `.cursor/mcp.json` only; rename to `check_cursor_config_schema.py` |
+| `check_windsurf_config_schema.py` | Validate `.claude/settings.json` + `.mcp.json` only; rename to `check_cursor_config_schema.py` |
 | `check_cursor_governance_mirror_health.py` | Delete or invert to `check_no_windsurf_tree.py` |
 | `check_windsurf_deletion_readiness.py` | Policy: `deletion_safe: true` when blockers empty |
 | `check_mcp_editor_parity.py` | Single-file schema |
@@ -197,7 +197,7 @@ python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
 - [ ] `deletion_safe: true` in [artifacts/cursor/windsurf_deletion_readiness.json](../../artifacts/cursor/windsurf_deletion_readiness.json)
 - [ ] `rg '\.windsurf'` outside `_archive` / legacy → documented only
 - [ ] [structure_policy.yaml](../../config/structure_blueprint/structure_policy.yaml) updated
-- [ ] Notion Plans: no `Plan File Path` under `.windsurf/plans/`
+- [ ] Notion Plans: no `Plan File Path` under `.claude/plans/`
 - [ ] 7-day CI green on `main`
 
 **Command:**
@@ -216,10 +216,10 @@ git rm -r .windsurf/
 
 ```text
 hard_blockers_today:
-  check_windsurf_config_schema  → .windsurf/hooks.json + mcp_config.json
+  check_windsurf_config_schema  → .claude/settings.json + mcp_config.json
   check_cursor_governance_mirror_health → requires mirror peers
   check_skill_frontmatter → .windsurf/skills (bug: doc says cursor)
-  check_hook_consolidation → .windsurf/hooks.json
+  check_hook_consolidation → .claude/settings.json
   pre-commit MCP mirror files
   dual-write artifacts/windsurf
 
@@ -231,7 +231,7 @@ W1 → W3 → W4 → deletion_safe:true → W5 git rm
 ## Out of scope
 
 - Re-running [windsurf-gha-cutover-d9f2a7](windsurf-gha-cutover-d9f2a7.md) (already COMPLETED)
-- Windsurf IDE hook 1:1 port (see [cursor_windsurf_hook_migration_inventory.md](../../docs/reports/cursor_windsurf_hook_migration_inventory.md))
+- legacy editor IDE hook 1:1 port (see [cursor_windsurf_hook_migration_inventory.md](../../docs/reports/cursor_windsurf_hook_migration_inventory.md))
 - `agentic_core` / `apps_rg` product runtime
 - Weakening gates to greenwash deletion
 
@@ -249,7 +249,7 @@ W1 → W3 → W4 → deletion_safe:true → W5 git rm
 
 ---
 
-## Suggested timeline (Cursor-only)
+## Suggested timeline (legacy editor-only)
 
 | Week | Wave |
 |------|------|

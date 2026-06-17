@@ -211,7 +211,7 @@ Layer 2 can be composite: cross-encoder for fast majority path, LLM-judge for ed
 
 ## Related Documents
 
-- Plan: `.windsurf/plans/rtc-w1-phase5-cache-safety-veto-e8a4d2.md`
+- Plan: `.claude/plans/rtc-w1-phase5-cache-safety-veto-e8a4d2.md`
 - Parent ADR: `artifacts/certification/semantic_cache_threshold_adr.json` (`SEMCACHE-THRESH-001`)
 - Dataset: `data/certification/calibration_pairs.json` (v2, 100 pairs, frozen)
 - W1p4 sweep baseline: `artifacts/certification/threshold_sweep_results.json`

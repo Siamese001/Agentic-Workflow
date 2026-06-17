@@ -1,6 +1,6 @@
 """ADG client — direct SQLite wrapper for ADG snapshot queries.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P1.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P1.
 
 Uses direct SQLite access to the latest ADG snapshot per constitutional §28.
 """

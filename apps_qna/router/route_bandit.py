@@ -160,7 +160,7 @@ def _emit_router_decision_marker(
             posterior_alpha=<a> posterior_beta=<b>
 
     Stays a single logical line so post_agent_router_decision_audit.py
-    can parse it from logs / stdout / Cursor Agent response trace.
+    can parse it from logs / stdout / Codex response trace.
     """
     print(
         f"ROUTER_DECISION: layer={_ROUTER_LAYER} router={_ROUTER_NAME} "

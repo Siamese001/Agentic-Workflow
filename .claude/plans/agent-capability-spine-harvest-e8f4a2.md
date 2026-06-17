@@ -34,7 +34,7 @@ DECISION_MODEL: docs/reports/cursor/agent_capability_decision_model.md
 MATRIX_SSOT: docs/reports/cursor/agent_capability_decision_matrix.json
 AUTHOR_GATE_RECEIPT_SSOT: docs/reports/cursor/agent_capability_harvest_author_gate_receipt.md
 
-PLAN_CREATED: slug=agent-capability-spine-harvest-e8f4a2 path=.cursor/plans/agent-capability-spine-harvest-e8f4a2.md status=Not Started notion_page=36b27693-f55c-8175-b7ee-c1042f686bdf
+PLAN_CREATED: slug=agent-capability-spine-harvest-e8f4a2 path=.claude/plans/agent-capability-spine-harvest-e8f4a2.md status=Not Started notion_page=36b27693-f55c-8175-b7ee-c1042f686bdf
 
 NOTION_PAGE_ID: 36b27693-f55c-8175-b7ee-c1042f686bdf
 NOTION_PLAN_URL: https://www.notion.so/agent-capability-spine-harvest-e8f4a2-36b27693f55c8175b7eec1042f686bdf
@@ -172,7 +172,7 @@ Regenerate matrix: `python tools/governance/build_agent_capability_decision_matr
 
 **Deliverables**
 
-- [ ] Cursor Author-Gate packet + `DECISION_CAPTURED` line in session log
+- [ ] legacy editor Author-Gate packet + `DECISION_CAPTURED` line in session log
 - [ ] Receipt file: [agent_capability_harvest_author_gate_receipt.md](../docs/reports/cursor/agent_capability_harvest_author_gate_receipt.md) containing:
   - `DECISION_CAPTURED: type=architecture_choice, repo_area=agentic_core, selected=<id>, outcome=executed`
   - Approved scope bullets (four bullets above)
@@ -184,7 +184,7 @@ Regenerate matrix: `python tools/governance/build_agent_capability_decision_matr
 W0.5 closeout MUST include a diff proving YAML updated from empty to populated. Receipt attaches one of:
 
 ```bash
-git diff -- .cursor/plans/agent-capability-spine-harvest-e8f4a2.md
+git diff -- .claude/plans/agent-capability-spine-harvest-e8f4a2.md
 ```
 
 **Required hunk (verbatim target after PASS):**

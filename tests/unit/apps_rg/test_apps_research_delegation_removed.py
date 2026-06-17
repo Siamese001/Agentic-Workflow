@@ -1,4 +1,4 @@
-"""apps_rg production path does not delegate missing briefing to apps_research."""
+"""apps_rg whole-run path delegates missing briefing to apps_research."""
 
 from __future__ import annotations
 
@@ -72,7 +72,7 @@ def test_route_profiles_contain_no_apps_research_required_true_condition() -> No
         assert conditions.get("apps_research_call_required") is not True
 
 
-def test_whole_run_delegation_decision_is_disabled_even_when_briefing_missing() -> None:
+def test_whole_run_delegation_decision_is_enabled_when_briefing_missing() -> None:
     assert (
         should_delegate_apps_research(
             route_family=ROUTE_FAMILY_R3R4,
@@ -80,7 +80,7 @@ def test_whole_run_delegation_decision_is_disabled_even_when_briefing_missing() 
             auto_research_internal=True,
             research_via="apps_research",
         )
-        is False
+        is True
     )
 
 

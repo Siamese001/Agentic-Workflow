@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """migrate_refactor_decision_ledger_windsurf_to_cursor.py — one-shot ledger alignment.
 
-Backs up the Cursor ledger if present, then either copies (empty Cursor) or
+Backs up the legacy editor ledger if present, then either copies (empty legacy editor) or
 merges rows from ``.claude/state/.../refactor_decision_ledger.sqlite`` that
 are missing in ``.claude/state/...`` (ATTACH-based INSERT OR IGNORE).
 
@@ -9,7 +9,7 @@ Usage:
     python tools/cursor/migrate_refactor_decision_ledger_windsurf_to_cursor.py
     python tools/cursor/migrate_refactor_decision_ledger_windsurf_to_cursor.py --dry-run
 
-No deletes. Existing Cursor rows are never overwritten.
+No deletes. Existing legacy editor rows are never overwritten.
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ def main() -> int:
     args = ap.parse_args()
 
     if not WINDSURF_DB.is_file():
-        print("[migrate] no Windsurf ledger — nothing to migrate", file=sys.stderr)
+        print("[migrate] no legacy editor ledger — nothing to migrate", file=sys.stderr)
         return 0
 
     CURSOR_DB.parent.mkdir(parents=True, exist_ok=True)
@@ -63,24 +63,24 @@ def main() -> int:
 
     if cursor_count == 0 and windsurf_count > 0:
         if args.dry_run:
-            print("[migrate] would copy Windsurf → Cursor (Cursor empty)")
+            print("[migrate] would copy legacy editor → legacy editor (legacy editor empty)")
             return 0
         if cursor_exists:
             bak = CURSOR_DB.with_suffix(
                 CURSOR_DB.suffix + ".bak." + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             )
             shutil.copy2(CURSOR_DB, bak)
-            print(f"[migrate] backed up existing Cursor DB → {bak.relative_to(REPO_ROOT)}")
+            print(f"[migrate] backed up existing legacy editor DB → {bak.relative_to(REPO_ROOT)}")
         shutil.copy2(WINDSURF_DB, CURSOR_DB)
-        print("[migrate] copied Windsurf ledger → Cursor path")
+        print("[migrate] copied legacy editor ledger → legacy editor path")
         return 0
 
     if windsurf_count == 0:
-        print("[migrate] Windsurf ledger empty — no merge")
+        print("[migrate] legacy editor ledger empty — no merge")
         return 0
 
     if args.dry_run:
-        print("[migrate] would merge any missing decision_id rows from Windsurf into Cursor")
+        print("[migrate] would merge any missing decision_id rows from legacy editor into legacy editor")
         return 0
 
     if cursor_exists and cursor_count > 0:

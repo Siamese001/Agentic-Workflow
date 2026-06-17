@@ -24,7 +24,7 @@ LAST_UPDATED: 2026-05-27
 COMPLETION_NOTE: W1-W3 fully certified (22 unit tests). W4 partial — X2 passes, regen W3-guard proven; residual Claude/Gemini soft-fail attributed to local Qwen stochasticity, deferred via DEFERRED_SCOPE. Commit bc727c4c39.
 NOTION_PAGE_ID: 36d27693-f55c-8139-aaa6-da41e0c3dca8
 
-PLAN_CREATED: slug=exec-summary-bro-svp-rca-e3a1f2 path=.cursor/plans/exec-summary-bro-svp-rca-e3a1f2.md status=Not Started notion=36d27693-f55c-8139-aaa6-da41e0c3dca8
+PLAN_CREATED: slug=exec-summary-bro-svp-rca-e3a1f2 path=.claude/plans/exec-summary-bro-svp-rca-e3a1f2.md status=Not Started notion=36d27693-f55c-8139-aaa6-da41e0c3dca8
 
 ---
 
@@ -98,7 +98,7 @@ All downstream lanes (`headline`, `unify_bullets`, `unify_narrative`, `ibm_bulle
 
 | Phase | Title | Scope (files) | Est. Tokens | Status |
 |-------|-------|---------------|-------------|--------|
-| W0.1 | Register plan (disk + Notion) | `.cursor/plans/`, Notion Plans DB | ~6K | ✅ Done |
+| W0.1 | Register plan (disk + Notion) | `.claude/plans/`, Notion Plans DB | ~6K | ✅ Done |
 | W1.1 | Auto-exec-brief default ON | `apps_rg/runtime/briefing_exec_resolution.py` | ~15K | ✅ Done |
 | W2.1 | S1 thesis-body promise constraint | `apps_rg/runtime/sections/executive_summary_generation_grade_contract.py` | ~18K | ✅ Done |
 | W2.2 | S6 forward-projection requirement | `apps_rg/runtime/sections/executive_summary_synthesis_contract.py` | ~12K | ✅ Done |

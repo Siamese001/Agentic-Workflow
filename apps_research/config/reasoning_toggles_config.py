@@ -1,7 +1,7 @@
 """
 apps_research Reasoning Toggles — feature flags for pipeline steps.
 
-Aligned with apps_exec reasoning_toggles_config pattern.
+Aligned with the shared reasoning-toggle pattern used across app pipelines.
 """
 
 from __future__ import annotations

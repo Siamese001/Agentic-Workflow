@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """post_agent_long_command_audit.py — session-level timeout observability.
 
-Reads the Cursor Agent response from stdin (post-agent payload). Scans
+Reads the Codex response from stdin (post-agent payload). Scans
 ``run_command`` invocations in the response for patterns known to run long
 (pytest, pre-commit run, git commit at root, npm/pnpm install, docker build,
 cargo build, python ``tools/generate_full_adg.py``) and flags those that lack
 an explicit timeout guard in the command line.
 
 Subcommands:
-  agent_response — **Cursor ``afterAgentResponse`` path** (W1.4): structured
+  agent_response — **legacy editor ``afterAgentResponse`` path** (W1.4): structured
     stderr (NOT_APPLICABLE / ALLOW / VIOLATION), logs under ``artifacts/governance/``.
     **Advisory only** — always exits 0. **Never** claims to block already-emitted
     ``run_command`` calls.
@@ -37,7 +37,7 @@ fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[3]
 
-# Cursor-native paths only (W1.4).
+# repo-native paths only (W1.4).
 violations_log = repo_root / "artifacts" / "governance" / "long_command_violations.jsonl"
 post_agent_audit_log = repo_root / "artifacts" / "governance" / "long_command_post_agent_audit.jsonl"
 
@@ -178,7 +178,7 @@ def _now_iso() -> str:
 
 
 def _extract_agent_response_text(payload: object) -> str:
-    """Best-effort text from Cursor afterAgentResponse stdin (dict or string)."""
+    """Best-effort text from legacy editor afterAgentResponse stdin (dict or string)."""
     if isinstance(payload, str):
         return payload
     if isinstance(payload, dict):
@@ -359,7 +359,7 @@ def cmd_legacy_stdin() -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(prog="post_agent_long_command_audit")
     sub = parser.add_subparsers(dest="cmd")
-    sub.add_parser("agent_response", help="Cursor afterAgentResponse stdin audit (advisory)")
+    sub.add_parser("agent_response", help="legacy editor afterAgentResponse stdin audit (advisory)")
     args = parser.parse_args()
     if args.cmd == "agent_response":
         return cmd_agent_response(args)

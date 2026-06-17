@@ -11,7 +11,7 @@ metadata:
 
 **PREREQUISITE:** <env vars, MCP servers, or constitutional rules that must be in place. State the gate file and the actionable error the user will see if missing. Delete this section if there is no prerequisite.>
 
-<One-paragraph plain-English summary: what this skill does, what problem it solves, and what would go wrong without it. End with the upstream reference if any: "Adapts the upstream <foo> docs (<url>) to the Cursor MCP architecture.">
+<One-paragraph plain-English summary: what this skill does, what problem it solves, and what would go wrong without it. End with the upstream reference if any: "Adapts the upstream <foo> docs (<url>) to the legacy editor MCP architecture.">
 
 **Sibling skills:** <list 1–3 skills that overlap. State the boundary: "Use X for A, this skill for B.">
 

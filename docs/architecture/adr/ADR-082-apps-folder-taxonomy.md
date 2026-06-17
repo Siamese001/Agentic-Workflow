@@ -2,9 +2,9 @@
 
 - **Status**: Accepted
 - **Date**: 2026-05-03 (re-execution; original 2026-05-02 rolled back)
-- **Deciders**: Cursor Agent (authored), user (approved re-execution via Author-Gate option 1)
+- **Deciders**: Codex (authored), user (approved re-execution via Author-Gate option 1)
 - **Context tier**: T3 (cross-app, cross-layer)
-- **SSOT plan**: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`
+- **SSOT plan**: `.claude/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 - **Sunset window**: Compat shims sunset 2026-05-17 (2-week window from re-execution).
 - **Slot provenance**: ADR-081 already occupies `docs/adr/ADR-081-apps-e2e-spine-cert-wireup.md`. Slot re-assigned to 082.
 
@@ -18,7 +18,7 @@ Nine `apps_*` folders (`apps_eval`, `apps_exec`, `apps_lic`, `apps_qna`, `apps_r
 
 ## 2. Decision
 
-Canonicalize every `apps_*` tree to a fixed sub-folder grammar and enforce it with CI (gate `ops_scripts/ci/check_apps_folder_taxonomy.py`) + an always-on-trigger Cursor Agent rule (`.windsurf/rules/apps-folder-taxonomy.md`).
+Canonicalize every `apps_*` tree to a fixed sub-folder grammar and enforce it with CI (gate `ops_scripts/ci/check_apps_folder_taxonomy.py`) + an always-on-trigger Codex rule (`.claude/rules/apps-folder-taxonomy.md`).
 
 ### 2.1 Mandatory sub-folders (all apps)
 
@@ -89,7 +89,7 @@ Every move phase follows the sequence documented in plan §8. Summary:
 
 ### Positive
 
-- Uniform taxonomy across 9 apps ⇒ reduced cognitive load for new developers and Cursor Agent itself.
+- Uniform taxonomy across 9 apps ⇒ reduced cognitive load for new developers and Codex itself.
 - Constitutional §31 (SSOT folder routing) extensible to `apps_*/` via new gate `T7r` (`check_apps_folder_taxonomy.py`).
 - Documentation parity ⇒ every app has the same discoverability contract.
 - Enables deferred work: apps-e2e certification re-run over canonical layout, Fort Knox arm rerun, constitutional §32 entry.
@@ -106,9 +106,9 @@ Every phase is a single commit (or pwsh `Move-Item` batch that's reversible via 
 
 ## 5. Related
 
-- Plan: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`
+- Plan: `.claude/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 - Canonical spec: `docs/architecture/apps-folder-taxonomy.md`
-- Enforcement rule: `.windsurf/rules/apps-folder-taxonomy.md`
+- Enforcement rule: `.claude/rules/apps-folder-taxonomy.md`
 - CI gate: `ops_scripts/ci/check_apps_folder_taxonomy.py`
 - Constitutional §31 (SSOT folder routing) — source discipline this ADR extends to `apps_*/`.
 - Constitutional §32 — reserved for apps-taxonomy-always-on entry (deferred; see plan §16 item 4).

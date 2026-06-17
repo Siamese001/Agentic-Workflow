@@ -2,7 +2,7 @@
   "mcpServers": {
     "GitKraken": {
       "command": "${GITKRAKEN_GK_PATH}",
-      "args": ["mcp", "--host=cursor", "--source=gitlens", "--scheme=cursor"]
+      "args": ["mcp", "--host=codex", "--source=gitlens", "--scheme=codex"]
     },
     "adg_sqlite": {
       "command": "python",
@@ -15,6 +15,14 @@
     },
     "deepwiki": {
       "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "filesystem": {
+      "command": "node",
+      "args": [
+        "${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/filesystem_mcp_launcher.js",
+        "${env:AGENTIC_REPO_ROOT}"
+      ],
+      "_startup": "Repo-root-only filesystem MCP launcher (Rule #0); resolves the server package dynamically and never expands scope beyond the repo root."
     },
     "memory": {
       "command": "python",

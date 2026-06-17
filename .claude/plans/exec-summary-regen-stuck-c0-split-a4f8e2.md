@@ -28,7 +28,7 @@ LAST_UPDATED: 2026-05-27
 
 NOTION_PAGE_ID: 36d27693-f55c-81d7-847a-c34cd7807849  
 NOTION_PLAN_URL: https://www.notion.so/exec-summary-regen-stuck-c0-split-a4f8e2-36d27693f55c81d7847ac34cd7807849  
-PLAN_CREATED: slug=exec-summary-regen-stuck-c0-split-a4f8e2 path=.cursor/plans/exec-summary-regen-stuck-c0-split-a4f8e2.md status=Not Started notion_page=36d27693-f55c-81d7-847a-c34cd7807849
+PLAN_CREATED: slug=exec-summary-regen-stuck-c0-split-a4f8e2 path=.claude/plans/exec-summary-regen-stuck-c0-split-a4f8e2.md status=Not Started notion_page=36d27693-f55c-81d7-847a-c34cd7807849
 
 ---
 

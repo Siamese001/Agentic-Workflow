@@ -7,7 +7,7 @@ upstream_artefacts:
   - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
   - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
   - docs/wave_g/G4b_control_plane/defaults_and_reload_policy.md
-  - .windsurf/mcp_config.json
+  - .mcp.json
 
 ADG snapshot timestamp used: `04182026_0814`.
 
@@ -16,7 +16,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 1. Start/verify local Redis service (`localhost:6379`).
 2. Verify ADG cache freshness (`python tools/adg/adg_redis_ingest.py --check`).
 3. If stale/cold, regenerate and ingest (`python tools/generate_full_adg.py` then `python tools/adg/adg_redis_ingest.py --force`).
-4. Start Windsurf MCP lifecycle (spawns local stdio/binary MCP servers from `.windsurf/mcp_config.json`).
+4. Start legacy editor MCP lifecycle (spawns local stdio/binary MCP servers from `.mcp.json`).
 5. Verify core MCP health:
    - `adg_health`
    - `redis_health`
@@ -37,7 +37,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 1. Stop app runtime processes.
 2. Stop optional sidecar/ancillary local daemons.
-3. Stop Windsurf (terminates local MCP subprocesses).
+3. Stop legacy editor (terminates local MCP subprocesses).
 4. Optionally keep Redis running for session continuity.
 
 For ADG full regeneration with lock concerns:
@@ -50,7 +50,7 @@ For ADG full regeneration with lock concerns:
 | Surface | Known restart mode |
 |---|---|
 | App runtimes (`apps_*`) | manual process restart |
-| Python/Node MCP subprocesses | Windsurf restart (or process recycle via IDE) |
+| Python/Node MCP subprocesses | legacy editor restart (or process recycle via IDE) |
 | ADG serving snapshot | `adg_reload` can repoint without full process restart |
 | Redis local service | OS/service restart |
 | Metrics sidecar | manual restart |
@@ -85,5 +85,5 @@ For ADG full regeneration with lock concerns:
 
 ## 8) Ambiguities explicitly preserved
 
-- Exact process cleanup behavior for every Windsurf MCP child is launcher-specific and only partially codified; unknown where not directly specified.
+- Exact process cleanup behavior for every legacy editor MCP child is launcher-specific and only partially codified; unknown where not directly specified.
 - External endpoint downtime semantics (`deepwiki`, provider APIs) are outside repo-managed restart control.

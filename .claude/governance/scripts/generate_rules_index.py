@@ -5,8 +5,8 @@ RULES_INDEX Generator Script (W5.P1)
 Generates deterministic RULES_INDEX.md from source-of-truth files:
 - .claude/rules/*.mdc (and legacy *.md if present)
 - .claude/skills/*/SKILL.md
-- .cursor/workflows/*.md
-- .cursor/hooks.json
+- docs/archive/windsurf/legacy-tree/workflows/*.md
+- .claude/settings.json
 
 Usage:
     python generate_rules_index.py --dry-run          # Print or write to temp artifact
@@ -80,7 +80,7 @@ def scan_rules() -> List[Dict]:
             content = rule_file.read_text(encoding="utf-8")
             metadata, body = extract_frontmatter(content)
             
-            # Cursor .mdc: alwaysApply; legacy .md: trigger
+            # legacy editor .mdc: alwaysApply; legacy .md: trigger
             if metadata.get("alwaysApply") is True:
                 trigger = "always_on"
             else:
@@ -166,7 +166,7 @@ def scan_skills() -> List[Dict]:
 
 
 def scan_workflows() -> List[Dict]:
-    """Scan .cursor/workflows/*.md and extract metadata."""
+    """Scan docs/archive/windsurf/legacy-tree/workflows/*.md and extract metadata."""
     workflows = []
     
     if not WORKFLOWS_DIR.exists():
@@ -194,7 +194,7 @@ def scan_workflows() -> List[Dict]:
 
 
 def scan_hooks() -> Optional[Dict]:
-    """Scan .cursor/hooks.json and extract counts."""
+    """Scan .claude/settings.json and extract counts."""
     if not HOOKS_JSON.exists():
         return None
     
@@ -270,7 +270,7 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
     lines.append("- **Tier-1 (always injected):** `AGENTS.md` + `000`–`003` `alwaysApply` rules only.")
     lines.append("- **Tier-2 (on demand):** other `.claude/rules/*.mdc` via description/globs.")
     lines.append("- **Tier-3 (progressive):** `.claude/skills/*/SKILL.md` — prefer `mcp-integration` sections over redirect stubs.")
-    lines.append("- **Hooks (zero-token enforcement):** `.cursor/hooks.json` → `.cursor/hooks/*.py` + `.claude/governance/scripts/post_agent_*.py`.")
+    lines.append("- **Hooks (zero-token enforcement):** `.claude/settings.json` → `.claude/governance/scripts/*.py` + `.claude/governance/scripts/post_agent_*.py`.")
     lines.append("")
     lines.append("## Governance SSOT map")
     lines.append("")
@@ -472,7 +472,7 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate RULES_INDEX.md from Cursor governance sources",
+        description="Generate RULES_INDEX.md from legacy editor governance sources",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

@@ -51,17 +51,17 @@ Add the new server entry:
 
 **Important**: Set `adg_redis.disabled: true` to prevent conflicts.
 
-### Step 2: Restart Windsurf
+### Step 2: Restart legacy editor
 
-1. Close Windsurf completely
-2. Reopen Windsurf
+1. Close legacy editor completely
+2. Reopen legacy editor
 3. Verify in MCP settings that `adg_sqlite` is enabled and `adg_redis` is disabled
 
 ### Step 3: Verify Installation
 
 Run the health check:
 ```bash
-# The adg_health tool is available via Windsurf MCP
+# The adg_health tool is available via legacy editor MCP
 # It returns mode, sqlite status, redis status, cache capability
 ```
 
@@ -147,10 +147,10 @@ If issues arise:
    "adg_redis": { "disabled": false }
    ```
 
-3. **Restart Windsurf**
+3. **Restart legacy editor**
 
 4. **Investigate logs**:
-   Check stderr output in Windsurf logs for server errors
+   Check stderr output in legacy editor logs for server errors
 
 ## Architecture Differences
 
@@ -189,7 +189,7 @@ Benefits:
 
 - [ ] MCP config updated with `adg_sqlite` enabled
 - [ ] MCP config updated with `adg_redis` disabled
-- [ ] Windsurf restarted
+- [ ] legacy editor restarted
 - [ ] `adg_health()` tool responds correctly
 - [ ] `adg_status()` returns correct ADG snapshot
 - [ ] Node queries work (cached and uncached)

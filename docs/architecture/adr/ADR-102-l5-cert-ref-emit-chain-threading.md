@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-09
 **Phase**: l5-cert-ref-emit-chain-threading-c4e7f1 W0–W4
-**Deciders**: Cursor Agent + user Author-Gate (W0 packet, 2026-05-09)
+**Deciders**: Codex + user Author-Gate (W0 packet, 2026-05-09)
 **ADG Snapshot**: `artifacts/adg/adg_indexed_<ts>.sqlite` (structural; cross-layer contract change)
 
 ---
@@ -101,7 +101,7 @@ Remove `__post_init__` methods from the 17 fail-closed dataclasses; the field it
 ## References
 
 - Related ADRs: ADR-080 (runtime certification binding), ADR-050 (intelligence-ledger family), ADR-023 (HITL runtime HITL)
-- Related plans: `.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md`
+- Related plans: `.claude/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md`
 - L5 reference docs:
   - `docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md`
   - `docs/reference/00A_L5_Governance_Safety/00A.6_L5_Replay_Audit_and_Certification_Evidence.md`

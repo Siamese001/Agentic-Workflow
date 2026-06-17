@@ -11,8 +11,8 @@
 - **Deciders:** L3 orchestration owner, L5 safety owner, compliance reviewer
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related plan:** `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md`
-- **Related sibling plan (distinct concern):** `.windsurf/plans/harness-enforcement-rename-a8f21c.md`
+- **Related plan:** `.claude/plans/runtime-hitl-exit-control-c4e7b3.md`
+- **Related sibling plan (distinct concern):** `.claude/plans/harness-enforcement-rename-a8f21c.md`
 - **Related contract:** `docs/contracts/L5_exit_control_hitl.md` (P0.2 deliverable)
 - **Impact layers:** L3 orchestration, L5 safety, L6 observability, apps_*
 
@@ -38,7 +38,7 @@ This ADR selects the architecture for the missing branch and binds it to the L5 
 
 ### 1.1 What this is not
 
-This ADR **is not** about developer-loop / IDE-side approval of Cursor Agent code changes. That
+This ADR **is not** about developer-loop / IDE-side approval of Codex code changes. That
 concern — previously mislabeled "HITL" in `.windsurf/` — is harness enforcement in the
 Fowler taxonomy and is governed by the sibling plan. The two systems share a schema pattern
 (candidates, scores, approval, outcome, integrity) but must not share a schema, a table, a
@@ -82,7 +82,7 @@ returns the concrete adapter binding per escalation class.
 
 ### 3.4 Suspension semantics
 
-On ESCALATE_HITL: the **production run** is suspended (not Cursor Agent, not the orchestrator
+On ESCALATE_HITL: the **production run** is suspended (not Codex, not the orchestrator
 process — the specific run keyed by `run_id` / `trace_id`). State is persisted to
 `runtime_hitl_ledger`. Resume is event-driven from adapter callback or scheduled timeout.
 
@@ -183,7 +183,7 @@ Full mapping deferred to W7 of the plan.
 
 ## 7. Resolutions to Plan Gaps
 
-Each gap in `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` §Gap Register, resolved
+Each gap in `.claude/plans/runtime-hitl-exit-control-c4e7b3.md` §Gap Register, resolved
 by this ADR:
 
 | Gap | Resolution |
@@ -225,8 +225,8 @@ This ADR is accepted when:
 ## 10. References
 
 - `docs/reference/_notes/agentic_process_mapping_v34.md` — canonical v30 map (step [5])
-- `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` — execution plan (waves W0–W7)
-- `.windsurf/plans/harness-enforcement-rename-a8f21c.md` — sibling (distinct concern, do not merge)
+- `.claude/plans/runtime-hitl-exit-control-c4e7b3.md` — execution plan (waves W0–W7)
+- `.claude/plans/harness-enforcement-rename-a8f21c.md` — sibling (distinct concern, do not merge)
 - Fowler, M. "Humans and Agents in Software Engineering Loops" (2026-03) — taxonomy
 - Anthropic "Claude Code auto mode" — classifier + deny-and-continue patterns (informs G5)
 - LangGraph interrupt + checkpointer docs — suspend/resume inspiration

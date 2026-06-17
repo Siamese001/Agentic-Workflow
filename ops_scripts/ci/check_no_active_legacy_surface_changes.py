@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Block new active Windsurf workflow artifacts.
+"""Block new active legacy editor workflow artifacts.
 
-The repository is Cursor-native. Historical Windsurf material may remain only in
+The repository is repo-native. Historical legacy editor material may remain only in
 explicit archive/compatibility locations, and existing `.windsurf/**` files are
 not an authoring surface. This staged-file gate prevents fresh edits from
 reintroducing `.windsurf` as a live SSOT.
@@ -17,23 +17,23 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 BLOCKED_PREFIXES = (
-    ".windsurf/plans/",
-    ".windsurf/skills/",
-    ".windsurf/workflows/",
-    ".windsurf/rules/",
-    ".windsurf/scripts/",
+    ".claude/plans/",
+    ".claude/skills/",
+    "docs/archive/windsurf/legacy-tree/workflows/",
+    ".claude/rules/",
+    ".claude/governance/scripts/",
     ".windsurf/schemas/",
     ".windsurf/state/",
-    ".windsurf/templates/",
+    ".claude/templates/",
     ".windsurf/reminders/",
 )
 BLOCKED_FILES = {
-    ".windsurf/hooks.json",
-    ".windsurf/mcp_config.json",
+    ".claude/settings.json",
+    ".mcp.json",
     ".windsurf/RULES_INDEX.md",
 }
 ARCHIVE_EXEMPT_PREFIXES = (
-    ".cursor/plans/_archive/",
+    ".claude/plans/_archive/",
     ".cursor/windsurf_compat/",
     "docs/archive/windsurf/",
 )

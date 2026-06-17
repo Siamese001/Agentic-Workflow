@@ -5,7 +5,7 @@
 - **Deciders**: Repo operator (ratified 2026-04-24 via 4-question Author-Gate sequence)
 - **Impact Layers**: L5 (primary), L3 (capability_token consumer), L2 (tool authorization), L4 (memory/context compartmentalization), L6 (audit/forensic emission)
 - **Supersedes**: (extends) `docs/reference/00_L5_Policy_Plane/Governance & Safety v3.md`
-- **Parent plan**: `.windsurf/plans/l5-governance-best-practice-gap-4615ae.md`
+- **Parent plan**: `.claude/plans/l5-governance-best-practice-gap-4615ae.md`
 
 ---
 

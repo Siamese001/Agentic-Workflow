@@ -1,6 +1,6 @@
 {
   "schema": "p2_w9_unify_bullets_final_rca_v1",
-  "generated_at": "2026-06-16T16:16:30Z",
+  "generated_at": "2026-06-17T16:09:50Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-W9-UNIFY-BULLETS-FINAL-CLOSEOUT",
   "latest_unify_bullets_prior_blocker": "X3_BLOCK via X2: x2_unify_protected_bullet_preserved_or_justified, x2_unify_metrics_preserved — default-targeting run (Unify Consulting + default_jd) produced LLM metric drift; bul_unify_006 lost $22M/20%/8-to-28; combined bullets missing locked metric literals.",
@@ -14,10 +14,10 @@
   "forbidden_fix_used": false,
   "post_fix_live_row": {
     "section": "unify_bullets",
-    "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py tests\\unit\\apps_rg -q --tb=short --disable-warnings",
+    "command": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pytest\\__main__.py -q tests -k apps_rg --tb=short",
     "status": "BLOCKED",
     "exit_code": 0,
-    "latest_run_dir": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-test-hardening\\artifacts\\apps_rg\\runtime_proofs\\contract_harness\\_test_companion_chain_unify",
+    "latest_run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runtime_proofs\\contract_harness\\_test_companion_chain_unify",
     "provider_classification": "REAL_LLM",
     "x2_status": "UNKNOWN",
     "x3_disposition": "X3_REVIEW_JUDGE_PROVIDER_BLOCKED",

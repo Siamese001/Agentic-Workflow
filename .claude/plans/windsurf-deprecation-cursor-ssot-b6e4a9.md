@@ -10,9 +10,9 @@ author_gate_receipt_ref: ""
 dod_exempt: false
 ---
 
-# Windsurf deprecation to Cursor SSOT
+# legacy editor deprecation to legacy editor SSOT
 
-Deprecate all active `.windsurf` workflow surfaces - plans, skills, workflows, rules, hooks, scripts, schemas, state, templates, reminders, indexes, and `AGENTS.md` references - so Cursor is the only active governance and agent workflow SSOT.
+Deprecate all active `.windsurf` workflow surfaces - plans, skills, workflows, rules, hooks, scripts, schemas, state, templates, reminders, indexes, and `AGENTS.md` references - so legacy editor is the only active governance and agent workflow SSOT.
 
 > **plan_id discipline:** `plan_id` = filename stem `windsurf-deprecation-cursor-ssot-b6e4a9`.
 
@@ -26,17 +26,17 @@ CURRENT_WAVE: W6
 LAST_COMPLETED_WAVE: W6
 LAST_UPDATED: 2026-06-07
 
-PLAN_CREATED: slug=windsurf-deprecation-cursor-ssot-b6e4a9 path=.cursor/plans/windsurf-deprecation-cursor-ssot-b6e4a9.md status=Not Started
-PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf tree deleted after archive, active references migrated to Cursor/archive paths, and deletion readiness plus focused governance/tests passed."
+PLAN_CREATED: slug=windsurf-deprecation-cursor-ssot-b6e4a9 path=.claude/plans/windsurf-deprecation-cursor-ssot-b6e4a9.md status=Not Started
+PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf tree deleted after archive, active references migrated to legacy editor/archive paths, and deletion readiness plus focused governance/tests passed."
 
 ---
 
 ## Context (SCQA)
 
-- **Situation** - Root `AGENTS.md` and Cursor governance now identify `.cursor/**` as the active SSOT for rules, skills, hooks, MCP routing, and plans.
+- **Situation** - Root `AGENTS.md` and legacy editor governance now identify `.cursor/**` as the active SSOT for rules, skills, hooks, MCP routing, and plans.
 - **Complication** - The repo still contains a large `.windsurf/**` tree and many active references to it. Initial inventory on 2026-06-07 found 958 `.windsurf` files: 544 plans, 165 scripts, 76 skills, 56 rules, 54 schemas, 32 state files, 25 workflows, 2 templates, 1 reminder, `hooks.json`, `mcp_config.json`, and `RULES_INDEX.md`. Repo-wide search also found runtime/config/test references to `.windsurf/schemas`, `.windsurf/scripts`, `.windsurf/plans`, and `.windsurf/rules`.
-- **Question** - How do we deprecate Windsurf artifacts without breaking runtime schema loads, historical plan provenance, hook behavior, or governance CI?
-- **Answer** - Execute an inventory-first, staged deprecation: freeze new `.windsurf` writes, migrate active runtime dependencies to Cursor or neutral repo locations, archive historical plans and docs, replace agent guidance with Cursor-only instructions, then add enforcement that blocks reintroduction except for explicitly approved historical archives.
+- **Question** - How do we deprecate legacy editor artifacts without breaking runtime schema loads, historical plan provenance, hook behavior, or governance CI?
+- **Answer** - Execute an inventory-first, staged deprecation: freeze new `.windsurf` writes, migrate active runtime dependencies to legacy editor or neutral repo locations, archive historical plans and docs, replace agent guidance with legacy editor-only instructions, then add enforcement that blocks reintroduction except for explicitly approved historical archives.
 
 ---
 
@@ -47,12 +47,12 @@ PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W0 | W0.1-W0.4 | Registration, baseline inventory, risk ledger | ~6k | Notion Plans row can be registered before execution | DONE | Inventory receipt exists; Notion registration writeback unavailable in this Codex session |
-| W1 | W1.1-W1.5 | Freeze and guidance update | ~8k | Cursor rules remain active SSOT | DONE | Agents/docs say `.windsurf` is deprecated; staged guard blocks new active `.windsurf` workflow edits |
+| W1 | W1.1-W1.5 | Freeze and guidance update | ~8k | legacy editor rules remain active SSOT | DONE | Agents/docs say `.windsurf` is deprecated; staged guard blocks new active `.windsurf` workflow edits |
 | W2 | W2.1-W2.6 | Runtime dependency migration | ~16k | Schemas/scripts used by tests and runtime can move to neutral `tools/`, `config/`, or `.cursor/` paths | DONE | Schema, governance log, MCP gate, and focused test consumers migrated |
 | W3 | W3.1-W3.5 | Plan and provenance archive | ~12k | Historical plans can be archived without Notion row mutation unless separately approved | DONE | Legacy plan tree archived under `docs/archive/windsurf/legacy-tree`; `.cursor/plans` remains executable SSOT |
-| W4 | W4.1-W4.5 | Skills, workflows, hooks, rules retirement | ~14k | Cursor equivalents exist or can be created as redirect/deprecation stubs | DONE | No active agent procedure requires `.windsurf/skills`, `.windsurf/workflows`, `.windsurf/rules`, or `.windsurf/hooks.json` |
-| W5 | W5.1-W5.4 | Config, state, reminders, docs cleanup | ~10k | `.cursor/mcp.json` is the only MCP config SSOT | DONE | Legacy config/state/reminder/template/index files archived, and live `.windsurf` removed |
-| W6 | W6.1-W6.4 | Verification and deletion/archive closeout | ~8k | Prior waves completed or deferred with markers | DONE | Search, tests, governance checks, and closeout receipt prove Cursor-only active governance |
+| W4 | W4.1-W4.5 | Skills, workflows, hooks, rules retirement | ~14k | legacy editor equivalents exist or can be created as redirect/deprecation stubs | DONE | No active agent procedure requires `.windsurf/skills`, `.windsurf/workflows`, `.windsurf/rules`, or `.claude/settings.json` |
+| W5 | W5.1-W5.4 | Config, state, reminders, docs cleanup | ~10k | `.mcp.json` is the only MCP config SSOT | DONE | Legacy config/state/reminder/template/index files archived, and live `.windsurf` removed |
+| W6 | W6.1-W6.4 | Verification and deletion/archive closeout | ~8k | Prior waves completed or deferred with markers | DONE | Search, tests, governance checks, and closeout receipt prove legacy editor-only active governance |
 
 ### Phase Progress
 
@@ -62,15 +62,15 @@ PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf
 | W0.2 | Generate full `.windsurf/**` inventory with hashes, file classes, and last-modified dates | DONE |
 | W0.3 | Classify each reference as runtime dependency, test fixture, governance instruction, historical citation, or ignored noise | DONE |
 | W0.4 | Build retention matrix: migrate, archive, delete, compatibility-only, or defer | DONE |
-| W1.1 | Update root `AGENTS.md` Windsurf language from mirror/SSOT to deprecated legacy/compatibility-only | DONE |
-| W1.2 | Update `.cursor/rules/**` and `.cursor/skills/**` instructions that still point to `.windsurf` as active | DONE |
-| W1.3 | Add a guard that blocks new `.windsurf/plans`, `.windsurf/skills`, `.windsurf/workflows`, `.windsurf/rules`, and `.windsurf/hooks.json` changes | DONE |
+| W1.1 | Update root `AGENTS.md` legacy editor language from mirror/SSOT to deprecated legacy/compatibility-only | DONE |
+| W1.2 | Update `.claude/rules/**` and `.claude/skills/**` instructions that still point to `.windsurf` as active | DONE |
+| W1.3 | Add a guard that blocks new `.windsurf/plans`, `.windsurf/skills`, `.windsurf/workflows`, `.windsurf/rules`, and `.claude/settings.json` changes | DONE |
 | W1.4 | Allow only approved archive paths and compatibility files through the guard | DONE |
 | W1.5 | Emit freeze receipt listing allowed remaining `.windsurf` classes | DONE |
 | W2.1 | Move canonical schemas from `.windsurf/schemas` to durable config/schema locations | DONE - `.cursor/schemas` already populated and now used by patched consumers |
 | W2.2 | Update schema loaders, tests, comments, and generated docs to use new schema paths | DONE |
 | W2.3 | Migrate still-used `.windsurf/scripts` functionality to `tools/cursor`, `tools/governance`, or other existing tool namespaces | DONE |
-| W2.4 | Replace `tools/windsurf/*` names or mark them compatibility wrappers around Cursor-native modules | DONE |
+| W2.4 | Replace `tools/windsurf/*` names or mark them compatibility wrappers around repo-native modules | DONE |
 | W2.5 | Update tests that read `.windsurf` fixtures to use copied fixtures or neutral schema paths | DONE |
 | W2.6 | Run focused tests for author-gate schemas, ledgers, plan lifecycle, and routing calibration | DONE |
 | W3.1 | Compare `.windsurf/plans` with `.cursor/plans` and identify duplicate, missing, and historical-only plans | DONE |
@@ -78,17 +78,17 @@ PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf
 | W3.3 | Replace active plan references with `.cursor/plans` equivalents where they exist | DONE |
 | W3.4 | Convert surviving historical plan citations to archive citations or neutral "legacy plan ref" text | DONE |
 | W3.5 | Confirm `.cursor/plans` remains the only executable plan location | DONE |
-| W4.1 | Map `.windsurf/skills/*` to `.cursor/skills/*` equivalents and identify gaps | DONE |
-| W4.2 | Retire or migrate `.windsurf/workflows/*`, including structured-reasoning and Tavily workflows | DONE |
-| W4.3 | Retire `.windsurf/rules/*` after Cursor `.mdc` equivalents are verified | DONE |
-| W4.4 | Remove `.windsurf/hooks.json` from active dispatch and migrate any unique hook coverage | DONE |
-| W4.5 | Regenerate Cursor rules/skills indexes and verify no Windsurf active-procedure drift | DONE |
-| W5.1 | Decide final status of `.windsurf/mcp_config.json`: delete, archive, or compatibility-only generated mirror | DONE - archived, not retained live |
+| W4.1 | Map `.claude/skills/*` to `.claude/skills/*` equivalents and identify gaps | DONE |
+| W4.2 | Retire or migrate `docs/archive/windsurf/legacy-tree/workflows/*`, including structured-reasoning and Tavily workflows | DONE |
+| W4.3 | Retire `.claude/rules/*` after legacy editor `.mdc` equivalents are verified | DONE |
+| W4.4 | Remove `.claude/settings.json` from active dispatch and migrate any unique hook coverage | DONE |
+| W4.5 | Regenerate legacy editor rules/skills indexes and verify no legacy editor active-procedure drift | DONE |
+| W5.1 | Decide final status of `.mcp.json`: delete, archive, or compatibility-only generated mirror | DONE - archived, not retained live |
 | W5.2 | Migrate `.windsurf/state` data needed by current tools to `artifacts/`, `.cursor/state`, or durable DB locations | DONE |
 | W5.3 | Archive or delete `.windsurf/templates`, `.windsurf/reminders`, and `.windsurf/RULES_INDEX.md` | DONE |
 | W5.4 | Update docs, reports, config comments, and generated blocks that still call `.windsurf` a filesystem SSOT | DONE |
-| W6.1 | Run repo-wide `rg` verification for `.windsurf`, `Windsurf`, and `windsurf` | DONE |
-| W6.2 | Run governance checks for Cursor native config, rules index, plan format, and hook wiring | DONE |
+| W6.1 | Run repo-wide `rg` verification for `.windsurf`, `legacy editor`, and `windsurf` | DONE |
+| W6.2 | Run governance checks for legacy editor native config, rules index, plan format, and hook wiring | DONE |
 | W6.3 | Run focused unit tests for migrated schemas/scripts plus any touched runtime paths | DONE |
 | W6.4 | Produce closeout receipt with removed, migrated, retained, and deferred files | DONE |
 
@@ -98,16 +98,16 @@ PLAN_COMPLETE: plan=windsurf-deprecation-cursor-ssot-b6e4a9 note="Live .windsurf
 
 ### Active SSOT
 
-| Surface | Active SSOT after this plan | Windsurf target state |
+| Surface | Active SSOT after this plan | legacy editor target state |
 |---------|-----------------------------|-----------------------|
-| Agent guidance | `AGENTS.md` + `.cursor/rules/*.mdc` | No active instruction role |
-| Plans | `.cursor/plans/*.md` | Historical archive or deletion |
-| Skills | `.cursor/skills/*/SKILL.md` | Deleted after gap check or archived as provenance |
-| Workflows | `.cursor/skills/*` or documented tool procedure | Deleted after migration |
-| Hooks | `.cursor/hooks.json` + `.cursor/hooks/**` | Deleted after coverage parity |
-| MCP config | `.cursor/mcp.json` | Compatibility-only mirror or deleted |
+| Agent guidance | `AGENTS.md` + `.claude/rules/*.mdc` | No active instruction role |
+| Plans | `.claude/plans/*.md` | Historical archive or deletion |
+| Skills | `.claude/skills/*/SKILL.md` | Deleted after gap check or archived as provenance |
+| Workflows | `.claude/skills/*` or documented tool procedure | Deleted after migration |
+| Hooks | `.claude/settings.json` + `.claude/governance/scripts/**` | Deleted after coverage parity |
+| MCP config | `.mcp.json` | Compatibility-only mirror or deleted |
 | Schemas | `config/**`, `tools/**`, or package-local schema directory | Deleted after consumers migrate |
-| Scripts | `tools/**` or `.cursor/hooks/**` | Deleted or compatibility wrapper removed |
+| Scripts | `tools/**` or `.claude/governance/scripts/**` | Deleted or compatibility wrapper removed |
 | State | `artifacts/**`, DB, or generated cache ignored by git | Deleted or migrated |
 | Rules index | `.cursor/RULES_INDEX.md` | Deleted |
 
@@ -130,7 +130,7 @@ Captured 2026-06-07 with `rg --files .windsurf` and a file-class count.
 | `.windsurf/plans` | 544 | Largest surface; includes active-looking historical plans and `_archive` subtrees |
 | `.windsurf/scripts` | 165 | Several active references from tools and hook/audit code |
 | `.windsurf/skills` | 76 | Includes MCP stubs, structured reasoning, testing, author-gate, graph analysis |
-| `.windsurf/rules` | 56 | Cursor `.mdc` equivalents must be verified before deletion |
+| `.windsurf/rules` | 56 | legacy editor `.mdc` equivalents must be verified before deletion |
 | `.windsurf/schemas` | 54 | Active runtime/test consumers found; migrate before deletion |
 | `.windsurf/state` | 32 | Includes plan registration cache and marker/state files |
 | `.windsurf/workflows` | 25 | Agent workflow procedures; migrate or retire |
@@ -153,7 +153,7 @@ python ops_scripts/ci/check_mcp_config_sovereignty.py
 python ops_scripts/ci/check_skill_frontmatter.py
 python .cursor/scripts/check_cursor_native_config.py
 python .cursor/scripts/generate_rules_index.py --check
-python ops_scripts/ci/check_plan_format_compliance.py --strict --paths .cursor/plans/windsurf-deprecation-cursor-ssot-b6e4a9.md
+python ops_scripts/ci/check_plan_format_compliance.py --strict --paths .claude/plans/windsurf-deprecation-cursor-ssot-b6e4a9.md
 ```
 
 Focused tests are selected after W0 inventory, but must include all touched schema loaders, plan lifecycle code, hook dispatch code, and runtime consumers that previously read `.windsurf/**`.
@@ -169,7 +169,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -p pytest_timeout -q tests/uni
 
 ## Acceptance Criteria
 
-- Root `AGENTS.md` no longer calls `.windsurf/rules` a filesystem SSOT or `.windsurf/mcp_config.json` an active mirror unless compatibility-only with expiry is explicitly documented.
+- Root `AGENTS.md` no longer calls `.windsurf/rules` a filesystem SSOT or `.mcp.json` an active mirror unless compatibility-only with expiry is explicitly documented.
 - `.cursor/**` is the only active location for plans, rules, skills, hooks, and MCP procedure.
 - No production code or tests require `.windsurf/schemas` or `.windsurf/scripts` as canonical inputs.
 - New `.windsurf` workflow artifacts are blocked by CI or hook checks, except explicitly allowlisted archive/compatibility paths.
@@ -201,10 +201,10 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -p pytest_timeout -q tests/uni
 
 ## Open Decisions
 
-1. CLOSED - `.windsurf/mcp_config.json` was archived under `docs/archive/windsurf/legacy-tree` and removed from the live tree.
+1. CLOSED - `.mcp.json` was archived under `docs/archive/windsurf/legacy-tree` and removed from the live tree.
 2. CLOSED - historical `.windsurf/plans` were preserved under `docs/archive/windsurf/legacy-tree/plans`; executable plan SSOT remains `.cursor/plans`.
 3. CLOSED - schemas remain under `.cursor/schemas` for this deprecation pass, with consumers migrated away from `.windsurf/schemas`.
-4. CLOSED - legacy Windsurf script behavior needed for provenance was copied to `.cursor/scripts/_legacy_windsurf`; active callers now use Cursor/archive paths.
+4. CLOSED - legacy legacy editor script behavior needed for provenance was copied to `.cursor/scripts/_legacy_windsurf`; active callers now use legacy editor/archive paths.
 
 ---
 
@@ -216,9 +216,9 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -p pytest_timeout -q tests/uni
 | Historical legacy tree | ARCHIVED | Preserved at `docs/archive/windsurf/legacy-tree` |
 | Legacy scripts | COMPATIBILITY ARCHIVE | Preserved at `.cursor/scripts/_legacy_windsurf` for historical/provenance fallback only |
 | Schemas | MIGRATED | Active consumers read `.cursor/schemas` |
-| MCP config | MIGRATED | `.cursor/mcp.json` is the only active MCP SSOT |
+| MCP config | MIGRATED | `.mcp.json` is the only active MCP SSOT |
 | Plans | MIGRATED/ARCHIVED | `.cursor/plans` is executable SSOT; legacy plans are archive-only |
-| Skills, rules, hooks, workflows | RETIRED | Cursor rules, skills, and hooks are active; legacy copies are archive-only |
+| Skills, rules, hooks, workflows | RETIRED | legacy editor rules, skills, and hooks are active; legacy copies are archive-only |
 | Enforcement | ACTIVE | `ops_scripts/ci/check_no_active_windsurf_changes.py` blocks staged active `.windsurf` workflow reintroduction |
 
 Deferred external writeback: Notion Plans registration/status update could not be performed because the Notion MCP was not available in this Codex session.

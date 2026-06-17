@@ -1,7 +1,7 @@
 # apps_* Domain Contract — Phase 0 Discovery Report
 
 > **Status**: DRAFT — discovery complete, awaiting Phase 1 SR_APPROVAL.
-> **Plan**: `.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`
+> **Plan**: `.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`
 > **Date**: 2026-05-01
 > **Scope**: Inventory all `apps_*` packages and identify the gaps required to
 > make app-domain contracts authoritative-via-UWG/L4, runtime-resolved,
@@ -373,5 +373,5 @@ during Phase 0.**
 ## Next action (gated)
 
 Phase 1 begins only when the user reviews this report + the companion plan
-(`.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`) and emits
+(`.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`) and emits
 `SR_APPROVAL: APPROVED` (or requests scope/sequencing changes).

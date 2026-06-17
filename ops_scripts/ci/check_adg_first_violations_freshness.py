@@ -9,7 +9,7 @@ the staleness window (default 7 days) has not been resolved.
 Sibling to ``ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py``
 — same shape, different log. Closes the gap where ADG-first violations
 (grep_search used for dependency analysis instead of ADG MCP) were written
-by the Windsurf hook but never surfaced in CI.
+by the legacy editor hook but never surfaced in CI.
 
 Exits:
     0 = log missing, empty, only bypass rows, all rows aged out / resolved, or

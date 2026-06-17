@@ -10,7 +10,7 @@ The flag name is deliberately namespaced (not bare ``--dry-run``) so it
 cannot collide with any app's own CLI surface (e.g. apps_qna already has
 its own ``--dry-run`` for pack-builder runs).
 
-Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md
+Plan: .claude/plans/apps-e2e-auditability-harness-7c2a91.md
 """
 
 from __future__ import annotations

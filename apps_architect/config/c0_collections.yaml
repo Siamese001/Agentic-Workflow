@@ -7,7 +7,7 @@
 collections:
   plans_recent:
     description: "Plan markdown files from the last N days"
-    source_root: ".windsurf/plans/"
+    source_root: ".claude/plans/"
     glob: "*.md"
     max_files: 200
     sort_by: "mtime"
@@ -20,7 +20,7 @@ collections:
 
   rules_active:
     description: "Active rule markdown files"
-    source_root: ".windsurf/rules/"
+    source_root: ".claude/rules/"
     glob: "*.md"
     max_files: 100
     sort_by: "name"

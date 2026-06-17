@@ -1,6 +1,6 @@
 """Pattern schema versioning — backward-compatible migration support.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW1 DS-3.
+Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW1 DS-3.
 
 Patterns carry a schema_version field. When the schema evolves, migration
 functions convert older patterns to the current version without breaking

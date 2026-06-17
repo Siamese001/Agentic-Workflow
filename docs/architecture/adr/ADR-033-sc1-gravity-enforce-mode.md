@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-23
-- **Deciders**: Cursor Agent (P2 Wave 8.1 execution) — user-directed
+- **Deciders**: Codex (P2 Wave 8.1 execution) — user-directed
 - **Impact Layers**: L0, L1, L2, L3, L4, L5, L6 (gravity crosses all)
 - **Supersedes**: — (SC-1 has been in audit mode since 2026-04-17)
 
@@ -103,7 +103,7 @@ not in code.
 
 ## References
 
-- Plan: `.windsurf/plans/<p2-w8.1-sc1-*>.md`
+- Plan: `.claude/plans/<p2-w8.1-sc1-*>.md`
 - Commits: `03c5698d38` (W1), `ac81b14039` (W2), `a6c4bf9d7d` (W3),
   `e0b60ed9e4` (W4), this ADR (W5).
 - Filter: `tools/adg/core/guardian_filter.py`

@@ -26,7 +26,7 @@ CURRENT_WAVE: W0
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-06-07
 
-PLAN_CREATED: slug=l7-auditability-overlap-cleanup-4f8c2d path=.cursor/plans/l7-auditability-overlap-cleanup-4f8c2d.md status=Not Started
+PLAN_CREATED: slug=l7-auditability-overlap-cleanup-4f8c2d path=.claude/plans/l7-auditability-overlap-cleanup-4f8c2d.md status=Not Started
 
 ---
 

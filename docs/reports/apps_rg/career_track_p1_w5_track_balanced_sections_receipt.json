@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
-  "generated_at": "2026-06-16T16:16:31Z",
+  "generated_at": "2026-06-17T16:09:51Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W5",
   "selected_tracks": [
@@ -782,9 +782,33 @@
   "p1_w4_non_graph_evidence_items_count": 0,
   "p1_w4_graph_hop_paths_count": 22,
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [],
-    "dirty_files": [],
+    "git_diff_name_only_agentic_core": [
+      "agentic_core/L0_routing/config/path_constants.py",
+      "agentic_core/L4_state/enforcement/graph_memory_bridge.py",
+      "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+      "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
+      "agentic_core/config/colors_config.py",
+      "agentic_core/runtime/utils/discovery_parser_util.py"
+    ],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L0_routing/config/path_constants.py",
+      "M agentic_core/L4_state/enforcement/graph_memory_bridge.py",
+      "M agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+      "M agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "M agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
+      "M agentic_core/config/colors_config.py",
+      "M agentic_core/runtime/utils/discovery_parser_util.py"
+    ],
+    "dirty_files": [
+      "agentic_core/L0_routing/config/path_constants.py",
+      "agentic_core/L4_state/enforcement/graph_memory_bridge.py",
+      "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+      "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
+      "agentic_core/config/colors_config.py",
+      "agentic_core/runtime/utils/discovery_parser_util.py"
+    ],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -796,8 +820,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": true,
-    "isolation_verdict": "CLEAN",
+    "workspace_guard_clean": false,
+    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope.",
     "p1_w5_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_balanced_section_projection.py",

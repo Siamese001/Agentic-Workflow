@@ -45,4 +45,4 @@ pytest tests/unit/apps_shared/proof/ -q         # proof harness
 
 - `TECHNICAL_SPEC.md`
 - ADR-082 — folder taxonomy
-- `.windsurf/plans/apps-runtime-first-principles-e6ba58.md` — boundary facades
+- `.claude/plans/apps-runtime-first-principles-e6ba58.md` — boundary facades

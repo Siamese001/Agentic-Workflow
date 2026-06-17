@@ -1,5 +1,5 @@
 """
-Refreshes the local Windsurf documentation mirror to ensure high-quality context retrieval.
+Refreshes the local legacy editor documentation mirror to ensure high-quality context retrieval.
 
 Usage:
     python scripts/refresh_legacy_docs.py
@@ -39,7 +39,7 @@ def main() -> None:
     with open(os.path.join(ROOT, "FETCHED_AT.txt"), "w", encoding="utf-8") as fh:
         fh.write(timestamp + "\n")
 
-    print(f"\nSuccess: Windsurf documentation mirror updated at {timestamp}.")
+    print(f"\nSuccess: legacy editor documentation mirror updated at {timestamp}.")
 
 
 if __name__ == "__main__":

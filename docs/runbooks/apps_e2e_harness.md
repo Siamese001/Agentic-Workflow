@@ -1,6 +1,6 @@
 # Apps_* End-to-End Auditability Harness — Runbook
 
-**Plan**: `.windsurf/plans/apps-e2e-auditability-harness-7c2a91.md`
+**Plan**: `.claude/plans/apps-e2e-auditability-harness-7c2a91.md`
 **Implementation**: 2026-05-01
 
 The harness proves each runnable `apps_*` package routes through the governed `agentic_core` runtime spine and emits a complete, hash-bound, run_id-bound proof bundle.

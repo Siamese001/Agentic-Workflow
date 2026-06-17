@@ -40,7 +40,7 @@ for token in ("rm -rf .cursor", "rmdir /s .cursor", "del /s .cursor", "Remove-It
     if token in text:
         risky.append(token)
 if risky:
-    reason = "Shell command risks deleting active Cursor controls: " + ", ".join(risky)
+    reason = "Shell command risks deleting active legacy editor controls: " + ", ".join(risky)
     write_receipt("beforeShellExecution", payload, "block", reason)
     raise SystemExit(block(reason))
 

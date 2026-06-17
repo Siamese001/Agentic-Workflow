@@ -147,8 +147,8 @@ def contains_legacy_execution_token(text: str) -> list[str]:
     for token in LEGACY_EXECUTION_TOKENS:
         if token in normalized and token not in hits:
             hits.append(token)
-    if re.search(r"\bWindsurf\b", text):
-        hits.append("Windsurf")
+    if re.search(r"\blegacy editor\b", text):
+        hits.append("legacy editor")
     return hits
 
 

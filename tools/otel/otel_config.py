@@ -38,8 +38,8 @@ def build_config(source_file: str) -> OTelServerConfig:
     # Path-resolution precedence (high to low):
     #   1. OTEL_MCP_RUNTIME_ADG_DIR — explicit operator override. Lets a
     #      single otel_mcp_server.py serve traces from a different repo
-    #      than where its source file lives. Required when Windsurf launches
-    #      the MCP from one workspace clone but the active Cursor Agent session
+    #      than where its source file lives. Required when legacy editor launches
+    #      the MCP from one workspace clone but the active Codex session
     #      writes traces to a sibling clone (precedent: 2026-04-30 apps_rg
     #      trace-visibility blackout — server ran from
     #      C:\Git\Agentic-Workflow while pipeline wrote to
@@ -47,7 +47,7 @@ def build_config(source_file: str) -> OTelServerConfig:
     #   2. parents[2] of source_file (in-process default). This is correct
     #      for both the MCP server (its source_file is in its own repo) and
     #      the in-process otel_lifecycle_bridge (its source_file is in the
-    #      pipeline's repo). Never honor AGENTIC_REPO_ROOT here — Windsurf
+    #      pipeline's repo). Never honor AGENTIC_REPO_ROOT here — legacy editor
     #      may set that to a different clone than the running Python process,
     #      which causes the in-process bridge to write to the wrong store and
     #      fail L4 compliance validation.

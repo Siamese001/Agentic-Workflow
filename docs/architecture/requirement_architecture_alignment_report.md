@@ -29,7 +29,7 @@ report `PARTIAL`. RTC-REQ-059 carries the new architecture and may be certified
 
 ## Why dense-only threshold proof remains CALIBRATION_GAP
 
-The W1p4 finding (see `.windsurf/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
+The W1p4 finding (see `.claude/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
 and `docs/architecture/adr/SEMCACHE-THRESH-001.md`) documented that at the
 current configured threshold of 0.95, the sweep on the calibration dataset
 produces false positives on the adversarial lexical-overlap and opposite-intent

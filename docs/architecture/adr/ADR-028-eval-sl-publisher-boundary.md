@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-04-22
-**Deciders**: Cursor Agent (planning); implemented under plan `eval-meta-otel-deferred-completion-d6b4e0`
+**Deciders**: Codex (planning); implemented under plan `eval-meta-otel-deferred-completion-d6b4e0`
 **Impact Layers**: L_APP (apps_eval) ↔ L_SL (system_learning)
 **Related**: ADR-025 (heal_router OTel), ADR-023 (runtime HITL), parent plan `eval-meta-otel-gap-review-ef4a20`
 
@@ -116,7 +116,7 @@ Route publications through `enhanced_http` or a queue. Rejected because it intro
 
 ## 6. References
 
-- Plan: `.windsurf/plans/eval-meta-otel-gap-review-ef4a20.md`
-- Plan: `.windsurf/plans/eval-meta-otel-deferred-completion-d6b4e0.md`
+- Plan: `.claude/plans/eval-meta-otel-gap-review-ef4a20.md`
+- Plan: `.claude/plans/eval-meta-otel-deferred-completion-d6b4e0.md`
 - Review: `docs/reports/plans/eval-meta-otel-gap-review.md`
 - Commits: `9468dcb3ec` (initial wiring), `5c99fa635d` (μW-1 guardian + HITL + scenario), `11ee7a8644` (retrieval engine), `a3cca1afea` (W-D2 L_SL/L6 tracer wiring)

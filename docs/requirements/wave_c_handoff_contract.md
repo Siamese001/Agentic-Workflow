@@ -184,4 +184,4 @@ Wave C may begin. All entry criteria are satisfied as of 2026-04-16:
 - [x] This handoff contract is acknowledged by the implementing party
 - [x] `docs/reports/wave_b_closeout.md` is in final COMPLETE state (v2.0, 2026-04-16)
 - [x] All 11 Wave B freeze gates pass (see `docs/reports/wave_b_b7_freeze_gates.md`)
-- [ ] A Wave C plan is drafted in `.windsurf/plans/` with source additions justified per §2 (Wave C work item)
+- [ ] A Wave C plan is drafted in `.claude/plans/` with source additions justified per §2 (Wave C work item)

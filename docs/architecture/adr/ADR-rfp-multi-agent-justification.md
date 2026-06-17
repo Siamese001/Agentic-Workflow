@@ -4,7 +4,7 @@
 
 > **Status**: **Accepted** (2026-05-01)
 > **Date**: 2026-04-29 (Proposed) → 2026-05-01 (Accepted)
-> **Plan**: `.windsurf/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W0/W1.1 evidence) + `.windsurf/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (W0.1 verification, W2 acceptance)
+> **Plan**: `.claude/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W0/W1.1 evidence) + `.claude/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (W0.1 verification, W2 acceptance)
 > **AgentSpec**: `apps_rfp/config/specs/agent_spec.rfp_response.v1.0.0.yaml` (declares `agency.tier=MULTI_AGENT`)
 > **Reference contract**: `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`
 >
@@ -117,5 +117,5 @@ If any of those fail, this ADR moves to **Rejected** and the spec's `agency.tier
 - First-principles design conversation 2026-04-29
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml` (SPEC-INV-001)
 - `apps_rfp/config/specs/agent_spec.rfp_response.v1.0.0.yaml`
-- `.windsurf/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W1.2)
+- `.claude/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W1.2)
 - `docs/reports/adg/apps_rfp_hotspots_<ts>.md` (W0.1 evidence)

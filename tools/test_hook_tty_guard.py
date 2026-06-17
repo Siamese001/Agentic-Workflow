@@ -9,7 +9,7 @@ For each hook script:
   3. Piped-payload run — verify the hook still processes input (at
      minimum terminates cleanly with exit 0)
 
-Note: Windsurf's real hook invocation uses piped stdin, which is what
+Note: legacy editor's real hook invocation uses piped stdin, which is what
 test #3 simulates. Test #2 proves the defensive exit path does not
 itself introduce a new hang.
 

@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-05-27
 
 NOTION_PAGE_ID: 36d27693-f55c-81e6-b0a7-ed964b7af164  
 NOTION_PLAN_URL: https://www.notion.so/complete-open-scope-closeout-c9e4a1-36d27693f55c81e6b0a7ed964b7af164  
-PLAN_CREATED: slug=complete-open-scope-closeout-c9e4a1 path=.cursor/plans/complete-open-scope-closeout-c9e4a1.md status=Completed notion_page=36d27693-f55c-81e6-b0a7-ed964b7af164
+PLAN_CREATED: slug=complete-open-scope-closeout-c9e4a1 path=.claude/plans/complete-open-scope-closeout-c9e4a1.md status=Completed notion_page=36d27693-f55c-81e6-b0a7-ed964b7af164
 
 ---
 

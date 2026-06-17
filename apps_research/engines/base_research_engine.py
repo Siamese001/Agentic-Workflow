@@ -1,7 +1,7 @@
 """
 Base Research Engine — Foundation for all apps_research engines.
 
-Mirrors apps_exec BaseExecEngine pattern with research-specific contracts.
+Mirrors the shared base-engine pattern with research-specific contracts.
 """
 
 from __future__ import annotations

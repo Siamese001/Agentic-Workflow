@@ -1,6 +1,6 @@
 """Judge promotion registry — tracks stub vs real judge implementations.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W5.P1.
+Plan: `.claude/plans/apps-eval-harness-residual-a2d9c7.md` W5.P1.
 
 Purpose
 -------

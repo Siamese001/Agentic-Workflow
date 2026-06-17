@@ -273,9 +273,9 @@ egress_points:
   - id: EGRESS-MCP-DEEPWIKI-01
     provider: mcp-external
     protocol: https
-    module_path: .windsurf/mcp_config.json
+    module_path: .mcp.json
     consumer_modules:
-      - Cursor Agent (Windsurf IDE client - not repo source)
+      - Codex (legacy editor IDE client - not repo source)
     auth_mode: none
     env_keys: []
     retry_posture:
@@ -292,7 +292,7 @@ egress_points:
     protocol: stdio
     module_path: tools/mcp/
     consumer_modules:
-      - .windsurf/mcp_config.json
+      - .mcp.json
     auth_mode: none
     env_keys:
       - NOTION_TOKEN

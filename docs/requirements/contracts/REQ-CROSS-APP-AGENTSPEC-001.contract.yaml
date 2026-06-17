@@ -14,7 +14,7 @@ description: |
   comes from here, never from a parallel config file.
 
   See first-principles design conversation 2026-04-29 and
-  .windsurf/plans/apps-rg-first-principles-refactor-*.md for usage.
+  .claude/plans/apps-rg-first-principles-refactor-*.md for usage.
 
 status: experimental
 owner: agentic-workflow
@@ -432,7 +432,7 @@ related_contracts:
   - REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
 
 references:
-  - .windsurf/plans/apps-rg-first-principles-refactor (planned)
+  - .claude/plans/apps-rg-first-principles-refactor (planned)
   - First-principles design conversation 2026-04-29
   - apps_underwriting_ai/config/*.yaml (reference rule-YAML pattern)
   - apps_lic/config/voice_profile.json (reference voice-profile pattern)

@@ -1,4 +1,4 @@
-"""Side-by-side: static ADG vs Cursor Agent memory graph — prove they're different stores."""
+"""Side-by-side: static ADG vs Codex memory graph — prove they're different stores."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def main() -> None:
 
     print()
     print("=" * 70)
-    print("MEMORY GRAPH (Cursor Agent persistent knowledge)")
+    print("MEMORY GRAPH (Codex persistent knowledge)")
     print("=" * 70)
     mem = Path("artifacts/memory/knowledge_graph.sqlite")
     print(f"File:  {mem.name}")

@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-05-02
-- **Deciders**: Cursor Agent (authoring), plan owner (approving)
+- **Deciders**: Codex (authoring), plan owner (approving)
 - **Supersedes**: none
 - **Related**: ADR-079 (L2 runtime-agent consumption of ADG graph-layer tools), plan
   `apps-e2e-spine-cert-wireup-e1c4d7`, plan `apps-e2e-two-gate-certification-d8b3a1`,
@@ -190,7 +190,7 @@ wire-up per app) scored 0.90; next-best (broaden waivers) scored 0.55.
 
 ## Evidence
 
-- **Plan**: `.windsurf/plans/apps-e2e-spine-cert-wireup-e1c4d7.md`
+- **Plan**: `.claude/plans/apps-e2e-spine-cert-wireup-e1c4d7.md`
   (Status: in-progress; W1+W2+W6+W7 shipped 2026-05-02 UTC-04:00)
 - **Shared helper**: `apps_shared/spine_emission/` (contracts.py +
   context.py + otel_trace.py + __init__.py)

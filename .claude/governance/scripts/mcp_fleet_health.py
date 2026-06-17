@@ -3,7 +3,7 @@
 
 Purpose:
     Answer "are all 12 MCP servers healthy?" in ONE command. Before this
-    script existed, Cursor Agent had to call each server's idiosyncratic
+    script existed, Codex had to call each server's idiosyncratic
     health endpoint separately (adg_health, redis_health, otel_status,
     readiness, API-get-self, mem_get_stats, ...) and reconstruct the
     fleet picture. That interrogation pattern missed the 2026-04-22
@@ -12,15 +12,13 @@ Purpose:
 
 Scope:
     This script does NOT call MCP tools (it can't — MCP is stdio-based
-    inside Cursor). Instead it checks the preconditions that, when
+    on the local host). Instead it checks the preconditions that, when
     green, strongly predict successful MCP spawn:
 
-      1. Repo config ``.cursor/mcp.json`` is valid JSON with
-         at least ``MIN_PLAUSIBLE_SERVER_COUNT`` servers.
-      2. User-home config ``.cursor/mcp.json`` has
-         the same server count (detects the 2026-04-22 stub-overwrite).
-      3. Backup file ``~/.cursor/cursor/mcp_config.backup.json`` exists
-         and has the same hash as the repo config (fleet-restorable).
+      1. Repo config ``.mcp.json`` is valid JSON with at least
+         ``MIN_PLAUSIBLE_SERVER_COUNT`` servers.
+      2. A local backup artifact exists and has the same hash as the
+         repo config (fleet-restorable).
       4. Backend dependencies per server: Redis up, ADG SQLite readable,
          ChromaDB integrity ok, NOTION_TOKEN present when notion is
          configured.
@@ -49,9 +47,8 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 REPO_CONFIG = REPO_ROOT / ".mcp.json"
-# cursor-decommission: the Cursor IDE user-home config is retired; root .mcp.json is the sole SSOT.
 GLOBAL_CONFIG = REPO_CONFIG
-GLOBAL_BACKUP = REPO_CONFIG
+GLOBAL_BACKUP = REPO_ROOT / "artifacts" / "governance" / "mcp_config.backup.json"
 
 # Must stay in sync with sync_mcp_config.MIN_PLAUSIBLE_SERVER_COUNT.
 MIN_PLAUSIBLE_SERVER_COUNT = 5
@@ -111,7 +108,7 @@ def check_repo_config() -> CheckResult:
 
 
 def check_global_config() -> CheckResult:
-    """User-home config is the config Cursor actually reads."""
+    """Repo config is the only config the local host reads."""
     if not GLOBAL_CONFIG.exists():
         return CheckResult("global_config", "RED", f"missing: {GLOBAL_CONFIG}")
     try:
@@ -121,19 +118,11 @@ def check_global_config() -> CheckResult:
     servers = data.get("mcpServers", {})
     count = len(servers) if isinstance(servers, dict) else 0
     if count < MIN_PLAUSIBLE_SERVER_COUNT:
-        return CheckResult(
-            "global_config", "RED",
-            f"STUB DETECTED: only {count} server(s) — 2026-04-22 failure mode",
-            {"count": count},
-        )
+        return CheckResult("global_config", "RED", f"only {count} server(s) (floor {MIN_PLAUSIBLE_SERVER_COUNT})", {"count": count})
     # Compare to repo count; drift is a yellow.
     repo_count = _repo_server_count()
     if repo_count and repo_count != count:
-        return CheckResult(
-            "global_config", "YELLOW",
-            f"global has {count} server(s), repo has {repo_count} — drift",
-            {"global_count": count, "repo_count": repo_count},
-        )
+        return CheckResult("global_config", "YELLOW", f"mirror has {count} server(s), repo has {repo_count} — drift", {"global_count": count, "repo_count": repo_count})
     return CheckResult("global_config", "GREEN", f"{count} servers", {"count": count})
 
 

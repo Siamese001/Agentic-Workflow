@@ -1,6 +1,0 @@
-# apps_eval Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
-- task_class: eval_self
-  kind: decisioning
-  description: Self-evaluate scorecard rows + judge rubrics (meta-eval surface).
-  risk_tier: standard
-  hitl_required: false

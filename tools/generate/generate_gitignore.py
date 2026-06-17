@@ -219,7 +219,7 @@ def generate_precommit_exclude(precommit_patterns: set[str]) -> str:
     return "\n".join(lines)
 
 
-# .codeiumignore generator RETIRED 2026-04-19 (L2 consolidation). Windsurf
+# .codeiumignore generator RETIRED 2026-04-19 (L2 consolidation). legacy editor
 # indexing honors .gitignore + hidden paths + node_modules natively; the two
 # deltas (**/*.db, **/*.pb) moved into file_patterns, and the stale
 # !artifacts/governance/session_state.json negation was vestigial.

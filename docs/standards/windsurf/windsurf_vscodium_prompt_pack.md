@@ -1,4 +1,4 @@
-# Windsurf VSCodium Prompt Pack
+# legacy editor VSCodium Prompt Pack
 
 ## Purpose
 
@@ -8,9 +8,9 @@ Reusable prompt templates for VSCodium extension and marketplace work in this re
 
 ## How To Use
 
-1. Copy the relevant template block into your Windsurf prompt.
+1. Copy the relevant template block into your legacy editor prompt.
 2. Replace bracketed placeholders (`[EXTENSION_ID]`, `[REQUESTED_CAPABILITY]`, etc.) with actual values before submitting.
-3. Templates reference `@` file paths — Windsurf will resolve these against the repo root.
+3. Templates reference `@` file paths — legacy editor will resolve these against the repo root.
 4. Templates with a **PROVISIONAL** marker must not be treated as final policy. See the policy file for unblock conditions.
 
 ---

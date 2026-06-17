@@ -1,4 +1,4 @@
-"""CI gate — Anthropic two-tier Tier-1 budget (Cursor-native SSOT).
+"""CI gate — Anthropic two-tier Tier-1 budget (repo-native SSOT).
 
 Measures and enforces:
 - ``.claude/rules/*.mdc`` with ``alwaysApply: true``

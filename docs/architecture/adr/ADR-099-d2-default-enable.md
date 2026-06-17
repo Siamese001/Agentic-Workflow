@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-07
 **Phase**: P1 (deferred-scope-spine-refinement-5e3d1b)
-**Deciders**: Cursor Agent + user Author-Gate
+**Deciders**: Codex + user Author-Gate
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260507.sqlite`
 
 ---
@@ -70,6 +70,6 @@ Override remains available via `SEMANTIC_CACHE_D2_ENABLED=0`.
 
 ## References
 
-- Plan: `.windsurf/plans/p1-d2-default-enable-b7e3f9.md`
+- Plan: `.claude/plans/p1-d2-default-enable-b7e3f9.md`
 - Commit: `6c0bf44`
 - Parent: `deferred-scope-spine-refinement-5e3d1b`

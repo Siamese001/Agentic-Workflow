@@ -284,7 +284,7 @@ def main():
         f.write("\n## Diff Files\n\n")
         f.write(f"Generated {pairs_found} diff files in `reports/blueprint_diffs/`\n\n")
         f.write("```bash\n")
-        f.write("# Open all diffs in Windsurf\n")
+        f.write("# Open all diffs in legacy editor\n")
         f.write("code reports/blueprint_diffs/*.patch\n")
         f.write("```\n\n")
 

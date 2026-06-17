@@ -2,7 +2,7 @@
 """Anti-regression gate: keep the repo-local `.cursor/` tree decommissioned.
 
 Two checks:
-  1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy Cursor tree
+  1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy legacy editor tree
      was relocated to `.claude/` (engine -> .claude/governance/scripts, plans ->
      .claude/plans, state/schemas/templates -> .claude/, rules/skills/commands/agents
      are the .claude SSOT). Historical copies live read-only under docs/archive/cursor/.

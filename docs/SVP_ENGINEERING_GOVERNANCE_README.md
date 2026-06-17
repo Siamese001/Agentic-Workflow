@@ -4,7 +4,7 @@ This repository is governed as a production engineering system, not just a codeb
 
 The control model has two primary governance layers:
 
-1. **Windsurf rules and hooks**: AI-time controls that shape how work is planned, edited, verified, and audited while the agent is operating.
+1. **legacy editor rules and hooks**: AI-time controls that shape how work is planned, edited, verified, and audited while the agent is operating.
 2. **ADG CI**: repo-wide structural governance that converts the codebase into a queryable architecture graph and fails the build when architecture, routing, write authority, evidence, or safety contracts regress.
 
 Tests remain important, but they are not asked to carry architectural governance. In this repo, tests prove runtime behavior; ADG CI proves whether the system is still structurally governable.
@@ -18,7 +18,7 @@ Most repositories rely on tests as the primary quality layer. That works for pro
 This repo uses a stronger pattern:
 
 ```text
-AI-time discipline    -> Windsurf rules, skills, workflows, and hooks
+AI-time discipline    -> legacy editor rules, skills, workflows, and hooks
 Commit-time hygiene   -> pre-commit and focused local gates
 Repo-wide governance  -> ADG CI graph generation, ratchets, structural checks
 Runtime proof         -> tests, coverage, replay evidence, and OTel-derived witnesses
@@ -42,13 +42,13 @@ The repo does not rely only on developer intent or local unit tests. It encodes 
 
 ---
 
-## Layer 1: Windsurf rules and hooks
+## Layer 1: legacy editor rules and hooks
 
-Windsurf is the AI-time control layer. It governs how the coding agent behaves before, during, and after changes.
+legacy editor is the AI-time control layer. It governs how the coding agent behaves before, during, and after changes.
 
 ### What it does
 
-Windsurf provides the repo's active operating discipline:
+legacy editor provides the repo's active operating discipline:
 
 - Keeps always-on rules lean and constitutional.
 - Routes deeper procedures into skills and workflows only when needed.
@@ -63,13 +63,13 @@ The `.windsurf` control surface enforces discipline at three points: **before** 
 
 | Surface | Role | SSOT |
 |---|---|---|
-| Constitutional rules | Always-on invariants the agent reads every turn | `.windsurf/rules/constitutional.md`, `global_rules.md` |
+| Constitutional rules | Always-on invariants the agent reads every turn | `.claude/rules/constitutional.md`, `global_rules.md` |
 | Conditional rules | Loaded on demand by trigger phrase | frontmatter `trigger: model_decision` |
-| Skills | Procedural how-to, on-demand (third-person, deterministic) | `.windsurf/skills/<name>/SKILL.md` |
-| Workflows | Slash-command runbooks for repeatable sequences | `.windsurf/workflows/*.md` |
-| Hook scripts | Deterministic Python at pre/post action moments | `.windsurf/scripts/*.py` |
+| Skills | Procedural how-to, on-demand (third-person, deterministic) | `.claude/skills/<name>/SKILL.md` |
+| Workflows | Slash-command runbooks for repeatable sequences | `docs/archive/windsurf/legacy-tree/workflows/*.md` |
+| Hook scripts | Deterministic Python at pre/post action moments | `.claude/governance/scripts/*.py` |
 | Schemas | Machine-validated contracts for ledgers, manifests, certs | `.windsurf/schemas/*.{sql,json,yaml}` |
-| Plans | Per-task SSOT with wave/phase decomposition | `.windsurf/plans/<slug>-<6hex>.md` |
+| Plans | Per-task SSOT with wave/phase decomposition | `.claude/plans/<slug>-<6hex>.md` |
 
 The two-tier model is deliberate. **Rules state invariants; skills carry procedure; hooks enforce.** Adding rules without a hook is advisory; adding hooks without a rule is brittle. Every load-bearing invariant lives in one SSOT and is enforced by all three layers, so drift is structurally hard.
 
@@ -77,15 +77,15 @@ Key files to inspect:
 
 ```text
 .windsurf/RULES_INDEX.md
-.windsurf/hooks.json
-.windsurf/rules/constitutional.md
-.windsurf/rules/global_rules.md
-.windsurf/rules/adg-canonical-invariants.md
-.windsurf/rules/author-gate-enforcement.md
-.windsurf/rules/ssot-folder-enforcement.md
-.windsurf/skills/*/SKILL.md
-.windsurf/workflows/*.md
-.windsurf/scripts/*.py
+.claude/settings.json
+.claude/rules/constitutional.md
+.claude/rules/global_rules.md
+.claude/rules/adg-canonical-invariants.md
+.claude/rules/author-gate-enforcement.md
+.claude/rules/ssot-folder-enforcement.md
+.claude/skills/*/SKILL.md
+docs/archive/windsurf/legacy-tree/workflows/*.md
+.claude/governance/scripts/*.py
 ```
 
 ### Hook coverage
@@ -110,11 +110,11 @@ After work:
 
 This matters because many AI-coding failures happen before a traditional test ever runs. Examples include scope drift, wrong tool use, unsafe write paths, missing plan registration, MCP misuse, or unrecorded deferred work.
 
-Windsurf hooks catch those process failures at the moment they happen.
+legacy editor hooks catch those process failures at the moment they happen.
 
 ### Operating discipline (visible signals)
 
-Every Cursor Agent response in this repo emits structured markers that the post-action hooks parse and route into ledgers and Notion databases:
+Every Codex response in this repo emits structured markers that the post-action hooks parse and route into ledgers and Notion databases:
 
 ```text
 SR_PLAN / SR_APPROVAL / SR_EXECUTE / SR_VERIFY     -> reasoning packet (T2/T3)
@@ -248,7 +248,7 @@ That makes it better at catching issues like:
                                 |
                                 v
 +--------------------------------------------------------------+
-| Layer 1: Windsurf AI-time governance                          |
+| Layer 1: legacy editor AI-time governance                          |
 | rules, hooks, skills, workflows, author gates, scope capture  |
 |                                                               |
 | Purpose: guide and constrain the agent while work is happening|
@@ -281,7 +281,7 @@ That makes it better at catching issues like:
 
 The important point is that no single layer is pretending to do everything.
 
-Windsurf prevents many bad actions before they happen. Pre-commit catches local hygiene and obvious failures. Tests prove behavior. ADG CI audits the whole repository against architectural contracts.
+legacy editor prevents many bad actions before they happen. Pre-commit catches local hygiene and obvious failures. Tests prove behavior. ADG CI audits the whole repository against architectural contracts.
 
 ---
 
@@ -306,8 +306,8 @@ Look for:
 ### 2. Inspect active hook enforcement
 
 ```text
-.windsurf/hooks.json
-.windsurf/scripts/
+.claude/settings.json
+.claude/governance/scripts/
 ```
 
 Look for:
@@ -315,7 +315,7 @@ Look for:
 - Pre-write gates.
 - Post-write audits.
 - MCP tool-use gates.
-- Cursor Agent response audits.
+- Codex response audits.
 - Scope drift and deferred-scope capture.
 - Author-gate capture and miss detection.
 
@@ -419,7 +419,7 @@ The clean split is:
 ```text
 Tests prove behavior.
 ADG CI proves governability.
-Windsurf controls the AI-time work process.
+legacy editor controls the AI-time work process.
 ```
 
 ---
@@ -435,7 +435,7 @@ The governance layers here reduce that risk by making the repo inspectable at mu
 ```text
 Behavioral correctness      -> tests
 Local change hygiene        -> pre-commit
-Agent behavior discipline   -> Windsurf rules and hooks
+Agent behavior discipline   -> legacy editor rules and hooks
 Architecture correctness    -> ADG CI
 Runtime evidence            -> coverage, replay, OTel witnesses
 Decision traceability       -> plans, author gates, ledgers, manifests

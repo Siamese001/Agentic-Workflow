@@ -14,7 +14,7 @@ dod_exempt: false
 
 Align the competencies lane with graph-skills authority (not base résumé `facts.skills`), a **generate 10 → keep top 6** selection pipeline grounded in `augmented_skills_graph`, colon+keyword display format, and a **single X1D judge** (`gemini_pro`) matching the employment-bullet pool model (one judge row, not a 3-provider panel).
 
-> **plan_id discipline**: `competencies-graph-10x6-gemini-924516` ↔ `.cursor/plans/competencies-graph-10x6-gemini-924516.md`
+> **plan_id discipline**: `competencies-graph-10x6-gemini-924516` ↔ `.claude/plans/competencies-graph-10x6-gemini-924516.md`
 
 ---
 

@@ -67,4 +67,4 @@ Skip step 1 only when the user gave a literal Context7 ID like `/vercel/next.js`
 
 ## Skill Registry
 
-Context7 also maintains a public skill registry at https://context7.com/skills covering library-specific workflows (React best practices, web design, PDF processing, etc.). Those are project-installable via `ctx7` CLI; this Cursor skill governs the MCP routing layer above them.
+Context7 also maintains a public skill registry at https://context7.com/skills covering library-specific workflows (React best practices, web design, PDF processing, etc.). Those are project-installable via `ctx7` CLI; this legacy editor skill governs the MCP routing layer above them.

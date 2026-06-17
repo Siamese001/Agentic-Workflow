@@ -1,6 +1,6 @@
 """Credential manager — secure token/secret resolution with source ladder.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW1 DS-1.
+Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW1 DS-1.
 
 Source ladder (first match wins):
 1. Explicit constructor arg

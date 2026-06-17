@@ -120,7 +120,7 @@ From `Agentic Prompt Categories.txt`:
 | 9 | HEALING PROPOSAL (The Correction) | — | ❌ no H0 |
 
 **5 of 9 categories are missing or mis-slotted.** The narrow plan at
-`@c:/Git/Agentic-Workflow/.windsurf/plans/prompt-assembly-few-shot-exemplars-9c4e2b.md`
+`@c:/Git/Agentic-Workflow/.claude/plans/prompt-assembly-few-shot-exemplars-9c4e2b.md`
 only addresses row 4 (EXEMPLARS).
 
 ---

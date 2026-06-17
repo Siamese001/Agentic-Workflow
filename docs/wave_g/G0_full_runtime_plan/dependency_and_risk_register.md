@@ -83,7 +83,7 @@ Failure at any gate blocks downstream sub-waves; the owning sub-wave MUST be re-
 
 | ID | Risk | Severity | Mitigation |
 |---|---|---|---|
-| R-G-13 | In-repo `.windsurf/mcp_config.json` drifts from active `~/.codeium/windsurf/mcp_config.json` | Medium | G5 documents the sync mechanism (`post_write_mcp_config_sync.py`) and uses in-repo as source of truth. |
+| R-G-13 | In-repo `.mcp.json` drifts from active `~/.codeium/windsurf/mcp_config.json` | Medium | G5 documents the sync mechanism (`post_write_mcp_config_sync.py`) and uses in-repo as source of truth. |
 | R-G-14 | Env var inventory surfaces secret KEY NAMES that look sensitive | Low | Names only (not values) — standard operational practice; no additional mitigation needed. |
 | R-G-15 | Ops scripts with no known caller are pruned out of the inventory | Medium | G5 inventories every `ops_scripts/**/*.py`; orphan scripts are marked "no known caller" but NOT excluded. |
 | R-G-16 | G1 misclassifies SRC-ADR-007 context assembler as multi-layer because of F04's historical C0 discussion | Low | OOS-003 is now SUPERSEDED in v1.4; F04 is L1. Use v1.4 baseline only. |

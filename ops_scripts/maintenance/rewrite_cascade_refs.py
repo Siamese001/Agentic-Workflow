@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Rename Windsurf-agent 'cascade' hooks/strings to Cursor Agent equivalents.
+"""Rename legacy editor-agent 'cascade' hooks/strings to Codex equivalents.
 
-Cursor Agent (Windsurf agent) -> Cursor Agent
+Codex (legacy editor agent) -> Codex
 post_cursor_agent_* -> post_cursor_agent_*
 
 Does NOT rewrite:
@@ -48,7 +48,7 @@ IDENT_REPLACEMENTS: list[tuple[str, str]] = [
     ("_post_cursor_agent_payload", "_post_cursor_agent_payload"),
     ("check_post_cursor_agent_alive", "check_post_cursor_agent_alive"),
     ("post-cursor-agent", "post-cursor-agent"),
-    ("Post-Cursor-Agent", "Post-Cursor-Agent"),
+    ("Post-legacy editor-Agent", "Post-legacy editor-Agent"),
     ("Post-cursor-agent", "Post-cursor-agent"),
     ("--cursor-prompts", "--cursor-prompts"),
     ("cursor_prompts", "cursor_prompts"),
@@ -56,69 +56,69 @@ IDENT_REPLACEMENTS: list[tuple[str, str]] = [
 ]
 
 PROSE_REPLACEMENTS: list[tuple[str, str]] = [
-    ("Cursor Agent", "Cursor Agent"),
-    ("Cursor Agent's", "Cursor Agent's"),
-    ("Cursor Agent MUST", "Cursor Agent MUST"),
-    ("Cursor Agent makes", "Cursor Agent makes"),
-    ("Cursor Agent response", "Cursor Agent response"),
+    ("Codex", "Codex"),
+    ("Codex's", "Codex's"),
+    ("Codex MUST", "Codex MUST"),
+    ("Codex makes", "Codex makes"),
+    ("Codex response", "Codex response"),
     ("cursor agent response", "cursor agent response"),
-    ("Cursor Agent tool-call", "Cursor Agent tool-call"),
-    ("Cursor Agent composed", "Cursor Agent composed"),
-    ("Event in Cursor Agent", "Event in Cursor Agent"),
-    ("by Cursor Agent", "by Cursor Agent"),
-    ("when Cursor Agent", "when Cursor Agent"),
-    ("if Cursor Agent", "if Cursor Agent"),
-    ("that Cursor Agent", "that Cursor Agent"),
-    ("Cursor Agent can", "Cursor Agent can"),
-    ("Cursor Agent is", "Cursor Agent is"),
-    ("Cursor Agent has", "Cursor Agent has"),
-    ("Cursor Agent executed", "Cursor Agent executed"),
-    ("Cursor Agent edited", "Cursor Agent edited"),
-    ("Cursor Agent closes", "Cursor Agent closes"),
-    ("Cursor Agent turn", "Cursor Agent turn"),
-    ("Cursor Agent session", "Cursor Agent session"),
-    ("Cursor Agent violations", "Cursor Agent violations"),
-    ("Cursor Agent violation", "Cursor Agent violation"),
-    ("Cursor Agent at", "Cursor Agent at"),
-    ("Cursor Agent post-", "Cursor Agent post-"),
-    ("Cursor Agent would", "Cursor Agent would"),
-    ("Cursor Agent self-", "Cursor Agent self-"),
-    ("Cursor Agent discussing", "Cursor Agent discussing"),
-    ("Cursor Agent touched", "Cursor Agent touched"),
-    ("Cursor Agent list", "Cursor Agent list"),
-    ("Cursor Agent mis-", "Cursor Agent mis-"),
-    ("Cursor Agent cannot", "Cursor Agent cannot"),
-    ("Cursor-Agent-authorable", "Cursor-Agent-authorable"),
-    ("Cursor Agent responses", "Cursor Agent responses"),
-    ("Cursor Agent response", "Cursor Agent response"),
-    ("block Cursor Agent", "block Cursor Agent"),
-    ("never block Cursor Agent", "never block Cursor Agent"),
-    ("help Cursor Agent", "help Cursor Agent"),
-    ("signals Cursor Agent", "signals Cursor Agent"),
-    ("Detects Cursor Agent", "Detects Cursor Agent"),
-    ("Scans Cursor Agent", "Scans Cursor Agent"),
-    ("Reads Cursor Agent", "Reads Cursor Agent"),
-    ("Fires on every Cursor Agent", "Fires on every Cursor Agent"),
-    ("emitted by Cursor Agent", "emitted by Cursor Agent"),
-    ("native Cursor Agent tools", "native Cursor Agent tools"),
-    ("Windsurf/Cursor Agent", "Windsurf/Cursor Agent"),
-    ("Restart Windsurf/Cursor Agent", "Restart Windsurf/Cursor Agent"),
-    ("hang Cursor Agent's", "hang Cursor Agent's"),
-    ("Author: Cursor", "Author: Cursor"),
-    ("agent_identity=\"Cursor Agent\"", "agent_identity=\"Cursor Agent\""),
-    ("Cursor Agent hook", "Cursor Agent hook"),
-    ("Cursor Agent hooks", "Cursor Agent hooks"),
-    ("Cursor Agent turn,", "Cursor Agent turn,"),
-    ("Cursor Agent per", "Cursor Agent per"),
-    ("from Cursor Agent", "from Cursor Agent"),
-    ("to Cursor Agent", "to Cursor Agent"),
-    ("Cursor Agent regression", "Cursor Agent regression"),
-    ("Cursor Agent is regressing", "Cursor Agent is regressing"),
-    ("did Cursor Agent's", "did Cursor Agent's"),
-    ("Cursor Agent wrote", "Cursor Agent wrote"),
-    ("what Cursor Agent wrote", "what Cursor Agent wrote"),
-    ("Cursor Agent executed waves", "Cursor Agent executed waves"),
-    ("Cursor Agent tool-schema", "Cursor Agent tool-schema"),
+    ("Codex tool-call", "Codex tool-call"),
+    ("Codex composed", "Codex composed"),
+    ("Event in Codex", "Event in Codex"),
+    ("by Codex", "by Codex"),
+    ("when Codex", "when Codex"),
+    ("if Codex", "if Codex"),
+    ("that Codex", "that Codex"),
+    ("Codex can", "Codex can"),
+    ("Codex is", "Codex is"),
+    ("Codex has", "Codex has"),
+    ("Codex executed", "Codex executed"),
+    ("Codex edited", "Codex edited"),
+    ("Codex closes", "Codex closes"),
+    ("Codex turn", "Codex turn"),
+    ("Codex session", "Codex session"),
+    ("Codex violations", "Codex violations"),
+    ("Codex violation", "Codex violation"),
+    ("Codex at", "Codex at"),
+    ("Codex post-", "Codex post-"),
+    ("Codex would", "Codex would"),
+    ("Codex self-", "Codex self-"),
+    ("Codex discussing", "Codex discussing"),
+    ("Codex touched", "Codex touched"),
+    ("Codex list", "Codex list"),
+    ("Codex mis-", "Codex mis-"),
+    ("Codex cannot", "Codex cannot"),
+    ("legacy editor-Agent-authorable", "legacy editor-Agent-authorable"),
+    ("Codex responses", "Codex responses"),
+    ("Codex response", "Codex response"),
+    ("block Codex", "block Codex"),
+    ("never block Codex", "never block Codex"),
+    ("help Codex", "help Codex"),
+    ("signals Codex", "signals Codex"),
+    ("Detects Codex", "Detects Codex"),
+    ("Scans Codex", "Scans Codex"),
+    ("Reads Codex", "Reads Codex"),
+    ("Fires on every Codex", "Fires on every Codex"),
+    ("emitted by Codex", "emitted by Codex"),
+    ("native Codex tools", "native Codex tools"),
+    ("legacy editor/Codex", "legacy editor/Codex"),
+    ("Restart legacy editor/Codex", "Restart legacy editor/Codex"),
+    ("hang Codex's", "hang Codex's"),
+    ("Author: legacy editor", "Author: legacy editor"),
+    ("agent_identity=\"Codex\"", "agent_identity=\"Codex\""),
+    ("Codex hook", "Codex hook"),
+    ("Codex hooks", "Codex hooks"),
+    ("Codex turn,", "Codex turn,"),
+    ("Codex per", "Codex per"),
+    ("from Codex", "from Codex"),
+    ("to Codex", "to Codex"),
+    ("Codex regression", "Codex regression"),
+    ("Codex is regressing", "Codex is regressing"),
+    ("did Codex's", "did Codex's"),
+    ("Codex wrote", "Codex wrote"),
+    ("what Codex wrote", "what Codex wrote"),
+    ("Codex executed waves", "Codex executed waves"),
+    ("Codex tool-schema", "Codex tool-schema"),
 ]
 
 # Filenames to rename (basename patterns).
@@ -131,7 +131,7 @@ RENAME_GLOBS = [
 ]
 
 _REMAINING_CASCADE = re.compile(
-    r"\bCascade\b(?![/\w])"  # word Cursor Agent not followed by / (L2/cascade)
+    r"\bCascade\b(?![/\w])"  # word Codex not followed by / (L2/cascade)
 )
 
 
@@ -149,8 +149,8 @@ def _rewrite_text(text: str) -> str:
         updated = updated.replace(old, new)
     for old, new in PROSE_REPLACEMENTS:
         updated = updated.replace(old, new)
-    # Residual standalone Cursor Agent -> Cursor Agent (skip L2/cascade paths).
-    updated = _REMAINING_CASCADE.sub("Cursor Agent", updated)
+    # Residual standalone Codex -> Codex (skip L2/cascade paths).
+    updated = _REMAINING_CASCADE.sub("Codex", updated)
     return updated
 
 

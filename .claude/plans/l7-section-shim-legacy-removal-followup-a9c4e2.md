@@ -26,7 +26,7 @@ CURRENT_WAVE: W2
 LAST_COMPLETED_WAVE: W2
 LAST_UPDATED: 2026-06-07
 
-PLAN_CREATED: slug=l7-section-shim-legacy-removal-followup-a9c4e2 path=.cursor/plans/l7-section-shim-legacy-removal-followup-a9c4e2.md status=Not Started
+PLAN_CREATED: slug=l7-section-shim-legacy-removal-followup-a9c4e2 path=.claude/plans/l7-section-shim-legacy-removal-followup-a9c4e2.md status=Not Started
 
 ---
 

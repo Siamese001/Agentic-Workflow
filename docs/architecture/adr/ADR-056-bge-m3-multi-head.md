@@ -6,7 +6,7 @@
 **Acceptance rationale**: `bge_embed_multi` already ships in `bge_runtime.py` (W5.3 of parent plan). All three heads are produced in one forward pass at zero extra GPU cost. Implementation proceeds behind `BGE_MULTI_HEAD=1` flag — existing dense-only path is unchanged. Sidecar storage gated behind per-collection opt-in per §4.
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/embeddings/bge_runtime.py`, `agentic_core/embeddings/embedding_factory.py`, `agentic_core/L4_state/utils/memory/bm25_store.py`, `agentic_core/L4_state/utils/client/chroma_client.py`, new `agentic_core/knowledge/retrieval/late_interaction_index.py`
-**Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.1
+**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.1
 **Relates-to**: ADR-018, ADR-046 (cross-encoder rerank), ADR-055 (model enforcement)
 
 ---
@@ -115,4 +115,4 @@ Rollback: `BGE_MULTI_HEAD=0` disables capture; stages fall back to current dense
 - Khattab & Zaharia, *ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction* (SIGIR 2020)
 - Cormack et al., *Reciprocal Rank Fusion* (SIGIR 2009)
 - In-repo: `agentic_core/embeddings/bge_runtime.py`, `agentic_core/L4_state/utils/memory/bm25_store.py`
-- Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

@@ -2,9 +2,9 @@
 """
 check_marker_ledger_parity.py — CI gate: DECISION_CAPTURED marker ↔ ledger parity (W1.2).
 
-Reconciles structured `DECISION_CAPTURED:` markers emitted by Cursor Agent over the
+Reconciles structured `DECISION_CAPTURED:` markers emitted by Codex over the
 last N days against actual rows written to the refactor_decision_ledger.sqlite.
-Detects silent hook-dispatcher failures (e.g., the 2026-04-22 Windsurf 2.0.67
+Detects silent hook-dispatcher failures (e.g., the 2026-04-22 legacy editor 2.0.67
 regression where post_agent_response hooks stopped firing mid-session).
 
 Parity rule:

@@ -4,8 +4,8 @@ plan_format: v2    # REQUIRED — opts into the enforced standard (Wave+Phase su
 plan_type: refactor    # refactor | governance | audit | doc | infra | tracker | platform_core_change
 touches_agentic_core: false   # true → plan_type MUST be platform_core_change + core_addition_author_gate_required=true
 touches_governance_ci: false   # true when modifying CI gates, schemas, or enforcement rules
-touches_cursor_rules: false   # true when modifying .cursor/rules/*.md
-touches_plan_templates: false   # true when modifying .cursor/templates/*.md
+touches_cursor_rules: false   # true when modifying .claude/rules/*.md
+touches_plan_templates: false   # true when modifying .claude/templates/*.md
 core_addition_author_gate_required: false   # true when touches_agentic_core=true; receipt ref required
 author_gate_receipt_ref: ""   # path to CoreAdditionAuthorGateReceipt JSON (required when core_addition_author_gate_required=true)
 dod_exempt: false   # true for RCA-only, doc-only, audit observation plans (exempt from PLAN-DOD gate)

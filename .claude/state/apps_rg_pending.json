@@ -63,7 +63,7 @@
     }
   },
   "next_invocation_template": "python -m apps_rg --target-company \"<TARGET_COMPANY>\" --target-role \"<TARGET_ROLE>\" --jd <JD_PATH> [--auto-research-tavily | --auto-research-internal | --manual-brief <BRIEF_PATH>]",
-  "discipline_note": "apps-rg-interactive-discipline.md: Cursor Agent MUST collect each value via ask_user_question \u2014 never auto-fill from prior turns, session memory, or scanned files. Each field is the user's explicit decision.",
+  "discipline_note": "apps-rg-interactive-discipline.md: Codex MUST collect each value via ask_user_question \u2014 never auto-fill from prior turns, session memory, or scanned files. Each field is the user's explicit decision.",
   "current_args": {
     "target_company": null,
     "target_role": null,

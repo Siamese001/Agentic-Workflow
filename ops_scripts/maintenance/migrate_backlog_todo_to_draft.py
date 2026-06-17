@@ -7,7 +7,7 @@ Deferred, Waiting, Completed, Retired, Archived. `Todo` is a legacy drift that s
 2026-05-02 `Proposed -> Not Started` rename; this script retires it.
 
 Uses the Notion REST API directly via httpx, bypassing MCP serialization
-constraints (§25 is aimed at Cursor Agent tool-call loops, not one-shot
+constraints (§25 is aimed at Codex tool-call loops, not one-shot
 administrative scripts). Requires NOTION_TOKEN env var.
 
 Exit codes:

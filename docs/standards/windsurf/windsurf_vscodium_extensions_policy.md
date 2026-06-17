@@ -1,4 +1,4 @@
-# Windsurf VSCodium Extensions Policy
+# legacy editor VSCodium Extensions Policy
 
 ## Status
 
@@ -11,7 +11,7 @@
 
 ## Purpose
 
-Define which extension sources, galleries, and individual extensions are approved, blocked, or provisional for use with VSCodium in this repository's development environment. This policy governs Windsurf AI assistant behavior when recommending, installing, or referencing extensions.
+Define which extension sources, galleries, and individual extensions are approved, blocked, or provisional for use with VSCodium in this repository's development environment. This policy governs legacy editor AI assistant behavior when recommending, installing, or referencing extensions.
 
 ---
 
@@ -291,9 +291,9 @@ Source: `@docs/external/vscodium/extensions.md` §Fallback Paths
 
 ---
 
-## Prompting Conventions for Windsurf
+## Prompting Conventions for legacy editor
 
-When prompting Windsurf for extension-related tasks in this repo, use these conventions to keep recommendations within policy bounds.
+When prompting legacy editor for extension-related tasks in this repo, use these conventions to keep recommendations within policy bounds.
 
 **Finding an extension:**
 > Search `@docs/external/vscodium/extensions-compatibility.md` for a compatible replacement before suggesting any extension. If the requested extension is on the blocklist, state it is blocked and suggest the approved replacement.

@@ -1,7 +1,7 @@
 """MCP ADG_REDIS_URL Consistency Gate — S-08 verification.
 
-Verifies that `adg_sqlite` and `memory` MCP servers have consistent ADG_REDIS_URL
-declarations in both `.cursor/mcp.json` and `.cursor/mcp.json`.
+Verifies that `adg_sqlite` and `memory` MCP servers have consistent
+ADG_REDIS_URL declarations in the repo SSOT.
 
 Bypass: MCP_ADG_REDIS_CONSISTENCY_BYPASS=1
 """
@@ -17,10 +17,9 @@ _CI_DIR = Path(__file__).resolve().parent
 if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
-from _mcp_ci_common import CURSOR_MCP_PATH, WINDSURF_MCP_PATH, server_env_value  # noqa: E402
+from _mcp_ci_common import REPO_MCP_PATH, server_env_value  # noqa: E402
 
-# Backward-compatible alias for tests and Windsurf-only callers.
-MCP_CONFIG_PATH = WINDSURF_MCP_PATH
+MCP_CONFIG_PATH = REPO_MCP_PATH
 
 EXPECTED_PATTERN = "${env:ADG_REDIS_URL}"
 HARDCODED_DEFAULT = "redis://localhost:6379/0"
@@ -82,11 +81,7 @@ def main() -> int:
         print("[check_mcp_adg_redis_consistency] BYPASS: MCP_ADG_REDIS_CONSISTENCY_BYPASS=1")
         return 0
 
-    targets: list[tuple[str, Path]]
-    if MCP_CONFIG_PATH != WINDSURF_MCP_PATH:
-        targets = [("config", MCP_CONFIG_PATH)]
-    else:
-        targets = [("cursor", CURSOR_MCP_PATH), ("windsurf", WINDSURF_MCP_PATH)]
+    targets: list[tuple[str, Path]] = [("repo", MCP_CONFIG_PATH)]
 
     issues: list[str] = []
     for label, path in targets:

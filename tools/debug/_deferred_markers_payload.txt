@@ -1,4 +1,4 @@
-Cursor Agent response payload containing 6 DEFERRED_SCOPE markers for manual replay.
+Codex response payload containing 6 DEFERRED_SCOPE markers for manual replay.
 
 DEFERRED_SCOPE: plan=adg-dead-code-waves-efg-b2e4f7 wave=E phase=E.1 layer=L4 fan_in=8 surface=State coverage_gap_pct=100.0 est_tokens=8000 reason=Duplicate adapter consolidation chromadb redis sqlite3 needs architectural decision
 

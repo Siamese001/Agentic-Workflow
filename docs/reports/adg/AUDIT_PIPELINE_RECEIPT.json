@@ -1,10 +1,12 @@
 {
-  "timestamp": "2026-06-13T14:52:48Z",
-  "certification_status": "clean",
-  "generator_exit_code": 0,
-  "report_exit_code": 0,
-  "runtime_proof_status": "view_present_zero_attested",
-  "generation_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06132026_1042.json",
-  "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06132026_1042.json",
-  "reasons": []
+  "timestamp": "2026-06-17T00:01:43Z",
+  "certification_status": "diagnostic_only",
+  "generator_exit_code": 1,
+  "report_exit_code": null,
+  "runtime_proof_status": "view_absent",
+  "generation_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06162026_2000.json",
+  "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06162026_2000.json",
+  "reasons": [
+    "snapshot path absent from generation manifest"
+  ]
 }

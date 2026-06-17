@@ -39,7 +39,7 @@ Relations (recommended):
 
 **Good name examples** (from existing memory):
 - `ProceduralPattern:PytestMCPDiscoveryServialCollection`
-- `ProceduralPattern:CursorHookSessionIdConsistency`
+- `ProceduralPattern:legacy editorHookSessionIdConsistency`
 
 ---
 

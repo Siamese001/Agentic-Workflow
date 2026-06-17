@@ -6,7 +6,7 @@
 - **Accepted:** 2026-06-15 status reconciliation with ADR-023
 - **Peers:** L3 orchestration, L5 safety (cross-cutting policy plane)
 - **ADR:** `docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md`
-- **Plan:** `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md`
+- **Plan:** `.claude/plans/runtime-hitl-exit-control-c4e7b3.md`
 - **Not coupled to:** developer-loop harness, `.windsurf/` artifacts, guardian exemptions
 
 ---

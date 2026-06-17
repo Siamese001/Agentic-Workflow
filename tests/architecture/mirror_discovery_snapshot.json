@@ -1836,12 +1836,12 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_routing\types\guardian_contract_types.py",
+      "module": "agentic_core\\L0_routing\\types\\guardian_contract_types.py",
       "expected_test": "tests\\agentic_core\\L0_routing\\types\\test_guardian_contract.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_routing\types\guardian_registry_types.py",
+      "module": "agentic_core\\L0_routing\\types\\guardian_registry_types.py",
       "expected_test": "tests\\agentic_core\\L0_routing\\types\\test_guardian_registry.py",
       "status": "PRESENT"
     },
@@ -3216,7 +3216,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L4_state\utils\local_disk_adapter_util.py",
+      "module": "agentic_core\\L4_state\\utils\\local_disk_adapter_util.py",
       "expected_test": "tests\\agentic_core\\L4_state\\utils\\test_local_disk_adapter.py",
       "status": "PRESENT"
     },
@@ -4666,7 +4666,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L6_observability\types\sovereign_report_types.py",
+      "module": "agentic_core\\L6_observability\types\\sovereign_report_types.py",
       "expected_test": "tests\\agentic_core\\L6_observability\\types\\test_sovereign_report.py",
       "status": "PRESENT"
     },
@@ -4698,11 +4698,6 @@
     {
       "module": "agentic_core\\mixins\\adaptive_execution_mixin.py",
       "expected_test": "tests\\agentic_core\\mixins\\test_adaptive_execution_mixin.py",
-      "status": "PRESENT"
-    },
-    {
-      "module": "agentic_core\\mixins\\ast_enforcement_mixin.py",
-      "expected_test": "tests\\agentic_core\\mixins\\test_ast_enforcement_mixin.py",
       "status": "PRESENT"
     },
     {
@@ -4738,11 +4733,6 @@
     {
       "module": "agentic_core\\mixins\\circuit_breaker_mixin.py",
       "expected_test": "tests\\agentic_core\\mixins\\test_circuit_breaker_mixin.py",
-      "status": "PRESENT"
-    },
-    {
-      "module": "agentic_core\\mixins\\cognitive_recovery_mixin.py",
-      "expected_test": "tests\\agentic_core\\mixins\\test_cognitive_recovery_mixin.py",
       "status": "PRESENT"
     },
     {
@@ -4818,11 +4808,6 @@
     {
       "module": "agentic_core\\mixins\\hitl_mixin.py",
       "expected_test": "tests\\agentic_core\\mixins\\test_hitl_mixin.py",
-      "status": "PRESENT"
-    },
-    {
-      "module": "agentic_core\\mixins\\hygiene_mixin.py",
-      "expected_test": "tests\\agentic_core\\mixins\\test_hygiene_mixin.py",
       "status": "PRESENT"
     },
     {
@@ -4903,11 +4888,6 @@
     {
       "module": "agentic_core\\mixins\\runtime_safety_mixin.py",
       "expected_test": "tests\\agentic_core\\mixins\\test_runtime_safety_mixin.py",
-      "status": "PRESENT"
-    },
-    {
-      "module": "agentic_core\\mixins\\secrets_management_mixin.py",
-      "expected_test": "tests\\agentic_core\\mixins\\test_secrets_management_mixin.py",
       "status": "PRESENT"
     },
     {
@@ -4998,11 +4978,6 @@
     {
       "module": "agentic_core\\prompt_governance\\scripts\\audit_registry_linkages.py",
       "expected_test": "tests\\agentic_core\\prompt_governance\\scripts\\test_audit_registry_linkages.py",
-      "status": "PRESENT"
-    },
-    {
-      "module": "agentic_core\\prompt_governance\\scripts\\cleanup_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\prompt_governance\\scripts\\test_cleanup_duplicates_util.py",
       "status": "PRESENT"
     },
     {

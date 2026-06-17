@@ -65,5 +65,5 @@ Compat shims at OLD paths emit `DeprecationWarning` and redirect via `sys.module
 ## References
 
 - ADR-082 — folder taxonomy
-- `.windsurf/plans/apps-runtime-first-principles-e6ba58.md` — W3 facade contract
-- `.windsurf/plans/apps-runtime-proof-harness-9d4c2a.md` — proof harness
+- `.claude/plans/apps-runtime-first-principles-e6ba58.md` — W3 facade contract
+- `.claude/plans/apps-runtime-proof-harness-9d4c2a.md` — proof harness

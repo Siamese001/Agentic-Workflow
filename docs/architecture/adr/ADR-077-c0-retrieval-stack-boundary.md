@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-04-30
 **Deciders:** L0 routing owner, L_PG knowledge plane owner, C0 architecture review
-**Source plan:** `.windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md`
+**Source plan:** `.claude/plans/c0-context-engine-wiring-fix-9e42a1.md`
 **Related:** ADR (none directly — this is a boundary-clarification ADR)
 **Author-Gate:** 2026-04-30 (architecture_choice, selected=adr_documenting_boundary_close_next_step, confidence=0.78)
 
@@ -25,7 +25,7 @@ appear redundant:
   `preretrieval_gate.py`).
 
 The original framing in
-`.windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md` and the
+`.claude/plans/c0-context-engine-wiring-fix-9e42a1.md` and the
 `NEXT_STEP` marker emitted on 2026-04-30 (page
 `35227693-f55c-8133-933e-c0af5ebc6486`) treated these as **"two parallel
 C0 implementations"** to be deduplicated. A subsequent ADG audit
@@ -182,7 +182,7 @@ dedup question.
 - Author-Gate decision capture (2026-04-30): refactor_scope ⇒
   finish_two_items_introduced_this_chat ⇒ Item 2 ⇒ architecture_choice
   ⇒ selected=adr_documenting_boundary_close_next_step
-- Plan: `.windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md`
+- Plan: `.claude/plans/c0-context-engine-wiring-fix-9e42a1.md`
 - ADG snapshot: `artifacts/adg/adg_indexed_04302026_1319.sqlite`
 - Constitutional §22 (ADG graph layer is primary for refactoring)
 - Constitutional §28 (SQLite-direct fallback supersedes grep)

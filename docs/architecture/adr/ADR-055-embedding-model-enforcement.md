@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L4_state/utils/client/chroma_client.py`, `tools/generate/ingestion/validate_collection.py`, `agentic_core/embeddings/embedding_factory.py`, all `tools/ingestion/ingest_*.py`
-**Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W1.3
+**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W1.3
 **Relates-to**: ADR-018 (ChromaDB canonical), ADR-046 (Rerank revival), sibling plan `chromadb-bge-retrieval-hardening-e9aa09`
 
 **Current-state note (2026-06-15):** Implemented by Chroma collection metadata checks in `agentic_core/L4_state/utils/client/chroma_client.py` and the BGE runtime path, with Chroma behavior, BGE runtime, and vector DB routing tests.
@@ -123,4 +123,4 @@ Added 2026-05-05 per plan `bge-m3-gap-closure-c8f3a2` W2.2.
 - `agentic_core/embeddings/embedding_factory.py::create_deterministic_cache_key`
 - `agentic_core/embeddings/exceptions.py::EmbeddingProvenanceMismatchError`
 - `agentic_core/L4_state/utils/client/chroma_client.py::SovereignChromaClient`
-- Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

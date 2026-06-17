@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-post_agent_adg_audit.py — ADG-first enforcement audit (Cursor Agent).
+post_agent_adg_audit.py — ADG-first enforcement audit (Codex).
 
 Reads agent response payload from stdin (tool_info.response / response / content).
 Detects grep-style tool calls used for dependency analysis and logs violations.

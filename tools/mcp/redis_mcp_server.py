@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 mcp = build_mcp_server()
 
 if __name__ == "__main__":
-    # Guard against Windsurf double-spawn: two redis MCP processes create
+    # Guard against legacy editor double-spawn: two redis MCP processes create
     # duplicate connection pools to the same Redis instance; mostly benign
     # but wastes sockets and complicates log tailing. Added 2026-04-22.
     from tools.mcp.mcp_bootstrap import guard_single_instance

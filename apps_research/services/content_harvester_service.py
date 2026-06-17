@@ -21,9 +21,9 @@ class ContentHarvesterService:
     """Placeholder service for content harvesting.
 
     Maintains an in-memory record of harvest attempts and returns a structured
-    placeholder result. Full retrieval is delegated to upstream HOP agents
-    (SourceDiscoveryAgent, ResearchAgent) — this service exists as the integration
-    seam for future direct-harvest workflows.
+    placeholder result. Full retrieval is delegated to upstream research
+    orchestration — this service exists as the integration seam for future
+    direct-harvest workflows.
     """
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:

@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-05-01
-**Plan**: `.windsurf/plans/fortknox-certification-discipline-fb2a9e.md`
+**Plan**: `.claude/plans/fortknox-certification-discipline-fb2a9e.md`
 **Pairs with**: ADR-080 (Phase D Runtime Certification design anchor), ADR-050 (intelligence-ledger family)
 **Constitutional rule**: §32
 
@@ -12,13 +12,13 @@ The runtime-certification stack (`scripts/compile_requirement_signoff.py`,
 `scripts/verify_final_requirement_signoff_bundle.py`,
 `scripts/generate_mutation_rejection_report.py`,
 `certification/schemas/evidence_assertion.schema.json`) shipped in Phase D
-without harness-side enforcement. Cursor Agent had three latent failure modes:
+without harness-side enforcement. Codex had three latent failure modes:
 
-1. **Hand-edited reports.** Cursor Agent could open
+1. **Hand-edited reports.** Codex could open
    `artifacts/certification/final_requirement_signoff_report.json` and
    "fix" a row instead of regenerating from atomic assertions — bypassing
    the hostile verifier doctrine.
-2. **Prose certification claims.** Cursor Agent could narrate "RTC-REQ-042 is
+2. **Prose certification claims.** Codex could narrate "RTC-REQ-042 is
    now SIGNED_OFF" without ever invoking the compiler, leaving auditors
    unable to distinguish a real signoff from a prose hallucination.
 3. **Silently-broken compiler.** A compiler that rejects every assertion
@@ -28,7 +28,7 @@ without harness-side enforcement. Cursor Agent had three latent failure modes:
 These are the same three classes that SLSA L3 / in-toto / Sigstore /
 Critic-Agent doctrine address through (a) producer allowlists, (b)
 attestation envelopes, (c) adversarial review. This ADR codifies the
-mapping for the Windsurf harness layer.
+mapping for the legacy editor harness layer.
 
 ## Decision
 
@@ -37,13 +37,13 @@ with five enforcement layers:
 
 | Layer | Artifact | Behavior |
 |---|---|---|
-| Advisory rule | `.windsurf/rules/fortknox-certification-discipline.md` | Always-on; shapes Cursor Agent composition |
-| Pre-write hook | `.windsurf/scripts/pre_write_fortknox_guard.py` | Blocks direct edits to `final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}` and `certification/*.xlsx` (exit 2) |
-| Post-cursor-agent audit | `.windsurf/scripts/post_cursor_agent_fortknox_integrity_audit.py` | Fail-open detection of prose signoff claims without compiler invocation; logs to `artifacts/windsurf/fortknox_integrity_violations.jsonl` |
+| Advisory rule | `.claude/rules/fortknox-certification-discipline.md` | Always-on; shapes Codex composition |
+| Pre-write hook | `.claude/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct edits to `final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}` and `certification/*.xlsx` (exit 2) |
+| Post-cursor-agent audit | `.claude/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` | Fail-open detection of prose signoff claims without compiler invocation; logs to `artifacts/windsurf/fortknox_integrity_violations.jsonl` |
 | Pre-commit triplet | `ops_scripts/ci/check_fortknox_{clean_bundle,mutation_rejection,positive_control}.py` | T7s.1/.2/.3 — separation-of-duties: compiler+verifier agree, all mutations rejected, RTC-REQ-001 canary remains SIGNED_OFF |
 | Nightly regression | `.github/workflows/fortknox-nightly.yml` | Diffs trust_level + signed_off count + merkle_root vs prior committed bundle; opens `cert-regression`-tagged issue on regression |
-| Author-Gate trigger | `.windsurf/rules/author-gate-decision-points.md` §1.11 | `certification_claim` — Cursor Agent must run compiler+verifier before claiming SIGNED_OFF / FINAL_SIGNED_CERTIFICATION |
-| Skill | `.windsurf/skills/fortknox-evidence/SKILL.md` | Procedural recipe + forbidden-pattern checklist |
+| Author-Gate trigger | `.claude/rules/author-gate-decision-points.md` §1.11 | `certification_claim` — Codex must run compiler+verifier before claiming SIGNED_OFF / FINAL_SIGNED_CERTIFICATION |
+| Skill | `.claude/skills/fortknox-evidence/SKILL.md` | Procedural recipe + forbidden-pattern checklist |
 
 Producer-allowlist (per §32): atomic assertions emitters MUST live under
 `tools/cert/*.py`, `scripts/verify_*_gate.py`, or `scripts/verify_rtc_*.py`.
@@ -124,9 +124,9 @@ not migration-driven.
 - Bundle verifier: `scripts/verify_final_requirement_signoff_bundle.py`
 - Mutation runner: `scripts/generate_mutation_rejection_report.py`
 - Envelope writer: `tools/cert/sign_requirement_signoff_envelope.py`
-- Rule: `.windsurf/rules/fortknox-certification-discipline.md`
-- Skill: `.windsurf/skills/fortknox-evidence/SKILL.md`
-- Plan: `.windsurf/plans/fortknox-certification-discipline-fb2a9e.md`
+- Rule: `.claude/rules/fortknox-certification-discipline.md`
+- Skill: `.claude/skills/fortknox-evidence/SKILL.md`
+- Plan: `.claude/plans/fortknox-certification-discipline-fb2a9e.md`
 - Pairs: ADR-080 (Phase D anchor), ADR-050 (intelligence-ledger family)
 
 Web-research grounding: SLSA L3 build-provenance verifiability,

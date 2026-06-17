@@ -20,7 +20,7 @@ LAST_COMPLETED_WAVE: W6
 LAST_UPDATED: 2026-05-26
 NOTION_PAGE_ID: 36c27693-f55c-8192-b780-c470af1130c1
 
-PLAN_CREATED: slug=exec-summary-regen-voice-repair-unblock-e7c4a2 path=.cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md status=Completed notion=36c27693-f55c-8192-b780-c470af1130c1
+PLAN_CREATED: slug=exec-summary-regen-voice-repair-unblock-e7c4a2 path=.claude/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md status=Completed notion=36c27693-f55c-8192-b780-c470af1130c1
 PLAN_COMPLETED: slug=exec-summary-regen-voice-repair-unblock-e7c4a2 waves=W0-W6 closeout=docs/reports/apps_rg/exec_summary_regen_voice_repair_unblock_closeout_20260526.md
 
 ---
@@ -76,7 +76,7 @@ PLAN_COMPLETED: slug=exec-summary-regen-voice-repair-unblock-e7c4a2 waves=W0-W6 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|-----------------|-------------|-------------|--------|
-| W0.1 | Register plan (Notion + `PLAN_CREATED`) | `.cursor/plans/`, Notion | — | ~8K | ✅ DONE |
+| W0.1 | Register plan (Notion + `PLAN_CREATED`) | `.claude/plans/`, Notion | — | ~8K | ✅ DONE |
 | W1.1 | Audit + document voice_repair trigger graph | `executive_summary_voice_repair.py` | Hardcoded fallbacks = judge quotes | ~8K | ✅ DONE |
 | W1.2 | Replace `_S5_CREDENTIAL_REPLACEMENT` / `_S6_FORWARD_REPLACEMENT` with metric-grounded templates | `executive_summary_voice_repair.py`, tests | S5 loses 40% when repaired | ~12K | ✅ DONE |
 | W1.3 | Gate synthesis_regen materialization vs voice_repair order | `executive_summary_voice_repair.py` (post-order safe) | Double-rewrite S5 | ~8K | ✅ DONE |
@@ -160,8 +160,8 @@ WAVE_COMPLETE: YES
 
 **Acceptance**
 
-- [x] [`.cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md`](exec-summary-regen-voice-repair-unblock-e7c4a2.md) exists with wave table at top.
-- [x] Notion Plans row: `Status=Not Started`, `Exists On Disk=true`, `Plan File Path=.cursor/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md`.
+- [x] [`.claude/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md`](exec-summary-regen-voice-repair-unblock-e7c4a2.md) exists with wave table at top.
+- [x] Notion Plans row: `Status=Not Started`, `Exists On Disk=true`, `Plan File Path=.claude/plans/exec-summary-regen-voice-repair-unblock-e7c4a2.md`.
 - [x] `PLAN_CREATED` marker updated with `NOTION_PAGE_ID`.
 
 ---

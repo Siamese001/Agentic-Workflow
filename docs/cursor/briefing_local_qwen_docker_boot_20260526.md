@@ -1,7 +1,7 @@
-# Briefing — Local Qwen vLLM Docker boot (Cursor / Windows)
+# Briefing — Local Qwen vLLM Docker boot (legacy editor / Windows)
 
 > **Date:** 2026-05-26  
-> **Audience:** Operator (future Cursor sessions)  
+> **Audience:** Operator (future legacy editor sessions)  
 > **Full runbook:** [local_qwen_docker_boot.md](local_qwen_docker_boot.md)  
 > **Compose SSOT:** [docker-compose.qwen.yml](../../docker-compose.qwen.yml)
 
@@ -147,4 +147,4 @@ Override weights path: `QWEN_MODEL_HOST_PATH` in `.env` or shell (see [.env.exam
 
 - [local_qwen_docker_boot.md](local_qwen_docker_boot.md) — expanded runbook  
 - [qwen-vllm-topology.md](../architecture/qwen-vllm-topology.md) — architecture + apps_rg env tables  
-- [.cursor/rules/local-llm-wsl2-gpu.mdc](../../.cursor/rules/local-llm-wsl2-gpu.mdc) — VRAM / Blackwell quirks for agents  
+- [.claude/rules/local-llm-wsl2-gpu.mdc](../../.claude/rules/local-llm-wsl2-gpu.mdc) — VRAM / Blackwell quirks for agents  

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -21,43 +20,17 @@ def _write(path: Path, text: str = "placeholder") -> None:
 def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
-    hook_groups: dict[tuple[str, str], list[str]] = {}
-    for event, matcher, target in (
-        ("PreToolUse", "Edit|Write|MultiEdit", ".claude/hooks/before_file_edit_branch_guard.py"),
-        ("PreToolUse", "Bash", ".claude/hooks/before_shell_execution.py"),
-        ("Stop", "", ".claude/hooks/stop_task_audit.py"),
-    ):
-        _write(tmp_path / target)
-        hook_groups.setdefault((event, matcher), []).append(target)
-    settings_hooks: dict[str, list[dict]] = {}
-    for (event, matcher), targets in hook_groups.items():
-        group = {
-            "hooks": [
-                {
-                    "type": "command",
-                    "command": (
-                        f'"$CLAUDE_PROJECT_DIR/{target}"'
-                        if target.endswith(".sh")
-                        else f'python "$CLAUDE_PROJECT_DIR/{target}"'
-                    ),
-                }
-                for target in targets
-            ]
-        }
-        if matcher:
-            group["matcher"] = matcher
-        settings_hooks.setdefault(event, []).append(group)
-    _write(tmp_path / ".claude/settings.json", json.dumps({"hooks": settings_hooks}))
     _write(
         tmp_path / "AGENTS.md",
         "\n".join(
             [
                 "## Codex primary execution adapter",
                 "docs/codex-primary-execution.md",
-                "scripts/governance/codex_hook_parity.py",
+                "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
+                "GitKraken",
             ]
         ),
     )
@@ -66,23 +39,12 @@ def _valid_root(tmp_path: Path) -> Path:
         "\n".join(
             [
                 "Codex primary execution surface",
-                "scripts/governance/codex_hook_parity.py",
+                "GitKraken",
+                "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "No parallel registry",
-            ]
-        ),
-    )
-    _write(
-        tmp_path / "docs/codex-backup-adapter.md",
-        "\n".join(
-            [
-                "docs/codex-primary-execution.md",
-                "scripts/governance/verify_codex_primary.py",
-                "scripts/governance/codex_hook_parity.py",
-                "scripts/governance/codex_readiness.py",
-                "scripts/governance/verify_codex_run_receipt.py",
             ]
         ),
     )

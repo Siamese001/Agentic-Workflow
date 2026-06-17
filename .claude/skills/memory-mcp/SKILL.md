@@ -1,6 +1,6 @@
 ---
 name: memory-mcp
-description: Persistent SQLite-backed knowledge graph for Claude Code — survives Cursor restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from Cursor's built-in.
+description: Persistent SQLite-backed knowledge graph for Claude Code — survives legacy editor restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from legacy editor's built-in.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -18,7 +18,7 @@ metadata:
 
 # Memory MCP Skill (Legacy)
 
-In-house persistent knowledge graph. SQLite-backed at `artifacts/memory/knowledge_graph.sqlite`. Survives Cursor restarts.
+In-house persistent knowledge graph. SQLite-backed at `artifacts/memory/knowledge_graph.sqlite`. Survives legacy editor restarts.
 
 **Sibling skills:** `writeback-discipline` (when/what to write), `ledger-consulter-memory-recall` (recall pattern)
 **Doctrine:** `.claude/rules/agents-memory-lifecycle.md`, `.claude/rules/memory-management.md`

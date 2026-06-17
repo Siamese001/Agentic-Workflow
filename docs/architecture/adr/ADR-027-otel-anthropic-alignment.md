@@ -2,11 +2,11 @@
 
 - **Status**: Accepted
 - **Date**: 2026-04-22
-- **Deciders**: Cursor Agent (paired with user)
+- **Deciders**: Codex (paired with user)
 - **Related**:
   - ADR-023 Runtime HITL Exit Control
   - ADR-025 Unified Heal-Router OTel Schema
-- **Plan**: `.windsurf/plans/otel-anthropic-alignment-b4c8e1.md`
+- **Plan**: `.claude/plans/otel-anthropic-alignment-b4c8e1.md`
 
 ## Context
 
