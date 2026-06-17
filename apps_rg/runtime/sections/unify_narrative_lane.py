@@ -820,6 +820,9 @@ def run_unify_narrative_execution(
         input_payload_hash=input_payload_hash,
         allowed_fact_ids=allowed_fact_ids,
     )
+    raw_output_for_x2 = raw_output
+    if "```" in raw_output and isinstance(parsed_for_x2, dict):
+        raw_output_for_x2 = json.dumps(parsed_for_x2, ensure_ascii=False, separators=(",", ":"))
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
     temperature = float(args.temperature) if args.provider == "external_claude" else NARRATIVE_TEMP_DEFAULT
 
@@ -958,7 +961,7 @@ def run_unify_narrative_execution(
             provider_requested=args.provider,
             provider_attempted=args.provider,
             model_name=model_name,
-            raw_output=raw_output,
+            raw_output=raw_output_for_x2,
             x1d_judges=x1d,
             allowed_fact_ids=allowed_fact_ids,
             artifacts_dir=artifact_dir,

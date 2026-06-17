@@ -602,6 +602,57 @@ def sync_selected_fact_plan_required_ids(
     parsed["selected_fact_plan"] = base
 
 
+def _rewrite_partner_enablement_segment(
+    headline_line: str,
+    *,
+    selected_fact_plan: dict[str, Any] | None,
+) -> tuple[str, dict[str, Any] | None]:
+    """Replace abstract GSI enablement phrasing with a grounded partner skill label."""
+    hl = str(headline_line or "").strip()
+    if not hl or "gsi" not in hl.lower() or "enablement" not in hl.lower():
+        return hl, None
+
+    sfp = selected_fact_plan if isinstance(selected_fact_plan, dict) else {}
+    skill_sources: set[str] = set()
+    for sk in sfp.get("selected_skills") or []:
+        sid = str(sk.get("skill_id") if isinstance(sk, dict) else sk or "").strip()
+        if sid:
+            skill_sources.add(sid)
+    for sid in sfp.get("selected_skill_ids") or []:
+        sid = str(sid).strip()
+        if sid:
+            skill_sources.add(sid)
+
+    grounded_skills = {
+        "skill_partner_partner_led_ai_solutions",
+        "skill_partner_cloud_vendor_joint_gtm",
+        "skill_partner_gtm_enablement",
+    }
+    if not skill_sources.intersection(grounded_skills):
+        return hl, None
+
+    parts = [p.strip() for p in hl.split(" | ")]
+    if len(parts) != 4:
+        return hl, None
+
+    segment = parts[2]
+    if not re.search(r"\bgsi\b", segment, re.IGNORECASE) or not re.search(
+        r"\benablement\b", segment, re.IGNORECASE
+    ):
+        return hl, None
+
+    replacement = "Partner-Led AI Solutions"
+    if segment == replacement:
+        return hl, None
+
+    parts[2] = replacement
+    return " | ".join(parts), {
+        "from": segment,
+        "to": replacement,
+        "selected_skill_ids": sorted(skill_sources.intersection(grounded_skills)),
+    }
+
+
 def snapshot_raw_jd_alignment(parsed: dict[str, Any]) -> None:
     """Freeze model-emitted ``jd_alignment`` before normalize for X2 proof gates (no proof-boolean injection)."""
     jd0 = parsed.get("jd_alignment")
@@ -646,6 +697,27 @@ def normalize_parsed_output(
         return parsed
     out = dict(parsed)
     hl = str(out.get("headline_line") or headline_line or "").strip()
+    selected_fact_plan_for_repair = (
+        out.get("selected_fact_plan")
+        if isinstance(out.get("selected_fact_plan"), dict)
+        else runtime_payload.get("selected_fact_plan")
+    )
+    repaired_hl, repaired_meta = _rewrite_partner_enablement_segment(
+        hl,
+        selected_fact_plan=selected_fact_plan_for_repair if isinstance(selected_fact_plan_for_repair, dict) else None,
+    )
+    if repaired_meta is not None and repaired_hl != hl:
+        hl = repaired_hl
+        out["headline_line"] = hl
+        change_log = out.setdefault("change_log", [])
+        if isinstance(change_log, list):
+            change_log.append(
+                {
+                    "operation": "headline_partner_enablement_grounding_repair",
+                    "reason": "replace_abstract_gsi_enablement_with_grounded_partner_label",
+                    **repaired_meta,
+                }
+            )
     out["headline_line"] = hl
     jd = dict(out.get("jd_alignment") or {})
     jd.setdefault("targeting_only", True)
@@ -1826,6 +1898,9 @@ def run_headline_execution(
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
     )
+    raw_output_for_x2 = raw_output
+    if "```" in raw_output and isinstance(parsed_for_x2, dict):
+        raw_output_for_x2 = json.dumps(parsed_for_x2, ensure_ascii=False, separators=(",", ":"))
     x1d = [
         j.to_dict()
         for j in run_headline_judges(
@@ -1861,7 +1936,7 @@ def run_headline_execution(
             provider_requested=args.provider,
             provider_attempted=args.provider,
             model_name=model_name,
-            raw_output=raw_output,
+            raw_output=raw_output_for_x2,
             x1d_judges=x1d,
             companion_context=companion_context,
             candidate_name_tokens=candidate_name_tokens,

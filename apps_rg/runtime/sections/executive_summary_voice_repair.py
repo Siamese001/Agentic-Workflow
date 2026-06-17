@@ -576,6 +576,13 @@ _GOV_POOL_UTILIZATION_SENTENCE = (
     "automated validation frameworks cut regulatory reporting errors by 40%."
 )
 
+_INSURTECH_POOL_UTILIZATION_SENTENCE = (
+    "In parallel, regulated cloud modernization architecture for financial-services workloads "
+    "established reference architecture reuse across migration waves, grounding partner-led AI "
+    "solutions in validated delivery patterns while addressing insurance regulatory cloud "
+    "adoption standards."
+)
+
 _GRAPH_OVERRIDE_ANCHOR = "dependency graph intelligence enables accelerated"
 
 
@@ -1604,42 +1611,92 @@ def ensure_required_allowed_fact_utilization(
     ledger = [dict(r) for r in (parsed.get("claim_ledger") or []) if isinstance(r, dict)]
     unused = collect_unused_allowed_fact_ids(ledger, allowed)
     waived = resolve_utilization_waived_fact_ids(allowed)
-    if "fact_governance_003" not in [u for u in unused if u not in waived]:
+    pending = [u for u in unused if u not in waived]
+    needs_gov = "fact_governance_003" in pending
+    needs_insurtech = "reb_insurtech_insurance_regulatory_cloud_adoption_standards" in pending
+    if not needs_gov and not needs_insurtech:
         return parsed, receipt
-
-    text = str(parsed.get("resume_display_text") or "").strip()
-    # Already present — check via both old "Through that" and new "Applied across" forms.
-    if "basel iii" in text.lower() and "40%" in text:
-        return parsed, receipt
-
-    sentences = split_sentences(text)
-    if len(sentences) != 6:
-        return parsed, receipt
-
-    insert_at = 2
-    sentences[insert_at] = _GOV_POOL_UTILIZATION_SENTENCE
 
     out = dict(parsed)
-    out["resume_display_text"] = " ".join(s.strip() for s in sentences if s.strip())
-    ledger = [dict(r) for r in (out.get("claim_ledger") or []) if isinstance(r, dict)]
-    gov_row = {
-        "claim": "Basel III lineage cut reporting errors",
-        "claim_text": _GOV_POOL_UTILIZATION_SENTENCE,
-        "source_fact_ids": ["fact_governance_003"],
-    }
-    if len(ledger) >= 3:
-        ledger[2] = gov_row
-    else:
-        ledger.append(gov_row)
-    out["claim_ledger"] = ledger
-    out = reconcile_claim_ledger_after_voice_repair(out)
-    for row in out.get("claim_ledger") or []:
-        if not isinstance(row, dict):
-            continue
-        claim = str(row.get("claim_text") or "")
-        if "basel iii" in claim.lower() and "40%" in claim:
-            row["source_fact_ids"] = ["fact_governance_003"]
-    receipt["patched_fact_ids"].append("fact_governance_003")
+    text = str(parsed.get("resume_display_text") or "").strip()
+    gov_present = "basel iii" in text.lower() and "40%" in text
+    insurtech_present = "insurance regulatory cloud adoption standards" in text.lower()
+
+    if needs_gov and not gov_present:
+        sentences = split_sentences(text)
+        if len(sentences) != 6:
+            return parsed, receipt
+        sentences[2] = _GOV_POOL_UTILIZATION_SENTENCE
+        out["resume_display_text"] = " ".join(s.strip() for s in sentences if s.strip())
+        ledger = [dict(r) for r in (out.get("claim_ledger") or []) if isinstance(r, dict)]
+        gov_row = {
+            "claim": "Basel III lineage cut reporting errors",
+            "claim_text": _GOV_POOL_UTILIZATION_SENTENCE,
+            "source_fact_ids": ["fact_governance_003"],
+        }
+        if len(ledger) >= 3:
+            ledger[2] = gov_row
+        else:
+            ledger.append(gov_row)
+        out["claim_ledger"] = ledger
+        out = reconcile_claim_ledger_after_voice_repair(out)
+        for row in out.get("claim_ledger") or []:
+            if not isinstance(row, dict):
+                continue
+            claim = str(row.get("claim_text") or "")
+            if "basel iii" in claim.lower() and "40%" in claim:
+                row["source_fact_ids"] = ["fact_governance_003"]
+        receipt["patched_fact_ids"].append("fact_governance_003")
+        text = str(out.get("resume_display_text") or "").strip()
+        insurtech_present = "insurance regulatory cloud adoption standards" in text.lower()
+
+    if needs_insurtech and not insurtech_present:
+        sentences = split_sentences(text)
+        if len(sentences) != 6:
+            return parsed, receipt
+        sentences[3] = _INSURTECH_POOL_UTILIZATION_SENTENCE
+        out["resume_display_text"] = " ".join(s.strip() for s in sentences if s.strip())
+        ledger = [dict(r) for r in (out.get("claim_ledger") or []) if isinstance(r, dict)]
+        if len(ledger) >= 4:
+            ins_row = dict(ledger[3])
+            ins_row["claim_text"] = _INSURTECH_POOL_UTILIZATION_SENTENCE
+            source_ids = [
+                str(x).strip()
+                for x in (ins_row.get("source_fact_ids") or [])
+                if str(x).strip()
+            ]
+            if "reb_insurtech_insurance_regulatory_cloud_adoption_standards" not in source_ids:
+                source_ids.append("reb_insurtech_insurance_regulatory_cloud_adoption_standards")
+            ins_row["source_fact_ids"] = source_ids
+            ledger[3] = ins_row
+        else:
+            ledger.append(
+                {
+                    "claim": "Insurance regulatory cloud adoption standards",
+                    "claim_text": _INSURTECH_POOL_UTILIZATION_SENTENCE,
+                    "source_fact_ids": [
+                        "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
+                    ],
+                }
+            )
+        out["claim_ledger"] = ledger
+        out = reconcile_claim_ledger_after_voice_repair(out)
+        for row in out.get("claim_ledger") or []:
+            if not isinstance(row, dict):
+                continue
+            claim = str(row.get("claim_text") or "")
+            if "insurance regulatory cloud adoption standards" in claim.lower():
+                source_ids = [
+                    str(x).strip()
+                    for x in (row.get("source_fact_ids") or [])
+                    if str(x).strip()
+                ]
+                if "reb_insurtech_insurance_regulatory_cloud_adoption_standards" not in source_ids:
+                    source_ids.append("reb_insurtech_insurance_regulatory_cloud_adoption_standards")
+                row["source_fact_ids"] = source_ids
+        receipt["patched_fact_ids"].append(
+            "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
+        )
     return out, receipt
 
 

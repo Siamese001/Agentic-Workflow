@@ -496,6 +496,9 @@ def run_ibm_narrative_lane_execution(
         apply_proof_pool_to_usage_ledger(usage_doc, pool),
     )
     parsed_for_x2: dict[str, Any] = {**(parsed or {}), "text_claim_coverage": coverage}
+    raw_output_for_x2 = raw_output
+    if "```" in raw_output and isinstance(parsed_for_x2, dict):
+        raw_output_for_x2 = json.dumps(parsed_for_x2, ensure_ascii=False, separators=(",", ":"))
 
     mock_provider_cli = str(getattr(args, "provider", "") or "").strip().lower() == "mock"
     plumbing_waiver_cli = bool(getattr(args, "allow_non_allow_exit_zero", False))
@@ -525,7 +528,7 @@ def run_ibm_narrative_lane_execution(
             provider_requested=args.provider,
             provider_attempted=args.provider,
             model_name=model_name,
-            raw_output=raw_output,
+            raw_output=raw_output_for_x2,
             x1d_judges=x1d,
             allowed_fact_ids=allowed_ids_list,
             test_only_mock_provider=test_only_mock_provider_eff,

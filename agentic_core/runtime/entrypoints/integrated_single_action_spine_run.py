@@ -106,6 +106,9 @@ from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
 )
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
     compute_artifact_hash,
+    emit_artifact,
+    ProvenanceStamp,
+    W2_CHAIN_LINKAGE,
 )
 from agentic_core.runtime.artifacts.spine_proof_bundle import (
     git_commit_and_dirty,
@@ -116,6 +119,22 @@ from agentic_core.runtime.contracts.c0_bypass_receipt import (
 )
 from agentic_core.runtime.contracts.identity import (
     build_runtime_identity_envelope,
+)
+from agentic_core.L5_safety.certification.integrated_l5_evidence import (
+    binding_payload_from_identity,
+    build_hitl_reclearance_not_applicable,
+    certification_ref_from_binding,
+)
+from agentic_core.runtime.contracts.prompt_assembly_bypass_receipt import (
+    build_prompt_assembly_bypass_receipt,
+)
+from agentic_core.runtime.contracts.runtime_gate_verdict_bundle import (
+    GateOutcome,
+    RuntimeGateVerdictBundle,
+    VetoOutcome,
+)
+from agentic_core.runtime.contracts.safe_reuse_decision import (
+    SafeReuseDecision,
 )
 from agentic_core.runtime.profiles.profile_resolver import (
     RuntimeProfileResolver,
@@ -544,6 +563,7 @@ def _build_r5_exit_receipts(
     replay_key: str = "",
     policy_digest: str = "",
     blueprint_digest: str = "",
+    l5_certification_refs: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Receipts dict for an L0 R5 terminal path through Exit V6 (§5.0 fields)."""
     rid = (effective_route_id or "").strip() or ROUTE_ID
@@ -569,6 +589,7 @@ def _build_r5_exit_receipts(
             app_name=app_name,
         ),
         "terminal_class": "failure",
+        "l5_certification_refs": list(l5_certification_refs),
     }
     _apply_pipeline_exit_carriers(out, app_name)
     return out
@@ -611,6 +632,7 @@ def _build_l2_exit_receipts(
     blueprint_digest: str,
     terminal_class: str,
     app_name: str,
+    l5_certification_refs: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Receipts dict for an L2-executed path through Exit V6 §5.0 onward.
 
@@ -642,6 +664,7 @@ def _build_l2_exit_receipts(
         "terminal_class": terminal_class,
         # Coherent hashes for ExitReviewPacket (identity envelope uses same lineage)
         "blueprint_hash": blueprint_digest,
+        "l5_certification_refs": list(l5_certification_refs),
     }
     _apply_pipeline_exit_carriers(out, app_name)
     return out
@@ -883,6 +906,20 @@ def run_integrated_single_action_spine(
     # U0 → L1 bridge
     # ------------------------------------------------------------------
     plan_contract = validated_request_to_plan_contract(validated)
+    _binding_payload = binding_payload_from_identity(
+        {
+            "request_id": request_id,
+            "run_id": run_id,
+            "trace_root": trace_root,
+            "policy_hash": policy_hash or raw_request.get("policy_hash", "") or "",
+            "blueprint_hash": blueprint_hash or raw_request.get("blueprint_hash", "") or "",
+            "registry_digest_set": {},
+            "route_contract_id": str(getattr(plan_contract, "contract_id", "") or run_id),
+            "route_id": effective_route_id,
+            "app_name": app_name or "",
+        }
+    )
+    _l5_cert_ref = certification_ref_from_binding(_binding_payload)
 
     # ------------------------------------------------------------------
     # L0 — route gates (decision only; no fallback execution)
@@ -904,6 +941,7 @@ def run_integrated_single_action_spine(
             replay_key=replay_key,
             policy_digest=str(raw_request.get("policy_hash", "") or ""),
             blueprint_digest=str(raw_request.get("blueprint_hash", "") or ""),
+            l5_certification_refs=(_l5_cert_ref,),
         )
         exit_pipeline = ExitEvalPipeline()
         exit_result: ExitEvalResult = exit_pipeline.run(receipts)
@@ -969,6 +1007,8 @@ def run_integrated_single_action_spine(
         app_name=_app_name_for_identity,
     )
     _write_json(artifact_dir / _IDENTITY_RECEIPT_FILENAME, identity.to_dict())
+    _binding_payload = binding_payload_from_identity(identity.to_dict())
+    _l5_cert_ref = certification_ref_from_binding(_binding_payload)
 
     # ------------------------------------------------------------------
     # Seal U0 validated_request envelope (HowTrace U0_INTAKE evidence)
@@ -1075,6 +1115,7 @@ def run_integrated_single_action_spine(
         blueprint_digest=_blueprint_digest,
         terminal_class=_terminal_cls,
         app_name=app_name,
+        l5_certification_refs=(_l5_cert_ref,),
     )
     if l2_fault:
         receipts["l2_fault"] = l2_fault
@@ -1237,76 +1278,125 @@ def run_integrated_single_action_spine(
         build_spine_proof_payload as _build_spine_proof,
     )
 
-    # Create Track-2 filename aliases for build_how_trace compatibility
-    # R4 writes different filenames/structures than the canonical integrated_runtime entrypoints
-    _identity_src = artifact_dir / _IDENTITY_RECEIPT_FILENAME
-    _identity_dst = artifact_dir / "runtime_identity_envelope.json"
-    if _identity_src.exists() and not _identity_dst.exists():
-        # Wrap flat identity dict in payload envelope that build_how_trace expects
-        _identity_flat = json.loads(_identity_src.read_text(encoding="utf-8"))
-        _identity_envelope = {
-            "schema_version": "runtime_identity_envelope.v1",
-            **_l7_compat_alias_fields(
-                canonical_source_artifact=_IDENTITY_RECEIPT_FILENAME
-            ),
-            "payload": _identity_flat,
-        }
-        _write_json(_identity_dst, _identity_envelope)
+    # Re-stamp the W2 evidence chain as full envelopes. This overwrites
+    # any earlier raw compatibility aliases so reruns cannot reuse stale
+    # request/trace roots from a prior attempt.
+    stamp = ProvenanceStamp(
+        producer_component=_PRODUCER_COMPONENT,
+        producer_module="integrated_single_action_spine_run",
+        producer_function_or_class=_PRODUCER_FUNCTION,
+    )
+    artifact_hashes: dict[str, str] = {}
+    upstream_for = {fn: (up or "") for fn, up in W2_CHAIN_LINKAGE}
 
-    _plan_src = artifact_dir / _R4_RUN_MANIFEST_FILENAME
-    _plan_dst = artifact_dir / "l1_plan_contract.json"
-    if _plan_src.exists() and not _plan_dst.exists():
-        _plan_data = json.loads(_plan_src.read_text(encoding="utf-8"))
-        _write_json(
-            _plan_dst,
-            {
-                "schema_version": "l1_plan_contract.v1",
-                **_l7_compat_alias_fields(),
-                "payload": _plan_data,
-            },
+    def _emit_chain(filename: str, payload: dict[str, Any]) -> str:
+        upstream_filename = upstream_for.get(filename, "")
+        upstream_ref = artifact_hashes.get(upstream_filename, "") if upstream_filename else ""
+        _, digest = emit_artifact(
+            artifact_dir,
+            filename,
+            payload,
+            stamp=stamp,
+            upstream_artifact_ref=upstream_ref,
         )
+        artifact_hashes[filename] = digest
+        return digest
 
-    # Create route_contract.json (required by build_how_trace but not written by R4)
-    # request_id + trace_root MUST be present at payload level — the L7 route-family
-    # coverage classifier (_route_contract_emitted) requires them to certify R4.
-    _route_contract_path = artifact_dir / "route_contract.json"
-    if not _route_contract_path.exists():
-        _write_json(
-            _route_contract_path,
-            {
-                "schema_version": "route_contract.v1",
-                **_l7_compat_alias_fields(),
-                "payload": {
-                    "route_id": effective_route_id,
-                    "route_contract_id": route_contract_id,
-                    "request_id": request_id,
-                    "trace_root": trace_root,
-                    "execution_form": "R4_SINGLE_ACTION",
-                    "grounding_required": True,
-                    "prompt_assembly_required": False,
-                },
-            },
-        )
+    _emit_chain(
+        "integrated_runtime_entrypoint_invocation.json",
+        {
+            "invocation_id": run_id,
+            "integrated_runtime_entrypoint_used": True,
+            "entry_point": f"{_PRODUCER_COMPONENT}.{_PRODUCER_FUNCTION}",
+            "app_name": app_name,
+            "route_family": eff_route_family,
+            "chain_kind": CHAIN_KIND,
+            "started_at_utc": started_at,
+            "request_id": request_id,
+            "trace_root": trace_root,
+            "raw_request_keys": sorted(raw_request.keys()),
+        },
+    )
+    _emit_chain("runtime_identity_envelope.json", identity.to_dict())
 
-    # Track-2 alias: build_how_trace reads c0_bypass_receipt.json (canonical name)
-    _c0_src = artifact_dir / _C0_BYPASS_RECEIPT_FILENAME
-    _c0_dst = artifact_dir / "c0_bypass_receipt.json"
-    if _c0_src.exists() and not _c0_dst.exists():
-        _c0_flat = json.loads(_c0_src.read_text(encoding="utf-8"))
-        _c0_flat["c0_sub_stages"] = c0_sub_stages
-        _c0_envelope = {
-            "schema_version": "c0_bypass_receipt.v1",
-            **_l7_compat_alias_fields(
-                canonical_source_artifact=_C0_BYPASS_RECEIPT_FILENAME
-            ),
-            "artifact_hash": _hash_payload(_c0_flat),
-            "payload": _c0_flat,
-        }
-        _write_json(_c0_dst, _c0_envelope)
+    _binding_payload = binding_payload_from_identity(identity.to_dict())
+    _l5_cert_ref = certification_ref_from_binding(_binding_payload)
+    _emit_chain("runtime_certification_binding.json", _binding_payload)
+    _emit_chain(
+        "l5_hitl_reclearance.json",
+        build_hitl_reclearance_not_applicable(
+            request_id=request_id,
+            run_id=run_id,
+            replay_key=replay_key,
+        ),
+    )
 
-    # ------------------------------------------------------------------
-    # Seal L6 runtime_exhaust + trace_snapshot (HowTrace L6 evidence)
-    # ------------------------------------------------------------------
+    plan_payload = {
+        "task_spec": str(getattr(plan_contract, "task_spec", "") or ""),
+        "query_spec": str(getattr(plan_contract, "query_spec", "") or ""),
+        "grounding_required": bool(getattr(plan_contract, "grounding_required", False)),
+        "user_task_text": str(getattr(plan_contract, "user_task_text", "") or ""),
+        "request_id": request_id,
+        "trace_root": trace_root,
+        "route_id": effective_route_id,
+    }
+    _emit_chain("validated_request.json", _validated_payload)
+    _emit_chain("l1_plan_contract.json", plan_payload)
+    _emit_chain(
+        "route_contract.json",
+        {
+            "route_id": effective_route_id,
+            "route_contract_id": route_contract_id,
+            "request_id": request_id,
+            "trace_root": trace_root,
+            "execution_form": "R4_SINGLE_ACTION",
+            "grounding_required": True,
+            "prompt_assembly_required": False,
+            "route_family": eff_route_family,
+            "policy_hash": identity.policy_hash,
+            "blueprint_hash": identity.blueprint_hash,
+            "replay_key": identity.replay_key,
+        },
+    )
+    _emit_chain("l3_bypass_receipt.json", _l3_bypass_payload)
+    _emit_chain("c0_bypass_receipt.json", c0_receipt.to_dict())
+    _emit_chain(
+        "prompt_assembly_bypass_receipt.json",
+        build_prompt_assembly_bypass_receipt(
+            run_id=run_id,
+            request_id=request_id,
+            trace_root=trace_root,
+            route_contract_id=route_contract_id,
+            route_id=effective_route_id,
+            prompt_assembly_bypass_reason="NO_MODEL_EXECUTION_REQUIRED",
+        ).to_dict(),
+    )
+
+    gate_bundle = RuntimeGateVerdictBundle(
+        d1_outcome=GateOutcome.MISS,
+        d2_outcome=GateOutcome.MISS,
+        veto_outcome=VetoOutcome.NOT_INVOKED,
+        reason_codes=("r4_single_action", "no_cache_reuse"),
+    )
+    _emit_chain("runtime_gate_verdict_bundle.json", gate_bundle.to_dict())
+
+    safe_reuse = SafeReuseDecision(
+        allow=False,
+        reason_code="NOT_APPLICABLE",
+        dense_candidate_produced=False,
+        veto_invoked=False,
+        veto_outcome=VetoOutcome.NOT_INVOKED,
+        d2_similarity=0.0,
+        upstream_gate_verdict_ref=artifact_hashes["runtime_gate_verdict_bundle.json"],
+        evidence_refs=("r4_single_action", "no_cache_reuse"),
+    )
+    _emit_chain("semantic_cache_safe_reuse_decision.json", safe_reuse.to_dict())
+
+    _emit_chain("terminal_ret_packet.json", _terminal_payload)
+    _exit_review_payload["l5_certification_refs"] = [_l5_cert_ref]
+    _emit_chain("exit_review_packet.json", _exit_review_payload)
+    _emit_chain("x3_disposition_receipt.json", _x3_payload)
+
     _exhaust_payload = {
         "run_id": run_id,
         "request_id": request_id,
@@ -1318,14 +1408,9 @@ def run_integrated_single_action_spine(
         "sealed_at_utc": _utc_now_iso(),
         "runtime_mode": "fixture" if not l2_fault else "fault",
         "synthetic_trace_detected": False,
+        "l5_certification_refs": [_l5_cert_ref],
     }
-    _exhaust_envelope = {
-        "schema_version": "runtime_exhaust_bundle.v1",
-        **_l7_compat_alias_fields(),
-        "artifact_hash": _hash_payload(_exhaust_payload),
-        "payload": _exhaust_payload,
-    }
-    _write_json(artifact_dir / "runtime_exhaust_bundle.json", _exhaust_envelope)
+    _emit_chain("runtime_exhaust_bundle.json", _exhaust_payload)
 
     _trace_payload = {
         "run_id": run_id,
@@ -1338,59 +1423,87 @@ def run_integrated_single_action_spine(
         "synthetic_trace_detected": False,
         "l4_writes_observed": 0,
     }
-    _trace_envelope = {
-        "schema_version": "runtime_trace_snapshot.v1",
-        **_l7_compat_alias_fields(),
-        "artifact_hash": _hash_payload(_trace_payload),
-        "payload": _trace_payload,
-    }
-    _write_json(artifact_dir / "runtime_trace_snapshot.json", _trace_envelope)
+    _emit_chain("runtime_trace_snapshot.json", _trace_payload)
 
     _how_trace = _build_how_trace(artifact_dir, chain_kind=CHAIN_KIND)
     _how_trace_doc = dict(_how_trace.to_dict())
     _how_trace_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
-    _write_json(artifact_dir / "agentic_core_how_trace.json", _how_trace_doc)
+    _emit_chain("agentic_core_how_trace.json", _how_trace_doc)
 
     _rfc = _build_rfc(artifact_dir, chain_kind=CHAIN_KIND, write=False)
     _rfc_doc = dict(_rfc["payload"])
     _rfc_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
-    _write_json(artifact_dir / "agentic_core_l7_route_family_coverage.json", _rfc_doc)
+    _emit_chain("agentic_core_l7_route_family_coverage.json", _rfc_doc)
+
+    manifest_payload = {
+        "invocation_id": run_id,
+        "producer_component": _PRODUCER_COMPONENT,
+        "entry_point": f"{_PRODUCER_COMPONENT}.{_PRODUCER_FUNCTION}",
+        "integrated_runtime_entrypoint_used": True,
+        "chain_kind": CHAIN_KIND,
+        "artifact_filenames": list(artifact_hashes.keys()) + [
+            "integrated_runtime_artifact_manifest.json",
+            "no_harness_stamp_receipt.json",
+            "agentic_core_spine_proof.json",
+        ],
+        "how_trace_ref": "artifact://agentic_core_how_trace.json",
+        "how_trace_sha256": artifact_hashes["agentic_core_how_trace.json"],
+        "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
+        "l7_route_family_coverage_sha256": artifact_hashes[
+            "agentic_core_l7_route_family_coverage.json"
+        ],
+        "artifact_hashes": dict(artifact_hashes),
+        "chain_linkage": [
+            {"filename": fn, "upstream": (up or "")} for fn, up in W2_CHAIN_LINKAGE
+        ],
+        "x3_disposition": x3,
+        "cache_hit": False,
+        "safe_reuse_allow": False,
+        "veto_stage_actual": "",
+        "veto_stage_actual_names": [],
+        "veto_stage_expected": "LLMJudgeVeto",
+        "veto_stage_match_status": "FAIL_MISMATCH",
+        "deterministic_proof_stage_used": False,
+        "proof_only_stage_names": [],
+        "primary_veto_mode": "",
+        "veto_provider": "",
+        "veto_model_id": "",
+        "veto_rubric_path": "",
+        "veto_rubric_hash": "",
+        "veto_timeout_ms": 0,
+        "llm_judge_invocation_count": 0,
+        "veto_counters": {
+            "unsafe_reuse_allowed_count": 0,
+            "safe_reuse_blocked_count": 0,
+            "hard_negative_allowed_count": 0,
+            "unknown_error_timeout_parse_fail_block_count": 0,
+            "legacy_unsafe_fp_count": 0,
+            "legacy_safe_positive_block_count": 0,
+        },
+    }
+    _emit_chain("integrated_runtime_artifact_manifest.json", manifest_payload)
+
+    nh_payload = {
+        "invocation_id": run_id,
+        "all_artifacts_stamped_by_production": True,
+        "producer_component": _PRODUCER_COMPONENT,
+        "harness_check": "passed_self_attestation",
+        "attested_filenames": list(artifact_hashes.keys()),
+    }
+    _emit_chain("no_harness_stamp_receipt.json", nh_payload)
 
     _spine = _build_spine_proof(
         artifact_dir=artifact_dir,
-        artifact_hashes={"identity_receipt.json": _sha256_file(artifact_dir / _IDENTITY_RECEIPT_FILENAME)},
+        artifact_hashes=artifact_hashes,
         identity_envelope_payload=identity.to_dict(),
         started_at_utc=started_at,
         finished_at_utc=_utc_now_iso(),
         exit_code=0,
+        chain_kind=CHAIN_KIND,
     )
     _spine_doc = dict(_spine)
     _spine_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
-    _write_json(artifact_dir / "agentic_core_spine_proof.json", _spine_doc)
-
-    # Update manifest with L7 refs
-    _write_json(
-        artifact_dir / "integrated_runtime_artifact_manifest.json",
-        {
-            "invocation_id": run_id,
-            "producer_component": _PRODUCER_COMPONENT,
-            "entry_point": f"{_PRODUCER_COMPONENT}.{_PRODUCER_FUNCTION}",
-            "integrated_runtime_entrypoint_used": True,
-            "chain_kind": CHAIN_KIND,
-            "artifact_filenames": [
-                "agentic_core_how_trace.json",
-                "agentic_core_l7_route_family_coverage.json",
-                "agentic_core_spine_proof.json",
-                "integrated_runtime_artifact_manifest.json",
-            ],
-            "how_trace_ref": "artifact://agentic_core_how_trace.json",
-            "how_trace_sha256": _sha256_file(artifact_dir / "agentic_core_how_trace.json") or "",
-            "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
-            "l7_route_family_coverage_sha256": _sha256_file(artifact_dir / "agentic_core_l7_route_family_coverage.json") or "",
-            "artifact_hashes": {},
-            "chain_linkage": [],
-        },
-    )
+    _emit_chain("agentic_core_spine_proof.json", _spine_doc)
 
     return SingleActionSpineRunResult(
         run_id=run_id,
