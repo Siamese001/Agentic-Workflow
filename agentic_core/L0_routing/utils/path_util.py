@@ -97,7 +97,8 @@ _emit_links_execution_to_snapshot("p4", "path_util", "exec_snapshot_link")
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, PROJECT_ROOT_MARKERS
+from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_MARKERS
+from agentic_core.utils.fs_util import iter_scanned_files
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -238,11 +239,7 @@ def validate_no_duplicate_prefix(filename: str, prefix: str) -> bool:
 
 def get_python_files(directory: Path, *, exclude_dirs: frozenset[str] | None = None) -> Iterator[Path]:
     """Yield all Python files in a directory, excluding specified directories."""
-    if exclude_dirs is None:
-        exclude_dirs = GLOBAL_EXCLUDED_DIRS
-    for item in directory.rglob("*.py"):
-        if not any(part in exclude_dirs for part in item.parts):
-            yield item
+    yield from iter_scanned_files(directory, suffixes=(".py",), exclude_dirs=exclude_dirs)
 
 
 def is_path_allowed(path: str | Path, allowed_dirs: frozenset[str]) -> bool:

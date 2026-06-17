@@ -40,3 +40,34 @@ def test_get_python_files_fast_edge_case():
     with tempfile.TemporaryDirectory() as tmpdir:
         files = list(fs_util.get_python_files_fast(Path(tmpdir), exclude_dirs=[]))
         assert len(files) == 0
+
+
+def test_should_skip_scan_path_filters_junk_trees(tmp_path):
+    """Shared scan helper must exclude cache, temp, and egg-info trees."""
+    from agentic_core.utils.fs_util import should_skip_scan_path
+
+    assert should_skip_scan_path(tmp_path / ".cache" / "x.py") is True
+    assert should_skip_scan_path(tmp_path / "tmp_work" / "x.py") is True
+    assert should_skip_scan_path(tmp_path / "_temp_build" / "x.py") is True
+    assert should_skip_scan_path(tmp_path / "package.egg-info" / "x.py") is True
+    assert should_skip_scan_path(Path("docs/archive/windsurf/legacy-tree/file.py")) is True
+    assert should_skip_scan_path(Path("agentic_core/cache/cache_loader.py")) is False
+
+
+def test_iter_scanned_files_prunes_junk_dirs(tmp_path):
+    """Shared scanner walk helper must only yield real source files."""
+    from agentic_core.utils.fs_util import iter_scanned_files
+
+    good = tmp_path / "src" / "good.py"
+    bad_cache = tmp_path / ".cache" / "bad.py"
+    bad_tmp = tmp_path / "tmp_run" / "bad.py"
+    good.parent.mkdir(parents=True)
+    bad_cache.parent.mkdir(parents=True)
+    bad_tmp.parent.mkdir(parents=True)
+    good.write_text("print('ok')", encoding="utf-8")
+    bad_cache.write_text("print('no')", encoding="utf-8")
+    bad_tmp.write_text("print('no')", encoding="utf-8")
+
+    files = list(iter_scanned_files(tmp_path, suffixes=(".py",), exclude_dirs=frozenset({".cache", "tmp_run"})))
+
+    assert files == [good]

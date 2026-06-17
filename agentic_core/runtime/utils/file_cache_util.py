@@ -72,13 +72,12 @@ _emit_links_execution_to_snapshot("p4", "file_cache_util", "exec_snapshot_link")
 
 "\nFileCache: Singleton-based file discovery cache for reducing I/O overhead.\n\nThis module provides a centralized, cached file discovery mechanism to eliminate\nredundant rglob/glob calls across the codebase. All agents should use this cache\ninstead of direct path.rglob() calls.\n\nOpportunity #3: rglob Scan Proliferation\n- Consolidates 100+ redundant rglob calls into single cached SSOT\n- Lazy loading: only scans disk on first request\n- Built-in filtering for *.py and *.md extensions\n- Automatic exclusion of .git, __pycache__, .sovereign_healing_backup\n- Invalidation method for healer agents that modify files\n- Uses os.walk with directory pruning for performance (not rglob)\n\nUsage:\n\n    cache = FileCache.get_instance()\n    all_py_files = cache.get_files_by_extension('.py')\n    all_files = cache.get_all_files()\n\n    # After file modifications (healers):\n    cache.invalidate()\n"
 import logging
-import os
 import threading
 from pathlib import Path
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.utils.fs_util import SCAN_EXCLUDED_DIRS, iter_scanned_files
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -171,7 +170,7 @@ class FileCache:
 
     _instance: FileCache | None = None
     _lock: threading.Lock = threading.Lock()
-    EXCLUDED_DIRS: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS
+    EXCLUDED_DIRS: frozenset[str] = SCAN_EXCLUDED_DIRS
 
     def __init__(self, project_root: Path | None = None):
         """
@@ -241,16 +240,13 @@ class FileCache:
         self._scan_count += 1
         new_files: dict[str, list[Path]] = {"all": [], "python": [], "markdown": []}
         try:
-            for root, dirs, files in os.walk(self._project_root):
-                dirs[:] = [d for d in dirs if d not in self.EXCLUDED_DIRS and (not d.endswith(".egg-info"))]
-                for file in files:
-                    file_path = Path(root) / file
-                    new_files["all"].append(file_path)
-                    suffix = file_path.suffix.lower()
-                    if suffix == ".py" or suffix == ".pyi":
-                        new_files["python"].append(file_path)
-                    elif suffix in {".md", ".markdown"}:
-                        new_files["markdown"].append(file_path)
+            for file_path in iter_scanned_files(self._project_root, exclude_dirs=self.EXCLUDED_DIRS):
+                new_files["all"].append(file_path)
+                suffix = file_path.suffix.lower()
+                if suffix in {".py", ".pyi"}:
+                    new_files["python"].append(file_path)
+                elif suffix in {".md", ".markdown"}:
+                    new_files["markdown"].append(file_path)
         except PermissionError as e:  # guardian: allow-log-and-swallow -- permission denied during scan: non-fatal, partial file cache produced
             Logger.warning(f"[FileCache] Permission error during scan: {e}")
         except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
