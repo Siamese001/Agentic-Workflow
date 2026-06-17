@@ -3,13 +3,13 @@
 **Status**: ACCEPTED  
 **Date**: 2026-04-07  
 **Phase**: Wave 2 Phase 2.7 — MCP Config Simplification  
-**Deciders**: SVP Engineering (Cursor Agent)
+**Deciders**: SVP Engineering (Codex)
 
 ---
 
 ## Context
 
-Three scripts existed for converting `config/mcp_servers.yaml` to the Windsurf global
+Three scripts existed for converting `config/mcp_servers.yaml` to the legacy editor global
 `mcp_config.json` format:
 
 | Script | Location | Status |
@@ -52,6 +52,6 @@ Archive `expand_mcp_config.py` and `yaml_to_json_config.py` to `tools/archive/wi
 
 ## Enforcement
 
-- `.windsurf/rules/mcp-config-ssot.md` — references only `sync_yaml_to_global.py`
+- `.claude/rules/mcp-config-ssot.md` — references only `sync_yaml_to_global.py`
 - `docs/guides/MCP_Registry.md` — documents the sync workflow
 - Post-commit hook: `python tools/adg/sync_yaml_to_global.py` (triggered on `config/mcp_servers.yaml` commits)

@@ -1,6 +1,6 @@
-# Cursor plans directory
+# legacy editor plans directory
 
-Active Cursor work should normally avoid plan sprawl.
+Active legacy editor work should normally avoid plan sprawl.
 
 Use a plan file only when the task truly needs multi-step design or audit work. For implementation work, prefer one runtime seam, exact commands, and proof status.
 

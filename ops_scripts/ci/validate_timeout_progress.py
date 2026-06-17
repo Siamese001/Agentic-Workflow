@@ -1,6 +1,6 @@
 """Timeout + Progress Compliance Validator.
 
-Implements Step 6 of `.cursor/workflows/timeout-progress-enforcement.md`
+Implements Step 6 of `docs/archive/windsurf/legacy-tree/workflows/timeout-progress-enforcement.md`
 by delegating to the two existing checkers:
 
   §14 subprocess timeout  → ops_scripts/ci/check_terminal_cleanup.py

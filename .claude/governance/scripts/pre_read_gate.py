@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-pre_read_gate.py — Cursor pre_read_code hard gate.
+pre_read_gate.py — legacy editor pre_read_code hard gate.
 
 Reads JSON payload from stdin. Payload fields:
-  tool_info.file_path        — path Cursor Agent is about to read
+  tool_info.file_path        — path Codex is about to read
 
 Behavior (FAIL-CLOSED on explicit violations, FAIL-OPEN on parse errors):
   - Block reads of paths outside the repo root (with narrow exceptions for
-    docs/cursor mirror, Cursor home config, user tmp screenshots).
+    docs/cursor mirror, legacy editor home config, user tmp screenshots).
   - Block reads of sensitive filenames (.env, id_rsa, credentials*, etc.)
     and sensitive suffixes (.pem, .key, .kdbx, etc.), with .env.example
     / .env.template / .env.sample whitelisted.
@@ -43,15 +43,15 @@ AUDIT_LOG = AUDIT_DIR / "secret_scan.jsonl"
 CURSOR_HOME_SEGMENT = "." + "cursor"
 
 # Paths outside the repo that are explicitly allowed for read
-# (documented Cursor conventions — see docs/cursor/*.md and agent screenshots)
+# (documented legacy editor conventions — see docs/cursor/*.md and agent screenshots)
 _ALLOWED_OUTSIDE_REPO = (
-    # Cursor docs mirror and cache
+    # legacy editor docs mirror and cache
     "docs/cursor",
-    # User screenshot temp paths — documented behavior in Cursor Agent
+    # User screenshot temp paths — documented behavior in Codex
     "/Temp/TemporaryItems/",
     "\\Temp\\TemporaryItems\\",
     "/var/folders/",
-    # Cursor user-home config (read-only probes)
+    # legacy editor user-home config (read-only probes)
     f"{CURSOR_HOME_SEGMENT}/cursor/",
     f"\\{CURSOR_HOME_SEGMENT}\\cursor\\",
 )

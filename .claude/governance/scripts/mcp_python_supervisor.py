@@ -3,7 +3,7 @@
 Closes the remediation half of `docs/reports/plans/
 rca-otel-mcp-transport-closed-2026-04-23.md`. The companion heartbeat
 probe (`mcp_python_heartbeat.py`) *detects* dead servers; this script
-*respawns* them using the argv and env declared in `.cursor/mcp.json`.
+*respawns* them using the argv and env declared in `.mcp.json`.
 
 Design invariants
 -----------------
@@ -14,7 +14,7 @@ Design invariants
 3. **Debounced.** Tracks last-spawn timestamp per server in
    ``artifacts/mcp_supervisor/state.json``; refuses to respawn the same
    server more often than ``--min-interval`` seconds (default 30s).
-4. **Never fights Cursor.** When Cursor respawns a server itself, the
+4. **Never fights the host.** When the host respawns a server itself, the
    supervisor sees it alive on the next tick and does nothing.
 5. **No PowerShell.** All subprocess calls use ``shell=False`` + explicit
    ``timeout=`` per constitutional §0/§14.
@@ -167,6 +167,7 @@ def _spawn(server_id: str, spec: dict[str, Any], dry_run: bool) -> dict[str, Any
             kwargs["creationflags"] = 0x00000008 | 0x00000200
         else:
             kwargs["start_new_session"] = True
+        # guardian: allow-popen-leak -- deliberate detached MCP server process; supervisor must not reap it.
         proc = subprocess.Popen(argv, **kwargs)  # noqa: S603  # argv is config-sourced, shell=False
         return {"server_id": server_id, "argv": argv, "pid": proc.pid, "status": "spawned"}
     except (OSError, subprocess.SubprocessError) as exc:

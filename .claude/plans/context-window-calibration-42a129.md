@@ -1,7 +1,7 @@
 # Context-Window Calibration & Briefing SSOT Hardening
 
 **Slug:** `context-window-calibration-42a129`  
-**Path:** `.cursor/plans/context-window-calibration-42a129.md`  
+**Path:** `.claude/plans/context-window-calibration-42a129.md`  
 **Status:** Completed  
 **Last updated:** 2026-05-27
 

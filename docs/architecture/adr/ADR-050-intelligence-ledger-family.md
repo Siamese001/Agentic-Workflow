@@ -2,11 +2,11 @@
 
 - **Status**: Accepted
 - **Decision Date**: 2026-04-24
-- **Deciders**: Cursor Agent + operator
+- **Deciders**: Codex + operator
 - **Impact Layers**: L6 (Observability), L0 (Routing — consulters surface in prompt context)
 - **Supersedes**: None
 - **Related**: ADR-023 (Runtime HITL — distinct from harness-side Author-Gate), ADR-031 (Priority scoring operational signals), ADR-019 (ADG materialized views)
-- **Plan**: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`
+- **Plan**: `.claude/plans/intelligence-ledgers-ten-a7c3e2.md`
 
 ## Context
 
@@ -41,7 +41,7 @@ and registered in `tools/ledgers/schema_registry.py`. Each ledger has:
 - A **per-ledger schema extension** in `.windsurf/schemas/<name>_ledger.schema.sql`
   that documents its `prediction_json`, `outcome_json`, and `score_band` taxonomy.
 - A **writer hook** that appends rows (typically an existing post-hook, extended).
-- A **consulting skill** at `.windsurf/skills/ledger-consulter-<name>/SKILL.md` invoked
+- A **consulting skill** at `.claude/skills/ledger-consulter-<name>/SKILL.md` invoked
   before making a decision of that class.
 - A **weekly calibration entry** in `ops_scripts/calibration/ledger_weekly_report.py`
   emitting a unified report to `docs/reports/calibration/<YYYY-Www>.md`.
@@ -90,7 +90,7 @@ transports.
 ### Positive
 
 - Every major decision class gets an empirical feedback loop.
-- Cursor Agent queries precedent via consulting skills — same proven pattern as
+- Codex queries precedent via consulting skills — same proven pattern as
   `refactor-decision-memory`, now generalized.
 - Unified weekly report centralizes drift signals in one ≤6KB Markdown file.
 - Sunset criteria prevent ledger sprawl.
@@ -116,13 +116,13 @@ retired when ≥8/10 ledgers have sunset — at which point the family returns t
 
 ## References
 
-- Plan: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`
+- Plan: `.claude/plans/intelligence-ledgers-ten-a7c3e2.md`
 - Base DDL: `.windsurf/schemas/ledger_base.schema.sql`
 - Registry: `tools/ledgers/schema_registry.py`
 - Writer: `tools/ledgers/writer.py`
 - Consulter: `tools/ledgers/consulter.py`
-- Base skill: `.windsurf/skills/ledger-consulter/SKILL.md`
+- Base skill: `.claude/skills/ledger-consulter/SKILL.md`
 - CI gate: `ops_scripts/ci/check_ledger_writer_contract.py`
 - Weekly report: `ops_scripts/calibration/ledger_weekly_report.py`
 - Precedent for this pattern: `.windsurf/schemas/decision_ledger.schema.sql`,
-  `.windsurf/skills/refactor-decision-memory/SKILL.md`
+  `.claude/skills/refactor-decision-memory/SKILL.md`

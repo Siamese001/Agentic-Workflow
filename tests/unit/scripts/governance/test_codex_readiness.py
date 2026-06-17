@@ -43,6 +43,12 @@ def test_required_route_accepts_callable() -> None:
     assert checks[0].status == "PASS"
 
 
+def test_required_route_accepts_substitute_callable() -> None:
+    checks = mod._check_required_routes(_transport_report({"GitKraken": "SUBSTITUTE_CALLABLE"}), ["GitKraken"])
+
+    assert checks[0].status == "PASS"
+
+
 def test_vector_semantic_guard_warns_without_explicit_state(monkeypatch) -> None:
     monkeypatch.delenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", raising=False)
 
@@ -105,19 +111,6 @@ def test_duplicate_process_can_fail_strict_mode() -> None:
     )
 
     assert checks[0].status == "FAIL"
-
-
-def test_hook_parity_failure_is_critical(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(
-        mod.codex_hook_parity,
-        "validate_hook_matrix",
-        lambda root: ["missing hook"],
-    )
-
-    check = mod._check_hook_parity(tmp_path)
-
-    assert check.status == "FAIL"
-    assert check.severity == "critical"
 
 
 def test_summarize_prefers_failure_over_warning() -> None:

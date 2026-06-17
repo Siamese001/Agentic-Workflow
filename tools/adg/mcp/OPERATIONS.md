@@ -31,7 +31,7 @@ Two distinct restart types exist. Choosing the wrong one wastes time.
 
 | Change made | Action required | Why |
 |---|---|---|
-| Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Toggle adg_sqlite OFF then ON** in Windsurf MCP Settings | Windsurf kills and respawns the subprocess, loading fresh `.py` files |
+| Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Toggle adg_sqlite OFF then ON** in legacy editor MCP Settings | legacy editor kills and respawns the subprocess, loading fresh `.py` files |
 | Edited `.mcp.json` (command, args, **env**) | **Restart the MCP client session** | MCP clients read subprocess config at startup; per-server toggles can reuse a stale command. This includes `ADG_REDIS_URL` changes. |
 | New SQLite snapshot available (`adg_indexed_*.sqlite`) | Call **`adg_reload`** MCP tool | Data-only reload; does not restart the process or reload code |
 
@@ -78,7 +78,7 @@ Before using `grep_search` as a fallback for any graph query:
 
 ## ADG generation lock-release workflow
 
-Use this sequence when the ADG needs full regeneration while Windsurf is running:
+Use this sequence when the ADG needs full regeneration while legacy editor is running:
 
 ```
 1. adg_close_connections      # releases SQLite file lock; returns closed=true

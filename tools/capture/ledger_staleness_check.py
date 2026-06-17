@@ -6,7 +6,7 @@ documented in docs/reports/rcas/rca-author-gate-capture-outage-20260427-a7c3b2.m
 
 Reads the most recent ``created_at`` from the decision ledger; exits 2 (BLOCK)
 when the newest row is older than ``--max-age-hours`` (default 24). The exit
-code matches the Windsurf pre-hook convention: 2 = block, 0 = allow.
+code matches the legacy editor pre-hook convention: 2 = block, 0 = allow.
 
 Invocation:
     python tools/capture/ledger_staleness_check.py
@@ -50,7 +50,7 @@ _REMEDIATION = """
 Remediation:
   1. Drain any pending markers:   python tools/capture/queue_to_ledger.py
   2. Re-check ledger age:          python tools/capture/ledger_staleness_check.py
-  3. If step 1 yields zero rows:   investigate Windsurf hook health
+  3. If step 1 yields zero rows:   investigate legacy editor hook health
      - Check:    artifacts/governance/post_agent_heartbeat.jsonl (tail)
      - Reference: docs/reports/rcas/rca-author-gate-capture-outage-20260427-a7c3b2.md
   4. Confirm pipeline end-to-end:  python tools/capture/append_marker.py --marker "DECISION_CAPTURED: type=test_strategy, repo_area=diagnostic, selected=manual-probe, outcome=executed, principle=test, precedent=none"
@@ -187,7 +187,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if report["status"] in ("ledger_missing",):
         return 3
-    # stale or ledger_empty → BLOCK (exit 2 matches Windsurf pre-hook convention)
+    # stale or ledger_empty → BLOCK (exit 2 matches legacy editor pre-hook convention)
     return 2
 
 

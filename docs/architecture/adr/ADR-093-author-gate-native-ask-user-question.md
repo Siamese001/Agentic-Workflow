@@ -7,7 +7,7 @@
 
 ## Context
 
-The Author-Gate developer-loop HITL was built when the agent harness (Cursor/legacy IDE era) had **no
+The Author-Gate developer-loop HITL was built when the agent harness (legacy editor/legacy IDE era) had **no
 native structured-choice tool**. To make the model "stop and ask before an ambiguous edit," the repo
 hand-built a pipeline: a packet-builder skill → ui-renderer skill → `AUTHOR_GATE_PACKET:` marker →
 `DECISION_CAPTURED:` marker → SQLite decision ledger → Notion mirror → an append-only queue with

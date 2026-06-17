@@ -1,6 +1,6 @@
 """post_agent_scope_drift_detector.py — files-touched vs. plan-scope audit.
 
-Scans the Cursor Agent response for file-write invocations (`write_to_file`,
+Scans the Codex response for file-write invocations (`write_to_file`,
 `edit`, `multi_edit`, `edit_notebook`, `edit_file`) and cross-checks the
 target paths against the active plan's `## Phase-Level Summary · Scope
 (files)` column. Any write to a file NOT in scope is logged as drift.

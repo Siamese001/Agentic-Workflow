@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-04-30
-**Plan**: `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.4)
+**Plan**: `.claude/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.4)
 **Pairs with**: ADR-074 (Runtime Bucket as OTel View), ADR-078 (apps_* Spine Delegation)
 **Pilot consumer**: `agentic_core/L3_orchestration/execution_orchestrator.py::ExecutionOrchestrator._populate_d2_cache`
 (W5 P5.3 of the unified plan)
@@ -41,7 +41,7 @@ these two paths:
 
 | Path | When to use | Notes |
 |---|---|---|
-| **`adg_sqlite` MCP tools** (P3.3 surface) | Cross-process consumers, skill harnesses, Cursor Agent authoring, evaluation apps_* | Subject to MCP serialization (§25); use direct SQLite when blocked |
+| **`adg_sqlite` MCP tools** (P3.3 surface) | Cross-process consumers, skill harnesses, Codex authoring, evaluation apps_* | Subject to MCP serialization (§25); use direct SQLite when blocked |
 | **`tools.adg.core.service.ADGService`** (in-process) | Same-process agents that already share the runtime (e.g., L3 orchestrator) | Reuses the singleton SQLite connection + Redis cache; alignment to current `adg_snapshot_id` is automatic |
 
 **Forbidden**:
@@ -172,13 +172,13 @@ shape the graph) is **forbidden** and CI-gated.
 
 ## References
 
-- Plan: `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.4 +
+- Plan: `.claude/plans/adg-three-bucket-unified-c4f8e2.md` (W3 P3.4 +
   W5 P5.3 pilot)
 - Constitutional §22 (graph-layer primary driver), §25 (MCP serialization),
   §28 (SQLite-direct fallback hierarchy)
 - ADR-074 (Runtime Bucket as OTel View)
 - ADR-078 (apps_* Spine Delegation)
-- `.windsurf/rules/adg-canonical-invariants.md` (5 surfaces, 4 archetypes,
+- `.claude/rules/adg-canonical-invariants.md` (5 surfaces, 4 archetypes,
   layer multipliers)
 - `agentic_core/adg/artifact/consumer_mode.py` (mode declaration enforcement)
 - W3 P3.3 surface: `tools/adg/mcp/server.py`, `tools/adg/core/service.py`

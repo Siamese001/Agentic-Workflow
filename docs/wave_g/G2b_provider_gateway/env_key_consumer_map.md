@@ -35,7 +35,7 @@ Every `os.getenv` / `os.environ[...]` read in `agentic_core/`, `apps_*/`, `infra
 | `LLM_GATEWAY_SECRET` | `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py` | internal HMAC for gateway signature check |
 | `AGENTIC_AUTHORITY_SECRET` | `agentic_core/runtime/engine/execution_bound_token.py` | internal authority token signing |
 | `RG_VALIDATION_SECRET` | `apps_rg/validators/validation_gate_validator.py` | internal APP-RG validation signing |
-| `NOTION_TOKEN` | `.windsurf/mcp_config.json` (env block; NOT repo code) | MCP-NOTION (loopback via npx subprocess) |
+| `NOTION_TOKEN` | `.mcp.json` (env block; NOT repo code) | MCP-NOTION (loopback via npx subprocess) |
 
 ## 3. Endpoint / URL (7)
 
@@ -128,9 +128,9 @@ All tunables with 1-file consumer; full list available by scan. Grouped by subsy
 
 | Env key | Consumer(s) | Purpose |
 |---|---|---|
-| `ADG_DIR` | `.windsurf/mcp_config.json` (env block) | ADG artefacts directory |
+| `ADG_DIR` | `.mcp.json` (env block) | ADG artefacts directory |
 | `ADG_REPO_ROOT` | ADG scanner | repo-root override |
-| `AGENTIC_REPO_ROOT` | `.windsurf/mcp_config.json` (bootstrap) | repo root resolution |
+| `AGENTIC_REPO_ROOT` | `.mcp.json` (bootstrap) | repo root resolution |
 | `AGENTIC_CORE_DIR` | 1 | agentic_core path override |
 | `PROJECT_ROOT` | 1 | generic project root |
 | `MEMORY_DB` | 4 files (`tools/memory/*`, `agentic_core/L4_state/enforcement/graph_memory_bridge.py`) | memory SQLite path |
@@ -144,9 +144,9 @@ All tunables with 1-file consumer; full list available by scan. Grouped by subsy
 | `PYTHONPATH` | 1 | process PYTHONPATH override |
 | `SOVEREIGN_ENV` | 1 | deployment-env label |
 
-## 8. MCP-config env keys (propagated by Windsurf)
+## 8. MCP-config env keys (propagated by legacy editor)
 
-These appear only in `.windsurf/mcp_config.json` `env` blocks (not repo code) and are injected into MCP subprocesses at spawn time:
+These appear only in `.mcp.json` `env` blocks (not repo code) and are injected into MCP subprocesses at spawn time:
 
 | Env key | MCP server(s) |
 |---|---|

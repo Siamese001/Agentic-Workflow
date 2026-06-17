@@ -6,8 +6,8 @@
 
 | Editor | Config SSOT | Launcher | Global / runtime config |
 |--------|-------------|----------|-------------------------|
-| **Cursor** | [`.cursor/mcp.json`](../../.cursor/mcp.json) → `"filesystem"` | [`.cursor/scripts/filesystem_mcp_launcher.js`](../../.cursor/scripts/filesystem_mcp_launcher.js) | `~/.cursor/cursor/mcp.json` (sync via [`sync_mcp_config.py`](../../.cursor/scripts/sync_mcp_config.py)) |
-| **Windsurf** | [`.windsurf/mcp_config.json`](../../.windsurf/mcp_config.json) → `"filesystem"` | [`.windsurf/scripts/filesystem_mcp_launcher.js`](../../.windsurf/scripts/filesystem_mcp_launcher.js) | `~/.codeium/windsurf/mcp_config.json` (sync via `post_write_mcp_config_sync.py`) |
+| **legacy editor** | [`.mcp.json`](../../.mcp.json) → `"filesystem"` | [`.cursor/scripts/filesystem_mcp_launcher.js`](../../.cursor/scripts/filesystem_mcp_launcher.js) | `~/.cursor/cursor/mcp.json` (sync via [`sync_mcp_config.py`](../../.cursor/scripts/sync_mcp_config.py)) |
+| **legacy editor** | [`.mcp.json`](../../.mcp.json) → `"filesystem"` | [`.claude/governance/scripts/filesystem_mcp_launcher.js`](../../.claude/governance/scripts/filesystem_mcp_launcher.js) | `~/.codeium/windsurf/mcp_config.json` (sync via `post_write_mcp_config_sync.py`) |
 
 Both configs use the same args shape: `[<editor-launcher>, "${env:AGENTIC_REPO_ROOT}"]`. CI gate: `ops_scripts/ci/check_mcp_config_sovereignty.py`.
 
@@ -15,9 +15,9 @@ Both configs use the same args shape: `[<editor-launcher>, "${env:AGENTIC_REPO_R
 
 ## Normal Start Path
 
-### Cursor
+### legacy editor
 
-Cursor reads project [`.cursor/mcp.json`](../../.cursor/mcp.json) (and may mirror to global) and spawns:
+legacy editor reads project [`.mcp.json`](../../.mcp.json) (and may mirror to global) and spawns:
 
 ```
 node  .cursor/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
@@ -25,12 +25,12 @@ node  .cursor/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
 
 Write gate: [`.cursor/scripts/pre_mcp_gate.py`](../../.cursor/scripts/pre_mcp_gate.py) (`pre_mcp_tool_use`).
 
-### Windsurf
+### legacy editor
 
-Windsurf reads `~/.codeium/windsurf/mcp_config.json` at startup and spawns:
+legacy editor reads `~/.codeium/windsurf/mcp_config.json` at startup and spawns:
 
 ```
-node  .windsurf/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
+node  .claude/governance/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
 ```
 
 The launcher (`filesystem_mcp_launcher.js`) runs at startup and:
@@ -72,7 +72,7 @@ node --version
 # 2. The filesystem server package is globally installed
 npm list -g --depth=0 @modelcontextprotocol/server-filesystem
 
-# 3. The launcher exists in the repo (Cursor path shown; Windsurf: .windsurf/scripts/...)
+# 3. The launcher exists in the repo (legacy editor path shown; legacy editor: .claude/governance/scripts/...)
 Test-Path "$env:AGENTIC_REPO_ROOT\.cursor\scripts\filesystem_mcp_launcher.js"
 ```
 
@@ -87,7 +87,7 @@ Test-Path "$env:AGENTIC_REPO_ROOT\.cursor\scripts\filesystem_mcp_launcher.js"
 #   Allowed directories: [ 'C:\Git\Agentic-Workflow' ]
 # Use Ctrl+C to exit after the banner appears.
 node $env:AGENTIC_REPO_ROOT\.cursor\scripts\filesystem_mcp_launcher.js $env:AGENTIC_REPO_ROOT
-# Windsurf: node $env:AGENTIC_REPO_ROOT\.windsurf\scripts\filesystem_mcp_launcher.js $env:AGENTIC_REPO_ROOT
+# legacy editor: node $env:AGENTIC_REPO_ROOT\.windsurf\scripts\filesystem_mcp_launcher.js $env:AGENTIC_REPO_ROOT
 
 # Check the launcher's dynamic resolution directly
 node -e "
@@ -103,9 +103,9 @@ node -e "
 "
 ```
 
-The Cursor `pre_mcp_gate.py` hook (`.cursor/scripts/pre_mcp_gate.py`, `pre_mcp_tool_use`) probes
+The legacy editor `pre_mcp_gate.py` hook (`.cursor/scripts/pre_mcp_gate.py`, `pre_mcp_tool_use`) probes
 `node --version` and launcher file existence on every filesystem tool call, emitting a descriptive
-`BLOCKED` message to stderr if either check fails. Windsurf uses `.windsurf/scripts/pre_mcp_gate.py`.
+`BLOCKED` message to stderr if either check fails. legacy editor uses `.claude/governance/scripts/pre_mcp_gate.py`.
 
 ---
 
@@ -113,24 +113,24 @@ The Cursor `pre_mcp_gate.py` hook (`.cursor/scripts/pre_mcp_gate.py`, `pre_mcp_t
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| MCP panel shows red / tools unavailable | `node` not in PATH - fnm not activated | Run `fnm use <version>` in the shell that launches Windsurf, or set fnm default version |
+| MCP panel shows red / tools unavailable | `node` not in PATH - fnm not activated | Run `fnm use <version>` in the shell that launches legacy editor, or set fnm default version |
 | MCP panel shows red / tools unavailable | `server-filesystem` not globally installed | `npm install -g @modelcontextprotocol/server-filesystem@2026.1.14` |
 | `[pre_mcp_gate] BLOCKED: Filesystem MCP cannot start` | Gate detected node or launcher missing | Follow the check named in stderr |
 | `[filesystem_mcp_launcher] FATAL: server-filesystem not found` | Package uninstalled or wrong Node version active | Re-install under active node version; see Package Upgrade |
 | `[filesystem_mcp_launcher] Startup timeout after 15000 ms ...` | Child process hung before readiness banner or stdout/stderr wiring is broken | Run the manual launcher test; inspect stderr; verify the active Node install and global package |
-| `write_file` / `edit_file` / `move_file` blocked | Correct behavior - gate enforces native write tools | Use `write_to_file`, `edit`, or `multi_edit` native Cursor Agent tools instead |
-| All filesystem reads fail after Windsurf update | Windsurf may have changed MCP spawn mechanism | Check Windsurf changelog; verify `node` resolves correctly; re-run manual launcher test |
+| `write_file` / `edit_file` / `move_file` blocked | Correct behavior - gate enforces native write tools | Use `write_to_file`, `edit`, or `multi_edit` native Codex tools instead |
+| All filesystem reads fail after legacy editor update | legacy editor may have changed MCP spawn mechanism | Check legacy editor changelog; verify `node` resolves correctly; re-run manual launcher test |
 
 ---
 
 ## Exact Restart Procedure
 
 ```
-1. Close Windsurf.
+1. Close legacy editor.
 2. Verify prerequisites (see Prerequisites section above).
-3. Open Windsurf - MCP starts automatically from global config.
+3. Open legacy editor - MCP starts automatically from global config.
 4. If MCP panel still shows red: click the refresh/reconnect button in the MCP panel.
-5. If still red: check Windsurf's MCP log output for the launcher FATAL or startup-timeout message.
+5. If still red: check legacy editor's MCP log output for the launcher FATAL or startup-timeout message.
 ```
 
 ---
@@ -152,7 +152,7 @@ When upgrading Node.js via fnm (for example v24 -> v26):
 4. No changes needed to mcp_config.json or pre_mcp_gate.py - the launcher resolves
    the server path dynamically from the active Node version's npm prefix.
 
-5. Restart Windsurf.
+5. Restart legacy editor.
 ```
 
 ---
@@ -169,14 +169,14 @@ When upgrading to a newer `@modelcontextprotocol/server-filesystem` release:
 3. No changes needed to mcp_config.json or pre_mcp_gate.py - the launcher resolves
    the server script from the global prefix dynamically.
 
-4. Update the `_startup` comment in `.cursor/mcp.json` and `.windsurf/mcp_config.json` if needed.
+4. Update the `_startup` comment in `.mcp.json` and `.mcp.json` if needed.
 
-5. Run `python .cursor/scripts/sync_mcp_config.py` (Cursor) and/or save Windsurf config
+5. Run `python .cursor/scripts/sync_mcp_config.py` (legacy editor) and/or save legacy editor config
    (post_write_mcp_config_sync.py copies to global).
 
 6. Restart the editor.
 
-7. Gate validation (Cursor):
+7. Gate validation (legacy editor):
    echo '{"tool_info":{"mcp_server_name":"filesystem","mcp_tool_name":"read_text_file"}}' |
      python .cursor/scripts/pre_mcp_gate.py
    # Expected: exit 0, no BLOCKED output
@@ -187,7 +187,7 @@ When upgrading to a newer `@modelcontextprotocol/server-filesystem` release:
 ## Write Gate Policy
 
 The `pre_mcp_tool_use` hook blocks these filesystem MCP tools - they bypass the constitutional
-write gates that Cursor Agent's native tools enforce:
+write gates that Codex's native tools enforce:
 
 | Tool | Status | Reason |
 |------|--------|--------|
@@ -196,7 +196,7 @@ write gates that Cursor Agent's native tools enforce:
 | `move_file` | **BLOCKED** | Mutates filesystem (rename/relocate); bypasses gates |
 | All others | Allowed | Read-only or non-mutating operations |
 
-**Correct alternatives**: Use Cursor Agent's native `write_to_file`, `edit`, or `multi_edit` tools -
+**Correct alternatives**: Use Codex's native `write_to_file`, `edit`, or `multi_edit` tools -
 these fire `pre_write_code` -> `pre_write_gate.py` -> constitutional anti-pattern and syntax checks.
 
 ---
@@ -214,11 +214,11 @@ The server is started with exactly one allowed directory: `C:/Git/Agentic-Workfl
 
 ## References
 
-- Config SSOT: `.cursor/mcp.json` (Cursor) and `.windsurf/mcp_config.json` (Windsurf mirror) → key `"filesystem"`
+- Config SSOT: `.mcp.json` (legacy editor) and `.mcp.json` (legacy editor mirror) → key `"filesystem"`
 - Scope gate: `ops_scripts/ci/check_mcp_config_sovereignty.py` (Rule #0, pre-commit T11)
-- Write gate (Cursor): `.cursor/scripts/pre_mcp_gate.py` → `FILESYSTEM_WRITE_TOOLS`, `check_filesystem_startup_gate`, `check_filesystem_write_gate`
-- Write gate (Windsurf): `.windsurf/scripts/pre_mcp_gate.py`
-- Gate tests: `tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py` (archived); Cursor gate covered by sovereignty unit tests
+- Write gate (legacy editor): `.cursor/scripts/pre_mcp_gate.py` → `FILESYSTEM_WRITE_TOOLS`, `check_filesystem_startup_gate`, `check_filesystem_write_gate`
+- Write gate (legacy editor): `.claude/governance/scripts/pre_mcp_gate.py`
+- Gate tests: `tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py` (archived); legacy editor gate covered by sovereignty unit tests
 - Write-gate RCA: `docs/reports/rca/filesystem_mcp_write_gate_bypass_rca.md`
 - MCP Registry: `docs/guides/MCP_Registry.md`
 - ADR-021: `docs/architecture/adr/ADR-021-hooks-mcp-recovery-limitations.md`

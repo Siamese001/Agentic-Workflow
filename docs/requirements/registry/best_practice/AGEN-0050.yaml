@@ -6,7 +6,7 @@ authority_tier: T4_repo_canonical
 source_collection: curated_agent_docs
 normative_scope: repo_internal
 evidence_sources:
-  - path: .windsurf/rules/constitutional.md
+  - path: .claude/rules/constitutional.md
     section: "ADG-First Retrieval-Tool Decision Tree §3.2"
     quote: |
       ADG graph is the primary analysis primitive.

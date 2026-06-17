@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Post-write hook for `.cursor/mcp.json`.
+"""Post-write hook for the repo `.mcp.json`.
 
 Behavior:
-1. Detect whether `.cursor/mcp.json` was just modified.
+1. Detect whether `.mcp.json` was just modified.
 2. Validate strict JSON.
-3. Sync the repo SSOT to `.cursor/mcp.json`.
+3. Refresh the repo MCP Quick Reference if the SSOT changed.
 4. Refresh the repo-root `AGENTS.md` MCP Quick Reference section.
 
-Note: Notion MCP Registry sync removed 2026-05-11 — MCP Registry archived 2026-05-02.
-Filesystem (.cursor/mcp.json) is the SSOT.
+Note: the repo SSOT is `.mcp.json`.
 
 This hook is advisory. It never blocks the write.
 """
@@ -139,12 +138,9 @@ def main() -> int:
     try:
         copied = sync_global_config(data)
         if copied:
-            print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to global config.", flush=True)
+            print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to repo SSOT cache.", flush=True)
         else:
-            print(
-                "[mcp_sync] No-op: repo SSOT and global config are the same file (symlink in place).",
-                flush=True,
-            )
+            print("[mcp_sync] No-op: repo SSOT already current.", flush=True)
     except (OSError, ValueError) as exc:
         print(f"[mcp_sync] WARNING: global sync failed: {exc}", flush=True)
 
@@ -157,7 +153,7 @@ def main() -> int:
         print(f"[mcp_sync] WARNING: AGENTS sync failed: {exc}", flush=True)
 
     # MCP Registry archived 2026-05-02 (notion-integration-consistency-audit-b2c4d8 W2).
-    # Notion sync removed; filesystem (.cursor/mcp.json) is the SSOT.
+    # Notion sync removed; `.mcp.json` is the SSOT.
 
     return 0
 

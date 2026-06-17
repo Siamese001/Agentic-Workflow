@@ -17,7 +17,7 @@ Upgrade the canonical `local-qwen-vllm` stack from **Qwen2.5-32B-Instruct-AWQ** 
 > **Priority:** Parked — execute when scheduled vLLM maintenance or exec-summary regen quality/cost triggers work.  
 > **Notion status:** `Lower Priority`  
 > **Supersedes nothing:** Qwen2.5-32B remains production until W3 proof passes.  
-> **Related:** [qwen-vllm-topology.md](docs/architecture/qwen-vllm-topology.md), [local-llm-wsl2-gpu.mdc](.cursor/rules/local-llm-wsl2-gpu.mdc), [exec-summary-qwen-regen-token-budget-c4e8a1.md](exec-summary-qwen-regen-token-budget-c4e8a1.md) (completed)
+> **Related:** [qwen-vllm-topology.md](docs/architecture/qwen-vllm-topology.md), [local-llm-wsl2-gpu.mdc](.claude/rules/local-llm-wsl2-gpu.mdc), [exec-summary-qwen-regen-token-budget-c4e8a1.md](exec-summary-qwen-regen-token-budget-c4e8a1.md) (completed)
 
 ---
 
@@ -218,7 +218,7 @@ DoD-1: `local-qwen-vllm` serves Qwen3-32B-Instruct-AWQ at `http://localhost:8000
 - Status: TODO
 
 DoD-2: Topology and local-llm rule document Qwen3 args and rollback
-- Evidence: diff in `docs/architecture/qwen-vllm-topology.md`, `.cursor/rules/local-llm-wsl2-gpu.mdc`
+- Evidence: diff in `docs/architecture/qwen-vllm-topology.md`, `.claude/rules/local-llm-wsl2-gpu.mdc`
 - Status: TODO
 
 DoD-3: Targeted pytest slice PASS (no skipped gates)
@@ -247,7 +247,7 @@ DoD-5: Closeout receipt + Notion `Completed`
 ## Marker Quick Reference
 
 ```
-PLAN_CREATED: slug=qwen3-32b-vllm-upgrade-d7a3f1 path=.cursor/plans/qwen3-32b-vllm-upgrade-d7a3f1.md status=Lower Priority
+PLAN_CREATED: slug=qwen3-32b-vllm-upgrade-d7a3f1 path=.claude/plans/qwen3-32b-vllm-upgrade-d7a3f1.md status=Lower Priority
 WAVE_COMPLETE: plan=qwen3-32b-vllm-upgrade-d7a3f1 wave=<N> note="<evidence>"
 PLAN_COMPLETE: plan=qwen3-32b-vllm-upgrade-d7a3f1 note="<outcome>"
 ```

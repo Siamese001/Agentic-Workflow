@@ -60,7 +60,7 @@ When the ESCALATED healing tier routes to a HITL gate (per ADR-F25-int §3.1), t
 - **HITL APPROVE:** the healing attempt may proceed with human-endorsed correction. No escalation to L3 occurs.
 - **HITL DECLINE or unavailable:** the failure becomes unrecoverable under §3.1 item 3. L3 escalation applies.
 
-This ADR does not redefine the HITL gate's input or decision semantics — those remain in `.windsurf/rules/hitl-enforcement.md`.
+This ADR does not redefine the HITL gate's input or decision semantics — those remain in `.claude/rules/hitl-enforcement.md`.
 
 ---
 
@@ -101,7 +101,7 @@ Validation tests are implementation-debt items, not blockers for publishing this
 - `docs/architecture/healing_dispatch_routing_adr.md` — tier decision (invalid_for_normative_use=True by design)
 - `docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md` — retry bounds
 - `docs/architecture/l3_orchestration_charter_adr.md` — L3 charter; §3.4 is the receiving contract
-- `.windsurf/rules/hitl-enforcement.md` — HITL gate semantics
+- `.claude/rules/hitl-enforcement.md` — HITL gate semantics
 - Requirement graph family F07; atom F07.03
 
 ---

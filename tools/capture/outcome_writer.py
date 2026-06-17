@@ -3,7 +3,7 @@
 
 Plan: `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W1.P1.2.
 
-DECISION_OUTCOME marker shape (produced by Cursor Agent at end of an executing turn
+DECISION_OUTCOME marker shape (produced by Codex at end of an executing turn
 or by a Git post-commit trailer parser):
 
     DECISION_OUTCOME: decision_id=dec_xxx, execution_completed=1, tests_passed=1,

@@ -3,8 +3,8 @@
 from apps_lic.reasoning.LICValidationExecutor import (
     LICValidationExecutor,
 )
-from apps_lic.reasoning.ValidatorAgent import (
-    ValidatorAgent,
+from apps_lic.reasoning.MessageComplianceAgent import (
+    MessageComplianceAgent,
 )
 
 
@@ -20,13 +20,13 @@ class TestLICValidationExecutor:
         assert callable(LICValidationExecutor)
 
 
-class TestValidatorAgent:
-    """Test ValidatorAgent."""
+class TestMessageComplianceAgent:
+    """Test MessageComplianceAgent."""
 
     def test_agent_import(self):
-        """Test that ValidatorAgent can be imported."""
-        assert ValidatorAgent is not None
+        """Test that MessageComplianceAgent can be imported."""
+        assert MessageComplianceAgent is not None
 
-    def test_agent_class_exists(self):
-        """Test that ValidatorAgent class exists."""
-        assert callable(ValidatorAgent)
+    def test_agent_aliases_executor(self):
+        """Test that MessageComplianceAgent remains the executor alias."""
+        assert MessageComplianceAgent is LICValidationExecutor

@@ -76,7 +76,7 @@ Module: `agentic_core/L4_state/utils/memory/in_memory_vector_cache.py`.
 
 - **Model**: `BAAI/bge-m3` (dim 1024 per `tools/retrieval/vector_config.py KNOWN_MODEL_DIMS`).
 - **Runtime**: `sentence_transformers.SentenceTransformer` loaded once per process.
-- **Offline by default**: `HF_HUB_OFFLINE=1` enforced via `.windsurf/mcp_config.json` vector_db env block.
+- **Offline by default**: `HF_HUB_OFFLINE=1` enforced via `.mcp.json` vector_db env block.
 - **Fetch gate**: `VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0` (default). When `=1`, enables EGRESS-HF-HUB-01.
 - **Cache**: HuggingFace model cache typically under `~/.cache/huggingface/` (operator-local, not in repo).
 

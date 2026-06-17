@@ -1,8 +1,8 @@
 # Apps Folder Taxonomy — Canonical Spec
 
-> **Status**: Canonical (enforced by CI gate `T7r` + rule `.windsurf/rules/apps-folder-taxonomy.md`)
+> **Status**: Canonical (enforced by CI gate `T7r` + rule `.claude/rules/apps-folder-taxonomy.md`)
 > **ADR**: `docs/architecture/adr/ADR-082-apps-folder-taxonomy.md`
-> **SSOT Plan**: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`
+> **SSOT Plan**: `.claude/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 
 This document is the canonical spec for the nine `apps_*` folders. CI gate T7r scans repo-root `apps_*` trees against these rules; the always-on rule loads this spec on any `apps_*` edit.
 
@@ -66,7 +66,7 @@ Conditionally required:
 
 ## 5. Enforcement
 
-1. **Always-on rule** `.windsurf/rules/apps-folder-taxonomy.md` (trigger=model_decision) loads on any `apps_*` edit.
+1. **Always-on rule** `.claude/rules/apps-folder-taxonomy.md` (trigger=model_decision) loads on any `apps_*` edit.
 2. **CI gate** `ops_scripts/ci/check_apps_folder_taxonomy.py` — pre-commit + CI contract gate `T7r`:
    - `FORBIDDEN_ROOT_FOLDERS` check (scans every `apps_*/` for §3 violations)
    - Mandatory doc-set check (§4)

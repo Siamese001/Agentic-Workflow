@@ -2,7 +2,7 @@
 
 > **Moved from root `AGENTS.md` in W1** (`cursor-governance-two-tier-b4e8f2`) per Option A.  
 > Tier-1 `AGENTS.md` keeps invariants + autogen tables; this file holds procedural detail.  
-> **Edit SSOT for rules:** `.claude/rules/*.mdc` only — Windsurf rules mirror is read-only (see repo `windsurf/rules/README.md`).
+> **Edit SSOT for rules:** `.claude/rules/*.mdc` only — legacy editor rules mirror is read-only (see repo `windsurf/rules/README.md`).
 
 ## Notion — manual MCP use only (no plan-status enforcement)
 
@@ -31,7 +31,7 @@ never enforced, never for plan status. Editing `.mcp.json` still runs
 | Strict sync | `python ops_scripts/ci/check_mcp_sync_integrity.py` |
 | Coverage | `python ops_scripts/ci/check_agents_mcp_coverage.py` |
 | Editor parity | `python ops_scripts/ci/check_mcp_editor_parity.py` |
-| Cursor SSOT check | `python .claude/governance/scripts/sync_mcp_config.py --check` |
+| legacy editor SSOT check | `python .claude/governance/scripts/sync_mcp_config.py --check` |
 
 Regenerate: `python .claude/governance/scripts/sync_mcp_config.py` (refreshes AGENTS autogen blocks + global MCP copy).
 

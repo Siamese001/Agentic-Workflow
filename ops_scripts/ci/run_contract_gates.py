@@ -95,13 +95,13 @@ def validate_mcp_health():
     # deprecated editor mirrors and parity checks. Both mirrors are
     # retired (root .mcp.json is the sole SSOT), so these gates are obsolete and removed.
 
-    # cursor-decommission W7: check_mcp_config_sovereignty enforced a Cursor-era
+    # cursor-decommission W7: check_mcp_config_sovereignty enforced a legacy editor-era
     # filesystem-MCP-args lock against root .mcp.json.
     # and intentionally omits the filesystem MCP (native file tools), so the gate's
     # MISSING_FILESYSTEM premise no longer holds. Retired.
 
     # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
-    # deleted Cursor-era hooks/MCP config; Claude Code uses .claude/settings.json + root .mcp.json).
+    # deleted legacy editor-era hooks/MCP config; Claude Code uses .claude/settings.json + root .mcp.json).
 
     # Gate: every .claude/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
@@ -145,7 +145,7 @@ def main():
     if not validate_mcp_health():
         sys.exit(1)
 
-    # [contract-gates-deband 2026-06-15] Removed Windsurf-era band-aids from the runner:
+    # [contract-gates-deband 2026-06-15] Removed legacy editor-era band-aids from the runner:
     # 0b skill-health loop, 1.1 infra_wiring_scan (ADG v_p0_* views are the canonical
     # structural check), 1.2 executor_theater. (memory: contract-gates-debanding-triage)
     # Gate: ADG graph-layer evidence in refactoring plans (Constitutional §22)
@@ -160,7 +160,7 @@ def main():
         sys.exit(1)
     print("✅ Graph-layer evidence gate passed")
 
-    # [contract-gates-deband 2026-06-15] Removed Windsurf-era ADG-pipeline band-aids from the
+    # [contract-gates-deband 2026-06-15] Removed legacy editor-era ADG-pipeline band-aids from the
     # runner: 1.4 snapshot_has_mvs, 1.5 pipeline_skips, 1.6 severity_band_ssot, 1.7 exclusion_sync.
     # (memory: contract-gates-debanding-triage)
     # Gate: Repository structure policy (config/structure_blueprint/structure_policy.yaml)
@@ -176,7 +176,7 @@ def main():
     print("✅ Structure policy gate passed")
 
     # [contract-gates-deband 2026-06-15] Removed from the runner: 1.9 reference_orphans,
-    # 1.10 judge_calibration (Windsurf-era). (memory: contract-gates-debanding-triage)
+    # 1.10 judge_calibration (legacy editor-era). (memory: contract-gates-debanding-triage)
     # [W1 claude-native-supersession-9d3f7a] Author-Gate harness-HITL CI gates RETIRED.
     # The 9 gates here (ledger schema/SSOT/outcome-coverage/integrity, ask_user_question
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
@@ -247,7 +247,7 @@ def main():
         ),
         # NOTE: check_legacy_tree_config_schema.py is canonical in wiring_gates (§26 label).
         # Removed from assurance_gates 2026-05-05 to eliminate true CI-plane duplication.
-        # See: ops_scripts/ci/run_contract_gates.py wiring_gates entry "§26 Windsurf config schema purity".
+        # See: ops_scripts/ci/run_contract_gates.py wiring_gates entry "§26 legacy editor config schema purity".
         ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
         ("W3 replay determinism proof", "ops_scripts/ci/check_replay_proof.py"),
         ("W4 requirements ↔ ADG crosswalk", "ops_scripts/ci/check_requirements_adg_crosswalk.py"),
@@ -511,8 +511,8 @@ def main():
             "SP2 PII in telemetry sinks",
             "ops_scripts/ci/check_pii_in_telemetry.py",
         ),
-        # -- Cursor Agent violation log freshness backstops (2026-05-05) ---------------
-        # Windsurf post_agent_* hooks write persistent violation logs. These
+        # -- Codex violation log freshness backstops (2026-05-05) ---------------
+        # legacy editor post_agent_* hooks write persistent violation logs. These
         # gates ensure CI surfaces stale unresolved violations — same pattern
         # as check_ask_user_question_packet_freshness.py. Advisory by default.
         #
@@ -714,7 +714,7 @@ def main():
         # Advisory by default; fail-closed via MCP_CONFIG_SCHEMA_FAIL_CLOSED=1.
         # Bypass: MCP_CONFIG_SCHEMA_BYPASS=1.
         (
-            "MCP-SCHEMA Cursor+Windsurf MCP config validation (advisory)",
+            "MCP-SCHEMA legacy editor+legacy editor MCP config validation (advisory)",
             "ops_scripts/ci/check_mcp_config_schema.py --profile all",
         ),
         # NO-CURSOR-REFS — .cursor decommission anti-regression (W7): no tracked
@@ -733,7 +733,7 @@ def main():
         ),
         # MCP-PARITY — canonical fleet parity across editor configs.
         (
-            "MCP-PARITY Cursor vs Windsurf MCP editor parity",
+            "MCP-PARITY legacy editor vs legacy editor MCP editor parity",
             "ops_scripts/ci/check_mcp_editor_parity.py",
         ),
         # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
@@ -770,7 +770,7 @@ def main():
             "ops_scripts/ci/check_hook_consolidation.py",
         ),
         (
-            "MIRROR-H Cursor docs/archive/windsurf/legacy-tree mirror health (advisory)",
+            "MIRROR-H legacy editor docs/archive/windsurf/legacy-tree mirror health (advisory)",
             "ops_scripts/ci/check_cursor_governance_mirror_health.py",
         ),
         (
@@ -1046,14 +1046,14 @@ def main():
         ("S4 unused imports ratchet", "ops_scripts/ci/check_unused_imports_ratchet.py"),
         ("W5 waiver expiry", "ops_scripts/ci/check_waiver_expiry.py"),
         (
-            "§26 Windsurf config schema purity",
+            "§26 legacy editor config schema purity",
             "ops_scripts/ci/check_legacy_tree_config_schema.py",
         ),
         # §31 — SSOT folder routing for NEW Python files. Pre-commit covers
         # commit-time staged-file checks; this aggregator entry ensures CI
         # workflows that stage files (e.g., during release branches or merge
         # queues) also see the gate. Pass-through when no staged additions.
-        # Sibling Windsurf hook: .claude/governance/scripts/pre_write_gate.py.
+        # Sibling legacy editor hook: .claude/governance/scripts/pre_write_gate.py.
         ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
         # T8r — Phase E.1 advisory runtime-certification gate (ADR-080 §11).
         # Reads per-app Phase D cert-decision ledgers, compares latest
@@ -1086,7 +1086,7 @@ def main():
         # AG-DEFER — Deferred-scope plan guard marker parity.
         # Every plan with "do not implement without" prose MUST have a
         # DO_NOT_IMPLEMENT_GUARD: marker so the pre_user_prompt hook can surface
-        # the block to Cursor Agent at every turn. Advisory by default;
+        # the block to Codex at every turn. Advisory by default;
         # fail-closed via DEFERRED_PLAN_GUARD_FAIL_CLOSED=1.
         # RCA: 2026-05-10 notion-test-hardening-deferred-scope-a7b4c9.
         # Bypass: DEFERRED_PLAN_GUARD_BYPASS=1.

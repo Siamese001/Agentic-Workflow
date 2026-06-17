@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-05-25
 PARENT_PLAN: agent-inventory-spine-taxonomy-b4e9f2
 DEFERRED_REGISTER: docs/reports/cursor/agent_inventory_deferred_scope_register_20260525.md
 
-PLAN_CREATED: slug=agent-inventory-deferred-followup-c2a8f1 path=.cursor/plans/agent-inventory-deferred-followup-c2a8f1.md status=Not Started notion_page=36b27693-f55c-81b7-869e-f5c752742ff9
+PLAN_CREATED: slug=agent-inventory-deferred-followup-c2a8f1 path=.claude/plans/agent-inventory-deferred-followup-c2a8f1.md status=Not Started notion_page=36b27693-f55c-81b7-869e-f5c752742ff9
 
 NOTION_PAGE_ID: 36b27693-f55c-81b7-869e-f5c752742ff9
 NOTION_PLAN_URL: https://www.notion.so/agent-inventory-deferred-followup-c2a8f1-36b27693f55c81b7869ef5c752742ff9

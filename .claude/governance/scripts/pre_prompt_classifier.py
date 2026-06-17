@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-pre_prompt_classifier.py — Cursor pre_user_prompt hard gate + context seeder (Phase 1.4).
+pre_prompt_classifier.py — legacy editor pre_user_prompt hard gate + context seeder (Phase 1.4).
 
 Reads JSON payload from stdin. Payload field:
   tool_info.prompt  — the user's prompt text
 
 Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
-tier tag + mandatory requirements to stderr so Cursor Agent sees them (show_output: true).
+tier tag + mandatory requirements to stderr so Codex sees them (show_output: true).
 
 Exits 0 for T0/T1.
 Exits 2 (BLOCK) for T2/T3 when ADG health is red or Redis is down (hard gate).
 Exits 0 for T2/T3 when healthy — but emits MANDATORY structured reasoning requirements
-so Cursor Agent is instructed to call mcp8_create_task before proceeding.
+so Codex is instructed to call mcp8_create_task before proceeding.
 
 Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG/Redis.
 Zero hardcoded paths.
@@ -22,6 +22,7 @@ import os
 import shutil
 import socket
 import sys
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,6 +32,7 @@ repo_root = Path(__file__).resolve().parents[3]
 # Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
+MCP_CONFIG_FINGERPRINT = repo_root / "artifacts" / "governance" / "mcp_config_fingerprint.json"
 
 t3_keywords = {
     "architecture",
@@ -285,8 +287,8 @@ def _detect_semantic_retrieval(prompt: str) -> bool:
     return any(sig in lower for sig in _SEMANTIC_SIGNALS)
 
 
-# Structured reasoning mandate injected into Cursor Agent context for every T2/T3 prompt.
-# show_output: true ensures Cursor Agent sees this output before responding.
+# Structured reasoning mandate injected into Codex context for every T2/T3 prompt.
+# show_output: true ensures Codex sees this output before responding.
 _sr_mandate = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
@@ -342,7 +344,7 @@ _sr_mandate = """
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
   4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
   5. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Cursor Agent reasoning.
+  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Codex reasoning.
   Rule: .claude/rules/plan-first-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
@@ -716,62 +718,52 @@ def check_adg_health_red(repo_root: Path) -> bool:
 
 
 def _check_mcp_config_drift() -> None:
-    """
-    Detect and auto-fix env-block drift between repo MCP config and global Cursor config.
+    """Fingerprint the repo MCP SSOT and refresh the derived cache on change.
 
-    Cursor IDE can overwrite .cursor/mcp.json (e.g. via the MCP
-    settings UI) and silently drop custom env blocks (e.g. NOTION_TOKEN).  This check
-    runs on every pre_user_prompt event, compares env blocks, and re-syncs from the
-    repo SSOT when any server has env in repo but is missing or different in global.
-    Fail-open: any I/O or parse error is silently ignored.
+    This hook no longer tries to reconcile deprecated mirror configs. The repo
+    root `.mcp.json` is the only SSOT; if it changes, the fingerprint artifact
+    is refreshed so downstream checks can invalidate derived state.
     """
     repo_cfg = repo_root / ".mcp.json"
-    global_cfg = repo_cfg
     try:
         repo_data = json.loads(repo_cfg.read_text(encoding="utf-8"))
-        global_data = json.loads(global_cfg.read_text(encoding="utf-8"))
-    except (
-        OSError,
-        json.JSONDecodeError,
-    ):  # guardian: allow-silent-swallow -- MCP config read: non-fatal, check skipped
-        return
-
-    repo_servers = repo_data.get("mcpServers", {})
-    global_servers = global_data.get("mcpServers", {})
-
-    drifted: list[str] = []
-    for name, cfg in repo_servers.items():
-        if not isinstance(cfg, dict):
-            continue
-        repo_env = cfg.get("env")
-        if repo_env is None:
-            continue
-        global_entry = global_servers.get(name, {})
-        global_env = global_entry.get("env") if isinstance(global_entry, dict) else None
-        if global_env != repo_env:
-            drifted.append(name)
-
-    if not drifted:
+        servers = repo_data.get("mcpServers", {})
+        if not isinstance(servers, dict):
+            return
+        current = {
+            "mcpServers_sha256": hashlib.sha256(
+                json.dumps(servers, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            ).hexdigest(),
+            "server_count": len(servers),
+            "captured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+    except (OSError, json.JSONDecodeError, ValueError):
         return
 
     try:
-        global_backup = global_cfg.parent / "mcp_config.backup.json"
-        if global_cfg.exists():
-            shutil.copy2(global_cfg, global_backup)
-        global_cfg.write_text(json.dumps(repo_data, indent=2) + "\n", encoding="utf-8")
-        print(
-            "[pre_prompt_classifier] MCP_CONFIG_DRIFT_FIXED: env drift detected in: "
-            f"{', '.join(drifted)} — global config re-synced from repo SSOT. "
-            "Restart Cursor MCP servers to pick up the new env blocks.",
-            file=sys.stderr,
-        )
-    except (OSError, ValueError) as exc:
-        print(
-            "[pre_prompt_classifier] MCP_CONFIG_DRIFT_DETECTED: env drift in: "
-            f"{', '.join(drifted)} — auto-fix failed ({exc}); run: "
-            "python .claude/governance/scripts/sync_mcp_config.py",
-            file=sys.stderr,
-        )
+        previous = json.loads(MCP_CONFIG_FINGERPRINT.read_text(encoding="utf-8")) if MCP_CONFIG_FINGERPRINT.exists() else None
+    except (OSError, json.JSONDecodeError, ValueError):
+        previous = None
+
+    if isinstance(previous, dict) and previous.get("mcpServers_sha256") == current["mcpServers_sha256"]:
+        return
+
+    try:
+        MCP_CONFIG_FINGERPRINT.parent.mkdir(parents=True, exist_ok=True)
+        MCP_CONFIG_FINGERPRINT.write_text(json.dumps(current, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        if previous is None:
+            print(
+                f"[pre_prompt_classifier] MCP_CONFIG_FINGERPRINT_INITIALIZED: {current['server_count']} servers",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                "[pre_prompt_classifier] MCP_CONFIG_DRIFT_INVALIDATED: repo MCP SSOT changed; "
+                "derived fingerprint refreshed.",
+                file=sys.stderr,
+            )
+    except OSError:
+        pass
 
 
 def main() -> int:
@@ -908,7 +900,7 @@ def main() -> int:
     # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
 
-    # Human diagnostic (exit 0 stderr — not injected into Cursor Agent context).
+    # Human diagnostic (exit 0 stderr — not injected into Codex context).
     # Gate enforces recall via exit 2 in pre_mcp_gate.py.
     if emit_memory_mandate:
         print(_memory_mandate, file=sys.stderr)
@@ -956,8 +948,8 @@ def main() -> int:
                 file=sys.stderr,
             )
 
-        # Infrastructure healthy — inject structured reasoning mandate into Cursor Agent context.
-        # show_output: true in hooks.json ensures Cursor Agent sees this before responding.
+        # Infrastructure healthy — inject structured reasoning mandate into Codex context.
+        # show_output: true in hooks.json ensures Codex sees this before responding.
         mandate = _sr_mandate.format(tier=tier)
         if any(kw in prompt.lower() for kw in notion_keywords):
             mandate = mandate + "\n" + _notion_sr_hint

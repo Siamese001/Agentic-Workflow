@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L1_cognition/reasoning/`, `agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py`, `agentic_core/knowledge/retrieval/`, `agentic_core/knowledge/engine/rag_orchestrator.py`
-**Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W4.1
+**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W4.1
 **Relates-to**: ADR-045 (contextual retrieval), ADR-046 (rerank), ADR-056 (multi-head), ADR-058 (query transforms), ADR-023 (runtime HITL — distinct from this dev-loop pattern)
 
 **Current-state note (2026-06-15):** Implemented by `agentic_core/L1_cognition/reasoning/retrieval_reflexion.py`, `retrieval_grader.py`, and shared reflection types, with retrieval reflexion and router tests.
@@ -31,7 +31,7 @@ This is the published gap closed by **CRAG** (Corrective Retrieval-Augmented Gen
 The repo already has the **upstream parts**: a reflexion engine at L3
 (`reflexion_engine.py`, 91 matches) for orchestration-side reflection, GraphRAG local/global/drift engines for KG hop, ADG SQLite for structural fallback, and (post-ADR-058) query transforms for reformulation. None of these are wired into a retrieval-time loop. The reflexion engine is scoped to *agent task* reflection — not retrieval-evidence reflection.
 
-CRAG's own ablation reports +3–8 % EM and +5–11 % F1 on Knowledge-NQ vs. vanilla RAG, with the largest gains on out-of-distribution queries — exactly the queries Cursor Agent fields when the corpus lags behind a fast-moving codebase.
+CRAG's own ablation reports +3–8 % EM and +5–11 % F1 on Knowledge-NQ vs. vanilla RAG, with the largest gains on out-of-distribution queries — exactly the queries Codex fields when the corpus lags behind a fast-moving codebase.
 
 ## Decision
 
@@ -126,4 +126,4 @@ Rollback: `RETRIEVAL_REFLECTIVE=0` env var disables the loop globally; orchestra
 - Shinn et al., *Reflexion: Language Agents with Verbal Reinforcement Learning* (NeurIPS 2023)
 - In-repo: `agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py`, `agentic_core/knowledge/engine/rag_orchestrator.py`
 - Sibling spec: `docs/reports/plans/reflexion-retriever-binding.md` (W4.2)
-- Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

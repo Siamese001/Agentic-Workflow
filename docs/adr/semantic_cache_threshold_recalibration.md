@@ -112,7 +112,7 @@ An approver must:
 ## References
 
 - Sweep evidence: `artifacts\certification\threshold_sweep_results.json` (SHA-256: `cdac96f24ae01100e0c5d3eb0a581d42be5399a55f2febd834e875215256223b`)
-- W1p3 plan: `.windsurf/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
-- W1p4 plan: `.windsurf/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
+- W1p3 plan: `.claude/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
+- W1p4 plan: `.claude/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
 - Composer: `scripts/compose_semantic_cache_subclaims.py`
 - Threshold SSOT: `agentic_core/L4_state/utils/memory/semantic_cache_manager.py`

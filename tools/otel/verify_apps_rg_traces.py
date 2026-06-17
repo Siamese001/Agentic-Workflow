@@ -63,7 +63,7 @@ def _resolve_store_path(explicit: str | None) -> Path:
         return Path(explicit_dir).expanduser().resolve()
     # Default: derive from this file's repo. Matches `otel_config.py` precedence
     # exactly so the verifier reads the same store the in-process bridge writes.
-    # Intentionally does NOT honor AGENTIC_REPO_ROOT (Windsurf may set it to a
+    # Intentionally does NOT honor AGENTIC_REPO_ROOT (legacy editor may set it to a
     # different clone than the running Python process).
     return (
         Path(__file__).resolve().parents[2]

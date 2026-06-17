@@ -28,7 +28,7 @@ PLAN_SUMMARY = (
     "Human-driven scoring pass for 63 UNSCORED Wave/Phase Convergence rows that no automated "
     "pass could score. Output: worksheet filled by human -> applier script PATCHes Notion. "
     "5 waves by category: graph-edge (4), governance (22), baseline-burndown (8), singleton (22), "
-    "apply (Cursor Agent runs script)."
+    "apply (Codex runs script)."
 )
 
 
@@ -76,7 +76,7 @@ WAVES = [
     (
         "2",
         "Score 22 governance rows (W1.x / W2.x / W2-P1.x)",
-        "Human audits each governance row against .claude/rules/ and .cursor/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
+        "Human audits each governance row against .claude/rules/ and .claude/settings.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
         5000,
         22,
     ),
@@ -97,7 +97,7 @@ WAVES = [
     (
         "5",
         "Apply filled worksheet to Notion",
-        "Cursor Agent runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4. Script PATCHes every row with BAND filled, descopes rows marked DESCOPE, skips rows marked SKIP/empty.",
+        "Codex runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4. Script PATCHes every row with BAND filled, descopes rows marked DESCOPE, skips rows marked SKIP/empty.",
         2000,
         63,
     ),

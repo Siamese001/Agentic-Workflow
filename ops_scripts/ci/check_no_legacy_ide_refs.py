@@ -2,7 +2,7 @@
 """Anti-regression gate: keep the repo-local `.cursor/` tree decommissioned.
 
 Two checks:
-  1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy Cursor tree
+  1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy legacy editor tree
      was relocated to `.claude/` (engine -> .claude/governance/scripts, plans ->
      .claude/plans, state/schemas/templates -> .claude/, rules/skills/commands/agents
      are the .claude SSOT). Historical copies live read-only under docs/archive/cursor/.
@@ -73,7 +73,7 @@ def _tracked_cursor_files() -> list[str]:
     # green on the very commit that removes .cursor (HEAD would still show it).
     out = subprocess.run(
         ["git", "ls-files", ".cursor"],
-        cwd=str(REPO_ROOT), capture_output=True, text=True, check=False,
+        cwd=str(REPO_ROOT), capture_output=True, text=True, check=False, timeout=30,
     )
     return [ln for ln in out.stdout.splitlines() if ln.strip()]
 

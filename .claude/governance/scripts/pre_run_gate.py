@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-pre_run_gate.py — Cursor pre_run_command hard gate (Phase 1.1).
+pre_run_gate.py — legacy editor pre_run_command hard gate (Phase 1.1).
 
 Reads JSON payload from stdin. Blocks (exit 2) on:
   - python -c quote hazards (pwsh tokenizer hangs)
   - Interactive / stdin-blocking commands (pagers, editors, watchers, bare REPLs)
   - Full test-suite run during ADG repair (ADG_REPAIR_ACTIVE env var)
 
-PowerShell ban removed (Windsurf-era legacy): PowerShell is the primary Windows
+PowerShell ban removed (legacy editor-era legacy): PowerShell is the primary Windows
   shell and is permitted. The interactive/quote-hazard guards below remain — they
   protect against turn-hanging commands regardless of shell.
 
@@ -32,8 +32,8 @@ _FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
 _PYTEST_LEADING_RE = re.compile(r"(?:^|[;&|])\s*\"?(?:[^\s]*[/\\])?pytest(?:\.exe)?\b", re.IGNORECASE)
 _PYTEST_NARROWERS = ("-k", "-m", "--lf", "--ff", "--last-failed", "--failed-first", "::")
 
-# Interactive / stdin-blocking commands that hang Cursor Agent's turn forever.
-# Cursor Agent's terminal cannot send keystrokes, so any command that waits for
+# Interactive / stdin-blocking commands that hang Codex's turn forever.
+# Codex's terminal cannot send keystrokes, so any command that waits for
 # keyboard input (pagers, editors, watchers, REPLs) blocks indefinitely.
 # Constitutional §14 (`subprocess.run` timeout=) covers Python invocations,
 # but the shell pipeline itself is the blocking entity here — a Python-level
@@ -169,7 +169,7 @@ def _exit_block(reason: str) -> int:
 
 def check_command(command_line: str) -> int:
     """Return 0 (allow) or 2 (block). command_line must be a non-empty string."""
-    # PowerShell is permitted (primary Windows shell); the legacy Windsurf-era
+    # PowerShell is permitted (primary Windows shell); the legacy legacy editor-era
     # ban was removed. The interactive/quote-hazard guards below still apply.
     quote_hazard = _check_python_dash_c_quote_hazard(command_line)
     if quote_hazard is not None:
@@ -187,7 +187,7 @@ def check_command(command_line: str) -> int:
     if interactive_kind is not None:
         return _exit_block(
             f"Interactive / stdin-blocking command detected ({interactive_kind}). "
-            "Cursor Agent's terminal cannot send keystrokes, so the command will hang "
+            "Codex's terminal cannot send keystrokes, so the command will hang "
             "the turn forever. Recovery: (a) redirect output to a file with `> out.txt` "
             "and read it back via read_file; (b) use `head -n N` for long output; "
             "(c) for genuine long-runners, set Blocking=false + WaitMsBeforeAsync. "

@@ -21,7 +21,7 @@ _CI_DIR = Path(__file__).resolve().parent
 if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
-from _mcp_ci_common import AGENTS_MD, CURSOR_MCP_PATH, WINDSURF_MCP_PATH  # noqa: E402
+from _mcp_ci_common import AGENTS_MD, REPO_MCP_PATH  # noqa: E402
 
 # Matches the first backtick-quoted cell of each Quick Reference table row:
 #   | `GitKraken` | Git operations ... |
@@ -72,21 +72,15 @@ def main() -> int:
         print(f"[agents_mcp_coverage] FAIL: {exc}", flush=True)
         return 1
 
-    missing_cursor = _check_config("root", CURSOR_MCP_PATH, documented)
-    missing_windsurf = _check_config(
-        "deprecated Windsurf mirror",
-        WINDSURF_MCP_PATH,
-        documented,
-        required=False,
-    )
+    missing_repo = _check_config("repo", REPO_MCP_PATH, documented)
 
-    if missing_cursor:
+    if missing_repo:
         print(
-            f"[agents_mcp_coverage] FAIL: {len(missing_cursor)} root MCP server(s) "
+            f"[agents_mcp_coverage] FAIL: {len(missing_repo)} repo MCP server(s) "
             "registered in .mcp.json but NOT documented in AGENTS.md:",
             flush=True,
         )
-        for name in missing_cursor:
+        for name in missing_repo:
             print(f"  MISSING: {name}", flush=True)
         print(
             "[agents_mcp_coverage] Run: python .claude/governance/scripts/sync_mcp_config.py",
@@ -94,20 +88,9 @@ def main() -> int:
         )
         return 1
 
-    expected_windsurf_only = {"io.windsurf/mcp-playwright"}
-    unexpected_windsurf = [n for n in missing_windsurf if n not in expected_windsurf_only]
-    if unexpected_windsurf:
-        print(
-            f"[agents_mcp_coverage] FAIL: unexpected Windsurf server id(s) missing from AGENTS.md:",
-            flush=True,
-        )
-        for name in unexpected_windsurf:
-            print(f"  UNEXPECTED: {name}", flush=True)
-        return 1
-
-    cursor_count = len(load_registered_servers(CURSOR_MCP_PATH))
+    root_count = len(load_registered_servers(REPO_MCP_PATH))
     print(
-        f"[agents_mcp_coverage] OK: all {cursor_count} root MCP server(s) documented in AGENTS.md.",
+        f"[agents_mcp_coverage] OK: all {root_count} repo MCP server(s) documented in AGENTS.md.",
         flush=True,
     )
     return 0

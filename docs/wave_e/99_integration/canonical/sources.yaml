@@ -7,7 +7,7 @@ sources:
   - id: SRC-RULE-001
     subtype: RULE
     title: "Constitutional Rules (Agentic Workflow)"
-    locator: ".windsurf/rules/constitutional.md"
+    locator: ".claude/rules/constitutional.md"
     authority_class: CONSTITUTIONAL
     retrieved_at_wave: E1c
     notes: "Rank 1. Binds all layers, all waves, all agents."
@@ -15,7 +15,7 @@ sources:
   - id: SRC-RULE-002
     subtype: RULE
     title: "Global Rules - Tier 2 SSOT"
-    locator: ".windsurf/rules/global_rules.md"
+    locator: ".claude/rules/global_rules.md"
     authority_class: GOVERNANCE
     retrieved_at_wave: E1c
     notes: "Rank 2."

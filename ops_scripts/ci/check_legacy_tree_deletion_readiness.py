@@ -43,7 +43,7 @@ SCAN_ROOTS = (
     "tools",
 )
 ALLOW_PREFIXES = (
-    ".cursor/plans/_archive/",
+    ".claude/plans/_archive/",
     ".cursor/windsurf_compat/",
     ".windsurf/",
     "docs/archive/windsurf/",

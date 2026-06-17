@@ -1,6 +1,6 @@
 """README assembler — builds modular README from scan results.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P1.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P1.
 """
 
 from __future__ import annotations

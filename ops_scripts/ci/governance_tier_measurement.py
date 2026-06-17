@@ -1,7 +1,7 @@
-"""Shared Cursor governance tier measurement (W0 SSOT for always-on budget).
+"""Shared legacy editor governance tier measurement (W0 SSOT for always-on budget).
 
-Tier-1 (Cursor-native): ``.claude/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
-Windsurf legacy ``trigger: always_on`` ``.md`` files are reported separately (not summed into Tier-1).
+Tier-1 (repo-native): ``.claude/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
+legacy editor legacy ``trigger: always_on`` ``.md`` files are reported separately (not summed into Tier-1).
 """
 
 from __future__ import annotations

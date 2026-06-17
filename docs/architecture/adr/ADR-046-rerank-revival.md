@@ -4,7 +4,7 @@
 **Date**: 2026-04-23 (amended 2026-04-24)
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/knowledge/retrieval/senior_librarian_reranker.py`, `agentic_core/knowledge/retrieval/hybrid_recall_stage.py`, `agentic_core/knowledge/retrieval/evidence_contract_builder.py`, new `agentic_core/knowledge/retrieval/cross_encoder_reranker.py`
-**Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` (W2)
+**Plan**: `.claude/plans/c0-context-assembly-best-practices-b7c3a1.md` (W2)
 
 **Current-state note (2026-06-15):** Implemented by `agentic_core/knowledge/retrieval/reranker_factory.py`, `senior_librarian_reranker.py`, `cross_encoder_reranker.py`, and `bge_reranker_adapter.py`, with reranker factory/cross-encoder tests.
 
@@ -153,4 +153,4 @@ late-interaction model load. The slot defined here is the integration point.
 - Google Cloud, *Building your own RAG — semantic ranking API*, 2024
 - In-repo: `agentic_core/knowledge/retrieval/senior_librarian_reranker.py`
 - In-repo archive: `archives/adg_dead_code/2026-04-23/apps_shared/utils/late_interaction_reranker_util.py`
-- Plan: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md`
+- Plan: `.claude/plans/c0-context-assembly-best-practices-b7c3a1.md`

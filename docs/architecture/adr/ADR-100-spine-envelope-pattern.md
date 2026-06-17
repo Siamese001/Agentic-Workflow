@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-07
 **Phase**: P2, P3 (deferred-scope-spine-refinement-5e3d1b)
-**Deciders**: Cursor Agent + user Author-Gate
+**Deciders**: Codex + user Author-Gate
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260507.sqlite`
 
 ---
@@ -77,7 +77,7 @@ Applied to:
 
 ## References
 
-- Plan P2: `.windsurf/plans/p2-apps-qna-product-spine-b3e8d2.md`
-- Plan P3: `.windsurf/plans/p3-apps-research-spine-envelope-c4e9f3.md`
+- Plan P2: `.claude/plans/p2-apps-qna-product-spine-b3e8d2.md`
+- Plan P3: `.claude/plans/p3-apps-research-spine-envelope-c4e9f3.md`
 - Commits: `2c99705`, `984534a`
 - Parent: `deferred-scope-spine-refinement-5e3d1b`

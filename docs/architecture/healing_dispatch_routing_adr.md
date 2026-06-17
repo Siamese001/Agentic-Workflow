@@ -134,7 +134,7 @@ Deterministic abort (no further escalation) is required when:
 | `docs/requirements/wave_b_target_state_registry.md` §F25 split | Records the F25-int / F25-ext classification and the F25-int OUT OF SCOPE disposition for ext_authority |
 | `docs/requirements/wave_c_handoff_contract.md` §2, §9 | Binds F25-int to repo_evidence Lane C; forbids ext_authority additions for this topic |
 | `docs/reports/wave_c_gap_map.md` §4 WC-G02 | Records the IMPL_GAP status; this ADR is the deliverable that closes the documentation portion of WC-G02 |
-| `.windsurf/rules/hitl-enforcement.md` | Defines the HITL gate invoked at ESCALATED tier |
+| `.claude/rules/hitl-enforcement.md` | Defines the HITL gate invoked at ESCALATED tier |
 
 No external URLs are referenced. All alignment is with in-repo artifacts.
 
@@ -167,5 +167,5 @@ This ADR is accepted into `repo_evidence` Lane C when:
 - `docs/requirements/wave_c_handoff_contract.md` (repo_evidence Lane C constraint; ext_authority prohibition for F25-int)
 - `docs/reports/wave_c_gap_map.md` (WC-G02 IMPL_GAP record)
 - `docs/requirements/wave_b_metadata_contract.md` (14-field metadata contract enforced by freeze gates G4, G5, G6)
-- `.windsurf/rules/hitl-enforcement.md` (HITL gate invoked at ESCALATED tier)
+- `.claude/rules/hitl-enforcement.md` (HITL gate invoked at ESCALATED tier)
 - `docs/requirements/normative_requirements_spec.md` (AGEN-0100 abstain/refine/fallback requirement, adjacent context)

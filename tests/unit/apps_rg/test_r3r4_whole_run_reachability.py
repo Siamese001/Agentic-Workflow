@@ -1,4 +1,4 @@
-"""R3R4 whole-run reachability with apps_research delegation disabled."""
+"""R3R4 whole-run reachability with apps_research delegation enabled."""
 from __future__ import annotations
 
 import json
@@ -21,8 +21,8 @@ from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
 
 
 def test_research_enabled_when_brief_missing_and_auto_research_on() -> None:
-    assert not research_delegation_enabled(auto_research_internal=True, research_via=None)
-    assert not should_delegate_apps_research(
+    assert research_delegation_enabled(auto_research_internal=True, research_via=None)
+    assert should_delegate_apps_research(
         route_family=ROUTE_FAMILY_R3R4,
         manual_brief="",
         auto_research_internal=True,

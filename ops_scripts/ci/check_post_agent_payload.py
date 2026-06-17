@@ -2,7 +2,7 @@
 
 The 2026-04-23 RCA found two hooks (`post_agent_deferred_scope_capture.py`
 and `post_agent_writeback_audit.py`) silently dropping DEFERRED_SCOPE
-markers because they ignored the documented Windsurf payload shape
+markers because they ignored the documented legacy editor payload shape
 ``{"tool_info": {"response": "..."}}`` and fell through to `json.dumps`
 which escapes newlines and breaks multiline regex anchors.
 
@@ -87,7 +87,7 @@ def check_file(path: Path) -> list[str]:
         problems.append(
             f"{path.name}: reads sys.stdin but does not import "
             f"extract_response_text and does not reference tool_info. "
-            f"Windsurf delivers payload at tool_info.response — this hook "
+            f"legacy editor delivers payload at tool_info.response — this hook "
             f"will silently drop real payloads. Replace with "
             f"`{_REQUIRED_IMPORT}`."
         )

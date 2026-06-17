@@ -26,7 +26,7 @@ CURRENT_WAVE: —
 LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-05-26
 
-PLAN_CREATED: slug=whole-run-phase1-x3-dispatch-remediation-f2a8c4 path=.cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md status=Complete
+PLAN_CREATED: slug=whole-run-phase1-x3-dispatch-remediation-f2a8c4 path=.claude/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md status=Complete
 
 CLOSEOUT: receipt=[whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md](docs/reports/apps_rg/whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md) tests=85_passed e2e=[run_governed_spine_e2e_proof.sh](ops_scripts/apps_rg/run_governed_spine_e2e_proof.sh)
 
@@ -48,7 +48,7 @@ CLOSEOUT: receipt=[whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md]
 | RC-3 | Symptom only | [`generate_resume_step_receipt.json`](artifacts/apps_rg/runtime_proofs/full_resume_1bffb730f966/modular_r4/generate_resume_step_receipt.json) `lanes_executed: 0`; [`full_run_section_status.json`](artifacts/apps_rg/runtime_proofs/full_resume_1bffb730f966/full_run_section_status.json) shows exec summary executed |
 | Ruled out | Wrong `sections_root`, vLLM failure on exec summary, publish disposition demotion, stale targeting | See conversation RCA H1–H14 |
 
-**Supersedes (partial overlap):** archived [fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2](.cursor/plans/_archive/2026-05/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md) addressed pointer/briefing materialization; **this plan** addresses the **dispatch status / dict `pass_` regression** found in `full_resume_1bffb730f966`.
+**Supersedes (partial overlap):** archived [fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2](.claude/plans/_archive/2026-05/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md) addressed pointer/briefing materialization; **this plan** addresses the **dispatch status / dict `pass_` regression** found in `full_resume_1bffb730f966`.
 
 ---
 

@@ -9,8 +9,8 @@ implements the deterministic backend for one of the rubric YAMLs in
 
 Each is a leaf swap-in target: replacing any one with an
 ``evaluate_with_llm`` variant does not change the HOP integration
-surface (D2). HOP6's evaluator lives in HOP6ValidationAgent.py
-historically (W2-P1); the three shipped here are the W3 batch.
+surface (D2). HOP6 is now covered through the JudgeBase contract tests
+only; the three shipped here are the W3 batch.
 """
 from __future__ import annotations
 

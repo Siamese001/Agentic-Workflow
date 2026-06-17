@@ -5,8 +5,8 @@
 # Authority binding note:
 #   SRC-* IDs below are placeholders that E1c_authority_scope MUST materialize
 #   in its proposals/sources.yaml. Canonical placeholder mapping:
-#     SRC-RULE-001  -> .windsurf/rules/constitutional.md          (CONSTITUTIONAL)
-#     SRC-RULE-002  -> .windsurf/rules/global_rules.md            (GOVERNANCE)
+#     SRC-RULE-001  -> .claude/rules/constitutional.md          (CONSTITUTIONAL)
+#     SRC-RULE-002  -> .claude/rules/global_rules.md            (GOVERNANCE)
 #     SRC-INT-001   -> AGENTS.md governing-semantics block        (GOVERNANCE)
 #     SRC-INT-002   -> docs/wave_e/00_schema/                     (GOVERNANCE)
 #                       downstream_lane_contract.md

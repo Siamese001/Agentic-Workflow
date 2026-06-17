@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validation script for the restructured YAML to ensure all 14 Windsurf completion criteria are met
+Validation script for the restructured YAML to ensure all 14 legacy editor completion criteria are met
 """
 
 import yaml

@@ -48,7 +48,10 @@ UWG_APPROVED_WRITERS = frozenset(
 )
 
 EXCLUDE_LAYERS = ("L_TEST", "L_TOOLS", "L_UNKNOWN")
-EXCLUDE_PREFIXES = ("apps_eval_legacy/original_tree/",)
+
+
+def _source_file_exists(resolved_path: str) -> bool:
+    return (REPO_ROOT / resolved_path).is_file()
 
 
 class UwgBypassRatchetGate(WiringGate):
@@ -71,7 +74,7 @@ class UwgBypassRatchetGate(WiringGate):
         for source_file, line_no, src_path, layer, symbol in rows:
             if layer in EXCLUDE_LAYERS:
                 continue
-            if src_path.startswith(EXCLUDE_PREFIXES):
+            if not _source_file_exists(src_path):
                 continue
             if src_path in UWG_APPROVED_WRITERS:
                 continue

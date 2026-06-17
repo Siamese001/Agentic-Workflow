@@ -25,7 +25,7 @@ CURRENT_WAVE: —
 LAST_COMPLETED_WAVE: W3  
 LAST_UPDATED: 2026-05-26  
 
-PLAN_CREATED: slug=exec-summary-context-limits-ssot-b7e4a1 path=.cursor/plans/exec-summary-context-limits-ssot-b7e4a1.md status=Complete
+PLAN_CREATED: slug=exec-summary-context-limits-ssot-b7e4a1 path=.claude/plans/exec-summary-context-limits-ssot-b7e4a1.md status=Complete
 
 ---
 

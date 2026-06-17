@@ -2439,7 +2439,7 @@ def main() -> None:
             pass
 
     if p0_deferred or shared_deferred:
-        # Cursor Agent Wave B summary line + W3.1 markdown table for full visibility.
+        # Codex Wave B summary line + W3.1 markdown table for full visibility.
         if shared_deferred:
             shared_rows = _shared_deferred_summary()
             print(

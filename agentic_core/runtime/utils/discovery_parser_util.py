@@ -3,7 +3,7 @@ File: agentic_core/utils/discovery_parser.py
 Hunk 1: Immutability Propagation to Metadata Parser
 Location: Lines 45-72
 Description: Updating the JSON parser to cast loaded agent metadata into Final Mapping structures.
-[CRITICAL ANALYSIS] Windsurf (Junior AI) typically uses simple `json.load`, yielding mutable dictionaries.
+[CRITICAL ANALYSIS] legacy editor (Junior AI) typically uses simple `json.load`, yielding mutable dictionaries.
 By wrapping the dictionary output in a Mapping at the ingestion layer and marking it Final,
 we prevent 'Junior' agents from modifying agent fingerprints or capability flags during an active Mission,
 preventing state-drift attacks. This strictly enforces the read-only nature of the discovery manifest.

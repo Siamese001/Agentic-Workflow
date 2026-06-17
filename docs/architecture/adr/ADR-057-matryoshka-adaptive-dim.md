@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/embeddings/bge_runtime.py`, `agentic_core/embeddings/embedding_factory.py`, `agentic_core/L4_state/utils/client/chroma_client.py`, `config/retrieval/retrieval_plan.py`
-**Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.2
+**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.2
 **Relates-to**: ADR-018, ADR-055 (model enforcement), ADR-056 (multi-head), sibling plan `e9aa09`
 
 **Current-state note (2026-06-15):** Dense 1024-d BGE enforcement exists under ADR-055/056 and is the canonical retrieval posture. The multi-tier Matryoshka topology in this ADR is no longer an active commitment; any renewed tiered-dimension rollout needs a fresh ADG-backed ADR and execution plan.
@@ -15,7 +15,7 @@
 
 Every embedding in the repo is stored at BGE-M3's native **1024-d**. No tier trades fidelity for latency or storage. This produces three observed frictions:
 
-1. **Cold paths pay interactive costs.** Background anomaly triage, nightly audit scans, and offline analytics run against the same 1024-d HNSW as the interactive Cursor Agent loop. 400 ms of HNSW traversal is irrelevant when the caller is an interactive agent but wasteful when the caller is a batch job iterating over 50 K candidates.
+1. **Cold paths pay interactive costs.** Background anomaly triage, nightly audit scans, and offline analytics run against the same 1024-d HNSW as the interactive Codex loop. 400 ms of HNSW traversal is irrelevant when the caller is an interactive agent but wasteful when the caller is a batch job iterating over 50 K candidates.
 2. **Memory pressure on the ChromaDB host.** The largest collection (`code_chunks` per sibling plan `e9aa09`) holds ~100 K chunks × 1024 × 4 bytes ≈ 400 MB of float32 vectors in RAM when loaded. Scaling the corpus 5× pushes past a 2 GB working set for a single collection. Matryoshka dim-truncation lets the same content live at 256-d for a 4× memory cut with minimal recall loss (per Matryoshka Representation Learning: recall@100 drops <2 % going from 1024-d to 256-d on BGE-M3-scale models).
 3. **Router has nothing to negotiate.** The future agentic router (W6.2) needs a knob to trade fidelity for latency per query SLO. If every collection is pinned at 1024-d, the router is reduced to "query or don't."
 
@@ -31,7 +31,7 @@ Promote embedding dimension to a **first-class tier axis**, with BGE-M3 Matryosh
 
    | Tier | Dim | Intended use | Recall@20 floor vs 1024-d baseline |
    |---|---:|---|---|
-   | `hot-interactive` | 1024 | Cursor Agent C0 live loop, chat retrieval | 1.00 (baseline) |
+   | `hot-interactive` | 1024 | Codex C0 live loop, chat retrieval | 1.00 (baseline) |
    | `warm-analytics` | 512 | Session-scoped analytics, scorer features | ≥ 0.97 |
    | `cold-batch` | 256 | Nightly audit, drift detection, bulk similarity | ≥ 0.93 |
    | `tiny-prefilter` | 128 | Candidate generation before warm/hot rerank | ≥ 0.85 |
@@ -44,7 +44,7 @@ Promote embedding dimension to a **first-class tier axis**, with BGE-M3 Matryosh
 
 4. **Retrieval plan selects tier** — `RetrievalPlan` (see `agentic_core/knowledge/retrieval/retrieval_plan.py`) gains `dim_tier: Literal["hot-interactive","warm-analytics","cold-batch","tiny-prefilter"]` with default `hot-interactive`. Callers that don't care get current behavior. The future agentic router (W6.2) sets it per query SLO.
 
-5. **Cursor Agent prefilter pattern** — a canonical two-step pattern is documented for large-corpus queries:
+5. **Codex prefilter pattern** — a canonical two-step pattern is documented for large-corpus queries:
    ```
    Step 1: query tiny-prefilter (128-d) for top-500 candidates   (fast, broad)
    Step 2: re-score that top-500 with hot-interactive (1024-d)   (accurate)
@@ -101,4 +101,4 @@ Rollback: delete non-1024 per-tier collections; revert `RetrievalPlan` to ignore
 - OpenAI, *New and improved embedding models* (Jan 2024) — text-embedding-3 Matryoshka
 - In-repo: `agentic_core/knowledge/retrieval/retrieval_plan.py`
 - Sibling plan: `chromadb-bge-retrieval-hardening-e9aa09` (store consolidation prereq)
-- Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

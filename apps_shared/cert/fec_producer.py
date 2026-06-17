@@ -28,7 +28,7 @@ READ-ONLY. The registry never mutates run_context. FEC shape is validated
 defensively — producers that return non-dict are coerced to empty dict
 with a logged warning.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W1.P1.
+Plan: `.claude/plans/apps-eval-harness-residual-a2d9c7.md` W1.P1.
 """
 
 from __future__ import annotations

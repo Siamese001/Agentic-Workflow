@@ -14,7 +14,7 @@ CURSOR_RULES = REPO / ".claude" / "rules"
 MAP_OUT = REPO / "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md"
 DEMOTION_NOTE = (
     "Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). "
-    "Cursor SSOT: .claude/rules/{stem}.mdc (alwaysApply: false)."
+    "legacy editor SSOT: .claude/rules/{stem}.mdc (alwaysApply: false)."
 )
 TRIGGER_RE = re.compile(r"^trigger:\s*always_on\s*$", re.MULTILINE)
 
@@ -90,7 +90,7 @@ def _demote_file(path: Path) -> dict[str, object]:
 
 def _write_map(rows: list[dict[str, object]], before_total: int, after_total: int) -> None:
     lines = [
-        "# Windsurf always_on demotion map — 2026-05-26",
+        "# legacy editor always_on demotion map — 2026-05-26",
         "",
         "**Plan:** `governance-dedup-closeout-e8a4c2` wave W4",
         f"**Generated:** {datetime.now(timezone.utc).isoformat()}",
@@ -100,12 +100,12 @@ def _write_map(rows: list[dict[str, object]], before_total: int, after_total: in
         "| Metric | Before | After |",
         "|--------|--------|-------|",
         f"| `trigger: always_on` file count | 13 | 0 |",
-        f"| Windsurf always_on bytes (gate scan) | {before_total:,} | {after_total:,} |",
-        "| Tier-1 Cursor (`alwaysApply` + AGENTS.md) | unchanged | PASS |",
+        f"| legacy editor always_on bytes (gate scan) | {before_total:,} | {after_total:,} |",
+        "| Tier-1 legacy editor (`alwaysApply` + AGENTS.md) | unchanged | PASS |",
         "",
         "## Demotion table",
         "",
-        "| Windsurf rule | Cursor on-demand SSOT | Before (B) | After (B) | Action |",
+        "| legacy editor rule | legacy editor on-demand SSOT | Before (B) | After (B) | Action |",
         "|---------------|----------------------|------------|-----------|--------|",
     ]
     for row in rows:
@@ -121,9 +121,9 @@ def _write_map(rows: list[dict[str, object]], before_total: int, after_total: in
             "",
             "## Policy",
             "",
-            "- Windsurf mirror is **read-only legacy** for CI parity; Cursor agents use `.claude/rules/*.mdc`.",
+            "- legacy editor mirror is **read-only legacy** for CI parity; legacy editor agents use `.claude/rules/*.mdc`.",
             "- Physical demotion: `trigger: always_on` → `trigger: model_decision` with demotion note in `description`.",
-            "- Tier-1 budget gate: `python ops_scripts/ci/check_always_on_token_budget.py` (Windsurf bytes reported separately).",
+            "- Tier-1 budget gate: `python ops_scripts/ci/check_always_on_token_budget.py` (legacy editor bytes reported separately).",
             "",
             "## Verification",
             "",

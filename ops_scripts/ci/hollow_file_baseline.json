@@ -6780,11 +6780,6 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\mixins\\ast_enforcement_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\mixins\\atomic_execution_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
@@ -6816,11 +6811,6 @@
       "max_allowed_count": 1
     },
     "agentic_core\\mixins\\circuit_breaker_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\mixins\\cognitive_recovery_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -6915,11 +6905,6 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\mixins\\hygiene_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\mixins\\infrastructure_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
@@ -6990,22 +6975,12 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\mixins\\replay_guard_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\mixins\\runtime_safety_mixin.py": {
       "classification": "boilerplate_heavy",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
     "agentic_core\\mixins\\safety_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\mixins\\secrets_management_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -7026,11 +7001,6 @@
       "max_allowed_count": 1
     },
     "agentic_core\\mixins\\ssot_circuit_breaker_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\mixins\\ssot_cognitive_recovery_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -7075,17 +7045,7 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\mixins\\ssot_state_validation_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\mixins\\ssot_tracing_mixin.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\mixins\\state_validation_mixin.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -7182,26 +7142,6 @@
     },
     "agentic_core\\prompt_governance\\meta_prompts\\__init__.py": {
       "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\prompt_governance\\optimization\\__init__.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\prompt_governance\\optimization\\optimization_strategy.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\prompt_governance\\registry\\backups\\__init__.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\prompt_governance\\scripts\\cleanup_duplicates_util.py": {
-      "classification": "boilerplate_heavy",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },

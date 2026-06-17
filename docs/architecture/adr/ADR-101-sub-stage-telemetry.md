@@ -3,7 +3,7 @@
 **Status**: ACCEPTED
 **Date**: 2026-05-07
 **Phase**: W2 (agentic-spine-diagram-refinement-a3f7c2)
-**Deciders**: Cursor Agent + user Author-Gate
+**Deciders**: Codex + user Author-Gate
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260507.sqlite`
 
 ---
@@ -72,7 +72,7 @@ Extend the HowTrace schema to v1.1 with sub-stage telemetry:
 
 ## References
 
-- Plan: `.windsurf/plans/agentic-spine-diagram-refinement-a3f7c2.md` W2
+- Plan: `.claude/plans/agentic-spine-diagram-refinement-a3f7c2.md` W2
 - Schema: `agentic_core/L7_auditability/contracts/how_trace.py`
 - Builder: `agentic_core/L7_auditability/how_trace/how_trace_builder.py`
 - Verification: W4 (HowTrace v1.1 confirmed)

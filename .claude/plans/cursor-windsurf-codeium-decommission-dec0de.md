@@ -44,28 +44,28 @@ LAST_UPDATED: 2026-06-08
 > codeium config) → W4 (docs/rules prose) → W5 (live `post_cursor_agent`/`_legacy_windsurf` rename,
 > gated) → W6 (verify incl. `check_no_cursor_refs` + full gates).
 
-# Cursor / Windsurf / Codeium Decommission — Claude Code as Sole SSOT
+# legacy editor / legacy editor / Codeium Decommission — Claude Code as Sole SSOT
 
 ## Context (SCQA)
 
-- **Situation.** The repo migrated Windsurf → Cursor → Claude Code. Claude Code (`CLAUDE.md`,
+- **Situation.** The repo migrated legacy editor → legacy editor → Claude Code. Claude Code (`CLAUDE.md`,
   `.claude/**`, `.mcp.json`) is the live operating contract. But the previous two IDE eras left a
   large residual footprint: dead config, archived trees, and — most importantly — **live governance
-  wiring that still carries Cursor/Windsurf *names*** even though Claude Code's hooks are what
+  wiring that still carries legacy editor/legacy editor *names*** even though Claude Code's hooks are what
   invoke it.
 - **Complication.** "Deprecate all references" collides with blast radius. Three distinct
   categories exist and must NOT be treated the same:
   1. **Pure dead legacy** — safe to delete (`.cursor/` empty `__pycache__` mirrors, `_legacy_windsurf/`
      161 files, `_legacy_cursor/` 11 files, `docs/archive/windsurf/` ~913 files, `_archive/windsurf_legacy*`
      ~450 plans, root `AGENTS.md`).
-  2. **Brand-only config** — Windsurf/Codeium-specific, zero Claude value (`.codeiumignore`,
+  2. **Brand-only config** — legacy editor/Codeium-specific, zero Claude value (`.codeiumignore`,
      windsurf lines in `.pre-commit-config.yaml`, `config/excluded_paths.yaml`).
   3. **LIVE Claude Code wiring, historically named** — 26+ `post_cursor_agent_*.py` governance
      scripts (dispatched by `after_agent_governance_dispatch.py` + `lib/claude_hook_common.py`),
      `artifacts/cursor/` write target, `tools/windsurf/` (3 active plan-lifecycle tools consumed by
      a governance capture script + 2 CI gates), `.claude/.cursor/state/refactor_decision_ledger.sqlite`,
      the `before_shell_execution.py` guard that *blocks* `.windsurf`/`post_cursor_agent` shell tokens,
-     and ~20 `.claude/rules/` files whose prose says "Cursor Agent".
+     and ~20 `.claude/rules/` files whose prose says "Codex".
 - **Question.** How to reach a zero-brand Claude-Code SSOT without breaking the governance engine
   that is currently *named* after the deprecated IDEs?
 - **Answer.** Stage by risk. Delete dead legacy and brand-only config first (high value, near-zero
@@ -87,10 +87,10 @@ LAST_UPDATED: 2026-06-08
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | P1.1–P1.3 | Inventory freeze + safety prep | ~8k | Inventory from 2026-06-07 exploration holds | ✅ Done (2026-06-07) | Frozen manifest written ([inventory_freeze_dec0de.md](../../docs/reports/decommission/inventory_freeze_dec0de.md)); rollback tag `pre-decommission-dec0de`@7729ce863e; 3 plan-path estimates corrected |
 | W2 | P2.1–P2.3 | Re-baseline + dead-legacy audit | ~12k | See re-baseline banner | ✅ Done (2026-06-07) | Re-scoped to reality: `_legacy_*` retained (live importers); a1f7c3 retired. No destructive action taken. ⚠️ **REVISED twice (2026-06-07):** P5.1 first flagged `.cursor/state` as holding the live ledger (DERIVED from `path_constants.CURSOR_STATE_DIR` + GH-workflow refs). W1-R1.2 of the split plan then **disk-verified the opposite**: `.cursor/state` is EMPTY; the live ledger is at `.claude/state/refactor_decisions/` (`ledger_paths.py` SSOT). So `.cursor/` IS safe to delete; the `.cursor/state` refs are dead pointers. Cleanup tracked in [cursor-naming-rename-w5-b4f1a9](../../plans/cursor-naming-rename-w5-b4f1a9.md) R5/R6. |
-| W3 | P3.1–P3.3 | Remove brand-only config | ~6k | Codeium/Windsurf indexers no longer used | 🟡 Partial (2026-06-07) | ✅ P3.1 `.codeiumignore` deleted (was untracked orphan; repo's prior "eliminated" intent now physically true). ⏭️ P3.2/P3.3 **deferred to W5** (decision `deletion_strategy selected=defer_coupled_to_w5`): pre-commit `T6a no-active-windsurf-authoring` is **live** and still guards `_legacy_windsurf` (331 files, live importers); `excluded_paths.yaml` windsurf entries mirror boundary-protected `agentic_core/L0_routing/config/path_constants.py` (drift gate `check_exclusion_consistency.py`). NOT brand-only as W3 assumed → migrate with the legacy importers in W5. |
-| W4 | P4.1–P4.2 | Docs/rules prose → "Claude Code" | ~14k | Prose rewrite is non-functional | ✅ Done (2026-06-07) | 58 prose replacements / 31 rule files: "Cursor Agent"→"Claude Code" (0 residual), dead `.cursor/RULES_INDEX.md` cross-refs retargeted to `CLAUDE.md` (0 residual), standalone-"Cursor" titles rebranded. `post_cursor_agent_*`/`artifacts/cursor/`/`L2/cursor_agent`/gate-name identifiers preserved (28 refs intact). Gap A1 (hook-migration-auditor wrong engine path) + A4 folded in. Gate `check_always_on_token_budget.py` PASS. **Kept** (historical/true): conversion-banner provenance, constitutional §0 Windsurf-ban-lifted line, claude-config-lookup legacy-tree explanations. |
+| W3 | P3.1–P3.3 | Remove brand-only config | ~6k | Codeium/legacy editor indexers no longer used | 🟡 Partial (2026-06-07) | ✅ P3.1 `.codeiumignore` deleted (was untracked orphan; repo's prior "eliminated" intent now physically true). ⏭️ P3.2/P3.3 **deferred to W5** (decision `deletion_strategy selected=defer_coupled_to_w5`): pre-commit `T6a no-active-windsurf-authoring` is **live** and still guards `_legacy_windsurf` (331 files, live importers); `excluded_paths.yaml` windsurf entries mirror boundary-protected `agentic_core/L0_routing/config/path_constants.py` (drift gate `check_exclusion_consistency.py`). NOT brand-only as W3 assumed → migrate with the legacy importers in W5. |
+| W4 | P4.1–P4.2 | Docs/rules prose → "Claude Code" | ~14k | Prose rewrite is non-functional | ✅ Done (2026-06-07) | 58 prose replacements / 31 rule files: "Codex"→"Claude Code" (0 residual), dead `.cursor/RULES_INDEX.md` cross-refs retargeted to `CLAUDE.md` (0 residual), standalone-"legacy editor" titles rebranded. `post_cursor_agent_*`/`artifacts/cursor/`/`L2/cursor_agent`/gate-name identifiers preserved (28 refs intact). Gap A1 (hook-migration-auditor wrong engine path) + A4 folded in. Gate `check_always_on_token_budget.py` PASS. **Kept** (historical/true): conversion-banner provenance, constitutional §0 legacy editor-ban-lifted line, claude-config-lookup legacy-tree explanations. |
 | W5 | P5.1–P5.4 | Live-wiring rename (GATED) | ~30k | ADG blast radius clear; settings.json clean (verified) | ⏭️ Split out (2026-06-07) | P5.1 map done (read-only). P5.2–P5.4 **split to dedicated plan** [cursor-naming-rename-w5-b4f1a9](../../plans/cursor-naming-rename-w5-b4f1a9.md) per DoD #8 (decision `deletion_strategy selected=split_w5_to_own_plan`): ~800+ refs, live ledger + session-state, 2 core edits, prior in-flight rename to reconcile. |
-| W6 | P6.1 | Verify brand-free *surface* (reframed) | ~4k | W4 prose done; W5 deferred to own plan | ✅ Done (2026-06-07) | Active prose surface brand-free: `.claude/rules` "Cursor Agent" = 0; `.claude/skills`/`CLAUDE.md` residual cleaned (1 docstring). Only intentional historical mention remains: `constitutional.md:12` (Windsurf-ban-lifted, true). P6.2 (shell-guard restore) moved to W5 plan (R6.2) where the renamed tokens land. |
+| W6 | P6.1 | Verify brand-free *surface* (reframed) | ~4k | W4 prose done; W5 deferred to own plan | ✅ Done (2026-06-07) | Active prose surface brand-free: `.claude/rules` "Codex" = 0; `.claude/skills`/`CLAUDE.md` residual cleaned (1 docstring). Only intentional historical mention remains: `constitutional.md:12` (legacy editor-ban-lifted, true). P6.2 (shell-guard restore) moved to W5 plan (R6.2) where the renamed tokens land. |
 
 ### Phase-Level Summary
 
@@ -105,7 +105,7 @@ LAST_UPDATED: 2026-06-08
 | P3.1 | Remove `.codeiumignore` | `.codeiumignore` | Confirm no tool reads it | ~2k | ✅ Done — untracked orphan deleted (T6h gate already retired; no live reader) |
 | P3.2 | Clean pre-commit config | `.pre-commit-config.yaml` | NOT generator-emitted (hand-maintained); `T6a` is a **live** gate guarding `_legacy_windsurf` | ~2k | ⏭️ Deferred to W5 |
 | P3.3 | Clean `config/excluded_paths.yaml` | `config/excluded_paths.yaml` + `agentic_core/L0_routing/config/path_constants.py` | Entries mirror boundary-protected frozensets; drift gate; needs core edit + receipt | ~2k | ⏭️ Deferred to W5 |
-| P4.1 | Rewrite `.claude/rules/**` prose | 31 rule `.md` (actual; not ~20) | "Cursor Agent" → "Claude Code"; markers/identifiers preserved | ~9k | ✅ Done — 58 repl, 0 residual actor-prose |
+| P4.1 | Rewrite `.claude/rules/**` prose | 31 rule `.md` (actual; not ~20) | "Codex" → "Claude Code"; markers/identifiers preserved | ~9k | ✅ Done — 58 repl, 0 residual actor-prose |
 | P4.2 | Rewrite root contract prose | `CLAUDE.md`, `claude-config-lookup.md`, `constitutional.md` | Keep historical-context lines that are still true | ~5k | ✅ Done — `constitutional.md` rebranded (5); `CLAUDE.md` already clean; `claude-config-lookup.md` legacy explanations kept (accurate) |
 | P5.1 | ADG + consumer map for rename | adg_sqlite, grep | Governance scripts may not be ADG-indexed → grep fallback w/ DEGRADED_FALLBACK | ~6k | ✅ Done (2026-06-07) — map below; ⚠️ found W2 `.cursor`-is-dead claim is WRONG (live ledger inside) |
 | P5.2 | Rename `post_cursor_agent_*` → `post_agent_*` | 26+ scripts + dispatch + `lib/claude_hook_common.py` + `mcp_before_hygiene.py` + CI gate `check_cursor_optimized_config.py` | Dispatch wiring + deny-token gate must update atomically | ~10k | ⬜ |
@@ -149,13 +149,13 @@ Outcome of the dependency check (see re-baseline banner + [inventory_freeze_dec0
 - **Gate:** `pre-commit run --all-files` (or scoped) succeeds; generated files stable on re-run.
 
 ### W4 — Docs/rules prose rebrand
-- **P4.1** Rewrite "Cursor Agent" → "Claude Code"/"the agent" across active `.claude/rules/**`.
+- **P4.1** Rewrite "Codex" → "Claude Code"/"the agent" across active `.claude/rules/**`.
   **Preserve** machine-relied tokens verbatim: marker grammar (`DECISION_CAPTURED:`,
   `AUTHOR_GATE_PACKET:`, `WAVE_COMPLETE:`, etc.), env-var bypass names, file paths still in use.
   Only prose changes — zero functional edits (constitutional §21 zero-loss overwrite).
 - **P4.2** Same for `CLAUDE.md`, `claude-config-lookup.md`, `constitutional.md`. Keep historically-true
-  lines (e.g. "supersedes AGENTS.md", "legacy Windsurf PowerShell ban lifted") — rewrite only if they
-  imply Cursor/Windsurf is still operative.
+  lines (e.g. "supersedes AGENTS.md", "legacy legacy editor PowerShell ban lifted") — rewrite only if they
+  imply legacy editor/legacy editor is still operative.
 - **Gate:** rule-lint / `check_always_on_token_budget.py`; manual diff review confirms no marker drift.
 
 ### W5 — Live-wiring rename (GATED — approve/defer independently)
@@ -187,7 +187,7 @@ Outcome of the dependency check (see re-baseline banner + [inventory_freeze_dec0
 | # | Criterion | Verify / Defer |
 |---|-----------|----------------|
 | 1 | No `.codeiumignore`, `.cursorignore`, `.cursorindexingignore`, root `AGENTS.md`, or `.cursor/`/`_legacy_*`/`docs/archive/windsurf/` legacy trees remain | Verify: `git status` + Grep |
-| 2 | No "Cursor Agent" / "Windsurf" prose in active `.claude/rules/**` or `CLAUDE.md` (history docs allowlisted) | Verify: Grep with allowlist |
+| 2 | No "Codex" / "legacy editor" prose in active `.claude/rules/**` or `CLAUDE.md` (history docs allowlisted) | Verify: Grep with allowlist |
 | 3 | Live governance chain still fires after rename: after-agent dispatch writes audit rows | Verify: run dispatch, inspect `artifacts/governance/` |
 | 4 | `python ops_scripts/ci/run_contract_gates.py` exits 0 | Verify: command output |
 | 5 | Smoke run: `python -m tools.plan_lifecycle.wave_execution_state --help` exits 0 (executable surface touched) | Verify: exit code |
@@ -199,7 +199,7 @@ Outcome of the dependency check (see re-baseline banner + [inventory_freeze_dec0
 and are low-risk. W5 (internal rename of live wiring) is the only high-blast-radius wave and is
 explicitly deferral-eligible — if P5.1 shows the rename endangers governance/session state, split it
 to its own plan and stop after W4 + W6 verification (which then asserts "no functional dependency on
-Cursor/Windsurf remains" rather than "no name remains").
+legacy editor/legacy editor remains" rather than "no name remains").
 
 ## Risk / blast-radius notes
 - **Highest risk:** P5.3 (`artifacts/cursor/` rename) — live session-state + audit write target;
@@ -238,7 +238,7 @@ string-literal path/script-name references, not Python import edges, so ADG cann
 - `before_shell_execution.py` deny-token guard blocks `.windsurf`/`post_cursor_agent` in shell → neutralize for rename (P1.3), restore at new names (P6.2).
 - `.github/workflows/author-gate-gates.yml` → must update ledger paths atomically or CI artifact upload breaks.
 
-**Recommendation:** Given (a) 800+ reference updates across 4 coupled renames, (b) live session-state + a live decision ledger in the blast radius, (c) two boundary-protected core edits, and (d) a partially-started prior rename to reconcile — **split W5 into its own dedicated plan** with its own rollback tag and per-target sub-waves. W3(P3.1)+W4 already deliver a brand-free *surface*; W6 can then verify "no functional Cursor/Windsurf dependency in prose" rather than "no name remains."
+**Recommendation:** Given (a) 800+ reference updates across 4 coupled renames, (b) live session-state + a live decision ledger in the blast radius, (c) two boundary-protected core edits, and (d) a partially-started prior rename to reconcile — **split W5 into its own dedicated plan** with its own rollback tag and per-target sub-waves. W3(P3.1)+W4 already deliver a brand-free *surface*; W6 can then verify "no functional legacy editor/legacy editor dependency in prose" rather than "no name remains."
 
 ## Supersedes
 - `windsurf-deprecation-cursor-ssot-b6e4a9` (prior windsurf→cursor migration) — flip to Retired when

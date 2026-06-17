@@ -217,7 +217,7 @@
         {
           "file": "meta_prompts\\adversarial_escalation.jinja",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (adversarial_escalation.jinja, line 30)",
+            "error": "invalid character '—' (U+2014) (adversarial_escalation.jinja, line 30)",
             "lines": 0,
             "size": 1870
           }
@@ -225,7 +225,7 @@
         {
           "file": "meta_prompts\\adversarial_self_test.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (adversarial_self_test.jinja, line 20)",
+            "error": "invalid character '–' (U+2013) (adversarial_self_test.jinja, line 20)",
             "lines": 0,
             "size": 5019
           }
@@ -257,7 +257,7 @@
         {
           "file": "meta_prompts\\emergent_capability_discovery.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (emergent_capability_discovery.jinja, line 20)",
+            "error": "invalid character '–' (U+2013) (emergent_capability_discovery.jinja, line 20)",
             "lines": 0,
             "size": 5383
           }
@@ -281,7 +281,7 @@
         {
           "file": "meta_prompts\\INSTRUCTIONAL_INJECTION_PATTERNS.md",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (INSTRUCTIONAL_INJECTION_PATTERNS.md, line 16)",
+            "error": "invalid character '—' (U+2014) (INSTRUCTIONAL_INJECTION_PATTERNS.md, line 16)",
             "lines": 0,
             "size": 3870
           }
@@ -305,7 +305,7 @@
         {
           "file": "meta_prompts\\meta_coordination_directive.jinja",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (meta_coordination_directive.jinja, line 21)",
+            "error": "invalid character '—' (U+2014) (meta_coordination_directive.jinja, line 21)",
             "lines": 0,
             "size": 3298
           }
@@ -353,7 +353,7 @@
         {
           "file": "meta_prompts\\sovereign_orchestrator.jinja",
           "complexity": {
-            "error": "invalid character '\u2264' (U+2264) (sovereign_orchestrator.jinja, line 34)",
+            "error": "invalid character '≤' (U+2264) (sovereign_orchestrator.jinja, line 34)",
             "lines": 0,
             "size": 1822
           }
@@ -489,16 +489,6 @@
           }
         },
         {
-          "file": "scripts\\cleanup_duplicates_util.py",
-          "complexity": {
-            "functions": 1,
-            "classes": 0,
-            "imports": 6,
-            "lines": 229,
-            "size": 12152
-          }
-        },
-        {
           "file": "scripts\\detect_template_drift.py",
           "complexity": {
             "functions": 5,
@@ -584,7 +574,6 @@
       "low_signal_files": [],
       "high_signal_root_files": [
         "scripts\\audit_registry_linkages.py",
-        "scripts\\cleanup_duplicates_util.py",
         "scripts\\detect_template_drift.py",
         "scripts\\dry_run_compiler.py",
         "scripts\\file_intent.py",
@@ -626,7 +615,7 @@
             {
               "file": "adversarial\\cot_jailbreak.jinja",
               "complexity": {
-                "error": "invalid character '\u2014' (U+2014) (cot_jailbreak.jinja, line 24)",
+                "error": "invalid character '—' (U+2014) (cot_jailbreak.jinja, line 24)",
                 "lines": 0,
                 "size": 1527
               }
@@ -658,7 +647,7 @@
             {
               "file": "adversarial\\indirect_attack.jinja",
               "complexity": {
-                "error": "invalid character '\u2014' (U+2014) (indirect_attack.jinja, line 22)",
+                "error": "invalid character '—' (U+2014) (indirect_attack.jinja, line 22)",
                 "lines": 0,
                 "size": 1411
               }
@@ -682,7 +671,7 @@
             {
               "file": "adversarial\\prompt_injection_payload.jinja",
               "complexity": {
-                "error": "invalid character '\u2014' (U+2014) (prompt_injection_payload.jinja, line 19)",
+                "error": "invalid character '—' (U+2014) (prompt_injection_payload.jinja, line 19)",
                 "lines": 0,
                 "size": 1337
               }
@@ -690,7 +679,7 @@
             {
               "file": "adversarial\\recursive_override.jinja",
               "complexity": {
-                "error": "invalid character '\u2014' (U+2014) (recursive_override.jinja, line 36)",
+                "error": "invalid character '—' (U+2014) (recursive_override.jinja, line 36)",
                 "lines": 0,
                 "size": 2477
               }
@@ -698,7 +687,7 @@
             {
               "file": "adversarial\\recursive_override_staged.jinja",
               "complexity": {
-                "error": "invalid character '\u2014' (U+2014) (recursive_override_staged.jinja, line 43)",
+                "error": "invalid character '—' (U+2014) (recursive_override_staged.jinja, line 43)",
                 "lines": 0,
                 "size": 1749
               }
@@ -864,7 +853,7 @@
         {
           "file": "templates\\agent_autonomy_law.jinja",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (agent_autonomy_law.jinja, line 27)",
+            "error": "invalid character '—' (U+2014) (agent_autonomy_law.jinja, line 27)",
             "lines": 0,
             "size": 1965
           }
@@ -872,7 +861,7 @@
         {
           "file": "templates\\anomaly_detection_response.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (anomaly_detection_response.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (anomaly_detection_response.jinja, line 14)",
             "lines": 0,
             "size": 5069
           }
@@ -880,7 +869,7 @@
         {
           "file": "templates\\async_compatibility.jinja",
           "complexity": {
-            "error": "invalid character '\u2192' (U+2192) (async_compatibility.jinja, line 19)",
+            "error": "invalid character '→' (U+2192) (async_compatibility.jinja, line 19)",
             "lines": 0,
             "size": 1254
           }
@@ -888,7 +877,7 @@
         {
           "file": "templates\\autonomous_decision_tree.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (autonomous_decision_tree.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (autonomous_decision_tree.jinja, line 14)",
             "lines": 0,
             "size": 3149
           }
@@ -904,7 +893,7 @@
         {
           "file": "templates\\context_memory_synthesis.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (context_memory_synthesis.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (context_memory_synthesis.jinja, line 14)",
             "lines": 0,
             "size": 4881
           }
@@ -912,7 +901,7 @@
         {
           "file": "templates\\cross_layer_coordination.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (cross_layer_coordination.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (cross_layer_coordination.jinja, line 14)",
             "lines": 0,
             "size": 3990
           }
@@ -952,7 +941,7 @@
         {
           "file": "templates\\goal_decomposition_planning.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (goal_decomposition_planning.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (goal_decomposition_planning.jinja, line 14)",
             "lines": 0,
             "size": 4032
           }
@@ -984,7 +973,7 @@
         {
           "file": "templates\\import_optimization.jinja",
           "complexity": {
-            "error": "invalid character '\u2192' (U+2192) (import_optimization.jinja, line 22)",
+            "error": "invalid character '→' (U+2192) (import_optimization.jinja, line 22)",
             "lines": 0,
             "size": 1494
           }
@@ -992,7 +981,7 @@
         {
           "file": "templates\\multi_agent_consensus.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (multi_agent_consensus.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (multi_agent_consensus.jinja, line 14)",
             "lines": 0,
             "size": 4725
           }
@@ -1016,7 +1005,7 @@
         {
           "file": "templates\\predictive_failure_prevention.jinja",
           "complexity": {
-            "error": "invalid character '\u2013' (U+2013) (predictive_failure_prevention.jinja, line 14)",
+            "error": "invalid character '–' (U+2013) (predictive_failure_prevention.jinja, line 14)",
             "lines": 0,
             "size": 4635
           }
@@ -1024,7 +1013,7 @@
         {
           "file": "templates\\reasoning_chain.jinja",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (reasoning_chain.jinja, line 30)",
+            "error": "invalid character '—' (U+2014) (reasoning_chain.jinja, line 30)",
             "lines": 0,
             "size": 1919
           }
@@ -1032,7 +1021,7 @@
         {
           "file": "templates\\subatomic_healing_context.jinja",
           "complexity": {
-            "error": "invalid character '\u2014' (U+2014) (subatomic_healing_context.jinja, line 33)",
+            "error": "invalid character '—' (U+2014) (subatomic_healing_context.jinja, line 33)",
             "lines": 0,
             "size": 2407
           }

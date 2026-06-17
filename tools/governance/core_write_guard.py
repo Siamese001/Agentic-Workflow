@@ -186,7 +186,7 @@ def classify_file(filepath: str, strict: bool = False) -> Tuple[str, List[Dict]]
 
 def get_staged_files() -> List[str]:
     """Get list of files being modified (from environment or git)."""
-    # Check for WINDSUFF_FILES environment variable (set by Windsurf)
+    # Check for WINDSUFF_FILES environment variable (set by legacy editor)
     windsurf_files = os.environ.get('WINDSURF_FILES', '')
     if windsurf_files:
         return [f.strip() for f in windsurf_files.split(',') if f.strip()]

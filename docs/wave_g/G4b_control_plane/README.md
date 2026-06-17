@@ -20,7 +20,7 @@
   - `agentic_core/L0_routing/enforcement/runtime_mutation_guard.py`
   - `agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py`
   - `agentic_core/config/constants_config.py`
-  - `.windsurf/mcp_config.json`
+  - `.mcp.json`
 
 ## 3. Outputs
 

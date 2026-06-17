@@ -1,6 +1,6 @@
 # Obsolete Native vLLM Autostart Setup
 
-This file used to describe the Windsurf-era native WSL venv stack:
+This file used to describe the legacy editor-era native WSL venv stack:
 
 - `~/.vllm_env`
 - `tools/vllm/vllm.service`

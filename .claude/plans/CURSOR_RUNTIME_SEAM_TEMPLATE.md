@@ -1,4 +1,4 @@
-# Cursor Runtime Seam Template
+# legacy editor Runtime Seam Template
 
 ## Objective
 

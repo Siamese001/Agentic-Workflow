@@ -4,7 +4,7 @@ Utility Silent Swallower Validator
 Enhanced silent swallower detection for utility/ops scripts with context-aware
 classification and governance path enforcement.
 
-Implements Windsurf Hardening Response requirements:
+Implements legacy editor Hardening Response requirements:
 - Zero tolerance for governance/CI script silent failures
 - Retry-with-reraise pattern detection
 - Utility script classification by operational category

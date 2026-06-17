@@ -1978,7 +1978,7 @@ def emit_mandatory_adg_review_template(
             if not inline.endswith("\n"):
                 sys.stdout.write("\n")
             print(
-                "[adg_review_template] inline markdown emitted to stdout for Cursor display",
+                "[adg_review_template] inline markdown emitted to stdout for legacy editor display",
                 file=sys.stderr,
             )
         elif _inline_bypassed():

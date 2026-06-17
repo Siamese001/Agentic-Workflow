@@ -20,7 +20,7 @@ LAST_UPDATED: 2026-06-08
 
 ## Context
 
-Situation: `apps_qna` still has embedding and retrieval cleanup work, but its old P0 Chroma initialization plan is retired in Notion and points at a legacy Cursor archive path.
+Situation: `apps_qna` still has embedding and retrieval cleanup work, but its old P0 Chroma initialization plan is retired in Notion and points at a legacy legacy editor archive path.
 
 Complication: The dependent `apps_qna` C0 Chroma migration must not run until the parent L4 cache substrate is initialized and verified in the active BGE review branch.
 

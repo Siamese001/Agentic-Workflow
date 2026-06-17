@@ -4,7 +4,7 @@ wave: G5
 produced_at: 2026-04-18
 adg_snapshot: artifacts/adg/adg_indexed_04182026_0814.sqlite
 upstream_artefacts:
-  - .windsurf/mcp_config.json
+  - .mcp.json
   - docs/wave_g/G2b_provider_gateway/mcp_as_transport.md
   - docs/wave_g/G4b_control_plane/config_knob_catalogue.yaml
 
@@ -31,8 +31,8 @@ ADG snapshot timestamp used: `04182026_0814`.
 | `enhanced_http` | `python -u tools/mcp/enhanced_http_server.py` | python stdio subprocess | stdio loopback | yes, arbitrary HTTP by design | `test_connectivity`, request-level failures |
 | `notion` | `cmd /c npx -y @notionhq/notion-mcp-server` | node stdio subprocess | stdio loopback | yes (`api.notion.com`) | `API-get-self` |
 | `task_manager` | `cmd /c npx -y @blizzy/mcp-task-manager stdio` | node stdio subprocess | stdio loopback | none | `task_info` |
-| `filesystem` | `node .windsurf/scripts/filesystem_mcp_launcher.js <repo_root>` | binary subprocess | node wrapper stdio | none | launcher readiness marker + startup watchdog |
-| `GitKraken` | `${env:GITKRAKEN_GK_PATH} mcp --host=windsurf ...` | binary subprocess | vendor bridge | conditional to git providers | `git_status` |
+| `filesystem` | `node .claude/governance/scripts/filesystem_mcp_launcher.js <repo_root>` | binary subprocess | node wrapper stdio | none | launcher readiness marker + startup watchdog |
+| `GitKraken` | `${env:GITKRAKEN_GK_PATH} mcp --host=codex ...` | binary subprocess | vendor bridge | conditional to git providers | `git_status` |
 | `deepwiki` | `https://mcp.deepwiki.com/mcp` | external endpoint | HTTPS MCP | yes (remote endpoint) | endpoint connectivity |
 
 ## MCP env injection classes by server
@@ -65,7 +65,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 ## Restart semantics (MCP-specific)
 
-- Most MCP servers: restart by Windsurf process lifecycle.
+- Most MCP servers: restart by legacy editor process lifecycle.
 - ADG snapshot freshness can be advanced without full restart via `adg_reload`.
 - OTel stale-source detection: inspect `otel_server_info` before restart.
 - Unknown/opaque restart internals: `GitKraken` and external `deepwiki` service.

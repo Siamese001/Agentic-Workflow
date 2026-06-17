@@ -15,7 +15,7 @@
 - **Repo evidence scan** (ADG-first + literal env-key scan; constitutionally allowed for literal matches):
   - 269 `os.getenv` / `os.environ` reads across 154 unique env keys spread over 114 reader files in `agentic_core/`, `apps_*/`, `infrastructure/`, `tools/`.
   - HTTP-library import scan: `requests` (4), `aiohttp` (4), `openai` (2), `anthropic` (2), `google.generativeai` (3), `neo4j` (1), `chromadb` (39), `redis` (19).
-  - MCP server catalogue: `.windsurf/mcp_config.json` (12 servers).
+  - MCP server catalogue: `.mcp.json` (12 servers).
 
 ## 3. Outputs
 
@@ -31,7 +31,7 @@ Met.
 
 - Every egress point catalogued: **12** entries in `egress_points.yaml` (6 external providers [4 unconditional + 2 conditional], 3 localhost/internal, 1 stub, 1 MCP-external, 1 MCP-loopback bucket), each record carries all 10 required schema fields.
 - Every `os.getenv` / `os.environ[...]` read mapped to consumer modules: 269 reads / 154 unique keys across 4 repo roots. Full table in `env_key_consumer_map.md`.
-- MCP loopback documented in `mcp_as_transport.md` — 9 stdio-loopback servers + 1 HTTPS external (`deepwiki`) + 1 binary subprocess (`GitKraken`) + 1 ingress-perspective FastMCP (`enhanced_http` both ingresses tool calls from Windsurf AND egresses HTTP from the repo).
+- MCP loopback documented in `mcp_as_transport.md` — 9 stdio-loopback servers + 1 HTTPS external (`deepwiki`) + 1 binary subprocess (`GitKraken`) + 1 ingress-perspective FastMCP (`enhanced_http` both ingresses tool calls from legacy editor AND egresses HTTP from the repo).
 - Real external egress distinguished from MCP loopback transport and local-only stubs (see §5 of `provider_inventory.md` for the canonical matrix).
 - G2 findings consumed explicitly:
   - **Gateway/interface live subset** (G2 `seam_usage_report.md` §2): `agentic_core/interfaces/gateway.py` is ingress-side (Kong/Envoy/Custom tracing header injection per `agentic_core/gateway/api_gateway_integration.py`), **not a provider egress wrapper** — fully disambiguated in `provider_inventory.md` §6.

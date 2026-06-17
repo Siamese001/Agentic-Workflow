@@ -7,7 +7,7 @@ components for simplified usage and optimized performance.
 UNIFIED API: Single entry point for all Forward-Rolling operations
 OPTIMIZATION: Performance tuning and caching strategies
 
-Author: Cursor
+Author: legacy editor
 Date: February 2026
 Phase: 5 - Optimization & Enhancement
 """

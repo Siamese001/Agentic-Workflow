@@ -49,7 +49,7 @@ The 32KB `research_assembly_engine.py` is the largest engine in the portfolio. I
 (Original review content preserved below for rubric mapping.)
 
 
-apps_research has been hardened to SVP engineering quality standards, matching the rigor of apps_eval, apps_lic, apps_exec, and apps_rfp. This includes:
+apps_research has been hardened to SVP engineering quality standards, matching the rigor of apps_eval, apps_lic, apps_rg, and apps_rfp. This includes:
 
 - **Strict Typing:** Pydantic models with Field validators and bounds checking
 - **Explicit Validation:** Source credibility and claim type validation

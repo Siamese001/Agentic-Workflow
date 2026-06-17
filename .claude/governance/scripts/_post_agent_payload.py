@@ -1,6 +1,6 @@
 """Shared payload extractor for post_agent_response hooks.
 
-Windsurf delivers the cursor agent response text to hook stdin in this shape:
+legacy editor delivers the cursor agent response text to hook stdin in this shape:
 
     {
       "agent_action_name": "post_agent_response",
@@ -83,7 +83,7 @@ def extract_response_text(raw: str) -> str:
 
     # 3. Last resort: stringify the whole envelope. NOTE: newlines will be
     #    escaped — multiline anchors will not match. This is a signal of a
-    #    malformed payload shape, not a normal Windsurf payload.
+    #    malformed payload shape, not a normal legacy editor payload.
     try:
         return json.dumps(payload)
     except (TypeError, ValueError):

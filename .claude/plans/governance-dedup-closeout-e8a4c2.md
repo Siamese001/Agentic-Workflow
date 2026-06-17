@@ -10,7 +10,7 @@ author_gate_receipt_ref: ""
 dod_exempt: false
 ---
 
-# Governance dedup closeout — hooks, CI gates, plan sprawl, Windsurf mirror
+# Governance dedup closeout — hooks, CI gates, plan sprawl, legacy editor mirror
 
 Close all **deferred scope** from [governance_dedup_audit_20260526.md](../../docs/reports/cursor/governance_dedup_audit_20260526.md) (2026-05-26 partial pass). Parent track: [cursor-governance-two-tier-b4e8f2](cursor-governance-two-tier-b4e8f2.md) (COMPLETED); this plan finishes Option A leftovers without reopening Tier-1 invariants.
 
@@ -26,16 +26,16 @@ CURRENT_WAVE: W5
 LAST_COMPLETED_WAVE: W5  
 LAST_UPDATED: 2026-05-26  
 
-PLAN_CREATED: slug=governance-dedup-closeout-e8a4c2 path=.cursor/plans/governance-dedup-closeout-e8a4c2.md status=Not Started
+PLAN_CREATED: slug=governance-dedup-closeout-e8a4c2 path=.claude/plans/governance-dedup-closeout-e8a4c2.md status=Not Started
 
 ---
 
 ## Context (SCQA)
 
 - **Situation** — 2026-05-26 dedup pass fixed README (4 always-on rules), regenerated [RULES_INDEX.md](../RULES_INDEX.md), unified post-agent SSOT on `after_agent_governance_dispatch.py`, shortened Author-Gate pre-prompt reminder, and documented legacy/obsolete hooks. Tier-1 budget PASS (~4.6k tokens per [governance_tier_inventory.json](../../docs/reports/cursor/governance_tier_inventory.json)).
-- **Complication** — Four deferred items remain: (1) obsolete `post_cursor_agent_*` scripts still on disk; (2) `check_cursor_native_config.py` FAIL on `.windsurf` tokens in active `.cursor` scripts; (3) ~86 active top-level plans vs &lt;20 policy target; (4) 13 Windsurf `always_on` rules (~47 KB) not demoted per Option A. Dispatch shadow period (≥7 days) not formally recorded before script deletion.
+- **Complication** — Four deferred items remain: (1) obsolete `post_cursor_agent_*` scripts still on disk; (2) `check_cursor_native_config.py` FAIL on `.windsurf` tokens in active `.cursor` scripts; (3) ~86 active top-level plans vs &lt;20 policy target; (4) 13 legacy editor `always_on` rules (~47 KB) not demoted per Option A. Dispatch shadow period (≥7 days) not formally recorded before script deletion.
 - **Question** — How do we close governance dedup deferred scope with receipts, CI proof, and zero-loss hook coverage?
-- **Answer** — Five waves: baseline + shadow metrics → hook retirement → CI legacy-ref remediation → plan archive → Windsurf demotion doc/execution → closeout manifest; each wave gated by explicit commands and artifact paths.
+- **Answer** — Five waves: baseline + shadow metrics → hook retirement → CI legacy-ref remediation → plan archive → legacy editor demotion doc/execution → closeout manifest; each wave gated by explicit commands and artifact paths.
 
 ---
 
@@ -49,7 +49,7 @@ PLAN_CREATED: slug=governance-dedup-closeout-e8a4c2 path=.cursor/plans/governanc
 | W1 | W1.1–W1.3 | Retire obsolete post-agent scripts + legacy hook | ~10k | W0 shadow ≥7 days OR operator waives with receipt | ✅ DONE | [governance_dedup_w1_receipt.md](../../docs/reports/cursor/governance_dedup_w1_receipt.md) |
 | W2 | W2.1–W2.2 | `check_cursor_native_config` + RULES_INDEX drift gate | ~6k | W1 complete | ✅ DONE | [governance_dedup_w2_receipt.md](../../docs/reports/cursor/governance_dedup_w2_receipt.md) |
 | W3 | W3.1–W3.2 | Active plan sprawl archive (&lt;20 top-level) | ~8k | Archive policy from W3 cursor-governance plan | ✅ DONE | [governance_dedup_w3_receipt.md](../../docs/reports/cursor/governance_dedup_w3_receipt.md) |
-| W4 | W4.1 | Windsurf `always_on` demotion / mirror freeze receipt | ~6k | No Windsurf deletion without migration receipt | ✅ DONE | [governance_dedup_w4_receipt.md](../../docs/reports/cursor/governance_dedup_w4_receipt.md) |
+| W4 | W4.1 | legacy editor `always_on` demotion / mirror freeze receipt | ~6k | No legacy editor deletion without migration receipt | ✅ DONE | [governance_dedup_w4_receipt.md](../../docs/reports/cursor/governance_dedup_w4_receipt.md) |
 | W5 | W5.1 | Closeout manifest + audit link-back | ~2k | W0–W4 done or DEFERRED_SCOPE captured | ✅ DONE | [governance_dedup_closeout_receipt.md](../../docs/reports/cursor/governance_dedup_closeout_receipt.md) |
 
 ### Phase Progress
@@ -64,8 +64,8 @@ PLAN_CREATED: slug=governance-dedup-closeout-e8a4c2 path=.cursor/plans/governanc
 | W2.1 | Allowlist migration scripts in native config check | ✅ DONE |
 | W2.2 | Exclude generated timestamp from `generate_rules_index --check` | ✅ DONE |
 | W3.1 | Classify active plans (keep / archive / merge) | ✅ DONE |
-| W3.2 | Move completed plans to `.cursor/plans/_archive/` | ✅ DONE |
-| W4.1 | Windsurf always_on inventory + demotion decision doc | ✅ DONE |
+| W3.2 | Move completed plans to `.claude/plans/_archive/` | ✅ DONE |
+| W4.1 | legacy editor always_on inventory + demotion decision doc | ✅ DONE |
 | W5.1 | Emit closeout receipt + Notion `Completed` | ✅ DONE |
 
 ---
@@ -102,9 +102,9 @@ PLAN_CREATED: slug=governance-dedup-closeout-e8a4c2 path=.cursor/plans/governanc
 - `check_cursor_optimized_config.py` warns; W3 of parent plan targeted &lt;20.  
 - Impact: Agent plan-selection noise.
 
-**GAP-6: Windsurf 13× `always_on` (~47 KB)**  
+**GAP-6: legacy editor 13× `always_on` (~47 KB)**  
 - Option A W1 froze mirror; demotion never executed.  
-- Impact: Windsurf sessions still load duplicate invariants (separate product surface).
+- Impact: legacy editor sessions still load duplicate invariants (separate product surface).
 
 ---
 
@@ -195,7 +195,7 @@ CHECKPOINT: D
 
 **Phases**:
 - **W3.1** — Inventory CSV at `docs/reports/cursor/plan_sprawl_inventory_20260526.csv` (87 rows classified) | ~4k | PHASE_STATUS: DONE
-- **W3.2** — 76 plans moved to `.cursor/plans/_archive/2026-05/`; registration cache refreshed | ~4k | PHASE_STATUS: DONE
+- **W3.2** — 76 plans moved to `.claude/plans/_archive/2026-05/`; registration cache refreshed | ~4k | PHASE_STATUS: DONE
 
 **Acceptance**:
 - `check_cursor_optimized_config.py` → `active_plan_files_count` **11** (≤ 20) ✅
@@ -205,7 +205,7 @@ WAVE_COMPLETE: plan=governance-dedup-closeout-e8a4c2 wave=3 note="76 archived, 1
 
 ---
 
-## Wave 4 — Windsurf always_on demotion
+## Wave 4 — legacy editor always_on demotion
 
 WAVE_ID: W4  
 WAVE_STATUS: DONE  
@@ -218,7 +218,7 @@ CHECKPOINT: E
 
 **Acceptance**:
 - [windsurf_always_on_demotion_map_20260526.md](../../docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md) on disk ✅
-- Windsurf `always_on` count **0** (47,493 B → 0 B); Tier-1 **PASS** unchanged ✅
+- legacy editor `always_on` count **0** (47,493 B → 0 B); Tier-1 **PASS** unchanged ✅
 
 WAVE_COMPLETE: plan=governance-dedup-closeout-e8a4c2 wave=4 note="13 windsurf rules demoted; windsurf_always_on_total=0"
 
@@ -264,7 +264,7 @@ DoD-4: Hook/cursor unit tests
 - Status: PASS
 
 DoD-5: Plan registered on disk + Notion; parent audit cross-linked  
-- Evidence: `.cursor/plans/governance-dedup-closeout-e8a4c2.md`; audit §6 updated; Notion Completed via wave-exec  
+- Evidence: `.claude/plans/governance-dedup-closeout-e8a4c2.md`; audit §6 updated; Notion Completed via wave-exec  
 - Status: PASS
 
 ---
@@ -275,7 +275,7 @@ DoD-5: Plan registered on disk + Notion; parent audit cross-linked
 |------|------|------------|
 | Shadow &lt;7 days | W1 | DEFERRED_SCOPE P-Band; do not delete scripts |
 | Notion token missing | W5 | Disk-only; `PLAN_REGISTRATION_BYPASS` for local wave start |
-| Windsurf demotion rejected | W4 | Document freeze; defer physical edits |
+| legacy editor demotion rejected | W4 | Document freeze; defer physical edits |
 | Plan archive breaks slug | W3 | Rollback move; fix registration cache |
 
 ---

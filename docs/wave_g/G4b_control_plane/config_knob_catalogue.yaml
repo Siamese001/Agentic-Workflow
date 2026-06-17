@@ -191,7 +191,7 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: ${AGENTIC_REPO_ROOT}/artifacts/adg
     consumer_modules:
-      - .windsurf/mcp_config.json (adg_sqlite env block)
+      - .mcp.json (adg_sqlite env block)
       - tools/adg/mcp/server.py runtime backend
     affects_pipelines: [PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST]
     affects_stores: [STORE-ADG-SQLITE, STORE-ADG-GRAPH-PROJECTION, STORE-ADG-JSON-TIERS]
@@ -199,7 +199,7 @@ knobs:
     reload_behavior: process_start
     risk_level: high
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: mcpServers.adg_sqlite.env.ADG_DIR
     default: ${AGENTIC_REPO_ROOT}/artifacts/adg
     consumers: [adg_sqlite MCP subprocess]
@@ -295,7 +295,7 @@ knobs:
     default_value_if_observable: unknown
     consumer_modules:
       - tools/retrieval/embedder.py
-      - .windsurf/mcp_config.json (vector_db env block)
+      - .mcp.json (vector_db env block)
     affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
     affects_stores: [STORE-CHROMA-CANONICAL]
     read_time: embedder model load
@@ -1057,14 +1057,14 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: unknown
     consumer_modules:
-      - .windsurf/mcp_config.json (notion env block)
+      - .mcp.json (notion env block)
     affects_pipelines: []
     affects_stores: []
     read_time: MCP subprocess spawn
     reload_behavior: process_start
     risk_level: high
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: mcpServers.notion.env.NOTION_TOKEN
     default: unknown
     consumers: [notion MCP subprocess only]
@@ -1077,7 +1077,7 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: unknown
     consumer_modules:
-      - .windsurf/mcp_config.json
+      - .mcp.json
       - tools/mcp/mcp_bootstrap.py
     affects_pipelines: [PIPE-ADG-GEN, PIPE-MEMORY-LIFECYCLE, PIPE-VECTOR-RETRIEVAL]
     affects_stores: [STORE-ADG-SQLITE, STORE-MEMORY-SQLITE-CANONICAL, STORE-CHROMA-CANONICAL]
@@ -1085,7 +1085,7 @@ knobs:
     reload_behavior: process_start
     risk_level: high
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: _bootstrap_env.AGENTIC_REPO_ROOT
     default: unknown
     consumers: [all python MCP subprocesses]
@@ -1098,14 +1098,14 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: ${AGENTIC_REPO_ROOT}
     consumer_modules:
-      - .windsurf/mcp_config.json
+      - .mcp.json
     affects_pipelines: [PIPE-ADG-REDIS-INGEST, PIPE-MEMORY-LIFECYCLE, PIPE-VECTOR-RETRIEVAL]
     affects_stores: []
     read_time: MCP subprocess start
     reload_behavior: process_start
     risk_level: medium
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: mcpServers.*.env.PYTHONPATH
     default: ${AGENTIC_REPO_ROOT}
     consumers: [all python MCP subprocesses]
@@ -1118,14 +1118,14 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: "1"
     consumer_modules:
-      - .windsurf/mcp_config.json
+      - .mcp.json
     affects_pipelines: []
     affects_stores: []
     read_time: MCP subprocess start
     reload_behavior: process_start
     risk_level: low
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: mcpServers.*.env.PYTHONUNBUFFERED
     default: "1"
     consumers: [all python MCP subprocesses]
@@ -1138,14 +1138,14 @@ knobs:
     class: mcp_runtime_env
     default_value_if_observable: unknown
     consumer_modules:
-      - .windsurf/mcp_config.json
+      - .mcp.json
     affects_pipelines: []
     affects_stores: []
     read_time: MCP spawn command interpolation
     reload_behavior: process_start
     risk_level: low
     plane: env
-    source: .windsurf/mcp_config.json
+    source: .mcp.json
     key_path: mcpServers.GitKraken.command
     default: unknown
     consumers: [GitKraken MCP subprocess]

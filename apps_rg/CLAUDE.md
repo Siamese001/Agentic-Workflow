@@ -1,6 +1,6 @@
 # apps_rg Runtime Seam Discipline
 
-> Nested memory: auto-loads when working under `apps_rg/`. Migrated from the Cursor glob-scoped
+> Nested memory: auto-loads when working under `apps_rg/`. Migrated from the legacy editor glob-scoped
 > rule `010-apps-rg-runtime-seams` (globs `apps_rg/**`, `tests/**/apps_rg/**`, `artifacts/apps_rg/**`).
 > Applies when editing or verifying resume-generator runtime seams.
 

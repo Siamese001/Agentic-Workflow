@@ -29625,54 +29625,6 @@ components:
       edges: []
       sources: []
     notes: ""
-  - id: C-CROSS_CUTTING-00639
-    path: agentic_core/prompt_governance/optimization/__init__.py
-    layer: CROSS_CUTTING
-    role: other
-    entry_points: []
-    exports: [OptimizationConfig, OptimizationLevel, OptimizationStrategy, PromptOptimizer, create_prompt_optimizer]
-    imports_summary:
-      intra_layer: 0
-      cross_layer: []
-      external: []
-    seams_used: []
-    embodies:
-      atoms: []
-      edges: []
-      sources: []
-    notes: ""
-  - id: C-CROSS_CUTTING-00640
-    path: agentic_core/prompt_governance/optimization/optimization_strategy.py
-    layer: CROSS_CUTTING
-    role: other
-    entry_points: [OptimizationStrategy, OptimizationLevel, OptimizationConfig, PromptOptimizer, create_prompt_optimizer]
-    exports: [OptimizationStrategy, OptimizationLevel, OptimizationConfig, PromptOptimizer, create_prompt_optimizer]
-    imports_summary:
-      intra_layer: 0
-      cross_layer: []
-      external: ["agentic_core:cross_cutting", dataclasses, logging, typing]
-    seams_used: []
-    embodies:
-      atoms: []
-      edges: []
-      sources: []
-    notes: ""
-  - id: C-CROSS_CUTTING-00641
-    path: agentic_core/prompt_governance/registry/backups/__init__.py
-    layer: CROSS_CUTTING
-    role: other
-    entry_points: []
-    exports: []
-    imports_summary:
-      intra_layer: 0
-      cross_layer: []
-      external: []
-    seams_used: []
-    embodies:
-      atoms: []
-      edges: []
-      sources: []
-    notes: ""
   - id: C-CROSS_CUTTING-00642
     path: agentic_core/prompt_governance/scripts/audit_registry_linkages.py
     layer: CROSS_CUTTING
@@ -29683,22 +29635,6 @@ components:
       intra_layer: 0
       cross_layer: []
       external: [json, pathlib, sys]
-    seams_used: []
-    embodies:
-      atoms: []
-      edges: []
-      sources: []
-    notes: ""
-  - id: C-CROSS_CUTTING-00643
-    path: agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py
-    layer: CROSS_CUTTING
-    role: util
-    entry_points: [collapse_duplicates]
-    exports: [collapse_duplicates]
-    imports_summary:
-      intra_layer: 0
-      cross_layer: []
-      external: ["agentic_core:cross_cutting", logging, typing]
     seams_used: []
     embodies:
       atoms: []

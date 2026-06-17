@@ -1,4 +1,4 @@
-"""Generate a compact Cursor Canvas summary for ADG CI burndown.
+"""Generate a compact legacy editor Canvas summary for ADG CI burndown.
 
 The **readable gate tables** live in markdown (``adg_burndown_report.md``) — this
 script refreshes that report and opens it by default. The canvas is optional

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-pre_mcp_gate.py — Cursor pre_mcp_tool_use hard gate (Phase 1.3).
+pre_mcp_gate.py — legacy editor pre_mcp_tool_use hard gate (Phase 1.3).
 
 Reads JSON payload from stdin. Payload fields:
   tool_info.mcp_server_name  — name of MCP server being called
@@ -8,9 +8,9 @@ Reads JSON payload from stdin. Payload fields:
 
 Behavior:
   - Filesystem MCP (mcp_server_name == "filesystem") write tools → EXIT 2
-      * write_file and edit_file are BLOCKED — Cursor does not pass tool
+      * write_file and edit_file are BLOCKED — legacy editor does not pass tool
         arguments to pre_mcp_tool_use hooks, so content validation is impossible
-        at this layer. Writes must go through Cursor Agent's native write tools
+        at this layer. Writes must go through Codex's native write tools
         (write_to_file, edit, multi_edit) which DO invoke pre_write_code and
         the constitutional anti-pattern + syntax gates.
       * Read-only tools (read_text_file, list_directory, etc.) → exit 0.
@@ -58,7 +58,7 @@ adg_server_name = "adg_sqlite"
 # post_agent_mcp_preflight_audit.py hook.
 #
 # Keyed on tool short-name (after stripping the unstable mcp<digits>_
-# prefix) to stay resilient across Cursor MCP reorderings.
+# prefix) to stay resilient across legacy editor MCP reorderings.
 # ---------------------------------------------------------------------------
 _DESTRUCTIVE_PREFLIGHT_TOOLS: dict[str, str] = {
     "adg_close_connections": "adg_sqlite",
@@ -79,7 +79,7 @@ _PREFLIGHT_MAX_AGE_S: int = 60
 _PREFLIGHT_STARTUP_GRACE_S: int = 60
 
 # Additional MCP servers requiring health gates
-# These names MUST match the keys in .cursor/mcp.json exactly.
+# These names MUST match the keys in .mcp.json exactly.
 pytest_server_name = "pytest_mcp"
 redis_server_name = "redis"  # mcp.json key is "redis", not "redis_mcp"
 memory_server_name = "memory"
@@ -150,7 +150,7 @@ _probe_cache: dict[str, bool] = {}
 
 filesystem_server_name = "filesystem"
 # Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
-# so all .py writes are forced through Cursor Agent's native tools and the
+# so all .py writes are forced through Codex's native tools and the
 # constitutional anti-pattern + syntax gates.
 # move_file included: rename/relocate operations mutate the filesystem and
 # bypass pre_write_code just as write_file and edit_file do.
@@ -169,13 +169,13 @@ artifacts_adg = repo_root / "artifacts" / "adg"
 # as the fallback for pytest / CLI contexts.
 #
 # This solves:
-# - multiple Cursor / VS Code windows clobbering each other
+# - multiple legacy editor / VS Code windows clobbering each other
 # - parallel pytest workers sharing one session_state file
 #
 # This does NOT solve:
 # - per-chat / per-tab isolation inside the same IDE window
 #
-# Per-chat isolation requires Cursor to expose a conversation-scoped
+# Per-chat isolation requires legacy editor to expose a conversation-scoped
 # identifier, for example cursor_chat_id. If such an ID becomes available,
 # replace vscode_pid in the _session_id derivation and keep the rest of the
 # session-state mechanism unchanged.
@@ -189,7 +189,7 @@ session_state = repo_root / "artifacts" / "governance" / f"session_state_{_sessi
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # After this many consecutive blocks without a successful memory recall,
-# the gate degrades to open so Cursor Agent is never permanently stuck.
+# the gate degrades to open so Codex is never permanently stuck.
 max_memory_block_attempts = 3
 
 # Stale session-state files older than this are removed on each gate startup.
@@ -245,7 +245,7 @@ _mcp_whitelist_cache: set[str] | None = None
 
 
 def _load_mcp_whitelist() -> set[str]:
-    """Return the set of mcpServers declared in repo .cursor/mcp.json.
+    """Return the set of mcpServers declared in repo .mcp.json.
 
     Cached after first load. Returns empty set on any error (caller treats
     as fail-open to avoid breaking sessions when config is temporarily invalid).
@@ -730,15 +730,15 @@ def check_filesystem_write_gate(tool_name: str) -> int:
     """
     Block filesystem MCP write tools (write_file, edit_file).
 
-    Cursor does not expose tool arguments to pre_mcp_tool_use hooks, so
+    legacy editor does not expose tool arguments to pre_mcp_tool_use hooks, so
     content-level validation is impossible here. The only safe option is to
-    redirect writes to Cursor Agent's native write tools (write_to_file / edit /
+    redirect writes to Codex's native write tools (write_to_file / edit /
     multi_edit) which DO fire pre_write_code and the constitutional gates.
     """
     if tool_name in filesystem_write_tools:
         return _exit_block(
             f"filesystem MCP tool '{tool_name}' is blocked — "
-            "use Cursor Agent's native write_to_file / edit / multi_edit tools instead. "
+            "use Codex's native write_to_file / edit / multi_edit tools instead. "
             "Those tools invoke pre_write_code and the constitutional anti-pattern "
             "and syntax gates that mcp5 bypasses.",
         )
@@ -985,7 +985,7 @@ def check_vector_db_gate() -> int:
 
     Best-practice change:
     - Do not spawn a subprocess to `import chromadb` on every hook invocation.
-      Cursor launches this hook as a fresh process per MCP call, so process-local
+      legacy editor launches this hook as a fresh process per MCP call, so process-local
       caches provide no cross-call benefit.
     - Do not probe localhost:8000 for Chroma HTTP health when the MCP server uses
       embedded PersistentClient mode against the local persist directory.
@@ -1086,7 +1086,7 @@ def _resolve_gitkraken_repo(payload: dict) -> Path:  # pylint: disable=unused-ar
     Resolve the target repository from the GitKraken tool payload.
 
     GitKraken tools pass the repo root as a `directory` field in tool arguments.
-    Cursor's pre_mcp_tool_use hook does NOT expose tool arguments, so we
+    legacy editor's pre_mcp_tool_use hook does NOT expose tool arguments, so we
     cannot read the `directory` value directly. We resolve the workspace root
     from gitkraken_workspace_root (= repo_root from mcp.json cwd binding).
 
@@ -1252,7 +1252,7 @@ def check_notion_gate() -> int:
             "Notion MCP auth gate failed: NOTION_TOKEN is not set or is empty. "
             "Create an Internal integration token at https://www.notion.so/my-integrations "
             "and register it as a Windows environment variable: "
-            "  setx NOTION_TOKEN secret_...  (then restart Cursor). "
+            "  setx NOTION_TOKEN secret_...  (then restart legacy editor). "
             "See .env for the expected format (NOTION_TOKEN=secret_... or ntn_...)."
         )
     return 0
@@ -1277,7 +1277,7 @@ def check_tavily_gate() -> int:
             "Tavily MCP auth gate failed: TAVILY_API_KEY is not set or is empty. "
             "Create an API key at https://app.tavily.com/home (free tier: 1000 "
             "credits/month) and register it as a Windows environment variable: "
-            "  setx TAVILY_API_KEY tvly-...  (then restart Cursor). "
+            "  setx TAVILY_API_KEY tvly-...  (then restart legacy editor). "
             "Key format: tvly-<alphanumeric>."
         )
     return 0
@@ -1308,7 +1308,7 @@ def check_deepwiki_gate() -> int:
     a gate-level hang on every DeepWiki call (before the probe is cached).
     Since this gate always returns 0, the probe risk outweighs any advisory value.
 
-    Return 0 always (fail-open — remote availability is not Cursor Agent's fault).
+    Return 0 always (fail-open — remote availability is not Codex's fault).
     """
     return 0  # always fail-open — no DNS probe to avoid Windows getaddrinfo hang
 
@@ -1436,9 +1436,9 @@ def main() -> int:
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
 
-    # MCP whitelist — reject any server not declared in .cursor/mcp.json.
+    # MCP whitelist — reject any server not declared in .mcp.json.
     # Mitigates rogue server injection (e.g., user home config override leaking
-    # an unapproved server into Cursor Agent's tool surface).
+    # an unapproved server into Codex's tool surface).
     if server_name:
         rc = check_mcp_whitelist(server_name, tool_name)
         if rc != 0:

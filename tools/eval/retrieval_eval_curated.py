@@ -97,15 +97,15 @@ GOLDEN_QUERIES: list[dict] = [
         "text": "What are the constitutional hard constraints for agent behavior?",
         "cat": "policy",
     },
-    # ── 4. Windsurf hooks / MCP / tooling (TOOLING) ──────────────────────────
+    # ── 4. legacy editor hooks / MCP / tooling (TOOLING) ──────────────────────────
     {
         "id": "TOOL-01",
-        "text": "How do Windsurf MCP servers work and what is the FastMCP pattern?",
+        "text": "How do legacy editor MCP servers work and what is the FastMCP pattern?",
         "cat": "tooling",
     },
     {
         "id": "TOOL-02",
-        "text": "How to configure a Windsurf hook with command and working_directory?",
+        "text": "How to configure a legacy editor hook with command and working_directory?",
         "cat": "tooling",
     },
     {"id": "TOOL-03", "text": "What is the ADG SQLite MCP server and how is it queried?", "cat": "tooling"},

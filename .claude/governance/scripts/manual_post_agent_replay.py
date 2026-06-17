@@ -1,11 +1,11 @@
 """Manual replay of the post_agent_response hook chain.
 
-Workaround for Windsurf 2.0.67 bug where post_agent_response hooks
+Workaround for legacy editor 2.0.67 bug where post_agent_response hooks
 silently stop firing mid-session (pre_user_prompt hooks continue to work).
 
 Usage
 -----
-    # From stdin (paste Cursor Agent response text):
+    # From stdin (paste Codex response text):
     python .claude/governance/scripts/manual_post_agent_replay.py < response.txt
 
     # From clipboard (Windows / pyperclip):
@@ -19,14 +19,14 @@ Usage
 
 What it does
 ------------
-Reads the response text, wraps it in the Windsurf payload shape
+Reads the response text, wraps it in the legacy editor payload shape
 ``{"tool_info": {"response": "..."}}``, and pipes that JSON through
-every entry in ``hooks.post_agent_response`` from ``.cursor/hooks.json``.
+every entry in ``hooks.post_agent_response`` from ``.claude/settings.json``.
 Reports each hook's exit code + stderr summary so silent failures surface.
 
 Why this exists
 ---------------
-Windsurf's post_agent_response hook dispatcher stops invoking hooks
+legacy editor's post_agent_response hook dispatcher stops invoking hooks
 mid-session (root cause upstream; affected 2.0.67). pre_user_prompt
 hooks continue working, proving hooks.json is valid. This script is the
 fallback that keeps DEFERRED_SCOPE capture, writeback audit, ADG audit,
@@ -116,7 +116,7 @@ def _run_hook(hook: dict, payload: str, dry_run: bool) -> tuple[int, str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     src = parser.add_mutually_exclusive_group()
-    src.add_argument("--file", help="Read Cursor Agent response from this file.")
+    src.add_argument("--file", help="Read Codex response from this file.")
     src.add_argument("--clipboard", action="store_true", help="Read from clipboard.")
     parser.add_argument(
         "--dry-run",

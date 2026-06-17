@@ -19,7 +19,7 @@ Detectors:
   A17  rename_shim_consumer_risk (view-only; joins existing shim data)
        WHO still imports the rename shims? (join shim modules × fan-in)
   A19  mcp_tool_contract_drift
-       Compare .cursor/mcp.json servers vs tools/*/mcp_*_server.py
+       Compare .mcp.json servers vs tools/*/mcp_*_server.py
        @tool declarations
 
 Bonus:

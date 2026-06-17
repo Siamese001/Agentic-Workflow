@@ -7,12 +7,12 @@ Reads staged Python files from git index. For each file ADDED in this commit
 (exit 1) on any violation, prints the canonical target suggestion.
 
 Pre-existing files (status 'M', 'R', 'D') are never checked — the rule
-applies to NEW files only, matching the Windsurf hook behavior.
+applies to NEW files only, matching the legacy editor hook behavior.
 
 Bypass: SSOT_FOLDER_BYPASS=1 (logged to stderr).
 
 SSOT logic: ``.claude/governance/scripts/_ssot_folder_check.py``. Both this gate and
-the Windsurf hook ``pre_write_gate.py`` import from the same helper to
+the legacy editor hook ``pre_write_gate.py`` import from the same helper to
 prevent drift.
 
 Constitutional tie-in: §31 (see ``.claude/rules/ssot-folder-enforcement.md``).

@@ -1,8 +1,8 @@
 # Executive Summary — Operator Guide
 
-> **Plan SSOT:** [.cursor/plans/exec-summary-operator-ship-a3f7c2.md](../.cursor/plans/exec-summary-operator-ship-a3f7c2.md)  
-> **Surgical judge regen:** [.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md](../.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md)  
-> **Token / regen budget:** [.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
+> **Plan SSOT:** [.claude/plans/exec-summary-operator-ship-a3f7c2.md](../.claude/plans/exec-summary-operator-ship-a3f7c2.md)  
+> **Surgical judge regen:** [.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md](../.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md)  
+> **Token / regen budget:** [.claude/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.claude/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
 
 ## One command
 
@@ -182,7 +182,7 @@ Seven facts were allowed as proof; eleven graph neighbors (GTM/revenue/partnersh
 - No new X2 gates for “narrative quality.”
 - No lowering judge thresholds to force ALLOW.
 
-## Default run summary (Cursor / operators)
+## Default run summary (legacy editor / operators)
 
 **Always lead with exactly 3 short sentences** (~12-year-old reading level), then technical detail.
 
@@ -201,7 +201,7 @@ Seven facts were allowed as proof; eleven graph neighbors (GTM/revenue/partnersh
 | Product disposition | stdout `PRODUCT_X3_STATUS`, `x3_disposition.json` |
 | Operator tier | `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED` in `cli_section_execution_report.json` |
 
-Rule: [.cursor/rules/apps-rg-executive-summary-response.mdc](../.cursor/rules/apps-rg-executive-summary-response.mdc)
+Rule: [.claude/rules/apps-rg-executive-summary-response.mdc](../.claude/rules/apps-rg-executive-summary-response.mdc)
 
 ### Example layman (Brown run `exec_summary_20260524_233842`)
 
@@ -223,7 +223,7 @@ Per-run contract manifest: `generation_grade_contract_manifest.json` (digests, E
 
 Targeting parity (`targeting_context_parity_receipt.json`) proves JD/briefing bytes match — not full instructional parity. Judges run **after** structural X2 on `REAL_LLM` paths.
 
-Plan: [.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+Plan: [.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 
 ## Debug: which rubric dimension failed? (triangulate → Qwen, not more judges)
 
@@ -246,7 +246,7 @@ After judges (or after X2 block with no judges), read **`dimension_upstream_tria
 
 **Regen hints:** Qwen receives judge feedback via `collect_judge_remediation_delta_lines` (`executive_summary_judge_remediation.py`). Trigger mode: `any_judge_below_floor`.
 
-**Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+**Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.claude/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 
 ## Receipt & call-plan glossary (token / regen budget)
 

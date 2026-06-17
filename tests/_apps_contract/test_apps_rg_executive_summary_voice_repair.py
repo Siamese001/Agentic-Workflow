@@ -82,6 +82,28 @@ def test_finalize_excuses_orphan_ledger_after_credential_strip() -> None:
     assert any("fact_certs_001" in str(g) for g in (out.get("gap_notes") or []))
 
 
+def test_finalize_strips_orphan_source_fact_ids_when_allowlisted() -> None:
+    display = "Led platform work for regulated enterprises."
+    ledger = [
+        {
+            "claim_text": "Led platform work for regulated enterprises.",
+            "source_fact_ids": ["fact_engineering_platform_001", "fact_orphan_999"],
+        }
+    ]
+    parsed = {
+        "resume_display_text": display,
+        "claim_ledger": ledger,
+        "gap_notes": [],
+    }
+    out, receipt = finalize_executive_summary_coherence(
+        parsed,
+        allowed_fact_ids={"fact_engineering_platform_001"},
+    )
+    assert receipt["orphan_citations_stripped"] == ["fact_orphan_999"]
+    assert receipt["ledger_reconciled"] is True
+    assert list(out["claim_ledger"][0]["source_fact_ids"]) == ["fact_engineering_platform_001"]
+
+
 def test_repair_strips_additionally_opener() -> None:
     text = (
         "Led platform delivery. Built governance controls. "

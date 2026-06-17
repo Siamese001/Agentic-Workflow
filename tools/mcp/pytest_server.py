@@ -2,7 +2,7 @@
 """
 Pytest MCP Server - Test discovery, execution, and analysis.
 
-Provides pytest integration for Windsurf with comprehensive test management.
+Provides pytest integration for legacy editor with comprehensive test management.
 Uses the canonical mcp_bootstrap pattern (FastMCP + @mcp.tool() + run_server)
 to avoid the Windows stdio transport hangs caused by low-level Server + anyio.run.
 Subprocess calls use safe_run() to enforce stdin=DEVNULL / stdout=PIPE / stderr=PIPE.
@@ -49,7 +49,7 @@ register_standard_health(mcp, "pytest_mcp", extra=_pytest_health_extra)
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    # Guard against Windsurf double-spawn: two pytest MCP processes racing
+    # Guard against legacy editor double-spawn: two pytest MCP processes racing
     # on the same test collection / coverage artifacts produce flaky,
     # duplicated results. Added 2026-04-23 after RCA of orphan MCP fleet.
     from tools.mcp.mcp_bootstrap import guard_single_instance

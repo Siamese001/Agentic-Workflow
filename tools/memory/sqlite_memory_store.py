@@ -3,7 +3,7 @@
 Single source of truth for knowledge_graph.sqlite schema and all CRUD operations.
 
 Used by two consumers:
-  - tools/memory/adg_memory_server.py  (MCP protocol wrapper — Windsurf IDE access)
+  - tools/memory/adg_memory_server.py  (MCP protocol wrapper — legacy editor IDE access)
   - agentic_core/L4_state/enforcement/graph_memory_bridge.py  (CLI fallback path)
 
 Both paths write to the same knowledge_graph.sqlite file, ensuring that ADG

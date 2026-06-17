@@ -276,7 +276,7 @@ python -m apps_lic.db.check_recipient_counts --compare-with=pre_w5
 ## 8. Reference
 
 **Related Documents:**
-- W5 Migration Plan: `.windsurf/plans/apps-lic-p2p3-deferred-scope-execution.md`
+- W5 Migration Plan: `.claude/plans/apps-lic-p2p3-deferred-scope-execution.md`
 - W6 Migration Script: `apps_lic/migrations/w6_migration.py`
 - Campaign Inventory: `apps_lic/migrations/campaign_inventory.py`
 - Compatibility Checker: `apps_lic/migrations/campaign_inventory.py`

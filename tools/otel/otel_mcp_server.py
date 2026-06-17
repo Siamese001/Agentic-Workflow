@@ -70,7 +70,7 @@ def _prewarm() -> None:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
-    # Guard against Windsurf double-spawn: two otel MCP processes would both
+    # Guard against legacy editor double-spawn: two otel MCP processes would both
     # try to bind the same OTel collector port/ingest lock. Added 2026-04-23
     # after RCA of orphan MCP session fleet.
     from tools.mcp.mcp_bootstrap import guard_single_instance

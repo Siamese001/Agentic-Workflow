@@ -1,4 +1,4 @@
-# Enforcement Architecture: Windsurf Rules + CI Gates
+# Enforcement Architecture: legacy editor Rules + CI Gates
 
 **Last Updated**: 2026-03-11
 **Status**: Canonical Contract
@@ -58,7 +58,7 @@ START: New rule to enforce
 │  │  │
 │  │  └─ NO → Is it about process artifacts (checkpoints, evidence)?
 │  │     ├─ YES → BOTH LAYERS
-│  │     │        Windsurf: enforce creation BEFORE work
+│  │     │        legacy editor: enforce creation BEFORE work
 │  │     │        Pre-commit: verify artifact exists AFTER work
 │  │     │        Examples: rollback checkpoints, dedup search evidence
 │  │     │
@@ -80,13 +80,13 @@ END
 
 | Rule | Layer | Timing | Type | Rationale |
 |------|-------|--------|------|-----------|
-| **AST-First Gate** | Windsurf | Before work | Behavioural | Process rule — must build graph BEFORE investigation |
-| **Scope Guard** | Windsurf | Before work | Behavioural | Process rule — must declare scope BEFORE edits |
-| **Rollback Gate** | Both | Before work (primary) | Behavioural + Structural | Windsurf enforces checkpoint creation; CI verifies artifact exists |
-| **Dedup Guard** | Both | Before work (primary) | Behavioural + Structural | Windsurf enforces 4-step search; CI flags new symbols as proxy |
-| **ADG Repair Discipline** | Windsurf | Before work | Behavioural | Process rule — must answer litmus questions BEFORE edit |
-| **Script Sprawl Guard** | Both | Before work (primary) | Behavioural + Structural | Windsurf enforces decision tree; CI detects new scripts |
-| **Shim Discipline** | Both | Before work (primary) | Behavioural + Structural | Windsurf enforces protocol; CI validates shim content |
+| **AST-First Gate** | legacy editor | Before work | Behavioural | Process rule — must build graph BEFORE investigation |
+| **Scope Guard** | legacy editor | Before work | Behavioural | Process rule — must declare scope BEFORE edits |
+| **Rollback Gate** | Both | Before work (primary) | Behavioural + Structural | legacy editor enforces checkpoint creation; CI verifies artifact exists |
+| **Dedup Guard** | Both | Before work (primary) | Behavioural + Structural | legacy editor enforces 4-step search; CI flags new symbols as proxy |
+| **ADG Repair Discipline** | legacy editor | Before work | Behavioural | Process rule — must answer litmus questions BEFORE edit |
+| **Script Sprawl Guard** | Both | Before work (primary) | Behavioural + Structural | legacy editor enforces decision tree; CI detects new scripts |
+| **Shim Discipline** | Both | Before work (primary) | Behavioural + Structural | legacy editor enforces protocol; CI validates shim content |
 | **Import Hygiene** | Pre-commit | After work | Structural | Observable in file — dead/forbidden imports detectable |
 | **Layer Boundary Guard** | Pre-commit | After work | Structural | Observable in imports — GV edges detectable |
 | **Plan Location** | Pre-commit | After work | Structural | Observable in path — file location verifiable |
@@ -98,7 +98,7 @@ END
 
 ## Enforcement Mechanisms
 
-### Windsurf Layer (Behavioural)
+### legacy editor Layer (Behavioural)
 
 **Mechanism**: Mandatory pre-condition blocks in skill `SKILL.md` files
 
@@ -175,14 +175,14 @@ def main() -> int:
 
 Some rules have enforcement in BOTH layers:
 
-| Rule | Windsurf Enforcement | Pre-Commit Enforcement |
+| Rule | legacy editor Enforcement | Pre-Commit Enforcement |
 |------|---------------------|----------------------|
 | **Rollback Gate** | BEFORE phase: record checkpoint | AFTER phase: verify checkpoint artifact exists |
 | **Dedup Guard** | BEFORE creation: 4-step search | AFTER creation: flag new symbols (proxy) |
 | **Script Sprawl** | BEFORE creation: decision tree | AFTER creation: detect new scripts |
 | **Shim Discipline** | BEFORE move: protocol | AFTER move: validate shim content |
 
-**Key Principle**: Windsurf is PRIMARY (prevents), pre-commit is SECONDARY (detects if it slipped through).
+**Key Principle**: legacy editor is PRIMARY (prevents), pre-commit is SECONDARY (detects if it slipped through).
 
 ---
 
@@ -198,21 +198,21 @@ Some rules have enforcement in BOTH layers:
 
 **Why Wrong**: AST-first is a PROCESS rule (must build graph BEFORE investigation). At commit time, the investigation is already done. Pre-commit cannot reverse bad decisions.
 
-**Correct**: Enforce in Windsurf skill with mandatory pre-condition block.
+**Correct**: Enforce in legacy editor skill with mandatory pre-condition block.
 
-### ❌ Mistake 2: Relying Only on Windsurf for Structural Rules
+### ❌ Mistake 2: Relying Only on legacy editor for Structural Rules
 
-**Wrong**: Only documenting import hygiene in Windsurf skills, no pre-commit gate.
+**Wrong**: Only documenting import hygiene in legacy editor skills, no pre-commit gate.
 
-**Why Wrong**: Windsurf enforcement is soft (AI can make mistakes). Structural rules MUST have hard pre-commit enforcement as safety net.
+**Why Wrong**: legacy editor enforcement is soft (AI can make mistakes). Structural rules MUST have hard pre-commit enforcement as safety net.
 
-**Correct**: Enforce in BOTH layers — Windsurf guides, pre-commit blocks.
+**Correct**: Enforce in BOTH layers — legacy editor guides, pre-commit blocks.
 
 ### ❌ Mistake 3: Confusing Proxy Checks with Full Enforcement
 
 **Wrong**: Believing `check_dedup_violations.py` prevents all duplicates.
 
-**Why Wrong**: Pre-commit can only detect NEW symbols, not semantic duplicates. Full dedup requires AST-backed search BEFORE creation (Windsurf layer).
+**Why Wrong**: Pre-commit can only detect NEW symbols, not semantic duplicates. Full dedup requires AST-backed search BEFORE creation (legacy editor layer).
 
 **Correct**: Understand pre-commit dedup is a PROXY flag, not full enforcement.
 
@@ -224,11 +224,11 @@ Some rules have enforcement in BOTH layers:
 
 1. **Classify the rule** using the decision tree above
 2. **Choose enforcement layer(s)**:
-   - Behavioural/process → Windsurf only
+   - Behavioural/process → legacy editor only
    - Structural/observable → Pre-commit only
-   - Both aspects → Both layers (Windsurf primary, pre-commit secondary)
+   - Both aspects → Both layers (legacy editor primary, pre-commit secondary)
 3. **Create artifacts**:
-   - Windsurf: Add skill to `.windsurf/skills/[skill-name]/` with `MANDATORY PRE-CONDITION` block
+   - legacy editor: Add skill to `.claude/skills/[skill-name]/` with `MANDATORY PRE-CONDITION` block
    - Pre-commit: Add script to `ops_scripts/ci/check_[rule].py`
 4. **Add metadata** to skill `SKILL.md`:
    ```yaml
@@ -253,17 +253,17 @@ Some rules have enforcement in BOTH layers:
 
 ## Examples
 
-### Example 1: Pure Windsurf Rule (AST-First Gate)
+### Example 1: Pure legacy editor Rule (AST-First Gate)
 
 **Rule**: Build AST dependency graph BEFORE any code investigation
 
 **Classification**:
 - Can it be verified at commit time? NO (investigation already done)
 - Is it about HOW the AI works? YES (process rule)
-- **Decision**: Windsurf only
+- **Decision**: legacy editor only
 
 **Enforcement**:
-- Windsurf skill: `.windsurf/skills/ast-first-gate/SKILL.md` with mandatory pre-condition
+- legacy editor skill: `.claude/skills/ast-first-gate/SKILL.md` with mandatory pre-condition
 - Pre-commit gate: None (would be too late)
 
 **Metadata**:
@@ -283,7 +283,7 @@ enforcement_type: behavioural
 - **Decision**: Pre-commit only
 
 **Enforcement**:
-- Windsurf skill: Optional guidance (not mandatory)
+- legacy editor skill: Optional guidance (not mandatory)
 - Pre-commit gate: Ruff F401 check (hard block)
 
 **Metadata**:
@@ -300,10 +300,10 @@ enforcement_type: structural
 **Classification**:
 - Can it be verified at commit time? PARTIALLY (artifact observable, but process not)
 - Is it about HOW the AI works? YES (process rule for checkpoint creation)
-- **Decision**: Both layers (Windsurf primary, pre-commit secondary)
+- **Decision**: Both layers (legacy editor primary, pre-commit secondary)
 
 **Enforcement**:
-- Windsurf skill: `.windsurf/skills/rollback-gate/SKILL.md` with mandatory pre-condition (PRIMARY)
+- legacy editor skill: `.claude/skills/rollback-gate/SKILL.md` with mandatory pre-condition (PRIMARY)
 - Pre-commit gate: `ops_scripts/ci/check_rollback_checkpoints.py` verifies artifact exists (SECONDARY)
 
 **Metadata**:
@@ -321,19 +321,19 @@ enforcement_type: behavioural_primary_structural_secondary
 
 **A**: Pre-commit runs AFTER work is done. Process rules (like "build ADG first") cannot be enforced at commit time because the investigation/refactoring is already complete. Pre-commit cannot reverse bad decisions.
 
-### Q: Why not rely only on Windsurf rules?
+### Q: Why not rely only on legacy editor rules?
 
-**A**: Windsurf enforcement is soft — the AI must voluntarily follow the rules. For structural checks (dead imports, layer violations), we need hard pre-commit enforcement as a safety net. Also, non-Windsurf contributors (humans, other AI tools) won't see Windsurf rules.
+**A**: legacy editor enforcement is soft — the AI must voluntarily follow the rules. For structural checks (dead imports, layer violations), we need hard pre-commit enforcement as a safety net. Also, non-legacy editor contributors (humans, other AI tools) won't see legacy editor rules.
 
 ### Q: What if a rule fits both categories?
 
-**A**: Use BOTH layers with clear primary/secondary roles. Windsurf enforces the PROCESS (prevents), pre-commit verifies the RESULT (detects if it slipped through). Example: Rollback gate — Windsurf enforces checkpoint creation, pre-commit verifies checkpoint artifact exists.
+**A**: Use BOTH layers with clear primary/secondary roles. legacy editor enforces the PROCESS (prevents), pre-commit verifies the RESULT (detects if it slipped through). Example: Rollback gate — legacy editor enforces checkpoint creation, pre-commit verifies checkpoint artifact exists.
 
 ### Q: How do I know if a pre-commit gate is misplaced?
 
 **A**: Ask: "Can this gate reverse a bad decision made during work?" If NO, it's likely misplaced. Example: AST-first gate at commit time cannot force the AI to rebuild the graph and redo the investigation.
 
-### Q: Can I bypass Windsurf rules?
+### Q: Can I bypass legacy editor rules?
 
 **A**: Only if user explicitly requests bypass. The AI must warn about constitutional violation and reduced confidence. Bypass should be rare and documented.
 
@@ -347,18 +347,18 @@ enforcement_type: behavioural_primary_structural_secondary
 
 | Date | Change | Author |
 |------|--------|--------|
-| 2026-03-11 | Initial architecture document created | Cursor Agent AI |
-| 2026-03-11 | Removed AST-first gate from pre-commit (misplaced) | Cursor Agent AI |
-| 2026-03-11 | Added mandatory pre-condition blocks to 5 Windsurf skills | Cursor Agent AI |
-| 2026-03-11 | Tightened dedup and rollback CI gates to proxy/artifact checks | Cursor Agent AI |
-| 2026-03-11 | Added enforcement_layer metadata to all skills | Cursor Agent AI |
+| 2026-03-11 | Initial architecture document created | Codex AI |
+| 2026-03-11 | Removed AST-first gate from pre-commit (misplaced) | Codex AI |
+| 2026-03-11 | Added mandatory pre-condition blocks to 5 legacy editor skills | Codex AI |
+| 2026-03-11 | Tightened dedup and rollback CI gates to proxy/artifact checks | Codex AI |
+| 2026-03-11 | Added enforcement_layer metadata to all skills | Codex AI |
 
 ---
 
 ## References
 
 - `.windsurf/RULES_INDEX.md` — Master index of all rules and gates
-- `.windsurf/rules/adg-repair-discipline.md` — ADG repair protocol
-- `.windsurf/skills/` — All Windsurf skill definitions
+- `.claude/rules/adg-repair-discipline.md` — ADG repair protocol
+- `.claude/skills/` — All legacy editor skill definitions
 - `ops_scripts/ci/` — All pre-commit gate scripts
 - `.pre-commit-config.yaml` — Pre-commit hook configuration

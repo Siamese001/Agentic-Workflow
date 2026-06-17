@@ -34,7 +34,6 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -106,7 +105,11 @@ from apps_rg.runtime.runtime_proof_layout import (
     resolve_effective_lane_l2_path,
 )
 from apps_rg.runtime.sections.ibm_canonical_hydration import remap_ibm_narrative_claim_ledger_to_fact_pool
-from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_graph_evidence_runtime_payload,
+    build_selected_graph_evidence_plan,
+    merge_graph_evidence_reporting_into_dict,
+)
 
 def _generation_status_allows_structure_parse(runtime_generation_status: str) -> bool:
     return runtime_generation_status in {"REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS}
@@ -171,23 +174,23 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
         facts,
         key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
     )
-    return {
-        "section_id": "ibm_narrative",
-        "selection_method": "canonical_json_ibm_facts",
-        "facts": ordered,
-        "required_fact_ids": list(IBM_BULLET_IDS),
-    }
+    return build_selected_graph_evidence_plan(
+        section_id="ibm_narrative",
+        selection_method="canonical_json_ibm_facts",
+        facts=ordered,
+        required_fact_ids=list(IBM_BULLET_IDS),
+    )
 
 
 def build_selected_graph_evidence_plan_ibm_narrative(facts: list[dict[str, Any]]) -> dict[str, Any]:
     from apps_rg.runtime.sections.graph_evidence_contract import selection_method_for_section
 
-    return {
-        "section_id": "ibm_narrative",
-        "selection_method": selection_method_for_section("ibm_narrative"),
-        "facts": facts,
-        "required_fact_ids": [str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")],
-    }
+    return build_selected_graph_evidence_plan(
+        section_id="ibm_narrative",
+        selection_method=selection_method_for_section("ibm_narrative"),
+        facts=facts,
+        required_fact_ids=[str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")],
+    )
 
 
 def _companion_ibm_bullets_accepted(run_dir: Path) -> bool:
@@ -232,26 +235,28 @@ def build_runtime_payload(
     briefing: str,
     candidate_name: str = "",
 ) -> dict[str, Any]:
-    return {
-        "run_id": datetime.now(timezone.utc).strftime("ibm_narrative_%Y%m%d_%H%M%S"),
-        "section_id": "ibm_narrative",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT)) if base_json_path.is_relative_to(REPO_ROOT) else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "ibm_header": ibm_header,
-        "candidate_name": candidate_name,
-        "companion_ibm_bullets_ref": companion_bullets_ref,
-        "companion_ibm_bullets_status": companion_bullets_status,
-        "companion_ibm_bullets_reason": companion_bullets_reason,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": sorted(allowed_fact_ids),
-        "writable_context_scope": "ibm_narrative_only",
-        "full_resume_writable": False,
-    }
+    return build_graph_evidence_runtime_payload(
+        run_id_prefix="ibm_narrative",
+        section_id="ibm_narrative",
+        prompt_id=PROMPT_ID,
+        repo_root=REPO_ROOT,
+        base_json_path=base_json_path,
+        base_hash=base_hash,
+        selected_graph_evidence_plan=selected_fact_plan,
+        allowed_graph_evidence_ids=sorted(allowed_fact_ids),
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing=briefing,
+        writable_context_scope="ibm_narrative_only",
+        extra_fields={
+            "ibm_header": ibm_header,
+            "candidate_name": candidate_name,
+            "companion_ibm_bullets_ref": companion_bullets_ref,
+            "companion_ibm_bullets_status": companion_bullets_status,
+            "companion_ibm_bullets_reason": companion_bullets_reason,
+        },
+    )
 
 
 def build_prompt_messages(runtime_payload: dict[str, Any], companion_text: str) -> list[dict[str, str]]:

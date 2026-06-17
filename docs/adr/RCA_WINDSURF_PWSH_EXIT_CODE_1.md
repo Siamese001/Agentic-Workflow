@@ -1,4 +1,4 @@
-# RCA: Windsurf PowerShell Exit Code 1 Error
+# RCA: legacy editor PowerShell Exit Code 1 Error
 
 **Date:** 2026-05-06  
 **Severity:** P2 — Tooling Friction  
@@ -10,7 +10,7 @@
 
 ## 1. Symptom
 
-Error message repeatedly appears in Windsurf:
+Error message repeatedly appears in legacy editor:
 ```
 The terminal process "C:\Program Files\PowerShell\7\pwsh.exe" terminated with exit code: 1.
 ```
@@ -21,7 +21,7 @@ This is a **generic PowerShell failure** — exit code 1 indicates the shell pro
 
 ## 2. Root Cause Analysis
 
-### 2.1 Known VS Code / Windsurf Bug Pattern
+### 2.1 Known VS Code / legacy editor Bug Pattern
 
 This is a **well-documented upstream issue** affecting VS Code-based IDEs:
 
@@ -43,7 +43,7 @@ The error typically occurs when:
 
 ### 2.3 Specific to This Workspace
 
-This repository has **aggressive pre-hook scripts** (`.windsurf/scripts/pre_*.py`) that run on every Cursor Agent interaction:
+This repository has **aggressive pre-hook scripts** (`.claude/governance/scripts/pre_*.py`) that run on every Codex interaction:
 
 - `pre_prompt_classifier.py` — Runs before every prompt
 - `pre_run_gate.py` — Blocks PowerShell commands (exit 2 for pwsh/powershell)
@@ -55,7 +55,7 @@ This repository has **aggressive pre-hook scripts** (`.windsurf/scripts/pre_*.py
 
 ## 3. Diagnostic Commands
 
-Run these in a **standalone PowerShell window** (not Windsurf terminal):
+Run these in a **standalone PowerShell window** (not legacy editor terminal):
 
 ### 3.1 Check PowerShell Health
 ```powershell
@@ -83,7 +83,7 @@ Get-ExecutionPolicy -List
 Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 ```
 
-### 3.4 Test Windsurf Hook Scripts Directly
+### 3.4 Test legacy editor Hook Scripts Directly
 ```powershell
 cd "C:\Git\Agentic-Workflow-FRESH"
 python .windsurf\scripts\post_cursor_agent_heartbeat.py
@@ -99,7 +99,7 @@ echo "Exit code: $LASTEXITCODE"
 The error often stems from a broken PowerShell profile.
 
 **Option A1 — Quick Test:**
-In Windsurf, open Settings (JSON) and add:
+In legacy editor, open Settings (JSON) and add:
 ```json
 {
   "terminal.integrated.profiles.windows": {
@@ -116,7 +116,7 @@ In Windsurf, open Settings (JSON) and add:
 ```powershell
 # Rename profile to disable it temporarily
 Rename-Item $PROFILE "$PROFILE.bak"
-# Restart Windsurf terminal
+# Restart legacy editor terminal
 ```
 
 ### 4.2 Fix B: Add Antivirus Exclusions
@@ -144,7 +144,7 @@ winget install --id Microsoft.PowerShell --force
 
 ### 4.4 Fix D: Disable VS Code Shell Integration
 
-In Windsurf settings:
+In legacy editor settings:
 ```json
 {
   "terminal.integrated.shellIntegration.enabled": false
@@ -153,12 +153,12 @@ In Windsurf settings:
 
 ### 4.5 Fix E: Clear Terminal State
 
-1. Close all Windsurf windows
+1. Close all legacy editor windows
 2. Delete terminal state cache:
    ```powershell
    Remove-Item -Recurse -Force "$env:APPDATA\Code\User\globalStorage\*terminal*"
    ```
-3. Restart Windsurf
+3. Restart legacy editor
 
 ---
 
@@ -171,10 +171,10 @@ If you need to continue working **right now**:
    - Select "Command Prompt" instead of PowerShell
 
 2. **Or use Windows PowerShell (5.1):**
-   - Not PowerShell 7 — often more stable in Windsurf
+   - Not PowerShell 7 — often more stable in legacy editor
 
 3. **Disable the most intrusive hooks temporarily:**
-   Rename `.windsurf/hooks.json` to `.windsurf/hooks.json.disabled` and restart Windsurf.
+   Rename `.claude/settings.json` to `.claude/settings.json.disabled` and restart legacy editor.
 
 ---
 
@@ -182,9 +182,9 @@ If you need to continue working **right now**:
 
 After applying a fix, verify:
 
-- [ ] Open new terminal in Windsurf → no exit code 1 error
+- [ ] Open new terminal in legacy editor → no exit code 1 error
 - [ ] Run a simple command: `echo "test"` → works
-- [ ] Run a Python script: `python .windsurf/scripts/post_cursor_agent_heartbeat.py` → exit code 0
+- [ ] Run a Python script: `python .claude/governance/scripts/post_cursor_agent_heartbeat.py` → exit code 0
 - [ ] Check hooks still fire: Look for heartbeat in `artifacts/windsurf/post_cursor_agent_heartbeat.jsonl`
 
 ---
@@ -193,7 +193,7 @@ After applying a fix, verify:
 
 - **Regular PowerShell profile backups** — before any changes
 - **Antivirus exclusion policy** — document for team onboarding
-- **Hook script smoke tests** — run `.windsurf/scripts/post_cursor_agent_heartbeat.py` manually after any script edits
+- **Hook script smoke tests** — run `.claude/governance/scripts/post_cursor_agent_heartbeat.py` manually after any script edits
 
 ---
 
@@ -201,7 +201,7 @@ After applying a fix, verify:
 
 - Constitutional §14: No PowerShell in subprocess calls
 - `pre_run_gate.py`: Blocks PowerShell commands at runtime
-- `.windsurf/hooks.json`: 20+ Python hook scripts that may trigger terminal activity
+- `.claude/settings.json`: 20+ Python hook scripts that may trigger terminal activity
 
 ---
 

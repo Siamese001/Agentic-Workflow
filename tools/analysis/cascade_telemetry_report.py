@@ -78,7 +78,7 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def render_text(stats: dict[str, Any]) -> str:
     lines: list[str] = []
-    lines.append("=== Cursor Agent Telemetry Report ===")
+    lines.append("=== Codex Telemetry Report ===")
     lines.append(f"total events       : {stats['total']}")
     lines.append(f"successes          : {stats['successes']}")
     lines.append(f"failures           : {stats['failures']}")

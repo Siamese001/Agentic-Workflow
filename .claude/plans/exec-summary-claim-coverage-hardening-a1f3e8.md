@@ -28,7 +28,7 @@ CURRENT_WAVE: none
 LAST_COMPLETED_WAVE: W4  
 LAST_UPDATED: 2026-05-26  
 
-PLAN_CREATED: slug=exec-summary-claim-coverage-hardening-a1f3e8 path=.cursor/plans/exec-summary-claim-coverage-hardening-a1f3e8.md status=Not Started
+PLAN_CREATED: slug=exec-summary-claim-coverage-hardening-a1f3e8 path=.claude/plans/exec-summary-claim-coverage-hardening-a1f3e8.md status=Not Started
 
 ---
 

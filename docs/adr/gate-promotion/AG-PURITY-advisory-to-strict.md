@@ -258,7 +258,7 @@ AG_PURITY_FAIL_CLOSED=1
 
 ## References
 
-- Plan: `.windsurf/plans/adg-ci-agentic-core-purity-a7c3e9.md`
+- Plan: `.claude/plans/adg-ci-agentic-core-purity-a7c3e9.md`
 - Gate: `ops_scripts/ci/adg_gates/gate_agentic_core_purity.py`
 - Baseline: `artifacts/ci/agentic_core_purity_baseline.json`
 - W0 Receipt: `artifacts/ci/ag_purity_w0_schema_discovery_receipt.md`

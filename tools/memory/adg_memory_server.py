@@ -4,14 +4,14 @@ ADG-Aware Memory MCP Server — persistent replacement for @modelcontextprotocol
 Why this exists
 ---------------
 @modelcontextprotocol/server-memory uses an in-memory Node.js store.
-The ENTIRE knowledge graph is lost on every Windsurf restart. This means:
+The ENTIRE knowledge graph is lost on every legacy editor restart. This means:
   - Constitutional rules must be re-established from scratch every session
   - ADG context must be re-imported every time
   - No cross-session knowledge accumulation or audit trail of what was learned
 
 This server provides:
   - SQLite-backed persistence at artifacts/memory/knowledge_graph.sqlite
-  - Survives Windsurf and machine restarts (durable knowledge base)
+  - Survives legacy editor and machine restarts (durable knowledge base)
   - Same core API as the marketplace server — drop-in replacement
   - Observation deduplication: duplicate observations are silently ignored
   - Session tagging: constitutional rules (ArchitectureLayer, ConstitutionalRule,
@@ -175,7 +175,7 @@ mcp = create_mcp_server(
     "adg-memory",
     (
         "Persistent SQLite-backed knowledge graph. "
-        "Survives restarts — no data loss on Windsurf reload. "
+        "Survives restarts — no data loss on legacy editor reload. "
         "Call mem_recall_session_start first. "
         "Use mem_import_adg_context to seed from ADG hot cache."
     ),
@@ -400,7 +400,7 @@ def mem_recall_session_start() -> dict[str, Any]:
     entities = _store.get_entities_by_type(_SESSION_RECALL_TYPES)
     return {
         "count": len(entities),
-        "note": "These are durable entities — they persist across Windsurf restarts.",
+        "note": "These are durable entities — they persist across legacy editor restarts.",
         "entities": entities,
     }
 
@@ -556,7 +556,7 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
-    # Guard against Windsurf double-spawn: two memory processes would both
+    # Guard against legacy editor double-spawn: two memory processes would both
     # write to knowledge_graph.sqlite and corrupt observation dedup. Added
     # 2026-04-22 MCP standardization.
     from tools.mcp.mcp_bootstrap import guard_single_instance

@@ -22,7 +22,7 @@ _CI_DIR = Path(__file__).resolve().parent
 if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
-from _mcp_ci_common import AGENTS_MD, import_cursor_sync  # noqa: E402
+from _mcp_ci_common import AGENTS_MD, import_repo_sync  # noqa: E402
 
 
 def _extract_block(text: str, marker: str) -> tuple[str | None, str]:
@@ -67,7 +67,7 @@ def _check_block(text: str, marker: str, generator) -> list[str]:
 
 
 def main() -> int:
-    sync = import_cursor_sync()
+    sync = import_repo_sync()
     if not AGENTS_MD.exists():
         print(f"[agents_md_sync] FAIL: AGENTS.md not found at {AGENTS_MD}", flush=True)
         return 1

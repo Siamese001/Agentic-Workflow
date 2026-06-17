@@ -1,6 +1,6 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-15T14:52:45+00:00
+- **Generated:** 2026-06-17T00:01:43+00:00
 - **Gate-results source:** `artifacts\adg\adg_gate_results_20260615_144950.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
 - **Snapshot timestamp:** 2026-06-15T14:49:50.441742+00:00

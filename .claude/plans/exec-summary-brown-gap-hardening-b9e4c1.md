@@ -23,7 +23,7 @@ LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-05-27
 NOTION_PAGE_ID: 36d27693-f55c-81ab-879e-def5569f1007
 
-PLAN_CREATED: slug=exec-summary-brown-gap-hardening-b9e4c1 path=.cursor/plans/exec-summary-brown-gap-hardening-b9e4c1.md status=Completed notion=36d27693-f55c-81ab-879e-def5569f1007
+PLAN_CREATED: slug=exec-summary-brown-gap-hardening-b9e4c1 path=.claude/plans/exec-summary-brown-gap-hardening-b9e4c1.md status=Completed notion=36d27693-f55c-81ab-879e-def5569f1007
 PLAN_COMPLETE: plan=exec-summary-brown-gap-hardening-b9e4c1 note="W1–W4 engineering DONE; 20 unit tests; W4 REAL_LLM exec_summary_20260527_073959; certification deferred (X2 block before judges)"
 
 ---
@@ -53,7 +53,7 @@ PLAN_COMPLETE: plan=exec-summary-brown-gap-hardening-b9e4c1 note="W1–W4 engine
 
 | Phase | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |-------|-------|---------------|-------------|-------------|--------|
-| W0.1 | Register plan (Notion + `PLAN_CREATED`) | `.cursor/plans/`, Notion Plans | — | ~8K | ✅ DONE |
+| W0.1 | Register plan (Notion + `PLAN_CREATED`) | `.claude/plans/`, Notion Plans | — | ~8K | ✅ DONE |
 | W1.1 | Fix E0 positive example S6 (Looking ahead / extend arc) | `executive_summary_examples.yaml`, template hydrate | Contradictory style signal | ~8K | ✅ DONE |
 | W1.2 | Regen remediation filter: strip/reframe proof-impossible findings | `executive_summary_regen*.py`, delta pack builder | Insurance S1 → X2 fail | ~12K | ✅ DONE |
 | W1.3 | Align `delta_class` with EDIT_BUDGET (S6-only vs full-arc) | regen policy + receipts | Scope inflation | ~8K | ✅ DONE |
@@ -100,8 +100,8 @@ WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 
 **Acceptance**
-- [x] [`.cursor/plans/exec-summary-brown-gap-hardening-b9e4c1.md`](exec-summary-brown-gap-hardening-b9e4c1.md) on disk.
-- [x] Notion Plans row: `Status=Completed`, `Exists On Disk=true`, `Plan File Path=.cursor/plans/exec-summary-brown-gap-hardening-b9e4c1.md` — [Notion page](https://www.notion.so/exec-summary-brown-gap-hardening-b9e4c1-36d27693f55c81ab879edef5569f1007) (`36d27693-f55c-81ab-879e-def5569f1007`).
+- [x] [`.claude/plans/exec-summary-brown-gap-hardening-b9e4c1.md`](exec-summary-brown-gap-hardening-b9e4c1.md) on disk.
+- [x] Notion Plans row: `Status=Completed`, `Exists On Disk=true`, `Plan File Path=.claude/plans/exec-summary-brown-gap-hardening-b9e4c1.md` — [Notion page](https://www.notion.so/exec-summary-brown-gap-hardening-b9e4c1-36d27693f55c81ab879edef5569f1007) (`36d27693-f55c-81ab-879e-def5569f1007`).
 
 ---
 
@@ -251,7 +251,7 @@ DoD-5: Operator guide + plan Notion row updated
 ## Marker Quick Reference
 
 ```
-PLAN_CREATED: slug=exec-summary-brown-gap-hardening-b9e4c1 path=.cursor/plans/exec-summary-brown-gap-hardening-b9e4c1.md status=Completed
+PLAN_CREATED: slug=exec-summary-brown-gap-hardening-b9e4c1 path=.claude/plans/exec-summary-brown-gap-hardening-b9e4c1.md status=Completed
 WAVE_COMPLETE: plan=exec-summary-brown-gap-hardening-b9e4c1 wave=4 note="+synthesis revert, 20 tests, W4 073959, certification deferred"
 PLAN_COMPLETE: plan=exec-summary-brown-gap-hardening-b9e4c1 note="W1–W4 engineering DONE; certification deferred"
 ```

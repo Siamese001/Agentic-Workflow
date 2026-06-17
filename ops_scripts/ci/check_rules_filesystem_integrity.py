@@ -36,7 +36,7 @@ def _find_repo_root() -> Path:
     for parent in [cwd] + list(cwd.parents):
         if (parent / ".claude" / "rules").exists():
             return parent
-    # Known repo location (when running in Windsurf environment)
+    # Known repo location (when running in legacy editor environment)
     known_path = Path("C:/Git/Agentic-Workflow-FRESH")
     if (known_path / ".claude" / "rules").exists():
         return known_path

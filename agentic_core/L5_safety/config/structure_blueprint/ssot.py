@@ -917,7 +917,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset().union(
     frozenset(
         {
             ".github",  # GitHub workflows (intentional)
-            "docs/archive/windsurf/legacy-tree",  # Windsurf IDE data (intentional)
+            "docs/archive/windsurf/legacy-tree",  # legacy editor IDE data (intentional)
             ".hypothesis",  # Hypothesis test DB (intentional)
             "Thumbs.db",  # Windows thumbnail cache (file, not dir)
             "docs",  # Documentation territory (intentional)

@@ -6,10 +6,10 @@ authority_tier: T4_repo_canonical
 source_collection: curated_agent_docs
 normative_scope: repo_internal
 evidence_sources:
-  - path: .windsurf/rules/constitutional.md
+  - path: .claude/rules/constitutional.md
     section: "Hard Constraints §14"
     quote: "Subprocess timeout required. subprocess.run(argv, shell=False, timeout=30)."
-  - path: .windsurf/rules/global_rules.md
+  - path: .claude/rules/global_rules.md
     section: "Subprocess Timeout Discipline"
     quote: "ALL subprocess calls MUST include timeout=. No exceptions."
 statement: |

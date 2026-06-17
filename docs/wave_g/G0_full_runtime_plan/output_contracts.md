@@ -208,7 +208,7 @@ mcp_servers:
       ADG_REDIS_URL: redis://localhost:6379/0
     in_repo_source: tools/adg/mcp/server.py
     lifecycle:
-      start: "Windsurf boots server from ~/.codeium/windsurf/mcp_config.json"
+      start: "legacy editor boots server from ~/.codeium/windsurf/mcp_config.json"
       health_probe: adg_health
       shutdown: "process exit"
     dependencies:

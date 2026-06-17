@@ -18,8 +18,8 @@ from lib.claude_hook_common import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-# NOTE (cursor-decommission W6): the legacy MCP-mirror sync (root .mcp.json -> .cursor/mcp.json)
-# is retired. The .cursor/mcp.json mirror no longer exists; root .mcp.json is the sole SSOT,
+# NOTE (cursor-decommission W6): the legacy MCP-mirror sync (root .mcp.json -> .mcp.json)
+# is retired. The .mcp.json mirror no longer exists; root .mcp.json is the sole SSOT,
 # so no post-edit mirror sync is triggered.
 
 

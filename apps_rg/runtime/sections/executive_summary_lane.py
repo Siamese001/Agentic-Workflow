@@ -30,7 +30,6 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +78,11 @@ from apps_rg.runtime.sections.executive_summary_proof_bundle import (
     emit_executive_summary_post_x3_proof_artifacts,
     write_executive_summary_artifact_inventory,
 )
-from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_graph_evidence_runtime_payload,
+    build_selected_graph_evidence_plan,
+    merge_graph_evidence_reporting_into_dict,
+)
 from apps_rg.runtime.sections.executive_summary_evidence_capsule import _capsule_enabled
 from apps_rg.runtime.sections.executive_summary_targeting_context import (
     freeze_executive_summary_targeting_context,
@@ -275,12 +278,12 @@ def extract_allowed_facts(base_resume: dict[str, Any]) -> tuple[list[dict[str, A
 
 def build_selected_fact_plan(selected_facts: list[dict[str, Any]]) -> dict[str, Any]:
     top = selected_facts[:4]
-    return {
-        "section_id": "executive_summary",
-        "selection_method": "resume_document_order_top_n",
-        "facts": top,
-        "required_fact_ids": [row["fact_id"] for row in top],
-    }
+    return build_selected_graph_evidence_plan(
+        section_id="executive_summary",
+        selection_method="resume_document_order_top_n",
+        facts=top,
+        required_fact_ids=[row["fact_id"] for row in top],
+    )
 
 
 def build_runtime_payload(
@@ -295,24 +298,25 @@ def build_runtime_payload(
     allowed_fact_ids_ordered: list[str] | None = None,
 ) -> dict[str, Any]:
     ids = allowed_fact_ids_ordered if allowed_fact_ids_ordered is not None else list(selected_fact_plan.get("required_fact_ids") or [])
-    payload = {
-        "run_id": datetime.now(timezone.utc).strftime("exec_summary_%Y%m%d_%H%M%S"),
-        "section_id": "executive_summary",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT)) if base_json_path.is_relative_to(REPO_ROOT) else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": ids,
-        "writable_context_scope": "executive_summary_only",
-        "full_resume_writable": False,
-        "monolithic_prompt_invoked": False,
-        "strategic_tailor_v1_invoked": False,
-    }
-    return payload
+    return build_graph_evidence_runtime_payload(
+        run_id_prefix="exec_summary",
+        section_id="executive_summary",
+        prompt_id=PROMPT_ID,
+        repo_root=REPO_ROOT,
+        base_json_path=base_json_path,
+        base_hash=base_hash,
+        selected_graph_evidence_plan=selected_fact_plan,
+        allowed_graph_evidence_ids=ids,
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing=briefing,
+        writable_context_scope="executive_summary_only",
+        extra_fields={
+            "monolithic_prompt_invoked": False,
+            "strategic_tailor_v1_invoked": False,
+        },
+    )
 
 
 L2_BRIDGE_PHRASE_PATTERN = re.compile(
@@ -1480,33 +1484,26 @@ def apply_exec_summary_word_budget_repair(
                 candidate, _wb_finalize_receipt = finalize_executive_summary_coherence(
                     candidate,
                     selected_facts=plan_facts,
+                    allowed_fact_ids=allowed_fact_ids,
                     target_role=target_role,
                 )
                 receipt["polish_chain_reapplied"] = True
                 receipt["final_word_budget_trim_applied"] = bool(
                     _wb_finalize_receipt.get("final_word_budget_trim_applied")
                 )
-                # Orphan-citation strip — same allowed-set filter the lane applies to attempt-1.
-                _allowed_set = {str(x) for x in (allowed_fact_ids or set()) if str(x)}
-                new_ledger: list[dict[str, Any]] = []
-                for _row in list(candidate.get("claim_ledger") or []):
-                    if not isinstance(_row, dict):
-                        new_ledger.append(_row)
-                        continue
-                    _r2 = dict(_row)
-                    _ids = [str(x) for x in (_r2.get("source_fact_ids") or [])]
-                    _r2["source_fact_ids"] = [
-                        x
-                        for x in _ids
-                        if x in _allowed_set or x.split("_metric_", 1)[0] in _allowed_set
-                    ]
-                    new_ledger.append(_r2)
-                candidate["claim_ledger"] = new_ledger
+                if _wb_finalize_receipt.get("orphan_citations_stripped") and artifact_dir is not None:
+                    write_json(
+                        artifact_dir / "voice_repair_orphan_citations_stripped.json",
+                        {
+                            "stripped": list(_wb_finalize_receipt.get("orphan_citations_stripped") or []),
+                            "allowed_fact_ids": sorted(allowed_fact_ids),
+                        },
+                    )
                 new_text = str(candidate.get("resume_display_text") or "")
                 words_post = _resume_word_count(new_text)
                 receipt["words_post_candidate"] = words_post
                 orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(
-                    new_ledger, allowed_fact_ids
+                    list(candidate.get("claim_ledger") or []), allowed_fact_ids
                 )
                 if words_post > EXEC_SUMMARY_MAX_WORDS:
                     receipt["rejected_reason"] = f"regen_still_over_budget:{words_post}"
@@ -2368,6 +2365,7 @@ def run_executive_summary_execution(
         parsed, finalize_receipt = finalize_executive_summary_coherence(
             parsed,
             selected_facts=list(selected_fact_plan.get("facts") or []),
+            allowed_fact_ids=allowed_fact_ids,
             target_role=str(
                 getattr(args, "target_role", None)
                 or getattr(args, "target_title", None)
@@ -2397,40 +2395,16 @@ def run_executive_summary_execution(
                     )[:240],
                     replaced_l2=True,
                 )
+            if finalize_receipt.get("orphan_citations_stripped") and artifact_dir is not None:
+                write_json(
+                    artifact_dir / "voice_repair_orphan_citations_stripped.json",
+                    {
+                        "stripped": list(finalize_receipt.get("orphan_citations_stripped") or []),
+                        "allowed_fact_ids": sorted(allowed_fact_ids),
+                    },
+                )
         resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
         claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
-        # Defensive: voice_repair may inject canonical sentences (e.g. dependency-graph
-        # DISPLAY_OVERRIDE) and _source_fact_ids_for_display_sentence may stamp
-        # source_fact_ids that aren't in this run's allowed_fact_ids (e.g.
-        # fact_engineering_platform_002 when the SRFS selector excluded it for a given
-        # role). Strip orphan citations so the X2 orphan/subset gates don't fail closed
-        # on voice-repair drift. If filtering empties a row, keep the row but mark its
-        # source_fact_ids empty (the unsupported_claim_zero gate will then catch real
-        # gaps honestly rather than orphan-citation noise).
-        _allowed_set = set(allowed_fact_ids or [])
-        if _allowed_set:
-            _filtered_ledger: list[dict[str, Any]] = []
-            _orphans_stripped: list[str] = []
-            for _row in claim_ledger:
-                if not isinstance(_row, dict):
-                    _filtered_ledger.append(_row)
-                    continue
-                _new_row = dict(_row)
-                _raw_ids = _new_row.get("source_fact_ids") or []
-                _kept = [str(x) for x in _raw_ids if str(x).split("_metric_", 1)[0] in _allowed_set or str(x) in _allowed_set]
-                _dropped = [str(x) for x in _raw_ids if str(x) not in _kept]
-                if _dropped:
-                    _orphans_stripped.extend(_dropped)
-                _new_row["source_fact_ids"] = _kept
-                _filtered_ledger.append(_new_row)
-            if _orphans_stripped:
-                claim_ledger = _filtered_ledger
-                parsed["claim_ledger"] = _filtered_ledger
-                if artifact_dir is not None:
-                    write_json(
-                        artifact_dir / "voice_repair_orphan_citations_stripped.json",
-                        {"stripped": sorted(set(_orphans_stripped)), "allowed_fact_ids": sorted(_allowed_set)},
-                    )
     # W4 last-seam rung: final post-polish display text is known here, X2 has not run yet.
     # ONE bounded regen when the word ceiling (x2_exec_summary_paragraph_max_words) would fail.
     (
@@ -3209,6 +3183,7 @@ def run_executive_summary_execution(
                             parsed, _finalize_receipt = finalize_executive_summary_coherence(
                                 parsed,
                                 selected_facts=list(selected_fact_plan.get("facts") or []),
+                                allowed_fact_ids=allowed_fact_ids,
                             )
                             resume_display_text = str(
                                 parsed.get("resume_display_text") or resume_display_text

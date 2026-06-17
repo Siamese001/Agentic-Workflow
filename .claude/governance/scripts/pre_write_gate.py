@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-pre_write_gate.py — Cursor pre_write_code hard gate (Phase 1.2).
+pre_write_gate.py — legacy editor pre_write_code hard gate (Phase 1.2).
 
 Reads JSON payload from stdin. Payload fields:
   tool_info.file_path  — path of file being written
@@ -471,13 +471,13 @@ def main() -> int:
     # pipes stdin, which is never a TTY, so hook behavior is unaffected.
     if sys.stdin.isatty():
         return 0
-    # Fast path: if Cursor passes file path as argv[1], check it before reading stdin.
+    # Fast path: if legacy editor passes file path as argv[1], check it before reading stdin.
     # This prevents fail-closed stdin logic from blocking non-.py/.json writes.
     if len(sys.argv) > 1:
         argv_path = sys.argv[1]
         argv_norm = argv_path.replace("\\", "/")
-        # Block .env writes — Cursor Agent cannot read it (pre_read_gate blocks it), so any
-        # write from Cursor Agent will be a blank overwrite that destroys real API keys.
+        # Block .env writes — Codex cannot read it (pre_read_gate blocks it), so any
+        # write from Codex will be a blank overwrite that destroys real API keys.
         if argv_norm.endswith("/.env") or argv_norm == ".env":
             print("[pre_write_gate] BLOCKED: .env writes are forbidden — edit manually in VS Code.", file=sys.stderr)
             return 2

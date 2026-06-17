@@ -1,10 +1,10 @@
-# MCP Server Configuration for Windsurf
+# MCP Server Configuration for legacy editor
 
 ## Overview
-This document describes the Model Context Protocol (MCP) servers configured in Windsurf for the Agentic-Workflow project.
+This document describes the Model Context Protocol (MCP) servers configured in legacy editor for the Agentic-Workflow project.
 
 ## Installation Location
-**File**: `C:\Users\amita\AppData\Roaming\Windsurf\User\settings.json`
+**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
 
 ## Configured MCP Servers
 
@@ -164,13 +164,13 @@ PINECONE_ENVIRONMENT=your_environment
 
 ---
 
-## Usage in Windsurf
+## Usage in legacy editor
 
-After configuration, restart Windsurf to load the MCP servers. You can then:
+After configuration, restart legacy editor to load the MCP servers. You can then:
 
-1. **Check MCP Status**: Look for MCP indicators in the Cursor Agent panel
+1. **Check MCP Status**: Look for MCP indicators in the Codex panel
 2. **Use MCP Tools**: Tools will be available automatically in conversations
-3. **Debug**: Check Windsurf logs if servers fail to start
+3. **Debug**: Check legacy editor logs if servers fail to start
 
 ---
 
@@ -182,7 +182,7 @@ After configuration, restart Windsurf to load the MCP servers. You can then:
 - Verify environment variables are set
 
 ### Permission Errors
-- Run Windsurf as administrator (Windows)
+- Run legacy editor as administrator (Windows)
 - Check file/directory permissions
 
 ### API Key Issues
@@ -195,9 +195,9 @@ After configuration, restart Windsurf to load the MCP servers. You can then:
 
 - [MCP Documentation](https://modelcontextprotocol.io)
 - [MCP Server Registry](https://github.com/modelcontextprotocol/servers)
-- [Windsurf MCP Guide](https://docs.codeium.com/windsurf/mcp)
+- [legacy editor MCP Guide](https://docs.codeium.com/windsurf/mcp)
 
 ---
 
 **Last Updated**: 2026-02-03
-**Configuration File**: `C:\Users\amita\AppData\Roaming\Windsurf\User\settings.json`
+**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`

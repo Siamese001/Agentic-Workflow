@@ -1,6 +1,6 @@
 """apps_architect type definitions — Pattern, PatternCollection, delta types.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P1.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P1.
 Brought forward to W2 as engines depend on Pattern objects.
 """
 

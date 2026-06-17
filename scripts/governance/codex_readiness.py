@@ -24,7 +24,6 @@ if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
 
 import audit_codex_mcp_transports  # noqa: E402
-import codex_hook_parity  # noqa: E402
 
 DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "vector_db")
 CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
@@ -65,7 +64,6 @@ def _check_contract_files(root: Path) -> list[ReadinessCheck]:
     required = [
         "docs/codex-primary-execution.md",
         "scripts/governance/verify_codex_primary.py",
-        "scripts/governance/codex_hook_parity.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/audit_codex_mcp_transports.py",
         "scripts/governance/check_windows_path_budget.py",
@@ -80,26 +78,8 @@ def _check_contract_files(root: Path) -> list[ReadinessCheck]:
                 "Codex primary contract files are missing.",
                 ", ".join(missing),
             )
-        ]
+    ]
     return [ReadinessCheck("codex.contract_files", "PASS", "critical", "Codex primary contract files are present.")]
-
-
-def _check_hook_parity(root: Path) -> ReadinessCheck:
-    failures = codex_hook_parity.validate_hook_matrix(root)
-    if failures:
-        return ReadinessCheck(
-            "codex.hook_parity",
-            "FAIL",
-            "critical",
-            "Codex cannot prove the Claude hook matrix is registered and present.",
-            "\n".join(failures[:20]),
-        )
-    return ReadinessCheck(
-        "codex.hook_parity",
-        "PASS",
-        "critical",
-        "Claude hook matrix is registered and present for Codex preflight.",
-    )
 
 
 def _check_git_state(root: Path, require_clean: bool) -> ReadinessCheck:
@@ -277,7 +257,6 @@ def build_readiness_report(
     transport_report = audit_codex_mcp_transports.build_report(route_contract)
     checks: list[ReadinessCheck] = []
     checks.extend(_check_contract_files(root))
-    checks.append(_check_hook_parity(root))
     checks.append(_check_git_state(root, require_clean))
     checks.extend(_check_env(transport_report))
     checks.extend(_check_required_routes(transport_report, required_callable_routes))

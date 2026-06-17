@@ -1,6 +1,6 @@
 """apps_architect cert-path utilities.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W1.P2.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W1.P2.
 """
 
 from __future__ import annotations

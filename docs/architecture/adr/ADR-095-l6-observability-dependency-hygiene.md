@@ -18,7 +18,7 @@ The historical "fix" was inline `# guardian: allow-layer-violation` comments at 
 
 ## Decision
 
-**Three-pronged hygiene policy**, codified here so that future Cursor Agent sessions and human authors apply it consistently:
+**Three-pronged hygiene policy**, codified here so that future Codex sessions and human authors apply it consistently:
 
 ### 1. Reporter-class files MUST move to `L_OPS` (`ops_scripts/reports/`)
 
@@ -83,8 +83,8 @@ The 5 currently-undocumented L6→L0 edges are a measurement artifact, not a ref
 - ADR-079 — L2 agent graph-layer contract (related: how lower layers consume graph data)
 - Constitutional rule §22 — ADG graph-layer primary driver for refactoring
 - Constitutional rule §3 — Agent deletion authorization (90-day deprecation rule applied here to shim removal)
-- Parent plan: `.windsurf/plans/l6-gravity-hybrid-7c4e2a.md`
-- Session-execution plan: `.windsurf/plans/session-burndown-2026-05-02-c8f3a4.md`
+- Parent plan: `.claude/plans/l6-gravity-hybrid-7c4e2a.md`
+- Session-execution plan: `.claude/plans/session-burndown-2026-05-02-c8f3a4.md`
 
 ## Acceptance Criteria
 

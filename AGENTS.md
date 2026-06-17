@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts; `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json` remain the shared repo-owned governance inputs.
+Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts. Primary enforcement is Codex-owned; legacy `CLAUDE.md` / `.claude/**` compatibility files are not consulted by the primary path.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
@@ -63,7 +63,7 @@ Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.claude
 
 ## Memory
 
-First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Claude's current rule treats native file memory under `memory/` as canonical and the knowledge-graph MCP as optional. Detail: `.claude/rules/memory-management.md`, skill `memory-mcp`.
+First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Native file memory under `memory/` is canonical and the knowledge-graph MCP is optional. Detail: `memory/MEMORY.md` and `memory/codex/memory_summary.md`.
 
 Codex project-memory loader convention: for non-trivial work in this repo, read `memory/MEMORY.md` first and then `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task. Treat `C:\Users\amita\.codex\memories` as global/user memory only; do not make it the SSOT for Agentic Workflow project memory.
 
@@ -74,9 +74,9 @@ Codex project-memory loader convention: for non-trivial work in this repo, read 
 - No bare `except Exception` without guardian
 - No edits during planning phase
 - ADG before grep for structure (§28); grep for literals/TODOs only
-- Full rules: `.claude/rules/` · expanded lists: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md)
+- Full rules: `AGENTS.md` + `docs/codex-primary-execution.md` · expanded lists: legacy compatibility notes only
 
-## Claude config & plans
+## Legacy compatibility & plans
 
 Lookup: `.claude/rules/claude-config-lookup.md` and `.claude/rules/plan-location.md`. New plans are disk-only under `plans/<name>-<6hex>.md`; legacy `.claude/plans/` paths are historical compatibility only.
 
@@ -86,22 +86,22 @@ Pytest runs with plugin **autoload ON** (CI default); `addopts` carries `--timeo
 
 ## Core vs apps (summary)
 
-Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](plans/core-judge-panel-harness-f3c8d1.md)). Detail: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md) · [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.claude/rules/agentic-core-static.md`.
+Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](plans/core-judge-panel-harness-f3c8d1.md)). Detail: [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.claude/rules/agentic-core-static.md` (legacy reference only).
 
 ## Rules & Skills SSOT
 
-Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) · [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md). Plan location (disk-only): [`plan-location.md`](.claude/rules/plan-location.md).
+Procedural MCP / Notion / ledgers: `scripts/governance/**` and `docs/reports/codex/**` cover the active Codex flow; legacy routing notes remain under `.claude/**` for compatibility only. Plan location (disk-only): [`plan-location.md`](.claude/rules/plan-location.md).
 
 | Layer | Path | Notes |
 |-------|------|-------|
-| Always-on rules | `CLAUDE.md` + `.claude/rules/000-002*.md` | Repo governance contract plus compact always-on rule floor |
-| On-demand rules | `.claude/rules/*.md` | Load by task surface and file scope |
-| Skills | `.claude/skills/*/SKILL.md` | Progressive disclosure; per-server stubs redirect to `mcp-integration` §1–§13 |
-| Hooks | `.claude/settings.json` + `.claude/hooks/**` | Post-agent SSOT: `after_agent_governance_dispatch.py` |
-| Index | `.claude/rules/` + historical rule-index references | Generated rule index references remain historical only |
-| Deprecated compatibility shims | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit `.claude/**` SSOT files |
+| Always-on rules | `AGENTS.md` + `docs/codex-primary-execution.md` | Active Codex governance contract and rule floor |
+| On-demand rules | `scripts/governance/**` | Load by task surface and file scope |
+| Skills | `.claude/skills/*/SKILL.md` | Legacy compatibility only; primary enforcement is Codex-owned |
+| Hooks | `.claude/settings.json` + `.claude/hooks/**` | Legacy compatibility only; not consulted by primary enforcement |
+| Index | `docs/reports/codex/` + historical rule-index references | Generated route evidence and historical references only |
+| Deprecated compatibility shims | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit Codex-owned files |
 
-**Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Retired rule and skill names remain historical only.
+**Dedup:** Do not restate always-on invariants in compatibility stubs or hook reminders. Active procedure lives in `AGENTS.md` and `docs/codex-primary-execution.md`; retired rule and skill names remain historical only.
 
 Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](plans/governance-dedup-closeout-e8a4c2.md).
 
@@ -111,7 +111,7 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
-- Validate and run Claude hook preflights from Codex with `python scripts/governance/codex_hook_parity.py --json check`; `.claude/settings.json` and `.claude/hooks/**` remain the hook SSOT.
+- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement does not depend on Claude hook parity.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
 - Do not create a Codex-only rule or MCP registry. Codex consumes repo-owned rules and records live route evidence under `docs/reports/codex/`.
@@ -123,10 +123,10 @@ This section is legacy compatibility only. Older docs and checks still use the "
 When using Codex in this repo:
 
 - Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
-- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as repo-owned governance inputs; Codex consumes them directly and does not mirror them into a private registry.
+- Use `AGENTS.md`, `docs/codex-primary-execution.md`, root `.mcp.json`, and `scripts/governance/**` as repo-owned governance inputs; Codex consumes them directly and does not mirror them into a private registry. Legacy Claude compatibility files remain archival only.
 - Do not copy deprecated rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
 - Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
-- If a Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
+- If a live route is unavailable, use the documented repo CLI/helper for that route; otherwise report the route unavailable and stop. Do not substitute Claude-specific workflows.
 - Validate the legacy compatibility check with `python scripts/governance/verify_codex_backup.py` after changing legacy docs or skills.
 
 Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).

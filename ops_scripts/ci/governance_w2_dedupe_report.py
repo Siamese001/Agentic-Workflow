@@ -18,22 +18,22 @@ def _bytes(path: Path) -> int:
 def main() -> int:
     clusters = {
         "author_gate": {
-            "tier_1": ".cursor/rules/003-cursor-author-gate-hitl.mdc",
+            "tier_1": ".claude/rules/003-cursor-author-gate-hitl.mdc",
             "on_demand_rules": [
-                ".cursor/rules/author-gate-enforcement.mdc",
-                ".cursor/rules/author-gate-decision-points.mdc",
-                ".cursor/rules/anti-pattern-author-gate.mdc",
-                ".cursor/rules/author-gate-svp-calibration.mdc",
+                ".claude/rules/author-gate-enforcement.mdc",
+                ".claude/rules/author-gate-decision-points.mdc",
+                ".claude/rules/anti-pattern-author-gate.mdc",
+                ".claude/rules/author-gate-svp-calibration.mdc",
             ],
             "skills": [
-                ".cursor/skills/author-gate-packet-builder/SKILL.md",
-                ".cursor/skills/author-gate-ui-renderer/SKILL.md",
-                ".cursor/skills/refactor-decision-memory/SKILL.md",
+                ".claude/skills/author-gate-packet-builder/SKILL.md",
+                ".claude/skills/author-gate-ui-renderer/SKILL.md",
+                ".claude/skills/refactor-decision-memory/SKILL.md",
             ],
             "workflows_thinned": [
-                ".cursor/workflows/author-gate-decision-gate.md",
-                ".cursor/workflows/antipattern-author-gate.md",
-                ".cursor/workflows/author-gate-calibration-report.md",
+                "docs/archive/windsurf/legacy-tree/workflows/author-gate-decision-gate.md",
+                "docs/archive/windsurf/legacy-tree/workflows/antipattern-author-gate.md",
+                "docs/archive/windsurf/legacy-tree/workflows/author-gate-calibration-report.md",
             ],
             "removed_duplicate_locations": [
                 "author-gate-enforcement.mdc: pipeline steps 1-9 (now points to 003)",
@@ -44,17 +44,17 @@ def main() -> int:
         },
         "adg": {
             "on_demand_rules": [
-                ".cursor/rules/adg-analysis-procedures.mdc",
-                ".cursor/rules/adg-canonical-invariants.mdc",
-                ".cursor/rules/adg-p-band-burn-down-discipline.mdc",
+                ".claude/rules/adg-analysis-procedures.mdc",
+                ".claude/rules/adg-canonical-invariants.mdc",
+                ".claude/rules/adg-p-band-burn-down-discipline.mdc",
             ],
             "skills": [
-                ".cursor/skills/adg-sqlite/SKILL.md",
-                ".cursor/skills/graph-analysis/SKILL.md",
+                ".claude/skills/adg-sqlite/SKILL.md",
+                ".claude/skills/graph-analysis/SKILL.md",
             ],
             "workflows_thinned": [
-                ".cursor/workflows/adg-repair-loop.md",
-                ".cursor/workflows/adg-test-triage-gate.md",
+                "docs/archive/windsurf/legacy-tree/workflows/adg-repair-loop.md",
+                "docs/archive/windsurf/legacy-tree/workflows/adg-test-triage-gate.md",
             ],
             "removed_duplicate_locations": [
                 "workflows/adg-repair-loop.md: step-by-step repair body",
@@ -63,9 +63,9 @@ def main() -> int:
             "no_loss_assertion": "Full repair/hotspot procedures remain in adg-analysis-procedures.mdc; invariants in adg-canonical-invariants.mdc",
         },
         "structured_reasoning": {
-            "on_demand_rules": [".cursor/rules/sequential-thinking-enforcement.mdc"],
-            "skills": [".cursor/skills/structured-reasoning/SKILL.md"],
-            "workflows_thinned": [".cursor/workflows/structured-reasoning.md"],
+            "on_demand_rules": [".claude/rules/sequential-thinking-enforcement.mdc"],
+            "skills": [".claude/skills/structured-reasoning/SKILL.md"],
+            "workflows_thinned": ["docs/archive/windsurf/legacy-tree/workflows/structured-reasoning.md"],
             "removed_duplicate_locations": [
                 "workflows/structured-reasoning.md: SR_INTAKE through SR_SUMMARY phase bodies",
             ],
@@ -73,16 +73,16 @@ def main() -> int:
         },
         "tavily": {
             "skills": [
-                ".cursor/skills/tavily-research/SKILL.md",
-                ".cursor/skills/mcp-integration/SKILL.md",
+                ".claude/skills/tavily-research/SKILL.md",
+                ".claude/skills/mcp-integration/SKILL.md",
             ],
             "workflows_thinned": [
-                ".cursor/workflows/tavily-search.md",
-                ".cursor/workflows/tavily-extract.md",
-                ".cursor/workflows/tavily-map.md",
-                ".cursor/workflows/tavily-crawl.md",
-                ".cursor/workflows/tavily-research.md",
-                ".cursor/workflows/tavily-best-practices.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-search.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-extract.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-map.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-crawl.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-research.md",
+                "docs/archive/windsurf/legacy-tree/workflows/tavily-best-practices.md",
             ],
             "removed_duplicate_locations": [
                 "All six tavily workflow files: duplicated tool params and hard rules",
@@ -91,11 +91,11 @@ def main() -> int:
         },
         "notion_plan": {
             "on_demand_rules": [
-                ".cursor/rules/plan-location.mdc",
-                ".cursor/rules/plan-update-enforcement.mdc",
-                ".cursor/rules/plan-lifecycle-procedures.mdc",
+                ".claude/rules/plan-location.mdc",
+                ".claude/rules/plan-update-enforcement.mdc",
+                ".claude/rules/plan-lifecycle-procedures.mdc",
             ],
-            "skills": [".cursor/skills/plan-governance/SKILL.md"],
+            "skills": [".claude/skills/plan-governance/SKILL.md"],
             "workflows_thinned": [],
             "removed_duplicate_locations": [
                 "plan-lifecycle-procedures.mdc: full procedural body (moved to plan-governance skill)",

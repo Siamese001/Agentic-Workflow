@@ -35,7 +35,7 @@ Only key names are listed. No secret values are shown.
 
 | Key | MCP server | Notes |
 |---|---|---|
-| `NOTION_TOKEN` | notion MCP (`npx @notionhq/notion-mcp-server`) | injected via `.windsurf/mcp_config.json`; not read by repo runtime Python |
+| `NOTION_TOKEN` | notion MCP (`npx @notionhq/notion-mcp-server`) | injected via `.mcp.json`; not read by repo runtime Python |
 | `GITKRAKEN_GK_PATH` | GitKraken MCP command interpolation | executable path token, not provider API secret |
 
 ## 5. Auth-binding + control-plane coupling

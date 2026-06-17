@@ -1,7 +1,7 @@
 """SSOT path constants for governance CI gates.
 
-Plan files, registration helpers, state, and artifact logs use Cursor-native
-locations. Deprecated Windsurf compatibility copies are not write targets.
+Plan files, registration helpers, state, and artifact logs use repo-native
+locations. Deprecated legacy editor compatibility copies are not write targets.
 """
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def governance_artifact_log(name: str) -> Path:
 
 
 def append_governance_artifact_jsonl(name: str, record: dict[str, Any]) -> Path:
-    """Append one JSON line to the Cursor governance artifact log."""
+    """Append one JSON line to the legacy editor governance artifact log."""
     line = json.dumps(record, ensure_ascii=False) + "\n"
     primary = governance_artifact_log(name)
     with primary.open("a", encoding="utf-8") as fh:
@@ -40,6 +40,6 @@ def append_governance_artifact_jsonl(name: str, record: dict[str, Any]) -> Path:
 
 
 def read_governance_artifact_jsonl_paths(name: str) -> list[Path]:
-    """Return existing Cursor governance artifact log paths."""
+    """Return existing legacy editor governance artifact log paths."""
     p = CURSOR_ARTIFACTS_DIR / name
     return [p] if p.is_file() else []

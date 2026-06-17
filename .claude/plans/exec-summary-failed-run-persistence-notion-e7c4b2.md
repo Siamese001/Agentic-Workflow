@@ -40,7 +40,7 @@ LAST_UPDATED: 2026-05-26
 
 NOTION_PAGE_ID: 36c27693-f55c-81d8-8cba-d0181e262ba2
 NOTION_PLAN_URL: https://www.notion.so/exec-summary-failed-run-persistence-notion-e7c4b2-36c27693f55c81d88cbad0181e262ba2
-PLAN_CREATED: slug=exec-summary-failed-run-persistence-notion-e7c4b2 path=.cursor/plans/exec-summary-failed-run-persistence-notion-e7c4b2.md status=Not Started notion_page=36c27693-f55c-81d8-8cba-d0181e262ba2
+PLAN_CREATED: slug=exec-summary-failed-run-persistence-notion-e7c4b2 path=.claude/plans/exec-summary-failed-run-persistence-notion-e7c4b2.md status=Not Started notion_page=36c27693-f55c-81d8-8cba-d0181e262ba2
 
 ---
 

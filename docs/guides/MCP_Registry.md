@@ -1,7 +1,7 @@
 # MCP Registry — Capability Authority Map
 
 **Status**: ACTIVE  
-**SSOT**: This file reflects live `.windsurf/mcp_config.json`. Runtime config is the authority.  
+**SSOT**: This file reflects live `.mcp.json`. Runtime config is the authority.  
 **Updated**: 2026-04-12 (notion capability names corrected to runtime-actual API-* names)  
 **Rule**: `global_rules.md` §MCP Authority: One SSOT Per Capability
 
@@ -67,9 +67,9 @@ explicit authority assignment.
 
 ### `filesystem` — Local Filesystem
 - **Transport**: Node binary (direct `node.exe` invocation, no npx) — `@modelcontextprotocol/server-filesystem@2026.1.14`
-- **Authority**: All local file reads; writes via gate-redirect to native Cursor Agent tools
+- **Authority**: All local file reads; writes via gate-redirect to native Codex tools
 - **Capability (read/list/meta — allowed)**: `read_text_file`, `read_file` (deprecated), `read_media_file`, `read_multiple_files`, `list_directory`, `list_directory_with_sizes`, `directory_tree`, `search_files`, `get_file_info`, `list_allowed_directories`, `create_directory`
-- **Capability (write/mutate — BLOCKED by gate)**: `write_file`, `edit_file`, `move_file` — redirected to Cursor Agent native tools (`write_to_file`, `edit`, `multi_edit`) which fire `pre_write_code` constitutional gates
+- **Capability (write/mutate — BLOCKED by gate)**: `write_file`, `edit_file`, `move_file` — redirected to Codex native tools (`write_to_file`, `edit`, `multi_edit`) which fire `pre_write_code` constitutional gates
 - **Scope**: Locked to repo root (`C:/Git/Agentic-Workflow`) only — enforced both by server and by gate
 - **Operator note**: `docs/guides/filesystem_mcp_operations.md`
 
@@ -111,7 +111,7 @@ explicit authority assignment.
 ### `notion` — Notion Workspace
 - **Transport**: Local stdio (`npx @notionhq/notion-mcp-server`)
 - **Authority**: Notion workspace read/write — pages, databases, comments, search
-- **Capability** (Windsurf auto-prefixes all names with `mcp6_`, e.g. `mcp6_API-post-page`):
+- **Capability** (legacy editor auto-prefixes all names with `mcp6_`, e.g. `mcp6_API-post-page`):
   - Read: `API-retrieve-a-page`, `API-get-block-children`, `API-retrieve-a-block`, `API-retrieve-a-database`, `API-retrieve-a-data-source`, `API-retrieve-a-page-property`, `API-retrieve-a-comment`, `API-get-self`, `API-get-user`, `API-get-users`
   - Write: `API-post-page`, `API-patch-page`, `API-patch-block-children`, `API-update-a-block`, `API-create-a-data-source`, `API-update-a-data-source`, `API-delete-a-block`, `API-move-page`, `API-create-a-comment`
   - Query/Search: `API-post-search`, `API-query-data-source`, `API-list-data-source-templates`
@@ -172,4 +172,4 @@ Before adding a new MCP server:
 2. If overlap: document the authority decision here before adding
 3. HITL approval required (Constitutional §HITL-1.5 Dependency Addition)
 4. Update this registry after approval
-5. Save `.windsurf/mcp_config.json` — `post_write_mcp_config_sync.py` hook auto-copies to global. Restart Windsurf to apply.
+5. Save `.mcp.json` — `post_write_mcp_config_sync.py` hook auto-copies to global. Restart legacy editor to apply.

@@ -1,4 +1,4 @@
-# Windsurf VSCodium Decision Log
+# legacy editor VSCodium Decision Log
 
 ## Purpose
 

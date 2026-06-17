@@ -43,7 +43,7 @@ ttl_config = repo_root / "config" / "mcp_preflight_ttl.json"
 
 # Maps mcp<digits>_<tool> short-name → logical server identity used as the
 # heartbeat key. The server prefix (mcp0_, mcp1_, ...) is NOT stable across
-# Windsurf restarts — we key on the tool name, not the numeric prefix.
+# legacy editor restarts — we key on the tool name, not the numeric prefix.
 _HEALTH_TOOLS: dict[str, str] = {
     "adg_health": "adg_sqlite",
     "adg_status": "adg_sqlite",

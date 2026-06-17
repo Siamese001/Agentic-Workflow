@@ -1,5 +1,5 @@
 
-<!-- Converted from `.claude/rules/scope-containment.md`. Original Cursor trigger: `always_on`. -->
+<!-- Converted from `.claude/rules/scope-containment.md`. Original legacy editor trigger: `always_on`. -->
 
 # Scope Containment — No Gold-Plating, One Task At A Time
 

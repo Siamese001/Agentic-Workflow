@@ -40,7 +40,7 @@ def main() -> int:
     )
     cpath = str(lookup.DB_PATH).replace("\\", "/")
     if ".claude/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath:
-        errors.append(f"lookup DB_PATH not Cursor ledger: {lookup.DB_PATH}")
+        errors.append(f"lookup DB_PATH not legacy editor ledger: {lookup.DB_PATH}")
 
     cap = _load(
         "capture_verify",
@@ -48,7 +48,7 @@ def main() -> int:
     )
     cpath2 = str(cap.DB_PATH).replace("\\", "/")
     if ".claude/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath2:
-        errors.append(f"capture DB_PATH not Cursor ledger: {cap.DB_PATH}")
+        errors.append(f"capture DB_PATH not legacy editor ledger: {cap.DB_PATH}")
 
     proc = subprocess.run(
         [

@@ -16,6 +16,10 @@ build_cache_dirs:
   - "build"
   - "dist"
   - "_build"
+  - ".cache"
+  - ".tmp"
+  - "temp"
+  - "tmp"
   - ".eggs"
 
 # Version control directories
@@ -46,6 +50,7 @@ coverage_dirs:
 archive_dirs:
   - "archives"
   - "archive"
+  - "_archive"
   - "tools/archive"
   - "artifacts"
   - ".sovereign_healing_backup"
@@ -179,10 +184,18 @@ global_excluded_dirs:
   - ".vscode"
   - "docs/archive/windsurf/legacy-tree"
   - "__pycache__"
+  - ".cache"
   - ".mypy_cache"
   - ".pytest_cache"
   - ".ruff_cache"
+  - ".tmp"
+  - ".eggs"
+  - "_build"
+  - "archive"
+  - "archives"
+  - "env"
   - "node_modules"
+  - "site-packages"
   - "venv"
   - "build"
   - "dist"
@@ -190,6 +203,9 @@ global_excluded_dirs:
   - ".tox"
   - ".nox"
   - "eggs"
+  - "temp"
+  - "tmp"
+  - "venv_stable"
   - "*.egg-info"
 
 # Mirrors path_constants.DISCOVERY_EXCLUDED_TERRITORIES

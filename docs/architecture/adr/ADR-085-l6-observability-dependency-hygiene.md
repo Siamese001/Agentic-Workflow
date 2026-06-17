@@ -2,8 +2,8 @@
 
 **Status:** Accepted  
 **Date:** 2026-05-25  
-**Plan:** [l6-repo-reorganization-mental-model-c4e8f2](../../.cursor/plans/l6-repo-reorganization-mental-model-c4e8f2.md) W6  
-**Child plan:** [l6-gravity-hybrid-7c4e2a](../../.cursor/plans/_archive/2026-05/l6-gravity-hybrid-7c4e2a.md) (Option 1 hybrid — partial execution)
+**Plan:** [l6-repo-reorganization-mental-model-c4e8f2](../../.claude/plans/l6-repo-reorganization-mental-model-c4e8f2.md) W6  
+**Child plan:** [l6-gravity-hybrid-7c4e2a](../../.claude/plans/_archive/2026-05/l6-gravity-hybrid-7c4e2a.md) (Option 1 hybrid — partial execution)
 
 ## Context
 

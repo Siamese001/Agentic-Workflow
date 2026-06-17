@@ -5,7 +5,7 @@ Validates that the canonical SQLite decision ledger
 (.claude/state/refactor_decisions/refactor_decision_ledger.sqlite) is being
 written to. The ledger is fed by:
 
-    Cursor Agent response  -->  tools/capture/append_marker.py  -->  markers.jsonl
+    Codex response  -->  tools/capture/append_marker.py  -->  markers.jsonl
                             -->  tools/capture/queue_to_ledger.py  -->  SQLite
 
 If the JSONL queue has un-drained DECISION_CAPTURED markers (>1 hour old),

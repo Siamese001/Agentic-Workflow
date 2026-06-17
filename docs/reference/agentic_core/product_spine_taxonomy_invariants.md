@@ -1,7 +1,7 @@
 # Product Spine & Agent Taxonomy Invariants
 
 **ADR:** [ADR-088-product-spine-function-truth.md](../../architecture/adr/ADR-088-product-spine-function-truth.md)  
-**Plan:** [agent-inventory-spine-taxonomy-b4e9f2](../../../.cursor/plans/agent-inventory-spine-taxonomy-b4e9f2.md)  
+**Plan:** [agent-inventory-spine-taxonomy-b4e9f2](../../../.claude/plans/agent-inventory-spine-taxonomy-b4e9f2.md)  
 **Assessment:** [agentic_core_agent_inventory_runtime_assessment.md](../../reports/agentic_core_agent_inventory_runtime_assessment.md) (STATUS: PARTIAL)
 
 ## Quick reference

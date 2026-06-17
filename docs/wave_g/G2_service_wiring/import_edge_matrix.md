@@ -23,7 +23,7 @@ ADG recognizes 17 layer partitions (v1.4 only specifies `L0..L6 + CROSS_CUTTING`
 | `L_APP` | apps_* | 6 runtime apps + `apps_underwriting_ai/` |
 | `L_PG` | CROSS_CUTTING | `agentic_core/prompt_governance/` |
 | `L_TOOLS` | out-of-scope for v1.4 | `tools/`, parts of `agentic_core/adg/` |
-| `L_OPS` | out-of-scope | `ops_scripts/`, `.windsurf/scripts/` |
+| `L_OPS` | out-of-scope | `ops_scripts/`, `.claude/governance/scripts/` |
 | `L_INFRA` | out-of-scope | `infrastructure/` |
 | `L_SL` | out-of-scope | `system_learning/` |
 | `L_TEST` | out-of-scope | `tests/` |

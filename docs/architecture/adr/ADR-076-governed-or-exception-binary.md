@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-04-30
 **Deciders:** apps_* owners, apps_shared substrate owner, governance review board
-**Source plan:** `.windsurf/plans/apps-runtime-first-principles-e6ba58.md` (W7)
+**Source plan:** `.claude/plans/apps-runtime-first-principles-e6ba58.md` (W7)
 **Related:** ADR-023 (runtime HITL exit control), ADR-050 (intelligence ledger family)
 
 ---
@@ -106,7 +106,7 @@ entries (5 governed, 2 formal exceptions).
 
 ## Verification
 
-- Plan: `.windsurf/plans/apps-runtime-first-principles-e6ba58.md` W7
+- Plan: `.claude/plans/apps-runtime-first-principles-e6ba58.md` W7
 - Implementation: `ops_scripts/ci/check_app_registry_conformance.py`
 - Tests: `tests/unit/ops_scripts/ci/test_check_app_registry_conformance.py`
 

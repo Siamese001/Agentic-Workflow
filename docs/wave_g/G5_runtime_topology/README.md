@@ -21,10 +21,10 @@
 - Wave F baseline consumed:
   - `docs/wave_e/99_integration_v14/canonical/*` (preferred baseline present)
 - Primary runtime surfaces inspected:
-  - `.windsurf/mcp_config.json`
-  - `.windsurf/hooks.json`
-  - `.windsurf/workflows/*.md`
-  - `.windsurf/scripts/*`
+  - `.mcp.json`
+  - `.claude/settings.json`
+  - `docs/archive/windsurf/legacy-tree/workflows/*.md`
+  - `.claude/governance/scripts/*`
   - `tools/mcp/*`, `tools/adg/*`, `tools/memory/*`, `tools/retrieval/*`, `tools/otel/*`
   - `apps_*/__main__.py`, `apps_rg/bootstrap_runtime.py`, `apps_exec/_optional_agentic_core.py`
   - `.github/workflows/*.yml`, `.pre-commit-config.yaml`, `pytest.ini`

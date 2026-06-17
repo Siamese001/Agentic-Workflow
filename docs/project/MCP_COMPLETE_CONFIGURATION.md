@@ -1,14 +1,14 @@
 # Complete MCP Server Configuration - Historical & Current
 
 ## Overview
-This document contains the **complete MCP server configuration** for Windsurf, including all servers found in historical commits and archives.
+This document contains the **complete MCP server configuration** for legacy editor, including all servers found in historical commits and archives.
 
 **Total MCP Servers Configured**: 28
 
 ---
 
 ## Installation Location
-**File**: `C:\Users\amita\AppData\Roaming\Windsurf\User\settings.json`
+**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
 
 ---
 
@@ -328,9 +328,9 @@ From `agentic_core/config/mcp_mappings.yaml`:
 
 ## Next Steps
 
-1. **Restart Windsurf** to load all 29 MCP servers
+1. **Restart legacy editor** to load all 29 MCP servers
 2. **Set Environment Variables** (see above)
-3. **Verify Installation**: Check MCP panel in Cursor Agent
+3. **Verify Installation**: Check MCP panel in Codex
 4. **Test Individual Servers**: Use MCP tools in conversations
 
 ---
@@ -338,8 +338,8 @@ From `agentic_core/config/mcp_mappings.yaml`:
 ## Troubleshooting
 
 ### GitKraken Not Found
-- Install GitLens extension in Windsurf
-- Path: `C:\Users\amita\AppData\Roaming\Windsurf\User\globalStorage\eamodio.gitlens\gk.exe`
+- Install GitLens extension in legacy editor
+- Path: `C:\Users\amita\AppData\Roaming\legacy editor\User\globalStorage\eamodio.gitlens\gk.exe`
 
 ### Python MCP Servers (Time)
 - Requires: `pip install mcp-server-time`
@@ -353,5 +353,5 @@ From `agentic_core/config/mcp_mappings.yaml`:
 
 **Last Updated**: 2026-02-03
 **Total Servers**: 29
-**Configuration File**: `C:\Users\amita\AppData\Roaming\Windsurf\User\settings.json`
+**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
 **Historical Commit**: `b61340122` (Dec 31, 2025)

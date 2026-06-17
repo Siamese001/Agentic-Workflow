@@ -29,7 +29,7 @@ _CI_DIR = Path(__file__).resolve().parent
 if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
-from _mcp_ci_common import CURSOR_MCP_PATH, load_mcp_json  # noqa: E402
+from _mcp_ci_common import REPO_MCP_PATH, load_mcp_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "mcp_config_sovereignty.json"
@@ -46,7 +46,7 @@ FORBIDDEN_PATH_FRAGMENTS: tuple[str, ...] = (
 )
 
 PROFILE_LAUNCHERS: dict[str, tuple[Path, str]] = {
-    "cursor": (CURSOR_MCP_PATH, ".claude/governance/scripts/filesystem_mcp_launcher.js"),
+    "repo": (REPO_MCP_PATH, ".claude/governance/scripts/filesystem_mcp_launcher.js"),
 }
 
 

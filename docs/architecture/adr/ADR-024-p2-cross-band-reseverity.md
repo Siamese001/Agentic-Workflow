@@ -3,8 +3,8 @@
 **Status**: ACCEPTED (Part A complete; Part B requires fresh post-W5 rescope before execution)
 **Date**: 2026-04-21
 **Phase**: P2 Burndown Wave — `p2-burndown-wave-9e4c17`
-**Deciders**: SVP Engineering (Cursor Agent) + User (Human Approver)
-**Related Plan**: `.windsurf/plans/p2-burndown-wave-9e4c17.md`
+**Deciders**: SVP Engineering (Codex) + User (Human Approver)
+**Related Plan**: `.claude/plans/p2-burndown-wave-9e4c17.md`
 
 ---
 
@@ -227,8 +227,8 @@ Scoping diagnostics: `tools/debug/_adg_part_a_final_scope.py` (retained for Part
 
 ## References
 
-- Plan: `.windsurf/plans/p2-burndown-wave-9e4c17.md`
-- Doctrine: `.windsurf/rules/adg-canonical-invariants.md` §3 (5 Surfaces), §6 (multipliers)
+- Plan: `.claude/plans/p2-burndown-wave-9e4c17.md`
+- Doctrine: `.claude/rules/adg-canonical-invariants.md` §3 (5 Surfaces), §6 (multipliers)
 - Constitutional rule §22 (graph-layer primary), §23 (surface intersections)
 - Detector: `agentic_core/adg/extraction/visitors/core.py` (unchanged by this ADR)
 - Severity SSOT: `agentic_core.adg.severity_bands` (changed by step 1)

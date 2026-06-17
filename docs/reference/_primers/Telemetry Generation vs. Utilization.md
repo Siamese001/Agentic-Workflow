@@ -29,15 +29,15 @@
                     |                                                    | (reads, queries, aggregates)
                     | [X]                                                v
                     | Data exists, but                       +-----------------------+
-                    | Cursor Agent is blind                       |    OTEL MCP SERVER    |
+                    | Codex is blind                       |    OTEL MCP SERVER    |
                     |                                        |  (Bounded Adapter &   |
                     v                                        |  Execution Surface)   |
 +---------------------------------------+                    +-----------------------+
-|         Cursor Agent / Windsurf            |                                ^
+|         Codex / legacy editor            |                                ^
 |     (Cannot easily use data)          |                                | (governed tool call)
 +---------------------------------------+                                v
                                                      +---------------------------------------+
-                                                     |         Cursor Agent / Windsurf            |
+                                                     |         Codex / legacy editor            |
                                                      |  (Operationalizes the Telemetry)      |
                                                      +---------------------------------------+
                                                                          |

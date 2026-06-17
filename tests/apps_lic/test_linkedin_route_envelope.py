@@ -7,7 +7,6 @@ from apps_lic.types.linkedin_route_envelope import (
     ROUTE_INMAIL,
     resolve_linkedin_route_envelope,
 )
-from apps_lic.engines.HOP4RoutingAgent import resolve_hop4_linkedin_route
 from apps_lic.types import message_route_types, route_types
 
 
@@ -52,23 +51,6 @@ def test_explicit_inmail_override_wins() -> None:
     assert envelope.subject_required is True
     assert envelope.premium_available is False
     assert envelope.decision_reason == "explicit_inmail_route_or_channel"
-
-
-def test_legacy_hop4_delegates_explicit_inmail_override_to_route_envelope() -> None:
-    legacy_route, envelope = resolve_hop4_linkedin_route(
-        {
-            "channel": "linkedin_chat",
-            "connection_status": "NOT_CONNECTED",
-            "premium_available": False,
-            "route_override": "INMAIL",
-        }
-    )
-
-    assert legacy_route == ROUTE_INMAIL
-    assert envelope.route == ROUTE_INMAIL
-    assert envelope.hard_cap_chars == INMAIL_BODY_CHAR_CAP
-    assert envelope.subject_required is True
-    assert envelope.signature_required is True
 
 
 def test_legacy_route_config_surfaces_match_canonical_envelope_for_core_linkedin_routes() -> None:

@@ -11,7 +11,7 @@ Renders a weekly markdown report to
 - Flip-readiness: fraction of decisions in the 0.72–0.85 near-indifference band
 - Top-5 overrides that led to promote_to_pattern=1 (learning candidates)
 - Top-5 recommendations that led to rollback=1 or regression=1 (calibration failures)
-- Precedent-agreement % (did Cursor Agent's selected option match historical winning pick?)
+- Precedent-agreement % (did Codex's selected option match historical winning pick?)
 
 Usage:
     python ops_scripts/calibration/author_gate_weekly_report.py

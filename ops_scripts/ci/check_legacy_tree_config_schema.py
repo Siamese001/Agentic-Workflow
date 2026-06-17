@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Constitutional §26 — Windsurf config schema purity.
+"""Constitutional §26 — legacy editor config schema purity.
 
-Validates that `.cursor/hooks.json` and `.cursor/mcp.json` contain
-only fields published in the official Windsurf schema. Unknown keys (e.g.
+Validates that `.claude/settings.json` and `.mcp.json` contain
+only fields published in the official legacy editor schema. Unknown keys (e.g.
 `powershell`, `bash`, `shell`, `env_override`, `platform`) silently disable
-the hook entry or MCP server — Windsurf's parser rejects the entry with no
+the hook entry or MCP server — legacy editor's parser rejects the entry with no
 error surfaced to the user.
 
 Precedent (2026-04-23):
     A `powershell` field added to 23 hook entries silently disabled the
-    entire `post_agent_response` chain across a full Windsurf restart.
+    entire `post_agent_response` chain across a full legacy editor restart.
     Detected only via heartbeat-log forensics.
 
-Bypass (Cursor-only / no Windsurf mirror maintenance):
+Bypass (legacy editor-only / no legacy editor mirror maintenance):
     ``WINDSURF_CONFIG_SCHEMA_BYPASS=1`` — skip validation of
-    ``.cursor/hooks.json`` and ``.cursor/mcp.json`` only. CI must
-    NOT set this; Cursor schema is still enforced by
+    ``.claude/settings.json`` and ``.mcp.json`` only. CI must
+    NOT set this; legacy editor schema is still enforced by
     ``check_cursor_config_schema.py``.
 
 Schema whitelists (per docs/cursor/hooks.md + docs/cursor/mcp.md):
@@ -41,13 +41,13 @@ MCP_PATH = ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
 # Schema whitelists — extend ONLY when docs/cursor/*.md is updated upstream.
 # Underscore-prefixed keys (e.g. `_note`, `_comment`) are universally allowed
-# as an inline-documentation convention; Windsurf's parser tolerates them.
+# as an inline-documentation convention; legacy editor's parser tolerates them.
 HOOK_ENTRY_FIELDS = {
     "command",
     "working_directory",
     "show_output",
     # Governance metadata (enriched hooks.json — plan plan-update-enforcement-template-fix-e7a3c1).
-    # Windsurf tolerates underscore-prefixed keys; these are explicit non-_ fields.
+    # legacy editor tolerates underscore-prefixed keys; these are explicit non-_ fields.
     "hook_id",
     "lifecycle_stage",
     "priority",
@@ -79,7 +79,7 @@ MCP_SERVER_FIELDS = {
 HOOKS_TOP_LEVEL = {"hooks", "schema_version", "version"}
 MCP_TOP_LEVEL = {"mcpServers", "schema_version", "version"}
 
-# Fields that LOOK plausible but are known to silently break Windsurf.
+# Fields that LOOK plausible but are known to silently break legacy editor.
 KNOWN_POISON_FIELDS = {
     "powershell",
     "bash",
@@ -104,7 +104,7 @@ def _validate_working_directory(
     """Fail when a hooks.json entry carries a hardcoded absolute path that
     does not resolve to the active repo root.
 
-    Why: Windsurf hook runner resolves ``working_directory`` literally. A stale
+    Why: legacy editor hook runner resolves ``working_directory`` literally. A stale
     clone path (e.g. ``C:\\Git\\Agentic-Workflow`` when the active workspace is
     ``C:\\Git\\Agentic-Workflow-FRESH``) silently misdirects every hook invocation
     to the wrong directory, causing all hook scripts to fail or run against stale
@@ -115,14 +115,14 @@ def _validate_working_directory(
     path is used. This works on any developer machine and in any CI runner.
 
     Waiver: if the entry contains a ``_local_only_waiver`` key (underscore-prefix
-    = tolerated by Windsurf schema), the working_directory check is skipped for
+    = tolerated by legacy editor schema), the working_directory check is skipped for
     that entry. The waiver must be explicitly set and is visible in code review.
     """
     if entry.get("_local_only_waiver"):
         return
     wd_path = Path(working_dir)
     if not wd_path.is_absolute():
-        return  # relative paths are fine — Windsurf resolves them against workspace
+        return  # relative paths are fine — legacy editor resolves them against workspace
     try:
         resolved = wd_path.resolve()
         if resolved != ROOT.resolve():
@@ -143,12 +143,12 @@ def _check_entry(entry: dict, allowed: set[str], path: str, violations: list[str
             continue
         if key.startswith("_"):
             # Underscore-prefixed = documentation/metadata convention. Tolerated
-            # by Windsurf's parser across both hooks.json and mcp_config.json.
+            # by legacy editor's parser across both hooks.json and mcp_config.json.
             continue
         if key in KNOWN_POISON_FIELDS:
             violations.append(
                 f"  ❌ {path}: forbidden field '{key}' — this silently disables "
-                f"the entry in Windsurf. See constitutional §26."
+                f"the entry in legacy editor. See constitutional §26."
             )
         else:
             violations.append(
@@ -249,28 +249,28 @@ def main() -> int:
     ):
         print(
             "[windsurf-config-schema] BYPASS — WINDSURF_CONFIG_SCHEMA_BYPASS=1 "
-            "(Windsurf hooks/MCP files not validated; Cursor gate is separate)"
+            "(legacy editor hooks/MCP files not validated; legacy editor gate is separate)"
         )
         return 0
 
-    print("🔍 Validating Windsurf config schema purity (constitutional §26)")
+    print("🔍 Validating legacy editor config schema purity (constitutional §26)")
     violations: list[str] = []
     _validate_hooks(violations)
     _validate_mcp(violations)
 
     if violations:
-        print(f"❌ Windsurf config schema violations ({len(violations)} issue(s)):")
+        print(f"❌ legacy editor config schema violations ({len(violations)} issue(s)):")
         for v in violations:
             print(v)
         print(
-            "\nWhy this matters: Windsurf's config parser silently rejects "
+            "\nWhy this matters: legacy editor's config parser silently rejects "
             "entries with unknown fields. The hook or MCP server goes dark "
             "with no error surfaced. See constitutional §26 and the "
             "2026-04-23 post-agent hook-chain failure RCA."
         )
         return 1
 
-    print("✅ Windsurf config schema purity validated (hooks.json + mcp_config.json)")
+    print("✅ legacy editor config schema purity validated (hooks.json + mcp_config.json)")
     return 0
 
 

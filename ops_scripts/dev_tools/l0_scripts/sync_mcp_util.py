@@ -1,7 +1,7 @@
 """
 MCP configuration Sync Script
 
-Automatically syncs SOVEREIGN_MCP_REGISTRY from mcp_registry.py to Windsurf's mcp_config.json.
+Automatically syncs SOVEREIGN_MCP_REGISTRY from mcp_registry.py to legacy editor's mcp_config.json.
 This prevents configuration drift between the Python SSOT and the IDE configuration.
 
 Usage:
@@ -9,7 +9,7 @@ Usage:
     python scripts/sync_mcp_util.py --apply   # Apply changes
     python scripts/sync_mcp_util.py --verify  # Verify sync status only
 
-Author: Cursor
+Author: legacy editor
 Date: January 19, 2026
 """
 
@@ -72,12 +72,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def get_windsurf_config_path() -> Path:
-    """Get the path to Windsurf's MCP config file."""
+    """Get the path to legacy editor's MCP config file."""
     if sys.platform == "win32":
         appdata = os.environ.get("APPDATA", "")
-        return Path(appdata) / "Windsurf" / "config" / "mcp_config.json"
+        return Path(appdata) / "legacy editor" / "config" / "mcp_config.json"
     elif sys.platform == "darwin":
-        return Path.home() / "Library" / "Application Support" / "Windsurf" / "config" / "mcp_config.json"
+        return Path.home() / "Library" / "Application Support" / "legacy editor" / "config" / "mcp_config.json"
     else:
         return Path.home() / ".config" / "windsurf" / "mcp_config.json"
 
@@ -97,7 +97,7 @@ def load_sovereign_registry() -> dict[str, Any]:
 
 
 def load_windsurf_config(config_path: Path) -> dict[str, Any]:
-    """Load the current Windsurf MCP config."""
+    """Load the current legacy editor MCP config."""
     # guardian: allow-config-with-logic
     if not config_path.exists():
         return {"mcpServers": {}}
@@ -109,7 +109,7 @@ def load_windsurf_config(config_path: Path) -> dict[str, Any]:
 
 
 def convert_registry_to_windsurf_format(registry: dict[str, Any]) -> dict[str, Any]:
-    """Convert SOVEREIGN_MCP_REGISTRY entries to Windsurf mcp_config.json format."""
+    """Convert SOVEREIGN_MCP_REGISTRY entries to legacy editor mcp_config.json format."""
     NAME_MAP = {
         "playwright": "mcp-playwright",
         "pinecone": "pinecone-mcp-server",
@@ -154,7 +154,7 @@ def merge_configs(
     Merge registry servers into current config.
 
     Args:
-        current_config: Current Windsurf config
+        current_config: Current legacy editor config
         registry_servers: Servers from SOVEREIGN_MCP_REGISTRY
         preserve_local: If True, preserve servers not in registry (like filesystem)
 
@@ -250,7 +250,7 @@ def apply_config(config_path: Path, new_config: dict[str, Any]) -> bool:
 
 
 def verify_sync(config_path: Path, registry: dict[str, Any]) -> bool:
-    """Verify that Windsurf config is in sync with registry."""
+    """Verify that legacy editor config is in sync with registry."""
     current_config = load_windsurf_config(config_path)
     registry_servers = convert_registry_to_windsurf_format(registry)
     current_servers = current_config.get("mcpServers", {})
@@ -275,11 +275,11 @@ def verify_sync(config_path: Path, registry: dict[str, Any]) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sync SOVEREIGN_MCP_REGISTRY to Windsurf mcp_config.json")
+    parser = argparse.ArgumentParser(description="Sync SOVEREIGN_MCP_REGISTRY to legacy editor mcp_config.json")
     parser.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
     parser.add_argument("--verify", action="store_true", help="Only verify sync status, don't show diff")
     parser.add_argument("--no-backup", action="store_true", help="Skip creating backup before applying")
-    parser.add_argument("--config-path", type=Path, default=None, help="Override Windsurf config path")
+    parser.add_argument("--config-path", type=Path, default=None, help="Override legacy editor config path")
     args = parser.parse_args()
     print("\n" + "=" * 60)
     print("MCP CONFIGURATION SYNC")
@@ -293,10 +293,10 @@ def main():
     if args.verify:
         success = verify_sync(config_path, registry)
         sys.exit(0 if success else 1)
-    print("\nLoading current Windsurf config...")
+    print("\nLoading current legacy editor config...")
     current_config = load_windsurf_config(config_path)
     current_count = len(current_config.get("mcpServers", {}))
-    print(f"   Found {current_count} servers in Windsurf config")
+    print(f"   Found {current_count} servers in legacy editor config")
     registry_servers = convert_registry_to_windsurf_format(registry)
     new_config = merge_configs(current_config, registry_servers)
     diff = compute_diff(current_config, new_config)
@@ -321,7 +321,7 @@ def main():
         print("\n" + "=" * 60)
         print("✅ SYNC COMPLETE")
         print("=" * 60)
-        print("\n⚠️  ACTION REQUIRED: Restart Windsurf/Cursor Agent to activate changes")
+        print("\n⚠️  ACTION REQUIRED: Restart legacy editor/Codex to activate changes")
         sys.exit(0)
     else:
         print("\n❌ SYNC FAILED")

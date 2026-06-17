@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Rewrite active Windsurf SSOT path references to Cursor equivalents.
+"""Rewrite active legacy editor SSOT path references to legacy editor equivalents.
 
-Skips archive/legacy trees and preserves explicit Windsurf-mirror MCP paths.
+Skips archive/legacy trees and preserves explicit legacy editor-mirror MCP paths.
 
 Usage:
   python ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py --dry-run
@@ -30,17 +30,17 @@ SKIP_DIR_PARTS = (
 TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".json"}
 
 REPLACEMENTS: list[tuple[str, str]] = [
-    (".cursor/rules/", ".cursor/rules/"),
-    ("docs/archive/windsurf/legacy-tree/plans/", ".cursor/plans/"),
+    (".claude/rules/", ".claude/rules/"),
+    ("docs/archive/windsurf/legacy-tree/plans/", ".claude/plans/"),
     (".cursor/state/", ".cursor/state/"),
     (".claude/governance/scripts/", ".cursor/scripts/"),
-    (".cursor/skills/", ".cursor/skills/"),
+    (".claude/skills/", ".claude/skills/"),
     ("docs/archive/windsurf/legacy-tree/config/", ".cursor/config/"),
     (' / "docs/archive/windsurf/legacy-tree" / "config" / ', ' / ".cursor" / "config" / '),
-    (".cursor/hooks.json", ".cursor/hooks.json"),
+    (".claude/settings.json", ".claude/settings.json"),
     (".cursor/schemas/", ".cursor/schemas/"),
-    ("docs/archive/windsurf/legacy-tree/workflows/", ".cursor/workflows/"),
-    (".cursor/templates/", ".cursor/templates/"),
+    ("docs/archive/windsurf/legacy-tree/workflows/", "docs/archive/windsurf/legacy-tree/workflows/"),
+    (".claude/templates/", ".claude/templates/"),
     ("docs/archive/windsurf/legacy-tree/commands/", ".cursor/commands/"),
     ("docs/archive/windsurf/legacy-tree/agents/", ".cursor/agents/"),
     (".cursor/RULES_INDEX.md", ".cursor/RULES_INDEX.md"),
@@ -51,14 +51,14 @@ REPLACEMENTS: list[tuple[str, str]] = [
     (r"\.windsurf[/\\]scripts[/\\]", r".cursor[/\\]scripts[/\\]"),
     (r"\.windsurf[/\\]plans[/\\]", r".cursor[/\\]plans[/\\]"),
     (r"\\\.windsurf[/\\]plans", r"\\\.cursor[/\\]plans"),
-    ("@.cursor/rules/", "@.cursor/rules/"),
+    ("@.claude/rules/", "@.claude/rules/"),
     ("tools/windsurf/wave_execution_state.py", "tools/plan_lifecycle/wave_execution_state.py"),
     ("python tools/windsurf/wave_execution_state.py", "python tools/plan_lifecycle/wave_execution_state.py"),
     ("docs/windsurf/", "docs/cursor/"),
     ("windsurf-config-lookup.md", "cursor-config-lookup.mdc"),
     ("windsurf-config-lookup", "cursor-config-lookup"),
-    ("## Windsurf Configuration Docs", "## Cursor Configuration Docs"),
-    ("Windsurf Configuration Docs", "Cursor Configuration Docs"),
+    ("## legacy editor Configuration Docs", "## legacy editor Configuration Docs"),
+    ("legacy editor Configuration Docs", "legacy editor Configuration Docs"),
 ]
 
 # Whole-line / doc fixes (order matters — run after path swaps).
@@ -68,32 +68,32 @@ PHRASE_REPLACEMENTS: list[tuple[str, str]] = [
         "invoke the `structured-reasoning` skill. Emit `SR_INTAKE`",
     ),
     (
-        "See `.cursor/rules/sequential-thinking-enforcement.md`",
-        "See `.cursor/rules/sequential-thinking-enforcement.mdc`",
+        "See `.claude/rules/sequential-thinking-enforcement.md`",
+        "See `.claude/rules/sequential-thinking-enforcement.mdc`",
     ),
     (
-        "See `.cursor/rules/sequential-thinking-enforcement.md`",
-        "See `.cursor/rules/sequential-thinking-enforcement.mdc`",
+        "See `.claude/rules/sequential-thinking-enforcement.md`",
+        "See `.claude/rules/sequential-thinking-enforcement.mdc`",
     ),
     (
-        "See `.cursor/rules/windsurf-config-lookup.md`",
-        "See `.cursor/rules/cursor-config-lookup.mdc`",
+        "See `.claude/rules/windsurf-config-lookup.md`",
+        "See `.claude/rules/cursor-config-lookup.mdc`",
     ),
     (
-        "See `.cursor/rules/windsurf-config-lookup.md` for the full local-first lookup order. Local docs mirror: `docs/windsurf/`. Plans SSOT: `docs/archive/windsurf/legacy-tree/plans/<name>-<6hex>.md`",
-        "See `.cursor/rules/cursor-config-lookup.mdc` for the full local-first lookup order. Plans SSOT: `.cursor/plans/<name>-<6hex>.md`",
+        "See `.claude/rules/windsurf-config-lookup.md` for the full local-first lookup order. Local docs mirror: `docs/windsurf/`. Plans SSOT: `docs/archive/windsurf/legacy-tree/plans/<name>-<6hex>.md`",
+        "See `.claude/rules/cursor-config-lookup.mdc` for the full local-first lookup order. Plans SSOT: `.claude/plans/<name>-<6hex>.md`",
     ),
     (
-        "Full rules: `.cursor/rules/` and `.cursor/RULES_INDEX.md`",
-        "Full rules: `.cursor/rules/` and `.cursor/RULES_INDEX.md`",
+        "Full rules: `.claude/rules/` and `.cursor/RULES_INDEX.md`",
+        "Full rules: `.claude/rules/` and `.cursor/RULES_INDEX.md`",
     ),
     (
-        "2. **Windsurf Rules** — Static analysis and editing-time guidance",
-        "2. **Cursor Rules** — Static analysis and editing-time guidance",
+        "2. **legacy editor Rules** — Static analysis and editing-time guidance",
+        "2. **legacy editor Rules** — Static analysis and editing-time guidance",
     ),
     (
-        "Sync Windsurf mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using Windsurf",
-        "Sync Windsurf mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using Windsurf (optional)",
+        "Sync legacy editor mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor",
+        "Sync legacy editor mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor (optional)",
     ),
     (
         "Change gate behavior in `.claude/governance/scripts/pre_mcp_gate.py`",
@@ -104,12 +104,12 @@ PHRASE_REPLACEMENTS: list[tuple[str, str]] = [
         "python .cursor/scripts/sync_mcp_config.py",
     ),
     (
-        "Filesystem SSOT: `.cursor/mcp.json`",
-        "Filesystem SSOT (Windsurf mirror): `.cursor/mcp.json`",
+        "Filesystem SSOT: `.mcp.json`",
+        "Filesystem SSOT (legacy editor mirror): `.mcp.json`",
     ),
     (
-        "Filesystem SSOT: `.cursor/rules/*.md`",
-        "Filesystem SSOT: `.cursor/rules/*.mdc`",
+        "Filesystem SSOT: `.claude/rules/*.md`",
+        "Filesystem SSOT: `.claude/rules/*.mdc`",
     ),
 ]
 

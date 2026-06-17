@@ -8,7 +8,7 @@
 
 The 2026-04 three-bucket model (static / runtime / registry) correctly states that
 AST proof, policy declarations, and execution traces answer different questions.
-Windsurf-era plans stacked W1–W8 (registry lift, synthetic OTel, triplet health,
+legacy editor-era plans stacked W1–W8 (registry lift, synthetic OTel, triplet health,
 in-toto digest, ADG_CERTIFIED) into **every** full ADG regen.
 
 Observed problems:

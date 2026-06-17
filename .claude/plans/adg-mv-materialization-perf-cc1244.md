@@ -2,7 +2,7 @@
 plan_id: adg-mv-materialization-perf-cc1244
 plan_type: tracker
 # Auto-scaffolded 2026-06-07 by .cursor/scripts/post_cursor_agent_deferred_scope_capture.py
-# from a DEFERRED_SCOPE marker. Cursor Agent should expand this plan on the next
+# from a DEFERRED_SCOPE marker. Codex should expand this plan on the next
 # session before execution starts.
 ---
 
@@ -29,7 +29,7 @@ DEFERRED_SCOPE: plan=adg-mv-materialization-perf-cc1244 wave=W1 phase=W1.1 layer
 
 | Waves | Metric | Scope | Checkpoint | Tokens |
 |-------|--------|-------|------------|--------|
-| W1 | AUTO-SCAFFOLD | TBD — Cursor Agent to fill | A | ~22000 🟡 |
+| W1 | AUTO-SCAFFOLD | TBD — Codex to fill | A | ~22000 🟡 |
 
 ## Phase-Level Summary
 
@@ -47,6 +47,6 @@ DEFERRED_SCOPE: plan=adg-mv-materialization-perf-cc1244 wave=W1 phase=W1.1 layer
 
 ## Next Action
 
-Cursor Agent must expand this plan on the first session that picks it up. The
+Codex must expand this plan on the first session that picks it up. The
 authoritative backlog row lives in Notion Wave/Phase Convergence
 (``Plan File = "adg-mv-materialization-perf-cc1244.md"``).

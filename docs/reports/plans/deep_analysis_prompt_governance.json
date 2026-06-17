@@ -1,10 +1,10 @@
 {
   "summary": {
     "target_dir": "agentic_core/prompt_governance",
-    "total_files": 98,
-    "total_with_issues": 4,
+    "total_files": 93,
+    "total_with_issues": 3,
     "total_root_violations": 0,
-    "total_dead_code_files": 4,
+    "total_dead_code_files": 3,
     "total_misplaced_files": 0,
     "folder_breakdown": {
       "prompt_governance": {
@@ -41,16 +41,6 @@
         "misplaced_files": [],
         "clean_files": 19
       },
-      "prompt_governance\\optimization": {
-        "files": 2,
-        "total_lines": 251,
-        "root_violations": [],
-        "dead_code_files": [
-          "prompt_governance/optimization/__init__.py"
-        ],
-        "misplaced_files": [],
-        "clean_files": 1
-      },
       "prompt_governance\\registry": {
         "files": 2,
         "total_lines": 407,
@@ -59,21 +49,13 @@
         "misplaced_files": [],
         "clean_files": 2
       },
-      "prompt_governance\\registry\\backups": {
-        "files": 2,
-        "total_lines": 17,
-        "root_violations": [],
-        "dead_code_files": [],
-        "misplaced_files": [],
-        "clean_files": 2
-      },
       "prompt_governance\\scripts": {
-        "files": 10,
-        "total_lines": 2702,
+        "files": 9,
+        "total_lines": 2473,
         "root_violations": [],
         "dead_code_files": [],
         "misplaced_files": [],
-        "clean_files": 10
+        "clean_files": 9
       },
       "prompt_governance\\security": {
         "files": 2,
@@ -980,75 +962,6 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "prompt_governance/optimization/__init__.py",
-      "depth": 2,
-      "size_bytes": 375,
-      "total_lines": 17,
-      "code_lines": 15,
-      "functions": [],
-      "classes": [],
-      "import_count": 1,
-      "parse_error": null,
-      "root_violation": false,
-      "issues": [
-        "DEAD_IMPORTS(5)"
-      ],
-      "classification": "DEAD_CODE",
-      "adg_unused_imports": [],
-      "adg_dead_imports": [
-        {
-          "line": 3,
-          "symbol": "optimization_strategy.OptimizationConfig"
-        },
-        {
-          "line": 3,
-          "symbol": "optimization_strategy.OptimizationLevel"
-        },
-        {
-          "line": 3,
-          "symbol": "optimization_strategy.OptimizationStrategy"
-        },
-        {
-          "line": 3,
-          "symbol": "optimization_strategy.PromptOptimizer"
-        },
-        {
-          "line": 3,
-          "symbol": "optimization_strategy.create_prompt_optimizer"
-        }
-      ],
-      "adg_unreachable": [],
-      "adg_duplicate_methods": []
-    },
-    {
-      "path": "prompt_governance/optimization/optimization_strategy.py",
-      "depth": 2,
-      "size_bytes": 10611,
-      "total_lines": 234,
-      "code_lines": 209,
-      "functions": [
-        "create_prompt_optimizer",
-        "__init__",
-        "optimize",
-        "analyze_prompt"
-      ],
-      "classes": [
-        "OptimizationStrategy",
-        "OptimizationLevel",
-        "OptimizationConfig",
-        "PromptOptimizer"
-      ],
-      "import_count": 8,
-      "parse_error": null,
-      "root_violation": false,
-      "issues": [],
-      "classification": "CLEAN",
-      "adg_unused_imports": [],
-      "adg_dead_imports": [],
-      "adg_unreachable": [],
-      "adg_duplicate_methods": []
-    },
-    {
       "path": "prompt_governance/registry/prompt_registry_config.json",
       "depth": 2,
       "size_bytes": 638,
@@ -1085,42 +998,6 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "prompt_governance/registry/backups/__init__.py",
-      "depth": 3,
-      "size_bytes": 74,
-      "total_lines": 1,
-      "code_lines": 1,
-      "functions": [],
-      "classes": [],
-      "import_count": 0,
-      "parse_error": null,
-      "root_violation": false,
-      "issues": [],
-      "classification": "CLEAN",
-      "adg_unused_imports": [],
-      "adg_dead_imports": [],
-      "adg_unreachable": [],
-      "adg_duplicate_methods": []
-    },
-    {
-      "path": "prompt_governance/registry/backups/registry.v1.backup",
-      "depth": 3,
-      "size_bytes": 359,
-      "total_lines": 16,
-      "code_lines": 16,
-      "functions": [],
-      "classes": [],
-      "import_count": 0,
-      "parse_error": null,
-      "root_violation": false,
-      "issues": [],
-      "classification": "CLEAN",
-      "adg_unused_imports": [],
-      "adg_dead_imports": [],
-      "adg_unreachable": [],
-      "adg_duplicate_methods": []
-    },
-    {
       "path": "prompt_governance/scripts/audit_registry_linkages.py",
       "depth": 2,
       "size_bytes": 5131,
@@ -1134,26 +1011,6 @@
       ],
       "classes": [],
       "import_count": 3,
-      "parse_error": null,
-      "root_violation": false,
-      "issues": [],
-      "classification": "CLEAN",
-      "adg_unused_imports": [],
-      "adg_dead_imports": [],
-      "adg_unreachable": [],
-      "adg_duplicate_methods": []
-    },
-    {
-      "path": "prompt_governance/scripts/cleanup_duplicates_util.py",
-      "depth": 2,
-      "size_bytes": 12152,
-      "total_lines": 229,
-      "code_lines": 217,
-      "functions": [
-        "collapse_duplicates"
-      ],
-      "classes": [],
-      "import_count": 6,
       "parse_error": null,
       "root_violation": false,
       "issues": [],

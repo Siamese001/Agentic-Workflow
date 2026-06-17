@@ -90,7 +90,7 @@ Also present in `apps_shared/types/hardened_gemini_executor_types.py` (tenacity 
 
 **Module**: `tools/memory/sqlite_memory_store.py` + `tools/memory/purge_sync.py`.
 
-Entities persist in `artifacts/memory/knowledge_graph.sqlite` across Windsurf restarts.
+Entities persist in `artifacts/memory/knowledge_graph.sqlite` across legacy editor restarts.
 
 | State | Description | Transition rule |
 |---|---|---|

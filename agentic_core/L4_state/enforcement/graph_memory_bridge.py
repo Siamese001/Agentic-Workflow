@@ -193,7 +193,7 @@ class GraphMemoryBridge:
         """
         Detect live Memory MCP availability.
 
-        Attempts to import the mcp11 module exposed by the Windsurf Memory MCP
+        Attempts to import the mcp11 module exposed by the legacy editor Memory MCP
         server.  Falls back to in-process ADGMCPClient stub when unavailable
         (CI / offline environments).
         """

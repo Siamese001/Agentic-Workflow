@@ -546,7 +546,6 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
                    OR src.resolved_path LIKE 'apps_%/services/%'
                    OR src.resolved_path LIKE 'apps_%/proof/%'
                    OR src.resolved_path LIKE 'apps_eval/%'
-                   OR src.resolved_path LIKE 'apps_eval_legacy/original_tree/apps_eval/%'
                    OR src.resolved_path LIKE '%_adapter.py'
                    OR src.resolved_path LIKE '%_adapter_util.py'
                    OR src.resolved_path LIKE '%_base_util.py'

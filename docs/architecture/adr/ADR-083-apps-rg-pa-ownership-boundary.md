@@ -93,8 +93,8 @@ Rejected: the shared PA surface is the highest-value scan target (L0, high fan-i
 
 ## References
 
-- Plan: `.windsurf/plans/apps-rg-spine-hardening-deferred-wave-2f8b1d.md` W2 P2.1
-- Parent plan: `.windsurf/plans/apps-rg-spine-hardening-7e3b9c.md` (Completed)
+- Plan: `.claude/plans/apps-rg-spine-hardening-deferred-wave-2f8b1d.md` W2 P2.1
+- Parent plan: `.claude/plans/apps-rg-spine-hardening-7e3b9c.md` (Completed)
 - W1 findings: `docs/reports/apps_rg/w1_carry_forward_findings_20260509.md`
 - Scanner: `ops_scripts/ci/check_apps_rg_pa_boundary.py`
 - PA boundary receipt: `apps_rg/prompt_assembly/_pa_boundary.py`

@@ -4,7 +4,7 @@ L6 runs AFTER Exit v6. It may read run-state for metrics/telemetry but
 must NEVER mutate the current-run record, re-emit Exit, write L4, or call
 provider synthesis directly.
 
-Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W5.P1.
+Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W5.P1.
 """
 
 from apps_architect.L6_observability.span_emitters import (

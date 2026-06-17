@@ -1817,7 +1817,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -2178,7 +2177,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -2767,7 +2765,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -2878,7 +2875,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/config/test_config_loader.py
       - tests/unit/agentic_core/config/test_rag_config.py
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3009,7 +3005,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3142,7 +3137,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3275,7 +3269,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3408,7 +3401,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3769,7 +3761,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -3902,7 +3893,6 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
       - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
       - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
-      - tests/unit/agentic_core/prompt_governance/validation/test_prompt_evaluation_corpus.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py

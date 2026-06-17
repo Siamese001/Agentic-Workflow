@@ -229,7 +229,7 @@ def guard_single_instance(
     """Terminate any other process whose cmdline contains ``script_marker``.
 
     Purpose (MCP fleet standardization, 2026-04-22):
-        Windsurf occasionally spawns a second MCP server process on reconnect
+        legacy editor occasionally spawns a second MCP server process on reconnect
         without terminating the first. Two concurrent instances deadlock on
         shared resources: ChromaDB's SQLite WAL lock (vector_db), the memory
         SQLite store, the ADG snapshot, etc. Originally this guard lived in
@@ -313,7 +313,7 @@ def guard_single_instance(
 
             # If a fresh heartbeat is present AND force_kill is not set, defer
             # the kill: the sibling is active and likely serving a live
-            # Windsurf client. Clobbering it would produce the split-brain
+            # legacy editor client. Clobbering it would produce the split-brain
             # failure mode documented in the RCA.
             if heartbeat_fresh and not force_kill:
                 logger.warning(

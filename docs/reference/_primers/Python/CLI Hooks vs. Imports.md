@@ -2,7 +2,7 @@
 | CLI / HOOKS                                   | IMPORTS                                       |
 +-----------------------------------------------+-----------------------------------------------+
 | [ Outside trigger ]                           | [ Python code ]                               |
-| pre-commit / shell / Windsurf / task runner   | another .py file                              |
+| pre-commit / shell / legacy editor / task runner   | another .py file                              |
 |                 |                             |                 |                             |
 |                 v                             |                 v                             |
 |       python entry_script.py                  |       import helper_module                    |
@@ -33,7 +33,7 @@
 +-----------------------------------------------+-----------------------------------------------+
 | YOUR CASE                                     |                                               |
 +-----------------------------------------------+-----------------------------------------------+
-| .windsurf/scripts/                            | usually scanned first as EXECUTION TARGETS    |
+| .claude/governance/scripts/                            | usually scanned first as EXECUTION TARGETS    |
 | ops_scripts/                                  | then inspect what they IMPORT underneath      |
 | tools/                                        | some may be entry points, some may be helpers |
 +-----------------------------------------------+-----------------------------------------------+

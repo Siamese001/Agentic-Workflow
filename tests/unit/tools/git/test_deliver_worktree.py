@@ -4,7 +4,7 @@ Builds a hermetic bare-remote + primary clone + feature worktree, then exercises
 ``--mode push`` deliver flow and asserts the reap behaviour:
   * default ``--reap``: worktree dir + local branch are gone after a clean push;
   * ``--no-reap``: worktree + branch are kept;
-  * ``--mode pr`` is not exercised here (needs gh) but the reap path is push-only by construction.
+  * ``--mode pr`` is now fail-closed and intentionally does not auto-create a PR.
 """
 from __future__ import annotations
 
@@ -68,6 +68,7 @@ def test_push_mode_reaps_worktree_and_branch(tmp_path, deliver_mod, monkeypatch)
     wt = _feat_worktree(tmp_path, primary, "feat/reapme")
     # Invoke from the primary (Windows-safe — no process cwd inside the worktree).
     monkeypatch.chdir(primary)
+    monkeypatch.setattr(deliver_mod, "_have_gk_cli", lambda: True)
 
     rc = deliver_mod.main(["--worktree", str(wt), "--trunk", "main", "--mode", "push"])
     assert rc == 0
@@ -86,6 +87,7 @@ def test_no_reap_keeps_worktree_and_branch(tmp_path, deliver_mod, monkeypatch):
     remote, primary = _setup(tmp_path)
     wt = _feat_worktree(tmp_path, primary, "feat/keepme")
     monkeypatch.chdir(primary)
+    monkeypatch.setattr(deliver_mod, "_have_gk_cli", lambda: True)
 
     rc = deliver_mod.main(["--worktree", str(wt), "--trunk", "main", "--mode", "push", "--no-reap"])
     assert rc == 0
@@ -100,7 +102,18 @@ def test_reap_helper_skips_when_not_ancestor(tmp_path, deliver_mod, monkeypatch)
     remote, primary = _setup(tmp_path)
     wt = _feat_worktree(tmp_path, primary, "feat/unmerged")
     monkeypatch.chdir(primary)
+    monkeypatch.setattr(deliver_mod, "_have_gk_cli", lambda: True)
     # Call the reap helper directly without pushing — branch is not an ancestor of origin/main.
     deliver_mod._reap_after_push(wt, "feat/unmerged", "main")
     assert wt.exists()
     assert "feat/unmerged" in _git("branch", "--list", "feat/unmerged", cwd=primary).stdout
+
+
+def test_pr_mode_refuses_shell_pr_creation(tmp_path, deliver_mod, monkeypatch):
+    _, primary = _setup(tmp_path)
+    wt = _feat_worktree(tmp_path, primary, "feat/no-pr")
+    monkeypatch.chdir(primary)
+    monkeypatch.setattr(deliver_mod, "_have_gk_cli", lambda: True)
+
+    rc = deliver_mod.main(["--worktree", str(wt), "--trunk", "main", "--mode", "pr"])
+    assert rc == 1

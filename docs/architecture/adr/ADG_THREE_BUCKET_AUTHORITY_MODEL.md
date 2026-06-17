@@ -93,7 +93,7 @@ runtime-observed edges into static edges without labels.
 
 Evidence sources: agent registry (`apps_*/config/agent_specs.json`), tool
 registry, prompt registry, MCP connector registry
-(`.windsurf/mcp_config.json`), route registry, capability registry,
+(`.mcp.json`), route registry, capability registry,
 sandbox registry, YAML/JSON plugin maps, L4 policy/blueprint state.
 
 Edge kinds: `REGISTRY_DECLARED`, `AGENT_TOOL_ALLOWED`,
@@ -351,7 +351,7 @@ one declarative source and returns a list of ``RegistryEdge`` records.
 
 | Source | Resolver | Edge `relation_type` | Live count |
 |---|---|---|---|
-| `.windsurf/mcp_config.json` | `resolve_mcp_config` | `MCP_SERVER_DECLARED` | 13 servers |
+| `.mcp.json` | `resolve_mcp_config` | `MCP_SERVER_DECLARED` | 13 servers |
 | `apps_*/config/agent_specs*.json` | `resolve_agent_specs` | `AGENT_SPEC_DECLARED` | varies per app |
 
 ### Resolution-status mapping
@@ -523,7 +523,7 @@ registry buckets are real — but populating them is W2/W3 work.
 
 ## References
 
-* Plan: `.windsurf/plans/adg-three-bucket-authority-model-7e2a91.md`
+* Plan: `.claude/plans/adg-three-bucket-authority-model-7e2a91.md`
 * SSOT: `agentic_core/adg/artifact/edge_authority.py`
 * Schema: `agentic_core/adg/artifact/ArtifactPaths.py`, `multi_writer.py`
 * Final-stage backfill: `tools/generate/generate_full_adg.py`

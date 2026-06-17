@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rewrite active `.windsurf` references to Cursor/archive locations."""
+"""Rewrite active `.windsurf` references to legacy editor/archive locations."""
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ SCAN_ROOTS = (
 SKIP_PREFIXES = (
     ".git/",
     ".windsurf/",
-    ".cursor/plans/_archive/",
+    ".claude/plans/_archive/",
     ".cursor/scripts/_legacy_windsurf/",
     "docs/archive/windsurf/legacy-tree/",
 )
@@ -58,7 +58,7 @@ SKIP_FILES = {
 }
 
 REPLACEMENTS = (
-    (".windsurf/plans/", "docs/archive/windsurf/legacy-tree/plans/"),
+    (".claude/plans/", "docs/archive/windsurf/legacy-tree/plans/"),
     (".windsurf\\plans\\", "docs\\archive\\windsurf\\legacy-tree\\plans\\"),
     (".windsurf/plans", "docs/archive/windsurf/legacy-tree/plans"),
     (".windsurf\\plans", "docs\\archive\\windsurf\\legacy-tree\\plans"),
@@ -66,19 +66,19 @@ REPLACEMENTS = (
     (".windsurf\\schemas\\", ".cursor\\schemas\\"),
     (".windsurf/schemas", ".cursor/schemas"),
     (".windsurf\\schemas", ".cursor\\schemas"),
-    (".windsurf/scripts/", ".cursor/scripts/_legacy_windsurf/"),
+    (".claude/governance/scripts/", ".cursor/scripts/_legacy_windsurf/"),
     (".windsurf\\scripts\\", ".cursor\\scripts\\_legacy_windsurf\\"),
     (".windsurf/scripts", ".cursor/scripts/_legacy_windsurf"),
     (".windsurf\\scripts", ".cursor\\scripts\\_legacy_windsurf"),
-    (".windsurf/skills/", ".cursor/skills/"),
+    (".claude/skills/", ".claude/skills/"),
     (".windsurf\\skills\\", ".cursor\\skills\\"),
     (".windsurf/skills", ".cursor/skills"),
     (".windsurf\\skills", ".cursor\\skills"),
-    (".windsurf/rules/", ".cursor/rules/"),
+    (".claude/rules/", ".claude/rules/"),
     (".windsurf\\rules\\", ".cursor\\rules\\"),
     (".windsurf/rules", ".cursor/rules"),
     (".windsurf\\rules", ".cursor\\rules"),
-    (".windsurf/workflows/", "docs/archive/windsurf/legacy-tree/workflows/"),
+    ("docs/archive/windsurf/legacy-tree/workflows/", "docs/archive/windsurf/legacy-tree/workflows/"),
     (".windsurf\\workflows\\", "docs\\archive\\windsurf\\legacy-tree\\workflows\\"),
     (".windsurf/workflows", "docs/archive/windsurf/legacy-tree/workflows"),
     (".windsurf\\workflows", "docs\\archive\\windsurf\\legacy-tree\\workflows"),
@@ -86,7 +86,7 @@ REPLACEMENTS = (
     (".windsurf\\state\\", ".cursor\\state\\"),
     (".windsurf/state", ".cursor/state"),
     (".windsurf\\state", ".cursor\\state"),
-    (".windsurf/templates/", ".cursor/templates/"),
+    (".claude/templates/", ".claude/templates/"),
     (".windsurf\\templates\\", ".cursor\\templates\\"),
     (".windsurf/templates", ".cursor/templates"),
     (".windsurf\\templates", ".cursor\\templates"),
@@ -94,9 +94,9 @@ REPLACEMENTS = (
     (".windsurf\\reminders\\", "docs\\archive\\windsurf\\legacy-tree\\reminders\\"),
     (".windsurf/reminders", "docs/archive/windsurf/legacy-tree/reminders"),
     (".windsurf\\reminders", "docs\\archive\\windsurf\\legacy-tree\\reminders"),
-    (".windsurf/hooks.json", ".cursor/hooks.json"),
+    (".claude/settings.json", ".claude/settings.json"),
     (".windsurf\\hooks.json", ".cursor\\hooks.json"),
-    (".windsurf/mcp_config.json", ".cursor/mcp.json"),
+    (".mcp.json", ".mcp.json"),
     (".windsurf\\mcp_config.json", ".cursor\\mcp.json"),
     (".windsurf/RULES_INDEX.md", ".cursor/RULES_INDEX.md"),
     (".windsurf\\RULES_INDEX.md", ".cursor\\RULES_INDEX.md"),

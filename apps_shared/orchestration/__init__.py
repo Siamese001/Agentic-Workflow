@@ -4,7 +4,7 @@ Canonical home for the per-app HOP pipeline executor that consumers in
 ``apps_rg``, ``apps_lic``, ``apps_underwriting_ai`` (and future multi-hop
 apps) delegate to instead of re-inventing orchestration plumbing.
 
-See: .windsurf/plans/apps-hop-substrate-f7751b.md (Wave 1).
+See: .claude/plans/apps-hop-substrate-f7751b.md (Wave 1).
 """
 
 from __future__ import annotations

@@ -115,7 +115,7 @@ triggers:
         - '^\+\s*except\s+Exception\b'
       exclude_globs_any:
         - "tests/**"
-        - ".cursor/skills/**"
+        - ".claude/skills/**"
 
   - id: HITL-1.8
     description: subprocess without timeout= (constitutional §14)
@@ -136,9 +136,9 @@ triggers:
     severity: block
     features:
       path_globs_any:
-        - ".cursor/rules/*.md"
+        - ".claude/rules/*.md"
         - "docs/architecture/adr/*.md"
-        - ".cursor/hooks.json"
+        - ".claude/settings.json"
         - "agentic_core/L5_safety/**"
 
   # ---- Test strategy triggers -------------------------------------

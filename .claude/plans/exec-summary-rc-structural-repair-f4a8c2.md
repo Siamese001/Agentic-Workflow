@@ -7,7 +7,7 @@ LAST_COMPLETED_WAVE: none
 LAST_UPDATED: 2026-05-27
 NOTION_PAGE_ID: 36d27693-f55c-8131-b67c-fc0aa960d9dc
 
-PLAN_CREATED: slug=exec-summary-rc-structural-repair-f4a8c2 path=.cursor/plans/exec-summary-rc-structural-repair-f4a8c2.md status=Not Started
+PLAN_CREATED: slug=exec-summary-rc-structural-repair-f4a8c2 path=.claude/plans/exec-summary-rc-structural-repair-f4a8c2.md status=Not Started
 
 ---
 

@@ -88,7 +88,7 @@ PROCESS_MARKERS = {
 }
 
 CALLABLE_STATUS_ENV_PREFIX = "CODEX_MCP_CALLABLE_"
-ROUTE_CONTRACT_GLOB = "codex_claude_mcp_access_contract_*.json"
+ROUTE_CONTRACT_GLOB = "codex_mcp_live_route_contract.json"
 
 
 def _safe_cmdline(cmdline: list[str]) -> list[str]:
@@ -237,6 +237,28 @@ def _callable_status(server_id: str) -> str:
     return "absent"
 
 
+def _gitkraken_cli_ready() -> bool:
+    gk = shutil.which("gk")
+    if not gk:
+        return False
+    try:
+        proc = subprocess.run(
+            [gk, "mcp", "--list-tools"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=20,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    if proc.returncode != 0:
+        return False
+    output = f"{proc.stdout}\n{proc.stderr}"
+    required_tools = ("pull_request_create", "git_status", "git_add_or_commit", "git_push")
+    return all(tool in output for tool in required_tools)
+
+
 def classify_route(route: dict[str, Any], process_state: dict[str, Any], callable_status: str = "absent") -> str:
     """Classify a Codex MCP route without treating process presence as parity."""
     selected = str(route.get("selected_codex_route", ""))
@@ -273,6 +295,8 @@ def build_route_evidence(
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
         callable_status = _callable_status(server_id)
+        if server_id == "GitKraken" and callable_status != "healthy" and _gitkraken_cli_ready():
+            callable_status = "substitute_callable"
         classification = classify_route(route, process_state, callable_status)
         counts[classification] = counts.get(classification, 0) + 1
         classified[server_id] = {
@@ -348,7 +372,7 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
         "primary_root": str(PRIMARY_ROOT),
         "registry_path": str(registry_path),
         "route_contract_path": str(contract_path) if contract_path else None,
-        "command_paths": {name: shutil.which(name) for name in ["python", "cmd", "npx", "node", "git", "redis-cli"]},
+        "command_paths": {name: shutil.which(name) for name in ["python", "cmd", "npx", "node", "git", "gk", "redis-cli"]},
         "script_compile": {rel: _compile_script(ROOT / rel) for rel in sorted(set(SCRIPT_PATHS))},
         "tcp": {"localhost:6379": _tcp_probe("localhost", 6379)},
         "env": env_state,
@@ -369,7 +393,7 @@ def main() -> int:
     parser.add_argument(
         "--route-contract",
         type=Path,
-        help="Optional Codex route contract JSON; defaults to latest codex_claude_mcp_access_contract_*.json",
+        help="Optional Codex route contract JSON; defaults to docs/reports/codex/codex_mcp_live_route_contract.json",
     )
     args = parser.parse_args()
     report = build_report(args.route_contract)

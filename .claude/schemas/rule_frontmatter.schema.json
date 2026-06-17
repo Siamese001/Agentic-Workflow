@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agentic-workflow.io/schemas/rule_frontmatter.schema.json",
-  "title": "Cursor Rule Frontmatter Schema",
-  "description": "JSON Schema for validating .cursor/rules/*.md YAML frontmatter",
+  "title": "legacy editor Rule Frontmatter Schema",
+  "description": "JSON Schema for validating .claude/rules/*.md YAML frontmatter",
   "type": "object",
   "required": ["version", "rule_class", "enforcement_tier"],
   "properties": {
@@ -78,7 +78,7 @@
       "description": "List of related rule files",
       "items": {
         "type": "string",
-        "pattern": "^\\.cursor/rules/[a-z0-9_-]+\\.md$"
+        "pattern": "^\\.claude/rules/[a-z0-9_-]+\\.md$"
       }
     },
     "related_skills": {

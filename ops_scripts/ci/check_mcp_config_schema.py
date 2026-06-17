@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""
-MCP Config Schema Validation Gate (MCP-SCHEMA)
+"""MCP Config Schema Validation Gate (MCP-SCHEMA).
 
-Validates root `.mcp.json` (Claude Code SSOT) and optional deprecated compatibility mirrors:
+Validates the repo SSOT `.mcp.json`:
 - Required servers present: GitKraken, adg_sqlite, memory, notion, otel_mcp, pytest_mcp, redis, vector_db
 - Each server has required fields: command, args (array)
 - Optional fields valid: env (object), disabled (boolean), url (for remote)
@@ -19,8 +18,6 @@ Environment:
 
 Output:
     artifacts/ci/mcp_config_schema.json
-    artifacts/ci/mcp_config_schema_cursor.json
-    artifacts/ci/mcp_config_schema_windsurf.json
 
 Rule: `.claude/rules/mcp-config-ssot.mdc` + constitutional §27
 """
@@ -39,24 +36,21 @@ if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
 from _mcp_ci_common import (  # noqa: E402
-    CURSOR_MCP_PATH,
-    CURSOR_REQUIRED_SERVERS,
     MCP_PROFILES,
     OPTIONAL_SERVERS,
+    REPO_MCP_PATH,
+    REPO_REQUIRED_SERVERS,
     VALID_SERVER_KEYS,
     VALID_TOP_KEYS,
-    WINDSURF_MCP_PATH,
-    WINDSURF_REQUIRED_SERVERS,
     profile_config_path,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = WINDSURF_MCP_PATH
+CONFIG_PATH = REPO_MCP_PATH
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "mcp_config_schema.json"
 ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
-# Backward-compatible alias for tests and Windsurf-only callers.
-REQUIRED_SERVERS = WINDSURF_REQUIRED_SERVERS
+REQUIRED_SERVERS = REPO_REQUIRED_SERVERS
 
 
 @dataclass(frozen=True)
@@ -240,7 +234,7 @@ def check_server_structure(
 def evaluate(
     config_path: Path | None = None,
     required_servers: frozenset[str] | None = None,
-    profile: str = "windsurf",
+    profile: str = "repo",
 ) -> dict[str, Any]:
     """Run full schema validation for one editor profile. Returns report dict."""
     path = config_path if config_path is not None else CONFIG_PATH
@@ -336,9 +330,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="MCP Config Schema Validation")
     parser.add_argument(
         "--profile",
-        choices=("cursor", "windsurf", "all"),
-        default="windsurf",
-        help="Which editor MCP config to validate (default: windsurf; CI uses --profile all)",
+        choices=("repo", "all"),
+        default="repo",
+        help="Which MCP config to validate (default: repo; CI uses --profile all)",
     )
     parser.add_argument("--fail-closed", action="store_true", help="Exit 1 on violations")
     parser.add_argument("--json", action="store_true", help="Output JSON to stdout")
@@ -353,7 +347,7 @@ def main(argv: list[str] | None = None) -> int:
     
     if args.profile == "all":
         reports = evaluate_all_profiles()
-        write_report(reports["windsurf"])
+        write_report(reports["repo"])
         combined_errors = sum(len(r["errors"]) for r in reports.values())
         combined_warnings = sum(len(r["warnings"]) for r in reports.values())
     else:

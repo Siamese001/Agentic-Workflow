@@ -14,17 +14,17 @@
 
 ## Context
 
-Wave 10 backlog triage surfaced **EQ-12b.1 — Apply-patch multi-file batching** as genuine new T2 work: zero `apply_patch` / `multi_file_batch` / `batch_apply` infrastructure exists in the repo. Today, every code-edit operation Cursor Agent or any agent issues is a single-file `edit` / `multi_edit` call with no transactional grouping across files.
+Wave 10 backlog triage surfaced **EQ-12b.1 — Apply-patch multi-file batching** as genuine new T2 work: zero `apply_patch` / `multi_file_batch` / `batch_apply` infrastructure exists in the repo. Today, every code-edit operation Codex or any agent issues is a single-file `edit` / `multi_edit` call with no transactional grouping across files.
 
 Three failure modes motivate a multi-file envelope:
 
 1. **Cross-file refactor atomicity** — renaming a symbol that lives in file A and is imported by files B…N requires either all changes to land or none to land. Today: partial application leaves the working tree broken between calls.
-2. **Author-Gate scope visibility** — Cursor Agent currently presents a wall of edits that the user cannot inspect as a single change-set before approval. A patch envelope is the natural artifact for one-shot review.
+2. **Author-Gate scope visibility** — Codex currently presents a wall of edits that the user cannot inspect as a single change-set before approval. A patch envelope is the natural artifact for one-shot review.
 3. **Replayability and audit** — without a structured envelope, re-running an edit sequence (e.g., after a rebase) requires re-running the full LLM turn. A persisted envelope is replayable.
 
 ## Decision Drivers
 
-- **Standards alignment**: Existing tools (Aider, Cursor, Anthropic's `apply_patch`, OpenAI Codex CLI) have converged on a small family of envelope formats. Inventing a fourth would be a net cost.
+- **Standards alignment**: Existing tools (Aider, legacy editor, Anthropic's `apply_patch`, OpenAI Codex CLI) have converged on a small family of envelope formats. Inventing a fourth would be a net cost.
 - **Tooling compatibility**: GitHub PR view, `git apply`, IDE diff renderers — these all understand unified diff. JSON Patch (RFC 6902) is structured but only well-suited to JSON/YAML data, not source files.
 - **Anchor robustness**: Line-number-based patches break on any upstream edit. Anchor-based (before/after context) patches survive minor drift.
 - **UWG integration**: All file writes MUST flow through `agentic_core/L4_state/utils/write_gateway.py` (`write_gateway` SSOT). The envelope executor must call UWG, not bypass it.
@@ -113,7 +113,7 @@ Rationale:
 
 ### Positive
 
-- Single SSOT format for all multi-file edits across Cursor Agent, harness scripts, and agent-issued refactors.
+- Single SSOT format for all multi-file edits across Codex, harness scripts, and agent-issued refactors.
 - Audit trail: every applied envelope persists to `artifacts/apply_patch/<sha>.patch` with timestamp, author, and outcome.
 - Future-proofs Wave 14.b/c: parser, validator, and UWG-integrated executor have a stable contract to build against.
 
@@ -151,7 +151,7 @@ Rationale:
 
 - Constitutional §4 — UWG write authority
 - ADR-023 — runtime HITL exit control (envelope failures may need to escalate to runtime HITL, not just author-gate)
-- Plan: `.windsurf/plans/post-wave10-roadmap-a1e7f2.md` — W14.a row
+- Plan: `.claude/plans/post-wave10-roadmap-a1e7f2.md` — W14.a row
 - Notion row: Wave/Phase Convergence INDEX `[INDEX] Post-Wave-10 Roadmap — W11 through W18` (`34c27693-f55c-813a-a19a-d052c901b8d5`)
 - Anthropic apply_patch reference — Claude Code public docs (format definition)
 - RFC 6902 — JSON Patch (Option 2 reference)

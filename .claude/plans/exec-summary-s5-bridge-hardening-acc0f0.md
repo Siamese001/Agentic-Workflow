@@ -22,7 +22,7 @@ CURRENT_WAVE: W1
 LAST_COMPLETED_WAVE: W0
 LAST_UPDATED: 2026-05-27
 
-PLAN_CREATED: slug=exec-summary-s5-bridge-hardening-acc0f0 path=.cursor/plans/exec-summary-s5-bridge-hardening-acc0f0.md status=In Progress
+PLAN_CREATED: slug=exec-summary-s5-bridge-hardening-acc0f0 path=.claude/plans/exec-summary-s5-bridge-hardening-acc0f0.md status=In Progress
 
 ---
 
@@ -52,7 +52,7 @@ PLAN_CREATED: slug=exec-summary-s5-bridge-hardening-acc0f0 path=.cursor/plans/ex
 
 | Phase | Title | Files | Status |
 |-------|-------|-------|--------|
-| W0.1 | Register plan (disk + Notion) | `.cursor/plans/`, Notion Plans | ✅ DONE |
+| W0.1 | Register plan (disk + Notion) | `.claude/plans/`, Notion Plans | ✅ DONE |
 | W1.1 | `FACT_C0_DISPLAY_OVERRIDES` constant in synthesis_contract | `executive_summary_synthesis_contract.py` | 🔄 IN PROGRESS |
 | W1.2 | Apply override in `format_selected_facts_for_c0` | `executive_summary_pa.py` | 🔄 IN PROGRESS |
 | W2.1 | `s4_opener_directive` in `format_composition_plan_for_pa` | `executive_summary_composition.py` | ⬜ PENDING |
@@ -70,7 +70,7 @@ WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 
 **Acceptance**
-- [x] [`.cursor/plans/exec-summary-s5-bridge-hardening-acc0f0.md`](exec-summary-s5-bridge-hardening-acc0f0.md) on disk.
+- [x] [`.claude/plans/exec-summary-s5-bridge-hardening-acc0f0.md`](exec-summary-s5-bridge-hardening-acc0f0.md) on disk.
 - [ ] Notion Plans row: `Status=In Progress` — pending Notion registration in same response.
 
 ---

@@ -1,5 +1,5 @@
 """
-Terminal Color Utilities for Windsurf Console
+Terminal Color Utilities for legacy editor Console
 ==============================================
 
 Provides color-coded status bars and progress indicators for:

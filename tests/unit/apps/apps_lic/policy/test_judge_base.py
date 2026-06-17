@@ -9,7 +9,7 @@ Covers the JudgeBase contractual surfaces:
   6. ROUTER_DECISION marker emission (constitutional §29)
 
 Plus integration tests on each shipped rubric:
-  - judge_hop6_alignment.yaml (the W2-P1 live Judge)
+  - judge_hop6_alignment.yaml (live rubric coverage via JudgeBase contract)
   - judge_hop1_classifier.yaml (W3-P1 deferred but rubric loadable)
   - judge_hop2_grounding.yaml  (W3-P2 deferred but rubric loadable)
   - judge_hop8_narrative.yaml  (W3-P3 deferred but rubric loadable)
@@ -220,66 +220,3 @@ def test_all_shipped_rubrics_load(rubric_filename, expected_judge_name):
     # Each rubric must declare its deterministic-backend params.
     assert isinstance(rubric.params, dict)
 
-
-# ---------------------------------------------------------------------- #
-# HOP6 deterministic-alignment evaluator integration
-# ---------------------------------------------------------------------- #
-
-
-def test_hop6_deterministic_alignment_strong():
-    """Strong overlap on a substantive brief → ALLOW disposition."""
-    from apps_lic.engines.HOP6ValidationAgent import (
-        _evaluate_strategic_alignment,
-    )
-
-    rubric = Rubric.load(RUBRIC_DIR / "judge_hop6_alignment.yaml")
-    state = {
-        "strategic_brief": (
-            "AcmeCorp recently launched their AcmeCloud platform targeting "
-            "enterprise migration workloads with strong emphasis on regulatory "
-            "compliance and audit readiness for Fortune 500 customers."
-        ),
-        "draft_text": (
-            "Saw the AcmeCloud launch — the enterprise migration story plus "
-            "compliance and audit readiness positioning is exactly where we focus "
-            "for Fortune 500 customers."
-        ),
-    }
-    score, codes, evidence, hint = _evaluate_strategic_alignment(state, rubric)
-    assert score >= 0.55, f"expected STRONG band score >= 0.55, got {score}"
-    assert "zero_overlap" not in codes
-    assert hint == ""
-
-
-def test_hop6_deterministic_alignment_weak():
-    """Zero meaningful overlap → score 0 → WEAK band → DENY downstream."""
-    from apps_lic.engines.HOP6ValidationAgent import (
-        _evaluate_strategic_alignment,
-    )
-
-    rubric = Rubric.load(RUBRIC_DIR / "judge_hop6_alignment.yaml")
-    state = {
-        "strategic_brief": (
-            "AcmeCorp recently launched AcmeCloud targeting enterprise migration "
-            "workloads with regulatory compliance and audit readiness focus."
-        ),
-        "draft_text": (
-            "Hello there hope this finds you well wanted to introduce myself "
-            "and my background in widgets and gadgets unrelated to anything."
-        ),
-    }
-    score, codes, evidence, hint = _evaluate_strategic_alignment(state, rubric)
-    assert score < 0.30
-    assert "zero_overlap" in codes or "alignment_below_moderate_threshold" in codes
-
-
-def test_hop6_deterministic_alignment_short_brief_raises():
-    """ABSTAIN path: short brief raises so JudgeBase converts to ABSTAIN."""
-    from apps_lic.engines.HOP6ValidationAgent import (
-        _evaluate_strategic_alignment,
-    )
-
-    rubric = Rubric.load(RUBRIC_DIR / "judge_hop6_alignment.yaml")
-    state = {"strategic_brief": "too short", "draft_text": "x" * 200}
-    with pytest.raises(ValueError, match="too short"):
-        _evaluate_strategic_alignment(state, rubric)

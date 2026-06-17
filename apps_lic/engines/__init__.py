@@ -1,9 +1,8 @@
-"""apps_lic/engines/__init__.py — Sovereign Engine Registry.
+"""apps_lic engine package.
 
-Only canonical executors are eagerly imported. All other agents remain
-importable directly from their modules, e.g.:
-    from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent
-    from apps_lic.engines.OutreachSignalRouterAgent import OutreachSignalRouterAgent
+Import concrete engine modules directly. Legacy HOP agents are being
+removed from the live surface; only the canonical runtime modules should
+remain discoverable here.
 """
 
 from __future__ import annotations

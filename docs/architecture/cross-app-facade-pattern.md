@@ -49,7 +49,7 @@ Which pattern to choose:
 
 **Producer**: `apps_research` invoked as a subprocess CLI (`python -m apps_research --mode company`)
 
-**Consumer**: `apps_rg/integrations/company_research_loader.py` (mode 2 of the 4-mode CompanyBrief loader; see HOP-0.6-COMPANY-RESEARCH in `.windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md`)
+**Consumer**: `apps_rg/integrations/company_research_loader.py` (mode 2 of the 4-mode CompanyBrief loader; see HOP-0.6-COMPANY-RESEARCH in `.claude/plans/apps-rg-narrative-and-company-research-e3f8c1.md`)
 
 **Shape**:
 
@@ -238,8 +238,8 @@ Captured as memory patterns:
 - `apps_shared/adapters/research_facade.py`
 - `apps_rg/integrations/company_research_loader.py` (consumer of `research_facade`)
 - `apps_eval/engines/scenario_runner.py` (consumer of `rg_orchestrator_facade`)
-- `.windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md` (HOP-0.6 design)
-- `.windsurf/plans/dormant-facade-cleanup-b2d4f7.md` (the plan that produced this doc)
-- `.windsurf/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (closed; established that no producer→consumer integration existed pre-2026-05-01)
+- `.claude/plans/apps-rg-narrative-and-company-research-e3f8c1.md` (HOP-0.6 design)
+- `.claude/plans/dormant-facade-cleanup-b2d4f7.md` (the plan that produced this doc)
+- `.claude/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (closed; established that no producer→consumer integration existed pre-2026-05-01)
 - Constitutional §22 (ADG graph layer is primary for refactoring)
 - Constitutional §28 (SQLite-direct fallback supersedes grep)

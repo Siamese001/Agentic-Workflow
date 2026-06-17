@@ -48,15 +48,11 @@ agentic_core/prompt_governance/meta_prompts/red_team_scope_validator.jinja
 agentic_core/prompt_governance/meta_prompts/self_reflection.jinja
 agentic_core/prompt_governance/meta_prompts/sovereign_convergence_orchestrator.jinja
 agentic_core/prompt_governance/meta_prompts/sovereign_orchestrator.jinja
-agentic_core/prompt_governance/optimization/__init__.py
-agentic_core/prompt_governance/optimization/optimization_strategy.py
 agentic_core/prompt_governance/prompt_entry_types.py
 agentic_core/prompt_governance/prompt_loader.py
-agentic_core/prompt_governance/registry/backups/__init__.py
 agentic_core/prompt_governance/registry/prompt_registry_config.json
 agentic_core/prompt_governance/registry/registry.json
 agentic_core/prompt_governance/scripts/audit_registry_linkages.py
-agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py
 agentic_core/prompt_governance/scripts/detect_template_drift.py
 agentic_core/prompt_governance/scripts/dry_run_compiler.py
 agentic_core/prompt_governance/scripts/file_intent.py
@@ -89,7 +85,6 @@ tests/agentic_core/prompt_governance/core/test_sovereign_prompt_renderer.py
 tests/agentic_core/prompt_governance/domain/test_prompt_entry_types.py
 tests/agentic_core/prompt_governance/optimization/test_optimization_strategy.py
 tests/agentic_core/prompt_governance/scripts/test_audit_registry_linkages.py
-tests/agentic_core/prompt_governance/scripts/test_cleanup_duplicates_util.py
 tests/agentic_core/prompt_governance/scripts/test_detect_template_drift.py
 tests/agentic_core/prompt_governance/scripts/test_dry_run_compiler.py
 tests/agentic_core/prompt_governance/scripts/test_file_intent.py

@@ -76,7 +76,7 @@ class TestPromptBOMReferences:
         """Prompt BOM template refs must match registry entries."""
         repo_root = Path(__file__).parent.parent.parent
         
-        bom_path = repo_root / "apps_research/prompts/prompt_bom.yaml"
+        bom_path = repo_root / "apps_research/prompt_assembly/prompt_bom.yaml"
         registry_path = repo_root / "apps_research/prompts/prompt_registry.yaml"
         
         assert bom_path.exists(), "Prompt BOM must exist"

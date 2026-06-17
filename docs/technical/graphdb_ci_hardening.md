@@ -342,7 +342,7 @@ This implementation is complete when:
 - ADG Generation: `tools/generate/generate_full_adg.py`
 - GraphDB Projection: `tools/graphdb/projection.py`
 - CI Gate Framework: `ops_scripts/ci/run_contract_gates.py`
-- Constitutional Rules: `.windsurf/rules/constitutional.md`
+- Constitutional Rules: `.claude/rules/constitutional.md`
 
 ---
 
