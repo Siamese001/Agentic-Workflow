@@ -1,8 +1,8 @@
-# Codex Adapter
+# Legacy Codex Compatibility
 
-Codex is now the primary local execution surface for this repository. The historical "backup adapter" name remains in some compatibility checks, but new Codex work should follow [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
+This file is a legacy compatibility reference. The active Codex execution contract lives in [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); the historical "backup adapter" name remains only in compatibility checks.
 
-Repo-owned governance files remain the rule source of truth during the migration. Codex should read those files, run readiness checks, produce execution receipts, and avoid creating a private rules or MCP registry.
+Repo-owned governance files remain the rule source of truth. Codex should read those files, run readiness checks, produce execution receipts, and avoid creating a private rules or MCP registry.
 
 ## Source of truth
 

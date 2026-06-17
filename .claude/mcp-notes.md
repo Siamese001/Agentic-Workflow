@@ -1,7 +1,7 @@
-# MCP server notes (Claude Code)
+# MCP server notes (legacy Claude Code compatibility)
 
 Source of truth for MCP config is [`.mcp.json`](../.mcp.json) at repo root. This file holds the
-operational notes that don't fit JSON. Migrated from `.cursor/mcp.json` (Cursor legacy).
+compatibility notes that don't fit JSON.
 
 ## Bootstrap env vars
 Set these as OS environment variables before launching Claude Code:
@@ -10,7 +10,7 @@ Set these as OS environment variables before launching Claude Code:
 - `ADG_REDIS_URL` — Redis URL for ADG hot cache (used by `adg_sqlite`, `memory`).
 
 Claude Code expands `${VAR}` (and `${VAR:-default}`) in `.mcp.json` — note this differs from
-Cursor's `${env:VAR}` syntax.
+legacy editor's `${env:VAR}` syntax.
 
 ## Auth-gated servers
 - **notion** — requires `NOTION_TOKEN` (`setx NOTION_TOKEN secret_...`). Internal integration token
@@ -46,7 +46,7 @@ want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from htt
 }
 ```
 
-## Servers never migrated (were `disabled: true` in Cursor)
+## Servers never migrated (were `disabled: true` in legacy editor)
 - **filesystem** — shadow-disabled 2026-05-02 (Author-Gate F4, ADR-095): native file tools
   (Read/Write/Edit/Glob/Grep) fully substitute.
 - **task_manager** — shadow-disabled 2026-05-02: `structured-reasoning` skill covers multi-step

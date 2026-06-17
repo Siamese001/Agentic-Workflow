@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and sync the repo MCP config to AGENTS.md and optional editor mirrors.
+"""Validate and sync the repo MCP config to AGENTS.md.
 
 Usage:
     python .claude/governance/scripts/sync_mcp_config.py
@@ -13,24 +13,20 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 from pathlib import Path
 from typing import Any
 
 repo_root = Path(__file__).resolve().parents[3]
 repo_config = repo_root / ".mcp.json"
-global_config = Path.home() / ".cursor" / "cursor" / "mcp.json"
 agents_md = repo_root / "AGENTS.md"
 notion_databases_yaml = repo_root / "config" / "notion_databases.yaml"
-global_backup = Path.home() / ".cursor" / "cursor" / "mcp_config.backup.json"
 
-# Backward-compatible aliases for downstream hooks/tests.
+# Canonical aliases for downstream hooks/tests.
 REPO_ROOT = repo_root
 REPO_CONFIG = repo_config
-GLOBAL_CONFIG = global_config
+GLOBAL_CONFIG = repo_config
 AGENTS_MD = agents_md
 NOTION_DATABASES_YAML = notion_databases_yaml
-GLOBAL_BACKUP = global_backup
 
 # Each row: (server_id, use_for, example_tools, notes, skill)
 # `skill` is the slug under .claude/skills/<slug>/ that documents the
@@ -177,19 +173,14 @@ def generate_mcp_quick_reference_block() -> str:
 
 
 def generate_agents_quick_reference() -> str:
-    """Full MCP Quick Reference section (heading + intro + autogen block).
-
-    Retained for backward compatibility with check_mcp_sync_integrity.py.
-    The autogen block within is identical to generate_mcp_quick_reference_block().
-    """
+    """Full MCP Quick Reference section (heading + intro + autogen block)."""
     lines: list[str] = []
     lines.append("## MCP Quick Reference")
     lines.append("")
     lines.append(
-        "> Stable IDs are the `mcpServers` keys in root `.mcp.json` (Claude Code project SSOT). "
-        "Deprecated Cursor/Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, "
-        "and so on can shift when server order changes. Resolve the live prefix from the "
-        "current tool list in-session."
+        "> Stable IDs are the `mcpServers` keys in root `.mcp.json` (repo MCP SSOT). "
+        "Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. "
+        "Resolve the live prefix from the current tool list in-session."
     )
     lines.append("")
     lines.append("<!-- MCP-QUICK-REFERENCE:START -->")
@@ -399,59 +390,17 @@ def _same_file(a: Path, b: Path) -> bool:
         return False
 
 
-# Minimum plausible server count for the authoritative repo config. This is
-# a defensive floor: if a caller passes fewer servers than this, we refuse
-# to overwrite a healthy global config. Historical precedent: on 2026-04-22
-# a buggy unit test silently wrote a 1-server stub (`{"test": ...}`) to the
-# real user-home config every full-suite run, taking the entire MCP fleet
-# offline. The production repo has 12+ servers; anything below this floor
-# is almost certainly a test fixture escaping its mock boundary.
-MIN_PLAUSIBLE_SERVER_COUNT = 5
+def sync_global_config(data: dict[str, Any], global_path: Path = repo_config) -> bool:
+    """Compatibility no-op for the repo SSOT.
 
-
-def sync_global_config(data: dict[str, Any], global_path: Path = global_config) -> bool:
-    """Copy the repo SSOT to the Cursor-read global path.
-
-    Returns True if a copy was performed, False if the two paths already point
-    to the same file (symlink in place — no-op is correct and zero-drift).
-
-    Refuses to overwrite an existing multi-server global config with a
-    payload containing fewer than ``MIN_PLAUSIBLE_SERVER_COUNT`` servers.
-    This guards against the failure mode documented at 2026-04-22 where a
-    unit test mocked module-level SSOT/GLOBAL but left `global_config`
-    (defaulted here) pointing at the real filesystem, writing a 1-server
-    stub and killing the entire MCP fleet.
+    The repo no longer maintains a separate in-tree editor mirror. The only
+    authoritative config is `.mcp.json`, so this returns False when the caller
+    points at the SSOT itself and otherwise writes only if a separate path is
+    explicitly supplied.
     """
-    global_path.parent.mkdir(parents=True, exist_ok=True)
     if _same_file(repo_config, global_path):
         return False
-
-    incoming_servers = data.get("mcpServers", {})
-    incoming_count = len(incoming_servers) if isinstance(incoming_servers, dict) else 0
-
-    if global_path.exists():
-        # Defense-in-depth: read the current global config and compare counts.
-        # If the incoming payload has fewer servers than the plausibility floor
-        # AND the current global config has more, refuse the overwrite.
-        try:
-            existing_raw = json.loads(global_path.read_text(encoding="utf-8"))
-            existing_servers = existing_raw.get("mcpServers", {}) if isinstance(existing_raw, dict) else {}
-            existing_count = len(existing_servers) if isinstance(existing_servers, dict) else 0
-        except (OSError, json.JSONDecodeError, ValueError):
-            existing_count = 0
-
-        if incoming_count < MIN_PLAUSIBLE_SERVER_COUNT and existing_count >= MIN_PLAUSIBLE_SERVER_COUNT:
-            print(
-                f"[mcp_sync] REFUSED: incoming payload has {incoming_count} server(s) "
-                f"(< floor {MIN_PLAUSIBLE_SERVER_COUNT}), existing global has {existing_count}. "
-                f"Suspected test fixture escaping its mock boundary — refusing to overwrite "
-                f"{global_path}. See sync_mcp_config.MIN_PLAUSIBLE_SERVER_COUNT.",
-                flush=True,
-            )
-            return False
-
-        shutil.copy2(global_path, global_backup)
-
+    global_path.parent.mkdir(parents=True, exist_ok=True)
     global_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     return True
 
@@ -467,15 +416,15 @@ def run(check_only: bool = False, dry_run: bool = False) -> int:
         print(f"[mcp_sync] OK: {len(data['mcpServers'])} MCP servers validated.")
         return 0
     if dry_run:
-        print(f"[mcp_sync] DRY RUN: would sync {len(data['mcpServers'])} servers to {global_config}")
+        print(f"[mcp_sync] DRY RUN: repo SSOT already contains {len(data['mcpServers'])} servers")
         if agents_md.exists():
             print(f"[mcp_sync] DRY RUN: would refresh {agents_md}")
         return 0
     copied = sync_global_config(data)
     if copied:
-        print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {global_config}")
+        print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {repo_config}")
     else:
-        print(f"[mcp_sync] No-op: repo SSOT and {global_config} are the same file (symlink).")
+        print(f"[mcp_sync] No-op: repo SSOT already points at {repo_config}.")
     if sync_agents_md():
         print(f"[mcp_sync] Refreshed AGENTS.md MCP Quick Reference at {agents_md}")
     else:
