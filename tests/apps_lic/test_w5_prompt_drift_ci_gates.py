@@ -133,7 +133,10 @@ def test_w5_four_archetype_fixture_pa_receipts(
         ARCHETYPE_C_LEVEL,
     )
     assert f"Mapped archetype: {archetype}." in cpa.prompt_blocks[0].content
+    assert "MESSAGE TYPE CALIBRATION:" in cpa.prompt_blocks[0].content
+    assert "One-shot example shape:" in cpa.prompt_blocks[0].content
     assert f"recipient_archetype={archetype}" in cpa.slot_lineage_map["A0"]
+    assert "message_type=" in cpa.slot_lineage_map["A0"]
     assert "recipient_policy_profile" in cpa.component_hash_map
     assert "template_policy" in cpa.component_hash_map
     assert cpa.slot_lineage_map["output_schema"].startswith(
@@ -153,6 +156,7 @@ def test_w5_ceo_maps_to_c_level_while_template_set_stays_four() -> None:
 
     assert "LIC recipient class: CEO." in cpa.prompt_blocks[0].content
     assert "Mapped archetype: C_LEVEL." in cpa.prompt_blocks[0].content
+    assert "Org dynamics required: True." in cpa.prompt_blocks[0].content
     assert CANONICAL_RECIPIENT_ARCHETYPES == (
         ARCHETYPE_RECRUITER,
         ARCHETYPE_SENIOR_TA,

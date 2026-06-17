@@ -298,6 +298,7 @@ def test_role_specific_recruiter_generates_two_whole_message_candidates() -> Non
         assert candidate.is_whole_message is True
         assert "Director, AI Platforms" in candidate.draft_text
         assert "JR-12345" in candidate.draft_text
+        assert "anchored to the req" in candidate.draft_text.lower()
         assert "Subject:" not in candidate.draft_text
         assert candidate.draft_text.endswith("\n\nAmit")
         assert candidate.claims_used
@@ -328,6 +329,7 @@ def test_ceo_trigger_gets_sc3_three_candidates_and_two_judge_depth_marker() -> N
     assert request.reasoning_policy.x1d_llm_judge_depth == 2
     assert len(batch.candidates) == 3
     assert all("governance" in candidate.draft_text.lower() for candidate in batch.candidates)
+    assert all("org dynamics" in candidate.draft_text.lower() for candidate in batch.candidates)
     assert all("deployment caught my attention" not in candidate.draft_text for candidate in batch.candidates)
     assert all("I noticed AIG announced" in candidate.draft_text for candidate in batch.candidates)
 

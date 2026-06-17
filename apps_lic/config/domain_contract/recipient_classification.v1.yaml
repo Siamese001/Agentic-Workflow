@@ -30,18 +30,48 @@ canonical_classes:
   - UNKNOWN
 
 sub_archetype_extensions:
+  RECRUITER:
+    - TECHNICAL_RECRUITER
+    - SOURCER
+    - TALENT_PARTNER
+    - EXECUTIVE_RECRUITER
+  SENIOR_TA:
+    - HEAD_OF_TA
+    - GLOBAL_HEAD_OF_TA
+    - DIRECTOR_TA
+    - VP_TA
+    - TALENT_ACQUISITION_LEADER
+  HIRING_MANAGER:
+    - ENGINEERING_MANAGER
+    - DIRECTOR_ENGINEERING
+    - HEAD_OF_AI
+    - HEAD_OF_DATA
+    - HEAD_OF_PLATFORM
+    - GM
+    - PRODUCT_LEADER
   EXECUTIVE:
     - SVP_ENG
     - HEAD_OF_AI
     - HEAD_OF_DATA
     - HEAD_OF_PLATFORM
+    - VP_PRODUCT
+    - VP_DATA
+    - VP_PLATFORM
+    - VP_AI
+    - GM
+    - MANAGING_DIRECTOR
   C_LEVEL:
+    - CEO
+    - CTO
     - CAIO
     - CIO
     - CISO
     - COO
     - CFO
     - CMO
+    - CRO
+    - CHRO
+    - CDO
 
 confidence_thresholds:
   RECRUITER: 0.60

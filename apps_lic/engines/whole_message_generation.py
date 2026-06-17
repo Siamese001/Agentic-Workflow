@@ -61,6 +61,11 @@ from apps_lic.engines.sender_proof_graph import (
     validate_l2_sender_claims_against_packet,
 )
 from apps_lic.types.recipient_archetype_mapping import (
+    ARCHETYPE_C_LEVEL,
+    ARCHETYPE_EXECUTIVE,
+    ARCHETYPE_RECRUITER,
+    ARCHETYPE_SENIOR_TA,
+    map_lic_recipient_class_to_archetype,
     resolve_recipient_template_policy,
 )
 from apps_lic.types.linkedin_route_envelope import CHANNEL_LINKEDIN_INMAIL
@@ -774,9 +779,10 @@ def _packet_trigger(request: WholeMessageGenerationRequest) -> str:
 
 def _packet_value_sentence(request: WholeMessageGenerationRequest) -> str:
     value = _clean(request.message_intelligence_packet.value_proposition)
+    lens = _archetype_lens_fragment(request)
     if not value:
-        return "That gives the note a concrete operating lens rather than a broad background summary."
-    return f"That makes the fit specific: {value}."
+        return lens
+    return f"{lens} {value}."
 
 
 def _packet_ask(
@@ -791,11 +797,37 @@ def _packet_ask(
     if recommended.endswith("?") and "15" not in recommended and "20" not in recommended:
         return recommended
     next_step = _clean(request.desired_next_step)
-    asks = (
-        f"Would {next_step} be useful?" if next_step else "Would a brief exchange be useful?",
-        f"Open to a short fit exchange?" if not next_step else f"Open to {next_step} if the fit is worth a closer look?",
-        "Would it be useful to compare notes briefly?",
-    )
+    archetype = _recipient_archetype(request)
+    if archetype == ARCHETYPE_RECRUITER:
+        asks = (
+            f"Would a JD-aligned fit check be useful?" if not next_step else f"Would {next_step} help against the exact req?",
+            "Open to a short recruiter screen on the role fit?",
+            "Would it help to compare notes against the req?",
+        )
+    elif archetype == ARCHETYPE_SENIOR_TA:
+        asks = (
+            f"Would a quick search-strategy read be useful?" if not next_step else f"Would {next_step} help against the search plan?",
+            "Open to a brief TA calibration on the role?",
+            "Would it help to compare notes on the search strategy?",
+        )
+    elif archetype == ARCHETYPE_EXECUTIVE:
+        asks = (
+            f"Would a brief operating-model exchange be useful?" if not next_step else f"Would {next_step} be useful on the mandate?",
+            "Open to a short executive conversation on the execution angle?",
+            "Would it help to compare notes on the operating tradeoff?",
+        )
+    elif archetype == ARCHETYPE_C_LEVEL:
+        asks = (
+            f"Would a brief executive exchange on the strategic angle be useful?" if not next_step else f"Would {next_step} help on the enterprise priority?",
+            "Open to a concise executive exchange on the org-level implication?",
+            "Would it help to compare notes on the strategic implication?",
+        )
+    else:
+        asks = (
+            f"Would {next_step} be useful?" if next_step else "Would a brief exchange be useful?",
+            f"Open to a short fit exchange?" if not next_step else f"Open to {next_step} if the fit is worth a closer look?",
+            "Would it be useful to compare notes briefly?",
+        )
     return asks[variant_index % len(asks)]
 
 
@@ -806,6 +838,26 @@ def _role_reference(request: WholeMessageGenerationRequest) -> str:
     if position and req:
         return f"{position} ({req})"
     return position or "the open role"
+
+
+def _recipient_archetype(request: WholeMessageGenerationRequest) -> str:
+    try:
+        return map_lic_recipient_class_to_archetype(request.recipient_class)
+    except ValueError:
+        return ""
+
+
+def _archetype_lens_fragment(request: WholeMessageGenerationRequest) -> str:
+    archetype = _recipient_archetype(request)
+    if archetype == ARCHETYPE_RECRUITER:
+        return "This keeps the note anchored to the req"
+    if archetype == ARCHETYPE_SENIOR_TA:
+        return "This keeps the note tied to search strategy"
+    if archetype == ARCHETYPE_EXECUTIVE:
+        return "This keeps the note on mandate and team outcomes"
+    if archetype == ARCHETYPE_C_LEVEL:
+        return "This keeps the note on enterprise priorities and org dynamics"
+    return "This keeps the note concrete"
 
 
 def _render_candidate_text(
@@ -824,13 +876,21 @@ def _render_candidate_text(
     prior_thread = _clean(target.get("prior_thread_summary"))
     value_sentence = _packet_value_sentence(request)
     ask = _packet_ask(request, variant_index=variant_index)
+    archetype = _recipient_archetype(request)
+    lens_fragment = _archetype_lens_fragment(request)
 
     if _route_is_connection_request(request):
-        connection_context = (
-            f"{company}'s {role_ref} work"
-            if request.message_type == MESSAGE_ROLE_SPECIFIC
-            else f"{company}'s AI work"
-        )
+        connection_context = f"{company}'s AI work"
+        if archetype == ARCHETYPE_RECRUITER:
+            connection_context = f"{company}'s {role_ref} hiring lane"
+        elif archetype == ARCHETYPE_SENIOR_TA:
+            connection_context = f"{company}'s talent strategy"
+        elif archetype == ARCHETYPE_EXECUTIVE:
+            connection_context = f"{company}'s operating mandate"
+        elif archetype == ARCHETYPE_C_LEVEL:
+            connection_context = f"{company}'s operating-model signal"
+        elif request.message_type == MESSAGE_ROLE_SPECIFIC:
+            connection_context = f"{company}'s {role_ref} work"
         if trigger:
             connection_context = (
                 trigger
@@ -859,27 +919,29 @@ def _render_candidate_text(
         if request.message_type == MESSAGE_ROLE_SPECIFIC:
             opener = f"Hi {first}, I noticed {company}'s {role_ref} role."
             context = (
-                f"The role signal is specific: {role_ref} appears to need governed AI platform delivery "
+                f"{lens_fragment} The role signal is specific: {role_ref} appears to need governed AI platform delivery "
                 "with enough validation and traceability to work in regulated enterprise workflows."
             )
         elif request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
             trigger_ref = _short_trigger_signal(trigger or f"{company}'s AI platform work", max_words=18).rstrip(".!?")
             opener = f"Hi {first}, I noticed {trigger_ref}."
             context = (
-                "The useful operating question is whether agent workflows can be policy-gated, "
+                f"{lens_fragment} The useful operating question is whether agent workflows can be policy-gated, "
                 "validated, and replayed before teams rely on them in regulated workflows."
             )
         elif request.message_type == MESSAGE_REFERRAL_ASK:
             bridge = f"{referrer} suggested I reach out" if referrer else "A warm intro brought you to mind"
             opener = f"Hi {first}, {bridge}."
-            context = "The relevant fit signal is governed AI platform execution with clean proof boundaries."
+            context = (
+                f"{lens_fragment} The relevant fit signal is governed AI platform execution with clean proof boundaries."
+            )
         elif request.message_type == MESSAGE_FOLLOW_UP:
             thread_ref = prior_thread or "our earlier exchange"
             opener = f"Hi {first}, following up on {thread_ref}."
-            context = "The useful follow-up angle is fit against governed AI platform execution."
+            context = f"{lens_fragment} The useful follow-up angle is fit against governed AI platform execution."
         else:
             opener = f"Hi {first}, I saw your work at {company}."
-            context = _punctuated(objective or "The relevant signal is governed AI platform execution.")
+            context = f"{lens_fragment} {_punctuated(objective or 'The relevant signal is governed AI platform execution.')}"
         body = " ".join(
             part
             for part in (
@@ -898,7 +960,7 @@ def _render_candidate_text(
             _finalize_message(
                 request,
                 f"Hi {first}, I noticed {company}'s {role_ref} role. "
-                f"{proof_fragment}. {ask}"
+                f"{lens_fragment} {proof_fragment}. {ask}"
             ),
             claims_used,
         )
@@ -908,7 +970,7 @@ def _render_candidate_text(
             _finalize_message(
                 request,
                 f"Hi {first}, I noticed {trigger_ref}. "
-                f"{proof_fragment} for governance-heavy AI delivery. {ask}"
+                f"{lens_fragment} {proof_fragment} for governance-heavy AI delivery. {ask}"
             ),
             claims_used,
         )
@@ -918,7 +980,7 @@ def _render_candidate_text(
             _finalize_message(
                 request,
                 f"Hi {first}, {bridge}. "
-                f"{proof_fragment}. "
+                f"{lens_fragment} {proof_fragment}. "
                 f"{ask}"
             ),
             claims_used,
@@ -929,7 +991,7 @@ def _render_candidate_text(
             _finalize_message(
                 request,
                 f"Hi {first}, following up on {thread_ref}. "
-                f"{proof_fragment}. "
+                f"{lens_fragment} {proof_fragment}. "
                 f"{ask}"
             ),
             claims_used,
@@ -939,7 +1001,7 @@ def _render_candidate_text(
             _finalize_message(
                 request,
                 f"Hi {first}, I saw your work at {company} and wanted to connect around {objective}. "
-                f"{proof_fragment}. "
+                f"{lens_fragment} {proof_fragment}. "
                 f"{ask}"
             ),
             claims_used,
@@ -948,7 +1010,7 @@ def _render_candidate_text(
         _finalize_message(
             request,
             f"Hi {first}, I saw your work at {company} and wanted to connect. "
-            f"{proof_fragment}. "
+            f"{lens_fragment} {proof_fragment}. "
             f"{ask}"
         ),
         claims_used,
@@ -972,10 +1034,41 @@ def _subject_for_request(request: WholeMessageGenerationRequest) -> str:
     position = _clean(
         request.jd_fields.get("position_name") or request.jd_fields.get("job_title")
     )
+    archetype = _recipient_archetype(request)
+    if request.message_type == MESSAGE_ROLE_SPECIFIC:
+        if archetype == ARCHETYPE_RECRUITER:
+            subject = f"{position or 'Role'} fit at {company}"
+        elif archetype == ARCHETYPE_SENIOR_TA:
+            subject = f"{position or 'Role'} search strategy at {company}"
+        elif archetype == ARCHETYPE_C_LEVEL:
+            subject = f"{company} strategic role note"
+            if position:
+                subject = f"{position} at {company}"
+        elif archetype == ARCHETYPE_EXECUTIVE:
+            subject = f"{position or company} execution note"
+        else:
+            subject = f"{position or company} fit note"
+        return _clean(subject)[:200]
+    if request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
+        if archetype == ARCHETYPE_C_LEVEL:
+            return _clean(f"{company} strategic signal")[:200]
+        if archetype == ARCHETYPE_EXECUTIVE:
+            return _clean(f"{company} operating-model note")[:200]
+        if archetype == ARCHETYPE_SENIOR_TA:
+            return _clean(f"{company} hiring signal")[:200]
+        return _clean(f"{company} AI execution note")[:200]
+    if request.message_type == MESSAGE_REFERRAL_ASK:
+        return _clean(f"{company} warm intro")[:200]
+    if request.message_type == MESSAGE_FOLLOW_UP:
+        return _clean(f"{company} follow-up")[:200]
+    if archetype == ARCHETYPE_C_LEVEL:
+        return _clean(f"{company} leadership note")[:200]
+    if archetype == ARCHETYPE_EXECUTIVE:
+        return _clean(f"{company} operating note")[:200]
+    if archetype == ARCHETYPE_SENIOR_TA:
+        return _clean(f"{company} talent strategy")[:200]
     if position:
         return _clean(f"{position} fit at {company}")[:200]
-    if request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
-        return _clean(f"{company} AI execution note")[:200]
     return _clean(f"{company} AI leadership fit")[:200]
 
 

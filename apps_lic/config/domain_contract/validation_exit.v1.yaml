@@ -50,6 +50,7 @@ x2_gates:
     - prior_thread_gate
     - company_trigger_gate
     - role_ownership_fit_gate
+    - executive_org_dynamics_gate
 
 x1d:
   default_model: GPT-5.5
@@ -171,6 +172,7 @@ acceptance:
   - Hiring-manager trigger-based or technical-proof messages require evidence and tone/non-generic X1D.
   - Recruiter and Senior TA role-specific messages require evidence X1D by default and add tone/non-generic X1D for provider-backed or similarity-risk paths.
   - Executive/VP_ENG trigger-based or technical-proof messages require tone/channel and evidence X1D.
+  - Executive and C-level messages require an org-dynamics lens at X2, not recruiter-style copy.
   - CTO messages follow the C-level two-judge policy.
   - Required X1D judges must come from a live Anthropic Claude transport receipt; fake/mock/manual artifacts block.
   - X1D cannot run if X2 failed.

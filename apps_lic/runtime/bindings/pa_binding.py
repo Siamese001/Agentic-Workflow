@@ -219,6 +219,7 @@ def _build_system_preamble(
             lic_recipient_class=recipient_class,
             profile=profile,
             length_budget=effective_length_budget,
+            message_guidance=template_policy.message_guidance,
         ),
     ]
 
@@ -629,7 +630,8 @@ def pa_compose_apps_lic(
         "U0": f"validated_request:{validated_request.request_id}",
         "A0": (
             "PA-authored:recipient_archetype="
-            f"{recipient_archetype}:template={archetype_profile.template_id}"
+            f"{recipient_archetype}:message_type={message_type}:"
+            f"template={archetype_profile.template_id}"
         ),
         "H0": f"PA-authored:linkedin_{recipient_archetype.lower()}_style_constraints",
         "R0": (

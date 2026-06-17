@@ -74,6 +74,7 @@ from apps_lic.engines.x1d_judge_policy import (
     required_x1d_judge_ids_for_context,
     x1d_judge_profile_policy,
 )
+from apps_lic.types.recipient_archetype_mapping import resolve_recipient_template_policy
 
 
 STATUS_X2_PASS = "X2_VALIDATION_PASS"
@@ -117,6 +118,7 @@ GATE_RELATIONSHIP_EVIDENCE = "relationship_evidence_gate"
 GATE_PRIOR_THREAD = "prior_thread_gate"
 GATE_COMPANY_TRIGGER = "company_trigger_gate"
 GATE_ROLE_OWNERSHIP_FIT = "role_ownership_fit_gate"
+GATE_EXECUTIVE_ORG_DYNAMICS = "executive_org_dynamics_gate"
 
 X1D_DEPTH_NONE = "none"
 X1D_DEPTH_ONE = "one"
@@ -154,6 +156,26 @@ _NON_US_OWNERSHIP_HINTS = (
     "japan",
     "tokyo",
 )
+_EXECUTIVE_ORG_DYNAMICS_MARKERS = (
+    "operating model",
+    "org dynamics",
+    "enterprise",
+    "governance",
+    "mandate",
+    "platform economics",
+    "execution",
+    "adoption",
+    "strategic",
+    "strategy",
+    "decision",
+    "leadership",
+    "team outcomes",
+    "org-level",
+    "leverage",
+    "risk",
+)
+
+
 @dataclass(frozen=True)
 class X2GateResult:
     gate_id: str
@@ -380,6 +402,32 @@ def _role_ownership_fit_passes(request: WholeMessageGenerationRequest) -> tuple[
     if non_us_signal and us_jd_signal:
         return False, "role_ownership_region_mismatch"
     return True, "role_ownership_fit_not_contradicted"
+
+
+def _executive_org_dynamics_passes(
+    request: WholeMessageGenerationRequest,
+    candidate: WholeMessageCandidate | None,
+) -> tuple[bool, str, bool]:
+    try:
+        guidance = resolve_recipient_template_policy(
+            recipient_class=request.recipient_class,
+            message_type=request.message_type,
+            channel=request.channel,
+            modifiers=request.modifiers,
+        ).message_guidance
+    except ValueError:
+        return True, "message_guidance_unavailable", False
+    if not guidance.org_dynamics_required:
+        return True, "org_dynamics_not_required", False
+    if candidate is None:
+        return False, "selected_candidate_missing", True
+    lowered = _clean(candidate.draft_text).lower()
+    matched_markers = tuple(
+        marker for marker in _EXECUTIVE_ORG_DYNAMICS_MARKERS if marker in lowered
+    )
+    if matched_markers:
+        return True, "executive_org_dynamics_lens_present", True
+    return False, "missing_executive_org_dynamics_lens", True
 
 
 def _has_prompt_injection_text(*values: Any) -> bool:
@@ -762,6 +810,24 @@ def run_x2_validation(
         )
     )
 
+    org_dynamics_ok, org_dynamics_reason, org_dynamics_applicable = _executive_org_dynamics_passes(
+        request,
+        selected_candidate,
+    )
+    gate_results.append(
+        _gate(
+            GATE_EXECUTIVE_ORG_DYNAMICS,
+            org_dynamics_ok,
+            org_dynamics_reason,
+            evidence_refs=(
+                selected_id,
+                request.recipient_class,
+                request.message_type,
+            ),
+            applicable=org_dynamics_applicable,
+        )
+    )
+
     failed = tuple(
         result.gate_id
         for result in gate_results
@@ -1064,6 +1130,7 @@ __all__ = [
     "GATE_RELATIONSHIP_EVIDENCE",
     "GATE_REQUISITION_NUMBER",
     "GATE_ROLE_OWNERSHIP_FIT",
+    "GATE_EXECUTIVE_ORG_DYNAMICS",
     "GATE_SCHEMA",
     "GATE_UNSUPPORTED_CLAIM",
     "GATE_WHOLE_MESSAGE_SHAPE",

@@ -1,0 +1,207 @@
+schema_version: apps_lic.archetype_message_matrix.v1
+app: apps_lic
+owner: apps_lic.prompt_assembly
+purpose: >
+  Canonical archetype and message-type guidance for prompt assembly,
+  provider-free candidate scaffolding, and evaluation calibration.
+
+canonical_archetypes:
+  - RECRUITER
+  - SENIOR_TA
+  - EXECUTIVE
+  - C_LEVEL
+
+canonical_message_types:
+  - general_intro
+  - role_specific
+  - trigger_based_insight
+  - referral_ask
+  - follow_up
+
+archetypes:
+  RECRUITER:
+    prompt_altitude: "JD-anchored screening and hiring workflow."
+    sub_archetypes:
+      - TECHNICAL_RECRUITER
+      - SOURCER
+      - TALENT_PARTNER
+      - EXECUTIVE_RECRUITER
+    anti_ai_tells:
+      - generic opener cadence
+      - em dash heavy phrasing
+      - blanket praise with no req anchor
+      - vague excited to connect language
+    message_types:
+      general_intro:
+        jd_dependency: preferred
+        org_dynamics_required: false
+        strategic_lens: "Name the hiring lane and one tangible fit signal."
+        cta_hint: "Ask for a fit check, resume review, or short screen."
+        one_shot_example: "Open with the role family or team lane, name one proof point, and ask for a fit check."
+      role_specific:
+        jd_dependency: required
+        org_dynamics_required: false
+        strategic_lens: "Anchor to the JD, requisition, and screening criteria before any broader pitch."
+        cta_hint: "Ask for a JD-aligned fit review or recruiting screen."
+        one_shot_example: "Open with the req title or number, connect one proof point to the role need, then ask for a fit check."
+      trigger_based_insight:
+        jd_dependency: preferred
+        org_dynamics_required: false
+        strategic_lens: "Translate a company signal into hiring demand, team load, or search urgency."
+        cta_hint: "Ask whether the signal changes the hiring priority."
+        one_shot_example: "Use the company signal to explain why this search matters now, then tie it back to the JD."
+      referral_ask:
+        jd_dependency: conditional
+        org_dynamics_required: false
+        strategic_lens: "Keep the referral ask tied to a real opening or hiring need."
+        cta_hint: "Ask for a warm intro to the right recruiting owner."
+        one_shot_example: "State the intro source, name the search if one exists, and ask for a warm recruiting intro."
+      follow_up:
+        jd_dependency: required
+        org_dynamics_required: false
+        strategic_lens: "Pick up the prior recruiting thread and re-anchor to the exact role or screen."
+        cta_hint: "Ask for a next-step decision or a revised fit check."
+        one_shot_example: "Reference the earlier exchange, restate the role, and ask for the next recruiting step."
+
+  SENIOR_TA:
+    prompt_altitude: "Talent-system fit and hiring strategy."
+    sub_archetypes:
+      - HEAD_OF_TA
+      - GLOBAL_HEAD_OF_TA
+      - DIRECTOR_TA
+      - VP_TA
+      - TALENT_ACQUISITION_LEADER
+    anti_ai_tells:
+      - generic recruiter boilerplate
+      - role agnostic praise
+      - em dash heavy phrasing
+      - buzzword stacking without search strategy
+    message_types:
+      general_intro:
+        jd_dependency: preferred
+        org_dynamics_required: false
+        strategic_lens: "Frame the note around search strategy, talent depth, or hiring-system quality."
+        cta_hint: "Ask for a quick fit calibration or search-strategy read."
+        one_shot_example: "Lead with the team or talent strategy lane, then connect one proof point to the search."
+      role_specific:
+        jd_dependency: required
+        org_dynamics_required: false
+        strategic_lens: "Use the JD to show you understand the role bar, search scope, and team need."
+        cta_hint: "Ask for a role fit review or calibration against the search plan."
+        one_shot_example: "Name the requisition, connect your proof to the bar, and ask for a calibration chat."
+      trigger_based_insight:
+        jd_dependency: preferred
+        org_dynamics_required: false
+        strategic_lens: "Translate the trigger into search design, market mapping, or pipeline impact."
+        cta_hint: "Ask whether the trigger changes the search design."
+        one_shot_example: "Use the trigger to talk about search design, not just the role title."
+      referral_ask:
+        jd_dependency: conditional
+        org_dynamics_required: false
+        strategic_lens: "Use the referral to open a talent-strategy conversation, not a generic intro."
+        cta_hint: "Ask for a brief introduction to the TA owner."
+        one_shot_example: "Mention the referrer, state the hiring context, and ask for a short TA introduction."
+      follow_up:
+        jd_dependency: required
+        org_dynamics_required: false
+        strategic_lens: "Re-open the prior TA conversation with the same search and a sharper reason to reply."
+        cta_hint: "Ask for a next-step or a search-plan adjustment."
+        one_shot_example: "Reference the earlier note, restate the search need, and ask for the next step."
+
+  EXECUTIVE:
+    prompt_altitude: "Operating mandate and team outcomes."
+    sub_archetypes:
+      - HIRING_MANAGER
+      - SVP_ENG
+      - HEAD_OF_AI
+      - HEAD_OF_DATA
+      - HEAD_OF_PLATFORM
+      - GM
+      - MANAGING_DIRECTOR
+    anti_ai_tells:
+      - recruiter-style screen language
+      - resume review phrasing
+      - em dash heavy phrasing
+      - vague leadership talk without execution consequence
+    message_types:
+      general_intro:
+        jd_dependency: not_required
+        org_dynamics_required: true
+        strategic_lens: "Keep the note on mandate, team outcomes, and execution risk."
+        cta_hint: "Ask for a short executive exchange or a redirect to the right owner."
+        one_shot_example: "Open with the operating context, one proof point, and a low-friction executive ask."
+      role_specific:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "When the role is real, frame it as a mandate and team outcome problem, not a recruiter screen."
+        cta_hint: "Ask for a brief technical or operating conversation."
+        one_shot_example: "Name the role, connect your proof to the team mandate, and ask for a short conversation."
+      trigger_based_insight:
+        jd_dependency: not_required
+        org_dynamics_required: true
+        strategic_lens: "Translate the trigger into operating-model, adoption, or platform-economics implications."
+        cta_hint: "Ask whether the trigger changes the operating model."
+        one_shot_example: "Use the trigger to frame an execution or org-design implication, then ask for a brief exchange."
+      referral_ask:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "Use the referral to reach the owner of the mandate or the right executive peer."
+        cta_hint: "Ask for a peer-level introduction."
+        one_shot_example: "State the referrer, the relevant mandate, and ask for a peer introduction."
+      follow_up:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "Resume the prior thread with the same operating problem and a tighter ask."
+        cta_hint: "Ask for a decision, owner, or next-step conversation."
+        one_shot_example: "Reference the earlier exchange, restate the operating issue, and ask for the next decision path."
+
+  C_LEVEL:
+    prompt_altitude: "Enterprise strategy and executive priorities."
+    sub_archetypes:
+      - CEO
+      - CTO
+      - CAIO
+      - CIO
+      - CISO
+      - COO
+      - CFO
+      - CMO
+      - CRO
+      - CHRO
+      - CDO
+    anti_ai_tells:
+      - recruiter cadence
+      - generic visionary language
+      - em dash heavy phrasing
+      - overexplained tactical detail
+    message_types:
+      general_intro:
+        jd_dependency: not_required
+        org_dynamics_required: true
+        strategic_lens: "Speak to enterprise priorities, decision rights, and org-level leverage."
+        cta_hint: "Ask for a short executive exchange or the right owner."
+        one_shot_example: "Open with one strategic signal, one relevant proof point, and a concise executive ask."
+      role_specific:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "Only use the JD as a concrete anchor; keep the frame at the level of enterprise outcomes."
+        cta_hint: "Ask for a brief executive conversation or a redirect to the owner."
+        one_shot_example: "Name the role only if it matters, connect it to the company objective, and ask for a short exchange."
+      trigger_based_insight:
+        jd_dependency: not_required
+        org_dynamics_required: true
+        strategic_lens: "Translate the trigger into strategy, operating-model change, or market posture."
+        cta_hint: "Ask whether the trigger changes the enterprise priority."
+        one_shot_example: "Use the trigger to show the strategic implication, then ask for a brief executive exchange."
+      referral_ask:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "Keep the referral tied to the executive objective, not a generic intro."
+        cta_hint: "Ask for a peer-level introduction."
+        one_shot_example: "Name the referrer, the strategic objective, and ask for the most relevant introduction."
+      follow_up:
+        jd_dependency: conditional
+        org_dynamics_required: true
+        strategic_lens: "Re-enter the prior thread with a sharper strategic angle and a clear next step."
+        cta_hint: "Ask for a decision path or a short follow-up conversation."
+        one_shot_example: "Reference the earlier exchange, restate the strategic implication, and ask for the next step."
