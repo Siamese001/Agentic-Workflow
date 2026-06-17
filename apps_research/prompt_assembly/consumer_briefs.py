@@ -18,6 +18,7 @@ _TEMPLATE_PROMPT_FILES: dict[str, Path] = {
     "apps_rg_targeting_brief_synthesis_v1": _PROMPT_DIR / "apps_rg_targeting_brief_v1.md",
     "downstream_research_substrate_v1": _PROMPT_DIR / "downstream_research_substrate_v1.md",
     "apps_lic_research_substrate_v1": _PROMPT_DIR / "apps_lic_research_substrate_v1.md",
+    "apps_exec_executive_brief_v1": _PROMPT_DIR / "apps_exec_executive_brief_v1.md",
 }
 
 _TEMPLATE_ALIASES: dict[str, str] = {
@@ -28,6 +29,8 @@ _TEMPLATE_ALIASES: dict[str, str] = {
     "downstream_research_substrate_v1": "downstream_research_substrate_v1",
     "apps_lic_research_substrate": "apps_lic_research_substrate_v1",
     "apps_lic_research_substrate_v1": "apps_lic_research_substrate_v1",
+    "apps_exec_executive_brief": "apps_exec_executive_brief_v1",
+    "apps_exec_executive_brief_v1": "apps_exec_executive_brief_v1",
 }
 
 

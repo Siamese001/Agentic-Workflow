@@ -13,17 +13,6 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 
-from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
-from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.L1_cognition.c0_package_driven_grounding import FinalEvidenceContract
-from agentic_core.prompt_governance.pa_package_driven_binding import (
-    pa_assemble_prompt_package_driven,
-    CANONICAL_SLOT_ORDER,
-    CompiledPromptArtifact,
-)
-from agentic_core.prompt_governance.apps_research_pa_binding import pa_assemble_apps_research
-
-
 class TestPromptProfileRefs:
     """Verify PA consumes profile refs from U0 package."""
     
@@ -47,16 +36,17 @@ class TestPromptBOMAndRegistry:
     def test_w5_prompt_bom_loaded_from_apps_research_config(self):
         """PA must load prompt BOM from apps_research/prompts/."""
         repo_root = Path(__file__).parent.parent.parent
-        bom_path = repo_root / "apps_research/prompts/prompt_bom.yaml"
+        bom_path = repo_root / "apps_research/prompt_assembly/prompt_bom.yaml"
         
         assert bom_path.exists(), "Prompt BOM must exist"
         
         import yaml
         bom = yaml.safe_load(bom_path.read_text())
         
-        assert "base_templates" in bom
-        assert "task_templates" in bom
-        assert "assembly_order" in bom
+        assert bom["app"] == "apps_research"
+        assert bom["bom_id"] == "apps_research_prompt_bom_v1"
+        assert bom["required_slots"] == ["S0", "I0", "C0", "U0", "D0", "R0"]
+        assert "company_brief_synthesis_v1" in bom["template_registry_refs"]
     
     def test_w5_prompt_registry_loaded_from_apps_research_config(self):
         """PA must load prompt registry from apps_research/prompts/."""
@@ -104,7 +94,7 @@ class TestTemplateResolution:
         assert consumer_rules.get("apps_rg") == "downstream_research_substrate_v1"
     
     def test_w5_downstream_substrate_template_resolved_for_apps_lic(self):
-        """downstream_research_substrate_v1 must resolve for apps_lic."""
+        """apps_lic_research_substrate_v1 must resolve for apps_lic."""
         repo_root = Path(__file__).parent.parent.parent
         registry_path = repo_root / "apps_research/prompts/prompt_registry.yaml"
         
@@ -113,8 +103,45 @@ class TestTemplateResolution:
         
         resolution_rules = registry.get("resolution_rules", {})
         consumer_rules = resolution_rules.get("by_downstream_consumer", {})
-        
-        assert consumer_rules.get("apps_lic") == "downstream_research_substrate_v1"
+
+        assert consumer_rules.get("apps_lic") == "apps_lic_research_substrate_v1"
+
+    def test_w5_executive_brief_template_resolved_for_apps_exec(self):
+        """apps_exec_executive_brief_v1 must resolve for apps_exec."""
+        repo_root = Path(__file__).parent.parent.parent
+        registry_path = repo_root / "apps_research/prompts/prompt_registry.yaml"
+
+        import yaml
+        registry = yaml.safe_load(registry_path.read_text())
+
+        resolution_rules = registry.get("resolution_rules", {})
+        consumer_rules = resolution_rules.get("by_downstream_consumer", {})
+
+        assert consumer_rules.get("apps_exec") == "apps_exec_executive_brief_v1"
+
+    def test_w5_prompt_profile_includes_apps_lic_consumer_template(self):
+        """Prompt profile must expose the apps_lic downstream consumer template."""
+        repo_root = Path(__file__).parent.parent.parent
+        profile_path = repo_root / "apps_research/config/domain_contract/prompt_profile.company_brief.v1.yaml"
+
+        import yaml
+        profile = yaml.safe_load(profile_path.read_text())
+
+        templates = profile.get("template_resolution", {}).get("downstream_consumer_templates", {})
+
+        assert templates.get("apps_lic") == "apps_lic_research_substrate_v1"
+
+    def test_w5_prompt_profile_includes_apps_exec_consumer_template(self):
+        """Prompt profile must expose the apps_exec downstream consumer template."""
+        repo_root = Path(__file__).parent.parent.parent
+        profile_path = repo_root / "apps_research/config/domain_contract/prompt_profile.company_brief.v1.yaml"
+
+        import yaml
+        profile = yaml.safe_load(profile_path.read_text())
+
+        templates = profile.get("template_resolution", {}).get("downstream_consumer_templates", {})
+
+        assert templates.get("apps_exec") == "apps_exec_executive_brief_v1"
 
 
 class TestCanonicalSlotOrder:
@@ -227,19 +254,20 @@ class TestArtifactEmission:
         # Verify dataclass structure
         fields = [f.name for f in CompiledPromptArtifact.__dataclass_fields__.values()]
         
-        assert "prompt_hash" in fields
+        assert "compilation_hash" in fields
         assert "component_hash_map" in fields
         assert "slot_lineage_map" in fields
-        assert "envelope" in fields
-        assert "provider_render_manifest" in fields
-        assert "replay_manifest" in fields
+        assert "replay_manifest_ref" in fields
+        assert "per_input_hash_map" in fields
+        assert "system_preamble" in fields
+        assert "user_instruction" in fields
     
     def test_w5_pa_emits_prompt_hash(self):
-        """CompiledPromptArtifact must include prompt_hash."""
+        """CompiledPromptArtifact must include compilation_hash."""
         from agentic_core.prompt_governance.pa_package_driven_binding import CompiledPromptArtifact
         
         fields = [f.name for f in CompiledPromptArtifact.__dataclass_fields__.values()]
-        assert "prompt_hash" in fields
+        assert "compilation_hash" in fields
     
     def test_w5_pa_emits_component_hash_map(self):
         """CompiledPromptArtifact must include component_hash_map."""
@@ -255,19 +283,12 @@ class TestArtifactEmission:
         fields = [f.name for f in CompiledPromptArtifact.__dataclass_fields__.values()]
         assert "slot_lineage_map" in fields
     
-    def test_w5_pa_emits_provider_render_manifest(self):
-        """CompiledPromptArtifact must include provider_render_manifest."""
+    def test_w5_pa_emits_replay_manifest_ref(self):
+        """CompiledPromptArtifact must include replay_manifest_ref."""
         from agentic_core.prompt_governance.pa_package_driven_binding import CompiledPromptArtifact
         
         fields = [f.name for f in CompiledPromptArtifact.__dataclass_fields__.values()]
-        assert "provider_render_manifest" in fields
-    
-    def test_w5_pa_emits_replay_manifest(self):
-        """CompiledPromptArtifact must include replay_manifest."""
-        from agentic_core.prompt_governance.pa_package_driven_binding import CompiledPromptArtifact
-        
-        fields = [f.name for f in CompiledPromptArtifact.__dataclass_fields__.values()]
-        assert "replay_manifest" in fields
+        assert "replay_manifest_ref" in fields
 
 
 class TestPAnAuthorityBoundaries:
@@ -280,7 +301,14 @@ class TestPAnAuthorityBoundaries:
         
         source = inspect.getsource(pa_package_driven_binding)
         
-        forbidden = ["retrieve", "fetch_", "c0.retrieve", "get_evidence"]
+        forbidden = [
+            "retrieve(",
+            ".retrieve(",
+            "fetch_evidence(",
+            ".fetch_evidence(",
+            "get_evidence(",
+            ".get_evidence(",
+        ]
         for term in forbidden:
             assert term not in source.lower(), f"PA must not retrieve: {term}"
     

@@ -24,8 +24,11 @@ templates:
     path: apps_research/prompts/templates/downstream_research_substrate_v1.jinja
   apps_lic_research_substrate_v1:
     path: apps_research/prompts/templates/apps_lic_research_substrate_v1.jinja
+  apps_exec_executive_brief_v1:
+    path: apps_research/prompts/templates/apps_exec_executive_brief_v1.jinja
 resolution_rules:
   by_support_status: {}
   by_downstream_consumer:
     apps_rg: downstream_research_substrate_v1
     apps_lic: apps_lic_research_substrate_v1
+    apps_exec: apps_exec_executive_brief_v1

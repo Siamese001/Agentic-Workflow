@@ -410,6 +410,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         if consumer_template_id in {
             "downstream_research_substrate_v1",
             "apps_lic_research_substrate_v1",
+            "apps_exec_executive_brief_v1",
         }:
             consumer_keys = {
                 "downstream_research_substrate_v1": (
@@ -421,6 +422,11 @@ class CompanyBriefEngine(BaseResearchEngine):
                     "apps_lic_research_substrate_text",
                     "apps_lic_research_substrate_disposition",
                     "apps_lic_research_substrate_block_reason",
+                ),
+                "apps_exec_executive_brief_v1": (
+                    "apps_exec_executive_brief_text",
+                    "apps_exec_executive_brief_disposition",
+                    "apps_exec_executive_brief_block_reason",
                 ),
             }
             consumer_output_key, consumer_disposition_key, consumer_block_reason_key = (

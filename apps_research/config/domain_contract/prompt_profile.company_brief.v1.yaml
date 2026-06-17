@@ -30,6 +30,7 @@ template_resolution:
   downstream_consumer_templates:
     apps_rg: downstream_research_substrate_v1
     apps_lic: apps_lic_research_substrate_v1
+    apps_exec: apps_exec_executive_brief_v1
   
   degraded_support_template: degraded_support_caveat_v1
   

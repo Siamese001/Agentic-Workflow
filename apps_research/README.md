@@ -18,6 +18,7 @@ The default `company_brief_synthesis_v1` path still produces the full research b
 |----------|----------|-------------|-------|
 | `apps_rg` | `downstream_research_substrate_v1` | Delegated downstream research substrate for app logic | Compact signal-first output, roughly 1,600 chars, no more than 14 bullets, sections: Research Summary, Key Findings, Source Attributions, Confidence Assessment, Reuse Policy |
 | `apps_lic` | `apps_lic_research_substrate_v1` | Outreach drafting, recipient positioning, and proof selection | Compact machine-friendly output, roughly 1,400 chars, no more than 12 bullets, sections: Research Summary, LIC Relevance, Key Findings, Source Attributions, Confidence Assessment, Reuse Policy |
+| `apps_exec` | `apps_exec_executive_brief_v1` | Executive decision framing, operating pressure, leadership map, and positioning themes | Compact executive brief, roughly 1,800 chars, no more than 12 bullets, sections: Executive Summary, Company Strategy & Operating Pressure, Leadership & Stakeholder Map, AI/Data/Platform Signals, Recent Events & Urgency, Positioning Themes, Do Not Use As Proof |
 
 Both consumer briefs treat the JD as data, preserve only verified company facts, and block with `BLOCKED: COMPANY_NOT_IDENTIFIABLE` when the company cannot be verified.
 
