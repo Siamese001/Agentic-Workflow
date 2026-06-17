@@ -45,7 +45,7 @@ LAST_UPDATED: 2026-06-19
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Refresh branch and PR evidence | ~4K | GitHub PR refs remain fetchable; local untracked plan files are not touched | ✅ DONE | Fresh table of closed PR refs and local branches with `commits_not_ancestor` and `patch_unique` counts |
 | W2 | W2.1, W2.2 | Decide merge, cherry-pick, or retire path | ~5K | User approval is required before mutating refs or pushing | ✅ DONE | Every unique-patch source has an explicit disposition: publish, retire, or defer |
-| W3 | W3.1, W3.2, W3.3 | Publish approved work and verify remote closure | ~8K | Approved work can be integrated without overwriting newer `origin/main` | ✅ DONE | `origin/main` contains approved patches; deferred/manual-refresh candidates remain outside publication scope |
+| W3 | W3.1, W3.2, W3.3 | Publish approved work and verify remote closure | ~8K | Approved work can be integrated without overwriting newer `origin/main` | ✅ DONE | `origin/main` contains approved patches; stale historical candidates have final dispositions |
 
 ### Phase Progress
 
@@ -281,8 +281,8 @@ Publication result:
 |---|---|---|
 | Local `claude-apps-rg-pytest-fixes` / `c610a1b386c976456948b3319be77be142819c7f` | PUBLISHED | Cherry-picked cleanly as `fe30352d7b`; focused pytest passed; pushed to `origin/main` in publication commit chain |
 | Plan gate fixes | PUBLISHED | `plans/apps-rg-11-lane-closeout-5f8c2a.md`, `plans/shared-lane-skill-metric-skew-elimination-b4e8c1.md`, and this plan passed strict per-file plan format checks |
-| PR #418 / local `codex/adg-bcg-report-status` | DEFERRED_MANUAL_REFRESH | Cherry-pick conflicted in generated ADG report artifacts plus `tools/reports/*`; current `origin/main` has newer ADG report state, so blind publication was unsafe |
-| Local `codex/tests-unit-cleanup-chat` / `9bb6b3dc025d315ba2288b4ac641d328d56f19c0` | DEFERRED_MANUAL_REBASE | Cherry-pick conflicted in `apps_rg/runtime/sections/graph_evidence_contract.py`, `executive_summary_voice_repair.py`, and add/add test coverage |
+| PR #418 / local `codex/adg-bcg-report-status` | PUBLISHED_MANUAL_REFRESH | Published as `ad933e8e53` after applying the validated ADG report/test refresh onto current `origin/main`; ADG report slice passed |
+| Local `codex/tests-unit-cleanup-chat` / `9bb6b3dc025d315ba2288b4ac641d328d56f19c0` | RETIRED_STALE_HISTORICAL | Replay conflicted with newer `graph_evidence_contract.py`, `executive_summary_voice_repair.py`, and add/add test coverage; preserving current `main` reduced the cherry-pick to no publishable change |
 | PR #369 | RETIRED_STALE_HISTORICAL | Closed unmerged historical workflow/governance churn; patch-unique but not safe to replay without a dedicated CI/governance review |
 | PR #368 | RETIRED_STALE_HISTORICAL | Closed unmerged graph-skills ratchet baseline changes; patch-unique but stale relative to current main-line ratchets |
 | PR #345 | RETIRED_STALE_HISTORICAL | Closed unmerged test additions for older governance surfaces; not replayed in this publication pass |
@@ -305,6 +305,12 @@ python -m pytest tests/unit/apps_rg/test_executive_summary_prompt_dedup_v2.py -q
 
 git push origin HEAD:main
 4274036a71..d88702c241 HEAD -> main
+
+git push origin HEAD:main
+b8ec0daf83..ad933e8e53 HEAD -> main
+
+python -m pytest tests/unit/tools/reports/test_adg_action_queue.py tests/unit/tools/reports/test_adg_bcg_adapter.py tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py tests/unit/tools/reports/test_adg_burndown_report_mandatory.py tests/unit/tools/reports/test_adg_cleanup_queue_and_p2_blocker_trace.py tests/unit/tools/reports/test_adg_dead_code_report.py tests/unit/tools/reports/test_adg_review_template.py -q
+54 passed, 3 warnings
 ```
 
 RCA: `python scripts/governance/codex_readiness.py --json` failed before push because live Codex Memory and vector_db MCP routes were not exposed in this session. Root cause: environment/tooling route availability, not repository code or working-tree state. Evidence: readiness reported `git.clean=PASS`, `GitKraken=PASS`, `mcp.memory=FAIL`, and `mcp.vector_db=FAIL`. fix: used the documented degraded git/pytest/script path and recorded the route failure in this closeout. Recurrence guard: rerun readiness in a session with Memory/vector_db routes exposed before expensive proof/eval runs.
