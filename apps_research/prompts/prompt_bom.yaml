@@ -1,0 +1,71 @@
+schema_version: "1.0"
+app: apps_research
+bom_id: apps_research_prompt_bom_v1
+owner: apps_research.prompt_assembly
+purpose: >
+  Defines canonical Prompt Assembly slots for governed company research briefs.
+  R3_SIMPLE_GROUNDED_READ: every synthesis step must use a CompiledPromptArtifact
+  produced from this BOM. No ad hoc prompt strings permitted.
+required_slots:
+  - S0
+  - I0
+  - C0
+  - U0
+  - D0
+  - R0
+slot_definitions:
+  S0:
+    name: system_and_governance
+    authority: system_governance
+    required: true
+    description: >
+      Governing spine, safety, and authority instructions. Establishes
+      apps_research as a GROUNDED READ app — no side-effect actions.
+  I0:
+    name: research_synthesis_rules
+    authority: app_instruction
+    required: true
+    description: >
+      apps_research synthesis rules: grounding requirements, citation discipline,
+      forbidden invention patterns, depth profile constraints.
+  C0:
+    name: verified_c0_evidence
+    authority: data_only
+    required: true
+    description: >
+      Verified evidence from the C0 retrieval pass (C0EvidenceBundle).
+      Hydrated at compile time from the E1-validated bundle. All factual
+      claims in the synthesis output must trace to this evidence.
+  U0:
+    name: research_request
+    authority: user_intent_only
+    required: true
+    description: >
+      Research request: target entity, depth profile, emphasis areas.
+      Treated as intent only — not a source of verified facts.
+  D0:
+    name: origin_and_injection_fences
+    authority: security_boundary
+    required: true
+    description: >
+      Origin labels and data/instruction boundary declarations.
+      Prevents prompt injection from retrieved evidence text.
+  R0:
+    name: output_schema_and_constraints
+    authority: schema_contract
+    required: true
+    description: >
+      ResearchBrief output schema, citation format, and depth profile
+      constraints. Synthesis must produce exactly this output shape.
+hash_fields:
+  - schema_version
+  - bom_id
+  - required_slots
+  - slot_definitions
+  - template_registry_refs
+template_registry_refs:
+  - company_brief_synthesis_v1
+  - research_retrieval_plan_v1
+  - evidence_gap_analysis_v1
+  - brief_citation_repair_v1
+  - depth_profile_downgrade_v1
