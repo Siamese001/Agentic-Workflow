@@ -30,7 +30,6 @@ import hashlib
 import json
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -74,7 +73,11 @@ from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
 from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
-from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_graph_evidence_runtime_payload,
+    build_selected_graph_evidence_plan as _build_selected_graph_evidence_plan,
+    merge_graph_evidence_reporting_into_dict,
+)
 
 UNIFY_NARRATIVE_BASE_FACT_ID = "unify_narrative_base_001"
 # C0 / model priority: north-star anchor first, then commercialization + architecture + governance;
@@ -192,15 +195,18 @@ def build_selected_fact_plan(
 ) -> dict[str, Any]:
     by_id = {str(r["fact_id"]): r for r in facts if r.get("fact_id")}
     ordered_bullets: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     for bid in UNIFY_NARRATIVE_C0_BULLET_PRIORITY:
         row = by_id.get(bid)
         if row:
             ordered_bullets.append(row)
+            seen_ids.add(bid)
     for bid in UNIFY_BULLET_IDS:
-        if bid not in {r["fact_id"] for r in ordered_bullets}:
-            row = by_id.get(bid)
-            if row:
-                ordered_bullets.append(row)
+        if bid in seen_ids:
+            continue
+        row = by_id.get(bid)
+        if row:
+            ordered_bullets.append(row)
 
     narrative = (role_narrative or "").strip()
     fact_rows: list[dict[str, Any]] = []
@@ -223,12 +229,12 @@ def build_selected_fact_plan(
         r2["priority_rank"] = i + 1
         fact_rows.append(r2)
     required_ids.extend(list(UNIFY_BULLET_IDS))
-    return {
-        "section_id": "unify_narrative",
-        "selection_method": "canonical_json_unify_facts",
-        "facts": fact_rows,
-        "required_fact_ids": required_ids,
-    }
+    return _build_selected_graph_evidence_plan(
+        section_id="unify_narrative",
+        selection_method="canonical_json_unify_facts",
+        facts=fact_rows,
+        required_fact_ids=required_ids,
+    )
 
 
 def build_selected_graph_evidence_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
@@ -236,12 +242,12 @@ def build_selected_graph_evidence_plan(facts: list[dict[str, Any]]) -> dict[str,
     from apps_rg.runtime.sections.graph_evidence_contract import selection_method_for_section
 
     req = [str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")]
-    return {
-        "section_id": "unify_narrative",
-        "selection_method": selection_method_for_section("unify_narrative"),
-        "facts": facts,
-        "required_fact_ids": req,
-    }
+    return _build_selected_graph_evidence_plan(
+        section_id="unify_narrative",
+        selection_method=selection_method_for_section("unify_narrative"),
+        facts=facts,
+        required_fact_ids=req,
+    )
 
 
 def _companion_unify_bullets_accepted(run_dir: Path) -> bool:
@@ -295,31 +301,31 @@ def build_runtime_payload(
     briefing: str,
     candidate_name: str = "",
 ) -> dict[str, Any]:
-    return {
-        "run_id": datetime.now(timezone.utc).strftime("unify_narrative_%Y%m%d_%H%M%S"),
-        "section_id": "unify_narrative",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT))
-        if base_json_path.is_relative_to(REPO_ROOT)
-        else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "unify_header": unify_header,
-        "candidate_name": candidate_name,
-        "companion_unify_bullets_ref": companion_bullets_ref,
-        "companion_unify_bullets_status": companion_bullets_status,
-        "companion_unify_bullets_reason": companion_bullets_reason,
-        "companion_unify_bullet_ids": companion_bullet_ids,
-        "companion_unify_bullets_x3_code": companion_x3_code,
-        "companion_unify_bullets_product_quality_status": companion_product_quality_status,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": sorted(allowed_fact_ids),
-        "writable_context_scope": "unify_narrative_only",
-        "full_resume_writable": False,
-    }
+    return build_graph_evidence_runtime_payload(
+        run_id_prefix="unify_narrative",
+        section_id="unify_narrative",
+        prompt_id=PROMPT_ID,
+        repo_root=REPO_ROOT,
+        base_json_path=base_json_path,
+        base_hash=base_hash,
+        selected_graph_evidence_plan=selected_fact_plan,
+        allowed_graph_evidence_ids=sorted(allowed_fact_ids),
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing=briefing,
+        writable_context_scope="unify_narrative_only",
+        extra_fields={
+            "unify_header": unify_header,
+            "candidate_name": candidate_name,
+            "companion_unify_bullets_ref": companion_bullets_ref,
+            "companion_unify_bullets_status": companion_bullets_status,
+            "companion_unify_bullets_reason": companion_bullets_reason,
+            "companion_unify_bullet_ids": companion_bullet_ids,
+            "companion_unify_bullets_x3_code": companion_x3_code,
+            "companion_unify_bullets_product_quality_status": companion_product_quality_status,
+        },
+    )
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:

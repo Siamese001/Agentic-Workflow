@@ -72,6 +72,7 @@ def prepare_parsed_after_judge_regen(
     out, fin_receipt = finalize_executive_summary_coherence(
         out,
         selected_facts=plan_facts,
+        allowed_fact_ids=allowed_fact_ids,
     )
     receipt["finalize_coherence"] = fin_receipt
     return out, receipt

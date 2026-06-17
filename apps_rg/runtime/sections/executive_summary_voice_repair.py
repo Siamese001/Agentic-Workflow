@@ -553,6 +553,40 @@ def reconcile_claim_ledger_after_voice_repair(parsed: dict[str, Any]) -> dict[st
     return out
 
 
+def _strip_claim_ledger_source_fact_ids_not_in_allowed_pool(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str] | None,
+) -> tuple[dict[str, Any], list[str]]:
+    """Drop orphan source_fact_ids that are outside the active allowlist."""
+    out = dict(parsed)
+    allowed = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    if not allowed:
+        return out, []
+
+    raw_ledger = list(out.get("claim_ledger") or [])
+    ledger = [dict(r) for r in raw_ledger if isinstance(r, dict)]
+    if not ledger:
+        return out, []
+
+    stripped: list[str] = []
+    filtered: list[Any] = []
+    for row in raw_ledger:
+        if not isinstance(row, dict):
+            filtered.append(row)
+            continue
+        raw_ids = [str(x).strip() for x in (row.get("source_fact_ids") or []) if str(x).strip()]
+        kept = [x for x in raw_ids if x in allowed or x.split("_metric_", 1)[0] in allowed]
+        if kept != raw_ids:
+            stripped.extend(x for x in raw_ids if x not in kept)
+        row["source_fact_ids"] = kept
+        filtered.append(row)
+
+    if stripped:
+        out["claim_ledger"] = filtered
+    return out, sorted(set(stripped))
+
+
 def apply_voice_repair_to_parsed(
     parsed: dict[str, Any],
     *,
@@ -1670,6 +1704,7 @@ def finalize_executive_summary_coherence(
     parsed: dict[str, Any],
     *,
     selected_facts: list[dict[str, Any]] | None = None,
+    allowed_fact_ids: set[str] | None = None,
     target_role: str = "",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Last post-LLM mutator: voice repair, ledger reconcile, gap excuse for display drift."""
@@ -1684,6 +1719,7 @@ def finalize_executive_summary_coherence(
         "voice_repair": {},
         "ledger_reconciled": False,
         "gap_excuses_added": [],
+        "orphan_citations_stripped": [],
         "materialization_pass": False,
     }
     if not isinstance(parsed, dict):
@@ -1783,6 +1819,14 @@ def finalize_executive_summary_coherence(
         receipt["ledger_reconciled"] = True
     else:
         receipt["final_word_budget_trim_applied"] = False
+
+    out, stripped = _strip_claim_ledger_source_fact_ids_not_in_allowed_pool(
+        out,
+        allowed_fact_ids=allowed_fact_ids,
+    )
+    if stripped:
+        receipt["orphan_citations_stripped"] = stripped
+        receipt["ledger_reconciled"] = True
     return out, receipt
 
 
