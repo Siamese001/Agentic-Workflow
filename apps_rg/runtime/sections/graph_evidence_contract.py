@@ -9,8 +9,11 @@ or resolve SelectedRoleFactSet/SRFS artifacts.
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
+
+from apps_rg.runtime.graph_era_aliases import emit_graph_era_aliases
 
 SECTION_KEYS: tuple[str, ...] = (
     "competencies",
@@ -128,6 +131,68 @@ def build_allowed_fact_ids_for_plan_facts(
 
 def selection_method_for_section(section_id: str) -> str:
     return f"selected_graph_evidence_plan_{section_id}"
+
+
+def build_selected_graph_evidence_plan(
+    *,
+    section_id: str,
+    selection_method: str,
+    facts: list[dict[str, Any]],
+    required_fact_ids: list[str] | None = None,
+    **extra_fields: Any,
+) -> dict[str, Any]:
+    """Build a selected graph-evidence plan with optional section-specific metadata."""
+    plan: dict[str, Any] = {
+        "section_id": section_id,
+        "selection_method": selection_method,
+        "facts": facts,
+    }
+    if required_fact_ids is not None:
+        plan["required_fact_ids"] = list(required_fact_ids)
+    if extra_fields:
+        plan.update(extra_fields)
+    return plan
+
+
+def build_graph_evidence_runtime_payload(
+    *,
+    run_id_prefix: str,
+    section_id: str,
+    prompt_id: str,
+    repo_root: Path,
+    base_json_path: Path,
+    base_hash: str,
+    selected_graph_evidence_plan: dict[str, Any],
+    allowed_graph_evidence_ids: Iterable[str],
+    target_title: str,
+    target_company: str,
+    jd_text: str,
+    briefing: str,
+    writable_context_scope: str,
+    extra_fields: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build a graph-era runtime payload and backfill fact-era aliases for compatibility."""
+    payload: dict[str, Any] = {
+        "run_id": datetime.now(timezone.utc).strftime(f"{run_id_prefix}_%Y%m%d_%H%M%S"),
+        "section_id": section_id,
+        "prompt_id": prompt_id,
+        "base_resume_json_ref": str(base_json_path.relative_to(repo_root))
+        if base_json_path.is_relative_to(repo_root)
+        else str(base_json_path),
+        "base_resume_json_hash": base_hash,
+        "target_title": target_title,
+        "target_company": target_company,
+        "jd_text": jd_text,
+        "briefing": briefing,
+        "selected_graph_evidence_plan": selected_graph_evidence_plan,
+        "allowed_graph_evidence_ids": list(allowed_graph_evidence_ids),
+        "writable_context_scope": writable_context_scope,
+        "full_resume_writable": False,
+    }
+    if extra_fields:
+        payload.update(extra_fields)
+    emit_graph_era_aliases(payload)
+    return payload
 
 
 def plan_fact_to_employment_bullet_row(plan_fact: dict[str, Any]) -> dict[str, Any]:
@@ -424,6 +489,8 @@ def evaluate_active_pool_source_fact_gate(
 __all__ = [
     "SECTION_KEYS",
     "build_allowed_fact_ids_for_plan_facts",
+    "build_graph_evidence_runtime_payload",
+    "build_selected_graph_evidence_plan",
     "collect_source_fact_ids_for_section",
     "collect_source_fact_ids_from_bullets_and_ledger",
     "collect_source_fact_ids_from_claim_ledger",
