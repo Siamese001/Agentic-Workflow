@@ -1,8 +1,9 @@
-# Agentic-Workflow — Claude Code Operating Contract
+# Agentic-Workflow — Claude Code Compatibility Contract
 
-> This is the always-on SSOT for Claude Code in this repo. It supersedes `AGENTS.md` (the prior
-> Cursor-era contract, kept as legacy). Specialized guidance lives on demand in `.claude/rules/`,
-> `.claude/skills/`, and subdirectory `CLAUDE.md` files — see the index at the bottom.
+> Legacy compatibility contract for Claude Code in this repo. The active Codex execution contract
+> lives in `AGENTS.md` and `docs/codex-primary-execution.md`; specialized guidance lives on demand in
+> `.claude/rules/`, `.claude/skills/`, and subdirectory `CLAUDE.md` files for compatibility — see the
+> index at the bottom.
 
 ## Plan First. Execute Second.
 
