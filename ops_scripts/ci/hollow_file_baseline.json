@@ -3995,11 +3995,6 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\enforcement\\HealingStrategy.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\enforcement\\HumanReviewAdapter.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
@@ -4480,142 +4475,12 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorValidatorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\BootstrapAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CodeJanitorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DocstringComplianceAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DocumentationAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\GospelSyncAgent.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -4630,28 +4495,8 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\InspectorExecutor.py": {
       "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py": {
-      "classification": "boilerplate_heavy",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
@@ -4660,48 +4505,8 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\NeuralAutoImmuneAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\PascalSovereigntyAgent.py": {
       "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\RedTeamAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent.py": {
-      "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
@@ -4720,28 +4525,8 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py": {
       "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent.py": {
-      "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
@@ -4755,37 +4540,7 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
@@ -5240,26 +4995,6 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "agentic_core\\L5_safety\\utils\\verify_semantic_meta_learning_util.py": {
-      "classification": "boilerplate_heavy",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\validators\\CodeJanitorAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\validators\\GovernanceAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
     "agentic_core\\L5_safety\\validators\\PascalSovereigntyAgent.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
@@ -5696,11 +5431,6 @@
       "max_allowed_count": 1
     },
     "agentic_core\\_compat\\__init__.py": {
-      "classification": "hollow",
-      "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
-      "max_allowed_count": 1
-    },
-    "agentic_core\\_compat\\l5_safety_aliases.py": {
       "classification": "hollow",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
