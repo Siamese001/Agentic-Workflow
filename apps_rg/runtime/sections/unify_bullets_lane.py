@@ -30,7 +30,6 @@ import hashlib
 import json
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -76,7 +75,11 @@ from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package, ext
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
-from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_graph_evidence_runtime_payload,
+    build_selected_graph_evidence_plan,
+    merge_graph_evidence_reporting_into_dict,
+)
 from apps_rg.runtime.validators.fact_id_typo_repair import (
     repair_fact_id_against_allowlist,
     repair_unify_bullet_surface_id,
@@ -177,12 +180,12 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
         facts,
         key=lambda r: UNIFY_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in UNIFY_BULLET_IDS else 99,
     )
-    return {
-        "section_id": "unify_bullets",
-        "selection_method": "canonical_json_all_unify_bullets",
-        "facts": ordered,
-        "required_fact_ids": list(UNIFY_BULLET_IDS),
-    }
+    return build_selected_graph_evidence_plan(
+        section_id="unify_bullets",
+        selection_method="canonical_json_all_unify_bullets",
+        facts=ordered,
+        required_fact_ids=list(UNIFY_BULLET_IDS),
+    )
 
 
 def build_runtime_payload(
@@ -197,27 +200,27 @@ def build_runtime_payload(
     jd_text: str,
     briefing: str,
 ) -> dict[str, Any]:
-    return {
-        "run_id": datetime.now(timezone.utc).strftime("unify_bullets_%Y%m%d_%H%M%S"),
-        "section_id": "unify_bullets",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT))
-        if base_json_path.is_relative_to(REPO_ROOT)
-        else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "unify_header": unify_header,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": sorted(allowed_fact_ids),
-        "writable_context_scope": "unify_bullets_only",
-        "full_resume_writable": False,
-        "protected_bullet_default": PROTECTED_BULLET_DEFAULT,
-        "pool_path_count": sc_path_count_for_lane("unify_bullets"),
-        "selection_model": "qwen_pool_claude_top_n_pass",
-    }
+    return build_graph_evidence_runtime_payload(
+        run_id_prefix="unify_bullets",
+        section_id="unify_bullets",
+        prompt_id=PROMPT_ID,
+        repo_root=REPO_ROOT,
+        base_json_path=base_json_path,
+        base_hash=base_hash,
+        selected_graph_evidence_plan=selected_fact_plan,
+        allowed_graph_evidence_ids=sorted(allowed_fact_ids),
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing=briefing,
+        writable_context_scope="unify_bullets_only",
+        extra_fields={
+            "unify_header": unify_header,
+            "protected_bullet_default": PROTECTED_BULLET_DEFAULT,
+            "pool_path_count": sc_path_count_for_lane("unify_bullets"),
+            "selection_model": "qwen_pool_claude_top_n_pass",
+        },
+    )
 
 
 def _canonicalize_unify_gate_metric_text(text: str) -> str:

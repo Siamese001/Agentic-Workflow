@@ -32,7 +32,6 @@ import argparse
 import json
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -109,7 +108,11 @@ from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
 )
-from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_graph_evidence_runtime_payload,
+    build_selected_graph_evidence_plan,
+    merge_graph_evidence_reporting_into_dict,
+)
 
 def _artifact_repo_rel(path: Path, repo_root: Path) -> str:
     try:
@@ -177,12 +180,12 @@ def _terms_list_has_dict(terms_raw: Any) -> bool:
 
 
 def build_selected_fact_plan(facts: list[dict[str, Any]], required_ids: list[str]) -> dict[str, Any]:
-    return {
-        "section_id": "competencies",
-        "selection_method": "canonical_base_resume_employment_bullets",
-        "facts": facts,
-        "required_fact_ids": required_ids,
-    }
+    return build_selected_graph_evidence_plan(
+        section_id="competencies",
+        selection_method="canonical_base_resume_employment_bullets",
+        facts=facts,
+        required_fact_ids=required_ids,
+    )
 
 
 def build_runtime_payload(
@@ -196,21 +199,21 @@ def build_runtime_payload(
     jd_text: str,
     briefing: str,
 ) -> dict[str, Any]:
-    return {
-        "run_id": datetime.now(timezone.utc).strftime("competencies_%Y%m%d_%H%M%S"),
-        "section_id": "competencies",
-        "prompt_id": PROMPT_ID,
-        "base_resume_json_ref": str(base_json_path.relative_to(REPO_ROOT)) if base_json_path.is_relative_to(REPO_ROOT) else str(base_json_path),
-        "base_resume_json_hash": base_hash,
-        "target_title": target_title,
-        "target_company": target_company,
-        "jd_text": jd_text,
-        "briefing": briefing,
-        "selected_fact_plan": selected_fact_plan,
-        "allowed_fact_ids": sorted(allowed_fact_ids),
-        "writable_context_scope": "competencies_only",
-        "full_resume_writable": False,
-    }
+    return build_graph_evidence_runtime_payload(
+        run_id_prefix="competencies",
+        section_id="competencies",
+        prompt_id=PROMPT_ID,
+        repo_root=REPO_ROOT,
+        base_json_path=base_json_path,
+        base_hash=base_hash,
+        selected_graph_evidence_plan=selected_fact_plan,
+        allowed_graph_evidence_ids=sorted(allowed_fact_ids),
+        target_title=target_title,
+        target_company=target_company,
+        jd_text=jd_text,
+        briefing=briefing,
+        writable_context_scope="competencies_only",
+    )
 
 
 def build_prompt_messages(
