@@ -80,6 +80,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+from agentic_core.utils.fs_util import should_skip_scan_path
 
 try:
     from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
@@ -472,14 +473,15 @@ class SovereignIndex:
                 for entry in tqdm(entries, desc="Processing", unit="item"):
                     try:
                         if entry.is_dir(follow_symlinks=False):
-                            if entry.name in self._excluded_dirs:
-                                continue
-                            if entry.name.startswith(".") and entry.name not in self._excluded_dirs:
+                            if should_skip_scan_path(Path(entry.path), exclude_dirs=self._excluded_dirs):
                                 continue
                             self._scan_directory(Path(entry.path))
                         elif entry.is_file(follow_symlinks=False):
+                            file_path = Path(entry.path)
+                            if should_skip_scan_path(file_path, exclude_dirs=self._excluded_dirs):
+                                continue
                             self._all_files.append(
-                                Path(entry.path)
+                                file_path
                             )  # review: Multiple exceptions (PermissionError, OSError) need specific handling
                     except (PermissionError, OSError):
                         continue  # review: Multiple exceptions (PermissionError, OSError) need specific handling

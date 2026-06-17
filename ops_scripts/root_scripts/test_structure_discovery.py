@@ -21,6 +21,7 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.utils.fs_util import iter_scanned_files
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -179,18 +180,12 @@ class ModuleInfo:
 
 def discover_python_modules(root: pathlib.Path) -> list[pathlib.Path]:
     """Discover all Python modules in scope."""
-    modules = []
     exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
-
-    for py_file in root.rglob("*.py"):
-        # Skip excluded directories
-        if any(exclude in str(py_file) for exclude in exclude_dirs):
-            continue
-        # Skip test files themselves
-        if TESTS_DIR in py_file.parts:
-            continue
-        modules.append(py_file)
-
+    modules = [
+        py_file
+        for py_file in iter_scanned_files(root, suffixes=(".py",), exclude_dirs=exclude_dirs)
+        if TESTS_DIR not in py_file.parts
+    ]
     return sorted(modules)
 
 

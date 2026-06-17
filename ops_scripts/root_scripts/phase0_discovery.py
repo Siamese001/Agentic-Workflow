@@ -13,6 +13,7 @@ from agentic_core.L0_routing.config.path_constants import (
     get_validated_project_root,
 )
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.utils.fs_util import iter_scanned_files
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -162,28 +163,14 @@ _ROOT = get_validated_project_root()
 
 def enumerate_modules() -> list[pathlib.Path]:
     """Enumerate all Python modules in scope."""
-    modules = []
-
-    # Search agentic_core
-    agentic_core_path = _ROOT / AGENTIC_CORE_DIR
-    if agentic_core_path.exists():
-        modules.extend(agentic_core_path.rglob("*.py"))
-
-    # Search apps_* directories
-    for apps_dir in pathlib.Path(".").glob("apps_*"):
-        if apps_dir.is_dir():
-            modules.extend(apps_dir.rglob("*.py"))
-
-    # Filter out excluded paths
     excluded_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
-
-    filtered_modules = []
-    for module in modules:
-        module_str = str(module)
-        if not any(pattern in module_str for pattern in excluded_patterns):
-            filtered_modules.append(module)
-
-    return sorted(filtered_modules)
+    modules = [
+        module
+        for module in iter_scanned_files(_ROOT, suffixes=(".py",), exclude_dirs=excluded_patterns)
+        if module.parts and (module.parts[0] == AGENTIC_CORE_DIR or module.parts[0].startswith("apps_"))
+        and TESTS_DIR not in module.parts
+    ]
+    return sorted(modules)
 
 
 def enumerate_tests() -> list[pathlib.Path]:

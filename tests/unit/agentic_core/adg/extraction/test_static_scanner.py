@@ -13,6 +13,7 @@ from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanManifest,
     ScanResult,
+    _is_scannable_static_path,
 )
 
 
@@ -198,3 +199,20 @@ class TestEdgeOrderConsistency:
         assert sorted_edges[0].from_name == "A"
         assert sorted_edges[0].to_name == "A"
         assert sorted_edges[-1].from_name == "B"
+
+
+class TestScannablePathExclusions:
+    """The scanner should ignore generated junk trees while keeping source trees."""
+
+    def test_excludes_archive_temp_and_venv_trees(self) -> None:
+        assert not _is_scannable_static_path("tools/archive/old_helper.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/build/generated.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/dist/generated.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/.cache/generated.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/.venv/site-packages/x.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/tmp/work/x.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/temp/work/x.py", include_tests=False)
+        assert not _is_scannable_static_path("tools/.tmp/work/x.py", include_tests=False)
+
+    def test_keeps_real_source_cache_packages(self) -> None:
+        assert _is_scannable_static_path("agentic_core/cache/cache_loader.py", include_tests=False)

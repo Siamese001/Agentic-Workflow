@@ -80,6 +80,7 @@ from agentic_core.adg.extraction.visitors import (
     _UWGIngressGateVisitor,
 )
 from agentic_core.L0_routing.config.path_constants import (
+    GLOBAL_EXCLUDED_DIRS,
     AGENTIC_CORE_DIR,
     INFRASTRUCTURE_DIR,
     GOVERNANCE_SCRIPTS_DIR,
@@ -118,6 +119,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.utils.fs_util import prune_walk_dirs, should_skip_scan_path
 
 # P0: Bootstrap mode flag - gates self-emit calls during scanner self-analysis
 # When True, scanner skips emitting edges for itself to avoid circular ADG entries
@@ -315,6 +317,12 @@ _SCAN_ROOTS: tuple[str, ...] = _STRUCTURAL_SCAN_ROOTS + _NON_STRUCTURAL_SCAN_ROO
 # These are full relative-path prefixes (forward-slash), matched against normalized paths.
 # Add here when a subtree is archived/inert and should never appear in violation reports.
 _EXCLUDED_PATH_PREFIXES: tuple[str, ...] = ("tools/archive/", "docs/archive/")
+
+# Walk exclusions are the union of the repo's shared tooling-cache/build dirs and
+# the stricter sovereign guardrails. This keeps ADG discovery off temp/archive/
+# venv trees while still allowing legitimate source packages like agentic_core/cache.
+_WALK_EXCLUDE_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
+_WALK_EXCLUDE_PREFIXES: tuple[str, ...] = ("temp_", "tmp_", "_temp_", ".tmp_")
 
 _RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
     {
@@ -547,7 +555,12 @@ def _is_scannable_static_path(rel_path: str, include_tests: bool, scan_mode: str
     """Check if path is scannable based on scan roots and mode."""
     normalized = rel_path.replace("\\", "/")
     # Hard-exclude archived subtrees before any root or mode check
-    if any(normalized.startswith(prefix) for prefix in _EXCLUDED_PATH_PREFIXES):
+    if should_skip_scan_path(
+        normalized,
+        exclude_dirs=_WALK_EXCLUDE_DIRS,
+        exclude_prefixes=_WALK_EXCLUDE_PREFIXES,
+        exclude_path_prefixes=_EXCLUDED_PATH_PREFIXES,
+    ):
         return False
     root_matched = any(
         normalized == root or normalized.startswith(f"{root}/")
@@ -1249,12 +1262,13 @@ def _iter_python_files(
         if not root_path.exists():
             continue
         for dirpath, dirnames, filenames in tqdm(os.walk(root_path), desc="  walk", unit="dir", leave=False):
-            dirnames[:] = sorted(
-                d
-                for d in dirnames
-                if d not in SOVEREIGN_EXCLUDED_FOLDERS
-                and (include_tests or d not in _RUNTIME_ONLY_SCAN_SUBDIRS)
+            prune_walk_dirs(
+                dirnames,
+                root=dirpath,
+                exclude_dirs=_WALK_EXCLUDE_DIRS,
+                exclude_prefixes=_WALK_EXCLUDE_PREFIXES,
             )
+            dirnames[:] = sorted(d for d in dirnames if include_tests or d not in _RUNTIME_ONLY_SCAN_SUBDIRS)
             for fname in sorted(filenames):
                 if fname.endswith(".py") and not fname.endswith(".pyc"):
                     candidate = Path(dirpath) / fname

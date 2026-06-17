@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.fs_util import should_skip_scan_path
+
 
 class SSOTDiscoveryValidator:
     """Validator for Single Source of Truth discovery."""
@@ -50,7 +52,7 @@ def get_python_files(
     return [
         f
         for f in directory.rglob(pattern)
-        if f.is_file() and not any(ex in str(f) for ex in excludes)
+        if f.is_file() and not should_skip_scan_path(f) and not any(ex in str(f) for ex in excludes)
     ]
 
 
@@ -70,7 +72,7 @@ def get_data_files(
         result.extend(
             f
             for f in directory.rglob(f"*{ext}")
-            if f.is_file() and not any(ex in str(f) for ex in excludes)
+            if f.is_file() and not should_skip_scan_path(f) and not any(ex in str(f) for ex in excludes)
         )
     return result
 

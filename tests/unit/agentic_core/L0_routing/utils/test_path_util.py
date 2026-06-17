@@ -98,6 +98,20 @@ class TestPathValidation:
 
 
 class TestPathUtilityFunctions:
+    def test_get_python_files_uses_shared_junk_filters(self, path_util_module, tmp_path):
+        src = tmp_path / "src"
+        junk = tmp_path / ".cache"
+        src.mkdir()
+        junk.mkdir()
+        good = src / "good.py"
+        bad = junk / "bad.py"
+        good.write_text("print('ok')", encoding="utf-8")
+        bad.write_text("print('no')", encoding="utf-8")
+
+        result = list(path_util_module.get_python_files(tmp_path, exclude_dirs=frozenset({".cache"})))
+
+        assert result == [good]
+
     def test_is_path_allowed_with_allowed_dir(self, path_util_module):
         test_path = "agentic_core/L0_routing/utils/path_util.py"
         allowed = frozenset({"agentic_core", "L0_routing"})
