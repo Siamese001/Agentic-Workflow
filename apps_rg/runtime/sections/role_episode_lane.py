@@ -946,7 +946,7 @@ def run_role_episode_lane_execution(
             token_budget=MAX_OUTPUT_TOKENS,
             temperature=float(args.temperature),
         )
-    provider_result = maybe_fallback_to_openai_for_claude_availability(
+        provider_result = maybe_fallback_to_openai_for_claude_availability(
             provider_result,
             compiled_obj,
             token_budget=MAX_OUTPUT_TOKENS,
