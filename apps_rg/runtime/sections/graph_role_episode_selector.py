@@ -15,6 +15,9 @@ from apps_rg.runtime.sections.executive_summary_briefing import (
     briefing_signal_bonus,
     extract_briefing_signal_packet,
 )
+from apps_rg.runtime.graph.graph_skill_concentration_policy import (
+    build_graph_skill_concentration_policy,
+)
 
 _BUNDLE_FILES: tuple[tuple[str, str], ...] = (
     ("unify", "unify_role_episode_bundles.json"),
@@ -632,6 +635,16 @@ def build_selected_graph_evidence_plan_for_section(
         if employer and employer not in selected_employers:
             selected_employers.append(employer)
     selected_skill_ids_all = [str(s["skill_id"]) for s in selected_skills]
+    concentration_policy = build_graph_skill_concentration_policy(
+        counts=selected_skill_counts_by_employer,
+        distribution_kind="employer_lane",
+        bucket_ids=tuple(employer_weights.keys()),
+        context={
+            "section_id": section_id,
+            "target_role_profile": target_role_profile,
+            "target_role": target_role,
+        },
+    )
     selected_edges = [
         {
             "edge_type": "role_episode_contains_skill",
@@ -683,6 +696,7 @@ def build_selected_graph_evidence_plan_for_section(
             _COMPETENCY_FAMILIES_BY_PROFILE.get(target_role_profile, ())
         ),
         "briefing_signal_packet": briefing_signal_packet,
+        "concentration_policy": concentration_policy,
         "excluded_due_to_root_cap": excluded_due_to_root_cap,
         "excluded_due_to_metric_cap": excluded_due_to_metric_cap,
         "allowed_graph_evidence_ids": ordered,

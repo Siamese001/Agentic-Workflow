@@ -169,7 +169,11 @@ def test_headline_resolver_exposes_selected_graph_plan_before_bundle_attach() ->
     meta = pool.proof_pool_metadata
     plan = meta.get("selected_graph_evidence_plan")
     assert isinstance(plan, dict)
+    policy = plan.get("concentration_policy")
+    assert isinstance(policy, dict)
     assert plan["section_id"] == "headline"
+    assert policy["distribution_kind"] == "employer_lane"
+    assert len(policy["rows"]) == 4
     assert meta["selected_role_fact_set_used"] is False
     assert meta["graph_evidence_plan_used"] is True
     assert "hpb_agentic_ai_platforms" in meta["headline_positioning_bundle_ids"]

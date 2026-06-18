@@ -23,6 +23,9 @@ from apps_rg.fact_inventory.augmented_skills_graph import (
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     skill_row_eligible_for_external_claim,
 )
+from apps_rg.runtime.graph.graph_skill_concentration_policy import (
+    build_graph_skill_concentration_policy,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORTS_DIR = ROOT / "docs/reports/apps_rg"
@@ -835,6 +838,16 @@ def build_track_weighted_expansion(
     skills_by_track = {k: _uniq(v) for k, v in skills_by_track.items()}
     facts_by_track = {k: _uniq(v) for k, v in facts_by_track.items()}
     tracks_with_facts = [t for t, fids in facts_by_track.items() if fids]
+    concentration_policy = build_graph_skill_concentration_policy(
+        counts={k: len(v) for k, v in skills_by_track.items()},
+        distribution_kind="career_track",
+        bucket_ids=TRACK_NODE_IDS,
+        context={
+            "role_family_key": role_family_key,
+            "jd_text_excerpt": jd_text[:240],
+            "briefing_text_excerpt": briefing_text[:120],
+        },
+    )
 
     meta = {
         "schema": "track_weighted_graph_expansion_v1",
@@ -852,6 +865,7 @@ def build_track_weighted_expansion(
         "track_weights": weights,
         "selected_skill_count_by_track": {k: len(v) for k, v in skills_by_track.items()},
         "selected_fact_count_by_track": {k: len(v) for k, v in facts_by_track.items()},
+        "concentration_policy": concentration_policy,
         "tracks_with_facts": tracks_with_facts,
         "selected_skills": selected_skills[:120],
         "selected_facts": selected_facts[:120],
@@ -901,6 +915,7 @@ def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str
         capture_output=True,
         text=True,
         check=False,
+        timeout=30,
     )
     status = subprocess.run(  # guardian: allow-chokepoint-bypass -- isolation receipt captures read-only git status; no runtime tool egress
         ["git", "status", "--short", "--", "agentic_core"],
@@ -908,6 +923,7 @@ def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str
         capture_output=True,
         text=True,
         check=False,
+        timeout=30,
     )
     diff_names = [ln.strip() for ln in diff.stdout.splitlines() if ln.strip()]
     status_lines = [ln.strip() for ln in status.stdout.splitlines() if ln.strip()]
