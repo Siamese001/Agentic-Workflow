@@ -1,0 +1,62 @@
+personality = "friendly"
+
+[mcp_servers]
+
+[mcp_servers.GitKraken]
+command = "${GITKRAKEN_GK_PATH}"
+args = ["mcp", "--host=codex", "--source=gitlens", "--scheme=codex"]
+
+[mcp_servers.adg_sqlite]
+command = "python"
+args = ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"]
+env_vars = ["ADG_REDIS_URL"]
+
+[mcp_servers.adg_sqlite.env]
+ADG_REPO_ROOT = "${AGENTIC_REPO_ROOT}"
+PYTHONPATH = "${AGENTIC_REPO_ROOT}"
+
+[mcp_servers.deepwiki]
+url = "https://mcp.deepwiki.com/mcp"
+
+[mcp_servers.filesystem]
+command = "node"
+args = ["${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/filesystem_mcp_launcher.js", "${env:AGENTIC_REPO_ROOT}"]
+
+[mcp_servers.memory]
+command = "python"
+args = ["-u", "${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"]
+env_vars = ["ADG_REDIS_URL"]
+
+[mcp_servers.memory.env]
+MEMORY_DB = "${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite"
+PYTHONPATH = "${AGENTIC_REPO_ROOT}"
+
+[mcp_servers.vector_db]
+command = "python"
+args = ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py"]
+
+[mcp_servers.vector_db.env]
+PYTHONPATH = "${AGENTIC_REPO_ROOT}"
+VECTOR_DB_CHROMA_PATH = "${AGENTIC_REPO_ROOT}/data/cache/chromadb"
+VECTOR_DB_EMBEDDING_MODEL = "BAAI/bge-m3"
+VECTOR_DB_ALLOW_MODEL_DOWNLOAD = "0"
+HF_HUB_OFFLINE = "1"
+VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT = "90"
+VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT = "15"
+MCP_MAX_THREADPOOL_WORKERS = "2"
+
+[mcp_servers.notion]
+command = "cmd"
+args = ["/c", "npx", "-y", "@notionhq/notion-mcp-server"]
+env_vars = ["NOTION_TOKEN"]
+
+[mcp_servers.context7]
+command = "cmd"
+args = ["/c", "npx", "-y", "@upstash/context7-mcp"]
+
+[mcp_servers.playwright]
+command = "cmd"
+args = ["/c", "npx", "-y", "@playwright/mcp"]
+
+[features]
+codex_hooks = true
