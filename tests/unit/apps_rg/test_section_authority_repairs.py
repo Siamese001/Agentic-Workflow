@@ -9,8 +9,10 @@ import pytest
 from apps_rg.runtime.sections.section_authority_repairs import (
     apply_exec_summary_display_authority_repairs,
     prune_competencies_rigor_failing_terms,
+    repair_exec_summary_orphan_rows_with_unused_required_facts,
     sanitize_ibm_narrative_display_text,
     strip_exec_summary_credential_dump_sentences,
+    strip_target_company_tailoring_sentences,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
@@ -20,6 +22,117 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 )
 from apps_rg.runtime.validators.ibm_narrative_x2 import run_ibm_narrative_x2_gates
 from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
+
+
+def test_strip_target_company_tailoring_removes_alignment_sentences() -> None:
+    text = (
+        "Engineering executive who builds governed agentic AI platforms for regulated workflows. "
+        "He aligns with Acme Corp on enterprise architecture and innovation priorities. "
+        "Platform lifecycle work ties architecture to commercial adoption and operating discipline."
+    )
+    repaired, removed = strip_target_company_tailoring_sentences(text, "Acme Corp")
+    assert removed
+    assert "acme corp" not in repaired.lower()
+    assert "governed agentic ai" in repaired.lower()
+
+
+def test_repair_orphan_rows_materializes_unused_required_fact() -> None:
+    """Orphan ledger rows must cite unused required facts without fabricating prose."""
+    orphan_bridge = (
+        "That foundation informs data governance and AI strategy at scale."
+    )
+    text = (
+        "Enterprise technology leader who unifies governed AI platforms for regulated enterprises. "
+        "Designed and operationalized a governed agentic AI platform with deterministic routing. "
+        f"{orphan_bridge} "
+        "That regulatory foundation is grounded in FSA-chartered actuarial work in capital modeling. "
+        "Directed large-scale regulatory IT transformations for major financial institutions. "
+        "Software dependency graph intelligence enables accelerated legacy-system analysis."
+    )
+    facts = [
+        {"fact_id": "fact_engineering_platform_001", "claim_text": "Governed agentic AI platform."},
+        {
+            "fact_id": "fact_engineering_platform_006",
+            "claim_text": (
+                "Platform commercialization generated $22M in IP-led revenue and expanded gross "
+                "margins by 20%, while scaling the ML engineering organization from 8 to 28 specialists."
+            ),
+        },
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "FSA-chartered actuarial work in capital modeling."},
+        {"fact_id": "fact_consulting_001", "claim_text": "Directed large-scale regulatory IT transformations."},
+        {"fact_id": "fact_engineering_platform_002", "claim_text": "Software dependency graph intelligence."},
+        {"fact_id": "fact_exec_002", "claim_text": "Scaled ML engineering organization from 8 to 28."},
+    ]
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim_text": "a", "source_fact_ids": ["fact_engineering_platform_001"]},
+            {"claim_text": "b", "source_fact_ids": ["fact_engineering_platform_001"]},
+            {"claim_text": "c", "source_fact_ids": []},
+            {"claim_text": "d", "source_fact_ids": ["fact_quant_hpc_003"]},
+            {"claim_text": "e", "source_fact_ids": ["fact_consulting_001"]},
+            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002", "fact_exec_002"]},
+        ],
+        "change_log": [],
+    }
+    allowed = {f["fact_id"] for f in facts}
+    repairs = repair_exec_summary_orphan_rows_with_unused_required_facts(
+        parsed,
+        allowed_fact_ids=allowed,
+        plan_facts=facts,
+    )
+    assert repairs
+    assert parsed["claim_ledger"][2]["source_fact_ids"] == ["fact_engineering_platform_006"]
+    assert "$22m" in str(parsed["resume_display_text"]).lower()
+    assert orphan_bridge not in str(parsed["resume_display_text"])
+
+
+def test_apply_authority_repairs_runs_orphan_repair_before_shape_check() -> None:
+    text = (
+        "Enterprise technology leader who unifies governed AI platforms for regulated enterprises. "
+        "Designed and operationalized a governed agentic AI platform with deterministic routing. "
+        "That foundation informs data governance and AI strategy at scale. "
+        "That regulatory foundation is grounded in FSA-chartered actuarial work in capital modeling. "
+        "Directed large-scale regulatory IT transformations for major financial institutions. "
+        "Software dependency graph intelligence enables accelerated legacy-system analysis."
+    )
+    facts = [
+        {"fact_id": "fact_engineering_platform_001", "claim_text": "Governed agentic AI platform."},
+        {
+            "fact_id": "fact_engineering_platform_006",
+            "claim_text": (
+                "Platform commercialization generated $22M in IP-led revenue and expanded gross "
+                "margins by 20%, while scaling the ML engineering organization from 8 to 28 specialists."
+            ),
+        },
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "FSA-chartered actuarial work in capital modeling."},
+        {"fact_id": "fact_consulting_001", "claim_text": "Directed large-scale regulatory IT transformations."},
+        {"fact_id": "fact_engineering_platform_002", "claim_text": "Software dependency graph intelligence."},
+        {"fact_id": "fact_exec_002", "claim_text": "Scaled ML engineering organization from 8 to 28."},
+    ]
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim_text": "a", "source_fact_ids": ["fact_engineering_platform_001"]},
+            {"claim_text": "b", "source_fact_ids": ["fact_engineering_platform_001"]},
+            {"claim_text": "c", "source_fact_ids": []},
+            {"claim_text": "d", "source_fact_ids": ["fact_quant_hpc_003"]},
+            {"claim_text": "e", "source_fact_ids": ["fact_consulting_001"]},
+            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002", "fact_exec_002"]},
+        ],
+        "change_log": [],
+        "selected_fact_plan": {"facts": facts},
+    }
+    out = apply_exec_summary_display_authority_repairs(
+        parsed,
+        allowed_fact_ids={f["fact_id"] for f in facts},
+        plan_facts=facts,
+    )
+    assert out["claim_ledger"][2]["source_fact_ids"] == ["fact_engineering_platform_006"]
+    assert any(
+        c.get("operation") == "repair_orphan_row_with_unused_required_fact"
+        for c in out.get("change_log") or []
+    )
 
 
 def test_strip_credential_dump_removes_cert_sentence():
