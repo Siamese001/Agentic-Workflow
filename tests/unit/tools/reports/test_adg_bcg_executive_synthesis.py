@@ -9,6 +9,7 @@ import yaml
 from tools.reports.adg_bcg_executive_synthesis import (
     build_artifact_usage_matrix,
     build_canonical_next_best_actions,
+    build_deprecation_deletion_plan,
     build_mv_usefulness_audit,
     build_test_scope_inventory,
     emit_bcg_executive_summary,
@@ -179,6 +180,53 @@ def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path:
     assert all("Raw" in r["why_or_why_not"] or "not enough" in r["why_or_why_not"] for r in diagnostic)
 
 
+def test_deprecation_deletion_plan_prioritizes_confirmed_dead_code_before_noise() -> None:
+    dead_code_report = {
+        "summary": {
+            "total_dead_imports": 0,
+            "total_dead_code_candidates": 2,
+            "total_unresolved_imports": 17,
+            "first_party_low_confidence_ratio": 2.5,
+            "inferred_symbol_ratio": 9.0,
+        },
+        "dead_code_candidates": {
+            "dead_code_hotspots": [
+                ("ADG::Module::legacy_path", 4),
+                ("ADG::Module::stale_path", 2),
+            ]
+        },
+        "unresolved_imports": {"unresolved_hotspots": [("ADG::Module::tests/foo.py", 7)]},
+        "low_confidence_zones": {"first_party_low_confidence_ratio": 2.5},
+        "inferred_symbols": {"inferred_symbol_ratio": 9.0},
+    }
+    mv_audit = {
+        "rows": [
+            {
+                "mv_name": "mv_empty_noise",
+                "row_count": 0,
+                "category": "stale_or_empty",
+                "recommendation": "deprecate_candidate",
+                "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal.",
+                "decision_impact": "Not promoted; no blocker/testing/action linkage.",
+            }
+        ]
+    }
+    artifacts = {
+        "rows": [
+            {"artifact_key": "dead_code_report", "used_for": ["audit"], "rationale": "report"},
+            {"artifact_key": "unused_report", "used_for": ["none"], "rationale": "unused"},
+        ]
+    }
+
+    plan = build_deprecation_deletion_plan(dead_code_report, mv_audit, artifacts)
+
+    assert plan["priority_rows"][0]["scope"] == "ADG::Module::legacy_path"
+    assert plan["priority_rows"][0]["decision"] == "delete_after_deprecation"
+    assert plan["priority_rows"][1]["scope"] == "ADG::Module::stale_path"
+    assert plan["priority_rows"][2]["move"] == "Triage unresolved imports"
+    assert plan["summary"]["cleanup_candidate_count"] == 2
+
+
 def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: Path, capsys) -> None:
     _repo_tests(tmp_path)
     artifacts = tmp_path / "artifacts" / "adg"
@@ -193,6 +241,83 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     _write_json(queue, {"actions": [{"scope": "apps_sales/runtime/checkout.py"}]})
     _write_json(review, {"artifact_kind": "adg_run_review_template"})
     _write_json(burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}})
+    dead_code_report = artifacts / "dead_code_zone_control_report_run.json"
+    _write_json(
+        dead_code_report,
+        {
+            "status": "PASS",
+            "dead_imports": {
+                "total_dead_imports": 0,
+                "dead_imports_by_layer": {},
+                "dead_imports_by_domain": {},
+                "dead_imports_by_confidence": {},
+                "dead_import_hotspots": [],
+                "l4_dead_imports": 0,
+            },
+            "dead_code_candidates": {
+                "total_dead_code_candidates": 0,
+                "dead_code_by_layer": {},
+                "dead_code_by_entity_type": {},
+                "dead_code_by_confidence": {},
+                "dead_code_hotspots": [],
+            },
+            "unresolved_imports": {
+                "total_unresolved_imports": 928,
+                "unresolved_by_layer": {"": 928},
+                "unresolved_by_confidence": {"LOW": 928},
+                "unresolved_hotspots": [["ADG::Module::tests/foo.py", 9]],
+                "l4_unresolved": 0,
+            },
+            "low_confidence_zones": {
+                "total_low_confidence": 928,
+                "low_conf_by_layer": {"": 928},
+                "low_conf_by_entity_type": {"symbol": 928},
+                "low_conf_by_identity_kind": {"unresolved_import": 928},
+                "first_party_low_confidence_ratio": 3.0327788489819927,
+                "governance_low_confidence_ratio": 0.0,
+                "low_conf_hotspots": [["", 928]],
+            },
+            "inferred_symbols": {
+                "total_inferred_symbols": 17161,
+                "total_symbols": 173449,
+                "inferred_symbol_ratio": 9.893974597720367,
+                "inferred_by_layer": {"L0": 1},
+                "inferred_by_confidence": {"MEDIUM": 1},
+            },
+            "executive_readiness": {
+                "executive_metrics": {
+                    "dead_import_count": 0,
+                    "dead_code_count": 0,
+                    "unresolved_import_count": 928,
+                    "low_confidence_count": 928,
+                    "l4_unresolved_import_count": 0,
+                    "first_party_low_confidence_ratio": 3.0327788489819927,
+                    "inferred_symbol_ratio": 9.893974597720367,
+                },
+                "first_party_metrics": {
+                    "dead_import_count": 0,
+                    "dead_code_count": 0,
+                    "unresolved_import_count": 928,
+                    "low_confidence_count": 928,
+                    "l4_unresolved_import_count": 0,
+                },
+                "readiness_issues": [],
+                "executive_ready": True,
+            },
+            "errors": [],
+            "warnings": [],
+            "summary": {
+                "total_dead_imports": 0,
+                "total_dead_code_candidates": 0,
+                "total_unresolved_imports": 928,
+                "total_low_confidence": 928,
+                "l4_unresolved_imports": 0,
+                "first_party_low_confidence_ratio": 3.0327788489819927,
+                "inferred_symbol_ratio": 9.893974597720367,
+                "executive_ready": True,
+            },
+        },
+    )
     p0_plan = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
     _p0_plan(p0_plan)
 
@@ -205,7 +330,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         queue,
         review,
         burndown,
-        {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None, "p0_wave_plan": p0_plan},
+        {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None, "p0_wave_plan": p0_plan, "dead_code_report": dead_code_report},
         print_inline=True,
         docs_dir=docs,
     )
@@ -221,6 +346,8 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert data["lens_0_p0_landmines"]["summary"]["wrong_way_imports"] == 1
     assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
+    assert data["dead_code_report"]["summary"]["total_dead_code_candidates"] == 0
+    assert data["deprecation_deletion_plan"]["summary"]["executive_read"].startswith("No deletions are approved")
     for key in [
         "lens_0_p0_landmines",
         "lens_1_health_gates",
@@ -234,6 +361,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     for section in [
         "## ADG Executive Brief",
+        "### BCG Executive Brief",
         "### 1. What ADG Is",
         "### 2. Patient Size",
         "### 3. Executive Decision",
@@ -245,8 +373,12 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact",
         "### 10. Next Best Actions",
         "### 11. Defer / Delete / Deprecate",
+        "### BCG Deletion Brief",
         "### 12. Honest Bottom Line",
         "Action impact:",
+        "No deletions are approved in this run",
+        "Priority",
+        "Maintain SVP engineer-level repo standards",
     ]:
         assert section in md
     assert "## ADG Executive Brief" in capsys.readouterr().out

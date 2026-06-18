@@ -102,8 +102,8 @@ def extract_jd_text(
             p = Path(jd_ref)
             if p.is_file():
                 try:
-                    return p.read_text(encoding="utf-8").strip()
-                except OSError:
+                    return p.read_text(encoding="utf-8", errors="replace").strip()
+                except FileNotFoundError:
                     pass
     if jd_anchor and jd_anchor.is_file():
         try:

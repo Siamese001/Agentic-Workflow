@@ -207,7 +207,6 @@ class ExternalProvider:
         first_byte_after_s: float | None = None
         chunk_count = 0
         last_progress_after_s: float | None = None
-        last_exc: Exception | None = None
         for _attempt in range(_attempts):
             text_parts = []
             resolved_model = str(body["model"])
@@ -261,9 +260,22 @@ class ExternalProvider:
                             progress["raw_output_chars"] = sum(len(p) for p in text_parts)
             except urllib.error.HTTPError:
                 raise
-            except (TimeoutError, urllib.error.URLError, OSError) as exc:
-                last_exc = exc
+            except (
+                TimeoutError,
+                urllib.error.URLError,
+                OSError,
+                json.JSONDecodeError,
+                ValueError,
+                TypeError,
+                RuntimeError,
+                LookupError,
+                AttributeError,
+                KeyError,
+                ConnectionError,
+                ProviderGatewayError,
+            ):
                 if _attempt + 1 < _attempts:
+                    time.sleep(min(0.25 * (2 ** _attempt), 2.0))
                     continue
                 raise
             break
@@ -360,7 +372,22 @@ class ExternalProvider:
         def _runner() -> None:
             try:
                 result_queue.put(("ok", transport(request)), block=False)
-            except Exception as exc:
+            except urllib.error.HTTPError as exc:
+                result_queue.put(("http_error", exc), block=False)
+            except (
+                urllib.error.URLError,
+                TimeoutError,
+                OSError,
+                json.JSONDecodeError,
+                ValueError,
+                TypeError,
+                RuntimeError,
+                LookupError,
+                AttributeError,
+                KeyError,
+                ConnectionError,
+                ProviderGatewayError,
+            ) as exc:
                 result_queue.put(("error", exc), block=False)
 
         worker = threading.Thread(
@@ -377,8 +404,12 @@ class ExternalProvider:
             kind, payload = result_queue.get_nowait()
         except queue.Empty as exc:
             raise TimeoutError("External provider returned without a transport result") from exc
-        if kind == "error":
+        if kind == "http_error":
             raise payload
+        if kind == "error":
+            if isinstance(payload, urllib.error.URLError):
+                raise payload
+            raise urllib.error.URLError(f"{type(payload).__name__}: {payload}") from payload
         return payload
 
     def generate(
@@ -426,10 +457,7 @@ class ExternalProvider:
                 timeout_seconds=provider_timeout_seconds,
             )
         except urllib.error.HTTPError as exc:
-            try:
-                detail = exc.read().decode("utf-8", errors="replace")[:1000]
-            except OSError:
-                detail = ""
+            detail = exc.read().decode("utf-8", errors="replace")[:1000]
             return ProviderResult(
                 provider_requested=self.provider_profile.value,
                 provider_attempted=True,

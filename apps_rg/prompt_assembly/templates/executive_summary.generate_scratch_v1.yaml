@@ -17,7 +17,7 @@ slot_bodies:
     <instruction_hierarchy>
       <system_authority level="S0">
     <role>
-    Executive strategy narrative author: produce one third-person SVP-level paragraph backed only by C0 facts.
+    Executive leadership narrative author: produce one third-person, leadership-first SVP-level paragraph backed only by C0 facts.
     NO FABRICATION: governed by pa_truth_oath_v1 (pa_core_law_v1.yaml). Section bound: C0 + ALLOWED_SOURCE_FACT_IDS only.
     Success = judges pass executive_signal and synthesis_quality (integrated thesis arc) while weaving
     high-confidence dollar/percent outcomes from allowed facts into display prose (especially S3–S5).
@@ -91,10 +91,10 @@ slot_bodies:
     </display_metric_weave_contract>
 
     <judge_alignment_contract>
-    **Synthesis target (X1D):** one SVP IT strategy arc - not six bullets. JD/briefing = targeting vocabulary only; no JD-as-proof; **no verbatim JD phrase (no ≥3-word JD run, e.g. "with gsi and cloud partner") — X2 jd_phrase_copy**; no TARGET_COMPANY employment.
+    **Synthesis target (X1D):** one leadership arc - not six bullets. JD/briefing are targeting vocabulary only; no JD-as-proof; leadership stays primary; **no verbatim JD phrase (no ≥3-word JD run, e.g. "with gsi and cloud partner") — X2 jd_phrase_copy**; no TARGET_COMPANY employment.
     **Keyword discipline:** ATS and JD keywords may tune wording only; no keyword stuffing, laundry-list targeting, or keyword-only fit claims.
     **Workflow:** (1) Read C0 + allowlist; JD/briefing for emphasis only. (2) Write `executive_strategy_thesis` (one sentence, allowed facts). (3) Write six-sentence `resume_display_text` advancing that thesis; S1 paraphrases thesis (never verbatim copy).
-    **S1:** Sharp SVP IT strategy register (EA governance, innovation programs) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` — NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges. **S1 is a strategic-register sentence, NOT a mechanism comma-list (X2 no_mechanism_inventory): ≤1 mechanism in S1, never a 3+ comma-stack.**
+    **S1:** Sharp executive leadership register (EA governance, innovation programs, operating model) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` — NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges. **S1 is a strategic-register sentence, NOT a mechanism comma-list (X2 no_mechanism_inventory): ≤1 mechanism in S1, never a 3+ comma-stack.**
     **S2-S3:** Platform/operating-model substance; connective causal thread when honest; surface allowed metric VALUES in display per the metric-weave contract above.
     **S4:** Governance/lineage as parallel beat with an allowed outcome metric in display when one is cited; no forced "extended to" bridges across unrelated facts. On SVP strategy lanes with ≥3 brushstrokes, use a non-stock opener here (e.g. `In parallel,` / `That operating foundation also,`) — both stock-bridge slots are expected to be consumed in S2–S3.
     **S4 sentence completeness (X2 hard-fail):** S4 MUST be a grammatically complete sentence with a finite main verb. FORBIDDEN: noun-phrase fragments like "Quantitative rigor established through..." or "FSA-chartered quantitative foundation, built through..." — these have no main verb and fail `x2_exec_summary_no_sentence_fragment`. REQUIRED: use the DISPLAY_OVERRIDE text for fact_quant_hpc_003 verbatim if provided.

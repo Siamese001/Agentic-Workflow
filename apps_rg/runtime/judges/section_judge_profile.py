@@ -36,7 +36,9 @@ def _yaml_judge_models() -> dict:
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
         jm = (data or {}).get("judge_models") or {}
-    except Exception as exc:  # guardian: strict SSOT load; caller must see the broken source
+    except ImportError as exc:  # guardian: strict SSOT load; caller must see the broken source
+        raise SectionJudgeProfileSSOTError(f"Cannot load apps_rg judge-model SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    except (AttributeError, OSError, TypeError, UnicodeError, ValueError, yaml.YAMLError) as exc:
         raise SectionJudgeProfileSSOTError(f"Cannot load apps_rg judge-model SSOT: {_PROVIDER_PROFILES_PATH}") from exc
     if not isinstance(jm, dict):
         raise SectionJudgeProfileSSOTError(f"Invalid judge_models block in {_PROVIDER_PROFILES_PATH}")

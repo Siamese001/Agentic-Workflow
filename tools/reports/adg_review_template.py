@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from tools.generate.core.helpers import _write_text_artifact
+from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
 from tools.reports.adg_decision_synthesis import (
     after_green_plan,
     artifact_consistency_status,
@@ -501,6 +502,48 @@ def _mv_action_names(action_rows: list[dict[str, Any]]) -> set[str]:
 
 def _gate_status_by_id(gate_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return {str(row.get("gate_id")): row for row in gate_rows}
+
+
+def _review_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
+    summary = doc.get("operator_summary", {})
+    executive = doc.get("executive_decision_brief") or {}
+    graphdb = doc.get("graphdb_mv_analyst_summary") or {}
+    testing_gap = graphdb.get("testing_gap_summary") or {}
+    priority_bullets = doc.get("next_best_action", {}).get("priority_bullets") or doc.get("high_signal_review", {}).get("do_this_next") or []
+    priority_plan = doc.get("priority_execution_plan") or {}
+    execution_rows = priority_plan.get("rows") or []
+    priority_rows: list[dict[str, Any]] = []
+    for row in execution_rows[:4]:
+        priority_rows.append(
+            {
+                "priority": row.get("rank"),
+                "move": row.get("priority_work"),
+                "scope": row.get("testing_mv_action"),
+                "business_reason": row.get("why_now"),
+                "technical_reason": row.get("testing_mv_action"),
+                "why_this_rank": row.get("why_now"),
+                "decision": row.get("done_when"),
+            }
+        )
+    return build_bcg_brief(
+        title="BCG Review Brief",
+        status=str(doc.get("run_id") or ""),
+        business_read=(
+            str(executive.get("decision") or "Stabilize the run, close testing exposure, then reduce accepted debt.")
+        ),
+        technical_read=[
+            str(executive.get("situation") or ""),
+            str(executive.get("risk") or ""),
+            str(executive.get("testing_gap_readout") or testing_gap.get("plain_language") or ""),
+            str(executive.get("graphdb_mv_readout") or ""),
+            f"Tracked records: {_fmt_int(summary.get('tracked_records', 0))}",
+        ],
+        priority_rule="Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
+        priority_rows=priority_rows,
+        why_this_order=(doc.get("high_signal_review") or {}).get("what_this_means", [])[:4],
+        next_step=(priority_bullets[0] if priority_bullets else "Follow the Priority Execution Plan."),
+        table_limit=4,
+    )
 
 
 def _mv_description(name: str) -> str:
@@ -1696,17 +1739,23 @@ def render_inline_review_template(
         f"- **YAML:** `{_repo_rel(yaml_path) or 'not written'}`",
         f"- **Run ID:** `{doc.get('run_id') or 'n/a'}`",
         "",
-        "### Executive Decision Brief",
-        "",
-        f"- **Decision:** {_md_cell(executive.get('decision'))}",
-        f"- **Situation:** {_md_cell(executive.get('situation'))}",
-        f"- **Risk:** {_md_cell(executive.get('risk'))}",
-        f"- **Testing gap:** {_md_cell(executive.get('testing_gap_readout'))}",
-        f"- **GraphDB/MV read:** {_md_cell(executive.get('graphdb_mv_readout'))}",
-        "",
-        "| # | Move | Action | Why | GraphDB/MV signal |",
-        "|--:|------|--------|-----|-------------------|",
     ]
+    lines.extend(render_bcg_brief_md(_review_bcg_brief(doc)).splitlines())
+    lines.append("")
+    lines.extend(
+        [
+            "### Executive Decision Brief",
+            "",
+            f"- **Decision:** {_md_cell(executive.get('decision'))}",
+            f"- **Situation:** {_md_cell(executive.get('situation'))}",
+            f"- **Risk:** {_md_cell(executive.get('risk'))}",
+            f"- **Testing gap:** {_md_cell(executive.get('testing_gap_readout'))}",
+            f"- **GraphDB/MV read:** {_md_cell(executive.get('graphdb_mv_readout'))}",
+            "",
+            "| # | Move | Action | Why | GraphDB/MV signal |",
+            "|--:|------|--------|-----|-------------------|",
+        ]
+    )
     for row in executive.get("actions") or []:
         lines.append(
             f"| {_fmt_int(row.get('rank', 0))} | {_md_cell(row.get('move'), limit=42)} | "

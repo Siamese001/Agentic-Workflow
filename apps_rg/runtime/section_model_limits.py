@@ -27,7 +27,9 @@ def _provider_config() -> dict[str, Any]:
         import yaml  # noqa: PLC0415
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
-    except Exception as exc:  # guardian: strict SSOT load; caller must see the broken source
+    except ImportError as exc:  # guardian: strict SSOT load; caller must see the broken source
+        raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    except (AttributeError, OSError, TypeError, UnicodeError, ValueError, yaml.YAMLError) as exc:
         raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
     if not isinstance(data, dict):
         raise SectionModelSSOTError(f"Invalid apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}")

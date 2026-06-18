@@ -1652,6 +1652,8 @@ def generate_full_adg(
     # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
     action_queue_path: Path | None = None
     review_template_path: Path | None = None
+    dead_code_report_path: Path | None = None
+    cleanup_queue_and_p2_blocker_trace_path: Path | None = None
     try:
         from tools.reports.adg_action_queue import emit_adg_action_queue_from_adg_run  # noqa: PLC0415
 
@@ -1735,6 +1737,85 @@ def generate_full_adg(
             message="mandatory JSON/YAML review template",
         )
 
+    # --- Mandatory dead-code control report (post review template; non-blocking) ---
+    try:
+        from tools.reports.adg_dead_code_report import emit_mandatory_adg_dead_code_report  # noqa: PLC0415
+
+        _dead_code_rc, dead_code_report_path = emit_mandatory_adg_dead_code_report(
+            adg_artifacts_dir=adg_artifacts_dir,
+            ts=ts,
+            print_inline=False,
+            fail_closed=False,
+        )
+        if _dead_code_rc != 0:
+            print(f"[ADG] WARNING: dead-code report emit returned {_dead_code_rc}", file=sys.stderr)
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _dead_code_exc:
+        print(
+            f"[adg_dead_code_report] DEAD_CODE_REPORT_ERROR={_dead_code_exc}",
+            file=sys.stderr,
+        )
+
+    _rec_dead_code = _current_recorder()
+    if _rec_dead_code is not None:
+        _rec_dead_code.record(
+            "adg_dead_code_report",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status="pass" if dead_code_report_path is not None and dead_code_report_path.is_file() else "fail",
+            exit_code=0 if dead_code_report_path is not None and dead_code_report_path.is_file() else 1,
+            script_rel="tools/reports/adg_dead_code_report.py",
+            message="mandatory JSON dead-code control report",
+        )
+
+    # --- Mandatory cleanup queue + P2 blocker trace (non-blocking) ---
+    try:
+        from tools.reports.adg_cleanup_queue_and_p2_blocker_trace import (  # noqa: PLC0415
+            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace,
+        )
+
+        _cleanup_queue_rc, cleanup_queue_and_p2_blocker_trace_path = (
+            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                print_inline=False,
+                fail_closed=False,
+            )
+        )
+        if _cleanup_queue_rc != 0:
+            print(
+                f"[ADG] WARNING: cleanup queue and P2 trace emit returned {_cleanup_queue_rc}",
+                file=sys.stderr,
+            )
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _cleanup_queue_exc:
+        print(
+            f"[adg_cleanup_queue_and_p2_blocker_trace] CLEANUP_QUEUE_TRACE_ERROR={_cleanup_queue_exc}",
+            file=sys.stderr,
+        )
+
+    _rec_cleanup_queue = _current_recorder()
+    if _rec_cleanup_queue is not None:
+        _rec_cleanup_queue.record(
+            "adg_cleanup_queue_and_p2_blocker_trace",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status=(
+                "pass"
+                if cleanup_queue_and_p2_blocker_trace_path is not None
+                and cleanup_queue_and_p2_blocker_trace_path.is_file()
+                else "fail"
+            ),
+            exit_code=(
+                0
+                if cleanup_queue_and_p2_blocker_trace_path is not None
+                and cleanup_queue_and_p2_blocker_trace_path.is_file()
+                else 1
+            ),
+            script_rel="tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
+            message="mandatory cleanup queue and P2 blocker trace report",
+        )
+
     # --- Mandatory BCG executive synthesis (post review template; non-blocking) ---
     bcg_summary_path: Path | None = None
     try:
@@ -1751,6 +1832,7 @@ def generate_full_adg(
             "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
             "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
             "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
+            "dead_code_report": dead_code_report_path,
         }
         _bcg_rc, bcg_summary_path = emit_bcg_executive_summary(
             adg_artifacts_dir=adg_artifacts_dir,
@@ -1849,6 +1931,16 @@ def generate_full_adg(
         review_template_yaml_path = review_template_path.with_suffix(".yaml")
         if review_template_yaml_path.is_file():
             extra_files.append(review_template_yaml_path)
+    if dead_code_report_path is not None and dead_code_report_path.is_file():
+        extra_files.append(dead_code_report_path)
+        for _dead_code_latest in adg_artifacts_dir.glob("dead_code_zone_control_report_latest.*"):
+            if _dead_code_latest.is_file():
+                extra_files.append(_dead_code_latest)
+    if cleanup_queue_and_p2_blocker_trace_path is not None and cleanup_queue_and_p2_blocker_trace_path.is_file():
+        extra_files.append(cleanup_queue_and_p2_blocker_trace_path)
+        for _cleanup_latest in adg_artifacts_dir.glob("adg_cleanup_queue_and_p2_blocker_trace*.*"):
+            if _cleanup_latest.is_file():
+                extra_files.append(_cleanup_latest)
     if bcg_summary_path is not None and bcg_summary_path.is_file():
         extra_files.append(bcg_summary_path)
         for _bcg_suffix in (".yaml", ".md"):
@@ -1862,10 +1954,11 @@ def generate_full_adg(
         extra_files.append(watchlist_path)
     if graph_watchlist_path is not None and graph_watchlist_path.exists():
         extra_files.append(graph_watchlist_path)
+    extra_files = list(dict.fromkeys(extra_files))
     if extra_files:
         artifact_files.extend(extra_files)
         if enable_zip:
-            print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (burndown/watchlists)")
+            print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (reports/watchlists)")
 
     for _plan_key in ("json_path", "markdown_path"):
         _plan_path = p0_wave_plan.get(_plan_key)
@@ -2410,6 +2503,30 @@ def main() -> None:
         except ImportError:
             pass
         try:
+            from tools.reports.adg_dead_code_report import emit_mandatory_adg_dead_code_report  # noqa: PLC0415
+
+            emit_mandatory_adg_dead_code_report(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                print_inline=False,
+                fail_closed=False,
+            )
+        except ImportError:
+            pass
+        try:
+            from tools.reports.adg_cleanup_queue_and_p2_blocker_trace import (  # noqa: PLC0415
+                emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace,
+            )
+
+            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                print_inline=False,
+                fail_closed=False,
+            )
+        except ImportError:
+            pass
+        try:
             from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
 
             _dispatcher_latest = _resolve_dispatcher_results_path("", adg_artifacts_dir)
@@ -2431,6 +2548,7 @@ def main() -> None:
                     "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
                     "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
                     "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
+                    "dead_code_report": adg_artifacts_dir / f"dead_code_zone_control_report_{ts}.json",
                 },
                 print_inline=False,
                 fail_closed=False,

@@ -45,6 +45,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
 from tools.reports.adg_decision_synthesis import band_decision_summary
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
@@ -193,6 +194,61 @@ def _band_next_move(row: dict[str, int]) -> str:
     if int(row.get("track", 0)) or int(row.get("track_records", 0)):
         return "work ranked queue; ratchets first"
     return "no action"
+
+
+def _burndown_bcg_brief(gates_doc: dict[str, Any], burndown: dict[str, Any]) -> dict[str, Any]:
+    gates: list[dict[str, Any]] = gates_doc.get("gates") or []
+    cluster_counts = _count_by_cluster(gates)
+    attack_rows = _adg_attack_order_rows(gates, burndown)
+    severity = burndown.get("summary") or {}
+    priority_rows: list[dict[str, Any]] = []
+    for row in attack_rows[:4]:
+        priority_rows.append(
+            {
+                "priority": row.get("rank"),
+                "move": row.get("work_class"),
+                "scope": f"{row.get('band')}: {row.get('target')}",
+                "business_reason": row.get("why"),
+                "technical_reason": (
+                    f"{_fmt_int(row.get('records', 0))} records; {row.get('next_step')}"
+                ),
+                "why_this_rank": row.get("why"),
+                "decision": row.get("next_step"),
+            }
+        )
+    return build_bcg_brief(
+        title="BCG Burndown Brief",
+        status="BLOCKED" if gates_doc.get("overall_exit_code", 1) else "PASS",
+        business_read=(
+            f"Fix {cluster_counts.get('FIX', 0)} blocker(s) first, then burn down "
+            f"{cluster_counts.get('TRACK', 0)} backlog item(s) so the run stays green."
+        ),
+        technical_read=[
+            f"Snapshot timestamp: {gates_doc.get('timestamp', 'n/a')}",
+            f"Total gates: {gates_doc.get('total_gates', len(gates))}",
+            f"FIX={cluster_counts.get('FIX', 0)}; TRACK={cluster_counts.get('TRACK', 0)}; CLEAR={cluster_counts.get('CLEAR', 0)}",
+            (
+                f"P0 gross/net: {(severity.get('P0') or {}).get('gross', 0)}/"
+                f"{(severity.get('P0') or {}).get('net', 0)}"
+            ),
+            (
+                f"P1 gross/net: {(severity.get('P1') or {}).get('gross', 0)}/"
+                f"{(severity.get('P1') or {}).get('net', 0)}"
+            ),
+        ],
+        priority_rule=(
+            "Work class first (Fix now > ratchets > open work > severity audit), then "
+            "P-band (P0 > P1 > P2 > P3), then record count within the same class and band."
+        ),
+        priority_rows=priority_rows,
+        why_this_order=[
+            "Non-exempt severity rows are review context only, not Fix-now work unless a gate is failing.",
+            "Record count breaks ties inside the same work class and P-band; it does not make P3 outrank P0.",
+            "When the top row is P0 ratchets, use the P0 Action Plan for the exact gate order.",
+        ],
+        next_step="Use the P0 Action Plan for the exact gate order.",
+        table_limit=4,
+    )
 
 
 def _short_gate_id(gate_id: str) -> str:
@@ -553,6 +609,9 @@ def render(
             f"**TRACK**={track_n} (CI OK, backlog) · "
             f"**CLEAR**={cluster_counts.get('CLEAR', 0)}"
         )
+    a("")
+    for line in render_bcg_brief_md(_burndown_bcg_brief(gates_doc, burndown)).splitlines():
+        a(line)
     a("")
 
     # ---------------------------------------------------- §1 ADG heuristic attack order

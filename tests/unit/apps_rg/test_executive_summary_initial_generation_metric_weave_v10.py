@@ -34,6 +34,7 @@ def test_template_v10_metric_weave_slots():
     assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V10" in raw
     assert 'version: "2.0"' in raw
     assert "display_metric_weave_contract" in raw
+    assert "leadership-first" in raw.lower()
     assert "material_metrics_surfaced_in_display_rows_3_4_5" in raw
     assert "not metric inventory coverage" not in raw
 
@@ -84,6 +85,7 @@ def test_brown_composition_plan_s5_metric_and_s6_forward_binding():
     binding = plan.get("s5_metric_binding") or {}
     assert binding.get("metric_display_fact_id") == QUANT_METRIC_DISPLAY_FACT_ID
     assert binding.get("credential_fact_id") == FSA_CREDENTIAL_FACT_ID
+    assert "leadership-first" in str(plan.get("target_picture") or "").lower()
     s5_row = (plan.get("sentence_arc") or [])[4]
     assert QUANT_METRIC_DISPLAY_FACT_ID in (s5_row.get("required_source_fact_ids") or [])
     assert "decentralized" in str(plan.get("s6_targeting_forward_anchor") or "").lower()
@@ -159,4 +161,5 @@ def test_composition_plan_block_includes_display_ledger_parity():
 def test_generation_law_digest_mentions_display_metric_weave():
     digest = generation_law_digest_text()
     assert "Display metric weave" in digest or "display metric weave" in digest.lower()
+    assert "leadership first" in digest.lower() or "leadership-first" in digest.lower()
     assert "ledger-only" in digest.lower()

@@ -21,6 +21,10 @@ from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInpu
 from apps_rg.prompt_assembly.e0_examples import example_after_text, resolve_e0_for_section
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import augment_section_compiled_with_input_authority
+from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+    FACT_C0_DISPLAY_OVERRIDES,
+    format_leadership_first_exec_summary_block,
+)
 
 
 def _repo_root() -> Path:
@@ -326,10 +330,6 @@ def format_graph_evidence_style_quality_block() -> str:
 
 
 def format_selected_facts_for_c0(facts: list[dict[str, Any]], allowed_source_fact_ids: list[str]) -> str:
-    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
-        FACT_C0_DISPLAY_OVERRIDES,
-    )
-
     header = format_allowed_source_fact_ids_contract(allowed_source_fact_ids)
     prohibition_lines: list[str] = []
     fact_lines: list[str] = []
@@ -421,6 +421,7 @@ def build_executive_summary_assembly_input(
     strategy_voice = ""
     if is_strategy_executive_target_title(t_title):
         strategy_voice = " SVP lane: follow I0 judge_alignment_contract (thesis-first, six-sentence arc)."
+    leadership_voice = format_leadership_first_exec_summary_block(target_title=t_title)
     composition_block = ""
     _pp_for_plan = runtime_payload.get("proof_pool_metadata")
     if not isinstance(_pp_for_plan, dict):
@@ -446,6 +447,7 @@ def build_executive_summary_assembly_input(
     u0 = (
         f"Task: executive summary for {t_title!r} at {t_company!r} (targeting context only).\n"
         "Proof: C0 + ALLOWED_SOURCE_FACT_IDS only. Generation law: I0 + R0; voice: E0 examples.\n"
+        f"{leadership_voice}"
         f"{strategy_voice}"
         "Return bare JSON per R0 (executive_strategy_thesis, resume_display_text, claim_ledger, jd_alignment, "
         "gap_notes, change_log, self_check). Do not emit selected_fact_plan."

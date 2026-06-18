@@ -107,7 +107,7 @@ def build_c02_semantic_cache_payload(
         from apps_rg.cache.r1b_bge_embedding import embed_text_bge
 
         values = embed_text_bge(intent_text)
-    except Exception:  # noqa: BLE001 - proposal artifact must never block C0
+    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError):  # proposal artifact must never block C0
         values = None
     if values is not None:
         intent_vector = {
@@ -162,7 +162,7 @@ def write_c02_semantic_cache_payload(
             encoding="utf-8",
         )
         return path
-    except OSError:
+    except (FileNotFoundError, IsADirectoryError, PermissionError, UnicodeError):
         return None
 
 

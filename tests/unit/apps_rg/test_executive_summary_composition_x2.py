@@ -129,6 +129,7 @@ def test_strategy_target_emits_svp_sentence_arc() -> None:
         target_company="Brown & Brown",
     )
     assert plan.get("strategy_executive_arc") is True
+    assert "leadership-first" in str(plan.get("target_picture") or "").lower()
     arc = plan.get("sentence_arc") or []
     assert len(arc) == 6
     assert arc[2].get("arc_role") == "scale_operating_model"
@@ -143,6 +144,7 @@ def test_build_sentence_arc_default_has_six_rows() -> None:
     arc = build_sentence_arc(target_role="VP Engineering", strategy_executive=False)
     assert len(arc) == 6
     assert arc[0]["brushstroke_id"] == "B1_executive_identity"
+    assert "leadership" in arc[0]["guidance"].lower()
 
 
 def test_dominant_brushstroke_coherence_passes_thesis() -> None:

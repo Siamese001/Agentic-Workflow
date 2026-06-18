@@ -39,7 +39,10 @@ def generation_law_digest_text() -> str:
     return (
         "GENERATION_LAW_DIGEST:\n"
         "- Proof: ALLOWED_SOURCE_FACT_IDS + C0 lines only; JD/briefing targeting-only.\n"
-        "- Required: executive_strategy_thesis (one sentence) then six-sentence display serving that thesis.\n"
+        "- Required: executive_strategy_thesis (one sentence) then six-sentence display serving that "
+        "leadership-first thesis.\n"
+        "- Leadership first: regardless of JD or role family, open with leadership identity, scope, and "
+        "operating model before domain-specific keywords.\n"
         "- Display metric weave: when claim_text for S3–S5 includes dollar/percent outcomes from allowed facts, "
         "the matching display sentence must include at least one outcome (executive_signal; not ledger-only metrics).\n"
         "- Anti-inventory: no comma-chain mechanism dumps; no sequential achievement bullet stack; no employer inventory line.\n"
