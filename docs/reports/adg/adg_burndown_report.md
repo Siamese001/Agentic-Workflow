@@ -11,7 +11,7 @@
 ## 1. ADG Status By Band
 
 Operator summary from `adg_gate_results_*.json`.
-Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory.
+Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/net math is only in Severity Inventory.
 
 | Band | Status | Fix now | Tracked backlog | Read it as | Next move |
 |------|:------:|--------:|-----------------|------------|-----------|

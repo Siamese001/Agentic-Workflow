@@ -168,6 +168,7 @@ def test_render_fix_cluster_for_blocked_gate(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| FIX | block | 2 |" in md
     assert "### Fix now" in md
+    assert "| P0 | BLOCKED | 1 | 0 gates / 0 rows | red gates present | fix red gates first |" in md
 
 
 def test_verdict_three_clusters_mece() -> None:
@@ -247,7 +248,7 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
-    assert "Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory." in md
+    assert "Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/net math is only in Severity Inventory." in md
     assert "| Band | Status | Fix now | Tracked backlog | Read it as | Next move |" in md
     assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
     assert "Allowed Floor" in md
