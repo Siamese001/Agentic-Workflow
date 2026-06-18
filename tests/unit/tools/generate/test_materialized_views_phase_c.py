@@ -299,6 +299,45 @@ class TestTraceReplayEvalViews:
         assert replay_hook == (0,)
         assert runtime_writer == (1,)
 
+    def test_proof_harness_and_post_runtime_helpers_are_exempt_from_runtime_gap_views(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node2(conn, 1, "target", "L4", "agentic_core/L4_state/store.py")
+        exempt_paths = [
+            "agentic_core/L6_observability/shadow_eval/span_export.py",
+            "apps_eval/adapters/apps_rg.py",
+            "apps_eval/l6_shadow_bridge.py",
+            "apps_eval/matrix.py",
+            "apps_eval/scenarios.py",
+            "apps_eval/tests/test_apps_rg_live_adapter.py",
+            "apps_eval/tests/test_apps_rg_scenario_scaffold.py",
+            "apps_eval/tests/test_baseline_workflow.py",
+            "apps_eval/tests/test_trend_workflow.py",
+            "apps_eval/trends.py",
+            "apps_rg/hitl/hitl_replay_store.py",
+            "apps_rg/runtime/spine/l6_shadow_eval_runner.py",
+        ]
+        for node_id, path in enumerate(exempt_paths, start=2):
+            _node2(conn, node_id, f"src_{node_id}", "L_APP", path)
+            _edge(conn, node_id, 1, "writes_to")
+        conn.commit()
+        conn.close()
+        _setup_phases_ab(db)
+        materialize_phase_c(db)
+        conn = sqlite3.connect(str(db))
+        try:
+            for path in exempt_paths:
+                trace_count = conn.execute(
+                    "SELECT COUNT(*) FROM mv_trace_replay_eval_gaps WHERE file = ?",
+                    (path,),
+                ).fetchone()[0]
+                assert trace_count == 0, path
+        finally:
+            conn.close()
+
 
 # ---------------------------------------------------------------------------
 # Family 8 (remaining) — Determinism / provenance drift
