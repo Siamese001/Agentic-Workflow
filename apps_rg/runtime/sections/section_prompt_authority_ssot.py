@@ -117,6 +117,97 @@ _COMPETENCIES_STUB: dict[str, Any] = {
 }
 
 
+def _section_prompt_runtime_payload(section_id: str) -> dict[str, Any]:
+    """Build the minimal proof-backed runtime payload needed to compile a lane corpus."""
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        attach_competency_bundles_to_proof_pool_metadata,
+    )
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
+    from apps_rg.runtime.sections.headline_positioning_evidence import (
+        attach_headline_positioning_bundles_to_proof_pool_metadata,
+    )
+
+    target_title = "SVP Engineering"
+    target_company = "Example Co"
+    jd_text = "agentic multi-agent GraphRAG runtime platform control plane"
+    briefing_text = "regulated enterprise"
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id=section_id,
+        target_role=target_title,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    proof_pool_metadata: dict[str, Any] = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+        "evidence_authority": build_evidence_authority(
+            graph_ref="apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+            ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
+            skills_authority_status="PASS",
+        ),
+        "selected_graph_evidence_plan": plan,
+    }
+    if section_id == "headline":
+        proof_pool_metadata = attach_headline_positioning_bundles_to_proof_pool_metadata(
+            proof_pool_metadata,
+            section_id="headline",
+        )
+    elif section_id == "competencies":
+        proof_pool_metadata = attach_competency_bundles_to_proof_pool_metadata(
+            proof_pool_metadata,
+            section_id="competencies",
+        )
+    return {
+        "product_visible": False,
+        "target_title": target_title,
+        "target_company": target_company,
+        "jd_text": jd_text,
+        "briefing": briefing_text,
+        "proof_pool_metadata": proof_pool_metadata,
+        "canonical_final_evidence_contract": proof_pool_metadata,
+        "selected_fact_plan": {
+            "section_id": section_id,
+            "selection_method": "canonical_base_resume_employment_bullets",
+            "required_fact_ids": ["bul_unify_001"],
+        },
+        "allowed_fact_ids": ["bul_unify_001"],
+    }
+
+
+def _section_corpus_compile_input(section_id: str, *, fact_lines: str) -> str:
+    """Compile a section corpus using the minimal proof-backed runtime payload."""
+    runtime_payload = _section_prompt_runtime_payload(section_id)
+    if section_id == "headline":
+        from apps_rg.runtime.sections.headline_pa import build_headline_assembly_input
+
+        assembly = build_headline_assembly_input(
+            runtime_payload,
+            fact_lines,
+            "- unify\n- ibm\n",
+            request_id="authority-corpus",
+            run_id="authority-corpus",
+            trace_root="headline:authority-corpus",
+        )
+    elif section_id == "competencies":
+        from apps_rg.runtime.sections.competencies_pa import build_competencies_assembly_input
+
+        assembly = build_competencies_assembly_input(
+            runtime_payload,
+            fact_lines,
+            request_id="authority-corpus",
+            run_id="authority-corpus",
+            trace_root="competencies:authority-corpus",
+        )
+    else:
+        raise KeyError(section_id)
+    return str(assembly.u0_user_task or "")
+
+
 def _executable_sources_for_section(section_id: str) -> list[dict[str, str]]:
     shape = section_product_shape(section_id)
     sources: list[dict[str, str]] = [
@@ -186,30 +277,17 @@ def _executive_summary_extra_corpus() -> str:
 
 
 def _headline_u0_corpus() -> str:
-    from apps_rg.runtime.sections.headline_pa import build_headline_assembly_input
-
-    assembly = build_headline_assembly_input(
-        _HEADLINE_STUB,
-        "- bul_unify_001: platform delivery\n",
-        "- ExampleCo\n",
-        request_id="authority-corpus",
-        run_id="authority-corpus",
-        trace_root="headline:authority-corpus",
+    return _section_corpus_compile_input(
+        "headline",
+        fact_lines="- bul_unify_001: platform delivery\n",
     )
-    return str(assembly.u0_user_task or "")
 
 
 def _competencies_u0_corpus() -> str:
-    from apps_rg.runtime.sections.competencies_pa import build_competencies_assembly_input
-
-    assembly = build_competencies_assembly_input(
-        _COMPETENCIES_STUB,
-        "- bul_unify_001: platform delivery\n",
-        request_id="authority-corpus",
-        run_id="authority-corpus",
-        trace_root="competencies:authority-corpus",
+    return _section_corpus_compile_input(
+        "competencies",
+        fact_lines="- bul_unify_001: platform delivery\n",
     )
-    return str(assembly.u0_user_task or "")
 
 
 def collect_executable_prompt_corpus(section_id: str) -> str:

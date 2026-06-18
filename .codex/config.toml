@@ -65,4 +65,4 @@ command = "cmd"
 args = ["/c", "npx", "-y", "@playwright/mcp"]
 
 [features]
-hooks = true
+codex_hooks = true

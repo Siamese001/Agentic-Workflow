@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-18T15:36:04+00:00
+- **Generated:** 2026-06-18T18:03:57+00:00
 - **Status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06182026_1128.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06182026_1357.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06182026_0852.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06182026_1351.json`
 
 ### BCG Cleanup Brief
 
@@ -70,12 +70,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **Status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_1128.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_1357.sqlite
   - P2 ceiling: 20
   - Current MEDIUM hygiene count: 20
   - Delta vs ceiling: +0
   - Baseline snapshot: missing
-  - Latest failed run: 2026-06-18T13:00:34Z (failed)
+  - Latest failed run: 2026-06-18T17:57:04Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
@@ -100,8 +100,8 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Ceiling:** 20
 - **Delta:** +0
 - **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_06182026_1128.sqlite
-- **Latest failed run:** 2026-06-18T13:00:34Z (failed)
+- **Published snapshot:** artifacts/adg/adg_indexed_06182026_1357.sqlite
+- **Latest failed run:** 2026-06-18T17:57:04Z (failed)
 
 ### Evidence Buckets
 

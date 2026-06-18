@@ -401,6 +401,21 @@ def _pa_compose_apps_rg_legacy(
     )
     system_text = f"{preamble}\n\n{route_hint}"
     user_text = _compose_ag2_user_instruction(plan, validated_request)
+    content_hash = _sha256_hex64(
+        json.dumps(
+            {
+                "system": system_text,
+                "user": user_text,
+                "route": {
+                    "route_id": route.route_id,
+                    "route_family": route.route_family,
+                    "execution_form": route.execution_form,
+                    "provider_model_requirement_ref": route.provider_model_requirement_ref,
+                },
+            },
+            sort_keys=True,
+        )
+    )
 
     blocks = (
         PromptBlock(role="system", content=system_text, block_index=0, origin=Origin.SYSTEM_INTERNAL),
@@ -408,8 +423,10 @@ def _pa_compose_apps_rg_legacy(
     )
 
     slot_lineage_map = {
-        "system_block_0": "PA-authored|SYSTEM_INTERNAL",
-        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS",
+        "system_block_0": "PA-authored|SYSTEM_INTERNAL|S0_SYSTEM",
+        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|U0_NEUTRALIZED_USER_TASK",
+        "u0_task_segment": "U0_NEUTRALIZED_USER_TASK|I0_INSTRUCTIONS",
+        "c0_evidence_segment": "C0_VERIFIED_EVIDENCE_DATA|R0_RESPONSE_SCHEMA",
     }
 
     style_key = json.dumps(profile, sort_keys=True, default=str)
@@ -438,8 +455,13 @@ def _pa_compose_apps_rg_legacy(
 
     component_hash_map = {
         "style_profile": _sha256_hex64(style_key),
+        "style_profile__s0_i0": _sha256_hex64(style_key),
         "evidence": _sha256_hex64(ev_digest),
+        "evidence__c0": _sha256_hex64(ev_digest),
+        "u0_task_segment": _sha256_hex64(user_text),
+        "c0_evidence_segment": _sha256_hex64(ev_digest),
         "l1_plan": _sha256_hex64(plan_key),
+        "r0_schema": _sha256_hex64(route_key),
         "app_payload": _sha256_hex64(app_key),
         "route": _sha256_hex64(route_key),
     }
@@ -461,13 +483,14 @@ def _pa_compose_apps_rg_legacy(
 
     comp_in = json.dumps(
         {
+            "content_hash": content_hash,
             "system": system_text,
             "user": user_text,
             "component_hash_map": component_hash_map,
         },
         sort_keys=True,
     )
-    compilation_hash = _sha256_hex64(comp_in)
+    compilation_hash = content_hash
 
     ts = datetime.now(timezone.utc).isoformat()
     tenant = getattr(validated_request, "tenant_id", "") or getattr(fec, "tenant_id", "")

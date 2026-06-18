@@ -77,7 +77,7 @@ def _load_profiles() -> list[dict[str, Any]]:
     path = _repo_root() / _ROUTE_PROFILE_RELPATH
     if not path.is_file():
         raise RouteProfileNotFoundError(f"Canonical route profile missing: {path}")
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = yaml.full_load(path.read_bytes().decode("utf-8"))
     if not isinstance(raw, list) or not raw:
         raise RouteProfileSchemaError("route_profiles.yaml must be a non-empty YAML list")
     for row in raw:

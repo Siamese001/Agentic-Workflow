@@ -1,12 +1,12 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-18T15:36:03+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260618_153438.json`
+- **Generated:** 2026-06-18T18:03:56+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260618_180231.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
-- **Snapshot timestamp:** 2026-06-18T15:34:38.627236+00:00
+- **Snapshot timestamp:** 2026-06-18T18:02:31.238895+00:00
 - **Total gates:** 48
 - **Overall verdict:** **BLOCKED** (run halt — exit code)
-- **Action:** **FIX**=5 (address for green ADG) · **TRACK**=20 (CI OK, backlog) · **CLEAR**=23
+- **Action:** **FIX**=3 (address for green ADG) · **TRACK**=20 (CI OK, backlog) · **CLEAR**=25
 
 ## 1. ADG Status By Band
 
@@ -16,7 +16,7 @@ Backlog rows are summed gate `violation_count`; guardian gross/net math is only 
 | Band | Status | Fix now | Tracked backlog | Read it as | Next move |
 |------|:------:|--------:|-----------------|------------|-----------|
 | P0 | BLOCKED | 2 | 5 gates / 5,275 rows | red gates present | fix red gates first |
-| P1 | BLOCKED | 2 | 9 gates / 5,548 rows | red gates present | fix red gates first |
+| P1 | PASS | 0 | 9 gates / 5,533 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
 | P2 | PASS | 0 | 3 gates / 2,089 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
 | P3 | BLOCKED | 1 | 3 gates / 12,284 rows | red gates present | fix red gates first |
 
@@ -50,8 +50,6 @@ One row per registered gate.
 | `9_executor_theater` | P0 | block | CLEAR | — | 0 | 0 | Counts: Executor-theater signals: import-only or stub execution patterns. Sub: No rows. | None — gate clean (zero rows). |
 | `C1_uwg_bypass_pview` | P0 | block | CLEAR | — | 0 | 0 | Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: No rows. | None — gate clean (zero rows). |
 | `W5_waiver_expiry` | P0 | block | CLEAR | — | 0 | 0 | Counts: Expired wiring-CI waiver entries in config. Sub: No rows. | None — gate clean (zero rows). |
-| `8_trace_replay_eval` | P1 | ratchet | FIX | regr | 12 | unseeded | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. | Regression +N over baseline None: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| `H1_new_orphans_delta_ratchet` | P1 | ratchet | FIX | regr | 3 | 0 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +3 vs baseline 0. | Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | `B2_layer_skip_ratchet` | P1 | ratchet | TRACK | floor | 878 | 878 | Counts: Import edges that skip more than one layer ordinal (layer-hop). Sub: 878 at floor (baseline 878); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `C3_silent_writes_ratchet` | P1 | ratchet | TRACK | floor | 2011 | 2011 | Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2011 at floor (baseline 2011); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `C4_policy_without_audit_ratchet` | P1 | ratchet | TRACK | floor | 1 | 1 | Counts: controls_flow edges without paired audit/telemetry emission. Sub: 1 at floor (baseline 1); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
@@ -64,9 +62,11 @@ One row per registered gate.
 | `11_architecture_witness` | P1 | block | CLEAR | — | 0 | 0 | Counts: Architecture witness Class A/B absence or live-plane write violations. Sub: No rows. | None — gate clean (zero rows). |
 | `12_prompt_assembly_wiring` | P1 | block | CLEAR | — | 0 | 0 | Counts: Prompt-assembly subgraph disconnected from runtime spine. Sub: No rows. | None — gate clean (zero rows). |
 | `7_lifecycle_coverage` | P1 | ratchet | CLEAR | — | 0 | unseeded | Counts: Lifecycle gaps: resources opened without matching close/cleanup. Sub: No rows. | None — gate clean (zero rows). |
+| `8_trace_replay_eval` | P1 | ratchet | CLEAR | — | 0 | unseeded | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: No rows. | None — gate clean (zero rows). |
 | `G2_seam_test_export_coherence` | P1 | block | CLEAR | — | 0 | 0 | Counts: Production seam symbols exported in tests but not in package __all__/exports. Sub: No rows. | None — gate clean (zero rows). |
 | `G_ISLAND_connected_components` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Non-giant connected components on undirected import graph. Sub: No rows. | None — gate clean (zero rows). |
 | `G_WATCHLIST_DELTA_hotspot_regressions` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub: No rows. | None — gate clean (zero rows). |
+| `H1_new_orphans_delta_ratchet` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: No rows. | None — gate clean (zero rows). |
 | `H2_fanin_collapse_ratchet` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Hotspot modules with >30% fan_in drop vs prior snapshot. Sub: No rows. | None — gate clean (zero rows). |
 | `F1_untyped_seam_ratchet` | P2 | ratchet | TRACK | floor | 1006 | 1006 | Counts: Cross-layer imports where target has empty type_surface. Sub: 1006 at floor (baseline 1006); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `I2_replay_surface_gaps_ratchet` | P2 | ratchet | TRACK | floor | 978 | 978 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 978 at floor (baseline 978); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
@@ -89,8 +89,6 @@ One row per registered gate.
 | Gate ID | Sub | Rows |
 |---------|:---:|---------:|
 | `Q2_cyclomatic_complexity_ratchet` | regr | 1095 |
-| `8_trace_replay_eval` | regr | 12 |
-| `H1_new_orphans_delta_ratchet` | regr | 3 |
 | `C2_l5_bypass_pview` | block | 2 |
 | `L2_lpg_drift_ratchet` | regr | 2 |
 
@@ -132,7 +130,7 @@ Use this section for guardian math, not the status table above.
 | P0 | layer_violations | 44 | 41 | 3 | +41 |
 | P1 | anti_patterns_high | 1151 | 1146 | 5 | +1146 |
 | P2 | anti_patterns_medium | 724 | 704 | 20 | +704 |
-| P3 | style_warnings | 18983 | 90 | 18893 | +90 |
+| P3 | style_warnings | 19009 | 88 | 18921 | +88 |
 
 _p0_clean = False • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 
@@ -163,8 +161,8 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 |---------|------:|---------|
 | block_pass | 13 | Block-class gates that did not halt the run (exit 0). Rows may be non-zero. |
 | block_fail | 1 | Block-class gates that halted the run — clear the gate blocking condition. |
-| ratchet_pass | 23 | Ratchet-class gates within their baseline ceiling. |
-| ratchet_regressed | 4 | Ratchet-class gates with NEW rows beyond baseline. |
+| ratchet_pass | 25 | Ratchet-class gates within their baseline ceiling. |
+| ratchet_regressed | 2 | Ratchet-class gates with NEW rows beyond baseline. |
 | ratchet_seed_missing | 0 | Ratchet-class gates without a baseline seed (first run). |
 | warn | 6 | Advisory-class gates (do not gate the run). |
 
@@ -172,35 +170,33 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 
 | Verdict | Gates | Meaning |
 |---------|------:|---------|
-| FIX | 5 | Address before treating ADG as green (gate blocked or ratchet regressed). |
+| FIX | 3 | Address before treating ADG as green (gate blocked or ratchet regressed). |
 | TRACK | 20 | CI passed this gate; rows are backlog — plan hygiene, not a halt. |
-| CLEAR | 23 | Zero rows; nothing to do on this gate. |
+| CLEAR | 25 | Zero rows; nothing to do on this gate. |
 
 ## 5. Fix now (detail)
 
 | Gate | Band | Enf | Sub | Rows | Signal |
 |------|:----:|:---:|:---:|---------:|--------|
 | `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | regr | 1095 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +12 vs baseline 1083. |
-| `8_trace_replay_eval` | P1 | ratchet | regr | 12 | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. |
-| `H1_new_orphans_delta_ratchet` | P1 | ratchet | regr | 3 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +3 vs baseline 0. |
 | `C2_l5_bypass_pview` | P0 | block | block | 2 | Counts: Provider/tool calls skipping L5 gateway (materialized view). Sub: Run blocked (exit 1). |
 | `L2_lpg_drift_ratchet` | P0 | ratchet | regr | 2 | Counts: Illegal or drifted imports touching L_PG boundary. Sub: +1 vs baseline 1. |
 
 ---
 ## Next action
 
-- **Queue:** `artifacts\adg\adg_action_queue_06182026_1128.json`
+- **Queue:** `artifacts\adg\adg_action_queue_06182026_1357.json`
 - **emit_status:** `ok`
 - **degraded:** `False`
-- **summary:** FIX=5 · TRACK=20 · actions_emitted=10
+- **summary:** FIX=3 · TRACK=20 · actions_emitted=10
 
 | Rank | Lane | Kind | Target | ordering_reason | Signal |
 |-----:|------|------|--------|-----------------|--------|
 | 1 | FIX | fix_gate | `C2_l5_bypass_pview` | fix_block_p0_violations_asc | Counts: Provider/tool calls skipping L5 gateway (materialized view). Sub: Run blocked (exit 1). |
 | 2 | FIX | fix_gate | `L2_lpg_drift_ratchet` | fix_regr_p0_delta_asc | Counts: Illegal or drifted imports touching L_PG boundary. Sub: +1 vs baseline 1. |
-| 3 | FIX | fix_gate | `H1_new_orphans_delta_ratchet` | fix_regr_p1_delta_asc | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +3 vs baseline 0. |
-| 4 | FIX | fix_gate | `8_trace_replay_eval` | fix_regr_p1_delta_asc | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. |
-| 5 | FIX | fix_gate | `Q2_cyclomatic_complexity_ratchet` | fix_regr_p3_delta_asc | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +12 vs baseline 1083. |
+| 3 | FIX | fix_gate | `Q2_cyclomatic_complexity_ratchet` | fix_regr_p3_delta_asc | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +12 vs baseline 1083. |
+| 4 | GRAPHDB | test_hotspot_gap | `apps_rg/runtime/sections/executive_summary_lane.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); critical... |
+| 5 | GRAPHDB | test_hotspot_gap | `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticalit... |
 
 CLI: `python tools/reports/adg_action_queue.py --latest --top 10 --format markdown`
 
