@@ -166,3 +166,13 @@ def test_decide_respects_interval():
         min_interval=30.0,
     )
     assert decisions == [("a", "debounced"), ("b", "respawn")]
+
+
+def test_expand_env_vars_supports_repo_root_and_env_prefix(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("AGENTIC_REPO_ROOT", "C:/Git/Agentic-Workflow-FRESH")
+    monkeypatch.setenv("ADG_REDIS_URL", "redis://localhost:6379/0")
+
+    assert supervisor._expand_env_vars("${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py") == (
+        "C:/Git/Agentic-Workflow-FRESH/tools/memory/adg_memory_server.py"
+    )
+    assert supervisor._expand_env_vars("${env:ADG_REDIS_URL}") == "redis://localhost:6379/0"

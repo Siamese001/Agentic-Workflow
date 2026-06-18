@@ -19,8 +19,8 @@
     "executive_metrics": {
       "dead_code_count": 0,
       "dead_import_count": 0,
-      "first_party_low_confidence_ratio": 1.9728246668408673,
-      "inferred_symbol_ratio": 10.110130888542928,
+      "first_party_low_confidence_ratio": 1.97276023124408,
+      "inferred_symbol_ratio": 10.109781129638598,
       "l4_unresolved_import_count": 0,
       "low_confidence_count": 604,
       "unresolved_import_count": 604
@@ -56,12 +56,12 @@
       "L_TOOLS": 2323,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.110130888542928,
+    "inferred_symbol_ratio": 10.109781129638598,
     "total_inferred_symbols": 17534,
-    "total_symbols": 173430
+    "total_symbols": 173436
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.9728246668408673,
+    "first_party_low_confidence_ratio": 1.97276023124408,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
       "symbol": 604
@@ -83,8 +83,8 @@
   "status": "PASS",
   "summary": {
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.9728246668408673,
-    "inferred_symbol_ratio": 10.110130888542928,
+    "first_party_low_confidence_ratio": 1.97276023124408,
+    "inferred_symbol_ratio": 10.109781129638598,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 0,
     "total_dead_imports": 0,

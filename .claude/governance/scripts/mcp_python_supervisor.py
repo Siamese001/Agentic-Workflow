@@ -41,6 +41,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 import time
@@ -50,6 +51,7 @@ from typing import Any
 _REPO = Path(__file__).resolve().parents[3]
 _MCP_CONFIG = _REPO / ".mcp.json"
 _STATE_PATH = _REPO / "artifacts" / "mcp_supervisor" / "state.json"
+_ENV_PLACEHOLDER_RE = re.compile(r"\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}")
 
 # Ensure sibling heartbeat probe is importable by path (the scripts dir is
 # not a Python package, so we load it as a path-based module).
@@ -113,14 +115,12 @@ def _load_server_specs(config_path: Path) -> dict[str, dict[str, Any]]:
 
 
 def _expand_env_vars(value: str) -> str:
-    """Resolve ``${env:NAME}`` placeholders against the current process env."""
-    out = value
-    while "${env:" in out:
-        start = out.index("${env:")
-        end = out.index("}", start)
-        name = out[start + 6:end]
-        out = out[:start] + os.environ.get(name, "") + out[end + 1:]
-    return out
+    """Resolve ``${NAME}`` and ``${env:NAME}`` placeholders against the current process env."""
+
+    def _replace(match: re.Match[str]) -> str:
+        return os.environ.get(match.group(1), "")
+
+    return _ENV_PLACEHOLDER_RE.sub(_replace, value)
 
 
 # ---------------------------------------------------------------------------
