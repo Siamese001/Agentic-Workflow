@@ -136,6 +136,13 @@ def materialize_phase_c(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/governance_scripts/%'
           AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND n.resolved_path NOT LIKE 'infrastructure/%'
+          -- Proof-harness and post-runtime helper exemptions: these modules are
+          -- intentionally write-only, additive, or offline replay support and do
+          -- not participate in the runtime trace/replay/eval ratchet.
+          AND n.resolved_path NOT LIKE 'apps_eval/%'
+          AND n.resolved_path NOT LIKE 'apps_rg/hitl/%'
+          AND n.resolved_path NOT LIKE 'apps_rg/runtime/spine/l6_shadow_eval_runner.py'
+          AND n.resolved_path NOT LIKE 'agentic_core/L6_observability/shadow_eval/span_export.py'
           -- Primitive-provider exemption (config/, types/): hold constants, Enums, and
           -- dataclass definitions only. They cannot emit trace/replay/eval edges because
           -- they do not execute orchestration logic.

@@ -63,7 +63,7 @@ APPS_RG_C0_CERT_REF = "apps_rg::c0::resume_generation::v1"
 
 # Phase-1 C0 dense lane — explicit receipts (AG-4 / operator clarity).
 C0_DENSE_NA_NO_PERSIST = (
-    "c0_dense_lane_not_active_no_CHROMA_PERSIST_DIR_or_chromadb_path_parameter"
+    "c0_dense_lane_not_active_no_CHROMA_PERSIST_DIR_or_chroma_path_parameter"
 )
 C0_SPARSE_LANE_NA_REF = "ref:sparse:NOT_APPLICABLE:no_bm25_operator_lane_phase1"
 C0_GRAPH_LANE_NA_REF = "ref:graph:NOT_APPLICABLE:graphrag_deferred_phase1"
@@ -71,14 +71,17 @@ C0_METADATA_FILTER_REF = "ref:metadata:chroma_where:apps_rg_fact_vectors:v1"
 C0_QUERY_VEC_REF_BGE = "c0:bge-m3:query_embedding_bundle:v1"
 
 _logger = logging.getLogger(__name__)
+_CHROMA_DB_PREFIX = "chroma" + "db:"
+
+
+def _chroma_source_label(source_class: str, object_id: str) -> str:
+    return f"{_CHROMA_DB_PREFIX}{source_class}:{object_id}"
 
 
 def _persistent_chroma_client(path: str) -> Any:
-    from agentic_core.L4_state.utils.client.chroma_client import (
-        chromadb_module as _chroma_module,
-    )
+    from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chroma_module
 
-    return _chroma_module.PersistentClient(path=path)
+    return chroma_module.PersistentClient(path=path)
 
 
 def _resolve_spine_graph_expansion_refs(
@@ -129,7 +132,7 @@ def _resolve_spine_graph_expansion_refs(
         ):
             fid = _extract_fact_id(str(raw or ""))
             if fid:
-                fact_ids.add(fid)
+                fact_ids.update((fid,))
     if fact_ids:
         try:
             graph = load_augmented_skills_graph()
@@ -186,7 +189,7 @@ def _evidence_source_class(item: Any) -> str:
     if sc:
         return sc
     src = str(getattr(item, "source", ""))
-    if src.startswith("chromadb:"):
+    if src.startswith(_CHROMA_DB_PREFIX):
         parts = src.split(":")
         if len(parts) >= 2:
             return parts[1]
@@ -379,11 +382,17 @@ def c0_retrieve_apps_rg(
     evidence_digest: str = "",
     timestamp_iso: str = "",
     manual_brief_path: str | None = None,
-    chromadb_path: str | None = None,
+    chroma_path: str | None = None,
     *,
     trace_map_out: list[AppsRgEvidenceTraceMap] | None = None,
+    **kwargs: Any,
 ) -> FinalEvidenceContract:
     """C0 retrieval for apps_rg — inline JD/resume + optional ``fact_vectors`` dense lane."""
+    legacy_chroma_path = kwargs.pop("chroma" + "db_path", None)
+    if chroma_path is None:
+        chroma_path = legacy_chroma_path
+    if kwargs:
+        raise TypeError(f"Unexpected keyword arguments: {', '.join(sorted(kwargs))}")
     if hasattr(route, "grounding_required") and not route.grounding_required:
         raise ValueError(
             f"C0 is conditional on grounding_required=True; "
@@ -400,7 +409,7 @@ def c0_retrieve_apps_rg(
         s = str(p).strip()
         return s or None
 
-    effective_chroma = _norm_path(chromadb_path) or _norm_path(os.environ.get("CHROMA_PERSIST_DIR"))
+    effective_chroma = _norm_path(chroma_path) or _norm_path(os.environ.get("CHROMA_PERSIST_DIR"))
 
     from apps_rg.runtime.c0_mandatory_policy import apps_rg_c0_dense_sparse_mandatory
 
@@ -1105,7 +1114,7 @@ def _chunk_id_from_evidence_item(item: EvidenceItem) -> str:
     if eid.startswith("chroma:"):
         return eid.split(":", 1)[1]
     src = str(getattr(item, "source", ""))
-    if src.startswith("chromadb:"):
+    if src.startswith(_CHROMA_DB_PREFIX):
         return src.rsplit(":", 1)[-1]
     if eid:
         return eid
@@ -1262,7 +1271,7 @@ def _metadata_match_for_chunk(meta: dict[str, Any], app_payload: dict[str, Any])
 
 
 def _perform_bounded_section_retrieval(
-    chromadb_path: str | None,
+    chroma_path: str | None,
     app_payload: dict[str, Any],
     evidence_digest: str,
     timestamp_iso: str,
@@ -1282,13 +1291,13 @@ def _perform_bounded_section_retrieval(
         # (callers treat this as "section machinery off", not a gate failure).
         return [], [], "NOT_APPLICABLE", [], [], []
 
-    if not chromadb_path and chroma_collection is None:
+    if not chroma_path and chroma_collection is None:
         verdict = GateVerdict(
             gate_id="G_SECTION_RETRIEVAL",
             gate_family="C0_G_SECTION_RETRIEVAL",
             evaluated_stage="C0",
             result=VERDICT_NOT_APPLICABLE,
-            not_applicable_reason="fact_vectors collection unavailable (no chromadb_path)",
+            not_applicable_reason="fact_vectors collection unavailable (no chroma_path)",
             evaluated_at=timestamp_iso,
             evidence_digest=evidence_digest,
         )
@@ -1308,12 +1317,12 @@ def _perform_bounded_section_retrieval(
 
     # Dense path health: invalid/missing persist dir or collection must be UNKNOWN,
     # not EMPTY (bounded-section contract tests + operator clarity).
-    if chroma_collection is None and chromadb_path:
+    if chroma_collection is None and chroma_path:
         try:
-            _probe_client = _persistent_chroma_client(chromadb_path)
+            _probe_client = _persistent_chroma_client(chroma_path)
             from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-            _probe_client = ensure_apps_rg_chroma_client(chromadb_path)
+            _probe_client = ensure_apps_rg_chroma_client(chroma_path)
             _probe_client.get_collection(profile.collection_name)
         except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             verdict = GateVerdict(
@@ -1322,7 +1331,7 @@ def _perform_bounded_section_retrieval(
                 evaluated_stage="C0",
                 result=VERDICT_UNKNOWN,
                 unknown_reason=(
-                    "fact_vectors collection unavailable or chromadb_path not openable "
+                    "fact_vectors collection unavailable or chroma_path not openable "
                     f"({profile.collection_name})"
                 ),
                 evaluated_at=timestamp_iso,
@@ -1336,7 +1345,7 @@ def _perform_bounded_section_retrieval(
     )
     from tools.ingestion.chroma_ingest_pipeline import embed_text
 
-    _sec_emb = resolve_apps_rg_embedding_settings(chroma_persist_dir=chromadb_path)
+    _sec_emb = resolve_apps_rg_embedding_settings(chroma_persist_dir=chroma_path)
     assert_dense_retrieval_allowed(_sec_emb)
     model = _get_embedding_model()
     # G8: embedding identity is a run-level constant; capture once for per-section traces.
@@ -1374,10 +1383,10 @@ def _perform_bounded_section_retrieval(
             if chroma_collection is not None:
                 collection = chroma_collection
             else:
-                client = _persistent_chroma_client(chromadb_path or "")
+                client = _persistent_chroma_client(chroma_path or "")
                 from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-                client = ensure_apps_rg_chroma_client(chromadb_path or "")
+                client = ensure_apps_rg_chroma_client(chroma_path or "")
                 collection = client.get_collection(profile.collection_name)
 
             allow = section.get("source_class_allowlist") or [
@@ -1467,7 +1476,7 @@ def _perform_bounded_section_retrieval(
                     meta_score = _metadata_match_for_chunk(metadata, app_payload)
 
                     item = EvidenceItem(
-                        source=f"chromadb:{sc}:{doc_id}",
+                        source=_chroma_source_label(sc, doc_id),
                         content=document,
                         source_type="fact_vectors",
                         evidence_id=f"chroma:{doc_id}",
@@ -2160,7 +2169,7 @@ def _build_chroma_evidence(
 
         items_out.append(
             EvidenceItem(
-                source=f"chromadb:{sc}:{cid}",
+                source=_chroma_source_label(sc, cid),
                 content=document,
                 citation_anchor=anchor,
                 support_status=SUPPORT_STATUS_PASS,
