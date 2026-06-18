@@ -6,6 +6,7 @@ weakening validators.
 """
 from __future__ import annotations
 
+import json
 import hashlib
 import re
 from typing import Any
@@ -35,6 +36,49 @@ def _parsed_ledger_lacks_bul_ibm_roots(parsed: dict[str, Any]) -> bool:
     return False
 
 _TAXONOMY_PREFIX = re.compile(r"^[A-Z][A-Za-z /,&-]{3,60}:\s+")
+
+
+def _ibm_narrative_attestation_redaction_terms() -> tuple[str, ...]:
+    from apps_rg.runtime.validators.ibm_narrative_x2 import (
+        REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS,
+    )
+
+    return tuple(
+        dict.fromkeys(
+            (
+                *REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS,
+                "mock_fallback",
+                "mocked_judge",
+            )
+        )
+    )
+
+
+def _redact_attestation_value(value: Any, redaction_terms: tuple[str, ...]) -> tuple[Any, bool]:
+    if isinstance(value, str):
+        new_val = value
+        for tok in redaction_terms:
+            if tok in new_val.lower():
+                pattern = re.compile(re.escape(tok), re.IGNORECASE)
+                new_val = pattern.sub("[lexicon-redacted]", new_val)
+        return new_val, new_val != value
+    if isinstance(value, list):
+        changed = False
+        redacted_list: list[Any] = []
+        for item in value:
+            new_item, item_changed = _redact_attestation_value(item, redaction_terms)
+            redacted_list.append(new_item)
+            changed = changed or item_changed
+        return redacted_list, changed
+    if isinstance(value, dict):
+        changed = False
+        redacted_dict: dict[str, Any] = {}
+        for key, item in value.items():
+            new_item, item_changed = _redact_attestation_value(item, redaction_terms)
+            redacted_dict[key] = new_item
+            changed = changed or item_changed
+        return redacted_dict, changed
+    return value, False
 
 
 def sha16(value: str) -> str:
@@ -234,32 +278,44 @@ def redact_banned_lexicon_from_attestation_change_log(parsed: dict[str, Any]) ->
     attestations (scan/check vocabulary present) - real plumbing language in content
     fields or non-attestation rows still trips the gate.
     """
-    from apps_rg.runtime.validators.ibm_narrative_x2 import (
-        REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS,
-    )
+    redaction_terms = _ibm_narrative_attestation_redaction_terms()
 
     attestation_markers = ("scan", "check", "verif", "ensur", "avoid", "confirm")
     redacted = 0
     for row in parsed.get("change_log") or []:
         if not isinstance(row, dict):
             continue
-        for field in ("detail", "reason", "note"):
-            val = row.get(field)
-            if not isinstance(val, str):
-                continue
-            low = val.lower()
-            if not any(tok in low for tok in REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS):
-                continue
-            if not any(m in low for m in attestation_markers):
-                continue
-            new_val = val
-            for tok in REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS:
-                if tok in new_val.lower():
-                    pattern = re.compile(re.escape(tok), re.IGNORECASE)
-                    new_val = pattern.sub("[lexicon-redacted]", new_val)
-            if new_val != val:
-                row[field] = new_val
-                redacted += 1
+        row_text = json.dumps(row, sort_keys=True, default=str).lower()
+        if not any(tok in row_text for tok in redaction_terms):
+            continue
+        if not any(m in row_text for m in attestation_markers):
+            continue
+
+        new_row, changed = _redact_attestation_value(row, redaction_terms)
+        if changed and isinstance(new_row, dict):
+            row.clear()
+            row.update(new_row)
+            redacted += 1
+    return redacted
+
+
+def redact_banned_lexicon_from_attestation_metadata(parsed: dict[str, Any]) -> int:
+    """Redact the same banned lexicon from IBM narrative attestation metadata fields.
+
+    The mock-language X2 gate scans ``gap_notes`` and ``self_check`` as part of the L2 payload.
+    Those fields are attestation surfaces, not narrative evidence, so the lane can safely
+    normalize self-audit wording there without changing claim authority or sentence truth.
+    """
+    redaction_terms = _ibm_narrative_attestation_redaction_terms()
+
+    redacted = 0
+    for field in ("gap_notes", "self_check"):
+        if field not in parsed:
+            continue
+        new_value, changed = _redact_attestation_value(parsed.get(field), redaction_terms)
+        if changed:
+            parsed[field] = new_value
+            redacted += 1
     return redacted
 
 
