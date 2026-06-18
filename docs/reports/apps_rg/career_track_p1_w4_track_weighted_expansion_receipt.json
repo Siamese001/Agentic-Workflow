@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T16:09:51Z",
+  "generated_at": "2026-06-17T23:04:01Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -34,6 +34,81 @@
       "track_actuarial_risk_derivatives": 4,
       "track_data_tech_cloud_ml": 3,
       "track_genai_agentic": 6
+    },
+    "concentration_policy": {
+      "schema": "graph_skill_concentration_policy_v1",
+      "distribution_kind": "career_track",
+      "context": {
+        "role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
+        "jd_text_excerpt": "SVP Engineering \u2014 Agentic AI platform leader for regulated financial services. Must show governed agentic runtime, GraphRAG, multi-agent orchestration, and policy gates. Also value actuarial rigor, derivatives risk, and Basel/CCAR lineage p",
+        "briefing_text_excerpt": ""
+      },
+      "bucket_ids": [
+        "track_actuarial_risk_derivatives",
+        "track_data_tech_cloud_ml",
+        "track_genai_agentic"
+      ],
+      "total_count": 20,
+      "thresholds": {
+        "warning_pct": 75.0,
+        "hitl_pct": 80.0,
+        "proposal_target_pct": 80.0
+      },
+      "current_share_pct_by_bucket": {
+        "track_actuarial_risk_derivatives": 15.0,
+        "track_data_tech_cloud_ml": 25.0,
+        "track_genai_agentic": 60.0
+      },
+      "proposed_share_pct_by_bucket": {
+        "track_actuarial_risk_derivatives": 15.0,
+        "track_data_tech_cloud_ml": 25.0,
+        "track_genai_agentic": 60.0
+      },
+      "dominant_bucket_id": "track_genai_agentic",
+      "dominant_bucket_label": "track genai agentic",
+      "dominant_share_pct": 60.0,
+      "dominant_gap_to_warning_pp": -15.0,
+      "dominant_gap_to_hitl_pp": -20.0,
+      "policy_status": "ok",
+      "policy_reason": "dominant_share_within_threshold",
+      "policy_message": "Dominant bucket 'track_genai_agentic' is at 60.0% (ok).",
+      "rows": [
+        {
+          "rank": 1,
+          "bucket_id": "track_genai_agentic",
+          "bucket_label": "track genai agentic",
+          "count": 12,
+          "current_share_pct": 60.0,
+          "proposed_share_pct": 60.0,
+          "delta_pp": 0.0,
+          "is_dominant": true,
+          "row_status": "dominant"
+        },
+        {
+          "rank": 2,
+          "bucket_id": "track_data_tech_cloud_ml",
+          "bucket_label": "track data tech cloud ml",
+          "count": 5,
+          "current_share_pct": 25.0,
+          "proposed_share_pct": 25.0,
+          "delta_pp": 0.0,
+          "is_dominant": false,
+          "row_status": "supporting"
+        },
+        {
+          "rank": 3,
+          "bucket_id": "track_actuarial_risk_derivatives",
+          "bucket_label": "track actuarial risk derivatives",
+          "count": 3,
+          "current_share_pct": 15.0,
+          "proposed_share_pct": 15.0,
+          "delta_pp": 0.0,
+          "is_dominant": false,
+          "row_status": "supporting"
+        }
+      ],
+      "reallocation_feasible": false,
+      "reallocation_proposal": null
     },
     "tracks_with_facts": [
       "track_actuarial_risk_derivatives",
@@ -1819,7 +1894,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-06-17T16:09:51.781264+00:00",
+      "generated_at_utc": "2026-06-17T23:04:01.745679+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2128,7 +2203,7 @@
             "career_track": "track_genai_agentic"
           }
         ],
-        "evidence_collection_timestamp": "2026-06-17T16:09:51.781264+00:00",
+        "evidence_collection_timestamp": "2026-06-17T23:04:01.745679+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2210,33 +2285,9 @@
     ]
   },
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [
-      "agentic_core/L0_routing/config/path_constants.py",
-      "agentic_core/L4_state/enforcement/graph_memory_bridge.py",
-      "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
-      "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
-      "agentic_core/config/colors_config.py",
-      "agentic_core/runtime/utils/discovery_parser_util.py"
-    ],
-    "git_status_short_agentic_core": [
-      "M agentic_core/L0_routing/config/path_constants.py",
-      "M agentic_core/L4_state/enforcement/graph_memory_bridge.py",
-      "M agentic_core/L5_safety/config/structure_blueprint/ssot.py",
-      "M agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "M agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
-      "M agentic_core/config/colors_config.py",
-      "M agentic_core/runtime/utils/discovery_parser_util.py"
-    ],
-    "dirty_files": [
-      "agentic_core/L0_routing/config/path_constants.py",
-      "agentic_core/L4_state/enforcement/graph_memory_bridge.py",
-      "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
-      "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "agentic_core/L5_safety/validators/utility_silent_swallower_validator.py",
-      "agentic_core/config/colors_config.py",
-      "agentic_core/runtime/utils/discovery_parser_util.py"
-    ],
+    "git_diff_name_only_agentic_core": [],
+    "git_status_short_agentic_core": [],
+    "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -2248,8 +2299,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": false,
-    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
+    "workspace_guard_clean": true,
+    "isolation_verdict": "CLEAN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope."
   }
 }

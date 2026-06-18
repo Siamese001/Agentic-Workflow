@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-06-17T16:09:51Z  
+**Generated:** 2026-06-17T23:04:01Z  
 **Plan:** graph-skills-hardening-f3a8c1  
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
@@ -59,6 +59,6 @@
 
 ## agentic_core isolation
 
-- isolation_verdict: **ISOLATED_PREEXISTING_CHURN**
+- isolation_verdict: **CLEAN**
 - touched_by_this_wave: **False**
-- dirty_files: `['agentic_core/L0_routing/config/path_constants.py', 'agentic_core/L4_state/enforcement/graph_memory_bridge.py', 'agentic_core/L5_safety/config/structure_blueprint/ssot.py', 'agentic_core/L5_safety/reasoning/root_hygiene_healer.py', 'agentic_core/L5_safety/validators/utility_silent_swallower_validator.py', 'agentic_core/config/colors_config.py', 'agentic_core/runtime/utils/discovery_parser_util.py']`
+- dirty_files: `[]`
