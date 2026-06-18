@@ -135,14 +135,13 @@ class TestStopTaskAuditResponsePayloads:
         assert result.returncode == _BLOCK
         assert "missing STATUS" in result.stdout
 
-    def test_speculative_pass_language_blocked(self) -> None:
+    def test_speculative_pass_language_allowed_without_floor(self) -> None:
         result = _run_response("This SHOULD PASS once CI runs.")
-        assert result.returncode == _BLOCK
-        assert "Speculative pass language" in result.stdout
+        assert result.returncode == _ALLOW
 
-    def test_likely_pass_language_blocked(self) -> None:
+    def test_likely_pass_language_allowed_without_floor(self) -> None:
         result = _run_response("LIKELY PASS after the gate finishes.")
-        assert result.returncode == _BLOCK
+        assert result.returncode == _ALLOW
 
     def test_empty_payload_allowed(self) -> None:
         result = _run({})
