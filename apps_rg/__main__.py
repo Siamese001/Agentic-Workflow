@@ -670,7 +670,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "--section",
         default="",
         choices=("", *GENERATED_CONTENT_LANES),
-        help="Run a single section lane through the apps_rg orchestrator (default: full R4 product).",
+        help=(
+            "Run a single section lane through the apps_rg orchestrator "
+            "(bypasses whole-run R1A/R1B preflight; default: full R4 product)."
+        ),
     )
     p.add_argument(
         "--executive-summary",
