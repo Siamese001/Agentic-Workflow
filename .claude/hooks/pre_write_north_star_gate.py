@@ -37,6 +37,7 @@ from pathlib import Path
 _BYPASS_ENV = "NORTH_STAR_GATE_BYPASS"
 _MODE_ENV = "NORTH_STAR_GATE_ENFORCE"  # ask (default) | warn | off
 _STATE_REL = "config/north_star_state.json"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Edits that ADVANCE the north star — always allowed (apps_rg + apps_lic + apps_eval + apps_underwriting_ai; see config/north_star_state.json goals[]).
 _NORTH_PREFIXES = (
@@ -62,11 +63,9 @@ def _repo_rel(file_path: str) -> str:
     p = file_path.replace("\\", "/")
     if p.startswith("./"):
         p = p[2:]
-    root = os.environ.get("CLAUDE_PROJECT_DIR", "")
-    if root:
-        root = root.replace("\\", "/").rstrip("/") + "/"
-        if p.startswith(root):
-            p = p[len(root):]
+    root = REPO_ROOT.as_posix().rstrip("/") + "/"
+    if p.startswith(root):
+        p = p[len(root):]
     # strip any leading absolute prefix up to a known repo segment
     for seg in ("apps_rg/", "apps_eval/", "apps_underwriting_ai/", "tests/", ".claude/", "plans/", "ops_scripts/", "docs/", ".github/", "config/"):
         i = p.find(seg)
@@ -78,7 +77,7 @@ def _repo_rel(file_path: str) -> str:
 
 def _load_state(state_path: Path | None = None) -> dict:
     try:
-        sp = state_path or (Path(os.environ.get("CLAUDE_PROJECT_DIR", ".")) / _STATE_REL)
+        sp = state_path or (REPO_ROOT / _STATE_REL)
         return json.loads(sp.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}

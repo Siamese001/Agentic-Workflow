@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start_branch_guard.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/session_start_branch_guard.py\""
           }
         ]
       },
@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\""
+            "command": "\"$AGENTIC_REPO_ROOT/.claude/hooks/session-start.sh\""
           }
         ]
       }
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_submit_prompt.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_submit_prompt.py\""
           }
         ]
       }
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_ask_user_question.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_ask_user_question.py\""
           }
         ],
         "matcher": "AskUserQuestion"
@@ -42,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_file_edit_branch_guard.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_file_edit_branch_guard.py\""
           }
         ],
         "matcher": "Edit|Write|MultiEdit"
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_write_plan_mint_gate.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/pre_write_plan_mint_gate.py\""
           }
         ],
         "matcher": "Edit|Write|MultiEdit"
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_write_north_star_gate.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/pre_write_north_star_gate.py\""
           }
         ],
         "matcher": "Edit|Write|MultiEdit"
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_shell_execution.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_shell_execution.py\""
           }
         ],
         "matcher": "Bash"
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_read_file.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_read_file.py\""
           }
         ],
         "matcher": "Read"
@@ -87,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_grep.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_grep.py\""
           }
         ],
         "matcher": "Grep"
@@ -96,7 +96,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_mcp_execution.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/before_mcp_execution.py\""
           }
         ],
         "matcher": "mcp__.*"
@@ -105,7 +105,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_workflow_fanout_gate.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/pre_workflow_fanout_gate.py\""
           }
         ],
         "matcher": "Workflow"
@@ -116,7 +116,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_file_edit.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/after_file_edit.py\""
           }
         ],
         "matcher": "Edit|Write|MultiEdit|NotebookEdit"
@@ -125,7 +125,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_ask_user_question.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/after_ask_user_question.py\""
           }
         ],
         "matcher": "AskUserQuestion"
@@ -136,15 +136,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_task_audit.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/stop_task_audit.py\""
           },
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_runtime_rca_gate.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/stop_runtime_rca_gate.py\""
           },
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_agent_governance_dispatch.py\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.claude/hooks/after_agent_governance_dispatch.py\""
           }
         ]
       }
