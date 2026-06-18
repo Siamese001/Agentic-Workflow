@@ -114,6 +114,7 @@ def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
             "ratchet_regressed": 0,
             "seed_missing": 0,
             "findings": 0,
+            "track_rows": 0,
         }
     for gate in gates:
         band = str(gate.get("band", "P3"))
@@ -128,13 +129,17 @@ def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
                 "ratchet_regressed": 0,
                 "seed_missing": 0,
                 "findings": 0,
+                "track_rows": 0,
             },
         )
+        violation_count = int(gate.get("violation_count") or 0)
         row["total"] += 1
-        row["findings"] += int(gate.get("violation_count") or 0)
+        row["findings"] += violation_count
         cluster = display_verdict(gate).lower()
         if cluster in ("fix", "track", "clear"):
             row[cluster] += 1
+        if cluster == "track":
+            row["track_rows"] += violation_count
         sub = display_verdict_sub(gate)
         if sub == "block":
             row["block_fail"] += 1
@@ -156,8 +161,8 @@ def _plural(value: int, singular: str, plural: str | None = None) -> str:
 
 def _band_backlog_cell(row: dict[str, int]) -> str:
     track = int(row.get("track", 0))
-    findings = int(row.get("findings", 0))
-    return f"{_plural(track, 'gate')} / {_plural(findings, 'row')}"
+    track_rows = int(row.get("track_rows", 0))
+    return f"{_plural(track, 'gate')} / {_plural(track_rows, 'row')}"
 
 
 def _band_status(row: dict[str, int]) -> str:
@@ -337,7 +342,7 @@ def render(
     a("## 1. ADG Status By Band")
     a("")
     a("Operator summary from `adg_gate_results_*.json`.")
-    a("Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory.")
+    a("Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/net math is only in Severity Inventory.")
     a("")
     a("| Band | Status | Fix now | Tracked backlog | Read it as | Next move |")
     a("|------|:------:|--------:|-----------------|------------|-----------|")
