@@ -66,11 +66,17 @@ def resolve_jd_fit_slot_bundle_map(
     skill_index: dict[str, dict[str, Any]],
     graph: dict[str, Any],
 ) -> dict[str, str]:
-    """Generic JD-fit slot→bundle map; static default when no profile resolvable."""
+    """Fail-closed JD-fit slot→bundle map for graph-backed sections."""
+    if not role_family_key:
+        raise ValueError(f"{section_id}: graph packet is mandatory; missing role_family_key")
     pillar_weights, deprio = profile_pillar_weights(role_family_key, graph)
     if not pillar_weights:
-        return dict(default_map)
+        raise ValueError(
+            f"{section_id}: no JD-fit profile resolved for role_family_key={role_family_key!r}"
+        )
     eligible = bundles_for_section(section_id)
+    if not eligible:
+        raise ValueError(f"{section_id}: no eligible bundles available for JD-fit selection")
     ranked = sorted(
         eligible,
         key=lambda b: (

@@ -103,7 +103,7 @@ def _theme_budget_block() -> str:
         "additional family vocabulary>.' Choose A-D from four DIFFERENT families; before "
         "returning, count the families each clause expresses and remove vocabulary until "
         "each clause has at most two.",
-        "- OPENER LAW (deterministic gate x2_ibm_narrative_forbidden_opener): the sentence "
+        "- OPENER LAW (deterministic opener constraint): the sentence "
         "MUST begin with a past-tense action verb. NEVER open with a preposition or "
         "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
         "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"

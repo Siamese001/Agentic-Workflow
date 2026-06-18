@@ -177,19 +177,17 @@ def build_headline_assembly_input(
 
     positioning_block = ""
     pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
-    if pp_meta.get("headline_positioning_bundle_consumption"):
-        try:
-            from apps_rg.runtime.sections.headline_positioning_evidence import (
-                format_headline_positioning_evidence_pack,
-            )
+    if not pp_meta.get("headline_positioning_bundle_consumption"):
+        raise ValueError(
+            "headline: proof_pool_metadata missing headline_positioning_bundle_consumption; graph packet is mandatory"
+        )
+    from apps_rg.runtime.sections.headline_positioning_evidence import (
+        format_headline_positioning_evidence_pack,
+    )
 
-            positioning_block = (
-                "\n\n"
-                + format_headline_positioning_evidence_pack(runtime_payload, section_id="headline")
-                + "\n"
-            )
-        except (OSError, ValueError, TypeError, json.JSONDecodeError):  # guardian: allow-default-fallback -- positioning pack optional boundary
-            positioning_block = ""
+    positioning_block = (
+        "\n\n" + format_headline_positioning_evidence_pack(runtime_payload, section_id="headline") + "\n"
+    )
 
     c0_block = (
         "CANONICAL_EMPLOYMENT_BULLETS (proof only; do not paste verbatim into headline_line):\n"

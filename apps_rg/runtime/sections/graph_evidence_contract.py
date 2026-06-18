@@ -133,6 +133,55 @@ def selection_method_for_section(section_id: str) -> str:
     return f"selected_graph_evidence_plan_{section_id}"
 
 
+def selected_graph_evidence_plan_from_payload(source: dict[str, Any] | None) -> dict[str, Any]:
+    """Extract the selected graph-evidence plan from a runtime payload or proof-pool metadata."""
+    if not isinstance(source, dict):
+        return {}
+    plan = source.get("selected_graph_evidence_plan")
+    if isinstance(plan, dict) and plan:
+        return plan
+    pp_meta = source.get("proof_pool_metadata")
+    if isinstance(pp_meta, dict):
+        nested = pp_meta.get("selected_graph_evidence_plan")
+        if isinstance(nested, dict) and nested:
+            return nested
+    return {}
+
+
+def require_selected_graph_evidence_plan(
+    source: dict[str, Any] | None,
+    *,
+    section_id: str,
+) -> dict[str, Any]:
+    plan = selected_graph_evidence_plan_from_payload(source)
+    if not plan:
+        raise ValueError(
+            f"{section_id}: graph packet is mandatory; missing selected_graph_evidence_plan"
+        )
+    return plan
+
+
+def require_section_packet(
+    source: dict[str, Any] | None,
+    *,
+    section_id: str,
+    packet_key: str,
+) -> dict[str, Any]:
+    """Require an attached section packet either top-level or nested in proof_pool_metadata."""
+    if not isinstance(source, dict):
+        raise ValueError(f"{section_id}: graph packet is mandatory; missing {packet_key}")
+    packet = source.get(packet_key)
+    if not isinstance(packet, dict) or not packet:
+        pp_meta = source.get("proof_pool_metadata")
+        if isinstance(pp_meta, dict):
+            nested = pp_meta.get(packet_key)
+            if isinstance(nested, dict) and nested:
+                packet = nested
+    if not isinstance(packet, dict) or not packet:
+        raise ValueError(f"{section_id}: graph packet is mandatory; missing {packet_key}")
+    return packet
+
+
 def build_selected_graph_evidence_plan(
     *,
     section_id: str,
@@ -503,7 +552,10 @@ __all__ = [
     "metric_derivative_fact_id",
     "normalized_graph_evidence_reporting_fields",
     "plan_fact_to_employment_bullet_row",
+    "require_section_packet",
+    "require_selected_graph_evidence_plan",
     "selection_method_for_section",
+    "selected_graph_evidence_plan_from_payload",
     "sha16",
     "slice_row_to_plan_fact",
     "validate_source_fact_ids_within_active_pool",

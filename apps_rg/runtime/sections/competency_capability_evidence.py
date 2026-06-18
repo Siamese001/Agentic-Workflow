@@ -12,6 +12,10 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    require_section_packet,
+    require_selected_graph_evidence_plan,
+)
 
 logger = logging.getLogger(__name__)
 from apps_rg.runtime.sections.competency_capability_registry import (
@@ -139,15 +143,7 @@ def build_competency_capability_section_packet(
 
 
 def _selected_graph_plan(source: dict[str, Any] | None) -> dict[str, Any]:
-    if not isinstance(source, dict):
-        return {}
-    plan = source.get("selected_graph_evidence_plan")
-    if isinstance(plan, dict):
-        return plan
-    pp_meta = source.get("proof_pool_metadata")
-    if isinstance(pp_meta, dict) and isinstance(pp_meta.get("selected_graph_evidence_plan"), dict):
-        return pp_meta["selected_graph_evidence_plan"]
-    return {}
+    return require_selected_graph_evidence_plan(source, section_id="competencies")
 
 
 def _filter_packet_by_selected_graph_plan(
@@ -155,7 +151,7 @@ def _filter_packet_by_selected_graph_plan(
     selected_graph_plan: dict[str, Any],
 ) -> dict[str, Any]:
     if not isinstance(selected_graph_plan, dict) or not selected_graph_plan:
-        return packet
+        raise ValueError("competencies: graph packet is mandatory; missing selected_graph_evidence_plan")
     selected_families = {
         str(x).strip()
         for x in (selected_graph_plan.get("selected_competency_families") or [])
@@ -167,7 +163,9 @@ def _filter_packet_by_selected_graph_plan(
         if str(x).strip()
     }
     if not selected_families and not selected_skills:
-        return packet
+        raise ValueError(
+            "competencies: selected_graph_evidence_plan must include competency families or skill ids"
+        )
 
     filtered: list[dict[str, Any]] = []
     for rec in packet.get("competency_bundles") or []:
@@ -192,7 +190,7 @@ def _filter_packet_by_selected_graph_plan(
         if include:
             filtered.append(rec)
     if not filtered:
-        return packet
+        raise ValueError("competencies: selected_graph_evidence_plan produced no competency_bundles")
 
     graph_skill_node_ids_by_category: dict[str, list[str]] = {}
     source_fact_ids_by_category: dict[str, list[str]] = {}
@@ -267,7 +265,11 @@ def format_competency_capability_evidence_pack(
     section_id: str = "competencies",
 ) -> str:
     """C0 body: competency capability bundles as proof authority (graph-backed, per family)."""
-    packet = build_competency_capability_section_packet(section_id)
+    packet = require_section_packet(
+        runtime_payload,
+        section_id=section_id,
+        packet_key="competency_capability_section_packet",
+    )
     packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(runtime_payload))
     runtime_payload["competency_capability_section_packet"] = packet
     runtime_payload["competency_bundle_ids"] = packet["competency_bundle_ids"]
