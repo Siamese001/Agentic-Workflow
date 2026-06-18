@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from apps_rg.l2_recipe.modular_rg_output_builder import (
+    _word_count,
     build_rg_output_from_modular_sections,
     load_lane_l2_from_section_refs,
 )
@@ -600,3 +601,13 @@ def test_export_preserves_eight_competency_categories(tmp_path: Path) -> None:
     assert res.ok is True, res.failure_reason
     cats = res.rg_output["sections"]["skills"]["categories"]
     assert len(cats) == 8
+
+
+def test_word_count_uses_whitespace_tokenizer_not_regex_compounds() -> None:
+    """Regression (2026-06-11): ``\\b\\w+\\b`` over-counted hyphen/slash compounds.
+
+    Lane word-budget rungs and X2 caps use ``len(text.split())``; the builder must
+    match that authority or a lane-certified 140-word summary gets rejected at export.
+    """
+    text = "AI-driven cloud-native platform delivery across regulated workloads"
+    assert _word_count(text) == len(text.split()) == 7
