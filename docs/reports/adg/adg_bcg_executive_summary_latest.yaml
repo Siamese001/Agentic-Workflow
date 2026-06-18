@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: 06182026_0852
-  generated_at_utc: '2026-06-18T13:00:35+00:00'
-  snapshot_ts: '2026-06-18T12:57:56.221731+00:00'
-  commit_sha: 0dd8833959a449cf84abd2088239c60045d5a474
-  repo_state_hash: ac0af7aad5e2f73a
+  run_id: 06182026_1128
+  generated_at_utc: '2026-06-18T15:37:45+00:00'
+  snapshot_ts: '2026-06-18T15:34:38.627236+00:00'
+  commit_sha: 8e6b5663e189ed0e32f94b5b0d0d501cb1badb14
+  repo_state_hash: bd1f32686a1c2604
   decision_grade_status: PASS
   degradation_reasons: []
 plain_english_context:
@@ -22,9 +22,9 @@ plain_english_context:
     caveats: []
 patient_size:
   status: present
-  total_python_files: 12282
-  production_python_files: 7115
-  test_python_files: 5167
+  total_python_files: 12302
+  production_python_files: 7117
+  test_python_files: 5185
   agentic_core:
     file_count: 2889
     largest_layers:
@@ -44,10 +44,10 @@ patient_size:
       file_count: 224
       executive_read: Large core layer; treat as control-plane blast-radius context.
   apps:
-    total_files: 1428
+    total_files: 1431
     app_breakdown:
     - app: apps_rg
-      file_count: 568
+      file_count: 570
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_shared
@@ -71,7 +71,7 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_eval
-      file_count: 39
+      file_count: 40
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_architect
@@ -79,10 +79,10 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
   tests:
-    total_files: 5167
+    total_files: 5185
     folder_breakdown:
     - folder: tests/unit
-      file_count: 3000
+      file_count: 3018
     - folder: tests/e2e
       file_count: 62
     - folder: tests/regression
@@ -101,7 +101,7 @@ patient_size:
       file_count: 2035
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: '2026-06-18T12:57:56.221731+00:00'
+  snapshot_ts: '2026-06-18T15:34:38.627236+00:00'
 executive_decision:
   verdict: REPORT_INCONSISTENT
   recommendation: Repair report consistency first; the executive order of work is
@@ -185,21 +185,21 @@ lens_1_health_gates:
     carrying accepted debt; they should not hide report inconsistency or runtime failures.
   summary:
     total_gates: 48
-    clear_gates: 24
-    track_gates: 18
-    fix_gates: 6
+    clear_gates: 23
+    track_gates: 20
+    fix_gates: 5
     overall_verdict: BLOCKED
     executive_read: FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR
       needs no action.
   buckets:
   - bucket: CLEAR
-    count: 24
+    count: 23
     plain_meaning: No action now.
   - bucket: TRACK
-    count: 18
+    count: 20
     plain_meaning: Known debt or advisory inventory; burn down after red gates.
   - bucket: FIX
-    count: 6
+    count: 5
     plain_meaning: Current blocker or regression requiring action before decision-grade
       green.
   red_gates:
@@ -227,28 +227,16 @@ lens_1_health_gates:
     next_action: 'Regression +1 over baseline 1 (P0): investigate each NEW path; fix
       the regression — re-baseline only with explicit sign-off.'
     done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
-  - gate_id: S2_uwg_bypass_ratchet
-    band: P0
-    enforcement: ratchet
-    total_records: 1549
-    baseline_records: 1540
-    regression_delta: 0
-    record_type: gate records
-    executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
-      tiny ratchet creep from structural failure.
-    next_action: 'Regression +9 over baseline 1540 (P0): investigate each NEW path;
-      fix the regression — re-baseline only with explicit sign-off.'
-    done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
   - gate_id: Q2_cyclomatic_complexity_ratchet
     band: P3
     enforcement: ratchet
-    total_records: 1087
+    total_records: 1095
     baseline_records: 1083
     regression_delta: 0
     record_type: gate records
     executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
       tiny ratchet creep from structural failure.
-    next_action: 'Regression +4 over baseline 1083: fix the new findings, or re-baseline
+    next_action: 'Regression +12 over baseline 1083: fix the new findings, or re-baseline
       via the gate''s `--regenerate-baseline` if intentional/approved debt.'
     done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
   - gate_id: C2_l5_bypass_pview
@@ -263,40 +251,40 @@ lens_1_health_gates:
     next_action: 'BLOCKER (P0): clear the zero-tolerance condition before merge. Do
       NOT re-baseline a P0 block.'
     done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
-  - gate_id: C3_silent_writes_ratchet
+  - gate_id: H1_new_orphans_delta_ratchet
     band: P1
     enforcement: ratchet
-    total_records: 2011
-    baseline_records: 1986
+    total_records: 3
+    baseline_records: 0
     regression_delta: 0
     record_type: gate records
     executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
       tiny ratchet creep from structural failure.
-    next_action: 'Regression +25 over baseline 1986: fix the new findings, or re-baseline
+    next_action: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
       via the gate''s `--regenerate-baseline` if intentional/approved debt.'
     done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
   managed_debt:
-    ratchet_floor_records: 19472
+    ratchet_floor_records: 23040
     open_non_ratchet_records: 1042
     top_ratchets:
     - gate_id: S4_unused_imports_ratchet
-      records: 10735
+      records: 10740
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: G_REACH_l0_reachability
-      records: 2785
+      records: 2788
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: C3_silent_writes_ratchet
+      records: 2011
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: S2_uwg_bypass_ratchet
+      records: 1549
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: F1_untyped_seam_ratchet
       records: 1006
-      executive_read: Accepted baseline debt, not current red.
-      after_green_action: Burn down after FIX rows clear.
-    - gate_id: E1_trace_stub_module
-      records: 983
-      executive_read: Accepted baseline debt, not current red.
-      after_green_action: Burn down after FIX rows clear.
-    - gate_id: I2_replay_surface_gaps_ratchet
-      records: 978
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
   key_interpretation: A blocked ADG run is not automatically a platform crisis; regression
@@ -313,22 +301,22 @@ lens_1_health_gates:
       ratchet creep from structural failure.
     recommended_action: 'Regression +1 over baseline 1 (P0): investigate each NEW
       path; fix the regression — re-baseline only with explicit sign-off.'
-  - signal: S2_uwg_bypass_ratchet
-    impact: Current red gate. Treat as blocker, but inspect delta to distinguish tiny
-      ratchet creep from structural failure.
-    recommended_action: 'Regression +9 over baseline 1540 (P0): investigate each NEW
-      path; fix the regression — re-baseline only with explicit sign-off.'
   - signal: Q2_cyclomatic_complexity_ratchet
     impact: Current red gate. Treat as blocker, but inspect delta to distinguish tiny
       ratchet creep from structural failure.
-    recommended_action: 'Regression +4 over baseline 1083: fix the new findings, or
-      re-baseline via the gate''s `--regenerate-baseline` if intentional/approved
+    recommended_action: 'Regression +12 over baseline 1083: fix the new findings,
+      or re-baseline via the gate''s `--regenerate-baseline` if intentional/approved
       debt.'
   - signal: C2_l5_bypass_pview
     impact: Current red gate. Treat as blocker, but inspect delta to distinguish tiny
       ratchet creep from structural failure.
     recommended_action: 'BLOCKER (P0): clear the zero-tolerance condition before merge.
       Do NOT re-baseline a P0 block.'
+  - signal: H1_new_orphans_delta_ratchet
+    impact: Current red gate. Treat as blocker, but inspect delta to distinguish tiny
+      ratchet creep from structural failure.
+    recommended_action: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
 lens_2_runtime_proof_observability:
   status: present_failing
   why_it_matters: Runtime proof separates a real observed failure from a blind spot;
@@ -388,7 +376,7 @@ lens_3_product_app_risk:
     evidence:
     - signal_name: apps_rg/runtime/sections/executive_summary_lane.py
       signal_type: hotspot
-      raw_count: 34
+      raw_count: 29
       interpreted_meaning: This production scope has structural or coverage risk;
         missing mapped tests make fixes harder to prove.
     executive_read: App risk is promoted because product surface and missing test
@@ -521,7 +509,7 @@ lens_4_testing_control_gaps:
     scanned_tests_root: tests
     folders:
     - folder: tests/unit
-      file_count: 3107
+      file_count: 3125
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -745,6 +733,7 @@ lens_4_testing_control_gaps:
       - apps_lic/agents
       - apps_lic/config
       - apps_lic/engines
+      - apps_lic/engines/judges
       - apps_lic/integrations
       - apps_lic/no/such
       - apps_lic/observability
@@ -1563,7 +1552,9 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py
       - tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py
       - tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py
+      - tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py
       - tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py
+      - tests/unit/apps_rg/runtime/sections/test_executive_summary_briefing.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_evidence_capsule.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_regen_support.py
@@ -1669,6 +1660,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_executive_summary_upstream_triangulation.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_regen_unblock.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_synthesis.py
+      - tests/unit/apps_rg/test_executive_summary_voice_repair_word_budget_arc.py
       - tests/unit/apps_rg/test_executive_summary_w1_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w2_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w3_brown_gap_hardening.py
@@ -1679,6 +1671,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py
       - tests/unit/apps_rg/test_full_resume_review_bundle.py
       - tests/unit/apps_rg/test_gate_taxonomy_wave8.py
+      - tests/unit/apps_rg/test_graph_skill_concentration_policy.py
       - tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py
       - tests/unit/apps_rg/test_headline_fact_id_resolution_vs_shared_typo_repair.py
       - tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py
@@ -1704,7 +1697,10 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_remaining_resume_rigor_finish.py
       - tests/unit/apps_rg/test_role_episode_jd_tailoring.py
       - tests/unit/apps_rg/test_role_episode_sentence_gate_w3.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge_contract.py
       - tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py
+      - tests/unit/apps_rg/test_role_episode_x2_gates.py
       - tests/unit/apps_rg/test_run_bundle_index.py
       - tests/unit/apps_rg/test_run_correlation_links.py
       - tests/unit/apps_rg/test_same_authority_regen_delegation.py
@@ -1793,9 +1789,9 @@ lens_4_testing_control_gaps:
       coverage_pct: '-1.0'
       fan_in: 0
       fan_out: 228
-      criticality_score: 330.0
-      combined_risk_score: 443.0
-      violation_count: 34
+      criticality_score: 315.0
+      combined_risk_score: 418.0
+      violation_count: 29
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
     recommended_test_investment: Add mapped tests/regression coverage for apps_rg.
@@ -1931,7 +1927,9 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py
       - tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py
       - tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py
+      - tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py
       - tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py
+      - tests/unit/apps_rg/runtime/sections/test_executive_summary_briefing.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_evidence_capsule.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_regen_support.py
@@ -2037,6 +2035,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_executive_summary_upstream_triangulation.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_regen_unblock.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_synthesis.py
+      - tests/unit/apps_rg/test_executive_summary_voice_repair_word_budget_arc.py
       - tests/unit/apps_rg/test_executive_summary_w1_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w2_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w3_brown_gap_hardening.py
@@ -2047,6 +2046,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py
       - tests/unit/apps_rg/test_full_resume_review_bundle.py
       - tests/unit/apps_rg/test_gate_taxonomy_wave8.py
+      - tests/unit/apps_rg/test_graph_skill_concentration_policy.py
       - tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py
       - tests/unit/apps_rg/test_headline_fact_id_resolution_vs_shared_typo_repair.py
       - tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py
@@ -2072,7 +2072,10 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_remaining_resume_rigor_finish.py
       - tests/unit/apps_rg/test_role_episode_jd_tailoring.py
       - tests/unit/apps_rg/test_role_episode_sentence_gate_w3.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge_contract.py
       - tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py
+      - tests/unit/apps_rg/test_role_episode_x2_gates.py
       - tests/unit/apps_rg/test_run_bundle_index.py
       - tests/unit/apps_rg/test_run_correlation_links.py
       - tests/unit/apps_rg/test_same_authority_regen_delegation.py
@@ -2299,7 +2302,9 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py
       - tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py
       - tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py
+      - tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py
       - tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py
+      - tests/unit/apps_rg/runtime/sections/test_executive_summary_briefing.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_evidence_capsule.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_regen_support.py
@@ -2405,6 +2410,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_executive_summary_upstream_triangulation.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_regen_unblock.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_synthesis.py
+      - tests/unit/apps_rg/test_executive_summary_voice_repair_word_budget_arc.py
       - tests/unit/apps_rg/test_executive_summary_w1_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w2_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w3_brown_gap_hardening.py
@@ -2415,6 +2421,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py
       - tests/unit/apps_rg/test_full_resume_review_bundle.py
       - tests/unit/apps_rg/test_gate_taxonomy_wave8.py
+      - tests/unit/apps_rg/test_graph_skill_concentration_policy.py
       - tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py
       - tests/unit/apps_rg/test_headline_fact_id_resolution_vs_shared_typo_repair.py
       - tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py
@@ -2440,7 +2447,10 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_remaining_resume_rigor_finish.py
       - tests/unit/apps_rg/test_role_episode_jd_tailoring.py
       - tests/unit/apps_rg/test_role_episode_sentence_gate_w3.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge_contract.py
       - tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py
+      - tests/unit/apps_rg/test_role_episode_x2_gates.py
       - tests/unit/apps_rg/test_run_bundle_index.py
       - tests/unit/apps_rg/test_run_correlation_links.py
       - tests/unit/apps_rg/test_same_authority_regen_delegation.py
@@ -2550,7 +2560,9 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py
       - tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py
       - tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py
+      - tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py
       - tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py
+      - tests/unit/apps_rg/runtime/sections/test_executive_summary_briefing.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_evidence_capsule.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_regen_support.py
@@ -2656,6 +2668,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_executive_summary_upstream_triangulation.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_regen_unblock.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_synthesis.py
+      - tests/unit/apps_rg/test_executive_summary_voice_repair_word_budget_arc.py
       - tests/unit/apps_rg/test_executive_summary_w1_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w2_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w3_brown_gap_hardening.py
@@ -2666,6 +2679,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py
       - tests/unit/apps_rg/test_full_resume_review_bundle.py
       - tests/unit/apps_rg/test_gate_taxonomy_wave8.py
+      - tests/unit/apps_rg/test_graph_skill_concentration_policy.py
       - tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py
       - tests/unit/apps_rg/test_headline_fact_id_resolution_vs_shared_typo_repair.py
       - tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py
@@ -2691,7 +2705,10 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_remaining_resume_rigor_finish.py
       - tests/unit/apps_rg/test_role_episode_jd_tailoring.py
       - tests/unit/apps_rg/test_role_episode_sentence_gate_w3.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge_contract.py
       - tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py
+      - tests/unit/apps_rg/test_role_episode_x2_gates.py
       - tests/unit/apps_rg/test_run_bundle_index.py
       - tests/unit/apps_rg/test_run_correlation_links.py
       - tests/unit/apps_rg/test_same_authority_regen_delegation.py
@@ -3254,7 +3271,9 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py
       - tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py
       - tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py
+      - tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py
       - tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py
+      - tests/unit/apps_rg/runtime/sections/test_executive_summary_briefing.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_evidence_capsule.py
       - tests/unit/apps_rg/runtime/sections/test_executive_summary_regen_support.py
@@ -3360,6 +3379,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_executive_summary_upstream_triangulation.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_regen_unblock.py
       - tests/unit/apps_rg/test_executive_summary_voice_repair_synthesis.py
+      - tests/unit/apps_rg/test_executive_summary_voice_repair_word_budget_arc.py
       - tests/unit/apps_rg/test_executive_summary_w1_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w2_brown_gap_hardening.py
       - tests/unit/apps_rg/test_executive_summary_w3_brown_gap_hardening.py
@@ -3370,6 +3390,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py
       - tests/unit/apps_rg/test_full_resume_review_bundle.py
       - tests/unit/apps_rg/test_gate_taxonomy_wave8.py
+      - tests/unit/apps_rg/test_graph_skill_concentration_policy.py
       - tests/unit/apps_rg/test_graph_skills_skill_capsule_w2.py
       - tests/unit/apps_rg/test_headline_fact_id_resolution_vs_shared_typo_repair.py
       - tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py
@@ -3395,7 +3416,10 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_remaining_resume_rigor_finish.py
       - tests/unit/apps_rg/test_role_episode_jd_tailoring.py
       - tests/unit/apps_rg/test_role_episode_sentence_gate_w3.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge.py
+      - tests/unit/apps_rg/test_role_episode_x1d_judge_contract.py
       - tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py
+      - tests/unit/apps_rg/test_role_episode_x2_gates.py
       - tests/unit/apps_rg/test_run_bundle_index.py
       - tests/unit/apps_rg/test_run_correlation_links.py
       - tests/unit/apps_rg/test_same_authority_regen_delegation.py
@@ -4078,7 +4102,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_debt_concentration_hotspots
     signal_type: materialized_view
-    row_count: 4843
+    row_count: 4857
     decision_role: used_for_testing
     used_inline: true
     why_or_why_not: Translates structural risk into concrete test-placement decisions.
@@ -4087,7 +4111,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_dependency_cone_risk
     signal_type: materialized_view
-    row_count: 11720
+    row_count: 11741
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `cone_risk_score`); a
@@ -4098,7 +4122,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_determinism_provenance_drift
     signal_type: materialized_view
-    row_count: 6555
+    row_count: 6558
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4157,7 +4181,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_chokepoint_bridges
     signal_type: materialized_view
-    row_count: 2045
+    row_count: 2046
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
@@ -4167,7 +4191,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_critical_path_blast_radius
     signal_type: materialized_view
-    row_count: 129
+    row_count: 130
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `weighted_blast_radius`);
@@ -4178,7 +4202,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_reverse_dependency_hotspots
     signal_type: materialized_view
-    row_count: 99
+    row_count: 101
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `reverse_dependency_score`);
@@ -4229,7 +4253,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_high_fan_in_out_with_defects
     signal_type: materialized_view
-    row_count: 10797
+    row_count: 10818
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4249,7 +4273,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_centrality
     signal_type: materialized_view
-    row_count: 11720
+    row_count: 11741
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `betweenness_approx`);
@@ -4260,7 +4284,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_coverage_risk
     signal_type: materialized_view
-    row_count: 4384
+    row_count: 4387
     decision_role: used_now
     used_inline: true
     why_or_why_not: Linked to a current FIX/action signal, so it changes immediate
@@ -4309,7 +4333,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_modified_area_regressions
     signal_type: materialized_view
-    row_count: 4858
+    row_count: 4872
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4349,7 +4373,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_newly_introduced_critical_paths
     signal_type: materialized_view
-    row_count: 8440
+    row_count: 8456
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `criticality_score`);
@@ -4370,7 +4394,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_path_criticality_rollup
     signal_type: materialized_view
-    row_count: 11720
+    row_count: 11741
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4441,7 +4465,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_snapshot_integrity_anomalies
     signal_type: materialized_view
-    row_count: 391466
+    row_count: 392082
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4501,7 +4525,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_unknown_taxonomy_and_orphans
     signal_type: materialized_view
-    row_count: 6555
+    row_count: 6558
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -4571,7 +4595,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: graphdb_projection
     signal_type: graphdb_report
-    row_count: 617711
+    row_count: 618868
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Parsed P7 structural context; promoted only when it overlaps a
@@ -4624,7 +4648,7 @@ lens_5_graphdb_mv_decision_impact:
     layer: L_TOOLS
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint,
       newly_introduced
-    centrality: 2.1567
+    centrality: 2.1529
     blast_radius: 84.0
     reverse_dependency: 84.0
     dependency_cone: 84.0
@@ -4638,7 +4662,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/base_agents/SovereignBaseAgent.py
     layer: L_SHARED
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.8359
+    centrality: 0.8344
     blast_radius: 179.39
     reverse_dependency: 93.0
     dependency_cone: 93.0
@@ -4651,7 +4675,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L0_routing/config/__init__.py
     layer: L0
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 2.5503
+    centrality: 2.5457
     blast_radius: 175.21
     reverse_dependency: 111.0
     dependency_cone: 111.0
@@ -4664,7 +4688,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L2_execution/utils/write_gateway.py
     layer: L2
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.6082
+    centrality: 0.6071
     blast_radius: 125.06
     reverse_dependency: 64.0
     dependency_cone: 64.0
@@ -4677,7 +4701,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/runtime/contracts/lifecycle_trace_contract.py
     layer: L_RUNTIME
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone
-    centrality: 88.8278
+    centrality: 88.6689
     blast_radius: 3244.12
     reverse_dependency: 1772.0
     dependency_cone: 1772.0
@@ -4693,31 +4717,31 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: betweenness_approx
       rows_used: 25
-      total_rows: 11720
+      total_rows: 11741
     mv_graph_reverse_dependency_hotspots:
       available: true
       queried: true
       score_column: reverse_dependency_score
       rows_used: 25
-      total_rows: 99
+      total_rows: 101
     mv_graph_critical_path_blast_radius:
       available: true
       queried: true
       score_column: weighted_blast_radius
       rows_used: 25
-      total_rows: 129
+      total_rows: 130
     mv_dependency_cone_risk:
       available: true
       queried: true
       score_column: cone_risk_score
       rows_used: 25
-      total_rows: 11720
+      total_rows: 11741
     mv_graph_chokepoint_bridges:
       available: true
       queried: true
       score_column: bridge_score
       rows_used: 25
-      total_rows: 2045
+      total_rows: 2046
     mv_graph_scc_clusters:
       available: true
       queried: true
@@ -4729,7 +4753,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: criticality_score
       rows_used: 25
-      total_rows: 8440
+      total_rows: 8456
   action_impact_rows:
   - signal: mv_debt_concentration_hotspots
     impact: Translates structural risk into concrete test-placement decisions.
@@ -4785,12 +4809,12 @@ canonical_next_best_actions:
     timing: now
   - rank: 3
     action_type: fix_blocker
-    action: Clear red gate C3_silent_writes_ratchet
-    scope: C3_silent_writes_ratchet
+    action: Clear red gate H1_new_orphans_delta_ratchet
+    scope: H1_new_orphans_delta_ratchet
     why_now: Current FIX gates block decision-grade green; inspect delta before assuming
       structural crisis.
     evidence_used:
-    - signal_name: C3_silent_writes_ratchet
+    - signal_name: H1_new_orphans_delta_ratchet
       signal_type: gate
       decision_effect: Current FIX gates block decision-grade green; inspect delta
         before assuming structural crisis.
@@ -4869,7 +4893,7 @@ after_green_plan:
   - order: 1
     work_class: ratchet_burndown
     scope: S4_unused_imports_ratchet
-    records: 10735
+    records: 10740
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4878,7 +4902,7 @@ after_green_plan:
   - order: 2
     work_class: ratchet_burndown
     scope: G_REACH_l0_reachability
-    records: 2785
+    records: 2788
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4886,8 +4910,8 @@ after_green_plan:
     done_condition: Lower baseline and rerun ADG.
   - order: 3
     work_class: ratchet_burndown
-    scope: F1_untyped_seam_ratchet
-    records: 1006
+    scope: C3_silent_writes_ratchet
+    records: 2011
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4895,8 +4919,8 @@ after_green_plan:
     done_condition: Lower baseline and rerun ADG.
   - order: 4
     work_class: ratchet_burndown
-    scope: E1_trace_stub_module
-    records: 983
+    scope: S2_uwg_bypass_ratchet
+    records: 1549
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4904,8 +4928,8 @@ after_green_plan:
     done_condition: Lower baseline and rerun ADG.
   - order: 5
     work_class: ratchet_burndown
-    scope: I2_replay_surface_gaps_ratchet
-    records: 978
+    scope: F1_untyped_seam_ratchet
+    records: 1006
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4915,7 +4939,7 @@ artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: artifacts/adg/adg_gate_results_20260618_125756.json
+    path: artifacts/adg/adg_gate_results_20260618_153438.json
     exists: true
     loaded: true
     stale: false
@@ -4925,7 +4949,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: action_queue
-    path: artifacts/adg/adg_action_queue_06182026_0852.json
+    path: artifacts/adg/adg_action_queue_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -4935,7 +4959,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: artifacts/adg/adg_review_template_06182026_0852.json
+    path: artifacts/adg/adg_review_template_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -4967,7 +4991,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: artifacts/adg/adg_indexed_06182026_0852.sqlite
+    path: artifacts/adg/adg_indexed_06182026_1128.sqlite
     exists: true
     loaded: false
     stale: false
@@ -4978,7 +5002,7 @@ artifact_usage_matrix:
     rationale: Existing non-JSON artifact or SQLite snapshot mapped to a decision
       lens.
   - artifact_key: generation_manifest
-    path: artifacts/adg/adg_generation_manifest_06182026_0852.json
+    path: artifacts/adg/adg_generation_manifest_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -4988,7 +5012,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: structural_outputs
-    path: artifacts/adg/adg_structural_outputs_06182026_0852.json
+    path: artifacts/adg/adg_structural_outputs_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -4998,7 +5022,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: refactor_accelerator
-    path: artifacts/adg/adg_refactor_accelerator_06182026_0852.json
+    path: artifacts/adg/adg_refactor_accelerator_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5008,7 +5032,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_queries
-    path: artifacts/adg/adg_graphdb_queries_06182026_0852.json
+    path: artifacts/adg/adg_graphdb_queries_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5018,7 +5042,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: runtime_spine
-    path: artifacts/adg/adg_runtime_spine_06182026_0852.json
+    path: artifacts/adg/adg_runtime_spine_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5028,7 +5052,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_projection
-    path: artifacts/adg/adg_graphdb_projection_06182026_0852.json
+    path: artifacts/adg/adg_graphdb_projection_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5040,7 +5064,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_metadata
-    path: artifacts/adg/adg_graphdb_metadata_06182026_0852.json
+    path: artifacts/adg/adg_graphdb_metadata_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5052,7 +5076,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_index
-    path: artifacts/adg/adg_graphdb_index_06182026_0852.json
+    path: artifacts/adg/adg_graphdb_index_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5076,7 +5100,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: p0_wave_plan
-    path: artifacts/adg/issues/p0_remediation_wave_plan_06182026_0852.json
+    path: artifacts/adg/issues/p0_remediation_wave_plan_06182026_1128.json
     exists: true
     loaded: true
     stale: false
@@ -5173,14 +5197,14 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_debt_concentration_hotspots
-    row_count: 4843
+    row_count: 4857
     category: testing_driver
     decision_impact: Translates structural risk into concrete test-placement decisions.
     recommendation: keep
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_dependency_cone_risk
-    row_count: 11720
+    row_count: 11741
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `cone_risk_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -5189,7 +5213,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_determinism_provenance_drift
-    row_count: 6555
+    row_count: 6558
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5240,7 +5264,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_graph_chokepoint_bridges
-    row_count: 2045
+    row_count: 2046
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
       scope overlaps a current FIX gate or coverage hotspot, so it drives work now.
@@ -5248,7 +5272,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_graph_critical_path_blast_radius
-    row_count: 129
+    row_count: 130
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `weighted_blast_radius`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -5257,7 +5281,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_graph_reverse_dependency_hotspots
-    row_count: 99
+    row_count: 101
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `reverse_dependency_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -5302,7 +5326,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_high_fan_in_out_with_defects
-    row_count: 10797
+    row_count: 10818
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5320,7 +5344,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_hotspot_centrality
-    row_count: 11720
+    row_count: 11741
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `betweenness_approx`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -5329,7 +5353,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_hotspot_coverage_risk
-    row_count: 4384
+    row_count: 4387
     category: decision_driver
     decision_impact: Linked to a current FIX/action signal, so it changes immediate
       work order.
@@ -5371,7 +5395,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_modified_area_regressions
-    row_count: 4858
+    row_count: 4872
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5407,7 +5431,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_newly_introduced_critical_paths
-    row_count: 8440
+    row_count: 8456
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `criticality_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -5425,7 +5449,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_path_criticality_rollup
-    row_count: 11720
+    row_count: 11741
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5488,7 +5512,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_snapshot_integrity_anomalies
-    row_count: 391466
+    row_count: 392082
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5542,7 +5566,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_unknown_taxonomy_and_orphans
-    row_count: 6555
+    row_count: 6558
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -5587,22 +5611,22 @@ dead_code_report:
     executive_metrics:
       dead_code_count: 0
       dead_import_count: 0
-      first_party_low_confidence_ratio: 1.957639048024356
-      inferred_symbol_ratio: 10.108509753166313
+      first_party_low_confidence_ratio: 1.9728246668408673
+      inferred_symbol_ratio: 10.110130888542928
       l4_unresolved_import_count: 0
-      low_confidence_count: 598
-      unresolved_import_count: 598
+      low_confidence_count: 604
+      unresolved_import_count: 604
     executive_ready: true
     first_party_metrics:
       dead_code_count: 0
       dead_import_count: 0
       l4_unresolved_import_count: 0
-      low_confidence_count: 598
-      unresolved_import_count: 598
+      low_confidence_count: 604
+      unresolved_import_count: 604
     readiness_issues: []
   inferred_symbols:
     inferred_by_confidence:
-      MEDIUM: 17495
+      MEDIUM: 17534
     inferred_by_layer:
       L0: 1349
       L1: 577
@@ -5611,49 +5635,49 @@ dead_code_report:
       L4: 605
       L5: 1289
       L6: 1287
-      L_APP: 5167
+      L_APP: 5196
       L_OPS: 487
       L_PG: 497
-      L_RUNTIME: 1072
+      L_RUNTIME: 1075
       L_SHARED: 588
       L_TEST: 289
-      L_TOOLS: 2316
+      L_TOOLS: 2323
       L_UNKNOWN: 216
-    inferred_symbol_ratio: 10.108509753166313
-    total_inferred_symbols: 17495
-    total_symbols: 173072
+    inferred_symbol_ratio: 10.110130888542928
+    total_inferred_symbols: 17534
+    total_symbols: 173430
   low_confidence_zones:
-    first_party_low_confidence_ratio: 1.957639048024356
+    first_party_low_confidence_ratio: 1.9728246668408673
     governance_low_confidence_ratio: 0.0
     low_conf_by_entity_type:
-      symbol: 598
+      symbol: 604
     low_conf_by_identity_kind:
-      unresolved_import: 598
+      unresolved_import: 604
     low_conf_by_layer:
       ? ''
-      : 598
+      : 604
     low_conf_hotspots:
     - - ''
-      - 598
-    total_low_confidence: 598
+      - 604
+    total_low_confidence: 604
   status: PASS
   summary:
     executive_ready: true
-    first_party_low_confidence_ratio: 1.957639048024356
-    inferred_symbol_ratio: 10.108509753166313
+    first_party_low_confidence_ratio: 1.9728246668408673
+    inferred_symbol_ratio: 10.110130888542928
     l4_unresolved_imports: 0
     total_dead_code_candidates: 0
     total_dead_imports: 0
-    total_low_confidence: 598
-    total_unresolved_imports: 598
+    total_low_confidence: 604
+    total_unresolved_imports: 604
   unresolved_imports:
     l4_unresolved: 0
-    total_unresolved_imports: 598
+    total_unresolved_imports: 604
     unresolved_by_confidence:
-      LOW: 598
+      LOW: 604
     unresolved_by_layer:
       ? ''
-      : 598
+      : 604
     unresolved_hotspots:
     - - ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py
       - 62
@@ -5690,9 +5714,9 @@ deprecation_deletion_plan:
     - Low-value diagnostics are cheap to deprecate once the evidence layer is cleaner.
     dead_code_candidates: 0
     dead_imports: 0
-    unresolved_imports: 598
-    first_party_low_confidence_ratio: 1.957639048024356
-    inferred_symbol_ratio: 10.108509753166313
+    unresolved_imports: 604
+    first_party_low_confidence_ratio: 1.9728246668408673
+    inferred_symbol_ratio: 10.110130888542928
     cleanup_candidate_count: 18
   brief:
     title: BCG Deletion Brief
@@ -5703,8 +5727,8 @@ deprecation_deletion_plan:
     technical_read:
     - 'Dead code candidates: 0'
     - 'Dead imports: 0'
-    - 'Unresolved imports: 598'
-    - 'First-party low-confidence ratio: 1.96%'
+    - 'Unresolved imports: 604'
+    - 'First-party low-confidence ratio: 1.97%'
     - 'Inferred-symbol ratio: 10.11%'
     - 'Cleanup candidates surfaced: 18'
     priority_rule: Confirmed dead code first, then unresolved imports, then low-confidence
@@ -5725,7 +5749,7 @@ deprecation_deletion_plan:
       scope: ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py
       business_reason: Unresolved imports are the biggest uncertainty and can hide
         real cleanup opportunities.
-      technical_reason: 598 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py
+      technical_reason: 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py
         (62).
       why_this_rank: We need a cleaner signal before we can trust deletion decisions.
       decision: investigate
@@ -5735,7 +5759,7 @@ deprecation_deletion_plan:
       scope: first-party nodes
       business_reason: Cleaner evidence makes later reviews faster and lowers the
         risk of deleting the wrong thing.
-      technical_reason: First-party low-confidence ratio = 1.96% and inferred-symbol
+      technical_reason: First-party low-confidence ratio = 1.97% and inferred-symbol
         ratio = 10.11%.
       why_this_rank: Noise reduction improves the quality of the next scan and makes
         future deletions safer.
@@ -5816,7 +5840,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_determinism_provenance_drift
     item_type: mv
-    current_value: 6555 rows; diagnostic_monitor
+    current_value: 6558 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -5874,9 +5898,9 @@ audit_notes:
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   - band: P3
-    gross: 18983
-    guardian: 90
-    non_exempt: 18893
+    gross: 19009
+    guardian: 88
+    non_exempt: 18921
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   severity_summary:
@@ -5889,12 +5913,12 @@ audit_notes:
     - mismatch_type: meta_count_mismatch
       ref_id: total_edges
       file: ''
-      detail: meta=1065546 actual=1065635
+      detail: meta=1067211 actual=1067300
       delta: 89
     - mismatch_type: meta_count_mismatch
       ref_id: total_nodes
       file: ''
-      detail: meta=184870 actual=184871
+      detail: meta=185249 actual=185250
       delta: 1
   notes:
   - Guardian exceptions are audit math only; they do not automatically explain away
@@ -5907,7 +5931,7 @@ honest_bottom_line:
   bullets:
   - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing
     gaps; do not spend executive time there.
-  - 'Actually blocking now: 6 FIX gates; inspect regression delta before declaring
+  - 'Actually blocking now: 5 FIX gates; inspect regression delta before declaring
     a platform crisis.'
   - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it
     after green unless it overlaps current work.
@@ -5918,22 +5942,22 @@ honest_bottom_line:
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: artifacts/adg/adg_gate_results_20260618_125756.json
-    action_queue: artifacts/adg/adg_action_queue_06182026_0852.json
-    review_template: artifacts/adg/adg_review_template_06182026_0852.json
+    gate_results: artifacts/adg/adg_gate_results_20260618_153438.json
+    action_queue: artifacts/adg/adg_action_queue_06182026_1128.json
+    review_template: artifacts/adg/adg_review_template_06182026_1128.json
     burndown_table: artifacts/adg/adg_burndown_table.json
     burndown_report: artifacts/adg/adg_burndown_report.md
-    sqlite_snapshot: artifacts/adg/adg_indexed_06182026_0852.sqlite
-    generation_manifest: artifacts/adg/adg_generation_manifest_06182026_0852.json
-    structural_outputs: artifacts/adg/adg_structural_outputs_06182026_0852.json
-    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_06182026_0852.json
-    graphdb_queries: artifacts/adg/adg_graphdb_queries_06182026_0852.json
-    runtime_spine: artifacts/adg/adg_runtime_spine_06182026_0852.json
-    graphdb_projection: artifacts/adg/adg_graphdb_projection_06182026_0852.json
-    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_06182026_0852.json
-    graphdb_index: artifacts/adg/adg_graphdb_index_06182026_0852.json
+    sqlite_snapshot: artifacts/adg/adg_indexed_06182026_1128.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_06182026_1128.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_06182026_1128.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_06182026_1128.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_06182026_1128.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_06182026_1128.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_06182026_1128.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_06182026_1128.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_06182026_1128.json
     graph_watchlist: ''
-    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_06182026_0852.json
+    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_06182026_1128.json
     dead_code_report: artifacts/adg/dead_code_zone_control_report_latest.json
   loaded_status:
     missing:

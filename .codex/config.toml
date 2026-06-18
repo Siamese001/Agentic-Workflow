@@ -1,4 +1,10 @@
-personality = "friendly"
+model = "gpt-5.5"
+personality = "pragmatic"
+web_search = "cached"
+
+[agents]
+max_depth = 1
+max_threads = 6
 
 [mcp_servers]
 
@@ -59,4 +65,4 @@ command = "cmd"
 args = ["/c", "npx", "-y", "@playwright/mcp"]
 
 [features]
-codex_hooks = true
+hooks = true

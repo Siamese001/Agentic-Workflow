@@ -1,9 +1,18 @@
 {
   "gate_id": "M1_module_loc_ratchet",
-  "count": 459,
+  "count": 446,
   "seeded_at": "2026-06-13T14:17:35.151986+00:00",
-  "snapshot": "adg_indexed_06132026_1009.sqlite",
+  "snapshot": "adg_indexed_06182026_1128.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-13T17:29:22.546913+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1324.sqlite"
+  "last_run_at": "2026-06-18T15:34:15.095053+00:00",
+  "last_run_snapshot": "adg_indexed_06182026_1128.sqlite",
+  "tightened_at": "2026-06-18T15:34:15.095053+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-18T15:34:15.095053+00:00",
+      "snapshot": "adg_indexed_06182026_1128.sqlite",
+      "from": 459,
+      "to": 446
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-18T12:59:09+00:00
+- **Generated:** 2026-06-18T15:36:04+00:00
 - **Status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06182026_0852.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06182026_1128.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06182026_0840.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06182026_0852.json`
 
 ### BCG Cleanup Brief
 
@@ -15,8 +15,8 @@
 - **Technical evidence:**
   - Dead code candidates: 0
   - Dead imports: 0
-  - Unresolved imports: 598
-  - First-party low-confidence ratio: 1.96%
+  - Unresolved imports: 604
+  - First-party low-confidence ratio: 1.97%
   - Inferred-symbol ratio: 10.11%
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
@@ -24,8 +24,8 @@
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
 | 1 | Hold all deletion | whole codebase | The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths. | Dead-code candidates = 0 and dead imports = 0. | No proven target means the safest action is to pause deletion. | defer |
-| 2 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 598 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
-| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.96% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 2 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
 | 4 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
@@ -70,12 +70,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **Status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_0852.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_1128.sqlite
   - P2 ceiling: 20
   - Current MEDIUM hygiene count: 20
   - Delta vs ceiling: +0
   - Baseline snapshot: missing
-  - Latest failed run: 2026-06-18T12:49:50Z (failed)
+  - Latest failed run: 2026-06-18T13:00:34Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
@@ -100,8 +100,8 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Ceiling:** 20
 - **Delta:** +0
 - **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_06182026_0852.sqlite
-- **Latest failed run:** 2026-06-18T12:49:50Z (failed)
+- **Published snapshot:** artifacts/adg/adg_indexed_06182026_1128.sqlite
+- **Latest failed run:** 2026-06-18T13:00:34Z (failed)
 
 ### Evidence Buckets
 
