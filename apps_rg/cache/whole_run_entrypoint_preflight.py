@@ -1,4 +1,8 @@
-"""W9b — SSOT whole-run cache preflight (R1A → R1B) for all canonical entrypoints."""
+"""W9b — SSOT whole-run cache preflight (R1A → R1B) for all canonical entrypoints.
+
+Section lanes intentionally bypass this whole-run cache path; they remain a separate
+modular execution surface and should not be confused with cache miss behavior.
+"""
 
 from __future__ import annotations
 
@@ -68,6 +72,8 @@ class WholeRunCachePreflightOutcome:
 
     @property
     def outcome(self) -> str:
+        if self.section_lane:
+            return "section_lane_bypass"
         if self.r1a_hit:
             return "r1a_hit"
         if self.r1b_hit:

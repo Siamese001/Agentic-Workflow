@@ -13,12 +13,16 @@ CACHE_PREFLIGHT_MANIFEST_NAME = "whole_run_cache_preflight.json"
 
 
 def _r1a_status(preflight: WholeRunCachePreflightOutcome) -> str:
+    if preflight.section_lane:
+        return "skipped"
     if preflight.r1a_hit:
         return "hit"
     return "miss"
 
 
 def _r1b_status(preflight: WholeRunCachePreflightOutcome) -> str:
+    if preflight.section_lane:
+        return "skipped"
     if preflight.r1b_hit:
         return "hit"
     if preflight.r1b_result is None:
@@ -38,7 +42,12 @@ def build_cache_preflight_evidence(
     cache_result = preflight.outcome
     generation_allowed = bool(preflight.generation_required)
     blocked_reason = ""
-    if not generation_allowed:
+    if preflight.section_lane:
+        # Section lanes do not use the whole-run cache path, so there is no R1A/R1B
+        # miss receipt to emit or surface here.
+        generation_allowed = False
+        blocked_reason = "section_lane_bypass"
+    elif not generation_allowed:
         if preflight.r1a_hit:
             blocked_reason = "r1a_cache_hit"
         elif preflight.r1b_hit:

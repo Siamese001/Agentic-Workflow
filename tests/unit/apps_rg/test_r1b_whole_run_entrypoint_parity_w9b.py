@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+from apps_rg.cache.cache_preflight_evidence import build_cache_preflight_evidence
 from apps_rg.cache.whole_run_entrypoint_preflight import (
     ENTRYPOINT_CANONICAL_DISPATCH,
     ENTRYPOINT_TEST_WHOLE_RUN_HARNESS,
@@ -89,7 +90,7 @@ def test_production_preflight_miss_fallthrough(tmp_path: Path, monkeypatch: pyte
     assert pf.generation_required is True
 
 
-def test_section_lane_skips_whole_run_preflight() -> None:
+def test_section_lane_skips_whole_run_preflight(tmp_path: Path) -> None:
     pf = run_whole_run_cache_preflight(
         entrypoint=ENTRYPOINT_CANONICAL_DISPATCH,
         raw_request=_req(),
@@ -97,9 +98,17 @@ def test_section_lane_skips_whole_run_preflight() -> None:
         target_role="VP",
         section="headline",
     )
+    evidence = build_cache_preflight_evidence(pf, artifact_dir=tmp_path / "art")
     assert pf.section_lane is True
+    assert pf.outcome == "section_lane_bypass"
     assert pf.generation_required is True
     assert pf.r1b_hit is False
+    assert evidence["cache_result"] == "section_lane_bypass"
+    assert evidence["r1a_preflight_status"] == "skipped"
+    assert evidence["r1b_preflight_status"] == "skipped"
+    assert evidence["cache_miss_receipt_ref"] == ""
+    assert evidence["generation_spine_invocation_allowed"] is False
+    assert evidence["generation_spine_invocation_blocked_reason"] == "section_lane_bypass"
 
 
 def test_canonical_dispatch_invokes_preflight_before_pipeline(
