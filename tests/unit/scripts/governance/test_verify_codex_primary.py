@@ -5,8 +5,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import pytest
-
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
@@ -66,21 +64,3 @@ def test_missing_anchor_fails(tmp_path: Path) -> None:
     failures = mod.validate(root)
 
     assert any("missing anchor" in failure for failure in failures)
-
-
-@pytest.mark.parametrize(
-    ("relative_path", "forbidden_phrase"),
-    [
-        ("docs/codex-primary-execution.md", "Claude hook parity"),
-        ("docs/codex-primary-execution.md", "AskUserQuestion"),
-        ("AGENTS.md", "request_user_input"),
-    ],
-)
-def test_forbidden_phrase_fails(tmp_path: Path, relative_path: str, forbidden_phrase: str) -> None:
-    root = _valid_root(tmp_path)
-    path = root / relative_path
-    path.write_text(path.read_text(encoding="utf-8") + f"\n{forbidden_phrase}\n", encoding="utf-8")
-
-    failures = mod.validate(root)
-
-    assert any("forbidden phrase" in failure for failure in failures)

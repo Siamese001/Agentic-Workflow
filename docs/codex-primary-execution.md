@@ -14,26 +14,9 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Route evidence and Codex preflight | `scripts/governance/audit_codex_mcp_transports.py` and `scripts/governance/codex_readiness.py` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
-No parallel registry: do not copy `.claude` rule bodies, MCP server definitions, or hook logic into a Codex-only store. Codex should consume the repo-owned files and produce fresh execution evidence.
+No parallel registry: do not copy rule bodies, MCP server definitions, or hook logic into a Codex-only store. Codex should consume the repo-owned files and produce fresh execution evidence.
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
-
-## Local Codex Skills
-
-Personal Codex skills under `C:\Users\amita\.codex\skills` are optional bootstrap shims. They help a new Codex session route into this repo contract quickly, but they are not required for normal verification and must not become a second source of truth.
-
-Primary verification is repo-owned:
-
-```bash
-python scripts/governance/verify_codex_primary.py
-```
-
-Legacy compatibility verification treats personal skills as advisory by default. Run it only when changing backup-adapter docs or workstation bootstrap skills; use strict mode only when auditing the workstation bootstrap layer itself:
-
-```bash
-python scripts/governance/verify_codex_backup.py
-python scripts/governance/verify_codex_backup.py --require-personal-skills
-```
 
 ## Required Preflight
 
@@ -115,10 +98,6 @@ python scripts/governance/cleanup_duplicate_mcp_cohorts.py --apply --codex-attac
 
 If a process-identity tool is absent, the live MCP child is still serving older code. Restart or reload the Codex MCP host and rerun strict readiness instead of killing child processes.
 
-## Hook Parity Contract
-
-Codex primary enforcement does not depend on hook parity. Any `.claude/hooks/**` or `.claude/settings.json` material is archival only and is not part of the primary readiness contract.
-
 ## Run Receipt Contract
 
 Every substantial Codex-primary implementation or verification run should produce a JSON receipt and validate it:
@@ -152,7 +131,7 @@ Use live Codex callable routes when exposed. When a route is unavailable, report
 | `playwright` | Browser/node substitutes are acceptable for UI verification unless raw browser MCP parity is explicitly required. |
 | `deepwiki` and `context7` | Use official docs, GitHub, Tavily, or web only as named degraded substitutes until raw tools are exposed. |
 
-Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without user choice. Do not assume a branch or wait for a separate prompt surface.
+Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 
 ## Verification
 
@@ -161,11 +140,3 @@ Run the primary verifier after changing Codex execution docs or scripts:
 ```bash
 python scripts/governance/verify_codex_primary.py
 ```
-
-The compatibility verifier is legacy/advisory for the backup-adapter name. Run it only when changing backup-adapter docs or personal bootstrap skills. It does not require personal Codex skills unless `--require-personal-skills` is supplied.
-
-```bash
-python scripts/governance/verify_codex_backup.py
-```
-
-The backup verifier name is compatibility terminology. The active Codex operating contract is this file plus `AGENTS.md`.
