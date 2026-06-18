@@ -14,6 +14,12 @@ from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
     format_unify_graph_bullet_evidence_pack,
 )
 from apps_rg.runtime.sections.unify_bullets_pa import _legacy_i0
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
+from apps_rg.runtime.sections.unify_role_episode_evidence import (
+    attach_role_episode_bundles_to_proof_pool_metadata,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
@@ -53,6 +59,19 @@ def _minimal_proof_metadata(*, skill_rows: list[dict[str, Any]] | None = None) -
     if skill_rows is not None:
         meta["selected_skill_rows"] = skill_rows
     return meta
+
+
+def _unify_compile_proof_meta(*, skill_rows: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO,
+        section_id="unify_bullets",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    meta = _minimal_proof_metadata(skill_rows=skill_rows)
+    meta["selected_graph_evidence_plan"] = plan
+    return attach_role_episode_bundles_to_proof_pool_metadata(meta, section_id="unify_bullets")
 
 
 def _unify_header() -> dict[str, str]:
@@ -111,11 +130,11 @@ def test_compiled_prompt_uses_graph_compose_not_rewrite() -> None:
         "run_id": "graph_compose_ub",
         "target_title": "SVP IT Strategy & Innovation",
         "target_company": "Brown & Brown",
-        "jd_text": "enterprise architecture and data platforms",
-        "briefing": "regulated carrier IT strategy",
+        "jd_text": "agentic multi-agent GraphRAG runtime platform control plane",
+        "briefing": "regulated enterprise",
         "unify_header": _unify_header(),
         "selected_fact_plan": {"facts": _six_slot_facts()},
-        "proof_pool_metadata": _minimal_proof_metadata(
+        "proof_pool_metadata": _unify_compile_proof_meta(
             skill_rows=[
                 {
                     "skill_id": "skill_agentic_platform_productization",

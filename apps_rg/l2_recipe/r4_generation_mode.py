@@ -7,8 +7,8 @@ unset is ``modular_section_lanes``.
 ``APPS_RG_R4_GENERATION_MODE`` must be unset or ``modular_section_lanes`` only.
 ``legacy_full_resume`` is retired (no monolithic envelope rollback).
 
-For modular mode, section dispatch ``--provider`` defaults to ``external_claude``.
-``qwen_vllm`` remains explicitly selectable for local comparison runs.
+For modular mode, section dispatch ``--provider`` defaults to ``external_claude`` for the
+Claude-backed lanes; ``external_openai`` is selectable for the GPT-backed lanes.
 
 Invalid values fail closed with ``RuntimeError``.
 """
@@ -24,7 +24,7 @@ MODE_MODULAR_SECTION_LANES: Final[str] = "modular_section_lanes"
 RETIRED_MODE_LEGACY_FULL_RESUME: Final[str] = "legacy_full_resume"
 
 _MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset(
-    {"external_claude"}
+    {"external_claude", "external_openai"}
 )
 
 AppsRgR4GenerationMode = Literal["modular_section_lanes"]

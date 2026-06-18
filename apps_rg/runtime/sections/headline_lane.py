@@ -49,7 +49,7 @@ from apps_rg.runtime.claim_ledger.headline_claim_ledger import (
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3 as _aggregate_headline_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
-from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.shadow.headline_l6 import (
@@ -116,7 +116,7 @@ BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 # incident; headline JSON (line + ledger + change_log + self_check) needs headroom, not 900.
 HEADLINE_MAX_OUTPUT_TOKENS = 4000
 
-# Parse/normalize model JSON for live Qwen and for offline contract stub (same payload shape).
+# Parse/normalize model JSON for live generation and for the offline contract stub (same payload shape).
 _HEADLINE_JSON_OUTPUT_STATUSES: frozenset[str] = frozenset({"REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS})
 
 # Keys compared in X2 ``x2_headline_self_check_consistent`` and snapshot_needs_headline_proof_retry.
@@ -1199,7 +1199,7 @@ def retry_headline_proof_shape(
     companion_nonempty: bool,
     employer_names_lower: list[str],
 ) -> tuple[str, dict[str, Any], dict[str, Any] | None]:
-    """Second same-authority Qwen attempt when raw ledger shape or self_check mismatches runtime."""
+    """Second same-authority repair attempt when raw ledger shape or self_check mismatches runtime."""
     hl_fail = str(failed_snapshot.get("headline_line") or "").strip()
     cl_fail = failed_snapshot.get("claim_ledger")
     sc_fail = failed_snapshot.get("self_check") if isinstance(failed_snapshot.get("self_check"), dict) else {}
@@ -1523,16 +1523,21 @@ def run_headline_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import resolve_section_generation_model
+
+    section_model = resolve_section_generation_model(LANE_KEY)
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
         max_tokens=HEADLINE_MAX_OUTPUT_TOKENS,
+        model=section_model,
+        provider_requested=str(args.provider),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
+    req_model = str(provider_request_data.get("model") or section_model)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
     from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
 
@@ -1691,7 +1696,7 @@ def run_headline_execution(
     # Pre-X2 registry repair: canonical positioning segments ("Agentic AI Platforms",
     # "Distributed AI Infrastructure", "Runtime Governance") are authored from the
     # headline_positioning_bundles registry, which is also the citation authority for those
-    # phrases. Qwen routinely emits the right display phrase but cites the wrong fact (in
+    # phrases. The live model routinely emits the right display phrase but cites the wrong fact (in
     # full_resume_7ec23069bce2 every citation was shifted one slot vs the registry). Re-cite
     # each canonical segment to its bundle.linked_source_fact_ids before X2/judges so the
     # claim_ledger, canonical ledger, fact-plan match, and judge packet all align with the
@@ -1728,7 +1733,7 @@ def run_headline_execution(
                     "receipt_ref": "headline_bundle_recitation_receipt.json",
                 })
     # Pre-X2 repair: re-cite mis-bound segments to facts whose claim_text actually contains
-    # their content nouns. Qwen sometimes binds a segment to a fact_id from the allowed set
+    # their content nouns. The live model sometimes binds a segment to a fact_id from the allowed set
     # that has zero shared tokens (e.g. "Microservices Telemetry" → fact_quant_hpc_002 where
     # neither word appears). The X2 grounding gate would correctly fail closed; this pass
     # gives the lane a deterministic second chance using only allowed facts.
@@ -1749,7 +1754,7 @@ def run_headline_execution(
             if isinstance(change_log, list):
                 change_log.append({
                     "operation": "repair_headline_segment_citations_for_grounding",
-                    "reason": "Qwen mis-cited segments to facts with zero shared content nouns",
+                    "reason": "Model mis-cited segments to facts with zero shared content nouns",
                     "receipt_ref": "headline_segment_recitation_receipt.json",
                 })
     if fact_id_resolution_receipt is not None:

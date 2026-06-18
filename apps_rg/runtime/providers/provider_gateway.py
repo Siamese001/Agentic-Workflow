@@ -1,8 +1,8 @@
 """apps_rg ProviderGateway abstraction (Wave 10A).
 
-This is the app-local provider selection surface. ``external_claude`` is the
-default apps_rg E2E provider while ``qwen_vllm`` remains explicitly selectable
-for local comparison runs.
+This is the app-local provider selection surface. ``external_claude`` remains the
+default apps_rg E2E provider for Claude-backed lanes, while ``external_openai`` is
+selectable for the GPT-backed lanes.
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ class ProviderProfileNotRegisteredError(ProviderGatewayError):
 
 
 class ProviderProfile(str, Enum):
-    """Provider profile selection. External Claude is the apps_rg generation default."""
+    """Provider profile selection used by apps_rg generation lanes."""
 
     EXTERNAL_CLAUDE = "external_claude"
     EXTERNAL_OPENAI = "external_openai"

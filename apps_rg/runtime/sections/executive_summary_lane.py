@@ -56,7 +56,6 @@ from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.sections.section_generation import (
-    SECTION_MODEL_ID,
     build_section_request,
     generate_section,
     tag_reasoning_lane,
@@ -118,7 +117,7 @@ def _emit_dimension_upstream_triangulation(
     runtime_payload: dict[str, Any],
     judge_regen_cycles: dict[str, Any] | None = None,
 ) -> None:
-    """Map dimension failures → Qwen prompt surfaces (no extra judge API spend)."""
+    """Map dimension failures to prompt surfaces without extra judge API spend."""
     from apps_rg.runtime.sections.executive_summary_repair_policy import post_regen_judge_rescore_mode
     from apps_rg.runtime.sections.executive_summary_upstream_triangulation import (
         build_dimension_upstream_triangulation,
@@ -480,7 +479,7 @@ def _split_compound_sentence(sentence: str) -> tuple[str, str] | None:
 def coerce_resume_display_sentence_count_band(resume: str) -> str:
     """Deterministically coerce executive_summary prose to exactly six sentences.
 
-    Live Qwen reliably emits five polished sentences (sometimes with a stray ``..`` artifact)
+    The live model reliably emits five polished sentences (sometimes with a stray ``..`` artifact)
     against the hard ``x2_exec_summary_sentence_count_6`` gate; prompt steering and the synthesis
     regen loop do not reliably fix it. This guard:
 
@@ -1683,7 +1682,7 @@ def run_executive_summary_execution(
     *,
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
-    """Single end-to-end executive_summary run (qwen_vllm): artifacts + X2/X1D/X3."""
+    """Single end-to-end executive_summary run: artifacts + X2/X1D/X3."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.c0.section_proof_loader import (
         apply_proof_pool_to_usage_ledger,
@@ -1945,7 +1944,7 @@ def run_executive_summary_execution(
                 section_compiled,
                 runtime_payload=runtime_payload,
                 provider=str(args.provider),
-                model=SECTION_MODEL_ID,
+                model=section_model,
                 requested_max_output_tokens=max_out_tokens,
             )
             write_token_budget_receipt(artifact_dir, token_budget_receipt)
@@ -2068,6 +2067,9 @@ def run_executive_summary_execution(
 
     provider_req: Any = None
     provider_payload: dict[str, Any] = {}
+    from apps_rg.runtime.section_model_limits import resolve_section_generation_model
+
+    section_model = resolve_section_generation_model(LANE_KEY)
     if evidence_capsule_block_reason:
         _block_ref = (
             "allowlist_coherence_receipt.json"
@@ -2090,7 +2092,7 @@ def run_executive_summary_execution(
             provider_available=False,
             exact_provider_error=f"L2_BLOCK:{evidence_capsule_block_reason}",
             runtime_generation_status="BLOCKED",
-            model=SECTION_MODEL_ID,
+            model=section_model,
             raw_model_output="",
             provider_response={
                 "pre_l2_blocked": True,
@@ -2101,7 +2103,7 @@ def run_executive_summary_execution(
                 "reason": evidence_capsule_block_reason,
             },
         )
-        req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
+        req_model = str(provider_request_data.get("model") or section_model)
     elif token_budget_block_reason:
         _tb_op_summary = ""
         if isinstance(token_budget_receipt, dict):
@@ -2125,7 +2127,7 @@ def run_executive_summary_execution(
                 f"L2_BLOCK:{_tb_op_summary or token_budget_block_reason}"
             ),
             runtime_generation_status="BLOCKED",
-            model=SECTION_MODEL_ID,
+            model=section_model,
             raw_model_output="",
             provider_response={
                 "token_budget_blocked": True,
@@ -2138,7 +2140,7 @@ def run_executive_summary_execution(
                 ),
             },
         )
-        req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
+        req_model = str(provider_request_data.get("model") or section_model)
     else:
         provider_req, provider_payload = build_section_request(
             messages=messages,
@@ -2146,6 +2148,8 @@ def run_executive_summary_execution(
             input_payload_hash=input_payload_hash,
             temperature=args.temperature,
             max_tokens=max_out_tokens,
+            model=section_model,
+            provider_requested=str(args.provider),
         )
         provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
         provider_request_data = provider_req.to_dict()
@@ -2159,7 +2163,7 @@ def run_executive_summary_execution(
                 "provider_context_window": token_budget_receipt.get("provider_context_window"),
             }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
+        req_model = str(provider_payload.get("model", section_model))
     if (
         evidence_capsule_block_reason
         or token_budget_block_reason

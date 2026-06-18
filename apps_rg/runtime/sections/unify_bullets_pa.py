@@ -19,10 +19,7 @@ from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     BULLETS_R0,
     load_w7_shell_slot_bodies,
 )
-from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
-    GRAPH_BULLET_EVIDENCE_PACK_MARKER,
-    format_unify_graph_bullet_evidence_pack,
-)
+from apps_rg.runtime.sections.unify_bullets_graph_evidence import GRAPH_BULLET_EVIDENCE_PACK_MARKER
 from apps_rg.runtime.validators.unify_bullets_x2 import PROTECTED_BULLET_DEFAULT
 
 
@@ -47,20 +44,22 @@ def _candidate_facts_block(runtime_payload: dict[str, Any]) -> str:
     allowed_block = format_allowed_source_fact_ids_contract(allowed_ids_list)
 
     pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
-    if pp_meta.get("role_episode_bundle_consumption") and pp_meta.get("unify_role_episode_section_packet"):
-        from apps_rg.runtime.sections.unify_role_episode_evidence import (
-            format_unify_role_episode_evidence_pack,
+    if not pp_meta.get("role_episode_bundle_consumption"):
+        raise ValueError(
+            "unify_bullets: proof_pool_metadata missing role_episode_bundle_consumption; graph packet is mandatory"
+        )
+    if not pp_meta.get("unify_role_episode_section_packet"):
+        raise ValueError(
+            "unify_bullets: proof_pool_metadata missing unify_role_episode_section_packet; graph packet is mandatory"
         )
 
-        return (
-            f"{allowed_block}{_unify_id_hygiene_block()}\n\n"
-            + format_unify_role_episode_evidence_pack(runtime_payload, section_id="unify_bullets")
-        )
+    from apps_rg.runtime.sections.unify_role_episode_evidence import (
+        format_unify_role_episode_evidence_pack,
+    )
 
-    return format_unify_graph_bullet_evidence_pack(
-        runtime_payload,
-        allowed_block=allowed_block,
-        unify_id_hygiene=_unify_id_hygiene_block(),
+    return (
+        f"{allowed_block}{_unify_id_hygiene_block()}\n\n"
+        + format_unify_role_episode_evidence_pack(runtime_payload, section_id="unify_bullets")
     )
 
 

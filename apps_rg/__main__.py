@@ -705,10 +705,10 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--provider",
         default=argparse.SUPPRESS,
-        choices=["external_claude"],
+        choices=["external_claude", "external_openai"],
         help=(
-            "Optional override for section-only lanes (external_claude); when omitted, uses "
-            "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
+            "Optional override for section-only lanes (external_claude or external_openai); when "
+            "omitted, uses the lane default for that section. "
             "Ignored for full R4 runs."
         ),
     )
@@ -960,7 +960,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
         try:
             lane_provider_eff, lane_provider_resolution_source = resolve_cli_lane_provider_with_source(
-                getattr(args, "provider", None)
+                getattr(args, "provider", None),
+                section_id=section_eff,
             )
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
@@ -1074,7 +1075,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             if lane_provider_eff is None or lane_provider_resolution_source is None:
                 try:
                     lane_provider_eff, lane_provider_resolution_source = (
-                        resolve_cli_lane_provider_with_source(getattr(args, "provider", None))
+                        resolve_cli_lane_provider_with_source(
+                            getattr(args, "provider", None),
+                            section_id=section_eff,
+                        )
                     )
                 except SectionCliConfigError as exc:
                     print(f"ERROR: {exc}", file=sys.stderr, flush=True)

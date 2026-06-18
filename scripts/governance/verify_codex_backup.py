@@ -19,7 +19,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CODEX_SKILLS_ROOT = Path.home() / ".codex" / "skills"
 
 REQUIRED_REPO_FILES = [
-    "CLAUDE.md",
     "AGENTS.md",
     "docs/codex-backup-adapter.md",
     ".claude/rules/001-runtime-seam-execution.md",
@@ -45,7 +44,7 @@ REQUIRED_CODEX_SKILLS = [
 REQUIRED_ANCHORS = {
     "AGENTS.md": [
         "## Codex backup adapter",
-        "CLAUDE.md",
+        "legacy compatibility files are not consulted by the primary path",
         "agentic-workflow-governance",
         "scripts/governance/verify_codex_backup.py",
         ".claude/rules/plan-first-enforcement.md",

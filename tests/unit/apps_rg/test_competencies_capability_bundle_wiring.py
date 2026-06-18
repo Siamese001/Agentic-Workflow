@@ -20,6 +20,9 @@ from apps_rg.runtime.sections.competency_capability_evidence import (
     is_flat_taxonomy_only_packet,
     stamp_competency_bundle_bindings,
 )
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
 from apps_rg.runtime.validators import competencies_quality_x2 as q
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -81,6 +84,25 @@ def _good_competencies() -> list[dict]:
             ["engineering organization scale-out", "platform operating model", "board-level alignment"],
         ),
     ]
+
+
+def _competencies_proof_meta(extra_fields: dict | None = None) -> dict:
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    meta: dict = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+        "selected_graph_evidence_plan": plan,
+    }
+    if extra_fields:
+        meta.update(extra_fields)
+    return attach_competency_bundles_to_proof_pool_metadata(meta, section_id="competencies")
 
 
 # ---------------------------------------------------------------------------
@@ -178,7 +200,7 @@ def test_classify_support_distinguishes_sources():
 
 
 def test_c0_evidence_pack_has_marker_and_authority_lines():
-    payload: dict = {}
+    payload: dict = {"proof_pool_metadata": _competencies_proof_meta()}
     pack = format_competency_capability_evidence_pack(payload, section_id="competencies")
     assert COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER in pack
     assert "proof_authority = graph_competency_bundles_plus_linked_source_facts" in pack
@@ -190,7 +212,7 @@ def test_c0_evidence_pack_has_marker_and_authority_lines():
 
 
 def test_proof_pool_attach_sets_consumption_flags():
-    meta = attach_competency_bundles_to_proof_pool_metadata({}, section_id="competencies")
+    meta = _competencies_proof_meta()
     assert meta["competency_capability_bundle_consumption"] is True
     assert meta["competency_capability_bundle_consumption_mode"] == "competency_bundle_required"
     assert meta["competency_capability_bundles"]
@@ -323,10 +345,7 @@ def test_run_competencies_x2_emits_bundle_gates_in_bundle_mode():
             "companion_context_used_as_proof": False,
         },
     }
-    meta = attach_competency_bundles_to_proof_pool_metadata(
-        {"proof_pool_type": "augmented_skills_graph", "graph_skills_proof_pool": True},
-        section_id="competencies",
-    )
+    meta = _competencies_proof_meta({"graph_skills_proof_pool": True})
     gates = run_competencies_x2_gates(
         competencies=comps,
         parsed_output=parsed,
@@ -410,13 +429,11 @@ def test_fec_bridge_pa_metadata_preserves_competency_bundle_consumption():
     from apps_rg.runtime.proof_pool_resolver import SectionProofPool
     from apps_rg.runtime.spine.c0_fec_compose import _build_pa_proof_authority_metadata
 
-    pp_meta = attach_competency_bundles_to_proof_pool_metadata(
+    pp_meta = _competencies_proof_meta(
         {
-            "proof_pool_type": "augmented_skills_graph",
             "augmented_skills_graph_present": True,
             "c03_graphrag_bound": {"support_status": "SUPPORTED"},
-        },
-        section_id="competencies",
+        }
     )
     pool = SectionProofPool(
         section="competencies",

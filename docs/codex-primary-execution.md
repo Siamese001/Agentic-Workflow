@@ -117,7 +117,7 @@ If a process-identity tool is absent, the live MCP child is still serving older 
 
 ## Hook Parity Contract
 
-Codex primary enforcement does not depend on Claude hook parity. Any `.claude/hooks/**` or `.claude/settings.json` material is legacy compatibility only and is not part of the primary readiness contract.
+Codex primary enforcement does not depend on hook parity. Any `.claude/hooks/**` or `.claude/settings.json` material is archival only and is not part of the primary readiness contract.
 
 ## Run Receipt Contract
 
@@ -152,7 +152,7 @@ Use live Codex callable routes when exposed. When a route is unavailable, report
 | `playwright` | Browser/node substitutes are acceptable for UI verification unless raw browser MCP parity is explicitly required. |
 | `deepwiki` and `context7` | Use official docs, GitHub, Tavily, or web only as named degraded substitutes until raw tools are exposed. |
 
-Codex does not expose the Claude `AskUserQuestion` tool. When a turn still needs user input, ask a plain-text clarifying question in the assistant response; `request_user_input` is only available in Plan mode and is not a repo-owned route.
+Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without user choice. Do not assume a branch or wait for a separate prompt surface.
 
 ## Verification
 

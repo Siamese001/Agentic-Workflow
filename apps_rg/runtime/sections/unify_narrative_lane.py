@@ -57,7 +57,7 @@ from apps_rg.runtime.sections.unify_narrative_pa import compile_unify_narrative_
 from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3 as _aggregate_unify_narrative_x3
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
-from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.runtime_proof_layout import (
@@ -553,7 +553,7 @@ def normalize_unify_narrative_parsed(
                 "among Unify-supported facts (targeting only)."
             )
     # Defensive: gate x2_unify_narrative_targeting_inputs_used_but_not_proof requires
-    # selected_jd_themes to be non-empty. Qwen sometimes returns an empty array. When JD
+    # selected_jd_themes to be non-empty. The live model sometimes returns an empty array. When JD
     # text is present in runtime_payload, backfill a minimal set of generic themes so the
     # gate doesn't fail closed on JSON drift. These remain targeting-only (jd_used_as_proof
     # stays false) and the briefing-themes / rationale fields above already handle the
@@ -706,7 +706,7 @@ def run_unify_narrative_execution(
     *,
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
-    """Single end-to-end unify_narrative run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
+    """Single end-to-end unify_narrative run: artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
     from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
@@ -850,6 +850,16 @@ def run_unify_narrative_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import (
+        external_claude_generation_model,
+        external_openai_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else external_claude_generation_model()
+    )
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
@@ -857,11 +867,13 @@ def run_unify_narrative_execution(
         temperature=args.temperature,
         max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
         temperature_bounds=NARRATIVE_TEMP_RANGE,
+        model=section_model,
+        provider_requested=str(args.provider),
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
+    req_model = str(provider_payload.get("model", section_model))
 
     from apps_rg.runtime.validators.companion_bullet_finalization import (
         UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,

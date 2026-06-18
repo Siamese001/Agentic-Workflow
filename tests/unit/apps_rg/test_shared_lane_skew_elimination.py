@@ -4,6 +4,7 @@ from pathlib import Path
 
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
 from apps_rg.runtime.sections.competency_capability_evidence import (
+    attach_competency_bundles_to_proof_pool_metadata,
     build_competency_capability_section_packet,
     format_competency_capability_evidence_pack,
 )
@@ -11,6 +12,7 @@ from apps_rg.runtime.sections.graph_role_episode_selector import (
     build_selected_graph_evidence_plan_for_section,
 )
 from apps_rg.runtime.sections.headline_positioning_evidence import (
+    attach_headline_positioning_bundles_to_proof_pool_metadata,
     build_headline_positioning_section_packet,
     format_headline_positioning_evidence_pack,
 )
@@ -83,9 +85,16 @@ def test_selected_graph_plan_filters_headline_and_competency_prompt_bundles() ->
         target_role="SVP IT Strategy & Innovation",
         jd_text=jd_text,
     )
+    competency_meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": competency_plan,
+        },
+        section_id="competencies",
+    )
     competency_payload = {
         "jd_text": jd_text,
-        "proof_pool_metadata": {"selected_graph_evidence_plan": competency_plan},
+        "proof_pool_metadata": competency_meta,
     }
     format_competency_capability_evidence_pack(competency_payload)
     all_competency_ids = set(build_competency_capability_section_packet()["competency_bundle_ids"])
@@ -101,9 +110,16 @@ def test_selected_graph_plan_filters_headline_and_competency_prompt_bundles() ->
         target_role="SVP IT Strategy & Innovation",
         jd_text=jd_text,
     )
+    headline_meta = attach_headline_positioning_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": headline_plan,
+        },
+        section_id="headline",
+    )
     headline_payload = {
         "jd_text": jd_text,
-        "proof_pool_metadata": {"selected_graph_evidence_plan": headline_plan},
+        "proof_pool_metadata": headline_meta,
     }
     format_headline_positioning_evidence_pack(headline_payload)
     all_headline_ids = set(build_headline_positioning_section_packet()["headline_positioning_bundle_ids"])

@@ -43,12 +43,26 @@ def test_headline_positioning_bundles_validate_and_cover_families():
 
 
 def _headline_proof_meta():
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
     from apps_rg.runtime.sections.headline_positioning_evidence import (
         attach_headline_positioning_bundles_to_proof_pool_metadata,
     )
 
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO_ROOT,
+        section_id="headline",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
     return attach_headline_positioning_bundles_to_proof_pool_metadata(
-        {"proof_pool_type": "augmented_skills_graph", "graph_skills_proof_pool": True},
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_skills_proof_pool": True,
+            "selected_graph_evidence_plan": plan,
+        },
         section_id="headline",
     )
 

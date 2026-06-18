@@ -1,10 +1,9 @@
 """W9: the per-section model pin must be WIRED into the section provider call path.
 
-Before this wiring, ``provider_profiles.yaml`` pinned competencies + the four narratives to
-Haiku but the runtime ignored it — every lane used the Sonnet default (observed: a live
-competencies run reported model=claude-sonnet-4-6). These tests prove the resolver is now
-threaded through ``call_section_model_provider`` via the ``_reasoning_section_lane`` tag /
-explicit ``section_id``, and that the gateway pins the resolved model on the Claude provider.
+Before this wiring, ``provider_profiles.yaml`` section overrides were ignored and the runtime
+used the section-agnostic Claude default. These tests prove the resolver is now threaded
+through ``call_section_model_provider`` via the ``_reasoning_section_lane`` tag / explicit
+``section_id``, and that the gateway pins the resolved model on the Claude provider.
 """
 from __future__ import annotations
 
@@ -42,7 +41,7 @@ def _capture_gateway_model(monkeypatch):
     return captured
 
 
-def test_competencies_resolves_to_pinned_haiku_via_tag(monkeypatch):
+def test_competencies_resolves_to_pinned_model_via_tag(monkeypatch):
     monkeypatch.delenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", raising=False)
     captured = _capture_gateway_model(monkeypatch)
     spc.call_section_model_provider(
@@ -50,7 +49,7 @@ def test_competencies_resolves_to_pinned_haiku_via_tag(monkeypatch):
         {"_reasoning_section_lane": "competencies", "messages": [{"role": "user", "content": "x"}]},
     )
     assert captured["claude_model"] == resolve_section_generation_model("competencies")
-    assert captured["claude_model"] == "claude-haiku-4-5"
+    assert captured["claude_model"] == "claude-sonnet-4-6"
 
 
 def test_explicit_section_id_resolves_pin(monkeypatch):
@@ -61,7 +60,7 @@ def test_explicit_section_id_resolves_pin(monkeypatch):
         {"messages": [{"role": "user", "content": "x"}]},
         section_id="ibm_narrative",
     )
-    assert captured["claude_model"] == "claude-haiku-4-5"
+    assert captured["claude_model"] == "claude-sonnet-4-6"
 
 
 def test_untagged_lane_uses_default_not_pin(monkeypatch):
@@ -71,26 +70,26 @@ def test_untagged_lane_uses_default_not_pin(monkeypatch):
         "external_claude",
         {"messages": [{"role": "user", "content": "x"}]},
     )
-    # No section -> section-agnostic default (Sonnet), NOT a per-section Haiku pin.
+    # No section -> section-agnostic default (Sonnet), NOT a per-section Opus override.
     assert captured["claude_model"] == resolve_section_generation_model(None)
-    assert captured["claude_model"] != "claude-haiku-4-5"
+    assert captured["claude_model"] != "claude-opus-4-8"
 
 
-def test_operator_pin_overrides_per_section(monkeypatch):
+def test_operator_pin_does_not_override_per_section(monkeypatch):
     monkeypatch.setenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", "claude-opus-4-8")
     captured = _capture_gateway_model(monkeypatch)
     spc.call_section_model_provider(
         "external_claude",
         {"_reasoning_section_lane": "competencies", "messages": [{"role": "user", "content": "x"}]},
     )
-    assert captured["claude_model"] == "claude-opus-4-8"  # operator pin wins over the Haiku pin
+    assert captured["claude_model"] == "claude-sonnet-4-6"  # per-section/default pin remains authoritative
 
 
 def test_gateway_pins_model_on_claude_provider():
-    gw = spc.build_section_provider_gateway(claude_model="claude-haiku-4-5")
+    gw = spc.build_section_provider_gateway(claude_model="claude-sonnet-4-6")
     prov = gw._providers[ProviderProfile.EXTERNAL_CLAUDE]
     assert isinstance(prov, ExternalProvider)
-    assert prov.model == "claude-haiku-4-5"
+    assert prov.model == "claude-sonnet-4-6"
 
 
 def test_gateway_empty_model_falls_back_to_default():

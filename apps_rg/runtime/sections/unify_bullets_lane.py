@@ -761,6 +761,7 @@ def run_unify_bullets_execution(
         temperature=args.temperature,
         max_tokens=UNIFY_MAX_OUTPUT_TOKENS,
         temperature_bounds=UNIFY_TEMP_RANGE,
+        provider_requested=str(args.provider),
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()

@@ -117,9 +117,9 @@ def modular_lane_targeting_from_recipe_context(context: dict[str, Any]) -> Modul
 def build_modular_lane_argv(*, provider: str, targeting: ModularLaneTargeting | None = None) -> list[str]:
     """Argv tokens historically passed to legacy dispatch CLIs (metadata / inventories only)."""
     pv = str(provider or "").strip().lower()
-    if pv and pv not in {"external_claude"}:
+    if pv and pv not in {"external_claude", "external_openai"}:
         raise ValueError(
-            f"Unsupported modular lane provider {provider!r} (expected external_claude)."
+            f"Unsupported modular lane provider {provider!r} (expected external_claude or external_openai)."
         )
     argv: list[str] = ["--provider", pv or "external_claude", "--allow-non-allow-exit-zero"]
     if targeting is None:
@@ -252,7 +252,7 @@ def build_section_provider_call_record(
     if isinstance(attempted_any, bool):
         provider_call_attempted = attempted_any
     else:
-        provider_call_attempted = provider_req in {"external_claude"}
+        provider_call_attempted = provider_req in {"external_claude", "external_openai"}
 
     model_id = str(prv_resp.get("model") or prov.get("model") or "")
     max_t = prv_resp.get("max_tokens", prov.get("max_tokens", 0))

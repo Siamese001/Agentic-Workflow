@@ -16,6 +16,18 @@ from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prom
 from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
 from apps_rg.runtime.graph_skill_phrase_capsule import SKILL_PHRASE_CAPSULE_MARKER
 from apps_rg.runtime.sections.competencies_pa import compile_competencies_prompt
+from apps_rg.runtime.sections.competency_capability_evidence import (
+    attach_competency_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
+from apps_rg.runtime.sections.headline_positioning_evidence import (
+    attach_headline_positioning_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.sections.unify_role_episode_evidence import (
+    attach_role_episode_bundles_to_proof_pool_metadata,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
@@ -36,7 +48,14 @@ def _fixture_bypass():
     deactivate_fixture_dev_bypass()
 
 
-def _minimal_proof_metadata(*, skill_rows: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+def _minimal_proof_metadata(
+    *,
+    skill_rows: list[dict[str, Any]] | None = None,
+    section_id: str | None = None,
+    target_role: str = "SVP Engineering",
+    jd_text: str = "agentic multi-agent GraphRAG runtime platform control plane",
+    briefing_text: str = "regulated enterprise",
+) -> dict[str, Any]:
     from apps_rg.runtime.product_evidence_authority import build_evidence_authority
 
     meta: dict[str, Any] = {
@@ -53,6 +72,30 @@ def _minimal_proof_metadata(*, skill_rows: list[dict[str, Any]] | None = None) -
     )
     if skill_rows is not None:
         meta["selected_skill_rows"] = skill_rows
+    if section_id in {"headline", "competencies", "unify_bullets"}:
+        plan, _, _ = build_selected_graph_evidence_plan_for_section(
+            repo_root=REPO,
+            section_id=section_id,
+            target_role=target_role,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+        )
+        meta["selected_graph_evidence_plan"] = plan
+        if section_id == "headline":
+            return attach_headline_positioning_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="headline",
+            )
+        if section_id == "competencies":
+            return attach_competency_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="competencies",
+            )
+        if section_id == "unify_bullets":
+            return attach_role_episode_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="unify_bullets",
+            )
     return meta
 
 
@@ -79,7 +122,10 @@ def _prompt_text(compiled: Any) -> str:
     "competencies",
 ])
 def test_compiled_prompt_contains_skill_phrase_capsule_marker(section_id: str) -> None:
-    meta = _minimal_proof_metadata(skill_rows=[_skill_row("skill_agentic_platform_productization", "agentic platform orchestration")])
+    meta = _minimal_proof_metadata(
+        skill_rows=[_skill_row("skill_agentic_platform_productization", "agentic platform orchestration")],
+        section_id=section_id,
+    )
     base: dict[str, Any] = {
         "product_visible": True,
         "run_id": f"w2_{section_id}",
