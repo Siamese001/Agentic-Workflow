@@ -49,18 +49,53 @@ def test_section_judge_policy_matrix() -> None:
     matrix = policy_matrix_export()
     assert matrix["executive_summary"]["judge_required_for_proof"] is True
     assert matrix["executive_summary"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
+    assert matrix["executive_summary"]["judge_runtime_profile"] == {
+        "judge_weight": 3,
+        "max_output_tokens": 8192,
+        "max_output_tokens_hard_cap": 8192,
+        "max_attempts": 3,
+        "retry_backoff_base_seconds": 0.5,
+        "retry_backoff_max_seconds": 4.0,
+    }
     assert matrix["headline"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
+    assert matrix["headline"]["judge_runtime_profile"] == {
+        "judge_weight": 2,
+        "max_output_tokens": 4096,
+        "max_output_tokens_hard_cap": 8192,
+        "max_attempts": 2,
+        "retry_backoff_base_seconds": 0.5,
+        "retry_backoff_max_seconds": 1.0,
+    }
     assert matrix["unify_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
     assert matrix["ibm_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
     assert matrix["insurtech_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
     assert matrix["ey_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
+    assert matrix["unify_bullets"]["judge_runtime_profile"] == matrix["ibm_bullets"]["judge_runtime_profile"]
+    assert matrix["unify_bullets"]["judge_runtime_profile"] == {
+        "judge_weight": 2,
+        "max_output_tokens": 4096,
+        "max_output_tokens_hard_cap": 8192,
+        "max_attempts": 2,
+        "retry_backoff_base_seconds": 0.5,
+        "retry_backoff_max_seconds": 1.0,
+    }
     assert matrix["unify_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["ibm_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["insurtech_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["ey_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
+    assert matrix["unify_narrative"]["judge_runtime_profile"] == matrix["unify_bullets"]["judge_runtime_profile"]
+    assert matrix["competencies"]["judge_runtime_profile"] == {
+        "judge_weight": 1,
+        "max_output_tokens": 2048,
+        "max_output_tokens_hard_cap": 2048,
+        "max_attempts": 1,
+        "retry_backoff_base_seconds": 0.25,
+        "retry_backoff_max_seconds": 0.25,
+    }
     assert matrix["competencies"]["judge_required_for_proof"] is False
     assert matrix["competencies"]["judge_tier"] == JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY.value
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
+    assert matrix["final_aggregate_resume"]["judge_runtime_profile"] == matrix["executive_summary"]["judge_runtime_profile"]
 
 
 def test_allow_non_allow_exit_zero_does_not_force_plumbing_when_product_passes() -> None:

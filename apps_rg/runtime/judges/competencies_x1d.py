@@ -15,6 +15,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _call_anthropic,
     _call_gemini,
     _call_openai,
+    _invoke_judge_with_bounded_retries,
     _make_blocked_output,
     _resolve_anthropic_model,
     _resolve_gemini_model,
@@ -167,12 +168,31 @@ def run_competencies_judges(
             model_source = model_env if model else "default"
 
         try:
-            if key == "openai_chatgpt":
-                output = _call_openai(
-                    api_key, prompt, model, input_hash, key, artifact_base=artifact_base
-                )
-            elif key == "anthropic_claude":
-                output = _call_anthropic(
+            def _dispatch(attempt_no: int) -> JudgeOutput:
+                if key == "openai_chatgpt":
+                    return _call_openai(
+                        api_key,
+                        prompt,
+                        model,
+                        input_hash,
+                        key,
+                        artifact_base=artifact_base,
+                        attempt=attempt_no,
+                        section_id="competencies",
+                    )
+                if key == "anthropic_claude":
+                    return _call_anthropic(
+                        api_key,
+                        prompt,
+                        model,
+                        input_hash,
+                        key,
+                        model_source=model_source,
+                        artifact_base=artifact_base,
+                        attempt=attempt_no,
+                        section_id="competencies",
+                    )
+                return _call_gemini(
                     api_key,
                     prompt,
                     model,
@@ -180,17 +200,15 @@ def run_competencies_judges(
                     key,
                     model_source=model_source,
                     artifact_base=artifact_base,
+                    attempt=attempt_no,
+                    section_id="competencies",
                 )
-            else:
-                output = _call_gemini(
-                    api_key,
-                    prompt,
-                    model,
-                    input_hash,
-                    key,
-                    model_source=model_source,
-                    artifact_base=artifact_base,
-                )
+
+            output = _invoke_judge_with_bounded_retries(
+                _dispatch,
+                provider_key=key,
+                section_id="competencies",
+            )
             output.judge_id = f"x1d_{key}_competencies"
             output.rubric_version = JUDGE_RUBRIC_VERSION
             output.advisory_only = True

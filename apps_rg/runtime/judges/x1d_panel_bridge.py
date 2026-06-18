@@ -170,6 +170,7 @@ def run_grade_only_judges_via_core_panel(
             input_hash=input_hash,
             model_source=resolution.model_source,
             model_requested=resolution.model_requested,
+            section_id=sid,
             artifact_base=artifact_base,
             judge_receipt=dict(base_receipt),
             reasoning_effort=resolution.reasoning_effort,

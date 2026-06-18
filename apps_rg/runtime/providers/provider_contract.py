@@ -1,10 +1,10 @@
 """Provider-neutral result/request contracts for apps_rg model providers.
 
 These dataclasses are the canonical shape returned by **every** apps_rg provider
-(external Claude, external OpenAI, and historically the local Qwen slice). They are
-deliberately provider-agnostic and carry no transport logic so the selection surface
-(`provider_gateway`, `section_provider_call`) and the section lanes can depend on a
-stable contract without importing any concrete provider implementation.
+(external Claude and external OpenAI). They are deliberately provider-agnostic and
+carry no transport logic so the selection surface (`provider_gateway`,
+`section_provider_call`) and the section lanes can depend on a stable contract
+without importing any concrete provider implementation.
 """
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ class ProviderResult:
     provider_response: dict[str, Any] | None
     reasoning_execution_receipt: dict[str, Any] | None = None
     stub: bool = False
-    apps_rg_qwen_preflight_blocked: bool = False
+    apps_rg_provider_preflight_blocked: bool = False
     apps_rg_last_probe_snapshot: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
