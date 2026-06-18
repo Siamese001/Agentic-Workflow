@@ -134,6 +134,53 @@ def test_phase1_parallel_env_default_off(monkeypatch) -> None:
     assert phase1_parallel_enabled(profile_flag=False) is True
 
 
+def test_dispatch_serial_reports_lane_progress(monkeypatch) -> None:
+    """§16: lane dispatcher must tick ProgressReporter on each lane completion."""
+    ticks: list[tuple[str, bool]] = []
+
+    class _FakeReporter:
+        def __init__(self, total: int, label: str = "", unit: str = "") -> None:
+            self.total = total
+            self.label = label
+            self.unit = unit
+
+        def update(self, label: str = "") -> None:
+            ticks.append((label, False))
+
+        def done(self) -> None:
+            ticks.append(("done", True))
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.orchestration.managed_section_lane_dispatcher.ProgressReporter",
+        _FakeReporter,
+    )
+
+    def _fn(**kwargs: object) -> dict[str, str]:
+        lane = str(kwargs.get("section") or "")
+        return {"section": lane, "exit_status": "ok"}
+
+    ctx = LaneExecutionContext(
+        sections_root="/tmp/sections",
+        target_company="Acme",
+        target_role="VP",
+        job_description_ref="",
+        job_description_text="",
+        manual_brief="",
+        lane_provider="mock",
+        lane_x1d_judges=(),
+        lane_mock_judges=True,
+    )
+    dispatch_phase1_lanes_managed(
+        ("headline", "competencies"),
+        ctx,
+        dispatch_fn=_fn,
+        parallel=False,
+    )
+    assert ticks[-1] == ("done", True)
+    assert any("headline" in label for label, _ in ticks)
+    assert any("competencies" in label for label, _ in ticks)
+
+
 def test_parallel_dispatch_skips_later_waves_after_abort() -> None:
     """A later wave must not run when an earlier wave sets should_skip_remaining_waves (fail-closed parity).
 
