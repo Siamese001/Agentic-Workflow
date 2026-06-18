@@ -29,6 +29,21 @@ and span artifacts beside the eval record. The bridge is observer-only evidence
 for core L6 G28 audit-completeness and G29 learning-firewall checks; it cannot
 mutate current-run artifacts or perform durable writes.
 
+## apps_lic eval workflow
+
+`apps_lic` remains deterministic-first in this harness, but the live adapter now
+passes through the redesign inputs that matter for JD-anchored outreach:
+
+- `message_type_hint`
+- `message_modifiers`
+- `application_status`
+- `desired_next_step`
+- `governed_opportunity_facts`
+- `c0_required_namespaces`
+
+That keeps the eval surface aligned with the redesigned runtime contract while
+still keeping `apps_eval` in the post-run grading lane.
+
 Default runs grade snapshots:
 
 ```bash

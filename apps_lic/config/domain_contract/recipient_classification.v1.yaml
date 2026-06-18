@@ -29,6 +29,50 @@ canonical_classes:
   - REFERRAL_CONTACT
   - UNKNOWN
 
+sub_archetype_extensions:
+  RECRUITER:
+    - TECHNICAL_RECRUITER
+    - SOURCER
+    - TALENT_PARTNER
+    - EXECUTIVE_RECRUITER
+  SENIOR_TA:
+    - HEAD_OF_TA
+    - GLOBAL_HEAD_OF_TA
+    - DIRECTOR_TA
+    - VP_TA
+    - TALENT_ACQUISITION_LEADER
+  HIRING_MANAGER:
+    - ENGINEERING_MANAGER
+    - DIRECTOR_ENGINEERING
+    - HEAD_OF_AI
+    - HEAD_OF_DATA
+    - HEAD_OF_PLATFORM
+    - GM
+    - PRODUCT_LEADER
+  EXECUTIVE:
+    - SVP_ENG
+    - HEAD_OF_AI
+    - HEAD_OF_DATA
+    - HEAD_OF_PLATFORM
+    - VP_PRODUCT
+    - VP_DATA
+    - VP_PLATFORM
+    - VP_AI
+    - GM
+    - MANAGING_DIRECTOR
+  C_LEVEL:
+    - CEO
+    - CTO
+    - CAIO
+    - CIO
+    - CISO
+    - COO
+    - CFO
+    - CMO
+    - CRO
+    - CHRO
+    - CDO
+
 confidence_thresholds:
   RECRUITER: 0.60
   SENIOR_TA: 0.65
@@ -39,6 +83,10 @@ confidence_thresholds:
   CTO: 0.66
   VP_ENG: 0.66
   REFERRAL_CONTACT: 0.60
+  CAIO: 0.66
+  CIO: 0.66
+  CISO: 0.66
+  COO: 0.66
 
 evidence_sources:
   required_for_classification:
@@ -144,7 +192,23 @@ signal_examples:
   VP_ENG:
     - vice president engineering
     - vp engineering
+    - svp engineering
+    - head of ai
+    - head of data platform
+    - svp ai
   REFERRAL_CONTACT:
     - referrer
     - mutual connection
     - former colleague
+  CAIO:
+    - chief ai officer
+    - caio
+  CIO:
+    - chief information officer
+    - cio
+  CISO:
+    - chief information security officer
+    - ciso
+  COO:
+    - chief operating officer
+    - coo

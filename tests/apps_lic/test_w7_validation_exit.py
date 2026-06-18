@@ -22,6 +22,7 @@ from apps_lic.engines.validation_exit import (
     EXIT_CLEAR_DRAFT,
     GATE_CANDIDATE_SELECTION,
     GATE_JD_REQUIRED,
+    GATE_EXECUTIVE_ORG_DYNAMICS,
     GATE_NO_SEND,
     GATE_POSITION_NAME,
     GATE_REQUISITION_NUMBER,
@@ -157,6 +158,7 @@ def test_w7_config_freezes_validation_exit_policy() -> None:
     assert "clear_draft" in config["exit"]["allowed_dispositions"]
     assert "schema_gate" in config["x2_gates"]["universal"]
     assert "candidate_selection_gate" in config["x2_gates"]["conditional"]
+    assert "executive_org_dynamics_gate" in config["x2_gates"]["conditional"]
     assert config["x1d"]["default_model"] == DEFAULT_X1D_JUDGE_MODEL
     assert config["x1d"]["depth_labels"] == {"none": 0, "one": 1, "two": 2}
     assert config["x1d"]["availability_policy"]["missing_or_unavailable_required_judge"] == "blocked"
@@ -275,6 +277,54 @@ def test_ceo_trigger_blocks_direct_non_live_judge_artifacts() -> None:
     assert len(two_judges.x1d_result.judge_results) == 2
     assert "non_live_gpt_judge:ceo_attention_originality_x1d" in two_judges.x1d_result.reason_codes
     assert "non_live_gpt_judge:ceo_evidence_overclaim_risk_x1d" in two_judges.x1d_result.reason_codes
+
+
+def test_c_level_draft_without_org_dynamics_lens_is_blocked_at_x2() -> None:
+    store = _store_for(
+        title="Chief Executive Officer",
+        company={"company": "AIG", "context": "Enterprise AI platform economics."},
+        company_trigger={
+            "trigger_text": "AIG announced an enterprise AI operating model.",
+            "url": "https://example.com/aig-ai",
+        },
+    )
+    request = _w7_request(
+        store,
+        message_type_hint="trigger_based_insight",
+        campaign_objective="Share an executive-native asymmetric insight about AI platform economics.",
+        desired_next_step="a brief executive exchange",
+    )
+    batch = generate_whole_message_candidates(request)
+    selected = replace(
+        batch.candidates[0],
+        draft_text=(
+            "Hi Jane, I noticed AIG's Chief Executive Officer role. "
+            "I work on governed AI platforms for regulated settings. "
+            "Would a brief exchange be useful?\n\nAmit"
+        ),
+        word_count=23,
+        sentence_count=3,
+        char_count=len(
+            "Hi Jane, I noticed AIG's Chief Executive Officer role. "
+            "I work on governed AI platforms for regulated settings. "
+            "Would a brief exchange be useful?\n\nAmit"
+        ),
+    )
+    modified_batch = replace(batch, candidates=(selected,) + batch.candidates[1:])
+
+    bundle = run_validation_exit(
+        request,
+        modified_batch,
+        selected_candidate_id=selected.candidate_id,
+        judge_results=(
+            _passing_judge(JUDGE_CEO_ORIGINALITY, score=0.93),
+            _passing_judge(JUDGE_CEO_EVIDENCE_RISK, score=0.94),
+        ),
+    )
+
+    assert bundle.disposition == EXIT_BLOCKED
+    assert bundle.x2_result.gate(GATE_EXECUTIVE_ORG_DYNAMICS).passed is False
+    assert bundle.x2_result.gate(GATE_EXECUTIVE_ORG_DYNAMICS).reason == "missing_executive_org_dynamics_lens"
 
 
 def test_validation_exit_rejects_fake_claude_x1d_runner_hook_after_x2_passes() -> None:

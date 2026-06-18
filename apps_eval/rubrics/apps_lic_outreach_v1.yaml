@@ -47,6 +47,25 @@ dimensions:
     definition: Personalization is grounded and bounded; not over-specific assumptions
     scale: {min: 0, max: 4}
     weight: 0.15
+  - id: jd_anchor_quality
+    definition: Role-specific outreach is anchored to a real JD, requisition, or role owner signal instead of a generic "have you applied" placeholder.
+    scale: {min: 0, max: 4}
+    weight: 0.10
+    hard_floor: 3
+  - id: message_type_fit
+    definition: The selected message type matches the evidence posture and recipient class, so recruiter, executive, referral, and follow-up copy are intentionally different.
+    scale: {min: 0, max: 4}
+    weight: 0.10
+  - id: anti_ai_tells
+    definition: Copy avoids dead giveaways of boilerplate model output, including generic warmth, stock transitions, and punctuation crutches.
+    scale: {min: 0, max: 4}
+    weight: 0.10
+    informational_only: true
+  - id: executive_org_dynamics
+    definition: C-level and executive outreach shows a credible view of organizational dynamics, ownership, and decision context rather than a recruiter-style intro.
+    scale: {min: 0, max: 4}
+    weight: 0.10
+    informational_only: true
   - id: overfit_risk
     definition: Inverted dimension. Lower is better. Mimicry / fake history / inflated certainty
     scale: {min: 0, max: 4}

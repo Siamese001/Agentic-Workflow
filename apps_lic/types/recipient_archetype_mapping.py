@@ -7,8 +7,12 @@ template behavior stays bounded and testable.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
+
+import yaml
 
 from apps_lic.engines.recipient_classification import (
     CLASS_CEO,
@@ -53,6 +57,9 @@ LIC_RECIPIENT_CLASS_TO_ARCHETYPE: dict[str, str] = {
     CLASS_CEO: ARCHETYPE_C_LEVEL,
     CLASS_CTO: ARCHETYPE_C_LEVEL,
 }
+
+_DOMAIN_CONTRACT_DIR = Path(__file__).resolve().parents[1] / "config" / "domain_contract"
+_ARCHETYPE_MESSAGE_MATRIX_PATH = _DOMAIN_CONTRACT_DIR / "archetype_message_matrix.v1.yaml"
 
 _RECIPIENT_CLASS_ALIASES: dict[str, str] = {
     "C-LEVEL": CLASS_C_LEVEL,
@@ -132,14 +139,42 @@ class TemplateLengthPolicy:
 
 
 @dataclass(frozen=True)
+class ArchetypeMessageGuidance:
+    archetype: str
+    message_type: str
+    jd_dependency: str
+    strategic_lens: str
+    cta_hint: str
+    org_dynamics_required: bool
+    sub_archetypes: tuple[str, ...]
+    anti_ai_tells: tuple[str, ...]
+    one_shot_example: str
+
+    def to_hash_payload(self) -> dict[str, Any]:
+        return {
+            "archetype": self.archetype,
+            "message_type": self.message_type,
+            "jd_dependency": self.jd_dependency,
+            "strategic_lens": self.strategic_lens,
+            "cta_hint": self.cta_hint,
+            "org_dynamics_required": self.org_dynamics_required,
+            "sub_archetypes": list(self.sub_archetypes),
+            "anti_ai_tells": list(self.anti_ai_tells),
+            "one_shot_example": self.one_shot_example,
+        }
+
+
+@dataclass(frozen=True)
 class RecipientTemplatePolicy:
     archetype_profile: RecipientArchetypePromptProfile
     length_policy: TemplateLengthPolicy
+    message_guidance: ArchetypeMessageGuidance
 
     def to_hash_payload(self) -> dict[str, Any]:
         return {
             "archetype_profile": self.archetype_profile.to_hash_payload(),
             "length_policy": self.length_policy.to_length_budget_packet(),
+            "message_guidance": self.message_guidance.to_hash_payload(),
         }
 
 
@@ -254,6 +289,59 @@ _STANDARD_LENGTH_POLICIES: dict[tuple[str, str], tuple[str, int, int, int, int, 
 }
 
 
+@lru_cache(maxsize=1)
+def _load_archetype_message_matrix() -> dict[str, Any]:
+    with _ARCHETYPE_MESSAGE_MATRIX_PATH.open(encoding="utf-8") as handle:
+        return yaml.safe_load(handle) or {}
+
+
+def _guidance_mapping_for(archetype: str, message_type: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    matrix = _load_archetype_message_matrix()
+    archetypes = dict(matrix.get("archetypes") or {})
+    archetype_packet = dict(archetypes.get(archetype) or {})
+    if not archetype_packet:
+        raise ValueError(f"Unsupported archetype for message guidance: {archetype!r}")
+    message_packets = dict(archetype_packet.get("message_types") or {})
+    guidance_packet = dict(message_packets.get(message_type) or {})
+    if not guidance_packet:
+        raise ValueError(
+            f"Unsupported message type guidance for archetype {archetype!r}: {message_type!r}"
+        )
+    return archetype_packet, guidance_packet
+
+
+def resolve_archetype_message_guidance(
+    *,
+    archetype: str,
+    message_type: str,
+) -> ArchetypeMessageGuidance:
+    normalized_archetype = str(archetype or "").strip().upper()
+    normalized_message_type = _normalize_message_type(message_type)
+    archetype_packet, guidance_packet = _guidance_mapping_for(
+        normalized_archetype,
+        normalized_message_type,
+    )
+    return ArchetypeMessageGuidance(
+        archetype=normalized_archetype,
+        message_type=normalized_message_type,
+        jd_dependency=str(guidance_packet.get("jd_dependency", "conditional")),
+        strategic_lens=str(guidance_packet.get("strategic_lens", "")),
+        cta_hint=str(guidance_packet.get("cta_hint", "")),
+        org_dynamics_required=bool(guidance_packet.get("org_dynamics_required", False)),
+        sub_archetypes=tuple(
+            str(item)
+            for item in archetype_packet.get("sub_archetypes", ())
+            if str(item)
+        ),
+        anti_ai_tells=tuple(
+            str(item)
+            for item in archetype_packet.get("anti_ai_tells", ())
+            if str(item)
+        ),
+        one_shot_example=str(guidance_packet.get("one_shot_example", "")),
+    )
+
+
 def _normalize_message_type(message_type: str) -> str:
     normalized = str(message_type or "").strip().lower()
     return normalized or "general_intro"
@@ -275,6 +363,10 @@ def resolve_recipient_template_policy(
     normalized_message = _normalize_message_type(message_type)
     normalized_channel = _normalize_channel(channel)
     modifier_map = dict(modifiers or {})
+    message_guidance = resolve_archetype_message_guidance(
+        archetype=archetype,
+        message_type=normalized_message,
+    )
 
     if normalized_channel == CHANNEL_LINKEDIN_CHAT:
         length = TemplateLengthPolicy(
@@ -328,7 +420,11 @@ def resolve_recipient_template_policy(
             signature_required=True,
             cta_style=profile.cta,
         )
-    return RecipientTemplatePolicy(archetype_profile=profile, length_policy=length)
+    return RecipientTemplatePolicy(
+        archetype_profile=profile,
+        length_policy=length,
+        message_guidance=message_guidance,
+    )
 
 
 def normalize_lic_recipient_class(recipient_class: str) -> str:
@@ -366,6 +462,7 @@ def build_archetype_prompt_lines(
     lic_recipient_class: str,
     profile: RecipientArchetypePromptProfile,
     length_budget: Mapping[str, Any] | None,
+    message_guidance: ArchetypeMessageGuidance,
 ) -> tuple[str, ...]:
     budget = dict(length_budget or {})
     max_sentences = int(
@@ -386,6 +483,23 @@ def build_archetype_prompt_lines(
         f"  - Focus: {profile.focus}.",
         f"  - Fact grounding: {profile.fact_grounding}",
         f"  - CTA: {profile.cta}",
+        "MESSAGE TYPE CALIBRATION:",
+        f"  - Canonical message type: {message_guidance.message_type}.",
+        f"  - JD dependency: {message_guidance.jd_dependency}.",
+        f"  - Org dynamics required: {message_guidance.org_dynamics_required}.",
+        f"  - Strategic lens: {message_guidance.strategic_lens}.",
+        f"  - CTA hint: {message_guidance.cta_hint}.",
+        (
+            "  - Sub-archetypes in scope: "
+            + ", ".join(message_guidance.sub_archetypes)
+            + "."
+        ),
+        (
+            "  - Anti-AI tells to avoid: "
+            + ", ".join(message_guidance.anti_ai_tells)
+            + "."
+        ),
+        f"  - One-shot example shape: {message_guidance.one_shot_example}.",
         (
             "  - Length controls: hard controls are "
             f"max {max_sentences} sentences and max {hard_cap_chars} characters; "
@@ -406,6 +520,7 @@ __all__ = [
     "ARCHETYPE_SENIOR_TA",
     "CANONICAL_RECIPIENT_ARCHETYPES",
     "LIC_RECIPIENT_CLASS_TO_ARCHETYPE",
+    "ArchetypeMessageGuidance",
     "RecipientArchetypePromptProfile",
     "RecipientTemplatePolicy",
     "TemplateLengthPolicy",
@@ -413,5 +528,6 @@ __all__ = [
     "map_lic_recipient_class_to_archetype",
     "normalize_lic_recipient_class",
     "recipient_archetype_profile",
+    "resolve_archetype_message_guidance",
     "resolve_recipient_template_policy",
 ]

@@ -14,6 +14,7 @@ from apps_lic.engines.recipient_classification import (
     CLASS_UNKNOWN,
     CLASS_VP_ENG,
 )
+from apps_lic.engines.message_type_requirement_gate import CANONICAL_MESSAGE_TYPES
 from apps_lic.types.recipient_archetype_mapping import (
     ARCHETYPE_C_LEVEL,
     ARCHETYPE_EXECUTIVE,
@@ -41,6 +42,7 @@ def test_lic_prompt_archetypes_stay_capped_at_four() -> None:
         ARCHETYPE_C_LEVEL,
     )
     assert set(ARCHETYPE_PROMPT_PROFILES) == set(CANONICAL_RECIPIENT_ARCHETYPES)
+    assert len(CANONICAL_MESSAGE_TYPES) == 5
 
 
 @pytest.mark.parametrize(
@@ -93,6 +95,81 @@ def test_w5_template_policy_resolves_inmail_budget_and_route_subject_rules() -> 
     assert packet["subject_required"] is True
     assert packet["signature_required"] is True
     assert packet["cta_style"] == policy.archetype_profile.cta
+    assert policy.message_guidance.archetype == ARCHETYPE_C_LEVEL
+    assert policy.message_guidance.message_type == "trigger_based_insight"
+    assert policy.message_guidance.org_dynamics_required is True
+    assert "CEO" in policy.message_guidance.sub_archetypes
+    assert "CTO" in policy.message_guidance.sub_archetypes
+    assert policy.message_guidance.one_shot_example
+
+
+@pytest.mark.parametrize(
+    (
+        "recipient_class",
+        "message_type",
+        "expected_archetype",
+        "expected_jd_dependency",
+        "expected_sub_archetype",
+        "expected_org_dynamics",
+    ),
+    (
+        (
+            CLASS_RECRUITER,
+            "role_specific",
+            ARCHETYPE_RECRUITER,
+            "required",
+            "TECHNICAL_RECRUITER",
+            False,
+        ),
+        (
+            CLASS_SENIOR_TA,
+            "role_specific",
+            ARCHETYPE_SENIOR_TA,
+            "required",
+            "HEAD_OF_TA",
+            False,
+        ),
+        (
+            CLASS_EXECUTIVE,
+            "trigger_based_insight",
+            ARCHETYPE_EXECUTIVE,
+            "not_required",
+            "SVP_ENG",
+            True,
+        ),
+        (
+            CLASS_C_LEVEL,
+            "trigger_based_insight",
+            ARCHETYPE_C_LEVEL,
+            "not_required",
+            "CAIO",
+            True,
+        ),
+    ),
+)
+def test_w5_archetype_message_guidance_matches_matrix(
+    recipient_class: str,
+    message_type: str,
+    expected_archetype: str,
+    expected_jd_dependency: str,
+    expected_sub_archetype: str,
+    expected_org_dynamics: bool,
+) -> None:
+    policy = resolve_recipient_template_policy(
+        recipient_class=recipient_class,
+        message_type=message_type,
+        channel=CHANNEL_LINKEDIN_INMAIL,
+    )
+
+    guidance = policy.message_guidance
+    assert guidance.archetype == expected_archetype
+    assert guidance.message_type == message_type
+    assert guidance.jd_dependency == expected_jd_dependency
+    assert expected_sub_archetype in guidance.sub_archetypes
+    assert guidance.org_dynamics_required is expected_org_dynamics
+    assert guidance.cta_hint
+    assert guidance.strategic_lens
+    assert guidance.anti_ai_tells
 
 
 def test_w5_template_policy_resolves_recruiting_trigger_inmail_budgets() -> None:
