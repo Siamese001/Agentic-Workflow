@@ -12,6 +12,7 @@ from apps_rg.runtime.orchestration.canonical_dispatch import (
     _read_optional_brief,
     _resolve_lane_manual_brief,
 )
+from apps_rg.runtime.section_cli_defaults import default_lane_provider_for_section
 from apps_rg.runtime.spine.section_x3_finalize import (
     lane_outcome_authorized_from_x3,
     lane_x3_code_from_x3,
@@ -68,8 +69,10 @@ def run_section_competencies_spine(
     if not str(briefing).strip():
         briefing = lane.BRIEFING_DEFAULT
 
+    lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section("competencies")
+
     args = lane.build_competencies_lane_args(
-        provider=_effective_lane_provider(lane_provider),
+        provider=lane_provider_eff,
         temperature=float(lane_temperature),
         x1d_judges=str(lane_x1d_judges),
         mock_judges=bool(lane_mock_judges),
@@ -430,7 +433,9 @@ def run_section_unify_bullets_spine(
     if not str(briefing).strip():
         briefing = lane.BRIEFING_DEFAULT
 
-    lane_provider_eff = _effective_lane_provider(lane_provider)
+    lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(
+        "unify_narrative"
+    )
 
     args = SimpleNamespace(
         provider=lane_provider_eff,
@@ -533,7 +538,9 @@ def run_section_unify_narrative_spine(
     if not str(briefing).strip():
         briefing = lane.BRIEFING_DEFAULT
 
-    lane_provider_eff = _effective_lane_provider(lane_provider)
+    lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(
+        "ibm_narrative"
+    )
 
     args = SimpleNamespace(
         provider=lane_provider_eff,
@@ -843,8 +850,10 @@ def _run_section_role_episode_spine(
     if not str(briefing).strip():
         briefing = _resolve_lane_manual_brief(raw_request)
 
+    lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(section_id)
+
     args = lane.build_role_episode_lane_args(
-        provider=_effective_lane_provider(lane_provider),
+        provider=lane_provider_eff,
         temperature=float(lane_temperature),
         x1d_judges=str(lane_x1d_judges),
         mock_judges=bool(lane_mock_judges),

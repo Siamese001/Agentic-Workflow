@@ -10,6 +10,10 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    require_section_packet,
+    require_selected_graph_evidence_plan,
+)
 from apps_rg.runtime.sections.headline_positioning_registry import (
     HEADLINE_SECTION_ID,
     REQUIRED_POSITIONING_FAMILIES,
@@ -132,15 +136,7 @@ def build_headline_positioning_section_packet(
 
 
 def _selected_graph_plan(source: dict[str, Any] | None) -> dict[str, Any]:
-    if not isinstance(source, dict):
-        return {}
-    plan = source.get("selected_graph_evidence_plan")
-    if isinstance(plan, dict):
-        return plan
-    pp_meta = source.get("proof_pool_metadata")
-    if isinstance(pp_meta, dict) and isinstance(pp_meta.get("selected_graph_evidence_plan"), dict):
-        return pp_meta["selected_graph_evidence_plan"]
-    return {}
+    return require_selected_graph_evidence_plan(source, section_id=HEADLINE_SECTION_ID)
 
 
 def _filter_packet_by_selected_graph_plan(
@@ -148,7 +144,9 @@ def _filter_packet_by_selected_graph_plan(
     selected_graph_plan: dict[str, Any],
 ) -> dict[str, Any]:
     if not isinstance(selected_graph_plan, dict) or not selected_graph_plan:
-        return packet
+        raise ValueError(
+            f"{HEADLINE_SECTION_ID}: graph packet is mandatory; missing selected_graph_evidence_plan"
+        )
     selected_families = {
         str(x).strip()
         for x in (selected_graph_plan.get("selected_headline_positioning_families") or [])
@@ -160,7 +158,9 @@ def _filter_packet_by_selected_graph_plan(
         if str(x).strip()
     }
     if not selected_families and not selected_skills:
-        return packet
+        raise ValueError(
+            f"{HEADLINE_SECTION_ID}: selected_graph_evidence_plan must include headline families or skill ids"
+        )
     filtered: list[dict[str, Any]] = []
     for rec in packet.get("headline_positioning_bundles") or []:
         if not isinstance(rec, dict):
@@ -174,7 +174,9 @@ def _filter_packet_by_selected_graph_plan(
         if include:
             filtered.append(rec)
     if not filtered:
-        return packet
+        raise ValueError(
+            f"{HEADLINE_SECTION_ID}: selected_graph_evidence_plan produced no headline_positioning_bundles"
+        )
 
     out = dict(packet)
     out["headline_positioning_bundles"] = filtered
@@ -247,7 +249,11 @@ def format_headline_positioning_evidence_pack(
     section_id: str = HEADLINE_SECTION_ID,
 ) -> str:
     """C0 body: headline positioning bundles as proof authority."""
-    packet = build_headline_positioning_section_packet(section_id)
+    packet = require_section_packet(
+        runtime_payload,
+        section_id=section_id,
+        packet_key="headline_positioning_section_packet",
+    )
     packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(runtime_payload))
     runtime_payload["headline_positioning_section_packet"] = packet
     runtime_payload["headline_positioning_bundle_ids"] = packet["headline_positioning_bundle_ids"]

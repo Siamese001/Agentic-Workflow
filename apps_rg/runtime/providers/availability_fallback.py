@@ -9,7 +9,7 @@ from typing import Any, Mapping
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.provider_gateway import ProviderProfile
-from apps_rg.runtime.section_model_limits import external_openai_generation_model_from_ssot
+from apps_rg.runtime.section_model_limits import external_openai_generation_model
 
 _HTTP_STATUS_RE = re.compile(r"\bHTTP\s+(\d{3})\b", re.IGNORECASE)
 _TRANSPORT_AVAILABILITY_MARKERS = (
@@ -115,7 +115,7 @@ def maybe_fallback_to_openai_for_claude_availability(
     if not is_claude_generation_availability_failure(initial_result):
         return initial_result
 
-    fallback_model = external_openai_generation_model_from_ssot()
+    fallback_model = external_openai_generation_model()
     fallback_provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
         model=fallback_model,

@@ -1126,6 +1126,19 @@ def _rebind_from_canonical_display_sentences(sentence: str) -> list[str]:
     return []
 
 
+def _source_fact_ids_from_row(row: dict[str, Any] | None) -> list[str]:
+    if not isinstance(row, dict):
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for sid in row.get("source_fact_ids") or []:
+        s = str(sid).strip()
+        if s and s not in seen:
+            seen.add(s)
+            out.append(s)
+    return out
+
+
 def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]:
     from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
@@ -1137,17 +1150,26 @@ def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]
         s = str(sent or "").strip()
         if not s:
             continue
-        fids = _source_fact_ids_for_display_sentence(s)
-        prior_fids = _rebind_source_fact_ids_from_prior_rows(s, prior_rows)
-        if prior_fids and (not fids or _graph_era_fact_ids(prior_fids)):
-            # Live graph-era pools use reb_*/metric_*/skill_* ids. The legacy anchor
-            # heuristics can match the prose but return fact_* ids that are not in the
-            # active allowlist; when the model's own row still overlaps, preserve it.
+        fids = []
+        prior_row = prior_rows[len(ledger)] if len(ledger) < len(prior_rows) else None
+        prior_fids = _source_fact_ids_from_row(prior_row)
+        if prior_fids:
+            # Slot-aligned narrative rewrites must keep the row's existing proof ids.
+            # Display heuristics only fill rows that started empty.
             fids = prior_fids
-        if not fids:
-            # Anchor heuristics missed (rewritten/bridged sentence) — re-bind the ids from
-            # the prior ledger row this sentence derives from instead of dropping them.
-            fids = prior_fids
+        else:
+            fids = _source_fact_ids_for_display_sentence(s)
+            if not fids:
+                prior_fids = _rebind_source_fact_ids_from_prior_rows(s, prior_rows)
+                if prior_fids and (not fids or _graph_era_fact_ids(prior_fids)):
+                    # Live graph-era pools use reb_*/metric_*/skill_* ids. The legacy anchor
+                    # heuristics can match the prose but return fact_* ids that are not in the
+                    # active allowlist; when the model's own row still overlaps, preserve it.
+                    fids = prior_fids
+                if not fids:
+                    # Anchor heuristics missed (rewritten/bridged sentence) — re-bind the ids from
+                    # the prior ledger row this sentence derives from instead of dropping them.
+                    fids = prior_fids
         if not fids:
             # The chain's OWN injected canonical sentence has no prior model row to bind to
             # (live: exec_summary_20260611_162322 row 1 — the required-fact-slot bridge,
