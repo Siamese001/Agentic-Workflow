@@ -129,6 +129,34 @@ def test_selected_graph_plan_filters_headline_and_competency_prompt_bundles() ->
     assert "hpb_agentic_ai_platforms" not in filtered_headline_ids
 
 
+def test_shared_lane_plan_exposes_briefing_signal_packet() -> None:
+    jd_text = "SVP engineering platform leadership"
+    briefing_text = (
+        "## Company Strategy & Operating Pressure\n"
+        "- The role must solve operating-model friction and clarify decision rights.\n\n"
+        "## Leadership & Stakeholder Map\n"
+        "- CEO, CIO, and business leaders need a tighter delivery cadence.\n\n"
+        "## AI, Data, Platform, Architecture Signals\n"
+        "- Platform modernization and architecture governance are forward-looking priorities.\n\n"
+        "## Recent Events & Urgency\n"
+        "- Recent integration pressure and roadmap changes create urgency.\n"
+    )
+    plan = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO_ROOT,
+        section_id="executive_summary",
+        target_role="SVP IT Strategy & Innovation",
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    packet = plan[0]["briefing_signal_packet"]
+    assert packet["schema"] == "briefing_signal_packet_v1"
+    assert packet["theme_counts"]["strategy"] >= 1
+    assert packet["theme_counts"]["operating_model"] >= 1
+    assert packet["theme_counts"]["leadership"] >= 1
+    assert packet["theme_counts"]["forward_looking"] >= 1
+    assert packet["dominant_themes"][0] in {"strategy", "operating_model"}
+
+
 def test_headline_resolver_exposes_selected_graph_plan_before_bundle_attach() -> None:
     pool = resolve_section_proof_pool(
         section="headline",

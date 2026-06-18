@@ -61,7 +61,8 @@ operating tension this role likely exists to solve.
 
 ## Company Strategy & Operating Pressure
 Give verified scale, business model, segment, financial, market, or strategic
-pressure that changes positioning.
+pressure that changes positioning. Include the operating-model tension or
+decision-rights shift this role is meant to solve.
 
 ## Leadership & Stakeholder Map
 Name verified leaders or functions only when supported. Explain the likely
@@ -69,7 +70,8 @@ stakeholder map without inventing org structure.
 
 ## AI, Data, Platform, Architecture Signals
 Capture verified AI/data/platform/cloud/security/architecture moves that
-matter to the role. Omit generic transformation language.
+matter to the role and the forward-looking operating model. Omit generic
+transformation language.
 
 ## Recent Events & Urgency
 Summarize recent events, deals, earnings, operating shifts, or peer pressure

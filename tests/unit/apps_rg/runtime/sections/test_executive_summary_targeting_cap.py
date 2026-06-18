@@ -191,6 +191,23 @@ def test_brown_markdown_briefing_cap_includes_integration_theme():
         assert priority_idx < capped.lower().index("cultural")
 
 
+def test_briefing_cap_prefers_operating_model_and_leadership_sections():
+    brief = (
+        "## Generic Notes\n"
+        "- Low-signal context that should be trimmed first.\n\n"
+        "## Operating Model\n"
+        "- Decision rights and operating cadence need clarification.\n\n"
+        "## Leadership & Stakeholders\n"
+        "- CEO and CIO sponsorship shape the move to the future state.\n\n"
+        "## Recent Events & Urgency\n"
+        "- Integration pressure and roadmap changes create urgency.\n"
+    )
+    capped = compress_targeting_briefing_body(brief, 240)
+    assert "Operating Model" in capped or "OPERATING MODEL" in capped
+    assert "Leadership & Stakeholders" in capped or "LEADERSHIP & STAKEHOLDERS" in capped
+    assert "Generic Notes" not in capped or capped.index("Operating Model") < capped.index("Generic Notes")
+
+
 def test_default_targeting_caps_pass_full_brown_jd_and_briefing():
     jd = (
         REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"

@@ -60,3 +60,29 @@ def test_insurance_briefing_selection_keeps_compact_brown_ssot_whole(brown_mater
     assert included == ["full_document"]
     assert selected == brief
     assert "integration" in selected.lower()
+
+
+def test_briefing_selection_prioritizes_prospective_leadership_sections(monkeypatch: pytest.MonkeyPatch) -> None:
+    from apps_rg.runtime.sections import executive_summary_briefing as briefing_mod
+
+    monkeypatch.setattr(briefing_mod, "_max_chars", lambda: 260)
+    brief = (
+        "## Generic Context\n"
+        "- General company background with low-signal context.\n"
+        "\n"
+        "## Company Strategy & Operating Pressure\n"
+        "- Operating-model friction and decision rights are the central tension.\n"
+        "\n"
+        "## Leadership & Stakeholder Map\n"
+        "- CEO, CIO, and business leaders need a tighter operating cadence.\n"
+        "\n"
+        "## AI, Data, Platform, Architecture Signals\n"
+        "- Platform modernization and architecture governance are forward-looking priorities.\n"
+    )
+    selected, receipt = prepare_briefing_for_executive_summary(brief)
+    included = receipt.get("included_section_ids") or []
+    assert included
+    assert included[0] == "company_strategy_operating_pressure"
+    assert "leadership_stakeholder_map" in included or "ai_data_platform_architecture_signals" in included
+    packet = receipt["briefing_signal_packet"]
+    assert packet["dominant_themes"][0] in {"strategy", "operating_model"}

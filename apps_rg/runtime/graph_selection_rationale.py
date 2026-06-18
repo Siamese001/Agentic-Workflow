@@ -26,6 +26,9 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     infer_projection_role_family_key,
     resolve_career_track_weights,
 )
+from apps_rg.runtime.sections.executive_summary_briefing import (
+    extract_briefing_signal_packet,
+)
 from apps_rg.runtime.section_graph_skills_proof_pool import (
     GRAPH_SKILLS_AUTHORITY_SECTIONS,
     allocate_section_facts_from_graph_substrate,
@@ -208,6 +211,10 @@ def emit_graph_selection_rationale(
         jd_text=jd_text,
         briefing_text=briefing_text,
     )
+    briefing_signal_packet = extract_briefing_signal_packet(
+        briefing_text,
+        role_family_key=role_family_key,
+    )
     weight_audit = jd_track_weight_delta(role_family_key=role_family_key, jd_text=jd_text)
     jd_hits = extract_jd_keyword_hits(jd_text)
     # Enhancement #1 — three_phase_jd_detected: all three career tracks hit by JD keywords.
@@ -298,6 +305,7 @@ def emit_graph_selection_rationale(
         "three_phase_jd_detected": three_phase_jd_detected,
         "jd_hit_tracks": sorted(jd_hit_tracks),
         "track_weight_audit": weight_audit,
+        "briefing_signal_packet": briefing_signal_packet,
         "jd_keyword_hits": jd_hits,
         "selection_method": selection_method,
         "graph_ref": graph_path.relative_to(root).as_posix(),
