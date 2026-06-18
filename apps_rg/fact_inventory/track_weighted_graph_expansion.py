@@ -915,6 +915,7 @@ def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str
         capture_output=True,
         text=True,
         check=False,
+        timeout=30,
     )
     status = subprocess.run(  # guardian: allow-chokepoint-bypass -- isolation receipt captures read-only git status; no runtime tool egress
         ["git", "status", "--short", "--", "agentic_core"],
@@ -922,6 +923,7 @@ def capture_agentic_core_isolation(*, repo_root: Path | None = None) -> dict[str
         capture_output=True,
         text=True,
         check=False,
+        timeout=30,
     )
     diff_names = [ln.strip() for ln in diff.stdout.splitlines() if ln.strip()]
     status_lines = [ln.strip() for ln in status.stdout.splitlines() if ln.strip()]
