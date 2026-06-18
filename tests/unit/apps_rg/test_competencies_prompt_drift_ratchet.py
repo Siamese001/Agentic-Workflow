@@ -7,6 +7,12 @@ import re
 from pathlib import Path
 
 from apps_rg.runtime.sections.competencies_pa import compile_competencies_prompt, load_competencies_template_slots
+from apps_rg.runtime.sections.competency_capability_evidence import (
+    attach_competency_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
 from apps_rg.runtime.sections.executive_summary_token_budget import estimate_tokens_approximate
 
 REPO = Path(__file__).resolve().parents[3]
@@ -22,6 +28,30 @@ def _slot_body(raw: str, slot: str) -> str:
     rest = raw[start + len(marker) :]
     end = rest.find("\n  ") if "\n  " in rest else len(rest)
     return rest[:end].strip()
+
+
+def _competencies_proof_meta() -> dict:
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO,
+        section_id="competencies",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    meta = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+        "selected_graph_evidence_plan": plan,
+    }
+    meta["evidence_authority"] = build_evidence_authority(
+        graph_ref=str(meta["graph_ref"]),
+        ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
+        skills_authority_status="PASS",
+    )
+    return attach_competency_bundles_to_proof_pool_metadata(meta, section_id="competencies")
 
 
 def test_template_markers_and_pa_core_law_ref():
@@ -49,7 +79,6 @@ def test_static_competencies_slots_under_core_law_budget():
 
 
 def test_compiled_prompt_lists_x2_competencies_gates_only_under_product_shape():
-    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
     from apps_rg.runtime.spine.front_contracts import (
         activate_fixture_dev_bypass,
         deactivate_fixture_dev_bypass,
@@ -57,16 +86,6 @@ def test_compiled_prompt_lists_x2_competencies_gates_only_under_product_shape():
 
     os.environ.setdefault("PYTEST_CURRENT_TEST", "test_competencies_prompt_drift_ratchet")
     activate_fixture_dev_bypass(non_product_certified=True)
-    meta = {
-        "proof_pool_type": "augmented_skills_graph",
-        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
-        "skills_authority_status": "PASS",
-    }
-    meta["evidence_authority"] = build_evidence_authority(
-        graph_ref=str(meta["graph_ref"]),
-        ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
-        skills_authority_status="PASS",
-    )
     payload = {
         "product_visible": False,
         "run_id": "competencies_drift_ratchet",
@@ -80,7 +99,7 @@ def test_compiled_prompt_lists_x2_competencies_gates_only_under_product_shape():
             "required_fact_ids": ["bul_unify_001"],
             "facts": [],
         },
-        "proof_pool_metadata": meta,
+        "proof_pool_metadata": _competencies_proof_meta(),
         "allowed_fact_ids": ["bul_unify_001"],
     }
     out = compile_competencies_prompt(

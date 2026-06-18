@@ -11,6 +11,10 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    require_section_packet,
+    require_selected_graph_evidence_plan,
+)
 from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
     APPROVED_METRIC_OUTCOME_IDS,
     UNIFY_EMPLOYER_ID,
@@ -47,13 +51,13 @@ def resolve_unify_bullet_slot_bundle_map(
     *,
     repo_root: Path | None = None,
 ) -> dict[str, str]:
-    """JD-fit slot→bundle map for unify_bullets (delegates to the shared selector)."""
+    """JD-fit slot→bundle map for unify_bullets (fail closed; no static default fallback)."""
     from apps_rg.runtime.sections.jd_fit_bundle_selection import (
         resolve_jd_fit_slot_bundle_map,
     )
 
     if not role_family_key:
-        return dict(UNIFY_BULLET_SLOT_BUNDLE_MAP)
+        raise ValueError("unify_bullets: graph packet is mandatory; missing role_family_key")
     graph = load_augmented_skills_graph(repo_root=repo_root or _repo_root())
     return resolve_jd_fit_slot_bundle_map(
         role_family_key=role_family_key,
@@ -232,13 +236,22 @@ def format_unify_role_episode_evidence_pack(
     section_id: str = "unify_bullets",
 ) -> str:
     """C0 body: Unify role episode bundles as proof authority (bullets slots or narrative list)."""
-    packet = build_unify_role_episode_section_packet(section_id)
-    runtime_payload["unify_role_episode_section_packet"] = packet
-    runtime_payload["role_episode_bundle_ids"] = packet["role_episode_bundle_ids"]
-
     plan = runtime_payload.get("selected_fact_plan") or {}
     selection_method = str(plan.get("selection_method") or "unify_role_episode_bundle")
     allowed_fact_ids_raw = list(runtime_payload.get("allowed_fact_ids") or [])
+
+    if section_id == "unify_narrative":
+        packet = build_unify_role_episode_section_packet(section_id)
+        runtime_payload["unify_role_episode_section_packet"] = packet
+        runtime_payload["role_episode_bundle_ids"] = packet["role_episode_bundle_ids"]
+    else:
+        packet = require_section_packet(
+            runtime_payload,
+            section_id=section_id,
+            packet_key="unify_role_episode_section_packet",
+        )
+        runtime_payload["unify_role_episode_section_packet"] = packet
+        runtime_payload["role_episode_bundle_ids"] = packet["role_episode_bundle_ids"]
 
     header_lines = [
         f"{UNIFY_ROLE_EPISODE_EVIDENCE_MARKER} "
@@ -271,16 +284,31 @@ def format_unify_role_episode_evidence_pack(
         return out
 
     skill_index = _skill_rows_by_id()
-    # JD-fit slot→bundle map: a partnerships JD promotes the partner/co-sell bundle into a
-    # slot; an engineering JD reproduces the static default. Resolved role family flows in
-    # via proof_pool_metadata (set by the lane); absent → static default.
-    _ppm = runtime_payload.get("proof_pool_metadata") or {}
-    _tw = _ppm.get("track_weighted_graph_expansion") or {}
+    selected_graph_plan = require_selected_graph_evidence_plan(runtime_payload, section_id=section_id)
     _role_family_key = str(
-        _tw.get("projection_role_family_key")
-        or _ppm.get("projection_role_family_key")
+        selected_graph_plan.get("role_family_key")
+        or selected_graph_plan.get("target_role_profile")
         or ""
+    ).strip()
+    if not _role_family_key:
+        raise ValueError(
+            f"{section_id}: graph packet is mandatory; selected_graph_evidence_plan missing role_family_key"
+        )
+    graph_profile_keys = set(
+        (load_augmented_skills_graph(repo_root=_repo_root()).get("role_family_projection_profiles") or {}).keys()
     )
+    if _role_family_key not in graph_profile_keys:
+        from apps_rg.fact_inventory.track_weighted_graph_expansion import (
+            infer_projection_role_family_key,
+        )
+
+        inferred_role_family_key = infer_projection_role_family_key(
+            target_role=str(runtime_payload.get("target_title") or runtime_payload.get("target_role") or ""),
+            jd_text=str(runtime_payload.get("jd_text") or ""),
+            briefing_text=str(runtime_payload.get("briefing") or runtime_payload.get("briefing_text") or ""),
+        )
+        if inferred_role_family_key in graph_profile_keys:
+            _role_family_key = inferred_role_family_key
     slot_bundle_map = resolve_unify_bullet_slot_bundle_map(_role_family_key)
     runtime_payload["unify_bullet_slot_bundle_map_resolved"] = slot_bundle_map
     slot_blocks: list[str] = []

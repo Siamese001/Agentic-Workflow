@@ -926,14 +926,38 @@ class TestHeadlineContentSignalNarrowingArm:
 
 
 def test_evidence_pack_narrowing_guard_paraphrased_and_leak_free():
+    from pathlib import Path
+
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
     from apps_rg.runtime.sections.headline_positioning_evidence import (
         _FORBIDDEN_C0_SUBSTRINGS,
+        attach_headline_positioning_bundles_to_proof_pool_metadata,
         assert_headline_positioning_evidence_pack_has_no_forbidden_leaks,
         format_headline_positioning_evidence_pack,
     )
     from apps_rg.runtime.validators.headline_quality_x2 import NARROWING_IT_LABELS
 
-    pack = format_headline_positioning_evidence_pack({"jd_text": "enterprise AI platform"})
+    repo_root = Path(__file__).resolve().parents[5]
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=repo_root,
+        section_id="headline",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    payload = {
+        "jd_text": "enterprise AI platform",
+        "proof_pool_metadata": attach_headline_positioning_bundles_to_proof_pool_metadata(
+            {
+                "proof_pool_type": "augmented_skills_graph",
+                "selected_graph_evidence_plan": plan,
+            },
+            section_id="headline",
+        ),
+    }
+    pack = format_headline_positioning_evidence_pack(payload)
     # steering line present
     assert "narrowing_guard:" in pack
     guard_line = next(ln for ln in pack.splitlines() if "narrowing_guard:" in ln)

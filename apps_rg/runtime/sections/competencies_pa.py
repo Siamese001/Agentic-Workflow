@@ -174,21 +174,19 @@ def build_competencies_assembly_input(
         )
 
     competency_bundle_block = ""
-    if pp_meta.get("competency_capability_bundle_consumption"):
-        try:
-            from apps_rg.runtime.sections.competency_capability_evidence import (
-                format_competency_capability_evidence_pack,
-            )
+    if not pp_meta.get("competency_capability_bundle_consumption"):
+        raise ValueError(
+            "competencies: proof_pool_metadata missing competency_capability_bundle_consumption; graph packet is mandatory"
+        )
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        format_competency_capability_evidence_pack,
+    )
 
-            competency_bundle_block = (
-                "\n\n"
-                + format_competency_capability_evidence_pack(
-                    runtime_payload, section_id="competencies"
-                )
-                + "\n"
-            )
-        except (OSError, ValueError, TypeError, json.JSONDecodeError):  # guardian: allow-default-fallback -- bundle pack optional boundary
-            competency_bundle_block = ""
+    competency_bundle_block = (
+        "\n\n"
+        + format_competency_capability_evidence_pack(runtime_payload, section_id="competencies")
+        + "\n"
+    )
 
     c0_facts = (
         "CANONICAL_EMPLOYMENT_BULLETS (claim evidence — candidate_fact_ledger slice; NOT skills authority):\n"
