@@ -121,7 +121,7 @@ class ADGDeadCodeZoneControlVerifier:
                     SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type = 'dead_imports'
-                    AND {self._first_party_filter('n')}
+                    AND """ + self._first_party_filter("n") + """
                     GROUP BY n.id, n.adg_name
                     ORDER BY dead_count DESC
                     LIMIT 10
@@ -211,6 +211,19 @@ class ADGDeadCodeZoneControlVerifier:
 
                 dead_code_by_confidence = dict(cursor.fetchall())
 
+                # Get top hotspot files for dead code candidates
+                cursor.execute("""
+                    SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
+                    JOIN nodes n ON e.src_id = n.id
+                    WHERE e.relation_type = 'dead_code_candidate'
+                    AND """ + self._first_party_filter("n") + """
+                    GROUP BY n.id, n.adg_name
+                    ORDER BY dead_count DESC
+                    LIMIT 10
+                """)
+
+                dead_code_hotspots = cursor.fetchall()
+
                 print(f"   📊 Total dead code candidates: {total_dead_code_candidates}")
                 print("   📊 Dead code by layer:")
                 for layer, count in dead_code_by_layer.items():
@@ -224,11 +237,16 @@ class ADGDeadCodeZoneControlVerifier:
                 for confidence, count in dead_code_by_confidence.items():
                     print(f"      {confidence}: {count}")
 
+                print("   📊 Top dead code hotspots:")
+                for i, (module, count) in enumerate(dead_code_hotspots[:5]):
+                    print(f"      {i + 1}. {module}: {count}")
+
                 return {
                     "total_dead_code_candidates": total_dead_code_candidates,
                     "dead_code_by_layer": dead_code_by_layer,
                     "dead_code_by_entity_type": dead_code_by_entity_type,
                     "dead_code_by_confidence": dead_code_by_confidence,
+                    "dead_code_hotspots": dead_code_hotspots,
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
@@ -274,7 +292,7 @@ class ADGDeadCodeZoneControlVerifier:
                     JOIN edges e ON e.dst_id = n_unres.id
                     JOIN nodes n_src ON e.src_id = n_src.id
                     WHERE n_unres.identity_kind = 'unresolved_import'
-                    AND {self._first_party_filter('n_src')}
+                    AND """ + self._first_party_filter("n_src") + """
                     GROUP BY n_src.id, n_src.adg_name
                     ORDER BY unresolved_count DESC
                     LIMIT 10
@@ -357,7 +375,7 @@ class ADGDeadCodeZoneControlVerifier:
                 cursor.execute("""
                     SELECT COUNT(*) FROM nodes
                     WHERE confidence = 'LOW'
-                    AND {self._first_party_filter()}
+                    AND """ + self._first_party_filter() + """
                 """)
 
                 first_party_low_conf = cursor.fetchone()[0]
@@ -523,11 +541,12 @@ class ADGDeadCodeZoneControlVerifier:
                         ratio = (inferred / max(1, total_symbols)) * 100
                         calculated_metrics[metric_name] = ratio
                     elif query == "calculated_first_party_low_confidence_ratio":
+                        first_party_filter = self._first_party_filter()
                         cursor.execute(
-                            f"SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW' AND {self._first_party_filter()}"
+                            f"SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW' AND {first_party_filter}"
                         )
                         first_party_low_conf = cursor.fetchone()[0]
-                        cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {self._first_party_filter()}")
+                        cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {first_party_filter}")
                         total_first_party = cursor.fetchone()[0]
                         calculated_metrics[metric_name] = (
                             first_party_low_conf / max(1, total_first_party)
@@ -544,12 +563,14 @@ class ADGDeadCodeZoneControlVerifier:
 
                     # Add first-party filter
                     if "edges" in query:
+                        first_party_filter = self._first_party_filter("n")
                         fp_query = (
                             query.replace("FROM edges", "FROM edges e JOIN nodes n ON e.src_id = n.id")
-                            + " AND {self._first_party_filter('n')}"
+                            + f" AND {first_party_filter}"
                         )
                     elif "nodes" in query:
-                        fp_query = query + " AND {self._first_party_filter()}"
+                        first_party_filter = self._first_party_filter()
+                        fp_query = query + f" AND {first_party_filter}"
                     else:
                         fp_query = query
 

@@ -22,6 +22,11 @@ from typing import Any
 
 import yaml
 
+from tools.reports.adg_bcg_adapter import (
+    build_bcg_brief,
+    build_deprecation_deletion_plan as _build_deprecation_deletion_plan,
+    render_bcg_brief_md,
+)
 from tools.reports.gate_signal_catalog import display_verdict, display_verdict_sub, recommended_next_step
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -61,6 +66,19 @@ def _write_yaml(path: Path, doc: dict[str, Any]) -> None:
 
 def _now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds")
+
+
+def _latest_by_glob(root: Path, pattern: str) -> Path | None:
+    candidates = sorted(root.glob(pattern), key=lambda p: p.stat().st_mtime)
+    return candidates[-1] if candidates else None
+
+
+def _sqlite_ts(sqlite_path: Path) -> str:
+    stem = sqlite_path.stem
+    prefix = "adg_indexed_"
+    if stem.startswith(prefix):
+        return stem[len(prefix) :]
+    return stem
 
 
 def _git_sha() -> str:
@@ -791,7 +809,7 @@ def build_artifact_usage_matrix(artifacts: dict[str, Path | None], loaded_docs: 
                 used_for.append("decision")
             elif key in {"sqlite_snapshot", "graphdb_queries", "structural_outputs", "refactor_accelerator", "runtime_spine", "graph_watchlist", "p0_wave_plan"}:
                 used_for.append("graphdb")
-            elif key in {"burndown_table", "burndown_report"}:
+            elif key in {"burndown_table", "burndown_report", "dead_code_report"}:
                 used_for.append("audit")
             elif key == "review_template":
                 used_for.append("evidence_only")
@@ -1098,13 +1116,15 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
         used_artifact_keys.append("sqlite_snapshot")
     artifact_matrix = build_artifact_usage_matrix(artifacts, loaded, {"used_artifact_keys": used_artifact_keys, "run_ts": run_ts})
     mv_audit = build_mv_usefulness_audit(sqlite_path, graph, gates)
+    dead_code_report = loaded.get("dead_code_report") or {}
+    deprecation_plan = build_deprecation_deletion_plan(dead_code_report, mv_audit, artifact_matrix)
     consistency = _artifact_consistency(sqlite_path)
     health = _health_lens(gates)
     runtime = _runtime_lens(p7_docs, sqlite_path)
     p0_landmines = _p0_landmine_lens(p7_docs.get("p0_wave_plan"))
     product = _product_lens(testing, graph)
     actions = build_canonical_next_best_actions(gates, graph, testing, artifact_matrix, mv_audit, action_queue)
-    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "defer_delete_deprecate": _defer_delete(mv_audit, artifact_matrix), "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
+    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "dead_code_report": dead_code_report, "deprecation_deletion_plan": deprecation_plan, "defer_delete_deprecate": {"status": "present", "rows": deprecation_plan.get("cleanup_candidates", [])}, "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
     doc["run"]["repo_state_hash"] = _hash_repo_state([p for p in artifacts.values() if p])
     if degraded:
         doc["executive_decision"]["verdict"] = "DEGRADED"
@@ -1123,15 +1143,12 @@ def _after_green(health: dict[str, Any], graph: dict[str, Any], testing: dict[st
     return {"status": "present", "executive_read": "After-green work lowers accepted floors and closes broad testing waves once blockers are gone.", "rows": rows}
 
 
-def _defer_delete(mv: dict[str, Any], artifacts: dict[str, Any]) -> dict[str, Any]:
-    rows = []
-    for r in mv.get("rows", [])[:20]:
-        if r.get("recommendation") != "keep":
-            rows.append({"item": r["mv_name"], "item_type": "mv", "current_value": f"{r.get('row_count')} rows; {r.get('category')}", "recommendation": "deprecate" if r.get("recommendation") == "deprecate_candidate" else r.get("recommendation", "keep"), "rationale": r.get("why_not_used_if_suppressed") or r.get("decision_impact"), "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."})
-    for r in artifacts.get("rows", []):
-        if r.get("used_for") == ["none"]:
-            rows.append({"item": r["artifact_key"], "item_type": "artifact", "current_value": "unused or missing", "recommendation": "hide_inline", "rationale": r.get("rationale"), "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."})
-    return {"status": "present", "rows": rows[:25]}
+def build_deprecation_deletion_plan(
+    dead_code_report: dict[str, Any] | None,
+    mv_usefulness_audit: dict[str, Any] | None,
+    artifact_usage_matrix: dict[str, Any] | None,
+) -> dict[str, Any]:
+    return _build_deprecation_deletion_plan(dead_code_report, mv_usefulness_audit, artifact_usage_matrix)
 
 
 def _audit_notes(gates: list[dict[str, Any]], burndown: dict[str, Any] | None, consistency: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -1186,12 +1203,74 @@ def _format_current_tests(current_tests: dict[str, Any]) -> str:
     return "; ".join(paths[:6]) or "none mapped"
 
 
+def _fmt_int(value: Any) -> str:
+    try:
+        return f"{int(value or 0):,}"
+    except (TypeError, ValueError):
+        return "0"
+
+
+def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
+    d = doc.get("executive_decision", {})
+    health = doc.get("lens_1_health_gates", {})
+    runtime = doc.get("lens_2_runtime_proof_observability", {})
+    testing = doc.get("lens_4_testing_control_gaps", {})
+    graph = doc.get("lens_5_graphdb_mv_decision_impact", {})
+    actions = (doc.get("canonical_next_best_actions") or {}).get("rows") or []
+    priority_rows: list[dict[str, Any]] = []
+    for row in actions[:4]:
+        evidence = "; ".join(
+            str(e.get("signal_type") or "").strip()
+            for e in row.get("evidence_used", [])
+            if isinstance(e, dict) and str(e.get("signal_type") or "").strip()
+        )
+        priority_rows.append(
+            {
+                "priority": row.get("rank"),
+                "move": row.get("action"),
+                "scope": row.get("scope"),
+                "business_reason": row.get("why_now"),
+                "technical_reason": row.get("testing_requirement") or evidence or row.get("action"),
+                "why_this_rank": row.get("why_now"),
+                "decision": row.get("action_type"),
+            }
+        )
+    return build_bcg_brief(
+        title="BCG Executive Brief",
+        status=str(doc.get("run", {}).get("decision_grade_status") or ""),
+        business_read=(
+            f"ADG is {d.get('verdict', 'UNKNOWN')}: {d.get('recommendation', 'no recommendation emitted')}. "
+            "Spend executive time on blockers and test gaps before accepted debt."
+        ),
+        technical_read=[
+            f"FIX gates: {_fmt_int(health.get('summary', {}).get('fix_gates', 0))}; "
+            f"TRACK gates: {_fmt_int(health.get('summary', {}).get('track_gates', 0))}",
+            runtime.get("measurement_gap_vs_quality_failure") or runtime.get("executive_read", ""),
+            testing.get("executive_read") or testing.get("why_it_matters", ""),
+            graph.get("executive_read", ""),
+            f"Action rows emitted: {_fmt_int(len(actions))}",
+        ],
+        priority_rule="Fix blockers first, then close testing exposure, then reduce accepted debt.",
+        priority_rows=priority_rows,
+        why_this_order=(doc.get("honest_bottom_line") or {}).get("bullets", [])[:4],
+        next_step=(
+            (actions[0].get("action") if actions else "Follow the next-best-actions table below.")
+            if actions
+            else "Follow the next-best-actions table below."
+        ),
+        table_limit=4,
+    )
+
+
 def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     """Render the locked executive inline markdown structure exactly."""
     h = doc["lens_1_health_gates"]
     lines: list[str] = []
     a = lines.append
     a("## ADG Executive Brief")
+    a("")
+    for line in render_bcg_brief_md(_executive_bcg_brief(doc)).splitlines():
+        a(line)
     a("")
     a("### 1. What ADG Is")
     a("")
@@ -1312,8 +1391,44 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("")
     a("### 11. Defer / Delete / Deprecate")
     a("")
-    dep = doc["defer_delete_deprecate"].get("rows", [])[:12] or [{"item": "None", "current_value": "No low-value signal promoted", "recommendation": "keep", "rationale": "No action."}]
-    a(_table(["Item", "Current value", "Recommendation", "Rationale"], [[r["item"], r["current_value"], r["recommendation"], r["rationale"]] for r in dep]))
+    plan = doc.get("deprecation_deletion_plan", {})
+    brief = plan.get("brief") or build_bcg_brief(
+        title="BCG Deletion Brief",
+        status=str(doc.get("run", {}).get("decision_grade_status") or ""),
+        business_read=(
+            plan.get("summary", {}).get("executive_read")
+            or "No deprecation/deletion plan was available for this run."
+        ),
+        technical_read=[
+            f"Dead code candidates: {_fmt_int((plan.get('summary') or {}).get('dead_code_candidates', 0))}",
+            f"Dead imports: {_fmt_int((plan.get('summary') or {}).get('dead_imports', 0))}",
+            f"Unresolved imports: {_fmt_int((plan.get('summary') or {}).get('unresolved_imports', 0))}",
+            (
+                "First-party low-confidence ratio: "
+                f"{float((plan.get('summary') or {}).get('first_party_low_confidence_ratio', 0) or 0):.2f}%"
+            ),
+            (
+                "Inferred-symbol ratio: "
+                f"{float((plan.get('summary') or {}).get('inferred_symbol_ratio', 0) or 0):.2f}%"
+            ),
+        ],
+        priority_rule=(
+            "Confirmed dead code first, then unresolved imports, then low-confidence noise, "
+            "then low-value diagnostics."
+        ),
+        priority_rows=plan.get("priority_rows") or [],
+        why_this_order=(plan.get("summary") or {}).get("why_this_order") or [],
+        next_step="Deprecate first, then delete after the evidence stays clean.",
+        table_limit=6,
+    )
+    for line in render_bcg_brief_md(brief).splitlines():
+        a(line)
+    cleanup = plan.get("cleanup_candidates") or doc["defer_delete_deprecate"].get("rows", [])
+    if cleanup:
+        a("")
+        a("Current low-value cleanup candidates:")
+        a("")
+        a(_table(["Item", "Type", "Current value", "Recommendation", "Rationale"], [[r["item"], r["item_type"], r["current_value"], r["recommendation"], r["rationale"]] for r in cleanup[:12]]))
     a("")
     a("### 12. Honest Bottom Line")
     a("")
@@ -1349,3 +1464,50 @@ def emit_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Pa
     except (OSError, sqlite3.Error, json.JSONDecodeError, yaml.YAMLError, ValueError, TypeError) as exc:
         print(f"[adg_bcg_executive_synthesis] ERROR={exc}", file=sys.stderr)
         return (2 if fail_closed else 0), None
+
+
+def emit_bcg_executive_summary_from_latest(
+    *,
+    print_inline: bool = True,
+    fail_closed: bool = False,
+    docs_dir: Path | None = None,
+    adg_artifacts_dir: Path = ARTIFACTS_ADG,
+) -> tuple[int, Path | None]:
+    sqlite_path = _latest_by_glob(adg_artifacts_dir, "adg_indexed_*.sqlite")
+    if sqlite_path is None:
+        return (2 if fail_closed else 0), None
+
+    ts = _sqlite_ts(sqlite_path)
+    gate_results_path = _latest_by_glob(adg_artifacts_dir, "adg_gate_results_*.json")
+    action_queue_path = _latest_by_glob(adg_artifacts_dir, f"adg_action_queue_{ts}.json") or _latest_by_glob(
+        adg_artifacts_dir, "adg_action_queue_*.json"
+    )
+    review_template_path = _latest_by_glob(adg_artifacts_dir, f"adg_review_template_{ts}.json") or _latest_by_glob(
+        adg_artifacts_dir, "adg_review_template_*.json"
+    )
+    p0_wave_plan = _latest_by_glob(adg_artifacts_dir / "issues", "p0_remediation_wave_plan_*.json")
+    p7_paths = {
+        "structural_outputs": _latest_by_glob(adg_artifacts_dir, "adg_structural_outputs_*.json"),
+        "refactor_accelerator": _latest_by_glob(adg_artifacts_dir, "adg_refactor_accelerator_*.json"),
+        "graphdb_queries": _latest_by_glob(adg_artifacts_dir, "adg_graphdb_queries_*.json"),
+        "runtime_spine": _latest_by_glob(adg_artifacts_dir, "adg_runtime_spine_*.json"),
+        "graphdb_projection": _latest_by_glob(adg_artifacts_dir, "adg_graphdb_projection_*.json"),
+        "graphdb_metadata": _latest_by_glob(adg_artifacts_dir, "adg_graphdb_metadata_*.json"),
+        "graphdb_index": _latest_by_glob(adg_artifacts_dir, "adg_graphdb_index_*.json"),
+        "graph_watchlist": _latest_by_glob(adg_artifacts_dir, "adg_graph_watchlist_*.json"),
+        "p0_wave_plan": p0_wave_plan,
+        "dead_code_report": _latest_by_glob(adg_artifacts_dir, "dead_code_zone_control_report_*.json"),
+    }
+    return emit_bcg_executive_summary(
+        adg_artifacts_dir=adg_artifacts_dir,
+        ts=ts,
+        sqlite_path=sqlite_path,
+        gate_results_path=gate_results_path,
+        action_queue_path=action_queue_path,
+        review_template_path=review_template_path,
+        burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
+        p7_paths=p7_paths,
+        print_inline=print_inline,
+        fail_closed=fail_closed,
+        docs_dir=docs_dir,
+    )

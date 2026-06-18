@@ -72,7 +72,7 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B1_executive_identity",
         "arc_role": "strategy_thesis",
         "guidance": (
-            "Technology strategy / enterprise technology executive thesis; avoid narrow engineering-manager label; "
+            "Leadership-first technology strategy / enterprise technology executive thesis; avoid narrow engineering-manager label; "
             "frame enterprise IT direction + innovation-program posture for decentralized regulated enterprises "
             "(targeting vocabulary — not JD-as-proof); avoid generic 'regulated enterprise scale' filler."
         ),
@@ -154,7 +154,21 @@ def format_s6_briefing_forward_targeting_anchor(
 def format_svp_jd_emphasis_line() -> str:
     themes = "; ".join(SVP_JD_EMPHASIS_THEMES)
     return (
-        f"- JD/briefing may tilt emphasis among evidenced themes only ({themes}) — never cite JD as proof.\n"
+        f"- JD/briefing may tilt emphasis among evidenced themes only ({themes}) — leadership stays primary, "
+        "role family cannot reorder the arc, and JD never becomes proof.\n"
+    )
+
+
+def format_leadership_first_exec_summary_block(*, target_title: str = "") -> str:
+    """Universal exec-summary targeting note: leadership first, JD only tunes emphasis."""
+    role = (target_title or "the target role").strip()
+    return (
+        "LEADERSHIP_FIRST_EXEC_SUMMARY (targeting only - NOT PROOF):\n"
+        "- Regardless of JD or role family, lead the executive summary with leadership identity, scope, "
+        "decision-making, and operating model before domain-specific keywords.\n"
+        "- JD and briefing only tune emphasis among proven facts; they do not reorder the arc or replace "
+        "graph-backed evidence.\n"
+        f"- Write for {role} as a leadership story first, then weave role-specific evidence and graph skills.\n"
     )
 
 
@@ -274,7 +288,7 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
     return (
         "STRATEGY_EXECUTIVE_SYNTHESIS (targeting only — NOT PROOF):\n"
         "- Required JSON field `executive_strategy_thesis` before `resume_display_text` (one ledger-backed sentence).\n"
-        "- Open display S1 as technology strategy / enterprise technology executive (not narrow AI-platform builder only); "
+        "- Open display S1 as leadership-first technology strategy / enterprise technology executive (not narrow AI-platform builder only); "
         "avoid generic 'aligns enterprise IT direction' openers — use architecture-governance + innovation-program posture.\n"
         "- At most two S2–S5 sentences may use stock bridges (Building on / Through that / Complementing / With that governance); "
         "vary other transitions (From that commercial base / Against that lineage backdrop / In parallel).\n"
@@ -291,6 +305,7 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
         "and closing on a backward-looking technical tool description with no forward projection.\n"
         "- S3–S4: honest connectors only; parallel governance and HPC threads need not be falsely causal.\n"
         f"{format_svp_jd_emphasis_line()}"
+        "- S1 should still read as leadership-first synthesis, not a role-family mirror or bullet chain.\n"
         f"- Target role framing: {role} (positioning only).\n"
         "- NEVER name TARGET_COMPANY in resume_display_text.\n"
         "- Weave team-scale facts (e.g. 8-to-28 engineering growth) into S2–S4 when in ALLOWED_SOURCE_FACT_IDS.\n"
@@ -423,6 +438,7 @@ def format_l6_judge_soft_fail_recommendation(*, soft_judges: list[str]) -> str:
 __all__ = [
     "DEPENDENCY_GRAPH_FACT_ID",
     "FSA_CREDENTIAL_FACT_ID",
+    "format_leadership_first_exec_summary_block",
     "QUANT_METRIC_DISPLAY_FACT_ID",
     "SENTENCE_ARC_SVP_STRATEGY",
     "SVP_JD_EMPHASIS_THEMES",

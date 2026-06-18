@@ -71,6 +71,8 @@ def test_emit_mandatory_writes_all_outputs(tmp_path: Path, monkeypatch) -> None:
     )
     assert out_a.is_file() and out_b.is_file()
     text = out_a.read_text(encoding="utf-8")
+    assert "### BCG Burndown Brief" in text
+    assert "Maintain SVP engineer-level repo standards" in text
     assert "## 1. ADG Heuristic Attack Order" in text
     assert "## 2. P0 Action Plan" in text
     assert "## 3. ADG Status By Band" in text
@@ -101,6 +103,7 @@ def test_emit_prints_markdown_to_stdout(
     assert emit_mandatory_adg_burndown_report(gate_results=gate, burndown=burndown) == 0
     captured = capsys.readouterr()
     assert "# ADG CI Burndown Report" in captured.out
+    assert "### BCG Burndown Brief" in captured.out
 
 
 def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:

@@ -94,6 +94,22 @@ class TestReviewTemplateWiring:
         assert "review_template_path.with_suffix(\".yaml\")" in source
 
 
+class TestDeadCodeReportWiring:
+    """Static regression coverage for mandatory ADG dead-code report wiring."""
+
+    def test_dead_code_report_emit_and_zip_inclusion_are_wired(self):
+        source_path = next(
+            candidate / "tools" / "generate" / "generate_full_adg.py"
+            for candidate in Path(__file__).resolve().parents
+            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+        )
+        source = source_path.read_text(encoding="utf-8")
+        assert "emit_mandatory_adg_dead_code_report" in source
+        assert "\"dead_code_report\"" in source
+        assert "dead_code_report_path" in source
+        assert "dead_code_zone_control_report_" in source
+
+
 class TestDispatcherResultsPathResolution:
     """Regression coverage for noisy gate-dispatcher stdout."""
 

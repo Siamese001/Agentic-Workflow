@@ -15,6 +15,7 @@ from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
     failed_x2_gate_ids,
     gate_ids_from_x2_reject_reason,
     SENTENCE_ARC_SVP_STRATEGY,
+    format_leadership_first_exec_summary_block,
     format_strategy_executive_u0_block,
     format_synthesis_repair_directive,
     format_x2_gate_failures_reject_reason,
@@ -39,10 +40,17 @@ def test_strategy_title_detects_brown_brown_svp() -> None:
 
 def test_u0_block_includes_jd_emphasis_and_s3_s6() -> None:
     block = format_strategy_executive_targeting_appendix("SVP IT Strategy & Innovation")
+    leadership = format_leadership_first_exec_summary_block(
+        target_title="SVP IT Strategy & Innovation"
+    )
+    assert "leadership-first" in leadership.lower() or "leadership_first" in leadership.lower()
+    assert "JD and briefing" in leadership
     assert "enterprise architecture" in block.lower()
     assert "S3–S4" in block or "S3-4" in block
     assert "integrative" in block.lower() or "capstone" in block.lower()
-    assert block == format_strategy_executive_u0_block(target_title="SVP IT Strategy & Innovation")
+    assert block == format_strategy_executive_u0_block(
+        target_title="SVP IT Strategy & Innovation"
+    )
 
 
 def test_sentence_arc_svp_has_six_roles() -> None:

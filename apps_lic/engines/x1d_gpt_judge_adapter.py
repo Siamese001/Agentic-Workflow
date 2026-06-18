@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping, Protocol
 
 from apps_lic.config.model_profiles import resolve_x1d_judge_transport_model_id
+from apps_lic.integrations.llm_client import OpenAI
 from apps_lic.engines.validation_exit import (
     DEFAULT_X1D_JUDGE_MODEL,
     DEFAULT_X1D_JUDGE_PROVIDER,
@@ -264,11 +265,9 @@ class OpenAIGPTX1DTransport:
         api_key = self._api_key or os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
             return None
-        try:
-            import openai  # type: ignore
-        except ImportError:
+        if OpenAI is None:
             return None
-        self._client = openai.OpenAI(api_key=api_key, timeout=self._timeout_s)
+        self._client = OpenAI(api_key=api_key, timeout=self._timeout_s)
         return self._client
 
     def __call__(self, payload: Mapping[str, Any]) -> Mapping[str, Any] | str:

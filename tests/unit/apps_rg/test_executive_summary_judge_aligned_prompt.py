@@ -51,6 +51,7 @@ def test_template_v15_judge_aligned_markers():
     raw = TEMPLATE.read_text(encoding="utf-8")
     assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V10" in raw
     assert "display_metric_weave_contract" in raw
+    assert "leadership-first" in raw.lower()
     assert "claude_synthesis_pass_contract" not in raw
     assert "connective_variety_contract" not in raw
     assert "<third_person_voice_contract>" in raw
@@ -76,6 +77,7 @@ def test_strategy_compile_includes_thesis_and_narrative_arc_weights():
     out = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = "\n".join(str(m.get("content") or "") for m in out.artifact.messages)
     assert "executive_strategy_thesis" in content
+    assert "LEADERSHIP_FIRST_EXEC_SUMMARY" in content
     assert "narrative_arc_weights" in content
     assert "TARGETING_CONCEPT_MAP" in content
     assert "must follow index order" not in content

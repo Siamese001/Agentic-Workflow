@@ -31,10 +31,7 @@ def _http_status_code(error: str) -> int | None:
     match = _HTTP_STATUS_RE.search(error)
     if not match:
         return None
-    try:
-        return int(match.group(1))
-    except ValueError:
-        return None
+    return int(match.group(1))
 
 
 def is_claude_generation_availability_failure(result: ProviderResult) -> bool:

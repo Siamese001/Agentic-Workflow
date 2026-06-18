@@ -336,6 +336,8 @@ def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: P
     hotspot = next(row for row in mv_inventory if row["mv_name"] == "mv_hotspot_coverage_risk")
     assert hotspot["routing_status"] == "action_driver"
     assert hotspot["priority"] == "next"
+    assert "### BCG Review Brief" in inline
+    assert "Maintain SVP engineer-level repo standards" in inline
     assert "### Executive Decision Brief" in inline
     assert "### Testing Gap Risk" in inline
     assert "Fund a narrow unblock-and-test slice now." in inline
@@ -406,6 +408,7 @@ def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     assert "## ADG Review" in inline
     assert "adg_review_template_06132026_1324.json" in inline
     assert "adg_review_template_06132026_1324.yaml" in inline
+    assert "### BCG Review Brief" in inline
     assert "### What This Means" in inline
     assert "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 848." in inline
     assert "Do it after ratchets unless an item is tiny or high-leverage." in inline
@@ -463,6 +466,7 @@ def test_emit_mandatory_review_template_prints_inline_by_default(
     assert rc == 0
     assert out is not None and out.is_file()
     assert "## ADG Review" in captured.out
+    assert "### BCG Review Brief" in captured.out
     assert "### What This Means" in captured.out
     assert "### Priority Execution Plan" in captured.out
     assert "Do This Next" not in captured.out

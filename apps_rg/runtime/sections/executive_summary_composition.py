@@ -28,7 +28,7 @@ SENTENCE_ARC_DEFAULT: tuple[dict[str, str], ...] = (
     {
         "brushstroke_id": "B1_executive_identity",
         "arc_role": "thesis",
-        "guidance": "Executive thesis and regulated platform scope; no mechanism inventory.",
+        "guidance": "Executive leadership thesis and operating scope; no mechanism inventory.",
     },
     {
         "brushstroke_id": "B2_governed_platform_system",
@@ -247,7 +247,7 @@ def _brushstroke_for_role(
     )
     skill_refs = _infer_graph_skill_refs(role_facts, proof_pool_metadata=proof_pool_metadata)
     image_goals = {
-        "B1_executive_identity": "Establish executive identity and regulated enterprise platform scope.",
+        "B1_executive_identity": "Establish executive leadership identity and operating scope.",
         "B2_governed_platform_system": "Paint the governed agentic platform system (runtime, retrieval, orchestration).",
         "B3_control_evidence_discipline": "Show control, lineage, validation, and audit-ready evidence discipline.",
         "B4_business_role_fit": "Close with commercial, scale, and credibility outcomes tied to role fit.",
@@ -512,13 +512,13 @@ def build_executive_summary_composition_plan(
         dominant = "B3_control_evidence_discipline"
     if strategy_executive:
         target_picture = (
-            "Executive portrait: technology strategy leader aligning governed AI platforms, "
+            "Executive portrait: leadership-first technology strategy leader aligning governed AI platforms, "
             "regulatory lineage, and digital innovation programs into one enterprise IT direction "
             f"(targeting context: {role_s or 'SVP IT strategy role'}; company name never in prose)."
         )
     else:
         target_picture = (
-            f"Executive portrait: governed agentic AI platform leader "
+            f"Executive portrait: leadership-first governed agentic AI platform leader "
             f"(targeting: {role_s or 'target role'}; company name never in prose)."
         )
     sentence_arc = build_sentence_arc(target_role=role_s, strategy_executive=strategy_executive)
