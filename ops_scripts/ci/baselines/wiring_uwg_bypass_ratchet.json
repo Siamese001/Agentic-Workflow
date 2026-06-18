@@ -1,9 +1,18 @@
 {
   "gate_id": "S2_uwg_bypass_ratchet",
-  "count": 1583,
+  "count": 1549,
   "seeded_at": "2026-06-13T14:17:35.228068+00:00",
-  "snapshot": "adg_indexed_06132026_1009.sqlite",
+  "snapshot": "adg_indexed_06182026_1128.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-13T17:29:22.570765+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1324.sqlite"
+  "last_run_at": "2026-06-18T15:34:15.138414+00:00",
+  "last_run_snapshot": "adg_indexed_06182026_1128.sqlite",
+  "tightened_at": "2026-06-18T15:34:15.130597+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-18T15:34:15.130597+00:00",
+      "snapshot": "adg_indexed_06182026_1128.sqlite",
+      "from": 1583,
+      "to": 1549
+    }
+  ]
 }
