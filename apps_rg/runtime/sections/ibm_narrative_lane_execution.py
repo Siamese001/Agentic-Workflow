@@ -194,16 +194,28 @@ def run_ibm_narrative_lane_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import (
+        external_claude_generation_model,
+        external_openai_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else external_claude_generation_model()
+    )
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
         max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
+        model=section_model,
+        provider_requested=str(args.provider),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
+    req_model = str(provider_request_data.get("model") or section_model)
 
     from apps_rg.runtime.validators.companion_bullet_finalization import (
         UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,

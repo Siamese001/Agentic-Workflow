@@ -1,4 +1,4 @@
-"""Bullet-pool generation: Qwen self-consistency paths + Claude per-slot selection."""
+"""Bullet-pool generation: self-consistency paths + per-slot selection."""
 
 from __future__ import annotations
 

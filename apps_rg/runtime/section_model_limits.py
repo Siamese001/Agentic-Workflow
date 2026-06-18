@@ -82,6 +82,13 @@ def runtime_limit_str(path: str) -> str:
     return value.strip()
 
 
+def runtime_limit_mapping(path: str) -> dict[str, Any]:
+    value = _runtime_limit_value(path)
+    if not isinstance(value, dict):
+        raise SectionModelSSOTError(f"runtime_limits.{path} must be a mapping in {_PROVIDER_PROFILES_PATH}")
+    return dict(value)
+
+
 SECTION_MODEL_MAX_MODEL_LEN: Final[int] = runtime_limit_int("section_context_window")
 
 
@@ -96,7 +103,7 @@ def _ssot_default_model(profile_key: str = "external_claude_generator") -> str:
 
 def _ssot_model_by_section() -> dict[str, str]:
     """Per-section model overrides from the provider-profiles SSOT
-    (``external_claude_generator.model_by_section``)."""
+    (``external_claude_generator.model_by_section`` for Claude-backed sections)."""
     profiles = _provider_profiles()
     raw = (profiles.get("external_claude_generator") or {}).get("model_by_section") or {}
     if not isinstance(raw, dict):
@@ -145,14 +152,10 @@ def external_openai_generation_model(environ: Mapping[str, str] | None = None) -
     return _ssot_default_model("external_openai_generator")
 
 
-def external_openai_generation_model_from_ssot() -> str:
-    """Compatibility alias for provider fallback code during the SSOT migration."""
-    return external_openai_generation_model()
-
-
-# Canonical generation model identity for apps_rg sections — resolved from the external
-# Claude generation profile (``provider_profiles.yaml`` -> external_claude_generator) so the
-# X2 ``x2_model_name_allowed`` proof and prompt-render manifests reference the real provider model.
+# Canonical generation model identity for Claude-backed apps_rg sections — resolved from the
+# external Claude generation profile (``provider_profiles.yaml`` -> external_claude_generator) so
+# the X2 ``x2_model_name_allowed`` proof and prompt-render manifests reference the actual Claude
+# model pin for those lanes.
 SECTION_MODEL_ID: Final[str] = external_claude_generation_model()
 DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = _ssot_default_model("external_claude_generator")
 DEFAULT_EXTERNAL_OPENAI_MODEL: Final[str] = _ssot_default_model("external_openai_generator")
@@ -167,6 +170,7 @@ __all__ = [
     "external_openai_generation_model",
     "resolve_section_generation_model",
     "runtime_limit_float",
+    "runtime_limit_mapping",
     "runtime_limit_int",
     "runtime_limit_str",
 ]

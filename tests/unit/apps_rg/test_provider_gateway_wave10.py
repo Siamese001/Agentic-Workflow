@@ -9,7 +9,12 @@ import pytest
 
 import apps_rg.runtime.providers.external_provider as external_provider_module
 import apps_rg.runtime.providers.section_provider_call as section_provider_call_module
-from apps_rg.runtime.section_model_limits import DEFAULT_EXTERNAL_CLAUDE_MODEL, external_claude_generation_model
+from apps_rg.runtime.section_model_limits import (
+    DEFAULT_EXTERNAL_CLAUDE_MODEL,
+    DEFAULT_EXTERNAL_OPENAI_MODEL,
+    external_claude_generation_model,
+    external_openai_generation_model,
+)
 from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.providers import (
     ExternalProvider,
@@ -38,17 +43,27 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     assert data["wave10a_policy"]["default_provider"] == "external_claude"
     assert data["wave10a_policy"]["external_default_status"] == "claude_default_for_apps_rg_e2e"
     profiles = data["profiles"]
+    assert profiles["external_openai_generator"]["default_model"] == DEFAULT_EXTERNAL_OPENAI_MODEL
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
     assert profiles["external_claude_generator"]["default_model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
+    assert profiles["external_claude_generator"]["model_by_section"] == {
+        "headline": "claude-opus-4-8",
+        "executive_summary": "claude-opus-4-8",
+    }
     assert "local_qwen_generator" not in profiles
 
 
 def test_external_claude_default_model_is_sonnet() -> None:
-    # Default tier is sonnet (high-signal). Haiku is applied per-section via provider_profiles.yaml
-    # model_by_section (competencies + 4 narratives), NEVER as the section-agnostic default.
+    # Default tier is sonnet for Claude-backed bullets. Headline and executive_summary override to
+    # Opus in provider_profiles.yaml; the OpenAI-backed lanes use the separate gpt-5.4-mini tier.
     assert external_claude_generation_model({}) == DEFAULT_EXTERNAL_CLAUDE_MODEL
     assert "haiku" not in DEFAULT_EXTERNAL_CLAUDE_MODEL
+
+
+def test_external_openai_default_model_is_gpt_5_4_mini() -> None:
+    assert external_openai_generation_model({}) == DEFAULT_EXTERNAL_OPENAI_MODEL
+    assert DEFAULT_EXTERNAL_OPENAI_MODEL == "gpt-5.4-mini"
 
 
 def test_section_request_uses_external_claude_default_model() -> None:

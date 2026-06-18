@@ -35,6 +35,7 @@ from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     ensure_dimension_verdicts,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
+from apps_rg.runtime.section_judge_policy import get_section_judge_policy
 from apps_rg.runtime.section_model_limits import runtime_limit_float, runtime_limit_int
 
 
@@ -69,6 +70,27 @@ ANTHROPIC_JUDGE_MAX_OUTPUT_TOKENS = _resolved_x1d_judge_max_output_tokens(attemp
 def _resolved_openai_judge_max_completion_tokens(*, attempt: int = 1) -> int:
     """OpenAI chat completions cap — same unified budget as Gemini/Anthropic judges."""
     return _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+
+
+def _section_judge_runtime_profile(section_id: str) -> Any:
+    return get_section_judge_policy(section_id).judge_runtime_profile
+
+
+def _resolved_section_x1d_judge_max_output_tokens(
+    section_id: str,
+    *,
+    attempt: int = 1,
+) -> int:
+    profile = _section_judge_runtime_profile(section_id)
+    return profile.resolved_max_output_tokens(attempt=attempt)
+
+
+def _section_x1d_judge_max_attempts(section_id: str) -> int:
+    return _section_judge_runtime_profile(section_id).max_attempts
+
+
+def _section_judge_retry_backoff_seconds(section_id: str, attempt: int) -> float:
+    return _section_judge_runtime_profile(section_id).resolved_retry_backoff_seconds(attempt=attempt)
 
 
 def _x1d_judge_max_attempts() -> int:
@@ -111,8 +133,13 @@ def _invoke_judge_with_bounded_retries(
     invoke: Callable[[int], JudgeOutput],
     *,
     provider_key: str,
+    section_id: str | None = None,
 ) -> JudgeOutput:
-    max_attempts = _x1d_judge_max_attempts()
+    max_attempts = (
+        _section_x1d_judge_max_attempts(section_id)
+        if section_id
+        else _x1d_judge_max_attempts()
+    )
     last: JudgeOutput | None = None
     for attempt in range(1, max_attempts + 1):
         last = invoke(attempt)
@@ -120,7 +147,11 @@ def _invoke_judge_with_bounded_retries(
             break
         if not _is_retriable_judge_output(last) or attempt >= max_attempts:
             return last
-        time.sleep(_judge_retry_backoff_seconds(attempt))
+        time.sleep(
+            _section_judge_retry_backoff_seconds(section_id, attempt)
+            if section_id
+            else _judge_retry_backoff_seconds(attempt)
+        )
     assert last is not None
     return last
 
@@ -448,11 +479,16 @@ def _build_judge_user_prompt(resume_display_text: str, claim_ledger: list[dict[s
     )
 
 
-def _gemini_generation_config(*, attempt: int = 1) -> dict[str, Any]:
+def _gemini_generation_config(*, attempt: int = 1, section_id: str | None = None) -> dict[str, Any]:
     """Gemini generationConfig for compact schema-valid judge JSON."""
+    max_tokens = (
+        _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=attempt)
+        if section_id
+        else _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    )
     return {
         "temperature": 0.1,
-        "maxOutputTokens": _resolved_x1d_judge_max_output_tokens(attempt=attempt),
+        "maxOutputTokens": max_tokens,
         "responseMimeType": "application/json",
         "responseSchema": GEMINI_JUDGE_RESPONSE_SCHEMA,
     }
@@ -880,6 +916,7 @@ def _call_openai(
     judge_receipt: dict[str, Any] | None = None,
     attempt: int = 1,
     model_env_source: str = "openai",
+    section_id: str | None = None,
 ) -> JudgeOutput:
     """Call OpenAI API with full artifact preservation."""
     system_content = build_x1d_judge_system_prompt(compact=True)
@@ -892,21 +929,24 @@ def _call_openai(
         ],
     }
     # GPT-5 family: max_completion_tokens only; temperature/reasoning rejected on current chat SKUs.
+    max_tokens = (
+        _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=attempt)
+        if section_id
+        else _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    )
+    judge_max_attempts = _section_x1d_judge_max_attempts(section_id) if section_id else _x1d_judge_max_attempts()
     if _is_openai_gpt5_chat_model(model):
-        payload["max_completion_tokens"] = _resolved_openai_judge_max_completion_tokens(
-            attempt=attempt
-        )
+        payload["max_completion_tokens"] = max_tokens
         effort = (reasoning_effort or "").strip()
         if effort and _openai_reasoning_effort_supported(model):
             payload["reasoning"] = {"effort": effort}
     else:
-        payload["max_tokens"] = _resolved_openai_judge_max_completion_tokens(attempt=attempt)
+        payload["max_tokens"] = max_tokens
         payload["temperature"] = 0.1
         payload["response_format"] = {"type": "json_object"}
     
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
-    max_tokens = _resolved_openai_judge_max_completion_tokens(attempt=attempt)
     req_doc: dict[str, Any] = {
         "payload": payload,
         "input_hash": input_hash,
@@ -915,7 +955,7 @@ def _call_openai(
         "model_actual": model,
         "reasoning_effort": reasoning_effort,
         "judge_attempt": attempt,
-        "judge_max_attempts": _x1d_judge_max_attempts(),
+        "judge_max_attempts": judge_max_attempts,
         "compact_system_prompt": True,
         **_x1d_provider_request_receipt_fields(
             judge_receipt,
@@ -1091,12 +1131,21 @@ def _call_anthropic(
     attempt: int = 1,
     packet_hash: str | None = None,
     canonical_contract_hash: str | None = None,
+    section_id: str | None = None,
 ) -> JudgeOutput:
     """Call Anthropic API with full artifact preservation."""
     original_model = model
     fallback_model = None
-    
-    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    section_max_attempts = (
+        _section_x1d_judge_max_attempts(section_id)
+        if section_id
+        else max(1, min(2, _x1d_judge_max_attempts()))
+    )
+    max_tokens = (
+        _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=attempt)
+        if section_id
+        else _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    )
     payload = {
         "model": model,
         "max_tokens": max_tokens,
@@ -1104,7 +1153,7 @@ def _call_anthropic(
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
-    
+
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
     req_doc = {
@@ -1118,6 +1167,7 @@ def _call_anthropic(
         "temperature": 0.1,
         "response_format": "system_json_instruction",
         "judge_attempt": attempt,
+        "judge_max_attempts": section_max_attempts,
         "original_model": original_model,
         "resolved_model": model,
         "resolved_model_source": model_source,
@@ -1197,7 +1247,7 @@ def _call_anthropic(
             "detail": str(exc),
             "raw_response_ref": str(raw_path),
         })
-        if attempt < 2 and canonical_contract_hash and packet_hash:
+        if attempt < section_max_attempts and attempt < 2 and canonical_contract_hash and packet_hash:
             retry_path = _artifact_path(provider_key, "anthropic_judge_retry_receipt", artifact_base=artifact_base)
             _write_artifact(
                 retry_path,
@@ -1221,6 +1271,7 @@ def _call_anthropic(
                 attempt=2,
                 packet_hash=packet_hash,
                 canonical_contract_hash=canonical_contract_hash,
+                section_id=section_id,
             )
         return _make_blocked_output(
             provider_key,
@@ -1235,7 +1286,7 @@ def _call_anthropic(
         )
 
     if stop_reason == "max_tokens":
-        if attempt < 2 and canonical_contract_hash and packet_hash:
+        if attempt < section_max_attempts and attempt < 2 and canonical_contract_hash and packet_hash:
             retry_path = _artifact_path(provider_key, "anthropic_judge_retry_receipt", artifact_base=artifact_base)
             _write_artifact(
                 retry_path,
@@ -1245,7 +1296,11 @@ def _call_anthropic(
                     "canonical_contract_hash": canonical_contract_hash,
                     "packet_hash": packet_hash,
                     "attempt": attempt,
-                    "next_max_tokens": _resolved_x1d_judge_max_output_tokens(attempt=2),
+                    "next_max_tokens": (
+                        _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=2)
+                        if section_id
+                        else _resolved_x1d_judge_max_output_tokens(attempt=2)
+                    ),
                 },
             )
             return _call_anthropic(
@@ -1261,6 +1316,7 @@ def _call_anthropic(
                 attempt=2,
                 packet_hash=packet_hash,
                 canonical_contract_hash=canonical_contract_hash,
+                section_id=section_id,
             )
         return _make_blocked_output(
             provider_key,
@@ -1403,13 +1459,19 @@ def _call_gemini(
     model_requested: str | None = None,
     judge_receipt: dict[str, Any] | None = None,
     attempt: int = 1,
+    section_id: str | None = None,
 ) -> JudgeOutput:
     """Call Gemini API with full artifact preservation."""
-    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    judge_max_attempts = _section_x1d_judge_max_attempts(section_id) if section_id else _x1d_judge_max_attempts()
+    max_tokens = (
+        _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=attempt)
+        if section_id
+        else _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    )
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "systemInstruction": {"parts": [{"text": build_x1d_judge_system_prompt(compact=True)}]},
-        "generationConfig": _gemini_generation_config(attempt=attempt),
+        "generationConfig": _gemini_generation_config(attempt=attempt, section_id=section_id),
     }
 
     endpoint_version = "v1beta" if _uses_gemini_preview_endpoint(model) else "v1"
@@ -1430,6 +1492,7 @@ def _call_gemini(
         "provider_key": provider_key,
         "request_timeout_seconds": 60,
         "gemini_max_retries_configured": retries,
+        "judge_max_attempts": judge_max_attempts,
         "input_hash": input_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "judge_attempt": attempt,
@@ -1746,8 +1809,10 @@ def run_llm_judges(
                         judge_receipt=receipt,
                         attempt=attempt,
                         model_env_source=model_source,
+                        section_id=sid,
                     ),
                     provider_key=key,
+                    section_id=sid,
                 )
             elif key == "anthropic_claude":
                 output = _invoke_judge_with_bounded_retries(
@@ -1761,11 +1826,13 @@ def run_llm_judges(
                         artifact_base=artifact_base,
                         model_requested=model_requested,
                         judge_receipt=receipt,
-                        attempt=1,
+                        attempt=attempt,
                         packet_hash=input_hash,
                         canonical_contract_hash=contract_hash,
+                        section_id=sid,
                     ),
                     provider_key=key,
+                    section_id=sid,
                 )
             else:
                 output = _invoke_judge_with_bounded_retries(
@@ -1780,8 +1847,10 @@ def run_llm_judges(
                         model_requested=model_requested,
                         judge_receipt=receipt,
                         attempt=attempt,
+                        section_id=sid,
                     ),
                     provider_key=key,
+                    section_id=sid,
                 )
             if use_grade_only_packet:
                 output.section_id = sid

@@ -19,6 +19,7 @@ class X1dPanelProviderContext:
     input_hash: str
     model_source: str
     model_requested: str
+    section_id: str = "executive_summary"
     artifact_base: Path | None = None
     judge_receipt: dict[str, Any] | None = None
     reasoning_effort: str | None = None

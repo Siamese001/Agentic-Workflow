@@ -53,7 +53,7 @@ def build_competencies_lane_args(
 ) -> SimpleNamespace:
     """Namespace compatible with competencies lane execution."""
     ns = SimpleNamespace(
-        provider=str(provider).strip() or "external_claude",
+        provider=str(provider).strip() or "external_openai",
         temperature=float(temperature),
         x1d_judges=str(x1d_judges),
         mock_judges=bool(mock_judges),
