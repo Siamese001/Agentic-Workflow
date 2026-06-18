@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from apps_rg.runtime.sections.executive_summary_briefing import extract_briefing_signal_packet
+from apps_rg.runtime.sections import executive_summary_briefing as briefing_mod
 from apps_rg.runtime.ingress.executive_summary_targeting_ingress import (
     prepare_executive_summary_targeting_ingress,
 )
@@ -47,6 +49,59 @@ def test_brown_briefing_passes_through_when_under_ingress_budget() -> None:
     assert len(ingress.briefing_text_bounded) >= len(brief.strip()) - 32
     assert "integration" in ingress.briefing_text_bounded.lower()
     assert "R26_0000001653" in ingress.briefing_text_bounded
+
+
+def test_ingress_exposes_briefing_signal_packet_for_prospective_lens() -> None:
+    brief = (
+        "## Company Strategy & Operating Pressure\n"
+        "- The role must solve operating-model friction and clarify decision rights.\n\n"
+        "## Leadership & Stakeholder Map\n"
+        "- CEO, CIO, and business leaders need a tighter delivery cadence.\n\n"
+        "## AI, Data, Platform, Architecture Signals\n"
+        "- Platform modernization and architecture governance are forward-looking priorities.\n\n"
+        "## Recent Events & Urgency\n"
+        "- Recent integration pressure and roadmap changes create urgency.\n"
+    )
+    ingress = prepare_executive_summary_targeting_ingress(
+        jd_text="SVP IT Strategy",
+        briefing_raw=brief,
+        target_title="SVP IT Strategy",
+        repo_root=REPO,
+    )
+    packet = ingress.briefing_signal_packet
+    assert packet["schema"] == "briefing_signal_packet_v1"
+    assert packet["theme_counts"]["strategy"] >= 1
+    assert packet["theme_counts"]["operating_model"] >= 1
+    assert packet["theme_counts"]["leadership"] >= 1
+    assert packet["theme_counts"]["forward_looking"] >= 1
+    assert packet["theme_counts"]["urgency"] >= 1
+    assert packet["dominant_themes"][0] in {"strategy", "operating_model"}
+
+
+def test_ingress_preserves_raw_briefing_signal_packet_when_bounded_text_trims_tail(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(briefing_mod, "_max_chars", lambda: 180)
+    brief = (
+        "## Strategy\n"
+        "- Strategy, mandate, pressure, operating model, and governance are the core themes "
+        "for the first section and should consume most of the budget.\n\n"
+        "## Operating Model\n"
+        "- Decision rights and cadence need clarity.\n\n"
+        "## Forward View\n"
+        "- Roadmap and future-state operating model changes matter.\n"
+    )
+    ingress = prepare_executive_summary_targeting_ingress(
+        jd_text="SVP IT Strategy",
+        briefing_raw=brief,
+        target_title="SVP IT Strategy",
+        repo_root=REPO,
+    )
+    raw_packet = ingress.briefing_signal_packet
+    bounded_packet = extract_briefing_signal_packet(ingress.briefing_text_bounded)
+    assert raw_packet["theme_counts"]["strategy"] == 1
+    assert bounded_packet["theme_counts"]["strategy"] == 0
+    assert raw_packet["theme_counts"]["strategy"] > bounded_packet["theme_counts"]["strategy"]
 
 
 def test_section_proof_loader_uses_briefing_override(monkeypatch: pytest.MonkeyPatch) -> None:

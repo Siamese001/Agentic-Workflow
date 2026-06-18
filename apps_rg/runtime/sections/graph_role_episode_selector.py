@@ -11,6 +11,10 @@ from apps_rg.runtime.sections.graph_evidence_contract import (
     build_allowed_fact_ids_for_plan_facts,
     selection_method_for_section,
 )
+from apps_rg.runtime.sections.executive_summary_briefing import (
+    briefing_signal_bonus,
+    extract_briefing_signal_packet,
+)
 
 _BUNDLE_FILES: tuple[tuple[str, str], ...] = (
     ("unify", "unify_role_episode_bundles.json"),
@@ -319,7 +323,14 @@ def _allocate_employer_root_budgets(
     return {emp: n for emp, n in budgets.items() if n > 0}
 
 
-def _token_score(bundle: dict[str, Any], *, target_role: str, jd_text: str, briefing_text: str) -> float:
+def _token_score(
+    bundle: dict[str, Any],
+    *,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    briefing_signal_packet: dict[str, Any] | None = None,
+) -> float:
     target_blob = f"{target_role}\n{jd_text}\n{briefing_text}".lower()
     bundle_blob = " ".join(
         [
@@ -357,6 +368,12 @@ def _token_score(bundle: dict[str, Any], *, target_role: str, jd_text: str, brie
         if token in target_blob and token in bundle_blob:
             score += 1.0
     score += min(len(bundle.get("linked_metric_outcome_ids") or []), 4) * 0.05
+    packet = briefing_signal_packet or extract_briefing_signal_packet(briefing_text)
+    score += briefing_signal_bonus(
+        packet,
+        bundle_blob=bundle_blob,
+        target_blob=target_blob,
+    )
     return score
 
 
@@ -440,6 +457,7 @@ def build_selected_graph_evidence_plan_for_section(
     candidates: list[tuple[float, str, dict[str, Any], dict[str, dict[str, Any]]]] = []
     raw_skill_counts_by_employer: dict[str, int] = {}
     raw_metric_counts_by_employer: dict[str, int] = {}
+    briefing_signal_packet = extract_briefing_signal_packet(briefing_text)
     for employer_lane, filename in _BUNDLE_FILES:
         doc = _load_bundle_doc(repo_root, filename)
         metric_nodes = _bundle_metric_nodes(doc)
@@ -454,6 +472,7 @@ def build_selected_graph_evidence_plan_for_section(
                 target_role=target_role,
                 jd_text=jd_text,
                 briefing_text=briefing_text,
+                briefing_signal_packet=briefing_signal_packet,
             )
             candidates.append((score, employer_lane, bundle, metric_nodes))
             raw_skill_counts_by_employer[employer_lane] = raw_skill_counts_by_employer.get(employer_lane, 0) + len(
@@ -471,6 +490,10 @@ def build_selected_graph_evidence_plan_for_section(
         jd_text=jd_text,
         briefing_text=briefing_text,
     )
+    briefing_signal_packet = {
+        **briefing_signal_packet,
+        "role_family_key": target_role_profile,
+    }
     employer_weights = dict(_ROLE_EMPLOYER_WEIGHTS[target_role_profile])
 
     candidates_by_employer: dict[str, list[tuple[float, str, dict[str, Any], dict[str, dict[str, Any]]]]] = {}
@@ -659,13 +682,15 @@ def build_selected_graph_evidence_plan_for_section(
         "selected_competency_families": list(
             _COMPETENCY_FAMILIES_BY_PROFILE.get(target_role_profile, ())
         ),
+        "briefing_signal_packet": briefing_signal_packet,
         "excluded_due_to_root_cap": excluded_due_to_root_cap,
         "excluded_due_to_metric_cap": excluded_due_to_metric_cap,
         "allowed_graph_evidence_ids": ordered,
         "selection_rationale": (
             "Selected graph role episode bundles by section eligibility, target-role profile, "
             "employer/root budgets, and per-root skill/metric caps. JD/briefing steer weighting "
-            "only and do not create evidence."
+            "only and do not create evidence. Briefing signal packet keeps strategy, operating-model, "
+            "leadership, platform, forward-looking, and urgency sections visible to the scorer."
         ),
         "skew_diagnostics": {
             "raw_skill_counts_by_employer": raw_skill_counts_by_employer,

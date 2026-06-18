@@ -37,6 +37,9 @@ def freeze_executive_summary_targeting_context(
         "targeting_context_frozen": False,
         "bundle_digest_before": material_targeting_digest(jd_before, br_before),
     }
+    signal_packet = runtime_payload.get("briefing_signal_packet")
+    if isinstance(signal_packet, dict) and signal_packet:
+        receipt["briefing_signal_packet"] = dict(signal_packet)
     if not jd_before.strip() and not br_before.strip():
         receipt["skip_reason"] = "empty_targeting_inputs"
         return receipt

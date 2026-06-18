@@ -20,6 +20,11 @@ _JD_TAG = "jd_requirements"
 
 _BRIEFING_SECTION_PRIORITY: tuple[str, ...] = (
     "STRATEGIC MANDATE",
+    "OPERATING MODEL",
+    "DECISION RIGHTS",
+    "FORWARD VIEW",
+    "PROSPECTIVE",
+    "ROADMAP",
     "POST-MERGER",
     "POST MERGER",
     "FEDERATED",
@@ -37,6 +42,16 @@ _BRIEFING_SECTION_PRIORITY: tuple[str, ...] = (
 )
 
 _BRIEFING_SLUG_BOOST: tuple[str, ...] = (
+    "strategy",
+    "operating_model",
+    "operating",
+    "leadership",
+    "stakeholder",
+    "decision_rights",
+    "roadmap",
+    "forward",
+    "prospective",
+    "future",
     "post_merger",
     "federated",
     "integration",
@@ -178,14 +193,16 @@ def _parse_briefing_sections(briefing: str) -> tuple[list[str], dict[str, list[s
     return preamble, sections
 
 
-def _score_briefing_section_title(title: str) -> int:
+def _score_briefing_section_title(title: str, *, body: str = "") -> int:
     t = title.lower()
+    blob = f"{title}\n{body}".lower()
     for idx, pat in enumerate(_BRIEFING_SECTION_PRIORITY):
-        if pat.lower() in t:
+        low_pat = pat.lower()
+        if low_pat in t or low_pat in blob:
             return idx
-    if any(k in t for k in _BRIEFING_SLUG_BOOST):
+    if any(k in blob for k in _BRIEFING_SLUG_BOOST):
         return 0
-    if any(k in t for k in ("cultural", "narrative", "performance_mapping")):
+    if any(k in blob for k in ("cultural", "narrative", "performance_mapping")):
         return len(_BRIEFING_SECTION_PRIORITY) + 2
     return len(_BRIEFING_SECTION_PRIORITY) + 1
 
@@ -216,7 +233,7 @@ def compress_targeting_briefing_body(briefing: str, max_chars: int) -> str:
 
     ordered_titles = sorted(
         sections.keys(),
-        key=lambda t: (_score_briefing_section_title(t), t.lower()),
+        key=lambda t: (_score_briefing_section_title(t, body="\n".join(sections.get(t) or [])), t.lower()),
     )
 
     for title in ordered_titles:

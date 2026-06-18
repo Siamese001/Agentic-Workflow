@@ -145,6 +145,16 @@ def test_allows_custom_additive_headers() -> None:
     assert v.valid, v.violations
 
 
+def test_allows_operating_model_and_forward_view_additive_headers() -> None:
+    v = validate_targeting_brief_text(
+        "## Operating Model\n- one verified company fact here\n\n"
+        "## Forward View\n- one verified forward-looking company fact here\n\n"
+        "## Decision Rights\n- one verified operating pressure fact here\n\n"
+        "## Leadership Signal\n- one verified leader fact here\n"
+    )
+    assert v.valid, v.violations
+
+
 def test_rejects_sub_bullet_and_table() -> None:
     sub = validate_targeting_brief_text(
         "=== STRATEGIC MANDATE ===\n- top fact verified\n  - nested fact\n"

@@ -1741,6 +1741,7 @@ def run_executive_summary_execution(
         allowed_fact_ids_ordered=allowed_fact_ids_ordered,
     )
     runtime_payload["targeting_ingress"] = targeting_ingress.to_dict()
+    runtime_payload["briefing_signal_packet"] = targeting_ingress.briefing_signal_packet
     if targeting_ingress.briefing_selection_receipt is not None:
         runtime_payload["briefing_selection"] = targeting_ingress.briefing_selection_receipt
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
