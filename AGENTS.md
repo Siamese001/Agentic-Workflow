@@ -111,8 +111,23 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
-- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement does not depend on hook parity.
+- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement does not depend on Claude hook parity.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
 - Do not create a Codex-only rule or MCP registry. Codex consumes repo-owned rules and records live route evidence under `docs/reports/codex/`.
+
+## Codex backup adapter
+
+This section is legacy compatibility only. Older docs and checks still use the "backup adapter" name; treat that as compatibility terminology only, and follow the primary execution adapter above for new Codex work.
+
+When using Codex in this repo:
+
+- Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work when it is available. If the skill is missing, continue from this file and [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md); local Codex skills are bootstrap shims, not governance SSOT.
+- Use `AGENTS.md`, `docs/codex-primary-execution.md`, root `.mcp.json`, and `scripts/governance/**` as repo-owned governance inputs; Codex consumes them directly and does not mirror them into a private registry. Legacy Claude compatibility files remain archival only.
+- Do not copy deprecated rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
+- Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next with `fix:`/`next:` · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
+- If a live route is unavailable, use the documented repo CLI/helper for that route; otherwise report the route unavailable and stop. Do not substitute Claude-specific workflows.
+- Validate the legacy compatibility check with `python scripts/governance/verify_codex_backup.py` after changing legacy docs or skills.
+
+Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).
