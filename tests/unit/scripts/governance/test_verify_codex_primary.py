@@ -45,7 +45,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "No parallel registry",
-                "Codex does not expose the Claude `AskUserQuestion` tool",
+                "When a turn still needs user input, ask a plain-text clarifying question",
             ]
         ),
     )

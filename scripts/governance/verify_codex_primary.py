@@ -39,7 +39,7 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
         "No parallel registry",
-        "Codex does not expose the Claude `AskUserQuestion` tool",
+        "When a turn still needs user input, ask a plain-text clarifying question",
     ],
 }
 

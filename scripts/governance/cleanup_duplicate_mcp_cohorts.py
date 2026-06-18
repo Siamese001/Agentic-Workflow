@@ -1,12 +1,12 @@
 """Clean duplicate MCP process cohorts with host-attachment guards.
 
 The audit helper is intentionally read-only. This companion script is the
-guarded write-side operation for a narrow runtime hygiene case: multiple Claude
-Code parent processes each own a full copy of the repo MCP launch tree.
+guarded write-side operation for a narrow runtime hygiene case: multiple legacy
+host parent processes each own a full copy of the repo MCP launch tree.
 
 Default mode is dry-run. Use ``--apply`` to terminate duplicate child MCP
-processes. The script never terminates Claude parent processes and only targets
-matching MCP descendants of Claude parents.
+processes. The script never terminates host parent processes and only targets
+matching MCP descendants of those parents.
 
 Codex-owned MCP children are different: stdio transport attachment is owned by
 the Codex host, and the attached process cannot be inferred safely from a plain
@@ -63,7 +63,7 @@ def _server_id(record: ProcessRecord) -> str | None:
     return None
 
 
-def _is_claude_parent(record: ProcessRecord) -> bool:
+def _is_legacy_parent(record: ProcessRecord) -> bool:
     return record.name.lower() == "claude.exe"
 
 
@@ -138,8 +138,8 @@ def select_duplicate_targets(
 ) -> dict[str, Any]:
     """Select duplicate MCP descendants to terminate.
 
-    When ``keep_parent_pid`` is omitted, the newest Claude parent with matching
-    MCP descendants is kept. All matching MCP descendants under older Claude
+    When ``keep_parent_pid`` is omitted, the newest legacy parent with matching
+    MCP descendants is kept. All matching MCP descendants under older legacy
     parents are selected.
     """
     by_pid = {record.pid: record for record in records}
@@ -147,14 +147,14 @@ def select_duplicate_targets(
     for record in records:
         children.setdefault(record.ppid, []).append(record)
 
-    claude_parents = [record for record in records if _is_claude_parent(record)]
+    legacy_parents = [record for record in records if _is_legacy_parent(record)]
     parent_targets: dict[int, list[ProcessRecord]] = {}
-    for parent in claude_parents:
+    for parent in legacy_parents:
         stack = list(children.get(parent.pid, []))
         descendants: list[ProcessRecord] = []
         while stack:
             child = stack.pop()
-            if _is_claude_parent(child):
+            if _is_legacy_parent(child):
                 continue
             descendants.append(child)
             stack.extend(children.get(child.pid, []))
@@ -168,7 +168,7 @@ def select_duplicate_targets(
             "duplicate_parent_pids": [],
             "target_pids": [],
             "targets": [],
-            "reason": "no claude-owned MCP cohorts found",
+            "reason": "no legacy-owned MCP cohorts found",
         }
 
     if keep_parent_pid is None:
@@ -357,7 +357,7 @@ def _terminate_targets(target_pids: list[int], timeout: float = 5.0) -> dict[str
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true", help="Terminate selected duplicate MCP child processes.")
-    parser.add_argument("--keep-parent-pid", type=int, default=None, help="Claude parent PID to keep. Defaults to newest MCP-owning Claude parent.")
+    parser.add_argument("--keep-parent-pid", type=int, default=None, help="Legacy parent PID to keep. Defaults to newest MCP-owning legacy parent.")
     parser.add_argument(
         "--codex-attached-pid",
         action="append",
@@ -368,7 +368,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--ignore-codex-duplicates",
         action="store_true",
-        help="Allow --apply to clean Claude-owned cohorts even when Codex-owned duplicates are blocked.",
+        help="Allow --apply to clean legacy-owned cohorts even when Codex-owned duplicates are blocked.",
     )
     parser.add_argument("--json", action="store_true", help="Emit JSON output.")
     args = parser.parse_args(argv)
