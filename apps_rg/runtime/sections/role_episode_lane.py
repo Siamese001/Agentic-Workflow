@@ -496,14 +496,14 @@ def _provider_gateway() -> ProviderGateway:
     )
 
 
-def _blocked_provider_result(provider: str, message: str) -> ProviderResult:
+def _blocked_provider_result(provider: str, message: str, *, model: str = "") -> ProviderResult:
     return ProviderResult(
         provider_requested=provider,
         provider_attempted=False,
         provider_available=False,
         exact_provider_error=message,
         runtime_generation_status="BLOCKED",
-        model="",
+        model=model,
         raw_model_output="",
         provider_response=None,
     )
@@ -751,10 +751,15 @@ def _write_blocked_artifacts(
         "authorization_scope": "PLUMBING_ONLY",
         "required_remediation": [reason],
     }
+    generation_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else external_claude_generation_model()
+    )
     provider_req = {
         "provider_requested": str(args.provider),
         "provider_attempted": False,
-        "model": "",
+        "model": generation_model,
         "temperature": float(args.temperature),
         "max_tokens": MAX_OUTPUT_TOKENS,
         "mock_fallback_allowed": False,
@@ -926,7 +931,7 @@ def run_role_episode_lane_execution(
     provider_request = {
         "provider_requested": str(args.provider),
         "provider_attempted": True,
-        "model": "",
+        "model": generation_model,
         "temperature": float(args.temperature),
         "max_tokens": MAX_OUTPUT_TOKENS,
         "prompt_hash": prompt_hash[:16],
@@ -948,7 +953,7 @@ def run_role_episode_lane_execution(
             temperature=float(args.temperature),
         )
     except ProviderGatewayError as exc:
-        provider_result = _blocked_provider_result(str(args.provider), str(exc))
+        provider_result = _blocked_provider_result(str(args.provider), str(exc), model=generation_model)
     write_json(artifact_dir / "provider_response.json", provider_result.to_dict())
     raw_output = provider_result.raw_model_output
     parsed, parse_error = _parse_json_object(raw_output)

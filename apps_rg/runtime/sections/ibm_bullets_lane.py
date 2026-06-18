@@ -1014,6 +1014,7 @@ def run_ibm_bullets_execution(
         temperature=args.temperature,
         max_tokens=IBM_MAX_OUTPUT_TOKENS,
         temperature_bounds=IBM_TEMP_RANGE,
+        provider_requested=str(args.provider),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)

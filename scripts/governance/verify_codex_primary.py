@@ -31,6 +31,7 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
+        "Codex must ask a plain-text clarifying question directly in the assistant response",
     ],
     "docs/codex-primary-execution.md": [
         "Codex primary execution surface",
@@ -39,7 +40,7 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
         "No parallel registry",
-        "When a turn still needs user input, ask a plain-text clarifying question",
+        "Codex must ask a plain-text clarifying question directly in the assistant response",
     ],
 }
 

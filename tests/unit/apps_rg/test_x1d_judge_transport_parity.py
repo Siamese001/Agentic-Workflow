@@ -24,7 +24,9 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     JUDGE_SCORE_SCHEMA,
     build_x1d_judge_system_prompt,
     _make_model_backed_output,
+    _resolved_section_x1d_judge_max_output_tokens,
     run_llm_judges,
+    _section_x1d_judge_max_attempts,
 )
 from apps_rg.runtime.judges.grade_only_judge_packet import (
     REQUIRED_JUDGE_OUTPUT_SCHEMA as GENERIC_REQUIRED_SCHEMA,
@@ -309,6 +311,19 @@ def test_openai_retry_attempt_token_budget_escalates_bounded() -> None:
     a2 = resolved_provider_max_output_tokens("openai_chatgpt", attempt=2)
     assert a2 >= a1
     assert a2 <= 8192
+
+
+def test_section_retry_profile_is_proportional() -> None:
+    assert _section_x1d_judge_max_attempts("competencies") == 1
+    assert _section_x1d_judge_max_attempts("unify_bullets") == 2
+    assert _section_x1d_judge_max_attempts("executive_summary") == 3
+
+    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=1) == 2048
+    assert _resolved_section_x1d_judge_max_output_tokens("unify_bullets", attempt=1) == 4096
+    assert _resolved_section_x1d_judge_max_output_tokens("executive_summary", attempt=1) == 8192
+    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=2) == 2048
+    assert _resolved_section_x1d_judge_max_output_tokens("unify_bullets", attempt=2) == 8192
+    assert _resolved_section_x1d_judge_max_output_tokens("executive_summary", attempt=2) == 8192
 
 
 @pytest.mark.parametrize(

@@ -481,3 +481,132 @@ def test_graph_era_trim_repair_restores_metric_nouns_after_word_budget() -> None
     assert "$22M in IP-led revenue and 20% gross margin expansion" in text
     assert "into a partner-led growth agenda" in text
     assert coverage["overall_pass"] is True
+
+
+def test_finalize_preserves_allowed_source_ids_for_pinned_brown_summary() -> None:
+    """Pinned narrative rewrites must not drop row-level proof ids on finalization."""
+    display = (
+        "Technology strategy executive who aligns governed cloud modernization, insurance core "
+        "architecture, and regulatory-grade controls into enterprise IT direction for "
+        "distributed, regulated organizations. "
+        "AWS migration execution classified workloads by cloud fit and completed migration "
+        "waves that moved core insurance platform workloads from monolithic on-premises "
+        "constraints to cloud-native delivery. "
+        "Guidewire-adjacent policy administration workflows and core insurance data models "
+        "were decomposed into configurable, integration-ready components, connecting "
+        "modernization execution to repeatable architecture patterns. "
+        "Reusable solution accelerators packaged cloud, data, and AI modernization patterns "
+        "for regulated financial-services workloads, enabling repeatable client pursuits "
+        "across reference architecture frameworks. "
+        "That regulatory foundation extended to BCBS 239-aligned risk-data aggregation, "
+        "three-lines-of-defense accountability structures, and regulatory analytics lineage "
+        "linking predictive risk use cases to audit-ready workflows. "
+        "That convergence of cloud execution, core systems governance, and lineage-backed "
+        "operating models positions this leader to federate architecture standards, "
+        "accelerate post-merger integration programs."
+    )
+    ledger = [
+        {
+            "claim_text": (
+                "Technology strategy executive who aligns governed cloud modernization, insurance "
+                "core architecture, and regulatory-grade controls into enterprise IT direction for "
+                "distributed, regulated organizations."
+            ),
+            "source_fact_ids": [
+                "reb_insurtech_aws_migration_execution",
+                "reb_insurtech_regulated_aws_control_implementation",
+                "reb_ey_erm_risk_governance",
+            ],
+        },
+        {
+            "claim_text": (
+                "AWS migration execution classified workloads by cloud fit and completed migration "
+                "waves that moved core insurance platform workloads from monolithic on-premises "
+                "constraints to cloud-native delivery."
+            ),
+            "source_fact_ids": [
+                "reb_insurtech_aws_migration_execution",
+                "metric_insurtech_workloads_classified_by_cloud_fit_count",
+                "metric_insurtech_migration_waves_completed_count",
+                "metric_insurtech_core_workloads_migrated_count",
+                "reb_ibm_aws_modernization_architecture",
+            ],
+        },
+        {
+            "claim_text": (
+                "Guidewire-adjacent policy administration workflows and core insurance data models "
+                "were decomposed into configurable, integration-ready components, connecting "
+                "modernization execution to repeatable architecture patterns."
+            ),
+            "source_fact_ids": [
+                "reb_insurtech_aws_guidewire_core_modernization",
+                "reb_ey_insurance_core_modernization",
+                "metric_insurtech_guidewire_workflows_mapped_count",
+                "metric_insurtech_core_data_entities_mapped_count",
+            ],
+        },
+        {
+            "claim_text": (
+                "Reusable solution accelerators packaged cloud, data, and AI modernization patterns "
+                "for regulated financial-services workloads, enabling repeatable client pursuits "
+                "across reference architecture frameworks."
+            ),
+            "source_fact_ids": [
+                "reb_ibm_offering_accelerator_management",
+                "metric_ibm_offering_accelerator_package_reuse",
+                "metric_ibm_client_facing_modernization_playbooks",
+                "skill_p2_tech_reference_architecture",
+                "metric_ibm_onprem_to_aws_modernization_waves",
+            ],
+        },
+        {
+            "claim_text": (
+                "That regulatory foundation extended to BCBS 239-aligned risk-data aggregation, "
+                "three-lines-of-defense accountability structures, and regulatory analytics lineage "
+                "linking predictive risk use cases to audit-ready workflows."
+            ),
+            "source_fact_ids": [
+                "reb_ey_erm_risk_governance",
+                "metric_ey_bcbs239_risk_data_domain_count",
+                "metric_ey_three_lines_control_owner_count",
+                "reb_ey_regulatory_analytics_modernization",
+                "metric_ey_regulatory_lineage_domains_count",
+                "metric_ey_predictive_risk_use_cases_count",
+            ],
+        },
+        {
+            "claim_text": (
+                "That convergence of cloud execution, core systems governance, and lineage-backed "
+                "operating models positions this leader to federate architecture standards, "
+                "accelerate post-merger integration programs."
+            ),
+            "source_fact_ids": [
+                "reb_unify_distributed_ecosystem_engineering",
+                "reb_insurtech_regulated_aws_control_implementation",
+                "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+            ],
+        },
+    ]
+    allowed = {sid for row in ledger for sid in row["source_fact_ids"]}
+
+    out, receipt = finalize_executive_summary_coherence(
+        {"resume_display_text": display, "claim_ledger": ledger, "gap_notes": []},
+        selected_facts=[{"fact_id": fid} for fid in sorted(allowed)],
+        allowed_fact_ids=allowed,
+        target_role="SVP IT Strategy & Innovation",
+    )
+
+    repaired_ledger = list(out.get("claim_ledger") or [])
+    coverage = build_sentence_claim_coverage(
+        str(out.get("resume_display_text") or ""),
+        repaired_ledger,
+        allowed,
+    )
+    orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(repaired_ledger, allowed)
+
+    assert receipt["judge_polish"]["applied"] is True
+    assert len(repaired_ledger) == 6
+    assert repaired_ledger[0]["source_fact_ids"] == ledger[0]["source_fact_ids"]
+    assert repaired_ledger[5]["source_fact_ids"] == ledger[5]["source_fact_ids"]
+    assert coverage["overall_pass"] is True, coverage
+    assert orphan_ok is True, orphan_reason

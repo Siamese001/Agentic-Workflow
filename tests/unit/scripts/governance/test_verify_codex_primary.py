@@ -31,6 +31,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "GitKraken",
+                "Codex must ask a plain-text clarifying question directly in the assistant response",
             ]
         ),
     )
@@ -45,7 +46,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "No parallel registry",
-                "When a turn still needs user input, ask a plain-text clarifying question",
+                "Codex must ask a plain-text clarifying question directly in the assistant response",
             ]
         ),
     )

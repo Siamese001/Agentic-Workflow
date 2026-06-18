@@ -11,6 +11,12 @@ from apps_rg.runtime.dispatch.ibm_narrative_pa import compile_ibm_narrative_prom
 from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
 from apps_rg.runtime.sections.ibm_bullets_pa import _legacy_i0 as ibm_bullets_i0
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
+from apps_rg.runtime.sections.unify_role_episode_evidence import (
+    attach_role_episode_bundles_to_proof_pool_metadata,
+)
 from apps_rg.runtime.sections.unify_bullets_pa import _legacy_i0 as unify_bullets_i0
 
 REPO = Path(__file__).resolve().parents[3]
@@ -34,6 +40,19 @@ def _minimal_proof_metadata() -> dict:
         skills_authority_status="PASS",
     )
     return meta
+
+
+def _unify_compile_proof_meta() -> dict:
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO,
+        section_id="unify_bullets",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    meta = _minimal_proof_metadata()
+    meta["selected_graph_evidence_plan"] = plan
+    return attach_role_episode_bundles_to_proof_pool_metadata(meta, section_id="unify_bullets")
 
 
 def _unify_header() -> dict:
@@ -103,13 +122,13 @@ def test_compiled_unify_bullets_lists_x2_only_under_product_shape():
         "run_id": "w4_ub",
         "target_title": "SVP Engineering",
         "target_company": "Synthetic Enterprise Corp.",
-        "jd_text": "enterprise AI",
-        "briefing": "regulated",
+        "jd_text": "agentic multi-agent GraphRAG runtime platform control plane",
+        "briefing": "regulated enterprise",
         "unify_header": _unify_header(),
         "selected_fact_plan": {
             "facts": [{"fact_id": "bul_unify_001", "claim_text": "Architected platform.", "metric_raw": ""}]
         },
-        "proof_pool_metadata": _minimal_proof_metadata(),
+        "proof_pool_metadata": _unify_compile_proof_meta(),
         "allowed_fact_ids": ["bul_unify_001"],
     }
     out = compile_unify_bullets_prompt(payload, run_id="w4_ub")

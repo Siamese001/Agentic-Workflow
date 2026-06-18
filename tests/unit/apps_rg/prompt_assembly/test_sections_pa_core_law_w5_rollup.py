@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -15,6 +16,18 @@ from apps_rg.runtime.dispatch.unify_bullets_pa import compile_unify_bullets_prom
 from apps_rg.runtime.dispatch.unify_narrative_pa import compile_unify_narrative_prompt
 from apps_rg.runtime.product_evidence_authority import build_evidence_authority
 from apps_rg.runtime.sections.competencies_pa import compile_competencies_prompt
+from apps_rg.runtime.sections.competency_capability_evidence import (
+    attach_competency_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.sections.graph_role_episode_selector import (
+    build_selected_graph_evidence_plan_for_section,
+)
+from apps_rg.runtime.sections.headline_positioning_evidence import (
+    attach_headline_positioning_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.sections.unify_role_episode_evidence import (
+    attach_role_episode_bundles_to_proof_pool_metadata,
+)
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
@@ -25,6 +38,8 @@ from tests.unit.apps_rg.prompt_assembly.core_law_drift_helpers import (
     extract_i0_compiled_segment,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[4]
+
 _W5_DRIFT_MODULES = (
     "tests/unit/apps_rg/test_exec_summary_prompt_drift_ratchet.py",
     "tests/unit/apps_rg/test_headline_prompt_drift_ratchet.py",
@@ -34,7 +49,7 @@ _W5_DRIFT_MODULES = (
 )
 
 
-def _minimal_proof_metadata() -> dict[str, Any]:
+def _minimal_proof_metadata(section_id: str | None = None) -> dict[str, Any]:
     meta: dict[str, Any] = {
         "proof_pool_type": "augmented_skills_graph",
         "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
@@ -45,6 +60,30 @@ def _minimal_proof_metadata() -> dict[str, Any]:
         ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
         skills_authority_status="PASS",
     )
+    if section_id in {"headline", "competencies", "unify_bullets"}:
+        plan, _, _ = build_selected_graph_evidence_plan_for_section(
+            repo_root=REPO_ROOT,
+            section_id=section_id,
+            target_role="SVP Engineering",
+            jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+            briefing_text="regulated enterprise",
+        )
+        meta["selected_graph_evidence_plan"] = plan
+        if section_id == "headline":
+            return attach_headline_positioning_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="headline",
+            )
+        if section_id == "competencies":
+            return attach_competency_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="competencies",
+            )
+        if section_id == "unify_bullets":
+            return attach_role_episode_bundles_to_proof_pool_metadata(
+                meta,
+                section_id="unify_bullets",
+            )
     return meta
 
 
@@ -104,7 +143,7 @@ def test_rollout_lane_single_product_shape_and_i0_without_x2_catalog(
     sample_gate_id: str,
     x2_pattern: re.Pattern[str],
 ) -> None:
-    meta = _minimal_proof_metadata()
+    meta = _minimal_proof_metadata(section_id=section_id)
     base = {
         "product_visible": False,
         "run_id": f"w5_{section_id}",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from apps_rg.runtime.judges.executive_summary_x1d import (
     PROVIDERS,
     _invoke_judge_with_bounded_retries,
-    _resolved_x1d_judge_max_output_tokens,
+    _resolved_section_x1d_judge_max_output_tokens,
 )
 from apps_rg.runtime.judges.x1d_panel_harness import (
     AdapterInvokeError,
@@ -25,7 +25,7 @@ def _transport_receipt(
     finish_reason: str | None = "stop",
     parse_status: str = "ok",
 ) -> TransportReceipt:
-    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=attempt)
+    max_tokens = _resolved_section_x1d_judge_max_output_tokens(ctx.section_id, attempt=attempt)
     if ctx.provider_key == "gemini_pro":
         json_lock = "responseSchema"
     else:
@@ -90,7 +90,9 @@ class AppsRgX1dPanelAdapter:
     def declared_policy(self, *, attempt: int = 1) -> DeclaredTransportPolicy:
         json_lock = "responseSchema" if self.provider_key == "gemini_pro" else "json_object"
         return DeclaredTransportPolicy(
-            max_output_tokens=_resolved_x1d_judge_max_output_tokens(attempt=attempt),
+            max_output_tokens=_resolved_section_x1d_judge_max_output_tokens(
+                self._ctx.section_id, attempt=attempt
+            ),
             json_output_lock=json_lock,
             temperature=0.1,
         )
@@ -121,6 +123,7 @@ class AppsRgX1dPanelAdapter:
                     judge_receipt=ctx.judge_receipt,
                     attempt=attempt_no,
                     model_env_source=ctx.model_source,
+                    section_id=ctx.section_id,
                 )
             if ctx.provider_key == "anthropic_claude":
                 return x1d_mod._call_anthropic(
@@ -137,6 +140,7 @@ class AppsRgX1dPanelAdapter:
                     attempt=attempt_no,
                     packet_hash=ctx.input_hash,
                     canonical_contract_hash=ctx.canonical_contract_hash or contract.contract_hash(),
+                    section_id=ctx.section_id,
                 )
             return x1d_mod._call_gemini(
                 ctx.api_key,
@@ -149,12 +153,14 @@ class AppsRgX1dPanelAdapter:
                 model_requested=ctx.model_requested,
                 judge_receipt=ctx.judge_receipt,
                 attempt=attempt_no,
+                section_id=ctx.section_id,
             )
 
         try:
             ctx.last_judge_output = _invoke_judge_with_bounded_retries(
                 _dispatch,
                 provider_key=ctx.provider_key,
+                section_id=ctx.section_id,
             )
         except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: normalize provider failures to AdapterInvokeError
             raise AdapterInvokeError(str(exc)) from exc

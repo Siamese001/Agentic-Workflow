@@ -1543,9 +1543,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg competencies runtime seam.")
     parser.add_argument(
         "--provider",
-        choices=["external_claude"],
-        default="external_claude",
-        help="Generation provider (qwen_vllm only). Live vLLM required; offline contract stub is disabled.",
+        choices=["external_openai", "external_claude"],
+        default="external_openai",
+        help="Generation provider for competencies (external_openai default; external_claude allowed for explicit override).",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
     parser.add_argument(

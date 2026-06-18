@@ -16,8 +16,7 @@ from typing import Any, Final, Literal
 CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE: Final[str] = "CLI_OVERRIDE"
 CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER: Final[str] = "ENV_APPS_RG_MODULAR_LANE_PROVIDER"
 CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE: Final[str] = "DEV_DEFAULT_EXTERNAL_CLAUDE"
-# Legacy exported Qwen name retained for older imports; value reflects the current default.
-CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM: Final[str] = CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
+CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI: Final[str] = "DEV_DEFAULT_EXTERNAL_OPENAI"
 # Legacy mock label remains distinct because reports use it to deny proof eligibility.
 CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_MOCK: Final[str] = "DEV_DEFAULT_MOCK"
 # Explicit label for pytest / harness runs that force a mock resolution trace (never proof_eligible).
@@ -27,6 +26,7 @@ ProviderResolutionSource = Literal[
     "CLI_OVERRIDE",
     "ENV_APPS_RG_MODULAR_LANE_PROVIDER",
     "DEV_DEFAULT_EXTERNAL_CLAUDE",
+    "DEV_DEFAULT_EXTERNAL_OPENAI",
     "DEV_DEFAULT_MOCK",
     "TEST_MOCK",
 ]
@@ -89,10 +89,29 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
     return resolve_allow_non_allow_exit_zero(cli_flag)
 
 
+_OPENAI_DEFAULT_SECTION_IDS: Final[frozenset[str]] = frozenset(
+    {
+        "competencies",
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+    }
+)
+
+
+def default_lane_provider_for_section(section_id: str | None = None) -> str:
+    """Default modular lane provider when the CLI omits ``--provider``."""
+    sid = str(section_id or "").strip().lower()
+    if sid in _OPENAI_DEFAULT_SECTION_IDS:
+        return "external_openai"
+    return "external_claude"
+
+
 # Judges are CROSS-PROVIDER ONLY (never anthropic_claude). Claude Sonnet 4.6 is the GENERATOR for
 # every lane, so a Claude judge is a self-judge with correlated blind spots. Recalibrated 2026-06-08
-# for the Claude base — the prior 3-provider panel (and the anthropic_claude bullet judge) was
-# Qwen-era. See .claude/rules/judge-calibration-cadence.md. Explicit CLI/env overrides still win.
+# from the older 3-provider panel; see .claude/rules/judge-calibration-cadence.md.
+# Explicit CLI/env overrides still win.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
 _SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"
 COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
@@ -107,7 +126,6 @@ EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 #   all bullets + all narratives -> 1 (gemini_pro); competencies -> 1 advisory (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
-    "professional_competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
     "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
     "insurtech_bullets": INSURTECH_BULLETS_DEFAULT_X1D_JUDGES,
@@ -123,7 +141,6 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
     "competencies": "single_advisory_taxonomy_judge_optional_for_proof",
-    "professional_competencies": "single_advisory_taxonomy_judge_optional_for_proof",
     "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
@@ -193,12 +210,17 @@ def resolve_cli_x1d_judges(
     return resolve_section_default_x1d_judges(section_id)
 
 
-def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, str]:
+def resolve_cli_lane_provider_with_source(
+    cli_value: str | None,
+    *,
+    section_id: str | None = None,
+) -> tuple[str, str]:
     """Resolve lane provider for section CLI and label *how* it was chosen.
 
     - ``CLI_OVERRIDE`` — non-empty ``--provider``
     - ``ENV_APPS_RG_MODULAR_LANE_PROVIDER`` — CLI omitted, env var set (any allowed value)
-    - ``DEV_DEFAULT_EXTERNAL_CLAUDE`` — CLI omitted, env unset (default ``external_claude``)
+    - ``DEV_DEFAULT_EXTERNAL_CLAUDE`` / ``DEV_DEFAULT_EXTERNAL_OPENAI`` — CLI omitted,
+      env unset (default provider depends on the section)
     """
     from apps_rg.l2_recipe.r4_generation_mode import (
         ENV_APPS_RG_MODULAR_LANE_PROVIDER,
@@ -209,12 +231,11 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
         v = str(cli_value).strip().lower()
         if v == "mock":
             raise SectionCliConfigError(
-                "Invalid --provider 'mock': section lanes require qwen_vllm or external_claude. "
-                "Live qwen_vllm required; APPS_RG_QWEN_OFFLINE_CONTRACT_STUB is disabled on product paths."
+                "Invalid --provider 'mock': section lanes require external_claude or external_openai."
             )
-        if v not in {"external_claude"}:
+        if v not in {"external_claude", "external_openai"}:
             raise SectionCliConfigError(
-                f"Invalid --provider {cli_value!r} (expected qwen_vllm or external_claude)."
+                f"Invalid --provider {cli_value!r} (expected external_claude or external_openai)."
             )
         return v, CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
@@ -223,13 +244,15 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
         resolved = resolve_apps_rg_modular_lane_provider()
         return resolved, CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER
 
-    resolved = resolve_apps_rg_modular_lane_provider()
+    resolved = default_lane_provider_for_section(section_id)
+    if resolved == "external_openai":
+        return resolved, CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI
     return resolved, CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
 
 
-def resolve_cli_lane_provider(cli_value: str | None) -> str:
+def resolve_cli_lane_provider(cli_value: str | None, *, section_id: str | None = None) -> str:
     """Honor ``APPS_RG_MODULAR_LANE_PROVIDER`` when CLI omits ``--provider``."""
-    provider, _src = resolve_cli_lane_provider_with_source(cli_value)
+    provider, _src = resolve_cli_lane_provider_with_source(cli_value, section_id=section_id)
     return provider
 
 
@@ -248,6 +271,8 @@ def coalesce_lane_provider_resolution_source(
         return CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER
     if str(resolved_provider).strip().lower() == "external_claude" and not raw_env:
         return CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
+    if str(resolved_provider).strip().lower() == "external_openai" and not raw_env:
+        return CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI
     return CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
 
@@ -337,8 +362,8 @@ def fill_executive_summary_cli_targets(args: Any) -> None:
 __all__ = [
     "CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE",
     "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE",
+    "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI",
     "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_MOCK",
-    "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM",
     "CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER",
     "CLI_PROVIDER_RESOLUTION_TEST_MOCK",
     "ProviderResolutionSource",
@@ -346,6 +371,7 @@ __all__ = [
     "coalesce_lane_provider_resolution_source",
     "collect_executive_summary_mandatory_missing",
     "default_targeting_briefing_text",
+    "default_lane_provider_for_section",
     "fill_executive_summary_cli_targets",
     "resolve_allow_non_allow_exit_zero",
     "resolve_phase1_lane_allow_non_allow_exit_zero",

@@ -1,8 +1,8 @@
 """Provider-neutral section-lane model calls.
 
 Older apps_rg lanes still build OpenAI-compatible ``messages`` payloads for the
-local qwen slice. This helper keeps that qwen path intact while letting the same
-payloads route through ``ProviderGateway`` for external profiles.
+local qwen slice. This helper keeps the payload shape intact while letting the
+same requests route through ``ProviderGateway`` for external profiles.
 """
 
 from __future__ import annotations
@@ -37,8 +37,7 @@ def build_section_provider_gateway(claude_model: str | None = None) -> ProviderG
 
     ``claude_model`` (when set) pins the EXTERNAL_CLAUDE provider's generation model for this
     call — the per-section tier resolved via ``resolve_section_generation_model``. Empty/None
-    falls back to ``ExternalProvider``'s section-agnostic default (the SSOT ``default_model`` /
-    operator pin), preserving prior behavior for callers without a section.
+    falls back to ``ExternalProvider``'s SSOT ``default_model`` for each provider profile.
     """
     return ProviderGateway(
         {
@@ -95,9 +94,9 @@ def call_section_model_provider(
     )
     # Per-section model pin (SSOT): resolve the section from an explicit arg or the
     # ``_reasoning_section_lane`` tag the lane stamped on the payload (``tag_reasoning_lane``),
-    # so competencies + the four narratives use their pinned Haiku tier while the rest use the
-    # Sonnet default — instead of every lane silently using the section-agnostic default. Only
-    # applied for the external Claude profile; an unknown/missing section resolves to the default.
+    # so Claude-backed lanes get their exact per-section pin instead of every lane silently using
+    # the section-agnostic default. Only applied for the external Claude profile; an
+    # unknown/missing section resolves to the default.
     claude_model: str | None = None
     if profile == ProviderProfile.EXTERNAL_CLAUDE:
         sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()

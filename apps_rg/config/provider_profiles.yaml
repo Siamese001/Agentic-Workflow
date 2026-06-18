@@ -23,7 +23,8 @@ profiles:
     profile_id: apps_rg::provider::external_openai_generator::v1
     provider_profile: external_openai
     provider_class: external_api
-    default_model: gpt-5.5
+    # default_model = OpenAI generation tier for competencies + all narratives.
+    default_model: gpt-5.4-mini
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
     capabilities:
@@ -37,16 +38,13 @@ profiles:
     provider_profile: external_claude
     provider_class: external_api
     # SINGLE SSOT for the apps_rg section generator model (no other file/env may define it).
-    # default_model = high-signal default (all bullets + executive_summary + headline).
-    # model_by_section = per-lane cost-tier overrides (competencies + all narratives -> Haiku).
+    # default_model = high-signal default (all bullets).
+    # model_by_section = per-lane Claude overrides (headline + executive_summary -> Opus).
     # Resolver: section_model_limits.resolve_section_generation_model(section_id).
     default_model: claude-sonnet-4-6
     model_by_section:
-      competencies: claude-haiku-4-5
-      unify_narrative: claude-haiku-4-5
-      ibm_narrative: claude-haiku-4-5
-      insurtech_narrative: claude-haiku-4-5
-      ey_narrative: claude-haiku-4-5
+      headline: claude-opus-4-8
+      executive_summary: claude-opus-4-8
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL
     api_key_env_var: ANTHROPIC_API_KEY
     capabilities:
@@ -104,7 +102,7 @@ judge_models:
     openai_chatgpt: gpt-5.5
     anthropic_claude: claude-sonnet-4-6
   standard:
-    gemini_pro: gemini-2.5-pro
+    gemini_pro: gemini-3.1-pro-preview
     openai_chatgpt: gpt-5.5
     anthropic_claude: claude-sonnet-4-6
 
@@ -121,9 +119,40 @@ runtime_limits:
     briefing_input_share_fraction: 0.15
     bullet_selector_input_share_fraction: 0.09
   judge:
+    # Compatibility baseline for flat consumers; section-specific runtime profiles below drive
+    # the actual lane-calibrated retry/token policy.
     x1d_max_output_tokens: 4096
     x1d_max_output_tokens_hard_cap: 8192
     x1d_max_attempts: 3
     retry_backoff_base_seconds: 0.5
     retry_backoff_max_seconds: 4.0
     openai_enhanced_reasoning_effort: high
+    runtime_profiles:
+      optional_advisory_taxonomy_only:
+        judge_weight: 1
+        max_output_tokens: 2048
+        max_output_tokens_hard_cap: 2048
+        max_attempts: 1
+        retry_backoff_base_seconds: 0.25
+        retry_backoff_max_seconds: 0.25
+      standard_reasoning:
+        judge_weight: 2
+        max_output_tokens: 4096
+        max_output_tokens_hard_cap: 8192
+        max_attempts: 2
+        retry_backoff_base_seconds: 0.5
+        retry_backoff_max_seconds: 1.0
+      bullet_rewrite_quality:
+        judge_weight: 2
+        max_output_tokens: 4096
+        max_output_tokens_hard_cap: 8192
+        max_attempts: 2
+        retry_backoff_base_seconds: 0.5
+        retry_backoff_max_seconds: 1.0
+      enhanced_reasoning:
+        judge_weight: 3
+        max_output_tokens: 8192
+        max_output_tokens_hard_cap: 8192
+        max_attempts: 3
+        retry_backoff_base_seconds: 0.5
+        retry_backoff_max_seconds: 4.0

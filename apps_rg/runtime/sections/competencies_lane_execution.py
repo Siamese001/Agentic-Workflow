@@ -212,6 +212,16 @@ def run_competencies_lane_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import (
+        external_openai_generation_model,
+        resolve_section_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else resolve_section_generation_model("competencies")
+    )
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
@@ -219,6 +229,8 @@ def run_competencies_lane_execution(
         temperature=args.temperature,
         max_tokens=COMPETENCIES_MAX_OUTPUT_TOKENS,
         timeout_seconds=competencies_vllm_chat_timeout_s(),
+        model=section_model,
+        provider_requested=str(args.provider),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
@@ -277,7 +289,7 @@ def run_competencies_lane_execution(
     _mark_phase("self_consistency_generation_and_selector")
     raw_model_output_original = raw_output
     provider_raw_output = raw_output
-    if getattr(result, "apps_rg_qwen_preflight_blocked", False) if result else False:
+    if getattr(result, "apps_rg_provider_preflight_blocked", False) if result else False:
         live_preflight_blocked = True
         snap = getattr(result, "apps_rg_last_probe_snapshot", None)
         write_json(
