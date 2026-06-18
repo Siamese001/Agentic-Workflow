@@ -1,0 +1,8 @@
+version = 1
+name = "Agentic-Workflow-FRESH"
+
+[setup]
+script = ""
+
+[cleanup]
+script = "powershell -NoProfile -ExecutionPolicy Bypass -File .\\ops_scripts\\maintenance\\cleanup_codex_worktree.ps1"
