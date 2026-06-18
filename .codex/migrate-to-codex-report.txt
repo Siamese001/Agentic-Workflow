@@ -1,0 +1,120 @@
+Migration inventory:
+  active: instruction files - 2 found
+    - CLAUDE.md
+    - AGENTS.md
+  active: skills - 32 found
+    - adg-sqlite
+    - app-leakage-refactor
+    - apps-rg-runtime
+    - artifact-management
+    - ask-user-question-recommendation
+    - boundary-enforcement
+    - context7
+    - core-boundary-audit
+    - deepwiki
+    - gitkraken
+    - graph-analysis
+    - ledger-consulter
+    - ledger-consulter-apps-qna-pack-lifecycle
+    - ledger-consulter-ask-user-question
+    - mcp-integration
+    - memory-mcp
+    - operational-gates
+    - otel-telemetry
+    - playwright
+    - pytest-mcp
+    - receipt-auditor
+    - redis-cache
+    - runtime-package-verifier
+    - scope-containment
+    - security-hardening
+    - structured-reasoning
+    - tavily-research
+    - testing-framework
+    - u0-app-customization
+    - vector-db
+    - worktree-per-chat
+    - writeback-discipline
+  active: command sources - 15 found
+    provider: source command (15)
+      - adg-redis-refresh
+      - adg-repair-loop
+      - adg-test-triage-gate
+      - adg-timeout-recovery
+      - agent-deletion-gate
+      - core-boundary-audit
+      - mcp-failure-rca
+      - memory-purge-sync
+      - migrate-app-binding-to-generic-core
+      - pre-commit-agentic-cert
+      - progress-display-enforcement
+      - skill-creator
+      - structured-reasoning
+      - timeout-progress-enforcement
+      - u0-customize-app
+  active: subagents - 4 found
+    - boundary-auditor
+    - hook-migration-auditor
+    - mcp-governance-auditor
+    - receipt-verifier
+Migration surfaces:
+  active: AGENTS.md - 1 instruction file(s) found.
+  active: skills - 47 skill(s) converted.
+  active: MCP config - 9 MCP server(s) converted into config.toml.
+  active: subagents - 4 subagent(s) converted.
+Migration report:
+  manual_fix_required: AGENTS.md - Generated copy contains Claude-only instruction semantics.
+  rewritten: .codex/hooks.json - Rewritten for Codex hooks; review behavior before relying on it. Codex hooks require `[features].codex_hooks = true`, only execute `command` handlers, skip `async` / `prompt` / `agent` handlers, ignore `matcher` for `UserPromptSubmit` and `Stop`, and `PreToolUse` / `PostToolUse` currently run for shell commands only.
+  manual_fix_required: .agents/skills/adg-sqlite/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  rewritten: .agents/skills/app-leakage-refactor/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/apps-rg-runtime/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/artifact-management/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/ask-user-question-recommendation/SKILL.md - Manual review required for Claude skill fields: `trigger`.
+  manual_fix_required: .agents/skills/boundary-enforcement/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/context7/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  rewritten: .agents/skills/core-boundary-audit/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/deepwiki/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/gitkraken/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/graph-analysis/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/ledger-consulter/SKILL.md - Manual review required for Claude skill fields: `trigger`.
+  manual_fix_required: .agents/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md - Manual review required for Claude skill fields: `trigger`.
+  manual_fix_required: .agents/skills/ledger-consulter-ask-user-question/SKILL.md - Manual review required for Claude skill fields: `trigger`.
+  manual_fix_required: .agents/skills/mcp-integration/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/memory-mcp/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/operational-gates/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/otel-telemetry/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/playwright/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/pytest-mcp/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  rewritten: .agents/skills/receipt-auditor/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/redis-cache/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  rewritten: .agents/skills/runtime-package-verifier/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/scope-containment/SKILL.md - Manual review required for Claude skill fields: `trigger`.
+  manual_fix_required: .agents/skills/security-hardening/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/structured-reasoning/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/tavily-research/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/testing-framework/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  rewritten: .agents/skills/u0-app-customization/SKILL.md - Converted Claude skill.
+  manual_fix_required: .agents/skills/vector-db/SKILL.md - Manual review required for Claude skill fields: `deprecated`, `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`, `redirect_to`.
+  manual_fix_required: .agents/skills/worktree-per-chat/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/writeback-discipline/SKILL.md - Manual review required for Claude skill fields: `enforcement_layer`, `enforcement_timing`, `enforcement_type`, `metadata`.
+  manual_fix_required: .agents/skills/source-command-adg-redis-refresh/SKILL.md - Converted source command `adg-redis-refresh` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-adg-repair-loop/SKILL.md - Converted source command `adg-repair-loop` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-adg-test-triage-gate/SKILL.md - Converted source command `adg-test-triage-gate` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-adg-timeout-recovery/SKILL.md - Converted source command `adg-timeout-recovery` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-agent-deletion-gate/SKILL.md - Converted source command `agent-deletion-gate` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-core-boundary-audit/SKILL.md - Converted source command `core-boundary-audit` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-mcp-failure-rca/SKILL.md - Converted source command `mcp-failure-rca` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-memory-purge-sync/SKILL.md - Converted source command `memory-purge-sync` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-migrate-app-binding-to-generic-core/SKILL.md - Converted source command `migrate-app-binding-to-generic-core` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-pre-commit-agentic-cert/SKILL.md - Converted source command `pre-commit-agentic-cert` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-progress-display-enforcement/SKILL.md - Converted source command `progress-display-enforcement` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-skill-creator/SKILL.md - Converted source command `skill-creator` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-structured-reasoning/SKILL.md - Converted source command `structured-reasoning` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-timeout-progress-enforcement/SKILL.md - Converted source command `timeout-progress-enforcement` to a single-file Codex skill; review invocation and template placeholder semantics.
+  manual_fix_required: .agents/skills/source-command-u0-customize-app/SKILL.md - Converted source command `u0-customize-app` to a single-file Codex skill; review invocation and template placeholder semantics.
+  rewritten: .codex/config.toml - Converted 9 MCP server entries.
+  manual_fix_required: .codex/config.toml - MCP server `filesystem` needs review: Review unsupported Claude MCP fields manually: `_startup`.
+  rewritten: .codex/agents/boundary-auditor.toml - Converted Claude subagent.
+  rewritten: .codex/agents/hook-migration-auditor.toml - Converted Claude subagent.
+  rewritten: .codex/agents/mcp-governance-auditor.toml - Converted Claude subagent.
+  rewritten: .codex/agents/receipt-verifier.toml - Converted Claude subagent.
