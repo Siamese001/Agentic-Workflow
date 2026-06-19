@@ -131,7 +131,9 @@ def _instruction(rel: str, state: dict) -> str:
         "and creates a review point. Cons: adds a later triage step.\"\n\n"
         "On choice 1 or 3: append a one-line `[P]` entry to PARKING_LOT.md and ABANDON this edit.\n"
         f"On choice 2: retry the edit with {_BYPASS_ENV}=1 in the environment.\n"
-        f"(Gate auto-disables at {total}/{total}. Suppress: {_MODE_ENV}=warn|off or {_BYPASS_ENV}=1.)"
+        f"(Gate auto-disables at {total}/{total}. Suppress: {_MODE_ENV}=warn|off or {_BYPASS_ENV}=1.)\n"
+        "Reminder: deterministic workflow first, one live product path over many control planes, "
+        "and the live trace matters more than adjacent artifacts."
     )
 
 

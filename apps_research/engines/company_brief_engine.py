@@ -83,6 +83,13 @@ def _emit_company_brief_marker(
         pass
 
 
+def _resolved_gemini_max_output_tokens() -> int:
+    """Canonical Gemini output-token budget for apps_research synthesis calls."""
+    from agentic_core.config.google_ai_env import google_ai_max_output_tokens  # noqa: PLC0415
+
+    return google_ai_max_output_tokens()
+
+
 class CompanyBriefEngine(BaseResearchEngine):
     """Generates a CompanyBrief for a target company.
 
@@ -504,9 +511,9 @@ class CompanyBriefEngine(BaseResearchEngine):
         # Try Pro first (synthesis-quality tier) then Flash (cheap-fast). Free-tier
         # Google AI Studio accounts have limit:0 for Pro models so the cascade
         # resolves to Flash; paid-tier accounts hit Pro and never reach Flash.
-        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
-            google_ai_flash_model_env,
-            google_ai_pro_model_env,
+        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
+            google_ai_flash_model_id,
+            google_ai_pro_model_id,
         )
 
         candidates: list[str] = []
@@ -515,8 +522,8 @@ class CompanyBriefEngine(BaseResearchEngine):
             GEMINI_PRO_MODEL_ID,
         )
 
-        pro_model = google_ai_pro_model_env(legacy_default=GEMINI_PRO_MODEL_ID).strip()
-        flash_model = google_ai_flash_model_env(legacy_default=GEMINI_FLASH_MODEL_ID).strip()
+        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
+        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
         if pro_model:
             candidates.append(pro_model)
         if flash_model and flash_model != pro_model:
@@ -538,7 +545,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                     ),
                     config={
                         "temperature": 0.2,
-                        "max_output_tokens": 2000,
+                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
                     },
                 )
             except Exception as exc:  # guardian: allow-broad-exception -- google-genai raises heterogeneous (APIError/Connection/Timeout/InvalidArgument); fail-soft preserves stub fallback
@@ -978,9 +985,9 @@ class CompanyBriefEngine(BaseResearchEngine):
         api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             return None
-        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
-            google_ai_flash_model_env,
-            google_ai_pro_model_env,
+        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
+            google_ai_flash_model_id,
+            google_ai_pro_model_id,
         )
 
         candidates: list[str] = []
@@ -989,8 +996,8 @@ class CompanyBriefEngine(BaseResearchEngine):
             GEMINI_PRO_MODEL_ID,
         )
 
-        pro_model = google_ai_pro_model_env(legacy_default=GEMINI_PRO_MODEL_ID).strip()
-        flash_model = google_ai_flash_model_env(legacy_default=GEMINI_FLASH_MODEL_ID).strip()
+        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
+        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
         if pro_model:
             candidates.append(pro_model)
         if flash_model and flash_model != pro_model:
@@ -1007,7 +1014,10 @@ class CompanyBriefEngine(BaseResearchEngine):
                         "Output plain markdown exactly as instructed. No JSON. No fences.\n\n"
                         + prompt
                     ),
-                    config={"temperature": 0.2, "max_output_tokens": 1200},
+                    config={
+                        "temperature": 0.2,
+                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
+                    },
                 )
             except Exception as exc:  # guardian: allow-broad-exception -- gemini fail-soft
                 self.logger.info(
