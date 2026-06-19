@@ -7,6 +7,10 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -20,6 +24,9 @@ jobs:
       config-sync: ${{ steps.filter.outputs.config-sync }}
       codex-adapter: ${{ steps.filter.outputs.codex-adapter }}
       apps-rg-prompt-judge-sync: ${{ steps.filter.outputs.apps-rg-prompt-judge-sync }}
+      apps-e2e-harness-verifier: ${{ steps.filter.outputs.apps-e2e-harness-verifier }}
+      eval-smoke: ${{ steps.filter.outputs.eval-smoke }}
+      selected-lanes: ${{ steps.filter.outputs.selected-lanes }}
       any: ${{ steps.filter.outputs.any }}
       base-ref: ${{ steps.filter.outputs.base-ref }}
       changed-files: ${{ steps.filter.outputs.changed-files }}
@@ -27,6 +34,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
 
       - id: filter
         name: Classify changed files
@@ -50,97 +62,17 @@ jobs:
               "pyproject.toml" \
               ".mcp.json" \
               "AGENTS.md" \
-              ".github/workflows/contract-gates.yml" > changed-files.txt
+              ".github/workflows/contract-gates.yml" \
+              "apps_rg/runtime/judges/manual_probe.py" \
+              "tools/certification/apps_e2e/manual_probe.py" \
+              "tools/eval/manual_probe.py" \
+              "config/judges/rubrics.yaml" > changed-files.txt
           fi
-          export BASE_REF_FOR_OUTPUT="${base_ref}"
-
-          python - <<'PY'
-          from pathlib import Path
-          import os
-
-          changed = [p.strip().replace("\\", "/") for p in Path("changed-files.txt").read_text().splitlines() if p.strip()]
-
-          def starts(path: str, prefixes: tuple[str, ...]) -> bool:
-              return path.startswith(prefixes)
-
-          terminal = any(
-              p.endswith(".py")
-              or p.startswith(("ops_scripts/", "tools/", "scripts/", ".github/workflows/"))
-              for p in changed
-          )
-          pytest_config = any(
-              p in {"pyproject.toml", "pytest.ini", "tox.ini", "setup.cfg"}
-              or p.startswith(".github/workflows/")
-              for p in changed
-          )
-          config_sync = any(
-              p in {"AGENTS.md", ".mcp.json", ".claude/settings.json"}
-              or starts(
-                  p,
-                  (
-                      ".claude/rules/",
-                      ".claude/skills/mcp-integration/",
-                      ".github/workflows/",
-                      ".github/actions/",
-                      "ops_scripts/ci/",
-                      "tools/generate/",
-                  ),
-              )
-              for p in changed
-          )
-          codex_adapter = any(
-              p in {
-                  "AGENTS.md",
-                  "CLAUDE.md",
-                  ".mcp.json",
-                  ".claude/mcp-notes.md",
-                  ".claude/settings.json",
-                  "docs/codex-backup-adapter.md",
-                  "scripts/governance/verify_codex_backup.py",
-                  ".github/workflows/contract-gates.yml",
-              }
-              or starts(
-                  p,
-                  (
-                      ".claude/hooks/",
-                      ".claude/rules/",
-                      ".claude/skills/structured-reasoning/",
-                      ".claude/skills/mcp-integration/",
-                  ),
-              )
-              for p in changed
-          )
-          apps_rg_prompt_judge_sync = any(
-              starts(
-                  p,
-                  (
-                      "apps_rg/prompt_assembly/",
-                      "apps_rg/runtime/sections/",
-                      "apps_rg/runtime/validators/",
-                      "apps_rg/runtime/judges/",
-                      "artifacts/apps_rg/prompt_authority/",
-                  ),
-              )
-              or p in {
-                  "ops_scripts/ci/check_apps_rg_prompt_judge_sync.py",
-                  "ops_scripts/ci/check_section_x2_x1d_drift.py",
-                  ".github/workflows/contract-gates.yml",
-              }
-              for p in changed
-          )
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write(f"terminal-cleanup={str(terminal).lower()}\n")
-              out.write(f"pytest-config={str(pytest_config).lower()}\n")
-              out.write(f"config-sync={str(config_sync).lower()}\n")
-              out.write(f"codex-adapter={str(codex_adapter).lower()}\n")
-              out.write(f"apps-rg-prompt-judge-sync={str(apps_rg_prompt_judge_sync).lower()}\n")
-              out.write(f"any={str(terminal or pytest_config or config_sync or codex_adapter or apps_rg_prompt_judge_sync).lower()}\n")
-              out.write(f"base-ref={os.environ.get('BASE_REF_FOR_OUTPUT', 'main')}\n")
-              out.write("changed-files<<EOF\n")
-              out.write("\n".join(changed))
-              out.write("\nEOF\n")
-          PY
+          python ops_scripts/ci/classify_ci_lanes.py \
+            --workflow contract-gates \
+            --changed-files-file changed-files.txt \
+            --base-ref "${base_ref}" \
+            --github-output "$GITHUB_OUTPUT"
 
   terminal-cleanup:
     name: terminal-cleanup
@@ -224,12 +156,85 @@ jobs:
       - name: apps_rg prompt/product-shape/X2/X1D sync
         run: python ops_scripts/ci/check_apps_rg_prompt_judge_sync.py
 
+  apps-e2e-harness-verifier:
+    name: apps-e2e-harness-verifier
+    needs: changes
+    if: needs.changes.outputs.apps-e2e-harness-verifier == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: dev
+      - name: Run apps_e2e harness verifier
+        run: |
+          python -m pytest tests/unit/apps_e2e/ -q --no-header -p no:cacheprovider
+          python -m tools.certification.apps_e2e.emit_proof_bundle --all --dry-run --skip-non-runnable
+          python -m tools.certification.apps_e2e.matrix_builder
+          python -m pytest \
+            tests/runtime/test_apps_e2e_auditability_harness.py \
+            tests/runtime/test_apps_e2e_matrix.py \
+            tests/runtime/test_apps_e2e_anti_cheat.py \
+            tests/runtime/test_apps_e2e_two_gate_negative_controls.py \
+            tests/runtime/test_agentic_core_spine_proof.py \
+            -q --no-header -p no:cacheprovider
+
+      - name: Check apps_e2e bundle emission
+        run: python -m ops_scripts.ci.check_apps_e2e_bundle_emission
+
+      - name: Check apps_e2e spine certification
+        continue-on-error: true
+        run: python -m ops_scripts.ci.check_apps_e2e_spine_certification
+
+      - name: Check apps_e2e harness
+        run: python -m ops_scripts.ci.check_apps_e2e_harness
+
+  eval-smoke:
+    name: eval-smoke
+    needs: changes
+    if: needs.changes.outputs.eval-smoke == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
+      - name: Run eval capability smoke
+        run: |
+          mkdir -p artifacts/eval
+          python tools/eval/run_capability_regression.py \
+            --rubrics config/judges/rubrics.yaml \
+            --suite capability \
+            --smoke \
+            --out artifacts/eval/pr_smoke.json
+
   contract-summary:
     name: contract-summary
-    needs: [changes, terminal-cleanup, pytest-config, config-sync, codex-adapter, apps-rg-prompt-judge-sync]
+    needs:
+      - changes
+      - terminal-cleanup
+      - pytest-config
+      - config-sync
+      - codex-adapter
+      - apps-rg-prompt-judge-sync
+      - apps-e2e-harness-verifier
+      - eval-smoke
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Python
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
+
       - name: Summarize contract gate routing
         env:
           ANY: ${{ needs.changes.outputs.any }}
@@ -239,33 +244,110 @@ jobs:
           CONFIG_RESULT: ${{ needs.config-sync.result }}
           CODEX_ADAPTER_RESULT: ${{ needs.codex-adapter.result }}
           APPS_RG_PROMPT_JUDGE_SYNC_RESULT: ${{ needs.apps-rg-prompt-judge-sync.result }}
+          APPS_E2E_RESULT: ${{ needs.apps-e2e-harness-verifier.result }}
+          EVAL_SMOKE_RESULT: ${{ needs.eval-smoke.result }}
           CHANGED_FILES: ${{ needs.changes.outputs.changed-files }}
+          SELECTED_LANES: ${{ needs.changes.outputs.selected-lanes }}
         run: |
           set -euo pipefail
           echo "Changed files:"
           printf '%s\n' "${CHANGED_FILES:-<none>}"
 
+          status="PASS"
+          reason="relevant contract-gate lanes passed"
           if [ "${CHANGES_RESULT}" != "success" ]; then
             echo "::error::Contract-gate routing failed before lane selection."
-            exit 1
-          fi
-
-          if [ "${ANY}" != "true" ]; then
+            status="FAIL_BLOCKING"
+            reason="routing failed before lane selection"
+          elif [ "${ANY}" != "true" ]; then
             echo "No contract-gate lanes were relevant to this diff."
-            exit 0
+            status="SKIP_NOT_RELEVANT"
+            reason="no contract-gate lanes were relevant to this diff"
+          else
+            failed=0
+            for lane in \
+              "terminal-cleanup:${TERMINAL_RESULT}" \
+              "pytest-config:${PYTEST_RESULT}" \
+              "config-sync:${CONFIG_RESULT}" \
+              "codex-adapter:${CODEX_ADAPTER_RESULT}" \
+              "apps-rg-prompt-judge-sync:${APPS_RG_PROMPT_JUDGE_SYNC_RESULT}" \
+              "apps-e2e-harness-verifier:${APPS_E2E_RESULT}" \
+              "eval-smoke:${EVAL_SMOKE_RESULT}"; do
+              name="${lane%%:*}"
+              result="${lane#*:}"
+              echo "${name}: ${result}"
+              if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
+                failed=1
+              fi
+            done
+
+            if [ "${failed}" = "1" ]; then
+              echo "::error::One or more relevant contract-gate lanes failed."
+              status="FAIL_BLOCKING"
+              reason="one or more relevant contract-gate lanes failed"
+            fi
           fi
 
-          failed=0
-          for lane in "terminal-cleanup:${TERMINAL_RESULT}" "pytest-config:${PYTEST_RESULT}" "config-sync:${CONFIG_RESULT}" "codex-adapter:${CODEX_ADAPTER_RESULT}" "apps-rg-prompt-judge-sync:${APPS_RG_PROMPT_JUDGE_SYNC_RESULT}"; do
-            name="${lane%%:*}"
-            result="${lane#*:}"
-            echo "${name}: ${result}"
-            if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
-              failed=1
-            fi
-          done
+          mkdir -p artifacts/ci/contract-gates
 
-          if [ "${failed}" = "1" ]; then
-            echo "::error::One or more relevant contract-gate lanes failed."
+          if [ -f ops_scripts/ci/write_ci_disposition.py ]; then
+            python ops_scripts/ci/write_ci_disposition.py \
+              --workflow contract-gates \
+              --lane contract-summary \
+              --status "${status}" \
+              --reason "${reason}" \
+              --evidence-artifact "contract-gates-${{ github.run_id }}" \
+              --selected-lanes-text "${SELECTED_LANES:-}" \
+              --changed-files-text "${CHANGED_FILES:-}" \
+              --out artifacts/ci/contract-gates/ci_disposition.json
+          else
+            echo "::warning::ops_scripts/ci/write_ci_disposition.py not found; writing fallback disposition JSON."
+            STATUS="${status}" \
+            REASON="${reason}" \
+            EVIDENCE_ARTIFACT="contract-gates-${{ github.run_id }}" \
+            SELECTED_LANES="${SELECTED_LANES:-}" \
+            CHANGED_FILES="${CHANGED_FILES:-}" \
+            python - <<'PY'
+            import json
+            import os
+            from pathlib import Path
+
+
+            def _split_csv(value: str) -> list[str]:
+                items: list[str] = []
+                for part in value.replace("\n", ",").split(","):
+                    item = part.strip()
+                    if item:
+                        items.append(item)
+                return items
+
+
+            status = os.environ.get("STATUS", "")
+            payload = {
+                "workflow": "contract-gates",
+                "lane": "contract-summary",
+                "status": status,
+                "blocking": status == "FAIL_BLOCKING",
+                "reason": os.environ.get("REASON", ""),
+                "evidence_artifact": os.environ.get("EVIDENCE_ARTIFACT", ""),
+                "selected_lanes": _split_csv(os.environ.get("SELECTED_LANES", "")),
+                "changed_files": [line for line in os.environ.get("CHANGED_FILES", "").splitlines() if line.strip()],
+            }
+            out = Path("artifacts/ci/contract-gates/ci_disposition.json")
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          fi
+
+          if [ "${status}" = "FAIL_BLOCKING" ]; then
             exit 1
           fi
+
+      - name: Upload contract disposition
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-gates-disposition-${{ github.run_id }}
+          path: artifacts/ci/contract-gates/ci_disposition.json
+          if-no-files-found: warn
+          retention-days: 30
