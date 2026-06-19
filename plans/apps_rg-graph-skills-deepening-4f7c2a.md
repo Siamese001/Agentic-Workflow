@@ -398,7 +398,7 @@ DoD-4: Calibration shows measurable improvement
 - Status: TODO
 
 DoD-5: SSOT and Notion copies are synchronized
-- Evidence: `.claude/plans/apps_rg-graph-skills-deepening-4f7c2a.md` and the mirrored Notion page match.
+- Evidence: `plans/apps_rg-graph-skills-deepening-4f7c2a.md` and the mirrored Notion page match.
 - Status: TODO
 
 ---
@@ -412,4 +412,3 @@ DISCOVERED_SCOPE: plan=apps_rg-graph-skills-deepening-4f7c2a wave=<N> phase=<M> 
 AUTHORIZATION_DECISION: plan=apps_rg-graph-skills-deepening-4f7c2a decision=<ACCEPTED|DEFERRED|SPLIT_TO_NEW_PLAN|REJECTED> authorized_by=<user|author_gate|self> decisive_reason="<why>"
 SCOPE_EXPANSION: plan=apps_rg-graph-skills-deepening-4f7c2a reason="<summary>" added="<waves/phases>" authorized="yes"
 ```
-
