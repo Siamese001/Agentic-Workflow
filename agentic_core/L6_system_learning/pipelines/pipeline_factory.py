@@ -321,7 +321,7 @@ def build_pipeline_deps(
     arbitration_policy = None
     try:
         from agentic_core.L6_system_learning.engine import ArbitrationEngine
-        from .....types import ArbitrationPolicy
+        from agentic_core.L6_system_learning.arbitration.types import ArbitrationPolicy
 
         arbitration_engine = ArbitrationEngine()
         arbitration_policy = ArbitrationPolicy(
