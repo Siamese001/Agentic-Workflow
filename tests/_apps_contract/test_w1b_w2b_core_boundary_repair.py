@@ -29,6 +29,7 @@ class TestNoAppsResearchPolicyHardcodedInCore:
             "company_brief",
             "research_substrate_only",
             "delegated_only",
+            "searxng",
             "tavily",
             "manual_brief",
             "company_website",
@@ -131,7 +132,7 @@ class TestNoAppsResearchPolicyHardcodedInCore:
         assert "_load_l1_planning_profile" in content, "L1 must load profile from app config"
     
     def test_generic_l1_emits_app_hints_without_hardcoded_source_scope(self):
-        """Generic L1 must NOT hardcode source_scope = [tavily, manual_brief, company_website]."""
+        """Generic L1 must NOT hardcode source_scope = [searxng, manual_brief, company_website]."""
         repo_root = Path(__file__).parent.parent.parent
         generic_l1 = repo_root / "agentic_core/L1_cognition/package_driven_l1_binding.py"
         
@@ -139,8 +140,8 @@ class TestNoAppsResearchPolicyHardcodedInCore:
         
         # Must NOT hardcode specific sources
         forbidden_sources = [
-            '["tavily", "manual_brief", "company_website"]',
-            "['tavily', 'manual_brief', 'company_website']",
+            '["searxng", "manual_brief", "company_website"]',
+            "['searxng', 'manual_brief', 'company_website']",
         ]
         
         for source_list in forbidden_sources:
@@ -184,7 +185,7 @@ class TestNoAppsResearchPolicyHardcodedInCore:
         
         # Verify allowed sources include apps_research-specific values
         allowed = profile["source_scope"].get("allowed_sources", [])
-        assert "tavily" in allowed, "Profile must allow tavily"
+        assert "searxng" in allowed, "Profile must allow searxng"
         assert "manual_brief" in allowed, "Profile must allow manual_brief"
         
         # Verify freshness default

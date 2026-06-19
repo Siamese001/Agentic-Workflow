@@ -4,7 +4,7 @@ Compiles prompt templates into CompiledPromptArtifact objects for
 apps_research synthesis steps.
 
 Prompt Assembly owns compilation ONLY. This module MUST NOT:
-- retrieve new information (forbidden: tavily_retrieval, reranker_adapter, etc.)
+- retrieve new information (forbidden: search_retrieval, tavily_retrieval, reranker_adapter, etc.)
 - route requests (forbidden: route_registry lookups)
 - execute tools (forbidden: any tool call)
 - call providers (forbidden: openai, anthropic, llm_client, etc.)

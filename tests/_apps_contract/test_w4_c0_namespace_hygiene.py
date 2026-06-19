@@ -68,6 +68,7 @@ class TestC0NamespaceHygiene:
             "source_list",
             "freshness_override",
             "execute_retrieval",
+            "searxng",
             "tavily",
         ]
         
