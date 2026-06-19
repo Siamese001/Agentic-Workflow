@@ -1,54 +1,51 @@
-"""ADG-hotspot scaffold tests for `agentic_core.L5_safety.reasoning.FileClassificationAgent` (fanin=14).
+"""ADG-hotspot regression tests for `agentic_core.L5_safety.reasoning.FileClassificationAgent`."""
 
-Auto-generated speculative scaffold. Module is high fan-in per ADG snapshot
-04252026_0843. Verify class/function names against actual module before
-treating these as authoritative tests.
-"""
 from __future__ import annotations
 
 import importlib
-
-import pytest
+from pathlib import Path
 
 
 MODULE_PATH = "agentic_core.L5_safety.reasoning.FileClassificationAgent"
+mod = importlib.import_module(MODULE_PATH)
+FileClassificationHealerAgent = mod.FileClassificationHealerAgent
+FileClassificationAgent = mod.FileClassificationAgent
 
 
-def test_module_imports():
-    """Smoke: hotspot module must import cleanly (high fan-in regression guard)."""
-    mod = importlib.import_module(MODULE_PATH)
+def _write_python_file(root: Path, relative_path: str, content: str) -> Path:
+    path = root / relative_path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+    return path
+
+
+def test_module_imports_clean() -> None:
+    """High fan-in hotspot module must import cleanly."""
     assert mod is not None
 
 
-def test_module_has_public_surface():
-    """Smoke: hotspot module must expose at least one public attribute."""
-    mod = importlib.import_module(MODULE_PATH)
-    public = [n for n in dir(mod) if not n.startswith("_")]
-    assert public, f"{MODULE_PATH} has no public attributes"
+def test_module_exports_current_alias() -> None:
+    """The backward-compat alias must still point at the healer class."""
+    assert FileClassificationAgent is FileClassificationHealerAgent
+    public = [name for name in dir(mod) if not name.startswith("_")]
+    assert "FileClassificationHealerAgent" in public
+    assert "FileClassificationAgent" in public
+    assert "ClassificationResult" in public
 
 
-def test_module_no_top_level_side_effects():
-    """Re-import must be idempotent — no top-level side effects that fail."""
-    importlib.import_module(MODULE_PATH)
-    importlib.import_module(MODULE_PATH)
+def test_module_reimports_idempotently() -> None:
+    """Re-importing the hotspot module should not raise."""
+    assert importlib.import_module(MODULE_PATH) is mod
 
 
-@pytest.mark.parametrize("attr_kind", ["class", "function"])
-def test_module_exposes_callable(attr_kind):
-    """Hotspot modules with high fan-in should expose a callable surface."""
-    mod = importlib.import_module(MODULE_PATH)
-    has_callable = any(
-        callable(getattr(mod, n))
-        for n in dir(mod)
-        if not n.startswith("_")
+def test_self_named_agent_file_stays_agent_and_compliant(tmp_path: Path) -> None:
+    """A self-named FileClassificationAgent file must stay classified as AGENT."""
+    target = _write_python_file(
+        tmp_path,
+        "FileClassificationAgent.py",
+        "class FileClassificationAgent:\n    pass\n",
     )
-    assert has_callable, f"{MODULE_PATH} exposes no callable {attr_kind}"
+    agent = FileClassificationHealerAgent(project_root=tmp_path)
 
-
-def test_module_layer_path_matches():
-    """Module file path must contain expected layer prefix."""
-    mod = importlib.import_module(MODULE_PATH)
-    file = getattr(mod, "__file__", "")
-    assert "agentic_core" in file.replace("\\", "/"), (
-        f"{MODULE_PATH} not under agentic_core: {file}"
-    )
+    assert agent.classify_file(target) == "AGENT"
+    assert agent.get_compliant_name(target, "AGENT") == target.name

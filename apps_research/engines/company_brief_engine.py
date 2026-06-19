@@ -103,12 +103,12 @@ class CompanyBriefEngine(BaseResearchEngine):
         ("strategic_priorities", '{company} strategic priorities 2025 2026 announcements roadmap'),
         ("customer_profile", '{company} customers verticals industries case studies'),
         ("tech_stack_signals", '{company} technology stack platforms partners "we use"'),
-        ("cultural_cues", '{company} culture values careers leadership philosophy'),
+        ("commercial_motion", '{company} commercial motion revenue sales partner-led product-led services-led'),
+        ("partner_ecosystem", '{company} partners alliances co-sell ecosystem channel ISV GSI'),
+        ("adoption_motion", '{company} adoption deployment implementation pilot production enablement'),
         ("leadership", '{company} leadership team CEO CTO executives'),
         ("competitive_set", '{company} competitors alternatives "vs"'),
-        ("pain_points_inferred", '{company} challenges market pressures industry issues'),
         ("recent_moves", '{company} news 2025 acquisition partnership launch'),
-        ("language", '{company} marketing copy "about us" mission positioning'),
     ]
 
     def execute(self, input_data: Any) -> Dict[str, Any]:
@@ -733,6 +733,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
         from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
             BriefStatus,
+            normalize_targeting_brief_text,
             seal_targeting_brief,
         )
 
@@ -769,12 +770,39 @@ class CompanyBriefEngine(BaseResearchEngine):
             )
             return stub
 
-        sealed = seal_targeting_brief(
+        normalized = normalize_targeting_brief_text(
             markdown,
+            jd_text=jd_text,
+            profile="apps_rg",
+        )
+        sealed = seal_targeting_brief(
+            normalized,
             company_name=company_name,
             jd_text=jd_text,
             profile="apps_rg",
         )
+        if not sealed.is_sealed:
+            repaired = self._repair_apps_rg_targeting_brief_markdown(
+                company_name=company_name,
+                draft_markdown=normalized,
+                jd_text=jd_text,
+                research_notes=research_notes,
+                gate_verdict=gate_verdict,
+                gate_reason=gate_reason,
+                violations=sealed.violations,
+            )
+            if repaired.strip() and repaired.strip() != normalized:
+                repaired_normalized = normalize_targeting_brief_text(
+                    repaired,
+                    jd_text=jd_text,
+                    profile="apps_rg",
+                )
+                sealed = seal_targeting_brief(
+                    repaired_normalized,
+                    company_name=company_name,
+                    jd_text=jd_text,
+                    profile="apps_rg",
+                )
         if not sealed.is_sealed:
             stub["targeting_brief_disposition"] = sealed.status.value
             stub["targeting_brief_block_reason"] = sealed.block_reason
@@ -808,6 +836,9 @@ class CompanyBriefEngine(BaseResearchEngine):
             extract_jd_text,
             format_research_findings,
         )
+        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
+            normalize_markdown_brief_text,
+        )
 
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
@@ -840,10 +871,45 @@ class CompanyBriefEngine(BaseResearchEngine):
             stub[block_reason_key] = text[:120] if text else "synthesis_returned_empty"
             return stub
 
+        brief_profile = "apps_lic" if template_id == "apps_lic_research_substrate_v1" else "apps_rg"
+        text = normalize_markdown_brief_text(text, profile=brief_profile)
         stub[output_key] = text
         stub["company_brief_text"] = text
         stub[disposition_key] = "SEALED"
         return stub
+
+    def _repair_apps_rg_targeting_brief_markdown(
+        self,
+        *,
+        company_name: str,
+        draft_markdown: str,
+        jd_text: str,
+        research_notes: str,
+        gate_verdict: str,
+        gate_reason: str,
+        violations: tuple[str, ...],
+    ) -> str:
+        """Bounded second-pass repair for contract-invalid targeting drafts."""
+
+        violation_text = ", ".join(violations[:8]) if violations else "contract_validation_failed"
+        prompt = (
+            "Repair this apps_rg targeting brief so it seals cleanly.\n"
+            f"Company: {company_name}\n"
+            f"Gate verdict: {gate_verdict or 'unknown'}\n"
+            f"Gate reason: {gate_reason or 'none'}\n"
+            f"Violations: {violation_text}\n\n"
+            "Rules: preserve the same company and section structure; keep the metadata line; "
+            "do not restate JD responsibilities or copy any 4-word JD phrase; keep bullets one "
+            "level deep; wrap every line to 240 characters or less; remove citations, links, "
+            "placeholders, and code fences; output markdown only.\n\n"
+            f"JD (context only):\n{jd_text}\n\n"
+            f"Research notes:\n{research_notes}\n\n"
+            f"Draft to repair:\n{draft_markdown}\n"
+        )
+        repaired = self._call_llm_plain_markdown(prompt).strip()
+        if repaired.upper().startswith("BLOCKED:"):
+            return ""
+        return repaired
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:
         """Qwen → Gemini cascade for plain-text targeting brief output."""
@@ -971,13 +1037,17 @@ class CompanyBriefEngine(BaseResearchEngine):
             f"return a best-effort inference clearly marked or an empty list.\n\n"
             f"Job-description anchor terms (for relevance weighting): {jd_hint}\n\n"
             f"Research notes:\n{joined}\n\n"
-            "Return strictly JSON with keys: tagline, core_offerings (list[str]), "
-            "strategic_priorities (list[str], min 2), verticals (list[str]), "
-            "buyer_titles (list[str]), tech_stack_signals (list[str]), "
-            "cultural_cues (list[str]), leadership (list of {name,title,background}), "
-            "competitive_set (list[str]), pain_points_inferred (list[str]), "
-            "recent_moves (list of {date,event,signal}), language_to_mirror (list[str], min 3), "
-            "language_to_avoid (list[str])."
+            "Return strictly JSON with keys: company_archetype (string), company_dna (object), "
+            "tagline, core_offerings (list[str]), strategic_priorities (list[str], min 2), "
+            "verticals (list[str]), buyer_titles (list[str]), tech_stack_signals (list[str]), "
+            "commercial_motion (list[str]), partner_ecosystem (list[str]), "
+            "adoption_motion (list[str]), leadership (list of {name,title,background}), "
+            "competitive_set (list[str]), recent_moves (list of {date,event,signal}), "
+            "language_to_mirror (list[str], min 3), language_to_avoid (list[str]).\n"
+            "company_dna should summarize the operating identity of the company in a few short "
+            "fields: archetype, commercial_motion, partner_ecosystem, adoption_motion, "
+            "operating_tension, and distinguishing_traits. Prefer specific language over "
+            "generic AI-company prose."
         )
 
     def _parse_synthesis(
@@ -1002,6 +1072,15 @@ class CompanyBriefEngine(BaseResearchEngine):
             "consulting", "transformation", "data", "analytics", "AI"
         ]
         return {
+            "company_archetype": "unknown (stub synthesis — research unavailable)",
+            "company_dna": {
+                "archetype": "unknown",
+                "commercial_motion": ["research unavailable"],
+                "partner_ecosystem": ["research unavailable"],
+                "adoption_motion": ["research unavailable"],
+                "operating_tension": ["research unavailable"],
+                "distinguishing_traits": ["stub synthesis — research unavailable"],
+            },
             "tagline": f"{topic} (stub synthesis — research unavailable)",
             "core_offerings": ["consulting", "data engineering", "AI enablement"],
             "strategic_priorities": [
@@ -1011,13 +1090,11 @@ class CompanyBriefEngine(BaseResearchEngine):
             "verticals": ["financial services", "insurance", "healthcare", "retail"],
             "buyer_titles": ["Chief Data Officer", "Chief AI Officer", "VP Data"],
             "tech_stack_signals": ["AWS", "Snowflake", "Databricks"],
-            "cultural_cues": ["partnership", "outcome-driven", "consultative"],
+            "commercial_motion": ["partner-led enterprise adoption", "sales-assisted delivery"],
+            "partner_ecosystem": ["alliances", "co-sell", "ecosystem"],
+            "adoption_motion": ["pilot-to-production", "enablement"],
             "leadership": [],
             "competitive_set": [],
-            "pain_points_inferred": [
-                "scaling AI proofs-of-concept into production",
-                "regulated-industry compliance for AI workloads",
-            ],
             "recent_moves": [],
             "language_to_mirror": list(dict.fromkeys(mirror_seed + ["partnership", "outcomes"])),
             "language_to_avoid": ["world-class", "best-in-class", "leverage", "synergy"],
@@ -1322,6 +1399,8 @@ class CompanyBriefEngine(BaseResearchEngine):
                 "headquarters": synthesis.get("headquarters"),
                 "core_offerings": synthesis.get("core_offerings", []) or [],
             },
+            "company_archetype": synthesis.get("company_archetype"),
+            "company_dna": synthesis.get("company_dna", {}) or {},
             "strategic_priorities": synthesis.get("strategic_priorities", []) or [],
             "customer_profile": {
                 "verticals": synthesis.get("verticals", []) or [],
@@ -1329,10 +1408,11 @@ class CompanyBriefEngine(BaseResearchEngine):
                 "typical_engagement_size": synthesis.get("typical_engagement_size"),
             },
             "tech_stack_signals": synthesis.get("tech_stack_signals", []) or [],
-            "cultural_cues": synthesis.get("cultural_cues", []) or [],
+            "commercial_motion": synthesis.get("commercial_motion", []) or [],
+            "partner_ecosystem": synthesis.get("partner_ecosystem", []) or [],
+            "adoption_motion": synthesis.get("adoption_motion", []) or [],
             "leadership": synthesis.get("leadership", []) or [],
             "competitive_set": synthesis.get("competitive_set", []) or [],
-            "pain_points_inferred": synthesis.get("pain_points_inferred", []) or [],
             "recent_moves": synthesis.get("recent_moves", []) or [],
             "language_to_mirror": synthesis.get("language_to_mirror", []) or [],
             "language_to_avoid": synthesis.get("language_to_avoid", []) or [],

@@ -563,6 +563,9 @@ def generate_bullet_lane_with_sc_and_claude(
     lane = str(section_lane or "").strip().lower()
     bullet_ids = required_bullet_ids or REQUIRED_BULLET_IDS.get(lane, ())
 
+    if lane == "competencies" and not sc_on:
+        raise ValueError("competencies lane requires self-consistency generation; non-SC fallback removed")
+
     if not sc_on:
         meta: dict[str, Any] = {"generation_mode": "singleton", "section_lane": section_lane}
         tagged = tag_reasoning_lane(dict(provider_payload), section_lane)

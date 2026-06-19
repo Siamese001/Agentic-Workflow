@@ -34,3 +34,19 @@ def test_briefing_signal_bonus_depends_on_bundle_content_not_target_briefing() -
 
     assert aligned_score > unrelated_score
     assert unrelated_score == 0.0
+
+
+def test_briefing_signal_packet_captures_partner_and_adoption_motion() -> None:
+    briefing = (
+        "## Company DNA & Operating Model\n"
+        "- Partner-led motion scales through GSI co-sell and ISV ecosystems.\n\n"
+        "## Partnership / Ecosystem Motion\n"
+        "- Joint solution development and technical close are the bottlenecks.\n\n"
+        "## Recent Events & Urgency\n"
+        "- Pilot-to-production adoption remains the operating pressure.\n"
+    )
+    packet = extract_briefing_signal_packet(briefing)
+    assert packet["theme_counts"]["commercial_motion"] >= 1
+    assert packet["theme_counts"]["partner_ecosystem"] >= 1
+    assert packet["theme_counts"]["adoption_motion"] >= 1
+    assert packet["dominant_themes"][0] in {"commercial_motion", "partner_ecosystem", "adoption_motion"}

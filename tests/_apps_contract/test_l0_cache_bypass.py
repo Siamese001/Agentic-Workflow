@@ -17,6 +17,7 @@ def test_personalization_disables_exact_and_semantic_cache() -> None:
             "target_level": "STAFF",
             "source_resume_text": "R",
             "job_description_text": "J",
+            "manual_brief_path": "brief.md",
         }
     )
     assert env is not None

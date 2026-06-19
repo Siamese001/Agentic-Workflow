@@ -64,7 +64,9 @@
       ],
       "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
-        "metric_insurtech_founder_buyer_discovery_count"
+        "metric_insurtech_founder_buyer_discovery_count",
+        "metric_insurtech_qualified_pipeline_stage_count",
+        "metric_insurtech_poc_to_paid_conversion_pct"
       ],
       "held_metrics": [],
       "excluded_metrics": [],
@@ -163,7 +165,9 @@
       ],
       "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
-        "metric_insurtech_mvp_to_production_cycle_time"
+        "metric_insurtech_mvp_to_production_cycle_time",
+        "metric_insurtech_control_ownership_matrix_count",
+        "metric_insurtech_safety_operating_model_artifacts_count"
       ],
       "held_metrics": [],
       "excluded_metrics": [],
@@ -745,7 +749,8 @@
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_insurtech_founder_led_gtm_revenue"
+        "reb_insurtech_founder_led_gtm_revenue",
+        "reb_insurtech_founder_led_market_creation"
       ],
       "claim_text": "InsurTech graph evidence supports qualified insurer modernization pipeline segmented by stage and buyer persona.",
       "surface_tokens": [
@@ -767,7 +772,8 @@
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_insurtech_founder_led_gtm_revenue"
+        "reb_insurtech_founder_led_gtm_revenue",
+        "reb_insurtech_founder_led_market_creation"
       ],
       "claim_text": "InsurTech graph evidence supports pilot-to-paid conversion for insurer modernization assessments.",
       "surface_tokens": [
@@ -991,7 +997,8 @@
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_insurtech_aws_shared_responsibility_operating_model"
+        "reb_insurtech_aws_shared_responsibility_operating_model",
+        "reb_insurtech_lean_delivery_operating_model"
       ],
       "claim_text": "InsurTech graph evidence supports shared-responsibility control ownership matrices for insurer AWS adoption.",
       "surface_tokens": [
@@ -1013,7 +1020,8 @@
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_insurtech_aws_shared_responsibility_operating_model"
+        "reb_insurtech_aws_shared_responsibility_operating_model",
+        "reb_insurtech_lean_delivery_operating_model"
       ],
       "claim_text": "InsurTech graph evidence supports cloud safety operating-model artifacts for identity, encryption, logging, backup, and incident response.",
       "surface_tokens": [

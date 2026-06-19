@@ -27,6 +27,7 @@ def test_u0_emits_l1_planning_profile_ref_and_digest() -> None:
         "target_role": "SWE",
         "source_resume_text": "x",
         "job_description_text": "y",
+        "manual_brief_path": "brief.md",
     }
     env = apps_rg_parse(thin)
     vr = u0_validate_apps_rg(env)
@@ -48,6 +49,7 @@ def test_l1_rejects_digest_mismatch(monkeypatch: pytest.MonkeyPatch) -> None:
         "target_role": "SWE",
         "source_resume_text": "x",
         "job_description_text": "y",
+        "manual_brief_path": "brief.md",
     }
     env = apps_rg_parse(thin)
     vr = u0_validate_apps_rg(env)
@@ -81,6 +83,7 @@ def test_l1_accepts_matching_digest() -> None:
         "target_role": "SWE",
         "source_resume_text": "x",
         "job_description_text": "y",
+        "manual_brief_path": "brief.md",
     }
     env = apps_rg_parse(thin)
     vr = u0_validate_apps_rg(env)

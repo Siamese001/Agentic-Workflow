@@ -30,10 +30,11 @@ _warnings.warn(
     stacklevel=2,
 )
 
-# Re-export the public symbol vocabulary from the new package.
-from agentic_core.L6_system_learning.future_run_promotion import *  # noqa: F401,F403
-
 __all__ = list(getattr(_new, "__all__", []))
+
+# Re-export the public symbol vocabulary from the new package without a star import.
+for _public_name in __all__:
+    globals()[_public_name] = getattr(_new, _public_name)
 
 # Register the legacy dotted submodule paths so existing
 # `from agentic_core.L6_learning.<sub> import X` imports keep resolving.

@@ -375,6 +375,40 @@ def competency_bundle_consumption_active(
     )
 
 
+def selected_graph_evidence_depth_result(
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult | None:
+    """Return a hard fail when the selected graph evidence packet is thin."""
+    if not isinstance(proof_pool_metadata, dict):
+        return None
+    report = proof_pool_metadata.get("graph_evidence_depth_report")
+    if not isinstance(report, dict) or not report:
+        return None
+    status = str(report.get("status") or "").strip().lower()
+    thin_item_ids = [str(x).strip() for x in (report.get("thin_item_ids") or []) if str(x).strip()]
+    weakest = report.get("weakest_link") or {}
+    passed = status == "judge_grade" and not thin_item_ids
+    return CompQualityResult(
+        gate_id="x2_competencies_selected_graph_evidence_depth_sufficient",
+        passed=passed,
+        observed_value={
+            "status": status or "unknown",
+            "summary": report.get("summary"),
+            "thin_item_ids": thin_item_ids,
+        },
+        threshold="selected_graph_evidence_plan must be judge_grade with no thin items",
+        failure_reason=(
+            None
+            if passed
+            else (
+                f"selected graph evidence packet is thin: {report.get('summary')} "
+                f"thin_items=[{', '.join(thin_item_ids)}] weakest_link={weakest!r}"
+            )
+        ),
+        signals=thin_item_ids[:6],
+    )
+
+
 def check_capability_bundles_in_proof_pool(
     proof_pool_metadata: dict[str, Any] | None,
 ) -> CompQualityResult:
@@ -679,4 +713,5 @@ __all__ = [
     "check_technical_density_floor",
     "competencies_to_text_blob",
     "competency_bundle_consumption_active",
+    "selected_graph_evidence_depth_result",
 ]

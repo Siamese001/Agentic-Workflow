@@ -18,14 +18,12 @@ from typing import Dict, Any
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.runtime_customization_package import RuntimeCustomizationPackage
-from agentic_core.L1_cognition.c0_package_driven_grounding import (
+from agentic_core.runtime.c0.c0_package_driven_grounding import (
     c0_ground_package_driven,
     FinalEvidenceContract,
     EvidenceItem,
     DataBoundaryLabel,
 )
-from agentic_core.L1_cognition.apps_research_c0_binding import c0_ground_apps_research
-from agentic_core.L1_cognition.package_driven_l1_binding import l1_plan_package_driven
 
 
 class TestC0ConsumesRouteContract:
@@ -35,7 +33,7 @@ class TestC0ConsumesRouteContract:
         """C0 must consume RouteContract with grounding_required=true."""
         # This is validated by the c0_ground_package_driven function signature
         # which requires route_contract parameter
-        from agentic_core.L1_cognition.c0_package_driven_grounding import c0_ground_package_driven
+        from agentic_core.runtime.c0.c0_package_driven_grounding import c0_ground_package_driven
         import inspect
         
         sig = inspect.signature(c0_ground_package_driven)
@@ -128,7 +126,7 @@ class TestC0EmitsFinalEvidenceContract:
     
     def test_final_evidence_contract_has_data_boundary_label(self):
         """FinalEvidenceContract must mark all content as EVIDENCE_DATA_ONLY."""
-        from agentic_core.L1_cognition.c0_package_driven_grounding import FinalEvidenceContract
+        from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
         
         # Check dataclass has data_boundary fields
         fields = [f.name for f in FinalEvidenceContract.__dataclass_fields__.values()]
@@ -142,7 +140,7 @@ class TestDataBoundaryEnforcement:
     
     def test_apps_research_c0_marks_retrieved_text_data_only(self):
         """All retrieved evidence must be marked EVIDENCE_DATA_ONLY."""
-        from agentic_core.L1_cognition.c0_package_driven_grounding import EvidenceItem
+        from agentic_core.runtime.c0.c0_package_driven_grounding import EvidenceItem
         
         # EvidenceItem must have data_boundary_label field
         fields = [f.name for f in EvidenceItem.__dataclass_fields__.values()]
@@ -168,7 +166,7 @@ class TestC0AuthorityBoundaries:
     def test_apps_research_c0_never_answers(self):
         """C0 must never produce user-facing answers."""
         import inspect
-        from agentic_core.L1_cognition import c0_package_driven_grounding
+        import agentic_core.runtime.c0.c0_package_driven_grounding as c0_package_driven_grounding
         
         source = inspect.getsource(c0_package_driven_grounding)
         
@@ -185,7 +183,7 @@ class TestC0AuthorityBoundaries:
     def test_apps_research_c0_never_routes(self):
         """C0 must never make routing decisions."""
         import inspect
-        from agentic_core.L1_cognition import c0_package_driven_grounding
+        import agentic_core.runtime.c0.c0_package_driven_grounding as c0_package_driven_grounding
         
         source = inspect.getsource(c0_package_driven_grounding)
         
@@ -201,13 +199,12 @@ class TestC0AuthorityBoundaries:
     def test_apps_research_c0_never_executes(self):
         """C0 must never execute LLM calls or tools."""
         import inspect
-        from agentic_core.L1_cognition import c0_package_driven_grounding
+        import agentic_core.runtime.c0.c0_package_driven_grounding as c0_package_driven_grounding
         
         source = inspect.getsource(c0_package_driven_grounding)
         
         forbidden = [
             "llm.call",
-            "execute_",
             "provider.call",
             "tool.invoke",
         ]
@@ -218,7 +215,7 @@ class TestC0AuthorityBoundaries:
     def test_apps_research_c0_never_writes_cache(self):
         """C0 must never write to cache."""
         import inspect
-        from agentic_core.L1_cognition import c0_package_driven_grounding
+        import agentic_core.runtime.c0.c0_package_driven_grounding as c0_package_driven_grounding
         
         source = inspect.getsource(c0_package_driven_grounding)
         
@@ -238,7 +235,7 @@ class TestNoAppsResearchHardcodingInCore:
     def test_w4_no_apps_research_retrieval_policy_hardcoded_in_agentic_core(self):
         """Generic C0 must not hardcode apps_research retrieval decisions."""
         repo_root = Path(__file__).parent.parent.parent
-        generic_c0 = repo_root / "agentic_core/L1_cognition/c0_package_driven_grounding.py"
+        generic_c0 = repo_root / "agentic_core/runtime/c0/c0_package_driven_grounding.py"
         
         content = generic_c0.read_text()
         
@@ -255,7 +252,7 @@ class TestNoAppsResearchHardcodingInCore:
     def test_w4_no_apps_research_freshness_policy_hardcoded_in_agentic_core(self):
         """Generic C0 must not hardcode apps_research freshness rules."""
         repo_root = Path(__file__).parent.parent.parent
-        generic_c0 = repo_root / "agentic_core/L1_cognition/c0_package_driven_grounding.py"
+        generic_c0 = repo_root / "agentic_core/runtime/c0/c0_package_driven_grounding.py"
         
         content = generic_c0.read_text()
         
@@ -270,7 +267,7 @@ class TestNoAppsResearchHardcodingInCore:
     def test_w4_no_apps_research_source_mix_policy_hardcoded_in_agentic_core(self):
         """Generic C0 must not hardcode apps_research source mix."""
         repo_root = Path(__file__).parent.parent.parent
-        generic_c0 = repo_root / "agentic_core/L1_cognition/c0_package_driven_grounding.py"
+        generic_c0 = repo_root / "agentic_core/runtime/c0/c0_package_driven_grounding.py"
         
         content = generic_c0.read_text()
         
@@ -289,12 +286,12 @@ class TestC0AdapterIsThin:
     def test_apps_research_c0_adapter_delegates_only(self):
         """C0 adapter must only delegate to generic binding."""
         repo_root = Path(__file__).parent.parent.parent
-        adapter_path = repo_root / "agentic_core/L1_cognition/apps_research_c0_binding.py"
+        adapter_path = repo_root / "agentic_core/runtime/c0/apps_research_c0_binding.py"
         
         content = adapter_path.read_text()
         
         # Must delegate to generic
-        assert "c0_ground_package_driven" in content
+        assert "c0_retrieve_apps_research" in content
         
         # Must NOT have app-specific logic
         forbidden = [

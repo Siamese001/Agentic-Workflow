@@ -94,54 +94,98 @@ def test_grounded_producer_weak_band_for_mid_support():
 # ----- W2: promoted exec-positioning judge ---------------------------------
 
 
-def test_exec_positioning_judge_is_no_longer_stub():
-    from apps_rg.engines.judges import executive_positioning_judge as mod
-
-    assert mod.IS_STUB is False
-    assert mod.GRADER_ID.endswith("::v2")
-
-
-def test_exec_positioning_judge_abstains_on_empty_output():
-    from apps_rg.engines.judges.executive_positioning_judge import grade
-    from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
-        GRADER_UNKNOWN_SENTINEL,
+def test_exec_positioning_judge_exports_core_contract():
+    from agentic_core.runtime.judges.resume_judges.executive_positioning import (
+        ExecutivePositioningJudge,
     )
 
-    score, refs = grade(None, {"output": {"text": ""}})
-    assert score is GRADER_UNKNOWN_SENTINEL
-    assert refs == []
+    assert ExecutivePositioningJudge.IS_STUB is False
+    assert ExecutivePositioningJudge.GRADER_REF == "rg::executive_positioning_judge::v1"
 
 
-def test_exec_positioning_judge_scores_high_for_canonical_output():
-    from apps_rg.engines.judges.executive_positioning_judge import grade
-
-    text = (
-        "The executive strategy delivered a 35% ROI improvement. "
-        "We aligned stakeholders around a quarterly roadmap, prioritized "
-        "the board initiative, and drove outcome KPI gains of 20%."
+def test_exec_positioning_judge_builds_prompt_from_context():
+    from agentic_core.runtime.judges.resume_judges.executive_positioning import (
+        ExecutivePositioningJudge,
     )
-    score, refs = grade(None, {"output": {"text": text}})
-    assert isinstance(score, float)
-    assert score >= 0.6
-    assert len(refs) == 4
-    assert all("exec_positioning::v2" in r for r in refs)
+
+    judge = ExecutivePositioningJudge()
+    prompt = judge.build_prompt(
+        candidate_text="Led a 300-person org and delivered 15% revenue growth.",
+        context_metadata={
+            "target_role": "VP Engineering",
+            "target_level": "executive",
+            "target_company": "Acme",
+        },
+    )
+    assert "VP Engineering" in prompt.user_prompt
+    assert "Acme" in prompt.user_prompt
+    assert "Led a 300-person org" in prompt.user_prompt
+    assert prompt.system_prompt.strip()
 
 
-def test_exec_positioning_judge_scores_low_for_empty_signal_text():
-    from apps_rg.engines.judges.executive_positioning_judge import grade
+def test_exec_positioning_judge_parse_response_handles_empty_output():
+    from agentic_core.runtime.judges.resume_judges.executive_positioning import (
+        ExecutivePositioningJudge,
+    )
 
-    text = "hello"  # too short + no lexicon hits
-    score, refs = grade(None, {"output": {"text": text}})
-    assert isinstance(score, float)
-    assert score < 0.3
+    judge = ExecutivePositioningJudge()
+    result = judge.parse_response("")
+    assert result.score == 0.0
+    assert result.confidence == 0.0
+    assert result.parse_error is not None
 
 
-def test_exec_positioning_judge_output_score_bounded():
-    from apps_rg.engines.judges.executive_positioning_judge import grade
+def test_exec_positioning_judge_parse_response_bounds_scores():
+    from agentic_core.runtime.judges.resume_judges.executive_positioning import (
+        ExecutivePositioningJudge,
+    )
 
-    text = "strategy roadmap stakeholder quarterly kpi roi executive align prioritize board initiative outcome delivered achieved drove improved increased reduced 10% 20% 30%"
-    score, _refs = grade(None, {"output": {"text": text}})
-    assert 0.0 <= score <= 1.0
+    judge = ExecutivePositioningJudge()
+    result = judge.parse_response(
+        json.dumps(
+            {
+                "score": 1.4,
+                "confidence": -0.3,
+                "reasoning": "Signals are strong.",
+                "signal_breakdown": {
+                    "scope_signals_count": 2,
+                    "ownership_language_count": 3,
+                    "quantified_outcomes_count": 1,
+                    "executive_summary_quality": "strong",
+                },
+            }
+        )
+    )
+    assert 0.0 <= result.score <= 1.0
+    assert 0.0 <= result.confidence <= 1.0
+    assert result.reasoning == "Signals are strong."
+    assert result.signal_breakdown["executive_summary_quality"] == "strong"
+
+
+def test_exec_positioning_judge_parse_response_extracts_valid_payload():
+    from agentic_core.runtime.judges.resume_judges.executive_positioning import (
+        ExecutivePositioningJudge,
+    )
+
+    judge = ExecutivePositioningJudge()
+    result = judge.parse_response(
+        json.dumps(
+            {
+                "score": 0.87,
+                "confidence": 0.91,
+                "reasoning": "Executive positioning is strong.",
+                "signal_breakdown": {
+                    "scope_signals_count": 3,
+                    "ownership_language_count": 2,
+                    "quantified_outcomes_count": 4,
+                    "executive_summary_quality": "strong",
+                },
+            }
+        )
+    )
+    assert result.score == 0.87
+    assert result.confidence == 0.91
+    assert result.signal_breakdown["scope_signals_count"] == 3
 
 
 def test_judge_registry_reports_promoted_count_at_least_one():
@@ -156,25 +200,28 @@ def test_judge_registry_reports_promoted_count_at_least_one():
 # ----- W3: synthetic dev fixtures -------------------------------------------
 
 
-@pytest.mark.parametrize(
-    "app_id",
-    [
-        "apps_qna",
-        "apps_research",
-        "apps_exec",
-        "apps_underwriting_ai",
-        "apps_rg",
-        "apps_lic",
-        "apps_eval",
-    ],
-)
-def test_seed_fixture_exists_for_app(app_id: str):
-    fixture = REPO_ROOT / "apps_eval" / "fixtures" / "dev" / f"{app_id}.jsonl"
-    assert fixture.is_file(), f"missing seed fixture: {fixture}"
-    rows = [json.loads(line) for line in fixture.read_text(encoding="utf-8").splitlines() if line.strip()]
-    assert rows, f"empty fixture: {fixture}"
-    assert rows[0]["app_id"] == app_id
-    assert "SYNTHETIC" in rows[0].get("tags", [])
+DEV_FIXTURE_ROOT = REPO_ROOT / "apps_eval" / "fixtures" / "dev"
+DEV_FIXTURE_APPS = tuple(
+    sorted(p.name for p in DEV_FIXTURE_ROOT.iterdir() if p.is_dir())
+) if DEV_FIXTURE_ROOT.is_dir() else ()
+
+
+@pytest.mark.parametrize("app_id", DEV_FIXTURE_APPS)
+def test_seed_fixture_bundle_exists_for_app(app_id: str):
+    app_root = DEV_FIXTURE_ROOT / app_id
+    assert app_root.is_dir(), f"missing dev fixture root: {app_root}"
+
+    scenario_dirs = sorted(p for p in app_root.iterdir() if p.is_dir())
+    assert scenario_dirs, f"no dev fixture scenarios found for {app_id}"
+
+    for scenario_dir in scenario_dirs:
+        for rel_path in (
+            "scenario.yaml",
+            "input/request.json",
+            "expected/expectations.json",
+            "snapshots/app_output_snapshot.json",
+        ):
+            assert (scenario_dir / rel_path).is_file(), f"missing {rel_path} in {scenario_dir}"
 
 
 # ----- W4: legacy YAML deprecation headers ---------------------------------

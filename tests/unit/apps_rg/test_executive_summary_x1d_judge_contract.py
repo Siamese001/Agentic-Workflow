@@ -73,6 +73,15 @@ def test_graph_rubric_no_penalize_unused_when_util_gate_passed() -> None:
     assert violations == [], _violation_codes(violations)
 
 
+def test_graph_and_srfs_rubrics_include_adversarial_review_lens() -> None:
+    srf = SRFS_GRADE_ONLY_RUBRIC.lower()
+    graph = GRAPH_ONLY_GRADE_ONLY_RUBRIC.lower()
+    for blob in (srf, graph):
+        assert "head of talent acquisition" in blob
+        assert "ai-authenticity" in blob
+        assert "buzzword soup" in blob
+
+
 def test_brown_synthetic_packet_full_coherence_audit() -> None:
     packet = build_brown_brown_six_sentence_packet()
     violations = audit_judge_packet_coherence(packet)

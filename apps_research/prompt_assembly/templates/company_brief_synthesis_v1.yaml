@@ -4,7 +4,9 @@ owner: apps_research.prompt_assembly
 purpose: >
   Synthesize a grounded company brief from verified C0 evidence.
   Output is a sealed ResearchBrief artifact. No side-effect actions.
-  All factual claims must trace to C0 evidence chunks.
+  All factual claims must trace to C0 evidence chunks. The brief should
+  surface company DNA and operating motion in a way that is reusable across
+  companies and JDs, not just generic company-overview prose.
 allowed_stage: E3_EXEC
 input_contract:
   required:
@@ -61,6 +63,11 @@ slot_bodies:
     - Citation format: [SOURCE: chunk_id] inline after the claim.
     - No em dashes. No markdown hyperlinks. Plain text only.
     - Confidence scoring: assign per-section confidence (0.0–1.0) based on evidence coverage.
+    - When evidence supports it, identify the company's archetype and dominant motion
+      (product-led, platform-led, services-led, partner-led, regulated-enterprise,
+      developer-led, consumer, or hybrid) instead of defaulting to generic prose.
+    - If partnership or ecosystem motion is material, surface it explicitly alongside
+      strategy, leadership, platform, and market context.
 
     Depth profile behavior:
     - LIGHT:    Executive summary only. ≤3 evidence chunks per section. Max 500 words.

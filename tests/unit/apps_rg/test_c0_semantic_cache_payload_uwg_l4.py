@@ -116,6 +116,35 @@ def test_write_and_read_roundtrip(tmp_path: Path) -> None:
     assert got["query_output_count"] == 2
 
 
+def test_write_returns_none_when_artifact_dir_is_a_file(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "not_a_dir"
+    artifact_dir.write_text("blocking file", encoding="utf-8")
+
+    payload = build_c02_semantic_cache_payload(
+        section_id="headline",
+        atoms=_atoms(),
+        vector_query_receipt={},
+        run_id="run_fs_error",
+    )
+
+    assert write_c02_semantic_cache_payload(artifact_dir, payload) is None
+
+
+def test_write_returns_none_when_artifact_dir_parent_is_a_file(tmp_path: Path) -> None:
+    parent_file = tmp_path / "parent_file"
+    parent_file.write_text("blocking file", encoding="utf-8")
+    artifact_dir = parent_file / "child"
+
+    payload = build_c02_semantic_cache_payload(
+        section_id="headline",
+        atoms=_atoms(),
+        vector_query_receipt={},
+        run_id="run_fs_error_parent",
+    )
+
+    assert write_c02_semantic_cache_payload(artifact_dir, payload) is None
+
+
 def test_read_missing_payload_returns_empty(tmp_path: Path) -> None:
     assert read_c02_semantic_cache_payload(tmp_path) == {}
 

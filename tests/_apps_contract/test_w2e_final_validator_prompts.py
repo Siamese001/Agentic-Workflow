@@ -232,7 +232,7 @@ class TestW2EHardConstraints:
             data = json.load(f)
         assert len(data["facts"]["employment"]) == 5
         bullet_count = sum(len(emp["bullets"]) for emp in data["facts"]["employment"])
-        assert bullet_count == 18
+        assert bullet_count == 20
 
 
 if __name__ == "__main__":

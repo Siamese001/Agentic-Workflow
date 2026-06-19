@@ -17,6 +17,48 @@ def test_build_prompt_marks_companion_context_read_only_and_compacts_ledger() ->
     assert "Return JSON only" in prompt
 
 
+def test_competencies_rubric_mentions_ta_screen_and_ai_authenticity() -> None:
+    rubric = competencies_x1d.COMPETENCIES_RUBRIC.lower()
+    assert "head of talent acquisition" in rubric
+    assert "ai authenticity" in rubric
+    assert "buzzword soup" in rubric
+    assert "anti-ai filters" in rubric
+    assert "no em dashes" in rubric
+
+
+def test_run_competencies_judges_uses_pinned_gemini_preview_model(monkeypatch) -> None:
+    captured: dict[str, str] = {}
+
+    def fake_credentials(provider_key: str, environ):
+        del provider_key, environ
+        return "fake-google-key", ["GOOGLE_API_KEY"]
+
+    def fake_call_gemini(api_key: str, prompt: str, model: str, input_hash: str, provider_key: str, **kwargs):
+        del api_key, prompt, input_hash, kwargs
+        captured["provider_key"] = provider_key
+        captured["model"] = model
+        return competencies_x1d._mocked(provider_key, "input-hash")
+
+    monkeypatch.setattr(competencies_x1d, "resolve_x1d_provider_credentials", fake_credentials)
+    monkeypatch.setattr(competencies_x1d, "_call_gemini", fake_call_gemini)
+
+    outputs = competencies_x1d.run_competencies_judges(
+        competencies=[{"category_label": "Cloud", "terms": [{"text": "AWS", "source_fact_id": "bul_001", "source_fact_ids": ["bul_001"]}]}],
+        claim_ledger=[{"claim_text": "Scaled cloud controls.", "source_fact_ids": ["bul_001"]}],
+        judge_keys=["gemini_pro"],
+        companion_context="",
+        mode="blocked_if_unavailable",
+    )
+
+    assert captured["provider_key"] == "gemini_pro"
+    assert captured["model"] == "gemini-3.1-pro-preview"
+    assert len(outputs) == 1
+    out = outputs[0]
+    assert out.provider_key == "gemini_pro"
+    assert out.advisory_only is True
+    assert out.proof_eligible_judge is False
+
+
 def test_run_competencies_judges_mocked_provider_contract() -> None:
     outputs = competencies_x1d.run_competencies_judges(
         competencies=[{"label": "Cloud", "terms": ["AWS", "Kubernetes"]}],

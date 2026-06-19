@@ -16,6 +16,7 @@ def _thin() -> dict:
         "target_level": "EXECUTIVE",
         "source_resume_text": "Resume body.",
         "job_description_text": "JD body.",
+        "manual_brief_path": "brief.md",
     }
 
 

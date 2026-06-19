@@ -1,0 +1,71 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-avatar-pretooluse-enforcement-20260619",
+  "generated_at": "2026-06-19T03:15:43.1209712-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH",
+    "branch": "HEAD",
+    "head": "d0759ff75103855eaed056d160e341052f2847b4",
+    "dirty_before": true,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Tighten avatar enforcement by running selected_avatar_guard.py before every tool execution.",
+    "plan_id": "avatar-pretooluse-enforcement-20260619",
+    "files_changed": [
+      ".claude/settings.json",
+      "docs/codex-primary-execution.md",
+      "docs/reports/codex/codex_avatar_pretooluse_enforcement_20260619_receipt.json"
+    ]
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python -m json.tool .claude/settings.json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m py_compile .claude/hooks/selected_avatar_guard.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "PowerShell smoke test for selected_avatar_guard.py with a PreToolUse payload and CODEX_CONFIG_TOML overrides for stacky and patch-fox configs",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "settings json parse",
+        "status": "PASS",
+        "evidence": "python -m json.tool parsed .claude/settings.json successfully."
+      },
+      {
+        "name": "PreToolUse hook smoke test",
+        "status": "PASS",
+        "evidence": "stacky config returned exit 2 with a block; patch-fox config returned exit 0 with allow for a synthetic PreToolUse payload."
+      },
+      {
+        "name": "primary verifier",
+        "status": "PASS",
+        "evidence": "Codex primary execution verification passed."
+      }
+    ]
+  }
+}

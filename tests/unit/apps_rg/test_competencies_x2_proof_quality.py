@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from apps_rg.runtime.sections.competencies_lane_runtime import (
     build_mock_output,
@@ -293,3 +294,58 @@ def test_sentence_like_term_fails_full_sentence_gate():
     )
     g = next(x for x in gates if x.gate_id == "x2_no_full_sentences")
     assert g.pass_ is False
+
+
+def test_run_competencies_x2_fails_on_thin_selected_graph_evidence_depth():
+    from apps_rg.runtime.validators.competencies_x2 import run_competencies_x2_gates
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        attach_competency_bundles_to_proof_pool_metadata,
+    )
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
+
+    base, _, bullet_lowers = load_base_resume()
+    rows, allowed, _ = collect_employment_bullets(base)
+    blob = build_resume_support_blob(rows, "")
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    mo = build_mock_output({"selected_fact_plan": plan})
+    parsed = dict(mo)
+    canonicalize_competency_terms_for_proof(parsed)
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    thin_report = {
+        "status": "insufficient_depth",
+        "summary": "competencies: 7/8 rich items, 26 unique skills, 13 unique metrics, 88% semantic coverage, 100% axis coverage",
+        "thin_item_ids": ["reb_ey_insurance_core_modernization"],
+        "weakest_link": {"item_id": "reb_ey_insurance_core_modernization"},
+    }
+    selected_graph_plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=Path(__file__).resolve().parents[3],
+        section_id="competencies",
+        target_role="SVP Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform control plane",
+        briefing_text="regulated enterprise",
+    )
+    meta = {
+        "proof_pool_type": "augmented_skills_graph",
+        "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        "skills_authority_status": "PASS",
+        "selected_graph_evidence_plan": selected_graph_plan,
+        "graph_skills_proof_pool": True,
+    }
+    meta = attach_competency_bundles_to_proof_pool_metadata(meta, section_id="competencies")
+    meta["graph_evidence_depth_report"] = thin_report
+    gates = run_competencies_x2_gates(
+        competencies=parsed["competencies"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text="unrelated",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        proof_pool_metadata=meta,
+    )
+    gate = next(g for g in gates if g.gate_id == "x2_competencies_selected_graph_evidence_depth_sufficient")
+    assert gate.pass_ is False
+    assert "thin" in str(gate.failure_reason or "").lower()

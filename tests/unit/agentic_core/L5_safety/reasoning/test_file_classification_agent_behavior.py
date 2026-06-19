@@ -18,11 +18,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L5_safety.config import structure_blueprint as structure_blueprint_pkg
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     ClassificationResult,
     FileClassificationHealerAgent,
     get_python_files_fast,
 )
+from agentic_core.utils import fs_util as fs_util_mod
 
 
 # ---- ClassificationResult ------------------------------------------
@@ -136,10 +138,17 @@ class TestGetPythonFilesFast:
         result = get_python_files_fast(tmp_path)
         assert isinstance(result, list)
 
-    def test_finds_py_files(self, tmp_path: Path) -> None:
-        # Stand up a mini agentic_core-like tree because the scanner is
-        # territory-scoped to enforced roots.
-        core = tmp_path / "agentic_core" / "L0_routing"
+    def test_finds_py_files(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Control the territory list explicitly so the test does not depend on
+        # the live blueprint loader state.
+        monkeypatch.setattr(
+            structure_blueprint_pkg,
+            "ENFORCED_TERRITORIES",
+            frozenset({"agentic_core"}),
+            raising=False,
+        )
+        monkeypatch.setattr(fs_util_mod, "should_skip_scan_path", lambda *args, **kwargs: False)
+        core = tmp_path / "agentic_core"
         core.mkdir(parents=True)
         (core / "module.py").write_text("x = 1", encoding="utf-8")
         (core / "notes.txt").write_text("ignore me", encoding="utf-8")

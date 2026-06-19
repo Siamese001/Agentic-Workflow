@@ -1,18 +1,36 @@
 {
   "gate_id": "C3_silent_writes_ratchet",
-  "count": 2011,
-  "seeded_at": "2026-06-13T14:17:48.833349+00:00",
-  "snapshot": "adg_indexed_06182026_1128.sqlite",
+  "count": 2009,
+  "seeded_at": "2026-06-19T03:05:05.479386+00:00",
+  "snapshot": "adg_indexed_06192026_0035.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-18T18:02:18.793310+00:00",
-  "last_run_snapshot": "adg_indexed_06182026_1357.sqlite",
-  "tightened_at": "2026-06-18T15:34:26.089418+00:00",
+  "last_run_at": "2026-06-19T13:22:23.489367+00:00",
+  "last_run_snapshot": "adg_indexed_06192026_0917.sqlite",
+  "tightened_at": "2026-06-19T04:40:29.551268+00:00",
   "tighten_history": [
     {
-      "at": "2026-06-18T15:34:26.089418+00:00",
-      "snapshot": "adg_indexed_06182026_1128.sqlite",
-      "from": 2085,
+      "at": "2026-06-19T03:48:46.797014+00:00",
+      "snapshot": "adg_indexed_06182026_2343.sqlite",
+      "from": 2013,
+      "to": 2012
+    },
+    {
+      "at": "2026-06-19T04:00:53.745664+00:00",
+      "snapshot": "adg_indexed_06182026_2355.sqlite",
+      "from": 2012,
       "to": 2011
+    },
+    {
+      "at": "2026-06-19T04:18:41.602525+00:00",
+      "snapshot": "adg_indexed_06192026_0013.sqlite",
+      "from": 2011,
+      "to": 2010
+    },
+    {
+      "at": "2026-06-19T04:40:29.551268+00:00",
+      "snapshot": "adg_indexed_06192026_0035.sqlite",
+      "from": 2010,
+      "to": 2009
     }
   ]
 }

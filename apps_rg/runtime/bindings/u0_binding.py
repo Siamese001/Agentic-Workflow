@@ -9,6 +9,7 @@ import hashlib
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Mapping
 
 __all__ = [
@@ -19,6 +20,9 @@ __all__ = [
 
 # Re-export terminal rejection for callers/tests.
 from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError  # noqa: E402
+from apps_rg.runtime.bindings.briefing_u0_signals import briefing_supplied_at_u0  # noqa: E402
+from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH  # noqa: E402
+from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH  # noqa: E402
 
 __all__.append("AppsRgU0RejectedError")
 
@@ -48,6 +52,44 @@ class _AppsRgU0AuthorityReceipt:
     validator_version: str = "W6.0"
     forbidden_fields_checked: tuple[str, ...] = field(default_factory=tuple)
     validation_passed: bool = True
+
+
+def _ref_points_to_default_ssot(ref: str, default_path: Path) -> bool:
+    """True when a supplied path-like ref points at the committed default SSOT file."""
+
+    raw = str(ref or "").strip()
+    if not raw:
+        return False
+    if raw.startswith(("http://", "https://")):
+        return False
+    default_raw = str(default_path).strip()
+    if raw in {default_raw, default_path.as_posix()}:
+        return True
+    try:
+        return Path(raw).expanduser().resolve() == default_path.expanduser().resolve()
+    except (OSError, RuntimeError, ValueError):
+        return False
+
+
+def _briefing_ref_candidates(app_payload: Mapping[str, Any]) -> tuple[tuple[str, str], ...]:
+    """Collect briefing ref candidates from top-level and nested payload fields."""
+
+    candidates: list[tuple[str, str]] = []
+    for key in ("briefing_artifact_ref", "manual_brief_path"):
+        ref = str(app_payload.get(key) or "").strip()
+        if ref:
+            candidates.append((key, ref))
+
+    for scope in ("policy_refs", "briefing"):
+        nested = app_payload.get(scope)
+        if not isinstance(nested, Mapping):
+            continue
+        for key in ("briefing_artifact_ref", "manual_brief_path"):
+            ref = str(nested.get(key) or "").strip()
+            if ref:
+                candidates.append((f"{scope}.{key}", ref))
+
+    return tuple(candidates)
 
 
 def u0_validate_apps_rg(
@@ -150,12 +192,65 @@ def u0_validate_apps_rg(
 
     jd_ref: str = str(app_payload.get("job_description_ref") or "").strip()
     jd_data_val: str = str(app_payload.get("jd_data") or "").strip()
-    jd_targeting_mode: str = (
-        "RUN_SPECIFIC" if (jd_text.strip() or jd_ref or jd_data_val) else "DEFAULT_SSOT"
-    )
+    has_run_specific_jd = bool(jd_text.strip() or jd_ref or jd_data_val)
+    has_run_specific_briefing = briefing_supplied_at_u0(app_payload)
+    missing_requirements: list[str] = []
+    if not has_run_specific_jd:
+        missing_requirements.append("job_description")
+    if not has_run_specific_briefing:
+        missing_requirements.append("briefing")
 
-    resume_hash = hashlib.sha256(source_resume_text.encode("utf-8")).hexdigest()
-    jd_hash = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()
+    blocked_default_ssot_refs: list[str] = []
+    if jd_ref and _ref_points_to_default_ssot(jd_ref, DEFAULT_JD_TARGETING_PATH):
+        blocked_default_ssot_refs.append("job_description_ref")
+    for candidate_field, candidate_ref in _briefing_ref_candidates(app_payload):
+        if _ref_points_to_default_ssot(candidate_ref, DEFAULT_TARGETING_BRIEFING_PATH):
+            blocked_default_ssot_refs.append(candidate_field)
+
+    blocked_default_ssot_refs = sorted(set(blocked_default_ssot_refs))
+    if missing_requirements or blocked_default_ssot_refs:
+        detail: dict[str, Any] = {
+            "validator": "u0_validate_apps_rg",
+            "policy": "no_static_ssot_inputs_allowed_in_u0",
+        }
+        if missing_requirements:
+            detail["missing_requirements"] = missing_requirements
+        if blocked_default_ssot_refs:
+            detail["blocked_default_ssot_refs"] = blocked_default_ssot_refs
+
+        message_bits: list[str] = []
+        if missing_requirements:
+            message_bits.append(
+                "missing run-specific " + " and ".join(missing_requirements)
+            )
+        if blocked_default_ssot_refs:
+            message_bits.append("static SSOT refs are not allowed at U0")
+
+        notice = build_u0_rejected_notice(
+            request_id=request_id_pre,
+            trace_root=trace_root_pre,
+            rejection_reason=AppsRgIngressReasonCode.FIELD_TYPE_MISMATCH,
+            machine_readable_detail=detail,
+        )
+        raise AppsRgU0RejectedError(
+            notice=notice,
+            message="u0_validate_apps_rg: " + "; ".join(message_bits),
+        )
+
+    jd_targeting_mode: str = "RUN_SPECIFIC"
+
+    resume_hash_source = f"text:{source_resume_text.strip()}"
+    if not source_resume_text.strip():
+        resume_hash_source = f"ref:{str(app_payload.get('source_resume_ref') or '').strip()}"
+
+    jd_hash_source = f"text:{jd_text.strip()}"
+    if not jd_text.strip():
+        if jd_ref:
+            jd_hash_source = f"ref:{jd_ref}"
+        else:
+            jd_hash_source = f"data:{jd_data_val}"
+    resume_hash = hashlib.sha256(resume_hash_source.encode("utf-8")).hexdigest()
+    jd_hash = hashlib.sha256(jd_hash_source.encode("utf-8")).hexdigest()
 
     idempotency_key = str(app_payload.get("idempotency_key") or "") or (
         f"{target_company}:{target_role}:{resume_hash[:16]}:{jd_hash[:16]}::v1"

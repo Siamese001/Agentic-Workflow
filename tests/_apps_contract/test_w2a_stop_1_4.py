@@ -102,8 +102,8 @@ class TestStop1CanonicalBaseResumeJSON:
             fact_ids.append(cert["fact_id"])
         
         assert len(fact_ids) == len(set(fact_ids)), "Duplicate fact_ids found"
-        # 5 employment + 18 bullets + 8 skills + 2 education + 4 certifications
-        assert len(fact_ids) == 37, f"Expected 37 facts, found {len(fact_ids)}"
+        # 5 employment + 20 bullets + 8 skills + 2 education + 4 certifications
+        assert len(fact_ids) == 39, f"Expected 39 facts, found {len(fact_ids)}"
     
     def test_active_pointer_exists(self):
         """Active pointer exists at apps_rg/resume/base/active_base_resume_pointer.json"""
@@ -215,7 +215,7 @@ class TestStop4ExecutiveSummaryPrompt:
         """executive_summary prompt has evidence-first oath"""
         template_path = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "executive_summary.generate_scratch_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "EVIDENCE-FIRST" in content or "evidence-first" in content.lower()
+        assert "proof_law_v1" in content or "fit_to_evidence" in content.lower()
     
     def test_executive_summary_no_target_words(self):
         """executive_summary prompt has NO target_words constraint"""
@@ -240,14 +240,14 @@ class TestStop4ExecutiveSummaryPrompt:
         """executive_summary prompt forbids generic openers"""
         template_path = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "executive_summary.generate_scratch_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "Seasoned" in content or "FORBIDDEN_OPENERS" in content
+        assert "FORBIDDEN openers" in content or "approved_non_stock_openers" in content
     
     def test_executive_summary_outputs_planning_artifacts(self):
         """executive_summary prompt aligns with claim_ledger and selected_fact_plan"""
         template_path = REPO_ROOT / "apps_rg" / "prompt_assembly" / "templates" / "executive_summary.generate_scratch_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
         assert "claim_ledger" in content
-        assert "selected_fact_plan" in content
+        assert "proof_law_v1" in content or "ALLOWED_SOURCE_FACT_IDS" in content
 
 
 class TestW2AHardConstraints:

@@ -20,31 +20,31 @@ class TestStop10CompetencySelector:
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         assert template_path.exists()
     
-    def test_output_has_exactly_six_emitted_categories(self):
-        """Output contract requires exactly 6 executive categories (graph_10x6)"""
+    def test_output_has_exactly_eight_emitted_categories(self):
+        """Output contract requires exactly 8 executive categories (graph_8x8)"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "min_items: 6" in content or "min_items:6" in content
-        assert "max_items: 6" in content or "max_items:6" in content
-        assert "category_count_exactly_six" in content
+        assert "min_items: 8" in content or "min_items:8" in content
+        assert "max_items: 8" in content or "max_items:8" in content
+        assert "category_count_exactly_eight" in content
         assert "min_three_terms_per_category" in content
-        assert "graph_10x6" in content
+        assert "graph_8x8" in content
         assert "candidate_category_count" in content
-    
-    def test_fewer_than_six_categories_fails(self):
-        """Pre-output validation rejects fewer than 6 categories"""
+
+    def test_fewer_than_eight_categories_fails(self):
+        """Pre-output validation rejects fewer than 8 categories"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "len(output.competencies) == 6" in content
+        assert "len(output.competencies) == 8" in content
         assert "CATEGORY_COUNT_INVALID" in content
-    
-    def test_more_than_six_categories_fails(self):
-        """Pre-output validation rejects more than 6 categories"""
+
+    def test_more_than_eight_categories_fails(self):
+        """Pre-output validation rejects more than 8 categories"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "max_items: 6" in content or "max_items:6" in content
+        assert "max_items: 8" in content or "max_items:8" in content
         assert "CATEGORY_COUNT_INVALID" in content
-        assert "more than 6 categories" in content.lower()
+        assert "more than 8 categories" in content.lower()
     
     def test_category_label_term_format(self):
         """Each category uses 'Category Label: term, term, term' format"""
@@ -206,13 +206,13 @@ class TestW2DHardConstraints:
         """STOP 1 v2 canonical JSON not modified during W2D"""
         json_path = APPS_RG_ROOT / "resume" / "base" / "amit_ayer_base_resume_v1.json"
         assert json_path.exists()
-        # JSON should still have 5 employment entries, 18 bullets, 8 skills, 2 education, 4 certifications
+        # JSON should still have 5 employment entries, 20 bullets, 8 skills, 2 education, 4 certifications
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         assert len(data["facts"]["employment"]) == 5
         # Count bullets
         bullet_count = sum(len(emp["bullets"]) for emp in data["facts"]["employment"])
-        assert bullet_count == 18
+        assert bullet_count == 20
 
 
 if __name__ == "__main__":

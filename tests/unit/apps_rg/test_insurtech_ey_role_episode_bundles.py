@@ -199,6 +199,39 @@ def test_metric_outcome_nodes_are_graph_ssot_and_bundle_linked() -> None:
         assert linked_seen == set(nodes)
 
 
+def test_role_episode_bundle_metric_depth_has_no_singleton_outliers() -> None:
+    counts_by_file: dict[str, dict[str, int]] = {}
+    for path in sorted(FI.glob("*role_episode_bundles.json")):
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        counts = {
+            b["role_episode_bundle_id"]: len(b.get("linked_metric_outcome_ids") or [])
+            for b in doc["bundles"]
+        }
+        counts_by_file[path.name] = counts
+        singletons = sorted(bid for bid, count in counts.items() if count == 1)
+        assert not singletons, f"{path.name} has singleton metric bundle(s): {singletons}"
+
+    insurtech_counts = counts_by_file["insurtech_role_episode_bundles.json"]
+    assert insurtech_counts["reb_insurtech_founder_led_market_creation"] >= 3
+    assert insurtech_counts["reb_insurtech_lean_delivery_operating_model"] >= 3
+
+    insurtech = json.loads((FI / "insurtech_role_episode_bundles.json").read_text(encoding="utf-8"))
+    bundles = {
+        b["role_episode_bundle_id"]: set(b.get("linked_metric_outcome_ids") or [])
+        for b in insurtech["bundles"]
+    }
+    assert {
+        "metric_insurtech_founder_buyer_discovery_count",
+        "metric_insurtech_qualified_pipeline_stage_count",
+        "metric_insurtech_poc_to_paid_conversion_pct",
+    } <= bundles["reb_insurtech_founder_led_market_creation"]
+    assert {
+        "metric_insurtech_mvp_to_production_cycle_time",
+        "metric_insurtech_control_ownership_matrix_count",
+        "metric_insurtech_safety_operating_model_artifacts_count",
+    } <= bundles["reb_insurtech_lean_delivery_operating_model"]
+
+
 def test_role_episode_graphs_do_not_use_base_resume_bullet_ids_as_proof() -> None:
     forbidden_by_file = {
         FI / "insurtech_role_episode_bundles.json": "bul_insurtech_",

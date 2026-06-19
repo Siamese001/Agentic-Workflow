@@ -115,70 +115,35 @@ def _get_orchestrator_class():
 
     _tid = str(_uuid.uuid4())
     _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_orchestrator_class", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_get_orchestrator_class")
-    from agentic_core.L3_orchestration.Orchestrator import Orchestrator
+    from agentic_core.L3_orchestration.reasoning.engines.orchestrator_engine import Orchestrator
 
     return Orchestrator
 
 
 def _get_checkpoint_manager():
-    from agentic_core.L4_state.reasoning.CheckpointManagerAgent import get_checkpoint_manager
+    from agentic_core.L4_state.reasoning.CheckpointManager import get_checkpoint_manager
 
     return get_checkpoint_manager
 
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.config.colors_config import (
+    Colors,
+    agent_status,
+    heartbeat,
+    log_status,
+    mission_header,
+    mission_summary,
+    phase_header,
+    progress_bar,
+    tier_summary,
+)
 
-try:
-    from agentic_core.utils.terminal_colors import (
-        Colors,
-        agent_status,
-        heartbeat,
-        log_status,
-        mission_header,
-        mission_summary,
-        phase_header,
-        progress_bar,
-        tier_summary,
-    )
-
-    COLORS_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow
-    COLORS_AVAILABLE = False
-
-    def phase_header(*args, **kwargs):
-        return f"\n[PHASE] {(args[0] if args else '')}"
-
-    def tier_summary(*args, **kwargs):
-        return ""
-
-    def mission_header(*args, **kwargs):
-        return "\n[MISSION START]"
-
-    def mission_summary(*args, **kwargs):
-        return "\n[MISSION COMPLETE]"
-
-    def agent_status(*args, **kwargs):
-        return f"  {(args[0] if args else '')}"
-
-    def progress_bar(*args, **kwargs):
-        return ""
-
-    def log_status(level, msg, **kwargs):
-        print(f"[{level.upper()}] {msg}")
-
-    def heartbeat(i):
-        return "."
-
-    class Colors:
-        RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = DIM = ""
+COLORS_AVAILABLE = True
 
 
 try:
@@ -537,10 +502,16 @@ def main():
     if args.reset:
         print("\n[*] SOVEREIGN STATE RESET ACTIVATED")
         try:
-            from agentic_core.L0_routing.reset_sovereign_state import purge_volatile_state
+            from agentic_core.L0_routing.config import fallback_chains_loader_v15, routing_calibration
+            from agentic_core.cache import reset_cache_singletons
 
-            purge_volatile_state()
-            print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
+            reset_cache_singletons()
+            routing_calibration.reset_cache()
+            fallback_chains_loader_v15.reset_cache()
+            runtime_state_path = project_root / RUNTIME_STATE_FILE
+            if runtime_state_path.exists():
+                runtime_state_path.unlink()
+            print("   [OK] Volatile state purged - caches reset on clean slate")
         except (  # guardian: allow-silent-swallow
             OSError,
             ImportError,
@@ -598,14 +569,15 @@ def main():
     if args.report:
         print("\n[*] Running Autonomy Compliance Report...")
         try:
-            from agentic_core.config.autonomy_targets import get_target
-
             from agentic_core.L0_routing.enforcement.safety_validators_seam import load_autonomy_guardian
+
+            def _resolve_autonomy_target(target: str) -> str:
+                return target
 
             get_autonomy_guardian = load_autonomy_guardian().get_autonomy_guardian
             guardian = get_autonomy_guardian(project_root)
-            print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
-            guardian.generate_compliance_report(context={"target_resolver": get_target})
+            print("   [TARGETS] Using inline autonomy target resolver fallback")
+            guardian.generate_compliance_report(context={"target_resolver": _resolve_autonomy_target})
         except (  # guardian: allow-silent-swallow
             ImportError,
             OSError,
@@ -773,7 +745,7 @@ def main():
                     import importlib.util
 
                     spec = importlib.util.find_spec(
-                        "agentic_core.L6_observability.engines.PerformanceAnalystAgentSimple",
+                        "agentic_core.L6_observability.utils.engines.PerformanceAnalystAgentSimple",
                     )
                     if spec:
                         perf_module = importlib.util.module_from_spec(spec)
@@ -793,7 +765,7 @@ def main():
                 project_root=project_root,
                 name="SovereignHealOrchestrator",
             )
-            checkpoint_manager = get_checkpoint_manager(project_root)
+            checkpoint_manager = get_checkpoint_manager(storage_path=project_root / ".canon_memory" / "checkpoints")
             performance_analyst = get_performance_analyst_safe(project_root)
             mission_context = {
                 "dry_run": not execute_heal,

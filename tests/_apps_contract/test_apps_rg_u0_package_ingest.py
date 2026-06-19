@@ -37,6 +37,7 @@ def _thin_payload(**overrides: object) -> dict[str, object]:
         "target_role": "Senior Director of AI Engineering",
         "source_resume_text": "Leadership profile content.",
         "job_description_text": "Senior Director role description.",
+        "manual_brief_path": "artifact:brief",
     }
     base.update(overrides)
     return base

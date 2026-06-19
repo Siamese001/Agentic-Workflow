@@ -119,6 +119,8 @@ If a process-identity tool is absent, the live MCP child is still serving older 
 
 Codex primary enforcement does not depend on Claude hook parity. Any `.claude/hooks/**` or `.claude/settings.json` material is legacy compatibility only and is not part of the primary readiness contract.
 
+Workspace-specific avatar enforcement lives in `.claude/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
+
 ## Run Receipt Contract
 
 Every substantial Codex-primary implementation or verification run should produce a JSON receipt and validate it:

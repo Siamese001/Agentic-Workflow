@@ -4,11 +4,11 @@ section: competencies
 
 description: >
 
-  Professional Competencies is a target-aware, fact-constrained selection and grouping lane (graph_10x6).
+  Professional Competencies is a target-aware, fact-constrained selection and grouping lane (graph_8x8).
 
-  It ranks up to 10 graph-matched capability category candidates from augmented_skills_graph projection and
+  It ranks 8 graph-matched capability category candidates from augmented_skills_graph projection and
 
-  employment-bullet facts, then emits exactly 6 highest-scoring categories. JD, briefing, title, company, and
+  employment-bullet facts, then emits exactly 8 highest-scoring categories. JD, briefing, title, company, and
 
   companion generated sections may influence emphasis, labels, ordering, and relevance — never proof.
 
@@ -30,11 +30,11 @@ evidence:
 
 selection:
 
-  model: graph_10x6_v1
+  model: graph_8x8_v1
 
-  candidate_category_count: 10
+  candidate_category_count: 8
 
-  emitted_category_count: 6
+  emitted_category_count: 8
 
   skills_authority: augmented_skills_graph
 
@@ -92,7 +92,7 @@ forbidden:
 
   - base_resume_facts_skills_as_authority
 
-  - emitting_more_than_six_categories
+  - emitting_more_than_eight_categories
 
 
 

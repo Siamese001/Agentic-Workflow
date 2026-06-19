@@ -8,39 +8,11 @@ arguments (repo_root, apply) for mutating mode support.
 
 from __future__ import annotations
 
-from typing import Callable
+from pathlib import Path
+from typing import Any, Callable
 
 from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult
-from agentic_core.L3_orchestration.healers.architecture_governance_healer import (
-    heal_import_compliance,
-    heal_layer_gravity,
-)
-from agentic_core.L3_orchestration.healers.architecture_governor_healer import (
-    heal_architecture_governance,
-)
-from agentic_core.L3_orchestration.healers.classification_compliance_healer import (
-    heal_naming_compliance,
-    heal_territory_compliance,
-)
-from agentic_core.L3_orchestration.healers.drift_detection_healer import (
-    heal_guardian_drift_detection,
-)
-from agentic_core.L3_orchestration.healers.file_classification_healer import (
-    heal_file_classification,
-)
-from agentic_core.L3_orchestration.healers.filesystem_ssot_healer import (
-    heal_filesystem_ssot_drift,
-)
-from agentic_core.L3_orchestration.healers.gravity_leak_healer import (
-    heal_gravity_violations,
-)
-from agentic_core.L3_orchestration.healers.hierarchy_agent_healer import (
-    heal_hierarchy_violations,
-)
-from agentic_core.L3_orchestration.healers.hierarchy_compliance_healer import (
-    heal_missing_structure,
-    heal_subfolder_compliance,
-)
+from agentic_core.L2_execution.types.heal_result_adapter import adapt_heal_result
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -187,6 +159,226 @@ _emit_captures_evaluation_metric("p4", "healer_registry_types", "eval_metric")
 _emit_stores_embedding("p4", "healer_registry_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "healer_registry_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "healer_registry_types", "exec_snapshot_link")
+
+
+def _merge_heal_context(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    context: dict[str, Any] = {}
+    for arg in args:
+        if isinstance(arg, dict):
+            context.update(arg)
+    context.update(kwargs)
+    return context
+
+
+def _repo_root(context: dict[str, Any]) -> Path:
+    root = context.get("repo_root") or context.get("project_root") or Path.cwd()
+    return Path(root).resolve()
+
+
+def _bool_context(context: dict[str, Any], key: str, default: bool) -> bool:
+    value = context.get(key, default)
+    return bool(value)
+
+
+def _target_territory(context: dict[str, Any]) -> str | None:
+    target = context.get("target_territory") or context.get("territory")
+    return str(target) if target else None
+
+
+def _file_path(context: dict[str, Any], repo_root: Path) -> Path | None:
+    raw = context.get("file_path") or context.get("path") or context.get("file")
+    if raw is None:
+        return None
+    path = Path(raw)
+    if not path.is_absolute():
+        path = repo_root / path
+    return path.resolve()
+
+
+def _adapt_result(check_id: str, raw_result: dict[str, Any] | str | None, repo_root: Path) -> HealCheckResult:
+    return adapt_heal_result(check_id, raw_result, repo_root)
+
+
+def heal_import_compliance(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    file_path = _file_path(context, repo_root)
+    if file_path is None:
+        return _adapt_result(
+            "import_compliance",
+            {"status": "SKIPPED", "notes": "No file_path provided"},
+            repo_root,
+        )
+    from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent, HealerConfig
+
+    agent = CodeHealerAgent(
+        project_root=repo_root,
+        agent_config=HealerConfig(
+            enable_canon=False,
+            enable_import=True,
+            enable_structural=False,
+            dry_run=_bool_context(context, "dry_run", True),
+        ),
+    )
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        file_path=file_path,
+    )
+    return _adapt_result("import_compliance", raw, repo_root)
+
+
+def heal_layer_gravity(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
+
+    agent = GravityLeakRepairAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+    )
+    return _adapt_result("layer_gravity", raw, repo_root)
+
+
+def heal_architecture_governance(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+
+    agent = ArchitectureGovernorAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+    )
+    return _adapt_result("architecture_governance", raw, repo_root)
+
+
+def heal_naming_compliance(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
+    agent = FileClassificationAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+        cached_scan=context.get("cached_scan"),
+    )
+    return _adapt_result("naming_compliance", raw, repo_root)
+
+
+def heal_territory_compliance(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneHealerAgent
+
+    agent = RootHygieneHealerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+    )
+    return _adapt_result("territory_compliance", raw, repo_root)
+
+
+def heal_guardian_drift_detection(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneHealerAgent
+
+    agent = RootHygieneHealerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+    )
+    return _adapt_result("guardian_drift_detection", raw, repo_root)
+
+
+def heal_file_classification(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
+    agent = FileClassificationAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+        cached_scan=context.get("cached_scan"),
+    )
+    return _adapt_result("file_classification", raw, repo_root)
+
+
+def heal_filesystem_ssot_drift(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import FilesystemSSOTReconcilerAgent
+
+    agent = FilesystemSSOTReconcilerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        force=True,
+    )
+    return _adapt_result("filesystem_ssot_drift", raw, repo_root)
+
+
+def heal_gravity_violations(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
+
+    agent = GravityLeakRepairAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+    )
+    return _adapt_result("gravity_violations", raw, repo_root)
+
+
+def heal_hierarchy_violations(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+
+    agent = HierarchyHealerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+    )
+    return _adapt_result("hierarchy_violations", raw, repo_root)
+
+
+def heal_missing_structure(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+
+    agent = HierarchyHealerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+    )
+    return _adapt_result("missing_structure", raw, repo_root)
+
+
+def heal_subfolder_compliance(*args: Any, **kwargs: Any) -> HealCheckResult:
+    context = _merge_heal_context(*args, **kwargs)
+    repo_root = _repo_root(context)
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+
+    agent = HierarchyHealerAgent(project_root=repo_root)
+    raw = agent.heal_repository(
+        dry_run=_bool_context(context, "dry_run", True),
+        execute=_bool_context(context, "execute", False),
+        target_territory=_target_territory(context),
+    )
+    return _adapt_result("subfolder_compliance", raw, repo_root)
+
 
 HealerFn = Callable[..., HealCheckResult]
 

@@ -33,13 +33,26 @@ Score contract:
 - score_scale must be "0_to_1" or "0_to_5" only.
 
 Rubric dimensions:
-1. factual_support: terms align with claim_ledger and allowed bul_* resume facts only.
-2. ats_alignment_without_stuffing: relevant clusters without keyword stuffing or JD-as-proof.
-3. seniority_executive_relevance: reads as executive-level capability groupings.
-4. complementarity: augments executive summary, Unify, and IBM generated sections; not a mechanical restatement of bullets.
-5. no_bullet_restatement: avoids copying long bullet fragments or outcome laundry lists.
-6. anti_overfit: no JD-only or briefing-only skills framed as proof.
-7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims).
+1. factual_support: terms align with claim_ledger and allowed bul_* resume facts only; graph-skill support may inform phrasing, but JD/briefing never become proof.
+2. ats_alignment_without_stuffing: relevant clusters without keyword stuffing or JD-as-proof; favor semantic coverage and distinct ATS query clusters over repeating the same three metrics or one employer lane.
+3. seniority_executive_relevance: reads as executive-level capability groupings with breadth across the graph, not a single repeated theme or junior operator checklist.
+4. complementarity: augments executive summary, Unify, and IBM generated sections; not a mechanical restatement of bullets, the same proof surface, or career-phase narration.
+5. no_bullet_restatement: avoids copying long bullet fragments, outcome laundry lists, repeated metric language, or employer-specific verbatim lines.
+6. anti_overfit: no JD-only or briefing-only skills framed as proof; company-specific targeting may influence label choice, not evidence; do not collapse multiple categories onto one metric family; no AI-authenticity dead giveaways such as template phrasing or buzzword soup.
+7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims) and each category should be semantically distinct, graph-backed, and tied to a different skill family.
+
+Adversarial review lens:
+- Head of Talent Acquisition pass: would the taxonomy feel recruiter-clean and senior enough for the target company?
+- AI authenticity pass: no generic generated labels, no buzzword soup, no phrase recycling across categories.
+
+Anti-AI filters:
+- no em dashes in labels or findings
+- no template phrasing like "strategic leadership" repeated across categories
+- no repeated metric families copied into multiple categories
+- no first-person voice, self-reference, or resume prose leakage
+- no unsupported tools, benchmarks, certifications, or employer claims
+- no sentence-style category labels or bullet-shaped terms
+- no "transformational", "innovative", or "cutting-edge" filler without concrete grounding
 
 Advisory notes:
 - The deterministic product shape expects exactly 8 categories; flag missing, extra, or duplicate category groups as quality_flags.
@@ -47,11 +60,16 @@ Advisory notes:
 - Judge pass/fail does not gate product proof eligibility for competencies.
 - companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).
 - Terms require source_fact_ids / claim_ledger binding — no JD-only skills as proof.
+- When the categories collapse onto the same few metrics, fact surfaces, or employer lane, lower the score even if the shape is technically valid.
+- If the labels feel machine-generated or too generic to survive a TA skim, treat that as a quality flag.
 
 Decisive failure triggers (advisory only):
 - JD or briefing used as primary evidence for unsupported clusters
 - obvious bullet paste or first-person resume voice leakage
 - format breaks (full sentences inside terms, bullet markers)
+- repeated metric/language loops across multiple categories
+- generic category labels with no graph-backed differentiation
+- company-specific targeting used as proof rather than label choice
 """.strip()
 
 

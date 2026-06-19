@@ -20,6 +20,7 @@ def _thin(**overrides: object) -> dict[str, object]:
         "target_level": "EXECUTIVE",
         "source_resume_text": "Resume body for W3 evidence test.",
         "job_description_text": "JD body for W3 evidence test.",
+        "manual_brief_path": "brief.md",
     }
     base.update(overrides)
     return base

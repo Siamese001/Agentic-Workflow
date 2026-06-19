@@ -21,12 +21,57 @@ from apps_rg.runtime.jd_resolution import JdSource, resolve_jd_for_lanes
 
 
 def test_u0_jd_targeting_mode_run_specific(tmp_path):
-    """u0_validate_apps_rg sets jd_targeting_mode=RUN_SPECIFIC when JD text is provided."""
+    """u0_validate_apps_rg sets jd_targeting_mode=RUN_SPECIFIC when run inputs are present."""
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
         AppsRgIngressPayload,
         RequestEnvelope,
     )
     from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+
+    brief = tmp_path / "brief.txt"
+    brief.write_text("Company context.", encoding="utf-8")
+    payload = AppsRgIngressPayload(
+        target_company="Acme",
+        target_role="Staff Engineer",
+        source_resume_text="resume body",
+        job_description_text="Design distributed systems at scale.",
+        manual_brief_path=str(brief),
+        l5_certification_ref="test:valid:w6",
+    )
+    result = u0_validate_apps_rg(RequestEnvelope(payload=payload))
+    mode = result.app_payload["query_spec"]["jd_targeting_mode"]
+    assert mode == "RUN_SPECIFIC", f"expected RUN_SPECIFIC, got {mode!r}"
+
+
+def test_u0_rejects_missing_jd_even_with_briefing(tmp_path):
+    """U0 must fail closed when JD is missing, even if a briefing ref is present."""
+    from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
+        AppsRgIngressPayload,
+        RequestEnvelope,
+    )
+    from apps_rg.runtime.bindings.u0_binding import AppsRgU0RejectedError, u0_validate_apps_rg
+
+    brief = tmp_path / "brief.txt"
+    brief.write_text("Company context.", encoding="utf-8")
+
+    payload = AppsRgIngressPayload(
+        target_company="Acme",
+        target_role="Staff Engineer",
+        source_resume_text="resume body",
+        manual_brief_path=str(brief),
+        l5_certification_ref="test:valid:w6",
+    )
+    with pytest.raises(AppsRgU0RejectedError, match="missing run-specific job_description"):
+        u0_validate_apps_rg(RequestEnvelope(payload=payload))
+
+
+def test_u0_rejects_missing_briefing_even_with_jd():
+    """U0 must fail closed when briefing is missing, even if JD text is present."""
+    from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
+        AppsRgIngressPayload,
+        RequestEnvelope,
+    )
+    from apps_rg.runtime.bindings.u0_binding import AppsRgU0RejectedError, u0_validate_apps_rg
 
     payload = AppsRgIngressPayload(
         target_company="Acme",
@@ -35,28 +80,30 @@ def test_u0_jd_targeting_mode_run_specific(tmp_path):
         job_description_text="Design distributed systems at scale.",
         l5_certification_ref="test:valid:w6",
     )
-    result = u0_validate_apps_rg(RequestEnvelope(payload=payload))
-    mode = result.app_payload["query_spec"]["jd_targeting_mode"]
-    assert mode == "RUN_SPECIFIC", f"expected RUN_SPECIFIC, got {mode!r}"
+    with pytest.raises(AppsRgU0RejectedError, match="missing run-specific briefing"):
+        u0_validate_apps_rg(RequestEnvelope(payload=payload))
 
 
-def test_u0_jd_targeting_mode_default_ssot():
-    """u0_validate_apps_rg sets jd_targeting_mode=DEFAULT_SSOT when no JD is supplied."""
+def test_u0_rejects_default_ssot_refs():
+    """U0 must reject the committed default JD and briefing refs even when present."""
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
         AppsRgIngressPayload,
         RequestEnvelope,
     )
-    from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+    from apps_rg.runtime.bindings.u0_binding import AppsRgU0RejectedError, u0_validate_apps_rg
+    from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH
+    from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH
 
     payload = AppsRgIngressPayload(
         target_company="Acme",
         target_role="Staff Engineer",
         source_resume_text="resume body",
+        job_description_ref=str(DEFAULT_JD_TARGETING_PATH),
+        manual_brief_path=str(DEFAULT_TARGETING_BRIEFING_PATH),
         l5_certification_ref="test:valid:w6",
     )
-    result = u0_validate_apps_rg(RequestEnvelope(payload=payload))
-    mode = result.app_payload["query_spec"]["jd_targeting_mode"]
-    assert mode == "DEFAULT_SSOT", f"expected DEFAULT_SSOT, got {mode!r}"
+    with pytest.raises(AppsRgU0RejectedError, match="static SSOT refs are not allowed at U0"):
+        u0_validate_apps_rg(RequestEnvelope(payload=payload))
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,112 @@
+"""Regression tests for apps_research brief markdown normalization."""
+
+from __future__ import annotations
+
+from apps_research.engines.company_brief_engine import CompanyBriefEngine
+from apps_research.types.apps_rg_targeting_brief_contract import (
+    normalize_markdown_brief_text,
+    normalize_targeting_brief_text,
+    validate_targeting_brief_text,
+)
+
+_TARGETING_JD_CONTEXT = {
+    "company_name": "Acme Co",
+    "output_format": "apps_rg_targeting_brief_v1",
+    "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
+    "jd_context": {"role": "SVP IT Strategy"},
+}
+
+_VALID_TARGETING_BRIEF = (
+    "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
+    "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
+    "=== STRATEGIC MANDATE ===\n"
+    "- Verified mid-cap insurer scaling distribution channels\n"
+    "- Role anchors platform consolidation across books\n"
+    "- Cloud-core migration shifts spend to data services\n\n"
+    "=== LEADERSHIP ===\n"
+    "- CEO drives acquisitive growth with integration focus\n"
+    "- CIO mandate: unify policy systems on one platform\n\n"
+    "=== TECH & AI PLATFORM ===\n"
+    "- Mainframe-to-cloud core underway across units\n"
+    "- Peers investing in agentic underwriting assistance\n"
+)
+
+
+def test_targeting_normalizer_rewrites_jd_dense_bullet() -> None:
+    jd = "Lead enterprise data platform strategy for the insurance division."
+    draft = (
+        "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
+        "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
+        "=== STRATEGIC MANDATE ===\n"
+        "- lead enterprise data platform strategy for the insurance division and manage the change while coordinating with architecture and governance teams to keep delivery aligned with the business.\n\n"
+        "=== LEADERSHIP ===\n"
+        "- The stakeholder map crosses business, technology, and operations.\n\n"
+        "=== AI, DATA, PLATFORM, ARCHITECTURE SIGNALS ===\n"
+        "- Platform modernization needs to remain measurable and specific.\n"
+    )
+
+    normalized = normalize_targeting_brief_text(draft, jd_text=jd)
+    validation = validate_targeting_brief_text(normalized, jd_text=jd)
+
+    assert validation.valid, validation.violations
+    assert "lead enterprise data platform strategy" not in normalized.lower()
+    assert all(len(line) <= 240 for line in normalized.splitlines() if line.strip())
+
+
+def test_targeting_synthesis_repairs_invalid_markdown(monkeypatch) -> None:
+    engine = CompanyBriefEngine()
+    responses = iter(
+        [
+            (
+                "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
+                "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
+                "=== STRATEGIC MANDATE ===\n"
+                "- lead enterprise data platform strategy for the insurance division and manage the change while coordinating with architecture and governance teams to keep delivery aligned with the business.\n"
+            ),
+            _VALID_TARGETING_BRIEF,
+        ]
+    )
+    monkeypatch.setattr(engine, "_call_llm_plain_markdown", lambda prompt: next(responses))
+
+    synthesized = engine._synthesize_apps_rg_targeting_brief(
+        topic="Acme Co",
+        findings={"overview": "Acme is a mid-cap insurer with verified scale."},
+        jd_context=_TARGETING_JD_CONTEXT,
+        jd_anchor=None,
+    )
+
+    assert synthesized.get("targeting_brief_disposition") == "SEALED"
+    md = synthesized["apps_rg_targeting_brief_markdown"]
+    assert md.strip()
+    assert validate_targeting_brief_text(md, jd_text="Lead enterprise data platform strategy for the insurance division.").valid
+
+
+def test_consumer_brief_path_normalizes_output(monkeypatch) -> None:
+    engine = CompanyBriefEngine()
+    long_line = "- " + ("company context and operating pressure " * 12)
+    monkeypatch.setattr(
+        engine,
+        "_call_llm_plain_markdown",
+        lambda prompt: (
+            "Acme Co briefing\n\n"
+            "=== RESEARCH SUMMARY ===\n"
+            f"{long_line}\n"
+        ),
+    )
+
+    synthesized = engine._synthesize_consumer_brief(
+        topic="Acme Co",
+        findings={"overview": "Acme is a mid-cap insurer with verified scale."},
+        jd_context={"company_name": "Acme Co"},
+        jd_anchor=None,
+        template_id="downstream_research_substrate_v1",
+        output_key="downstream_research_substrate_text",
+        disposition_key="downstream_research_substrate_disposition",
+        block_reason_key="downstream_research_substrate_block_reason",
+    )
+
+    assert synthesized.get("downstream_research_substrate_disposition") == "SEALED"
+    brief = synthesized["downstream_research_substrate_text"]
+    assert brief.strip()
+    assert all(len(line) <= 240 for line in brief.splitlines() if line.strip())
+    assert normalize_markdown_brief_text(brief, profile="apps_rg") == brief

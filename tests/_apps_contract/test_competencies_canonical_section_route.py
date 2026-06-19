@@ -97,6 +97,9 @@ def test_cli_section_competencies_avoids_product_dispatch(monkeypatch: pytest.Mo
 
     monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "1")
     monkeypatch.setenv("APPS_RG_C0_EVIDENCE_ROOM", "0")
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.setenv("APPS_RG_MOCK_JUDGES", "1")
+    monkeypatch.setenv("APPS_RG_ALLOW_DEFAULT_TARGETING_PATHS", "1")
     rc = main(
         [
             "--section",
@@ -105,10 +108,14 @@ def test_cli_section_competencies_avoids_product_dispatch(monkeypatch: pytest.Mo
             "Synthetic Enterprise Corp.",
             "--target-role",
             "SVP Engineering",
+            "--jd",
+            "JD text for competency routing",
+            "--manual-brief",
+            "Brief text for competency routing",
             "--resume",
             str(REPO_ROOT / "apps_rg/resume/base/amit_ayer_base_resume_v1.json"),
             "--provider",
-            "qwen_vllm",
+            "external_openai",
             "--mock-judges",
             "--allow-test-mock-judges",
         ]
