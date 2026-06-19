@@ -213,6 +213,19 @@ def runtime_plan_to_orchestrator_plan(
     ts = dict(plan.task_spec or {})
     if ts.get("generation_mode"):
         lines.append(f"Generation mode: {ts.get('generation_mode')}")
+    completion = dict(plan.output_expectation or {}).get("completion_criteria")
+    if isinstance(completion, Mapping) and completion:
+        capsule_ref = str((plan.policy_refs or {}).get("l1_planning_capsule_ref", "") or "")
+        if capsule_ref:
+            lines.append(f"Planning capsule: {capsule_ref}")
+        lines.append(
+            "Planning completion: max_refinement_passes="
+            f"{completion.get('max_refinement_passes', 0)}"
+        )
+        lines.append(
+            "Planning ambiguity ceiling: "
+            f"{completion.get('max_ambiguity_severity', 'none')}"
+        )
     user_task = "\n".join(lines)
     return OrchPlan(
         task_spec=json.dumps(dict(plan.task_spec or {}), sort_keys=True),
@@ -259,10 +272,16 @@ def envelope_to_runtime_compiled_prompt(
     gate_refs.extend(list(route.gate_verdict_refs or ()))
 
     plan_key = {
+        "task_plan": tuple(plan.task_plan or ()),
+        "required_capabilities": tuple(plan.required_capabilities or ()),
         "task_spec": dict(plan.task_spec or {}),
         "query_spec": dict(plan.query_spec or {}),
         "support_expectation": dict(plan.support_expectation or {}),
         "output_expectation": dict(plan.output_expectation or {}),
+        "planning_prior_refs": tuple(plan.planning_prior_refs or ()),
+        "policy_refs": dict(plan.policy_refs or {}),
+        "route_hints": dict(getattr(plan, "route_hints", {}) or {}),
+        "ambiguity_register": dict(plan.ambiguity_register or {}),
     }
     app_payload = _stable_app_payload_for_hash(
         getattr(validated_request, "app_payload", None) or {}
@@ -294,7 +313,11 @@ def envelope_to_runtime_compiled_prompt(
     }
     slot_lineage_map: dict[str, str] = {
         "system_block_0": "PA-authored|SYSTEM_INTERNAL|core_assemble_prompt",
-        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|core_assemble_prompt",
+        "user_block_1": (
+            "USER_INTENT|L1_PLAN_PROJECTIONS|"
+            f"planning_capsule_ref={(plan.policy_refs or {}).get('l1_planning_capsule_ref', '')}|"
+            "core_assemble_prompt"
+        ),
         "evidence": f"C0:{ev_digest}",
     }
     for idx, row in enumerate(envelope.slot_manifest):

@@ -44,6 +44,7 @@ def _minimal_validated_request(*, generation_mode: str = "strategic_tailor") -> 
             "query_spec": {"target_level": "VP"},
             "support_expectation": {},
             "output_expectation": {},
+            "briefing_artifact_ref": "apps_rg/config/targeting/briefing.md",
         },
     )
 

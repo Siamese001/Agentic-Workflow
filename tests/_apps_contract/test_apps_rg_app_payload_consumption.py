@@ -23,6 +23,7 @@ import importlib.util as _importlib_util
 import inspect
 import os
 import typing
+from dataclasses import replace as _replace
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -126,6 +127,8 @@ def test_l1_output_expectation_carries_formats_and_flags() -> None:
     assert isinstance(oe["formats"], (list, tuple)) and len(oe["formats"]) >= 1
     assert isinstance(oe["provenance_required"], bool)
     assert isinstance(oe["fact_checked_required"], bool)
+    assert oe["completion_criteria"]["schema_version"] == "apps_rg_completion_criteria_v1"
+    assert oe["completion_criteria"]["max_refinement_passes"] == 1
 
 
 def test_l1_policy_refs_carries_all_policy_refs() -> None:
@@ -140,6 +143,8 @@ def test_l1_policy_refs_carries_all_policy_refs() -> None:
         "agent_spec_ref",
         "thresholds_ref",
         "l5_governance_profile_ref",
+        "l1_planning_prior_set_ref",
+        "l1_planning_capsule_ref",
     }
     assert set(refs.keys()) == expected_keys
     for key, value in refs.items():
@@ -261,6 +266,7 @@ def test_pa_user_instruction_includes_target_from_app_payload() -> None:
     assert "Acme Corp" in artifact.user_instruction
     assert "Senior Director of AI Engineering" in artifact.user_instruction
     assert "EXECUTIVE" in artifact.user_instruction
+    assert "Planning completion" in artifact.user_instruction
 
 
 def test_pa_artifact_includes_provenance_proof_fields() -> None:
@@ -272,6 +278,7 @@ def test_pa_artifact_includes_provenance_proof_fields() -> None:
     assert "l1_plan" in artifact.component_hash_map
     assert "evidence" in artifact.slot_lineage_map
     assert artifact.slot_lineage_map["evidence"].startswith("C0:")
+    assert "planning_capsule_ref=" in artifact.slot_lineage_map["user_block_1"]
 
 
 def test_pa_emits_slot_lineage_map() -> None:
@@ -370,6 +377,34 @@ def test_pa_l1_plan_hash_changes_when_target_projection_changes() -> None:
     art2 = _live_compiled_prompt(_thin_payload(target_company="Acme B"))
     assert art1.component_hash_map["l1_plan"] != art2.component_hash_map["l1_plan"]
     assert art1.component_hash_map["app_payload"] != art2.component_hash_map["app_payload"]
+
+
+def test_pa_l1_plan_hash_changes_when_planning_capsule_ref_changes() -> None:
+    vr = _live_validated_request()
+    plan = l1_plan_apps_rg(vr)
+    route = l0_route_apps_rg(plan)
+    with patch.dict(
+        os.environ,
+        {
+            "APPS_RG_C0_DENSE_SPARSE_MANDATORY": "0",
+            "CHROMA_PERSIST_DIR": "",
+        },
+        clear=False,
+    ):
+        fec = c0_retrieve_apps_rg(route, vr)
+
+    plan_variant = _replace(
+        plan,
+        policy_refs={
+            **dict(plan.policy_refs),
+            "l1_planning_prior_set_ref": "l1priors-variant",
+            "l1_planning_capsule_ref": "l1plan-variant",
+        },
+    )
+    artifact_base = pa_compose_apps_rg(route, plan, fec, vr)
+    artifact_variant = pa_compose_apps_rg(route, plan_variant, fec, vr)
+
+    assert artifact_base.component_hash_map["l1_plan"] != artifact_variant.component_hash_map["l1_plan"]
 
 
 # ---------------------------------------------------------------------------

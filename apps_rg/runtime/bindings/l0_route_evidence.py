@@ -56,6 +56,10 @@ def compute_route_digest(
         "cache_eligibility": dict(sorted(cache_eligibility.items())),
         "replay_key": plan.replay_key,
         "validation_receipt_id": getattr(plan, "validation_receipt_id", ""),
+        "planning_capsule_ref": str((plan.policy_refs or {}).get("l1_planning_capsule_ref", "")),
+        "planning_prior_set_ref": str((plan.policy_refs or {}).get("l1_planning_prior_set_ref", "")),
+        "completion_criteria": dict((plan.output_expectation or {}).get("completion_criteria") or {}),
+        "ambiguity_register_id": str((plan.ambiguity_register or {}).get("register_id", "")),
     }
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -97,9 +101,22 @@ def stamp_route_evidence(
 
     from dataclasses import replace
 
+    reason_codes = tuple(route.reason_codes or ())
+    planning_reason_codes = []
+    planning_capsule_ref = str((plan.policy_refs or {}).get("l1_planning_capsule_ref", "") or "")
+    planning_prior_set_ref = str((plan.policy_refs or {}).get("l1_planning_prior_set_ref", "") or "")
+    ambiguity_register_id = str((plan.ambiguity_register or {}).get("register_id", "") or "")
+    if planning_capsule_ref:
+        planning_reason_codes.append(f"l1_planning_capsule_ref={planning_capsule_ref}")
+    if planning_prior_set_ref:
+        planning_reason_codes.append(f"l1_planning_prior_set_ref={planning_prior_set_ref}")
+    if ambiguity_register_id:
+        planning_reason_codes.append(f"l1_ambiguity_register_id={ambiguity_register_id}")
+
     return replace(
         route,
         route_digest=digest,
         hmac_sig=sig,
         signature=sig,
+        reason_codes=reason_codes + tuple(planning_reason_codes),
     )

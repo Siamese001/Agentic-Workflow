@@ -360,6 +360,19 @@ def _compose_ag2_user_instruction(plan: L1PlanContract, vr: ValidatedRequest) ->
     fmts = out.get("formats")
     if fmts:
         lines.append(f"Output formats: {', '.join(str(x) for x in fmts)}.")
+    completion = out.get("completion_criteria")
+    if isinstance(completion, Mapping) and completion:
+        capsule_ref = str((plan.policy_refs or {}).get("l1_planning_capsule_ref", "") or "")
+        if capsule_ref:
+            lines.append(f"Planning capsule: {capsule_ref}.")
+        lines.append(
+            "Planning completion: max_refinement_passes="
+            f"{completion.get('max_refinement_passes', 0)}."
+        )
+        lines.append(
+            "Planning ambiguity ceiling: "
+            f"{completion.get('max_ambiguity_severity', 'none')}."
+        )
     return "\n".join(lines)
 
 
@@ -424,7 +437,11 @@ def _pa_compose_apps_rg_legacy(
 
     slot_lineage_map = {
         "system_block_0": "PA-authored|SYSTEM_INTERNAL|S0_SYSTEM",
-        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|U0_NEUTRALIZED_USER_TASK",
+        "user_block_1": (
+            "USER_INTENT|L1_PLAN_PROJECTIONS|"
+            f"planning_capsule_ref={(plan.policy_refs or {}).get('l1_planning_capsule_ref', '')}|"
+            "U0_NEUTRALIZED_USER_TASK"
+        ),
         "u0_task_segment": "U0_NEUTRALIZED_USER_TASK|I0_INSTRUCTIONS",
         "c0_evidence_segment": "C0_VERIFIED_EVIDENCE_DATA|R0_RESPONSE_SCHEMA",
     }
@@ -432,10 +449,16 @@ def _pa_compose_apps_rg_legacy(
     style_key = json.dumps(profile, sort_keys=True, default=str)
     plan_key = json.dumps(
         {
+            "task_plan": tuple(plan.task_plan or ()),
+            "required_capabilities": tuple(plan.required_capabilities or ()),
             "task_spec": dict(plan.task_spec or {}),
             "query_spec": dict(plan.query_spec or {}),
             "support_expectation": dict(plan.support_expectation or {}),
             "output_expectation": dict(plan.output_expectation or {}),
+            "planning_prior_refs": tuple(plan.planning_prior_refs or ()),
+            "policy_refs": dict(plan.policy_refs or {}),
+            "route_hints": dict(getattr(plan, "route_hints", {}) or {}),
+            "ambiguity_register": dict(plan.ambiguity_register or {}),
         },
         sort_keys=True,
         default=str,
