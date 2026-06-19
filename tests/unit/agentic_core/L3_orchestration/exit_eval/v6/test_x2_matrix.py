@@ -84,14 +84,14 @@ class TestHardFailPath:
         assert decision.rationale == "hard_fail_condition"
         assert code in decision.reason_codes
 
-    def test_non_replayable_only_hard_for_high_impact(self) -> None:
+    def test_non_replayable_denies_for_all_terminal_classes(self) -> None:
         verdicts = _all_pass(_X1_ALL[:-1]) + [_verdict("X1J", GateResult.FAIL, "NON_REPLAYABLE")]
-        # answer_only is NOT high-impact → NON_REPLAYABLE is filtered from the
-        # hard-fail set AND excluded from other-fail (it stays a _HARD_FAIL_CODE),
-        # so with nothing else failing the run falls through to ALLOW.
+        # Replay determinism is required on every terminal class, so the
+        # NON_REPLAYABLE fail must never fall through to ALLOW.
         low = aggregate_decision(verdicts, _packet(terminal_class="answer_only"))
-        assert low.disposition is V6Disposition.ALLOW
-        # durable_write IS high-impact → NON_REPLAYABLE becomes a hard fail.
+        assert low.disposition is V6Disposition.DENY
+        assert low.rationale == "hard_fail_condition"
+        # durable_write remains a hard fail as well.
         high = aggregate_decision(verdicts, _packet(terminal_class="durable_write"))
         assert high.disposition is V6Disposition.DENY
         assert high.rationale == "hard_fail_condition"
