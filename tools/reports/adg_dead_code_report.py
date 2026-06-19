@@ -39,11 +39,29 @@ def _write_json(path: Path, doc: dict[str, Any]) -> None:
     path.write_text(json.dumps(doc, indent=2, sort_keys=True, default=str), encoding="utf-8")
 
 
+def _sqlite_has_required_tables(path: Path) -> bool:
+    try:
+        with sqlite3.connect(path) as conn:
+            tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    except sqlite3.Error:
+        return False
+    return {"nodes", "edges"}.issubset(tables)
+
+
 def _find_sqlite_database(adg_artifacts_dir: Path) -> Path:
-    sqlite_files = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)
-    if not sqlite_files:
-        raise DeadCodeZoneControlError("No SQLite database found")
-    return sqlite_files[-1]
+    sqlite_files = sorted(
+        adg_artifacts_dir.glob("adg_indexed_*.sqlite"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for candidate in sqlite_files:
+        if _sqlite_has_required_tables(candidate):
+            return candidate
+    if sqlite_files:
+        raise DeadCodeZoneControlError(
+            "No SQLite database found with required nodes/edges tables"
+        )
+    raise DeadCodeZoneControlError("No SQLite database found")
 
 
 def _sqlite_snapshot_ts(sqlite_path: Path) -> str:

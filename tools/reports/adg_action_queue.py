@@ -11,12 +11,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sqlite3
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
 from tools.reports.gate_signal_catalog import (
     display_verdict,
     display_verdict_sub,
@@ -36,6 +38,8 @@ SUB_TO_SORT_BUCKET = {
     "regr": 1,
     "seed": 2,
 }
+
+INLINE_BYPASS_ENV = "ADG_ACTION_QUEUE_INLINE_BYPASS"
 
 
 @dataclass(frozen=True)
@@ -66,8 +70,19 @@ def _repo_rel(path: Path, repo_root: Path = REPO_ROOT) -> str:
         return str(path)
 
 
+def _fmt_int(value: Any) -> str:
+    try:
+        return f"{int(value or 0):,}"
+    except (TypeError, ValueError):
+        return "0"
+
+
 def _file_digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _inline_bypassed() -> bool:
+    return os.environ.get(INLINE_BYPASS_ENV, "").strip().lower() in {"1", "true", "yes"}
 
 
 def _normalize_ts(value: str | None) -> str | None:
@@ -599,6 +614,89 @@ def _count_verdicts(gates: list[dict[str, Any]]) -> tuple[int, int, int]:
     return fix_n, track_n, clear_n
 
 
+def _action_move_label(action: dict[str, Any]) -> str:
+    kind = str(action.get("action_kind") or "").strip()
+    verdict = str(action.get("verdict_cluster") or "").strip()
+    if kind == "fix_gate" or verdict == "FIX":
+        return "Fix blocker"
+    if kind == "test_hotspot_gap":
+        return "Fund mapped tests"
+    if kind == "refactor_candidate":
+        return "Refactor candidate"
+    if kind == "graphdb_hotspot":
+        return "Review GraphDB hotspot"
+    if kind == "graphdb_structural_signal":
+        return "Review GraphDB signal"
+    if kind == "p0_wave_file":
+        return "P0 wave file"
+    return kind or verdict or "Action"
+
+
+def _action_business_reason(action: dict[str, Any]) -> str:
+    verdict = str(action.get("verdict_cluster") or "").strip()
+    if verdict == "FIX":
+        return "This is a current blocker and should be cleared before any lower-priority work."
+    if verdict == "GRAPHDB":
+        return "This reduces test or structural risk after blockers are cleared."
+    if verdict == "REFACTOR":
+        return "This is leverage cleanup that should wait until the run is stable."
+    return "This is the next ranked risk item in the queue."
+
+
+def _action_queue_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
+    provenance = doc.get("provenance") or {}
+    inputs = provenance.get("inputs") or []
+    gate_input = next((row for row in inputs if row.get("artifact_key") == "gate_results"), {})
+    burndown_input = next((row for row in inputs if row.get("artifact_key") == "burndown"), {})
+    summary = doc.get("summary") or {}
+    actions = doc.get("actions") or []
+    priority_rows: list[dict[str, Any]] = []
+    for action in actions[:5]:
+        target = action.get("gate_id") or action.get("source_id") or "?"
+        priority_rows.append(
+            {
+                "priority": action.get("rank") or len(priority_rows) + 1,
+                "move": _action_move_label(action),
+                "scope": target,
+                "business_reason": _action_business_reason(action),
+                "technical_reason": str(action.get("signal") or ""),
+                "why_this_rank": str(action.get("ordering_reason") or ""),
+                "decision": str(action.get("plan_hint") or ""),
+            }
+        )
+
+    snapshot_ts = str(doc.get("snapshot_ts") or provenance.get("active_snapshot_ts") or "")
+    return build_bcg_brief(
+        title="BCG Action Queue Brief",
+        status=str(doc.get("emit_status") or "unknown").upper(),
+        business_read=(
+            "Fix blockers first, then the highest-risk test, refactor, and GraphDB slices; "
+            "the queue is ordered by delivery risk."
+            if int(summary.get("fix_count") or 0)
+            else "No FIX gates were present; the queue is ordered backlog and investigation work."
+        ),
+        technical_read=[
+            f"Snapshot timestamp: {snapshot_ts or 'missing'}",
+            f"Gate-results source: {gate_input.get('path') or 'missing'}",
+            f"Burndown source: {burndown_input.get('path') or 'missing'}",
+            f"FIX gates: {_fmt_int(summary.get('fix_count', 0))}",
+            f"TRACK gates: {_fmt_int(summary.get('track_count', 0))}",
+            f"CLEAR gates: {_fmt_int(summary.get('clear_count', 0))}",
+            f"Actions emitted: {_fmt_int(summary.get('actions_emitted', 0))}",
+            f"Degraded inputs: {provenance.get('degraded')}",
+        ],
+        priority_rule="FIX actions first, then testing hotspots, then refactor and GraphDB support work.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "Fix actions are the only rows that directly unblock the run.",
+            "Testing hotspots reduce repeat risk after blockers are known.",
+            "Refactor and GraphDB work should follow blocker removal so effort stays tied to current risk.",
+        ],
+        next_step="Clear the top FIX rows, then work the highest-risk follow-on actions in rank order.",
+        table_limit=5,
+    )
+
+
 def build_action_queue(
     *,
     gate_results_path: Path,
@@ -837,13 +935,19 @@ def render_markdown_table(doc: dict[str, Any], top: int = 10) -> str:
     lines = [
         "# ADG Action Queue (triage)",
         "",
-        f"- **snapshot_ts:** {doc.get('snapshot_ts')}",
-        f"- **emit_status:** {doc.get('emit_status')}",
-        f"- **degraded:** {doc.get('provenance', {}).get('degraded')}",
-        "",
-        "| Rank | Lane | Kind | Target | ordering_reason | signal |",
-        "|-----:|------|------|--------|-----------------|--------|",
     ]
+    lines.extend(render_bcg_brief_md(_action_queue_bcg_brief(doc)).splitlines())
+    lines.extend(
+        [
+            "",
+            f"- **snapshot_ts:** {doc.get('snapshot_ts')}",
+            f"- **emit_status:** {doc.get('emit_status')}",
+            f"- **degraded:** {doc.get('provenance', {}).get('degraded')}",
+            "",
+            "| Rank | Lane | Kind | Target | ordering_reason | signal |",
+            "|-----:|------|------|--------|-----------------|--------|",
+        ]
+    )
     for action in (doc.get("actions") or [])[:top]:
         target = action.get("gate_id") or action.get("source_id") or "?"
         lines.append(
@@ -872,6 +976,7 @@ def emit_adg_action_queue(
     ts: str | None = None,
     max_actions: int = DEFAULT_MAX_ACTIONS,
     fail_closed: bool = True,
+    print_inline: bool = False,
     repo_root: Path = REPO_ROOT,
 ) -> tuple[int, Path | None]:
     """Emit queue JSON. Returns (exit_code, path_or_none)."""
@@ -960,6 +1065,9 @@ def emit_adg_action_queue(
     print(f"[adg_action_queue] NEXT_ACTION={rel}", file=sys.stderr)
     if doc.get("emit_status") == "degraded":
         print("[adg_action_queue] NEXT_ACTION_DEGRADED=1", file=sys.stderr)
+    if print_inline and not _inline_bypassed():
+        sys.stdout.write("\n")
+        sys.stdout.write(render_markdown_table(doc, top=max_actions))
     return (0, output_path)
 
 
@@ -968,6 +1076,7 @@ def emit_adg_action_queue_from_adg_run(
     adg_artifacts_dir: Path,
     ts: str,
     fail_closed: bool = False,
+    print_inline: bool = True,
 ) -> tuple[int, Path | None]:
     """Non-blocking hook for generate_full_adg (fail_closed=False preserves ADG exit)."""
     try:
@@ -976,6 +1085,7 @@ def emit_adg_action_queue_from_adg_run(
             burndown=adg_artifacts_dir / "adg_burndown_table.json",
             ts=ts,
             fail_closed=fail_closed,
+            print_inline=print_inline,
             repo_root=adg_artifacts_dir.parent.parent,
         )
     except Exception as exc:

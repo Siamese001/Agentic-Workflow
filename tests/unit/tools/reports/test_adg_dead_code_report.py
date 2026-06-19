@@ -154,6 +154,29 @@ def test_emit_dead_code_report_uses_completed_overlay_dead_imports(tmp_path: Pat
     assert "2 resolved dead-import overlay row(s) point at this file." in captured.out
 
 
+def test_emit_dead_code_report_prefers_valid_snapshot_over_newer_placeholder(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    valid = artifacts / "adg_indexed_20260618_120000.sqlite"
+    _sqlite(valid)
+    placeholder = artifacts / "adg_indexed_20260619_120000.sqlite"
+    placeholder.write_text("not a sqlite database", encoding="utf-8")
+
+    rc, out = emit_mandatory_adg_dead_code_report(
+        adg_artifacts_dir=artifacts,
+        ts="run",
+        print_inline=False,
+        fail_closed=False,
+        docs_dir=tmp_path / "docs_mirror",
+    )
+
+    assert rc == 0
+    assert out == artifacts / "dead_code_zone_control_report_run.json"
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["summary"]["total_dead_code_candidates"] == 0
+    assert data["summary"]["executive_ready"] is True
+
+
 def test_emit_dead_code_report_without_ts_does_not_self_copy_latest(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts" / "adg"
     artifacts.mkdir(parents=True)
