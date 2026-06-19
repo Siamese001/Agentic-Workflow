@@ -121,6 +121,18 @@ Codex primary enforcement does not depend on Claude hook parity. Any `.claude/ho
 
 Workspace-specific avatar enforcement lives in `.claude/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
 
+## High-Signal Lessons
+
+The repo only hard-enforces the lessons that repeatedly prevented failures. Keep the surface narrow:
+
+- Deterministic workflow first, single bounded agent second, multi-agent only after contracts, gates, replay, and state authority.
+- A file, plan, receipt, dashboard, or manifest is not progress until the live product trace consumes it and leaves replayable evidence.
+- One product path beats many control planes. Static evidence does not certify runtime behavior.
+- L6 learns only after the run boundary; postmortems are future-run constraints, not current-run rescue.
+- When a product artifact appears, freeze route expansion and ship before widening certification.
+
+The avatar pin is identity-only. The narrow enforcement surfaces for these lessons are the existing plan-mint gate and north-star edit gate. They are reminders and scope guards, not a license to add broad new blocks.
+
 ## Run Receipt Contract
 
 Every substantial Codex-primary implementation or verification run should produce a JSON receipt and validate it:
