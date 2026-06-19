@@ -143,6 +143,7 @@ def materialize_phase_c(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND n.resolved_path NOT LIKE 'apps_rg/hitl/%'
           AND n.resolved_path NOT LIKE 'apps_rg/runtime/spine/l6_shadow_eval_runner.py'
           AND n.resolved_path NOT LIKE 'agentic_core/L6_observability/shadow_eval/span_export.py'
+          AND n.resolved_path NOT LIKE 'agentic_core/L6_observability/shadow_eval/adapters/apps_eval_record.py'
           -- Primitive-provider exemption (config/, types/): hold constants, Enums, and
           -- dataclass definitions only. They cannot emit trace/replay/eval edges because
           -- they do not execute orchestration logic.

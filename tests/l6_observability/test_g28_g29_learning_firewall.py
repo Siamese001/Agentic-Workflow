@@ -95,6 +95,18 @@ def test_g28_fails_missing_l5_sentinel_and_readiness_holds() -> None:
     assert readiness.l5_certification_status == "MISSING"
 
 
+def test_g28_fails_generated_apps_eval_l5_ref_and_readiness_holds() -> None:
+    state = L6PipelineState()
+    run_6a(state, _raw_exhaust(l5_ref="l5-cert-ref:apps_eval:record-001"))
+    readiness = run_observer(state)
+
+    assert state.g28 is not None
+    assert state.g28.verdict == L6_GATE_FAIL
+    assert "l5_certification_ref" in state.g28.missing_refs
+    assert "L5_CERT_REF_UNRESOLVED" in readiness.reason_codes
+    assert readiness.l5_certification_status == "MISSING"
+
+
 def test_g29_blocks_current_run_x3_mutation_attempt() -> None:
     state = L6PipelineState()
     ingest = run_6a(state, _raw_exhaust())

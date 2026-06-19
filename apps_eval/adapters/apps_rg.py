@@ -25,7 +25,7 @@ _LONGEST_EXPECTED_LANE_REL = Path(
 _X3_CANONICAL = {
     "X3A": "X3A_DENY",
     "X3B": "X3B_ESCALATE_HITL",
-    "X3C": "X3C_ALLOW_WITH_REVIEW",
+    "X3C": "X3C_COMMIT_REQUEST_TO_UWG",
     "X3D": "X3D_ALLOW_FINISH",
     "X3E": "X3E_SAFE_ABSTAIN",
 }
@@ -208,30 +208,16 @@ def _claims_from_resume(generated_resume: dict[str, Any]) -> list[dict[str, Any]
         {
             "id": f"apps_rg_live_claim_{idx + 1}",
             "source_ids": [ref],
-            "supported": True,
+            "support_status": "UNKNOWN",
             "text": ref,
         }
         for idx, ref in enumerate(refs)
     ]
 
 
-def _materialize_resume_md(artifact_dir: Path, sections: dict[str, str]) -> bool:
-    if not sections:
-        return False
-    target = artifact_dir / "resume.md"
-    lines = ["# Resume", ""]
-    for name, text in sections.items():
-        title = name.replace("_", " ").title()
-        lines.extend([f"## {title}", "", text, ""])
-    target.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    return True
-
-
-def _artifact_names(artifact_dir: Path, sections: dict[str, str]) -> list[str]:
+def _artifact_names(artifact_dir: Path) -> list[str]:
     names: set[str] = set()
     if (artifact_dir / "outputs" / "resume.md").is_file() or (artifact_dir / "resume.md").is_file():
-        names.add("resume.md")
-    elif _materialize_resume_md(artifact_dir, sections):
         names.add("resume.md")
     if _generated_resume_path(artifact_dir) is not None:
         names.add("generated_resume.json")
@@ -268,7 +254,7 @@ def _normalize_live_snapshot(
         x3_disposition=_result_x3(result, artifact_dir),
         output=output,
         claims=claims,
-        artifacts=_artifact_names(artifact_dir, sections),
+        artifacts=_artifact_names(artifact_dir),
         provenance={
             "entrypoint": "agentic_core.runtime.entry.apps_rg_dispatch:dispatch_apps_rg_run",
             "preflight": "passed",
@@ -276,8 +262,9 @@ def _normalize_live_snapshot(
             "generated_resume_ref": str(resume_path.relative_to(artifact_dir)).replace("\\", "/") if resume_path else "",
             "evidence_refs": evidence_refs,
             "resolved_inputs": preflight.get("resolved_inputs", {}),
+            "side_effect_receipt_status": "MISSING",
         },
-        side_effects={"product_state_mutated": False, "writes": []},
+        side_effects={"product_state_mutated": "UNKNOWN", "writes": [], "receipt_status": "MISSING"},
     )
 
 

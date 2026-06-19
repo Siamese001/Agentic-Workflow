@@ -2,7 +2,7 @@
 
 Bridges the runtime-span adapter (Phase 4) to the L6 6A ingest + observer
 (Phase 7) and asserts:
-  * sealed trace evidence  ->  evaluable (READY_FOR_6B), normalized records built,
+  * partial sealed trace evidence  ->  held for repair, normalized records built,
     no live OTEL backend touched;
   * no trace evidence      ->  honestly NON_EVALUABLE_PACKET.
 """
@@ -10,8 +10,8 @@ Bridges the runtime-span adapter (Phase 4) to the L6 6A ingest + observer
 from __future__ import annotations
 
 from agentic_core.L6_observability.shadow_eval.observer import (
+    READINESS_HOLD,
     READINESS_NON_EVAL,
-    READINESS_READY,
 )
 from agentic_core.L6_observability.shadow_eval.pipeline import (
     L6PipelineState,
@@ -58,13 +58,15 @@ def _raw_exhaust(spans):
     )
 
 
-def test_sealed_trace_evidence_is_evaluable():
+def test_partial_sealed_trace_evidence_holds_for_stage_repair():
     state = L6PipelineState()
     run_6a(state, _raw_exhaust(_spans()))
     readiness = run_observer(state)
 
-    assert readiness.readiness_decision == READINESS_READY
+    assert readiness.readiness_decision == READINESS_HOLD
     assert readiness.readiness_decision != READINESS_NON_EVAL
+    assert "U0" in readiness.reason_codes
+    assert "L1" in readiness.reason_codes
     assert state.ingest is not None
     assert len(state.ingest.normalized) == 3  # normalized evidence from bridged spans
 

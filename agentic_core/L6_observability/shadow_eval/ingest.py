@@ -46,7 +46,9 @@ REASON_POLICY_HASH_MISMATCH = "POLICY_HASH_MISMATCH"
 REASON_REPLAY_KEY_MISSING = "REPLAY_KEY_MISSING"
 REASON_UNKNOWN_PROVIDER_FALLBACK = "UNKNOWN_PROVIDER_FALLBACK"
 REASON_CERT_REF_MISSING = "L5_CERT_REF_MISSING"
+REASON_CERT_REF_UNRESOLVED = "L5_CERT_REF_UNRESOLVED"
 MISSING_CERT_REF_SENTINEL = "l5-cert-ref:MISSING"  # valid non-empty sentinel for gap-analysis bundles
+UNRESOLVED_CERT_REF_PREFIXES = ("l5-cert-ref:apps_eval:",)
 
 # Canonical pipeline stages used by StageMap.expected_stages.
 EXPECTED_STAGES = ("U0", "L1", "L0", "C0", "PA", "L3", "L2", "EXIT", "UWG")
@@ -59,6 +61,14 @@ def _gen_id(prefix: str) -> str:
 def is_missing_l5_certification_ref(value: object | None) -> bool:
     ref = str(value or "").strip()
     return not ref or ref == MISSING_CERT_REF_SENTINEL
+
+
+def is_unresolved_l5_certification_ref(value: object | None) -> bool:
+    """Return True for placeholder/generated refs that are not L5 artifacts."""
+    ref = str(value or "").strip()
+    if is_missing_l5_certification_ref(ref):
+        return True
+    return any(ref.startswith(prefix) for prefix in UNRESOLVED_CERT_REF_PREFIXES)
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +140,8 @@ def validate_lineage(
         gap_codes.append(REASON_REPLAY_KEY_MISSING)
     if is_missing_l5_certification_ref(raw_exhaust.get("l5_certification_ref")):
         gap_codes.append(REASON_CERT_REF_MISSING)
+    elif is_unresolved_l5_certification_ref(raw_exhaust.get("l5_certification_ref")):
+        gap_codes.append(REASON_CERT_REF_UNRESOLVED)
     # Orphan artifacts (those without lineage parents AND not stage-anchored).
     for m in manifests:
         if not m.lineage_parent_refs and m.observed_stage == "UNKNOWN":
@@ -355,8 +367,11 @@ __all__ = [
     "REASON_REPLAY_KEY_MISSING",
     "REASON_UNKNOWN_PROVIDER_FALLBACK",
     "REASON_CERT_REF_MISSING",
+    "REASON_CERT_REF_UNRESOLVED",
     "MISSING_CERT_REF_SENTINEL",
+    "UNRESOLVED_CERT_REF_PREFIXES",
     "is_missing_l5_certification_ref",
+    "is_unresolved_l5_certification_ref",
     "receive_completed_run_marker",
     "collect_source_refs",
     "validate_lineage",
