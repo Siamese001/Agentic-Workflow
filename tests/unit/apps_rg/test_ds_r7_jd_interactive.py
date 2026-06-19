@@ -48,17 +48,6 @@ def _args(**kwargs):
     return ns
 
 
-@pytest.fixture(autouse=True)
-def _stub_generated_brief(monkeypatch, tmp_path):
-    generated = tmp_path / "briefing.md"
-    generated.write_text("Generated company brief for Acme.\n", encoding="utf-8")
-    monkeypatch.setattr(
-        "apps_rg.runtime.orchestration.canonical_dispatch._materialize_fallback_brief",
-        lambda **_: str(generated),
-    )
-    return generated
-
-
 # ---------------------------------------------------------------------------
 # 1. _prompt_jd_interactive raises SystemExit when stdin is not a TTY (no batch)
 # ---------------------------------------------------------------------------
@@ -163,7 +152,7 @@ def test_build_raw_request_json_file_matches_canonical_dispatch(tmp_path):
     assert built["body_text"] == canonical["body_text"]
 
 
-def test_missing_manual_brief_materializes_research_brief(tmp_path):
+def test_missing_manual_brief_stays_empty_when_not_supplied(tmp_path):
     jd_path = tmp_path / "role.json"
     jd_path.write_text(
         json.dumps(
@@ -173,10 +162,17 @@ def test_missing_manual_brief_materializes_research_brief(tmp_path):
     )
     args = _args(jd=str(jd_path), manual_brief="", non_interactive=True)
     result = _build_raw_request(args)
-    assert result["manual_brief"].endswith("briefing.md")
-    assert Path(result["manual_brief"]).read_text(encoding="utf-8").startswith(
-        "Generated company brief for Acme."
+    assert result["manual_brief"] == ""
+    canonical = build_raw_request_for_r4(
+        target_company="Acme",
+        target_role="Engineer",
+        target_level="",
+        jd=str(jd_path),
+        manual_brief="",
+        resume_path="",
+        generation_mode="strategic_tailor",
     )
+    assert canonical["manual_brief"] == ""
 
 
 # ---------------------------------------------------------------------------

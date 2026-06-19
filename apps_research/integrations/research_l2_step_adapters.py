@@ -308,18 +308,8 @@ class E3ProviderSynthesisAdapter:
                 ).hexdigest()[:32],
             }
         else:
-            # Offline/degraded stub — downstream E4 will note stub provenance
-            topic = rendered_slots.get("S0", rendered_slots.get("topic", "unknown"))
-            self.synthesis_output = {
-                "text": f"[STUB] Company brief for {topic}. Research infrastructure unavailable.",
-                "artifact_id": artifact_id,
-                "depth_profile": depth_profile,
-                "provider": "stub_degraded",
-                "synthesis_hash": "stub",
-            }
-            _log.warning(
-                "E3: governed gateway unavailable — using stub synthesis (artifact=%s)",
-                artifact_id,
+            raise RuntimeError(
+                f"E3 governed gateway unavailable for artifact={artifact_id}"
             )
 
         _log.info(
@@ -335,7 +325,7 @@ class E3ProviderSynthesisAdapter:
     ) -> str:
         """Delegate synthesis to the governed LLM gateway.
 
-        Returns empty string on any failure (caller degrades to stub).
+        Returns synthesized text on success and raises on any failure.
         """
         try:
             from apps_research.integrations.llm_client import (  # noqa: PLC0415
@@ -346,14 +336,18 @@ class E3ProviderSynthesisAdapter:
                 prompt=prompt_text,
                 artifact_id=artifact_id,
             )
-        except ImportError:
-            pass
-        except Exception as exc:  # guardian: allow-log-and-swallow -- governed gateway failures degrade to stub synthesis; synthesis failure is non-blocking
+        except ImportError as exc:
+            raise RuntimeError(
+                f"E3 governed gateway import unavailable for artifact={artifact_id}"
+            ) from exc
+        except Exception as exc:  # guardian: allow-log-and-swallow -- governed gateway failures must fail closed
             _log.info(
                 "E3: governed gateway call failed (artifact=%s): %s: %s",
                 artifact_id, type(exc).__name__, exc,
             )
-        return ""
+            raise RuntimeError(
+                f"E3 governed gateway call failed for artifact={artifact_id}: {type(exc).__name__}: {exc}"
+            ) from exc
 
 
 # ---------------------------------------------------------------------------

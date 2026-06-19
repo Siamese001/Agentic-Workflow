@@ -39,20 +39,6 @@ approved_model_lanes:
       max_tokens: 2048
       temperature: 0.2
       
-  # Emergency fallback: Lower capability but reliable
-  emergency:
-    lane_id: research_synthesis_stub
-    provider: stub_provider
-    model: stub_research_synthesizer
-    
-    trigger_conditions:
-      - all_lanes_unavailable
-      - circuit_breaker_open
-      
-    stub_behavior:
-      emit_placeholder: true
-      include_caveats: true
-
 # Lane selection policy
 lane_selection:
   strategy: priority_order
@@ -64,7 +50,7 @@ lane_selection:
     
   promotion_rules:
     promote_on_primary_failure: true
-    promote_to_emergency_after: 2_retries
+    promote_to_next_priority_after: 2_retries
 
 # Gateway configuration
 gateway:
@@ -114,11 +100,6 @@ capacity:
     max_requests: 4
     max_tokens_per_minute: 100000
     queue_policy: fail_fast
-    
-  # Stub provider (always available)
-  stub_provider:
-    max_requests: unlimited
-    always_available: true
 
 # Health monitoring
 health_monitoring:
@@ -143,8 +124,7 @@ health_monitoring:
 fallback_cascade:
   level_1: retry_same_lane_with_backoff
   level_2: promote_to_next_priority_lane
-  level_3: emergency_stub_with_caveats
-  level_4: fail_closed_with_receipt
+  level_3: fail_closed_with_receipt
 
 # Cost/performance tradeoffs (for future budget controls)
 tradeoffs:
