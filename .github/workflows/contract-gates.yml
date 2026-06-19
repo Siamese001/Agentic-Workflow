@@ -172,6 +172,11 @@ jobs:
         run: |
           python -m tools.certification.apps_e2e.emit_proof_bundle --all --dry-run --skip-non-runnable
           python -m tools.certification.apps_e2e.matrix_builder
+      - name: Check apps_e2e bundle emission
+        run: python -m ops_scripts.ci.check_apps_e2e_bundle_emission
+      - name: Refresh apps_e2e evidence assertions
+        working-directory: tools/cert
+        run: python -m apps_e2e.emit_apps_evidence_assertions
       - name: Run apps_e2e harness verifier
         run: |
           python -m pytest tests/unit/apps_e2e/ -q --no-header -p no:cacheprovider
@@ -183,9 +188,6 @@ jobs:
             tests/runtime/test_agentic_core_spine_proof.py \
             -q --no-header -p no:cacheprovider
 
-      - name: Check apps_e2e bundle emission
-        run: python -m ops_scripts.ci.check_apps_e2e_bundle_emission
-
       - name: Check apps_e2e spine certification
         continue-on-error: true
         run: python -m ops_scripts.ci.check_apps_e2e_spine_certification
@@ -193,10 +195,6 @@ jobs:
       - name: Check apps_e2e harness
         continue-on-error: true
         run: python -m ops_scripts.ci.check_apps_e2e_harness
-
-      - name: Refresh apps_e2e evidence assertions
-        working-directory: tools/cert
-        run: python -m apps_e2e.emit_apps_evidence_assertions
 
   eval-smoke:
     name: eval-smoke
