@@ -234,9 +234,18 @@ class TestRouteHintsValidator:
             app_id="apps_rg",
             trace_id="t1",
             l5_certification_ref="valid:test",
-            route_hints={"execution_shape_hint": "multi_work_unit_managed_candidate"},
+            route_hints={
+                "execution_shape_hint": "multi_work_unit_managed_candidate",
+                "completion_policy": "bounded_refinement",
+                "planning_prior_set_ref": "l1priors-abc123",
+                "planning_capsule_ref": "l1plan-def456",
+                "max_refinement_passes": "1",
+            },
         )
         assert contract.route_hints["execution_shape_hint"] == "multi_work_unit_managed_candidate"
+        assert contract.route_hints["completion_policy"] == "bounded_refinement"
+        assert contract.route_hints["planning_prior_set_ref"] == "l1priors-abc123"
+        assert contract.route_hints["planning_capsule_ref"] == "l1plan-def456"
 
 
 class TestRefTupleValidators:
