@@ -56,14 +56,14 @@ JD and briefing steer weighting only; they never create evidence.
 
 ### Wave Progress
 
-| Wave | Focus | Status | Success Criteria |
-|---|---|---|---|
-| W1 | Baseline skew audit | DONE | Current raw employer/root/skill/metric mix is emitted in `skew_diagnostics` |
-| W2 | Shared-lane selection contract | DONE | `selected_graph_evidence_plan` includes employer/root caps for skills and metrics |
-| W3 | Role-weight and cap policy | DONE | Role-profile caps normalize exposure without equalizing graph sizes |
-| W4 | Lane integration | DONE | `executive_summary`, `headline`, and `competencies` consume the same selection contract |
-| W5 | Validators and regression gates | DONE | Unit tests fail on raw skill-count dominance and selected root-cap leakage |
-| W6 | Proof runs and closeout | DONE | Target profiles prove employer/root/skill/metric mix matches expected weighting |
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|------|-----------|-------|-------------|-------------|--------|------------------|
+| W1 | W1.1, W1.2 | Baseline skew audit | ~3K | Existing graph diagnostics expose employer/root/skill/metric mix | DONE | Current raw employer/root/skill/metric mix is emitted in `skew_diagnostics` |
+| W2 | W2.1, W2.2 | Shared-lane selection contract | ~4K | Shared lanes can consume one common selected evidence contract | DONE | `selected_graph_evidence_plan` includes employer/root caps for skills and metrics |
+| W3 | W3.1, W3.2, W3.3 | Role-weight and cap policy | ~5K | Role-profile caps can normalize exposure without graph flattening | DONE | Role-profile caps normalize exposure without equalizing graph sizes |
+| W4 | W4.1, W4.2, W4.3 | Lane integration | ~5K | Shared-lane utilities can be reused by target lanes | DONE | `executive_summary`, `headline`, and `competencies` consume the same selection contract |
+| W5 | W5.1, W5.2 | Validators and regression gates | ~4K | Regression tests can encode forbidden raw-density fallback behavior | DONE | Unit tests fail on raw skill-count dominance and selected root-cap leakage |
+| W6 | W6.1, W6.2, W6.3 | Proof runs and closeout | ~4K | Target profiles cover the expected employer/root weighting modes | DONE | Target profiles prove employer/root/skill/metric mix matches expected weighting |
 
 ### Phase Progress
 
