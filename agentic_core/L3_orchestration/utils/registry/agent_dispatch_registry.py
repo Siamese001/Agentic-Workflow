@@ -53,7 +53,7 @@ from agentic_core.L2_execution.enforcement.guardrail_gate import (
     GuardrailViolationError,
     get_guardrail_gate,
 )
-from agentic_core.L2_execution.trace_context import get_trace_context
+from agentic_core.L2_execution.types.trace_context import get_trace_context
 from agentic_core.L3_orchestration.types.coordination_ledger import (
     MissingCoordinationLedger,
     get_coordination_ledger,
