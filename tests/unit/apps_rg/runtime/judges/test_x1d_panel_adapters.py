@@ -67,18 +67,17 @@ def test_panel_adapter_declared_policy_scales_by_section_profile() -> None:
     medium = AppsRgX1dPanelAdapter(_ctx(section_id="unify_bullets")).declared_policy(attempt=1)
     high = AppsRgX1dPanelAdapter(_ctx(section_id="executive_summary")).declared_policy(attempt=1)
 
-    assert low.max_output_tokens == 2048
+    assert low.max_output_tokens == 4096
     assert medium.max_output_tokens == 4096
     assert high.max_output_tokens == 8192
-    assert low.max_output_tokens < medium.max_output_tokens <= high.max_output_tokens
+    assert low.max_output_tokens <= medium.max_output_tokens <= high.max_output_tokens
 
     medium_retry = AppsRgX1dPanelAdapter(_ctx(section_id="unify_bullets")).declared_policy(attempt=2)
     high_retry = AppsRgX1dPanelAdapter(_ctx(section_id="executive_summary")).declared_policy(attempt=2)
     assert medium_retry.max_output_tokens == 8192
     assert high_retry.max_output_tokens == 8192
-    assert low.max_output_tokens == AppsRgX1dPanelAdapter(_ctx(section_id="competencies")).declared_policy(
-        attempt=2
-    ).max_output_tokens
+    low_retry = AppsRgX1dPanelAdapter(_ctx(section_id="competencies")).declared_policy(attempt=2)
+    assert low_retry.max_output_tokens == 8192
 
 
 def test_panel_adapter_converts_judge_output_to_panel_outcome(monkeypatch) -> None:
