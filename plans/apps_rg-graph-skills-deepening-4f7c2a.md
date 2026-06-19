@@ -12,28 +12,28 @@ dod_exempt: false
 supersedes: []
 ---
 
-# Graph Skills Deepening and Confidence Scoring
+# Competencies Graph Skills Deepening and Confidence Scoring
 
-Improve the graph skills SSOT so competencies, headline, and executive summary can express more granular, better-validated evidence without inventing facts or overfitting to vendor labels.
+Improve the graph skills SSOT so competencies can express more granular, better-validated evidence without inventing facts or overfitting to vendor labels. Headline and executive summary may consume the shared graph-depth report, but their gates and output schemas are out of scope until a separate scoped wave or plan names them explicitly.
 
 ---
 
 ## Plan State Markers
 
-FORMAT_VERSION: simplified-plan-format-v1
+FORMAT_VERSION: plan-format-v2
 PLAN_STATUS: TODO
 CURRENT_WAVE: W0
 LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-06-20
+LAST_UPDATED: 2026-06-19
 
 ---
 
 ## Context (SCQA)
 
 - **Situation** — `apps_rg` already has a graph-backed competencies pipeline with section-level semantic coverage, employer routing, and fail-closed evidence selection.
-- **Complication** — Several competencies and shared sections still collapse into broad or vendor-specific phrasing, reuse the same few metrics, and do not expose a per-bullet confidence signal. The graph can therefore look “present” while remaining too thin to justify the exact wording it emits.
-- **Question** — How do we deepen the graph skills SSOT so the resume can stay graph-grounded, more specific, and more trustworthy at the bullet level?
-- **Answer** — Split overloaded capability nodes, enrich evidence density, add per-bullet confidence/weakest-link scoring, and harden deterministic gates so thin graph areas fail visibly instead of being padded by LLM wording.
+- **Complication** — Several competencies still collapse into broad or vendor-specific phrasing, reuse the same few metrics, and do not expose category/term confidence. The graph can therefore look "present" while remaining too thin to justify the exact wording it emits.
+- **Question** — How do we deepen the graph skills SSOT so competencies stay graph-grounded, more specific, and more trustworthy at the category and term layer?
+- **Answer** — First harden the scoring and gate contracts, then split overloaded capability nodes, enrich evidence density, add category/term confidence and weakest-link scoring, and harden deterministic gates so thin graph areas fail visibly instead of being padded by LLM wording.
 
 ---
 
@@ -43,8 +43,9 @@ LAST_UPDATED: 2026-06-20
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
+| W0 | W0.1, W0.2, W0.3, W0.4 | Contract-first hardening before taxonomy work | ~8K | Existing graph-depth report and X2 gates are the right seams | 🔲 TODO | Plan, scoring schema, thresholds, and bundle loophole are explicit and test-backed |
 | W1 | W1.1, W1.2 | Graph taxonomy decomposition and vendor-neutral capability labels | ~12K | Existing graph rows and employer bundles are the SSOT baseline | 🔲 TODO | Weak capability clusters are split into finer nodes without losing provenance |
-| W2 | W2.1, W2.2, W2.3 | Evidence densification and per-bullet confidence scoring | ~16K | The pipeline can carry extra metadata from graph selection to final competencies | 🔲 TODO | Each competency category emits confidence, weakest-link, and support ratios |
+| W2 | W2.1, W2.2, W2.3 | Evidence densification and category/term confidence scoring | ~16K | The pipeline can carry extra metadata from graph selection to final competencies | 🔲 TODO | Each competency category emits confidence, weakest-link, and support ratios |
 | W3 | W3.1, W3.2 | Gates and regression tests for graph depth, uniqueness, and anti-overfit | ~14K | Current section and X2/X3 gates can be extended without changing product flow | 🔲 TODO | Thin graph areas fail closed and new regressions are covered by tests |
 | W4 | W4.1, W4.2 | Calibration, before/after reporting, and documentation writeback | ~10K | We can compare pre/post artifacts on one or more representative JDs | 🔲 TODO | The plan proves measurable improvement rather than subjective cleanup |
 
@@ -52,15 +53,19 @@ LAST_UPDATED: 2026-06-20
 
 | Phase | Title | Status |
 |-------|-------|--------|
+| W0.1 | Resolve plan format and scope | 🔲 TODO |
+| W0.2 | Define category/term/claim confidence schema | 🔲 TODO |
+| W0.3 | Close bundle-binding and coverage authority loopholes | 🔲 TODO |
+| W0.4 | Name deterministic CI/test gates and thresholds | 🔲 TODO |
 | W1.1 | Split overloaded capability nodes | 🔲 TODO |
 | W1.2 | Remove vendor leakage from generic labels | 🔲 TODO |
-| W2.1 | Add per-bullet confidence fields | 🔲 TODO |
+| W2.1 | Add category/term confidence fields | 🔲 TODO |
 | W2.2 | Add weakest-link and support-ratio metrics | 🔲 TODO |
 | W2.3 | Thread JD/briefing overlap into scoring | 🔲 TODO |
 | W3.1 | Add graph-depth and repetition gates | 🔲 TODO |
 | W3.2 | Add regression tests for weak graph families | 🔲 TODO |
 | W4.1 | Run calibration on representative JDs | 🔲 TODO |
-| W4.2 | Publish summary to SSOT and Notion | 🔲 TODO |
+| W4.2 | Publish summary to SSOT | 🔲 TODO |
 
 ---
 
@@ -70,6 +75,91 @@ LAST_UPDATED: 2026-06-20
 - Changing the JD/briefing contract so they become proof sources.
 - Adding silent fallback paths that invent evidence when the graph is thin.
 - Broad resume redesign unrelated to graph skills quality.
+- Headline or executive-summary gate/schema changes in this PR. Shared report fields may remain available to those lanes, but competencies are the only active enforcement scope.
+
+---
+
+## Wave 0 — Contract Hardening
+
+WAVE_ID: W0
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: W0
+
+**Phases**:
+- **W0.1** — Resolve plan-format conflict and narrow execution scope to competencies | ~1K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W0.2** — Define deterministic category/term/claim confidence schema on `graph_evidence_depth_report_v2` | ~3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W0.3** — Close bundle-binding and capability-family authority loopholes | ~2K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W0.4** — Name CI/test gates, thresholds, and regression fixtures | ~2K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Acceptance**:
+- The plan uses one format marker: frontmatter `plan_format: v2` plus body `FORMAT_VERSION: plan-format-v2`.
+- Confidence is scoped to `category_graph_confidence`, `term_graph_confidence`, `claim_ledger_confidence`, `weakest_link`, and `support_ratio`; rendered resume bullet scoring is outside this plan.
+- JD and briefing overlap are targeting signals only and cannot increase `proof_authority_score`.
+- Generic categories require `competency_bundle_id`, category `graph_skill_node_ids`, at least three graph-backed terms, and term-level skill or fact support.
+- Capability-family coverage uses bundle `capability_family` as authority when present; token matching is diagnostic/fallback only.
+
+### W0.2 — Confidence Schema
+
+Add or preserve this scoring shape on the shared depth report instead of creating a parallel metrics stack:
+
+```json
+{
+  "schema": "graph_evidence_depth_report_v2",
+  "category_id": "cloud_partner_ecosystems",
+  "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
+  "category_graph_confidence": 0.86,
+  "claim_ledger_confidence": 0.82,
+  "proof_authority_score": 0.82,
+  "targeting_fit_score": 0.64,
+  "support_ratio": {
+    "items_with_fact_support": 3,
+    "items_with_skill_support": 3,
+    "items_total": 4
+  },
+  "weakest_link": {
+    "category_id": "cloud_partner_ecosystems",
+    "term": "cloud partner ecosystem GTM",
+    "reason": "repeated_metric",
+    "source_fact_ids": ["fact_partner_001"],
+    "graph_skill_node_ids": ["skill_partner_ecosystem"],
+    "confidence": 0.71
+  },
+  "penalties": {
+    "metric_reuse_penalty": 0.10,
+    "vendor_overfit_penalty": 0.00,
+    "generic_label_penalty": 0.00
+  }
+}
+```
+
+Weakest-link ranking is deterministic:
+
+```text
+weakness_score =
+  missing_skill_axis * 0.30
++ missing_fact_or_metric_axis * 0.30
++ repeated_detail_penalty * 0.15
++ vendor_overfit_penalty * 0.15
++ jd_only_or_briefing_only_penalty * 0.10
+```
+
+### W0.4 — Named Gates and Thresholds
+
+Required gate/test surfaces:
+- `check_apps_rg_competency_confidence_schema.py` or equivalent pytest coverage for `graph_evidence_depth_report_v2`.
+- `check_apps_rg_graph_bundle_depth_contract.py` or equivalent pytest coverage for bundle depth fields.
+- `check_apps_rg_no_generic_category_bundle_loophole.py` or equivalent pytest coverage for the generic-category bundle loophole.
+- `check_apps_rg_vendor_overfit_terms.py` or equivalent pytest coverage before W1/W2 vendor decomposition lands.
+
+Thresholds:
+- Generic competency category: minimum three graph-backed terms.
+- Generic competency category: non-empty `competency_bundle_id`.
+- Generic competency category: non-empty category `graph_skill_node_ids`.
+- Term support: each counted graph-backed term has `source_skill_ids`, `graph_skill_node_ids`, or `source_fact_ids`.
+- Metric/detail reuse: `detail_reuse_ratio`, `max_detail_frequency`, and repeated detail IDs are report fields and become hard X2 thresholds in W3.
+- Vendor leakage: vendor terms require vendor-specific graph support plus targeting relevance; otherwise vendor-neutral phrasing wins.
 
 ---
 
@@ -135,7 +225,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W2.1** — Add per-bullet confidence scoring based on graph support, JD overlap, and briefing overlap | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** — Add category/term confidence scoring based on graph support, JD overlap, and briefing overlap | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W2.2** — Add weakest-link and support-ratio fields to each competency category | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W2.3** — Add metric diversity and uniqueness penalties so repeated metrics do not masquerade as depth | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
@@ -144,7 +234,7 @@ CHECKPOINT: B
 - Each category can expose the weakest link, not just the final text.
 - Reused metrics reduce confidence instead of inflating it.
 
-### W2.1 — Add Per-Bullet Confidence Scoring
+### W2.1 — Add Category/Term Confidence Scoring
 
 **Scope**:
 - Introduce a structured confidence field for each competency category.
@@ -157,14 +247,15 @@ CHECKPOINT: B
 - repetition penalties
 
 **Proposed shape**:
-- `graph_match_confidence`: 0.0 to 1.0
-- `jd_overlap_pct`: 0.0 to 1.0
-- `briefing_overlap_pct`: 0.0 to 1.0
-- `graph_skill_density`: unique skill IDs divided by term count
+- `category_graph_confidence`: 0.0 to 1.0
+- `claim_ledger_confidence`: 0.0 to 1.0
+- `proof_authority_score`: 0.0 to 1.0; excludes JD/briefing targeting overlap
+- `targeting_fit_score`: 0.0 to 1.0; JD/briefing targeting-only overlap
+- `support_ratio`: fact/skill support counts over total items or terms
 
 **Expected output**:
 - A category can be “good but thin” instead of merely passing or failing.
-- The pipeline can show why a given bullet was selected.
+- The pipeline can show why a given category or term was selected.
 
 ### W2.2 — Add Weakest-Link Reporting
 
@@ -251,12 +342,12 @@ CHECKPOINT: D
 
 **Phases**:
 - **W4.1** — Run before/after calibration on representative JDs and briefings | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W4.2** — Write the final summary back to SSOT and mirror the result into Notion | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.2** — Write the final summary back to SSOT | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Acceptance**:
 - The plan can prove a delta, not just a theory.
 - Calibration outputs show improvement in graph depth and confidence.
-- The SSOT and Notion copies stay aligned.
+- The SSOT plan and durable calibration artifacts stay aligned.
 
 ### W4.1 — Calibration Runs
 
@@ -275,16 +366,15 @@ CHECKPOINT: D
 **Expected output**:
 - The team can see whether the graph improved or simply changed wording.
 
-### W4.2 — Writeback and Mirror
+### W4.2 — Writeback
 
 **Scope**:
 - Update the SSOT plan status after implementation.
-- Create or update the Notion page with the same plan content.
 - Preserve the final before/after metrics as a durable record.
 
 **Expected output**:
 - One plan source of truth in-repo.
-- One mirrored operational copy in Notion.
+- Durable calibration artifacts referenced from this plan.
 
 ---
 
@@ -306,7 +396,7 @@ CHECKPOINT: D
 - Edit `apps_rg/runtime/sections/competencies_lane_runtime.py`
 - Add regression tests for vendor-neutral wording
 
-### W2.1 — Add Per-Bullet Confidence
+### W2.1 — Add Category/Term Confidence
 **Scope**: Carry confidence and overlap metrics through final competency output.
 
 **Commands**:
@@ -355,7 +445,6 @@ CHECKPOINT: D
 
 **Commands**:
 - Update this SSOT file
-- Update Notion page
 
 ---
 
@@ -369,8 +458,8 @@ CHECKPOINT: D
 - The same metric surfaces can appear repeatedly across categories.
 - Impact: section looks rich but is not actually diverse.
 
-**GAP-3: No per-bullet confidence**
-- Current reporting is too coarse to tell whether a specific category is strong or merely passable.
+**GAP-3: No category/term confidence**
+- Current reporting is too coarse to tell whether a specific category or term is strong or merely passable.
 - Impact: weak nodes can hide inside an overall passing run.
 
 **GAP-4: Limited weakest-link diagnostics**
@@ -381,31 +470,51 @@ CHECKPOINT: D
 
 ## Definition of Done
 
-DoD-1: Graph taxonomy is deeper and less vendor-biased
-- Evidence: taxonomy diff plus regression tests for vendor-neutral labels and specific vendor phrases.
+DoD-1: Taxonomy decomposition
+- Evidence: migration map from old node to new nodes, with stable IDs, aliases, deprecated labels, and preserved source fact links.
 - Status: TODO
 
-DoD-2: Competency output includes per-bullet confidence and weakest-link diagnostics
-- Evidence: focused e2e run shows `graph_match_confidence`, `jd_overlap_pct`, `briefing_overlap_pct`, and `weakest_link`.
+DoD-2: Confidence scoring
+- Evidence: every category and term emits deterministic confidence components, not just one aggregate score.
 - Status: TODO
 
-DoD-3: Thin graph cases fail closed
-- Evidence: tests show unsupported phrases and repeated metric surfaces are rejected.
+DoD-3: Weakest link
+- Evidence: weakest link is ranked by deterministic weakness score, not first thin row.
 - Status: TODO
 
-DoD-4: Calibration shows measurable improvement
-- Evidence: before/after report with semantic coverage, axis coverage, unique skill count, unique metric count, and repetition ratio.
+DoD-4: Bundle rigor
+- Evidence: generic categories require bundle ID, graph skill IDs, and minimum graph-backed terms with term support.
 - Status: TODO
 
-DoD-5: SSOT and Notion copies are synchronized
-- Evidence: `plans/apps_rg-graph-skills-deepening-4f7c2a.md` and the mirrored Notion page match.
+DoD-5: Vendor leakage
+- Evidence: vendor terms require vendor-specific graph support and JD targeting relevance; otherwise vendor-neutral phrase wins.
+- Status: TODO
+
+DoD-6: Metric reuse
+- Evidence: `detail_reuse_ratio`, `max_detail_frequency`, and repeated detail IDs are emitted and become hard X2 gates above thresholds.
+- Status: TODO
+
+DoD-7: JD/briefing discipline
+- Evidence: JD/briefing overlap is targeting-only and never contributes to proof authority.
+- Status: TODO
+
+DoD-8: Regression tests
+- Evidence: tests cover Databricks overfit, cloud/partner co-sell specificity, LLMOps split, repeated metric reuse, and thin generic category with bundle ID.
+- Status: TODO
+
+DoD-9: Calibration
+- Evidence: before/after report proves higher semantic coverage and lower reuse without increasing unsupported terms.
+- Status: TODO
+
+DoD-10: Runtime proof
+- Evidence: focused live or contract-stub competencies run produces artifacts showing new fields and passing X2/X3.
 - Status: TODO
 
 ---
 
 ## Scope Expansion Authorization
 
-When implementation uncovers adjacent graph weak spots, expand only if the issue directly affects competency evidence quality or the shared headline/executive-summary graph path.
+When implementation uncovers adjacent graph weak spots, expand only if the issue directly affects competency evidence quality. Headline and executive-summary graph paths require explicit scope expansion or a separate plan.
 
 ```
 DISCOVERED_SCOPE: plan=apps_rg-graph-skills-deepening-4f7c2a wave=<N> phase=<M> gap="<what>" impact="<severity>"
