@@ -329,7 +329,7 @@ jobs:
             out = Path("artifacts/ci/contract-gates/ci_disposition.json")
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-            PY
+          PY
           fi
 
           if [ "${status}" = "FAIL_BLOCKING" ]; then
