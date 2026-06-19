@@ -154,6 +154,35 @@ class TestResolveJdContext:
         assert out["jd_content_hash"].startswith("sha256-")
 
 
+class TestCuratedTargetingFallback:
+    def test_adaptive_research_uses_curated_anthropic_pack_when_tavily_is_empty(
+        self, monkeypatch, engine
+    ):
+        def _boom(*_args, **_kwargs):
+            raise RuntimeError("usage limit")
+
+        monkeypatch.setattr(
+            "apps_research.integrations.tavily_retrieval.retrieve",
+            _boom,
+        )
+
+        findings = engine._run_research_adaptive(
+            topic="Anthropic",
+            depth_profile="COMPANY_BRIEF_STANDARD",
+            jd_context={
+                "company_name": "Anthropic",
+                "job_title": "Manager of Applied AI Architecture, Partnerships",
+            },
+        )
+
+        assert findings["partner_ecosystem"]
+        assert findings["commercial_motion"]
+        assert findings["leadership"]
+        assert findings["recent_moves"]
+        assert "co-sell" in findings["partner_ecosystem"].lower()
+        assert "partner-led" in findings["commercial_motion"].lower()
+
+
 class TestAssembleBrief:
     def test_schema_shape(self, engine):
         synthesis = {
