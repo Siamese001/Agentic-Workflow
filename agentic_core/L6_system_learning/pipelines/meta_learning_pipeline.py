@@ -150,7 +150,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.L6_system_learning.engine import ArbitrationEngine
-from .....types import ArbitrationCandidate, ArbitrationPolicy
+from agentic_core.L6_system_learning.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
 from agentic_core.L6_system_learning.engine import HealingConfidenceScorer
 from agentic_core.L6_system_learning.constraints.dampening import CooldownPolicy, SampleSizePolicy
 from agentic_core.L6_system_learning.engine import RiskCorrelator

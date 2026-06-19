@@ -6,27 +6,28 @@
 - **Status:** PASS
 - **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree.. Spend executive time on blockers and test gaps before accepted debt.
 - **Technical evidence:**
-  - FIX gates: 3; TRACK gates: 20
+  - ADG source: artifacts/adg/adg_indexed_06192026_0209.sqlite (snapshot 06192026_0209)
+  - FIX gates: 6; TRACK gates: 17
   - Runtime proof is present and FAILING — treat as a quality failure to fix.
-  - Testing is a control gap where apps_rg/runtime/sections/executive_summary_lane.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
+  - Testing is a control gap where agentic_core/L5_safety/reasoning/hierarchy_healer.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
   - GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.
   - Action rows emitted: 7
 - **Priority rule:** Fix blockers first, then close testing exposure, then reduce accepted debt.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
-| 2 | Clear red gate L2_lpg_drift_ratchet | L2_lpg_drift_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
-| 3 | Clear red gate Q2_cyclomatic_complexity_ratchet | Q2_cyclomatic_complexity_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
-| 4 | Fund mapped tests for apps_rg/runtime/sections/executive_summary_lane.py | apps_rg/runtime/sections/executive_summary_lane.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for apps_rg. | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | add_tests |
+| 1 | Clear red gate B2_layer_skip_ratchet | B2_layer_skip_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
+| 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
+| 3 | Clear red gate C3_silent_writes_ratchet | C3_silent_writes_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
+| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | add_tests |
 
 Why this order:
 - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
-- Actually blocking now: 3 FIX gates; inspect regression delta before declaring a platform crisis.
+- Actually blocking now: 6 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
 
-Next step: Clear red gate C2_l5_bypass_pview
+Next step: Clear red gate B2_layer_skip_ratchet
 
 ### 1. What ADG Is
 
@@ -34,7 +35,7 @@ ADG is the X-ray of the codebase. It maps code connections and lets the system a
 
 ### 2. Patient Size
 
-This patient has 12303 Python files: 7117 production files and 5186 test files. agentic_core contributes 2889 files; apps_* contributes 1431 files. Current snapshot/run ID: 06182026_1357.
+This patient has 12303 Python files: 7119 production files and 5184 test files. agentic_core contributes 2891 files; apps_* contributes 1431 files. Current snapshot/run ID: 06192026_0209.
 
 ### 3. Executive Decision
 
@@ -70,22 +71,27 @@ FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.
 | Bucket | Count | Executive meaning |
 |---|---:|---|
 | CLEAR | 25 | No action now. |
-| TRACK | 20 | Known debt or advisory inventory; burn down after red gates. |
-| FIX | 3 | Current blocker or regression requiring action before decision-grade green. |
+| TRACK | 17 | Known debt or advisory inventory; burn down after red gates. |
+| FIX | 6 | Current blocker or regression requiring action before decision-grade green. |
 
 | Red gate | Total records | Regression / new delta | Executive read | Next action |
 |---|---:|---:|---|---|
 | L2_lpg_drift_ratchet | 2 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 1 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
-| Q2_cyclomatic_complexity_ratchet | 1095 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +12 over baseline 1083: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| S4_unused_imports_ratchet | 10743 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +16 over baseline 10727: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| B2_layer_skip_ratchet | 895 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +4 over baseline 891: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | C2_l5_bypass_pview | 2 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| C3_silent_writes_ratchet | 2010 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 2009: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| F1_untyped_seam_ratchet | 1026 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +7 over baseline 1019: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
 | L2_lpg_drift_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 1 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
-| Q2_cyclomatic_complexity_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +12 over baseline 1083: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| S4_unused_imports_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +16 over baseline 10727: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| B2_layer_skip_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +4 over baseline 891: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | C2_l5_bypass_pview | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| C3_silent_writes_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 2009: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 
 ### 6. Gap Analysis — Lens 2: Runtime Proof / Observability
 
@@ -113,54 +119,46 @@ Action impact:
 
 Product risk shows whether a structural issue touches user-facing app behavior, not just internal cleanup.
 
-App/product risks were promoted only where hotspot or test evidence changes funding posture.
+No app-specific product gap was promoted in this run; app risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row.
 
 | App / product scope | Risk | Evidence | Executive read | Next action |
 |---|---|---|---|---|
-| apps_rg | Under-tested product hotspot | apps_rg/runtime/sections/executive_summary_lane.py | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | Under-tested product hotspot | apps_rg/runtime/sections/headline_lane.py | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | Under-tested product hotspot | apps_rg/runtime/sections/ibm_bullets_lane.py | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | Under-tested product hotspot | apps_rg/runtime/sections/unify_bullets_lane.py | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | Under-tested product hotspot | apps_rg/runtime/sections/executive_summary_judge_remediation.py | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
+| None | No app-specific product gap was promoted in this run |  | App risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row. | Monitor. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| apps_rg | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
-| apps_rg | App risk is promoted because product surface and missing test scope overlap. | Add mapped tests/regression coverage for apps_rg. |
+| none | No immediate action impact. | No product-scope action promoted. |
 
 ### 8. Gap Analysis — Lens 4: Testing Control Gaps
 
 Tests are the control that prove a risky fix actually works; missing mapped tests turn every red-gate fix into a repeat-risk.
 
-Testing is a control gap where apps_rg/runtime/sections/executive_summary_lane.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
+Testing is a control gap where agentic_core/L5_safety/reasoning/hierarchy_healer.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
 
 | Rank | Production scope | Current tests found | Missing test scope | Risk | Recommended investment | Trigger |
 |---:|---|---|---|---|---|---|
-| 1 | apps_rg/runtime/sections/executive_summary_lane.py | unit: tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py; unit: tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py; unit: tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py; unit: tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py; unit: tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py; unit: tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py | regression | CRITICAL | Add mapped tests/regression coverage for apps_rg. | current action queue overlap |
-| 2 | agentic_core/L5_safety/reasoning/hierarchy_healer.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
-| 3 | apps_rg/runtime/sections/headline_lane.py | unit: tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py; unit: tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py; unit: tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py; unit: tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py; unit: tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py; unit: tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py | regression | CRITICAL | Add mapped tests/regression coverage for apps_rg. | current action queue overlap |
-| 4 | agentic_core/L5_safety/reasoning/FileClassificationAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
-| 5 | apps_rg/runtime/sections/ibm_bullets_lane.py | unit: tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py; unit: tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py; unit: tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py; unit: tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py; unit: tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py; unit: tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py | regression | CRITICAL | Add mapped tests/regression coverage for apps_rg. | current action queue overlap |
-| 6 | apps_rg/runtime/sections/unify_bullets_lane.py | unit: tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py; unit: tests/unit/apps_rg/fact_inventory/test_competencies_graph_skills_proof_pool_p2_w1a.py; unit: tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py; unit: tests/unit/apps_rg/prompt_assembly/test_sections_pa_core_law_w5_rollup.py; unit: tests/unit/apps_rg/runtime/ingress/test_executive_summary_targeting_ingress.py; unit: tests/unit/apps_rg/runtime/sections/test_companion_lane_context.py | regression | CRITICAL | Add mapped tests/regression coverage for apps_rg. | current action queue overlap |
-| 7 | agentic_core/L5_safety/reasoning/root_hygiene_healer.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
-| 8 | agentic_core/adg/extraction/static_scanner.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
-| 9 | agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
-| 10 | agentic_core/L5_safety/reasoning/location_validator.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 1 | agentic_core/L5_safety/reasoning/hierarchy_healer.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 2 | agentic_core/L5_safety/reasoning/FileClassificationAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 3 | agentic_core/L5_safety/reasoning/root_hygiene_healer.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 4 | agentic_core/adg/extraction/static_scanner.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 5 | agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 6 | agentic_core/L5_safety/reasoning/location_validator.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 7 | agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 8 | agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 9 | agentic_core/L5_safety/reasoning/SystemArchitectAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 10 | agentic_core/L5_safety/reasoning/CodeHealerAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| apps_rg/runtime/sections/executive_summary_lane.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for apps_rg. |
 | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
-| apps_rg/runtime/sections/headline_lane.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for apps_rg. |
 | agentic_core/L5_safety/reasoning/FileClassificationAgent.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
-| apps_rg/runtime/sections/ibm_bullets_lane.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for apps_rg. |
+| agentic_core/L5_safety/reasoning/root_hygiene_healer.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/adg/extraction/static_scanner.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
 
 ### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact
 
@@ -198,21 +196,21 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 | Rank | Scope | Graph signal | Centrality | Blast radius | Reverse dep | Executive read |
 |---:|---|---|---|---|---|---|
 | 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.1527 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
-| 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8344 | 179.39 | 93.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5455 | 175.21 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 4 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.6071 | 125.06 | 64.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.6614 | 3244.12 | 1772.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
+| 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8344 | 179.45 | 93.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5455 | 175.43 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 4 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.6071 | 125.07 | 64.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.5911 | 3243.84 | 1771.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
 
 ### 10. Next Best Actions
 
 | Rank | Action | Scope | Why now | Evidence used | Testing requirement | Done condition |
 |---:|---|---|---|---|---|---|
-| 1 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 2 | Clear red gate L2_lpg_drift_ratchet | L2_lpg_drift_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 3 | Clear red gate Q2_cyclomatic_complexity_ratchet | Q2_cyclomatic_complexity_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 4 | Fund mapped tests for apps_rg/runtime/sections/executive_summary_lane.py | apps_rg/runtime/sections/executive_summary_lane.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | testing_hotspot | Add mapped tests/regression coverage for apps_rg. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 1 | Clear red gate B2_layer_skip_ratchet | B2_layer_skip_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 3 | Clear red gate C3_silent_writes_ratchet | C3_silent_writes_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | testing_hotspot | Add mapped tests/regression coverage for agentic_core. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 5 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | graphdb | Add mapped tests before refactoring this seam. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 6 | Burn down ratchet S4_unused_imports_ratchet | S4_unused_imports_ratchet | Accepted baseline debt should fall after red gates are clear. | gate | Add tests only when touched scope overlaps hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 6 | Burn down ratchet G_REACH_l0_reachability | G_REACH_l0_reachability | Accepted baseline debt should fall after red gates are clear. | gate | Add tests only when touched scope overlaps hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 7 | Refine/deprecate low-value ADG signal mv_graph_scc_clusters | mv_graph_scc_clusters | Suppress or retire signals that do not affect decisions. | mv | No test required unless generator logic changes. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 
 ### 11. Defer / Delete / Deprecate
@@ -223,19 +221,20 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 - **Status:** PASS
 - **Business read:** No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.
 - **Technical evidence:**
+  - ADG source: artifacts/adg/adg_indexed_06192026_0209.sqlite (snapshot 06192026_0209)
   - Dead code candidates: 0
   - Dead imports: 0
-  - Unresolved imports: 604
-  - First-party low-confidence ratio: 1.97%
-  - Inferred-symbol ratio: 10.11%
+  - Unresolved imports: 495
+  - First-party low-confidence ratio: 1.62%
+  - Inferred-symbol ratio: 10.15%
   - Cleanup candidates surfaced: 18
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
 | 1 | Hold all deletion | whole codebase | The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths. | Dead-code candidates = 0 and dead imports = 0. | No proven target means the safest action is to pause deletion. | defer |
-| 2 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
-| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 2 | Triage unresolved imports | ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_shadow_replay_integration.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 495 unresolved imports; lead hotspot ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_shadow_replay_integration.py (9). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.62% and inferred-symbol ratio = 10.15%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
 | 4 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
@@ -250,24 +249,24 @@ Current low-value cleanup candidates:
 
 | Item | Type | Current value | Recommendation | Rationale |
 |---|---|---|---|---|
-| mv_actionable_surface_without_schema | mv | 769 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
-| mv_agent_specialization_overlap | mv | 3034 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_actionable_surface_without_schema | mv | 768 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_agent_specialization_overlap | mv | 3036 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_agent_tool_ratio | mv | 15 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_authority_boundary_breaches | mv | 7 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_capability_and_egress_gaps | mv | 1 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_critical_path_segments | mv | 196 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_cross_cutting_witness_tiers | mv | 56 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
-| mv_determinism_provenance_drift | mv | 6558 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_determinism_provenance_drift | mv | 6559 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_digest_reconciliation | mv | 6 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
-| mv_exemptions_near_critical_paths | mv | 3162 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_exemptions_near_critical_paths | mv | 3142 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_gateway_bypass_paths | mv | 2 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_graph_scc_clusters | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
 
 ### 12. Honest Bottom Line
 
 - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
-- Actually blocking now: 3 FIX gates; inspect regression delta before declaring a platform crisis.
+- Actually blocking now: 6 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
-- Clear red gate C2_l5_bypass_pview
+- Clear red gate B2_layer_skip_ratchet
 - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role.

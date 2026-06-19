@@ -11,7 +11,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any
 
-from ....._tracing import sl_span
+from agentic_core.L6_system_learning._tracing import sl_span
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

@@ -2443,7 +2443,12 @@ def main() -> None:
     # gate-invocation + generation manifests BEFORE sys.exit so even
     # deferred-failure runs produce a complete auditable record. The atexit
     # hook is a safety net for native crashes; this is the clean path.
-    def _finalize_manifests(gen_rc: int, p0_status: str) -> None:
+    def _finalize_manifests(
+        gen_rc: int,
+        p0_status: str,
+        *,
+        p0_wave_plan: dict[str, Any] | None = None,
+    ) -> None:
         sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
         rt_status, rt_count = ("view_absent", 0)
         try:
@@ -2574,11 +2579,11 @@ def main() -> None:
         # legacy p0_runner-only signal.
         rc = _shared_deferred_exit_code() or deferred_p0_exit_code() or 1
         print(f"[ERROR] One or more failures were deferred; final exit code = {rc}")
-        _finalize_manifests(rc, p0_status="deferred_fail")
+        _finalize_manifests(rc, p0_status="deferred_fail", p0_wave_plan=p0_wave_plan)
         sys.exit(rc)
 
     # Clean-exit path: all gates passed, no deferred failures.
-    _finalize_manifests(0, p0_status="pass")
+    _finalize_manifests(0, p0_status="pass", p0_wave_plan=p0_wave_plan)
 
     if os.environ.get("ADG_CERTIFICATION_MODE") == "1":
         from tools.generate.integration import adg_run_state as _adg_run_state_exit  # noqa: PLC0415

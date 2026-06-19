@@ -106,7 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.runtime.trace_context import get_trace_context
+from agentic_core.L2_execution.types.trace_context import get_trace_context
 from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_agent_paths
 
 _emit_authorize_and_execute("p2", "orchestrator_engine", "execution_auth")
@@ -274,22 +274,23 @@ class _PolicyShimError(Exception):
 class _PolicyShimAction:
     TOOL_EXECUTION = "TOOL_EXECUTION"
 
-
 def _resolve_runtime_primitives():
     try:
-        from agentic_core.runtime.control.breaker import get_breaker as _get_breaker  # type: ignore
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker as _get_breaker
     except (
         Exception
     ):  # guardian: allow-broad-exception -- import fallback shim; assigns null breaker, never re-raises
         _get_breaker = lambda _name: _NullBreaker()
     try:
-        from agentic_core.runtime.state.run_state_authority import get_run_state_authority as _get_rsa  # type: ignore
+        from agentic_core.L4_state.enforcement.authority.run_state_authority import (
+            get_run_state_authority as _get_rsa,
+        )
     except (
         Exception
     ):  # guardian: allow-broad-exception -- import fallback shim; assigns null authority, never re-raises
         _get_rsa = lambda: _NullRunStateAuthority()
     try:
-        from agentic_core.L5_safety.policy.policy_enforcer import (  # type: ignore
+        from agentic_core.L5_safety.enforcement.policy_action_contract import (
             ActionClass as _ActionClass,
             PolicyEnforcementError as _PolicyError,
             enforce_policy_before_action as _enforce_policy_before_action,

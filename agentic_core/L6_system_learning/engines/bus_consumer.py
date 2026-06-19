@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from ....._tracing import sl_span
+from agentic_core.L6_system_learning._tracing import sl_span
 
 if TYPE_CHECKING:
     from .healing_success_rate_store import HealingSuccessRateStore
