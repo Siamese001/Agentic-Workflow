@@ -101,6 +101,11 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     priority_rule = str(brief.get("priority_rule") or "").strip()
     if priority_rule:
         a(f"- **Priority rule:** {_md(priority_rule)}")
+    if brief.get("priority_rows"):
+        a(
+            "- **Column key:** Business reason = why the item matters to delivery or governance; "
+            "Technical reason = the measured evidence; Why this order = why this item is ahead of the next row."
+        )
     priority_rows = list(brief.get("priority_rows") or [])
     if priority_rows:
         a("")
@@ -179,31 +184,70 @@ def build_deprecation_deletion_plan(
     report = dead_code_report or {}
     summary = report.get("summary") or {}
     dead_code = report.get("dead_code_candidates") or {}
+    dead_imports = report.get("dead_imports") or {}
     unresolved = report.get("unresolved_imports") or {}
     low_conf = report.get("low_confidence_zones") or {}
     inferred = report.get("inferred_symbols") or {}
     cleanup_candidates = _defer_delete(mv_usefulness_audit, artifact_usage_matrix).get("rows", [])
     dead_hotspots = dead_code.get("dead_code_hotspots") or []
+    dead_import_hotspots = dead_imports.get("dead_import_hotspots") or []
+    cleanup_hotspots = dead_hotspots or dead_import_hotspots
     unresolved_hotspots = unresolved.get("unresolved_hotspots") or []
     unresolved_lead = unresolved_hotspots[0] if unresolved_hotspots else ("none", 0)
+    source = report.get("source") or {}
+    adg_snapshot = str(summary.get("adg_snapshot") or source.get("adg_snapshot") or "")
+    adg_snapshot_ts = str(summary.get("adg_snapshot_ts") or source.get("adg_snapshot_ts") or "")
+    technical_read: list[str] = []
+    if adg_snapshot:
+        source_line = f"ADG source: {adg_snapshot}"
+        if adg_snapshot_ts:
+            source_line = f"{source_line} (snapshot {adg_snapshot_ts})"
+        technical_read.append(source_line)
+    technical_read.extend(
+        [
+            f"Dead code candidates: {_fmt_int(summary.get('total_dead_code_candidates', 0))}",
+            f"Dead imports: {_fmt_int(summary.get('total_dead_imports', 0))}",
+            f"Unresolved imports: {_fmt_int(summary.get('total_unresolved_imports', 0))}",
+            (
+                "First-party low-confidence ratio: "
+                f"{float(low_conf.get('first_party_low_confidence_ratio', 0) or 0):.2f}%"
+            ),
+            (
+                "Inferred-symbol ratio: "
+                f"{float(inferred.get('inferred_symbol_ratio', 0) or 0):.2f}%"
+            ),
+            f"Cleanup candidates surfaced: {_fmt_int(len(cleanup_candidates))}",
+        ]
+    )
     priority_rows: list[dict[str, Any]] = []
 
-    if dead_hotspots:
-        for module, count in dead_hotspots[:3]:
+    if cleanup_hotspots:
+        for module, count in cleanup_hotspots[:3]:
+            is_dead_code = bool(dead_hotspots)
             priority_rows.append(
                 {
                     "priority": len(priority_rows) + 1,
-                    "move": "Deprecate then delete confirmed dead code",
+                    "move": (
+                        "Deprecate then delete confirmed dead code"
+                        if is_dead_code
+                        else "Remove confirmed dead imports"
+                    ),
                     "scope": module,
                     "business_reason": (
-                        "This is the highest-confidence waste to remove because ADG already "
-                        "marked it as dead-code candidate traffic."
+                        "This is high-confidence cleanup because the completed ADG marked it as "
+                        "dead-code candidate traffic."
+                        if is_dead_code
+                        else "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic."
                     ),
-                    "technical_reason": f"{count} dead-code candidate edge(s) point at this module.",
+                    "technical_reason": (
+                        f"{count} dead-code candidate edge(s) point at this module."
+                        if is_dead_code
+                        else f"{count} resolved dead-import overlay row(s) point at this file."
+                    ),
                     "why_this_rank": (
                         "Delete the most certain waste first so we do not spend time cleaning speculative targets."
                     ),
-                    "decision": "delete_after_deprecation",
+                    "decision": "delete_after_deprecation" if is_dead_code else "remove_imports",
                 }
             )
     else:
@@ -277,7 +321,7 @@ def build_deprecation_deletion_plan(
 
     executive_read = (
         "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics."
-        if dead_hotspots
+        if cleanup_hotspots
         else "No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics."
     )
 
@@ -285,20 +329,7 @@ def build_deprecation_deletion_plan(
         title="BCG Deletion Brief",
         status=str(report.get("status") or ""),
         business_read=executive_read,
-        technical_read=[
-            f"Dead code candidates: {_fmt_int(summary.get('total_dead_code_candidates', 0))}",
-            f"Dead imports: {_fmt_int(summary.get('total_dead_imports', 0))}",
-            f"Unresolved imports: {_fmt_int(summary.get('total_unresolved_imports', 0))}",
-            (
-                "First-party low-confidence ratio: "
-                f"{float(low_conf.get('first_party_low_confidence_ratio', 0) or 0):.2f}%"
-            ),
-            (
-                "Inferred-symbol ratio: "
-                f"{float(inferred.get('inferred_symbol_ratio', 0) or 0):.2f}%"
-            ),
-            f"Cleanup candidates surfaced: {_fmt_int(len(cleanup_candidates))}",
-        ],
+        technical_read=technical_read,
         priority_rule=(
             "Confirmed dead code first, then unresolved imports, then low-confidence noise, "
             "then low-value diagnostics."

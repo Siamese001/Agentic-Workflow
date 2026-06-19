@@ -167,6 +167,59 @@ def test_testing_map_can_prioritize_apps_testing_over_p0_ratchet(tmp_path: Path)
     assert any(r["action_type"] == "add_tests" and r["scope"].startswith("apps_sales") for r in actions["rows"])
 
 
+def test_fix_blocker_rows_carry_business_and_technical_priority_backing() -> None:
+    gate_rows = [
+        {
+            "gate_id": "B2_layer_skip_ratchet",
+            "gate_class": "LayerSkipGate",
+            "band": "P1",
+            "enforcement": "ratchet",
+            "violation_count": 895,
+            "baseline_count": 891,
+            "classification": "regressed",
+        },
+        {
+            "gate_id": "C2_l5_bypass_pview",
+            "gate_class": "L5BypassGate",
+            "band": "P0",
+            "enforcement": "block",
+            "violation_count": 2,
+            "baseline_count": None,
+            "classification": "blocked",
+        },
+        {
+            "gate_id": "F1_untyped_seam_ratchet",
+            "gate_class": "UntypedSeamGate",
+            "band": "P2",
+            "enforcement": "ratchet",
+            "violation_count": 1026,
+            "baseline_count": 1019,
+            "classification": "regressed",
+        },
+    ]
+    actions = build_canonical_next_best_actions(
+        gate_rows,
+        {"top_graph_risks": []},
+        {"investment_map": []},
+        {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
+        {"rows": []},
+        {},
+    )
+
+    first_three = actions["rows"][:3]
+    assert [r["scope"] for r in first_three] == [
+        "B2_layer_skip_ratchet",
+        "C2_l5_bypass_pview",
+        "F1_untyped_seam_ratchet",
+    ]
+    assert "broad architecture drift" in first_three[0]["business_reason"].lower()
+    assert "zero-tolerance governance breach" in first_three[1]["business_reason"].lower()
+    assert "contract-seam debt" in first_three[2]["business_reason"].lower()
+    assert "layer-hop pattern" in first_three[0]["why_this_rank"].lower()
+    assert "control breach" in first_three[1]["why_this_rank"].lower()
+    assert "broad technical debt" in first_three[2]["why_this_rank"].lower()
+
+
 def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path: Path) -> None:
     db = tmp_path / "adg.sqlite"
     _sqlite(db)
@@ -237,7 +290,15 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     queue = artifacts / "adg_action_queue_run.json"
     review = artifacts / "adg_review_template_run.json"
     burndown = artifacts / "adg_burndown_table.json"
-    _write_json(gate, {"timestamp": "run", "total_gates": 2, "overall_exit_code": 1, "gates": [_gate("blocker", records=1), _gate("ratchet", verdict="TRACK", records=5)]})
+    _write_json(
+        gate,
+        {
+            "timestamp": "2026-06-18T18:02:31+00:00",
+            "total_gates": 2,
+            "overall_exit_code": 1,
+            "gates": [_gate("blocker", records=1), _gate("ratchet", verdict="TRACK", records=5)],
+        },
+    )
     _write_json(queue, {"actions": [{"scope": "apps_sales/runtime/checkout.py"}]})
     _write_json(review, {"artifact_kind": "adg_run_review_template"})
     _write_json(burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}})
@@ -343,6 +404,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     data = yaml.safe_load((artifacts / "adg_bcg_executive_summary_run.yaml").read_text(encoding="utf-8"))
     assert data["schema_version"] == "1.0"
     assert data["artifact_kind"] == "adg_bcg_executive_summary"
+    assert data["raw_inputs"]["artifacts"]["sqlite_snapshot"].endswith("adg_indexed_run.sqlite")
     assert data["lens_0_p0_landmines"]["summary"]["wrong_way_imports"] == 1
     assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
@@ -381,6 +443,9 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "Maintain SVP engineer-level repo standards",
     ]:
         assert section in md
+    assert "ADG source:" in md
+    assert "adg_indexed_run.sqlite" in md
+    assert "(snapshot run)" in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
 
 
