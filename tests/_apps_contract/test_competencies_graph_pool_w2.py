@@ -1,4 +1,7 @@
-"""W2/W3 — competencies graph pool (paths → top 8 merge) + gemini_pro pool judge row."""
+"""W2/W3 — competencies graph pool (paths → top 8 merge) + selector receipt wiring.
+
+The selector receipt is Anthropic-backed; the formal competencies X1D judge is wired separately.
+"""
 from __future__ import annotations
 
 import json
@@ -43,7 +46,7 @@ def test_competencies_sc_path_count_and_profile() -> None:
     assert prof.self_consistency_samples == 2.0
 
 
-def test_competencies_pool_x1d_judge_rows_gemini_pro_single_row(tmp_path) -> None:
+def test_competencies_pool_x1d_judge_rows_selector_receipt_is_anthropic(tmp_path) -> None:
     from apps_rg.runtime.reasoning.employment_bullet_pool import competencies_pool_x1d_judge_rows
 
     sel_path = tmp_path / "bullet_pool_selection.json"
@@ -62,8 +65,10 @@ def test_competencies_pool_x1d_judge_rows_gemini_pro_single_row(tmp_path) -> Non
         },
     )
     assert len(rows) == 1
-    assert rows[0]["provider_key"] == "gemini_pro"
+    assert rows[0]["provider_key"] == "anthropic_claude"
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
+    assert rows[0]["advisory_only"] is True
+    assert rows[0]["proof_eligible_judge"] is False
 
 
 def test_merge_competencies_graph_pool_top_eight_from_selections() -> None:

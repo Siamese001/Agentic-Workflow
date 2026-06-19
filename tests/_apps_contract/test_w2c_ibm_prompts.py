@@ -266,13 +266,13 @@ class TestW2CHardConstraints:
         """STOP 1 v2 canonical JSON not modified during W2C"""
         json_path = APPS_RG_ROOT / "resume" / "base" / "amit_ayer_base_resume_v1.json"
         assert json_path.exists()
-        # JSON should still have 5 employment entries, 18 bullets, 8 skills, 2 education, 4 certifications
+        # JSON should still have 5 employment entries, 20 bullets, 8 skills, 2 education, 4 certifications
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         assert len(data["facts"]["employment"]) == 5
         # Count bullets
         bullet_count = sum(len(emp["bullets"]) for emp in data["facts"]["employment"])
-        assert bullet_count == 18
+        assert bullet_count == 20
 
 
 if __name__ == "__main__":

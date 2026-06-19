@@ -16,6 +16,8 @@ from apps_research.prompt_assembly.apps_rg_targeting_brief import (
 def test_prompt_template_loads_and_contains_sections() -> None:
     text = load_targeting_brief_prompt_template()
     assert "## JD Complement" in text
+    assert "## Company DNA & Operating Model" in text
+    assert "## Partnership / Ecosystem Motion" in text
     assert "apps_lic Outreach Angles" in text
     assert "{{jd_text}}" in text
     assert "{{research_notes}}" in text
@@ -32,6 +34,7 @@ def test_build_targeting_brief_prompt_replaces_placeholders() -> None:
     assert "AIG" in out
     assert "{{jd_text}}" not in out
     assert "complement the JD" in out
+    assert "company-DNA layer" in out
 
 
 def test_apps_rg_targeting_brief_enabled_from_jd_context() -> None:

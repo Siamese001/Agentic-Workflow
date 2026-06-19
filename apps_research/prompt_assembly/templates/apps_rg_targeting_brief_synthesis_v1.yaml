@@ -4,7 +4,9 @@ owner: apps_research.prompt_assembly
 purpose: >
   Synthesize a compact apps_rg targeting brief (=== SECTION === markdown) from
   verified research notes and JD context. Output is plain text for apps_rg
-  --manual-brief consumption, not ResearchBrief JSON.
+  --manual-brief consumption, not ResearchBrief JSON. The brief must encode
+  company DNA and commercial motion for any company/JD pairing, not generic
+  AI-company prose.
 allowed_stage: E3_EXEC
 input_contract:
   required:
@@ -34,7 +36,12 @@ slot_bodies:
     You operate inside apps_research producing apps_rg targeting briefs only.
     Output plain markdown in the required === SECTION === format.
     Use only verified research notes and JD metadata (company, role, comp, reports-to).
+    Infer and state the company's archetype and operating motion when supported
+    by evidence; if partnership motion is material, surface partner-led GTM,
+    co-sell, enablement, and ecosystem revenue instead of generic transformation talk.
     JD body is for identification and metadata — do not restate JD responsibilities as bullets.
+    Keep every bullet short enough to stay under the 240-char contract line cap.
+    If a draft sentence sounds like the JD, rewrite it as company context instead of echoing the role description.
     No preamble, citations, links, or self-check in the final output.
   I0: |
     See apps_research/config/prompts/apps_rg_targeting_brief_v1.md for the full

@@ -260,3 +260,5 @@ def test_competencies_policy_does_not_require_llm_for_proof() -> None:
     rubric = competencies_x1d.COMPETENCIES_RUBRIC
     assert "OPTIONAL ADVISORY" in rubric
     assert "does not gate product proof" in rubric.lower()
+    assert "distinct ATS query clusters" in rubric
+    assert "graph-backed differentiation" in rubric.lower()

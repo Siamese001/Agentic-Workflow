@@ -140,6 +140,7 @@ class TestRequestEnvelopeReplayThreading:
             target_role="Eng",
             source_resume_text="body",
             job_description_text="jd",
+            manual_brief_path="brief.md",
             idempotency_key="from-payload",
             l5_certification_ref="test:valid:w6",
         )

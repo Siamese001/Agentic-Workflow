@@ -9,6 +9,8 @@ from typing import Any
 
 from apps_rg.runtime.sections.graph_evidence_contract import (
     build_allowed_fact_ids_for_plan_facts,
+    build_graph_evidence_depth_comparison_report,
+    build_graph_evidence_depth_report,
     selection_method_for_section,
 )
 from apps_rg.runtime.sections.executive_summary_briefing import (
@@ -279,6 +281,40 @@ def _caps_for(*, section_id: str, weight: float) -> tuple[int, int, str]:
     return skill_cap, metric_cap, band
 
 
+def _metric_floor_for_section(section_id: str) -> int:
+    if section_id == "competencies":
+        return 2
+    return 0
+
+
+def _prefer_novel_metric_ids(
+    raw_metric_ids: list[str],
+    seen_metric_ids: set[str],
+    cap: int,
+) -> list[str]:
+    if cap <= 0:
+        return []
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for metric_id in raw_metric_ids:
+        metric_id = str(metric_id).strip()
+        if not metric_id or metric_id in seen or metric_id in seen_metric_ids:
+            continue
+        ordered.append(metric_id)
+        seen.add(metric_id)
+        if len(ordered) >= cap:
+            return ordered
+    for metric_id in raw_metric_ids:
+        metric_id = str(metric_id).strip()
+        if not metric_id or metric_id in seen:
+            continue
+        ordered.append(metric_id)
+        seen.add(metric_id)
+        if len(ordered) >= cap:
+            break
+    return ordered[:cap]
+
+
 def _allocate_employer_root_budgets(
     *,
     candidates_by_employer: dict[str, list[tuple[float, str, dict[str, Any], dict[str, dict[str, Any]]]]],
@@ -539,16 +575,20 @@ def build_selected_graph_evidence_plan_for_section(
         selected = candidates[:max_items]
 
     facts: list[dict[str, Any]] = []
+    pre_facts: list[dict[str, Any]] = []
     skill_caps_by_root: dict[str, int] = {}
     metric_caps_by_root: dict[str, int] = {}
+    metric_caps_by_root_before_floor: dict[str, int] = {}
     root_weight_bands: dict[str, str] = {}
     employer_root_weights: dict[str, float] = {}
     selected_skills: list[dict[str, Any]] = []
     selected_metrics_detail: list[dict[str, Any]] = []
     selected_skill_counts_by_employer: dict[str, int] = {}
     selected_metric_counts_by_employer: dict[str, int] = {}
+    selected_metric_counts_by_employer_before_floor: dict[str, int] = {}
     excluded_due_to_root_cap: list[dict[str, Any]] = []
     excluded_due_to_metric_cap: list[dict[str, Any]] = []
+    selected_metric_ids_seen: set[str] = set()
 
     for score, employer_lane, bundle, metric_nodes in selected:
         bundle_id = str(bundle.get("role_episode_bundle_id") or "").strip()
@@ -556,14 +596,26 @@ def build_selected_graph_evidence_plan_for_section(
         skill_cap, metric_cap, band = _caps_for(section_id=section_id, weight=weight)
         raw_skill_ids = [str(x).strip() for x in (bundle.get("graph_skill_node_ids") or []) if str(x).strip()]
         raw_metric_ids = [str(x).strip() for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
+        metric_floor = _metric_floor_for_section(section_id)
+        effective_metric_cap = min(len(raw_metric_ids), max(metric_cap, metric_floor)) if raw_metric_ids else 0
         selected_skill_ids = raw_skill_ids[:skill_cap] if skill_cap > 0 else []
-        selected_metric_ids = raw_metric_ids[:metric_cap] if metric_cap > 0 else []
+        selected_metric_ids_before_floor = raw_metric_ids[:metric_cap] if metric_cap > 0 else []
+        selected_metric_ids = _prefer_novel_metric_ids(
+            raw_metric_ids,
+            selected_metric_ids_seen,
+            effective_metric_cap,
+        )
         skill_caps_by_root[bundle_id] = skill_cap
-        metric_caps_by_root[bundle_id] = metric_cap
+        metric_caps_by_root_before_floor[bundle_id] = metric_cap
+        metric_caps_by_root[bundle_id] = effective_metric_cap
         root_weight_bands[bundle_id] = band
         employer_root_weights[bundle_id] = weight
         selected_skill_counts_by_employer[employer_lane] = (
             selected_skill_counts_by_employer.get(employer_lane, 0) + len(selected_skill_ids)
+        )
+        selected_metric_counts_by_employer_before_floor[employer_lane] = (
+            selected_metric_counts_by_employer_before_floor.get(employer_lane, 0)
+            + len(selected_metric_ids_before_floor)
         )
         selected_metric_counts_by_employer[employer_lane] = (
             selected_metric_counts_by_employer.get(employer_lane, 0) + len(selected_metric_ids)
@@ -579,6 +631,8 @@ def build_selected_graph_evidence_plan_for_section(
                 }
             )
         for mid in selected_metric_ids:
+            selected_metric_ids_seen.add(mid)
+        for mid in selected_metric_ids:
             node = metric_nodes.get(mid) or {}
             selected_metrics_detail.append(
                 {
@@ -590,6 +644,15 @@ def build_selected_graph_evidence_plan_for_section(
                     "metric": str(node.get("metric") or node.get("claim_text") or mid),
                 }
             )
+        pre_facts.append(
+            _bundle_to_fact(
+                bundle,
+                employer_lane=employer_lane,
+                metric_nodes=metric_nodes,
+                selected_skill_ids=selected_skill_ids,
+                selected_metric_ids=selected_metric_ids_before_floor,
+            )
+        )
         for sid in raw_skill_ids[skill_cap:]:
             excluded_due_to_root_cap.append(
                 {
@@ -660,6 +723,14 @@ def build_selected_graph_evidence_plan_for_section(
         }
         for item in selected_metrics_detail
     ]
+    pre_depth_report = build_graph_evidence_depth_report({"facts": pre_facts}, section_id=section_id)
+    post_depth_report = build_graph_evidence_depth_report({"facts": facts}, section_id=section_id)
+    depth_comparison_report = build_graph_evidence_depth_comparison_report(
+        section_id=section_id,
+        pre_report=pre_depth_report,
+        post_report=post_depth_report,
+        fix_label="competencies_metric_floor_v1" if section_id == "competencies" else "shared_lane_metric_floor_v1",
+    )
     raw_max_emp = max(raw_skill_counts_by_employer, key=raw_skill_counts_by_employer.get)
     selected_max_emp = (
         max(selected_skill_counts_by_employer, key=selected_skill_counts_by_employer.get)
@@ -710,16 +781,27 @@ def build_selected_graph_evidence_plan_for_section(
             "raw_skill_counts_by_employer": raw_skill_counts_by_employer,
             "raw_metric_counts_by_employer": raw_metric_counts_by_employer,
             "selected_skill_counts_by_employer": selected_skill_counts_by_employer,
+            "selected_metric_counts_by_employer_before_floor": selected_metric_counts_by_employer_before_floor,
             "selected_metric_counts_by_employer": selected_metric_counts_by_employer,
             "employer_root_budgets": budgets,
             "max_raw_skill_count_employer": raw_max_emp,
             "max_selected_skill_count_employer": selected_max_emp,
             "selection_normalized_by_employer_root_cap": section_id in _SHARED_SECTION_LIMITS,
-            "raw_density_dominance_detected": False,
+            "metric_caps_by_root_before_floor": metric_caps_by_root_before_floor,
+            "metric_caps_by_root_after_floor": metric_caps_by_root,
+            "thin_item_ids_before_floor": pre_depth_report.get("thin_item_ids") or [],
+            "thin_item_ids_after_floor": post_depth_report.get("thin_item_ids") or [],
+            "raw_density_dominance_detected": bool((pre_depth_report.get("detail_reuse_ratio") or 0.0) > 0.35),
         },
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
     }
+    plan["graph_evidence_depth_pre_report"] = pre_depth_report
+    plan["graph_evidence_depth_report"] = post_depth_report
+    plan["graph_evidence_depth_post_report"] = post_depth_report
+    plan["graph_evidence_depth_comparison_report"] = depth_comparison_report
+    plan["graph_evidence_depth_status"] = post_depth_report.get("status")
+    plan["graph_evidence_semantic_coverage_pct"] = post_depth_report.get("semantic_coverage_pct")
     return plan, ordered, allowed
 
 

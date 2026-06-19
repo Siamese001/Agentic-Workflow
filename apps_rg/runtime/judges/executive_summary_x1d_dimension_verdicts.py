@@ -26,8 +26,18 @@ DIMENSION_VERDICT_CODES: frozenset[str] = frozenset(
         "weak_domain_targeting",
         "thin_closing_sentence",
         "metric_inventory",
+        "repeated_metric_surface",
         "weak_synthesis",
         "recruiter_filler",
+        "generic_ai_prose",
+        "head_of_talent_acquisition_screen",
+        "ai_authenticity_failure",
+        "buzzword_soup",
+        "em_dash_usage",
+        "template_phrasing",
+        "company_dna_thin",
+        "partner_motion_missing",
+        "adoption_motion_missing",
         "jd_as_proof_risk",
         "unsupported_claim",
         "underused_facts",
@@ -48,15 +58,72 @@ _FLAG_TO_DIMENSIONS: dict[str, tuple[str, ...]] = {
 
 _TEXT_HINTS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("factual_support", ("unsupported", "ledger", "source_fact", "proof boundary")),
-    ("executive_signal", ("bullet stack", "bullet-stack", "svp", "platform/governance", "metric inventory")),
-    ("resume_voice", ("recruiter", "filler", "this individual", "additionally", "furthermore")),
+    (
+        "executive_signal",
+        ("bullet stack", "bullet-stack", "svp", "platform/governance", "metric inventory", "partner motion", "adoption motion", "company dna"),
+    ),
+    (
+        "resume_voice",
+        (
+            "recruiter",
+            "filler",
+            "this individual",
+            "additionally",
+            "furthermore",
+            "generic ai prose",
+            "head of talent acquisition",
+            "talent acquisition",
+            "ta screen",
+            "ai authenticity",
+            "em dash",
+        ),
+    ),
     (
         "ats_alignment_without_keyword_stuffing",
-        ("jd", "briefing", "brokerage", "insurance", "domain alignment", "targeting", "interoperability"),
+        (
+            "jd",
+            "briefing",
+            "brokerage",
+            "insurance",
+            "domain alignment",
+            "targeting",
+            "interoperability",
+            "company dna",
+            "partner ecosystem",
+            "head of talent acquisition",
+            "ta screen",
+        ),
     ),
-    ("anti_overfit", ("jd-as-proof", "target company as experience", "keyword stuff")),
-    ("synthesis_quality", ("synthesis", "six sentence", "narrative", "connective", "recap", "paragraph flow")),
-    ("evidence_utilization", ("unused_fact", "under-use", "underuse", "weave")),
+    (
+        "anti_overfit",
+        (
+            "jd-as-proof",
+            "target company as experience",
+            "keyword stuff",
+            "generic ai prose",
+            "head of talent acquisition",
+            "ai authenticity",
+            "buzzword soup",
+            "template phrasing",
+            "em dash",
+        ),
+    ),
+        (
+            "synthesis_quality",
+            (
+                "synthesis",
+                "six sentence",
+                "narrative",
+                "connective",
+                "recap",
+                "paragraph flow",
+                "repeated metric",
+                "machine generated",
+                "machine-generated",
+                "template cadence",
+            ),
+        ),
+    ("evidence_utilization", ("unused_fact", "under-use", "underuse", "weave", "distinct evidence")),
 )
 
 
@@ -81,27 +148,32 @@ _EXEC_SUMMARY_RUBRIC_DIMENSION_PROSE: dict[str, str] = {
         "(no JD/briefing-as-proof)."
     ),
     "executive_signal": (
-        "SVP/CTO-level narrative — platform, runtime, governance, retrieval, orchestration, "
-        "evaluation, commercialization **woven**, not listed."
+        "SVP/CTO-level narrative — platform, runtime, governance, retrieval, orchestration, partner motion, "
+        "adoption motion, commercial fit **woven**, not listed."
     ),
     "resume_voice": (
         "concise, credible, human executive style; **synthesis**, not recruiter filler, hype, "
-        "or generic AI prose."
+        "generic AI-company prose, or a paragraph that would fail a Head of Talent Acquisition screen."
     ),
     "ats_alignment_without_keyword_stuffing": (
-        "relevant to target role via emphasis only; no JD mirroring or stuffing."
+        "relevant to target role via emphasis only; no JD mirroring or stuffing. Reward company-DNA specificity "
+        "when evidence supports partner ecosystem, adoption motion, commercial fit, and an ATS/TA screen that stays clean."
     ),
     "anti_overfit": (
         "no JD-as-proof, no briefing-as-proof, no target company as candidate experience, "
-        "no **copy-paste of style-example metrics/credentials** absent from claim ledger support."
+        "no **copy-paste of style-example metrics/credentials** absent from claim ledger support, "
+        "no repeated metric surface across sentences, and no AI-authenticity dead giveaways such as em dashes, buzzword soup, "
+        "or template phrasing."
     ),
     "synthesis_quality": (
         "**executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, "
-        "visible process language, and excessive naked capability lists without narrative."
+        "visible process language, repeated metric surfaces, excessive naked capability lists without narrative, "
+        "and machine-generated cadence that would not pass a human screen."
     ),
     "evidence_utilization": (
         "penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin; "
-        "when x2_exec_summary_evidence_utilization.pass is true, unused facts are optional weave targets."
+        "when x2_exec_summary_evidence_utilization.pass is true, unused facts are optional weave targets. "
+        "Reward distinct evidence themes instead of the same metric or proof surface repeated across sentences."
     ),
     "deterministic_alignment": (
         "**only** penalize gates that show `\"pass\": false` in deterministic_gate_summary; "
@@ -114,8 +186,10 @@ def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -
     """Canonical eight-dimension rubric block for all exec-summary X1D judge prompts."""
     lines = [
         "You are evaluating one executive resume **executive summary paragraph** against the same bar as the "
-        "``executive_summary.generate_scratch_v1`` north star: polished SVP synthesis, not bullet stacks, "
-        "not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.",
+        "``executive_summary.generate_scratch_v1`` north star: polished SVP synthesis with company-DNA specificity, "
+        "not bullet stacks, not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.",
+        "Adversarial review lens: would a Head of Talent Acquisition at the target company forward this, "
+        "and does it read as AI-authentic rather than machine-generated?",
         "Return JSON only with: score_scale, score, threshold, pass, decisive_failure, "
         "findings, cited_sentence_indexes, remediation_suggestions. "
         "cited_sentence_indexes MUST list every 1-based sentence you want changed (S1=1 … S6=6); "
@@ -131,7 +205,7 @@ def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -
         [
             "",
             "**Target shape:** **exactly six dense sentences** (one executive paragraph, max 140 words); "
-            "metrics/credentials only when ledger-backed.",
+            "metrics/credentials only when ledger-backed; prefer distinct proof themes over repeated metrics.",
             "",
             "Decisive failure triggers:",
             "- unsupported business metric or credential",
@@ -140,6 +214,10 @@ def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -
             "- copied JD phrase longer than four words",
             "- generic opener or hype/filler",
             "- summary is mechanically sentence-stacked proof rather than narrative synthesis",
+            "- repeated metric surface across multiple sentences",
+            "- generic AI-company prose that omits company DNA when the packet supports it",
+            "- would not pass a Head of Talent Acquisition screen at the target company",
+            "- AI-authenticity dead giveaways such as em dashes, buzzword soup, template phrasing, or machine-generated cadence",
             "- obvious colon-label / fact-title stitching in prose",
         ]
     )
@@ -397,24 +475,28 @@ def write_x1d_dimension_matrix_artifact(path: Any, judges: list[Any]) -> str:
 DIMENSION_REGEN_FIX_INSTRUCTIONS: dict[str, str] = {
     "executive_signal": (
         "executive_signal: S1 = one SVP IT strategy thesis (technology strategy executive, not "
-        "narrow AI-platform opener); rewrite S2–S5 as one causal arc—no sequential achievement stack."
+        "narrow AI-platform opener); rewrite S2–S5 as one causal arc with company-DNA, partner-motion, "
+        "or adoption-motion emphasis—no sequential achievement stack."
     ),
     "synthesis_quality": (
         "synthesis_quality: connect S3–S6 with causal bridges; S6 = forward enterprise IT direction, "
-        "not a thin recap of S2–S5."
+        "not a thin recap of S2–S5 or a repeated metric loop."
     ),
     "ats_alignment_without_keyword_stuffing": (
-        "ats_alignment_without_keyword_stuffing: shape emphasis toward enterprise architecture, "
-        "innovation, interoperability via allowed facts only (jd_used_as_proof=false)."
+        "ats_alignment_without_keyword_stuffing: shape emphasis toward enterprise architecture, partner motion, "
+        "adoption motion, interoperability via allowed facts only (jd_used_as_proof=false)."
     ),
     "evidence_utilization": (
-        "evidence_utilization: weave unused allowed source_fact_ids into prose and claim_ledger rows."
+        "evidence_utilization: weave unused allowed source_fact_ids into prose and claim_ledger rows, but vary the "
+        "proof themes instead of repeating the same metric."
     ),
     "resume_voice": (
-        "resume_voice: third person only; active voice; no Additionally/Furthermore openers."
+        "resume_voice: third person only; active voice; no Additionally/Furthermore openers or generic AI prose; "
+        "optimize for a Head of Talent Acquisition screen and remove AI-authenticity dead giveaways."
     ),
     "anti_overfit": (
-        "anti_overfit: no target-company name or JD keyword echo in resume_display_text."
+        "anti_overfit: no target-company name or JD keyword echo in resume_display_text; do not turn the paragraph "
+        "into a generic AI-company marketing blurb, and do not leave in em dashes, buzzword soup, or template phrasing."
     ),
     "factual_support": (
         "factual_support: every claim_ledger row must cite allowed source_fact_ids only."

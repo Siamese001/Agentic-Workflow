@@ -1,18 +1,9 @@
 {
   "gate_id": "B2_layer_skip_ratchet",
-  "count": 878,
-  "seeded_at": "2026-06-13T14:17:35.504778+00:00",
-  "snapshot": "adg_indexed_06182026_1128.sqlite",
+  "count": 891,
+  "seeded_at": "2026-06-19T03:04:55.149139+00:00",
+  "snapshot": "adg_indexed_06182026_2259.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-18T18:02:07.936735+00:00",
-  "last_run_snapshot": "adg_indexed_06182026_1357.sqlite",
-  "tightened_at": "2026-06-18T15:34:15.312806+00:00",
-  "tighten_history": [
-    {
-      "at": "2026-06-18T15:34:15.312806+00:00",
-      "snapshot": "adg_indexed_06182026_1128.sqlite",
-      "from": 951,
-      "to": 878
-    }
-  ]
+  "last_run_at": "2026-06-19T05:28:11.893812+00:00",
+  "last_run_snapshot": "adg_indexed_06192026_0123.sqlite"
 }

@@ -31,6 +31,14 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/selected_avatar_guard.py\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start_branch_guard.py\""
           }
         ]
@@ -49,12 +57,29 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/selected_avatar_guard.py\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_submit_prompt.py\""
           }
         ]
       }
     ],
     "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/selected_avatar_guard.py\""
+          }
+        ]
+      },
       {
         "matcher": "AskUserQuestion",
         "hooks": [

@@ -34,8 +34,10 @@ from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGE
 from apps_rg.runtime.sections.graph_evidence_contract import (
     SECTION_KEYS,
     build_allowed_fact_ids_for_plan_facts,
+    build_graph_evidence_depth_report,
     graph_only_proof_pool_metadata,
     plan_fact_to_employment_bullet_row,
+    require_graph_evidence_depth,
     slice_row_to_plan_fact,
 )
 
@@ -474,6 +476,11 @@ def _resolve_executive_summary_graph_only_proof_pool(
         ),
     )
     meta = _attach_id_alias_map(meta, plan)
+    meta["graph_evidence_depth_report"] = require_graph_evidence_depth(
+        meta,
+        section_id="executive_summary",
+        packet_key="selected_graph_evidence_plan",
+    )
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
     receipt = meta.get("exec_summary_allowlist_receipt")
     if isinstance(receipt, dict):
@@ -626,6 +633,11 @@ def _resolve_generic_section_graph_skills_proof_pool(
 
         meta = attach_headline_positioning_bundles_to_proof_pool_metadata(
             meta, section_id=section_id, repo_root=root
+        )
+        meta["graph_evidence_depth_report"] = require_graph_evidence_depth(
+            meta,
+            section_id="headline",
+            packet_key="headline_positioning_section_packet",
         )
     meta["c03_graph_bound_status"] = c03_status
     meta["c03_graphrag_bound"] = c03_doc
@@ -801,6 +813,29 @@ def _resolve_competencies_graph_skills_proof_pool(
 
     meta = attach_competency_bundles_to_proof_pool_metadata(
         meta, section_id="competencies", repo_root=root
+    )
+    graph_depth_pre_report = selected_graph_plan.get("graph_evidence_depth_pre_report")
+    graph_depth_report = selected_graph_plan.get("graph_evidence_depth_post_report") or selected_graph_plan.get(
+        "graph_evidence_depth_report"
+    )
+    if not isinstance(graph_depth_report, dict) or not graph_depth_report:
+        graph_depth_report = build_graph_evidence_depth_report(
+            meta,
+            section_id="competencies",
+            packet_key="selected_graph_evidence_plan",
+        )
+    meta["graph_evidence_depth_pre_report"] = graph_depth_pre_report
+    meta["graph_evidence_depth_report"] = graph_depth_report
+    meta["graph_evidence_depth_post_report"] = graph_depth_report
+    comparison_report = selected_graph_plan.get("graph_evidence_depth_comparison_report")
+    if isinstance(comparison_report, dict) and comparison_report:
+        meta["graph_evidence_depth_comparison_report"] = comparison_report
+    meta["graph_evidence_depth_status"] = graph_depth_report.get("status")
+    meta["graph_evidence_depth_summary"] = graph_depth_report.get("summary")
+    meta["competency_capability_depth_report"] = build_graph_evidence_depth_report(
+        meta,
+        section_id="competencies",
+        packet_key="competency_capability_section_packet",
     )
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
     return SectionProofPool(

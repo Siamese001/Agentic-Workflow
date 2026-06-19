@@ -65,7 +65,8 @@ def run_section_competencies_spine(
     )
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
+    resolved_manual_brief = str(raw_request.get("manual_brief") or manual_brief or "").strip()
+    briefing = _read_optional_brief(resolved_manual_brief)
     if not str(briefing).strip():
         briefing = lane.BRIEFING_DEFAULT
 
@@ -151,7 +152,8 @@ def run_section_headline_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
+    resolved_manual_brief = str(raw_request.get("manual_brief") or manual_brief or "").strip()
+    briefing = _read_optional_brief(resolved_manual_brief)
     if not str(briefing).strip():
         briefing = lane.BRIEFING_DEFAULT
 

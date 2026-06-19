@@ -71,3 +71,6 @@ def test_competencies_primary_surface_is_sections_lane_not_dispatch_cli() -> Non
     assert "trace_runtime_path" in exec_text
     assert "apps_rg.runtime.sections.competencies_lane" in exec_text
     assert "run_competencies_execution" in exec_text
+    assert "use_sc_path=True" in exec_text
+    assert "run_competencies_judges" not in exec_text
+    assert "is_competencies_pool_generation" not in exec_text

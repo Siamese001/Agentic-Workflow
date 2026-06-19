@@ -18,9 +18,7 @@ from __future__ import annotations
 
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
-from agentic_core.prompt_governance import (  # guardian: allow-layer-violation -- apps_research thin L2 binding consumes PA artifact type before delegating to generic package-driven L2 executor
-    CompiledPromptArtifact,
-)
+from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
 from agentic_core.L2_execution.l2_package_driven_executor import (
     l2_execute_package_driven,
     SealedL2Artifact,
@@ -37,10 +35,11 @@ def l2_execute_apps_research(
     Called as: l2_fn(prompt_artifact) -> SealedL2Artifact
 
     W4 remediation (bundle-c1-blocker-remediation-a4f9e2):
-    Runner calls l2_fn with only CompiledPromptArtifact. RouteContract and
-    FinalEvidenceContract are not forwarded to L2 by the runner; the executor
-    receives profile-ref defaults instead. App-owned profile refs supply all
-    execution policy without requiring route/evidence passthrough.
+    Runner calls l2_fn with only the runtime-contract CompiledPromptArtifact.
+    RouteContract and FinalEvidenceContract are not forwarded to L2 by the
+    runner; the executor receives profile-ref defaults instead. App-owned
+    profile refs supply all execution policy without requiring
+    route/evidence passthrough.
 
     Raises:
         TypeError: on bad input types

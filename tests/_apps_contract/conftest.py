@@ -13,7 +13,6 @@ _REPO = Path(__file__).resolve().parents[2]
 
 collect_ignore = [
     "test_ae2_pii_redactor.py",
-    "test_w5_eval_acceptance.py",
 ]
 
 # Subprocess ``python -m apps_rg`` lanes — each run is minutes when vLLM is up.

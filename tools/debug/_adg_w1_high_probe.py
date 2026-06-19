@@ -29,7 +29,7 @@ def main() -> int:
     print("=" * 80)
     targets = [
         "tools/eval/retrieval_benchmark.py",
-        "ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+        "ops_scripts/_archived_obsolete/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
         "agentic_core/L5_safety/reasoning/LocationHealerAgent.py",
         "agentic_core/L2_execution/utils/write_gateway.py",
     ]

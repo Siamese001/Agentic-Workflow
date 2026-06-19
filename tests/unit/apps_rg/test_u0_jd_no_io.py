@@ -15,6 +15,8 @@ from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 def test_u0_validate_apps_rg_does_not_open_job_description_file(tmp_path: Path) -> None:
     jd = tmp_path / "probe_jd.txt"
     jd.write_text("U0 must not read this JD body.\n", encoding="utf-8")
+    brief = tmp_path / "probe_briefing.txt"
+    brief.write_text("U0 must not read this briefing body.\n", encoding="utf-8")
 
     payload = AppsRgIngressPayload(
         target_company="Co",
@@ -22,6 +24,7 @@ def test_u0_validate_apps_rg_does_not_open_job_description_file(tmp_path: Path) 
         source_resume_text="resume body",
         job_description_ref=str(jd),
         job_description_text="",
+        manual_brief_path=str(brief),
         l5_certification_ref="test:valid:w6",
     )
     env = RequestEnvelope(payload=payload)
@@ -31,7 +34,7 @@ def test_u0_validate_apps_rg_does_not_open_job_description_file(tmp_path: Path) 
 
     def _track_open(self: Path, *args: object, **kwargs: object):  # type: ignore[no-untyped-def]
         try:
-            if self.resolve() == jd.resolve():
+            if self.resolve() in {jd.resolve(), brief.resolve()}:
                 opened.append(self)
         except OSError:
             pass
@@ -40,6 +43,7 @@ def test_u0_validate_apps_rg_does_not_open_job_description_file(tmp_path: Path) 
     with patch.object(Path, "open", _track_open):
         vr = u0_validate_apps_rg(env)
 
-    assert opened == [], "U0 must not open the job_description_ref path"
+    assert opened == [], "U0 must not open the job_description_ref or briefing path"
     ap = dict(vr.app_payload)
     assert ap.get("job_description_ref") == str(jd)
+    assert ap.get("manual_brief_path") == str(brief)

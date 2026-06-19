@@ -101,10 +101,7 @@ def extract_jd_text(
         if jd_ref:
             p = Path(jd_ref)
             if p.is_file():
-                try:
-                    return p.read_text(encoding="utf-8", errors="replace").strip()
-                except FileNotFoundError:
-                    pass
+                return p.read_text(encoding="utf-8", errors="replace").strip()
     if jd_anchor and jd_anchor.is_file():
         try:
             raw = jd_anchor.read_text(encoding="utf-8").strip()

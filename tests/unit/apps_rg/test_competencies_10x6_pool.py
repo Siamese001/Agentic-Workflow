@@ -1,4 +1,7 @@
-"""W4 — competencies graph_8x8 pool (8 paths -> 8 categories -> single gemini_pro X1D)."""
+"""W4 — competencies graph_8x8 pool (8 paths -> 8 categories) + selector/judge split.
+
+The selector receipt is Anthropic-backed; the formal competencies judge is Gemini-backed.
+"""
 
 from __future__ import annotations
 
@@ -169,6 +172,46 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
     assert result is not None
 
 
+def test_generate_competencies_graph_pool_lane_forced_sc_ignores_disable_toggle(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    called: list[bool] = []
+
+    def _fake_competencies_graph_pool_lane(**_: object) -> tuple[None, str, dict[str, object], str, dict[str, object]]:
+        called.append(True)
+        return (
+            None,
+            '{"competencies":[],"claim_ledger":[]}',
+            {"competencies": [], "claim_ledger": []},
+            "",
+            {"generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen"},
+        )
+
+    monkeypatch.setenv("APPS_RG_BULLET_SC_DISABLE", "1")
+    monkeypatch.setattr(
+        "apps_rg.runtime.reasoning.bullet_lane_generation._generate_competencies_graph_pool_lane",
+        _fake_competencies_graph_pool_lane,
+    )
+
+    result, raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
+        section_lane="competencies",
+        slot_kind="competencies",
+        provider_payload={"model": "stub", "messages": []},
+        parse_model_json=lambda r: (json.loads(r) if r.strip().startswith("{") else None, ""),
+        normalize_parsed=lambda p: p,
+        targeting_context={"allowed_fact_ids": ["bul_001"], "resume_support_blob_lower": ""},
+        judge_mode="mocked",
+        use_sc_path=True,
+    )
+
+    assert called == [True]
+    assert result is None
+    assert raw == '{"competencies":[],"claim_ledger":[]}'
+    assert parsed == {"competencies": [], "claim_ledger": []}
+    assert err == ""
+    assert meta["generation_mode"] == "qwen_competencies_graph_pool_claude_top_8_regen"
+
+
 def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
     selections = [
         {"category_label": f"C{i}", "path_index": 0, "score": 0.88, "passes": True}
@@ -189,8 +232,26 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
         gen_meta=gen_meta,
     )
     assert len(rows) == 1
-    assert rows[0]["provider_key"] == "gemini_pro"
+    assert rows[0]["provider_key"] == "anthropic_claude"
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
+    assert rows[0]["advisory_only"] is True
+    assert rows[0]["proof_eligible_judge"] is False
+
+
+def test_competencies_non_sc_path_is_removed() -> None:
+    from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+
+    with pytest.raises(ValueError, match="competencies lane requires self-consistency generation"):
+        generate_bullet_lane_with_sc_and_claude(
+            section_lane="competencies",
+            slot_kind="competencies",
+            provider_payload={"model": "stub", "messages": []},
+            parse_model_json=lambda r: (json.loads(r) if r.strip().startswith("{") else None, ""),
+            normalize_parsed=lambda p: p,
+            targeting_context={"allowed_fact_ids": ["bul_001"], "resume_support_blob_lower": ""},
+            judge_mode="mocked",
+            use_sc_path=False,
+        )
 
 
 def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:

@@ -1,87 +1,104 @@
-"""
-Unit tests for L6 Observability Outcome Logger - deterministic outcome recording.
-"""
+"""Compatibility smoke tests for the current L6 Observability outcome logger."""
+
+from __future__ import annotations
 
 import pytest
 
+from agentic_core.L6_observability.enforcement.outcome_logger import (
+    OutcomeLogger,
+    OutcomeRecord,
+    OutcomeReconciler,
+)
+
+
 @pytest.mark.unit
 class TestOutcomeLogger:
-    """Test deterministic OutcomeLogger implementation."""
+    """Test the current deterministic OutcomeLogger implementation."""
 
-    def test_outcome_logger_initialization(self):
-        """Test OutcomeLogger initializes correctly."""
-        from agentic_core.L6_observation.outcome_logger import OutcomeLogger
-
+    def test_outcome_logger_initialization(self) -> None:
         logger = OutcomeLogger()
 
         assert logger is not None
-        assert hasattr(logger, "log_outcome")
-        assert hasattr(logger, "get_outcomes")
+        assert hasattr(logger, "append")
+        assert hasattr(logger, "records")
 
-    def test_log_outcome_records_event(self):
-        """Test log_outcome records an event."""
-        from agentic_core.L6_observation.outcome_logger import OutcomeLogger
-
+    def test_append_records_event(self) -> None:
         logger = OutcomeLogger()
 
-        # Log a test outcome
-        logger.log_outcome(
-            event_type="test_event",
-            outcome="success",
-            metadata={"test": "value"},
+        record = logger.append(
+            trace_id="trace-001",
+            cid="cid-001",
+            status="SUCCESS",
+            manifest_hash="hash-001",
         )
 
-        # Retrieve outcomes
-        outcomes = logger.get_outcomes()
+        records = logger.records()
 
-        assert len(outcomes) == 1
-        assert outcomes[0]["event_type"] == "test_event"
-        assert outcomes[0]["outcome"] == "success"
-        assert outcomes[0]["metadata"]["test"] == "value"
+        assert isinstance(record, OutcomeRecord)
+        assert len(records) == 1
+        assert records[0].trace_id == "trace-001"
+        assert records[0].cid == "cid-001"
+        assert records[0].status == "SUCCESS"
 
-    def test_get_outcomes_returns_copy(self):
-        """Test get_outcomes returns a copy, not reference."""
-        from agentic_core.L6_observation.outcome_logger import OutcomeLogger
-
+    def test_records_returns_copy(self) -> None:
         logger = OutcomeLogger()
+        logger.append(
+            trace_id="trace-001",
+            cid="cid-001",
+            status="SUCCESS",
+            manifest_hash="hash-001",
+        )
 
-        logger.log_outcome("test", "success")
+        outcomes1 = logger.records()
+        outcomes2 = logger.records()
 
-        outcomes1 = logger.get_outcomes()
-        outcomes2 = logger.get_outcomes()
-
-        # Should be equal but not the same object
         assert outcomes1 == outcomes2
         assert outcomes1 is not outcomes2
 
-    def test_multiple_outcomes_ordered(self):
-        """Test multiple outcomes are recorded in order."""
-        from agentic_core.L6_observation.outcome_logger import OutcomeLogger
-
+    def test_multiple_records_ordered(self) -> None:
         logger = OutcomeLogger()
 
-        # Log multiple outcomes
-        logger.log_outcome("event1", "success")
-        logger.log_outcome("event2", "failure")
-        logger.log_outcome("event3", "success")
+        first = logger.append(
+            trace_id="trace-001",
+            cid="cid-001",
+            status="SUCCESS",
+            manifest_hash="hash-001",
+        )
+        second = logger.append(
+            trace_id="trace-002",
+            cid="cid-002",
+            status="FAILURE",
+            manifest_hash="hash-002",
+        )
+        third = logger.append(
+            trace_id="trace-003",
+            cid="cid-003",
+            status="SUCCESS",
+            manifest_hash="hash-003",
+        )
 
-        outcomes = logger.get_outcomes()
+        records = logger.records()
 
-        assert len(outcomes) == 3
-        assert outcomes[0]["event_type"] == "event1"
-        assert outcomes[1]["event_type"] == "event2"
-        assert outcomes[2]["event_type"] == "event3"
+        assert len(records) == 3
+        assert records == (first, second, third)
+        assert records[0].trace_id == "trace-001"
+        assert records[1].trace_id == "trace-002"
+        assert records[2].trace_id == "trace-003"
 
-    def test_clear_outcomes(self):
-        """Test clearing outcomes."""
-        from agentic_core.L6_observation.outcome_logger import OutcomeLogger
-
+    def test_reconciler_round_trip(self) -> None:
         logger = OutcomeLogger()
+        record = logger.append(
+            trace_id="trace-001",
+            cid="cid-001",
+            status="SUCCESS",
+            manifest_hash="hash-001",
+        )
 
-        logger.log_outcome("test", "success")
-        assert len(logger.get_outcomes()) == 1
+        result = OutcomeReconciler().reconcile(
+            observed=logger.records(),
+            expected_hashes=(record.record_hash,),
+        )
 
-        # Clear if method exists
-        if hasattr(logger, "clear_outcomes"):
-            logger.clear_outcomes()
-            assert len(logger.get_outcomes()) == 0
+        assert result.ok is True
+        assert result.missing == ()
+        assert result.extra == ()

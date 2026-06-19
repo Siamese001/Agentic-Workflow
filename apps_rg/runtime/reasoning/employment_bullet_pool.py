@@ -269,7 +269,11 @@ def competencies_pool_x1d_judge_rows(
     section_id: str,
     gen_meta: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Single X1D row from graph pool selection (10× Qwen paths → top-6 pass), gemini_pro only."""
+    """Selector receipt row for the competencies graph pool (Anthropic selector artifact).
+
+    This is the pool-selection receipt, not the formal competencies X1D judge. The real
+    competencies judge is model-backed Gemini and is wired separately in the lane runtime.
+    """
     from apps_rg.runtime.judges.competencies_x1d import JUDGE_RUBRIC_VERSION
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
     from apps_rg.runtime.reasoning.competencies_graph_pool import (
@@ -317,10 +321,11 @@ def competencies_pool_x1d_judge_rows(
             else "no_selection_input_artifact"
         )
 
-    gemini_meta = PROVIDERS.get("gemini_pro") or {}
-    row.setdefault("judge_id", f"x1d_gemini_pro_{lane}_pool")
-    row.setdefault("provider_name", gemini_meta.get("provider_name", "Google Gemini"))
-    row["provider_key"] = "gemini_pro"
+    anthropic_meta = PROVIDERS.get("anthropic_claude") or {}
+    row.setdefault("judge_id", f"x1d_anthropic_claude_{lane}_pool")
+    row.setdefault("provider_name", anthropic_meta.get("provider_name", "Anthropic Claude"))
+    row.setdefault("model_name", anthropic_meta.get("default_model", "unknown"))
+    row["provider_key"] = "anthropic_claude"
     row["section_id"] = lane
     row["evaluator_mode"] = "MODEL_BACKED"
     row["provider_available"] = True
@@ -334,8 +339,8 @@ def competencies_pool_x1d_judge_rows(
     row["pass_"] = passed
     row["decisive_failure"] = not passed
     row["provider_status"] = "MODEL_BACKED_PASS" if passed else "MODEL_BACKED_FAIL"
-    row["proof_eligible_judge"] = True
-    row["advisory_only"] = False
+    row["proof_eligible_judge"] = False
+    row["advisory_only"] = True
     row["judge_role"] = "competencies_graph_pool_selector"
     row["rubric_ref"] = "apps_rg/runtime/judges/competencies_x1d.py#graph_pool"
     row["rubric_version"] = JUDGE_RUBRIC_VERSION
@@ -350,6 +355,8 @@ def competencies_pool_x1d_judge_rows(
         row["diagnostic_reason"] = diagnostic_reason
         row["selection_file_present"] = selection_file_present
         row["provider_status"] = "BLOCKED_NO_SELECTION"
+        row["proof_eligible_judge"] = False
+        row["advisory_only"] = True
         row["findings"] = [
             (
                 f"Competencies graph pool selector BLOCKED: {diagnostic_reason} "

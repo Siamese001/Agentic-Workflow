@@ -276,7 +276,7 @@ class TestL2ProfileConfiguration:
         
         authority = profile.get("repair_authority", {})
         assert authority.get("same_authority_only") is True
-        assert authority.get("cross_authority_repair_blocked") is True
+        assert authority.get("cross_authority_blocked") is True
 
 
 if __name__ == "__main__":

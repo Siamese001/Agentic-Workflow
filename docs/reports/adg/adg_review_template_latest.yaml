@@ -1,8 +1,8 @@
 schema_version: '1.0'
 artifact_kind: adg_run_review_template
-run_id: 06192026_0200
-generated_at_utc: '2026-06-19T06:06:40+00:00'
-snapshot_ts: '2026-06-19T06:05:27.857973+00:00'
+run_id: 06192026_0917
+generated_at_utc: '2026-06-19T13:23:52+00:00'
+snapshot_ts: '2026-06-19T13:22:35.342598+00:00'
 review_template:
   reviewer: ''
   reviewed_at: ''
@@ -24,12 +24,12 @@ terminology:
   guardian_math_location: severity_inventory; net = gross - guardian
 operator_summary:
   overall_verdict: BLOCKED
-  fix_gates: 6
-  track_gates: 17
+  fix_gates: 5
+  track_gates: 18
   clear_gates: 25
-  fix_records: 14678
-  tracked_records: 10547
-  ratchet_floor_records: 9503
+  fix_records: 12668
+  tracked_records: 12556
+  ratchet_floor_records: 11512
   cleanup_records: 1044
   band_status:
   - band: P0
@@ -85,13 +85,13 @@ operator_summary:
     next_move: fix red gates first
   - band: P1
     status: BLOCKED
-    fix_gates: 2
-    fix_records: 2905
-    tracked_gates: 7
-    tracked_records: 2641
-    tracked_record_label: 7 gates / 2,641 tracked records
-    ratchet_floor_gates: 7
-    ratchet_floor_records: 2641
+    fix_gates: 1
+    fix_records: 895
+    tracked_gates: 8
+    tracked_records: 4650
+    tracked_record_label: 8 gates / 4,650 tracked records
+    ratchet_floor_gates: 8
+    ratchet_floor_records: 4650
     ratchet_floor_items:
     - gate_id: E1_trace_stub_module
       label: E1_trace_stub
@@ -99,6 +99,11 @@ operator_summary:
       sub: floor
       record_type: Modules with high test:production import ratio (trace-theater stub
         pattern).
+    - gate_id: C3_silent_writes_ratchet
+      label: C3_silent_writes
+      records: 2009
+      sub: floor
+      record_type: writes_to edges without sibling emits_side_effect on same source.
     - gate_id: C4_policy_without_audit_ratchet
       label: C4_policy_without_audit
       records: 1
@@ -130,8 +135,8 @@ operator_summary:
       records: 1
       sub: floor
       record_type: generates_prompt at scale without structured output schema.
-    ratchet_burn_down: '`E1_trace_stub` 982; `I1_exit_disposition` 695; `M_taint_actionable`
-      668; +4 more = 2,641 total'
+    ratchet_burn_down: '`C3_silent_writes` 2,009; `E1_trace_stub` 982; `I1_exit_disposition`
+      695; +5 more = 4,650 total'
     cleanup_gates: 0
     cleanup_records: 0
     cleanup_items: []
@@ -207,7 +212,7 @@ operator_summary:
 executive_decision_brief:
   title: Executive Decision Brief
   decision: Fund a narrow unblock-and-test slice now.
-  situation: 'ADG is BLOCKED: 6 red gate(s) covering 14,678 record(s). The run is
+  situation: 'ADG is BLOCKED: 5 red gate(s) covering 12,668 record(s). The run is
     not green.'
   risk: High
   testing_gap_readout: 'Testing risk is High: 1,507 urgent GraphDB hotspots, 444 critical-risk
@@ -240,7 +245,7 @@ executive_decision_brief:
   - Do not run broad cleanup before red gates and ratchet floors are controlled.
 graphdb_mv_analyst_summary:
   title: ADG + GraphDB/MV Analyst Summary
-  snapshot_sqlite: artifacts\adg\adg_indexed_06192026_0200.sqlite
+  snapshot_sqlite: artifacts\adg\adg_indexed_06192026_0917.sqlite
   summary:
     mv_tables: 52
     nonempty_mv_tables: 46
@@ -413,7 +418,7 @@ graphdb_mv_analyst_summary:
   - rank: 3
     priority: Use structural hotspots after blockers
     plain_language: These are leverage points, not emergency blockers.
-    graphdb_mv_signal: '`agentic_core/adg/extraction/static_scanner.py`'
+    graphdb_mv_signal: '`agentic_core/adg/extraction/static_scanner.py`; `agentic_core/base_agents/SovereignBaseAgent.py`'
     next_action: Use after FIX gates are green or when a blocker overlaps the same
       file.
   top_mv_signals:
@@ -502,7 +507,7 @@ graphdb_mv_analyst_summary:
     - P_structured_output_ratchet
   - &id013
     mv_name: mv_snapshot_integrity_anomalies
-    rows: 391917
+    rows: 391807
     routing_status: analyst_signal
     priority: supporting
     role: Treat as generator/ingest health signal, not product-code work by itself.
@@ -511,7 +516,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id005
     mv_name: mv_dependency_cone_risk
-    rows: 11743
+    rows: 11741
     routing_status: analyst_signal
     priority: supporting
     role: Prefer fixes that reduce downstream blast radius.
@@ -650,7 +655,7 @@ graphdb_mv_analyst_summary:
       slice.
     related_gates: []
   - mv_name: mv_debt_concentration_hotspots
-    rows: 4855
+    rows: 4854
     routing_status: analyst_signal
     priority: supporting
     role: Rank refactor slices after red gates clear.
@@ -765,7 +770,7 @@ graphdb_mv_analyst_summary:
     related_gates:
     - 8_trace_replay_eval
   - mv_name: mv_high_fan_in_out_with_defects
-    rows: 10820
+    rows: 10818
     routing_status: analyst_signal
     priority: supporting
     role: Prioritize defects in high fan-in/fan-out symbols.
@@ -774,7 +779,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - *id008
   - mv_name: mv_hotspot_centrality
-    rows: 11743
+    rows: 11741
     routing_status: analyst_signal
     priority: supporting
     role: Use as structural leverage ranking for refactor waves.
@@ -811,7 +816,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - *id010
   - mv_name: mv_modified_area_regressions
-    rows: 4870
+    rows: 4869
     routing_status: analyst_signal
     priority: supporting
     role: Check defects in files touched by this run.
@@ -837,7 +842,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - *id011
   - mv_name: mv_newly_introduced_critical_paths
-    rows: 8449
+    rows: 8447
     routing_status: analyst_signal
     priority: supporting
     role: Inspect newly created critical-path edges for regressions.
@@ -853,7 +858,7 @@ graphdb_mv_analyst_summary:
     next_action: No action from this MV.
     related_gates: []
   - mv_name: mv_path_criticality_rollup
-    rows: 11743
+    rows: 11741
     routing_status: analyst_signal
     priority: supporting
     role: Use as impact weighting for any fix or refactor slice.
@@ -965,40 +970,34 @@ priority_execution_plan:
       tests in the same change.
     done_when: Gate no longer appears as FIX after rerun.
   - rank: '3'
-    priority_work: Fix `C3_silent_writes_ratchet` (P1, 2,010 record(s))
-    why_now: 'Counts: writes_to edges without sibling emits_side_effect on same source.
-      Sub: +1 vs baseline 2009.'
-    testing_mv_action: If this work touches a Testing Gap Risk file or caller, add/repair
-      tests in the same change.
-    done_when: Gate no longer appears as FIX after rerun.
-  - rank: '4'
     priority_work: Fix `B2_layer_skip_ratchet` (P1, 895 record(s))
     why_now: 'Counts: Import edges that skip more than one layer ordinal (layer-hop).
       Sub: +4 vs baseline 891.'
     testing_mv_action: If this work touches a Testing Gap Risk file or caller, add/repair
       tests in the same change.
     done_when: Gate no longer appears as FIX after rerun.
-  - rank: '5'
+  - rank: '4'
     priority_work: Fix `F1_untyped_seam_ratchet` (P2, 1,026 record(s))
     why_now: 'Counts: Cross-layer imports where target has empty type_surface. Sub:
       +7 vs baseline 1019.'
     testing_mv_action: If this work touches a Testing Gap Risk file or caller, add/repair
       tests in the same change.
     done_when: Gate no longer appears as FIX after rerun.
-  - rank: '6'
-    priority_work: Fix remaining red gates after the top five
-    why_now: 1 more gate(s).
+  - rank: '5'
+    priority_work: Fix `S4_unused_imports_ratchet` (P3, 10,743 record(s))
+    why_now: 'Counts: Unused import edges in production modules. Sub: +16 vs baseline
+      10727.'
     testing_mv_action: If this work touches a Testing Gap Risk file or caller, add/repair
       tests in the same change.
-    done_when: Action either closed or deliberately deferred with evidence.
-  - rank: '7'
+    done_when: Gate no longer appears as FIX after rerun.
+  - rank: '6'
     priority_work: Rerun ADG after the red gates clear; only then treat ratchet burn-down
       as the main queue.
     why_now: Locks in the corrected state before burn-down work starts.
     testing_mv_action: Run focused tests plus ADG; confirm the new review output reflects
       the lower risk.
     done_when: Fresh ADG review is generated and read before the next slice.
-  - rank: '8'
+  - rank: '7'
     priority_work: Review guardian exceptions separately; they are severity audit
       math, not burn-down work.
     why_now: Keeps exception math separate from the engineering queue.
@@ -1024,7 +1023,7 @@ adg_attack_order: &id019
   - band: P1
     work_class: Fix now
     target: P1 CI blockers
-    records: 2905
+    records: 895
     why_this_priority: CI blocker; ADG is not green until this clears.
     next_step: Fix the blocking gate condition and rerun ADG before burn-down work.
     rank: 2
@@ -1052,9 +1051,9 @@ adg_attack_order: &id019
     rank: 5
   - band: P1
     work_class: Burn down ratchets
-    target: '`E1_trace_stub` 982; `I1_exit_disposition` 695; `M_taint_actionable`
-      668; +4 more = 2,641 total'
-    records: 2641
+    target: '`C3_silent_writes` 2,009; `E1_trace_stub` 982; `I1_exit_disposition`
+      695; +5 more = 4,650 total'
+    records: 4650
     why_this_priority: Ratchet floor work lowers accepted baseline debt; P-band outranks
       raw size.
     next_step: Open a burn-down slice for the listed ratchets, rerun ADG, then absorb
@@ -1408,15 +1407,15 @@ adg_ci_gates:
 - gate_id: C3_silent_writes_ratchet
   band: P1
   enforcement: ratchet
-  action: FIX
-  sub: regr
-  records: 2010
+  action: TRACK
+  sub: floor
+  records: 2009
   record_type: writes_to edges without sibling emits_side_effect on same source.
   allowed_floor: '2009'
   signal: 'Counts: writes_to edges without sibling emits_side_effect on same source.
-    Sub: +1 vs baseline 2009.'
-  next_best_action: 'Regression +1 over baseline 2009: fix the new findings, or re-baseline
-    via the gate''s `--regenerate-baseline` if intentional/approved debt.'
+    Sub: 2009 at floor (baseline 2009); no new debt.'
+  next_best_action: 'Backlog (within ratchet ceiling): shrink over time, defer to
+    a plan wave. No action needed to pass CI.'
 - gate_id: C4_policy_without_audit_ratchet
   band: P1
   enforcement: ratchet
@@ -1801,8 +1800,8 @@ severity_inventory:
 high_signal_review:
   headline: Fix red ADG gates before burn-down work.
   what_this_means:
-  - 'The ADG run is BLOCKED: 6 gate(s) must be fixed before treating the run as green.'
-  - 'Green does not mean done: 9,503 ratchet-floor records still need burn-down.'
+  - 'The ADG run is BLOCKED: 5 gate(s) must be fixed before treating the run as green.'
+  - 'Green does not mean done: 11,512 ratchet-floor records still need burn-down.'
   - Use the ADG Heuristic Attack Order to choose the next bucket across P0-P3.
   - Use the P0 Action Plan top to bottom; it prioritizes ratchets by tracked-record
     count.
@@ -1818,13 +1817,12 @@ high_signal_review:
     L5 gateway (materialized view). Sub: Run blocked (exit 1).'
   - 'Fix `L2_lpg_drift_ratchet` (P0, 2 record(s)): Counts: Illegal or drifted imports
     touching L_PG boundary. Sub: +1 vs baseline 1.'
-  - 'Fix `C3_silent_writes_ratchet` (P1, 2,010 record(s)): Counts: writes_to edges
-    without sibling emits_side_effect on same source. Sub: +1 vs baseline 2009.'
   - 'Fix `B2_layer_skip_ratchet` (P1, 895 record(s)): Counts: Import edges that skip
     more than one layer ordinal (layer-hop). Sub: +4 vs baseline 891.'
   - 'Fix `F1_untyped_seam_ratchet` (P2, 1,026 record(s)): Counts: Cross-layer imports
     where target has empty type_surface. Sub: +7 vs baseline 1019.'
-  - 'Fix remaining red gates after the top five: 1 more gate(s).'
+  - 'Fix `S4_unused_imports_ratchet` (P3, 10,743 record(s)): Counts: Unused import
+    edges in production modules. Sub: +16 vs baseline 10727.'
   - 'While fixing red gates, use GraphDB/MV testing hotspots as the test-placement
     map: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`;
     `agentic_core/L5_safety/reasoning/hierarchy_healer.py`.'
@@ -1854,7 +1852,7 @@ high_signal_review:
     guardian_relation_to_burn_down: Separate exception audit. Guardian changes severity
       net math, not the ratchet or open-work queue.
   first_testing_hotspot: &id026
-    rank: 7
+    rank: 6
     lane: GRAPHDB
     kind: test_hotspot_gap
     target: apps_rg/runtime/sections/executive_summary_lane.py
@@ -1865,7 +1863,7 @@ high_signal_review:
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
       coverage=ABSENT (absent); criticality=315.00; fan_in=0
 next_best_action:
-  source: artifacts\adg\adg_action_queue_06192026_0200.json
+  source: artifacts\adg\adg_action_queue_06192026_0917.json
   emit_status: ok
   degraded: false
   actions:
@@ -1892,16 +1890,6 @@ next_best_action:
   - rank: 3
     lane: FIX
     kind: fix_gate
-    target: C3_silent_writes_ratchet
-    band: P1
-    records: 2010
-    ordering_reason: fix_regr_p1_delta_asc
-    source_artifact: gate_results
-    signal: 'Counts: writes_to edges without sibling emits_side_effect on same source.
-      Sub: +1 vs baseline 2009.'
-  - rank: 4
-    lane: FIX
-    kind: fix_gate
     target: B2_layer_skip_ratchet
     band: P1
     records: 895
@@ -1909,7 +1897,7 @@ next_best_action:
     source_artifact: gate_results
     signal: 'Counts: Import edges that skip more than one layer ordinal (layer-hop).
       Sub: +4 vs baseline 891.'
-  - rank: 5
+  - rank: 4
     lane: FIX
     kind: fix_gate
     target: F1_untyped_seam_ratchet
@@ -1919,7 +1907,7 @@ next_best_action:
     source_artifact: gate_results
     signal: 'Counts: Cross-layer imports where target has empty type_surface. Sub:
       +7 vs baseline 1019.'
-  - rank: 6
+  - rank: 5
     lane: FIX
     kind: fix_gate
     target: S4_unused_imports_ratchet
@@ -1930,7 +1918,7 @@ next_best_action:
     signal: 'Counts: Unused import edges in production modules. Sub: +16 vs baseline
       10727.'
   - *id026
-  - rank: 8
+  - rank: 7
     lane: GRAPHDB
     kind: test_hotspot_gap
     target: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
@@ -1940,7 +1928,7 @@ next_best_action:
     source_artifact: sqlite:mv_hotspot_coverage_risk
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
       coverage=ABSENT (0.0%); criticality=217.00; fan_in=0
-  - rank: 9
+  - rank: 8
     lane: GRAPHDB
     kind: test_hotspot_gap
     target: agentic_core/L5_safety/reasoning/hierarchy_healer.py
@@ -1950,7 +1938,7 @@ next_best_action:
     source_artifact: sqlite:mv_hotspot_coverage_risk
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
       coverage=ABSENT (0.0%); criticality=199.00; fan_in=0
-  - rank: 10
+  - rank: 9
     lane: REFACTOR
     kind: refactor_candidate
     target: agentic_core/adg/extraction/static_scanner.py
@@ -1959,6 +1947,15 @@ next_best_action:
     ordering_reason: refactor_accelerator_candidates_desc
     source_artifact: refactor_accelerator
     signal: Refactor candidate; score=0.2013
+  - rank: 10
+    lane: REFACTOR
+    kind: refactor_candidate
+    target: agentic_core/base_agents/SovereignBaseAgent.py
+    band: L_SHARED
+    records: 0
+    ordering_reason: refactor_accelerator_candidates_desc
+    source_artifact: refactor_accelerator
+    signal: Refactor candidate; score=0.0946
   priority_bullets: *id027
 graphdb_mv_positioning:
   purpose: GraphDB/MV actions rank structural test hotspots and refactor targets after
@@ -1986,14 +1983,14 @@ decision_synthesis:
     P1:
       band: P1
       total_gates: 18
-      total_records: 5546
-      fix_gates: 2
-      fix_records: 2905
+      total_records: 5545
+      fix_gates: 1
+      fix_records: 895
       fix_block_gates: 0
-      fix_regressed_gates: 2
+      fix_regressed_gates: 1
       fix_seed_missing_gates: 0
-      ratchet_floor_gates: 7
-      ratchet_floor_records: 2641
+      ratchet_floor_gates: 8
+      ratchet_floor_records: 4650
       open_non_ratchet_gates: 0
       open_non_ratchet_records: 0
       clear_gates: 9
@@ -2044,7 +2041,7 @@ decision_synthesis:
       why: Closes real open work that does not lower a ratchet floor.
     - band: P1
       work: burn_down_ratchet_floor
-      records: 2641
+      records: 4650
       why: Lowers accepted baseline debt after red gates are green.
     - band: P2
       work: burn_down_ratchet_floor
@@ -2081,25 +2078,25 @@ decision_synthesis:
 artifacts:
   gate_results:
     artifact_key: gate_results
-    path: artifacts\adg\adg_gate_results_20260619_060527.json
+    path: artifacts\adg\adg_gate_results_20260619_132235.json
     exists: true
     required: true
-    sha256: f41b4506914c2eb3ff705b3f7783d9ca06f1bcc4af78bf1f3d05eb8870988107
+    sha256: 056216fedc836885acdfd4ef750271d10247c1306c450e8d6132275530f02d7f
   burndown:
     artifact_key: burndown
     path: artifacts\adg\adg_burndown_table.json
     exists: true
     required: true
-    sha256: 9f8e5e22744beb13103d7480e7c1a5141cd5c35a270b0b52d196eddf2010018d
+    sha256: bb1fd17b39625e0e08ae64527f34aa1aed7f80c3f8b1af794e8192c0d32f0067
   action_queue:
     artifact_key: action_queue
-    path: artifacts\adg\adg_action_queue_06192026_0200.json
+    path: artifacts\adg\adg_action_queue_06192026_0917.json
     exists: true
     required: false
-    sha256: 447e685bf9adb87348a9a5645ed9c264332f9151234b16a1cfd0d2f0c7295943
+    sha256: 637a101fb2eeacc2b8c30d695aa512dc7dfbe209ea2cf79842a445de02ca764c
   generation_manifest:
     artifact_key: generation_manifest
-    path: artifacts\adg\adg_generation_manifest_06192026_0200.json
+    path: artifacts\adg\adg_generation_manifest_06192026_0917.json
     exists: false
     required: false
     sha256: null
@@ -2114,19 +2111,19 @@ artifacts:
     path: artifacts\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: f94caec71d2d0248f609594ddc1f8489c907b8a08e1d606768a4257456f0a360
+    sha256: 0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213
   docs_markdown_burndown:
     artifact_key: docs_markdown_burndown
     path: docs\reports\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: f94caec71d2d0248f609594ddc1f8489c907b8a08e1d606768a4257456f0a360
+    sha256: 0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213
 raw_rollups:
   gate_results_summary:
     block_pass: 13
     block_fail: 1
-    ratchet_pass: 22
-    ratchet_regressed: 5
+    ratchet_pass: 23
+    ratchet_regressed: 4
     ratchet_seed_missing: 0
     warn: 6
   burndown_flags:

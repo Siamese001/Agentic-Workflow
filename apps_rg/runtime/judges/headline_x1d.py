@@ -23,11 +23,15 @@ Rubric dimensions:
 1. factual_support: every substantive phrase in X/Y/Z is supported by claim_ledger source_fact_ids from the active proof pool only (bul_*, fact_*, or metric-suffixed IDs in allowed_fact_packet — never JD/briefing/target fields as proof).
 2. fixed_prefix_compliance: headline_line starts with "SVP Engineering | " and uses exactly three " | " separators.
 3. base_identity_fidelity: authentic to the base resume headline anchor; not rewritten to chase the JD.
-4. anti_keyword_stuffing: no ATS keyword bags, list-like segments, or multi-domain laundry lists.
-5. JD targeting discipline: JD relevance without copying JD phrasing or treating JD as authority.
-6. executive_authenticity: reads as a senior platform/engineering leader, not generic leadership filler.
+4. anti_keyword_stuffing: no ATS keyword bags, list-like segments, or semantically redundant variants of the same positioning theme across X/Y/Z.
+5. JD targeting discipline: JD relevance without copying JD phrasing or treating JD as authority; preserve senior platform, governance, and runtime signals; ask whether a Head of Talent Acquisition at the target company would forward it.
+6. executive_authenticity: reads as a senior platform/engineering leader, not generic leadership filler or juniorized IT labeling; no AI-authenticity dead giveaways such as em dashes, buzzword soup, template cadence, or machine-generated phrasing.
 7. no_title_inflation: first segment is not replaced or subverted; no "SVP at TargetCo" framing.
-8. natural human resume sound: concise, human, resume-native phrasing.
+8. natural human resume sound: concise, human, resume-native phrasing; each segment should add a distinct signal, not a synonym, and the whole line should survive a skeptical TA screen.
+
+Adversarial review lens:
+- Head of Talent Acquisition pass: would a recruiter at the target company forward it in one read?
+- AI authenticity pass: no em dashes, no buzzword soup, no template phrasing, no generic AI tells.
 
 Decisive failure triggers (if any, set decisive_failure true and pass false):
 - missing fixed prefix "SVP Engineering" as segment 1
@@ -37,7 +41,11 @@ Decisive failure triggers (if any, set decisive_failure true and pass false):
 - employer names, target company names, or candidate personal name tokens
 - metrics or numeric proof in headline_line
 - first person
+- semantically redundant X/Y/Z segments that collapse to the same concept
+- generic IT labels or demoting terms that blunt SVP-level positioning
 - copied JD phrases or briefing-only / JD-only claims without fact support
+- would not pass a Head of Talent Acquisition screen
+- AI-authenticity dead giveaways such as em dashes, buzzword soup, or machine-generated cadence
 """.strip()
 
 

@@ -284,6 +284,7 @@ def run_competencies_lane_execution(
         targeting_context=targeting_context,
         judge_mode=judge_mode,
         provider_profile=str(args.provider),
+        use_sc_path=True,
     )
     write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
     _mark_phase("self_consistency_generation_and_selector")
@@ -561,30 +562,38 @@ def run_competencies_lane_execution(
         apply_proof_pool_to_usage_ledger(usage_doc, pool),
     )
 
-    from apps_rg.runtime.reasoning.competencies_graph_pool import is_competencies_pool_generation
     from apps_rg.runtime.reasoning.employment_bullet_pool import competencies_pool_x1d_judge_rows
+    from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
 
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
     judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
-    if is_competencies_pool_generation(gen_meta):
-        x1d = competencies_pool_x1d_judge_rows(
-            artifact_dir=artifact_dir,
-            section_id=LANE_KEY,
-            gen_meta=gen_meta,
-        )
-    else:
-        x1d = [
-            j.to_dict()
-            for j in run_competencies_judges(
-                competencies=competencies,
-                claim_ledger=claim_ledger,
-                judge_keys=["gemini_pro"],
-                companion_context=companion_context,
-                mode=judge_mode,
-                artifact_base=artifact_dir,
-            )
-        ]
-    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+    selector_receipt = competencies_pool_x1d_judge_rows(
+        artifact_dir=artifact_dir,
+        section_id=LANE_KEY,
+        gen_meta=gen_meta,
+    )
+    write_json(
+        artifact_dir / "competencies_graph_pool_selector_receipt.json",
+        {"judges": selector_receipt},
+    )
+    judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
+    if not judge_keys:
+        from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
+
+        judge_keys = [j.strip() for j in COMPETENCIES_DEFAULT_X1D_JUDGES.split(",") if j.strip()]
+    x1d_outputs = run_competencies_judges(
+        competencies=competencies,
+        claim_ledger=claim_ledger,
+        judge_keys=judge_keys,
+        companion_context=companion_context,
+        mode=judge_mode,
+        artifact_base=artifact_dir,
+    )
+    x1d = [j.to_dict() if hasattr(j, "to_dict") else dict(j) for j in x1d_outputs]
+    write_json(
+        artifact_dir / "x1d_llm_judge_outputs.json",
+        {"judges": x1d, "requested_judges": judge_keys},
+    )
     _mark_phase("x1d")
 
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags

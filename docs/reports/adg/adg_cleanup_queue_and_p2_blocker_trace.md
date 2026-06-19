@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-19T06:06:40+00:00
+- **Generated:** 2026-06-19T13:23:52+00:00
 - **Status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06192026_0200.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06192026_0917.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06192026_0151.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06192026_0209.json`
 
 ### BCG Cleanup Brief
 
@@ -13,22 +13,22 @@
 - **Status:** NO_DELETIONS_APPROVED
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06192026_0200.sqlite (snapshot 06192026_0200)
+  - ADG source: artifacts/adg/adg_indexed_06192026_0917.sqlite (snapshot 06192026_0917)
   - Dead code candidates: 0
-  - Dead imports: 1,004
-  - Unresolved imports: 495
-  - First-party low-confidence ratio: 1.62%
-  - Inferred-symbol ratio: 10.15%
+  - Dead imports: 971
+  - Unresolved imports: 486
+  - First-party low-confidence ratio: 1.59%
+  - Inferred-symbol ratio: 10.16%
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Remove confirmed dead imports | tests/_archived_obsolete/_apps_contract/test_w5_eval_acceptance.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 25 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
-| 2 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
-| 3 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
-| 4 | Triage unresolved imports | ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_shadow_replay_integration.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 495 unresolved imports; lead hotspot ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_shadow_replay_integration.py (9). | We need a cleaner signal before we can trust deletion decisions. | investigate |
-| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.62% and inferred-symbol ratio = 10.15%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 1 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 2 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 3 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 4 | Triage unresolved imports | ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
 | 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
@@ -55,12 +55,12 @@ The dead-code report found no confirmed deletions, so this queue prioritizes sig
 | 6 | live | ADG::Module::agentic_core/interfaces/meta_control.py | 7 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 7 unresolved import(s) on this surface. | investigate |
 | 7 | live | ADG::Module::ops_scripts/dev_tools/L0_routing_scripts/forward_rolling_facade.py | 7 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 7 unresolved import(s) on this surface. | investigate |
 | 8 | live | ADG::Module::tests/_apps_contract/test_apps_rg_acceptance_checks.py | 7 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 7 unresolved import(s) on this surface. | investigate |
+| 9 | live | ADG::Module::agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py | 6 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 6 unresolved import(s) on this surface. | investigate |
 
 ### Archived or obsolete surfaces
 
 | Priority | Surface | Scope | Count | Business reason | Technical reason | Decision |
 |---:|---|---|---:|---|---|---|
-| 9 | archived | ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_shadow_replay_integration.py | 9 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 9 unresolved import(s) on this surface. | defer |
 | 10 | archived | ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_eval_to_learning_bridge.py | 7 | This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy. | 7 unresolved import(s) on this surface. | defer |
 
 ## P2 Ratchet Trace
@@ -73,12 +73,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **Status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_0200.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_0917.sqlite
   - P2 ceiling: 19
   - Current MEDIUM hygiene count: 19
   - Delta vs ceiling: +0
   - Baseline snapshot: missing
-  - Latest failed run: 2026-06-19T05:59:33Z (failed)
+  - Latest failed run: 2026-06-19T06:12:56Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
@@ -103,8 +103,8 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Ceiling:** 19
 - **Delta:** +0
 - **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_06192026_0200.sqlite
-- **Latest failed run:** 2026-06-19T05:59:33Z (failed)
+- **Published snapshot:** artifacts/adg/adg_indexed_06192026_0917.sqlite
+- **Latest failed run:** 2026-06-19T06:12:56Z (failed)
 
 ### Evidence Buckets
 

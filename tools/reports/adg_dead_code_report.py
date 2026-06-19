@@ -46,6 +46,12 @@ def _find_sqlite_database(adg_artifacts_dir: Path) -> Path:
     return sqlite_files[-1]
 
 
+def _sqlite_snapshot_ts(sqlite_path: Path) -> str:
+    prefix = "adg_indexed_"
+    stem = sqlite_path.stem
+    return stem[len(prefix) :] if stem.startswith(prefix) else stem
+
+
 def _first_party_filter(alias: str = "") -> str:
     prefix = f"{alias}." if alias else ""
     return (
@@ -70,8 +76,85 @@ def _fetch_rows(cursor: sqlite3.Cursor, query: str, params: tuple[Any, ...] = ()
     return list(cursor.fetchall())
 
 
+def _table_exists(cursor: sqlite3.Cursor, table_name: str) -> bool:
+    cursor.execute(
+        "SELECT 1 FROM sqlite_master WHERE name = ? AND type IN ('table', 'view') LIMIT 1",
+        (table_name,),
+    )
+    return cursor.fetchone() is not None
+
+
+def _merge_hotspots(*groups: list[tuple[Any, ...]]) -> list[tuple[str, int]]:
+    merged: dict[str, int] = {}
+    for group in groups:
+        for raw_name, raw_count, *_ in group:
+            name = str(raw_name or "").strip()
+            if not name:
+                continue
+            try:
+                count = int(raw_count or 0)
+            except (TypeError, ValueError):
+                count = 0
+            merged[name] = merged.get(name, 0) + count
+    return sorted(merged.items(), key=lambda item: (-item[1], item[0]))[:10]
+
+
+def _overlay_dead_imports_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
+    if not _table_exists(cursor, "overlay_violations"):
+        return {
+            "total_overlay_dead_imports": 0,
+            "overlay_dead_imports_by_severity": {},
+            "overlay_dead_import_hotspots": [],
+        }
+
+    total_overlay_dead_imports = _fetch_count(
+        cursor,
+        "SELECT COUNT(*) FROM overlay_violations WHERE category = 'dead_import_resolved'",
+    )
+    overlay_dead_imports_by_severity = _fetch_count_map(
+        cursor,
+        """
+        SELECT severity, COUNT(*) FROM overlay_violations
+        WHERE category = 'dead_import_resolved'
+        GROUP BY severity
+        ORDER BY COUNT(*) DESC
+        """,
+    )
+
+    if _table_exists(cursor, "mv_dead_import_hotspots_overlay"):
+        overlay_dead_import_hotspots = _fetch_rows(
+            cursor,
+            """
+            SELECT file, dead_count FROM mv_dead_import_hotspots_overlay
+            ORDER BY dead_count DESC
+            LIMIT 10
+            """,
+        )
+    else:
+        overlay_dead_import_hotspots = _fetch_rows(
+            cursor,
+            """
+            SELECT file_path, COUNT(*) as dead_count FROM overlay_violations
+            WHERE category = 'dead_import_resolved'
+            GROUP BY file_path
+            ORDER BY dead_count DESC
+            LIMIT 10
+            """,
+        )
+
+    return {
+        "total_overlay_dead_imports": total_overlay_dead_imports,
+        "overlay_dead_imports_by_severity": overlay_dead_imports_by_severity,
+        "overlay_dead_import_hotspots": overlay_dead_import_hotspots,
+    }
+
+
 def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[str, Any]:
-    total_dead_imports = _fetch_count(cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'")
+    legacy_dead_import_edges = _fetch_count(cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'")
+    overlay_dead_imports = _overlay_dead_imports_section(cursor)
+    total_dead_imports = legacy_dead_import_edges + int(
+        overlay_dead_imports.get("total_overlay_dead_imports", 0) or 0
+    )
     dead_imports_by_layer = _fetch_count_map(
         cursor,
         """
@@ -109,7 +192,7 @@ def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[s
         ORDER BY COUNT(*) DESC
         """,
     )
-    dead_import_hotspots = _fetch_rows(
+    legacy_dead_import_hotspots = _fetch_rows(
         cursor,
         """
         SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
@@ -121,14 +204,23 @@ def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[s
         LIMIT 10
         """,
     )
+    dead_import_hotspots = _merge_hotspots(
+        legacy_dead_import_hotspots,
+        overlay_dead_imports.get("overlay_dead_import_hotspots") or [],
+    )
     l4_dead_imports = int(dead_imports_by_layer.get("L4", 0) or 0)
     if l4_dead_imports > 5:
         warnings.append(f"L4 has {l4_dead_imports} dead imports (should trend to zero)")
     return {
         "total_dead_imports": total_dead_imports,
+        "source_counts": {
+            "legacy_dead_import_edges": legacy_dead_import_edges,
+            "overlay_dead_import_resolved": overlay_dead_imports.get("total_overlay_dead_imports", 0),
+        },
         "dead_imports_by_layer": dead_imports_by_layer,
         "dead_imports_by_domain": dead_imports_by_domain,
         "dead_imports_by_confidence": dead_imports_by_confidence,
+        "overlay_dead_imports_by_severity": overlay_dead_imports.get("overlay_dead_imports_by_severity", {}),
         "dead_import_hotspots": dead_import_hotspots,
         "l4_dead_imports": l4_dead_imports,
     }
@@ -417,8 +509,19 @@ def _build_dead_code_zone_control_report(adg_artifacts_dir: Path) -> dict[str, A
         raise DeadCodeZoneControlError(f"Dead-code report verification failed: {exc}") from exc
 
     critical_issues = unresolved.get("l4_unresolved", 0) > 0 or not executive.get("executive_ready", True)
+    source = {
+        "adg_snapshot": _repo_rel(sqlite_path),
+        "adg_snapshot_ts": _sqlite_snapshot_ts(sqlite_path),
+        "dead_code_signal_sources": [
+            "overlay_violations.category=dead_import_resolved",
+            "mv_dead_import_hotspots_overlay",
+            "edges.relation_type=dead_imports",
+            "edges.relation_type=dead_code_candidate",
+        ],
+    }
     return {
         "status": "FAIL" if critical_issues else "PASS",
+        "source": source,
         "dead_imports": dead_imports,
         "dead_code_candidates": dead_code,
         "unresolved_imports": unresolved,
@@ -436,6 +539,8 @@ def _build_dead_code_zone_control_report(adg_artifacts_dir: Path) -> dict[str, A
             "first_party_low_confidence_ratio": low_confidence.get("first_party_low_confidence_ratio", 0),
             "inferred_symbol_ratio": inferred.get("inferred_symbol_ratio", 0),
             "executive_ready": executive.get("executive_ready", False),
+            "adg_snapshot": source["adg_snapshot"],
+            "adg_snapshot_ts": source["adg_snapshot_ts"],
         },
     }
 
@@ -445,12 +550,22 @@ def _render_inline_summary(report: dict[str, Any]) -> str:
     lines = ["## ADG Dead Code Report", ""]
     lines.extend(render_bcg_brief_md(plan["brief"]).splitlines())
     hotspots = (report.get("dead_code_candidates") or {}).get("dead_code_hotspots") or []
+    hotspot_title = "### Top dead-code hotspots"
+    if not hotspots:
+        hotspots = (report.get("dead_imports") or {}).get("dead_import_hotspots") or []
+        hotspot_title = "### Top dead-import hotspots"
     if hotspots:
         lines.append("")
-        lines.append("### Top dead-code hotspots")
+        lines.append(hotspot_title)
         for idx, (module, count) in enumerate(hotspots[:5], 1):
             lines.append(f"- {idx}. {module}: {count}")
     return "\n".join(lines)
+
+
+def _copyfile_if_different(src: Path, dst: Path) -> None:
+    if src.resolve() == dst.resolve():
+        return
+    shutil.copyfile(src, dst)
 
 
 def emit_mandatory_adg_dead_code_report(
@@ -479,8 +594,8 @@ def emit_mandatory_adg_dead_code_report(
         docs_latest = docs_target / "dead_code_zone_control_report_latest.json"
         latest.parent.mkdir(parents=True, exist_ok=True)
         docs_latest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(json_path, latest)
-        shutil.copyfile(json_path, docs_latest)
+        _copyfile_if_different(json_path, latest)
+        _copyfile_if_different(json_path, docs_latest)
 
         if print_inline:
             sys.stdout.write("\n" + _render_inline_summary(report) + "\n")

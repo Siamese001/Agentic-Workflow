@@ -1,0 +1,61 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-avatar-enforcement-patchfox-20260618",
+  "generated_at": "2026-06-18T20:59:40.6468669-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH",
+    "branch": "HEAD",
+    "head": "d0759ff75103855eaed056d160e341052f2847b4",
+    "dirty_before": true,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Add workspace enforcement so Codex uses the patch-fox avatar, wire the guard into hooks, and document the enforcement surface.",
+    "plan_id": "avatar-enforcement-patchfox-20260618",
+    "files_changed": [
+      ".claude/hooks/selected_avatar_guard.py",
+      ".claude/settings.json",
+      "docs/codex-primary-execution.md",
+      "C:/Users/amita/.codex/config.toml"
+    ]
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python -m py_compile .claude/hooks/selected_avatar_guard.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "PowerShell smoke test for selected_avatar_guard.py with CODEX_CONFIG_TOML overrides for stacky and patch-fox configs",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "hook smoke test",
+        "status": "PASS",
+        "evidence": "stacky config returned exit 2 with a block; patch-fox config returned exit 0 with allow."
+      },
+      {
+        "name": "primary verifier",
+        "status": "PASS",
+        "evidence": "Codex primary execution verification passed."
+      }
+    ]
+  }
+}

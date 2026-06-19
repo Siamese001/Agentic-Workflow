@@ -82,14 +82,53 @@ def _read_optional_brief(path_or_url: str) -> str:
 def _materialize_fallback_brief(
     *,
     target_company: str,
+    target_role: str = "",
     jd_path: Path | None,
     request_id: str,
     run_id: str,
     trace_id: str,
 ) -> str:
-    """Generate a repo-local briefing.md when the caller omitted a brief."""
+    """Generate a repo-local briefing.md when the caller omitted a brief.
+
+    Prefer the managed apps_research delegation path so the resulting brief
+    is JD-grounded and contract-sealed. Fall back to the older materializer
+    only if the managed bridge cannot produce a usable brief.
+    """
     if not str(target_company).strip():
         return ""
+
+    repo_root = find_repo_root()
+    artifact_root = repo_root / "artifacts" / "apps_rg" / "generated_briefs"
+    try:
+        from apps_rg.integrations.apps_research_bridge import AppsResearchBridge
+        from apps_rg.integrations.managed_research_delegation import (
+            RequestForResumeBriefing,
+            ResumeBriefingReady,
+            dispatch_resume_research_briefing,
+        )
+
+        bridge = AppsResearchBridge(capability_ref="apps_research.v1")
+        req = RequestForResumeBriefing(
+            request_id=str(request_id or f"req-{uuid.uuid4().hex[:12]}"),
+            run_id=str(run_id or f"research-{uuid.uuid4().hex[:12]}"),
+            trace_id=str(trace_id or f"trace-{uuid.uuid4().hex[:12]}"),
+            company_name=target_company,
+            job_title=str(target_role or target_company).strip(),
+            research_authorized=True,
+        )
+        outcome = dispatch_resume_research_briefing(req, bridge=bridge)
+        if isinstance(outcome, ResumeBriefingReady):
+            brief_path = (
+                artifact_root
+                / f"research_{(outcome.research_run_id or req.run_id)[:8]}"
+                / "briefing.md"
+            )
+            brief_path.parent.mkdir(parents=True, exist_ok=True)
+            brief_path.write_text(outcome.briefing_text.rstrip() + "\n", encoding="utf-8")
+            return str(brief_path)
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
     try:
         from apps_shared.adapters.research_l3_adapter import (
             materialize_company_brief_markdown,
@@ -97,8 +136,6 @@ def _materialize_fallback_brief(
     except ImportError:
         return ""
 
-    repo_root = find_repo_root()
-    artifact_root = repo_root / "artifacts" / "apps_rg" / "generated_briefs"
     brief_path = materialize_company_brief_markdown(
         company=target_company,
         jd_path=jd_path,
@@ -189,6 +226,7 @@ def build_raw_request_for_r4(
                 break
         generated_brief = _materialize_fallback_brief(
             target_company=str(target_company),
+            target_role=str(target_role),
             jd_path=fallback_jd_path,
             request_id="",
             run_id="",

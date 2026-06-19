@@ -15,6 +15,7 @@ rich apps_rg briefing can coexist with a compact apps_lic packet.
 from __future__ import annotations
 
 import re
+import textwrap
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -199,6 +200,153 @@ def _plain_header_text(line: str) -> str:
     s = re.sub(r"^#{1,3}\s*", "", s)
     s = re.sub(r"^===\s*|\s*===$", "", s)
     return s.strip().lower()
+
+
+def _fallback_bullet_for_section(section: str) -> str:
+    section_key = (section or "").strip().lower()
+    if "jd complement" in section_key:
+        return "Company context adds a role-specific operating priority beyond the JD."
+    if "company strategy" in section_key or "operating pressure" in section_key:
+        return (
+            "Company scale and operating pressure tilt the role toward sequencing, "
+            "governance, and execution speed."
+        )
+    if "leadership" in section_key or "stakeholder" in section_key:
+        return "Stakeholder alignment likely spans business, technology, and operating leaders."
+    if "ai" in section_key or "platform" in section_key or "architecture" in section_key:
+        return "Platform, data, and AI modernization appear central to delivery."
+    if "recent" in section_key or "urgency" in section_key:
+        return "Recent company moves increase urgency around prioritization and timing."
+    if "positioning" in section_key:
+        return "Position toward company-scale modernization, operating discipline, and measurable delivery."
+    if "outreach" in section_key:
+        return "Outreach should sound specific to the company context without adding proof claims."
+    if "do not use as proof" in section_key:
+        return "Keep candidate proof separate from company targeting context."
+    return "Company context adds targeting signal beyond the JD."
+
+
+def _squash_blank_lines(lines: list[str]) -> list[str]:
+    squashed: list[str] = []
+    previous_blank = False
+    for raw in lines:
+        line = raw.rstrip()
+        if not line.strip():
+            if previous_blank:
+                continue
+            squashed.append("")
+            previous_blank = True
+            continue
+        squashed.append(line)
+        previous_blank = False
+
+    while squashed and not squashed[0].strip():
+        squashed.pop(0)
+    while squashed and not squashed[-1].strip():
+        squashed.pop()
+    return squashed
+
+
+def _normalize_brief_lines(
+    body: str,
+    *,
+    cfg: BriefingProfile,
+    jd_tokens: set[str] | None = None,
+    rewrite_jd_dense_bullets: bool = False,
+) -> str:
+    lines = (body or "").strip().splitlines()
+    normalized: list[str] = []
+    current_section = ""
+    previous_was_bullet = False
+    jd_tokens = jd_tokens or set()
+
+    for raw in lines:
+        stripped = raw.rstrip()
+        line = stripped.strip()
+        if not line:
+            normalized.append("")
+            previous_was_bullet = False
+            continue
+        if _HEADER_RE.match(line):
+            current_section = _plain_header_text(line)
+            normalized.append(line)
+            previous_was_bullet = False
+            continue
+        if line.startswith("|") and line.endswith("|"):
+            normalized.append(line)
+            previous_was_bullet = False
+            continue
+        if raw[:1].isspace() and previous_was_bullet:
+            normalized.append(stripped)
+            continue
+        if line.startswith("- "):
+            bullet = line[2:].strip()
+            if jd_tokens and rewrite_jd_dense_bullets and any(
+                phrase in bullet.lower() for phrase in jd_tokens
+            ):
+                cleaned = bullet
+                for phrase in sorted(jd_tokens, key=len, reverse=True):
+                    cleaned = re.sub(re.escape(phrase), " ", cleaned, flags=re.IGNORECASE)
+                cleaned = re.sub(r"\s+", " ", cleaned).strip(" -:;,./")
+                if cleaned and len(cleaned.split()) >= 6 and not any(
+                    phrase in cleaned.lower() for phrase in jd_tokens
+                ):
+                    bullet = cleaned
+                else:
+                    bullet = _fallback_bullet_for_section(current_section)
+            wrapped = textwrap.fill(
+                bullet,
+                width=cfg.max_line_chars,
+                initial_indent="- ",
+                subsequent_indent="  ",
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+            normalized.extend(wrapped.splitlines())
+            previous_was_bullet = True
+            continue
+        if len(line) > cfg.max_line_chars:
+            wrapped = textwrap.fill(
+                line,
+                width=cfg.max_line_chars,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+            normalized.extend(wrapped.splitlines())
+        else:
+            normalized.append(line)
+        previous_was_bullet = False
+
+    return "\n".join(_squash_blank_lines(normalized))
+
+
+def normalize_markdown_brief_text(
+    text: str,
+    *,
+    profile: str = DEFAULT_BRIEFING_PROFILE,
+) -> str:
+    """Return a contract-friendly markdown draft with wrapped lines."""
+
+    cfg = _resolve_profile(profile)
+    return _normalize_brief_lines(text, cfg=cfg)
+
+
+def normalize_targeting_brief_text(
+    text: str,
+    *,
+    jd_text: str = "",
+    profile: str = DEFAULT_BRIEFING_PROFILE,
+) -> str:
+    """Return a targeting-brief draft normalized for seal validation."""
+
+    cfg = _resolve_profile(profile)
+    jd_tokens = _jd_restatement_tokens(jd_text) if jd_text else set()
+    return _normalize_brief_lines(
+        text,
+        cfg=cfg,
+        jd_tokens=jd_tokens,
+        rewrite_jd_dense_bullets=True,
+    )
 
 
 def validate_targeting_brief_text(
@@ -401,6 +549,8 @@ __all__ = [
     "BriefingProfile",
     "TargetingBriefValidation",
     "blocked_targeting_brief",
+    "normalize_markdown_brief_text",
+    "normalize_targeting_brief_text",
     "seal_targeting_brief",
     "validate_targeting_brief_text",
 ]

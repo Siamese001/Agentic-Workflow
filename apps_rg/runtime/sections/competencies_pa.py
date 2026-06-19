@@ -173,18 +173,61 @@ def build_competencies_assembly_input(
             + ", ".join(sorted(allowed_list))
         )
 
-    competency_bundle_block = ""
-    if not pp_meta.get("competency_capability_bundle_consumption"):
-        raise ValueError(
-            "competencies: proof_pool_metadata missing competency_capability_bundle_consumption; graph packet is mandatory"
-        )
     from apps_rg.runtime.sections.competency_capability_evidence import (
+        attach_competency_bundles_to_proof_pool_metadata,
         format_competency_capability_evidence_pack,
     )
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
+
+    def _competencies_plan_has_selection(plan: Any) -> bool:
+        if not isinstance(plan, dict) or not plan:
+            return False
+        families = [
+            str(x).strip()
+            for x in (plan.get("selected_competency_families") or [])
+            if str(x).strip()
+        ]
+        skills = [str(x).strip() for x in (plan.get("selected_skill_ids") or []) if str(x).strip()]
+        return bool(families or skills)
+
+    prompt_runtime_payload = runtime_payload
+    selected_graph_plan = pp_meta.get("selected_graph_evidence_plan")
+    if not _competencies_plan_has_selection(selected_graph_plan):
+        selected_graph_plan = runtime_payload.get("selected_graph_evidence_plan")
+    if not _competencies_plan_has_selection(selected_graph_plan):
+        selected_graph_plan, _, _ = build_selected_graph_evidence_plan_for_section(
+            repo_root=_REPO_ROOT,
+            section_id="competencies",
+            target_role=t_title,
+            jd_text=jd,
+            briefing_text=briefing,
+        )
+    if not pp_meta.get("competency_capability_bundle_consumption"):
+        if bool(runtime_payload.get("product_visible", True)):
+            raise ValueError(
+                "competencies: proof_pool_metadata missing competency_capability_bundle_consumption; graph packet is mandatory"
+            )
+        proof_pool_metadata = dict(pp_meta)
+        proof_pool_metadata["selected_graph_evidence_plan"] = selected_graph_plan
+        proof_pool_metadata = attach_competency_bundles_to_proof_pool_metadata(
+            proof_pool_metadata,
+            section_id="competencies",
+            repo_root=_REPO_ROOT,
+        )
+        prompt_runtime_payload = dict(runtime_payload)
+        prompt_runtime_payload["proof_pool_metadata"] = proof_pool_metadata
+    else:
+        proof_pool_metadata = dict(pp_meta)
+        proof_pool_metadata["selected_graph_evidence_plan"] = selected_graph_plan
+        prompt_runtime_payload = dict(runtime_payload)
+        prompt_runtime_payload["proof_pool_metadata"] = proof_pool_metadata
+        prompt_runtime_payload["selected_graph_evidence_plan"] = selected_graph_plan
 
     competency_bundle_block = (
         "\n\n"
-        + format_competency_capability_evidence_pack(runtime_payload, section_id="competencies")
+        + format_competency_capability_evidence_pack(prompt_runtime_payload, section_id="competencies")
         + "\n"
     )
 

@@ -154,6 +154,10 @@ def write_c02_semantic_cache_payload(
     payload: dict[str, Any],
 ) -> Path | None:
     """Write the inert C0 semantic-cache payload artifact (best-effort, never blocks C0)."""
+    if artifact_dir.exists() and not artifact_dir.is_dir():
+        return None
+    if any(parent.exists() and not parent.is_dir() for parent in artifact_dir.parents):
+        return None
     try:
         artifact_dir.mkdir(parents=True, exist_ok=True)
         path = artifact_dir / C02_SEMANTIC_CACHE_PAYLOAD_ARTIFACT
@@ -162,7 +166,7 @@ def write_c02_semantic_cache_payload(
             encoding="utf-8",
         )
         return path
-    except (FileNotFoundError, IsADirectoryError, PermissionError, UnicodeError):
+    except (NotADirectoryError, PermissionError, UnicodeError):
         return None
 
 

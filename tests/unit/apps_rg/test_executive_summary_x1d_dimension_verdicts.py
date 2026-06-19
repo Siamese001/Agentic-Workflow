@@ -41,6 +41,27 @@ def test_infer_dimension_verdicts_from_claude_style_blob() -> None:
     assert verdicts["ats_alignment_without_keyword_stuffing"]["pass"] is False
 
 
+def test_infer_dimension_verdicts_flags_ta_screen_and_ai_authenticity_language() -> None:
+    body = {
+        "pass": True,
+        "score": 4.5,
+        "findings": [
+            "Would a Head of Talent Acquisition at the target company forward this?",
+            "The cadence feels machine-generated, with em dashes and buzzword soup.",
+        ],
+        "quality_flags": [],
+        "fail_reasons": [],
+    }
+    verdicts = infer_dimension_verdicts_from_judge_blob(
+        body,
+        deterministic_gate_summary=_all_pass_gates(),
+    )
+    assert verdicts["resume_voice"]["pass"] is False
+    assert verdicts["anti_overfit"]["pass"] is False
+    assert verdicts["ats_alignment_without_keyword_stuffing"]["pass"] is False
+    assert verdicts["synthesis_quality"]["pass"] is False
+
+
 def test_ensure_dimension_verdicts_validates_explicit_block() -> None:
     body = {
         "score_scale": "0_to_5",

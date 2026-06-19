@@ -37,6 +37,9 @@ class TestFacetQueries:
         facets = [f for f, _ in engine._FACET_QUERIES]
         assert "overview" in facets
         assert "leadership" in facets
+        assert "commercial_motion" in facets
+        assert "partner_ecosystem" in facets
+        assert "adoption_motion" in facets
         assert len(engine._FACET_QUERIES) == 10
 
     def test_templates_use_company_placeholder(self, engine):
@@ -121,9 +124,14 @@ class TestStubSynthesis:
     def test_required_keys_present(self, engine):
         stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
         for key in (
+            "company_archetype",
+            "company_dna",
             "tagline",
             "core_offerings",
             "strategic_priorities",
+            "commercial_motion",
+            "partner_ecosystem",
+            "adoption_motion",
             "language_to_mirror",
             "language_to_avoid",
         ):
@@ -143,6 +151,14 @@ class TestStubSynthesis:
     def test_strategic_priorities_min_two(self, engine):
         stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
         assert len(stub["strategic_priorities"]) >= 2
+
+    def test_company_dna_object_contains_motion_fields(self, engine):
+        stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
+        dna = stub["company_dna"]
+        assert "archetype" in dna
+        assert "commercial_motion" in dna
+        assert "partner_ecosystem" in dna
+        assert "adoption_motion" in dna
 
 
 class TestResolveJdContext:
@@ -180,6 +196,9 @@ class TestAssembleBrief:
         assert brief["freshness_ttl_days"] == 30
         assert "overview" in brief
         assert "core_offerings" in brief["overview"]
+        assert "company_dna" in brief
+        assert "commercial_motion" in brief
+        assert "partner_ecosystem" in brief
         assert "customer_profile" in brief
 
     def test_missing_synthesis_keys_default_to_empty(self, engine):

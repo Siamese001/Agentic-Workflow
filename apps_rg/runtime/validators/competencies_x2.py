@@ -13,9 +13,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
     FIRST_PERSON_PATTERN,
     INLINE_SOURCE_PATTERN,
-    REQUIRED_JUDGE_PROVIDERS,
     check_json_parse_valid,
-    check_judge_rows_present,
     check_judge_schema_valid,
     has_jd_phrase_copy,
 )
@@ -1053,12 +1051,18 @@ def run_competencies_x2_gates(
         else f"Forbidden mock/test markers in REAL_LLM artifacts: {', '.join(marker_hits)}",
     )
 
+    x1d_present = bool(x1d_judges)
+    x1d_provider_keys = [
+        str(j.get("provider_key") or "").strip()
+        for j in (x1d_judges or [])
+        if isinstance(j, dict) and str(j.get("provider_key") or "").strip()
+    ]
     add(
         "x2_x1d_required_judges_present",
-        True,
-        "advisory_only_not_required_for_proof",
+        x1d_present,
+        x1d_provider_keys if x1d_provider_keys else "no_judges_emitted",
         [],
-        None,
+        None if x1d_present else "No X1D judge rows emitted for competencies.",
     )
 
     if x1d_judges:
@@ -1210,6 +1214,7 @@ def run_competencies_x2_gates(
         check_source_fact_ids_or_graph_lineage_per_category,
         check_technical_density_floor,
         competency_bundle_consumption_active,
+        selected_graph_evidence_depth_result,
     )
 
     bundle_mode = competency_bundle_consumption_active(proof_pool_metadata)
@@ -1228,6 +1233,16 @@ def run_competencies_x2_gates(
             check_required_capability_families_covered(comps_list, min_families=7),
         ):
             add(res.gate_id, res.passed, res.observed_value, res.threshold, res.failure_reason)
+
+        depth_r = selected_graph_evidence_depth_result(proof_pool_metadata)
+        if depth_r is not None:
+            add(
+                depth_r.gate_id,
+                depth_r.passed,
+                depth_r.observed_value,
+                depth_r.threshold,
+                depth_r.failure_reason,
+            )
 
         # Archive overlap (anti-hydration) — WARN unless archive prose provided.
         archive_texts: list[str] = []

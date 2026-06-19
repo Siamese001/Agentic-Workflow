@@ -8,6 +8,7 @@ or resolve SelectedRoleFactSet/SRFS artifacts.
 
 from __future__ import annotations
 
+from collections import Counter
 import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
@@ -244,6 +245,427 @@ def build_graph_evidence_runtime_payload(
     return payload
 
 
+def _nonempty_trimmed_strings(values: Any) -> list[str]:
+    raw: list[Any]
+    if values is None:
+        raw = []
+    elif isinstance(values, str):
+        raw = [values]
+    elif isinstance(values, (list, tuple, set, frozenset)):
+        raw = list(values)
+    else:
+        raw = [values]
+    out: list[str] = []
+    seen: set[str] = set()
+    for item in raw:
+        text = str(item).strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        out.append(text)
+    return out
+
+
+def _graph_evidence_depth_row(
+    item: dict[str, Any],
+    *,
+    section_id: str,
+    packet_shape: str,
+) -> dict[str, Any]:
+    item_id = str(
+        item.get("fact_id")
+        or item.get("candidate_fact_id")
+        or item.get("role_episode_bundle_id")
+        or item.get("competency_bundle_id")
+        or item.get("headline_positioning_bundle_id")
+        or item.get("item_id")
+        or ""
+    ).strip()
+    if packet_shape == "bundles":
+        skill_ids = _nonempty_trimmed_strings(item.get("graph_skill_node_ids") or item.get("source_skill_ids"))
+        linked_ids = _nonempty_trimmed_strings(
+            item.get("linked_source_fact_ids")
+            or item.get("source_fact_ids")
+            or item.get("source_fact_id")
+        )
+        missing_axes = []
+        if not skill_ids:
+            missing_axes.append("skills")
+        if not linked_ids:
+            missing_axes.append("source_facts")
+        rich = not missing_axes
+        axis_hit_count = int(bool(skill_ids)) + int(bool(linked_ids))
+        axis_total = 2
+        return {
+            "item_id": item_id or f"{section_id}_bundle",
+            "label": str(
+                item.get("display_label_candidate")
+                or item.get("display_phrase_candidate")
+                or item.get("capability_family")
+                or item.get("positioning_family")
+                or item_id
+            ).strip(),
+            "packet_shape": packet_shape,
+            "rich": rich,
+            "missing_axes": missing_axes,
+            "axis_hit_count": axis_hit_count,
+            "axis_total": axis_total,
+            "skill_count": len(skill_ids),
+            "linked_fact_count": len(linked_ids),
+            "source_fact_ids": linked_ids,
+            "linked_fact_ids": linked_ids,
+            "skill_ids": skill_ids,
+        }
+
+    skill_ids = _nonempty_trimmed_strings(
+        item.get("graph_skill_node_ids")
+        or item.get("selected_skill_ids")
+        or item.get("source_skill_ids")
+        or item.get("graph_skill_node_id")
+    )
+    metric_ids = _nonempty_trimmed_strings(
+        item.get("metric_outcome_ids")
+        or item.get("selected_metric_ids")
+        or item.get("linked_metric_outcome_ids")
+    )
+    missing_axes = []
+    if not skill_ids:
+        missing_axes.append("skills")
+    if not metric_ids:
+        missing_axes.append("metrics")
+    rich = not missing_axes
+    axis_hit_count = int(bool(skill_ids)) + int(bool(metric_ids))
+    axis_total = 2
+    return {
+        "item_id": item_id or f"{section_id}_fact",
+        "label": str(
+            item.get("claim_text")
+            or item.get("bundle_theme")
+            or item.get("claim_text")
+            or item_id
+        ).strip(),
+        "packet_shape": packet_shape,
+        "rich": rich,
+        "missing_axes": missing_axes,
+        "axis_hit_count": axis_hit_count,
+        "axis_total": axis_total,
+        "skill_count": len(skill_ids),
+        "metric_count": len(metric_ids),
+        "source_fact_ids": _nonempty_trimmed_strings(item.get("source_fact_ids") or [item_id]),
+        "skill_ids": skill_ids,
+        "metric_ids": metric_ids,
+    }
+
+
+def build_graph_evidence_depth_report(
+    source: dict[str, Any] | None,
+    *,
+    section_id: str,
+    packet_key: str | None = None,
+) -> dict[str, Any]:
+    """Return a fail-closed depth report for the selected graph evidence packet."""
+
+    if not isinstance(source, dict) or not source:
+        return {
+            "schema": "graph_evidence_depth_report_v1",
+            "section_id": section_id,
+            "packet_key": packet_key or "",
+            "packet_shape": "missing",
+            "item_count": 0,
+            "rich_item_count": 0,
+            "unique_skill_count": 0,
+            "unique_detail_count": 0,
+            "item_rich_ratio": 0.0,
+            "skill_diversity_ratio": 0.0,
+            "detail_diversity_ratio": 0.0,
+            "semantic_coverage_pct": 0.0,
+            "axis_coverage_pct": 0.0,
+            "minimum_coverage_pct": 0.0,
+            "status": "missing",
+            "thin_item_ids": [],
+            "items": [],
+            "weakest_link": None,
+            "summary": "missing graph evidence packet",
+        }
+
+    packet: dict[str, Any] | None = None
+    selected_key = packet_key or ""
+    if selected_key:
+        nested = source.get(selected_key)
+        if isinstance(nested, dict) and nested:
+            packet = nested
+        else:
+            pp_meta = source.get("proof_pool_metadata")
+            if isinstance(pp_meta, dict):
+                nested = pp_meta.get(selected_key)
+                if isinstance(nested, dict) and nested:
+                    packet = nested
+    else:
+        nested = source.get("selected_graph_evidence_plan")
+        if isinstance(nested, dict) and nested:
+            packet = nested
+        if packet is None:
+            nested = source.get("headline_positioning_section_packet")
+            if isinstance(nested, dict) and nested:
+                packet = nested
+        if packet is None:
+            nested = source.get("competency_capability_section_packet")
+            if isinstance(nested, dict) and nested:
+                packet = nested
+        if packet is None and (
+            source.get("facts")
+            or source.get("competency_bundles")
+            or source.get("headline_positioning_bundles")
+        ):
+            packet = source
+
+    if not isinstance(packet, dict) or not packet:
+        return {
+            "schema": "graph_evidence_depth_report_v1",
+            "section_id": section_id,
+            "packet_key": selected_key,
+            "packet_shape": "missing",
+            "item_count": 0,
+            "rich_item_count": 0,
+            "unique_skill_count": 0,
+            "unique_detail_count": 0,
+            "item_rich_ratio": 0.0,
+            "skill_diversity_ratio": 0.0,
+            "detail_diversity_ratio": 0.0,
+            "semantic_coverage_pct": 0.0,
+            "axis_coverage_pct": 0.0,
+            "minimum_coverage_pct": 0.0,
+            "status": "missing",
+            "thin_item_ids": [],
+            "items": [],
+            "weakest_link": None,
+            "summary": "selected graph evidence packet missing",
+        }
+
+    if packet.get("facts"):
+        packet_shape = "facts"
+        raw_items = [row for row in (packet.get("facts") or []) if isinstance(row, dict)]
+    elif packet.get("competency_bundles"):
+        packet_shape = "bundles"
+        raw_items = [row for row in (packet.get("competency_bundles") or []) if isinstance(row, dict)]
+    elif packet.get("headline_positioning_bundles"):
+        packet_shape = "bundles"
+        raw_items = [row for row in (packet.get("headline_positioning_bundles") or []) if isinstance(row, dict)]
+    else:
+        packet_shape = "unknown"
+        raw_items = []
+
+    item_rows = [
+        _graph_evidence_depth_row(item, section_id=section_id, packet_shape=packet_shape)
+        for item in raw_items
+    ]
+    minimum_coverage_pct = 0.8
+    detail_ids: list[str] = []
+    for row in item_rows:
+        if packet_shape == "facts":
+            detail_ids.extend(str(x) for x in (row.get("metric_ids") or []) if str(x).strip())
+        else:
+            detail_ids.extend(str(x) for x in (row.get("linked_fact_ids") or []) if str(x).strip())
+    detail_frequency = Counter(detail_ids)
+    rich_item_count = sum(1 for row in item_rows if row["rich"])
+    item_count = len(item_rows)
+    unique_skill_ids = sorted({sid for row in item_rows for sid in row.get("skill_ids") or [] if sid})
+    if packet_shape == "facts":
+        unique_detail_ids = sorted({mid for row in item_rows for mid in row.get("metric_ids") or [] if mid})
+        detail_label = "metrics"
+    else:
+        unique_detail_ids = sorted(
+            {fid for row in item_rows for fid in row.get("linked_fact_ids") or row.get("source_fact_ids") or [] if fid}
+        )
+        detail_label = "linked_facts"
+    item_rich_ratio = round(rich_item_count / item_count, 4) if item_count else 0.0
+    skill_diversity_ratio = round(min(len(unique_skill_ids) / item_count, 1.0), 4) if item_count else 0.0
+    detail_diversity_ratio = round(min(len(unique_detail_ids) / item_count, 1.0), 4) if item_count else 0.0
+    detail_occurrence_count = len(detail_ids)
+    detail_reuse_count = max(detail_occurrence_count - len(unique_detail_ids), 0)
+    detail_reuse_ratio = round(detail_reuse_count / detail_occurrence_count, 4) if detail_occurrence_count else 0.0
+    max_detail_frequency = max(detail_frequency.values()) if detail_frequency else 0
+    repeated_detail_ids = sorted(
+        [detail_id for detail_id, count in detail_frequency.items() if count > 1]
+    )
+    top_detail_frequencies = [
+        {"detail_id": detail_id, "count": count}
+        for detail_id, count in sorted(
+            detail_frequency.items(),
+            key=lambda item: (-item[1], item[0]),
+        )[:5]
+    ]
+    semantic_coverage_pct = round(
+        min(item_rich_ratio, skill_diversity_ratio, detail_diversity_ratio) if item_count else 0.0,
+        4,
+    )
+    axis_coverage_pct = round((skill_diversity_ratio + detail_diversity_ratio) / 2, 4) if item_count else 0.0
+    thin_rows = [row for row in item_rows if not row["rich"]]
+    status = (
+        "judge_grade"
+        if item_count and not thin_rows and semantic_coverage_pct >= minimum_coverage_pct
+        else ("missing" if not item_count else "insufficient_depth")
+    )
+    summary = (
+        f"{section_id}: {rich_item_count}/{item_count} rich items, "
+        f"{len(unique_skill_ids)} unique skills, {len(unique_detail_ids)} unique {detail_label}, "
+        f"{semantic_coverage_pct:.0%} semantic coverage, {axis_coverage_pct:.0%} axis coverage"
+    )
+    if thin_rows:
+        weakest_link = dict(thin_rows[0])
+    else:
+        weakest_link = item_rows[0] if item_rows else None
+    return {
+        "schema": "graph_evidence_depth_report_v1",
+        "section_id": section_id,
+        "packet_key": selected_key or ("selected_graph_evidence_plan" if packet_shape == "facts" else ""),
+        "packet_shape": packet_shape,
+        "item_count": item_count,
+        "rich_item_count": rich_item_count,
+        "unique_skill_count": len(unique_skill_ids),
+        "unique_detail_count": len(unique_detail_ids),
+        "detail_occurrence_count": detail_occurrence_count,
+        "detail_reuse_count": detail_reuse_count,
+        "detail_reuse_ratio": detail_reuse_ratio,
+        "max_detail_frequency": max_detail_frequency,
+        "repeated_detail_ids": repeated_detail_ids,
+        "top_detail_frequencies": top_detail_frequencies,
+        "item_rich_ratio": item_rich_ratio,
+        "skill_diversity_ratio": skill_diversity_ratio,
+        "detail_diversity_ratio": detail_diversity_ratio,
+        "semantic_coverage_pct": semantic_coverage_pct,
+        "axis_coverage_pct": axis_coverage_pct,
+        "minimum_coverage_pct": minimum_coverage_pct,
+        "status": status,
+        "thin_item_ids": [str(row["item_id"]) for row in thin_rows],
+        "items": item_rows,
+        "weakest_link": weakest_link,
+        "summary": summary,
+    }
+
+
+def _graph_evidence_depth_snapshot(report: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(report, dict) or not report:
+        return {}
+    snapshot: dict[str, Any] = {}
+    for key in (
+        "schema",
+        "section_id",
+        "packet_key",
+        "packet_shape",
+        "status",
+        "summary",
+        "item_count",
+        "rich_item_count",
+        "unique_skill_count",
+        "unique_detail_count",
+        "detail_occurrence_count",
+        "detail_reuse_count",
+        "detail_reuse_ratio",
+        "item_rich_ratio",
+        "skill_diversity_ratio",
+        "detail_diversity_ratio",
+        "semantic_coverage_pct",
+        "axis_coverage_pct",
+        "minimum_coverage_pct",
+        "thin_item_ids",
+        "weakest_link",
+        "max_detail_frequency",
+        "repeated_detail_ids",
+        "top_detail_frequencies",
+    ):
+        if key in report:
+            value = report.get(key)
+            snapshot[key] = list(value) if isinstance(value, tuple) else value
+    return snapshot
+
+
+def build_graph_evidence_depth_comparison_report(
+    *,
+    section_id: str,
+    pre_report: dict[str, Any] | None,
+    post_report: dict[str, Any] | None,
+    fix_label: str = "post_fix",
+) -> dict[str, Any]:
+    pre_snapshot = _graph_evidence_depth_snapshot(pre_report)
+    post_snapshot = _graph_evidence_depth_snapshot(post_report)
+
+    pre_item_count = int(pre_snapshot.get("item_count") or 0)
+    post_item_count = int(post_snapshot.get("item_count") or 0)
+    pre_rich_item_count = int(pre_snapshot.get("rich_item_count") or 0)
+    post_rich_item_count = int(post_snapshot.get("rich_item_count") or 0)
+    pre_thin_item_count = len(pre_snapshot.get("thin_item_ids") or [])
+    post_thin_item_count = len(post_snapshot.get("thin_item_ids") or [])
+    pre_item_rich_ratio = float(pre_snapshot.get("item_rich_ratio") or 0.0)
+    post_item_rich_ratio = float(post_snapshot.get("item_rich_ratio") or 0.0)
+    pre_semantic_coverage = float(pre_snapshot.get("semantic_coverage_pct") or 0.0)
+    post_semantic_coverage = float(post_snapshot.get("semantic_coverage_pct") or 0.0)
+    pre_axis_coverage = float(pre_snapshot.get("axis_coverage_pct") or 0.0)
+    post_axis_coverage = float(post_snapshot.get("axis_coverage_pct") or 0.0)
+    pre_detail_reuse_ratio = float(pre_snapshot.get("detail_reuse_ratio") or 0.0)
+    post_detail_reuse_ratio = float(post_snapshot.get("detail_reuse_ratio") or 0.0)
+
+    delta = {
+        "item_count": post_item_count - pre_item_count,
+        "rich_item_count": post_rich_item_count - pre_rich_item_count,
+        "thin_item_count": post_thin_item_count - pre_thin_item_count,
+        "unique_skill_count": int(post_snapshot.get("unique_skill_count") or 0)
+        - int(pre_snapshot.get("unique_skill_count") or 0),
+        "unique_detail_count": int(post_snapshot.get("unique_detail_count") or 0)
+        - int(pre_snapshot.get("unique_detail_count") or 0),
+        "detail_occurrence_count": int(post_snapshot.get("detail_occurrence_count") or 0)
+        - int(pre_snapshot.get("detail_occurrence_count") or 0),
+        "detail_reuse_count": int(post_snapshot.get("detail_reuse_count") or 0)
+        - int(pre_snapshot.get("detail_reuse_count") or 0),
+        "max_detail_frequency": int(post_snapshot.get("max_detail_frequency") or 0)
+        - int(pre_snapshot.get("max_detail_frequency") or 0),
+        "item_rich_ratio_pp": round((post_item_rich_ratio - pre_item_rich_ratio) * 100, 2),
+        "semantic_coverage_pp": round((post_semantic_coverage - pre_semantic_coverage) * 100, 2),
+        "axis_coverage_pp": round((post_axis_coverage - pre_axis_coverage) * 100, 2),
+        "detail_reuse_ratio_pp": round((post_detail_reuse_ratio - pre_detail_reuse_ratio) * 100, 2),
+    }
+    summary = (
+        f"{section_id}: {pre_rich_item_count}/{pre_item_count} rich items -> "
+        f"{post_rich_item_count}/{post_item_count} rich items; "
+        f"thin items {pre_thin_item_count} -> {post_thin_item_count}; "
+        f"semantic coverage {pre_semantic_coverage:.0%} -> {post_semantic_coverage:.0%}; "
+        f"detail reuse {pre_detail_reuse_ratio:.0%} -> {post_detail_reuse_ratio:.0%}"
+    )
+    return {
+        "schema": "graph_evidence_depth_comparison_report_v1",
+        "section_id": section_id,
+        "fix_label": fix_label,
+        "pre_fix_report": pre_snapshot,
+        "post_fix_report": post_snapshot,
+        "delta": delta,
+        "summary": summary,
+        "status_transition": f"{pre_snapshot.get('status') or 'unknown'}->{post_snapshot.get('status') or 'unknown'}",
+        "improved": (
+            post_thin_item_count < pre_thin_item_count
+            or post_semantic_coverage > pre_semantic_coverage
+            or post_item_rich_ratio > pre_item_rich_ratio
+        ),
+    }
+
+
+def require_graph_evidence_depth(
+    source: dict[str, Any] | None,
+    *,
+    section_id: str,
+    packet_key: str | None = None,
+) -> dict[str, Any]:
+    report = build_graph_evidence_depth_report(source, section_id=section_id, packet_key=packet_key)
+    minimum = float(report.get("minimum_coverage_pct") or 0.0)
+    if report.get("status") != "judge_grade" or float(report.get("semantic_coverage_pct") or 0.0) < minimum:
+        thin = ", ".join(report.get("thin_item_ids") or [])
+        weakest = report.get("weakest_link") or {}
+        raise ValueError(
+            f"{section_id}: evidence depth insufficient for SVP level; "
+            f"{report.get('summary')} thin_items=[{thin}] weakest_link={weakest!r}"
+        )
+    return report
+
+
 def plan_fact_to_employment_bullet_row(plan_fact: dict[str, Any]) -> dict[str, Any]:
     """Map selected evidence plan facts to the section bullet-row shape."""
     fid = str(plan_fact.get("fact_id") or "").strip()
@@ -357,6 +779,12 @@ def normalized_graph_evidence_reporting_fields(
         selected_fact_plan if isinstance(selected_fact_plan, dict) else None,
         claim_ledger,
     )
+    for key, value in pp.items():
+        key_str = str(key)
+        if not (key_str.endswith("_report") and "depth" in key_str):
+            continue
+        if isinstance(value, dict) and value:
+            out[key_str] = dict(value)
     active_gate_id = f"x2_{section_id}_active_proof_pool_source_fact_ids"
     active_gate = next((g for g in x2_gates if g.get("gate_id") == active_gate_id), None)
     if active_gate is not None:
@@ -538,6 +966,8 @@ def evaluate_active_pool_source_fact_gate(
 __all__ = [
     "SECTION_KEYS",
     "build_allowed_fact_ids_for_plan_facts",
+    "build_graph_evidence_depth_comparison_report",
+    "build_graph_evidence_depth_report",
     "build_graph_evidence_runtime_payload",
     "build_selected_graph_evidence_plan",
     "collect_source_fact_ids_for_section",
@@ -553,6 +983,7 @@ __all__ = [
     "normalized_graph_evidence_reporting_fields",
     "plan_fact_to_employment_bullet_row",
     "require_section_packet",
+    "require_graph_evidence_depth",
     "require_selected_graph_evidence_plan",
     "selection_method_for_section",
     "selected_graph_evidence_plan_from_payload",

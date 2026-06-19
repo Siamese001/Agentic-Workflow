@@ -1,10 +1,7 @@
-"""W0 red-path contract — target state for competencies-graph-10x6-gemini plan.
+"""W0 contract — target state for competencies-graph-8x8-gemini plan.
 
-These tests document the *desired* product constants and defaults after W2–W3.
-They MUST fail until implementation lands (TDD guardrail).
-
-Plan: .claude/plans/competencies-graph-10x6-gemini-924516.md
-Receipt: docs/reports/apps_rg/competencies_10x6_gemini_gap_receipt.md
+These tests document the live product constants and defaults after the 8x8
+competency selector rollout.
 """
 from __future__ import annotations
 
@@ -13,9 +10,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_RG = REPO_ROOT / "apps_rg"
 
-# --- Target constants (W2; variance-class alignment 2026-06: candidate pool 10 -> 8) ---
+# --- Target constants (W2; variance-class alignment 2026-06: candidate pool 8 -> 8) ---
 TARGET_SC_PATH_COUNT = 8
-TARGET_FINAL_CATEGORY_COUNT = 6
+TARGET_FINAL_CATEGORY_COUNT = 8
 TARGET_CANDIDATE_CATEGORY_COUNT = 8
 
 # --- Target judge default (W3) ---
@@ -28,7 +25,8 @@ def test_competencies_sc_path_count_matches_candidate_pool() -> None:
     assert COMPETENCIES_SC_PATH_COUNT == TARGET_SC_PATH_COUNT
 
 
-def test_competencies_emitted_category_count_fixed_at_6() -> None:
+def test_competencies_emitted_category_count_fixed_at_8() -> None:
+    """Competencies now emit 8 graph-backed categories."""
     from apps_rg.runtime.sections.competencies_rigor import (
         MAX_CATEGORY_COUNT,
         MIN_CATEGORY_COUNT,
@@ -66,12 +64,12 @@ def test_competency_selector_no_facts_skills_authority_wording() -> None:
     assert "NOT base-resume facts.skills" in text or "not base-resume facts.skills" in text.lower()
 
 
-def test_competency_selector_requires_10_candidate_6_emitted_categories() -> None:
+def test_competency_selector_requires_8_candidate_8_emitted_categories() -> None:
+    """Competency selector now requires 8 candidate and 8 emitted categories."""
     path = APPS_RG / "prompt_assembly/templates/competency_selector_v2.yaml"
     text = path.read_text(encoding="utf-8")
-    assert "graph_10x6" in text
+    assert "graph_8x8" in text
     assert "candidate_category_count" in text
-    assert 'value: "10"' in text or "candidate_category_count: 10" in text
-    assert "min_items: 6" in text
-    assert "max_items: 6" in text
-    assert "max_items: 8" not in text
+    assert 'value: "8"' in text or "candidate_category_count: 8" in text
+    assert "min_items: 8" in text
+    assert "max_items: 8" in text
