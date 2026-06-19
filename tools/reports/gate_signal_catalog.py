@@ -7,6 +7,8 @@ from enforcement, classification, baseline_count, and exit_code.
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 # What the Rows column counts (not necessarily CI failures).
 GATE_WHAT: dict[str, str] = {
     # --- Canonical ADGGateBase (12) -----------------------------------------
@@ -156,6 +158,141 @@ GATE_WHAT: dict[str, str] = {
         "Graph watchlist items newly FAIL/WARN vs prior run."
     ),
 }
+
+
+@dataclass(frozen=True)
+class ExecutiveGateCopy:
+    move: str
+    finding_name: str
+    why_it_matters: str
+    affected_system: str = ""
+    affected_layers: list[str] = field(default_factory=list)
+    diagram: dict[str, str] | None = None
+
+
+@dataclass(frozen=True)
+class DecisionOption:
+    label: str
+    description: str
+    required_proof: str = ""
+
+
+EXECUTIVE_GATE_COPY: dict[str, dict[str, object]] = {
+    "B2_layer_skip_ratchet": {
+        "move": "Clear layer-jump regression",
+        "finding_name": "direct dependency links",
+        "why_it_matters": "Direct layer jumps increase coupling and make future changes harder to contain.",
+        "affected_system": "tools",
+    },
+    "LayerSkipGate": {
+        "move": "Clear layer-jump regression",
+        "finding_name": "direct dependency links",
+        "why_it_matters": "Direct layer jumps increase coupling and make future changes harder to contain.",
+        "affected_system": "tools",
+    },
+    "C2_l5_bypass_pview": {
+        "move": "Stop L5 gateway bypass",
+        "finding_name": "provider/tool calls bypassing the L5 gateway",
+        "why_it_matters": "Gateway bypass weakens control assurances and makes provider routing harder to defend.",
+        "affected_system": "agentic_core",
+    },
+    "L5BypassGate": {
+        "move": "Stop L5 gateway bypass",
+        "finding_name": "provider/tool calls bypassing the L5 gateway",
+        "why_it_matters": "Gateway bypass weakens control assurances and makes provider routing harder to defend.",
+        "affected_system": "agentic_core",
+    },
+    "F1_untyped_seam_ratchet": {
+        "move": "Close untyped cross-layer seams",
+        "finding_name": "cross-layer imports with empty type surfaces",
+        "why_it_matters": "Untyped seams slow safe change and increase integration risk across callers.",
+        "affected_system": "tools",
+    },
+    "UntypedSeamGate": {
+        "move": "Close untyped cross-layer seams",
+        "finding_name": "cross-layer imports with empty type surfaces",
+        "why_it_matters": "Untyped seams slow safe change and increase integration risk across callers.",
+        "affected_system": "tools",
+    },
+    "L2_lpg_drift_ratchet": {
+        "move": "Restore L_PG boundary discipline",
+        "finding_name": "imports touching the L_PG boundary",
+        "why_it_matters": "Boundary drift weakens separation and can spread if left alone.",
+        "affected_system": "agentic_core",
+    },
+    "LpgDriftRatchetGate": {
+        "move": "Restore L_PG boundary discipline",
+        "finding_name": "imports touching the L_PG boundary",
+        "why_it_matters": "Boundary drift weakens separation and can spread if left alone.",
+        "affected_system": "agentic_core",
+    },
+    "S4_unused_imports_ratchet": {
+        "move": "Remove unused imports",
+        "finding_name": "unused import edges",
+        "why_it_matters": "Unused imports add clutter and obscure the live dependency graph.",
+        "affected_system": "tools",
+    },
+    "UnusedImportsRatchetGate": {
+        "move": "Remove unused imports",
+        "finding_name": "unused import edges",
+        "why_it_matters": "Unused imports add clutter and obscure the live dependency graph.",
+        "affected_system": "tools",
+    },
+}
+
+
+def executive_gate_copy(gate: dict) -> ExecutiveGateCopy:
+    gate_id = str(gate.get("gate_id") or "").strip()
+    gate_class = str(gate.get("gate_class") or "").strip()
+    payload = EXECUTIVE_GATE_COPY.get(gate_id) or EXECUTIVE_GATE_COPY.get(gate_class)
+    if payload:
+        return ExecutiveGateCopy(
+            move=str(payload.get("move") or ""),
+            finding_name=str(payload.get("finding_name") or ""),
+            why_it_matters=str(payload.get("why_it_matters") or ""),
+            affected_system=str(payload.get("affected_system") or ""),
+            affected_layers=list(payload.get("affected_layers") or []),
+            diagram=payload.get("diagram") if isinstance(payload.get("diagram"), dict) else None,
+        )
+    return ExecutiveGateCopy(
+        move=f"Address {gate_id or gate_class or 'gate'}",
+        finding_name=str(what_counts(gate_id, gate_class) or "gate findings"),
+        why_it_matters="This gate still carries decision-grade risk and should be reviewed on its own terms.",
+    )
+
+
+def executive_next_step_options(gate: dict, breakout: dict | None) -> list[DecisionOption]:
+    breakout_status = str((breakout or {}).get("status") or "").strip()
+    options = [
+        DecisionOption(
+            label="Fix",
+            description="Use when the dependency is convenience coupling or accidental reach-through.",
+            required_proof="Code diff removes the direct dependency and ADG rerun clears the delta.",
+        ),
+        DecisionOption(
+            label="Adapter/interface",
+            description="Use when cross-layer collaboration is valid but the dependency path is wrong.",
+            required_proof="New approved interface or adapter in the owning layer, plus tests that cover the mediated path.",
+        ),
+        DecisionOption(
+            label="Guardian exemption",
+            description="Use when the dependency is intentional but temporary or tightly constrained.",
+            required_proof="Owner, rationale, expiry or retirement condition, and the scoped path list.",
+        ),
+        DecisionOption(
+            label="Re-baseline",
+            description="Use when the architecture policy intentionally changed.",
+            required_proof="Approval, new baseline artifact, reason, reviewer, and migration plan.",
+        ),
+        DecisionOption(
+            label="Investigate evidence",
+            description="Use when the breakout is too thin to distinguish the options yet.",
+            required_proof="More detailed samples, counts, or path concentration from ADG.",
+        ),
+    ]
+    if breakout_status != "present":
+        return [options[-1], *options[:4]]
+    return options
 
 
 # Top-level Verdict (3-way MECE). Sub = detail (see VERDICT_SUB_DEFINITIONS).
