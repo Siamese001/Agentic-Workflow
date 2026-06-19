@@ -6,6 +6,8 @@ name: Calibration Drift Detector
 # `calibration_drift_policy` thresholds in apps_eval/config/eval_policies.yaml.
 
 on:
+  schedule:
+    - cron: "17 7 * * *"
   workflow_dispatch:
     inputs:
       window_days:
@@ -76,3 +78,39 @@ jobs:
         run: |
           echo "::error title=Calibration drift ALERT::Per-judge unknown-rate breached the ALERT threshold. Human recalibration required. See drift_report.txt."
           exit 1
+
+      - name: Persist disposition
+        if: always()
+        env:
+          EXIT_CODE: ${{ steps.detector.outputs.exit_code || '0' }}
+        run: |
+          set -euo pipefail
+          status="PASS"
+          reason="within calibration drift thresholds"
+          if grep -q "INSUFFICIENT_DATA" drift_report.txt; then
+            status="SKIP_MISSING_INPUT"
+            reason="insufficient calibration data in rolling window"
+          fi
+          if [ "${EXIT_CODE}" = "1" ]; then
+            status="FAIL_ADVISORY"
+            reason="warn threshold breached"
+          elif [ "${EXIT_CODE}" = "2" ]; then
+            status="FAIL_BLOCKING"
+            reason="alert threshold breached"
+          fi
+          python ops_scripts/ci/write_ci_disposition.py \
+            --workflow calibration-drift \
+            --lane drift \
+            --status "${status}" \
+            --reason "${reason}" \
+            --evidence-artifact "calibration-drift-${{ github.run_id }}" \
+            --out artifacts/ci/calibration-drift/ci_disposition.json
+
+      - name: Upload disposition artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calibration-drift-disposition-${{ github.run_id }}
+          path: artifacts/ci/calibration-drift/ci_disposition.json
+          if-no-files-found: warn
+          retention-days: 30
