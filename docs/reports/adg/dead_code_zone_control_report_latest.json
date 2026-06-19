@@ -7,199 +7,139 @@
     "total_dead_code_candidates": 0
   },
   "dead_imports": {
-    "dead_import_hotspots": [
-      [
-        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-        19
-      ],
-      [
-        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-        14
-      ],
-      [
-        "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-        13
-      ],
-      [
-        "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-        12
-      ],
-      [
-        "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-        11
-      ],
-      [
-        "tools/demo/apps_evidence_demo.py",
-        10
-      ],
-      [
-        "tools/eval/retrieval_benchmark.py",
-        10
-      ],
-      [
-        "tests/apps_eval/test_apps_eval_integration.py",
-        9
-      ],
-      [
-        "tests/apps_eval/test_eval_to_bus_roundtrip.py",
-        9
-      ],
-      [
-        "tests/unit/apps_exec/services/test_document_ingestion_service.py",
-        9
-      ]
-    ],
+    "dead_import_hotspots": [],
     "dead_imports_by_confidence": {},
     "dead_imports_by_domain": {},
     "dead_imports_by_layer": {},
     "l4_dead_imports": 0,
-    "overlay_dead_imports_by_severity": {
-      "HIGH": 971
-    },
-    "source_counts": {
-      "legacy_dead_import_edges": 0,
-      "overlay_dead_import_resolved": 971
-    },
-    "total_dead_imports": 971
+    "total_dead_imports": 0
   },
   "errors": [],
   "executive_readiness": {
     "executive_metrics": {
       "dead_code_count": 0,
       "dead_import_count": 0,
-      "first_party_low_confidence_ratio": 1.591459820551444,
-      "inferred_symbol_ratio": 10.155649444852239,
+      "first_party_low_confidence_ratio": 1.9204389574759946,
+      "inferred_symbol_ratio": 10.125406677588316,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 486,
-      "unresolved_import_count": 486
+      "low_confidence_count": 588,
+      "unresolved_import_count": 588
     },
     "executive_ready": true,
     "first_party_metrics": {
       "dead_code_count": 0,
       "dead_import_count": 0,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 486,
-      "unresolved_import_count": 486
+      "low_confidence_count": 588,
+      "unresolved_import_count": 588
     },
     "readiness_issues": []
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17571
+      "MEDIUM": 17553
     },
     "inferred_by_layer": {
       "L0": 1349,
-      "L1": 574,
-      "L2": 896,
+      "L1": 577,
+      "L2": 895,
       "L3": 862,
-      "L4": 606,
-      "L5": 1291,
+      "L4": 605,
+      "L5": 1289,
       "L6": 1304,
-      "L_APP": 5205,
+      "L_APP": 5196,
       "L_OPS": 487,
       "L_PG": 497,
-      "L_RUNTIME": 1076,
-      "L_SHARED": 596,
+      "L_RUNTIME": 1075,
+      "L_SHARED": 588,
       "L_TEST": 289,
-      "L_TOOLS": 2323,
+      "L_TOOLS": 2324,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.155649444852239,
-    "total_inferred_symbols": 17571,
-    "total_symbols": 173017
+    "inferred_symbol_ratio": 10.125406677588316,
+    "total_inferred_symbols": 17553,
+    "total_symbols": 173356
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.591459820551444,
+    "first_party_low_confidence_ratio": 1.9204389574759946,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
-      "symbol": 486
+      "symbol": 588
     },
     "low_conf_by_identity_kind": {
-      "unresolved_import": 486
+      "unresolved_import": 588
     },
     "low_conf_by_layer": {
-      "": 486
+      "": 588
     },
     "low_conf_hotspots": [
       [
         "",
-        486
+        588
       ]
     ],
-    "total_low_confidence": 486
-  },
-  "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-    "adg_snapshot_ts": "06192026_0917",
-    "dead_code_signal_sources": [
-      "overlay_violations.category=dead_import_resolved",
-      "mv_dead_import_hotspots_overlay",
-      "edges.relation_type=dead_imports",
-      "edges.relation_type=dead_code_candidate"
-    ]
+    "total_low_confidence": 588
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-    "adg_snapshot_ts": "06192026_0917",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.591459820551444,
-    "inferred_symbol_ratio": 10.155649444852239,
+    "first_party_low_confidence_ratio": 1.9204389574759946,
+    "inferred_symbol_ratio": 10.125406677588316,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 0,
-    "total_dead_imports": 971,
-    "total_low_confidence": 486,
-    "total_unresolved_imports": 486
+    "total_dead_imports": 0,
+    "total_low_confidence": 588,
+    "total_unresolved_imports": 588
   },
   "unresolved_imports": {
     "l4_unresolved": 0,
-    "total_unresolved_imports": 486,
+    "total_unresolved_imports": 588,
     "unresolved_by_confidence": {
-      "LOW": 486
+      "LOW": 588
     },
     "unresolved_by_layer": {
-      "": 486
+      "": 588
     },
     "unresolved_hotspots": [
       [
-        "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
-        9
+        "ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
+        62
       ],
       [
-        "ADG::Module::tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
-        9
+        "ADG::Module::tests/_archived_obsolete/ops_scripts/ci/test_graphdb_gates.py",
+        24
       ],
       [
-        "ADG::Module::agentic_core/L3_orchestration/enforcement/mission_runner.py",
-        8
+        "ADG::Module::ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+        20
       ],
       [
-        "ADG::Module::agentic_core/L4_state/utils/memory/case_library.py",
-        8
+        "ADG::Module::tests/_apps_contract/test_w2_hop4a_judging.py",
+        19
       ],
       [
-        "ADG::Module::tests/apps_shared/test_validators.py",
-        8
+        "ADG::Module::ops_scripts/dev_tools/L0_routing_scripts/colors.py",
+        14
       ],
       [
-        "ADG::Module::agentic_core/interfaces/meta_control.py",
-        7
+        "ADG::Module::agentic_core/L2_execution/types/healer_registry_types.py",
+        12
       ],
       [
-        "ADG::Module::ops_scripts/dev_tools/L0_routing_scripts/forward_rolling_facade.py",
-        7
+        "ADG::Module::tests/_archived_obsolete/unit_min_deps/test_inspector_mro_contracts.py",
+        12
       ],
       [
-        "ADG::Module::tests/_apps_contract/test_apps_rg_acceptance_checks.py",
-        7
+        "ADG::Module::tests/_archived_obsolete/ops_scripts/ci/test_pre_commit_summary_reporter.py",
+        11
       ],
       [
-        "ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_eval_to_learning_bridge.py",
-        7
+        "ADG::Module::tests/apps_research/test_w4_c0_package_driven_grounding.py",
+        11
       ],
       [
-        "ADG::Module::agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
-        6
+        "ADG::Module::tests/_apps_contract/test_w_final_deferred.py",
+        10
       ]
     ]
   },

@@ -9,8 +9,10 @@ from pathlib import Path
 import pytest
 
 from tools.reports.adg_action_queue import (
+    emit_adg_action_queue_from_adg_run,
     build_action_queue,
     extract_notion_fix_rows,
+    render_markdown_table,
     validate_action_queue,
 )
 from tools.reports.gate_signal_catalog import display_verdict
@@ -238,6 +240,69 @@ def test_hotspot_coverage_mv_becomes_graphdb_action(tmp_path: Path) -> None:
     assert action["file_path"] == "agentic_core/L5_safety/contracts/registry.py"
     assert "mv_hotspot_coverage_risk" in action["signal"]
     assert validate_action_queue(doc) == []
+
+
+def test_render_markdown_table_uses_bcg_brief(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    _write_gate_results(
+        gate,
+        [
+            _gate("1_critical_path_integrity", classification="blocked", violation_count=1),
+            _gate(
+                "O_tool_call_parity_ratchet",
+                band="P1",
+                enforcement="ratchet",
+                classification="regressed",
+                violation_count=316,
+                baseline_count=315,
+            ),
+        ],
+    )
+    _write_burndown(burndown)
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        max_actions=10,
+    )
+
+    md = render_markdown_table(doc, top=3)
+    assert "### BCG Action Queue Brief" in md
+    assert "Maintain SVP engineer-level repo standards" in md
+    assert "Gate-results source:" in md
+    assert "Burndown source:" in md
+    assert "Fix blockers first" in md
+
+
+def test_emit_action_queue_from_adg_run_prints_bcg_brief(tmp_path: Path, capsys) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    gate = artifacts / "adg_gate_results_20260618_120000.json"
+    burndown = artifacts / "adg_burndown_table.json"
+    _write_gate_results(
+        gate,
+        [
+            _gate("1_critical_path_integrity", classification="blocked", violation_count=1),
+        ],
+        ts="2026-06-18T12:00:00+00:00",
+    )
+    _write_burndown(burndown)
+
+    rc, out = emit_adg_action_queue_from_adg_run(
+        adg_artifacts_dir=artifacts,
+        ts="20260618_120000",
+        fail_closed=False,
+        print_inline=True,
+    )
+
+    captured = capsys.readouterr()
+    assert rc == 0
+    assert out == artifacts / "adg_action_queue_20260618_120000.json"
+    assert "# ADG Action Queue (triage)" in captured.out
+    assert "### BCG Action Queue Brief" in captured.out
+    assert "Gate-results source:" in captured.out
+    assert "Maintain SVP engineer-level repo standards" in captured.out
 
 
 def test_missing_accelerator_fix_only_degraded(tmp_path: Path) -> None:

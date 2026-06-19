@@ -43,6 +43,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
     display_verdict,
@@ -183,6 +184,77 @@ def _band_next_move(row: dict[str, int]) -> str:
     if int(row.get("track", 0)) or int(row.get("findings", 0)):
         return "work ranked queue; do not treat as new failures"
     return "no action"
+
+
+def _burndown_bcg_brief(
+    gates_doc: dict[str, Any],
+    burndown: dict[str, Any],
+    gate_results_path: Path,
+    burndown_path: Path,
+) -> dict[str, Any]:
+    gates: list[dict[str, Any]] = gates_doc["gates"]
+    summary = gates_doc.get("summary", {})
+    band_rows = _ci_band_summary(gates)
+    cluster_counts = _count_by_cluster(gates)
+    fix_total = cluster_counts.get("FIX", 0)
+    track_total = cluster_counts.get("TRACK", 0)
+    clear_total = cluster_counts.get("CLEAR", 0)
+    overall = "PASS" if gates_doc.get("overall_exit_code", 1) == 0 else "BLOCKED"
+    business_read = (
+        "Clear red gates first, then burn down tracked backlog; severity inventory is governed debt, not immediate work."
+        if fix_total
+        else "The run is green with backlog; burn down tracked debt after the blockers stay clear."
+    )
+    priority_rows: list[dict[str, Any]] = []
+    band_moves = {
+        "P0": ("Fix P0 red gates", "P0 failures block the run and need immediate attention.", "P0 is the blocking band."),
+        "P1": ("Burn down P1 ratchets", "P1 debt is the next highest maintenance drag.", "P1 follows the blocker band."),
+        "P2": ("Burn down P2 ratchets", "P2 debt is accepted backlog and should follow higher bands.", "P2 remains below P1."),
+        "P3": ("Close P3 advisory backlog", "P3 items are lowest urgency and should trail higher bands.", "P3 is the least urgent band."),
+    }
+    for band in ("P0", "P1", "P2", "P3"):
+        row = band_rows.get(band, {})
+        move, business_reason, why_this_rank = band_moves[band]
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": move,
+                "scope": band,
+                "business_reason": business_reason,
+                "technical_reason": (
+                    f"FIX={_fmt_int(row.get('fix', 0))}; TRACK gates={_fmt_int(row.get('track', 0))}; "
+                    f"TRACK rows={_fmt_int(row.get('track_rows', 0))}; CLEAR={_fmt_int(row.get('clear', 0))}."
+                ),
+                "why_this_rank": why_this_rank,
+                "decision": _band_next_move(row),
+            }
+        )
+
+    return build_bcg_brief(
+        title="BCG Burndown Brief",
+        status=overall,
+        business_read=business_read,
+        technical_read=[
+            f"Gate-results source: {_display_path(gate_results_path)}",
+            f"Burndown source: {_display_path(burndown_path)}",
+            f"Burndown schema version: {burndown.get('schema_version', 'unknown')}",
+            f"Snapshot timestamp: {gates_doc.get('timestamp', 'n/a')}",
+            f"Total gates: {gates_doc.get('total_gates', len(gates))}",
+            f"FIX gates: {fix_total}",
+            f"TRACK gates: {track_total}",
+            f"CLEAR gates: {clear_total}",
+            f"Aggregate verdict rows: block_pass={_fmt_int(summary.get('block_pass', 0))}; block_fail={_fmt_int(summary.get('block_fail', 0))}; ratchet_pass={_fmt_int(summary.get('ratchet_pass', 0))}; ratchet_regressed={_fmt_int(summary.get('ratchet_regressed', 0))}; warn={_fmt_int(summary.get('warn', 0))}.",
+        ],
+        priority_rule="Fix blockers first, then burn down ratchets, then keep advisory backlog visible.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "P0 blockers define whether the run is actually usable.",
+            "P1 and P2 ratchets are accepted debt and should be reduced after blockers are clear.",
+            "P3 items are the lowest urgency and should trail higher bands.",
+        ],
+        next_step="Clear red gates first, then burn down the largest tracked backlog.",
+        table_limit=4,
+    )
 
 
 def _load_gate_results(path: Path) -> dict[str, Any]:
@@ -336,6 +408,13 @@ def render(
             f"**TRACK**={track_n} (CI OK, backlog) · "
             f"**CLEAR**={cluster_counts.get('CLEAR', 0)}"
         )
+    a("")
+
+    lines.extend(
+        render_bcg_brief_md(
+            _burndown_bcg_brief(gates_doc, burndown, gate_results_path, burndown_path)
+        ).splitlines()
+    )
     a("")
 
     # ---------------------------------------------------- §1 ADG status by band
