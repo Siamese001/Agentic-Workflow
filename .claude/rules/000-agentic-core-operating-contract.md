@@ -3,6 +3,7 @@
 
 ## Non-negotiable spine laws
 
+- Deterministic workflow first: keep one live product path, one bounded agent, and one replayable artifact. Multi-agent and control-plane expansion comes later, after contracts, gates, replay, and state authority.
 - L2 proposes. Exit clears. UWG commits. L4 stores. L6 learns only after the current-run boundary.
 - Runtime gates decide live proceed/stop evidence. They do not emit final X3.
 - X1D judges may assess semantic quality. X2 deterministic gates enforce hard correctness. X3 aggregates exactly one disposition.
@@ -29,6 +30,7 @@ For imports, consumers, references, blast radius, layers, or who-uses-X:
 ## Proof law
 
 - Implementation claims require changed files, exact commands, command output, tests/gates, artifact paths, and honest status.
+- Plans, prompts, receipts, dashboards, and manifests are support evidence only; they do not certify runtime until the live trace consumes them.
 - PASS requires completed command output and passing tests/gates for the scoped seam.
 - PARTIAL requires useful completed work plus explicit unfinished proof.
 - FAIL requires exact failing command/output and smallest safe next patch.
