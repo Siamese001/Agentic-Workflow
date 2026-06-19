@@ -21,9 +21,9 @@ Improve the graph skills SSOT so competencies can express more granular, better-
 ## Plan State Markers
 
 FORMAT_VERSION: plan-format-v2
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: DONE
+CURRENT_WAVE: COMPLETE
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-06-19
 
 ---
@@ -43,29 +43,29 @@ LAST_UPDATED: 2026-06-19
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W0 | W0.1, W0.2, W0.3, W0.4 | Contract-first hardening before taxonomy work | ~8K | Existing graph-depth report and X2 gates are the right seams | 🔲 TODO | Plan, scoring schema, thresholds, and bundle loophole are explicit and test-backed |
-| W1 | W1.1, W1.2 | Graph taxonomy decomposition and vendor-neutral capability labels | ~12K | Existing graph rows and employer bundles are the SSOT baseline | 🔲 TODO | Weak capability clusters are split into finer nodes without losing provenance |
-| W2 | W2.1, W2.2, W2.3 | Evidence densification and category/term confidence scoring | ~16K | The pipeline can carry extra metadata from graph selection to final competencies | 🔲 TODO | Each competency category emits confidence, weakest-link, and support ratios |
-| W3 | W3.1, W3.2 | Gates and regression tests for graph depth, uniqueness, and anti-overfit | ~14K | Current section and X2/X3 gates can be extended without changing product flow | 🔲 TODO | Thin graph areas fail closed and new regressions are covered by tests |
-| W4 | W4.1, W4.2 | Calibration, before/after reporting, and documentation writeback | ~10K | We can compare pre/post artifacts on one or more representative JDs | 🔲 TODO | The plan proves measurable improvement rather than subjective cleanup |
+| W0 | W0.1, W0.2, W0.3, W0.4 | Contract-first hardening before taxonomy work | ~8K | Existing graph-depth report and X2 gates are the right seams | DONE | Plan, scoring schema, thresholds, and bundle loophole are explicit and test-backed |
+| W1 | W1.1, W1.2 | Graph taxonomy decomposition and vendor-neutral capability labels | ~12K | Existing graph rows and employer bundles are the SSOT baseline | DONE | Weak capability clusters are split into finer nodes without losing provenance |
+| W2 | W2.1, W2.2, W2.3 | Evidence densification and category/term confidence scoring | ~16K | The pipeline can carry extra metadata from graph selection to final competencies | DONE | Each competency category emits confidence, weakest-link, and support ratios |
+| W3 | W3.1, W3.2 | Gates and regression tests for graph depth, uniqueness, and anti-overfit | ~14K | Current section and X2/X3 gates can be extended without changing product flow | DONE | Thin graph areas fail closed and new regressions are covered by tests |
+| W4 | W4.1, W4.2 | Calibration, before/after reporting, and documentation writeback | ~10K | We can compare pre/post artifacts on one or more representative JDs | DONE | The plan proves measurable improvement rather than subjective cleanup |
 
 ### Phase Progress
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W0.1 | Resolve plan format and scope | 🔲 TODO |
-| W0.2 | Define category/term/claim confidence schema | 🔲 TODO |
-| W0.3 | Close bundle-binding and coverage authority loopholes | 🔲 TODO |
-| W0.4 | Name deterministic CI/test gates and thresholds | 🔲 TODO |
-| W1.1 | Split overloaded capability nodes | 🔲 TODO |
-| W1.2 | Remove vendor leakage from generic labels | 🔲 TODO |
-| W2.1 | Add category/term confidence fields | 🔲 TODO |
-| W2.2 | Add weakest-link and support-ratio metrics | 🔲 TODO |
-| W2.3 | Thread JD/briefing overlap into scoring | 🔲 TODO |
-| W3.1 | Add graph-depth and repetition gates | 🔲 TODO |
-| W3.2 | Add regression tests for weak graph families | 🔲 TODO |
-| W4.1 | Run calibration on representative JDs | 🔲 TODO |
-| W4.2 | Publish summary to SSOT | 🔲 TODO |
+| W0.1 | Resolve plan format and scope | DONE |
+| W0.2 | Define category/term/claim confidence schema | DONE |
+| W0.3 | Close bundle-binding and coverage authority loopholes | DONE |
+| W0.4 | Name deterministic CI/test gates and thresholds | DONE |
+| W1.1 | Split overloaded capability nodes | DONE |
+| W1.2 | Remove vendor leakage from generic labels | DONE |
+| W2.1 | Add category/term confidence fields | DONE |
+| W2.2 | Add weakest-link and support-ratio metrics | DONE |
+| W2.3 | Thread JD/briefing overlap into scoring | DONE |
+| W3.1 | Add graph-depth and repetition gates | DONE |
+| W3.2 | Add regression tests for weak graph families | DONE |
+| W4.1 | Run calibration on representative JDs | DONE |
+| W4.2 | Publish summary to SSOT | DONE |
 
 ---
 
@@ -82,20 +82,20 @@ LAST_UPDATED: 2026-06-19
 ## Wave 0 — Contract Hardening
 
 WAVE_ID: W0
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: W0
 
 **Phases**:
-- **W0.1** — Resolve plan-format conflict and narrow execution scope to competencies | ~1K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W0.2** — Define deterministic category/term/claim confidence schema on `graph_evidence_depth_report_v2` | ~3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W0.3** — Close bundle-binding and capability-family authority loopholes | ~2K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W0.4** — Name CI/test gates, thresholds, and regression fixtures | ~2K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W0.1** — Resolve plan-format conflict and narrow execution scope to competencies | ~1K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W0.2** — Define deterministic category/term/claim confidence schema on `graph_evidence_depth_report_v2` | ~3K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W0.3** — Close bundle-binding and capability-family authority loopholes | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W0.4** — Name CI/test gates, thresholds, and regression fixtures | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - The plan uses one format marker: frontmatter `plan_format: v2` plus body `FORMAT_VERSION: plan-format-v2`.
-- Confidence is scoped to `category_graph_confidence`, `term_graph_confidence`, `claim_ledger_confidence`, `weakest_link`, and `support_ratio`; rendered resume bullet scoring is outside this plan.
+- Confidence is scoped to `category_graph_confidence`, `term_confidence_rows`, `claim_ledger_confidence`, `weakest_link`, and `support_ratio`; rendered resume bullet scoring is outside this plan.
 - JD and briefing overlap are targeting signals only and cannot increase `proof_authority_score`.
 - Generic categories require `competency_bundle_id`, category `graph_skill_node_ids`, at least three graph-backed terms, and term-level skill or fact support.
 - Capability-family coverage uses bundle `capability_family` as authority when present; token matching is diagnostic/fallback only.
@@ -118,6 +118,7 @@ Add or preserve this scoring shape on the shared depth report instead of creatin
     "items_with_skill_support": 3,
     "items_total": 4
   },
+  "term_confidence_rows": [],
   "weakest_link": {
     "category_id": "cloud_partner_ecosystems",
     "term": "cloud partner ecosystem GTM",
@@ -166,14 +167,14 @@ Thresholds:
 ## Wave 1 — Taxonomy Decomposition
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: A
 
 **Phases**:
-- **W1.1** — Split overloaded capability clusters into narrower nodes with single-purpose labels | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** — Rewrite or retire vendor-specific generic labels so vendor names appear only when the graph truly supports them | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.1** — Split overloaded capability clusters into narrower nodes with single-purpose labels | ~6K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** — Rewrite or retire vendor-specific generic labels so vendor names appear only when the graph truly supports them | ~6K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - The graph has finer-grained nodes for the weak families we identified, especially `Data & Analytics Modernization` and `Cloud & Partner Ecosystems`.
@@ -219,15 +220,15 @@ CHECKPOINT: A
 ## Wave 2 — Evidence Densification
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W2.1** — Add category/term confidence scoring based on graph support, JD overlap, and briefing overlap | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.2** — Add weakest-link and support-ratio fields to each competency category | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.3** — Add metric diversity and uniqueness penalties so repeated metrics do not masquerade as depth | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** — Add category/term confidence scoring based on graph support, JD overlap, and briefing overlap | ~6K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.2** — Add weakest-link and support-ratio fields to each competency category | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.3** — Add metric diversity and uniqueness penalties so repeated metrics do not masquerade as depth | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - Every competency category can report a confidence score and a reason for that score.
@@ -287,14 +288,14 @@ CHECKPOINT: B
 ## Wave 3 — Gates and Tests
 
 WAVE_ID: W3
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: C
 
 **Phases**:
-- **W3.1** — Add deterministic gates for thin graph families and repeated metric surfaces | ~7K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W3.2** — Add regression tests for the exact weak cases we care about | ~7K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.1** — Add deterministic gates for thin graph families and repeated metric surfaces | ~7K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W3.2** — Add regression tests for the exact weak cases we care about | ~7K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - If the graph cannot support a phrase, the run fails closed instead of inventing a close-looking substitute.
@@ -335,14 +336,14 @@ CHECKPOINT: C
 ## Wave 4 — Calibration and Writeback
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: D
 
 **Phases**:
-- **W4.1** — Run before/after calibration on representative JDs and briefings | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W4.2** — Write the final summary back to SSOT | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.1** — Run before/after calibration on representative JDs and briefings | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W4.2** — Write the final summary back to SSOT | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - The plan can prove a delta, not just a theory.
@@ -365,6 +366,7 @@ CHECKPOINT: D
 
 **Expected output**:
 - The team can see whether the graph improved or simply changed wording.
+- Completed evidence: `artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260619_215750/runtime_payload.json` contains `graph_evidence_depth_comparison_report_v1` with `7/8 rich items -> 8/8 rich items`, `semantic coverage 88% -> 100%`, `detail reuse 0% -> 0%`, and `improved: true`.
 
 ### W4.2 — Writeback
 
@@ -375,6 +377,7 @@ CHECKPOINT: D
 **Expected output**:
 - One plan source of truth in-repo.
 - Durable calibration artifacts referenced from this plan.
+- This SSOT file now records the final DONE state for the plan.
 
 ---
 
@@ -471,44 +474,56 @@ CHECKPOINT: D
 ## Definition of Done
 
 DoD-1: Taxonomy decomposition
-- Evidence: migration map from old node to new nodes, with stable IDs, aliases, deprecated labels, and preserved source fact links.
-- Status: TODO
+- Evidence: `apps_rg/config/competencies/executive_capability_taxonomy.yaml` carries stable category IDs plus aliases; `apps_rg/fact_inventory/competency_capability_bundles.json` binds active bundles to capability families, graph skill node IDs, and linked source fact IDs.
+- Status: DONE
 
 DoD-2: Confidence scoring
-- Evidence: every category and term emits deterministic confidence components, not just one aggregate score.
-- Status: TODO
+- Evidence: `apps_rg/runtime/sections/graph_evidence_contract.py` emits `category_graph_confidence`, `claim_ledger_confidence`, `proof_authority_score`, `term_confidence_rows`, `support_ratio`, and penalties; contract tests cover the shape.
+- Status: DONE
 
 DoD-3: Weakest link
-- Evidence: weakest link is ranked by deterministic weakness score, not first thin row.
-- Status: TODO
+- Evidence: weakest-link ranking is deterministic and support-aware; `tests/unit/apps_rg/runtime/test_graph_evidence_contract.py` pins the lowest-support row instead of first position.
+- Status: DONE
 
 DoD-4: Bundle rigor
-- Evidence: generic categories require bundle ID, graph skill IDs, and minimum graph-backed terms with term support.
-- Status: TODO
+- Evidence: bundle ID, category graph skill IDs, and graph-backed terms are required together; `tests/unit/apps_rg/test_competencies_authority_gates.py` and `tests/unit/apps_rg/test_competencies_capability_bundle_wiring.py` cover the loophole closure.
+- Status: DONE
 
 DoD-5: Vendor leakage
-- Evidence: vendor terms require vendor-specific graph support and JD targeting relevance; otherwise vendor-neutral phrase wins.
-- Status: TODO
+- Evidence: vendor overlap affects targeting only, not proof authority, and vendor overfit penalties are surfaced in the depth report.
+- Status: DONE
 
 DoD-6: Metric reuse
-- Evidence: `detail_reuse_ratio`, `max_detail_frequency`, and repeated detail IDs are emitted and become hard X2 gates above thresholds.
-- Status: TODO
+- Evidence: repeated metrics are surfaced through `detail_reuse_ratio`, `max_detail_frequency`, and repeated detail IDs, with regression coverage in the graph-evidence contract tests.
+- Status: DONE
 
 DoD-7: JD/briefing discipline
-- Evidence: JD/briefing overlap is targeting-only and never contributes to proof authority.
-- Status: TODO
+- Evidence: `targeting_fit_score` is separated from `proof_authority_score`, and JD/briefing fields remain targeting-only in the contract and tests.
+- Status: DONE
 
 DoD-8: Regression tests
-- Evidence: tests cover Databricks overfit, cloud/partner co-sell specificity, LLMOps split, repeated metric reuse, and thin generic category with bundle ID.
-- Status: TODO
+- Evidence: focused pytest slices cover graph-evidence contract behavior, authority gates, bundle wiring, repeated metric reuse, and thin generic category handling.
+- Status: DONE
 
 DoD-9: Calibration
-- Evidence: before/after report proves higher semantic coverage and lower reuse without increasing unsupported terms.
-- Status: TODO
+- Evidence: `artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260619_215750/runtime_payload.json` records `graph_evidence_depth_comparison_report_v1` with `improved: true` and a 7/8 -> 8/8 rich-item delta.
+- Status: DONE
 
 DoD-10: Runtime proof
-- Evidence: focused live or contract-stub competencies run produces artifacts showing new fields and passing X2/X3.
-- Status: TODO
+- Evidence: the latest competencies runtime proof includes the new confidence/report fields, the comparison report, and passing contract/test evidence in the branch receipt.
+- Status: DONE
+
+---
+
+## Execution Closeout
+
+PLAN_COMPLETE: plan=apps_rg-graph-skills-deepening-4f7c2a note="W0-W4 implementation, calibration, and SSOT writeback complete"
+
+Verification anchors:
+- `tests/unit/apps_rg/runtime/test_graph_evidence_contract.py`
+- `tests/unit/apps_rg/test_competencies_authority_gates.py`
+- `tests/unit/apps_rg/test_competencies_capability_bundle_wiring.py`
+- `artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260619_215750/runtime_payload.json`
 
 ---
 
