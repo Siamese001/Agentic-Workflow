@@ -36,6 +36,18 @@ TEST_FOLDERS = ("unit", "e2e", "regression", "integration", "smoke", "golden", "
 TEST_TYPE_BY_FOLDER = {"fixtures": "fixture"}
 VERDICTS = {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
 
+# The next-slice fix ordering is intentionally human-readable, not a raw count sort.
+# We keep the broad architecture drift row ahead of the narrow control bypass row,
+# then the contract-seam debt row, so the executive brief can explain the business
+# tradeoff in plain English.
+_FIX_PRIORITY_FAMILY_ORDER: dict[str, int] = {
+    "LayerSkipGate": 0,
+    "L5BypassGate": 1,
+    "UntypedSeamGate": 2,
+    "LpgDriftRatchetGate": 3,
+    "UnusedImportsRatchetGate": 4,
+}
+
 
 def _repo_rel(path: Path | None) -> str:
     if path is None:
@@ -864,14 +876,58 @@ def build_canonical_next_best_actions(gate_rows: list[dict[str, Any]], graphdb_d
     actions = []
     inconsistent = [r for r in artifact_usage_matrix.get("rows", []) if not r.get("exists") and r.get("artifact_key") in {"gate_results", "sqlite_snapshot"}]
     if inconsistent:
-        actions.append(_action("repair_reporting", "Repair missing decision-grade ADG artifact", "ADG reporting", "A required artifact is missing, so the run is degraded.", "artifact", "Confirm artifacts emit and latest/docs copies exist.", "now", "high"))
+        actions.append(
+            _action(
+                "repair_reporting",
+                "Repair missing decision-grade ADG artifact",
+                "ADG reporting",
+                "A required artifact is missing, so the run is degraded.",
+                "artifact",
+                "Confirm artifacts emit and latest/docs copies exist.",
+                "now",
+                "high",
+                business_reason="Decision-grade reporting is incomplete until the required artifact exists.",
+                technical_reason="The run is missing a required artifact, so ADG cannot be treated as fully decision-grade.",
+                why_this_rank="This sits ahead of all slice work because report integrity has to be repaired before ranking any fix slice.",
+            )
+        )
     fix = [g for g in gate_rows if display_verdict(g) == "FIX"]
-    for g in sorted(fix, key=lambda r: (-_reg_delta(r), str(r.get("gate_id", ""))))[:3]:
-        actions.append(_action("fix_blocker", f"Clear red gate {g.get('gate_id')}", str(g.get("gate_id")), "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis.", "gate", "Add mapped tests when touched scope overlaps a hotspot.", "now", "high"))
+    for g in sorted(fix, key=lambda r: (_fix_priority_family_rank(r), -_reg_delta(r), -int(r.get("violation_count") or 0), str(r.get("gate_id", ""))))[:3]:
+        business_reason, technical_reason, why_this_rank = _fix_priority_copy(g)
+        actions.append(
+            _action(
+                "fix_blocker",
+                f"Clear red gate {g.get('gate_id')}",
+                str(g.get("gate_id")),
+                business_reason,
+                "gate",
+                "Add mapped tests when touched scope overlaps a hotspot.",
+                "now",
+                "high",
+                business_reason=business_reason,
+                technical_reason=technical_reason,
+                why_this_rank=why_this_rank,
+            )
+        )
     tests = testing_investment_map.get("investment_map", [])
     if tests:
         top = tests[0]
-        actions.append(_action("add_tests", f"Fund mapped tests for {top['production_scope']}", top["production_scope"], "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.", "testing_hotspot", top.get("recommended_test_investment", "Add mapped tests."), "now" if not fix else "if_touched", "medium"))
+        why = "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down."
+        actions.append(
+            _action(
+                "add_tests",
+                f"Fund mapped tests for {top['production_scope']}",
+                top["production_scope"],
+                why,
+                "testing_hotspot",
+                top.get("recommended_test_investment", "Add mapped tests."),
+                "now" if not fix else "if_touched",
+                "medium",
+                business_reason=why,
+                technical_reason=top.get("recommended_test_investment", "Add mapped tests."),
+                why_this_rank="This follows the blocker slice because mapped tests reduce repeat-risk after the failing surface is identified.",
+            )
+        )
     # Graph-driven refactor action: a studied high-blast-radius seam overlapping a blocker,
     # hotspot, or newly-introduced critical path is a codebase-wide action, not a sorted gate.
     graph_risks = graphdb_decision_impact.get("top_graph_risks", [])
@@ -881,15 +937,60 @@ def build_canonical_next_best_actions(gate_rows: list[dict[str, Any]], graphdb_d
         scope = str(gr.get("scope") or "")
         signal = str(gr.get("graph_signal") or "")
         if scope and (scope in test_scopes or (scope.lower() and scope.lower() in fix_scope_text) or "newly_introduced" in signal):
-            actions.append(_action("refactor", f"Refactor high-blast-radius seam {scope}", scope, "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.", "graphdb", "Add mapped tests before refactoring this seam.", "if_touched" if fix else "after_green", "medium"))
+            why = "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path."
+            actions.append(
+                _action(
+                    "refactor",
+                    f"Refactor high-blast-radius seam {scope}",
+                    scope,
+                    why,
+                    "graphdb",
+                    "Add mapped tests before refactoring this seam.",
+                    "if_touched" if fix else "after_green",
+                    "medium",
+                    business_reason=why,
+                    technical_reason=why,
+                    why_this_rank="This comes after the fix slice because the refactor is best handled once the blocker and test exposure are explicit.",
+                )
+            )
             break
     ratchets = [g for g in gate_rows if display_verdict(g) == "TRACK" and display_verdict_sub(g) == "floor"]
     if ratchets:
         g = sorted(ratchets, key=lambda r: (-int(r.get("violation_count") or 0), str(r.get("gate_id", ""))))[0]
-        actions.append(_action("burn_down_ratchet", f"Burn down ratchet {g.get('gate_id')}", str(g.get("gate_id")), "Accepted baseline debt should fall after red gates are clear.", "gate", "Add tests only when touched scope overlaps hotspot.", "after_green", "medium"))
+        why = "Accepted baseline debt should fall after red gates are clear."
+        actions.append(
+            _action(
+                "burn_down_ratchet",
+                f"Burn down ratchet {g.get('gate_id')}",
+                str(g.get("gate_id")),
+                why,
+                "gate",
+                "Add tests only when touched scope overlaps hotspot.",
+                "after_green",
+                "medium",
+                business_reason=why,
+                technical_reason=f"{_fmt_int(g.get('violation_count'))} floor-row(s) remain on the ratchet gate.",
+                why_this_rank="This is deferred until the current red gates clear because it is accepted baseline debt, not the immediate blocker slice.",
+            )
+        )
     low = [r for r in mv_usefulness_audit.get("rows", []) if r.get("recommendation") in {"refine", "deprecate_candidate"}]
     if low:
-        actions.append(_action("refine", f"Refine/deprecate low-value ADG signal {low[0]['mv_name']}", low[0]["mv_name"], "Suppress or retire signals that do not affect decisions.", "mv", "No test required unless generator logic changes.", "deprecate", "low"))
+        why = "Suppress or retire signals that do not affect decisions."
+        actions.append(
+            _action(
+                "refine",
+                f"Refine/deprecate low-value ADG signal {low[0]['mv_name']}",
+                low[0]["mv_name"],
+                why,
+                "mv",
+                "No test required unless generator logic changes.",
+                "deprecate",
+                "low",
+                business_reason=why,
+                technical_reason=low[0].get("decision_impact", "No current decision effect."),
+                why_this_rank="This is last because it is cleanup of decision noise, not a blocker or a high-risk exposure.",
+            )
+        )
     for i, row in enumerate(actions[:8], 1):
         row["rank"] = i
     return {"status": "present", "rows": actions[:8]}
@@ -897,18 +998,116 @@ def build_canonical_next_best_actions(gate_rows: list[dict[str, Any]], graphdb_d
 
 def _reg_delta(g: dict[str, Any]) -> int:
     for key in ("regression_delta", "delta", "new_records", "new", "worsened"):
-        try:
-            return int(g.get(key) or 0)
-        except (TypeError, ValueError):
-            pass
+        value = g.get(key)
+        if value not in (None, ""):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                pass
     try:
-        return max(0, int(g.get("violation_count") or 0) - int(g.get("baseline_count") or 0))
+        base = g.get("baseline_count")
+        if base in (None, ""):
+            base = g.get("baseline_records")
+        if base in (None, ""):
+            return 0
+        return max(0, int(g.get("violation_count") or 0) - int(base))
     except (TypeError, ValueError):
         return 0
 
 
-def _action(action_type: str, action: str, scope: str, why: str, signal_type: str, testing: str, timing: str, confidence: str) -> dict[str, Any]:
-    return {"rank": None, "action_type": action_type, "action": action, "scope": scope, "why_now": why, "evidence_used": [{"signal_name": scope, "signal_type": signal_type, "decision_effect": why}], "testing_requirement": testing, "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.", "confidence": confidence, "timing": timing}
+def _action(
+    action_type: str,
+    action: str,
+    scope: str,
+    why: str,
+    signal_type: str,
+    testing: str,
+    timing: str,
+    confidence: str,
+    *,
+    business_reason: str | None = None,
+    technical_reason: str | None = None,
+    why_this_rank: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "rank": None,
+        "action_type": action_type,
+        "action": action,
+        "scope": scope,
+        "why_now": why,
+        "business_reason": business_reason or why,
+        "technical_reason": technical_reason or testing,
+        "why_this_rank": why_this_rank or why,
+        "evidence_used": [{"signal_name": scope, "signal_type": signal_type, "decision_effect": why}],
+        "testing_requirement": testing,
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "confidence": confidence,
+        "timing": timing,
+    }
+
+
+def _fix_priority_family_rank(gate: dict[str, Any]) -> int:
+    gate_class = str(gate.get("gate_class") or "").strip()
+    gate_id = str(gate.get("gate_id") or "").strip()
+    if gate_class in _FIX_PRIORITY_FAMILY_ORDER:
+        return _FIX_PRIORITY_FAMILY_ORDER[gate_class]
+    if gate_id.startswith("B2_"):
+        return 0
+    if gate_id.startswith("C2_"):
+        return 1
+    if gate_id.startswith("F1_"):
+        return 2
+    if gate_id.startswith("L2_"):
+        return 3
+    if gate_id.startswith("S4_"):
+        return 4
+    return 50
+
+
+def _fix_priority_copy(gate: dict[str, Any]) -> tuple[str, str, str]:
+    gate_id = str(gate.get("gate_id") or "").strip()
+    gate_class = str(gate.get("gate_class") or "").strip()
+    band = str(gate.get("band") or "P?")
+    count = _fmt_int(gate.get("violation_count"))
+    base = gate.get("baseline_count")
+    base_text = _fmt_int(base) if base not in (None, "") else "none"
+    delta = _reg_delta(gate)
+
+    if gate_class == "LayerSkipGate" or gate_id.startswith("B2_"):
+        return (
+            "Broad architecture drift: layer skipping increases future change cost across the repo and weakens the authority model.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; imports are skipping more than one layer ordinal.",
+            "Ranks first because a cross-cutting layer-hop pattern will keep generating rework in every later slice.",
+        )
+    if gate_class == "L5BypassGate" or gate_id.startswith("C2_"):
+        return (
+            "Zero-tolerance governance breach: a small number of L5 bypasses can invalidate control assurances even when the footprint is small.",
+            f"{gate_id}: {count} finding(s), {band}; provider/tool calls are skipping the L5 gateway.",
+            "Ranks second because the control breach is severe, but the affected surface is narrower than the broader layer-skip regression above.",
+        )
+    if gate_class == "UntypedSeamGate" or gate_id.startswith("F1_"):
+        return (
+            "Contract-seam debt: wide untyped seams slow safe change and increase integration risk across many callers.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; cross-layer imports land on empty type surfaces.",
+            "Ranks third because it is broad technical debt, but not as cross-cutting as the layer-hop problem or as severe as the P0 control bypass.",
+        )
+    if gate_class == "LpgDriftRatchetGate" or gate_id.startswith("L2_"):
+        return (
+            "Boundary drift: even a small P0 ratchet at the L_PG boundary weakens the separation model and can spread if left alone.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; illegal or drifted imports touch the L_PG boundary.",
+            "Ranks below the first three because the current slice is small and the regression surface is more localized.",
+        )
+    if gate_class == "UnusedImportsRatchetGate" or gate_id.startswith("S4_"):
+        return (
+            "Hygiene debt: unused imports are real cleanup, but they move the business needle less than boundary or control-plane failures.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; unused import edges remain in production modules.",
+            "Ranks later because the work is valuable but mostly reduces clutter rather than decision-grade risk.",
+        )
+    return (
+        "Current FIX gate blocks decision-grade green and should be fixed before the next slice proceeds.",
+        f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}.",
+        "Ranks here because it is a current blocker in the next-slice plan.",
+    )
 
 
 def _patient_size(repo_root: Path, gate_doc: dict[str, Any] | None) -> dict[str, Any]:
@@ -1217,6 +1416,10 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     testing = doc.get("lens_4_testing_control_gaps", {})
     graph = doc.get("lens_5_graphdb_mv_decision_impact", {})
     actions = (doc.get("canonical_next_best_actions") or {}).get("rows") or []
+    raw_inputs = doc.get("raw_inputs") or {}
+    artifacts = raw_inputs.get("artifacts") or {}
+    sqlite_snapshot = str(artifacts.get("sqlite_snapshot") or "").strip()
+    snapshot_ts = _sqlite_ts(Path(sqlite_snapshot)) if sqlite_snapshot else ""
     priority_rows: list[dict[str, Any]] = []
     for row in actions[:4]:
         evidence = "; ".join(
@@ -1229,9 +1432,9 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
                 "priority": row.get("rank"),
                 "move": row.get("action"),
                 "scope": row.get("scope"),
-                "business_reason": row.get("why_now"),
-                "technical_reason": row.get("testing_requirement") or evidence or row.get("action"),
-                "why_this_rank": row.get("why_now"),
+                "business_reason": row.get("business_reason") or row.get("why_now"),
+                "technical_reason": row.get("technical_reason") or row.get("testing_requirement") or evidence or row.get("action"),
+                "why_this_rank": row.get("why_this_rank") or row.get("why_now"),
                 "decision": row.get("action_type"),
             }
         )
@@ -1243,6 +1446,11 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             "Spend executive time on blockers and test gaps before accepted debt."
         ),
         technical_read=[
+            (
+                f"ADG source: {sqlite_snapshot} (snapshot {snapshot_ts})"
+                if sqlite_snapshot
+                else f"ADG source: missing (snapshot {doc.get('run', {}).get('snapshot_ts') or doc.get('run', {}).get('run_id') or 'missing'})"
+            ),
             f"FIX gates: {_fmt_int(health.get('summary', {}).get('fix_gates', 0))}; "
             f"TRACK gates: {_fmt_int(health.get('summary', {}).get('track_gates', 0))}",
             runtime.get("measurement_gap_vs_quality_failure") or runtime.get("executive_read", ""),

@@ -34,6 +34,7 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
     assert "Maintain SVP engineer-level repo standards" in md
     assert "### BCG Sample Brief" in md
     assert "- **Business read:** Fix the blocker first, then clean the waste." in md
+    assert "- **Column key:** Business reason = why the item matters to delivery or governance;" in md
     assert "| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |" in md
     assert "Why this order:" in md
 
