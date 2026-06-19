@@ -36,5 +36,7 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
 
     assert rg_package["g28_audit_completeness"]["verdict"] == "PASS"
     assert rg_package["g29_learning_firewall"]["verdict"] == "PASS"
-    assert eval_bridge["g28_audit_completeness"]["verdict"] == "PASS"
+    assert eval_bridge["boundary_scope"] == "L6_1_2_BOUNDARY_ONLY"
+    assert eval_bridge["readiness_decision"] == "HOLD_FOR_MISSING_EVIDENCE"
+    assert eval_bridge["g28_audit_completeness"]["verdict"] == "FAIL"
     assert eval_bridge["g29_learning_firewall"]["verdict"] == "PASS"

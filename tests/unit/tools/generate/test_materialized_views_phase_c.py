@@ -308,8 +308,8 @@ class TestTraceReplayEvalViews:
         _node2(conn, 1, "target", "L4", "agentic_core/L4_state/store.py")
         exempt_paths = [
             "agentic_core/L6_observability/shadow_eval/span_export.py",
+            "agentic_core/L6_observability/shadow_eval/adapters/apps_eval_record.py",
             "apps_eval/adapters/apps_rg.py",
-            "apps_eval/l6_shadow_bridge.py",
             "apps_eval/matrix.py",
             "apps_eval/scenarios.py",
             "apps_eval/tests/test_apps_rg_live_adapter.py",

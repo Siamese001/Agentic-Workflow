@@ -260,6 +260,8 @@ class TestTrendContracts:
         assert dashboard.to_dict()["artifact_paths"] == {}
         assert dashboard.to_dict()["trend_dashboard_digest"] == ""
         assert decision.status == "blocked"
+        assert decision.decision_kind == "ADVISORY_EVAL_REGRESSION_CHECK"
+        assert decision.release_authority == "NONE"
         assert decision.artifact_paths == {}
         assert decision.to_dict()["schema_version"] == CURRENT_RELEASE_GATE_SCHEMA_VERSION
 
