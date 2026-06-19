@@ -9,6 +9,7 @@ import types
 import pytest
 
 from apps_research.engines.company_brief_engine import CompanyBriefEngine, _v2_enabled
+from apps_research.engines.company_brief_engine import CompanyBriefUnavailableError
 
 
 def test_v2_flag_off_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -23,22 +24,22 @@ def test_v2_flag_on_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_v2_path_offline_degrades_gracefully(monkeypatch: pytest.MonkeyPatch) -> None:
-    """V2 path with no TAVILY_API_KEY degrades to stub synthesis (plan §P1.4 acceptance).
+    """V2 path with no SEARXNG_BASE_URL fails closed without network calls.
 
-    Ensures the feature-flag ON case does not regress offline test environments.
+    Ensures the feature-flag ON case stays deterministic in offline test environments.
     """
-    for k in ("TAVILY_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
+    for k in ("SEARXNG_BASE_URL", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
     engine = CompanyBriefEngine()
-    payload = engine.execute({"topic": "TestCo", "depth": "shallow"})
-    assert payload["company"] == "TestCo"
+    with pytest.raises(CompanyBriefUnavailableError, match="v2 research returned no grounded findings"):
+        engine.execute({"topic": "TestCo", "depth": "shallow"})
 
 
 @pytest.fixture
 def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for k in (
-        "TAVILY_API_KEY",
+        "SEARXNG_BASE_URL",
         "ANTHROPIC_API_KEY",
         "OPENAI_API_KEY",
         "GEMINI_API_KEY",
@@ -47,13 +48,10 @@ def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(k, raising=False)
 
 
-def test_engine_produces_schema_valid_brief_offline(offline_env: None) -> None:
+def test_engine_fails_closed_without_live_or_curated_research(offline_env: None) -> None:
     engine = CompanyBriefEngine()
-    payload = engine.execute({"topic": "TestCo", "depth": "shallow"})
-    assert payload["company"] == "TestCo"
-    assert payload["overview"]["tagline"].startswith("TestCo")
-    assert len(payload["strategic_priorities"]) >= 2
-    assert len(payload["language_to_mirror"]) >= 3
+    with pytest.raises(CompanyBriefUnavailableError, match="adaptive research returned no grounded findings"):
+        engine.execute({"topic": "TestCo", "depth": "shallow"})
 
 
 def test_engine_rejects_empty_topic(offline_env: None) -> None:
@@ -69,9 +67,8 @@ def test_engine_uses_jd_facets_into_mirror_seed(tmp_path, offline_env: None) -> 
         encoding="utf-8",
     )
     engine = CompanyBriefEngine()
-    payload = engine.execute({"topic": "TestCo", "jd_anchor": jd_path, "depth": "shallow"})
-    # JD facets should leak into mirror seed via the stub.
-    assert any(facet in payload["language_to_mirror"] for facet in ("consulting", "agentic", "data"))
+    with pytest.raises(CompanyBriefUnavailableError, match="adaptive research returned no grounded findings"):
+        engine.execute({"topic": "TestCo", "jd_anchor": jd_path, "depth": "shallow"})
 
 
 def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -107,12 +104,12 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
     )
 
     class _FakeChatCompletions:
-        def create(self, *, model, messages, temperature, max_tokens):
+        def create(self, *, model, messages, temperature, max_completion_tokens):
             captured.append(
                 {
                     "model": model,
                     "temperature": temperature,
-                    "max_tokens": max_tokens,
+                    "max_completion_tokens": max_completion_tokens,
                     "messages": tuple(messages),
                 }
             )
@@ -140,4 +137,4 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
         "gpt-5.4-mini",
         "gpt-5.4-mini",
     ]
-    assert all(row["max_tokens"] == 777 for row in captured)
+    assert all(row["max_completion_tokens"] == 777 for row in captured)

@@ -110,36 +110,36 @@ source_blocklist:
   - paywalled_without_subscription
 
 # Cross-reference requirements
-  cross_reference_requirements:
-    material_claims_require_multiple_sources: true
-    minimum_sources_for_material_claim: 2
+cross_reference_requirements:
+  material_claims_require_multiple_sources: true
+  minimum_sources_for_material_claim: 2
   
-  financial_claims:
-    require_tier_1_source: true
-    allow_tier_2_with_audit_trail: true
+financial_claims:
+  require_tier_1_source: true
+  allow_tier_2_with_audit_trail: true
     
-    executive_claims:
-      require_tier_1_or_tier_2: true
-      linkedin_ok_for_secondary_confirmation: true
+executive_claims:
+  require_tier_1_or_tier_2: true
+  linkedin_ok_for_secondary_confirmation: true
 
-  jd_archetype_requirements:
-    partnerships_ecosystem:
-      required_source_classes:
-        - investor_relations
-        - leadership_interviews
-        - partner_blogs
-        - customer_case_studies
-        - trade_press
-      preferred_source_classes:
-        - investor_day
-        - podcasts
-        - channel_media
-    regulated_enterprise:
-      required_source_classes:
-        - investor_relations
-        - regulatory_disclosures
-        - leadership_interviews
-        - customer_case_studies
-      preferred_source_classes:
-        - earnings_transcripts
-        - trade_press
+jd_archetype_requirements:
+  partnerships_ecosystem:
+    required_source_classes:
+      - investor_relations
+      - leadership_interviews
+      - partner_blogs
+      - customer_case_studies
+      - trade_press
+    preferred_source_classes:
+      - investor_day
+      - podcasts
+      - channel_media
+  regulated_enterprise:
+    required_source_classes:
+      - investor_relations
+      - regulatory_disclosures
+      - leadership_interviews
+      - customer_case_studies
+    preferred_source_classes:
+      - earnings_transcripts
+      - trade_press

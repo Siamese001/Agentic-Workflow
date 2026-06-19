@@ -241,7 +241,8 @@ class TestNoAppsResearchHardcodingInCore:
         
         forbidden = [
             "if app_id == 'apps_research'",
-            "tavily",  # App-specific source
+            "searxng",  # App-specific source
+            "tavily",  # Legacy app-specific source
             "manual_brief",  # App-specific source
             "company_brief_v1",  # App-specific coverage
         ]

@@ -7,7 +7,7 @@ Sections
 Golden path + JD path (20 tests, §5.2)
 Negative controls — baseline (12 tests) + JD (11 tests) = 23 (§5.3)
 
-All tests are UNIT-ONLY (no network, no Tavily). Retrieval is mocked or
+All tests are UNIT-ONLY (no network, no SearXNG). Retrieval is mocked or
 stubbed; engines run in offline mode.
 """
 
@@ -976,7 +976,7 @@ def _run_dossier_engine(n_sources: int = 25) -> dict:
 
 
 class TestDossierDepthRetrieval:
-    """P3.1 — DOSSIER-depth SLO baseline using mocked Tavily (no network).
+    """P3.1 — DOSSIER-depth SLO baseline using mocked SearXNG (no network).
 
     Verifies:
       - ``max_queries == 15`` for DOSSIER profile

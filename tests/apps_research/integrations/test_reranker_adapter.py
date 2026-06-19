@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from apps_research.integrations.reranker_adapter import rerank
-from apps_research.integrations.tavily_retrieval import RetrievedDoc
+from apps_research.integrations.search_retrieval import RetrievedDoc
 
 
 def _mkdocs(scores: list[float]) -> list[RetrievedDoc]:
