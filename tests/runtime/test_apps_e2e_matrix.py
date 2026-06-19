@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.certification.apps_e2e.app_specs import APP_SPECS
+from tools.certification.apps_e2e.app_specs import APP_SPECS, find_spec
 from tools.certification.apps_e2e.matrix_builder import build_matrix
 from tools.certification.apps_e2e.paths import MATRIX_PATH, AppCertPaths
 
@@ -84,10 +84,11 @@ def test_apps_rg_is_runnable_in_matrix(matrix: dict) -> None:
     assert rg["entrypoint_command"].startswith("python -m apps_rg")
 
 
-def test_skeleton_apps_marked_not_runnable_in_matrix(matrix: dict) -> None:
+def test_apps_underwriting_ai_runnable_matches_registry(matrix: dict) -> None:
     by_name = {row["app_name"]: row for row in matrix["apps"]}
-    if "apps_underwriting_ai" in by_name:
-        assert by_name["apps_underwriting_ai"]["entrypoint_runnable"] is False
+    spec = find_spec("apps_underwriting_ai")
+    assert spec is not None
+    assert by_name["apps_underwriting_ai"]["entrypoint_runnable"] is spec.runnable
 
 
 def test_print_matrix_table(matrix: dict, capsys: pytest.CaptureFixture) -> None:
