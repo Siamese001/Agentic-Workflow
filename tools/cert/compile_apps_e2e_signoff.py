@@ -99,7 +99,7 @@ except ImportError:  # pragma: no cover - direct script execution
 
 COMPILER_VERSION = "apps_e2e_fortknox-v1.0"
 SCHEMA_VERSION = "apps_e2e_fortknox-v1"
-COMPILER_PATH_REL = "scripts/compile_apps_e2e_signoff.py"
+COMPILER_PATH_REL = "tools/cert/compile_apps_e2e_signoff.py"
 
 REQS_PATH = APPS_REQS_PATH
 ASSERTIONS_PATH = APPS_ASSERTIONS_PATH
