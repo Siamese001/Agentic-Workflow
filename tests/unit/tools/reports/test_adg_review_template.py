@@ -341,12 +341,16 @@ def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: P
     assert "### Executive Decision Brief" in inline
     assert "### Testing Gap Risk" in inline
     assert "Fund a narrow unblock-and-test slice now." in inline
+    assert "| Priority | Move | Why it matters | Evidence | Next step |" in inline
     assert "### Priority Execution Plan" in inline
     assert doc["priority_execution_plan"]["rows"][0]["priority_work"].startswith("Fix P1 red gates first")
     assert "Testing implication" in inline
     assert "If this work touches a Testing Gap Risk file or caller" in inline
     assert "What to do:" not in inline
     assert "Do This Next" not in inline
+    assert "Business reason" not in inline
+    assert "Technical reason" not in inline
+    assert "Why this order" not in inline
     assert "`apps_rg/runtime/sections/executive_summary_lane.py`" in inline
 
 
