@@ -219,6 +219,15 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Python
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
+
       - name: Summarize contract gate routing
         env:
           ANY: ${{ needs.changes.outputs.any }}
@@ -272,15 +281,56 @@ jobs:
             fi
           fi
 
-          python ops_scripts/ci/write_ci_disposition.py \
-            --workflow contract-gates \
-            --lane contract-summary \
-            --status "${status}" \
-            --reason "${reason}" \
-            --evidence-artifact "contract-gates-${{ github.run_id }}" \
-            --selected-lanes-text "${SELECTED_LANES:-}" \
-            --changed-files-text "${CHANGED_FILES:-}" \
-            --out artifacts/ci/contract-gates/ci_disposition.json
+          mkdir -p artifacts/ci/contract-gates
+
+          if [ -f ops_scripts/ci/write_ci_disposition.py ]; then
+            python ops_scripts/ci/write_ci_disposition.py \
+              --workflow contract-gates \
+              --lane contract-summary \
+              --status "${status}" \
+              --reason "${reason}" \
+              --evidence-artifact "contract-gates-${{ github.run_id }}" \
+              --selected-lanes-text "${SELECTED_LANES:-}" \
+              --changed-files-text "${CHANGED_FILES:-}" \
+              --out artifacts/ci/contract-gates/ci_disposition.json
+          else
+            echo "::warning::ops_scripts/ci/write_ci_disposition.py not found; writing fallback disposition JSON."
+            STATUS="${status}" \
+            REASON="${reason}" \
+            EVIDENCE_ARTIFACT="contract-gates-${{ github.run_id }}" \
+            SELECTED_LANES="${SELECTED_LANES:-}" \
+            CHANGED_FILES="${CHANGED_FILES:-}" \
+            python - <<'PY'
+            import json
+            import os
+            from pathlib import Path
+
+
+            def _split_csv(value: str) -> list[str]:
+                items: list[str] = []
+                for part in value.replace("\n", ",").split(","):
+                    item = part.strip()
+                    if item:
+                        items.append(item)
+                return items
+
+
+            status = os.environ.get("STATUS", "")
+            payload = {
+                "workflow": "contract-gates",
+                "lane": "contract-summary",
+                "status": status,
+                "blocking": status == "FAIL_BLOCKING",
+                "reason": os.environ.get("REASON", ""),
+                "evidence_artifact": os.environ.get("EVIDENCE_ARTIFACT", ""),
+                "selected_lanes": _split_csv(os.environ.get("SELECTED_LANES", "")),
+                "changed_files": [line for line in os.environ.get("CHANGED_FILES", "").splitlines() if line.strip()],
+            }
+            out = Path("artifacts/ci/contract-gates/ci_disposition.json")
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            PY
+          fi
 
           if [ "${status}" = "FAIL_BLOCKING" ]; then
             exit 1
