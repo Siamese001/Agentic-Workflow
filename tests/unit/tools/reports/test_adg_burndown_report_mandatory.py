@@ -97,7 +97,11 @@ def test_emit_prints_markdown_to_stdout(
     captured = capsys.readouterr()
     assert "# ADG CI Burndown Report" in captured.out
     assert "### BCG Burndown Brief" in captured.out
-    assert "Maintain SVP engineer-level repo standards" in captured.out
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in captured.out
     assert "Gate-results source:" in captured.out
     assert "Burndown source:" in captured.out
 

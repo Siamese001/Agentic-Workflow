@@ -119,7 +119,11 @@ def test_emit_dead_code_report_inline_uses_bcg_brief(tmp_path: Path, capsys) -> 
     assert "ADG source:" in captured.out
     assert "adg_indexed_20260618_120000.sqlite" in captured.out
     assert "(snapshot 20260618_120000)" in captured.out
-    assert "Maintain SVP engineer-level repo standards" in captured.out
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in captured.out
 
 
 def test_emit_dead_code_report_uses_completed_overlay_dead_imports(tmp_path: Path, capsys) -> None:

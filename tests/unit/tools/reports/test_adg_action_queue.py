@@ -269,7 +269,11 @@ def test_render_markdown_table_uses_bcg_brief(tmp_path: Path) -> None:
 
     md = render_markdown_table(doc, top=3)
     assert "### BCG Action Queue Brief" in md
-    assert "Maintain SVP engineer-level repo standards" in md
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in md
     assert "Gate-results source:" in md
     assert "Burndown source:" in md
     assert "Fix blockers first" in md
@@ -302,7 +306,11 @@ def test_emit_action_queue_from_adg_run_prints_bcg_brief(tmp_path: Path, capsys)
     assert "# ADG Action Queue (triage)" in captured.out
     assert "### BCG Action Queue Brief" in captured.out
     assert "Gate-results source:" in captured.out
-    assert "Maintain SVP engineer-level repo standards" in captured.out
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in captured.out
 
 
 def test_missing_accelerator_fix_only_degraded(tmp_path: Path) -> None:

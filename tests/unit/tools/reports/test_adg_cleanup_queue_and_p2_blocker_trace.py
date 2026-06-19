@@ -217,7 +217,11 @@ def test_emit_cleanup_queue_and_p2_trace_inline_uses_bcg_brief(tmp_path: Path, c
     assert "# ADG Cleanup Queue and P2 Ratchet Trace" in captured.out
     assert "### BCG Cleanup Brief" in captured.out
     assert "### BCG P2 Ratchet Brief" in captured.out
-    assert "Maintain SVP engineer-level repo standards" in captured.out
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in captured.out
     assert "| Priority | Move | Why it matters | Evidence | Next step |" in md
     assert "Business reason" not in md
     assert "Technical reason" not in md

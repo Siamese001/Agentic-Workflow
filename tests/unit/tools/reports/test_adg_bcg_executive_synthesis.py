@@ -477,7 +477,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "Action impact:",
         "No deletions are approved in this run",
         "| Priority | Move | Why it matters | Evidence | Next step |",
-        "Maintain SVP engineer-level repo standards",
+        "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
     ]:
         assert section in md
     assert "Business reason" not in md

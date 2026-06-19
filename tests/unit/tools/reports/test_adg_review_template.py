@@ -337,7 +337,11 @@ def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: P
     assert hotspot["routing_status"] == "action_driver"
     assert hotspot["priority"] == "next"
     assert "### BCG Review Brief" in inline
-    assert "Maintain SVP engineer-level repo standards" in inline
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in inline
     assert "### Executive Decision Brief" in inline
     assert "### Testing Gap Risk" in inline
     assert "Fund a narrow unblock-and-test slice now." in inline

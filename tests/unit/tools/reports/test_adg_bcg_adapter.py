@@ -35,7 +35,15 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
 
     md = render_bcg_brief_md(brief)
 
-    assert "Maintain SVP engineer-level repo standards" in md
+    assert brief["north_star"] == (
+        "Maintain SVP engineer-level repo standards: executive decisions, explicit "
+        "prioritization, and technical evidence a layperson can follow."
+    )
+    assert (
+        "- **North star:** Maintain SVP engineer-level repo standards: executive "
+        "decisions, explicit prioritization, and technical evidence a layperson can "
+        "follow."
+    ) in md
     assert "### BCG Sample Brief" in md
     assert "- **Business read:** Fix the blocker first, then clean the waste." in md
     assert "| Priority | Move | Why it matters | Evidence | Next step |" in md
