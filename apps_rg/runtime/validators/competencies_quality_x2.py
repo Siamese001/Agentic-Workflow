@@ -55,6 +55,16 @@ REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
     }),
 }
 
+CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY: dict[str, str] = {
+    "agentic_platforms": "agentic_platform",
+    "runtime_governance": "runtime_governance",
+    "retrieval_context_engineering": "retrieval_context",
+    "llmops_reliability": "llmops",
+    "distributed_systems_engineering": "distributed_infra",
+    "platform_productization": "productization",
+    "engineering_leadership": "engineering_leadership",
+}
+
 # ---------------------------------------------------------------------------
 # Generic category labels that MUST be backed by graph-derived terms
 # ---------------------------------------------------------------------------
@@ -128,7 +138,7 @@ def _category_terms(cat: Any) -> list[Any]:
 
 
 def _is_graph_backed(term: Any) -> bool:
-    """Term is graph-backed if it has graph_skill_node_ids, source_skill_ids, or is NOT default_fid_backfill."""
+    """Term is graph-backed when it carries explicit skill or fact support."""
     if not isinstance(term, dict):
         return False
     if term.get("proof_source") == "default_fid_backfill":
@@ -140,6 +150,29 @@ def _is_graph_backed(term: Any) -> bool:
     return bool(fact_ids)
 
 
+def _cat_graph_skill_ids(cat: Any) -> list[str]:
+    if not isinstance(cat, dict):
+        return []
+    raw = cat.get("graph_skill_node_ids") or cat.get("source_skill_ids") or []
+    if isinstance(raw, str):
+        raw = [raw]
+    return [str(item).strip() for item in raw if str(item).strip()]
+
+
+def _term_support_ids(term: Any) -> list[str]:
+    if not isinstance(term, dict):
+        return []
+    raw = (
+        term.get("graph_skill_node_ids")
+        or term.get("source_skill_ids")
+        or term.get("source_fact_ids")
+        or []
+    )
+    if isinstance(raw, str):
+        raw = [raw]
+    return [str(item).strip() for item in raw if str(item).strip()]
+
+
 # ---------------------------------------------------------------------------
 # Gate: capability family coverage
 # ---------------------------------------------------------------------------
@@ -149,23 +182,35 @@ def check_competencies_capability_family_coverage(
     competencies: list[Any],
     min_families: int = 5,
 ) -> CompQualityResult:
-    """Require ≥min_families of 7 capability families across all terms."""
+    """Require ≥min_families capability families, preferring bundle metadata over token proxies."""
     all_tokens: set[str] = set()
+    bundle_matched_families: set[str] = set()
     for cat in (competencies or []):
+        if isinstance(cat, dict):
+            family = str(cat.get("capability_family") or "").strip()
+            gate_family = CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY.get(family, family)
+            if gate_family in REQUIRED_CAPABILITY_FAMILIES:
+                bundle_matched_families.add(gate_family)
         for term in _category_terms(cat):
             all_tokens |= _term_tokens(term)
         all_tokens.update(_tokenize(_category_label(cat)))
 
-    matched_families: list[str] = []
+    token_matched_families: list[str] = []
     for family_name, signals in REQUIRED_CAPABILITY_FAMILIES.items():
         if signals & all_tokens:
-            matched_families.append(family_name)
+            token_matched_families.append(family_name)
+
+    matched_families = sorted(bundle_matched_families) if bundle_matched_families else token_matched_families
 
     passed = len(matched_families) >= min_families
     return CompQualityResult(
         gate_id="x2_competencies_capability_family_coverage",
         passed=passed,
-        observed_value=matched_families,
+        observed_value={
+            "bundle_families": sorted(bundle_matched_families),
+            "token_families": token_matched_families,
+            "matched_families": matched_families,
+        },
         threshold=f">={min_families} of {len(REQUIRED_CAPABILITY_FAMILIES)} capability families",
         failure_reason=(
             None
@@ -522,23 +567,47 @@ def check_default_fid_only_support_forbidden(competencies: list[Any]) -> CompQua
 
 
 def check_generic_taxonomy_only_category_forbidden(competencies: list[Any]) -> CompQualityResult:
-    """A generic category label with no graph-backed terms and no bundle binding fails."""
-    violations: list[str] = []
+    """Generic labels require bundle, category graph skills, and enough supported graph terms."""
+    violations: list[dict[str, Any]] = []
     for cat in (competencies or []):
         label = _category_label(cat)
         if label not in GENERIC_CATEGORIES_REQUIRING_GRAPH:
             continue
-        graph_terms = sum(1 for t in _category_terms(cat) if _is_graph_backed(t))
-        if graph_terms < GENERIC_CATEGORY_MIN_GRAPH_TERMS and not _cat_bundle_id(cat):
-            violations.append(label)
+        terms = _category_terms(cat)
+        graph_terms = [t for t in terms if _is_graph_backed(t)]
+        unsupported_graph_terms = [
+            str(t.get("term") or t.get("text") or "unknown")
+            for t in graph_terms
+            if not _term_support_ids(t)
+        ]
+        reasons: list[str] = []
+        if not _cat_bundle_id(cat):
+            reasons.append("missing_competency_bundle_id")
+        if not _cat_graph_skill_ids(cat):
+            reasons.append("missing_category_graph_skill_node_ids")
+        if len(graph_terms) < GENERIC_CATEGORY_MIN_GRAPH_TERMS:
+            reasons.append("too_few_graph_backed_terms")
+        if unsupported_graph_terms:
+            reasons.append("graph_terms_missing_skill_or_fact_support")
+        if reasons:
+            violations.append({
+                "category": label,
+                "reasons": reasons,
+                "graph_terms": len(graph_terms),
+                "required_graph_terms": GENERIC_CATEGORY_MIN_GRAPH_TERMS,
+                "unsupported_graph_terms": unsupported_graph_terms[:5],
+            })
     passed = not violations
     return CompQualityResult(
         gate_id="x2_generic_taxonomy_only_category_forbidden",
         passed=passed,
         observed_value=violations if violations else "none",
-        threshold="generic categories require graph-backed terms or bundle binding",
-        failure_reason=None if passed else f"Generic taxonomy-only categories: {violations}",
-        signals=violations,
+        threshold=(
+            "generic categories require bundle id, category graph_skill_node_ids, "
+            f">={GENERIC_CATEGORY_MIN_GRAPH_TERMS} graph-backed terms, and term skill/fact support"
+        ),
+        failure_reason=None if passed else f"Generic taxonomy categories failed graph depth contract: {violations}",
+        signals=[str(v.get("category")) for v in violations],
     )
 
 

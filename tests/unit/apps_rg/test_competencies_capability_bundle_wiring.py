@@ -297,8 +297,59 @@ def test_generic_taxonomy_only_category_fails_without_graph():
         }
     ]
     assert not q.check_generic_taxonomy_only_category_forbidden(comps).passed
-    # upgraded with bundle binding → passes
+    # Bundle binding is necessary but not sufficient.
     comps[0]["competency_bundle_id"] = "ccb_partnerships_ecosystem_execution"
+    assert not q.check_generic_taxonomy_only_category_forbidden(comps).passed
+
+
+def test_generic_category_with_bundle_but_zero_graph_terms_fails():
+    comps = [
+        {
+            "category_id": "cloud_partner_ecosystems",
+            "category_label": "Cloud & Partner Ecosystems",
+            "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
+            "graph_skill_node_ids": ["skill_partner_ecosystem"],
+            "terms": [
+                {"term": "partnerships", "proof_source": "default_fid_backfill"},
+                {"term": "ecosystems", "proof_source": "default_fid_backfill"},
+                {"term": "co-sell", "proof_source": "default_fid_backfill"},
+            ],
+        }
+    ]
+
+    result = q.check_generic_taxonomy_only_category_forbidden(comps)
+
+    assert not result.passed
+    assert result.observed_value[0]["reasons"] == ["too_few_graph_backed_terms"]
+
+
+def test_generic_category_passes_only_with_bundle_category_skills_and_supported_terms():
+    comps = [
+        {
+            "category_id": "cloud_partner_ecosystems",
+            "category_label": "Cloud & Partner Ecosystems",
+            "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
+            "graph_skill_node_ids": ["skill_partner_ecosystem"],
+            "terms": [
+                {
+                    "term": "cloud partner ecosystem GTM",
+                    "source_skill_ids": ["skill_partner_ecosystem"],
+                    "source_fact_ids": ["fact_partner_001"],
+                },
+                {
+                    "term": "co-sell enablement mechanics",
+                    "source_skill_ids": ["skill_partner_enablement"],
+                    "source_fact_ids": ["fact_partner_002"],
+                },
+                {
+                    "term": "technical close motion",
+                    "graph_skill_node_ids": ["skill_solution_close"],
+                    "source_fact_ids": ["fact_partner_003"],
+                },
+            ],
+        }
+    ]
+
     assert q.check_generic_taxonomy_only_category_forbidden(comps).passed
 
 

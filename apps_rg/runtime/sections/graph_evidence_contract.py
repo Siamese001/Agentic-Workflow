@@ -288,6 +288,7 @@ def _graph_evidence_depth_row(
             or item.get("source_fact_ids")
             or item.get("source_fact_id")
         )
+        target_category_ids = _nonempty_trimmed_strings(item.get("target_taxonomy_category_ids"))
         missing_axes = []
         if not skill_ids:
             missing_axes.append("skills")
@@ -298,6 +299,9 @@ def _graph_evidence_depth_row(
         axis_total = 2
         return {
             "item_id": item_id or f"{section_id}_bundle",
+            "category_id": str(item.get("category_id") or (target_category_ids[0] if target_category_ids else "")).strip(),
+            "competency_bundle_id": str(item.get("competency_bundle_id") or "").strip(),
+            "capability_family": str(item.get("capability_family") or "").strip(),
             "label": str(
                 item.get("display_label_candidate")
                 or item.get("display_phrase_candidate")
@@ -338,6 +342,9 @@ def _graph_evidence_depth_row(
     axis_total = 2
     return {
         "item_id": item_id or f"{section_id}_fact",
+        "category_id": str(item.get("category_id") or "").strip(),
+        "competency_bundle_id": str(item.get("competency_bundle_id") or "").strip(),
+        "capability_family": str(item.get("capability_family") or "").strip(),
         "label": str(
             item.get("claim_text")
             or item.get("bundle_theme")
@@ -357,6 +364,108 @@ def _graph_evidence_depth_row(
     }
 
 
+_VENDOR_TOKENS = frozenset({
+    "aws",
+    "azure",
+    "databricks",
+    "gcp",
+    "google",
+    "ibm",
+    "openai",
+    "salesforce",
+    "snowflake",
+})
+
+
+def _unit_float(value: float) -> float:
+    return round(max(0.0, min(float(value), 1.0)), 4)
+
+
+def _token_overlap_score(text: str, reference: str) -> float:
+    text_tokens = {tok for tok in _nonempty_trimmed_strings(str(text or "").lower().replace("/", " ").split())}
+    reference_tokens = {
+        tok for tok in _nonempty_trimmed_strings(str(reference or "").lower().replace("/", " ").split())
+    }
+    if not text_tokens or not reference_tokens:
+        return 0.0
+    return _unit_float(len(text_tokens & reference_tokens) / len(text_tokens))
+
+
+def _row_detail_ids(row: dict[str, Any], *, packet_shape: str) -> list[str]:
+    key = "metric_ids" if packet_shape == "facts" else "linked_fact_ids"
+    return [str(x).strip() for x in (row.get(key) or row.get("source_fact_ids") or []) if str(x).strip()]
+
+
+def _vendor_overfit_penalty(row: dict[str, Any], *, jd_text: str) -> float:
+    label_tokens = {tok.lower() for tok in str(row.get("label") or "").replace("/", " ").split()}
+    vendors = label_tokens & _VENDOR_TOKENS
+    if not vendors:
+        return 0.0
+    jd_tokens = {tok.lower() for tok in str(jd_text or "").replace("/", " ").split()}
+    return 0.0 if vendors & jd_tokens else 1.0
+
+
+def _rank_depth_row_weakness(
+    row: dict[str, Any],
+    *,
+    packet_shape: str,
+    detail_frequency: Counter[str],
+    jd_text: str,
+    briefing_text: str,
+) -> dict[str, Any]:
+    detail_ids = _row_detail_ids(row, packet_shape=packet_shape)
+    missing_skill_axis = 1.0 if "skills" in (row.get("missing_axes") or []) else 0.0
+    missing_fact_or_metric_axis = 1.0 if any(
+        axis in (row.get("missing_axes") or []) for axis in ("source_facts", "metrics")
+    ) else 0.0
+    repeated_detail_penalty = 1.0 if any(detail_frequency.get(detail_id, 0) > 1 for detail_id in detail_ids) else 0.0
+    vendor_penalty = _vendor_overfit_penalty(row, jd_text=jd_text)
+    jd_overlap = _token_overlap_score(str(row.get("label") or ""), jd_text)
+    briefing_overlap = _token_overlap_score(str(row.get("label") or ""), briefing_text)
+    jd_only_or_briefing_only_penalty = (
+        1.0
+        if (jd_overlap or briefing_overlap) and missing_skill_axis and missing_fact_or_metric_axis
+        else 0.0
+    )
+    weakness_score = _unit_float(
+        missing_skill_axis * 0.30
+        + missing_fact_or_metric_axis * 0.30
+        + repeated_detail_penalty * 0.15
+        + vendor_penalty * 0.15
+        + jd_only_or_briefing_only_penalty * 0.10
+    )
+    reason = "adequate_support"
+    if missing_fact_or_metric_axis:
+        reason = "thin_fact_support"
+    elif missing_skill_axis:
+        reason = "missing_skill_axis"
+    elif repeated_detail_penalty:
+        reason = "repeated_metric" if packet_shape == "facts" else "repeated_source_fact"
+    elif vendor_penalty:
+        reason = "vendor_overfit"
+    elif jd_only_or_briefing_only_penalty:
+        reason = "jd_or_briefing_only"
+    confidence = _unit_float(1.0 - weakness_score)
+    return {
+        "category_id": row.get("category_id") or "",
+        "competency_bundle_id": row.get("competency_bundle_id") or "",
+        "term": row.get("label") or row.get("item_id") or "",
+        "item_id": row.get("item_id") or "",
+        "reason": reason,
+        "source_fact_ids": row.get("source_fact_ids") or [],
+        "graph_skill_node_ids": row.get("skill_ids") or [],
+        "confidence": confidence,
+        "weakness_score": weakness_score,
+        "components": {
+            "missing_skill_axis": missing_skill_axis,
+            "missing_fact_or_metric_axis": missing_fact_or_metric_axis,
+            "repeated_detail_penalty": repeated_detail_penalty,
+            "vendor_overfit_penalty": vendor_penalty,
+            "jd_only_or_briefing_only_penalty": jd_only_or_briefing_only_penalty,
+        },
+    }
+
+
 def build_graph_evidence_depth_report(
     source: dict[str, Any] | None,
     *,
@@ -367,7 +476,7 @@ def build_graph_evidence_depth_report(
 
     if not isinstance(source, dict) or not source:
         return {
-            "schema": "graph_evidence_depth_report_v1",
+            "schema": "graph_evidence_depth_report_v2",
             "section_id": section_id,
             "packet_key": packet_key or "",
             "packet_shape": "missing",
@@ -385,6 +494,21 @@ def build_graph_evidence_depth_report(
             "thin_item_ids": [],
             "items": [],
             "weakest_link": None,
+            "category_graph_confidence": 0.0,
+            "claim_ledger_confidence": 0.0,
+            "proof_authority_score": 0.0,
+            "targeting_fit_score": 0.0,
+            "support_ratio": {
+                "items_with_fact_support": 0,
+                "items_with_skill_support": 0,
+                "items_total": 0,
+            },
+            "penalties": {
+                "metric_reuse_penalty": 0.0,
+                "vendor_overfit_penalty": 0.0,
+                "generic_label_penalty": 0.0,
+            },
+            "term_confidence_rows": [],
             "summary": "missing graph evidence packet",
         }
 
@@ -421,7 +545,7 @@ def build_graph_evidence_depth_report(
 
     if not isinstance(packet, dict) or not packet:
         return {
-            "schema": "graph_evidence_depth_report_v1",
+            "schema": "graph_evidence_depth_report_v2",
             "section_id": section_id,
             "packet_key": selected_key,
             "packet_shape": "missing",
@@ -439,6 +563,21 @@ def build_graph_evidence_depth_report(
             "thin_item_ids": [],
             "items": [],
             "weakest_link": None,
+            "category_graph_confidence": 0.0,
+            "claim_ledger_confidence": 0.0,
+            "proof_authority_score": 0.0,
+            "targeting_fit_score": 0.0,
+            "support_ratio": {
+                "items_with_fact_support": 0,
+                "items_with_skill_support": 0,
+                "items_total": 0,
+            },
+            "penalties": {
+                "metric_reuse_penalty": 0.0,
+                "vendor_overfit_penalty": 0.0,
+                "generic_label_penalty": 0.0,
+            },
+            "term_confidence_rows": [],
             "summary": "selected graph evidence packet missing",
         }
 
@@ -500,6 +639,57 @@ def build_graph_evidence_depth_report(
         4,
     )
     axis_coverage_pct = round((skill_diversity_ratio + detail_diversity_ratio) / 2, 4) if item_count else 0.0
+    jd_text = str(source.get("jd_text") or source.get("target_jd_text") or packet.get("jd_text") or "")
+    briefing_text = str(source.get("briefing") or source.get("briefing_text") or packet.get("briefing_text") or "")
+    term_confidence_rows = [
+        _rank_depth_row_weakness(
+            row,
+            packet_shape=packet_shape,
+            detail_frequency=detail_frequency,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+        )
+        for row in item_rows
+    ]
+    ranked_weakness_rows = sorted(
+        term_confidence_rows,
+        key=lambda row: (-float(row.get("weakness_score") or 0.0), str(row.get("item_id") or "")),
+    )
+    weakest_link = ranked_weakness_rows[0] if ranked_weakness_rows else None
+    items_with_skill_support = sum(1 for row in item_rows if row.get("skill_ids"))
+    items_with_fact_support = sum(1 for row in item_rows if _row_detail_ids(row, packet_shape=packet_shape))
+    support_ratio = {
+        "items_with_fact_support": items_with_fact_support,
+        "items_with_skill_support": items_with_skill_support,
+        "items_total": item_count,
+    }
+    metric_reuse_penalty = _unit_float(detail_reuse_ratio)
+    vendor_overfit_penalty = _unit_float(
+        max((row["components"]["vendor_overfit_penalty"] for row in term_confidence_rows), default=0.0)
+    )
+    generic_label_penalty = _unit_float(1.0 - item_rich_ratio)
+    category_graph_confidence = _unit_float(
+        (item_rich_ratio * 0.35)
+        + (skill_diversity_ratio * 0.25)
+        + (detail_diversity_ratio * 0.25)
+        - (metric_reuse_penalty * 0.10)
+        - (vendor_overfit_penalty * 0.05)
+    )
+    claim_ledger_confidence = category_graph_confidence
+    proof_authority_score = _unit_float(
+        (semantic_coverage_pct * 0.60)
+        + (axis_coverage_pct * 0.40)
+        - (metric_reuse_penalty * 0.20)
+        - (vendor_overfit_penalty * 0.10)
+    )
+    targeting_scores = [
+        max(
+            _token_overlap_score(str(row.get("label") or ""), jd_text),
+            _token_overlap_score(str(row.get("label") or ""), briefing_text),
+        )
+        for row in item_rows
+    ]
+    targeting_fit_score = _unit_float(sum(targeting_scores) / len(targeting_scores)) if targeting_scores else 0.0
     thin_rows = [row for row in item_rows if not row["rich"]]
     status = (
         "judge_grade"
@@ -511,12 +701,8 @@ def build_graph_evidence_depth_report(
         f"{len(unique_skill_ids)} unique skills, {len(unique_detail_ids)} unique {detail_label}, "
         f"{semantic_coverage_pct:.0%} semantic coverage, {axis_coverage_pct:.0%} axis coverage"
     )
-    if thin_rows:
-        weakest_link = dict(thin_rows[0])
-    else:
-        weakest_link = item_rows[0] if item_rows else None
     return {
-        "schema": "graph_evidence_depth_report_v1",
+        "schema": "graph_evidence_depth_report_v2",
         "section_id": section_id,
         "packet_key": selected_key or ("selected_graph_evidence_plan" if packet_shape == "facts" else ""),
         "packet_shape": packet_shape,
@@ -540,6 +726,17 @@ def build_graph_evidence_depth_report(
         "thin_item_ids": [str(row["item_id"]) for row in thin_rows],
         "items": item_rows,
         "weakest_link": weakest_link,
+        "category_graph_confidence": category_graph_confidence,
+        "claim_ledger_confidence": claim_ledger_confidence,
+        "proof_authority_score": proof_authority_score,
+        "targeting_fit_score": targeting_fit_score,
+        "support_ratio": support_ratio,
+        "penalties": {
+            "metric_reuse_penalty": metric_reuse_penalty,
+            "vendor_overfit_penalty": vendor_overfit_penalty,
+            "generic_label_penalty": generic_label_penalty,
+        },
+        "term_confidence_rows": term_confidence_rows,
         "summary": summary,
     }
 
@@ -573,6 +770,13 @@ def _graph_evidence_depth_snapshot(report: dict[str, Any] | None) -> dict[str, A
         "max_detail_frequency",
         "repeated_detail_ids",
         "top_detail_frequencies",
+        "category_graph_confidence",
+        "claim_ledger_confidence",
+        "proof_authority_score",
+        "targeting_fit_score",
+        "support_ratio",
+        "penalties",
+        "term_confidence_rows",
     ):
         if key in report:
             value = report.get(key)
