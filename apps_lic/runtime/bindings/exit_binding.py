@@ -455,7 +455,9 @@ def _load_exit_profile(
 
     Returns a dict with keys:
         required_gates  : list[str]  — loaded from JSON ``required_exit_gates``
+                         or legacy ``legacy_required_exit_gates``
         conditional_gates: list[str] — loaded from JSON ``conditional_exit_gates``
+                         or legacy ``legacy_conditional_exit_gates``
         profile_ref     : dict       — present only when package.exit_profile_ref
                                        is provided
         profile_id      : str        — loaded from JSON ``profile_id``
@@ -500,9 +502,14 @@ def _load_exit_profile(
                 f"got {config_digest!r}. (fail_closed)"
             )
 
-    # Extract gate lists — both keys are required; missing = malformed
+    # Extract gate lists — prefer canonical keys, fall back to shipped legacy
+    # keys for compatibility with the current apps_lic contract fence.
     required_gates = exit_profile.get("required_exit_gates")
+    if required_gates is None:
+        required_gates = exit_profile.get("legacy_required_exit_gates")
     conditional_gates = exit_profile.get("conditional_exit_gates")
+    if conditional_gates is None:
+        conditional_gates = exit_profile.get("legacy_conditional_exit_gates")
     if required_gates is None or conditional_gates is None:
         raise AppsLicExitProfileError(
             f"Exit profile missing required keys "
