@@ -5,6 +5,10 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -16,12 +20,18 @@ jobs:
       r1b-terminal: ${{ steps.filter.outputs.r1b-terminal }}
       runtime-spine: ${{ steps.filter.outputs.runtime-spine }}
       uwg-block: ${{ steps.filter.outputs.uwg-block }}
+      selected-lanes: ${{ steps.filter.outputs.selected-lanes }}
       any: ${{ steps.filter.outputs.any }}
       changed-files: ${{ steps.filter.outputs.changed-files }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
 
       - id: filter
         name: Classify changed files
@@ -40,77 +50,11 @@ jobs:
               "agentic_core/semantic_cache/manual_dispatch.py" \
               "agentic_core/durable_write_gateway_manual_dispatch.py" >> changed-files.txt
           fi
-
-          python - <<'PY'
-          from pathlib import Path
-          import os
-
-          changed = [p.strip().replace("\\", "/") for p in Path("changed-files.txt").read_text().splitlines() if p.strip()]
-
-          def matches(path: str, patterns: tuple[str, ...]) -> bool:
-              return any(pattern in path for pattern in patterns)
-
-          r1b = any(
-              matches(
-                  p,
-                  (
-                      "terminal",
-                      "semantic_cache",
-                      "r1b",
-                      "probe_r1b_terminal_exit.py",
-                      "tests/runtime/test_r1b_terminal_exit_proof.py",
-                      ".github/workflows/runtime-smokes.yml",
-                  ),
-              )
-              for p in changed
-          )
-          spine = any(
-              p.startswith(
-                  (
-                      "agentic_core/runtime/",
-                      "agentic_core/L2_execution/",
-                      "agentic_core/L3_orchestration/",
-                      "agentic_core/L5_safety/",
-                      "agentic_core/L7_auditability/",
-                  )
-              )
-              or matches(
-                  p,
-                  (
-                      "ops_scripts/ci/verify_runtime_certification_matrix_schema.py",
-                      "ops_scripts/ci/verify_runtime_certification_acceptance.py",
-                      "ops_scripts/ci/verify_source_divergence.py",
-                      ".github/workflows/runtime-smokes.yml",
-                  ),
-              )
-              for p in changed
-          )
-          uwg = any(
-              matches(
-                  p,
-                  (
-                      "DurableWriteGateway",
-                      "durable_write_gateway",
-                      "mutation",
-                      "write_path",
-                      "uwg",
-                      "tools/certification/regen_uwg_block_latest.py",
-                      "tests/runtime/test_cache_fixture_vs_uwg_proof.py",
-                      ".github/workflows/runtime-smokes.yml",
-                  ),
-              )
-              for p in changed
-          )
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write(f"r1b-terminal={str(r1b).lower()}\n")
-              out.write(f"runtime-spine={str(spine).lower()}\n")
-              out.write(f"uwg-block={str(uwg).lower()}\n")
-              out.write(f"any={str(r1b or spine or uwg).lower()}\n")
-              out.write("changed-files<<EOF\n")
-              out.write("\n".join(changed))
-              out.write("\nEOF\n")
-          PY
+          python ops_scripts/ci/classify_ci_lanes.py \
+            --workflow runtime-smokes \
+            --changed-files-file changed-files.txt \
+            --base-ref "main" \
+            --github-output "$GITHUB_OUTPUT"
 
   r1b-terminal:
     name: r1b-terminal
@@ -174,32 +118,62 @@ jobs:
           SPINE_RESULT: ${{ needs.runtime-spine.result }}
           UWG_RESULT: ${{ needs.uwg-block.result }}
           CHANGED_FILES: ${{ needs.changes.outputs.changed-files }}
+          SELECTED_LANES: ${{ needs.changes.outputs.selected-lanes }}
         run: |
           set -euo pipefail
           echo "Changed files:"
           printf '%s\n' "${CHANGED_FILES:-<none>}"
 
+          status="PASS"
+          reason="relevant runtime smoke lanes passed"
           if [ "${CHANGES_RESULT}" != "success" ]; then
             echo "::error::Runtime-smoke routing failed before lane selection."
-            exit 1
-          fi
-
-          if [ "${ANY}" != "true" ]; then
+            status="FAIL_BLOCKING"
+            reason="routing failed before lane selection"
+          elif [ "${ANY}" != "true" ]; then
             echo "No runtime smoke lanes were relevant to this diff."
-            exit 0
+            status="SKIP_NOT_RELEVANT"
+            reason="no runtime smoke lanes were relevant to this diff"
+          else
+            failed=0
+            for lane in \
+              "r1b-terminal:${R1B_RESULT}" \
+              "runtime-spine:${SPINE_RESULT}" \
+              "uwg-block:${UWG_RESULT}"; do
+              name="${lane%%:*}"
+              result="${lane#*:}"
+              echo "${name}: ${result}"
+              if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
+                failed=1
+              fi
+            done
+
+            if [ "${failed}" = "1" ]; then
+              echo "::error::One or more relevant runtime smoke lanes failed."
+              status="FAIL_BLOCKING"
+              reason="one or more relevant runtime smoke lanes failed"
+            fi
           fi
 
-          failed=0
-          for lane in "r1b-terminal:${R1B_RESULT}" "runtime-spine:${SPINE_RESULT}" "uwg-block:${UWG_RESULT}"; do
-            name="${lane%%:*}"
-            result="${lane#*:}"
-            echo "${name}: ${result}"
-            if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
-              failed=1
-            fi
-          done
+          python ops_scripts/ci/write_ci_disposition.py \
+            --workflow runtime-smokes \
+            --lane smoke-summary \
+            --status "${status}" \
+            --reason "${reason}" \
+            --evidence-artifact "runtime-smokes-${{ github.run_id }}" \
+            --selected-lanes-text "${SELECTED_LANES:-}" \
+            --changed-files-text "${CHANGED_FILES:-}" \
+            --out artifacts/ci/runtime-smokes/ci_disposition.json
 
-          if [ "${failed}" = "1" ]; then
-            echo "::error::One or more relevant runtime smoke lanes failed."
+          if [ "${status}" = "FAIL_BLOCKING" ]; then
             exit 1
           fi
+
+      - name: Upload smoke disposition
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-smokes-disposition-${{ github.run_id }}
+          path: artifacts/ci/runtime-smokes/ci_disposition.json
+          if-no-files-found: warn
+          retention-days: 30
