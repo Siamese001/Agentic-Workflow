@@ -17,6 +17,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     SourceType,
     V6Disposition,
     X3AllowPacket,
+    X3BreakGlassAllowPacket,
     X3CommitRequestPacket,
     X3DenyPacket,
     X3EscalatePacket,
@@ -193,18 +194,13 @@ class TestBuildX3fBreakGlass:
         tok.update(token)
         return _packet(capability_token=tok)
 
-    def test_all_h3_invariants_pass_but_packet_fails_closed_on_cert_ref(self) -> None:
-        # All H3 break-glass invariants are satisfied (no BreakGlassValidationError),
-        # yet build_x3f_break_glass_allow never passes l5_certification_ref into the
-        # X3BreakGlassAllowPacket, so its __post_init__ fail-closed cert-ref guard
-        # raises ValueError. This documents the real coupling: the break-glass
-        # builder cannot emit a packet without a separately-supplied cert ref.
-        with pytest.raises(ValueError, match="l5_certification_ref") as exc:
-            build_x3f_break_glass_allow(
-                self._bg_packet(), _decision(V6Disposition.BREAK_GLASS_ALLOW), **self._ok_kwargs()
-            )
-        # The failure is the cert-ref guard, NOT an H3 invariant violation.
-        assert not isinstance(exc.value, BreakGlassValidationError)
+    def test_all_h3_invariants_pass_and_packet_threads_cert_ref(self) -> None:
+        pkt = build_x3f_break_glass_allow(
+            self._bg_packet(), _decision(V6Disposition.BREAK_GLASS_ALLOW), **self._ok_kwargs()
+        )
+        assert isinstance(pkt, X3BreakGlassAllowPacket)
+        assert pkt.l5_certification_ref == _CERT
+        assert pkt.operator_id == "oncall-1"
 
     @pytest.mark.parametrize("forbidden", ["X1A", "X1C"])
     def test_forbidden_bypass_gate_raises(self, forbidden: str) -> None:

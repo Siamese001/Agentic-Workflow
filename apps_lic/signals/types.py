@@ -11,7 +11,7 @@ Defines the canonical signal taxonomy that can trigger wake events:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -222,13 +222,15 @@ def sort_signals_by_priority(
     signals: list[ResurfacingSignal],
 ) -> list[ResurfacingSignal]:
     """Sort signals by priority (high priority first), then recency."""
+    def _recency_key(signal: ResurfacingSignal) -> float:
+        detected_at = signal.detected_at
+        if detected_at.tzinfo is None:
+            detected_at = detected_at.replace(tzinfo=timezone.utc)
+        return -detected_at.timestamp()
+
     return sorted(
         signals,
-        key=lambda s: (
-            SIGNAL_PRIORITY.get(s.signal_type, 99),
-            s.detected_at,  # More recent = higher (descending will flip)
-        ),
-        reverse=True,
+        key=lambda s: (SIGNAL_PRIORITY.get(s.signal_type, 99), _recency_key(s)),
     )
 
 

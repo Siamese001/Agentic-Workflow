@@ -236,13 +236,11 @@ class TestLoadExitProfileFailClosed:
         with pytest.raises(AppsLicExitProfileError, match="missing required keys"):
             _load_exit_profile()
 
-    def test_real_config_missing_expected_keys(self) -> None:
-        # The shipped apps_lic exit profile uses legacy_* gate keys, not the
-        # required_exit_gates / conditional_exit_gates this loader expects, so
-        # the loader fails closed against the real config. (Asserting the real,
-        # current behavior — see report note.)
-        with pytest.raises(AppsLicExitProfileError):
-            _load_exit_profile()
+    def test_real_config_loads_legacy_keys(self) -> None:
+        result = _load_exit_profile()
+        assert result["required_gates"] == ["G21", "G22", "G23", "G24", "G26", "G28"]
+        assert result["conditional_gates"] == ["G25", "G27"]
+        assert result["profile_id"] == "exit_profile.outreach_message.v1"
 
     def test_happy_path_temp_config(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
         f = tmp_path / "profile.json"
