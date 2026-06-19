@@ -33,19 +33,28 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 # ---------------------------------------------------------------------------
 
 
-def _good_category(cat_id: str, label: str, terms: list[str]) -> dict:
+def _good_category(
+    cat_id: str,
+    label: str,
+    bundle_id: str,
+    capability_family: str,
+    fact_ids: list[str],
+    skill_ids: list[str],
+    terms: list[str],
+) -> dict:
     return {
         "category_id": cat_id,
         "category_label": label,
-        "competency_bundle_id": f"ccb_{cat_id}",
-        "graph_skill_node_ids": ["skill_governed_agentic_systems_architecture"],
-        "source_fact_ids": ["fact_engineering_platform_001"],
+        "competency_bundle_id": bundle_id,
+        "capability_family": capability_family,
+        "graph_skill_node_ids": list(skill_ids),
+        "source_fact_ids": list(fact_ids),
         "terms": [
             {
                 "term": t,
                 "text": t,
-                "source_fact_ids": ["fact_engineering_platform_001"],
-                "graph_skill_node_ids": ["skill_governed_agentic_systems_architecture"],
+                "source_fact_ids": [fact_ids[0]],
+                "graph_skill_node_ids": [skill_ids[0]],
                 "support_class": "FACT_AND_SKILL_GRAPH",
             }
             for t in terms
@@ -57,30 +66,51 @@ def _good_competencies() -> list[dict]:
     return [
         _good_category(
             "agentic", "AI Platform Leadership",
+            "ccb_agentic_platforms", "agentic_platforms",
+            ["fact_engineering_platform_001"],
+            ["skill_governed_agentic_systems_architecture"],
             ["governed agentic systems architecture", "multi-agent orchestration fabric", "agentic control plane"],
         ),
         _good_category(
             "governance", "Governance, Risk & Compliance",
+            "ccb_runtime_governance", "runtime_governance",
+            ["fact_engineering_platform_001"],
+            ["skill_runtime_gate_mesh_design"],
             ["runtime gate mesh design", "fail-closed gate semantics", "policy-bound runtime controls"],
         ),
         _good_category(
             "retrieval", "Retrieval Engineering",
+            "ccb_retrieval_context_engineering", "retrieval_context_engineering",
+            ["fact_engineering_platform_003"],
+            ["skill_context_engineering"],
             ["dense-sparse-exact retrieval design", "graph-aware grounding", "context engineering"],
         ),
         _good_category(
             "llmops", "Reliability & Evaluation",
+            "ccb_llmops_reliability", "llmops_reliability",
+            ["fact_engineering_platform_003", "fact_engineering_platform_004"],
+            ["skill_audit_grade_observability"],
             ["audit-grade observability", "evaluation gauntlet design", "multi-judge calibration"],
         ),
         _good_category(
             "distributed", "Distributed Systems",
+            "ccb_distributed_systems_engineering", "distributed_systems_engineering",
+            ["fact_engineering_platform_002"],
+            ["skill_sr_cloud_data_platform_engineering"],
             ["cloud-native microservices", "streaming analytics pipelines", "lakehouse data platform"],
         ),
         _good_category(
             "productization", "Platform Productization",
+            "ccb_platform_productization", "platform_productization",
+            ["fact_engineering_platform_006"],
+            ["skill_agentic_platform_productization"],
             ["platform commercialization", "reusable platform architecture", "demoable accelerators"],
         ),
         _good_category(
             "leadership", "Engineering Leadership",
+            "ccb_engineering_leadership", "engineering_leadership",
+            ["fact_exec_001"],
+            ["skill_svp_it_strategy_innovation"],
             ["engineering organization scale-out", "platform operating model", "board-level alignment"],
         ),
     ]
@@ -246,9 +276,12 @@ def test_stamp_competency_bundle_bindings_attaches_ids():
 
 def test_good_competencies_pass_bundle_gates():
     comps = _good_competencies()
+    meta = _competencies_proof_meta({"graph_skills_proof_pool": True})
     assert q.check_competency_bundle_id_per_category(comps).passed
     assert q.check_graph_skill_node_ids_per_category(comps).passed
     assert q.check_source_fact_ids_or_graph_lineage_per_category(comps).passed
+    assert q.check_competency_bundle_source_fact_alignment(comps, meta).passed
+    assert q.check_competency_source_fact_dominance(comps).passed
     assert q.check_default_fid_only_support_forbidden(comps).passed
     assert q.check_generic_taxonomy_only_category_forbidden(comps).passed
     assert q.check_jd_only_skill_forbidden(comps, "unrelated job text").passed
@@ -280,6 +313,54 @@ def test_no_source_facts_or_lineage_fails():
     comps[0]["graph_skill_node_ids"] = []
     comps[0].pop("competency_bundle_id")
     assert not q.check_source_fact_ids_or_graph_lineage_per_category(comps).passed
+
+
+def test_bundle_fact_mismatch_fails_when_category_uses_broad_fact():
+    comps = _good_competencies()
+    meta = _competencies_proof_meta({"graph_skills_proof_pool": True})
+    llmops = next(c for c in comps if c["competency_bundle_id"] == "ccb_llmops_reliability")
+    llmops["source_fact_ids"] = ["fact_engineering_platform_001"]
+    for term in llmops["terms"]:
+        term["source_fact_ids"] = ["fact_engineering_platform_001"]
+        term["source_fact_id"] = "fact_engineering_platform_001"
+
+    result = q.check_competency_bundle_source_fact_alignment(comps, meta)
+
+    assert not result.passed
+    assert result.observed_value[0]["competency_bundle_id"] == "ccb_llmops_reliability"
+    assert result.observed_value[0]["reason"] == "no_bundle_fact_intersection"
+
+
+def test_repeated_source_fact_dominance_fails_anthropic_collapse_pattern():
+    comps = _good_competencies()
+    partner = {
+        "category_id": "cloud_partner_ecosystems",
+        "category_label": "Cloud & Partner Ecosystems",
+        "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
+        "capability_family": "partnerships_ecosystem_execution",
+        "graph_skill_node_ids": ["skill_partner_ibm_aws_alliance_joint_revenue"],
+        "source_fact_ids": ["fact_partnerships_gtm_002"],
+        "terms": [
+            {
+                "term": "cloud partner ecosystem GTM",
+                "text": "cloud partner ecosystem GTM",
+                "source_fact_ids": ["fact_partnerships_gtm_002"],
+                "graph_skill_node_ids": ["skill_partner_ibm_aws_alliance_joint_revenue"],
+            }
+        ],
+    }
+    comps.append(partner)
+    for cat in comps[:7]:
+        cat["source_fact_ids"] = ["fact_engineering_platform_001"]
+        for term in cat["terms"]:
+            term["source_fact_ids"] = ["fact_engineering_platform_001"]
+            term["source_fact_id"] = "fact_engineering_platform_001"
+
+    result = q.check_competency_source_fact_dominance(comps)
+
+    assert not result.passed
+    assert result.observed_value["dominant_source_facts"][0]["source_fact_id"] == "fact_engineering_platform_001"
+    assert result.observed_value["dominant_source_facts"][0]["category_count"] == 7
 
 
 def test_default_fid_only_support_fails():
@@ -414,6 +495,8 @@ def test_run_competencies_x2_emits_bundle_gates_in_bundle_mode():
         "x2_competency_bundle_id_required_per_category",
         "x2_graph_skill_node_ids_required_per_category",
         "x2_source_fact_ids_or_graph_lineage_required_per_category",
+        "x2_competency_bundle_source_fact_alignment",
+        "x2_competency_source_fact_dominance",
         "x2_default_fid_only_support_forbidden",
         "x2_generic_taxonomy_only_category_forbidden",
         "x2_jd_only_skill_forbidden",

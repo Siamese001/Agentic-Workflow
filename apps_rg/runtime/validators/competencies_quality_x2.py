@@ -492,6 +492,51 @@ def _cat_source_fact_ids(cat: Any) -> list[str]:
     return out
 
 
+def _category_and_term_source_fact_ids(cat: Any) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for fid in _cat_source_fact_ids(cat):
+        fid_s = str(fid).strip()
+        if fid_s and fid_s not in seen:
+            seen.add(fid_s)
+            out.append(fid_s)
+    for term in _category_terms(cat):
+        if not isinstance(term, dict):
+            continue
+        raw = term.get("source_fact_ids") or []
+        if isinstance(raw, str):
+            raw = [raw]
+        primary = term.get("source_fact_id")
+        if primary:
+            raw = [primary, *list(raw)]
+        for fid in raw:
+            fid_s = str(fid).strip()
+            if fid_s and fid_s not in seen:
+                seen.add(fid_s)
+                out.append(fid_s)
+    return out
+
+
+def _bundle_records_by_id(
+    proof_pool_metadata: dict[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    if not isinstance(proof_pool_metadata, dict):
+        return {}
+    records = proof_pool_metadata.get("competency_capability_bundles") or []
+    if not records:
+        packet = proof_pool_metadata.get("competency_capability_section_packet") or {}
+        if isinstance(packet, dict):
+            records = packet.get("competency_bundles") or []
+    out: dict[str, dict[str, Any]] = {}
+    for rec in records:
+        if not isinstance(rec, dict):
+            continue
+        bid = str(rec.get("competency_bundle_id") or "").strip()
+        if bid:
+            out[bid] = rec
+    return out
+
+
 def check_competency_bundle_id_per_category(competencies: list[Any]) -> CompQualityResult:
     missing = [
         _category_label(c) or f"idx{i}"
@@ -541,6 +586,118 @@ def check_source_fact_ids_or_graph_lineage_per_category(competencies: list[Any])
         threshold="every category has source_fact_ids OR (bundle_id + graph_skill_node_ids)",
         failure_reason=None if passed else f"Categories without source facts or graph lineage: {missing[:6]}",
         signals=missing[:6],
+    )
+
+
+def check_competency_bundle_source_fact_alignment(
+    competencies: list[Any],
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult:
+    """Each emitted category must preserve at least one linked fact from its bound bundle."""
+    bundle_by_id = _bundle_records_by_id(proof_pool_metadata)
+    if not bundle_by_id:
+        return CompQualityResult(
+            gate_id="x2_competency_bundle_source_fact_alignment",
+            passed=True,
+            observed_value="no_bundle_records",
+            threshold="category source facts intersect bound bundle linked_source_fact_ids",
+            failure_reason=None,
+            signals=[],
+        )
+
+    violations: list[dict[str, Any]] = []
+    for index, cat in enumerate(competencies or []):
+        if not isinstance(cat, dict):
+            continue
+        bundle_id = _cat_bundle_id(cat)
+        if not bundle_id:
+            continue
+        bundle = bundle_by_id.get(bundle_id)
+        if not bundle:
+            violations.append({
+                "category": _category_label(cat) or f"idx{index}",
+                "competency_bundle_id": bundle_id,
+                "reason": "unknown_competency_bundle_id",
+                "observed_source_fact_ids": _category_and_term_source_fact_ids(cat),
+                "expected_linked_source_fact_ids": [],
+            })
+            continue
+        expected = {
+            str(fid).strip()
+            for fid in (bundle.get("linked_source_fact_ids") or [])
+            if str(fid).strip()
+        }
+        if not expected:
+            continue
+        observed = set(_category_and_term_source_fact_ids(cat))
+        if observed.intersection(expected):
+            continue
+        violations.append({
+            "category": _category_label(cat) or f"idx{index}",
+            "competency_bundle_id": bundle_id,
+            "reason": "no_bundle_fact_intersection",
+            "observed_source_fact_ids": sorted(observed),
+            "expected_linked_source_fact_ids": sorted(expected),
+        })
+
+    passed = not violations
+    return CompQualityResult(
+        gate_id="x2_competency_bundle_source_fact_alignment",
+        passed=passed,
+        observed_value=violations if violations else "all_categories_intersect_bound_bundle_facts",
+        threshold="every known competency_bundle_id has category/term source_fact_ids intersecting linked_source_fact_ids",
+        failure_reason=None if passed else f"Competency categories use facts outside their bound bundles: {violations[:6]}",
+        signals=[str(v.get("category")) for v in violations[:6]],
+    )
+
+
+def check_competency_source_fact_dominance(
+    competencies: list[Any],
+    *,
+    max_category_share: float = 0.5,
+    max_category_count: int = 4,
+) -> CompQualityResult:
+    """No single source fact may dominate the emitted competency categories."""
+    category_count = len([c for c in (competencies or []) if isinstance(c, dict)])
+    if category_count == 0:
+        return CompQualityResult(
+            gate_id="x2_competency_source_fact_dominance",
+            passed=True,
+            observed_value={"category_count": 0, "source_fact_category_counts": {}},
+            threshold=f"no fact in >{max_category_share:.0%} categories or >{max_category_count} categories",
+            failure_reason=None,
+            signals=[],
+        )
+
+    fact_category_counts: dict[str, int] = {}
+    for cat in competencies or []:
+        if not isinstance(cat, dict):
+            continue
+        for fid in set(_category_and_term_source_fact_ids(cat)):
+            fact_category_counts[fid] = fact_category_counts.get(fid, 0) + 1
+
+    dominant: list[dict[str, Any]] = []
+    for fid, count in sorted(fact_category_counts.items(), key=lambda item: (-item[1], item[0])):
+        share = count / category_count
+        if count > max_category_count or share > max_category_share:
+            dominant.append({
+                "source_fact_id": fid,
+                "category_count": count,
+                "category_share": round(share, 4),
+            })
+
+    passed = not dominant
+    return CompQualityResult(
+        gate_id="x2_competency_source_fact_dominance",
+        passed=passed,
+        observed_value={
+            "category_count": category_count,
+            "source_fact_category_counts": fact_category_counts,
+            "dominant_source_facts": dominant,
+        },
+        threshold=f"no source fact may support >{max_category_share:.0%} categories or >{max_category_count} categories",
+        failure_reason=None if passed else f"Source fact reuse dominates competency categories: {dominant[:6]}",
+        signals=[str(v.get("source_fact_id")) for v in dominant[:6]],
     )
 
 
@@ -771,8 +928,10 @@ __all__ = [
     "check_competencies_e0_ngram_overlap",
     "check_competencies_generic_category_has_graph_terms",
     "check_competencies_no_default_fid_proof",
+    "check_competency_bundle_source_fact_alignment",
     "check_competency_bundle_id_per_category",
     "check_competency_rigor_floor",
+    "check_competency_source_fact_dominance",
     "check_default_fid_only_support_forbidden",
     "check_generic_taxonomy_only_category_forbidden",
     "check_graph_skill_node_ids_per_category",
