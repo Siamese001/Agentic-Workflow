@@ -1,20 +1,21 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-18T15:36:04+00:00
-- **Status:** present
-- **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06182026_1128.sqlite`
-- **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06182026_0852.json`
+- **Generated:** 2026-06-18T19:20:23+00:00
+- **Report status:** present
+- **Dead-code source:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\dead_code_zone_control_report_latest.json`
+- **Published sqlite:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_06182026_1357.sqlite`
+- **P2 ratchet:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\p2_ratchet.json`
+- **Failed-run manifest:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_gate_invocation_manifest_06182026_1357.json`
 
 ### BCG Cleanup Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Status:** NO_DELETIONS_APPROVED
-- **Business read:** No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.
+- **Deletion status:** DELETION_CANDIDATES
+- **Source report status:** PASS
+- **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - Dead code candidates: 0
-  - Dead imports: 0
+  - Dead code candidates: 1,165
+  - Dead imports: 1,165
   - Unresolved imports: 604
   - First-party low-confidence ratio: 1.97%
   - Inferred-symbol ratio: 10.11%
@@ -23,10 +24,12 @@
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Hold all deletion | whole codebase | The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths. | Dead-code candidates = 0 and dead imports = 0. | No proven target means the safest action is to pause deletion. | defer |
-| 2 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
-| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
-| 4 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
+| 1 | Deprecate then delete confirmed dead code | tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 32 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 2 | Deprecate then delete confirmed dead code | tests/_apps_contract/test_w5_eval_acceptance.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 25 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 3 | Deprecate then delete confirmed dead code | ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 20 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 4 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
 - Confirmed dead code is the highest-confidence waste and should be removed first.
@@ -67,15 +70,15 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 ### BCG P2 Ratchet Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Status:** WITHIN_CEILING
+- **P2 ratchet status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_1128.sqlite
+  - Published sqlite snapshot: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_06182026_1357.sqlite
   - P2 ceiling: 20
   - Current MEDIUM hygiene count: 20
   - Delta vs ceiling: +0
   - Baseline snapshot: missing
-  - Latest failed run: 2026-06-18T13:00:34Z (failed)
+  - Latest failed run: 2026-06-18T18:05:56Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
@@ -100,8 +103,8 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Ceiling:** 20
 - **Delta:** +0
 - **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_06182026_1128.sqlite
-- **Latest failed run:** 2026-06-18T13:00:34Z (failed)
+- **Published snapshot:** C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_06182026_1357.sqlite
+- **Latest failed run:** 2026-06-18T18:05:56Z (failed)
 
 ### Evidence Buckets
 

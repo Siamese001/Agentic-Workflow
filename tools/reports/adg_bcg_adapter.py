@@ -62,6 +62,8 @@ def build_bcg_brief(
     why_this_order: list[str] | None = None,
     next_step: str | None = None,
     status: str | None = None,
+    status_label: str | None = None,
+    secondary_statuses: dict[str, Any] | None = None,
     table_limit: int = 6,
 ) -> dict[str, Any]:
     """Create a normalized BCG brief payload for rendering."""
@@ -75,6 +77,8 @@ def build_bcg_brief(
         "why_this_order": [item for item in _text_list(why_this_order)],
         "next_step": next_step or "",
         "status": status or "",
+        "status_label": status_label or "Status",
+        "secondary_statuses": dict(secondary_statuses or {}),
         "table_limit": table_limit,
     }
 
@@ -89,7 +93,11 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     a(f"- **North star:** {_md(brief.get('north_star') or BCG_NORTH_STAR)}")
     status = str(brief.get("status") or "").strip()
     if status:
-        a(f"- **Status:** {_md(status)}")
+        status_label = str(brief.get("status_label") or "Status").strip() or "Status"
+        a(f"- **{_md(status_label)}:** {_md(status)}")
+    for label, value in (brief.get("secondary_statuses") or {}).items():
+        if value not in (None, ""):
+            a(f"- **{_md(label)}:** {_md(value)}")
     business_read = str(brief.get("business_read") or "").strip()
     if business_read:
         a(f"- **Business read:** {_md(business_read)}")
@@ -179,11 +187,12 @@ def build_deprecation_deletion_plan(
     report = dead_code_report or {}
     summary = report.get("summary") or {}
     dead_code = report.get("dead_code_candidates") or {}
+    dead_imports = report.get("dead_imports") or {}
     unresolved = report.get("unresolved_imports") or {}
     low_conf = report.get("low_confidence_zones") or {}
     inferred = report.get("inferred_symbols") or {}
     cleanup_candidates = _defer_delete(mv_usefulness_audit, artifact_usage_matrix).get("rows", [])
-    dead_hotspots = dead_code.get("dead_code_hotspots") or []
+    dead_hotspots = dead_code.get("dead_code_hotspots") or dead_imports.get("dead_import_hotspots") or []
     unresolved_hotspots = unresolved.get("unresolved_hotspots") or []
     unresolved_lead = unresolved_hotspots[0] if unresolved_hotspots else ("none", 0)
     priority_rows: list[dict[str, Any]] = []
@@ -197,9 +206,9 @@ def build_deprecation_deletion_plan(
                     "scope": module,
                     "business_reason": (
                         "This is the highest-confidence waste to remove because ADG already "
-                        "marked it as dead-code candidate traffic."
+                        "marked it as a dead-code or dead-import hotspot."
                     ),
-                    "technical_reason": f"{count} dead-code candidate edge(s) point at this module.",
+                    "technical_reason": f"{count} dead-code hotspot(s) point at this module.",
                     "why_this_rank": (
                         "Delete the most certain waste first so we do not spend time cleaning speculative targets."
                     ),
@@ -281,9 +290,14 @@ def build_deprecation_deletion_plan(
         else "No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics."
     )
 
+    deletion_status = "DELETION_CANDIDATES" if dead_hotspots else "NO_DELETIONS_APPROVED"
+    source_status = str(report.get("status") or "").strip()
+
     brief = build_bcg_brief(
         title="BCG Deletion Brief",
-        status=str(report.get("status") or ""),
+        status=deletion_status,
+        status_label="Deletion status",
+        secondary_statuses={"Source report status": source_status} if source_status else None,
         business_read=executive_read,
         technical_read=[
             f"Dead code candidates: {_fmt_int(summary.get('total_dead_code_candidates', 0))}",

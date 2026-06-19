@@ -100,18 +100,27 @@ def _dead_code_report(path: Path) -> None:
     doc = {
         "status": "PASS",
         "summary": {
-            "total_dead_code_candidates": 0,
-            "total_dead_imports": 0,
+            "total_dead_code_candidates": 4,
+            "total_dead_imports": 4,
             "total_unresolved_imports": 191,
             "first_party_low_confidence_ratio": 3.2,
             "inferred_symbol_ratio": 9.7,
         },
         "dead_code_candidates": {
-            "dead_code_hotspots": [],
+            "total_dead_code_candidates": 4,
+            "dead_code_by_layer": {"L0": 4},
+            "dead_code_by_entity_type": {"module": 4},
+            "dead_code_by_confidence": {"HIGH": 4},
+            "dead_code_hotspots": [("ADG::Module::legacy_path", 3), ("ADG::Module::stale_path", 1)],
         },
         "dead_imports": {
-            "dead_import_hotspots": [],
-            "total_dead_imports": 0,
+            "total_dead_imports": 4,
+            "dead_imports_by_layer": {"L0": 4},
+            "dead_imports_by_domain": {"core": 4},
+            "dead_imports_by_confidence": {"HIGH": 4},
+            "dead_imports_by_entity_type": {"module": 4},
+            "dead_import_hotspots": [("ADG::Module::legacy_path", 3), ("ADG::Module::stale_path", 1)],
+            "l4_dead_imports": 0,
         },
         "unresolved_imports": {
             "unresolved_hotspots": [
@@ -188,7 +197,10 @@ def test_emit_cleanup_queue_and_p2_trace_writes_latest_copies(tmp_path: Path) ->
 
     data = json.loads(out.read_text(encoding="utf-8"))
     assert data["artifact_kind"] == "adg_cleanup_queue_and_p2_blocker_trace"
-    assert data["cleanup"]["summary"]["dead_code_candidates"] == 0
+    assert data["cleanup"]["summary"]["dead_code_candidates"] == 4
+    assert data["cleanup"]["brief"]["status"] == "DELETION_CANDIDATES"
+    assert data["cleanup"]["priority_rows"][0]["decision"] == "delete_after_deprecation"
+    assert data["cleanup"]["priority_rows"][0]["scope"] == "ADG::Module::legacy_path"
     assert data["cleanup"]["live_queue"][0]["scope"] == "tests/_apps_contract/test_apps_rg_u0_structured_resume_support.py"
     assert data["p2"]["summary"]["current_medium_hygiene_count"] == 5
     assert data["p2"]["summary"]["delta"] == 2
@@ -215,5 +227,6 @@ def test_emit_cleanup_queue_and_p2_trace_inline_uses_bcg_brief(tmp_path: Path, c
     captured = capsys.readouterr()
     assert "# ADG Cleanup Queue and P2 Ratchet Trace" in captured.out
     assert "### BCG Cleanup Brief" in captured.out
+    assert "DELETION_CANDIDATES" in captured.out
     assert "### BCG P2 Ratchet Brief" in captured.out
     assert "Maintain SVP engineer-level repo standards" in captured.out

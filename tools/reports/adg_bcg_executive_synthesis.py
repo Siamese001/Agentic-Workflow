@@ -1085,7 +1085,8 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
 
 
 def _base_doc(ts: str, sqlite_path: Path, gate_doc: dict[str, Any] | None, degraded: list[str]) -> dict[str, Any]:
-    return {"schema_version": "1.0", "artifact_kind": "adg_bcg_executive_summary", "run": {"run_id": ts, "generated_at_utc": _now(), "snapshot_ts": (gate_doc or {}).get("timestamp") or ts, "commit_sha": _git_sha(), "repo_state_hash": "", "decision_grade_status": "DEGRADED" if degraded else "PASS", "degradation_reasons": degraded}, "plain_english_context": {"what_adg_is": {"summary": "ADG is the X-ray of the codebase. It maps code connections and lets the system ask health-check questions automatically. It turns 'is this codebase healthy?' from opinion into measured facts.", "analogy": "ADG is the codebase X-ray: it sees dependency skeletons, health gates, and structural risk.", "measured_scope": {"connections": None, "gates": (gate_doc or {}).get("total_gates"), "files": None}, "caveats": []}}}
+    emit_status = "DEGRADED" if degraded else "PASS"
+    return {"schema_version": "1.0", "artifact_kind": "adg_bcg_executive_summary", "run": {"run_id": ts, "generated_at_utc": _now(), "snapshot_ts": (gate_doc or {}).get("timestamp") or ts, "commit_sha": _git_sha(), "repo_state_hash": "", "emit_status": emit_status, "decision_grade_status": "DEGRADED" if degraded else "PENDING", "degradation_reasons": degraded}, "plain_english_context": {"what_adg_is": {"summary": "ADG is the X-ray of the codebase. It maps code connections and lets the system ask health-check questions automatically. It turns 'is this codebase healthy?' from opinion into measured facts.", "analogy": "ADG is the codebase X-ray: it sees dependency skeletons, health gates, and structural risk.", "measured_scope": {"connections": None, "gates": (gate_doc or {}).get("total_gates"), "files": None}, "caveats": []}}}
 
 
 def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | None]) -> dict[str, Any]:
@@ -1126,6 +1127,7 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
     actions = build_canonical_next_best_actions(gates, graph, testing, artifact_matrix, mv_audit, action_queue)
     doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "dead_code_report": dead_code_report, "deprecation_deletion_plan": deprecation_plan, "defer_delete_deprecate": {"status": "present", "rows": deprecation_plan.get("cleanup_candidates", [])}, "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
     doc["run"]["repo_state_hash"] = _hash_repo_state([p for p in artifacts.values() if p])
+    doc["run"]["decision_grade_status"] = doc["executive_decision"]["verdict"]
     if degraded:
         doc["executive_decision"]["verdict"] = "DEGRADED"
         doc["run"]["decision_grade_status"] = "DEGRADED"
@@ -1218,6 +1220,46 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     graph = doc.get("lens_5_graphdb_mv_decision_impact", {})
     actions = (doc.get("canonical_next_best_actions") or {}).get("rows") or []
     priority_rows: list[dict[str, Any]] = []
+    verdict = str(d.get("verdict") or "UNKNOWN")
+    recommendation = str(d.get("recommendation") or "no recommendation emitted").rstrip(".")
+    if verdict == "REPORT_INCONSISTENT":
+        errors = ((doc.get("audit_notes") or {}).get("artifact_consistency") or {}).get("errors") or []
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Repair graph/report consistency",
+                "scope": "mv_graph_vs_report_mismatches",
+                "business_reason": d.get("recommendation"),
+                "technical_reason": f"{_fmt_int(len(errors))} graph/report mismatch row(s) block decision-grade ordering.",
+                "why_this_rank": "The report says its own action order is not trustworthy until graph and report agree.",
+                "decision": "repair_reporting",
+            }
+        )
+    elif verdict == "DEGRADED":
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Restore decision-grade artifacts",
+                "scope": "required report inputs",
+                "business_reason": d.get("recommendation"),
+                "technical_reason": "; ".join(str(v) for v in (doc.get("run") or {}).get("degradation_reasons", [])[:3]) or "Required artifacts are missing.",
+                "why_this_rank": "Missing inputs make lower-priority ordering unreliable.",
+                "decision": "repair_reporting",
+            }
+        )
+    elif verdict == "RUNTIME_PROOF_FAILING":
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Fix failing runtime proof",
+                "scope": "runtime_spine",
+                "business_reason": d.get("recommendation"),
+                "technical_reason": runtime.get("measurement_gap_vs_quality_failure") or "Runtime proof is failing.",
+                "why_this_rank": "Observed runtime failure outranks ordinary gate cleanup.",
+                "decision": "repair_runtime",
+            }
+        )
+    rank_offset = len(priority_rows)
     for row in actions[:4]:
         evidence = "; ".join(
             str(e.get("signal_type") or "").strip()
@@ -1226,7 +1268,7 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
         )
         priority_rows.append(
             {
-                "priority": row.get("rank"),
+                "priority": int(row.get("rank") or 0) + rank_offset,
                 "move": row.get("action"),
                 "scope": row.get("scope"),
                 "business_reason": row.get("why_now"),
@@ -1235,12 +1277,40 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
                 "decision": row.get("action_type"),
             }
         )
+    if verdict == "REPORT_INCONSISTENT":
+        business_suffix = "Repair report consistency before treating blocker order as authoritative."
+        priority_rule = "Repair report consistency first, then clear blockers, then close testing exposure."
+        why_this_order = [
+            "Graph/report mismatch means the action order is not decision-grade yet.",
+            "Once report consistency is restored, clear current FIX gates before accepted debt.",
+            "Testing exposure should travel with the relevant fix slice.",
+        ]
+    elif verdict == "DEGRADED":
+        business_suffix = "Restore required report inputs before using this summary for prioritization."
+        priority_rule = "Restore missing evidence first, then rerun the executive summary."
+        why_this_order = [
+            "Missing required artifacts make the report incomplete.",
+            "Once required inputs are present, rerun the summary before funding lower-priority work.",
+        ]
+    elif verdict == "RUNTIME_PROOF_FAILING":
+        business_suffix = "Fix failing runtime proof before ordinary gate cleanup."
+        priority_rule = "Fix runtime proof first, then clear blockers, then close testing exposure."
+        why_this_order = [
+            "Observed runtime failure is a quality failure, not a diagnostic detail.",
+            "Once runtime proof is clean, ordinary FIX gates can drive the next slice.",
+        ]
+    else:
+        business_suffix = "Spend executive time on blockers and test gaps before accepted debt."
+        priority_rule = "Fix blockers first, then close testing exposure, then reduce accepted debt."
+        why_this_order = (doc.get("honest_bottom_line") or {}).get("bullets", [])[:4]
     return build_bcg_brief(
         title="BCG Executive Brief",
-        status=str(doc.get("run", {}).get("decision_grade_status") or ""),
+        status=verdict,
+        status_label="Decision status",
+        secondary_statuses={"Emit status": (doc.get("run") or {}).get("emit_status", "")},
         business_read=(
-            f"ADG is {d.get('verdict', 'UNKNOWN')}: {d.get('recommendation', 'no recommendation emitted')}. "
-            "Spend executive time on blockers and test gaps before accepted debt."
+            f"ADG is {d.get('verdict', 'UNKNOWN')}: {recommendation}. "
+            f"{business_suffix}"
         ),
         technical_read=[
             f"FIX gates: {_fmt_int(health.get('summary', {}).get('fix_gates', 0))}; "
@@ -1250,13 +1320,21 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             graph.get("executive_read", ""),
             f"Action rows emitted: {_fmt_int(len(actions))}",
         ],
-        priority_rule="Fix blockers first, then close testing exposure, then reduce accepted debt.",
+        priority_rule=priority_rule,
         priority_rows=priority_rows,
-        why_this_order=(doc.get("honest_bottom_line") or {}).get("bullets", [])[:4],
+        why_this_order=why_this_order,
         next_step=(
-            (actions[0].get("action") if actions else "Follow the next-best-actions table below.")
-            if actions
-            else "Follow the next-best-actions table below."
+            "Repair graph/report consistency first."
+            if verdict == "REPORT_INCONSISTENT"
+            else "Restore required report inputs first."
+            if verdict == "DEGRADED"
+            else "Fix failing runtime proof first."
+            if verdict == "RUNTIME_PROOF_FAILING"
+            else (
+                (actions[0].get("action") if actions else "Follow the next-best-actions table below.")
+                if actions
+                else "Follow the next-best-actions table below."
+            )
         ),
         table_limit=4,
     )
@@ -1394,7 +1472,9 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     plan = doc.get("deprecation_deletion_plan", {})
     brief = plan.get("brief") or build_bcg_brief(
         title="BCG Deletion Brief",
-        status=str(doc.get("run", {}).get("decision_grade_status") or ""),
+        status="PLAN_MISSING",
+        status_label="Deletion status",
+        secondary_statuses={"Decision status": str((doc.get("executive_decision") or {}).get("verdict") or "")},
         business_read=(
             plan.get("summary", {}).get("executive_read")
             or "No deprecation/deletion plan was available for this run."
@@ -1460,7 +1540,7 @@ def emit_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Pa
         if print_inline:
             sys.stdout.write("\n" + md + ("\n" if not md.endswith("\n") else ""))
         print(f"[adg_bcg_executive_synthesis] SUMMARY={_repo_rel(json_path)}", file=sys.stderr)
-        return (0 if doc["run"].get("decision_grade_status") != "FAIL" else 2), json_path
+        return (0 if doc["run"].get("emit_status") != "FAIL" else 2), json_path
     except (OSError, sqlite3.Error, json.JSONDecodeError, yaml.YAMLError, ValueError, TypeError) as exc:
         print(f"[adg_bcg_executive_synthesis] ERROR={exc}", file=sys.stderr)
         return (2 if fail_closed else 0), None

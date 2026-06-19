@@ -3,30 +3,30 @@
 ### BCG Executive Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Status:** PASS
-- **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree.. Spend executive time on blockers and test gaps before accepted debt.
+- **Decision status:** REPORT_INCONSISTENT
+- **Emit status:** PASS
+- **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree. Repair report consistency before treating blocker order as authoritative.
 - **Technical evidence:**
-  - FIX gates: 5; TRACK gates: 20
+  - FIX gates: 3; TRACK gates: 20
   - Runtime proof is present and FAILING — treat as a quality failure to fix.
   - Testing is a control gap where apps_rg/runtime/sections/executive_summary_lane.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
   - GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.
   - Action rows emitted: 7
-- **Priority rule:** Fix blockers first, then close testing exposure, then reduce accepted debt.
+- **Priority rule:** Repair report consistency first, then clear blockers, then close testing exposure.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Clear red gate 8_trace_replay_eval | 8_trace_replay_eval | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
+| 1 | Repair graph/report consistency | mv_graph_vs_report_mismatches | Repair report consistency first; the executive order of work is not trustworthy until graph and report agree. | 2 graph/report mismatch row(s) block decision-grade ordering. | The report says its own action order is not trustworthy until graph and report agree. | repair_reporting |
 | 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
-| 3 | Clear red gate H1_new_orphans_delta_ratchet | H1_new_orphans_delta_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
-| 4 | Fund mapped tests for apps_rg/runtime/sections/executive_summary_lane.py | apps_rg/runtime/sections/executive_summary_lane.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for apps_rg. | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | add_tests |
+| 3 | Clear red gate L2_lpg_drift_ratchet | L2_lpg_drift_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
+| 4 | Clear red gate Q2_cyclomatic_complexity_ratchet | Q2_cyclomatic_complexity_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | Add mapped tests when touched scope overlaps a hotspot. | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | fix_blocker |
 
 Why this order:
-- Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
-- Actually blocking now: 5 FIX gates; inspect regression delta before declaring a platform crisis.
-- Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
-- Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
+- Graph/report mismatch means the action order is not decision-grade yet.
+- Once report consistency is restored, clear current FIX gates before accepted debt.
+- Testing exposure should travel with the relevant fix slice.
 
-Next step: Clear red gate 8_trace_replay_eval
+Next step: Repair graph/report consistency first.
 
 ### 1. What ADG Is
 
@@ -34,7 +34,7 @@ ADG is the X-ray of the codebase. It maps code connections and lets the system a
 
 ### 2. Patient Size
 
-This patient has 12302 Python files: 7117 production files and 5185 test files. agentic_core contributes 2889 files; apps_* contributes 1431 files. Current snapshot/run ID: 06182026_1128.
+This patient has 12178 Python files: 6993 production files and 5185 test files. agentic_core contributes 2887 files; apps_* contributes 1431 files. Current snapshot/run ID: 06182026_1357.
 
 ### 3. Executive Decision
 
@@ -69,27 +69,23 @@ FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.
 
 | Bucket | Count | Executive meaning |
 |---|---:|---|
-| CLEAR | 23 | No action now. |
+| CLEAR | 25 | No action now. |
 | TRACK | 20 | Known debt or advisory inventory; burn down after red gates. |
-| FIX | 5 | Current blocker or regression requiring action before decision-grade green. |
+| FIX | 3 | Current blocker or regression requiring action before decision-grade green. |
 
 | Red gate | Total records | Regression / new delta | Executive read | Next action |
 |---|---:|---:|---|---|
-| 8_trace_replay_eval | 12 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +N over baseline None: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | L2_lpg_drift_ratchet | 2 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 1 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 | Q2_cyclomatic_complexity_ratchet | 1095 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +12 over baseline 1083: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | C2_l5_bypass_pview | 2 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
-| H1_new_orphans_delta_ratchet | 3 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| 8_trace_replay_eval | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +N over baseline None: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | L2_lpg_drift_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +1 over baseline 1 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 | Q2_cyclomatic_complexity_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +12 over baseline 1083: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | C2_l5_bypass_pview | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
-| H1_new_orphans_delta_ratchet | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 
 ### 6. Gap Analysis — Lens 2: Runtime Proof / Observability
 
@@ -176,10 +172,10 @@ GraphDB/MV signals drive decisions only when the studied structural risk (centra
 |---|---|---|---|---|
 | p0_wave_plan | used_after_green | True | Planned-slice / watchlist input for after-green burn-down ordering. | Use for blast-radius / refactor / runtime-path / after-green planning. |
 | mv_debt_concentration_hotspots | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_eval_coverage_by_path | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_exit_disposition_coverage | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_l2_phase_coverage | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_dependency_cone_risk | used_now | True | Structural MV studied (25 ranked rows on `cone_risk_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
-| mv_eval_coverage_by_path | used_now | True | Linked to a current FIX/action signal, so it changes immediate work order. | Use in current fix slice. |
 | mv_graph_chokepoint_bridges | used_now | True | Structural MV studied (25 ranked rows on `bridge_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
 | mv_graph_critical_path_blast_radius | used_now | True | Structural MV studied (25 ranked rows on `weighted_blast_radius`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
 | mv_graph_reverse_dependency_hotspots | used_now | True | Structural MV studied (25 ranked rows on `reverse_dependency_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
@@ -193,7 +189,7 @@ Action impact:
 |---|---|---|
 | mv_debt_concentration_hotspots | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_dependency_cone_risk | Structural MV studied (25 ranked rows on `cone_risk_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
-| mv_eval_coverage_by_path | Linked to a current FIX/action signal, so it changes immediate work order. | Use in current fix slice. |
+| mv_eval_coverage_by_path | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_exit_disposition_coverage | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
 | mv_graph_chokepoint_bridges | Structural MV studied (25 ranked rows on `bridge_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
 
@@ -201,19 +197,19 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 
 | Rank | Scope | Graph signal | Centrality | Blast radius | Reverse dep | Executive read |
 |---:|---|---|---|---|---|---|
-| 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.1529 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
+| 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.1527 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
 | 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8344 | 179.39 | 93.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5457 | 175.21 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5455 | 175.21 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
 | 4 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.6071 | 125.06 | 64.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.6689 | 3244.12 | 1772.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
+| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.6614 | 3244.12 | 1772.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
 
 ### 10. Next Best Actions
 
 | Rank | Action | Scope | Why now | Evidence used | Testing requirement | Done condition |
 |---:|---|---|---|---|---|---|
-| 1 | Clear red gate 8_trace_replay_eval | 8_trace_replay_eval | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 3 | Clear red gate H1_new_orphans_delta_ratchet | H1_new_orphans_delta_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 1 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 2 | Clear red gate L2_lpg_drift_ratchet | L2_lpg_drift_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 3 | Clear red gate Q2_cyclomatic_complexity_ratchet | Q2_cyclomatic_complexity_ratchet | Current FIX gates block decision-grade green; inspect delta before assuming structural crisis. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 4 | Fund mapped tests for apps_rg/runtime/sections/executive_summary_lane.py | apps_rg/runtime/sections/executive_summary_lane.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | testing_hotspot | Add mapped tests/regression coverage for apps_rg. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 5 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | graphdb | Add mapped tests before refactoring this seam. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 6 | Burn down ratchet S4_unused_imports_ratchet | S4_unused_imports_ratchet | Accepted baseline debt should fall after red gates are clear. | gate | Add tests only when touched scope overlaps hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
@@ -224,11 +220,12 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 ### BCG Deletion Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Status:** PASS
-- **Business read:** No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.
+- **Deletion status:** DELETION_CANDIDATES
+- **Source report status:** PASS
+- **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - Dead code candidates: 0
-  - Dead imports: 0
+  - Dead code candidates: 1,165
+  - Dead imports: 1,165
   - Unresolved imports: 604
   - First-party low-confidence ratio: 1.97%
   - Inferred-symbol ratio: 10.11%
@@ -237,10 +234,12 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Hold all deletion | whole codebase | The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths. | Dead-code candidates = 0 and dead imports = 0. | No proven target means the safest action is to pause deletion. | defer |
-| 2 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
-| 3 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
-| 4 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
+| 1 | Deprecate then delete confirmed dead code | tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 32 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 2 | Deprecate then delete confirmed dead code | tests/_apps_contract/test_w5_eval_acceptance.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 25 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 3 | Deprecate then delete confirmed dead code | ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py | This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot. | 20 dead-code hotspot(s) point at this module. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | delete_after_deprecation |
+| 4 | Triage unresolved imports | ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
 - Confirmed dead code is the highest-confidence waste and should be removed first.
@@ -270,8 +269,8 @@ Current low-value cleanup candidates:
 ### 12. Honest Bottom Line
 
 - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
-- Actually blocking now: 5 FIX gates; inspect regression delta before declaring a platform crisis.
+- Actually blocking now: 3 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
-- Clear red gate 8_trace_replay_eval
+- Clear red gate C2_l5_bypass_pview
 - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role.

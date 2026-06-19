@@ -528,6 +528,7 @@ def _review_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     return build_bcg_brief(
         title="BCG Review Brief",
         status=str(doc.get("run_id") or ""),
+        status_label="Run ID",
         business_read=(
             str(executive.get("decision") or "Stabilize the run, close testing exposure, then reduce accepted debt.")
         ),

@@ -34,24 +34,42 @@
       }
     ],
     "brief": {
-      "business_read": "No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.",
+      "business_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
       "next_step": "Deprecate first, then delete after the evidence stays clean.",
       "north_star": "Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.",
       "priority_rows": [
         {
-          "business_reason": "The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths.",
-          "decision": "defer",
-          "move": "Hold all deletion",
+          "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+          "decision": "delete_after_deprecation",
+          "move": "Deprecate then delete confirmed dead code",
           "priority": 1,
-          "scope": "whole codebase",
-          "technical_reason": "Dead-code candidates = 0 and dead imports = 0.",
-          "why_this_rank": "No proven target means the safest action is to pause deletion."
+          "scope": "tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
+          "technical_reason": "32 dead-code hotspot(s) point at this module.",
+          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+        },
+        {
+          "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+          "decision": "delete_after_deprecation",
+          "move": "Deprecate then delete confirmed dead code",
+          "priority": 2,
+          "scope": "tests/_apps_contract/test_w5_eval_acceptance.py",
+          "technical_reason": "25 dead-code hotspot(s) point at this module.",
+          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+        },
+        {
+          "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+          "decision": "delete_after_deprecation",
+          "move": "Deprecate then delete confirmed dead code",
+          "priority": 3,
+          "scope": "ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+          "technical_reason": "20 dead-code hotspot(s) point at this module.",
+          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
         },
         {
           "business_reason": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
           "decision": "investigate",
           "move": "Triage unresolved imports",
-          "priority": 2,
+          "priority": 4,
           "scope": "ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
           "technical_reason": "604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62).",
           "why_this_rank": "We need a cleaner signal before we can trust deletion decisions."
@@ -60,7 +78,7 @@
           "business_reason": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
           "decision": "stabilize",
           "move": "Reduce low-confidence noise",
-          "priority": 3,
+          "priority": 5,
           "scope": "first-party nodes",
           "technical_reason": "First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%.",
           "why_this_rank": "Noise reduction improves the quality of the next scan and makes future deletions safer."
@@ -69,18 +87,22 @@
           "business_reason": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
           "decision": "deprecate",
           "move": "Deprecate low-value ADG signals",
-          "priority": 4,
+          "priority": 6,
           "scope": "materialized views and unused artifacts",
           "technical_reason": "0 MV candidates and 0 unused artifacts surfaced by the report.",
           "why_this_rank": "This is cheap cleanup, but it should follow the evidence cleanup work above."
         }
       ],
       "priority_rule": "Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.",
-      "status": "NO_DELETIONS_APPROVED",
+      "secondary_statuses": {
+        "Source report status": "PASS"
+      },
+      "status": "DELETION_CANDIDATES",
+      "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "Dead code candidates: 0",
-        "Dead imports: 0",
+        "Dead code candidates: 1,165",
+        "Dead imports: 1,165",
         "Unresolved imports: 604",
         "First-party low-confidence ratio: 1.97%",
         "Inferred-symbol ratio: 10.11%",
@@ -169,19 +191,37 @@
     ],
     "priority_rows": [
       {
-        "business_reason": "The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths.",
-        "decision": "defer",
-        "move": "Hold all deletion",
+        "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+        "decision": "delete_after_deprecation",
+        "move": "Deprecate then delete confirmed dead code",
         "priority": 1,
-        "scope": "whole codebase",
-        "technical_reason": "Dead-code candidates = 0 and dead imports = 0.",
-        "why_this_rank": "No proven target means the safest action is to pause deletion."
+        "scope": "tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
+        "technical_reason": "32 dead-code hotspot(s) point at this module.",
+        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+      },
+      {
+        "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+        "decision": "delete_after_deprecation",
+        "move": "Deprecate then delete confirmed dead code",
+        "priority": 2,
+        "scope": "tests/_apps_contract/test_w5_eval_acceptance.py",
+        "technical_reason": "25 dead-code hotspot(s) point at this module.",
+        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+      },
+      {
+        "business_reason": "This is the highest-confidence waste to remove because ADG already marked it as a dead-code or dead-import hotspot.",
+        "decision": "delete_after_deprecation",
+        "move": "Deprecate then delete confirmed dead code",
+        "priority": 3,
+        "scope": "ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+        "technical_reason": "20 dead-code hotspot(s) point at this module.",
+        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
       },
       {
         "business_reason": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
         "decision": "investigate",
         "move": "Triage unresolved imports",
-        "priority": 2,
+        "priority": 4,
         "scope": "ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
         "technical_reason": "604 unresolved imports; lead hotspot ADG::Module::tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py (62).",
         "why_this_rank": "We need a cleaner signal before we can trust deletion decisions."
@@ -190,7 +230,7 @@
         "business_reason": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
         "decision": "stabilize",
         "move": "Reduce low-confidence noise",
-        "priority": 3,
+        "priority": 5,
         "scope": "first-party nodes",
         "technical_reason": "First-party low-confidence ratio = 1.97% and inferred-symbol ratio = 10.11%.",
         "why_this_rank": "Noise reduction improves the quality of the next scan and makes future deletions safer."
@@ -199,21 +239,21 @@
         "business_reason": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
         "decision": "deprecate",
         "move": "Deprecate low-value ADG signals",
-        "priority": 4,
+        "priority": 6,
         "scope": "materialized views and unused artifacts",
         "technical_reason": "0 MV candidates and 0 unused artifacts surfaced by the report.",
         "why_this_rank": "This is cheap cleanup, but it should follow the evidence cleanup work above."
       }
     ],
-    "source": "artifacts/adg/dead_code_zone_control_report_latest.json",
+    "source": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\dead_code_zone_control_report_latest.json",
     "status": "PASS",
     "summary": {
       "cleanup_candidate_count": 0,
-      "dead_code_candidates": 0,
-      "dead_imports": 0,
-      "executive_read": "No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.9728246668408673,
-      "inferred_symbol_ratio": 10.110130888542928,
+      "dead_code_candidates": 1165,
+      "dead_imports": 1165,
+      "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
+      "first_party_low_confidence_ratio": 1.97276023124408,
+      "inferred_symbol_ratio": 10.109781129638598,
       "unresolved_imports": 604,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -223,7 +263,7 @@
       ]
     }
   },
-  "generated_at_utc": "2026-06-18T15:36:04+00:00",
+  "generated_at_utc": "2026-06-18T19:20:23+00:00",
   "p2": {
     "brief": {
       "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
@@ -286,15 +326,17 @@
         }
       ],
       "priority_rule": "Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.",
+      "secondary_statuses": {},
       "status": "WITHIN_CEILING",
+      "status_label": "P2 ratchet status",
       "table_limit": 6,
       "technical_read": [
-        "Published sqlite snapshot: artifacts/adg/adg_indexed_06182026_1128.sqlite",
+        "Published sqlite snapshot: C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06182026_1357.sqlite",
         "P2 ceiling: 20",
         "Current MEDIUM hygiene count: 20",
         "Delta vs ceiling: +0",
         "Baseline snapshot: missing",
-        "Latest failed run: 2026-06-18T13:00:34Z (failed)"
+        "Latest failed run: 2026-06-18T18:05:56Z (failed)"
       ],
       "title": "BCG P2 Ratchet Brief",
       "why_this_order": [
@@ -612,42 +654,165 @@
       "current_medium_hygiene_count": 20,
       "delta": 0,
       "failed_run_status": "failed",
-      "failed_run_timestamp": "2026-06-18T13:00:34Z",
-      "published_snapshot": "artifacts/adg/adg_indexed_06182026_1128.sqlite"
+      "failed_run_timestamp": "2026-06-18T18:05:56Z",
+      "published_snapshot": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06182026_1357.sqlite"
     }
   },
   "source_snapshots": {
     "dead_code_report": {
       "dead_code_candidates": {
-        "dead_code_by_confidence": {},
-        "dead_code_by_entity_type": {},
-        "dead_code_by_layer": {},
-        "dead_code_hotspots": [],
-        "total_dead_code_candidates": 0
+        "dead_code_by_confidence": {
+          "HIGH": 1098
+        },
+        "dead_code_by_entity_type": {
+          "module": 1098,
+          "symbol": 448
+        },
+        "dead_code_by_layer": {
+          "L0": 8,
+          "L1": 114,
+          "L2": 30,
+          "L3": 48,
+          "L4": 37,
+          "L5": 30,
+          "L6": 38,
+          "L_APP": 23,
+          "L_OPS": 71,
+          "L_PG": 6,
+          "L_RUNTIME": 18,
+          "L_SHARED": 34,
+          "L_TEST": 550,
+          "L_TOOLS": 91
+        },
+        "dead_code_hotspots": [
+          [
+            "tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
+            32
+          ],
+          [
+            "tests/_apps_contract/test_w5_eval_acceptance.py",
+            25
+          ],
+          [
+            "ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+            20
+          ],
+          [
+            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+            19
+          ],
+          [
+            "tests/_archived_obsolete/ops_scripts/ci/test_graphdb_gates.py",
+            16
+          ],
+          [
+            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+            14
+          ],
+          [
+            "ops_scripts/dev_tools/L0_routing_scripts/colors.py",
+            13
+          ],
+          [
+            "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+            13
+          ],
+          [
+            "agentic_core/L2_execution/types/healer_registry_types.py",
+            12
+          ],
+          [
+            "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+            12
+          ]
+        ],
+        "total_dead_code_candidates": 1165
       },
       "dead_imports": {
-        "dead_import_hotspots": [],
-        "dead_imports_by_confidence": {},
+        "dead_import_hotspots": [
+          [
+            "tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py",
+            32
+          ],
+          [
+            "tests/_apps_contract/test_w5_eval_acceptance.py",
+            25
+          ],
+          [
+            "ops_scripts/dev_tools/L0_routing_scripts/_ssot_meta_learning.py",
+            20
+          ],
+          [
+            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+            19
+          ],
+          [
+            "tests/_archived_obsolete/ops_scripts/ci/test_graphdb_gates.py",
+            16
+          ],
+          [
+            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+            14
+          ],
+          [
+            "ops_scripts/dev_tools/L0_routing_scripts/colors.py",
+            13
+          ],
+          [
+            "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+            13
+          ],
+          [
+            "agentic_core/L2_execution/types/healer_registry_types.py",
+            12
+          ],
+          [
+            "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+            12
+          ]
+        ],
+        "dead_imports_by_confidence": {
+          "HIGH": 1098
+        },
         "dead_imports_by_domain": {},
-        "dead_imports_by_layer": {},
-        "l4_dead_imports": 0,
-        "total_dead_imports": 0
+        "dead_imports_by_entity_type": {
+          "module": 1098,
+          "symbol": 448
+        },
+        "dead_imports_by_layer": {
+          "L0": 8,
+          "L1": 114,
+          "L2": 30,
+          "L3": 48,
+          "L4": 37,
+          "L5": 30,
+          "L6": 38,
+          "L_APP": 23,
+          "L_OPS": 71,
+          "L_PG": 6,
+          "L_RUNTIME": 18,
+          "L_SHARED": 34,
+          "L_TEST": 550,
+          "L_TOOLS": 91
+        },
+        "l4_dead_imports": 37,
+        "total_dead_imports": 1165
       },
       "errors": [],
       "executive_readiness": {
         "executive_metrics": {
-          "dead_code_count": 0,
-          "dead_import_count": 0,
-          "first_party_low_confidence_ratio": 1.9728246668408673,
-          "inferred_symbol_ratio": 10.110130888542928,
+          "dead_code_count": 1165,
+          "dead_import_count": 1165,
+          "first_party_low_confidence_ratio": 1.97276023124408,
+          "inferred_symbol_ratio": 10.109781129638598,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 604,
           "unresolved_import_count": 604
         },
         "executive_ready": true,
         "first_party_metrics": {
-          "dead_code_count": 0,
-          "dead_import_count": 0,
+          "dead_code_count": 1098,
+          "dead_import_count": 1098,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 604,
           "unresolved_import_count": 604
@@ -675,12 +840,12 @@
           "L_TOOLS": 2323,
           "L_UNKNOWN": 216
         },
-        "inferred_symbol_ratio": 10.110130888542928,
+        "inferred_symbol_ratio": 10.109781129638598,
         "total_inferred_symbols": 17534,
-        "total_symbols": 173430
+        "total_symbols": 173436
       },
       "low_confidence_zones": {
-        "first_party_low_confidence_ratio": 1.9728246668408673,
+        "first_party_low_confidence_ratio": 1.97276023124408,
         "governance_low_confidence_ratio": 0.0,
         "low_conf_by_entity_type": {
           "symbol": 604
@@ -702,11 +867,11 @@
       "status": "PASS",
       "summary": {
         "executive_ready": true,
-        "first_party_low_confidence_ratio": 1.9728246668408673,
-        "inferred_symbol_ratio": 10.110130888542928,
+        "first_party_low_confidence_ratio": 1.97276023124408,
+        "inferred_symbol_ratio": 10.109781129638598,
         "l4_unresolved_imports": 0,
-        "total_dead_code_candidates": 0,
-        "total_dead_imports": 0,
+        "total_dead_code_candidates": 1165,
+        "total_dead_imports": 1165,
         "total_low_confidence": 604,
         "total_unresolved_imports": 604
       },
@@ -763,7 +928,8 @@
         ]
       },
       "warnings": [
-        "Domain field not available for dead import analysis"
+        "Domain field not available for dead import analysis",
+        "L4 has 37 dead imports (should trend to zero)"
       ]
     },
     "failed_run_manifest": {
@@ -774,52 +940,52 @@
           "blocking_mode": "hard_fail",
           "duration_s": null,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T12:57:56Z",
+          "finished_at_utc": "2026-06-18T18:02:31Z",
           "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260618_125756.json",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260618_180231.json",
           "name": "adg_gate_dispatcher",
           "phase": "post-commit-validation",
           "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-06-18T12:57:56Z",
+          "started_at_utc": "2026-06-18T18:02:31Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 8.39000000001397,
+          "duration_s": 8.375,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 25.98399999999674,
+          "duration_s": 25.889999999984866,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5309999999881256,
+          "duration_s": 0.48399999999674037,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         }
       ],
@@ -828,280 +994,280 @@
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:52:36Z",
+          "finished_at_utc": "2026-06-18T17:57:13Z",
           "kind": "python_function",
           "message": null,
           "name": "mcp_config_drift",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-18T12:52:36Z",
+          "started_at_utc": "2026-06-18T17:57:13Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.6879999999946449,
+          "duration_s": 0.6719999999913853,
           "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:52:37Z",
+          "finished_at_utc": "2026-06-18T17:57:13Z",
           "kind": "python_function",
           "message": null,
           "name": "wal_checkpoint",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-18T12:52:37Z",
+          "started_at_utc": "2026-06-18T17:57:13Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:52:37Z",
+          "finished_at_utc": "2026-06-18T17:57:13Z",
           "kind": "python_function",
           "message": null,
           "name": "locked_files",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-18T12:52:37Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:53:38Z",
-          "kind": "validation",
-          "message": null,
-          "name": "p2_ratchet",
-          "phase": "build",
-          "script_rel": null,
-          "started_at_utc": "2026-06-18T12:53:38Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": null,
-          "exit_code": 1,
-          "finished_at_utc": "2026-06-18T12:57:56Z",
-          "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260618_125756.json",
-          "name": "adg_gate_dispatcher",
-          "phase": "post-commit-validation",
-          "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-06-18T12:57:56Z",
-          "status": "fail"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:08Z",
-          "kind": "validation",
-          "message": null,
-          "name": "p0_violations",
-          "phase": "post-commit-validation",
-          "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:08Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:08Z",
-          "kind": "validation",
-          "message": null,
-          "name": "p1_ratchet",
-          "phase": "post-commit-validation",
-          "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:08Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.26600000000325963,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:08Z",
-          "kind": "validation",
-          "message": null,
-          "name": "dead_production_imports",
-          "phase": "post-commit-validation",
-          "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:08Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.4370000000053551,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:08Z",
-          "kind": "validation",
-          "message": null,
-          "name": "structural_conformance",
-          "phase": "post-commit-validation",
-          "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:08Z",
+          "started_at_utc": "2026-06-18T17:57:13Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.01600000000325963,
           "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:08Z",
+          "finished_at_utc": "2026-06-18T17:58:13Z",
           "kind": "validation",
           "message": null,
-          "name": "agentic_antipatterns",
+          "name": "p2_ratchet",
+          "phase": "build",
+          "script_rel": null,
+          "started_at_utc": "2026-06-18T17:58:13Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": null,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-18T18:02:31Z",
+          "kind": "subprocess",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260618_180231.json",
+          "name": "adg_gate_dispatcher",
+          "phase": "post-commit-validation",
+          "script_rel": "ops_scripts/ci/adg_gates/run.py",
+          "started_at_utc": "2026-06-18T18:02:31Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.01600000000325963,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-18T18:02:43Z",
+          "kind": "validation",
+          "message": null,
+          "name": "p0_violations",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:08Z",
+          "started_at_utc": "2026-06-18T18:02:43Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-18T12:58:18Z",
+          "finished_at_utc": "2026-06-18T18:02:43Z",
+          "kind": "validation",
+          "message": null,
+          "name": "p1_ratchet",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-18T18:02:43Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.25,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-18T18:02:43Z",
+          "kind": "validation",
+          "message": null,
+          "name": "dead_production_imports",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-18T18:02:43Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.46899999998277053,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-18T18:02:44Z",
+          "kind": "validation",
+          "message": null,
+          "name": "structural_conformance",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-18T18:02:44Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.0,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-18T18:02:44Z",
+          "kind": "validation",
+          "message": null,
+          "name": "agentic_antipatterns",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-18T18:02:44Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.0,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-18T18:03:00Z",
           "kind": "validation",
           "message": null,
           "name": "witness_tier_gates",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-18T12:58:18Z",
+          "started_at_utc": "2026-06-18T18:03:00Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T12:59:09Z",
+          "finished_at_utc": "2026-06-18T18:03:56Z",
           "kind": "subprocess",
           "message": "mandatory markdown burndown",
           "name": "adg_burndown_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_burndown_report.py",
-          "started_at_utc": "2026-06-18T12:59:09Z",
+          "started_at_utc": "2026-06-18T18:03:56Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T12:59:09Z",
+          "finished_at_utc": "2026-06-18T18:03:56Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML review template",
           "name": "adg_review_template",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_review_template.py",
-          "started_at_utc": "2026-06-18T12:59:09Z",
+          "started_at_utc": "2026-06-18T18:03:56Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T12:59:09Z",
+          "finished_at_utc": "2026-06-18T18:03:57Z",
           "kind": "subprocess",
           "message": "mandatory JSON dead-code control report",
           "name": "adg_dead_code_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_dead_code_report.py",
-          "started_at_utc": "2026-06-18T12:59:09Z",
+          "started_at_utc": "2026-06-18T18:03:57Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T12:59:09Z",
+          "finished_at_utc": "2026-06-18T18:03:57Z",
           "kind": "subprocess",
           "message": "mandatory cleanup queue and P2 blocker trace report",
           "name": "adg_cleanup_queue_and_p2_blocker_trace",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
-          "started_at_utc": "2026-06-18T12:59:09Z",
+          "started_at_utc": "2026-06-18T18:03:57Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T12:59:20Z",
+          "finished_at_utc": "2026-06-18T18:04:11Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML/Markdown BCG executive synthesis",
           "name": "adg_bcg_executive_summary",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_bcg_executive_synthesis.py",
-          "started_at_utc": "2026-06-18T12:59:20Z",
+          "started_at_utc": "2026-06-18T18:04:11Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.20300000000861473,
+          "duration_s": 0.1870000000053551,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": null,
           "name": "wiring",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_expected_wiring.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 8.39000000001397,
+          "duration_s": 8.375,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 25.98399999999674,
+          "duration_s": 25.889999999984866,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5460000000020955,
+          "duration_s": 0.5,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": null,
           "name": "except-contract",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_exception_contract.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5309999999881256,
+          "duration_s": 0.48399999999674037,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-18T13:00:34Z",
+          "finished_at_utc": "2026-06-18T18:05:56Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-06-18T13:00:34Z",
+          "started_at_utc": "2026-06-18T18:05:56Z",
           "status": "fail"
         }
       ],
       "generation_exit_code": null,
       "generator_entrypoint": "tools/generate/generate_full_adg.py",
       "sqlite_path": null,
-      "timestamp": "2026-06-18T13:00:34Z",
+      "timestamp": "2026-06-18T18:05:56Z",
       "unexpected_skips": []
     },
     "p2_ratchet": {
@@ -1110,10 +1276,10 @@
     "sqlite_manifest": {}
   },
   "sources": {
-    "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06182026_0852.json",
-    "ratchet": "artifacts/adg/p2_ratchet.json",
-    "sqlite": "artifacts/adg/adg_indexed_06182026_1128.sqlite",
+    "dead_code_report": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\dead_code_zone_control_report_latest.json",
+    "failed_run_manifest": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06182026_1357.json",
+    "ratchet": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p2_ratchet.json",
+    "sqlite": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06182026_1357.sqlite",
     "sqlite_manifest": ""
   },
   "status": "present"
