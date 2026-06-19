@@ -168,6 +168,9 @@ jobs:
         with:
           python-version: "3.12"
           install-mode: dev
+      - name: Refresh apps_e2e evidence assertions
+        working-directory: tools/cert
+        run: python -m apps_e2e.emit_apps_evidence_assertions
       - name: Run apps_e2e harness verifier
         run: |
           python -m pytest tests/unit/apps_e2e/ -q --no-header -p no:cacheprovider
