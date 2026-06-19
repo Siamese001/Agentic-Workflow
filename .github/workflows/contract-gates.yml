@@ -168,14 +168,16 @@ jobs:
         with:
           python-version: "3.12"
           install-mode: dev
+      - name: Prepare apps_e2e proof inputs
+        run: |
+          python -m tools.certification.apps_e2e.emit_proof_bundle --all --dry-run --skip-non-runnable
+          python -m tools.certification.apps_e2e.matrix_builder
       - name: Refresh apps_e2e evidence assertions
         working-directory: tools/cert
         run: python -m apps_e2e.emit_apps_evidence_assertions
       - name: Run apps_e2e harness verifier
         run: |
           python -m pytest tests/unit/apps_e2e/ -q --no-header -p no:cacheprovider
-          python -m tools.certification.apps_e2e.emit_proof_bundle --all --dry-run --skip-non-runnable
-          python -m tools.certification.apps_e2e.matrix_builder
           python -m pytest \
             tests/runtime/test_apps_e2e_auditability_harness.py \
             tests/runtime/test_apps_e2e_matrix.py \
