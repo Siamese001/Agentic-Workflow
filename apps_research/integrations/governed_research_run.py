@@ -137,6 +137,7 @@ class GovernedE2ERunRecord:
     # _depth_profile and _c0_bundle to the brief output.
     research_depth_profile: str = ""
     fec_run_context: dict = dataclasses.field(default_factory=dict)
+    company_brief_sidecar: dict[str, Any] = dataclasses.field(default_factory=dict)
     # ── L4 durable write path (apps-research-deferred-scope-b7e3d2 W3 / DS-3) ──
     # commit_receipt_ref from DurableWriteGateway.commit() after the run.
     # "PENDING" when the commit was never attempted (degraded path).
@@ -167,6 +168,16 @@ def _company_brief_text_from_fec(fec_ctx: dict[str, Any]) -> str:
             if text:
                 return text
     return ""
+
+
+def _company_brief_sidecar_from_fec(fec_ctx: dict[str, Any]) -> dict[str, Any]:
+    """Extract apps_rg targeting brief sidecar metadata from hop FEC context."""
+    brief = fec_ctx.get("company_brief")
+    if isinstance(brief, dict):
+        sidecar = brief.get("apps_rg_targeting_brief_sidecar")
+        if isinstance(sidecar, dict):
+            return dict(sidecar)
+    return {}
 
 
 class GovernedResearchRun(GovernedAppRunner):
@@ -261,6 +272,7 @@ class GovernedResearchRun(GovernedAppRunner):
             max((getattr(item, "confidence", 0.0) for item in evidence_items), default=0.0),
         )
         company_brief_text = _company_brief_text_from_fec(fec_ctx)
+        company_brief_sidecar = _company_brief_sidecar_from_fec(fec_ctx)
         record = build_app_record(
             GovernedE2ERunRecord, core,
             aliases={"topic": "query"},
@@ -271,6 +283,7 @@ class GovernedResearchRun(GovernedAppRunner):
             evidence_items=evidence_items,
             confidence_score=confidence_score,
             company_brief_text=company_brief_text,
+            company_brief_sidecar=company_brief_sidecar,
         )
 
         # ── L4 durable write path (DS-3) — fail-soft ──────────────────────────

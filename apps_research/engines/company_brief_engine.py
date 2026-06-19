@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
+from apps_research.integrations.llm_client import create_openai_sync_client
 
 # W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — import catalog
 # and helpers from query_decomposer (L1 cognition layer). Re-export them
@@ -55,11 +56,9 @@ def _emit_company_brief_marker(
 ) -> None:
     """Best-effort ``JUDGE_DECISION`` emission for synthesis observability.
 
-    Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9). The marker is
-    treated as a synthesis-availability observation — the
-    judge-calibration harness uses it to track Qwen-vLLM uptime,
-    parse-success rate, and cloud-fallback ratio for company-brief
-    synthesis. Never raises.
+    Treated as a synthesis-availability observation for company-brief
+    synthesis. The calibration harness uses it to track parse-success
+    rate and fallback ratio. Never raises.
     """
     try:
         from tools.capture.append_marker import append_marker  # noqa: PLC0415
@@ -84,10 +83,14 @@ def _emit_company_brief_marker(
 
 
 def _resolved_gemini_max_output_tokens() -> int:
-    """Canonical Gemini output-token budget for apps_research synthesis calls."""
-    from agentic_core.config.google_ai_env import google_ai_max_output_tokens  # noqa: PLC0415
-
-    return google_ai_max_output_tokens()
+    """Canonical apps_research output-token budget for synthesis calls."""
+    raw = os.environ.get("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "").strip()
+    if raw:
+        try:
+            return max(512, int(raw))
+        except ValueError:
+            pass
+    return 4096
 
 
 class CompanyBriefEngine(BaseResearchEngine):
@@ -230,6 +233,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         targeting_disposition = str(synthesized.get("targeting_brief_disposition") or "").strip()
         if targeting_disposition:
             targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
+            targeting_sidecar = synthesized.get("apps_rg_targeting_brief_sidecar") or {}
             gate_blocks = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
             if targeting_md and not gate_blocks and targeting_disposition == "SEALED":
                 brief["apps_rg_targeting_brief_text"] = targeting_md
@@ -248,6 +252,8 @@ class CompanyBriefEngine(BaseResearchEngine):
                     brief["targeting_brief_violations"] = list(
                         synthesized["targeting_brief_violations"]
                     )
+            if targeting_sidecar:
+                brief["apps_rg_targeting_brief_sidecar"] = dict(targeting_sidecar)
         _sub_stages.append({
             "sub_stage_id": "research.assemble",
             "sub_stage_name": "Brief Assembly",
@@ -390,14 +396,10 @@ class CompanyBriefEngine(BaseResearchEngine):
     ) -> Dict[str, Any]:
         """LLM-synthesize raw research into structured facets.
 
-        Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9): try local
-        Qwen-32B vLLM first; fall through to SovereignLLMGateway (cloud)
-        when the local server is unavailable; deterministic stub when
-        both gateways fail. Matches the cascade pattern established in
-        Wave 2 for narrative_judge_scorer.
-
-        When ``apps_rg_targeting_brief_enabled`` (env or jd_context), emits
-        apps_rg targeting markdown per ``apps_rg_targeting_brief_v1.md``.
+        The company brief path uses the pinned OpenAI model route for
+        synthesis. When ``apps_rg_targeting_brief_enabled`` (env or
+        jd_context), emits apps_rg targeting markdown per
+        ``apps_rg_targeting_brief_v1.md``.
         """
         from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
             consumer_brief_template_id,
@@ -452,24 +454,9 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
 
-        # Strict mode: fail loud with categorized diagnostic when the operator
-        # explicitly required Qwen (APPS_RESEARCH_REQUIRE_QWEN=1). Distinguishes
-        # Docker Desktop down vs vLLM container down vs model not loaded so the
-        # error message is actionable. Cloud/stub fallbacks are intentionally
-        # bypassed in strict mode.
-        from apps_research.integrations.qwen_strict_probe import (
-            maybe_enforce_qwen_strict_requirement,
-        )
-
-        maybe_enforce_qwen_strict_requirement()
-
-        qwen_payload = self._qwen_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
-        if qwen_payload is not None:
-            return qwen_payload
-
-        gemini_payload = self._gemini_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
-        if gemini_payload is not None:
-            return gemini_payload
+        openai_payload = self._gemini_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
+        if openai_payload is not None:
+            return openai_payload
 
         return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
 
@@ -480,230 +467,77 @@ class CompanyBriefEngine(BaseResearchEngine):
         topic: str,
         jd_facets: List[str],
     ) -> Dict[str, Any] | None:
-        """Synthesize via Google Gemini 3.1 Pro Preview (cloud cascade tier 2).
+        """Synthesize via the pinned OpenAI model route.
 
-        Mirrors :meth:`_qwen_synthesize`. Reads `GOOGLE_API_KEY` and
-        ``GOOGLE_AI_PRO_MODEL`` (deprecated alias ``GEMINI_PRO_MODEL``,
-        default ``gemini-3.1-pro-preview``) from the
-        environment. Returns the parsed synthesis dict on success, ``None``
-        when any guard rejects (SDK absent, key missing, API exception,
-        empty response, parse failure). The ``None`` return signals
-        :meth:`_synthesize` to fall through to the deterministic stub.
-
-        Per `.env.example` doctrine, ``GOOGLE_AI_PRO_MODEL`` is the
-        synthesis-quality / structural-novel-failure escalation tier;
-        ``GOOGLE_AI_MODEL`` / ``GEMINI_MODEL`` (flash) is for cheap fallback
-        when Pro is exhausted or mismatched vs Pro.
+        Uses ``gpt-5.4-mini`` by default, with ``APPS_RESEARCH_BRIEF_MODEL``
+        as an explicit override for local experimentation. Returns the parsed
+        synthesis dict on success, ``None`` on transport, empty-response, or
+        parse failure so the caller can fall back to the deterministic stub.
         """
         import os  # noqa: PLC0415 — local import keeps module cold-load cheap
 
         try:
-            from google import genai  # noqa: PLC0415
-        except ImportError:
-            self.logger.info("[CompanyBriefEngine] google-genai SDK not installed; skipping Gemini fallback")
+            client = create_openai_sync_client()
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
+            self.logger.info("[CompanyBriefEngine] openai client unavailable: %s", exc)
             return None
 
-        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            self.logger.info("[CompanyBriefEngine] GOOGLE_API_KEY/GEMINI_API_KEY not set; skipping Gemini fallback")
-            return None
-
-        # Try Pro first (synthesis-quality tier) then Flash (cheap-fast). Free-tier
-        # Google AI Studio accounts have limit:0 for Pro models so the cascade
-        # resolves to Flash; paid-tier accounts hit Pro and never reach Flash.
-        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
-            google_ai_flash_model_id,
-            google_ai_pro_model_id,
-        )
-
-        candidates: list[str] = []
-        from agentic_core.config.model_catalog import (  # noqa: PLC0415
-            GEMINI_FLASH_MODEL_ID,
-            GEMINI_PRO_MODEL_ID,
-        )
-
-        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
-        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
-        if pro_model:
-            candidates.append(pro_model)
-        if flash_model and flash_model != pro_model:
-            candidates.append(flash_model)
-        if not candidates:
-            return None
-
-        client = genai.Client(api_key=api_key)
-        last_error: Exception | None = None
-        for model_name in candidates:
-            started = time.time()
-            try:
-                resp = client.models.generate_content(
-                    model=model_name,
-                    contents=(
-                        "You are a research analyst producing structured company briefs. "
-                        "Always answer with strict JSON matching the schema in the user prompt.\n\n"
-                        + prompt
-                    ),
-                    config={
-                        "temperature": 0.2,
-                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
-                    },
-                )
-            except Exception as exc:  # guardian: allow-broad-exception -- google-genai raises heterogeneous (APIError/Connection/Timeout/InvalidArgument); fail-soft preserves stub fallback
-                last_error = exc
-                self.logger.info(
-                    "[CompanyBriefEngine] gemini model=%s failed (%s); trying next candidate",
-                    model_name,
-                    type(exc).__name__,
-                )
-                _emit_company_brief_marker(
-                    accepted=False,
-                    model_used=model_name,
-                    fallback_reason="gemini_exception",
-                    latency_ms=(time.time() - started) * 1000.0,
-                )
-                continue
-
-            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
-            if not text:
-                _emit_company_brief_marker(
-                    accepted=False,
-                    model_used=model_name,
-                    fallback_reason="gemini_empty_response",
-                    latency_ms=(time.time() - started) * 1000.0,
-                )
-                continue
-
-            parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
-            if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
-                _emit_company_brief_marker(
-                    accepted=False,
-                    model_used=model_name,
-                    fallback_reason="gemini_parse_failure",
-                    latency_ms=(time.time() - started) * 1000.0,
-                )
-                continue
-
-            _emit_company_brief_marker(
-                accepted=True,
-                model_used=model_name,
-                fallback_reason="none",
-                latency_ms=(time.time() - started) * 1000.0,
-            )
-            return parsed
-
-        if last_error is not None:
-            self.logger.info(
-                "[CompanyBriefEngine] all Gemini candidates exhausted (last error: %s); falling back to stub",
-                last_error,
-            )
-        return None
-
-    def _qwen_synthesize(
-        self,
-        *,
-        prompt: str,
-        topic: str,
-        jd_facets: List[str],
-    ) -> Dict[str, Any] | None:
-        """Synthesize via the local Qwen vLLM server.
-
-        Returns the parsed synthesis dict on success, ``None`` when any
-        guard rejects (preflight fail, SDK absent, model_registry absent,
-        gateway exception, parse failure). The ``None`` return signals
-        :meth:`_synthesize` to fall through to the cloud gateway.
-
-        Emits a ``JUDGE_DECISION`` marker per call (treating the
-        synthesis as a free-text generation that the calibration ledger
-        observes; ``app_name=apps_research.company_brief``) so the
-        weekly judge-calibration harness can spot drift in synthesis
-        availability + parse-success rate.
-        """
-        try:
-            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
-                is_qwen_available,
-            )
-        except ImportError:
-            return None
-        if not is_qwen_available():
-            _emit_company_brief_marker(
-                accepted=False,
-                model_used="deterministic_fallback",
-                fallback_reason="preflight_failed",
-            )
-            return None
-
-        try:
-            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
-            if _OpenAI is None:
-                return None
-        except ImportError:
-            return None
-
-        try:
-            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
-                QWEN_LOCAL_MODEL_ID,
-                VLLM_BASE_URL,
-            )
-        except ImportError:
-            return None
-
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
         started = time.time()
         try:
-            client = _OpenAI(
-                base_url=VLLM_BASE_URL,
-                api_key="not-needed",
-                timeout=60.0,
-            )
             resp = client.chat.completions.create(
-                model=QWEN_LOCAL_MODEL_ID,
+                model=model_name,
                 messages=[
                     {
                         "role": "system",
                         "content": (
-                            "You are a corporate intelligence analyst producing strict "
-                            "JSON output. Respond ONLY with valid JSON."
+                            "You are a research analyst producing structured company briefs. "
+                            "Always answer with strict JSON matching the schema in the user prompt."
                         ),
                     },
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.2,
-                max_tokens=2000,
+                max_tokens=_resolved_gemini_max_output_tokens(),
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous (APIError/Connection/Timeout); fail-soft preserves cloud fallback
-            self.logger.info("[CompanyBriefEngine] qwen call failed, falling back: %s", exc)
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI SDK raises heterogeneous transport/API errors; fail-soft preserves stub fallback
+            self.logger.info("[CompanyBriefEngine] openai model=%s failed: %s", model_name, exc)
             _emit_company_brief_marker(
                 accepted=False,
-                model_used=QWEN_LOCAL_MODEL_ID,
-                fallback_reason="gateway_exception",
+                model_used=model_name,
+                fallback_reason="openai_exception",
                 latency_ms=(time.time() - started) * 1000.0,
             )
             return None
 
-        text = (resp.choices[0].message.content or "") if resp.choices else ""
-        if not text.strip():
+        text = ""
+        if getattr(resp, "choices", None):
+            try:
+                text = str(resp.choices[0].message.content or "").strip()
+            except (AttributeError, IndexError, TypeError, ValueError):
+                text = ""
+        if not text:
             _emit_company_brief_marker(
                 accepted=False,
-                model_used=QWEN_LOCAL_MODEL_ID,
-                fallback_reason="empty_response",
+                model_used=model_name,
+                fallback_reason="openai_empty_response",
                 latency_ms=(time.time() - started) * 1000.0,
             )
             return None
 
         parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
-        # _parse_synthesis returns the stub on any parse failure, which we
-        # treat as a soft fallback (return None so the cloud path can try).
         if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
             _emit_company_brief_marker(
                 accepted=False,
-                model_used=QWEN_LOCAL_MODEL_ID,
-                fallback_reason="parse_failure",
+                model_used=model_name,
+                fallback_reason="openai_parse_failure",
                 latency_ms=(time.time() - started) * 1000.0,
             )
             return None
 
         _emit_company_brief_marker(
             accepted=True,
-            model_used=QWEN_LOCAL_MODEL_ID,
+            model_used=model_name,
             fallback_reason="none",
             latency_ms=(time.time() - started) * 1000.0,
         )
@@ -740,6 +574,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
         from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
             BriefStatus,
+            assess_targeting_brief_semantics,
             normalize_targeting_brief_text,
             seal_targeting_brief,
         )
@@ -747,6 +582,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
 
         stub = self._stub_synthesis(topic=company_name, jd_facets=[])
         stub["synthesis_template"] = "apps_rg_targeting_brief_synthesis_v1"
@@ -814,9 +650,41 @@ class CompanyBriefEngine(BaseResearchEngine):
             stub["targeting_brief_disposition"] = sealed.status.value
             stub["targeting_brief_block_reason"] = sealed.block_reason
             stub["targeting_brief_violations"] = list(sealed.violations)
+            stub["apps_rg_targeting_brief_sidecar"] = self._build_targeting_brief_sidecar(
+                company_name=company_name,
+                brief_text=normalized,
+                jd_text=jd_text,
+                research_notes=research_notes,
+                findings=findings,
+                gate_verdict=gate_verdict,
+                gate_reason=gate_reason,
+                model_name=model_name,
+                semantic_override=assess_targeting_brief_semantics(
+                    normalized,
+                    jd_text=jd_text,
+                    research_notes=research_notes,
+                    profile="apps_rg",
+                ),
+            )
             return stub
 
         stub["apps_rg_targeting_brief_markdown"] = sealed.company_brief_text
+        stub["apps_rg_targeting_brief_sidecar"] = self._build_targeting_brief_sidecar(
+            company_name=company_name,
+            brief_text=sealed.company_brief_text,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            findings=findings,
+            gate_verdict=gate_verdict,
+            gate_reason=gate_reason,
+            model_name=model_name,
+            semantic_override=assess_targeting_brief_semantics(
+                sealed.company_brief_text,
+                jd_text=jd_text,
+                research_notes=research_notes,
+                profile="apps_rg",
+            ),
+        )
         stub["targeting_brief_disposition"] = BriefStatus.SEALED.value
         stub["targeting_brief_char_count"] = sealed.char_count
         stub["targeting_brief_bullet_count"] = sealed.bullet_count
@@ -918,45 +786,88 @@ class CompanyBriefEngine(BaseResearchEngine):
             return ""
         return repaired
 
-    def _call_llm_plain_markdown(self, prompt: str) -> str:
-        """Qwen → Gemini cascade for plain-text targeting brief output."""
-        from apps_research.integrations.qwen_strict_probe import (  # noqa: PLC0415
-            maybe_enforce_qwen_strict_requirement,
+    def _build_targeting_brief_sidecar(
+        self,
+        *,
+        company_name: str,
+        brief_text: str,
+        jd_text: str,
+        research_notes: str,
+        findings: Dict[str, str],
+        gate_verdict: str,
+        gate_reason: str,
+        model_name: str,
+        semantic_override: Any | None = None,
+    ) -> Dict[str, Any]:
+        """Build the structured sidecar carried from apps_research to apps_rg."""
+        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
+            assess_targeting_brief_semantics,
+            validate_targeting_brief_text,
         )
 
-        maybe_enforce_qwen_strict_requirement()
-        text = self._qwen_synthesize_plain(prompt=prompt)
-        if text:
-            return text
+        semantics = semantic_override or assess_targeting_brief_semantics(
+            brief_text,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            profile="apps_rg",
+        )
+        validation = validate_targeting_brief_text(
+            brief_text,
+            jd_text=jd_text,
+            profile="apps_rg",
+        )
+        source_register = [
+            {
+                "family": family,
+                "has_content": bool((blob or "").strip()),
+                "char_count": len((blob or "").strip()),
+            }
+            for family, blob in sorted(findings.items(), key=lambda item: item[0])
+        ]
+        digest = hashlib.sha256(brief_text.encode("utf-8")).hexdigest() if brief_text else ""
+        return {
+            "schema_version": "apps_research.apps_rg_targeting_brief_sidecar/v1",
+            "company_name": company_name,
+            "generation_model": model_name,
+            "generation_token_budget": _resolved_gemini_max_output_tokens(),
+            "judge_name": semantics.judge_name,
+            "judge_model": semantics.judge_model,
+            "briefing_semantic_score": semantics.score,
+            "handoff_eligible": semantics.handoff_eligible,
+            "role_archetype": semantics.role_archetype,
+            "required_sections_present": list(semantics.required_sections_present),
+            "missing_sections": list(semantics.missing_sections),
+            "source_families_present": list(semantics.source_families_present),
+            "source_families_missing": list(semantics.source_families_missing),
+            "signal_terms_present": list(semantics.signal_terms_present),
+            "signal_terms_missing": list(semantics.signal_terms_missing),
+            "source_register": source_register,
+            "gate_verdict": gate_verdict,
+            "gate_reason": gate_reason,
+            "text_char_count": validation.char_count,
+            "bullet_count": validation.bullet_count,
+            "section_count": validation.section_count,
+            "brief_text_sha256": digest,
+        }
+
+    def _call_llm_plain_markdown(self, prompt: str) -> str:
+        """OpenAI route for plain-text targeting brief output."""
         text = self._gemini_synthesize_plain(prompt=prompt)
         return text or ""
 
-    def _qwen_synthesize_plain(self, *, prompt: str) -> str | None:
+    def _gemini_synthesize_plain(self, *, prompt: str) -> str | None:
+        import os  # noqa: PLC0415
+
         try:
-            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
-                is_qwen_available,
-            )
-        except ImportError:
+            client = create_openai_sync_client()
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
+            self.logger.info("[CompanyBriefEngine] targeting brief openai client unavailable: %s", exc)
             return None
-        if not is_qwen_available():
-            return None
+
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
         try:
-            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
-            if _OpenAI is None:
-                return None
-        except ImportError:
-            return None
-        try:
-            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
-                QWEN_LOCAL_MODEL_ID,
-                VLLM_BASE_URL,
-            )
-        except ImportError:
-            return None
-        try:
-            client = _OpenAI(base_url=VLLM_BASE_URL, api_key="not-needed", timeout=90.0)
             resp = client.chat.completions.create(
-                model=QWEN_LOCAL_MODEL_ID,
+                model=model_name,
                 messages=[
                     {
                         "role": "system",
@@ -968,68 +879,21 @@ class CompanyBriefEngine(BaseResearchEngine):
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.2,
-                max_tokens=1200,
+                max_tokens=_resolved_gemini_max_output_tokens(),
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- vLLM fail-soft
-            self.logger.info("[CompanyBriefEngine] targeting brief qwen failed: %s", exc)
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI SDK raises heterogeneous transport/API errors; fail-soft
+            self.logger.info(
+                "[CompanyBriefEngine] targeting brief openai model=%s failed: %s",
+                model_name,
+                exc,
+            )
             return None
-        return (resp.choices[0].message.content or "").strip() if resp.choices else ""
-
-    def _gemini_synthesize_plain(self, *, prompt: str) -> str | None:
-        import os  # noqa: PLC0415
-
+        if not getattr(resp, "choices", None):
+            return None
         try:
-            from google import genai  # noqa: PLC0415
-        except ImportError:
+            return (resp.choices[0].message.content or "").strip()
+        except (AttributeError, IndexError, TypeError, ValueError):
             return None
-        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            return None
-        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
-            google_ai_flash_model_id,
-            google_ai_pro_model_id,
-        )
-
-        candidates: list[str] = []
-        from agentic_core.config.model_catalog import (  # noqa: PLC0415
-            GEMINI_FLASH_MODEL_ID,
-            GEMINI_PRO_MODEL_ID,
-        )
-
-        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
-        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
-        if pro_model:
-            candidates.append(pro_model)
-        if flash_model and flash_model != pro_model:
-            candidates.append(flash_model)
-        if not candidates:
-            return None
-        client = genai.Client(api_key=api_key)
-        for model_name in candidates:
-            try:
-                resp = client.models.generate_content(
-                    model=model_name,
-                    contents=(
-                        "You produce apps_rg targeting briefs only. "
-                        "Output plain markdown exactly as instructed. No JSON. No fences.\n\n"
-                        + prompt
-                    ),
-                    config={
-                        "temperature": 0.2,
-                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
-                    },
-                )
-            except Exception as exc:  # guardian: allow-broad-exception -- gemini fail-soft
-                self.logger.info(
-                    "[CompanyBriefEngine] targeting brief gemini model=%s failed: %s",
-                    model_name,
-                    exc,
-                )
-                continue
-            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
-            if text:
-                return text
-        return None
 
     @staticmethod
     def _build_synthesis_prompt(

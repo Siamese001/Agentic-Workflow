@@ -74,55 +74,58 @@ def test_engine_uses_jd_facets_into_mirror_seed(tmp_path, offline_env: None) -> 
     assert any(facet in payload["language_to_mirror"] for facet in ("consulting", "agentic", "data"))
 
 
-def test_gemini_synthesis_uses_google_ai_max_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("GOOGLE_API_KEY", "test-key")
-    monkeypatch.setenv("GOOGLE_AI_MAX_OUTPUT_TOKENS", "777")
-
-    import agentic_core.config.google_ai_env as google_env
-
-    monkeypatch.setattr(
-        google_env,
-        "google_ai_pro_model_id",
-        lambda environ=None, *, default="": ("gemini-3.1-pro-preview", "test"),
-    )
-    monkeypatch.setattr(
-        google_env,
-        "google_ai_flash_model_id",
-        lambda environ=None, *, default="": ("", ""),
-    )
+def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini")
+    monkeypatch.setenv("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "777")
 
     captured: list[dict[str, object]] = []
     responses = iter(
         [
             types.SimpleNamespace(
-                text=json.dumps(
-                    {
-                        "company_archetype": "consulting",
-                        "company_dna": {},
-                        "tagline": "TestCo",
-                    }
-                )
+                choices=[
+                    types.SimpleNamespace(
+                        message=types.SimpleNamespace(
+                            content=json.dumps(
+                                {
+                                    "company_archetype": "consulting",
+                                    "company_dna": {},
+                                    "tagline": "TestCo",
+                                }
+                            )
+                        )
+                    )
+                ]
             ),
-            types.SimpleNamespace(text="TestCo targeting brief"),
+            types.SimpleNamespace(
+                choices=[
+                    types.SimpleNamespace(
+                        message=types.SimpleNamespace(content="TestCo targeting brief")
+                    )
+                ]
+            ),
         ]
     )
 
-    class _FakeModels:
-        def generate_content(self, *, model, contents, config):
-            captured.append({"model": model, "config": dict(config)})
+    class _FakeChatCompletions:
+        def create(self, *, model, messages, temperature, max_tokens):
+            captured.append(
+                {
+                    "model": model,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                    "messages": tuple(messages),
+                }
+            )
             return next(responses)
 
     class _FakeClient:
-        def __init__(self, api_key):
-            self.api_key = api_key
-            self.models = _FakeModels()
+        def __init__(self):
+            self.chat = types.SimpleNamespace(completions=_FakeChatCompletions())
 
-    fake_genai = types.ModuleType("google.genai")
-    fake_genai.Client = _FakeClient
-    fake_google = types.ModuleType("google")
-    fake_google.genai = fake_genai
-    monkeypatch.setitem(sys.modules, "google", fake_google)
-    monkeypatch.setitem(sys.modules, "google.genai", fake_genai)
+    monkeypatch.setattr(
+        "apps_research.engines.company_brief_engine.create_openai_sync_client",
+        lambda: _FakeClient(),
+    )
 
     engine = CompanyBriefEngine()
     json_out = engine._gemini_synthesize(
@@ -134,7 +137,7 @@ def test_gemini_synthesis_uses_google_ai_max_output_tokens(monkeypatch: pytest.M
     assert json_out["tagline"] == "TestCo"
     assert plain_out == "TestCo targeting brief"
     assert [row["model"] for row in captured] == [
-        "gemini-3.1-pro-preview",
-        "gemini-3.1-pro-preview",
+        "gpt-5.4-mini",
+        "gpt-5.4-mini",
     ]
-    assert all(row["config"]["max_output_tokens"] == 777 for row in captured)
+    assert all(row["max_tokens"] == 777 for row in captured)

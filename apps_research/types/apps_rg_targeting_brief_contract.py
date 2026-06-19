@@ -102,6 +102,44 @@ _SIGNAL_TERMS = (
     "role complement",
 )
 
+_APPS_RG_REQUIRED_SECTIONS = (
+    "jd complement",
+    "company dna & operating model",
+    "company strategy & operating pressure",
+    "leadership & stakeholder map",
+    "ai, data, platform, architecture signals",
+    "partnership / ecosystem motion",
+    "recent events & urgency",
+    "apps_rg positioning themes",
+    "apps_lic outreach angles",
+    "do not use as proof",
+)
+
+_PARTNERSHIP_SIGNAL_TERMS = (
+    "co-sell",
+    "cosell",
+    "gsi",
+    "isv",
+    "channel",
+    "enablement",
+    "joint solution",
+    "technical close",
+    "ecosystem revenue",
+    "partner-led",
+)
+
+_JD_PARTNERSHIP_HINTS = (
+    "partnership",
+    "partner",
+    "alliance",
+    "co-sell",
+    "cosell",
+    "ecosystem",
+    "gsi",
+    "isv",
+    "channel",
+)
+
 
 class BriefStatus(str, Enum):
     """Disposition of a targeting-brief validation/seal attempt."""
@@ -131,6 +169,42 @@ class TargetingBriefValidation:
             "section_count": self.section_count,
             "profile": self.profile,
             "violations": list(self.violations),
+        }
+
+
+@dataclass(frozen=True)
+class BriefingSemanticsAssessment:
+    """Semantic quality gate for apps_rg-targeting briefs."""
+
+    score: float
+    profile: str = DEFAULT_BRIEFING_PROFILE
+    role_archetype: str = "general"
+    required_sections_present: tuple[str, ...] = ()
+    missing_sections: tuple[str, ...] = ()
+    source_families_present: tuple[str, ...] = ()
+    source_families_missing: tuple[str, ...] = ()
+    signal_terms_present: tuple[str, ...] = ()
+    signal_terms_missing: tuple[str, ...] = ()
+    handoff_eligible: bool = False
+    judge_name: str = "gemini-pro-3.1-preview"
+    judge_model: str = "gemini-3.1-pro-preview"
+    reason: str = ""
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "score": self.score,
+            "profile": self.profile,
+            "role_archetype": self.role_archetype,
+            "required_sections_present": list(self.required_sections_present),
+            "missing_sections": list(self.missing_sections),
+            "source_families_present": list(self.source_families_present),
+            "source_families_missing": list(self.source_families_missing),
+            "signal_terms_present": list(self.signal_terms_present),
+            "signal_terms_missing": list(self.signal_terms_missing),
+            "handoff_eligible": self.handoff_eligible,
+            "judge_name": self.judge_name,
+            "judge_model": self.judge_model,
+            "reason": self.reason,
         }
 
 
@@ -471,6 +545,133 @@ def validate_targeting_brief_text(
     )
 
 
+def _section_headers(text: str) -> list[str]:
+    headers: list[str] = []
+    for raw in (text or "").splitlines():
+        line = raw.strip()
+        if _HEADER_RE.match(line):
+            headers.append(_plain_header_text(line))
+    return headers
+
+
+def _research_families(research_notes: str) -> tuple[str, ...]:
+    families: list[str] = []
+    for raw in (research_notes or "").splitlines():
+        line = raw.strip()
+        if not line.startswith("### "):
+            continue
+        family = line[4:].strip().lower()
+        if family and family not in families:
+            families.append(family)
+    return tuple(families)
+
+
+def _role_archetype_from_jd(jd_text: str) -> str:
+    low = (jd_text or "").lower()
+    if any(token in low for token in _JD_PARTNERSHIP_HINTS):
+        return "partnerships"
+    if any(token in low for token in ("engineer", "engineering", "architect", "architecture", "platform")):
+        return "engineering"
+    if any(token in low for token in ("bank", "insurance", "regulated", "risk", "compliance")):
+        return "regulated_enterprise"
+    return "general"
+
+
+def assess_targeting_brief_semantics(
+    text: str,
+    *,
+    jd_text: str = "",
+    research_notes: str = "",
+    profile: str = DEFAULT_BRIEFING_PROFILE,
+) -> BriefingSemanticsAssessment:
+    """Assess whether the brief is dense enough to hand off to apps_rg."""
+
+    cfg = _resolve_profile(profile)
+    body = (text or "").strip()
+    if not body:
+        return BriefingSemanticsAssessment(
+            score=0.0,
+            profile=cfg.profile_id,
+            role_archetype=_role_archetype_from_jd(jd_text),
+            reason="empty_brief",
+        )
+
+    headers = _section_headers(body)
+    header_blob = " ".join(headers)
+    required_sections = tuple(_APPS_RG_REQUIRED_SECTIONS)
+    required_present = tuple(
+        section for section in required_sections if section in header_blob
+    )
+    missing_sections = tuple(
+        section for section in required_sections if section not in header_blob
+    )
+
+    source_families = _research_families(research_notes)
+    base_required_families = ("overview", "strategic_priorities", "leadership", "recent_moves")
+    required_families = list(base_required_families)
+    role_archetype = _role_archetype_from_jd(jd_text)
+    if role_archetype == "partnerships":
+        required_families.extend(["partner_ecosystem", "commercial_motion", "adoption_motion"])
+    if role_archetype in {"partnerships", "engineering"}:
+        required_families.append("tech_stack_signals")
+    source_families_present = tuple(fam for fam in required_families if fam in source_families)
+    source_families_missing = tuple(fam for fam in required_families if fam not in source_families)
+
+    blob = f"{body}\n{research_notes}\n{jd_text}".lower()
+    signal_terms = list(("company dna", "operating model", "leadership", "strategy", "urgency"))
+    if role_archetype == "partnerships":
+        signal_terms.extend(_PARTNERSHIP_SIGNAL_TERMS)
+    signal_terms_present = tuple(term for term in dict.fromkeys(signal_terms) if term in blob)
+    signal_terms_missing = tuple(term for term in dict.fromkeys(signal_terms) if term not in blob)
+
+    score = 1.0
+    score -= 0.10 * len(missing_sections)
+    score -= 0.08 * len(source_families_missing)
+    score -= 0.04 * len(signal_terms_missing)
+    if len(required_present) < max(6, len(required_sections) - 2):
+        score -= 0.08
+    if len(source_families_present) < len(base_required_families):
+        score -= 0.08
+    score = max(0.0, min(1.0, round(score, 3)))
+    handoff_eligible = (
+        score >= 0.72
+        and len(missing_sections) == 0
+        and len(source_families_missing) <= 1
+        and "company dna" in blob
+    )
+    if role_archetype == "partnerships":
+        handoff_eligible = (
+            score >= 0.75
+            and len(missing_sections) == 0
+            and "partner_ecosystem" in source_families
+            and "co-sell" in blob
+            and "company dna" in blob
+            and "partnership / ecosystem motion" in header_blob
+        )
+    reason = ""
+    if not handoff_eligible:
+        reason = ",".join(
+            [x for x in (
+                "missing_sections" if missing_sections else "",
+                "missing_source_families" if source_families_missing else "",
+                "missing_signal_terms" if signal_terms_missing else "",
+            ) if x]
+        ) or "semantic_score_below_threshold"
+    return BriefingSemanticsAssessment(
+        score=score,
+        profile=cfg.profile_id,
+        role_archetype=role_archetype,
+        required_sections_present=required_present,
+        missing_sections=missing_sections,
+        source_families_present=source_families_present,
+        source_families_missing=source_families_missing,
+        signal_terms_present=signal_terms_present,
+        signal_terms_missing=signal_terms_missing,
+        handoff_eligible=handoff_eligible,
+        reason=reason,
+    )
+
+
 def seal_targeting_brief(
     text: str,
     *,
@@ -547,8 +748,10 @@ __all__ = [
     "AppsRgTargetingBrief",
     "BriefStatus",
     "BriefingProfile",
+    "BriefingSemanticsAssessment",
     "TargetingBriefValidation",
     "blocked_targeting_brief",
+    "assess_targeting_brief_semantics",
     "normalize_markdown_brief_text",
     "normalize_targeting_brief_text",
     "seal_targeting_brief",

@@ -15,6 +15,7 @@ tier_definitions:
     examples:
       - SEC filings (10-K, 10-Q, 8-K)
       - Company investor relations
+      - Investor day / earnings transcripts
       - Official press releases
       - Regulatory disclosures
     
@@ -30,6 +31,9 @@ tier_definitions:
       - Wall Street Journal
       - Financial Times
       - Industry analyst reports (Gartner, Forrester)
+      - CRN / partner-channel coverage
+      - Executive interview transcripts
+      - Leadership podcasts
     
     trust_score: 0.8
     max_age_days: 30
@@ -42,6 +46,9 @@ tier_definitions:
       - Job posting aggregators
       - Patent filings
       - Conference presentations
+      - Partner blogs
+      - Customer case studies
+      - Webinars / launch keynotes
     
     trust_score: 0.5
     max_age_days: 14
@@ -86,6 +93,7 @@ diversity_requirements:
   perspective_diversity:
     require_company_voice: true
     require_analyst_voice: true
+    require_partner_voice: true
     require_journalist_voice: false  # Optional
     
   temporal_diversity:
@@ -102,14 +110,36 @@ source_blocklist:
   - paywalled_without_subscription
 
 # Cross-reference requirements
-cross_reference_requirements:
-  material_claims_require_multiple_sources: true
-  minimum_sources_for_material_claim: 2
+  cross_reference_requirements:
+    material_claims_require_multiple_sources: true
+    minimum_sources_for_material_claim: 2
   
   financial_claims:
     require_tier_1_source: true
     allow_tier_2_with_audit_trail: true
     
-  executive_claims:
-    require_tier_1_or_tier_2: true
-    linkedin_ok_for_secondary_confirmation: true
+    executive_claims:
+      require_tier_1_or_tier_2: true
+      linkedin_ok_for_secondary_confirmation: true
+
+  jd_archetype_requirements:
+    partnerships_ecosystem:
+      required_source_classes:
+        - investor_relations
+        - leadership_interviews
+        - partner_blogs
+        - customer_case_studies
+        - trade_press
+      preferred_source_classes:
+        - investor_day
+        - podcasts
+        - channel_media
+    regulated_enterprise:
+      required_source_classes:
+        - investor_relations
+        - regulatory_disclosures
+        - leadership_interviews
+        - customer_case_studies
+      preferred_source_classes:
+        - earnings_transcripts
+        - trade_press

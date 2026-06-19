@@ -3,7 +3,8 @@ Produce a frontier-model briefing packet for downstream apps_rg/apps_lic use.
 
 The briefing must complement the JD. It should add company DNA, role,
 operating, leadership, and outreach signal that the JD does not already
-provide. The same format must work for any company and JD.
+provide. The same format must work for any company and JD, but the content
+must be company-specific and JD-specific.
 
 The JD is relevance context only. Do not summarize it. Do not copy it. Do not
 use it to identify the company. Identify the company strictly from the target
@@ -29,6 +30,9 @@ HARD RULES
 - Infer the company archetype from evidence: product-led, platform-led,
   services-led, partner-led, regulated-enterprise, developer-led, consumer,
   infra, or hybrid.
+- For partnership-heavy companies, bias toward co-sell, GSI/ISV/channel,
+  partner enablement, joint solution development, technical close, and
+  ecosystem revenue, but only when supported by research.
 - When partnership evidence is material, surface the actual partnership DNA:
   co-sell, GSI/ISV/channel motion, joint solution development, partner
   enablement, technical close, and ecosystem revenue where supported.
@@ -46,6 +50,8 @@ HARD RULES
 - No tables except the single metadata line.
 - No bracket placeholders. No escaped HTML entities such as &#58;.
 - Keep source details out of the brief body; source register belongs in sidecar JSON.
+- Sidecar JSON carries source-class summary, source diversity, judge score, and
+  handoff eligibility. The markdown body is targeting-only prose.
 
 STRICT EXCLUSION
 Before writing each section, ask:
@@ -81,6 +87,18 @@ partnership, services, platform, or regulated adoption.
 Give verified scale, business model, segment, financial, market, or strategic
 pressure that changes positioning. Include the operating-model tension or
 decision-rights shift this role is meant to solve.
+
+## Past Evidence
+Show how the company has done the relevant motion in the past. Use concrete
+examples only. Do not summarize the entire history.
+
+## Current Motion
+Show what the company is doing now that matters for this JD. Keep it specific to
+the role and company.
+
+## Future Direction
+Show where the company appears to be heading next based on verified evidence.
+This should be directional, not speculative.
 
 ## Leadership & Stakeholder Map
 Name verified leaders or functions only when supported. Explain the likely

@@ -84,6 +84,11 @@ def test_synthesis_seals_valid_markdown(monkeypatch) -> None:
     md = synthesized["apps_rg_targeting_brief_markdown"]
     assert md.strip()
     assert len(re.findall(r"(?m)^- ", md)) <= 17
+    sidecar = synthesized["apps_rg_targeting_brief_sidecar"]
+    assert sidecar["generation_model"] == "gpt-5.4-mini"
+    assert sidecar["generation_token_budget"] == 4096
+    assert sidecar["judge_model"] == "gemini-3.1-pro-preview"
+    assert sidecar["judge_name"] == "gemini-pro-3.1-preview"
 
 
 def test_synthesis_rejects_invalid_markdown(monkeypatch) -> None:
