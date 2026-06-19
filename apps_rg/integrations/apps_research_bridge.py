@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, List
 
@@ -35,6 +35,7 @@ class ResearchResult:
     audit_ref: str
     research_artifact_dir: str = ""
     company_brief_text: str = ""
+    briefing_sidecar: dict[str, Any] = field(default_factory=dict)
 
 
 class AppsResearchBridge:
@@ -186,6 +187,11 @@ class AppsResearchBridge:
             or getattr(raw, "support_coverage", 0.0)
             or 0.0
         )
+        briefing_sidecar = dict(
+            getattr(raw, "company_brief_sidecar", None)
+            or getattr(raw, "briefing_sidecar", None)
+            or {}
+        )
         # The targeting route returns a sealed, contract-valid company_brief_text.
         # Reject missing or contract-invalid briefs (fail closed). No generic
         # "Delegated company research briefing" evidence-label fallback.
@@ -193,6 +199,22 @@ class AppsResearchBridge:
         block_reason = ""
         is_blocked = bool(getattr(raw, "is_blocked", False))
         if not is_blocked:
+            if not briefing_sidecar:
+                is_blocked = True
+                block_reason = "missing_briefing_sidecar"
+            elif not bool(briefing_sidecar.get("handoff_eligible", False)):
+                is_blocked = True
+                block_reason = (
+                    "briefing_sidecar_not_eligible:"
+                    + ",".join(
+                        str(x)
+                        for x in (
+                            briefing_sidecar.get("reason", ""),
+                            briefing_sidecar.get("judge_name", ""),
+                        )
+                        if str(x).strip()
+                    )
+                )
             if not brief_text:
                 is_blocked = True
                 block_reason = "missing_company_brief_text"
@@ -226,6 +248,7 @@ class AppsResearchBridge:
                 fetch_duration_ms=time.time() * 1000.0 - t_start,
                 audit_ref=trace_id,
                 company_brief_text="",
+                briefing_sidecar=briefing_sidecar,
             )
 
         result_hash = hashlib.sha256(
@@ -257,6 +280,7 @@ class AppsResearchBridge:
             audit_ref=trace_id,
             research_artifact_dir=research_dir,
             company_brief_text=brief_text,
+            briefing_sidecar=briefing_sidecar,
         )
 
 
@@ -330,6 +354,14 @@ class MockAppsResearchBridge(AppsResearchBridge):
         raw.confidence_score = self._mock_confidence
         raw.run_id = str(uuid.uuid4())
         raw.company_brief_text = self._mock_brief
+        raw.company_brief_sidecar = {
+            "handoff_eligible": not self._mock_blocked and bool(self._mock_brief.strip()),
+            "judge_name": "mock",
+            "judge_model": "mock",
+            "reason": self._mock_block_reason or "",
+            "source_families_present": ["overview", "leadership"],
+            "source_families_missing": [],
+        }
         raw.support_coverage = self._mock_confidence
         return raw
 

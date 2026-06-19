@@ -22,6 +22,12 @@ def test_materialize_fallback_brief_uses_apps_research_bridge(tmp_path: Path, mo
             run_id=request.run_id,
             trace_id=request.trace_id,
             briefing_text="Generated company brief for Acme.\n",
+            briefing_sidecar={
+                "handoff_eligible": True,
+                "judge_name": "gemini-pro-3.1-preview",
+                "judge_model": "gemini-3.1-pro-preview",
+                "reason": "",
+            },
             research_run_id="research-12345678",
             research_evidence_count=5,
             confidence_score=0.9,

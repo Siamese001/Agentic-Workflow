@@ -129,23 +129,7 @@ def _materialize_fallback_brief(
     except (ImportError, OSError, TypeError, ValueError):
         pass
 
-    try:
-        from apps_shared.adapters.research_l3_adapter import (
-            materialize_company_brief_markdown,
-        )
-    except ImportError:
-        return ""
-
-    brief_path = materialize_company_brief_markdown(
-        company=target_company,
-        jd_path=jd_path,
-        depth="standard",
-        request_id=request_id,
-        run_id=run_id,
-        trace_root=trace_id,
-        artifact_root=artifact_root,
-    )
-    return str(brief_path) if brief_path else ""
+    return ""
 
 
 def _resolve_lane_manual_brief(manual_brief: str) -> str:

@@ -35,11 +35,18 @@ coverage_families:
       - financial_summary
       - market_position
       - recent_developments
+      - company_dna
+      - operating_model
+      - strategy_pressure
+      - future_direction
     
     optional_evidence_types:
       - historical_performance
       - esg_initiatives
       - partnership_ecosystem
+      - partner_enablement
+      - joint_solution_development
+      - technical_close
 
 # Source limits by depth
 max_sources_by_depth:
@@ -125,6 +132,9 @@ evidence_quality_gates:
     - corporate_overview
     - leadership_profile
     - financial_summary
+    - operating_model
+    - recent_developments
+    - partnership_ecosystem
 
 # Retrieval receipts to emit
 retrieval_receipts:
