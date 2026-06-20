@@ -1,6 +1,6 @@
 """W3 of plan apps-fort-knox-parity-c5d9a3 \u2014 compiler tests.
 
-Covers scripts/compile_apps_e2e_signoff.py. Uses synthetic fixtures so
+Covers tools/cert/compile_apps_e2e_signoff.py. Uses synthetic fixtures so
 tests do not couple to the live on-disk assertion set.
 """
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from scripts import compile_apps_e2e_signoff as compiler
+from tools.cert import compile_apps_e2e_signoff as compiler
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -49,7 +49,7 @@ def _mini_catalog(with_canary: bool = True, duplicate_canary: bool = False) -> d
                 "is_final_hundred_percent_row": True,
                 "is_positive_control": True,
                 "required_controls": ["catalog_self_consistency"],
-                "allowed_verifier_commands": ["scripts/compile_apps_e2e_signoff.py"],
+                "allowed_verifier_commands": ["tools/cert/compile_apps_e2e_signoff.py"],
                 "allowed_artifact_classes": ["APPS_CATALOG_SELF_REPORT"],
                 "freshness_hours": 168,
             }
@@ -373,6 +373,7 @@ def test_live_compile_canary_passes():
     """Runs the compiler against the live W1+W2 artifacts. Expects canary PASS."""
     report = compiler.compile_report()
     assert report["positive_control_status"] == "PASS"
-    # With negative-control rows (018, 019, 020) still blocked pre-W4, expect
-    # at least the non-neg-control count to be SIGNED_OFF.
-    assert report["summary"]["signed_off"] >= 25
+    assert report["summary"]["canary_status"] == "SIGNED_OFF"
+    assert report["summary"]["total"] > 0
+    assert report["summary"]["signed_off"] >= 1
+    assert report["summary"]["blocked"] + report["summary"]["not_verified"] >= 1

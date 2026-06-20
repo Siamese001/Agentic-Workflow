@@ -1,23 +1,49 @@
-"""Shared BCG-style briefing helpers for ADG reports.
+"""Shared executive-brief helpers for ADG reports.
 
-The adapter keeps the presentation contract consistent across reports:
-
-* business-first summary
-* plain-English technical evidence
-* explicit priority order
-* short rationale for why each item is ranked where it is
-
-Reports provide the data; this module standardizes the wording and layout.
+The adapter keeps the presentation contract consistent across reports while
+preserving JSON compatibility for one release. Markdown renders the executive
+view; JSON can keep legacy aliases and richer evidence payloads.
 """
 
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 BCG_NORTH_STAR = (
-    "Maintain SVP engineer-level repo standards: business-first decisions, "
-    "explicit prioritization, and technical evidence a layperson can follow."
+    "Maintain SVP engineer-level repo standards: executive decisions, explicit "
+    "prioritization, and technical evidence a layperson can follow."
 )
+
+LEGACY_ROW_ALIASES: dict[str, str] = {
+    "business_reason": "why_it_matters",
+    "technical_reason": "evidence",
+    "decision": "next_step",
+}
+
+
+@dataclass(frozen=True)
+class ExecutivePriorityRow:
+    priority: int = 0
+    rank: int = 0
+    move: str = ""
+    action: str = ""
+    work: str = ""
+    why_it_matters: str = ""
+    business_reason: str = ""
+    evidence: str = ""
+    technical_reason: str = ""
+    next_step: str = ""
+    why_this_rank: str = ""
+    decision: str = ""
+    scope: str = ""
+    affected_system: str = ""
+    affected_layers: list[str] = field(default_factory=list)
+    change_breakout: list[dict[str, Any]] = field(default_factory=list)
+    decision_options: list[dict[str, Any]] = field(default_factory=list)
+    done_condition: str = ""
+    diagram: dict[str, Any] | None = None
+    action_type: str = ""
 
 
 def _fmt_int(value: Any) -> str:
@@ -52,6 +78,78 @@ def _row_value(row: dict[str, Any], *keys: str) -> str:
     return ""
 
 
+def _normalize_priority_row(row: dict[str, Any] | ExecutivePriorityRow | None) -> dict[str, Any]:
+    if row is None:
+        row = {}
+    if isinstance(row, ExecutivePriorityRow):
+        data = asdict(row)
+    else:
+        data = dict(row)
+
+    priority = data.get("priority")
+    if priority in (None, ""):
+        priority = data.get("rank", 0)
+
+    move = (
+        data.get("move")
+        or data.get("work")
+        or data.get("action")
+        or data.get("priority_work")
+        or data.get("move_title")
+        or ""
+    )
+    why_it_matters = (
+        data.get("why_it_matters")
+        or data.get("business_reason")
+        or data.get("business")
+        or data.get("why_now")
+        or ""
+    )
+    evidence = (
+        data.get("evidence")
+        or data.get("technical_reason")
+        or data.get("technical")
+        or data.get("testing_mv_action")
+        or ""
+    )
+    next_step = (
+        data.get("next_step")
+        or data.get("decision")
+        or data.get("why_this_rank")
+        or data.get("why")
+        or ""
+    )
+
+    normalized = {
+        "priority": int(priority or 0),
+        "rank": int(data.get("rank") or priority or 0),
+        "move": str(move),
+        "action": str(data.get("action") or move),
+        "work": str(data.get("work") or move),
+        "why_it_matters": str(why_it_matters),
+        "business_reason": str(data.get("business_reason") or why_it_matters),
+        "evidence": str(evidence),
+        "technical_reason": str(data.get("technical_reason") or evidence),
+        "next_step": str(next_step),
+        "why_this_rank": str(data.get("why_this_rank") or next_step),
+        "decision": str(data.get("decision") or next_step),
+        "scope": str(data.get("scope") or ""),
+        "affected_system": str(data.get("affected_system") or ""),
+        "affected_layers": list(data.get("affected_layers") or []),
+        "change_breakout": list(data.get("change_breakout") or []),
+        "decision_options": list(data.get("decision_options") or []),
+        "done_condition": str(data.get("done_condition") or ""),
+        "diagram": data.get("diagram"),
+        "action_type": str(data.get("action_type") or ""),
+    }
+
+    for key, alias in LEGACY_ROW_ALIASES.items():
+        if not normalized.get(key):
+            normalized[key] = str(data.get(key) or normalized.get(alias) or "")
+
+    return normalized
+
+
 def build_bcg_brief(
     *,
     title: str,
@@ -65,13 +163,14 @@ def build_bcg_brief(
     table_limit: int = 6,
 ) -> dict[str, Any]:
     """Create a normalized BCG brief payload for rendering."""
+    normalized_rows = [_normalize_priority_row(row) for row in list(priority_rows or [])]
     return {
         "title": title,
         "north_star": BCG_NORTH_STAR,
         "business_read": business_read,
         "technical_read": _text_list(technical_read),
         "priority_rule": priority_rule or "",
-        "priority_rows": list(priority_rows or []),
+        "priority_rows": normalized_rows,
         "why_this_order": [item for item in _text_list(why_this_order)],
         "next_step": next_step or "",
         "status": status or "",
@@ -101,16 +200,11 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     priority_rule = str(brief.get("priority_rule") or "").strip()
     if priority_rule:
         a(f"- **Priority rule:** {_md(priority_rule)}")
-    if brief.get("priority_rows"):
-        a(
-            "- **Column key:** Business reason = why the item matters to delivery or governance; "
-            "Technical reason = the measured evidence; Why this order = why this item is ahead of the next row."
-        )
-    priority_rows = list(brief.get("priority_rows") or [])
+    priority_rows = [_normalize_priority_row(row) for row in list(brief.get("priority_rows") or [])]
     if priority_rows:
         a("")
-        a("| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |")
-        a("|---------:|------|-------|----------------|-----------------|----------------|----------|")
+        a("| Priority | Move | Why it matters | Evidence | Next step |")
+        a("|---------:|------|----------------|----------|-----------|")
         limit = brief.get("table_limit")
         if not isinstance(limit, int) or limit < 0:
             limit = len(priority_rows)
@@ -118,18 +212,10 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
             a(
                 f"| {_row_value(row, 'priority', 'rank')} | "
                 f"{_row_value(row, 'move', 'work', 'priority_work', 'action')} | "
-                f"{_row_value(row, 'scope', 'band', 'target')} | "
-                f"{_row_value(row, 'business_reason', 'business')} | "
-                f"{_row_value(row, 'technical_reason', 'technical')} | "
-                f"{_row_value(row, 'why_this_rank', 'why', 'why_this_priority')} | "
-                f"{_row_value(row, 'decision', 'next_step')} |"
+                f"{_row_value(row, 'why_it_matters', 'business_reason', 'business', 'why_now')} | "
+                f"{_row_value(row, 'evidence', 'technical_reason', 'technical', 'testing_mv_action')} | "
+                f"{_row_value(row, 'next_step', 'decision', 'why_this_rank', 'why')} |"
             )
-    why_this_order = _text_list(brief.get("why_this_order"))
-    if why_this_order:
-        a("")
-        a("Why this order:")
-        for item in why_this_order:
-            a(f"- {_md(item)}")
     next_step = str(brief.get("next_step") or "").strip()
     if next_step:
         a("")
@@ -221,101 +307,124 @@ def build_deprecation_deletion_plan(
     )
     priority_rows: list[dict[str, Any]] = []
 
+    def _priority_row(
+        *,
+        priority: int,
+        move: str,
+        why_it_matters: str,
+        evidence: str,
+        next_step: str,
+        scope: str = "",
+        decision: str = "",
+    ) -> dict[str, Any]:
+        return _normalize_priority_row(
+            ExecutivePriorityRow(
+                priority=priority,
+                rank=priority,
+                move=move,
+                action=move,
+                work=move,
+                why_it_matters=why_it_matters,
+                business_reason=why_it_matters,
+                evidence=evidence,
+                technical_reason=evidence,
+                next_step=next_step,
+                why_this_rank=next_step,
+                decision=decision or next_step,
+                scope=scope,
+                done_condition="Rerun ADG and confirm the relevant evidence stays clean.",
+            )
+        )
+
     if cleanup_hotspots:
         for module, count in cleanup_hotspots[:3]:
             is_dead_code = bool(dead_hotspots)
+            move = (
+                "Deprecate then delete confirmed dead code"
+                if is_dead_code
+                else "Remove confirmed dead imports"
+            )
+            why_it_matters = (
+                "This is high-confidence cleanup because the completed ADG marked it as dead-code candidate traffic."
+                if is_dead_code
+                else "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic."
+            )
+            evidence = (
+                f"{count} dead-code candidate edge(s) point at this module."
+                if is_dead_code
+                else f"{count} resolved dead-import overlay row(s) point at this file."
+            )
+            next_step = (
+                "Deprecate now, then delete after the evidence stays clean."
+                if is_dead_code
+                else "Remove the imports, then rerun ADG to confirm the dead-import signal clears."
+            )
             priority_rows.append(
-                {
-                    "priority": len(priority_rows) + 1,
-                    "move": (
-                        "Deprecate then delete confirmed dead code"
-                        if is_dead_code
-                        else "Remove confirmed dead imports"
-                    ),
-                    "scope": module,
-                    "business_reason": (
-                        "This is high-confidence cleanup because the completed ADG marked it as "
-                        "dead-code candidate traffic."
-                        if is_dead_code
-                        else "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic."
-                    ),
-                    "technical_reason": (
-                        f"{count} dead-code candidate edge(s) point at this module."
-                        if is_dead_code
-                        else f"{count} resolved dead-import overlay row(s) point at this file."
-                    ),
-                    "why_this_rank": (
-                        "Delete the most certain waste first so we do not spend time cleaning speculative targets."
-                    ),
-                    "decision": "delete_after_deprecation" if is_dead_code else "remove_imports",
-                }
+                _priority_row(
+                    priority=len(priority_rows) + 1,
+                    move=move,
+                    why_it_matters=why_it_matters,
+                    evidence=evidence,
+                    next_step=next_step,
+                    scope=module,
+                    decision="delete_after_deprecation" if is_dead_code else "remove_imports",
+                )
             )
     else:
         priority_rows.append(
-            {
-                "priority": 1,
-                "move": "Hold all deletion",
-                "scope": "whole codebase",
-                "business_reason": (
-                    "The scan found no confirmed dead code, so deleting anything now would be "
-                    "speculative and could break working paths."
+            _priority_row(
+                priority=1,
+                move="Hold all deletion",
+                why_it_matters=(
+                    "The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths."
                 ),
-                "technical_reason": (
-                    f"Dead-code candidates = {summary.get('total_dead_code_candidates', 0)} "
-                    f"and dead imports = {summary.get('total_dead_imports', 0)}."
+                evidence=(
+                    f"Dead-code candidates = {summary.get('total_dead_code_candidates', 0)} and dead imports = {summary.get('total_dead_imports', 0)}."
                 ),
-                "why_this_rank": "No proven target means the safest action is to pause deletion.",
-                "decision": "defer",
-            }
+                next_step="No deletion move until a proven target appears.",
+                scope="whole codebase",
+                decision="defer",
+            )
         )
 
     priority_rows.extend(
         [
-            {
-                "priority": len(priority_rows) + 1,
-                "move": "Triage unresolved imports",
-                "scope": unresolved_lead[0],
-                "business_reason": (
-                    "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities."
+            _priority_row(
+                priority=len(priority_rows) + 1,
+                move="Triage unresolved imports",
+                why_it_matters="Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
+                evidence=(
+                    f"{summary.get('total_unresolved_imports', 0)} unresolved imports; lead hotspot {unresolved_lead[0]} ({unresolved_lead[1]})."
                 ),
-                "technical_reason": (
-                    f"{summary.get('total_unresolved_imports', 0)} unresolved imports; "
-                    f"lead hotspot {unresolved_lead[0]} ({unresolved_lead[1]})."
-                ),
-                "why_this_rank": "We need a cleaner signal before we can trust deletion decisions.",
-                "decision": "investigate",
-            },
-            {
-                "priority": len(priority_rows) + 2,
-                "move": "Reduce low-confidence noise",
-                "scope": "first-party nodes",
-                "business_reason": (
-                    "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing."
-                ),
-                "technical_reason": (
+                next_step="Trace the top unresolved scope before deleting anything else.",
+                scope=unresolved_lead[0],
+                decision="investigate",
+            ),
+            _priority_row(
+                priority=len(priority_rows) + 2,
+                move="Reduce low-confidence noise",
+                why_it_matters="Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
+                evidence=(
                     "First-party low-confidence ratio = "
-                    f"{float(low_conf.get('first_party_low_confidence_ratio', 0) or 0):.2f}% "
-                    "and inferred-symbol ratio = "
+                    f"{float(low_conf.get('first_party_low_confidence_ratio', 0) or 0):.2f}% and inferred-symbol ratio = "
                     f"{float(inferred.get('inferred_symbol_ratio', 0) or 0):.2f}%."
                 ),
-                "why_this_rank": "Noise reduction improves the quality of the next scan and makes future deletions safer.",
-                "decision": "stabilize",
-            },
-            {
-                "priority": len(priority_rows) + 3,
-                "move": "Deprecate low-value ADG signals",
-                "scope": "materialized views and unused artifacts",
-                "business_reason": (
-                    "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable."
-                ),
-                "technical_reason": (
+                next_step="Lower the noise floor, then rerun the scan.",
+                scope="first-party nodes",
+                decision="stabilize",
+            ),
+            _priority_row(
+                priority=len(priority_rows) + 3,
+                move="Deprecate low-value ADG signals",
+                why_it_matters="Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
+                evidence=(
                     f"{len([r for r in cleanup_candidates if r.get('item_type') == 'mv'])} MV candidates and "
-                    f"{len([r for r in cleanup_candidates if r.get('item_type') == 'artifact'])} unused artifacts "
-                    "surfaced by the report."
+                    f"{len([r for r in cleanup_candidates if r.get('item_type') == 'artifact'])} unused artifacts surfaced by the report."
                 ),
-                "why_this_rank": "This is cheap cleanup, but it should follow the evidence cleanup work above.",
-                "decision": "deprecate",
-            },
+                next_step="Deprecate only after higher-confidence cleanup is complete.",
+                scope="materialized views and unused artifacts",
+                decision="deprecate",
+            ),
         ]
     )
 

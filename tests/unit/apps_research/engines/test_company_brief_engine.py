@@ -3,7 +3,7 @@
 CompanyBriefEngine.execute() drives Tavily + an LLM synthesis cascade, but the
 engine carries a substantial *pure* static/deterministic surface that needs no
 provider: payload extraction, the env-flagged V2 toggle, prompt construction,
-tolerant JSON parsing with stub fallback, the deterministic stub synthesis, JD
+tolerant JSON parsing with fail-closed errors, the stub-disabled synthesis gate, JD
 context normalization (incl. content hashing), and schema-shaped brief
 assembly. This module covers that surface with real inputs. No mocks.
 """
@@ -24,7 +24,11 @@ _REPO_ROOT = str(Path(__file__).resolve().parents[4])
 if sys.path[0] != _REPO_ROOT:
     sys.path.insert(0, _REPO_ROOT)
 
-from apps_research.engines.company_brief_engine import CompanyBriefEngine, _v2_enabled
+from apps_research.engines.company_brief_engine import (
+    CompanyBriefEngine,
+    CompanyBriefUnavailableError,
+    _v2_enabled,
+)
 
 
 @pytest.fixture
@@ -109,56 +113,19 @@ class TestParseSynthesis:
         )
         assert out["tagline"] == "hi"
 
-    def test_invalid_json_falls_back_to_stub(self, engine):
-        out = engine._parse_synthesis("no json here", topic="Acme", jd_facets=["data"])
-        # Stub synthesis is clearly marked.
-        assert "stub synthesis" in out["tagline"]
-        assert out["tagline"].startswith("Acme")
+    def test_invalid_json_raises(self, engine):
+        with pytest.raises(CompanyBriefUnavailableError, match="structured synthesis JSON parse failed"):
+            engine._parse_synthesis("no json here", topic="Acme", jd_facets=["data"])
 
-    def test_malformed_braces_falls_back(self, engine):
-        out = engine._parse_synthesis("{not valid json", topic="Acme", jd_facets=[])
-        assert "stub synthesis" in out["tagline"]
+    def test_malformed_braces_raises(self, engine):
+        with pytest.raises(CompanyBriefUnavailableError, match="structured synthesis JSON parse failed"):
+            engine._parse_synthesis("{not valid json", topic="Acme", jd_facets=[])
 
 
 class TestStubSynthesis:
-    def test_required_keys_present(self, engine):
-        stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
-        for key in (
-            "company_archetype",
-            "company_dna",
-            "tagline",
-            "core_offerings",
-            "strategic_priorities",
-            "commercial_motion",
-            "partner_ecosystem",
-            "adoption_motion",
-            "language_to_mirror",
-            "language_to_avoid",
-        ):
-            assert key in stub
-
-    def test_jd_facets_seed_mirror_language(self, engine):
-        stub = engine._stub_synthesis(topic="Acme", jd_facets=["kubernetes", "golang"])
-        assert "kubernetes" in stub["language_to_mirror"]
-
-    def test_mirror_language_deduplicated(self, engine):
-        stub = engine._stub_synthesis(
-            topic="Acme", jd_facets=["partnership", "partnership", "outcomes"]
-        )
-        mirror = stub["language_to_mirror"]
-        assert len(mirror) == len(set(mirror))
-
-    def test_strategic_priorities_min_two(self, engine):
-        stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
-        assert len(stub["strategic_priorities"]) >= 2
-
-    def test_company_dna_object_contains_motion_fields(self, engine):
-        stub = engine._stub_synthesis(topic="Acme", jd_facets=[])
-        dna = stub["company_dna"]
-        assert "archetype" in dna
-        assert "commercial_motion" in dna
-        assert "partner_ecosystem" in dna
-        assert "adoption_motion" in dna
+    def test_stub_synthesis_disabled(self, engine):
+        with pytest.raises(CompanyBriefUnavailableError, match="stub synthesis disabled"):
+            engine._stub_synthesis(topic="Acme", jd_facets=[])
 
 
 class TestResolveJdContext:
@@ -187,9 +154,62 @@ class TestResolveJdContext:
         assert out["jd_content_hash"].startswith("sha256-")
 
 
+class TestCuratedTargetingFallback:
+    def test_adaptive_research_uses_curated_anthropic_pack_when_tavily_is_empty(
+        self, monkeypatch, engine
+    ):
+        def _boom(*_args, **_kwargs):
+            raise RuntimeError("usage limit")
+
+        monkeypatch.setattr(
+            "apps_research.integrations.tavily_retrieval.retrieve",
+            _boom,
+        )
+
+        findings = engine._run_research_adaptive(
+            topic="Anthropic",
+            depth_profile="COMPANY_BRIEF_STANDARD",
+            jd_context={
+                "company_name": "Anthropic",
+                "job_title": "Manager of Applied AI Architecture, Partnerships",
+            },
+        )
+
+        assert findings["partner_ecosystem"]
+        assert findings["commercial_motion"]
+        assert findings["leadership"]
+        assert findings["recent_moves"]
+        assert "co-sell" in findings["partner_ecosystem"].lower()
+        assert "partner-led" in findings["commercial_motion"].lower()
+
+
 class TestAssembleBrief:
     def test_schema_shape(self, engine):
-        synthesis = engine._stub_synthesis(topic="Acme", jd_facets=["data"])
+        synthesis = {
+            "company_archetype": "scale-up enterprise vendor",
+            "company_dna": {
+                "archetype": "scale-up enterprise vendor",
+                "commercial_motion": "partner-led growth",
+                "partner_ecosystem": "GSI + ISV",
+                "adoption_motion": "technical close and enablement",
+                "operating_tension": "speed versus governance",
+                "distinguishing_traits": ["co-sell discipline", "ecosystem revenue"],
+            },
+            "tagline": "Acme modernizes enterprise workflows through partner-led platform adoption.",
+            "core_offerings": ["platform", "services"],
+            "strategic_priorities": ["partner scale", "AI adoption"],
+            "verticals": ["insurance"],
+            "buyer_titles": ["SVP"],
+            "tech_stack_signals": ["AWS"],
+            "commercial_motion": ["co-sell"],
+            "partner_ecosystem": ["GSI", "ISV"],
+            "adoption_motion": ["pilot to production"],
+            "leadership": [{"name": "A", "title": "CEO", "background": "exec"}],
+            "competitive_set": ["Competitor"],
+            "recent_moves": [{"date": "2026-01-01", "event": "launch", "signal": "partner"}],
+            "language_to_mirror": ["partner-led"],
+            "language_to_avoid": ["generic"],
+        }
         brief = engine._assemble_brief(topic="Acme", synthesis=synthesis)
         assert brief["company"] == "Acme"
         assert brief["source"] == "apps_research"
