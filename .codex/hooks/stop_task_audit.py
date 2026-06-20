@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -18,7 +19,12 @@ if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
 
 from lib.codex_hook_common import allow, block, read_payload, resolve_response_text, write_receipt
-from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
+from worktree_hygiene import (  # noqa: E402
+    find_dirty_protected_worktrees,
+    summarize_dirty_worktrees,
+    summarize_single_main_worktree_issues,
+    verify_single_main_worktree,
+)
 
 _AUDIT_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "post_agent_runtime_rca_audit.py"
 _BLOCK_KINDS = (
@@ -71,6 +77,33 @@ def _protected_worktree_reason() -> str:
     )
 
 
+def _publication_closeout_claimed(text: str, status_value: str | None) -> bool:
+    if status_value != "PASS":
+        return False
+    lowered = text.lower()
+    if "origin/main" not in lowered:
+        return False
+    return bool(re.search(r"\b(pr|pull request|publish(?:ed)?|push(?:ed)?|merge(?:d)?)\b", lowered))
+
+
+def _single_main_worktree_reason(text: str, status_value: str | None) -> str:
+    if os.environ.get("STOP_TASK_AUDIT_SINGLE_MAIN_BYPASS") == "1":
+        return ""
+    if not _publication_closeout_claimed(text, status_value):
+        return ""
+    issues = verify_single_main_worktree(REPO_ROOT)
+    if not issues:
+        return ""
+    summary = summarize_single_main_worktree_issues(issues)
+    return (
+        "Single-main worktree closeout failure: a PASS response claims publication/merge/push "
+        "against origin/main, but local closeout is not exactly one clean main worktree.\n"
+        f"{summary}\n"
+        "Run python scripts/governance/verify_single_main_worktree.py --root "
+        "C:\\Git\\Agentic-Workflow-FRESH --expected-path C:\\Git\\Agentic-Workflow-FRESH and fix all blockers."
+    )
+
+
 def main() -> int:
     payload = read_payload()
     text = resolve_response_text(payload)
@@ -95,6 +128,10 @@ def main() -> int:
     if protected_reason:
         write_receipt("stop", payload, "block", protected_reason)
         return block(protected_reason)
+    single_main_reason = _single_main_worktree_reason(text, status_value)
+    if single_main_reason:
+        write_receipt("stop", payload, "block", single_main_reason)
+        return block(single_main_reason)
     write_receipt("stop", payload, "allow", "stop audit accepted")
     return allow("stop audit accepted")
 

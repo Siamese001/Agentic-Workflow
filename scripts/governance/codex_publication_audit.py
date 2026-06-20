@@ -16,6 +16,8 @@ from worktree_hygiene import (
     parse_worktrees,
     run_git,
     summarize_dirty_worktrees,
+    summarize_single_main_worktree_issues,
+    verify_single_main_worktree,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -87,6 +89,8 @@ def build_publication_audit(
     base_ref: str = "origin/main",
     branch_limit: int = 100,
     require_ancestor_cleanup: bool = False,
+    require_single_main_worktree: bool = False,
+    expected_worktree_path: Path | None = None,
 ) -> dict[str, Any]:
     fetch_result: dict[str, Any] | None = None
     if fetch:
@@ -98,6 +102,12 @@ def build_publication_audit(
     protected_issues = find_dirty_protected_worktrees(root, skip_paths=(root,))
     status = _status(root)
     unmerged = _unmerged_branches(root, base_ref, branch_limit) if origin_main else []
+    single_main_issues = verify_single_main_worktree(
+        root,
+        expected_path=expected_worktree_path,
+        base_ref=base_ref,
+        fetch=False,
+    )
 
     blockers: list[str] = []
     warnings: list[str] = []
@@ -122,6 +132,11 @@ def build_publication_audit(
             blockers.append("branches_not_ancestor_contained")
         else:
             warnings.append("branches_not_ancestor_contained")
+    if single_main_issues:
+        if require_single_main_worktree:
+            blockers.append("single_main_worktree_violation")
+        else:
+            warnings.append("single_main_worktree_violation")
 
     unique_count = 0
     equivalent_count = 0
@@ -167,6 +182,16 @@ def build_publication_audit(
             "patch_equivalent_commit_count": equivalent_count,
             "rule": "A branch is done only when its tip is ancestor-contained in origin/main. Patch equivalence is evidence for an ours merge, not cleanup proof.",
         },
+        "single_main_worktree": {
+            "required": require_single_main_worktree,
+            "clean": not bool(single_main_issues),
+            "issues": [
+                {"code": issue.code, "detail": issue.detail}
+                for issue in single_main_issues
+            ],
+            "summary": summarize_single_main_worktree_issues(single_main_issues),
+            "rule": "Post-PR local closeout requires exactly one clean main worktree at the expected repo path, with HEAD equal to the base ref.",
+        },
         "unmerged_branches": unmerged,
     }
 
@@ -182,6 +207,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Fail if any local branch is not ancestor-contained in the base ref.",
     )
+    parser.add_argument(
+        "--require-single-main-worktree",
+        action="store_true",
+        help="Fail unless the local repo is exactly one clean main worktree.",
+    )
+    parser.add_argument(
+        "--expected-worktree-path",
+        type=Path,
+        default=None,
+        help="Required sole worktree path. Defaults to the repo root.",
+    )
     return parser.parse_args()
 
 
@@ -192,6 +228,8 @@ def main() -> int:
         base_ref=args.base_ref,
         branch_limit=args.branch_limit,
         require_ancestor_cleanup=args.require_ancestor_cleanup,
+        require_single_main_worktree=args.require_single_main_worktree,
+        expected_worktree_path=args.expected_worktree_path,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
@@ -202,6 +240,9 @@ def main() -> int:
         dirty_summary = report.get("dirty_protected_summary")
         if dirty_summary:
             print(dirty_summary)
+        single_main_summary = report.get("single_main_worktree", {}).get("summary")
+        if single_main_summary:
+            print(single_main_summary)
     return 1 if report["status"] == "FAIL" else 0
 
 

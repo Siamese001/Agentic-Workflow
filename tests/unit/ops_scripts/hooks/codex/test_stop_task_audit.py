@@ -345,3 +345,39 @@ class TestStopTaskAuditProtectedWorktreeHygiene:
 
         assert HOOK_MOD.main() == _ALLOW
         assert "decision" not in out.getvalue()
+
+
+class TestStopTaskAuditSingleMainCloseout:
+    def test_origin_main_publication_pass_blocks_when_single_main_gate_fails(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(HOOK_MOD, "_load_detect", lambda: (lambda text: ("PASS", [])))
+        monkeypatch.setattr(HOOK_MOD, "_protected_worktree_reason", lambda: "")
+        monkeypatch.setattr(
+            HOOK_MOD,
+            "_single_main_worktree_reason",
+            lambda text, status_value: (
+                "Single-main worktree closeout failure: a PASS response claims publication/merge/push "
+                "against origin/main, but local closeout is not exactly one clean main worktree."
+            ),
+        )
+        monkeypatch.setattr(HOOK_MOD, "write_receipt", lambda *args, **kwargs: None)
+        text = _PASS_FULL_PROOF + "\nMerged PR and pushed origin/main."
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"response": text})))
+        out = io.StringIO()
+        monkeypatch.setattr(sys, "stdout", out)
+
+        assert HOOK_MOD.main() == _BLOCK
+        assert "single-main worktree closeout failure" in out.getvalue().lower()
+
+    def test_non_publication_pass_skips_single_main_gate(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(HOOK_MOD, "_load_detect", lambda: (lambda text: ("PASS", [])))
+        monkeypatch.setattr(HOOK_MOD, "_protected_worktree_reason", lambda: "")
+        monkeypatch.setattr(HOOK_MOD, "_single_main_worktree_reason", lambda text, status_value: "")
+        monkeypatch.setattr(HOOK_MOD, "write_receipt", lambda *args, **kwargs: None)
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"response": _PASS_FULL_PROOF})))
+        out = io.StringIO()
+        monkeypatch.setattr(sys, "stdout", out)
+
+        assert HOOK_MOD.main() == _ALLOW
+        assert "decision" not in out.getvalue()

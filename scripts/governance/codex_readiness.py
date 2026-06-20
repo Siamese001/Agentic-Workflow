@@ -185,6 +185,22 @@ def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck
             f"branches={len(unmerged)} patch_unique_commits={unique_count}; branch closeout requires ancestry containment, not patch equivalence",
         )
     )
+    single_main = audit.get("single_main_worktree") or {}
+    single_main_issues = single_main.get("issues") or []
+    single_main_required = bool(single_main.get("required"))
+    checks.append(
+        ReadinessCheck(
+            "git.publication.single_main_worktree",
+            "FAIL" if single_main_required and single_main_issues else ("WARN" if single_main_issues else "PASS"),
+            "critical" if single_main_required or not single_main_issues else "advisory",
+            (
+                "Local repo is exactly one clean main worktree."
+                if not single_main_issues
+                else "Local repo is not exactly one clean main worktree."
+            ),
+            str(single_main.get("summary") or ""),
+        )
+    )
     return checks
 
 
@@ -345,13 +361,18 @@ def build_readiness_report(
     *,
     require_clean: bool = False,
     git_publication: bool = False,
+    require_single_main_worktree: bool = False,
     fail_duplicate_processes: bool = False,
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
     allow_adg_sqlite_fallback: bool = True,
     route_contract: Path | None = None,
 ) -> dict[str, Any]:
     if git_publication:
-        audit = codex_publication_audit.build_publication_audit(root, fetch=True)
+        audit = codex_publication_audit.build_publication_audit(
+            root,
+            fetch=True,
+            require_single_main_worktree=require_single_main_worktree,
+        )
         checks = [*_check_contract_files(root), *_checks_from_publication_audit(audit)]
         return {
             "schema_version": "codex-readiness/v1",
@@ -396,6 +417,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Run only git publication safety checks and skip MCP route/process readiness.",
     )
+    parser.add_argument(
+        "--require-single-main-worktree",
+        action="store_true",
+        help="In --git-publication mode, fail unless the local repo is one clean main worktree.",
+    )
     parser.add_argument("--fail-duplicate-processes", action="store_true", help="Fail on duplicate MCP process cohorts")
     parser.add_argument(
         "--require-callable-route",
@@ -424,6 +450,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     report = build_readiness_report(
         require_clean=args.require_clean_worktree,
         git_publication=args.git_publication,
+        require_single_main_worktree=args.require_single_main_worktree,
         fail_duplicate_processes=args.fail_duplicate_processes,
         required_callable_routes=required_routes,
         allow_adg_sqlite_fallback=not args.no_adg_sqlite_fallback,

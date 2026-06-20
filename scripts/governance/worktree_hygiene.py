@@ -17,6 +17,12 @@ class WorktreeHygieneIssue:
     dirty_files: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class SingleMainWorktreeIssue:
+    code: str
+    detail: str
+
+
 def run_git(*args: str, cwd: Path) -> tuple[int, str, str]:
     try:
         proc = subprocess.run(
@@ -105,3 +111,92 @@ def summarize_dirty_worktrees(
             preview += f" (+{len(files) - max_files_per_worktree} more)"
         lines.append(f"- {issue.branch} @ {issue.worktree}: {preview}")
     return "\n".join(lines)
+
+
+def verify_single_main_worktree(
+    repo_root: Path,
+    *,
+    expected_path: Path | None = None,
+    base_ref: str = "origin/main",
+    fetch: bool = False,
+) -> list[SingleMainWorktreeIssue]:
+    """Return blockers when local closeout is not exactly one clean main worktree."""
+
+    root = repo_root.resolve()
+    expected = (expected_path or repo_root).resolve()
+    issues: list[SingleMainWorktreeIssue] = []
+
+    if fetch:
+        rc_fetch, _, stderr = run_git("fetch", "origin", "--prune", cwd=root)
+        if rc_fetch != 0:
+            issues.append(SingleMainWorktreeIssue("fetch_failed", stderr))
+
+    rc, porcelain, stderr = run_git("worktree", "list", "--porcelain", cwd=root)
+    if rc != 0:
+        return [*issues, SingleMainWorktreeIssue("worktree_list_failed", stderr)]
+
+    worktrees = parse_worktrees(porcelain)
+    if len(worktrees) != 1:
+        issues.append(SingleMainWorktreeIssue("worktree_count", f"expected=1 actual={len(worktrees)}"))
+
+    current = worktrees[0] if worktrees else {}
+    path_text = current.get("path", "")
+    actual_path = Path(path_text).resolve() if path_text else None
+    if actual_path != expected:
+        issues.append(
+            SingleMainWorktreeIssue(
+                "worktree_path",
+                f"expected={expected} actual={actual_path or '<missing>'}",
+            )
+        )
+
+    branch = current.get("branch", "")
+    if branch != "main":
+        issues.append(SingleMainWorktreeIssue("worktree_branch", f"expected=main actual={branch or '<missing>'}"))
+
+    rc_status, status, status_err = run_git("status", "--short", "--branch", cwd=root)
+    if rc_status != 0:
+        issues.append(SingleMainWorktreeIssue("status_failed", status_err))
+    else:
+        dirty_rows = [line for line in status.splitlines() if line and not line.startswith("##")]
+        if dirty_rows:
+            issues.append(SingleMainWorktreeIssue("dirty_status", "\n".join(dirty_rows)))
+
+    rc_diff, _, diff_err = run_git("diff", "--quiet", cwd=root)
+    if rc_diff != 0:
+        issues.append(SingleMainWorktreeIssue("unstaged_diff", diff_err or "git diff --quiet reported changes"))
+
+    rc_cached, _, cached_err = run_git("diff", "--cached", "--quiet", cwd=root)
+    if rc_cached != 0:
+        issues.append(
+            SingleMainWorktreeIssue("staged_diff", cached_err or "git diff --cached --quiet reported changes")
+        )
+
+    rc_head, head, head_err = run_git("rev-parse", "--verify", "HEAD", cwd=root)
+    rc_base, base, base_err = run_git("rev-parse", "--verify", base_ref, cwd=root)
+    if rc_head != 0:
+        issues.append(SingleMainWorktreeIssue("head_missing", head_err))
+    if rc_base != 0:
+        issues.append(SingleMainWorktreeIssue("base_ref_missing", f"{base_ref}: {base_err}"))
+    if rc_head == 0 and rc_base == 0 and head != base:
+        issues.append(SingleMainWorktreeIssue("head_not_base_ref", f"HEAD={head} {base_ref}={base}"))
+
+    rc_unmerged, unmerged, unmerged_err = run_git(
+        "branch",
+        "--no-merged",
+        base_ref,
+        "--format=%(refname:short)",
+        cwd=root,
+    )
+    if rc_unmerged != 0:
+        issues.append(SingleMainWorktreeIssue("unmerged_branch_check_failed", unmerged_err))
+    elif unmerged.strip():
+        issues.append(SingleMainWorktreeIssue("unmerged_branches", unmerged))
+
+    return issues
+
+
+def summarize_single_main_worktree_issues(issues: Sequence[SingleMainWorktreeIssue]) -> str:
+    if not issues:
+        return ""
+    return "\n".join(f"- {issue.code}: {issue.detail}" for issue in issues)

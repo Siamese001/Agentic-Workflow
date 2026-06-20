@@ -143,13 +143,14 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True: {
+        lambda root, fetch=True, require_single_main_worktree=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
             "refs": {"origin_main_equals_github_main": True},
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
+            "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
         },
     )
     for path in (
@@ -168,3 +169,44 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
     assert report["mode"] == "git-publication"
     assert report["status"] == "PASS"
     assert not any(check["id"].startswith("mcp.") for check in report["checks"])
+
+
+def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        mod.codex_publication_audit,
+        "build_publication_audit",
+        lambda root, fetch=True, require_single_main_worktree=False: {
+            "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
+            "dirty_protected_worktrees": [],
+            "dirty_protected_summary": "",
+            "refs": {"origin_main_equals_github_main": True},
+            "fetch": {"ok": True, "stdout": "", "stderr": ""},
+            "unmerged_branches": [],
+            "single_main_worktree": {
+                "required": require_single_main_worktree,
+                "issues": [{"code": "worktree_count", "detail": "expected=1 actual=2"}],
+                "summary": "- worktree_count: expected=1 actual=2",
+            },
+        },
+    )
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+
+    report = mod.build_readiness_report(
+        tmp_path,
+        git_publication=True,
+        require_single_main_worktree=True,
+    )
+
+    assert report["status"] == "FAIL"
+    check = next(check for check in report["checks"] if check["id"] == "git.publication.single_main_worktree")
+    assert check["status"] == "FAIL"
+    assert "expected=1 actual=2" in check["detail"]
