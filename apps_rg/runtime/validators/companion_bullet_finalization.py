@@ -36,10 +36,8 @@ COMPANION_FINALIZED_X3_CODES: frozenset[str] = frozenset(
 
 
 def companion_allow_legacy_stale_fallback() -> bool:
-    """When False, never scan global runtime_proofs for older accepted bullet runs."""
-    from apps_rg.runtime.product_output_policy import is_apps_rg_test_harness
-
-    return is_apps_rg_test_harness()
+    """Legacy stale companion fallback is disabled for all paths."""
+    return False
 
 
 def companion_blocks_narrative_llm(companion_context: Mapping[str, Any]) -> bool:
@@ -123,47 +121,14 @@ def _l2_from_modular_successful_pointer(repo: Path, upstream_section_id: str) ->
     return l2 if l2.is_file() else None
 
 
-def _l2_from_legacy_stale_fallback(repo: Path, upstream_section_id: str, *, expected_bullet_ids: tuple[str, ...]) -> Path | None:
-    from apps_rg.runtime.runtime_proof_layout import (
-        LATEST_SUCCESSFUL_REAL_FILENAME,
-        lane_root,
-        resolve_effective_lane_l2_path,
-        _read_json_dict,
-    )
-
-    path = resolve_effective_lane_l2_path(repo, upstream_section_id)
-    if path is not None and path.is_file() and companion_run_dir_accepted(
-        path.parent,
-        upstream_section_id=upstream_section_id,
-        expected_bullet_ids=expected_bullet_ids,
-    ):
-        return path
-
-    real_lane = lane_root(repo, upstream_section_id) / "real"
-    if real_lane.is_dir():
-        glob_pat = f"{upstream_section_id}_*"
-        for run_dir in sorted(real_lane.glob(glob_pat), key=lambda p: p.stat().st_mtime, reverse=True):
-            if companion_run_dir_accepted(
-                run_dir,
-                upstream_section_id=upstream_section_id,
-                expected_bullet_ids=expected_bullet_ids,
-            ):
-                candidate = run_dir / "l2_output.json"
-                if candidate.is_file():
-                    return candidate
-
-    succ_ptr = lane_root(repo, upstream_section_id) / LATEST_SUCCESSFUL_REAL_FILENAME
-    succ = _read_json_dict(succ_ptr) or {}
-    rel = succ.get("l2_output_repo_relative") or succ.get("run_dir")
-    if isinstance(rel, str) and rel.strip():
-        alt = (repo / rel).resolve()
-        alt_l2 = alt / "l2_output.json" if alt.is_dir() else alt
-        if alt_l2.is_file() and companion_run_dir_accepted(
-            alt_l2.parent,
-            upstream_section_id=upstream_section_id,
-            expected_bullet_ids=expected_bullet_ids,
-        ):
-            return alt_l2
+def _l2_from_legacy_stale_fallback(
+    repo: Path,
+    upstream_section_id: str,
+    *,
+    expected_bullet_ids: tuple[str, ...],
+) -> Path | None:
+    """Legacy global scan is disabled; current-run modular evidence is required."""
+    _ = (repo, upstream_section_id, expected_bullet_ids)
     return None
 
 
@@ -175,8 +140,8 @@ def resolve_companion_bullets_l2_path(
 ) -> Path | None:
     """Resolve upstream bullet L2 for narrative companion context.
 
-    Product path: modular ``latest_successful_real_run.json`` only (current run tree).
-    Test harness may fall back to global runtime_proofs scans.
+    Product and test paths: modular ``latest_successful_real_run.json`` only
+    from the current run tree. Global runtime_proofs scans are forbidden.
     """
     modular_l2 = _l2_from_modular_successful_pointer(repo, upstream_section_id)
     if modular_l2 is not None:
@@ -186,11 +151,8 @@ def resolve_companion_bullets_l2_path(
             expected_bullet_ids=expected_bullet_ids,
         ):
             return modular_l2
-        if not companion_allow_legacy_stale_fallback():
-            return None
-    if not companion_allow_legacy_stale_fallback():
         return None
-    return _l2_from_legacy_stale_fallback(repo, upstream_section_id, expected_bullet_ids=expected_bullet_ids)
+    return None
 
 
 def companion_accepted_in_modular_sections_root(
@@ -313,8 +275,6 @@ def evaluate_narrative_upstream_bullets_gate(
     spec = _narrative_upstream_spec(narrative_section_id)
     if spec is None:
         return "NOT_APPLICABLE", "", ""
-    if companion_allow_legacy_stale_fallback():
-        return "PASS", spec[0], "test_harness_waiver"
 
     upstream_lane, expected_ids = spec
     from apps_rg.runtime.runtime_proof_layout import (
@@ -338,14 +298,11 @@ def evaluate_narrative_upstream_bullets_gate(
             f"{upstream_lane} not ACCEPTED_FINALIZED in current modular sections root",
         )
 
-    path = _l2_from_legacy_stale_fallback(root, upstream_lane, expected_bullet_ids=expected_ids)
-    if path is not None:
-        return "PASS", upstream_lane, "accepted_upstream_run"
     return (
         "BLOCKED",
         upstream_lane,
-        f"run --section {upstream_lane} to ACCEPTED_FINALIZED PASS before "
-        f"--section {narrative_section_id}",
+        f"current modular sections root missing; run {upstream_lane} in the same e2e run before "
+        f"{narrative_section_id}",
     )
 
 

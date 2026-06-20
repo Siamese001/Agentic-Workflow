@@ -5,6 +5,7 @@ Reads the agent response once, then runs (fail-open, exit 0):
   2. Post-response audits (MCP hygiene, long-command). Author-Gate capture chain
      RETIRED W1 (claude-native-supersession-9d3f7a): native AskUserQuestion supersedes it.
   3. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
+  4. Delivered-worktree cleanup sweep (merged worktrees/branches only)
 
 Notion status advisory auditor REMOVED (notion-wave-enforcement-removal): the
 windsurf/cursor-era Notion plan/status/wave enforcement never functioned (advisory +
@@ -50,6 +51,8 @@ from lib.codex_hook_common import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO_ROOT / ".codex" / "governance" / "scripts"
 _DISPATCH_RECEIPT = REPO_ROOT / "artifacts" / "governance" / "post_turn_dispatch_receipts.jsonl"
+_CLEANUP_SCRIPT = REPO_ROOT / ".claude" / "hooks" / "prune_merged_chat_worktrees.py"
+_CLEANUP_PREFIXES = "chat/,feat/,codex-,claude-,bcg-"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
     "post_agent_mcp_hygiene_audit.py": ("agent_response",),
@@ -159,6 +162,43 @@ def _run_dispatch(parsed_raw: str) -> str:
         sys.stdin = saved_stdin
 
 
+def _run_worktree_cleanup() -> str:
+    if os.environ.get("WORKTREE_AUTOCLEANUP_BYPASS") == "1":
+        return "bypassed"
+    if not _CLEANUP_SCRIPT.is_file():
+        return "missing"
+
+    env = {**os.environ, "WORKTREE_REAP_DETACHED": "1"}
+    env.setdefault("WORKTREE_REAP_BRANCH_PREFIXES", _CLEANUP_PREFIXES)
+    env.setdefault("WORKTREE_PRUNE_BRANCH_PREFIXES", _CLEANUP_PREFIXES)
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(_CLEANUP_SCRIPT), "--delete-merged"],
+            cwd=str(Path.cwd()),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+            env=env,
+        )
+    except subprocess.TimeoutExpired:
+        print("[governance_dispatch] worktree cleanup timed out", file=sys.stderr)
+        return "timeout"
+    except OSError as err:
+        print(f"[governance_dispatch] worktree cleanup failed to launch: {err}", file=sys.stderr)
+        return "error"
+
+    if proc.stderr:
+        sys.stderr.write(proc.stderr)
+        if not proc.stderr.endswith("\n"):
+            sys.stderr.write("\n")
+    if proc.stdout:
+        sys.stderr.write(proc.stdout)
+        if not proc.stdout.endswith("\n"):
+            sys.stderr.write("\n")
+    return "ok"
+
+
 def main() -> int:
     payload = read_payload()
     session_id = str(payload.get("session_id") or "")
@@ -176,6 +216,7 @@ def main() -> int:
             failed_open=[],
             result="response_unavailable",
         )
+        _run_worktree_cleanup()
         return 0
 
     raw = cursor_response_payload({"response": response_text})
@@ -213,6 +254,7 @@ def main() -> int:
         failed_open=failed_open,
         result="dispatched",
     )
+    _run_worktree_cleanup()
     return 0
 
 

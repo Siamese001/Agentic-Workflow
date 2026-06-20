@@ -8,12 +8,19 @@ are owned by stop_runtime_rca_gate.py.
 from __future__ import annotations
 
 import importlib.util
+import os
+import sys
 from pathlib import Path
 
-from lib.codex_hook_common import allow, block, read_payload, resolve_response_text, write_receipt
+REPO_ROOT = Path(__file__).resolve().parents[2]
+GOVERNANCE_DIR = REPO_ROOT / "scripts" / "governance"
+if str(GOVERNANCE_DIR) not in sys.path:
+    sys.path.insert(0, str(GOVERNANCE_DIR))
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_AUDIT_PATH = _REPO_ROOT / ".codex" / "governance" / "scripts" / "post_agent_runtime_rca_audit.py"
+from lib.codex_hook_common import allow, block, read_payload, resolve_response_text, write_receipt
+from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
+
+_AUDIT_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "post_agent_runtime_rca_audit.py"
 _BLOCK_KINDS = (
     "missing_response_floor",
     "pass_without_proof",
@@ -49,6 +56,21 @@ def _reason(kind: str, violation: dict) -> str:
     return "Repo-work final response missing STATUS: PASS | PARTIAL | FAIL | BLOCKED."
 
 
+def _protected_worktree_reason() -> str:
+    if os.environ.get("STOP_TASK_AUDIT_WORKTREE_HYGIENE_BYPASS") == "1":
+        return ""
+    issues = find_dirty_protected_worktrees(REPO_ROOT)
+    if not issues:
+        return ""
+    summary = summarize_dirty_worktrees(issues)
+    return (
+        "Protected worktree hygiene failure: a protected checkout still has local changes.\n"
+        f"{summary}\n"
+        "Clean or commit the protected worktree before continuing. If this is a publication lane, "
+        "use a detached merge worktree so generated reports do not linger dirty on main."
+    )
+
+
 def main() -> int:
     payload = read_payload()
     text = resolve_response_text(payload)
@@ -60,7 +82,7 @@ def main() -> int:
         write_receipt("stop", payload, "allow", "detect() unavailable — fail open")
         return allow("detect() unavailable — fail open")
     try:
-        _status, violations = detect(text)
+        status_value, violations = detect(text)
     except Exception:  # guardian: allow-broad-exception -- detection failure must fail open
         return allow("detect() raised — fail open")
     for kind in _BLOCK_KINDS:
@@ -69,6 +91,10 @@ def main() -> int:
             reason = _reason(kind, hit)
             write_receipt("stop", payload, "block", reason)
             return block(reason)
+    protected_reason = _protected_worktree_reason() if status_value is not None or violations else ""
+    if protected_reason:
+        write_receipt("stop", payload, "block", protected_reason)
+        return block(protected_reason)
     write_receipt("stop", payload, "allow", "stop audit accepted")
     return allow("stop audit accepted")
 

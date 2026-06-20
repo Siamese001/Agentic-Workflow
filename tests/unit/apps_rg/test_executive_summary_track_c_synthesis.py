@@ -16,6 +16,9 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 def test_graph_only_reformat_allowed_on_product_fail_closed(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_ALLOW_PRODUCT_SHORTCUTS", raising=False)
     monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_GRAPH_ONLY_REPAIR_MODE", raising=False)
+    assert graph_only_reformat_allowed() is False
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_GRAPH_ONLY_REPAIR_MODE", "1")
     assert graph_only_reformat_allowed() is True
 
 

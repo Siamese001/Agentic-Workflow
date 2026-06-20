@@ -78,6 +78,7 @@ from apps_rg.runtime.sections.section_product_shape_ssot import (
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
+ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION = "deterministic_graph_bullet_render.v1"
 
 
 @dataclass(frozen=True)
@@ -89,6 +90,7 @@ class RoleEpisodeLaneConfig:
     bullet_prefix: str
     output_filename: str
     output_kind: str
+    allow_deterministic_graph_render: bool = False
 
     @property
     def is_bullet_lane(self) -> bool:
@@ -104,6 +106,7 @@ _ROLE_LANES: dict[str, RoleEpisodeLaneConfig] = {
         bullet_prefix="bul_insurtech",
         output_filename="insurtech_bullets_output.txt",
         output_kind="bullets",
+        allow_deterministic_graph_render=True,
     ),
     "insurtech_narrative": RoleEpisodeLaneConfig(
         section_id="insurtech_narrative",
@@ -122,6 +125,7 @@ _ROLE_LANES: dict[str, RoleEpisodeLaneConfig] = {
         bullet_prefix="bul_ey",
         output_filename="ey_bullets_output.txt",
         output_kind="bullets",
+        allow_deterministic_graph_render=True,
     ),
     "ey_narrative": RoleEpisodeLaneConfig(
         section_id="ey_narrative",
@@ -289,23 +293,120 @@ def _normalize_bullets(parsed: dict[str, Any], *, cfg: RoleEpisodeLaneConfig, al
     return out
 
 
-def _fallback_bullets_from_facts(*, cfg: RoleEpisodeLaneConfig, facts: list[dict[str, Any]], allowed: list[str]) -> list[dict[str, Any]]:
+def _source_fact_ids_from_bullets(bullets: list[dict[str, Any]]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for row in bullets:
+        if not isinstance(row, dict):
+            continue
+        for raw in row.get("source_fact_ids") or []:
+            fid = str(raw or "").strip()
+            if fid and fid not in seen:
+                seen.add(fid)
+                out.append(fid)
+    return out
+
+
+def _deterministic_graph_bullet_render(
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    for idx, fact in enumerate(facts[:3]):
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    if not cfg.allow_deterministic_graph_render or not allowed_set:
+        return out
+    for fact in facts:
         fid = str(fact.get("fact_id") or fact.get("candidate_fact_id") or "")
-        if fid not in allowed and idx < len(allowed):
-            fid = allowed[idx]
+        if fid not in allowed_set:
+            continue
         text = _sentence(str(fact.get("claim_text") or fact.get("text") or ""))
         if not text:
             continue
+        idx = len(out)
         out.append(
             {
                 "bullet_id": f"{cfg.bullet_prefix}_{idx + 1:03d}",
                 "bullet_text": text,
-                "source_fact_ids": [fid] if fid else [],
+                "source_fact_ids": [fid],
             }
         )
+        if len(out) >= 3:
+            break
     return out
+
+
+def _llm_generation_status(
+    *,
+    provider_runtime_generation_status: str,
+    parsed: dict[str, Any] | None,
+    parse_error: str,
+    model_bullets: list[dict[str, Any]],
+) -> str:
+    if provider_runtime_generation_status != "REAL_LLM":
+        return "not_run"
+    if parse_error == "empty_model_output":
+        return "empty_output"
+    if parsed is None or not model_bullets:
+        return "invalid_output"
+    return "usable_output"
+
+
+def _materialize_bullet_generation(
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    parsed: dict[str, Any] | None,
+    parse_error: str,
+    provider_runtime_generation_status: str,
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+    graph_packet_digest: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    model_bullets = _normalize_bullets(parsed or {}, cfg=cfg, allowed=allowed)
+    llm_status = _llm_generation_status(
+        provider_runtime_generation_status=provider_runtime_generation_status,
+        parsed=parsed,
+        parse_error=parse_error,
+        model_bullets=model_bullets,
+    )
+    if model_bullets:
+        bullets = model_bullets
+        generation_method = "llm_generation"
+        llm_output_used = True
+        renderer_version = ""
+    elif provider_runtime_generation_status == "REAL_LLM" and cfg.allow_deterministic_graph_render:
+        bullets = _deterministic_graph_bullet_render(cfg=cfg, facts=facts, allowed=allowed)
+        generation_method = (
+            "deterministic_graph_render"
+            if bullets
+            else "deterministic_graph_render_blocked"
+        )
+        llm_output_used = False
+        renderer_version = ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION
+    else:
+        bullets = []
+        generation_method = "blocked"
+        llm_output_used = False
+        renderer_version = ""
+
+    source_fact_ids = _source_fact_ids_from_bullets(bullets)
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    receipt = {
+        "generation_method": generation_method,
+        "llm_generation_status": llm_status,
+        "llm_output_used": llm_output_used,
+        "evidence_authority": "augmented_skills_graph",
+        "source_fact_ids": source_fact_ids,
+        "graph_packet_digest": str(graph_packet_digest or ""),
+        "renderer_version": renderer_version,
+        "lane_contract_allows_deterministic_graph_render": bool(
+            cfg.allow_deterministic_graph_render
+        ),
+        "allowed_graph_packet_fact_count": len(allowed_set),
+        "rendered_source_fact_ids_within_allowed_packet": set(source_fact_ids).issubset(allowed_set),
+    }
+    return bullets, receipt
 
 
 def _claim_ledger_from_bullets(bullets: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -539,7 +640,6 @@ def _x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
-    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     claim_ledger = list(l2.get("claim_ledger") or [])
     cited: list[str] = []
@@ -586,6 +686,7 @@ def _x2_gates(
     ]
     if cfg.is_bullet_lane:
         bullets = list(l2.get("bullets") or [])
+        bundle_consumed = bool(l2.get("role_episode_bundle_consumed"))
         gates.extend(
             [
                 _x2_gate(
@@ -652,7 +753,6 @@ def run_role_episode_x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
-    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     cfg = _ROLE_LANES[str(section_id or "").strip().lower()]
     return _x2_gates(
@@ -660,7 +760,6 @@ def run_role_episode_x2_gates(
         l2=l2,
         allowed=allowed,
         runtime_generation_status=runtime_generation_status,
-        bundle_consumed=bundle_consumed,
     )
 
 
@@ -969,9 +1068,15 @@ def run_role_episode_lane_execution(
 
     header = _role_header(base, cfg, args)
     if cfg.is_bullet_lane:
-        bullets = _normalize_bullets(parsed or {}, cfg=cfg, allowed=allowed_fact_ids)
-        if provider_result.runtime_generation_status == "REAL_LLM" and not bullets:
-            bullets = _fallback_bullets_from_facts(cfg=cfg, facts=facts, allowed=allowed_fact_ids)
+        bullets, generation_receipt = _materialize_bullet_generation(
+            cfg=cfg,
+            parsed=parsed,
+            parse_error=parse_error,
+            provider_runtime_generation_status=provider_result.runtime_generation_status,
+            facts=facts,
+            allowed=allowed_fact_ids,
+            graph_packet_digest=pool.proof_pool_digest,
+        )
         claim_ledger = _claim_ledger_from_bullets(bullets)
         l2 = {
             "run_id": run_id,
@@ -984,9 +1089,12 @@ def run_role_episode_lane_execution(
             "claim_ledger": claim_ledger,
             "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
             "prompt_hash": prompt_hash[:16],
+            **generation_receipt,
         }
+        l2["generation_receipt"] = dict(generation_receipt)
     else:
-        narrative = _narrative_from_parsed(parsed or {})
+        narrative_from_model = _narrative_from_parsed(parsed or {})
+        narrative = narrative_from_model
         if provider_result.runtime_generation_status == "REAL_LLM" and not narrative:
             narrative = _sentence(str(facts[0].get("claim_text") or facts[0].get("text") or ""))
         source_ids = _normalize_source_ids(
@@ -995,6 +1103,26 @@ def run_role_episode_lane_execution(
             0,
         )
         claim_ledger = [{"claim_text": narrative, "source_fact_ids": source_ids}] if narrative else []
+        llm_status = "not_run"
+        if provider_result.runtime_generation_status == "REAL_LLM":
+            if parse_error == "empty_model_output":
+                llm_status = "empty_output"
+            elif parsed is None or not narrative_from_model:
+                llm_status = "invalid_output"
+            else:
+                llm_status = "usable_output"
+        generation_receipt = {
+            "generation_method": "llm_generation" if narrative_from_model else "deterministic_graph_render",
+            "llm_generation_status": llm_status,
+            "llm_output_used": bool(narrative_from_model),
+            "evidence_authority": "augmented_skills_graph",
+            "source_fact_ids": source_ids if narrative else [],
+            "graph_packet_digest": str(pool.proof_pool_digest or ""),
+            "renderer_version": ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION if narrative and not narrative_from_model else "",
+            "lane_contract_allows_deterministic_graph_render": False,
+            "allowed_graph_packet_fact_count": len(allowed_fact_ids),
+            "rendered_source_fact_ids_within_allowed_packet": set(source_ids).issubset(set(allowed_fact_ids)),
+        }
         l2 = {
             "run_id": run_id,
             "section_id": sid,
@@ -1006,22 +1134,28 @@ def run_role_episode_lane_execution(
             "claim_ledger": claim_ledger,
             "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
             "prompt_hash": prompt_hash[:16],
+            **generation_receipt,
         }
+        l2["generation_receipt"] = dict(generation_receipt)
 
     proof_meta = dict(pool.proof_pool_metadata or {})
     bundle_consumed = bool(proof_meta.get("role_episode_bundle_consumption"))
+    l2["role_episode_bundle_consumed"] = bundle_consumed
     x2 = run_role_episode_x2_gates(
         section_id=sid,
         l2=l2,
         allowed=allowed_fact_ids,
         runtime_generation_status=provider_result.runtime_generation_status,
-        bundle_consumed=bundle_consumed,
     )
     product_quality_status = (
         "PASS" if provider_result.runtime_generation_status == "REAL_LLM" and all(g.get("pass") for g in x2) else "FAIL"
     )
     l2["product_quality_status"] = product_quality_status
     l2["product_quality_reason"] = "x2_pass" if product_quality_status == "PASS" else "x2_or_provider_blocked"
+    lane_status = "PASS" if product_quality_status == "PASS" else "FAIL"
+    generation_receipt["lane_status"] = lane_status
+    l2["lane_status"] = lane_status
+    l2["generation_receipt"] = dict(generation_receipt)
     x1d = _judge_rows(
         cfg=cfg,
         provider_result=provider_result,
@@ -1085,7 +1219,16 @@ def run_role_episode_lane_execution(
         x3_result=x3,
     )
     write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
-    write_json(artifact_dir / "real_l2_generation_result.json", {**provider_result.to_dict(), "product_quality_status": product_quality_status})
+    write_json(
+        artifact_dir / "real_l2_generation_result.json",
+        {
+            **provider_result.to_dict(),
+            "product_quality_status": product_quality_status,
+            "lane_status": lane_status,
+            **generation_receipt,
+            "generation_receipt": generation_receipt,
+        },
+    )
     write_json(
         artifact_dir / "section_metric_receipt.json",
         {
@@ -1093,9 +1236,12 @@ def run_role_episode_lane_execution(
             "run_id": run_id,
             "runtime_generation_status": provider_result.runtime_generation_status,
             "product_quality_status": product_quality_status,
+            "lane_status": lane_status,
             "x2_failed_gates": failed,
             "x3_code": x3.x3_code,
             "prompt_hash": prompt_hash[:16],
+            **generation_receipt,
+            "generation_receipt": generation_receipt,
         },
     )
     for gate in x2:
@@ -1111,8 +1257,34 @@ def run_role_episode_lane_execution(
                 "source_fact_ids_checked": allowed_fact_ids,
                 "proof_pool_ref": pool.proof_pool_ref,
                 "proof_pool_digest": pool.proof_pool_digest,
+                "generation_method": generation_receipt.get("generation_method"),
+                "llm_generation_status": generation_receipt.get("llm_generation_status"),
+                "llm_output_used": generation_receipt.get("llm_output_used"),
+                "evidence_authority": generation_receipt.get("evidence_authority"),
+                "rendered_source_fact_ids": generation_receipt.get("source_fact_ids"),
+                "graph_packet_digest": generation_receipt.get("graph_packet_digest"),
+                "renderer_version": generation_receipt.get("renderer_version"),
             },
         )
+    else:
+        pool_receipt_path = artifact_dir / "x2_source_fact_pool_receipt.json"
+        try:
+            pool_receipt = json.loads(pool_receipt_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            pool_receipt = {}
+        if isinstance(pool_receipt, dict):
+            pool_receipt.update(
+                {
+                    "generation_method": generation_receipt.get("generation_method"),
+                    "llm_generation_status": generation_receipt.get("llm_generation_status"),
+                    "llm_output_used": generation_receipt.get("llm_output_used"),
+                    "evidence_authority": generation_receipt.get("evidence_authority"),
+                    "rendered_source_fact_ids": generation_receipt.get("source_fact_ids"),
+                    "graph_packet_digest": generation_receipt.get("graph_packet_digest"),
+                    "renderer_version": generation_receipt.get("renderer_version"),
+                }
+            )
+            write_json(pool_receipt_path, pool_receipt)
     output_text = _display_text(l2, cfg)
     (artifact_dir / cfg.output_filename).write_text(output_text + ("\n" if output_text else ""), encoding="utf-8")
     (artifact_dir / "command_output.txt").write_text(output_text + ("\n" if output_text else ""), encoding="utf-8")

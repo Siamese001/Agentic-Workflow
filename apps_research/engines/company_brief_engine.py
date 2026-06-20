@@ -1,7 +1,7 @@
 """CompanyBriefEngine — apps_research --mode company.
 
 Produces a CompanyBrief conforming to apps_rg/schemas/company_research.schema.json.
-Driven by Tavily research (when available) plus a synthesizing LLM call.
+Driven by SearXNG research (when available) plus a synthesizing LLM call.
 Fails closed when grounding or synthesis dependencies cannot produce a real brief.
 
 Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P1.2).
@@ -15,7 +15,6 @@ import logging
 import os
 import re
 import time
-import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -46,9 +45,6 @@ def _v2_enabled() -> bool:
     return os.environ.get(_RETRIEVAL_V2_FLAG, "").strip() in {"1", "true", "yes", "on"}
 
 _log = logging.getLogger(__name__)
-_CURATED_TARGETING_BRIEF_DIR = Path(__file__).resolve().parents[2] / "apps_rg" / "config" / "targeting"
-
-
 def _emit_company_brief_marker(
     *,
     accepted: bool,
@@ -99,32 +95,6 @@ def _resolved_gemini_max_output_tokens() -> int:
     return 4096
 
 
-def _slugify_targeting_token(value: str) -> str:
-    """Return a filename-friendly token for matching curated targeting packs."""
-    normalized = unicodedata.normalize("NFKD", str(value or "")).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "_", normalized.lower()).strip("_")
-
-
-def _split_markdown_sections(text: str) -> dict[str, str]:
-    """Extract second-level markdown sections for curated fallback parsing."""
-    sections: dict[str, list[str]] = {}
-    current: str | None = None
-    for raw_line in str(text or "").splitlines():
-        line = raw_line.rstrip()
-        if line.startswith("## "):
-            current = line[3:].strip()
-            sections.setdefault(current, [])
-            continue
-        if current is None:
-            continue
-        sections[current].append(line)
-    return {
-        header: "\n".join(lines).strip()
-        for header, lines in sections.items()
-        if "\n".join(lines).strip()
-    }
-
-
 class CompanyBriefEngine(BaseResearchEngine):
     """Generates a CompanyBrief for a target company.
 
@@ -139,7 +109,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
     AGENT_ID = "apps_research.company_brief_engine"
 
-    # --- Tavily query templates (one per facet, decomposed; W1 Author-Gate B) -----
+    # --- Search query templates (one per facet, decomposed; W1 Author-Gate B) -----
     _FACET_QUERIES = [
         ("overview", '{company} company overview tagline founding "core offerings"'),
         ("strategic_priorities", '{company} strategic priorities 2025 2026 announcements roadmap'),
@@ -156,8 +126,6 @@ class CompanyBriefEngine(BaseResearchEngine):
     def execute(self, input_data: Any) -> Dict[str, Any]:
         _t0 = time.perf_counter()
         _sub_stages: list[dict[str, Any]] = []
-        self._last_curated_targeting_brief_path = None
-
         topic: str = self._extract(input_data, "topic")
         if not topic or not isinstance(topic, str):
             raise ValueError("CompanyBriefEngine requires non-empty 'topic' (company name)")
@@ -210,22 +178,14 @@ class CompanyBriefEngine(BaseResearchEngine):
         # --- Sub-stage: synthesize ---
         _t_synth = time.perf_counter()
         profile_cfg = _DEPTH_PROFILES[depth_profile]
-        if getattr(self, "_last_curated_targeting_brief_path", None):
-            synthesized = self._compose_curated_targeting_synthesis(
-                topic=topic,
-                jd_context=jd_context,
-                jd_anchor=jd_anchor,
-                findings=research_findings,
-            )
-        else:
-            synthesized = self._synthesize(
-                topic=topic,
-                findings=research_findings,
-                jd_facets=jd_facets,
-                depth=depth_profile,
-                jd_context=jd_context,
-                jd_anchor=jd_anchor,
-            )
+        synthesized = self._synthesize(
+            topic=topic,
+            findings=research_findings,
+            jd_facets=jd_facets,
+            depth=depth_profile,
+            jd_context=jd_context,
+            jd_anchor=jd_anchor,
+        )
         _sub_stages.append({
             "sub_stage_id": "research.synthesize",
             "sub_stage_name": "LLM Synthesis",
@@ -247,10 +207,6 @@ class CompanyBriefEngine(BaseResearchEngine):
         gate_verdict, gate_caveat, degraded_reason = self._evaluate_c0_pa_gate(
             c0_bundle=c0_bundle, depth_profile=depth_profile
         )
-        if getattr(self, "_last_curated_targeting_brief_path", None):
-            gate_verdict = "PASS"
-            gate_caveat = ""
-            degraded_reason = "curated_targeting_fallback_pack"
         c0_bundle["synthesis_guidance"]["gate_verdict"] = gate_verdict
         c0_bundle["synthesis_guidance"]["gate_caveat"] = gate_caveat
         c0_bundle["synthesis_guidance"]["degraded_packet_reason"] = degraded_reason
@@ -341,234 +297,6 @@ class CompanyBriefEngine(BaseResearchEngine):
                 facets.extend(str(x) for x in v if x)
         return facets
 
-    def _load_curated_targeting_research_notes(
-        self,
-        *,
-        topic: str,
-        jd_context: Dict[str, Any],
-    ) -> Dict[str, str]:
-        """Load repo-curated targeting notes when live retrieval is exhausted."""
-        company_name = str(jd_context.get("company_name") or "").strip() or topic
-        role_name = str(
-            jd_context.get("job_title")
-            or jd_context.get("target_role")
-            or jd_context.get("role")
-            or ""
-        ).strip()
-        company_slug = _slugify_targeting_token(company_name)
-        role_slug = _slugify_targeting_token(role_name)
-        if not _CURATED_TARGETING_BRIEF_DIR.is_dir():
-            return {}
-
-        def _rank(path: Path) -> tuple[int, int, str]:
-            stem_slug = _slugify_targeting_token(path.stem)
-            role_score = 0 if role_slug and role_slug in stem_slug else 1
-            return (role_score, len(path.name), path.name)
-
-        md_candidates = sorted(
-            _CURATED_TARGETING_BRIEF_DIR.glob(f"{company_slug}*briefing.md"),
-            key=_rank,
-        )
-        json_candidates = sorted(
-            _CURATED_TARGETING_BRIEF_DIR.glob(f"{company_slug}*.json"),
-            key=_rank,
-        )
-
-        brief_text = ""
-        source_path: Path | None = None
-        if md_candidates:
-            source_path = md_candidates[0]
-            try:
-                brief_text = source_path.read_text(encoding="utf-8").strip()
-            except OSError:
-                brief_text = ""
-        elif json_candidates:
-            source_path = json_candidates[0]
-            try:
-                raw = json.loads(source_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                raw = {}
-            if isinstance(raw, dict):
-                brief_text = str(
-                    raw.get("briefing_text")
-                    or raw.get("apps_rg_targeting_brief_text")
-                    or raw.get("company_brief_text")
-                    or ""
-                ).strip()
-        if not brief_text:
-            return {}
-
-        sections = _split_markdown_sections(brief_text)
-        if not sections:
-            sections = {"overview": brief_text}
-
-        section_map = {
-            "overview": ("JD Complement", "Company DNA & Operating Model"),
-            "strategic_priorities": ("Company Strategy & Operating Pressure",),
-            "customer_profile": (
-                "JD Complement",
-                "Company Strategy & Operating Pressure",
-                "Company DNA & Operating Model",
-            ),
-            "tech_stack_signals": ("AI, Data, Platform, Architecture Signals",),
-            "commercial_motion": (
-                "Company DNA & Operating Model",
-                "Partnership / Ecosystem Motion",
-            ),
-            "partner_ecosystem": ("Partnership / Ecosystem Motion",),
-            "adoption_motion": ("AI, Data, Platform, Architecture Signals",),
-            "leadership": ("Leadership & Stakeholder Map",),
-            "competitive_set": ("Company Strategy & Operating Pressure", "Recent Events & Urgency"),
-            "recent_moves": ("Recent Events & Urgency",),
-        }
-        findings: Dict[str, str] = {}
-        for family, wanted_sections in section_map.items():
-            parts = [sections[name] for name in wanted_sections if sections.get(name)]
-            if parts:
-                findings[family] = "\n\n".join(parts)
-
-        if findings:
-            setattr(self, "_last_curated_targeting_brief_path", source_path)
-            self.logger.info(
-                "[CompanyBriefEngine] using curated targeting fallback pack path=%s",
-                source_path,
-            )
-        return findings
-
-    def _compose_curated_targeting_synthesis(
-        self,
-        *,
-        topic: str,
-        jd_context: Dict[str, Any],
-        jd_anchor: Optional[Path],
-        findings: Dict[str, str],
-    ) -> Dict[str, Any]:
-        """Turn the curated fallback brief pack into a sealed synthesis payload."""
-        brief_path = getattr(self, "_last_curated_targeting_brief_path", None)
-        if not isinstance(brief_path, Path) or not brief_path.is_file():
-            raise CompanyBriefUnavailableError(
-                f"{topic}: curated fallback brief path missing"
-            )
-
-        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
-            assess_targeting_brief_semantics,
-            seal_targeting_brief,
-            validate_targeting_brief_text,
-        )
-        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
-            extract_jd_text,
-            format_research_findings,
-        )
-
-        jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
-        brief_text = brief_path.read_text(encoding="utf-8").strip()
-        sealed = seal_targeting_brief(
-            brief_text,
-            company_name=topic,
-            jd_text=jd_text,
-            profile="apps_rg",
-        )
-        if not sealed.is_sealed:
-            raise CompanyBriefUnavailableError(
-                f"{topic}: curated fallback brief rejected: {sealed.block_reason or 'contract_validation_failed'}"
-            )
-
-        research_notes = format_research_findings(findings)
-        validation = validate_targeting_brief_text(
-            sealed.company_brief_text,
-            jd_text=jd_text,
-            profile="apps_rg",
-        )
-        semantics = assess_targeting_brief_semantics(
-            sealed.company_brief_text,
-            jd_text=jd_text,
-            research_notes=research_notes,
-            profile="apps_rg",
-        )
-        sidecar = self._build_targeting_brief_sidecar(
-            company_name=topic,
-            brief_text=sealed.company_brief_text,
-            jd_text=jd_text,
-            research_notes=research_notes,
-            findings=findings,
-            gate_verdict="PASS",
-            gate_reason="curated_fallback_pack",
-            model_name="curated_targeting_pack",
-            semantic_override=semantics,
-        )
-        sidecar["validation_valid"] = validation.valid
-        sidecar["fallback_mode"] = "curated_targeting_pack"
-        return {
-            "company_archetype": "partner-led enterprise AI",
-            "company_dna": {
-                "archetype": "partner-led enterprise AI",
-                "commercial_motion": "co-sell and enablement",
-                "partner_ecosystem": "GSI + ISV + cloud alliances",
-                "adoption_motion": "pilot to production",
-                "operating_tension": "trust versus speed",
-                "distinguishing_traits": [
-                    "safety",
-                    "deployability",
-                    "technical close",
-                ],
-            },
-            "tagline": "Anthropic partnership DNA centered on partner-led enterprise adoption.",
-            "core_offerings": ["Claude for Enterprise", "Claude Code", "API"],
-            "strategic_priorities": [
-                "partner enablement",
-                "joint solution development",
-                "technical close",
-                "ecosystem revenue",
-            ],
-            "verticals": ["enterprise"],
-            "buyer_titles": [
-                "GTM Partnerships",
-                "Partner Solutions Architect",
-                "CIO",
-                "CTO",
-            ],
-            "tech_stack_signals": [
-                "Claude for Enterprise",
-                "Claude Code",
-                "Bedrock",
-                "Vertex AI",
-            ],
-            "commercial_motion": [
-                "co-sell",
-                "partner-led adoption",
-                "indirect revenue",
-            ],
-            "partner_ecosystem": ["GSI", "ISV", "cloud alliances"],
-            "adoption_motion": [
-                "pilot-to-production",
-                "enablement at scale",
-            ],
-            "leadership": [
-                {"name": "Dario Amodei", "title": "CEO", "background": "safety and execution"},
-                {"name": "Daniela Amodei", "title": "President", "background": "company voice"},
-            ],
-            "competitive_set": [
-                "enterprise AI platforms",
-                "model vendors",
-            ],
-            "recent_moves": [
-                {"date": "2026-06-19", "event": "partner-led enterprise targeting brief", "signal": "distribution and adoption"},
-            ],
-            "language_to_mirror": [
-                "partner-led adoption",
-                "technical close",
-                "reference architectures",
-            ],
-            "language_to_avoid": [
-                "frontier research",
-                "model internals",
-                "generic AI-company prose",
-            ],
-            "apps_rg_targeting_brief_markdown": sealed.company_brief_text,
-            "apps_rg_targeting_brief_sidecar": sidecar,
-            "targeting_brief_disposition": "SEALED",
-        }
-
     def _run_research_v2(self, *, topic: str, depth: str) -> Dict[str, str]:
         """V2 retrieval pipeline: decompose → retrieve (parallel) → rerank → assemble.
 
@@ -633,39 +361,30 @@ class CompanyBriefEngine(BaseResearchEngine):
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
         """Best-effort Tavily research per facet.
 
-        Returns a dict {facet_name: text_blob}. Missing Tavily or a missing
-        client bootstrap fails closed instead of substituting a synthetic brief.
+        Returns a dict {facet_name: text_blob}. Missing Tavily configuration
+        fails closed instead of substituting a synthetic brief.
         """
         findings: Dict[str, str] = {f: "" for f, _ in self._FACET_QUERIES}
         try:
-            from tools.retrieval.tavily_client import TavilySearchClient  # type: ignore
+            from apps_research.integrations.tavily_retrieval import retrieve
         except ImportError as exc:
             self.logger.warning(
-                "[CompanyBriefEngine] Tavily client unavailable; curated fallback may be used: %s",
+                "[CompanyBriefEngine] tavily_retrieval unavailable; failing closed: %s",
                 exc,
             )
-            TavilySearchClient = None  # type: ignore[assignment]
+            retrieve = None
 
         max_queries = {"shallow": 3, "standard": 6, "deep": 10}.get(depth, 6)
-        client = None
-        if TavilySearchClient is not None:
-            try:
-                client = TavilySearchClient()
-            except Exception as exc:  # guardian: allow-broad-exception -- Tavily client init heterogeneous (HTTPError/ValueError/EnvironmentError); fail-soft to curated pack
-                self.logger.warning(
-                    "[CompanyBriefEngine] Tavily init failed; curated fallback may be used: %s",
-                    exc,
-                )
 
         for facet, q_template in self._FACET_QUERIES[:max_queries]:
-            if client is None:
+            if retrieve is None:
                 break
             query = q_template.format(company=topic)
             try:
-                resp = client.search(query=query, max_results=5)
-                snippets = [r.get("content", "") for r in (resp or {}).get("results", [])]
+                docs = retrieve(query, top_k=5)
+                snippets = [d.snippet for d in docs if d.snippet]
                 findings[facet] = "\n".join(snippets)[:4000]
-            except Exception as exc:  # guardian: allow-broad-exception -- Tavily HTTP errors heterogeneous; per-facet fail-soft preserves partial brief
+            except Exception as exc:  # guardian: allow-broad-exception -- Tavily HTTP errors are heterogeneous; per-facet fail-soft preserves partial brief
                 self.logger.warning("[CompanyBriefEngine] Tavily query failed (%s): %s", facet, exc)
         if not any((blob or "").strip() for blob in findings.values()):
             raise CompanyBriefUnavailableError(
@@ -892,6 +611,18 @@ class CompanyBriefEngine(BaseResearchEngine):
             jd_text=jd_text,
             profile="apps_rg",
         )
+        if "jd_restatement_in_bullet" in sealed.violations:
+            violation_detail = next(
+                (
+                    str(v)
+                    for v in sealed.violations
+                    if str(v).startswith("jd_restatement_in_bullet_text:")
+                ),
+                "jd_restatement_in_bullet",
+            )
+            raise CompanyBriefUnavailableError(
+                f"{company_name}: apps_rg targeting brief rejected: {violation_detail}"
+            )
         if not sealed.is_sealed:
             repaired = self._repair_apps_rg_targeting_brief_markdown(
                 company_name=company_name,
@@ -1249,10 +980,9 @@ class CompanyBriefEngine(BaseResearchEngine):
         Delegates family selection + query generation to
         ``decompose_coverage_families()``. Uses
         ``apps_research.integrations.tavily_retrieval.retrieve`` (the
-        canonical Tavily adapter) for the actual searches. Degrades
-        gracefully when ``TAVILY_API_KEY`` is unset or the SDK is missing
-        — returns empty blobs per family so offline test environments
-        stay green.
+        canonical Tavily adapter) for the actual searches. Missing or empty
+        retrieval fails closed; no curated company pack may stand in for
+        grounded research.
         """
         plans = decompose_coverage_families(topic, depth_profile, jd_context or None)
         findings: Dict[str, str] = {p.family: "" for p in plans}
@@ -1261,7 +991,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             from apps_research.integrations.tavily_retrieval import retrieve
         except ImportError as exc:
             self.logger.warning(
-                "[CompanyBriefEngine] tavily_retrieval unavailable; curated fallback may be used: %s",
+                "[CompanyBriefEngine] tavily_retrieval unavailable; failing closed: %s",
                 exc,
             )
             retrieve = None
@@ -1276,7 +1006,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 docs = retrieve(plan.query, top_k=5)
             except RuntimeError as exc:
                 self.logger.warning(
-                    "[CompanyBriefEngine] Tavily unavailable for family=%s; falling back if needed: %s",
+                    "[CompanyBriefEngine] Tavily unavailable for family=%s: %s",
                     plan.family,
                     exc,
                 )
@@ -1300,12 +1030,6 @@ class CompanyBriefEngine(BaseResearchEngine):
                     snippets.append(d.url)
             findings[plan.family] = "\n".join(snippets)[:4000]
         if not any((blob or "").strip() for blob in findings.values()):
-            curated = self._load_curated_targeting_research_notes(
-                topic=topic,
-                jd_context=jd_context,
-            )
-            if curated:
-                return curated
             raise CompanyBriefUnavailableError(
                 f"{topic}: adaptive research returned no grounded findings"
             )

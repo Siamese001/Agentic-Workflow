@@ -166,6 +166,10 @@ def _prune_branches_enabled() -> bool:
     return os.environ.get("WORKTREE_PRUNE_MERGED_BRANCHES", "1").strip() != "0"
 
 
+def _reap_detached_enabled() -> bool:
+    return os.environ.get("WORKTREE_REAP_DETACHED", "0").strip() != "0"
+
+
 def _prune_branch_prefixes() -> tuple[str, ...]:
     return _csv_env("WORKTREE_PRUNE_BRANCH_PREFIXES", ("chat/", "feat/"))
 
@@ -175,6 +179,21 @@ def _matched_prefix(branch: str, prefixes: tuple[str, ...]) -> str | None:
         if p and branch.startswith(p):
             return p
     return None
+
+
+def _branch_prefix_candidates(branch: str) -> tuple[str, ...]:
+    candidates = [branch]
+    if "/" in branch:
+        normalized = branch.replace("/", "-")
+        if normalized != branch:
+            candidates.append(normalized)
+    return tuple(dict.fromkeys(candidates))
+
+
+def _worktree_prefix_candidates(branch: str, path: Path) -> tuple[str, ...]:
+    candidates = list(_branch_prefix_candidates(branch)) if branch else []
+    candidates.append(path.name)
+    return tuple(dict.fromkeys(candidates))
 
 
 def _is_ancestor(ref: str, trunk_ref: str, *, repo_root: Path) -> bool:
@@ -252,14 +271,16 @@ def reap_merged_chat_worktrees(
     min_age_seconds: int = 0,
     do_fetch: bool = True,
     reap_branch_prefixes: tuple[str, ...] = ("chat/",),
+    allow_detached: bool = False,
 ) -> dict:
     """Report or delete fully delivered, clean worktrees. Returns a structured report.
 
     ``reap_branch_prefixes`` is the set of enabled branch prefixes. The default
     ``("chat/",)`` preserves the original behavior: only ``chat/*`` worktrees *under the
     chat root* are eligible. Adding non-chat prefixes (e.g. ``feat/``) lets the explicit cleanup
-    command also remove merged sibling worktrees living anywhere. A ``.keep-worktree`` marker file in
-    any worktree exempts it permanently.
+    command also remove merged sibling worktrees living anywhere. Detached worktrees are skipped
+    unless ``allow_detached`` is true. A ``.keep-worktree`` marker file in any worktree exempts it
+    permanently.
     """
     report: dict = {"scanned": 0, "reaped": [], "skipped": [], "dry_run": dry_run, "status": "ok"}
     repo_root = repo_root.resolve()
@@ -278,6 +299,7 @@ def reap_merged_chat_worktrees(
     for wt in _parse_worktrees(porcelain):
         path = Path(wt.get("path", "")).resolve()
         branch = wt.get("branch", "")
+        head = wt.get("head", "")
         report["scanned"] += 1
 
         def skip(reason: str) -> None:
@@ -290,12 +312,25 @@ def reap_merged_chat_worktrees(
             under_chat_root = root == path or root in path.parents
         except (OSError, ValueError):
             under_chat_root = False
-        matched = _matched_prefix(branch, reap_branch_prefixes)
+        if not branch and not allow_detached:
+            skip("detached_worktree_disabled")
+            continue
+        label_candidates = _worktree_prefix_candidates(branch, path)
+        matched = None
+        label = label_candidates[-1] if label_candidates else path.name
+        for candidate in label_candidates:
+            matched = _matched_prefix(candidate, reap_branch_prefixes)
+            if matched is not None:
+                label = candidate
+                break
         # ``chat/*`` and non-matching branches are only *considered* under the chat root;
         # outside it they are silently ignored (preserves the "ignore manual worktrees" rule).
         if (matched == "chat/" or matched is None) and not under_chat_root:
             continue  # not an ephemeral chat worktree under the root — silently ignore
-        if matched is None or not branch or branch in PROTECTED:
+        if matched is None or not label:
+            skip("not_chat_branch")
+            continue
+        if branch in PROTECTED:
             skip("not_chat_branch")
             continue
         if path == cur:
@@ -308,7 +343,11 @@ def reap_merged_chat_worktrees(
 
         # Merged into trunk by exact commit ancestry. Patch-equivalent or no-unique-commit evidence
         # is insufficient; record superseded branches with an explicit ours merge before cleanup.
-        if not _is_ancestor(branch, trunk_ref, repo_root=repo_root):
+        ref = branch or head
+        if not ref:
+            skip("missing_head")
+            continue
+        if not _is_ancestor(ref, trunk_ref, repo_root=repo_root):
             skip("not_merged_into_trunk")
             continue
 
@@ -331,7 +370,9 @@ def reap_merged_chat_worktrees(
                 continue
 
         if dry_run:
-            report["reaped"].append({"path": str(path), "branch": branch, "dry_run": True})
+            report["reaped"].append(
+                {"path": str(path), "branch": branch, "label": label, "dry_run": True}
+            )
             continue
 
         rc_rm, _ = _git("worktree", "remove", str(path), cwd=repo_root)
@@ -340,11 +381,12 @@ def reap_merged_chat_worktrees(
         if rc_rm != 0:
             skip("worktree_remove_failed")
             continue
-        # Branch is now free; -d first (safe), -D fallback (we already proved ancestor-of-trunk).
-        rc_br, _ = _git("branch", "-d", branch, cwd=repo_root)
-        if rc_br != 0:
-            _git("branch", "-D", branch, cwd=repo_root)
-        report["reaped"].append({"path": str(path), "branch": branch})
+        if branch:
+            # Branch is now free; -d first (safe), -D fallback (we already proved ancestor-of-trunk).
+            rc_br, _ = _git("branch", "-d", branch, cwd=repo_root)
+            if rc_br != 0:
+                _git("branch", "-D", branch, cwd=repo_root)
+        report["reaped"].append({"path": str(path), "branch": branch, "label": label})
 
     return report
 
@@ -481,11 +523,12 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=dry_run,
         min_age_seconds=min_age_seconds,
         reap_branch_prefixes=_reap_prefixes(),
+        allow_detached=_reap_detached_enabled(),
     )
     reaped = report.get("reaped") or []
     if reaped:
         verb = "would reap" if report.get("dry_run") else "reaped"
-        lines = "\n".join(f"  - {r['branch']}  ({r['path']})" for r in reaped)
+        lines = "\n".join(f"  - {r.get('branch') or r.get('label')}  ({r['path']})" for r in reaped)
         messages.append(
             f"worktree-merge-cleanup: {verb} {len(reaped)} merged+clean worktree(s):\n{lines}\n"
             f"(branches delivered into the trunk; no committed work lost)."

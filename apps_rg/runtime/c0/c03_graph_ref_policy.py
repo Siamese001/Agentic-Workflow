@@ -6,7 +6,6 @@ import json
 import logging
 from typing import Any
 
-from apps_rg.fact_inventory.track_weighted_graph_expansion import SENIOR_ROLE_TAXONOMY_IDS
 from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
 
 logger = logging.getLogger(__name__)
@@ -65,6 +64,10 @@ EXECUTIVE_CAPABILITY_FRAMES: tuple[tuple[str, str], ...] = (
 )
 
 
+class RoleFamilyProjectionError(RuntimeError):
+    """Raised when role-family targeting cannot be resolved from the graph SSOT."""
+
+
 def _is_mechanism_skill(skill_id: str) -> bool:
     low = str(skill_id or "").lower()
     return any(m in low for m in MECHANISM_SKILL_MARKERS)
@@ -80,9 +83,10 @@ def resolve_role_family_projection(
     *,
     repo_root: Any = None,
 ) -> dict[str, Any]:
-    """Resolve SQLite role_family_projection or taxonomy-backed synthesis — never silent generic fallback."""
+    """Resolve SQLite role_family_projection, failing closed when missing."""
     from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
         default_graph_sqlite_path,
+        materialize_augmented_skills_graph_sqlite,
         open_graph_sqlite,
     )
 
@@ -98,10 +102,11 @@ def resolve_role_family_projection(
         "targeting_degraded_explicit": False,
     }
     db = default_graph_sqlite_path(repo_root)
-    if db.is_file():
+
+    def fetch_projection_row() -> Any | None:
         conn = open_graph_sqlite(repo_root=repo_root, db_path=db)
         try:
-            row = conn.execute(
+            return conn.execute(
                 """
                 SELECT role_family_id, projection_role_family_key, track_weight_profile,
                        targeting_keywords, proof_policy_note
@@ -113,6 +118,15 @@ def resolve_role_family_projection(
             ).fetchone()
         finally:
             conn.close()
+
+    row = None
+    if not db.is_file():
+        materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=db)
+    if db.is_file():
+        row = fetch_projection_row()
+        if row is None:
+            materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=db)
+            row = fetch_projection_row()
         if row:
             out["sqlite_projection_row_found"] = True
             out["projection_source"] = "sqlite_role_family_projection"
@@ -124,54 +138,10 @@ def resolve_role_family_projection(
             out["proof_policy_note"] = proof_policy_note
             return out
 
-    if rf in SENIOR_ROLE_TAXONOMY_IDS and pillar_hints:
-        out["projection_source"] = "taxonomy_pillar_hints_synthesized"
-        out["targeting_degraded_explicit"] = True
-        out["release_eligible_targeting_proof"] = False
-        out["fallback_pillar_bridge_used"] = False
-        out["targeting_degraded_gate"] = {
-            "gate_id": "TARGETING_DEGRADED",
-            "verdict": "WARN",
-            "projection_source": out["projection_source"],
-        }
-        logger.warning(
-            "C0.3 targeting degraded: role_family_key=%r resolved from taxonomy only "
-            "(no skills_graph.sqlite row). Add a role_family_projection row for full targeting.",
-            rf,
-        )
-        return out
-
-    if pillar_hints:
-        out["projection_source"] = "taxonomy_pillar_hints_only"
-        out["targeting_degraded_explicit"] = True
-        out["release_eligible_targeting_proof"] = False
-        out["targeting_degraded_gate"] = {
-            "gate_id": "TARGETING_DEGRADED",
-            "verdict": "WARN",
-            "projection_source": out["projection_source"],
-        }
-        logger.warning(
-            "C0.3 targeting degraded: role_family_key=%r resolved from taxonomy pillar hints only.",
-            rf,
-        )
-        return out
-
-    out["projection_source"] = "missing_no_taxonomy_pillars"
-    out["fallback_pillar_bridge_used"] = True
-    out["targeting_degraded_explicit"] = True
-    out["release_eligible_targeting_proof"] = False
-    out["targeting_degraded_gate"] = {
-        "gate_id": "TARGETING_DEGRADED",
-        "verdict": "WARN",
-        "projection_source": out["projection_source"],
-    }
-    logger.warning(
-        "C0.3 targeting degraded: role_family_key=%r not found in skills_graph.sqlite "
-        "and has no taxonomy pillar hints. Graph targeting will use generic fallback. "
-        "Add a role_family_projection row for this role to restore targeted generation.",
-        rf,
+    raise RoleFamilyProjectionError(
+        f"missing role_family_projection row for role_family_key={rf!r}; "
+        "graph targeting cannot continue without role-specific graph data"
     )
-    return out
 
 
 def _executive_capability_phrases(skill_ids: list[str], *, max_phrases: int = 3) -> list[str]:
@@ -546,5 +516,6 @@ __all__ = [
     "extract_briefing_targeting_supplement",
     "extract_c03_bindings_from_runtime_payload",
     "merge_graph_targeting_jd_alignment",
+    "RoleFamilyProjectionError",
     "resolve_role_family_projection",
 ]

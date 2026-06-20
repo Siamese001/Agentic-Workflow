@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from apps_research.engines.company_brief_engine import CompanyBriefEngine
+import pytest
+
+from apps_research.engines.company_brief_engine import (
+    CompanyBriefEngine,
+    CompanyBriefUnavailableError,
+)
 from apps_research.types.apps_rg_targeting_brief_contract import (
     normalize_markdown_brief_text,
     normalize_targeting_brief_text,
@@ -32,7 +37,7 @@ _VALID_TARGETING_BRIEF = (
 )
 
 
-def test_targeting_normalizer_rewrites_jd_dense_bullet() -> None:
+def test_targeting_normalizer_preserves_jd_dense_bullet_for_rejection() -> None:
     jd = "Lead enterprise data platform strategy for the insurance division."
     draft = (
         "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
@@ -48,37 +53,47 @@ def test_targeting_normalizer_rewrites_jd_dense_bullet() -> None:
     normalized = normalize_targeting_brief_text(draft, jd_text=jd)
     validation = validate_targeting_brief_text(normalized, jd_text=jd)
 
-    assert validation.valid, validation.violations
-    assert "lead enterprise data platform strategy" not in normalized.lower()
+    assert not validation.valid
+    assert "jd_restatement_in_bullet" in validation.violations
+    assert any(
+        str(v).startswith("jd_restatement_in_bullet_text:")
+        for v in validation.violations
+    )
+    assert "lead enterprise data platform strategy" in normalized.lower()
     assert all(len(line) <= 240 for line in normalized.splitlines() if line.strip())
 
 
-def test_targeting_synthesis_repairs_invalid_markdown(monkeypatch) -> None:
+def test_targeting_synthesis_rejects_jd_dense_bullet_without_repair(monkeypatch) -> None:
     engine = CompanyBriefEngine()
-    responses = iter(
-        [
-            (
-                "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
-                "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
-                "=== STRATEGIC MANDATE ===\n"
-                "- lead enterprise data platform strategy for the insurance division and manage the change while coordinating with architecture and governance teams to keep delivery aligned with the business.\n"
-            ),
-            _VALID_TARGETING_BRIEF,
-        ]
+    bad_markdown = (
+        "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
+        "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
+        "=== STRATEGIC MANDATE ===\n"
+        "- lead enterprise data platform strategy for the insurance division and manage the change while coordinating with architecture and governance teams to keep delivery aligned with the business.\n"
     )
-    monkeypatch.setattr(engine, "_call_llm_plain_markdown", lambda prompt: next(responses))
+    calls: list[str] = []
 
-    synthesized = engine._synthesize_apps_rg_targeting_brief(
-        topic="Acme Co",
-        findings={"overview": "Acme is a mid-cap insurer with verified scale."},
-        jd_context=_TARGETING_JD_CONTEXT,
-        jd_anchor=None,
-    )
+    def _fake_llm(prompt: str) -> str:
+        calls.append(prompt)
+        return _VALID_TARGETING_BRIEF if len(calls) > 1 else bad_markdown
 
-    assert synthesized.get("targeting_brief_disposition") == "SEALED"
-    md = synthesized["apps_rg_targeting_brief_markdown"]
-    assert md.strip()
-    assert validate_targeting_brief_text(md, jd_text="Lead enterprise data platform strategy for the insurance division.").valid
+    monkeypatch.setattr(engine, "_call_llm_plain_markdown", _fake_llm)
+
+    with pytest.raises(
+        CompanyBriefUnavailableError,
+        match="jd_restatement_in_bullet",
+    ):
+        engine._synthesize_apps_rg_targeting_brief(
+            topic="Acme Co",
+            findings={"overview": "Acme is a mid-cap insurer with verified scale."},
+            jd_context={
+                **_TARGETING_JD_CONTEXT,
+                "jd_text": "Lead enterprise data platform strategy for the insurance division.",
+            },
+            jd_anchor=None,
+        )
+
+    assert len(calls) == 1
 
 
 def test_consumer_brief_path_normalizes_output(monkeypatch) -> None:

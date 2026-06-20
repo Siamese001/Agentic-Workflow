@@ -12,14 +12,19 @@ from apps_rg.runtime.section_repair_ledger import (
 )
 
 
-def _make_ledger(*, operations: list[tuple[str, str, bool]], product_fail_closed: bool = True) -> dict:
+def _make_ledger(*, operations: list[tuple], product_fail_closed: bool = True) -> dict:
     """Build a minimal repair ledger with given operations.
 
-    Each entry is (kind, operation, replaced_l2).
+    Each entry is (kind, operation, replaced_l2[, detail]).
     """
     repairs = [
-        {"kind": kind, "operation": op, "replaced_l2": replaced}
-        for kind, op, replaced in operations
+        {
+            "kind": row[0],
+            "operation": row[1],
+            "replaced_l2": row[2],
+            **({"detail": row[3]} if len(row) > 3 else {}),
+        }
+        for row in operations
     ]
     return {
         "product_fail_closed": product_fail_closed,
@@ -57,15 +62,57 @@ def test_repair_protected_unify_bullet_metrics_is_authorized() -> None:
     )
 
 
-def test_graph_only_quality_repair_still_authorized() -> None:
+def test_graph_only_quality_repair_without_explicit_repair_receipt_blocks() -> None:
     ledger = _make_ledger(
         operations=[
             (KIND_DETERMINISTIC_REWRITE, "graph_only_generation_quality_repair", True),
         ]
     )
     blocked, reason = ledger_blocks_product_pass(ledger)
+    assert blocked, (
+        f"graph_only_generation_quality_repair requires explicit repair receipt. Got reason: {reason!r}"
+    )
+
+
+def test_graph_only_quality_repair_with_explicit_repair_receipt_is_authorized() -> None:
+    ledger = _make_ledger(
+        operations=[
+            (
+                KIND_DETERMINISTIC_REWRITE,
+                "graph_only_generation_quality_repair",
+                True,
+                {
+                    "repair_mode": "explicit_graph_only_repair",
+                    "explicit_repair_mode": True,
+                    "evidence_authority": "augmented_skills_graph",
+                },
+            ),
+        ]
+    )
+    blocked, reason = ledger_blocks_product_pass(ledger)
     assert not blocked, (
-        f"graph_only_generation_quality_repair must remain authorized. Got reason: {reason!r}"
+        f"graph_only_generation_quality_repair with explicit receipt must not block. Got reason: {reason!r}"
+    )
+
+
+def test_graph_only_display_repair_with_explicit_repair_receipt_is_authorized() -> None:
+    ledger = _make_ledger(
+        operations=[
+            (
+                KIND_DETERMINISTIC_REWRITE,
+                "graph_only_display_authority_fallback",
+                True,
+                {
+                    "repair_mode": "explicit_graph_only_repair",
+                    "explicit_repair_mode": True,
+                    "evidence_authority": "augmented_skills_graph",
+                },
+            ),
+        ]
+    )
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert not blocked, (
+        f"graph_only_display_authority_fallback with explicit receipt must not block. Got reason: {reason!r}"
     )
 
 
@@ -80,10 +127,19 @@ def test_unknown_deterministic_rewrite_still_blocks() -> None:
     assert "some_ad_hoc_unauthorized_repair" in reason
 
 
-def test_all_three_authorized_ops_together_do_not_block() -> None:
+def test_all_authorized_ops_together_do_not_block() -> None:
     ledger = _make_ledger(
         operations=[
-            (KIND_DETERMINISTIC_REWRITE, "graph_only_generation_quality_repair", True),
+            (
+                KIND_DETERMINISTIC_REWRITE,
+                "graph_only_generation_quality_repair",
+                True,
+                {
+                    "repair_mode": "explicit_graph_only_repair",
+                    "explicit_repair_mode": True,
+                    "evidence_authority": "augmented_skills_graph",
+                },
+            ),
             (KIND_DETERMINISTIC_REWRITE, "finalize_competencies_v3_output", True),
             (KIND_DETERMINISTIC_REWRITE, "repair_protected_unify_bullet_metrics", True),
         ]

@@ -160,7 +160,7 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
 
     repairs = list(ledger.get("repairs") or [])
     # Authorized deterministic post-processing ops that do NOT hide X2 gate failures:
-    # - graph_only_generation_quality_repair: augmented_skills_graph product path
+    # - graph_only_generation_quality_repair: only with explicit repair-mode receipt
     # - finalize_competencies_v3_output: capability projection on competencies lane (always runs)
     # - repair_protected_unify_bullet_metrics: canonical metric restoration on unify_bullets lane
     # - bullet_judge_feedback_reselection (W4.1/G14): judge-feedback pool reselection on the
@@ -170,17 +170,31 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
     #   (c) always writes reselection_receipt.json naming trigger, slots, and outcome.
     _AUTHORIZED_DET_OPS: frozenset[str] = frozenset(
         {
-            "graph_only_generation_quality_repair",
             "finalize_competencies_v3_output",
             "repair_protected_unify_bullet_metrics",
             "bullet_judge_feedback_reselection",
         }
     )
+
+    def _authorized_graph_only_quality_repair(row: dict[str, Any]) -> bool:
+        detail = row.get("detail")
+        detail_map = detail if isinstance(detail, dict) else {}
+        return (
+            row.get("operation")
+            in {
+                "graph_only_generation_quality_repair",
+                "graph_only_display_authority_fallback",
+            }
+            and detail_map.get("explicit_repair_mode") is True
+            and detail_map.get("repair_mode") == "explicit_graph_only_repair"
+        )
+
     det_ops = [
         r.get("operation")
         for r in repairs
         if r.get("kind") == KIND_DETERMINISTIC_REWRITE
         and r.get("operation") not in _AUTHORIZED_DET_OPS
+        and not _authorized_graph_only_quality_repair(r)
     ]
     if det_ops:
         return True, f"deterministic_rewrite_without_counted_regen:{det_ops}"

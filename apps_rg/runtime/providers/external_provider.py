@@ -420,6 +420,14 @@ class ExternalProvider:
         temperature: float = 0.7,
         timeout_seconds: int | float | None = None,
     ) -> ProviderResult:
+        attempt_started_at_utc = datetime.now(timezone.utc).isoformat()
+
+        def _provider_response_with_attempt(payload: dict[str, Any] | None) -> dict[str, Any]:
+            response = dict(payload or {})
+            response.setdefault("attempt_started_at_utc", attempt_started_at_utc)
+            response["attempt_completed_at_utc"] = datetime.now(timezone.utc).isoformat()
+            return response
+
         prompt = _prompt_text(compiled_prompt)
         # W1: resolve the effective wall-clock budget through the shared policy.
         provider_timeout_seconds = resolve_external_section_timeout_s(timeout_seconds)
@@ -447,7 +455,7 @@ class ExternalProvider:
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
-                provider_response=None,
+                provider_response=_provider_response_with_attempt({"provider_profile": self.provider_profile.value}),
             )
         transport = self.transport or self._default_transport
         try:
@@ -466,7 +474,9 @@ class ExternalProvider:
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
-                provider_response={"transport_progress": dict(progress_sink)} if progress_sink else None,
+                provider_response=_provider_response_with_attempt(
+                    {"transport_progress": dict(progress_sink)} if progress_sink else {}
+                ),
             )
         except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
             # Surface last-observed progress so a timeout reads as "slow, got N chars at +Ms",
@@ -489,7 +499,9 @@ class ExternalProvider:
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
-                provider_response={"transport_progress": prog} if prog else None,
+                provider_response=_provider_response_with_attempt(
+                    {"transport_progress": prog} if prog else {}
+                ),
             )
         text = str(response.get("text") or response.get("content") or "")
         resolved_model = str(response.get("model") or self.model)
@@ -501,14 +513,16 @@ class ExternalProvider:
             runtime_generation_status="REAL_LLM",
             model=resolved_model,
             raw_model_output=text,
-            provider_response={
-                "provider_profile": self.provider_profile.value,
-                "model": resolved_model,
-                "request_digest": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-                "effective_timeout_seconds": provider_timeout_seconds,
-                "transport_timing": response.get("transport_timing"),
-                "transport_response": response,
-            },
+            provider_response=_provider_response_with_attempt(
+                {
+                    "provider_profile": self.provider_profile.value,
+                    "model": resolved_model,
+                    "request_digest": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
+                    "effective_timeout_seconds": provider_timeout_seconds,
+                    "transport_timing": response.get("transport_timing"),
+                    "transport_response": response,
+                }
+            ),
         )
 
 

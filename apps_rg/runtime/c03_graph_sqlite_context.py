@@ -17,6 +17,7 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
 )
+from apps_rg.runtime.c0.c03_graph_ref_policy import RoleFamilyProjectionError
 
 PROOF_CLASSIFICATION = "graph_context_routing_support_not_claim_proof"
 
@@ -72,40 +73,29 @@ def assemble_c03_graph_sqlite_context(
             (rf, rf),
         ).fetchone()
 
-        pillar_ids: list[str] = []
-        fallback_pillar_bridge_used = False
-        if prof:
-            try:
-                targeting = json.loads(prof[4] or "[]")
-                for item in targeting:
-                    if isinstance(item, dict) and item.get("pillar_id"):
-                        pillar_ids.append(str(item["pillar_id"]))
-                    elif isinstance(item, str):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
-                        pillar_ids.append(item)
-            except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
-                pass
+        if not prof:
+            raise RoleFamilyProjectionError(
+                f"missing role_family_projection row for role_family_key={rf!r}; "
+                "graph targeting cannot continue without role-specific graph data"
+            )
 
+        pillar_ids: list[str] = []
+        try:
+            targeting = json.loads(prof[4] or "[]")
+            for item in targeting:
+                if isinstance(item, dict) and item.get("pillar_id"):
+                    pillar_ids.append(str(item["pillar_id"]))
+                elif isinstance(item, str):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
+                    pillar_ids.append(item)
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
+            pass
         if not pillar_ids and pillar_hint_ids:
             pillar_ids = [str(p).strip() for p in pillar_hint_ids if str(p).strip()][:max_pillars]
         if not pillar_ids:
-            from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
-
-            pillar_ids = list(resolve_c0_pillar_hints(rf, repo_root=root))[:max_pillars]
-        if not pillar_ids:
-            rows = conn.execute(
-                """
-                SELECT DISTINCT e.target_node_id
-                FROM graph_edges e
-                WHERE e.edge_type = 'career_track_contains_pillar'
-                ORDER BY e.target_node_id
-                LIMIT ?
-                """,
-                (max_pillars,),
-            ).fetchall()
-            pillar_ids = [r[0] for r in rows]
-            fallback_pillar_bridge_used = True
-        else:
-            fallback_pillar_bridge_used = False
+            raise RoleFamilyProjectionError(
+                f"role_family_projection row for role_family_key={rf!r} has no pillar targeting data"
+            )
+        fallback_pillar_bridge_used = False
 
         pillar_args: tuple[Any, ...] = tuple(pillar_ids)
         if pillar_ids:

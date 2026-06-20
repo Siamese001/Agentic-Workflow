@@ -2239,6 +2239,9 @@ def run_executive_summary_execution(
                 )
 
             if pool.proof_source == "augmented_skills_graph" and graph_only_reformat_allowed():
+                from apps_rg.runtime.sections.executive_summary_repair_policy import (
+                    graph_only_repair_mode_env_state,
+                )
                 from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
                     apply_graph_only_generation_quality_repair,
                     parsed_to_raw_model_output_json as _graph_quality_to_raw,
@@ -2275,6 +2278,13 @@ def run_executive_summary_execution(
                             or "graph_only_synthesis_violations"
                         )[:240],
                         replaced_l2=True,
+                        detail={
+                            "section_id": "executive_summary",
+                            "repair_mode": "explicit_graph_only_repair",
+                            "explicit_repair_mode": True,
+                            "repair_mode_env": graph_only_repair_mode_env_state(),
+                            "evidence_authority": "augmented_skills_graph",
+                        },
                     )
                 raw_output = _graph_quality_to_raw(parsed)
         if parsed and isinstance(parsed, dict):

@@ -170,6 +170,11 @@ def _add_worktree_at(repo: Path, path: Path, branch: str) -> Path:
     return path
 
 
+def _add_detached_worktree(repo: Path, path: Path) -> Path:
+    _git(repo, "worktree", "add", "-q", "--detach", str(path), "main")
+    return path
+
+
 def test_default_prefixes_ignore_sibling_feat_worktree(repo: Path) -> None:
     # A merged+clean feat/* SIBLING (not under the chat root) is never reaped by default.
     wt = _add_worktree_at(repo, repo.parent / "feat-sib", "feat/sib")
@@ -199,6 +204,28 @@ def test_optin_feat_prefix_keeps_unmerged_sibling(repo: Path) -> None:
     assert any(s["reason"] == "not_merged_into_trunk" for s in report["skipped"])
 
 
+# --- detached worktree reap opt-in ----------------------------------------------------------
+
+
+def test_detached_worktree_is_kept_by_default(repo: Path) -> None:
+    wt = _add_detached_worktree(repo, repo.parent / ".chat-worktrees" / "bcg-ssot-ad933e8e53")
+    report = _reap(repo)
+    assert report["reaped"] == []
+    assert wt.exists()
+    assert any(s["reason"] == "detached_worktree_disabled" for s in report["skipped"])
+
+
+def test_optin_detached_worktree_reaps_when_prefixed(repo: Path) -> None:
+    wt = _add_detached_worktree(repo, repo.parent / ".chat-worktrees" / "bcg-ssot-ad933e8e53")
+    report = _reap(
+        repo,
+        allow_detached=True,
+        reap_branch_prefixes=("chat/", "feat/", "bcg-"),
+    )
+    assert [r["label"] for r in report["reaped"]] == ["bcg-ssot-ad933e8e53"]
+    assert not wt.exists()
+
+
 # --- item #1: env-reader default grace window raised 0 -> 30 min ----------------------------
 
 
@@ -219,6 +246,13 @@ def test_reap_prefixes_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert reaper._reap_prefixes() == ("chat/", "feat/")  # module default (worktree-deliver-reap)
     monkeypatch.setenv("WORKTREE_REAP_BRANCH_PREFIXES", "chat/, feat/ ,codex/")
     assert reaper._reap_prefixes() == ("chat/", "feat/", "codex/")
+
+
+def test_reap_detached_enabled_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("WORKTREE_REAP_DETACHED", raising=False)
+    assert reaper._reap_detached_enabled() is False
+    monkeypatch.setenv("WORKTREE_REAP_DETACHED", "1")
+    assert reaper._reap_detached_enabled() is True
 
 
 # --- item #1: grace window honors worktree creation mtime (not just HEAD commit time) ------
@@ -447,3 +481,21 @@ def test_cli_delete_merged_is_explicit(monkeypatch: pytest.MonkeyPatch, tmp_path
 
     assert reaper.main(["--delete-merged", "--no-branches"]) == 0
     assert seen["dry_run"] is False
+
+
+def test_cli_allows_detached_when_env_enabled(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    seen: dict[str, bool] = {}
+
+    monkeypatch.setattr(reaper, "_primary_worktree", lambda start: tmp_path)
+    monkeypatch.setattr(reaper, "_cwd_toplevel", lambda start: tmp_path)
+    monkeypatch.setenv("WORKTREE_REAP_DETACHED", "1")
+
+    def fake_reap(**kwargs):
+        seen["allow_detached"] = kwargs["allow_detached"]
+        return {"reaped": [], "skipped": [], "dry_run": kwargs["dry_run"], "status": "ok"}
+
+    monkeypatch.setattr(reaper, "reap_merged_chat_worktrees", fake_reap)
+    monkeypatch.setattr(reaper, "prune_merged_branches", lambda **kwargs: {"deleted": []})
+
+    assert reaper.main(["--delete-merged", "--no-branches"]) == 0
+    assert seen["allow_detached"] is True

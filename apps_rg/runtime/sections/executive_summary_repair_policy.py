@@ -17,6 +17,7 @@ SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 
 # Graph-only path may deterministically reformat from allowed facts (not template finalizer).
 RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED = True
+GRAPH_ONLY_REPAIR_MODE_ENV = "APPS_RG_EXEC_SUMMARY_GRAPH_ONLY_REPAIR_MODE"
 
 # Bounded same-authority word-budget regen (apply_exec_summary_word_budget_repair).
 # Fires when the FINAL post-polish display text exceeds the X2 paragraph word ceiling
@@ -75,6 +76,21 @@ RELEASE_JUDGE_REGENERATION_ENABLED = True
 
 def _truthy_env(raw: str) -> bool:
     return str(raw or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def graph_only_repair_mode_enabled() -> bool:
+    """Explicit operator mode for graph-only display repair.
+
+    The release flag means the implementation exists; this env gate proves a run
+    intentionally entered repair mode instead of silently accepting rewritten
+    display text after a quality failure.
+    """
+    return _truthy_env(os.environ.get(GRAPH_ONLY_REPAIR_MODE_ENV, ""))
+
+
+def graph_only_repair_mode_env_state() -> str:
+    raw = os.environ.get(GRAPH_ONLY_REPAIR_MODE_ENV)
+    return raw.strip() if isinstance(raw, str) and raw.strip() else "unset"
 
 
 def regen_artificial_caps_enabled() -> bool:
@@ -209,6 +225,7 @@ def post_x2_judge_refresh_enabled() -> bool:
 __all__ = [
     "JUDGE_REGEN_MAX_ATTEMPTS",
     "JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "GRAPH_ONLY_REPAIR_MODE_ENV",
     "POST_REGEN_JUDGE_RESCORE_FULL_PANEL",
     "POST_REGEN_JUDGE_RESCORE_SOFT_ONLY",
     "RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED",
@@ -224,6 +241,8 @@ __all__ = [
     "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
     "WORD_BUDGET_REPAIR_MAX_ATTEMPTS",
     "exploratory_full_paragraph_regen_enabled",
+    "graph_only_repair_mode_enabled",
+    "graph_only_repair_mode_env_state",
     "judge_regen_core_runner_enabled",
     "judge_pass_floor_0_to_5",
     "judge_regen_max_attempts",

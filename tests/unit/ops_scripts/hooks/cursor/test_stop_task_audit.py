@@ -7,6 +7,7 @@ violations, letting misleading PASS claims through. Hardened to ``block()`` (exi
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -19,6 +20,8 @@ SCRIPT = HOOKS_DIR / "stop_task_audit.py"
 
 
 def _run_stop_audit(payload: dict) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    env["STOP_TASK_AUDIT_WORKTREE_HYGIENE_BYPASS"] = "1"
     return subprocess.run(
         [sys.executable, str(SCRIPT)],
         input=json.dumps(payload),
@@ -27,6 +30,7 @@ def _run_stop_audit(payload: dict) -> subprocess.CompletedProcess[str]:
         timeout=30,
         cwd=str(HOOKS_DIR),
         check=False,
+        env=env,
     )
 
 
@@ -79,7 +83,16 @@ class TestStopTaskAudit:
 
     def test_speculative_pass_language_blocked(self) -> None:
         for phrase in ("SHOULD PASS", "LIKELY PASS"):
-            result = _run_stop_audit({"response": f"Verdict: {phrase} once wired."})
+            result = _run_stop_audit(
+                {
+                    "response": (
+                        "STATUS: PARTIAL\n"
+                        "COMMANDS_RUN:\n- pytest -> in progress\n"
+                        "ARTIFACTS:\n- NONE\n"
+                        f"Verdict: {phrase} once wired."
+                    )
+                }
+            )
             assert result.returncode == 2, phrase
             assert "Speculative" in result.stdout + result.stderr
 

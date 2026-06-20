@@ -909,11 +909,12 @@ def _insurtech_bullets_weak_count():
             "source_fact_ids": ["bul_insurtech_002"],
         },
     ]
+    l2 = _role_bullet_l2(prefix="bul_insurtech", bullets=bullets)
+    l2["role_episode_bundle_consumed"] = True
     return run_insurtech_bullets_x2_gates(
-        l2=_role_bullet_l2(prefix="bul_insurtech", bullets=bullets),
+        l2=l2,
         allowed=["bul_insurtech_001", "bul_insurtech_002", "bul_insurtech_003"],
         runtime_generation_status="REAL_LLM",
-        bundle_consumed=True,
     )
 
 
@@ -928,11 +929,12 @@ def _insurtech_bullets_weak_bundle_not_consumed():
         }
         for i in range(1, 4)
     ]
+    l2 = _role_bullet_l2(prefix="bul_insurtech", bullets=bullets)
+    l2["role_episode_bundle_consumed"] = False
     return run_insurtech_bullets_x2_gates(
-        l2=_role_bullet_l2(prefix="bul_insurtech", bullets=bullets),
+        l2=l2,
         allowed=[b["bullet_id"] for b in bullets],
         runtime_generation_status="REAL_LLM",
-        bundle_consumed=False,
     )
 
 
@@ -962,10 +964,9 @@ def _ey_bullets_weak_unsupported_source_fact():
         {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets
     ]
     return run_ey_bullets_x2_gates(
-        l2={"bullets": bullets, "claim_ledger": ledger},
+        l2={"bullets": bullets, "claim_ledger": ledger, "role_episode_bundle_consumed": True},
         allowed=[f"bul_ey_{i:03d}" for i in range(1, 4)],
         runtime_generation_status="REAL_LLM",
-        bundle_consumed=True,
     )
 
 

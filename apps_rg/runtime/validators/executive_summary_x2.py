@@ -1627,16 +1627,14 @@ def check_exec_summary_jd_alignment_proof_flags(
             False,
             "fallback_pillar_bridge_used=true; generic pillar bridge is not release-eligible targeting",
         )
-    if gt.get("release_eligible_targeting_proof") is True and gt.get("sqlite_projection_row_found") is not True:
-        if gt.get("projection_source") != "sqlite_role_family_projection":
-            return (
-                False,
-                "release_eligible_targeting_proof without sqlite_role_family_projection row",
-            )
-    if gt.get("projection_source") == "missing_no_taxonomy_pillars":
-        return False, "role_family_projection missing; no taxonomy pillar hints"
-    if gt.get("release_eligible_targeting_proof") is not True and gt.get("targeting_degraded_explicit") is not True:
-        return False, "targeting must be explicit sqlite projection or targeting_degraded_explicit"
+    if gt.get("projection_source") != "sqlite_role_family_projection":
+        return False, "graph targeting requires sqlite_role_family_projection"
+    if gt.get("sqlite_projection_row_found") is not True:
+        return False, "graph targeting requires a role_family_projection row"
+    if gt.get("release_eligible_targeting_proof") is not True:
+        return False, "graph targeting requires release_eligible_targeting_proof"
+    if gt.get("targeting_degraded_explicit") is True:
+        return False, "targeting_degraded_explicit is not release-eligible"
     return True, None
 
 

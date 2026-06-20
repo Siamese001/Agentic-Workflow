@@ -60,6 +60,9 @@ def test_external_provider_blocks_without_credentials_and_does_not_call_transpor
     assert result.provider_attempted is False
     assert result.provider_available is False
     assert "OPENAI_API_KEY" in str(result.exact_provider_error)
+    assert result.provider_response is not None
+    assert result.provider_response["attempt_started_at_utc"]
+    assert result.provider_response["attempt_completed_at_utc"]
 
 
 def test_external_provider_threads_request_to_injected_transport() -> None:
@@ -90,6 +93,8 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
     assert result.model == "external-test-model"
     assert result.provider_response is not None
     assert result.provider_response["request_digest"]
+    assert result.provider_response["attempt_started_at_utc"]
+    assert result.provider_response["attempt_completed_at_utc"]
     assert result.provider_response["transport_response"]["text"] == "Generated section."
     assert captured == {
         "provider_profile": "external_openai",
@@ -116,6 +121,9 @@ def test_external_provider_transport_errors_fail_closed() -> None:
     assert result.provider_attempted is True
     assert result.provider_available is False
     assert "URLError" in str(result.exact_provider_error)
+    assert result.provider_response is not None
+    assert result.provider_response["attempt_started_at_utc"]
+    assert result.provider_response["attempt_completed_at_utc"]
 
 
 def test_external_provider_json_errors_fail_closed() -> None:
