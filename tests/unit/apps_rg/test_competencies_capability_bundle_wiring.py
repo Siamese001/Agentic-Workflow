@@ -294,6 +294,10 @@ def test_required_family_gate_counts_partnerships_bundle_family():
         _good_category(
             "partnerships",
             "Cloud & Partner Ecosystems",
+            "ccb_partnerships_ecosystem_execution",
+            "partnerships_ecosystem_execution",
+            ["fact_partnerships_gtm_002"],
+            ["skill_partner_ibm_aws_alliance_joint_revenue"],
             ["hyperscaler alliance co-sell", "cloud partner ecosystem GTM", "joint revenue execution"],
         )
     ]
