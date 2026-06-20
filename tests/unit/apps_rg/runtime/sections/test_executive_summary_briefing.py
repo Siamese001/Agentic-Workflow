@@ -34,8 +34,6 @@ def test_briefing_signal_bonus_depends_on_bundle_content_not_target_briefing() -
 
     assert aligned_score > unrelated_score
     assert unrelated_score == 0.0
-
-
 def test_briefing_signal_packet_captures_partner_and_adoption_motion() -> None:
     briefing = (
         "## Company DNA & Operating Model\n"
