@@ -1,7 +1,7 @@
 schema_version: '1.0'
 artifact_kind: adg_run_review_template
 run_id: 06192026_0917
-generated_at_utc: '2026-06-19T23:00:55+00:00'
+generated_at_utc: '2026-06-20T10:42:37+00:00'
 snapshot_ts: '2026-06-19T13:22:35.342598+00:00'
 review_template:
   reviewer: ''
@@ -2093,7 +2093,7 @@ artifacts:
     path: artifacts\adg\adg_action_queue_06192026_0917.json
     exists: true
     required: false
-    sha256: 637a101fb2eeacc2b8c30d695aa512dc7dfbe209ea2cf79842a445de02ca764c
+    sha256: f3455328a2e67af8ad462634fb839e20f2f179faa6be391734afe8668d074fe2
   generation_manifest:
     artifact_key: generation_manifest
     path: artifacts\adg\adg_generation_manifest_06192026_0917.json
@@ -2111,13 +2111,13 @@ artifacts:
     path: artifacts\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: ec764ae78ad7c35f22f32ba96b5e158a4bd30ca57d57a86cdcd695e8769b5648
+    sha256: ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed
   docs_markdown_burndown:
     artifact_key: docs_markdown_burndown
     path: docs\reports\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: ec764ae78ad7c35f22f32ba96b5e158a4bd30ca57d57a86cdcd695e8769b5648
+    sha256: ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed
 raw_rollups:
   gate_results_summary:
     block_pass: 13

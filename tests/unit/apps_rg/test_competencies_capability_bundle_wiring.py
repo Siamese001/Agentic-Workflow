@@ -15,6 +15,7 @@ from apps_rg.runtime.sections import competency_capability_registry as reg
 from apps_rg.runtime.sections.competency_capability_evidence import (
     COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER,
     attach_competency_bundles_to_proof_pool_metadata,
+    augment_bound_category_family_terms,
     build_competency_capability_section_packet,
     format_competency_capability_evidence_pack,
     is_flat_taxonomy_only_packet,
@@ -267,6 +268,98 @@ def test_stamp_competency_bundle_bindings_attaches_ids():
     assert cats[0]["competency_bundle_id"]
     assert cats[0]["graph_skill_node_ids"]
     assert cats[1]["competency_bundle_id"]
+
+
+def test_stamp_competency_bundle_bindings_resolves_overlapping_category_targets():
+    cats = [
+        {"category_id": "tech_strategy_innovation", "category_label": "Technology Strategy & Innovation", "terms": []},
+        {"category_id": "ai_platform_leadership", "category_label": "AI Platform Leadership", "terms": []},
+        {"category_id": "engineering_delivery_leadership", "category_label": "Engineering & Delivery Leadership", "terms": []},
+        {"category_id": "llmops_reliability", "category_label": "LLMOps & Reliability", "terms": []},
+        {"category_id": "cloud_partner_ecosystems", "category_label": "Cloud & Partner Ecosystems", "terms": []},
+    ]
+
+    stamp_competency_bundle_bindings(cats)
+
+    by_id = {c["category_id"]: c for c in cats}
+    assert by_id["tech_strategy_innovation"]["competency_bundle_id"] == "ccb_retrieval_context_engineering"
+    assert by_id["ai_platform_leadership"]["competency_bundle_id"] == "ccb_agentic_platforms"
+    assert by_id["engineering_delivery_leadership"]["competency_bundle_id"] == "ccb_engineering_leadership"
+    assert by_id["llmops_reliability"]["competency_bundle_id"] == "ccb_llmops_reliability"
+    assert by_id["cloud_partner_ecosystems"]["competency_bundle_id"] == "ccb_partnerships_ecosystem_execution"
+
+
+def test_required_family_gate_counts_partnerships_bundle_family():
+    comps = _good_competencies() + [
+        _good_category(
+            "partnerships",
+            "Cloud & Partner Ecosystems",
+            "ccb_partnerships_ecosystem_execution",
+            "partnerships_ecosystem_execution",
+            ["fact_partnerships_gtm_002"],
+            ["skill_partner_ibm_aws_alliance_joint_revenue"],
+            ["hyperscaler alliance co-sell", "cloud partner ecosystem GTM", "joint revenue execution"],
+        )
+    ]
+    canonical_families = [
+        "agentic_platforms",
+        "runtime_governance",
+        "retrieval_context_engineering",
+        "llmops_reliability",
+        "distributed_systems_engineering",
+        "platform_productization",
+        "engineering_leadership",
+        "partnerships_ecosystem_execution",
+    ]
+    for comp, family in zip(comps, canonical_families, strict=True):
+        comp["capability_family"] = family
+    comps[-1]["competency_bundle_id"] = "ccb_partnerships_ecosystem_execution"
+
+    result = q.check_required_capability_families_covered(comps, min_families=8)
+
+    assert result.passed
+    assert "partnerships_ecosystem_execution" in result.observed_value["matched_families"]
+
+
+def test_missing_family_augmentation_rebinds_target_category_to_injected_bundle():
+    packet = {
+        "competency_bundles": [
+            {
+                "competency_bundle_id": "ccb_retrieval_context_engineering",
+                "capability_family": "retrieval_context_engineering",
+                "graph_skill_node_ids": ["skill_context_engineering"],
+                "linked_source_fact_ids": ["fact_engineering_platform_003"],
+                "vocabulary_anchors": ["dense-sparse-exact retrieval design"],
+            }
+        ]
+    }
+    cats = [
+        {
+            "category_id": "tech_strategy_innovation",
+            "category_label": "Technology Strategy & Innovation",
+            "competency_bundle_id": "ccb_agentic_platforms",
+            "capability_family": "agentic_platforms",
+            "graph_skill_node_ids": ["skill_agentic_control_plane_design"],
+            "source_fact_ids": ["fact_engineering_platform_001"],
+            "terms": [
+                {"term": "Agentic control plane", "source_fact_ids": ["fact_engineering_platform_001"]},
+            ],
+        }
+    ]
+
+    augment_bound_category_family_terms(
+        cats,
+        packet=packet,
+        allowed_fact_ids={"fact_engineering_platform_003"},
+    )
+
+    assert cats[0]["competency_bundle_id"] == "ccb_retrieval_context_engineering"
+    assert cats[0]["capability_family"] == "retrieval_context_engineering"
+    assert any(
+        t.get("term") == "Dense-Sparse-Exact Retrieval Design"
+        for t in cats[0]["terms"]
+        if isinstance(t, dict)
+    )
 
 
 # ---------------------------------------------------------------------------

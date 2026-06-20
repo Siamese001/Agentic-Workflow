@@ -44,7 +44,7 @@ class TestConstructionAndDefaults:
     def test_scalar_defaults(self) -> None:
         p = _plan()
         assert p.grounding_required is False
-        assert p.apps_research_call_required is False
+        assert p.apps_research_call_required is True
         assert p.model_generation_required is False
         assert p.write_authority_present is False
         assert p.schema_version == "W6.0"

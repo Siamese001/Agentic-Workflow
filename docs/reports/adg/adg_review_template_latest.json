@@ -730,7 +730,7 @@
       "exists": true,
       "path": "artifacts\\adg\\adg_action_queue_06192026_0917.json",
       "required": false,
-      "sha256": "637a101fb2eeacc2b8c30d695aa512dc7dfbe209ea2cf79842a445de02ca764c"
+      "sha256": "f3455328a2e67af8ad462634fb839e20f2f179faa6be391734afe8668d074fe2"
     },
     "burndown": {
       "artifact_key": "burndown",
@@ -744,7 +744,7 @@
       "exists": true,
       "path": "docs\\reports\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "ec764ae78ad7c35f22f32ba96b5e158a4bd30ca57d57a86cdcd695e8769b5648"
+      "sha256": "ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed"
     },
     "enforcement_report": {
       "artifact_key": "enforcement_report",
@@ -772,7 +772,7 @@
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "ec764ae78ad7c35f22f32ba96b5e158a4bd30ca57d57a86cdcd695e8769b5648"
+      "sha256": "ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed"
     }
   },
   "decision_synthesis": {
@@ -948,7 +948,7 @@
       "Do not run broad cleanup before red gates and ratchet floors are controlled."
     ]
   },
-  "generated_at_utc": "2026-06-19T23:00:55+00:00",
+  "generated_at_utc": "2026-06-20T10:42:37+00:00",
   "graphdb_mv_analyst_summary": {
     "mv_inventory": [
       {

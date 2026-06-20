@@ -1,4 +1,4 @@
-"""Product-visible apps_rg generation requires briefing; no apps_research fallback."""
+"""Product-visible apps_rg generation requires briefing and apps_research flagging."""
 
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def _payload(mode: str, **extra: object) -> dict:
 
 @pytest.mark.parametrize("mode", ["strategic_tailor", "generate_scratch"])
 def test_product_visible_full_generation_without_briefing_fails_closed(mode: str) -> None:
-    with pytest.raises(BriefingMissingError, match="apps_research delegation is disabled"):
+    with pytest.raises(BriefingMissingError, match="apps_research is required"):
         l1_plan_apps_rg(_vr(_payload(mode)))
 
 
@@ -80,26 +80,26 @@ def test_valid_briefing_artifact_ref_passes() -> None:
     plan = l1_plan_apps_rg(
         _vr(_payload("strategic_tailor", briefing_artifact_ref="artifact:brief"))
     )
-    assert plan.apps_research_call_required is False
+    assert plan.apps_research_call_required is True
 
 
 def test_valid_manual_brief_path_passes() -> None:
     plan = l1_plan_apps_rg(
         _vr(_payload("generate_scratch", manual_brief_path="brief.md"))
     )
-    assert plan.apps_research_call_required is False
+    assert plan.apps_research_call_required is True
 
 
 def test_valid_inline_authoritative_briefing_text_passes() -> None:
     plan = l1_plan_apps_rg(
         _vr(_payload("section_regen", briefing={"briefing_text": "Authoritative brief."}))
     )
-    assert plan.apps_research_call_required is False
+    assert plan.apps_research_call_required is True
 
 
-def test_apps_research_call_required_field_is_false_when_contract_field_exists() -> None:
+def test_apps_research_call_required_field_is_true_when_contract_field_exists() -> None:
     plan = l1_plan_apps_rg(
         _vr(_payload("healing_fact_check", briefing_text="Authoritative brief."))
     )
     assert hasattr(plan, "apps_research_call_required")
-    assert plan.apps_research_call_required is False
+    assert plan.apps_research_call_required is True

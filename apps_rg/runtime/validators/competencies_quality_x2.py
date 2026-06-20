@@ -21,7 +21,7 @@ from apps_rg.runtime.validators.bullet_ngram_overlap_x2 import (
 )
 
 # ---------------------------------------------------------------------------
-# Capability families required for SVP Engineering posture
+# Capability families required for graph-backed executive competencies.
 # ---------------------------------------------------------------------------
 
 REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
@@ -53,6 +53,11 @@ REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
         "engineering", "leadership", "organization", "operating", "model",
         "talent", "hiring", "recruiting", "team", "staff",
     }),
+    "partnerships_ecosystem_execution": frozenset({
+        "partner", "partners", "partnership", "partnerships", "alliance",
+        "alliances", "ecosystem", "co-sell", "cosell", "gtm", "go-to-market",
+        "hyperscaler", "channel", "joint", "revenue",
+    }),
 }
 
 CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY: dict[str, str] = {
@@ -63,6 +68,7 @@ CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY: dict[str, str] = {
     "distributed_systems_engineering": "distributed_infra",
     "platform_productization": "productization",
     "engineering_leadership": "engineering_leadership",
+    "partnerships_ecosystem_execution": "partnerships_ecosystem_execution",
 }
 
 # ---------------------------------------------------------------------------
@@ -218,8 +224,9 @@ def check_competencies_capability_family_coverage(
             else (
                 f"Only {len(matched_families)}/{len(REQUIRED_CAPABILITY_FAMILIES)} capability families "
                 f"detected (need {min_families}): {matched_families}. "
-                "SVP Engineering competencies must cover Agentic Platform, Runtime Governance, "
-                "Retrieval Context, LLMOps, Distributed Infra, Productization, Engineering Leadership."
+                "Competencies must cover the required graph capability families: Agentic Platform, "
+                "Runtime Governance, Retrieval Context, LLMOps, Distributed Infra, Productization, "
+                "Engineering Leadership, and Partnerships/Ecosystem when present in the required bundle set."
             )
         ),
         signals=matched_families,
@@ -886,12 +893,13 @@ def check_technical_density_floor(
 def check_required_capability_families_covered(
     competencies: list[Any], *, min_families: int = 7
 ) -> CompQualityResult:
-    """Required-coverage gate: at least min_families of the 7 capability families present."""
+    """Required-coverage gate: at least min_families required capability families present."""
+    family_count = len(REQUIRED_CAPABILITY_FAMILIES)
     return CompQualityResult(
         gate_id="x2_required_capability_families_covered",
         passed=check_competencies_capability_family_coverage(competencies, min_families=min_families).passed,
         observed_value=check_competencies_capability_family_coverage(competencies, min_families=min_families).observed_value,
-        threshold=f">={min_families} of 7 required capability families",
+        threshold=f">={min_families} of {family_count} required capability families",
         failure_reason=check_competencies_capability_family_coverage(competencies, min_families=min_families).failure_reason,
         signals=[],
     )

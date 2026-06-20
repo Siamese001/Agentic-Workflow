@@ -476,7 +476,7 @@
       ]
     }
   },
-  "generated_at_utc": "2026-06-19T23:00:55+00:00",
+  "generated_at_utc": "2026-06-20T10:42:37+00:00",
   "p2": {
     "brief": {
       "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
