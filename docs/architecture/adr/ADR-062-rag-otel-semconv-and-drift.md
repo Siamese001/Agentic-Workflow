@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L6_observability/`, `agentic_core/knowledge/retrieval/`, `agentic_core/L1_cognition/reasoning/`, `agentic_core/embeddings/`, `tools/eval/`
-**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W5.3
+**Plan**: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W5.3
 **Relates-to**: ADR-055 (provenance telemetry), ADR-058 (transform telemetry), ADR-060 (reflective loop telemetry), ADR-061 (eval metrics)
 
 **Current-state note (2026-06-15):** `agentic_core/L6_observability/semconv/rag.py`, `tools/eval/retrieval_drift.py`, and retrieval calibration manifest drift fields exist. `build_drift_alert()` and `write_drift_report()` now provide filesystem alert artifacts; automatic Notion writes are superseded by current filesystem-governance routing.
@@ -125,4 +125,4 @@ Rollback: disable the constants gate; emitters can fall back to raw strings. Dri
 - OpenInference schema (Arize)
 - In-repo: `agentic_core/L6_observability/utils/evaluation/`, `tools/eval/retrieval_benchmark.py`
 - Sibling: ADR-061 (golden-set harness consumes these spans for per-cell metrics)
-- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

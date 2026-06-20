@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\windsurf-tree-deletion-ci-parity-b8e4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\windsurf-tree-deletion-ci-parity-b8e4f1.md'
 original_relative_path: 'windsurf-tree-deletion-ci-parity-b8e4f1.md'
 source_sha256: 4b10121c0fdee13021f6ccd456863dd7c60666fba9c4b5b8841f4759fdaf13c7
 recovered_status: LEGACY_EXISTING

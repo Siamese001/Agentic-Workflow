@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 from post_run_audit import _get_pid_best_effort, main
 

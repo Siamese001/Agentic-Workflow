@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-HOOK = REPO / ".claude" / "governance" / "scripts" / "post_agent_deferred_scope_capture.py"
+HOOK = REPO / ".codex" / "governance" / "scripts" / "post_agent_deferred_scope_capture.py"
 
 MARKERS = """\
 Layer-B markers for scorer OTel auto-source (ADR-031).

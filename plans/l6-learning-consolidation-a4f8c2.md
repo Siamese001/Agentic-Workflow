@@ -176,7 +176,7 @@ dissolve its modules into the existing S3B/C6/G-16 engines.
   `DeprecationWarning` (W5 `l6-repo-reorganization` precedent).
 - Write migration receipt → `artifacts/governance/migration_receipts/<ts>_l6_learning_consolidation.json`
   (classification GENERIC_INFRASTRUCTURE, justification, files, tests). Per
-  [agentic-core-glob-lock.md](.claude/rules/agentic-core-glob-lock.md) + CoreAddition Author-Gate.
+  [agentic-core-glob-lock.md](.codex/rules/agentic-core-glob-lock.md) + CoreAddition Author-Gate.
 
 ## Wave W4 — Re-point consumers + gates
 

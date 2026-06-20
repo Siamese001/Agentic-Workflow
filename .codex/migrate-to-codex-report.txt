@@ -1,6 +1,6 @@
 Migration inventory:
   active: instruction files - 2 found
-    - CLAUDE.md
+    - AGENTS.md
     - AGENTS.md
   active: skills - 32 found
     - adg-sqlite

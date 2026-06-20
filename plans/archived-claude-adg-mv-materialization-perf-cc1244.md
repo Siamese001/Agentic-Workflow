@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\adg-mv-materialization-perf-cc1244.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\adg-mv-materialization-perf-cc1244.md'
 original_relative_path: 'adg-mv-materialization-perf-cc1244.md'
 source_sha256: 137beff904546789115086b3ddf0c9ba47a82e4f41ff9953454281e03dd164da
 recovered_status: LEGACY_EXISTING

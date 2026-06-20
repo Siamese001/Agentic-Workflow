@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-backlog-schema-refactor-7c3d9e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-backlog-schema-refactor-7c3d9e.md'
 original_relative_path: '_archive\\2026-05\\notion-backlog-schema-refactor-7c3d9e.md'
 source_sha256: 21cd87faa6b201c551c858422f12de0280b15eed420de611c4d44f079bd7da55
 recovered_status: LEGACY_EXISTING

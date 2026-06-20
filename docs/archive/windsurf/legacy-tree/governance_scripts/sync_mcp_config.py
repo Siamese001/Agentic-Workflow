@@ -2,9 +2,9 @@
 """Validate and sync the repo MCP config to Cursor's global config and AGENTS.md.
 
 Usage:
-    python .claude/governance/scripts/sync_mcp_config.py
-    python .claude/governance/scripts/sync_mcp_config.py --check
-    python .claude/governance/scripts/sync_mcp_config.py --dry-run
+    python .codex/governance/scripts/sync_mcp_config.py
+    python .codex/governance/scripts/sync_mcp_config.py --check
+    python .codex/governance/scripts/sync_mcp_config.py --dry-run
 
 This script is stdlib-only and is safe to call from hooks.
 """
@@ -33,7 +33,7 @@ NOTION_DATABASES_YAML = notion_databases_yaml
 GLOBAL_BACKUP = global_backup
 
 # Each row: (server_id, use_for, example_tools, notes, skill)
-# `skill` is the slug under .claude/skills/<slug>/ that documents the
+# `skill` is the slug under .codex/skills/<slug>/ that documents the
 # canonical routing/usage for this MCP. Empty string = no dedicated skill yet.
 server_rows = [
     (
@@ -170,7 +170,7 @@ def generate_mcp_quick_reference_block() -> str:
     lines.append("| Server ID | Use For | Example Tools | Notes | Skill |")
     lines.append("|---|---|---|---|---|")
     for sid, use_for, tools, notes, skill in server_rows:
-        skill_cell = f"[`{skill}`](.claude/skills/{skill}/SKILL.md)" if skill else "—"
+        skill_cell = f"[`{skill}`](.codex/skills/{skill}/SKILL.md)" if skill else "—"
         lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} | {skill_cell} |")
     lines.append("")
     return "\n".join(lines)

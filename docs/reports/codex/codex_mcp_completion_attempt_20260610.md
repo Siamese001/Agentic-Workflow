@@ -22,7 +22,7 @@ Blocking evidence:
 
 Passing evidence:
 
-- `python scripts/governance/verify_codex_backup.py` passed.
+- `python scripts/governance/verify_codex_primary.py` passed.
 - `python ops_scripts/ci/check_plan_format_compliance.py --strict --paths C:/Git/Agentic-Workflow-FRESH/plans/codex-mcp-transport-parity-4b9c7e.md` passed with `0 FAIL, 0 ERROR, 0 WARN`.
 - Focused pytest slice passed: `14 passed, 5 warnings`.
 - `scripts/governance/audit_codex_mcp_transports.py` itself ran successfully.

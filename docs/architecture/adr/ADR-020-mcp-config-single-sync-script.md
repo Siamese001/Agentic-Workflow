@@ -52,6 +52,6 @@ Archive `expand_mcp_config.py` and `yaml_to_json_config.py` to `tools/archive/wi
 
 ## Enforcement
 
-- `.claude/rules/mcp-config-ssot.md` — references only `sync_yaml_to_global.py`
+- `.codex/rules/mcp-config-ssot.md` — references only `sync_yaml_to_global.py`
 - `docs/guides/MCP_Registry.md` — documents the sync workflow
 - Post-commit hook: `python tools/adg/sync_yaml_to_global.py` (triggered on `config/mcp_servers.yaml` commits)

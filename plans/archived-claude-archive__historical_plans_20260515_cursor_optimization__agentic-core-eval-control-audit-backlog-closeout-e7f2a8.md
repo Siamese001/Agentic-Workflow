@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-backlog-closeout-e7f2a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-backlog-closeout-e7f2a8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-backlog-closeout-e7f2a8.md'
 source_sha256: cb86c0be36a850b582e02a2626f3de367afbc6f81381ced5c9eb129d1b266dfd
 recovered_status: LEGACY_EXISTING

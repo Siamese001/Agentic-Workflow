@@ -7,7 +7,7 @@
 - **Impact Layers**: L3, L_APP (narrowed — see Amendment)
 - **Supersedes**: —
 - **Superseded by**: —
-- **Related**: ADR-049 (L5 v4 governance plane), `.claude/rules/adg-canonical-invariants.md`
+- **Related**: ADR-049 (L5 v4 governance plane), `.codex/rules/adg-canonical-invariants.md`
 
 ## Amendment — 2026-04-24
 
@@ -42,7 +42,7 @@ All three are **identical pattern** — SQLite-ledger `__init__` calling
 
 The original 5-wave structure below is preserved for ADR audit integrity but
 is OBSOLETE as of this amendment. See companion plan
-`.claude/plans/sc1-structural-block-closure-f9e3b1.md` for the collapsed
+`.codex/plans/sc1-structural-block-closure-f9e3b1.md` for the collapsed
 execution path.
 
 ## Context
@@ -81,7 +81,7 @@ is a **true bypass** (must fix) or a **legitimate structural exemption**
 
 Remediate SC-1 as a **dedicated multi-phase plan** with its own Author-Gate at
 each phase boundary, NOT as a bulk batch fix. The plan follows the ADG
-canonical-invariant doctrine (`.claude/rules/adg-canonical-invariants.md`)
+canonical-invariant doctrine (`.codex/rules/adg-canonical-invariants.md`)
 for hotspot analysis and the §22 graph-layer evidence requirement for refactor
 plans.
 
@@ -136,7 +136,7 @@ plans.
 
 ### Graph-Layer Evidence (constitutional §22)
 
-The remediation plan (`.claude/plans/sc1-structural-block-closure-f9e3b1.md`)
+The remediation plan (`.codex/plans/sc1-structural-block-closure-f9e3b1.md`)
 includes the mandatory `## ADG_GRAPH_LAYER_EVIDENCE` section citing:
 
 - `v_structural_conformance` (the source MV — SSOT for violation set)
@@ -154,7 +154,7 @@ multipliers per the canonical invariants.
 
 ### Decision Points Requiring Author-Gate
 
-Per `.claude/rules/author-gate-enforcement.md`, every one of the following
+Per `.codex/rules/author-gate-enforcement.md`, every one of the following
 triggers an Author-Gate (scored options, 0.72 threshold, dominance rule):
 
 - Any **deletion of an `*Agent.py`** encountered during remediation (constitutional §3)
@@ -165,7 +165,7 @@ triggers an Author-Gate (scored options, 0.72 threshold, dominance rule):
 ## References
 
 - `ops_scripts/ci/adg_gates/unified_registry.py` — `v_structural_conformance` gate spec
-- `.claude/rules/adg-canonical-invariants.md` — layer multipliers, surfaces, archetypes
-- `.claude/rules/adg-graph-layer-enforcement.md` — §22 plan section requirements
+- `.codex/rules/adg-canonical-invariants.md` — layer multipliers, surfaces, archetypes
+- `.codex/rules/adg-graph-layer-enforcement.md` — §22 plan section requirements
 - ADR-049 — L5 v4 governance plane (the canonical safety-plane ADR)
-- Companion plan: `.claude/plans/sc1-structural-block-closure-f9e3b1.md`
+- Companion plan: `.codex/plans/sc1-structural-block-closure-f9e3b1.md`

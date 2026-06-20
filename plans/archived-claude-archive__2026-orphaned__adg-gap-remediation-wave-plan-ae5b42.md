@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-gap-remediation-wave-plan-ae5b42.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-gap-remediation-wave-plan-ae5b42.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-gap-remediation-wave-plan-ae5b42.md'
 source_sha256: 8bf9a56f43363274eb32ae1ebafc42cfe81c4fe742e714280763d9eca880e0fd
 recovered_status: LEGACY_EXISTING

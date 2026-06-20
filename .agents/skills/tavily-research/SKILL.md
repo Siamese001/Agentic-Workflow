@@ -7,7 +7,7 @@ description: "Web search, page extraction, site mapping, full-site crawl, and mu
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §8 — Tavily Research (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §8 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §8 for current guidance.
 
 ---
 
@@ -74,7 +74,7 @@ This skill is the Claude Code-native adaptation of [Tavily's Agent Skills](https
 3. **Pick parameters** — use the topic/time-range/domain matrix; default to fast cost-conscious params unless the user asked for `advanced` or `pro`.
 4. **Invoke the Tavily tool** chosen for the task.
 5. **Cite sources** — every web-derived fact in Claude Code's response must include the source URL inline so the user can verify.
-6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into file memory (`memory/`) as a procedural pattern (see `.claude/rules/memory-management.md`).
+6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into file memory (`memory/`) as a procedural pattern (see `.codex/rules/memory-management.md`).
 
 ## Explicit Slash-Command UX (matches upstream Tavily Skills)
 
@@ -82,12 +82,12 @@ The user can invoke any Tavily tool explicitly with a slash command. Each maps 1
 
 | Slash command | Workflow file | Maps to |
 |---|---|---|
-| `/tavily-search <query>` | `.claude/commands/tavily-search.md` | `tavily-search` |
-| `/tavily-extract <url(s)>` | `.claude/commands/tavily-extract.md` | `tavily-extract` |
-| `/tavily-map <url>` | `.claude/commands/tavily-map.md` | `tavily-map` |
-| `/tavily-crawl <url>` | `.claude/commands/tavily-crawl.md` | `tavily-crawl` |
-| `/tavily-research <topic>` | `.claude/commands/tavily-research.md` | `tavily-research` |
-| `/tavily-best-practices` | `.claude/commands/tavily-best-practices.md` | meta — read this skill + linked decision tree |
+| `/tavily-search <query>` | `.codex/commands/tavily-search.md` | `tavily-search` |
+| `/tavily-extract <url(s)>` | `.codex/commands/tavily-extract.md` | `tavily-extract` |
+| `/tavily-map <url>` | `.codex/commands/tavily-map.md` | `tavily-map` |
+| `/tavily-crawl <url>` | `.codex/commands/tavily-crawl.md` | `tavily-crawl` |
+| `/tavily-research <topic>` | `.codex/commands/tavily-research.md` | `tavily-research` |
+| `/tavily-best-practices` | `.codex/commands/tavily-best-practices.md` | meta — read this skill + linked decision tree |
 
 ## Forbidden Patterns
 
@@ -100,8 +100,8 @@ The user can invoke any Tavily tool explicitly with a slash command. Each maps 1
 
 - Upstream documentation: <https://docs.tavily.com/documentation/agent-skills>
 - Tavily MCP server config: `.mcp.json` → `tavily`
-- Auth gate: `.claude/governance/scripts/pre_mcp_gate.py::check_tavily_gate`
-- Intent detection: `.claude/governance/scripts/pre_prompt_classifier.py` (`_TAVILY_SIGNALS`)
+- Auth gate: `.codex/governance/scripts/pre_mcp_gate.py::check_tavily_gate`
+- Intent detection: `.codex/governance/scripts/pre_prompt_classifier.py` (`_TAVILY_SIGNALS`)
 - Authority registry: `docs/guides/MCP_Registry.md` → `tavily`
 - Sibling skill (external library docs): `context7` MCP via `resolve-library-id` → `get-library-docs`
 

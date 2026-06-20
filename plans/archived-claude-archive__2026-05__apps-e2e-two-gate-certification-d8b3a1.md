@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-e2e-two-gate-certification-d8b3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-e2e-two-gate-certification-d8b3a1.md'
 original_relative_path: '_archive\\2026-05\\apps-e2e-two-gate-certification-d8b3a1.md'
 source_sha256: 1a794c366c3107fcc4f1837e30245948cced06641109da1b90d4a9fcec1983a2
 recovered_status: LEGACY_EXISTING

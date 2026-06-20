@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2b-live-provider-allow-proof-b24f8e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2b-live-provider-allow-proof-b24f8e.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2b-live-provider-allow-proof-b24f8e.md'
 source_sha256: ef4bf9885e3f2729f55dde37e397f735d9ca0858d794a719a9ea6f49dc6dd8ff
 recovered_status: LEGACY_EXISTING

@@ -24,8 +24,8 @@ W1 corrective patch (2026-05-14):
 These apps must not cause this gate to fail. They will be included in W3 when
 their DEFERRED_APPS removal is confirmed with zero-error scan.
 
-Plan: .claude/plans/kill-shadow-pipelines-a7f3c2.md (W5)
-      .claude/plans/one-spine-qna-rfp-migration-d2e8f1.md (W1 corrective patch)
+Plan: .codex/plans/kill-shadow-pipelines-a7f3c2.md (W5)
+      .codex/plans/one-spine-qna-rfp-migration-d2e8f1.md (W1 corrective patch)
 """
 from __future__ import annotations
 

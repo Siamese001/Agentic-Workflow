@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\competencies-graph-10x6-gemini-924516.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\competencies-graph-10x6-gemini-924516.md'
 original_relative_path: 'competencies-graph-10x6-gemini-924516.md'
 source_sha256: ec97eaea05ff81a1474e22094fd593893a32ef99b2fba4526c3979f065b5d835
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-e2e-closure-7b3a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-e2e-closure-7b3a91.md'
 original_relative_path: 'apps-lic-e2e-closure-7b3a91.md'
 source_sha256: c3a890960be71753a3f6c951ec4c3a970fca64d243716aeb5246847644c1b6ab
 recovered_status: LEGACY_EXISTING
@@ -19,7 +19,7 @@ archived_reason: historical consolidation for review, lessons learned, and anti-
 ---
 # apps_lic E2E Closure
 
-PLAN_CREATED: slug=apps-lic-e2e-closure-7b3a91 path=.claude/plans/apps-lic-e2e-closure-7b3a91.md status=Completed
+PLAN_CREATED: slug=apps-lic-e2e-closure-7b3a91 path=.codex/plans/apps-lic-e2e-closure-7b3a91.md status=Completed
 
 Status: Completed 2026-06-10  
 Created: 2026-06-10  

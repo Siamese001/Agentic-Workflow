@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\l7-auditability-overlap-cleanup-4f8c2d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\l7-auditability-overlap-cleanup-4f8c2d.md'
 original_relative_path: 'l7-auditability-overlap-cleanup-4f8c2d.md'
 source_sha256: ba3d4c55b7711e71313ddde936c08170e3d693d4797ee95e25b0181ebaabfb97
 recovered_status: LEGACY_EXISTING

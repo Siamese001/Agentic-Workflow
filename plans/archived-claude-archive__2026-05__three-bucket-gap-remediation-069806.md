@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\three-bucket-gap-remediation-069806.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\three-bucket-gap-remediation-069806.md'
 original_relative_path: '_archive\\2026-05\\three-bucket-gap-remediation-069806.md'
 source_sha256: 6314d45629aa625cf486613829be641e6ddb61b341443d8f40197372a99324f5
 recovered_status: LEGACY_EXISTING

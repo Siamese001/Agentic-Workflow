@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-regen-voice-repair-unblock-e7c4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-regen-voice-repair-unblock-e7c4a2.md'
 original_relative_path: 'exec-summary-regen-voice-repair-unblock-e7c4a2.md'
 source_sha256: e7f999dea4dab1d3d37c3fa0463a820b4e02198db4ec3aacc53366ef8b21b38a
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-wiring-ci-dispatcher-hardening-b2f4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-wiring-ci-dispatcher-hardening-b2f4a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-wiring-ci-dispatcher-hardening-b2f4a1.md'
 source_sha256: 3198290673bcfca843fbb17ff16be21ba8b1a57c07796d350ac03cc447941ebb
 recovered_status: LEGACY_EXISTING

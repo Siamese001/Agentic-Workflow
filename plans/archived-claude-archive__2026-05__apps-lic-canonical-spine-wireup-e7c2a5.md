@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-canonical-spine-wireup-e7c2a5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-canonical-spine-wireup-e7c2a5.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-canonical-spine-wireup-e7c2a5.md'
 source_sha256: 0db827630c6f9ffa7048364227c8ade1b3bda648c480b7fafaac59f58fdf123a
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\judge-spearman-calibration-a7e4c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\judge-spearman-calibration-a7e4c9.md'
 original_relative_path: '_archive\\2026-05\\judge-spearman-calibration-a7e4c9.md'
 source_sha256: 5cef298035331cd365d9ab5798fe6bb470ab424b0fffc09f9bbf2e3ad4214268
 recovered_status: LEGACY_EXISTING

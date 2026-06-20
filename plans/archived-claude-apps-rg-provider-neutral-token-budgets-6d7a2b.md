@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-rg-provider-neutral-token-budgets-6d7a2b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-rg-provider-neutral-token-budgets-6d7a2b.md'
 original_relative_path: 'apps-rg-provider-neutral-token-budgets-6d7a2b.md'
 source_sha256: 220bbf6112b4fd9098a0c4f5cc5e169af266de09da6486cc7430a42503f42d14
 recovered_status: LEGACY_EXISTING

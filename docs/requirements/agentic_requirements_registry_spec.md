@@ -239,7 +239,7 @@ validation_eval_expectation: |
   as the winner.
 
 repo_mapping_notes: |
-  Currently enforced via .claude/rules/constitutional.md and
+  Currently enforced via .codex/rules/constitutional.md and
   ops_scripts/ci/run_contract_gates.py. Structural check: guardian_exemption_gate.py.
 
 status: "active"

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-embedding-deferred-scope-f9a3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-embedding-deferred-scope-f9a3b2.md'
 original_relative_path: '_archive\\2026-05\\apps-embedding-deferred-scope-f9a3b2.md'
 source_sha256: c54703c434cdd6e1622f7657b5b701ea87d7623366cc61d3f29d17d9ff1bf4a9
 recovered_status: LEGACY_EXISTING

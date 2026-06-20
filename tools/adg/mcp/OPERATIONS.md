@@ -99,7 +99,7 @@ Root `.mcp.json` is the project MCP SSOT. After editing it, validate and sync
 generated references:
 
 ```
-python .claude/governance/scripts/sync_mcp_config.py
+python .codex/governance/scripts/sync_mcp_config.py
 ```
 
 Then restart the MCP client session so it reads the new command.

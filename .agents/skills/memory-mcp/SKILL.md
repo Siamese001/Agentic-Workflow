@@ -7,7 +7,7 @@ description: "Persistent SQLite-backed knowledge graph for Claude Code \u2014 su
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §12 — Memory MCP (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §12 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §12 for current guidance.
 
 ---
 
@@ -16,7 +16,7 @@ description: "Persistent SQLite-backed knowledge graph for Claude Code \u2014 su
 In-house persistent knowledge graph. SQLite-backed at `artifacts/memory/knowledge_graph.sqlite`. Survives legacy editor restarts.
 
 **Sibling skills:** `writeback-discipline` (when/what to write), `ledger-consulter-memory-recall` (recall pattern)
-**Doctrine:** `.claude/rules/agents-memory-lifecycle.md`, `.claude/rules/memory-management.md`
+**Doctrine:** `.codex/rules/agents-memory-lifecycle.md`, `.codex/rules/memory-management.md`
 
 ## When To Use This MCP
 

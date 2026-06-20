@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\plan-update-enforcement-template-fix-e7a3c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\plan-update-enforcement-template-fix-e7a3c1.md'
 original_relative_path: '_archive\\2026-05\\plan-update-enforcement-template-fix-e7a3c1.md'
 source_sha256: cac08b2a0193854daa1cd67d75b056644a93ea0fa6986dcd10746cb649944e5d
 recovered_status: LEGACY_EXISTING

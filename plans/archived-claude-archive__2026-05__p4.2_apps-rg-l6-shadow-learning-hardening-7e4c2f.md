@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p4.2_apps-rg-l6-shadow-learning-hardening-7e4c2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p4.2_apps-rg-l6-shadow-learning-hardening-7e4c2f.md'
 original_relative_path: '_archive\\2026-05\\p4.2_apps-rg-l6-shadow-learning-hardening-7e4c2f.md'
 source_sha256: ff802b88b1a807f45d3e10a01b5fc998f41cc7b347d204efa9f6da6189022417
 recovered_status: LEGACY_EXISTING

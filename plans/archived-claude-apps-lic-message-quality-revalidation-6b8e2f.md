@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-message-quality-revalidation-6b8e2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-message-quality-revalidation-6b8e2f.md'
 original_relative_path: 'apps-lic-message-quality-revalidation-6b8e2f.md'
 source_sha256: c50c4f3d43da6de7dd0d6ce9459bf301753584f11e16a71276ecd29c720f6923
 recovered_status: LEGACY_EXISTING

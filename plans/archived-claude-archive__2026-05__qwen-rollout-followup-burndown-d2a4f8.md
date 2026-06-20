@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\qwen-rollout-followup-burndown-d2a4f8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\qwen-rollout-followup-burndown-d2a4f8.md'
 original_relative_path: '_archive\\2026-05\\qwen-rollout-followup-burndown-d2a4f8.md'
 source_sha256: 590b62826c8091b5eea69c7456087afadf7ddd902a2f1190017fa019040cfbed
 recovered_status: LEGACY_EXISTING

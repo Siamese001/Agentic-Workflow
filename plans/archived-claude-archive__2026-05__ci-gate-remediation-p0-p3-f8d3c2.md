@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ci-gate-remediation-p0-p3-f8d3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ci-gate-remediation-p0-p3-f8d3c2.md'
 original_relative_path: '_archive\\2026-05\\ci-gate-remediation-p0-p3-f8d3c2.md'
 source_sha256: d9fdb582092ece88d9f9e3fc45c41e17bd3f89474a22b1f6c354a126eefdcc24
 recovered_status: LEGACY_EXISTING

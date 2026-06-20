@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-gate-coverage-hardening-7e3f1a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-gate-coverage-hardening-7e3f1a.md'
 original_relative_path: '_archive\\2026-05\\runtime-gate-coverage-hardening-7e3f1a.md'
 source_sha256: 70968f22996adf8d9650068f82bc1fe8211b73515eb463eec8adcd37bf0bfa1d
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\infra-wiring-scan-remediation-927628.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\infra-wiring-scan-remediation-927628.md'
 original_relative_path: '_archive\\2026-05\\infra-wiring-scan-remediation-927628.md'
 source_sha256: f64aaa9ea88d12f6eee20c553e086634880481026d5edccd5f0bbacf496e8e9b
 recovered_status: LEGACY_EXISTING

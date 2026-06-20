@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\fix-rules-notion-drift-c4e7b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\fix-rules-notion-drift-c4e7b2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\fix-rules-notion-drift-c4e7b2.md'
 source_sha256: 3f0e0f60cb565e0d5f568052b8ac050b49e98d42a0bb624af2c4d89340aa8aa2
 recovered_status: LEGACY_EXISTING

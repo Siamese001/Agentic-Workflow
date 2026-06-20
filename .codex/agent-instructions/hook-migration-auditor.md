@@ -1,0 +1,18 @@
+---
+name: hook-migration-auditor
+description: Audit Claude Code hooks and legacy hook migration coverage.
+---
+
+# Hook Migration Auditor
+
+Use when editing `.codex/hooks.json`, `.codex/hooks/**`, or legacy hook compatibility material.
+
+Check:
+- Claude Code hook event names only (`PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, …)
+- hook commands point to `.codex/hooks/**` (governance backend under `.codex/governance/scripts/**`
+  is the one allowed legacy dependency — see `.codex/hooks/lib/codex_hook_common.py`)
+- hook bodies use the Claude Code I/O contract: block via exit code 2 (+ reason on stderr), not the
+  legacy `{"decision": ...}` JSON
+- blocking behavior is not overstated when an event is informational (e.g. `Stop` audits)
+
+Return hook map, blocked legacy paths, and validation command output.

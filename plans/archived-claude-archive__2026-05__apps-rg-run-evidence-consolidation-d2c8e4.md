@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-run-evidence-consolidation-d2c8e4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-run-evidence-consolidation-d2c8e4.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-run-evidence-consolidation-d2c8e4.md'
 source_sha256: 6edde1b4e67042b4c58c239b24dea9f37d5479a1b2da36ec2e987cf5cf9c139b
 recovered_status: LEGACY_EXISTING

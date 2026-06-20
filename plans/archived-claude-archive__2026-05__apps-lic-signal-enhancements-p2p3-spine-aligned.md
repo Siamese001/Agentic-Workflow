@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-signal-enhancements-p2p3-spine-aligned.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-signal-enhancements-p2p3-spine-aligned.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-signal-enhancements-p2p3-spine-aligned.md'
 source_sha256: e0f44d43eca933cc89cf5b1f8b968f14d2405da236cba857b45a4947709b65a0
 recovered_status: LEGACY_EXISTING

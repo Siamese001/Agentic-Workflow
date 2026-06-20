@@ -9,9 +9,9 @@ time apps_rg runs in a fresh worktree (see project memory
 the primary checkout, never to rebuild them.
 
 This module is the SSOT for that linking. It is consumed by:
-  * ``.claude/hooks/session_start_branch_guard.py`` (auto-link on worktree create),
+  * ``.codex/hooks/session_start_branch_guard.py`` (auto-link on worktree create),
   * ``tools/git/worktree_doctor.py --link`` (repair an existing worktree),
-  * ``.claude/governance/scripts/post_setup_worktree.py`` (bootstrap),
+  * ``.codex/governance/scripts/post_setup_worktree.py`` (bootstrap),
 and exercised directly by ``tests/unit/tools/git/test_worktree_runtime_links.py``.
 
 Design contract:

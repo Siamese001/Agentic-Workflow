@@ -558,8 +558,8 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
             ".mypy.ini",
             ".pre-commit-config.yaml",
             # legacy editor workspace files
-            ".claude/rules",
-            ".claude/rules.bak",
+            ".codex/rules",
+            ".codex/rules.bak",
             ".windsurf.code-workspace",
             ".windsurfignore",
             # Python project files

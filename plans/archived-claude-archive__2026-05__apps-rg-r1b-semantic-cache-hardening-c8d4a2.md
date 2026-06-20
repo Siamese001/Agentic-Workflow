@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-r1b-semantic-cache-hardening-c8d4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-r1b-semantic-cache-hardening-c8d4a2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-r1b-semantic-cache-hardening-c8d4a2.md'
 source_sha256: be4eba1147d941253d6b6513ff45cf1bb0b9aa7a7db87bb7eab62c47208ef401
 recovered_status: LEGACY_EXISTING

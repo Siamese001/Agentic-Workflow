@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-quarantine-gap-remediation-8f405c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-quarantine-gap-remediation-8f405c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-quarantine-gap-remediation-8f405c.md'
 source_sha256: 08af3b349de53ba131e8ef76c76b20d05798773ceddd7d6cb92d49e689f7a9c4
 recovered_status: LEGACY_EXISTING

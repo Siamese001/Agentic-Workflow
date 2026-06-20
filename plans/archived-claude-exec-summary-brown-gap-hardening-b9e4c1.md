@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-brown-gap-hardening-b9e4c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-brown-gap-hardening-b9e4c1.md'
 original_relative_path: 'exec-summary-brown-gap-hardening-b9e4c1.md'
 source_sha256: e18b933fd70bd290dfe50b02eed3db06f36b2668abe988b500119c0027cef75d
 recovered_status: LEGACY_EXISTING

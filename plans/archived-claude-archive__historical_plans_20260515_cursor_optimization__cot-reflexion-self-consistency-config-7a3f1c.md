@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\cot-reflexion-self-consistency-config-7a3f1c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\cot-reflexion-self-consistency-config-7a3f1c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\cot-reflexion-self-consistency-config-7a3f1c.md'
 source_sha256: d1a229ee4a567c47c85f42a8779f7473aae0d1592fe181623823523a744e988c
 recovered_status: LEGACY_EXISTING

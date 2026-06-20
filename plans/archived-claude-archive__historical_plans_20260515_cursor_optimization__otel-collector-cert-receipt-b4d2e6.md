@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\otel-collector-cert-receipt-b4d2e6.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\otel-collector-cert-receipt-b4d2e6.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\otel-collector-cert-receipt-b4d2e6.md'
 source_sha256: 50b4a4d531fb121e8f756a4d3d01ce4880982a3b07518557615565effa429628
 recovered_status: LEGACY_EXISTING

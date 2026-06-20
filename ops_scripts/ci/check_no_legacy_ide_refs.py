@@ -3,9 +3,9 @@
 
 Two checks:
   1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy legacy editor tree
-     was relocated to `.claude/` (engine -> .claude/governance/scripts, plans ->
-     .claude/plans, state/schemas/templates -> .claude/, rules/skills/commands/agents
-     are the .claude SSOT). Historical copies live read-only under docs/archive/cursor/.
+     was relocated to `.codex/` (engine -> .codex/governance/scripts, plans ->
+     .codex/plans, state/schemas/templates -> .codex/, rules/skills/commands/agents
+     are the .codex SSOT). Historical copies live read-only under docs/archive/cursor/.
   2. ACTIVE PATH USE: no live code/config may CONSTRUCT a repo-local `.cursor/`
      filesystem path (Path(".cursor/..."), open(".cursor/..."), `/ ".cursor"`,
      Join-Path ... ".cursor", YAML workflow paths, etc.).
@@ -32,8 +32,8 @@ ACTIVE_GLOBS = (
     "ops_scripts",
     "tools",
     "agentic_core",
-    ".claude/governance",
-    ".claude/hooks",
+    ".codex/governance",
+    ".codex/hooks",
 )
 ACTIVE_APP_GLOB = "apps_*"
 ACTIVE_EXTS = {".py", ".ps1", ".yml", ".yaml"}
@@ -46,8 +46,8 @@ DENYLIST_FILES = {
     "ops_scripts/maintenance/rewrite_legacy_refs.py",
     "ops_scripts/maintenance/rewrite_cascade_refs.py",
     "ops_scripts/ci/governance_w2_dedupe_report.py",  # historical cursor-era report emitter
-    ".claude/governance/scripts/generate_rules_index.py",
-    ".claude/governance/scripts/sync_mcp_config.py",  # obsolete MCP-mirror sync (mirror retired)
+    ".codex/governance/scripts/generate_rules_index.py",
+    ".codex/governance/scripts/sync_mcp_config.py",  # obsolete MCP-mirror sync (mirror retired)
     "tools/governance_legacy/verify_author_gate_wiring.py",
 }
 

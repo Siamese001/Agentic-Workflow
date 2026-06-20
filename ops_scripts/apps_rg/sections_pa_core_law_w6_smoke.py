@@ -192,7 +192,7 @@ def _write_reports(payload: dict[str, Any], ts: str) -> tuple[Path, Path]:
         f"**Generated:** {payload['generated_at_utc']}",
         f"**STATUS:** {payload['status']}",
         "",
-        f"**Plan:** [sections-pa-core-law-rollout-c3a8f1.md](.claude/plans/sections-pa-core-law-rollout-c3a8f1.md)",
+        f"**Plan:** [sections-pa-core-law-rollout-c3a8f1.md](.codex/plans/sections-pa-core-law-rollout-c3a8f1.md)",
         "",
         "## Targeting",
         "",

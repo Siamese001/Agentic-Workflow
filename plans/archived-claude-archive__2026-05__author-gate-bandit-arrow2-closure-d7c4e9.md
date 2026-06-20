@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-bandit-arrow2-closure-d7c4e9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-bandit-arrow2-closure-d7c4e9.md'
 original_relative_path: '_archive\\2026-05\\author-gate-bandit-arrow2-closure-d7c4e9.md'
 source_sha256: 4d48dacb66f055a7ff021472e90a4c1959b818393cbcc9e8b74eb7b739cb8eb6
 recovered_status: LEGACY_EXISTING

@@ -156,6 +156,6 @@ Before editing any `agentic_core/` file:
 ## Related
 
 - Root `AGENTS.md` — Architecture law
-- `.claude/rules/agentic-core-static.md` — Always-on guidance
-- `.claude/rules/agentic-core-glob-lock.md` — Editing restrictions
+- `.codex/rules/agentic-core-static.md` — Always-on guidance
+- `.codex/rules/agentic-core-glob-lock.md` — Editing restrictions
 - `apps_lic/AGENTS.md`, `apps_rg/AGENTS.md`, etc. — App customization rules

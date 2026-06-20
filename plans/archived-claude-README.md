@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\README.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\README.md'
 original_relative_path: 'README.md'
 source_sha256: b3255d3af1af0c2d3c32d183c11050266b1c73ff45d761416513be843457f1cd
 recovered_status: LEGACY_EXISTING

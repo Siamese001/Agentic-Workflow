@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\apps-rg-entrypoint-convergence-e7f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\apps-rg-entrypoint-convergence-e7f3c2.md'
 original_relative_path: '_archive\\apps-rg-entrypoint-convergence-e7f3c2.md'
 source_sha256: c444b4046011773a358b85b8c6f8f1578be2962315c24a6f0935b4d1032b440d
 recovered_status: LEGACY_EXISTING

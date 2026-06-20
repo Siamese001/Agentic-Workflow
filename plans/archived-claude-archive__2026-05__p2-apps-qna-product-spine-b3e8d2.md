@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p2-apps-qna-product-spine-b3e8d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p2-apps-qna-product-spine-b3e8d2.md'
 original_relative_path: '_archive\\2026-05\\p2-apps-qna-product-spine-b3e8d2.md'
 source_sha256: b5fcd0ab6208051cd6120fcfc1ce17b7d2ea0d6d87446c034bf8a0c9d52a5af3
 recovered_status: LEGACY_EXISTING

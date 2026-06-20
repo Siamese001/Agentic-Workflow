@@ -1,6 +1,6 @@
 # Graph Skills Quality — Operator Guide (W9)
 
-> **Plan SSOT:** [.claude/plans/graph-skills-quality-enhancement-c4e8a1.md](../../.claude/plans/graph-skills-quality-enhancement-c4e8a1.md)  
+> **Plan SSOT:** [.codex/plans/graph-skills-quality-enhancement-c4e8a1.md](../../.codex/plans/graph-skills-quality-enhancement-c4e8a1.md)
 > **Related:** [graph_skills_graph_v2_rollback.md](graph_skills_graph_v2_rollback.md) · [executive_summary_operator_guide.md](executive_summary_operator_guide.md)
 
 This guide is the **canonical CLI surface** for graph-skills quality proof (W0–W10). Use these commands for product behavior proof — not ad-hoc orchestration helpers.

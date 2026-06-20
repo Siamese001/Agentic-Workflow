@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\c0-policy-rectification-deferred-f7b2a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\c0-policy-rectification-deferred-f7b2a9.md'
 original_relative_path: '_archive\\2026-05\\c0-policy-rectification-deferred-f7b2a9.md'
 source_sha256: c4f6f5101aa5cc71602cc6d2e3b203b22714092a51f39821c857212a54828951
 recovered_status: LEGACY_EXISTING

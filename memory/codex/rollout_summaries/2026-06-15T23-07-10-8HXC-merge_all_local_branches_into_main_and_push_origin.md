@@ -58,15 +58,15 @@ Failures and how to do differently:
 
 Reusable knowledge:
 - The preservation branch’s normal merge conflict set is a strong signal that it is archival, not an active feature branch.
-- Conflict files clustered in generated and governance-owned surfaces: `.claude/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, and `tools/git/*`.
+- Conflict files clustered in generated and governance-owned surfaces: `.codex/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, and `tools/git/*`.
 - `git merge -s ours --no-edit codex/preserve-local-main-20260614` produced a merge commit with no tree diff against the current first parent, which is the right pattern when the goal is branch containment rather than content replay.
 
 References:
 - Remaining unmerged branch before archival merge: `codex/preserve-local-main-20260614`
 - Normal merge failure snippet: `Automatic merge failed; fix conflicts and then commit the result.`
 - Conflict-heavy files included:
-  - `.claude/hooks/prune_merged_chat_worktrees.py`
-  - `.claude/hooks/session_start_branch_guard.py`
+  - `.codex/hooks/prune_merged_chat_worktrees.py`
+  - `.codex/hooks/session_start_branch_guard.py`
   - `docs/reports/adg/adg_bcg_executive_summary_latest.{json,md,yaml}`
   - `docs/reports/adg/adg_burndown_report.md`
   - `docs/reports/adg/adg_review_template_latest.{json,yaml}`

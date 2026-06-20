@@ -14,8 +14,8 @@
     "request": "Add workspace enforcement so Codex uses the patch-fox avatar, wire the guard into hooks, and document the enforcement surface.",
     "plan_id": "avatar-enforcement-patchfox-20260618",
     "files_changed": [
-      ".claude/hooks/selected_avatar_guard.py",
-      ".claude/settings.json",
+      ".codex/hooks/selected_avatar_guard.py",
+      ".codex/hooks.json",
       "docs/codex-primary-execution.md",
       "C:/Users/amita/.codex/config.toml"
     ]
@@ -24,7 +24,7 @@
     "status": "PASS",
     "commands": [
       {
-        "command": "python -m py_compile .claude/hooks/selected_avatar_guard.py",
+        "command": "python -m py_compile .codex/hooks/selected_avatar_guard.py",
         "cwd": "C:/Git/Agentic-Workflow-FRESH",
         "exit_code": 0,
         "status": "PASS"

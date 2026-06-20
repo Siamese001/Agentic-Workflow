@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l6-doctrinal-alignment-noninvasive-b9d3f5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l6-doctrinal-alignment-noninvasive-b9d3f5.md'
 original_relative_path: '_archive\\2026-05\\l6-doctrinal-alignment-noninvasive-b9d3f5.md'
 source_sha256: b2346553870fa3f19460914e3edc8c9320794b9afb5ae244c6a203616334e5a9
 recovered_status: LEGACY_EXISTING

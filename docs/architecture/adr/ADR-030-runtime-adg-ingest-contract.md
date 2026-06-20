@@ -5,11 +5,11 @@
 - **Deciders**: Codex (paired with user)
 - **Related**:
   - Constitutional §22 (graph-layer evidence)
-  - `@c:/Git/Agentic-Workflow/.claude/rules/adg-canonical-invariants.md` §8 (static-vs-runtime ADG)
+  - `@c:/Git/Agentic-Workflow/.codex/rules/adg-canonical-invariants.md` §8 (static-vs-runtime ADG)
   - ADR-025 (unified heal_router OTEL schema)
   - ADR-026 (consensus validator governance)
   - ADR-027 (OTel Anthropic alignment)
-- **Plan**: `@c:/Git/Agentic-Workflow/.claude/plans/otel-runtime-adg-ingest-7a3f12.md`
+- **Plan**: `@c:/Git/Agentic-Workflow/.codex/plans/otel-runtime-adg-ingest-7a3f12.md`
 - **Implementation commits**: `1f20f41f26` (W1), `53bb12a38c` (W2), `b94a900db0` (W3), `7390b74899` (W4)
 
 ## Context

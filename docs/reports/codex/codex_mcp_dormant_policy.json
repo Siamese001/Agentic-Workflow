@@ -5,8 +5,8 @@
   "scope": "dormant/re-add MCP server parity for Codex",
   "sources": {
     "live_mcp_ssot": ".mcp.json",
-    "dormant_readd_ssot": ".claude/mcp-notes.md",
-    "procedural_ssot": ".claude/skills/mcp-integration/sections/*.md",
+    "dormant_readd_ssot": ".codex/mcp-notes.md",
+    "procedural_ssot": ".codex/skills/mcp-integration/sections/*.md",
     "local_env_file": "C:/Users/amita/env/.env"
   },
   "policy": {
@@ -55,7 +55,7 @@
       "server_id": "redis",
       "claude_status": "dormant_readd",
       "mcp_json_status": "absent",
-      "readd_ssot": ".claude/mcp-notes.md redis block",
+      "readd_ssot": ".codex/mcp-notes.md redis block",
       "current_storage": [
         "ADG_REDIS_URL environment variable for ADG/memory",
         "REDIS_HOST/REDIS_PORT/REDIS_DB in dormant re-add block",
@@ -79,7 +79,7 @@
       "server_id": "tavily",
       "claude_status": "dormant_readd",
       "mcp_json_status": "absent",
-      "readd_ssot": ".claude/mcp-notes.md tavily block",
+      "readd_ssot": ".codex/mcp-notes.md tavily block",
       "current_storage": [
         "TAVILY_API_KEY in Windows/local env",
         "TAVILY_API_KEY in C:/Users/amita/env/.env"
@@ -94,13 +94,13 @@
         "npx -y tavily-mcp"
       ],
       "mutation_policy": "Read/search/extract only.",
-      "codex_policy": "Do not claim raw tavily MCP availability unless re-added from .claude/mcp-notes.md."
+      "codex_policy": "Do not claim raw tavily MCP availability unless re-added from .codex/mcp-notes.md."
     },
     {
       "server_id": "pytest_mcp",
       "claude_status": "dormant_readd",
       "mcp_json_status": "absent",
-      "readd_ssot": ".claude/mcp-notes.md pytest_mcp block",
+      "readd_ssot": ".codex/mcp-notes.md pytest_mcp block",
       "current_storage": [
         "tools/mcp/pytest_server.py",
         "repo pytest policy"
@@ -120,7 +120,7 @@
       "server_id": "otel_mcp",
       "claude_status": "dormant_on_demand",
       "mcp_json_status": "absent",
-      "readd_ssot": ".claude/mcp-notes.md otel_mcp block",
+      "readd_ssot": ".codex/mcp-notes.md otel_mcp block",
       "current_storage": [
         "tools/otel/otel_mcp_server.py",
         "OTEL_MCP_RUNTIME_ADG_DIR re-add env"

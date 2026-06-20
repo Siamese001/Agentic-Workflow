@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-quarantine-ssot-fanin-delete-c7e4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-quarantine-ssot-fanin-delete-c7e4a1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-quarantine-ssot-fanin-delete-c7e4a1.md'
 source_sha256: 09630f311e1e8427f9f87d5d7dfcf5e9748872de238869ece0f03ce5ea3065c5
 recovered_status: LEGACY_EXISTING

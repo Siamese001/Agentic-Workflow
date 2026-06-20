@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-canonical-wireup-c8a4f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-canonical-wireup-c8a4f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-canonical-wireup-c8a4f2.md'
 source_sha256: c9e4358753ee9b84cb88b2da3ab607a5bf13a67ca42beb84b93fd9a75f7ec0a4
 recovered_status: LEGACY_EXISTING

@@ -134,7 +134,7 @@ Failures and how to do differently:
 References:
 - Remaining local branch before the archival step: `codex/preserve-local-main-20260614`
 - Normal merge failure snippet: `Automatic merge failed; fix conflicts and then commit the result.`
-- Conflict clusters: `.claude/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, `tools/git/*`
+- Conflict clusters: `.codex/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, `tools/git/*`
 - Archive merge commit: `4ca3997164` (`Merge branch 'codex/preserve-local-main-20260614'`)
 - Final local/remote confirmation: `git rev-parse --short HEAD` -> `4ca3997164`; `git ls-remote origin refs/heads/main` -> `4ca3997164`
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\fortknox-100pct-static-runtime-gap-9a3d4f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\fortknox-100pct-static-runtime-gap-9a3d4f.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\fortknox-100pct-static-runtime-gap-9a3d4f.md'
 source_sha256: 07fa24d81a41ef18d49dcdb434f1ddcb42103c485d1d662b9998ae13a3120c11
 recovered_status: LEGACY_EXISTING

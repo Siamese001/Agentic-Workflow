@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9.md'
 original_relative_path: '_archive\\2026-04\\apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9.md'
 source_sha256: ab789b9fc27f4d42a07d7e3fd32400e2ca9f1677cb8c0bc724396d3a7504e400
 recovered_status: LEGACY_EXISTING

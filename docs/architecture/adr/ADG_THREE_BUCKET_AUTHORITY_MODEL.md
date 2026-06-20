@@ -523,7 +523,7 @@ registry buckets are real — but populating them is W2/W3 work.
 
 ## References
 
-* Plan: `.claude/plans/adg-three-bucket-authority-model-7e2a91.md`
+* Plan: `.codex/plans/adg-three-bucket-authority-model-7e2a91.md`
 * SSOT: `agentic_core/adg/artifact/edge_authority.py`
 * Schema: `agentic_core/adg/artifact/ArtifactPaths.py`, `multi_writer.py`
 * Final-stage backfill: `tools/generate/generate_full_adg.py`

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-underwriting-ai-deferred-scope-e8b2f4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-underwriting-ai-deferred-scope-e8b2f4.md'
 original_relative_path: '_archive\\2026-05\\apps-underwriting-ai-deferred-scope-e8b2f4.md'
 source_sha256: 758d964fd2f6932b2bdb3283191a1675c7d61e35f5e4e88d3fe183b5a67ce489
 recovered_status: LEGACY_EXISTING

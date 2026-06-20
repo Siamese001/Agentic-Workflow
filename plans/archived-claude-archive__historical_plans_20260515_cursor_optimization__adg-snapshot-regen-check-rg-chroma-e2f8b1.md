@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-snapshot-regen-check-rg-chroma-e2f8b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-snapshot-regen-check-rg-chroma-e2f8b1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-snapshot-regen-check-rg-chroma-e2f8b1.md'
 source_sha256: 737ea59c8f1c4e8277b59780b5a811f0882036d5b125a8353a943efe3f3fea32
 recovered_status: LEGACY_EXISTING

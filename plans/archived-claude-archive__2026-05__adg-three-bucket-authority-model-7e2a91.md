@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-three-bucket-authority-model-7e2a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-three-bucket-authority-model-7e2a91.md'
 original_relative_path: '_archive\\2026-05\\adg-three-bucket-authority-model-7e2a91.md'
 source_sha256: 81361a2ad559dbc0953344da7547e1e619102d75ea8097bf05e28ebe24e789c6
 recovered_status: LEGACY_EXISTING

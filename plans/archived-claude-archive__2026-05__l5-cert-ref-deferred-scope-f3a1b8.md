@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l5-cert-ref-deferred-scope-f3a1b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l5-cert-ref-deferred-scope-f3a1b8.md'
 original_relative_path: '_archive\\2026-05\\l5-cert-ref-deferred-scope-f3a1b8.md'
 source_sha256: 66e8ad3bdba8cd9b499c7a241639875510dd6e5c58514d9134809ab0014d16f6
 recovered_status: LEGACY_EXISTING

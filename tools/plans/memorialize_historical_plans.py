@@ -25,7 +25,7 @@ class SourceRoot:
 
 
 SOURCE_ROOTS = [
-    SourceRoot("claude", "claude_legacy_plans", REPO_ROOT / ".claude" / "plans"),
+    SourceRoot("claude", "claude_legacy_plans", REPO_ROOT / ".codex" / "plans"),
     SourceRoot("docs-reports", "docs_reports_plans", REPO_ROOT / "docs" / "reports" / "plans"),
     SourceRoot("windsurf", "recovered_windsurf_plans", RECOVERED_ROOT / "windsurf_plans"),
     SourceRoot("windsurf-docs", "recovered_docs_reports_plans", RECOVERED_ROOT / "docs_reports_plans"),
@@ -145,7 +145,7 @@ def main() -> int:
 
             manifest_key = str(relative_path).replace("\\", "/")
             if source.key == "windsurf":
-                recovered_key = f".claude/plans/{manifest_key}"
+                recovered_key = f".codex/plans/{manifest_key}"
             elif source.key == "windsurf-docs":
                 recovered_key = f"docs/reports/plans/{manifest_key}"
             else:

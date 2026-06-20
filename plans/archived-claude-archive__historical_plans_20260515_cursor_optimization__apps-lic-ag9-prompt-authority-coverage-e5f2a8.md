@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag9-prompt-authority-coverage-e5f2a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag9-prompt-authority-coverage-e5f2a8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag9-prompt-authority-coverage-e5f2a8.md'
 source_sha256: 0a8486d483620746ac21d4efd3a8f4677eb6aa61562a9ed7119d7387bec5f415
 recovered_status: LEGACY_EXISTING

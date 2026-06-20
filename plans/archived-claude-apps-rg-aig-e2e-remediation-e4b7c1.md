@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-rg-aig-e2e-remediation-e4b7c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-rg-aig-e2e-remediation-e4b7c1.md'
 original_relative_path: 'apps-rg-aig-e2e-remediation-e4b7c1.md'
 source_sha256: 4c519950d1623034b49a7dd93d533f07c5d1400a86f9a44216eb4a6ec147d387
 recovered_status: LEGACY_EXISTING

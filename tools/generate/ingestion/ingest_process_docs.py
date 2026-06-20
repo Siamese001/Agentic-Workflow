@@ -18,7 +18,7 @@ Source mapping — directories rolled into `process_docs`:
   docs/monitoring/      → monitoring (observability/monitoring docs)
   docs/technical/       → technical (technical notes)
   docs/project/         → project (project-level docs)
-  .claude/rules/      → windsurf_rules (constitutional/model rules)
+  .codex/rules/      → windsurf_rules (constitutional/model rules)
   apps_*/README.md      → apps (per-app README)
   apps_*/TECHNICAL_SPEC.md, TEST_STRATEGY.md, SVP_ENGINEERING_REVIEW.md → apps
 
@@ -95,7 +95,7 @@ SCAN_DIRS: list[tuple[str, str]] = [
     ("docs/monitoring", "monitoring"),
     ("docs/technical", "technical"),
     ("docs/project", "project"),
-    (".claude/rules", "rule"),
+    (".codex/rules", "rule"),
 ]
 
 # Per-app named files to include

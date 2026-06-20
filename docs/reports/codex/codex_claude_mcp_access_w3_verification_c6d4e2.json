@@ -60,7 +60,7 @@
     "open_items_for_w4": [
       "Run callable proof calls where Codex tools are exposed.",
       "Record blocked/degraded proof rows where tools remain absent or transport-closed.",
-      "Update Codex backup adapter documentation with the final access procedure."
+      "Update Codex primary adapter documentation with the final access procedure."
     ]
   }
 }

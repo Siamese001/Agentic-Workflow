@@ -619,7 +619,7 @@ def _main_inner() -> int:
         "# Sections PA Core-Law Rollout — W0 Baseline",
         "",
         f"**Generated:** {report_json['timestamp']} (UTC)  ",
-        f"**Plan:** [sections-pa-core-law-rollout-c3a8f1.md](../../.claude/plans/sections-pa-core-law-rollout-c3a8f1.md)  ",
+        f"**Plan:** [sections-pa-core-law-rollout-c3a8f1.md](../../.codex/plans/sections-pa-core-law-rollout-c3a8f1.md)  ",
         f"**Targeting:** {TARGET_COMPANY} / {TARGET_ROLE}",
         "",
         "## Compiled prompt fingerprints (Brown JD + briefing)",

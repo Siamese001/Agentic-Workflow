@@ -129,6 +129,6 @@ Audit trail: `artifacts/windsurf/mcp_lint_audit.jsonl` (legacy editor writes).
 ## References
 
 - Filesystem operator guide: `docs/guides/filesystem_mcp_operations.md`
-- MCP config SSOT rule: `.claude/rules/mcp-config-ssot.mdc`
+- MCP config SSOT rule: `.codex/rules/mcp-config-ssot.mdc`
 - H0 receipt: `docs/reports/cursor/mcp_scope0_h0_receipt.md`
 - Archive (YAML infra — do not restore): `tools/archive/mcp_yaml_infra_w5.2/`

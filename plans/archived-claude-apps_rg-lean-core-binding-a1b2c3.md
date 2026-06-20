@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps_rg-lean-core-binding-a1b2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps_rg-lean-core-binding-a1b2c3.md'
 original_relative_path: 'apps_rg-lean-core-binding-a1b2c3.md'
 source_sha256: 22dec8361a801d668f9ca0bc0eab8ec3282d21be7c594580e51b2953d5303035
 recovered_status: LEGACY_EXISTING

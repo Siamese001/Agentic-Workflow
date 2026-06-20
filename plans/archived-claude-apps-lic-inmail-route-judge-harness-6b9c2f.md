@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-inmail-route-judge-harness-6b9c2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-inmail-route-judge-harness-6b9c2f.md'
 original_relative_path: 'apps-lic-inmail-route-judge-harness-6b9c2f.md'
 source_sha256: 381d3a107b9bac66729a9b2617bbaac2b021531c976e327df332d04836c06cbf
 recovered_status: LEGACY_EXISTING

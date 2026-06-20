@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\final-resume-aggregation-product-closeout-c8f4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\final-resume-aggregation-product-closeout-c8f4e2.md'
 original_relative_path: '_archive\\2026-05\\final-resume-aggregation-product-closeout-c8f4e2.md'
 source_sha256: ba527e7d01d35a38868b9d97108c64ea7c49667a8c00652d4cbac8b6cb52069c
 recovered_status: LEGACY_EXISTING

@@ -28,7 +28,7 @@ LAST_UPDATED: 2026-06-08
 > No legacy-tree files were moved or deleted in L1. Lifecycle start required the documented
 > `PLAN_REGISTRATION_BYPASS=1` because `tools/plan_lifecycle/wave_execution_state.py` still imports
 > the stale `_legacy_windsurf/_plan_registration.py`, which reads `.windsurf/state` instead of
-> `.claude/state`; fixing that importer is L2 work.
+> `.codex/state`; fixing that importer is L2 work.
 
 > **PLAN COMPLETE 2026-06-08 (IDE_archive).** W6 verified that the deleted legacy trees and `.cursor/`
 > directory are absent on disk and from tracked files. Active stale hook-name references were repointed
@@ -38,7 +38,7 @@ LAST_UPDATED: 2026-06-08
 
 > Created 2026-06-07 as the **deferred tail** of the decommission. The naming-rename plan
 > [cursor-naming-rename-w5-b4f1a9](cursor-naming-rename-w5-b4f1a9.md) de-branded the live surface
-> (`post_agent_*`, `artifacts/governance`, `.claude/state` ledger, `tools/plan_lifecycle`) and
+> (`post_agent_*`, `artifacts/governance`, `.codex/state` ledger, `tools/plan_lifecycle`) and
 > **explicitly deferred** the two frozen legacy trees because they still contain **live-imported
 > helper modules**. This plan migrates those helpers to neutral homes, then deletes the dead bulk.
 >
@@ -49,8 +49,8 @@ LAST_UPDATED: 2026-06-08
 ## Context (SCQA)
 
 - **Situation.** Two frozen trees remain after the surface rename:
-  `.claude/governance/scripts/_legacy_windsurf/` (**331 files**) and
-  `.claude/governance/scripts/_legacy_cursor/` (**25 files**). They were retained because removing
+  `.codex/governance/scripts/_legacy_windsurf/` (**331 files**) and
+  `.codex/governance/scripts/_legacy_cursor/` (**25 files**). They were retained because removing
   them would break live consumers.
 - **Complication.** Each tree is a **mix**:
   1. **Live-helper subset** — shared modules imported at runtime by current (post-rename) code:
@@ -73,7 +73,7 @@ LAST_UPDATED: 2026-06-08
   `static_scanner.py` (3×), `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py`. The
   `.pre-commit-config.yaml` `T6a no-active-windsurf-authoring` gate guards the tree. The
   `_legacy_windsurf/_notion_plans_status_check.py` carries a **known dead-path import bug** (loads a
-  non-existent `.claude/governance/.cursor/scripts/_notion_plans_status_check.py`, fail-open) — fix
+  non-existent `.codex/governance/.cursor/scripts/_notion_plans_status_check.py`, fail-open) — fix
   on migration.
 - **Question.** How to delete both legacy trees without breaking the live governance chain, ledger
   capture, Notion tooling, ADG static scanner, or CI gates?
@@ -88,9 +88,9 @@ LAST_UPDATED: 2026-06-08
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1/L1 | P1.1–P1.3 | Inventory + classify (live-helper vs dead-archive) + rollback tag | ~10k | Actual tree differs from stale plan estimate | ✅ Done (2026-06-08) | Frozen manifest written; rollback tag set; no legacy-tree move/delete |
-| W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Neutral active helper copies already exist at `.claude/governance/scripts/` | ✅ Done (2026-06-08) | W1 direct-importer paths retargeted to `.claude/governance/scripts/`; lifecycle and Notion import smoke green; no legacy-tree move/delete |
+| W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Neutral active helper copies already exist at `.codex/governance/scripts/` | ✅ Done (2026-06-08) | W1 direct-importer paths retargeted to `.codex/governance/scripts/`; lifecycle and Notion import smoke green; no legacy-tree move/delete |
 | W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ✅ Done (2026-06-08) | Live dispatch fires; heartbeat fresh; wired payload gate scans 17 active hooks; lifecycle/ledger/import smokes green |
-| W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | Neutral `.claude/governance/scripts` SSOT already exists | ✅ Done (2026-06-08) | `GOVERNANCE_SCRIPTS_DIR` added; deprecated alias repointed; static_scanner + 2 gates updated; ADG scan-root parity green |
+| W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | Neutral `.codex/governance/scripts` SSOT already exists | ✅ Done (2026-06-08) | `GOVERNANCE_SCRIPTS_DIR` added; deprecated alias repointed; static_scanner + 2 gates updated; ADG scan-root parity green |
 | W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ✅ Done (2026-06-08) | `_legacy_windsurf`/`_legacy_cursor` deleted; active tests/consumers repointed; shell-guard legacy tokens pruned |
 | W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ✅ Done (2026-06-08) | Repo scan allowlisted; `.cursor/` absent on disk/tracked files; plan closed |
 
@@ -101,7 +101,7 @@ LAST_UPDATED: 2026-06-08
 | P1.1 | Rollback tag | git tag | — | ~1k | ✅ Done: `pre-legacy-tree-decommission-9f2c47` |
 | P1.2 | Classify `_legacy_windsurf` (167 on disk) | manifest | Distinguish live-helper from dead `post_cascade_*` archive; trace every importer | ~6k | ✅ Done: 42 LIVE_HELPER / 125 DEAD_ARCHIVE |
 | P1.3 | Classify `_legacy_cursor` (13 on disk) | manifest | heartbeat-latency test + dedup-verify consumer | ~3k | ✅ Done: 0 LIVE_HELPER / 13 DEAD_ARCHIVE |
-| P2.1 | Canonicalize neutral helper home | Active copies under `.claude/governance/scripts/` | Older `_helpers/` wording was stale; root helper copies are newer than legacy tree copies | ~8k | ✅ Done: no duplicate `_helpers/` package created |
+| P2.1 | Canonicalize neutral helper home | Active copies under `.codex/governance/scripts/` | Older `_helpers/` wording was stale; root helper copies are newer than legacy tree copies | ~8k | ✅ Done: no duplicate `_helpers/` package created |
 | P2.2 | Rewrite hook importers | `post_agent_plan_registration_capture.py`, `post_agent_plan_scope_audit.py`, `_post_handlers/*` | HELPER_PATH / W2_MODULE_PATH literals | ~5k | ✅ Done |
 | P2.3 | Rewrite tools importers | `tools/plan_lifecycle/wave_execution_state.py`, `tools/capture/queue_to_ledger.py`, `tools/notion/{wave_lifecycle_writer,_plan_registration_helpers,apply_plan_derived_status,triage_plans_duplicates}.py` | sys.path inserts | ~5k | ✅ Done |
 | P3.1 | Verify | dispatch + gates | Hook support library was missing from clean tree; payload gate still scanned frozen legacy dir | ~6k | ✅ Done: live hook lib restored, dispatch/payload/heartbeat checks green |
@@ -109,7 +109,7 @@ LAST_UPDATED: 2026-06-08
 | P4.2 | Scanner/gate consumers | `static_scanner.py`, `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py` | ADG scan parity (exclusion semantics) | ~4k | ✅ Done: live consumers import neutral constant |
 | P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ✅ Done |
 | P5.2 | Delete `_legacy_cursor` | `_legacy_cursor/**` + consumers | migrate test + dedup-verify first | ~3k | ✅ Done |
-| P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`claude_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ✅ Done |
+| P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`codex_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ✅ Done |
 | P6.1 | Zero-brand verify + close | whole repo, Notion | hand `.cursor/` dir to dec0de | ~5k | ✅ Done |
 
 ## Wave Detail
@@ -126,8 +126,8 @@ LAST_UPDATED: 2026-06-08
 
 ### L2 — Promote live-helper subset
 - **P2.1** Reconciled stale `_helpers/` wording with the clean-PR tree: the neutral active helper
-  home already exists at `.claude/governance/scripts/`, and those copies are newer/correcter than
-  the frozen `_legacy_windsurf` copies (for example `_plan_registration.py` reads `.claude/state`
+  home already exists at `.codex/governance/scripts/`, and those copies are newer/correcter than
+  the frozen `_legacy_windsurf` copies (for example `_plan_registration.py` reads `.codex/state`
   and repo-root `plans/`, while the legacy copy still reads `.windsurf/state`). No duplicate
   `_helpers/` package was created.
 - **P2.2/P2.3** Rewrote every W1 direct importer to the neutral root path (HELPER_PATH literals +
@@ -154,13 +154,13 @@ LAST_UPDATED: 2026-06-08
   smoke; import `tools.notion.wave_lifecycle_writer`; run `check_post_agent_alive` / `check_post_agent_payload`;
   run plan-lifecycle CLI. All green.
 - **Completed 2026-06-08:** W3 found and fixed two live-chain defects before closing:
-  `.claude/hooks/after_agent_governance_dispatch.py` and sibling hooks imported a missing
-  `lib.claude_hook_common` support package, and `check_post_agent_payload.py` still scanned the
+  `.codex/hooks/after_agent_governance_dispatch.py` and sibling hooks imported a missing
+  `lib.codex_hook_common` support package, and `check_post_agent_payload.py` still scanned the
   frozen `_legacy_windsurf` tree. W3 restored the live hook support library under
-  `.claude/hooks/lib/`, repointed hook tests to `.claude/hooks`, made the payload gate scan the wired
+  `.codex/hooks/lib/`, repointed hook tests to `.codex/hooks`, made the payload gate scan the wired
   active chain (17 hooks), and converted active payload readers to `_post_agent_payload`.
   Verification passed: 34 hook tests; `check_post_agent_payload.py --verbose`; dispatch smoke via
-  `.claude/hooks/after_agent_governance_dispatch.py`; `check_post_agent_alive.py`; `queue_to_ledger.py
+  `.codex/hooks/after_agent_governance_dispatch.py`; `check_post_agent_alive.py`; `queue_to_ledger.py
   --dry-run`; `tools.plan_lifecycle.wave_execution_state status`; and import smoke for
   `tools.notion.wave_lifecycle_writer`, `tools.capture.queue_to_ledger`, and the dispatch hook.
   Dispatch still surfaces a non-blocking ADG audit warning (`tool_routing append failed: no such
@@ -172,7 +172,7 @@ LAST_UPDATED: 2026-06-08
 - **P4.2** Update `static_scanner.py` (3×), `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py`.
   Re-run ADG static scan; confirm exclusion-set parity (no new/missing nodes).
 - **Completed 2026-06-08:** The clean tree already had the neutral
-  `.claude/governance/scripts` root, so L4 added `GOVERNANCE_SCRIPTS_DIR` as the active exported
+  `.codex/governance/scripts` root, so L4 added `GOVERNANCE_SCRIPTS_DIR` as the active exported
   SSOT and repointed the deprecated `WINDSURF_SCRIPTS_DIR` alias to it for compatibility. The ADG
   static scanner, `check_hardcoded_exclusions.py`, and `check_terminal_cleanup.py` now consume the
   neutral symbol. The two CI gates also bootstrap their own repo root before importing constants so
@@ -188,17 +188,17 @@ LAST_UPDATED: 2026-06-08
 - **P5.1** `git rm` the DEAD_ARCHIVE files (confirm zero importer). **P5.2** Migrate `_legacy_cursor`
   consumers (test + `governance_dedup_e2e_verify.py`), then `git rm` `_legacy_cursor/`. **P5.3** Retire
   `T6a no-active-windsurf-authoring` (no tree left to guard) or repoint; prune now-dead guard tokens
-  from `claude_hook_common.LEGACY_EXECUTION_TOKENS` once `.windsurf`/legacy refs are gone.
+  from `codex_hook_common.LEGACY_EXECUTION_TOKENS` once `.windsurf`/legacy refs are gone.
 - **Completed 2026-06-08:** Removed all tracked files under
-  `.claude/governance/scripts/_legacy_windsurf/` and
-  `.claude/governance/scripts/_legacy_cursor/`, then verified both directories are absent and
+  `.codex/governance/scripts/_legacy_windsurf/` and
+  `.codex/governance/scripts/_legacy_cursor/`, then verified both directories are absent and
   `git ls-files` returns no entries for either path. Obsolete legacy-layout tests were moved under
   `tests/_archived_obsolete/legacy_tree/`; active tests and tool snapshots were repointed to
-  `.claude/governance/scripts/`, `.claude/templates/`, root `plans/`, or `.claude/plans/` according
+  `.codex/governance/scripts/`, `.codex/templates/`, root `plans/`, or `.codex/plans/` according
   to each live consumer's current SSOT.
 - **P5.3 note:** `T6a no-active-windsurf-authoring` was already absent in the clean PR branch before
   this wave, so W5 verified the absence rather than editing `.pre-commit-config.yaml`. W5 pruned
-  bare `_legacy_windsurf` / `_legacy_cursor` execution tokens from `claude_hook_common` while
+  bare `_legacy_windsurf` / `_legacy_cursor` execution tokens from `codex_hook_common` while
   retaining broader compatibility/history guards that still apply outside this physical tree.
 - **Verification passed:** legacy directories absent; tracked legacy paths absent; active deleted-path
   scan found no `_legacy_windsurf` / `_legacy_cursor` script-tree references outside archived/doc/plan
@@ -221,8 +221,8 @@ LAST_UPDATED: 2026-06-08
 - **Completed 2026-06-08:** W6 evidence is recorded in
   `docs/reports/decommission/legacy_tree_w6_zero_brand_9f2c47.md`. `git ls-files` returned no entries
   for `.cursor`, `.windsurf`, `_legacy_windsurf`, or `_legacy_cursor`, and all four paths are absent on
-  disk in this worktree. Active stale hook-name references in `.claude/templates`, `.claude/skills`,
-  `.claude/rules`, root `AGENTS.md`, active CI helpers, config, and debug utilities were repointed to
+  disk in this worktree. Active stale hook-name references in `.codex/templates`, `.codex/skills`,
+  `.codex/rules`, root `AGENTS.md`, active CI helpers, config, and debug utilities were repointed to
   `post_agent_*` / post-agent wording. The only active targeted residual is
   `check_hook_consolidation.py` retaining `--max-post-cursor-agent` as a compatibility alias for the
   new `--max-post-agent`; broader residuals are historical docs/ADRs, explicit migration tools, or
@@ -256,7 +256,7 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   collision at the new location.
 - **Boundary edit:** L4 touches `agentic_core/path_constants.py` → Author-Gate + receipt; ADG static
   scanner consumes the constant, so re-run the scan and diff node/edge counts.
-- **Self-referential guard:** `before_shell_execution`/`claude_hook_common` still block `.windsurf`/
+- **Self-referential guard:** `before_shell_execution`/`codex_hook_common` still block `.windsurf`/
   `Windsurf` tokens — neutralize for delete waves, prune tokens in L5/P5.3 only after the trees are gone.
 - **Concurrency:** a separate agent has been active in this repo (branch switches, `apps_rg` edits) —
   do each wave as commit+push cycles on an isolated branch; merge (not destructive squash) if main diverges.

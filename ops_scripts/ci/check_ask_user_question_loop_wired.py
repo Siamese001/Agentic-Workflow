@@ -5,7 +5,7 @@ Plan: askq-confidence-meta-learning-loop-c4e7a1 (W3.1).
 
 The loop only learns if three seams are connected:
   1. CAPTURE — a ``PostToolUse`` hook on ``AskUserQuestion`` is registered in
-     ``.claude/settings.json`` and points at ``after_ask_user_question.py``.
+     ``.codex/hooks.json`` and points at ``after_ask_user_question.py``.
   2. The capture SSOT (``post_ask_user_question_capture.py``) and the calibration helper
      (``tools/ledgers/ask_user_question_calibration.py``) exist on disk.
   3. WRITABLE — the ``ask_user_question_decisions`` ledger can be opened/created.
@@ -29,9 +29,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SETTINGS = ROOT / ".claude" / "settings.json"
-CAPTURE_HOOK = ROOT / ".claude" / "hooks" / "after_ask_user_question.py"
-CAPTURE_SSOT = ROOT / ".claude" / "governance" / "scripts" / "post_ask_user_question_capture.py"
+SETTINGS = ROOT / ".codex" / "hooks.json"
+CAPTURE_HOOK = ROOT / ".codex" / "hooks" / "after_ask_user_question.py"
+CAPTURE_SSOT = ROOT / ".codex" / "governance" / "scripts" / "post_ask_user_question_capture.py"
 CALIB_HELPER = ROOT / "tools" / "ledgers" / "ask_user_question_calibration.py"
 
 
@@ -40,7 +40,7 @@ def _fail_closed() -> bool:
 
 
 def _post_hook_registered() -> bool:
-    """True when settings.json has a PostToolUse matcher 'AskUserQuestion' → after_ask_user_question.py."""
+    """True when hooks.json has a PostToolUse matcher 'AskUserQuestion' → after_ask_user_question.py."""
     try:
         data = json.loads(SETTINGS.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -82,7 +82,7 @@ def run_checks() -> list[tuple[str, bool, str]]:
         sys.path.insert(0, str(ROOT))
     return [
         ("post_tool_use_hook_registered", _post_hook_registered(),
-         "settings.json PostToolUse matcher 'AskUserQuestion' -> after_ask_user_question.py"),
+         "hooks.json PostToolUse matcher 'AskUserQuestion' -> after_ask_user_question.py"),
         ("capture_hook_exists", CAPTURE_HOOK.is_file(), str(CAPTURE_HOOK.relative_to(ROOT))),
         ("capture_ssot_exists", CAPTURE_SSOT.is_file(), str(CAPTURE_SSOT.relative_to(ROOT))),
         ("calibration_helper_exists", CALIB_HELPER.is_file(), str(CALIB_HELPER.relative_to(ROOT))),

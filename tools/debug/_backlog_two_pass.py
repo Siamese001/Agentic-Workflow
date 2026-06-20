@@ -22,8 +22,8 @@ ROWS_PATH = ROOT / "artifacts" / "notion" / "open_rows_with_ids.json"
 ADG_PATH = ROOT / "artifacts" / "adg" / "adg_indexed_04242026_0513.sqlite"
 HOOKS_JSON = ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 MCP_CFG = ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
-CONST_RULE = ROOT / ".claude" / "rules" / "constitutional.md"
-RULES_DIR = ROOT / ".claude" / "rules"
+CONST_RULE = ROOT / ".codex" / "rules" / "constitutional.md"
+RULES_DIR = ROOT / ".codex" / "rules"
 
 LAYER_MULT = {
     "L0": 2.0,
@@ -257,7 +257,7 @@ def audit_hook_gate(phase: str, title: str) -> dict:
     candidates = re.findall(r"[a-z_]+(?:_gate|_classifier|_audit|_cleanup|_dispatcher)\b", title_lower)
     found_files = []
     for cand in candidates:
-        for p in (ROOT / ".claude" / "governance" / "scripts").glob(f"*{cand}*.py"):
+        for p in (ROOT / ".codex" / "governance" / "scripts").glob(f"*{cand}*.py"):
             found_files.append(p.name)
     hooks_text = hooks_json_text()
     in_hooks = [f for f in found_files if f in hooks_text]

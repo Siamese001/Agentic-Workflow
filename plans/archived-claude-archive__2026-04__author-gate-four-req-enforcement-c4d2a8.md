@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\author-gate-four-req-enforcement-c4d2a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\author-gate-four-req-enforcement-c4d2a8.md'
 original_relative_path: '_archive\\2026-04\\author-gate-four-req-enforcement-c4d2a8.md'
 source_sha256: 1e0c6b1294f987d74c86b614d2bbdec75e4f56cec28ec8961f4fab034fad7479
 recovered_status: LEGACY_EXISTING

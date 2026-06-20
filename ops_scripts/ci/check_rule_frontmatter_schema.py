@@ -2,8 +2,8 @@
 """
 Rule Frontmatter Schema Validation Gate (RULE-FMT)
 
-Validates that .claude/rules/*.md files have valid YAML frontmatter
-conforming to the canonical schema at .claude/schemas/rule_frontmatter.schema.json.
+Validates that .codex/rules/*.md files have valid YAML frontmatter
+conforming to the canonical schema at .codex/schemas/rule_frontmatter.schema.json.
 
 Exit codes:
     0 = All rules have valid frontmatter (or advisory mode)
@@ -17,7 +17,7 @@ Environment:
 Output:
     artifacts/ci/rule_frontmatter_validation.json
 
-Rule: .claude/schemas/rule_frontmatter.schema.json
+Rule: .codex/schemas/rule_frontmatter.schema.json
 """
 
 from __future__ import annotations
@@ -31,8 +31,8 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RULES_DIR = REPO_ROOT / ".claude" / "rules"
-SCHEMA_PATH = REPO_ROOT / ".claude" / "schemas" / "rule_frontmatter.schema.json"
+RULES_DIR = REPO_ROOT / ".codex" / "rules"
+SCHEMA_PATH = REPO_ROOT / ".codex" / "schemas" / "rule_frontmatter.schema.json"
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "rule_frontmatter_validation.json"
 
 
@@ -226,7 +226,7 @@ def _validate_field(name: str, value: Any, schema: dict[str, Any]) -> list[Viola
 def validate_rule_file(file_path: Path, schema: dict[str, Any]) -> list[Violation]:
     """Validate a single rule file."""
     violations: list[Violation] = []
-    rel_path = f".claude/rules/{file_path.name}"
+    rel_path = f".codex/rules/{file_path.name}"
     
     try:
         content = file_path.read_text(encoding="utf-8")

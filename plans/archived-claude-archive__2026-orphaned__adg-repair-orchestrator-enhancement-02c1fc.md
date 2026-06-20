@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-repair-orchestrator-enhancement-02c1fc.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-repair-orchestrator-enhancement-02c1fc.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-repair-orchestrator-enhancement-02c1fc.md'
 source_sha256: e3b5002f547cef50c70814272aea20b4db22e846bf1eff6886badd434164e221
 recovered_status: LEGACY_EXISTING

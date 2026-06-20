@@ -63,7 +63,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 ## Domain FD-08 — Governance/hook/CI enforcement domain
 
-- Scope: `.claude/settings.json` gate chain, operator workflows, GitHub Actions runtime posture workflows.
+- Scope: `.codex/hooks.json` gate chain, operator workflows, GitHub Actions runtime posture workflows.
 - Typical failures: over-blocking gate, stale gate logic, CI gate regressions.
 - Blast radius: can halt deployment flow or tool execution despite healthy runtime services.
 - Key probes: hook script exit diagnostics, workflow job statuses, gate artifact outputs.

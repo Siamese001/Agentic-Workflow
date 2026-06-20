@@ -192,7 +192,7 @@ P1_W4_CLOSEOUT_FILE_PREFIXES = (
     "tests/_apps_contract/test_career_track_p1_w4_weighted_expansion_contract.py",
     "docs/reports/apps_rg/career_track_p1_w4",
     "docs/reports/apps_rg/fixtures/p1_w4",
-    ".claude/plans/graph-skills-hardening-f3a8c1.md",
+    ".codex/plans/graph-skills-hardening-f3a8c1.md",
 )
 
 

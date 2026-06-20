@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agent-inventory-spine-taxonomy-b4e9f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agent-inventory-spine-taxonomy-b4e9f2.md'
 original_relative_path: '_archive\\2026-05\\agent-inventory-spine-taxonomy-b4e9f2.md'
 source_sha256: 24aa9c0551f7f07c8efadf336222033f4d8517f3a808056041d7659353e9a834
 recovered_status: LEGACY_EXISTING

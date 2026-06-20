@@ -1,6 +1,6 @@
 """Core layer pattern detector — ADG queries for genetic architecture patterns.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P4.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P4.
 """
 
 from __future__ import annotations

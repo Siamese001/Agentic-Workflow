@@ -37,7 +37,7 @@ from _notion_constants import (  # noqa: E402
 """
 BOOTSTRAP_OUTSIDE = """\
 import sys as _sys
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance" / "scripts"))
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".codex" / "governance" / "scripts"))
 from _notion_constants import (  # noqa: E402
 {names}
 )
@@ -62,7 +62,7 @@ def transform(path: Path) -> tuple[str, str, list[str]]:
     if not imports_needed:
         return text, text, []
 
-    # Decide bootstrap flavor: if file path starts with .claude/governance/scripts/_legacy_windsurf, use WINDSURF; else OUTSIDE
+    # Decide bootstrap flavor: if file path starts with .codex/governance/scripts/_legacy_windsurf, use WINDSURF; else OUTSIDE
     rel_posix = path.as_posix()
     is_windsurf = rel_posix.startswith("docs/archive/windsurf/legacy-tree/governance_scripts/")
     if not is_windsurf and not find_repo_root_in_file(new_text):
@@ -75,7 +75,7 @@ def transform(path: Path) -> tuple[str, str, list[str]]:
     name_lines = "\n".join(f"    {n}," for n in sorted(imports_needed))
     bootstrap = (BOOTSTRAP_WINDSURF if is_windsurf else BOOTSTRAP_OUTSIDE).format(names=name_lines)
 
-    # Insert bootstrap block. For .claude/governance/scripts/_legacy_windsurf, after REPO_ROOT lines or after imports.
+    # Insert bootstrap block. For .codex/governance/scripts/_legacy_windsurf, after REPO_ROOT lines or after imports.
     # For simplicity: insert after the LAST occurrence of `from pathlib import Path` line (or `Path(__file__)` definition).
     # Actually best: insert after first blank-line-following-REPO_ROOT, or after imports block.
 

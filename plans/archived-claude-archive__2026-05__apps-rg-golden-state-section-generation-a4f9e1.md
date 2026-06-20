@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-golden-state-section-generation-a4f9e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-golden-state-section-generation-a4f9e1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-golden-state-section-generation-a4f9e1.md'
 source_sha256: 9b3a1ce782d4471273437cfb33abb36e1682b1bc89e25908e6418f0dc0965793
 recovered_status: LEGACY_EXISTING

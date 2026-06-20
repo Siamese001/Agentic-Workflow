@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-05-01
-**Plan**: `.claude/plans/fortknox-certification-discipline-fb2a9e.md`
+**Plan**: `.codex/plans/fortknox-certification-discipline-fb2a9e.md`
 **Pairs with**: ADR-080 (Phase D Runtime Certification design anchor), ADR-050 (intelligence-ledger family)
 **Constitutional rule**: §32
 
@@ -37,13 +37,13 @@ with five enforcement layers:
 
 | Layer | Artifact | Behavior |
 |---|---|---|
-| Advisory rule | `.claude/rules/fortknox-certification-discipline.md` | Always-on; shapes Codex composition |
-| Pre-write hook | `.claude/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct edits to `final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}` and `certification/*.xlsx` (exit 2) |
-| Post-cursor-agent audit | `.claude/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` | Fail-open detection of prose signoff claims without compiler invocation; logs to `artifacts/windsurf/fortknox_integrity_violations.jsonl` |
+| Advisory rule | `.codex/rules/fortknox-certification-discipline.md` | Always-on; shapes Codex composition |
+| Pre-write hook | `.codex/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct edits to `final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}` and `certification/*.xlsx` (exit 2) |
+| Post-cursor-agent audit | `.codex/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` | Fail-open detection of prose signoff claims without compiler invocation; logs to `artifacts/windsurf/fortknox_integrity_violations.jsonl` |
 | Pre-commit triplet | `ops_scripts/ci/check_fortknox_{clean_bundle,mutation_rejection,positive_control}.py` | T7s.1/.2/.3 — separation-of-duties: compiler+verifier agree, all mutations rejected, RTC-REQ-001 canary remains SIGNED_OFF |
 | Nightly regression | `.github/workflows/fortknox-nightly.yml` | Diffs trust_level + signed_off count + merkle_root vs prior committed bundle; opens `cert-regression`-tagged issue on regression |
-| Author-Gate trigger | `.claude/rules/author-gate-decision-points.md` §1.11 | `certification_claim` — Codex must run compiler+verifier before claiming SIGNED_OFF / FINAL_SIGNED_CERTIFICATION |
-| Skill | `.claude/skills/fortknox-evidence/SKILL.md` | Procedural recipe + forbidden-pattern checklist |
+| Author-Gate trigger | `.codex/rules/author-gate-decision-points.md` §1.11 | `certification_claim` — Codex must run compiler+verifier before claiming SIGNED_OFF / FINAL_SIGNED_CERTIFICATION |
+| Skill | `.codex/skills/fortknox-evidence/SKILL.md` | Procedural recipe + forbidden-pattern checklist |
 
 Producer-allowlist (per §32): atomic assertions emitters MUST live under
 `tools/cert/*.py`, `scripts/verify_*_gate.py`, or `scripts/verify_rtc_*.py`.
@@ -124,9 +124,9 @@ not migration-driven.
 - Bundle verifier: `scripts/verify_final_requirement_signoff_bundle.py`
 - Mutation runner: `scripts/generate_mutation_rejection_report.py`
 - Envelope writer: `tools/cert/sign_requirement_signoff_envelope.py`
-- Rule: `.claude/rules/fortknox-certification-discipline.md`
-- Skill: `.claude/skills/fortknox-evidence/SKILL.md`
-- Plan: `.claude/plans/fortknox-certification-discipline-fb2a9e.md`
+- Rule: `.codex/rules/fortknox-certification-discipline.md`
+- Skill: `.codex/skills/fortknox-evidence/SKILL.md`
+- Plan: `.codex/plans/fortknox-certification-discipline-fb2a9e.md`
 - Pairs: ADR-080 (Phase D anchor), ADR-050 (intelligence-ledger family)
 
 Web-research grounding: SLSA L3 build-provenance verifiability,

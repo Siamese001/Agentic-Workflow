@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md'
 source_sha256: c9890b02d28408853db0f67aab3e7e4a753093b919afeae4318849d8e33e68a6
 recovered_status: LEGACY_EXISTING

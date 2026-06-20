@@ -6,7 +6,7 @@ sources:
   - id: SRC-RULE-001
     subtype: RULE
     title: "Constitutional Rules (Agentic Workflow)"
-    locator: ".claude/rules/constitutional.md"
+    locator: ".codex/rules/constitutional.md"
     authority_class: CONSTITUTIONAL
     retrieved_at_wave: E1c
     notes: "Rank 1."
@@ -14,7 +14,7 @@ sources:
   - id: SRC-RULE-002
     subtype: RULE
     title: "Global Rules - Tier 2 SSOT"
-    locator: ".claude/rules/global_rules.md"
+    locator: ".codex/rules/global_rules.md"
     authority_class: GOVERNANCE
     retrieved_at_wave: E1c
     notes: "Rank 2."

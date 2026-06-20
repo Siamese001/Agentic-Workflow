@@ -19,7 +19,7 @@ Invocation:
 If ``<run_dir>`` is omitted, the most recently modified directory under
 ``artifacts/apps_rg/runs/`` is selected.
 
-Codex integration: per ``.claude/rules/apps-rg-post-run-summary.md``,
+Codex integration: per ``.codex/rules/apps-rg-post-run-summary.md``,
 Codex MUST invoke this script after every apps_rg run and surface the
 markdown output inline in chat.
 """

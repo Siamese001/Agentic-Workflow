@@ -7,7 +7,7 @@ description: "AI-powered structured documentation and Q&A for any third-party Gi
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §3 — DeepWiki (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §3 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §3 for current guidance.
 
 ---
 

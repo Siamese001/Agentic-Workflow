@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-underwriting-ai-d3-rationale-judge-f2c8d5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-underwriting-ai-d3-rationale-judge-f2c8d5.md'
 original_relative_path: '_archive\\2026-05\\apps-underwriting-ai-d3-rationale-judge-f2c8d5.md'
 source_sha256: 17f7c77bca0aa2abd5153e20bba53de354d485c9423e7b862c55c8602850f988
 recovered_status: LEGACY_EXISTING

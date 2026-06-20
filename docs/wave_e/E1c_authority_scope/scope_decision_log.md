@@ -28,7 +28,7 @@ Stable-ID record of every scope / layer / authority decision made by E1c.
 
 ## DEC-E1c-AUTH-CLASS-CONSTITUTIONAL
 **Subject:** Confirm CONSTITUTIONAL authority_class for F02, F03, F09, F10, F11, F12.
-**Decision:** **Confirmed defendable** via SRC-RULE-001 (`.claude/rules/constitutional.md`, rank 1).
+**Decision:** **Confirmed defendable** via SRC-RULE-001 (`.codex/rules/constitutional.md`, rank 1).
 **Rationale:** Six governing semantics these families restate are captured in the project constitutional file.
 **Impact:** E1a does not need to revise families.yaml for authority_class on these six.
 

@@ -65,7 +65,7 @@ Per SVP Engineering Principle (archival over deletion), this document records th
 
 - Modified: `agentic_core/L5_safety/config/structure_blueprint/ssot.py`
 - Test evidence: `tests/unit/agentic_core/adg/extraction/test_static_scanner.py` (3/3 pass)
-- Plan: `.claude/plans/scanner-exclusion-sync-two-wave-6d6151.md`
+- Plan: `.codex/plans/scanner-exclusion-sync-two-wave-6d6151.md`
 
 ---
 

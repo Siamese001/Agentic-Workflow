@@ -101,7 +101,7 @@ gantt
 | **P5 — Proof/control-plane shock + local runtime churn** | Apr 1-Apr 28, 2026 | Theater gates, Author-Gate, deferred-scope capture, runtime gates, Qwen/vLLM | Receipt/proof harnesses, named receipts, gate reports | Reactive truth-recovery sprint during billing/routing defect window | Apr 29/May 1 product breakthrough |
 | **P6 — Product breakthrough + certification ice** | Apr 29-May 14, 2026 | DOCX artifacts, OTEL, Fort Knox/L7, Notion state, Qwen rollout, apps_rg wiring | Artifact exists but certification expands | Shippability inversion: product appears, then proof machinery surrounds it | May 15 cancellation/Cursor migration and proof-contract language |
 | **P7 — Cursor migration + static-binding proof repair** | May 15-Jun 6, 2026 | PA contracts, apps_* binding docs, static scorecards, runtime manifests | STATIC vs TRACE_OBSERVED vs RUNTIME_CERTIFIED emerges | Static evidence is demoted; hidden runtime state becomes visible | Claude Code SSOT migration Jun 7 |
-| **P8 — Claude Code operating-model correction** | Jun 7-Jun 13, 2026 | `.claude` SSOT, hooks, worktrees, execution-bias rules, forensic reports | Fresh-worktree replay target; DOCX-in-hand DoD | Plans become expensive, shipping becomes the only meaningful close condition | Current state |
+| **P8 — Claude Code operating-model correction** | Jun 7-Jun 13, 2026 | `.codex` SSOT, hooks, worktrees, execution-bias rules, forensic reports | Fresh-worktree replay target; DOCX-in-hand DoD | Plans become expensive, shipping becomes the only meaningful close condition | Current state |
 
 ---
 

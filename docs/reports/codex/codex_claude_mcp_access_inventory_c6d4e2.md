@@ -9,7 +9,7 @@ Scope: inventory Claude `.mcp.json` servers against Codex process visibility and
 | Source | Role |
 |---|---|
 | `.mcp.json` | Claude Code live MCP server SSOT |
-| `.claude/mcp-notes.md` | Bootstrap env and dormant/re-add policy |
+| `.codex/mcp-notes.md` | Bootstrap env and dormant/re-add policy |
 | `scripts/governance/audit_codex_mcp_transports.py --json` | Process, env, command, and script-readiness evidence |
 | `tool_search` results | Codex-callable tool discovery evidence |
 | Direct Codex tool calls | Proof for exposed-but-failing and plugin-callable surfaces |
@@ -50,7 +50,7 @@ Scope: inventory Claude `.mcp.json` servers against Codex process visibility and
 
 | Phase | Result | Evidence |
 |---|---|---|
-| W1.1 | DONE | `.mcp.json`, `.claude/mcp-notes.md`, Codex tool discovery, and transport audit reviewed |
+| W1.1 | DONE | `.mcp.json`, `.codex/mcp-notes.md`, Codex tool discovery, and transport audit reviewed |
 | W1.2 | DONE | This matrix separates configured, process-visible, and callable states |
 
 ## Next Step

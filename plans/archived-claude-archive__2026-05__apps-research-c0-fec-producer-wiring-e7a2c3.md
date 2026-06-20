@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-c0-fec-producer-wiring-e7a2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-c0-fec-producer-wiring-e7a2c3.md'
 original_relative_path: '_archive\\2026-05\\apps-research-c0-fec-producer-wiring-e7a2c3.md'
 source_sha256: f367847893c6f0e80ab822d38468df2567857371a8e1ca124df54d2a393dabc5
 recovered_status: LEGACY_EXISTING

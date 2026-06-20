@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-quarantine-u0-coverage-review-d9f4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-quarantine-u0-coverage-review-d9f4a2.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-quarantine-u0-coverage-review-d9f4a2.md'
 source_sha256: 0138c0c4a0be449586d067db500ce15d944b036a95a56e53467ab474149fec33
 recovered_status: LEGACY_EXISTING

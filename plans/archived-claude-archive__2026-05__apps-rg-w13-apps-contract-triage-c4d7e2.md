@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-w13-apps-contract-triage-c4d7e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-w13-apps-contract-triage-c4d7e2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-w13-apps-contract-triage-c4d7e2.md'
 source_sha256: a1e2c6f2b155041eb44329da5047e87bb3ccb7bd6bf5cd3b61db3898c51463a2
 recovered_status: LEGACY_EXISTING

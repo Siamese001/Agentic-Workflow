@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\repo-wide-deduplication-c5d2a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\repo-wide-deduplication-c5d2a8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\repo-wide-deduplication-c5d2a8.md'
 source_sha256: d9c71509881877fdd254a882f03c81d32274fb5f7a913c0398e24900f51304b1
 recovered_status: LEGACY_EXISTING

@@ -14,7 +14,7 @@ IS the source of truth.
 
 Constitutional anchor:
   - §29 closed-loop router enforcement (judge surface analogue)
-  - ``.claude/rules/judge-calibration-cadence.md`` — weekly human
+  - ``.codex/rules/judge-calibration-cadence.md`` — weekly human
     spot-check + unknown-budget watchdog.
 
 Plan reference:
@@ -327,7 +327,7 @@ def _render_report(snap: JudgeCalibrationSnapshot) -> str:
     lines.append("## Human spot-check sampling")
     lines.append("")
     lines.append(
-        "Per ``.claude/rules/judge-calibration-cadence.md``, draw a "
+        "Per ``.codex/rules/judge-calibration-cadence.md``, draw a "
         "stratified sample of 10 verdicts this week (split evenly across "
         "accepted / rejected / fallback buckets) for human verification. "
         "Record disagreements in the report's free-form notes and open a "

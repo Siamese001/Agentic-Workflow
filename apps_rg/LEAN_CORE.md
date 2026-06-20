@@ -380,7 +380,7 @@ grep -r "from agentic_core.runtime" apps_rg --include="*.py" | grep -v test | gr
 
 ## References
 
-- **Plan Document:** `.claude/plans/apps_rg-lean-core-binding-a1b2c3.md`
+- **Plan Document:** `.codex/plans/apps_rg-lean-core-binding-a1b2c3.md`
 - **Notion Plan:** `apps_rg_lean_core_binding_a1b2c3`
 - **Architecture Tests:** `tests/architecture/test_apps_rg_spine_contract_binding.py`
 - **Ports Definition:** `apps_rg/runtime/ports.py`

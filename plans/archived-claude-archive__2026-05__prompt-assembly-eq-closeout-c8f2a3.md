@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\prompt-assembly-eq-closeout-c8f2a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\prompt-assembly-eq-closeout-c8f2a3.md'
 original_relative_path: '_archive\\2026-05\\prompt-assembly-eq-closeout-c8f2a3.md'
 source_sha256: d5ce8112d46efcfe3efafe51e4a7efe01ce7460ff53cd6596393115a2fcc988a
 recovered_status: LEGACY_EXISTING

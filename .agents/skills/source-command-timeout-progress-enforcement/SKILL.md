@@ -141,10 +141,10 @@ Check for violations:
 
 ## References
 
-- Constitutional Rule: `.claude/rules/constitutional.md` §9
-- Enforcement Skill: `.claude/skills/artifact-management/SKILL.md` (progress display protocol covers timeout+progress)
+- Constitutional Rule: `.codex/rules/constitutional.md` §9
+- Enforcement Skill: `.codex/skills/artifact-management/SKILL.md` (progress display protocol covers timeout+progress)
 
-> **Skill directory note:** The `timeout-progress-enforcement` skill directory is not present in the current `.claude/skills/` layout (7 canonical skills as of 2026-04-14). References to `.claude/skills/timeout-progress-enforcement/` are stale and should not be used.
+> **Skill directory note:** The `timeout-progress-enforcement` skill directory is not present in the current `.codex/skills/` layout (7 canonical skills as of 2026-04-14). References to `.codex/skills/timeout-progress-enforcement/` are stale and should not be used.
 
 ## MANUAL MIGRATION REQUIRED
 

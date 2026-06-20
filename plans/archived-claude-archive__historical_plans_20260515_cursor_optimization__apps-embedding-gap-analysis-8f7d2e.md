@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-embedding-gap-analysis-8f7d2e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-embedding-gap-analysis-8f7d2e.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-embedding-gap-analysis-8f7d2e.md'
 source_sha256: e0d46cbf9dee95f46d5277f54b25e387f21115af4a5047022c68e8e7197b9f9d
 recovered_status: LEGACY_EXISTING

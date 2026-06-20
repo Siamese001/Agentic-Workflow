@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave-phase-auto-update-rca-fix-e9c2b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave-phase-auto-update-rca-fix-e9c2b8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wave-phase-auto-update-rca-fix-e9c2b8.md'
 source_sha256: cd60249c4365dd434dffb7e6c5b9accc3dd3d84d9992f17ea6acd34b49d1c1b4
 recovered_status: LEGACY_EXISTING

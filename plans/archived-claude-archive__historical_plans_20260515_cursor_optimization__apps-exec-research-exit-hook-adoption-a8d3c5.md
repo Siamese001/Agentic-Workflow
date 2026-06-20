@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-exec-research-exit-hook-adoption-a8d3c5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-exec-research-exit-hook-adoption-a8d3c5.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-exec-research-exit-hook-adoption-a8d3c5.md'
 source_sha256: 8d43b6c8fde0017673b0c93b5e3898c687d1e445302b8837e8ed2f0901d7b8a9
 recovered_status: LEGACY_EXISTING

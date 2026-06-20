@@ -11,11 +11,11 @@ applies to NEW files only, matching the legacy editor hook behavior.
 
 Bypass: SSOT_FOLDER_BYPASS=1 (logged to stderr).
 
-SSOT logic: ``.claude/governance/scripts/_ssot_folder_check.py``. Both this gate and
+SSOT logic: ``.codex/governance/scripts/_ssot_folder_check.py``. Both this gate and
 the legacy editor hook ``pre_write_gate.py`` import from the same helper to
 prevent drift.
 
-Constitutional tie-in: §31 (see ``.claude/rules/ssot-folder-enforcement.md``).
+Constitutional tie-in: §31 (see ``.codex/rules/ssot-folder-enforcement.md``).
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ def _repo_root() -> Path:
 
 
 def _import_helper(repo: Path):
-    """Import the canonical SSOT helper from .claude/governance/scripts/."""
-    helper_dir = repo / ".claude" / "governance" / "scripts"
+    """Import the canonical SSOT helper from .codex/governance/scripts/."""
+    helper_dir = repo / ".codex" / "governance" / "scripts"
     sys.path.insert(0, str(helper_dir))
     try:
         import _ssot_folder_check  # type: ignore[import-not-found]
@@ -123,7 +123,7 @@ def main() -> int:
     print(
         "\nFix: move the new file(s) to the suggested SSOT folder, "
         "or set SSOT_FOLDER_BYPASS=1 if the violation is intentional. "
-        "Rule: .claude/rules/ssot-folder-enforcement.md",
+        "Rule: .codex/rules/ssot-folder-enforcement.md",
         file=sys.stderr,
     )
     return 1

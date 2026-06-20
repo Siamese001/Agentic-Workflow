@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-enforcement-ssot-hardening-e4f8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-enforcement-ssot-hardening-e4f8a2.md'
 original_relative_path: '_archive\\2026-05\\notion-enforcement-ssot-hardening-e4f8a2.md'
 source_sha256: ef4bf9918cb88655ff9cfb646a50bcdb947a27c99ae3b4eee1193681b4d90fd1
 recovered_status: LEGACY_EXISTING

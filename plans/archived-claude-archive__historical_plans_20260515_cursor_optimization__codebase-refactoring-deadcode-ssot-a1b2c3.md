@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\codebase-refactoring-deadcode-ssot-a1b2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\codebase-refactoring-deadcode-ssot-a1b2c3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\codebase-refactoring-deadcode-ssot-a1b2c3.md'
 source_sha256: 8d0cbe6aaf6c2f38c986358547fe4fdb30358d3f37e0351d8a28b51c84127baf
 recovered_status: LEGACY_EXISTING

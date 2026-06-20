@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l6-folder-rename-doctrinal-alignment-a8c4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l6-folder-rename-doctrinal-alignment-a8c4e2.md'
 original_relative_path: '_archive\\2026-05\\l6-folder-rename-doctrinal-alignment-a8c4e2.md'
 source_sha256: bc29ad310d6785eacdb1e9baed9cc0f16a8d80d7d9fee658b4866cf9b89f5317
 recovered_status: LEGACY_EXISTING

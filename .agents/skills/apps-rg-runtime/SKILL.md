@@ -58,7 +58,7 @@ the apps_rg *run + report* loop.
 ## References
 
 - Renderer (required tool): `tools/apps_rg/render_run_summary.py`
-- Rules: `.claude/rules/apps-rg-post-run-summary.md`, `apps-rg-interactive-discipline.md`, `apps-rg-executive-summary-response.md`, `apps-rg-execution-bias.md`
+- Rules: `.codex/rules/apps-rg-post-run-summary.md`, `apps-rg-interactive-discipline.md`, `apps-rg-executive-summary-response.md`, `apps-rg-execution-bias.md`
 - Operator guide: `docs/apps_rg/executive_summary_operator_guide.md`
 - Single backlog: `plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md` (Master Gap Inventory)
 - Sibling skills: `boundary-enforcement`, `artifact-management` · plan placement → `plan-location.md` rule

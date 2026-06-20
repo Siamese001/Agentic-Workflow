@@ -46,7 +46,7 @@ Exit codes
 References
 ----------
     - Constitutional §22 (graph-layer evidence)
-    - .claude/plans/adg-pipeline-e2e-5287a1.md (W4)
+    - .codex/plans/adg-pipeline-e2e-5287a1.md (W4)
     - tools/generate/generate_full_adg.py::_record_pipeline_skip
 """
 

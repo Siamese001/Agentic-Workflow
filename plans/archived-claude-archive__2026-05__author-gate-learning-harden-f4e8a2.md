@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-learning-harden-f4e8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-learning-harden-f4e8a2.md'
 original_relative_path: '_archive\\2026-05\\author-gate-learning-harden-f4e8a2.md'
 source_sha256: b4166d3ef1ca32a0a8f45bcc89341dafef3071d8c334e0672bc0b83b0231a858
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-deferred-activation-w8-a7f4d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-deferred-activation-w8-a7f4d9.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-deferred-activation-w8-a7f4d9.md'
 source_sha256: 1faf05ac97958540500db2139af93109f63f8bcf0e20909f898929c6d26eb45a
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\mcp-hardening-antipattern-registry-d05031.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\mcp-hardening-antipattern-registry-d05031.md'
 original_relative_path: '_archive\\2026-05\\mcp-hardening-antipattern-registry-d05031.md'
 source_sha256: 32d1008d326227b0bad95639a03b5e928257ed2f2815f231a16725ddce030f5b
 recovered_status: LEGACY_EXISTING

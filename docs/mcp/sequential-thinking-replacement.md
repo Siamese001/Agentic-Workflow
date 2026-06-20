@@ -3,8 +3,8 @@
 **Status**: RETIRED (2026-04-07)
 **Current replacement**: Claude Code native plan mode plus the `structured-reasoning` skill for
 decomposition and retrieval discipline.
-**Skill**: `.claude/skills/structured-reasoning/SKILL.md`
-**Rule**: `.claude/rules/plan-first-enforcement.md`
+**Skill**: `.codex/skills/structured-reasoning/SKILL.md`
+**Rule**: `.codex/rules/plan-first-enforcement.md`
 
 `structured-reasoning` is not the old MCP. The old MCP was the
 `@modelcontextprotocol/server-sequential-thinking` package and its `sequentialthinking` tool.

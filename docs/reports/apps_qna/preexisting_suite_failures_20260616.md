@@ -60,7 +60,7 @@ Observed result: `392 passed`, `9 warnings`.
    Failures referenced missing compatibility/test artifacts such as:
    - `tests/integrations/spine_handoff.py`
    - `tests/spine_manifest.yaml`
-   - `.claude/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md`
+   - `.codex/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md`
 
 3. Paste optimization route fixture mismatch.
    `tests/apps_qna/fixtures/synthetic_mini/interview.yaml` declares `route_id: apps_qna.live_interview_runtime_pack_v1`, while the builder route registry uses route ids such as `architecture`, `executive_fit`, `governance`, and related card-route ids. This produced paste counts of 8/9 where tests expected 21/22 in:

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ask-ui-consolidated-a1e3f7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ask-ui-consolidated-a1e3f7.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ask-ui-consolidated-a1e3f7.md'
 source_sha256: 4aa8467198d45120c9cb04ed4bd8d74b86d63be3679d24e712b47b6de396c507
 recovered_status: LEGACY_EXISTING

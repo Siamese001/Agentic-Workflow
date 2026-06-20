@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-judge-regen-loop-closure-d8f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-judge-regen-loop-closure-d8f3a1.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-judge-regen-loop-closure-d8f3a1.md'
 source_sha256: 1ba60af2c09311f343e75864640ccd3e39ba41a5b573f6465db0b1cec968cc73
 recovered_status: LEGACY_EXISTING

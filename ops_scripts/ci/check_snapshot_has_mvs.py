@@ -54,8 +54,8 @@ Exit codes
 References
 ----------
     - Constitutional §22 (graph-layer evidence)
-    - .claude/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
-    - .claude/rules/adg-graph-layer-enforcement.md
+    - .codex/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
+    - .codex/rules/adg-graph-layer-enforcement.md
 """
 
 from __future__ import annotations
@@ -314,7 +314,7 @@ def main(argv: list[str]) -> int:
         "  2. Verify `_enrich_infra_views` + `_materialize_adg_views` run\n"
         "     BEFORE P0/P1/dead-import gates in tools/generate/generate_full_adg.py\n"
         "     (plan adg-pipeline-e2e-5287a1 W1, commit 9fb93f698c).\n"
-        "  3. See: .claude/rules/adg-graph-layer-enforcement.md\n",
+        "  3. See: .codex/rules/adg-graph-layer-enforcement.md\n",
     )
     print(f"Log: {LOG_FILE.relative_to(ROOT)}")
     _log_violation(snapshot, counts, reasons)

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\complete-open-scope-closeout-c9e4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\complete-open-scope-closeout-c9e4a1.md'
 original_relative_path: 'complete-open-scope-closeout-c9e4a1.md'
 source_sha256: 88147df73a09a975a4a9d1a0f7934b3269e7b4a87e191aa5878fe3dbd33a51e7
 recovered_status: LEGACY_EXISTING

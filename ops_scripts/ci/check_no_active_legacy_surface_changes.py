@@ -17,23 +17,23 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 BLOCKED_PREFIXES = (
-    ".claude/plans/",
-    ".claude/skills/",
+    ".codex/plans/",
+    ".codex/skills/",
     "docs/archive/windsurf/legacy-tree/workflows/",
-    ".claude/rules/",
-    ".claude/governance/scripts/",
+    ".codex/rules/",
+    ".codex/governance/scripts/",
     ".windsurf/schemas/",
     ".windsurf/state/",
-    ".claude/templates/",
+    ".codex/templates/",
     ".windsurf/reminders/",
 )
 BLOCKED_FILES = {
-    ".claude/settings.json",
+    ".codex/hooks.json",
     ".mcp.json",
     ".windsurf/RULES_INDEX.md",
 }
 ARCHIVE_EXEMPT_PREFIXES = (
-    ".claude/plans/_archive/",
+    ".codex/plans/_archive/",
     ".cursor/windsurf_compat/",
     "docs/archive/windsurf/",
 )

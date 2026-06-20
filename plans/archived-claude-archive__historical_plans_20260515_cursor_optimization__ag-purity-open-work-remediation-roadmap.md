@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ag-purity-open-work-remediation-roadmap.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ag-purity-open-work-remediation-roadmap.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ag-purity-open-work-remediation-roadmap.md'
 source_sha256: b55f8b6147cbeb78d7f4a7fc4af99c6f12521deaafc31a5fed5b3f3a3451a812
 recovered_status: LEGACY_EXISTING

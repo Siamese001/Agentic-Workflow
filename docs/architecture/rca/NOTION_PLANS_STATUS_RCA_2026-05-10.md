@@ -223,5 +223,5 @@ Filed as **DEFERRED_SCOPE: wave-lifecycle-tests-prod-notion-pollution**.
 - Bug source: `@c:\Git\Agentic-Workflow-FRESH\tools\notion\backfill_historical_plan_statuses.py:127-158`
 - Trigger commit: `90883aafa105806b980b43c8cf4fb11108e6731c` (Sun May 10 06:56 EDT)
 - Constitutional: §25 (MCP serialization), §35 (queue drain), §36 (plan registration)
-- Rules: `.claude/rules/notion-plans-taxonomy.md`, `.claude/rules/plan-registration-enforcement.md`, `.claude/rules/notion-plan-wave-deferral.md`
+- Rules: `.codex/rules/notion-plans-taxonomy.md`, `.codex/rules/plan-registration-enforcement.md`, `.codex/rules/notion-plan-wave-deferral.md`
 - Memory: entity "Notion Plans DB Bulk-Overwrite Incident 2026-05-10"

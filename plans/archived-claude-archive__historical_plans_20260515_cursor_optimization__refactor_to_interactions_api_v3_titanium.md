@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api_v3_titanium.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api_v3_titanium.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api_v3_titanium.md'
 source_sha256: 580a7d08e47ecfcf4d25016e21080dabacb061796264a57fe72859ec05ef0012
 recovered_status: LEGACY_EXISTING

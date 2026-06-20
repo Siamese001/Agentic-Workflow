@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md'
 source_sha256: fbdb679fedc7789f9d7ae5dca0d9557ee921c31cc161b2bd61ac8bf3045a5726
 recovered_status: LEGACY_EXISTING

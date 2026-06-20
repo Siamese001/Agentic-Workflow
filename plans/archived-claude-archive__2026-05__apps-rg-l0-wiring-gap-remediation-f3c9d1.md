@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-l0-wiring-gap-remediation-f3c9d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-l0-wiring-gap-remediation-f3c9d1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-l0-wiring-gap-remediation-f3c9d1.md'
 source_sha256: 584fa952094459821d285c467c31cbb22f654cdf603bad27939e538585ae4ce6
 recovered_status: LEGACY_EXISTING

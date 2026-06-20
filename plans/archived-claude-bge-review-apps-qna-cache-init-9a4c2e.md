@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\bge-review-apps-qna-cache-init-9a4c2e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\bge-review-apps-qna-cache-init-9a4c2e.md'
 original_relative_path: 'bge-review-apps-qna-cache-init-9a4c2e.md'
 source_sha256: c155fb2154ac7f2ae8164aca6b49b995f60d61418183d157a10d4f37737984c1
 recovered_status: LEGACY_EXISTING
@@ -150,4 +150,4 @@ Verification:
 - [x] W3 cache hit/miss path verified.
 - [x] Child migration plan unblocked only after W3 completion.
 
-PLAN_CREATED: slug=bge-review-apps-qna-cache-init-9a4c2e path=.claude/plans/bge-review-apps-qna-cache-init-9a4c2e.md status=In Progress
+PLAN_CREATED: slug=bge-review-apps-qna-cache-init-9a4c2e path=.codex/plans/bge-review-apps-qna-cache-init-9a4c2e.md status=In Progress

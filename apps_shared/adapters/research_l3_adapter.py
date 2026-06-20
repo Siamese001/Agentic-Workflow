@@ -13,7 +13,7 @@ Design constraints
 - Stateless — no caching, no durable writes, no config mutations.
 - Fail-closed: any exception returns a structured error result; never raises.
 
-Plan: .claude/plans/agentic-spine-diagram-refinement-a3f7c2.md W5 P5.2
+Plan: .codex/plans/agentic-spine-diagram-refinement-a3f7c2.md W5 P5.2
 """
 
 from __future__ import annotations

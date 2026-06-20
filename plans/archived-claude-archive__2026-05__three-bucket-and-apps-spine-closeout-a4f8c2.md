@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\three-bucket-and-apps-spine-closeout-a4f8c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\three-bucket-and-apps-spine-closeout-a4f8c2.md'
 original_relative_path: '_archive\\2026-05\\three-bucket-and-apps-spine-closeout-a4f8c2.md'
 source_sha256: 4cee5b6107c4ba26f8b34ad5497a3026fa99598a594594fb2ccfd8fcc17ac86e
 recovered_status: LEGACY_EXISTING

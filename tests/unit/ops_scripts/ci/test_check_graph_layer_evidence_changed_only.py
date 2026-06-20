@@ -35,7 +35,7 @@ This plan declares a refactoring intent but carries no graph-layer evidence sect
 
 @pytest.fixture
 def fake_repo(tmp_path, monkeypatch):
-    plans = tmp_path / ".claude" / "plans"
+    plans = tmp_path / ".codex" / "plans"
     plans.mkdir(parents=True)
     monkeypatch.setattr(mod, "ROOT", tmp_path)
     monkeypatch.setattr(mod, "PLANS_DIR", plans)
@@ -53,21 +53,21 @@ class TestSelectChangedPlanPaths:
     def test_keeps_top_level_plan_md(self, fake_repo):
         _, plans = fake_repo
         (plans / "foo.md").write_text("x", encoding="utf-8")
-        out = mod._select_changed_plan_paths([".claude/plans/foo.md"])
+        out = mod._select_changed_plan_paths([".codex/plans/foo.md"])
         assert out == [plans / "foo.md"]
 
     def test_ignores_non_plan_paths_and_missing_files(self, fake_repo):
         _, plans = fake_repo
         (plans / "real.md").write_text("x", encoding="utf-8")
         out = mod._select_changed_plan_paths(
-            [".claude/plans/real.md", "tools/x.py", ".claude/plans/deleted.md", "README.md"]
+            [".codex/plans/real.md", "tools/x.py", ".codex/plans/deleted.md", "README.md"]
         )
         assert out == [plans / "real.md"]  # non-plan + nonexistent dropped
 
     def test_excludes_readme_template(self, fake_repo):
         _, plans = fake_repo
         (plans / "README.md").write_text("x", encoding="utf-8")
-        assert mod._select_changed_plan_paths([".claude/plans/README.md"]) == []
+        assert mod._select_changed_plan_paths([".codex/plans/README.md"]) == []
 
 
 # ----------------------------- main(--changed-only) ----------------------------- #
@@ -85,7 +85,7 @@ class TestChangedOnlyMode:
         _, plans = fake_repo
         (plans / "touched-bad.md").write_text(_NONCOMPLIANT_PLAN, encoding="utf-8")
         monkeypatch.setattr(
-            mod, "_changed_plan_files", lambda base_ref: [".claude/plans/touched-bad.md"]
+            mod, "_changed_plan_files", lambda base_ref: [".codex/plans/touched-bad.md"]
         )
         assert mod.main(["--changed-only", "--base-ref", "main"]) == 1
 

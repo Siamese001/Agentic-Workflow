@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-distilled-followups-c8e4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-distilled-followups-c8e4a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-distilled-followups-c8e4a1.md'
 source_sha256: 538df3f67776a7f2d6d83e335a682e4ec458a743e76a34ad891d9dcfbe0f6f0a
 recovered_status: LEGACY_EXISTING

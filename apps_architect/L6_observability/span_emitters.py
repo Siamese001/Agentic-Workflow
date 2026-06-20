@@ -1,6 +1,6 @@
 """OTEL span emitters for apps_architect operations.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W5.P1.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W5.P1.
 
 Emits spans for: architect.scan, architect.delta, architect.rules, architect.sync.
 Fail-soft: if OTEL is unavailable, spans are silently dropped.

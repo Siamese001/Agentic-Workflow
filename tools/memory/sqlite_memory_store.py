@@ -91,8 +91,8 @@ from tools.memory.memory_decay import (
 
 _DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
-# Schema SSOT: canonical schema lives in .claude/schemas/
-_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".claude" / "schemas"
+# Schema SSOT: canonical schema lives in .codex/schemas/
+_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".codex" / "schemas"
 _SCHEMA_FILE = _SCHEMA_DIR / "knowledge_graph.schema.sql"
 _MIGRATIONS_FILE = _SCHEMA_DIR / "knowledge_graph_migrations.sql"
 
@@ -109,7 +109,7 @@ ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
 )
 
 def _load_schema() -> str:
-    """Load canonical schema from .claude/schemas/knowledge_graph.schema.sql
+    """Load canonical schema from .codex/schemas/knowledge_graph.schema.sql
     
     Falls back to embedded schema if file not found (backward compatibility).
     """
@@ -734,7 +734,7 @@ class SqliteMemoryStore:
         entity_types: tuple[str, ...] | None = None,
     ) -> list[dict[str, Any]]:
         """Return Tier-1 ranking: entities ranked by effective_confidence *
-        log(1 + access_count). This is the "CLAUDE.md briefing" list from
+        log(1 + access_count). This is the "AGENTS.md briefing" list from
         yuvalsuede/memory-mcp — most-useful memories first.
         """
         now = time.time()

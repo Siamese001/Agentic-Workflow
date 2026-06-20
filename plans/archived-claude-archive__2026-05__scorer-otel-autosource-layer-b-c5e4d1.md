@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\scorer-otel-autosource-layer-b-c5e4d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\scorer-otel-autosource-layer-b-c5e4d1.md'
 original_relative_path: '_archive\\2026-05\\scorer-otel-autosource-layer-b-c5e4d1.md'
 source_sha256: daacc198ee48e3ad09c3bc486f808c4ed8001d44111a16b207eef398b576d635
 recovered_status: LEGACY_EXISTING

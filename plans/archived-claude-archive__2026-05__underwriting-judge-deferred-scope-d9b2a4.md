@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\underwriting-judge-deferred-scope-d9b2a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\underwriting-judge-deferred-scope-d9b2a4.md'
 original_relative_path: '_archive\\2026-05\\underwriting-judge-deferred-scope-d9b2a4.md'
 source_sha256: c982ba3a31664a8167af9a69333ba4d7fa8ed991f45a35489e6c1490abdb903e
 recovered_status: LEGACY_EXISTING

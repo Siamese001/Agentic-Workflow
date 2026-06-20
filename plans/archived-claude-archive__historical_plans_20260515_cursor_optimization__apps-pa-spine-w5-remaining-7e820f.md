@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-pa-spine-w5-remaining-7e820f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-pa-spine-w5-remaining-7e820f.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-pa-spine-w5-remaining-7e820f.md'
 source_sha256: 6848a9df8299e2dee3f8b0c7cda674fdf482250032e90704f975b270f95a09f8
 recovered_status: LEGACY_EXISTING

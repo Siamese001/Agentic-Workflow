@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rfp-first-principles-refactor-9c8d3f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rfp-first-principles-refactor-9c8d3f.md'
 original_relative_path: '_archive\\2026-05\\apps-rfp-first-principles-refactor-9c8d3f.md'
 source_sha256: d25b839d9701420b76390a8c11fc2c154755a5503e08455c3b03894159b4e107
 recovered_status: LEGACY_EXISTING

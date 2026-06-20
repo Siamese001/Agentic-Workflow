@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-governance-w6-core-migration-d4e8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-governance-w6-core-migration-d4e8a2.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-governance-w6-core-migration-d4e8a2.md'
 source_sha256: c328e19abeaf51c4d9e5f199e7483e279f193363dac2525d01ec65120c363a16
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\collapse-apps-rg-runtime-b7e2f5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\collapse-apps-rg-runtime-b7e2f5.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\collapse-apps-rg-runtime-b7e2f5.md'
 source_sha256: e34680811b33232a3d230a738430ea655c92f9eaab2aa82586508f0b361c3ded
 recovered_status: LEGACY_EXISTING

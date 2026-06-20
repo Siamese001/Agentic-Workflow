@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-plan-status-reconciliation-a3f2e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-plan-status-reconciliation-a3f2e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\notion-plan-status-reconciliation-a3f2e1.md'
 source_sha256: 09f79da1b3f628af64065036acfdc73a456833198d9f1a98a2858395806ba0b2
 recovered_status: LEGACY_EXISTING

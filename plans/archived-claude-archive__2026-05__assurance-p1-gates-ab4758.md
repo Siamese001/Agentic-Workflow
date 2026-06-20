@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\assurance-p1-gates-ab4758.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\assurance-p1-gates-ab4758.md'
 original_relative_path: '_archive\\2026-05\\assurance-p1-gates-ab4758.md'
 source_sha256: cc4fd757dca855c188e07a5df506096ee82fb31130922f5ba86d65322bfd1a54
 recovered_status: LEGACY_EXISTING

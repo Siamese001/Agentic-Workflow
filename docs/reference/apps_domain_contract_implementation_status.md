@@ -1,7 +1,7 @@
 # apps_* Domain Contract — Implementation Status Report
 
 > **Status**: Waves 1–3 + W7 partial **DELIVERED**. Waves 4–6 + W7 remainder + W8 **DEFERRED** with visible hooks.
-> **Plan**: `.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`
+> **Plan**: `.codex/plans/apps-domain-contract-fortknox-c4d8e2.md`
 > **Discovery**: `docs/reference/apps_domain_contract_discovery.md`
 > **Date**: 2026-05-01
 
@@ -176,7 +176,7 @@ Depends on all above.
 **Documentation**:
 - `docs/reference/apps_domain_contract_discovery.md`
 - `docs/reference/apps_domain_contract_implementation_status.md` (this file)
-- `.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`
+- `.codex/plans/apps-domain-contract-fortknox-c4d8e2.md`
 
 ### Modified
 
@@ -238,7 +238,7 @@ Depends on all above.
 - **§31 SSOT folder routing**: New files land in canonical folders — `agentic_core/L4_state/contracts/`, `agentic_core/L4_state/uwg/`, `tools/apps_proof/`, `tests/_apps_contract/`, `apps_<name>/config/domain_contract/`. Zero violations.
 - **§15 exception handling**: No bare `except:` introduced. Custom exception hierarchy (`AppDomainContractError`, `AppDomainLookupError`, `UnknownAppContractError`, `DeprecatedAppContractError`, `DraftAppContractError`) for precise catch-and-handle.
 - **§19 mode separation**: Phase 0 was pure discovery (no edits); Phases 1+ were implementation only after user approval. Honored.
-- **Plan SSOT**: Plan at `.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`; discovery at `docs/reference/apps_domain_contract_discovery.md`; this status at `docs/reference/apps_domain_contract_implementation_status.md`. No plan-file drift.
+- **Plan SSOT**: Plan at `.codex/plans/apps-domain-contract-fortknox-c4d8e2.md`; discovery at `docs/reference/apps_domain_contract_discovery.md`; this status at `docs/reference/apps_domain_contract_implementation_status.md`. No plan-file drift.
 
 ---
 

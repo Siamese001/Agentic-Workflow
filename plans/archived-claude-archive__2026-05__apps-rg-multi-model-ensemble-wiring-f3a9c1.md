@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-multi-model-ensemble-wiring-f3a9c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-multi-model-ensemble-wiring-f3a9c1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-multi-model-ensemble-wiring-f3a9c1.md'
 source_sha256: e62d2580da1c1b4a2641f553927bc95b50f24da89873b377f4be51b1b9523dc7
 recovered_status: LEGACY_EXISTING

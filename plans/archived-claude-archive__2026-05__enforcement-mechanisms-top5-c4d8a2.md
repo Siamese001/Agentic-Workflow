@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\enforcement-mechanisms-top5-c4d8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\enforcement-mechanisms-top5-c4d8a2.md'
 original_relative_path: '_archive\\2026-05\\enforcement-mechanisms-top5-c4d8a2.md'
 source_sha256: f68e9b5b1a4990a231d794d7cd7e5f515b12046c5df142fb4f80579f80e3c85a
 recovered_status: LEGACY_EXISTING

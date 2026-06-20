@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ag5-exit-x1-evaluator-wiring-d8e4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ag5-exit-x1-evaluator-wiring-d8e4a2.md'
 original_relative_path: '_archive\\2026-05\\ag5-exit-x1-evaluator-wiring-d8e4a2.md'
 source_sha256: 1fe34d2b6cb72736ee5e346d546b97c9dda20d31740776c8e6bb2daf4b91e703
 recovered_status: LEGACY_EXISTING

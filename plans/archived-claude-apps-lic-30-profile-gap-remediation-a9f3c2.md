@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-30-profile-gap-remediation-a9f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-30-profile-gap-remediation-a9f3c2.md'
 original_relative_path: 'apps-lic-30-profile-gap-remediation-a9f3c2.md'
 source_sha256: 3100f1ccddce44f105c23898e01f2be5b876cac4996ee9f6ec1987289b74cfe4
 recovered_status: LEGACY_EXISTING

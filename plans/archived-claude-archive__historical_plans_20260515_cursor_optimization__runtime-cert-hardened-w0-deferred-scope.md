@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-hardened-w0-deferred-scope.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-hardened-w0-deferred-scope.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-hardened-w0-deferred-scope.md'
 source_sha256: d3acd7d5cf0e805ca4b68c9f96616b58020ff60c1d300cc281eb384f3041d2f7
 recovered_status: LEGACY_EXISTING

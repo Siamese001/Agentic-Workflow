@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\10c-proof-bundle-current-head-a8f4c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\10c-proof-bundle-current-head-a8f4c2.md'
 original_relative_path: '_archive\\2026-05\\10c-proof-bundle-current-head-a8f4c2.md'
 source_sha256: af5c2ce61b3906d087c96ef0d445e471aa0145218787100938b011c65987ff55
 recovered_status: LEGACY_EXISTING

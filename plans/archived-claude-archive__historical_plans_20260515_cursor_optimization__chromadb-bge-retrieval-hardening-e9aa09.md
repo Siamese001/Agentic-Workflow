@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chromadb-bge-retrieval-hardening-e9aa09.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chromadb-bge-retrieval-hardening-e9aa09.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\chromadb-bge-retrieval-hardening-e9aa09.md'
 source_sha256: 84482b160610cf2b4a6e1911868f944f7747251eb7d505054e387b893954428d
 recovered_status: LEGACY_EXISTING

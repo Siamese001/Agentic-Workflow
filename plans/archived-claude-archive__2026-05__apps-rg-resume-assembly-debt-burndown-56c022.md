@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-resume-assembly-debt-burndown-56c022.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-resume-assembly-debt-burndown-56c022.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-resume-assembly-debt-burndown-56c022.md'
 source_sha256: 078001d41bb22c253dfeaec9cd99f392ddcbd54f5a31d2a4659e3ea779cba195
 recovered_status: LEGACY_EXISTING

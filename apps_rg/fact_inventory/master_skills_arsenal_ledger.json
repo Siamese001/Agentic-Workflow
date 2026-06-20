@@ -12457,7 +12457,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_layered_runtime_spine_design",
       "target_node_id": "repo_bd5d6d",
-      "rationale": "Repo evidence: .claude/rules/000-agentic-core-operating-contract.mdc",
+      "rationale": "Repo evidence: .codex/rules/000-agentic-core-operating-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -15177,7 +15177,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_side_effect_bounded_action_design",
       "target_node_id": "repo_bd5d6d",
-      "rationale": "Repo evidence: .claude/rules/000-agentic-core-operating-contract.mdc",
+      "rationale": "Repo evidence: .codex/rules/000-agentic-core-operating-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -16387,7 +16387,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_policy_bound_runtime_design",
       "target_node_id": "repo_f2456e",
-      "rationale": "Repo evidence: .claude/rules/constitutional.mdc",
+      "rationale": "Repo evidence: .codex/rules/constitutional.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -17097,7 +17097,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_receipt_and_artifact_chain_design",
       "target_node_id": "repo_08a182",
-      "rationale": "Repo evidence: .claude/rules/artifact-provenance-discipline.mdc",
+      "rationale": "Repo evidence: .codex/rules/artifact-provenance-discipline.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -17197,7 +17197,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_no_bypass_proof_controls",
       "target_node_id": "repo_c303f9",
-      "rationale": "Repo evidence: .claude/rules/002-pass-blocked-proof-contract.mdc",
+      "rationale": "Repo evidence: .codex/rules/002-pass-blocked-proof-contract.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -17397,7 +17397,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_learning_firewall_controls",
       "target_node_id": "repo_0eaaf9",
-      "rationale": "Repo evidence: .claude/rules/evaluation-promotion-gate.mdc",
+      "rationale": "Repo evidence: .codex/rules/evaluation-promotion-gate.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -17497,7 +17497,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_hitl_escalation_architecture",
       "target_node_id": "repo_b7a57b",
-      "rationale": "Repo evidence: .claude/rules/003-cursor-author-gate-hitl.mdc",
+      "rationale": "Repo evidence: .codex/rules/003-cursor-author-gate-hitl.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -17597,7 +17597,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_approval_gated_workflow_design",
       "target_node_id": "repo_3ffea5",
-      "rationale": "Repo evidence: .claude/rules/wave-completion-discipline.mdc",
+      "rationale": "Repo evidence: .codex/rules/wave-completion-discipline.mdc",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -24736,7 +24736,7 @@
         "ProfileResolver"
       ],
       "repo_evidence_files": [
-        ".claude/rules/000-agentic-core-operating-contract.mdc"
+        ".codex/rules/000-agentic-core-operating-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -26513,7 +26513,7 @@
         "NoDirectWrite"
       ],
       "repo_evidence_files": [
-        ".claude/rules/000-agentic-core-operating-contract.mdc"
+        ".codex/rules/000-agentic-core-operating-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -27293,7 +27293,7 @@
         "ConstitutionalRules"
       ],
       "repo_evidence_files": [
-        ".claude/rules/constitutional.mdc"
+        ".codex/rules/constitutional.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -27753,7 +27753,7 @@
         "ArtifactProvenance"
       ],
       "repo_evidence_files": [
-        ".claude/rules/artifact-provenance-discipline.mdc"
+        ".codex/rules/artifact-provenance-discipline.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -27817,7 +27817,7 @@
         "ProofContract"
       ],
       "repo_evidence_files": [
-        ".claude/rules/002-pass-blocked-proof-contract.mdc"
+        ".codex/rules/002-pass-blocked-proof-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -27944,7 +27944,7 @@
         "PromotionGate"
       ],
       "repo_evidence_files": [
-        ".claude/rules/evaluation-promotion-gate.mdc"
+        ".codex/rules/evaluation-promotion-gate.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -28007,7 +28007,7 @@
         "AuthorGate"
       ],
       "repo_evidence_files": [
-        ".claude/rules/003-cursor-author-gate-hitl.mdc"
+        ".codex/rules/003-cursor-author-gate-hitl.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -28070,7 +28070,7 @@
         "WaveLifecycle"
       ],
       "repo_evidence_files": [
-        ".claude/rules/wave-completion-discipline.mdc"
+        ".codex/rules/wave-completion-discipline.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -36536,7 +36536,7 @@
         "ProfileResolver"
       ],
       "repo_evidence_files": [
-        ".claude/rules/000-agentic-core-operating-contract.mdc"
+        ".codex/rules/000-agentic-core-operating-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -38634,7 +38634,7 @@
         "NoDirectWrite"
       ],
       "repo_evidence_files": [
-        ".claude/rules/000-agentic-core-operating-contract.mdc"
+        ".codex/rules/000-agentic-core-operating-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -39556,7 +39556,7 @@
         "ConstitutionalRules"
       ],
       "repo_evidence_files": [
-        ".claude/rules/constitutional.mdc"
+        ".codex/rules/constitutional.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -40099,7 +40099,7 @@
         "ArtifactProvenance"
       ],
       "repo_evidence_files": [
-        ".claude/rules/artifact-provenance-discipline.mdc"
+        ".codex/rules/artifact-provenance-discipline.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -40175,7 +40175,7 @@
         "ProofContract"
       ],
       "repo_evidence_files": [
-        ".claude/rules/002-pass-blocked-proof-contract.mdc"
+        ".codex/rules/002-pass-blocked-proof-contract.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -40326,7 +40326,7 @@
         "PromotionGate"
       ],
       "repo_evidence_files": [
-        ".claude/rules/evaluation-promotion-gate.mdc"
+        ".codex/rules/evaluation-promotion-gate.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -40401,7 +40401,7 @@
         "AuthorGate"
       ],
       "repo_evidence_files": [
-        ".claude/rules/003-cursor-author-gate-hitl.mdc"
+        ".codex/rules/003-cursor-author-gate-hitl.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -40476,7 +40476,7 @@
         "WaveLifecycle"
       ],
       "repo_evidence_files": [
-        ".claude/rules/wave-completion-discipline.mdc"
+        ".codex/rules/wave-completion-discipline.mdc"
       ],
       "source_resume_files": [],
       "source_snippets": [

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\llm-containment-hooks-rules-c7a91b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\llm-containment-hooks-rules-c7a91b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\llm-containment-hooks-rules-c7a91b.md'
 source_sha256: 02e393bdabbe471f7705f7be0bc9c6a56026282f84354e9bd091f7dc20dc06ba
 recovered_status: LEGACY_EXISTING

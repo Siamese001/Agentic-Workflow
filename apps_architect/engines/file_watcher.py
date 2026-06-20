@@ -1,6 +1,6 @@
 """File system watcher — event-driven scan triggers.
 
-Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW3 DS-4.
+Plan: ``.codex/plans/apps-architect-deferred-scope-b8e3f1.md`` DW3 DS-4.
 
 Watches plans/rules/core directories for changes and triggers pattern scans.
 Polling-based (no external deps). Configurable poll interval and debounce.

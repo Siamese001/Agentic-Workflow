@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\routing-decision-process-enhancement-9c7e4d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\routing-decision-process-enhancement-9c7e4d.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\routing-decision-process-enhancement-9c7e4d.md'
 source_sha256: 1ebb613b19ca8e79336960dea60a8bc9cf8b5afae0baf68bbb55d6005f3fcd7b
 recovered_status: LEGACY_EXISTING

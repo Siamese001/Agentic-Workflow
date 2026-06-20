@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\acceptance-gates-master-tracking-b5c3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\acceptance-gates-master-tracking-b5c3e1.md'
 original_relative_path: '_archive\\2026-05\\acceptance-gates-master-tracking-b5c3e1.md'
 source_sha256: 8bea8f6621925abfe6cf05937725775ea3f188bf8e064c7669d09d410f538ce1
 recovered_status: LEGACY_EXISTING

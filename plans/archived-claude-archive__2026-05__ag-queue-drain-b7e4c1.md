@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ag-queue-drain-b7e4c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ag-queue-drain-b7e4c1.md'
 original_relative_path: '_archive\\2026-05\\ag-queue-drain-b7e4c1.md'
 source_sha256: c40a67c623fc254b6dbb82bb7b397e535cdc3128c784e54e4c9da3bed64662fd
 recovered_status: LEGACY_EXISTING

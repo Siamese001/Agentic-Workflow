@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-l2-recipe-adapter-final-core-bound-d9f4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-l2-recipe-adapter-final-core-bound-d9f4a2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-l2-recipe-adapter-final-core-bound-d9f4a2.md'
 source_sha256: 334311522c13d29cd10e25aa275335cba3f8ddf734e0aef4b6af891271fbafa6
 recovered_status: LEGACY_EXISTING

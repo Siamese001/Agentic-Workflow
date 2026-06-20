@@ -70,7 +70,7 @@ Dry-run cleanup after the fix returns no duplicate targets:
 |---|---|
 | `python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/cleanup_duplicate_mcp_cohorts.py` | Pass |
 | `python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q` | Pass: 10 passed, 3 warnings |
-| `python scripts/governance/verify_codex_backup.py` | Pass |
+| `python scripts/governance/verify_codex_primary.py` | Pass |
 | `python tools/analysis/check_plan_format_forward.py plans/codex-claude-mcp-access-parity-c6d4e2.md` | Pass |
 
 ## Remaining Limit

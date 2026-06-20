@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-completeness-remediation-907fac.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-completeness-remediation-907fac.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-completeness-remediation-907fac.md'
 source_sha256: 36e535e3badc4204a050d8c2cfee789f9a551fbc7ce10b7fedc13b05d52b2e8d
 recovered_status: LEGACY_EXISTING

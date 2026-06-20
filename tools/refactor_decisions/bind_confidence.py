@@ -1,6 +1,6 @@
 """Bind-confidence classification for Author-Gate outcome binding (plan W1).
 
-Tiers: high, medium, low, disputed — see `.claude/plans/author-gate-learning-harden-f4e8a2.md`.
+Tiers: high, medium, low, disputed — see `.codex/plans/author-gate-learning-harden-f4e8a2.md`.
 Pure helpers (no I/O) except optional JSON file parse for CI receipts.
 """
 

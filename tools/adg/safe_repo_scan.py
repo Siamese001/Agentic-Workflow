@@ -42,7 +42,7 @@ def _on_walk_error(_err: OSError) -> None:
 def _should_prune_dir(name: str) -> bool:
     if name in _SKIP_DIR_NAMES:
         return True
-    if name.startswith(".") and name not in {".claude"}:
+    if name.startswith(".") and name not in {".codex"}:
         return True
     return False
 

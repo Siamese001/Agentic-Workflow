@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-adg-trace-binding-remediation-d7e8f9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-adg-trace-binding-remediation-d7e8f9.md'
 original_relative_path: '_archive\\2026-05\\runtime-adg-trace-binding-remediation-d7e8f9.md'
 source_sha256: f6a418610b79dfc7010edad6ca79e77734378aadd18aee49d06d1607bd95a013
 recovered_status: LEGACY_EXISTING

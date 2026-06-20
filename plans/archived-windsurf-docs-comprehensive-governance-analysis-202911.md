@@ -136,7 +136,7 @@ The `docs/` folder contains rich content (506+ files including architecture plan
 
 #### 10. IDE Configuration Blind Spot
 **Issue**: IDE configurations lack validation
-- **Location**: `.vscode/settings.json`, `.vscode/.windsurfrules`
+- **Location**: `.vscode/hooks.json`, `.vscode/.windsurfrules`
 - **Gap**: No validation of IDE configuration consistency
 
 ## Security Vulnerabilities Assessment

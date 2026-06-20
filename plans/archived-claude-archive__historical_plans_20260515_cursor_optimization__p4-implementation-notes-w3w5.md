@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p4-implementation-notes-w3w5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p4-implementation-notes-w3w5.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p4-implementation-notes-w3w5.md'
 source_sha256: 2f74bf928499db403dbeebc9ac7273d3ba4b23984c5b2e562556e0415f486130
 recovered_status: LEGACY_EXISTING

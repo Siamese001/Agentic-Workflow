@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-enforcement-consolidation-e8f3a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-enforcement-consolidation-e8f3a2.md'
 original_relative_path: '_archive\\2026-05\\notion-enforcement-consolidation-e8f3a2.md'
 source_sha256: 7c5a18b5e20a905a738ad8befcb2ed8c135c12f1032ae2c69f0eeb407d27ff60
 recovered_status: LEGACY_EXISTING

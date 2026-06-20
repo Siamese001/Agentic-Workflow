@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-ci-gate-hardening-deferred-b4e3c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-ci-gate-hardening-deferred-b4e3c9.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-ci-gate-hardening-deferred-b4e3c9.md'
 source_sha256: 50a47d9b2575e7f410b5075b922056bfbedfeaf12191f871c82819bdc6731741
 recovered_status: LEGACY_EXISTING

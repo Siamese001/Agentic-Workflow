@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-author-gate-harmonization-a7e3d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-author-gate-harmonization-a7e3d2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-author-gate-harmonization-a7e3d2.md'
 source_sha256: 01c6852695f8d8ef2ced61518010b4189a3acab2cbfff4b6e369c960cbc086ad
 recovered_status: LEGACY_EXISTING

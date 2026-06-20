@@ -19,7 +19,7 @@ Preference signals:
 
 Key steps:
 
-- Loaded the repo governance skill and session memory first, then read the repo guidance files (`AGENTS.md`, `.claude/rules/plan-first-enforcement.md`, `.claude/rules/plan-location.md`, `.claude/mcp-notes.md`, `.mcp.json`, and related skills) before doing analysis.
+- Loaded the repo governance skill and session memory first, then read the repo guidance files (`AGENTS.md`, `.codex/rules/plan-first-enforcement.md`, `.codex/rules/plan-location.md`, `.codex/mcp-notes.md`, `.mcp.json`, and related skills) before doing analysis.
 - Checked `git status` and found the main checkout already had unrelated modified files, so the work was redirected into a fresh worktree on `origin/main` instead of modifying the dirty checkout.
 - Created `codex/apps-rg-testing-gaps` worktree from `origin/main` and confirmed the branch was clean.
 - Located the newest ADG hotspot/coverage evidence by timestamped artifacts and a local SQLite snapshot rather than the older tracked Markdown report. The most relevant evidence came from `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_06152026_1043.sqlite` and the `mv_hotspot_coverage_risk`/`coverage_by_path` tables.

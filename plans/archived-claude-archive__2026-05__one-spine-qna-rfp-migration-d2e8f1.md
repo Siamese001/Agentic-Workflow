@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\one-spine-qna-rfp-migration-d2e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\one-spine-qna-rfp-migration-d2e8f1.md'
 original_relative_path: '_archive\\2026-05\\one-spine-qna-rfp-migration-d2e8f1.md'
 source_sha256: 7daf84a7e984fbe06cee43dd8057bd773127360abb5375bd5e845fb051dc54ed
 recovered_status: LEGACY_EXISTING

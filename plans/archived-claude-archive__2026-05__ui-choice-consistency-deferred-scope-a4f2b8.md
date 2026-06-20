@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ui-choice-consistency-deferred-scope-a4f2b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ui-choice-consistency-deferred-scope-a4f2b8.md'
 original_relative_path: '_archive\\2026-05\\ui-choice-consistency-deferred-scope-a4f2b8.md'
 source_sha256: 4a36be73b0c8596b7f65f70464af438bd7d38890e9d3eda2f514b8d09ec853b2
 recovered_status: LEGACY_EXISTING

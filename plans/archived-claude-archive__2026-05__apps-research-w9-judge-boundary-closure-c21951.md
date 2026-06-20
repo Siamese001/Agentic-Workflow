@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-w9-judge-boundary-closure-c21951.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-w9-judge-boundary-closure-c21951.md'
 original_relative_path: '_archive\\2026-05\\apps-research-w9-judge-boundary-closure-c21951.md'
 source_sha256: 535cda8016aa9654a22eba73879581b2d0aad37a8549233a13b06e964b2636cc
 recovered_status: LEGACY_EXISTING

@@ -93,7 +93,7 @@ For each:
 - `agentic_core/config/` and `agentic_core/runtime/config/` — runtime knob surfaces.
 - Per-app `config/` directories.
 - `.env` key inventory (names, consumers, defaults if declared).
-- `.claude/rules/`, `AGENTS.md`, `.claude/skills/`, `docs/archive/windsurf/legacy-tree/workflows/` — governance/control surfaces read at agent startup.
+- `.codex/rules/`, `AGENTS.md`, `.codex/skills/`, `docs/archive/windsurf/legacy-tree/workflows/` — governance/control surfaces read at agent startup.
 - Prompt surfaces: `agentic_core/prompt_governance/`, `apps_shared/prompts/`, per-app prompt directories.
 - Feature flags / runtime toggles wherever they live.
 
@@ -104,7 +104,7 @@ For each:
 
 **In scope**
 - MCP server inventory: `tools/mcp/` (enhanced_http, pytest, redis, vector_db), `tools/adg/mcp/` (adg_sqlite), plus all entries in `.mcp.json` (stable server IDs mapped to live transports).
-- `.claude/settings.json` — pre/post MCP gates, command gates, memory-first gate.
+- `.codex/hooks.json` — pre/post MCP gates, command gates, memory-first gate.
 - `ops_scripts/` — CI gates (`ops_scripts/ci/`), dev tools, governance, maintenance, verification.
 - `.github/` — CI workflows, actions, issue templates.
 - Startup/shutdown paths: MCP server launch, Redis/vector-DB lifecycle, process boundaries.

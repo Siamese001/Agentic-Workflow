@@ -2,7 +2,7 @@
 
 Generated: 2026-06-08
 
-Scope: W0 only for `.claude/plans/apps-lic-canonical-hardening-wireup-4c9d2a.md`. No production code was changed.
+Scope: W0 only for `.codex/plans/apps-lic-canonical-hardening-wireup-4c9d2a.md`. No production code was changed.
 
 ## Classification
 

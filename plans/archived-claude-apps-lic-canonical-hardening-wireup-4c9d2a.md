@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-canonical-hardening-wireup-4c9d2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-canonical-hardening-wireup-4c9d2a.md'
 original_relative_path: 'apps-lic-canonical-hardening-wireup-4c9d2a.md'
 source_sha256: 53b3eb8669f2d1ec4be74dc1c0f8501969743422dc835bec4cea0e171e4e00ae
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-exit-disposition-smoke-b7e2d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-exit-disposition-smoke-b7e2d9.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-exit-disposition-smoke-b7e2d9.md'
 source_sha256: 336d1afe39b74bbc1dac3c740380cb0d94115241d9bce6f03ec416a8edb6a121
 recovered_status: LEGACY_EXISTING

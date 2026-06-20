@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-standalone-harnesses-f2c7a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-standalone-harnesses-f2c7a9.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-standalone-harnesses-f2c7a9.md'
 source_sha256: 131391c53b96732a3cdd6fc5d44e4911c12109ee08cc489f5024469d02f0543d
 recovered_status: LEGACY_EXISTING

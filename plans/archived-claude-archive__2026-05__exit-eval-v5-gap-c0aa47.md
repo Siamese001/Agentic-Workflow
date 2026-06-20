@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exit-eval-v5-gap-c0aa47.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exit-eval-v5-gap-c0aa47.md'
 original_relative_path: '_archive\\2026-05\\exit-eval-v5-gap-c0aa47.md'
 source_sha256: 041ae5f7824365b78a7c9413a6634af3f1b9e9a1234900a3712dbac497e8f72f
 recovered_status: LEGACY_EXISTING

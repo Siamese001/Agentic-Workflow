@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\backlog-keep-triage-d2e4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\backlog-keep-triage-d2e4f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\backlog-keep-triage-d2e4f1.md'
 source_sha256: c9e77818a7830eb61e7015b22212d70e96089a3c2e01cf69eca70776ae89b2de
 recovered_status: LEGACY_EXISTING

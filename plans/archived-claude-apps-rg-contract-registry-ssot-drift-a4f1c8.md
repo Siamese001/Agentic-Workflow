@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-rg-contract-registry-ssot-drift-a4f1c8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-rg-contract-registry-ssot-drift-a4f1c8.md'
 original_relative_path: 'apps-rg-contract-registry-ssot-drift-a4f1c8.md'
 source_sha256: 8b96a1843bec09b985f84537c7ba31961986d1a68250c3096480ef594c482a9b
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l0-l3-parent-gap-remediation-a7f3e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l0-l3-parent-gap-remediation-a7f3e2.md'
 original_relative_path: '_archive\\2026-05\\l0-l3-parent-gap-remediation-a7f3e2.md'
 source_sha256: e844a365d89011d13cf867fd06aeb3e8862c223f81925eb8c87056fcfbe453f8
 recovered_status: LEGACY_EXISTING

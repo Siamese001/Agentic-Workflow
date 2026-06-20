@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-prose-options-detection-e7f2a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-prose-options-detection-e7f2a3.md'
 original_relative_path: '_archive\\2026-05\\author-gate-prose-options-detection-e7f2a3.md'
 source_sha256: 08784d11b9adaec6470937bda54090d0c411a3468b2df382486410d8eb33d095
 recovered_status: LEGACY_EXISTING

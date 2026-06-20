@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p2.1_core-l5-certification-packet-producer-hardening.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p2.1_core-l5-certification-packet-producer-hardening.md'
 original_relative_path: '_archive\\2026-05\\p2.1_core-l5-certification-packet-producer-hardening.md'
 source_sha256: f39242aefcb12c403ea5949bfec79c6649ce84c55ed38d1d3d2c3e9f1d191415
 recovered_status: LEGACY_EXISTING

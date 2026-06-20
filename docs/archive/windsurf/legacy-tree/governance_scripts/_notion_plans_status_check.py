@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Re-export — SSOT is ``.claude/governance/scripts/_notion_plans_status_check.py``."""
+"""Re-export — SSOT is ``.codex/governance/scripts/_notion_plans_status_check.py``."""
 from __future__ import annotations
 
 import importlib.util
@@ -7,7 +7,7 @@ from pathlib import Path
 
 _SSOT_PATH = (
     # parent       = _legacy_windsurf/
-    # parent.parent = .claude/governance/scripts/  ← real SSOT lives here
+    # parent.parent = .codex/governance/scripts/  ← real SSOT lives here
     # (old: probed .cursor/scripts/ which is absent in worktrees → FileNotFoundError)
     Path(__file__).resolve().parent.parent
     / "_notion_plans_status_check.py"

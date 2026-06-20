@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-hop-substrate-four-apps-b4a2c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-hop-substrate-four-apps-b4a2c9.md'
 original_relative_path: '_archive\\2026-05\\apps-hop-substrate-four-apps-b4a2c9.md'
 source_sha256: 26b1511d26368d9cbf2517e24424679fba585115e5c421d2df73987c01270067
 recovered_status: LEGACY_EXISTING

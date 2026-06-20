@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-l4-chromadb-init-p0-a7e4c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-l4-chromadb-init-p0-a7e4c3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-l4-chromadb-init-p0-a7e4c3.md'
 source_sha256: 9f82ea121a1d4e289cc47e1d8c8da4c185ba4e8b79d77057260859207a120bd1
 recovered_status: LEGACY_EXISTING

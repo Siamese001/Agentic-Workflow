@@ -7,7 +7,7 @@ description: "Up-to-date, versioned official documentation for external librarie
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §4 — Context7 (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §4 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §4 for current guidance.
 
 ---
 

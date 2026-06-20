@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md'
 source_sha256: ff1bc63b1bdc0b57676754d223096e1dadf0e9e3305c8d80a93a605577cb37cc
 recovered_status: LEGACY_EXISTING

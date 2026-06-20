@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-l2-x1d-input-parity-c4f8e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-l2-x1d-input-parity-c4f8e1.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-l2-x1d-input-parity-c4f8e1.md'
 source_sha256: 88b73f362b88a0989bca431da673bd89108ef527f898f50703583e7848b27d13
 recovered_status: LEGACY_EXISTING

@@ -39,7 +39,7 @@ def test_is_mcp_detects_adg_server_module_invocation() -> None:
 
 
 def test_is_mcp_detects_filesystem_launcher() -> None:
-    p = _p(1, 0, "node C:/x/.claude/governance/scripts/filesystem_mcp_launcher.js")
+    p = _p(1, 0, "node C:/x/.codex/governance/scripts/filesystem_mcp_launcher.js")
     assert p.is_mcp()
 
 

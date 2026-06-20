@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-u0-reflection-harness-79d032.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-u0-reflection-harness-79d032.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-u0-reflection-harness-79d032.md'
 source_sha256: 3868283332b3ed95c16444d12a7bfb023188d61f708b13a79fd8739b945ee471
 recovered_status: LEGACY_EXISTING

@@ -8,7 +8,7 @@
 | Decision Date | 2026-05-01 |
 | Deciders | Author-Gate (architecture_choice), confidence=0.85 |
 | Impact Layers | L_APP (apps_shared, apps_lic, apps_rg, apps_underwriting_ai, apps_research, apps_rfp, apps_exec, apps_eval) |
-| Plan | `.claude/plans/apps-hop-substrate-f7751b.md` |
+| Plan | `.codex/plans/apps-hop-substrate-f7751b.md` |
 | Supersedes | (none) |
 | Superseded By | (none) |
 
@@ -91,11 +91,11 @@ Delete `HOPPipelineExecutor`, `hop_stage_registry`, the `LicHealingOrchestrator.
 | 4.1 | apps_underwriting_ai adopt — additive `UnderwritingHopOrchestrator` + 5-stage topology + 5 adapter engines wrapping existing stage methods. `UnderwritingEngine.run()` remains primary. | ✅ DONE |
 | 4.2 | CI gate `check_apps_hop_pipeline_location.py` (advisory for unmigrated, strict for migrated). 3 migrated apps clean; apps_eval/apps_exec/apps_rfp remain as advisory candidates (single-step R3_grounded_read — adoption optional). | ✅ DONE |
 | 4.3 | This ADR + Notion writeback | ✅ DONE |
-| 5 (2026-05-01) | Four-app substrate extension — apps_research (3-stage), apps_rfp (3-stage), apps_exec (4-stage), apps_eval (6-stage). 29 NEW files: 4 configs + 16 adapters + 4 orchestrators + 4 smoke-test modules + 1 apps_eval hop_integration helper. Imperative `BaseXxxEngine` runtime unchanged; substrate path additive. L2 wiring closed: `hop_checkpoints`/`hop_terminal_error` fields + `_run_hop_pipeline()` helper added to `GovernedE2ERunRecord`/`GovernedRfpE2ERunRecord`/`GovernedExecE2ERunRecord`; apps_eval uses standalone `run_eval_hop_pipeline()` helper. GAP-1 smoke tests: 21 pass. CI gate: 7/7 migrated apps clean, 0 advisories. Plan: `.claude/plans/apps-hop-substrate-four-apps-b4a2c9.md`. | ✅ DONE |
+| 5 (2026-05-01) | Four-app substrate extension — apps_research (3-stage), apps_rfp (3-stage), apps_exec (4-stage), apps_eval (6-stage). 29 NEW files: 4 configs + 16 adapters + 4 orchestrators + 4 smoke-test modules + 1 apps_eval hop_integration helper. Imperative `BaseXxxEngine` runtime unchanged; substrate path additive. L2 wiring closed: `hop_checkpoints`/`hop_terminal_error` fields + `_run_hop_pipeline()` helper added to `GovernedE2ERunRecord`/`GovernedRfpE2ERunRecord`/`GovernedExecE2ERunRecord`; apps_eval uses standalone `run_eval_hop_pipeline()` helper. GAP-1 smoke tests: 21 pass. CI gate: 7/7 migrated apps clean, 0 advisories. Plan: `.codex/plans/apps-hop-substrate-four-apps-b4a2c9.md`. | ✅ DONE |
 
 ## References
 
-- Plan: `.claude/plans/apps-hop-substrate-f7751b.md`
+- Plan: `.codex/plans/apps-hop-substrate-f7751b.md`
 - Substrate: `apps_shared/orchestration/hop_pipeline.py`
 - First consumer: `apps_lic/config/hop_pipeline.py`, `apps_lic/reasoning/LicCampaignOrchestrator.py`
 - Tests: `tests/unit/apps_shared/test_hop_pipeline.py`

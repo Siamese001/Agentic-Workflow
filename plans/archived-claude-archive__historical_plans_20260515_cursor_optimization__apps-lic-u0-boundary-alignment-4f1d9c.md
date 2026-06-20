@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-u0-boundary-alignment-4f1d9c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-u0-boundary-alignment-4f1d9c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-u0-boundary-alignment-4f1d9c.md'
 source_sha256: 40a68ebf93b0820e329cf2108774a6ac37d9bb521f7eaba083beefb653207278
 recovered_status: LEGACY_EXISTING

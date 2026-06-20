@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-fail-aggregating-gate-chain-9d4e1f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-fail-aggregating-gate-chain-9d4e1f.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-fail-aggregating-gate-chain-9d4e1f.md'
 source_sha256: 383b23eaa50f3987190beb4bf5f7e702319b21cd67b67c45a9d13b0dba5482b1
 recovered_status: LEGACY_EXISTING

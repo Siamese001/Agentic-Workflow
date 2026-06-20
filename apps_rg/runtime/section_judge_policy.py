@@ -77,7 +77,7 @@ class SectionJudgePolicy:
 # Cross-provider judges ONLY — never anthropic_claude. Claude Sonnet 4.6 is the GENERATOR for every
 # lane, so a same-family judge has correlated blind spots (a self-judge that won't catch the
 # generator's systematic errors). Recalibrated 2026-06-08 for the Claude base — the 3-provider panel
-# was Qwen-era insurance against a weak local generator. See .claude/rules/judge-calibration-cadence.md.
+# was Qwen-era insurance against a weak local generator. See .codex/rules/judge-calibration-cadence.md.
 _DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\mcp-skill-installation-2ee0d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\mcp-skill-installation-2ee0d2.md'
 original_relative_path: '_archive\\2026-05\\mcp-skill-installation-2ee0d2.md'
 source_sha256: 9326116759db405038a2ac3b5bebe881fde2a804c90e1e909805243a222ac012
 recovered_status: LEGACY_EXISTING

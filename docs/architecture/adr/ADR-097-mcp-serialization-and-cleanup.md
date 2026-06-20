@@ -23,7 +23,7 @@ to this plan.
 - **Stop-dispatch already slimmed in W1** — `_AG_CHAIN` dropped from 10 → 2 entries.
 
 **Deferred (to avoid collision with parallel efforts, not abandoned):**
-- **Legacy-tree deletion** (`.claude/governance/scripts/_legacy_cursor/`, `_legacy_windsurf/`) — owned
+- **Legacy-tree deletion** (`.codex/governance/scripts/_legacy_cursor/`, `_legacy_windsurf/`) — owned
   by the active `cursor-decommission` / `windsurf-deprecation` branches; deleting here would conflict.
 - **Physical archiving of dormant scripts** from W1/W3/W4 (`pre_author_gate.py`, `_author_gate_queue.py`,
   `post_cursor_agent_*_author_gate_*.py`, `post_cursor_agent_deferred_scope_capture.py`,

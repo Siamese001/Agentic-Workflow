@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p1-p4-enforcement-hardening-8a3f2b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p1-p4-enforcement-hardening-8a3f2b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p1-p4-enforcement-hardening-8a3f2b.md'
 source_sha256: daa973b52316153cd2640b30676b973bbe9ae0060c9f9314183974213913b9ce
 recovered_status: LEGACY_EXISTING

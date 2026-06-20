@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-provider-authenticity-gate-c4f8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-provider-authenticity-gate-c4f8b2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-provider-authenticity-gate-c4f8b2.md'
 source_sha256: 941674ee64c416473c0e0b39f6a7822fad5ae71cca174f48c04c0779951019ee
 recovered_status: LEGACY_EXISTING

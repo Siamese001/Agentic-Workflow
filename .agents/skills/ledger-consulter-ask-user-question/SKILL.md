@@ -55,7 +55,7 @@ verdict = consulter.lookup(
 - Builder: `tools/decisions/enriched_choice_builder.py`
 - Dashboard: `tools/ledgers/telemetry_dashboard.py`
 - Weekly report: `ops_scripts/calibration/ask_user_question_weekly_report.py`
-- Parent skill: `.claude/skills/ledger-consulter/SKILL.md`
+- Parent skill: `.codex/skills/ledger-consulter/SKILL.md`
 
 ## MANUAL MIGRATION REQUIRED
 

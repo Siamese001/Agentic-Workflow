@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\test-coverage-improvement-a1b2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\test-coverage-improvement-a1b2c3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\test-coverage-improvement-a1b2c3.md'
 source_sha256: 25d2773d66673f381145ff7227074028e51020e58304245f98a870ebc9393b7b
 recovered_status: LEGACY_EXISTING

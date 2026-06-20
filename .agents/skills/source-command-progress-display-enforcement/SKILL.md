@@ -271,12 +271,12 @@ When violations are detected:
 - `tools/progress_utils.py` - Utility functions (verify exists before use)
 - `tests/test_progress_display.py` - Test suite (verify exists before use)
 
-> **Skill directory note:** The `progress-display` skill directory is not present in the current `.claude/skills/` layout (7 canonical skills as of 2026-04-14). Progress display guidance is covered by the `artifact-management` skill (`SKILL.md` and `progress_display_protocol.md`). References to `.claude/skills/progress-display/` are stale and should not be used.
+> **Skill directory note:** The `progress-display` skill directory is not present in the current `.codex/skills/` layout (7 canonical skills as of 2026-04-14). Progress display guidance is covered by the `artifact-management` skill (`SKILL.md` and `progress_display_protocol.md`). References to `.codex/skills/progress-display/` are stale and should not be used.
 
 ## References
 
 - **Constitutional Rule**: §5.3 Query Timeout & Progress Reporting
-- **Skill Definition**: `.claude/skills/artifact-management/SKILL.md` (progress display is in `progress_display_protocol.md`)
+- **Skill Definition**: `.codex/skills/artifact-management/SKILL.md` (progress display is in `progress_display_protocol.md`)
 
 ---
 

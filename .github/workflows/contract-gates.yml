@@ -138,8 +138,8 @@ jobs:
         with:
           python-version: "3.12"
           install-mode: minimal
-      - name: Verify Codex backup adapter
-        run: python scripts/governance/verify_codex_backup.py --repo-only
+      - name: Verify Codex primary adapter
+        run: python scripts/governance/verify_codex_primary.py --repo-only
 
   apps-rg-prompt-judge-sync:
     name: apps-rg-prompt-judge-sync

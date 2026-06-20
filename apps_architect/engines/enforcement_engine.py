@@ -1,6 +1,6 @@
 """Automatic rule enforcement engine — DS-5.
 
-Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW4 DS-5.
+Plan: ``.codex/plans/apps-architect-deferred-scope-b8e3f1.md`` DW4 DS-5.
 
 Applies hardening rules to the repo. Dry-run by default; requires
 Author-Gate approval for severity=required rules. Never modifies

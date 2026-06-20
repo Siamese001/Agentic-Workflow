@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-consistency-zero-loss-hardened-d9f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-consistency-zero-loss-hardened-d9f3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-consistency-zero-loss-hardened-d9f3a1.md'
 source_sha256: 94985cc08ec317299de047d637c2a89ccd3913d61519c3ee28a2e04ff9c8d4bd
 recovered_status: LEGACY_EXISTING

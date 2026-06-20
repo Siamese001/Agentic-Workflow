@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\CURSOR_RUNTIME_SEAM_TEMPLATE.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\CURSOR_RUNTIME_SEAM_TEMPLATE.md'
 original_relative_path: 'CURSOR_RUNTIME_SEAM_TEMPLATE.md'
 source_sha256: f3a93e90cdd8c75eb3bc678c1cc74b457838529fa6c22c156f4baee37a9369f8
 recovered_status: LEGACY_EXISTING

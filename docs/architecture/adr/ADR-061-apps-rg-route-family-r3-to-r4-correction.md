@@ -81,4 +81,4 @@ Rejected. apps_rg's résumé generation quality does not require a retrieval cor
 - `tests/governance/test_apps_rg_c0_bypass_manifest.py` — test 1 (`test_apps_rg_c0_bypass_declared_in_static_dag`)
 - `tests/governance/test_apps_rg_static_dag.py` — test 2 (`test_apps_rg_static_dag_declares_r4_single_action`)
 - `docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md` — Route-Shape Taxonomy
-- Plan: `.claude/plans/apps-rg-canonical-wireup-c8a4f2.md` W3 P5 + W4 P9
+- Plan: `.codex/plans/apps-rg-canonical-wireup-c8a4f2.md` W3 P5 + W4 P9

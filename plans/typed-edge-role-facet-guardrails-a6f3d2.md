@@ -704,7 +704,7 @@ W1 closes 2026-06-13 on the current-substrate-passable bar (operator decision). 
 - `insurtech_narrative` — X3_ALLOW
 - `ey_narrative` — X3_ALLOW
 
-(InsurTech and EY are locked-deterministic per `apps_rg/CLAUDE.md` § Locked deterministic copy; their `X3_ALLOW` reflects the locked path executing cleanly, not graph-skill exercise.)
+(InsurTech and EY are locked-deterministic per `apps_rg/AGENTS.md` § Locked deterministic copy; their `X3_ALLOW` reflects the locked path executing cleanly, not graph-skill exercise.)
 
 **Stage A canonical artifact path**: `artifacts/w1/` (single-resume run for `anthropic_partner_applied_ai`, short `--artifact-dir` to dodge Windows MAX_PATH 260). All later stages reference this path verbatim.
 
@@ -1105,7 +1105,7 @@ verdict: REBALANCE_REQUIRED
 
 **Required searches**:
 ```bash
-rg -n "candidate_fact|candidate facts|CandidateFact" apps_rg tests docs plans .claude
+rg -n "candidate_fact|candidate facts|CandidateFact" apps_rg tests docs plans .codex
 ```
 
 **Classification rule**:
@@ -1179,8 +1179,8 @@ rg -n "GENERATED_CONTENT_LANES|section_execution_plan|e2e|end to end" apps_rg te
 
 **Required searches**:
 ```bash
-rg -n "linked_metric_outcome_ids|metric_outcome_nodes|metric_outcome|metric outcome" apps_rg/runtime apps_rg/fact_inventory apps_rg/config tests docs plans .claude
-rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bullet" apps_rg tests docs plans .claude
+rg -n "linked_metric_outcome_ids|metric_outcome_nodes|metric_outcome|metric outcome" apps_rg/runtime apps_rg/fact_inventory apps_rg/config tests docs plans .codex
+rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bullet" apps_rg tests docs plans .codex
 ```
 
 **Review rule**: metric outcome references must resolve to GraphDB rows before they can support metrics authority. Evidence-strength and metric-strength may be emitted only as diagnostics. Capability depth and ResumeBullet nodes are not W2 core-graph inputs. No ranking, selection, prompt, role-facet, typed-edge, sliding-scale, capability-depth, or ResumeBullet behavior may be introduced in W2.0.
@@ -1217,11 +1217,11 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 
 **Required searches**:
 ```bash
-rg -n "selected_fact_plan|allowed_fact_ids|source_fact_ids|fact_id" apps_rg/runtime apps_rg/config tests docs plans .claude
-rg -n "proof_pool|proof pool|proof_pool_resolver|allowed_pool|proof metadata" apps_rg/runtime apps_rg/config tests docs plans .claude
-rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .claude
-rg -n "master_skills|master skills|master_skills_arsenal_ledger|selection_plan_skill_ref" apps_rg tests docs plans .claude
-rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bullet" apps_rg tests docs plans .claude
+rg -n "selected_fact_plan|allowed_fact_ids|source_fact_ids|fact_id" apps_rg/runtime apps_rg/config tests docs plans .codex
+rg -n "proof_pool|proof pool|proof_pool_resolver|allowed_pool|proof metadata" apps_rg/runtime apps_rg/config tests docs plans .codex
+rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .codex
+rg -n "master_skills|master skills|master_skills_arsenal_ledger|selection_plan_skill_ref" apps_rg tests docs plans .codex
+rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bullet" apps_rg tests docs plans .codex
 ```
 
 > Note: `candidate_fact_id` was inventoried and classified in P0.1 and fenced in P0.2; W2.2 reuses that classification (lineage/compatibility allowed; authority disallowed) rather than re-searching. Adding `candidate_fact_id` back into this search would re-surface the P0.1-allowed lineage aliases as if they were new W2.2 scope.

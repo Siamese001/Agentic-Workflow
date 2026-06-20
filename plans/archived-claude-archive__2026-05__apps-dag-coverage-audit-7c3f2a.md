@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-dag-coverage-audit-7c3f2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-dag-coverage-audit-7c3f2a.md'
 original_relative_path: '_archive\\2026-05\\apps-dag-coverage-audit-7c3f2a.md'
 source_sha256: 7f4c987c782e1709b43dfc3d004e76f3b219e12b40f74e9967e6c1de7802b16d
 recovered_status: LEGACY_EXISTING

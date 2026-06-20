@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p2-burndown-session-summary-2a8f4c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p2-burndown-session-summary-2a8f4c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p2-burndown-session-summary-2a8f4c.md'
 source_sha256: 0dc50bd5e644ee086660433020026c1f125e4e58375bc0c51b2d97bb3108ad52
 recovered_status: LEGACY_EXISTING

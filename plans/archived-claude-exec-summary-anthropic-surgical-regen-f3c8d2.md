@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-anthropic-surgical-regen-f3c8d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-anthropic-surgical-regen-f3c8d2.md'
 original_relative_path: 'exec-summary-anthropic-surgical-regen-f3c8d2.md'
 source_sha256: 376354c6e2297664a945e7f45000fefb7159fb891661fc4d47ef225b896e347f
 recovered_status: LEGACY_EXISTING

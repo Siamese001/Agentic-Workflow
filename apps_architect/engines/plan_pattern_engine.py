@@ -1,6 +1,6 @@
-"""Plan file pattern extractor — parses .claude/plans/*.md for methodological patterns.
+"""Plan file pattern extractor — parses .codex/plans/*.md for methodological patterns.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P2.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P2.
 """
 
 from __future__ import annotations

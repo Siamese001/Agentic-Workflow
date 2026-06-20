@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-np10-deferred-scope-c8f1a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-np10-deferred-scope-c8f1a4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\notion-np10-deferred-scope-c8f1a4.md'
 source_sha256: 032f411bb398e9a2a53ed0d4e69827c83021bbee4a67ad6fca7bf8d9fb2afbbe
 recovered_status: LEGACY_EXISTING

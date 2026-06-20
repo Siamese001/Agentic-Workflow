@@ -104,10 +104,10 @@ L6 (one layer, two surfaces)
 ## Pointers
 
 - Full doctrinal chapters: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Observability_and_System_Learning`
-- ADG canonical invariants (Static vs Runtime ADG distinction): `.claude/rules/adg-canonical-invariants.md` §8
-- Promotion-gate rule: `.claude/rules/evaluation-promotion-gate.md`
-- Folder-rename plan (Deferred): `.claude/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
-- Non-invasive alignment plan: `.claude/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`
+- ADG canonical invariants (Static vs Runtime ADG distinction): `.codex/rules/adg-canonical-invariants.md` §8
+- Promotion-gate rule: `.codex/rules/evaluation-promotion-gate.md`
+- Folder-rename plan (Deferred): `.codex/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
+- Non-invasive alignment plan: `.codex/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`
 
 ## Alignment Status (plan `l6-doctrinal-alignment-noninvasive-b9d3f5`)
 

@@ -5,7 +5,7 @@ Governance hooks fail OPEN — they allow when their delegated backend is missin
 errors, so a broken gate never wedges a turn. That safety property is correct, but a *silent*
 fail-open means enforcement can be dead while looking alive. W2 added a dedicated fail-open
 ledger (``artifacts/governance/hook_failopen_receipts.jsonl``, written by
-``lib.claude_hook_common.write_failopen_receipt``); this gate makes that ledger countable and,
+``lib.codex_hook_common.write_failopen_receipt``); this gate makes that ledger countable and,
 under strict mode, blockable.
 
 Checks
@@ -41,12 +41,12 @@ from typing import Any
 
 # ops_scripts/ci/<this> -> repo root
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SETTINGS = REPO_ROOT / ".claude" / "settings.json"
+SETTINGS = REPO_ROOT / ".codex" / "hooks.json"
 LEDGER = REPO_ROOT / "artifacts" / "governance" / "hook_failopen_receipts.jsonl"
 BASELINE = REPO_ROOT / "ops_scripts" / "ci" / "baselines" / "hook_failopen_budget.json"
 
 CRITICAL = {"CRITICAL_PRETURN", "CRITICAL_PRETOOL"}
-# settings.json event -> whether a registered hook under it is a critical enforcement surface
+# hooks.json event -> whether a registered hook under it is a critical enforcement surface
 _CRITICAL_EVENTS = {"UserPromptSubmit", "PreToolUse"}
 
 _PATH_RE = re.compile(r'([^\s"\']*\.(?:py|sh))')
@@ -61,12 +61,12 @@ def _fail_closed() -> bool:
 
 
 def _resolve_target(command: str) -> Path | None:
-    """Extract the hook's script path from a settings.json command string and resolve it."""
+    """Extract the hook's script path from a hooks.json command string and resolve it."""
     match = _PATH_RE.search(command or "")
     if not match:
         return None
     raw = match.group(1).strip().strip('"').strip("'")
-    raw = raw.replace("$CLAUDE_PROJECT_DIR", "").replace("${CLAUDE_PROJECT_DIR}", "")
+    raw = raw.replace("$AGENTIC_REPO_ROOT", "").replace("${AGENTIC_REPO_ROOT}", "")
     raw = raw.lstrip("/\\").replace("\\", "/")
     return (REPO_ROOT / raw).resolve()
 

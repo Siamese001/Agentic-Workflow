@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Constitutional §26 — legacy editor config schema purity.
 
-Validates that `.claude/settings.json` and `.mcp.json` contain
+Validates that `.codex/hooks.json` and `.mcp.json` contain
 only fields published in the official legacy editor schema. Unknown keys (e.g.
 `powershell`, `bash`, `shell`, `env_override`, `platform`) silently disable
 the hook entry or MCP server — legacy editor's parser rejects the entry with no
@@ -14,7 +14,7 @@ Precedent (2026-04-23):
 
 Bypass (legacy editor-only / no legacy editor mirror maintenance):
     ``WINDSURF_CONFIG_SCHEMA_BYPASS=1`` — skip validation of
-    ``.claude/settings.json`` and ``.mcp.json`` only. CI must
+    ``.codex/hooks.json`` and ``.mcp.json`` only. CI must
     NOT set this; legacy editor schema is still enforced by
     ``check_cursor_config_schema.py``.
 

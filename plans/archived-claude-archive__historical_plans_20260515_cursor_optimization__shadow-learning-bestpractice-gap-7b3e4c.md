@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\shadow-learning-bestpractice-gap-7b3e4c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\shadow-learning-bestpractice-gap-7b3e4c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\shadow-learning-bestpractice-gap-7b3e4c.md'
 source_sha256: efecd155c8e423991ccce019297e8ef8d6bce69932c2d551ab4ed70d3c58f6b5
 recovered_status: LEGACY_EXISTING

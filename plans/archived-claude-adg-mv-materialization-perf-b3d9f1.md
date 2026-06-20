@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\adg-mv-materialization-perf-b3d9f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\adg-mv-materialization-perf-b3d9f1.md'
 original_relative_path: 'adg-mv-materialization-perf-b3d9f1.md'
 source_sha256: 5f4c893869a096a8685bb17aa806f7cdc71d6db3d4ff43c267dd7b746b943710
 recovered_status: LEGACY_EXISTING
@@ -54,12 +54,12 @@ only_in_new=0 → BYTE-IDENTICAL.** Full `materialize_all_views`: ~440 s → 4.5
 
 **LANDING NOTE:** fix re-applied to
 `tools/generate/materialized_views/phase_a_path_authority.py` in the working tree
-but **NOT yet committed** — a concurrent agent is mid repo-wide `.cursor→.claude`
+but **NOT yet committed** — a concurrent agent is mid repo-wide `.cursor→.codex`
 migration (60+ churned files, incl. a 1-line path edit in phase_a). Commit deferred
 until that settles to avoid entangling the one-hunk fix with the migration. The
 exact rewrite lives in this plan's W2 execution detail and is trivially re-appliable.
 
-PLAN_COMPLETE: plan=adg-mv-materialization-perf-b3d9f1 note="mv_runtime_spine_gaps 440s->4.5s (~98x), equivalence proven byte-identical via EXCEPT; commit deferred pending concurrent .cursor->.claude migration"
+PLAN_COMPLETE: plan=adg-mv-materialization-perf-b3d9f1 note="mv_runtime_spine_gaps 440s->4.5s (~98x), equivalence proven byte-identical via EXCEPT; commit deferred pending concurrent .cursor->.codex migration"
 
 ## W1 FINDING (decisive — collapses the plan)
 

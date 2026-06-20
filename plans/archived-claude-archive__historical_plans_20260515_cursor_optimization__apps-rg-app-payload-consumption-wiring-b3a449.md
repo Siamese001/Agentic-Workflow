@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-app-payload-consumption-wiring-b3a449.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-app-payload-consumption-wiring-b3a449.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-app-payload-consumption-wiring-b3a449.md'
 source_sha256: a8ecb632f82e9ec2e2b0ddd693ed8fc4e171601aef58d8473123daa65900e613
 recovered_status: LEGACY_EXISTING

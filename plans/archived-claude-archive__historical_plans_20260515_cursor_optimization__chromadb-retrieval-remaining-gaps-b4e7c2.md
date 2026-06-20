@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chromadb-retrieval-remaining-gaps-b4e7c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chromadb-retrieval-remaining-gaps-b4e7c2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\chromadb-retrieval-remaining-gaps-b4e7c2.md'
 source_sha256: c9aace6b95d836bc0b58704f3465627c300ca20da2939c443d88bd870a41bb2c
 recovered_status: LEGACY_EXISTING

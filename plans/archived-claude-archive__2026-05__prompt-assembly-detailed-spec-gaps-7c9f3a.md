@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\prompt-assembly-detailed-spec-gaps-7c9f3a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\prompt-assembly-detailed-spec-gaps-7c9f3a.md'
 original_relative_path: '_archive\\2026-05\\prompt-assembly-detailed-spec-gaps-7c9f3a.md'
 source_sha256: 7aa53033e01b34006527eca90e6ef649239b2d46ada85b635bb8a6afcde9f79e
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-c0-ownership-split-a8c3e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-c0-ownership-split-a8c3e2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-c0-ownership-split-a8c3e2.md'
 source_sha256: 657dbe84a02ef019bf4e4f070bcfd86e56ced618eb76d723bf5b9b415ed758a5
 recovered_status: LEGACY_EXISTING

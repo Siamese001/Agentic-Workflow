@@ -1,6 +1,6 @@
 """Verifier — Canonical certification matrix + universe declaration.
 
-Plan: ``.claude/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.codex/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Covers: RTC-REQ-001, RTC-REQ-030, RTC-REQ-033, RTC-REQ-124, RTC-REQ-031 (presence)
 
 Behavior

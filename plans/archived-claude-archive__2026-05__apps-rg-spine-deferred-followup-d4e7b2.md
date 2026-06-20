@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-spine-deferred-followup-d4e7b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-spine-deferred-followup-d4e7b2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-spine-deferred-followup-d4e7b2.md'
 source_sha256: 0f5be32e3dee75e65a155ed220b5696dd657ed9b4a2bf00c12a2fe828cd60bd3
 recovered_status: LEGACY_EXISTING

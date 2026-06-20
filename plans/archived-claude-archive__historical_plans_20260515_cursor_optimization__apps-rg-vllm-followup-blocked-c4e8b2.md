@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-vllm-followup-blocked-c4e8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-vllm-followup-blocked-c4e8b2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-vllm-followup-blocked-c4e8b2.md'
 source_sha256: 35d84ceb064f2985738ecc944c52e6331ecd513a9ef75bcee9f9f10be775a752
 recovered_status: LEGACY_EXISTING

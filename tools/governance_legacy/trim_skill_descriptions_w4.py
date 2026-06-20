@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-SKILLS = REPO / ".claude" / "skills"
+SKILLS = REPO / ".codex" / "skills"
 DESC_MIN, DESC_MAX = 60, 420
 _FM = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _WHEN = re.compile(

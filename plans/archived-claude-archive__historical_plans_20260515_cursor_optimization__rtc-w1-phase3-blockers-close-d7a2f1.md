@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w1-phase3-blockers-close-d7a2f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w1-phase3-blockers-close-d7a2f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\rtc-w1-phase3-blockers-close-d7a2f1.md'
 source_sha256: d9574b49c655faf3e63af032f4f07b3fae357edf92cd78ea6a6230ecab98b5c9
 recovered_status: LEGACY_EXISTING

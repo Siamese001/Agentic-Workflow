@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-grounded-spine-refactor-f5a2c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-grounded-spine-refactor-f5a2c9.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-grounded-spine-refactor-f5a2c9.md'
 source_sha256: 65e2e3a82241a34127f566f4434117d91d93454fbfec037a07699bd15cfd1693
 recovered_status: LEGACY_EXISTING

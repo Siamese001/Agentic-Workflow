@@ -103,7 +103,7 @@ not in code.
 
 ## References
 
-- Plan: `.claude/plans/<p2-w8.1-sc1-*>.md`
+- Plan: `.codex/plans/<p2-w8.1-sc1-*>.md`
 - Commits: `03c5698d38` (W1), `ac81b14039` (W2), `a6c4bf9d7d` (W3),
   `e0b60ed9e4` (W4), this ADR (W5).
 - Filter: `tools/adg/core/guardian_filter.py`

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-c0-sparse-exact-core-boundary-gap-plan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-c0-sparse-exact-core-boundary-gap-plan.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-c0-sparse-exact-core-boundary-gap-plan.md'
 source_sha256: 1c7bde85804f9264c4ffe0921b1c2306337c3613715dad655fce7c83a5fe2c5b
 recovered_status: LEGACY_EXISTING

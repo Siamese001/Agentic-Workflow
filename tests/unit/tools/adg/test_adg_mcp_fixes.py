@@ -24,9 +24,9 @@ import pytest
 # Helpers shared across tests
 # ---------------------------------------------------------------------------
 
-# Inject .claude/governance/scripts onto sys.path so pre_mcp_gate is importable, matching
+# Inject .codex/governance/scripts onto sys.path so pre_mcp_gate is importable, matching
 # the pattern used by test_pre_mcp_gate.py.
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".codex" / "governance/scripts"))
 
 
 def _make_sqlite(adg_dir: Path, name: str) -> Path:
@@ -623,7 +623,7 @@ class TestSilentDegradedFallbackDetection:
         import sys
         from pathlib import Path
 
-        scripts_dir = str(Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts")
+        scripts_dir = str(Path(__file__).resolve().parents[4] / ".codex" / "governance/scripts")
         if scripts_dir not in sys.path:
             sys.path.insert(0, scripts_dir)
         from post_agent_adg_audit import detect_violations

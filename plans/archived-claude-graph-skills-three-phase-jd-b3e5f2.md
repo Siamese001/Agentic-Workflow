@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\graph-skills-three-phase-jd-b3e5f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\graph-skills-three-phase-jd-b3e5f2.md'
 original_relative_path: 'graph-skills-three-phase-jd-b3e5f2.md'
 source_sha256: a976c1da00636b8f9fccdaa7e8fd1856453341b9783bcb285e8c9589e84c1526
 recovered_status: LEGACY_EXISTING

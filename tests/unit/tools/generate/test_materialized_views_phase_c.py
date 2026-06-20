@@ -280,7 +280,7 @@ class TestTraceReplayEvalViews:
             1,
             "hook",
             "L_UNKNOWN",
-            ".claude/governance/scripts/post_agent_recommendation_gate_audit.py",
+            ".codex/governance/scripts/post_agent_recommendation_gate_audit.py",
         )
         _node2(conn, 2, "tgt", "L4", "agentic_core/L4_state/store.py")
         _node2(conn, 3, "writer", "L2", "agentic_core/L2_execution/reasoning/writer.py")

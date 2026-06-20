@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hybrid-search-adg-seed-rerank-c58e21.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hybrid-search-adg-seed-rerank-c58e21.md'
 original_relative_path: '_archive\\2026-05\\hybrid-search-adg-seed-rerank-c58e21.md'
 source_sha256: 41f57c94d99955c4cbd9f890776a14f234ebbb773fb13b14a1fc51ea78351ed6
 recovered_status: LEGACY_EXISTING

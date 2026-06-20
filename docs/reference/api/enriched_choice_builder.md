@@ -189,10 +189,10 @@ The `telemetry_packet` field contains:
 - Architecture choices
 - Anti-pattern introduction
 - Dependency additions
-- Uses native `AskUserQuestion` with the `.claude/skills/ask-user-question-recommendation`
+- Uses native `AskUserQuestion` with the `.codex/skills/ask-user-question-recommendation`
   option-shape convention
 
-Use `.claude/skills/ask-user-question-recommendation/SKILL.md` for governance decisions.
+Use `.codex/skills/ask-user-question-recommendation/SKILL.md` for governance decisions.
 
 ---
 

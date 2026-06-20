@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier3-broader-adoption-8f2d1c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier3-broader-adoption-8f2d1c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier3-broader-adoption-8f2d1c.md'
 source_sha256: 9a1a954c888a163a3ca3476f763e2d25013bfbd71655da300f96d3a329b962d3
 recovered_status: LEGACY_EXISTING

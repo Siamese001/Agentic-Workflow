@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-eval-qwen32b-rollout-b7c4d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-eval-qwen32b-rollout-b7c4d9.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-eval-qwen32b-rollout-b7c4d9.md'
 source_sha256: 77d5fec720744945e39b29542fc2b12bc60130017cf6a42d9e3b6c39599d5894
 recovered_status: LEGACY_EXISTING

@@ -67,7 +67,7 @@ Future Run") and 06.3–06.6 of the canonical active surface:
    `DeprecationWarning` at `agentic_core/L6_learning/` (the W5 precedent), with a 2-week sunset
    (→ 2026-06-29). No hard delete in this change.
 6. **Migration receipt required** (`agentic_core/**` edit) per
-   [.claude/rules/agentic-core-glob-lock.md](../../../.claude/rules/agentic-core-glob-lock.md) +
+   [.codex/rules/agentic-core-glob-lock.md](../../../.codex/rules/agentic-core-glob-lock.md) +
    the CoreAddition Author-Gate.
 
 ## Scope freeze (W1)
@@ -97,5 +97,5 @@ migration receipt; the compat shim.
 
 - Plan: [l6-learning-consolidation-a4f8c2.md](../../../plans/l6-learning-consolidation-a4f8c2.md)
 - L6 mental model: [docs/reference/_notes/L6_mental_model.md](../../reference/_notes/L6_mental_model.md)
-- Core edit guard: [.claude/rules/agentic-core-glob-lock.md](../../../.claude/rules/agentic-core-glob-lock.md)
+- Core edit guard: [.codex/rules/agentic-core-glob-lock.md](../../../.codex/rules/agentic-core-glob-lock.md)
 - Prior consolidation precedent: `l6-repo-reorganization-mental-model-c4e8f2` (W5 PATH_RENAME_CANONICAL)

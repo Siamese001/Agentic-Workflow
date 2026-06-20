@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-hop-domain-logic-b8c4c4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-hop-domain-logic-b8c4c4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-hop-domain-logic-b8c4c4.md'
 source_sha256: 037b931ad64443101863d616cb5560f5188bb0629aed057db42d43bb78c96639
 recovered_status: LEGACY_EXISTING

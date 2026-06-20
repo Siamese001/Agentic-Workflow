@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-targeting-wiring-closeout-b9e2a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-targeting-wiring-closeout-b9e2a4.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-targeting-wiring-closeout-b9e2a4.md'
 source_sha256: b04c75571f761153888834d7553a1a8e110a8fa846a70b7cd9cac9b5b2d4d1e1
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-three-bucket-pipeline-redesign-c8e4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-three-bucket-pipeline-redesign-c8e4f1.md'
 original_relative_path: '_archive\\2026-05\\adg-three-bucket-pipeline-redesign-c8e4f1.md'
 source_sha256: 475a5e659c7442c063905b8180103ce00d5eec3ae380d104f6b75f1893c93094
 recovered_status: LEGACY_EXISTING

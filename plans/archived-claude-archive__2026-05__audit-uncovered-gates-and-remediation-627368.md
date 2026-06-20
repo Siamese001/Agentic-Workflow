@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\audit-uncovered-gates-and-remediation-627368.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\audit-uncovered-gates-and-remediation-627368.md'
 original_relative_path: '_archive\\2026-05\\audit-uncovered-gates-and-remediation-627368.md'
 source_sha256: 25adc210e04996f8ecce4e11c9fcad0ea04becdf3e4edd1118b719ff2f1c09a9
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\llm-judge-hardening-followups-f2c8e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\llm-judge-hardening-followups-f2c8e1.md'
 original_relative_path: '_archive\\2026-05\\llm-judge-hardening-followups-f2c8e1.md'
 source_sha256: 0d50877d8f509041a9b392ef6e30f3d662cb985942f5ffc38c42518366fd3852
 recovered_status: LEGACY_EXISTING

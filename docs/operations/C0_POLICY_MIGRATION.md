@@ -151,7 +151,7 @@ If issues are detected:
 
 ## References
 
-- **Plan**: `.claude/plans/c0-policy-rectification-deferred-f7b2a9.md`
+- **Plan**: `.codex/plans/c0-policy-rectification-deferred-f7b2a9.md`
 - **Code**: `agentic_core/L0_routing/c0_retrieval/preflight.py`
 - **Code**: `agentic_core/prompt_governance/prompt_assembly/pa0_boundary.py`
 - **Tests**: `tests/agentic_core/runtime/entrypoints/test_w3_entrypoint_c0_bypass_audit.py`

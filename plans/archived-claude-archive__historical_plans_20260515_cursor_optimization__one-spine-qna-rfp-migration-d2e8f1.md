@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\one-spine-qna-rfp-migration-d2e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\one-spine-qna-rfp-migration-d2e8f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\one-spine-qna-rfp-migration-d2e8f1.md'
 source_sha256: f095107c903885918c044380f806365dad1603da62776fbdc98a2adc1f1bf01b
 recovered_status: LEGACY_EXISTING

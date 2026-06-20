@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-burndown-roadmap-f8a3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-burndown-roadmap-f8a3c2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-burndown-roadmap-f8a3c2.md'
 source_sha256: b91997675f50cc7ff2e5cfdd5f6d2f7924fd9581aa7fd64b2c7a65827201be83
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d5-phase-d-closeout-5e9d2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d5-phase-d-closeout-5e9d2a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d5-phase-d-closeout-5e9d2a.md'
 source_sha256: 0b2f5ae9c75a772d4721f6825e3ab4ddcda639106cc12900719e7097712e979b
 recovered_status: LEGACY_EXISTING

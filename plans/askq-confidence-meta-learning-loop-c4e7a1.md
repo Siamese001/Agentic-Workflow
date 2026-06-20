@@ -32,8 +32,8 @@ LAST_UPDATED: 2026-06-14
 
 ## Context (SCQA)
 
-- **Situation** — A full `ask_user_question_decisions` ledger subsystem already exists: a SQLite schema with `confidence_score`, `confidence_source`, `recommended_index`, `selected_index`, `context`, `packet_json` ([ask_user_question_ledger.py](tools/ledgers/ask_user_question_ledger.py) + [ask_user_question_ledger.schema.sql](.claude/schemas/ask_user_question_ledger.schema.sql)); a precedent-read consulter that computes `acceptance_rate` / `override_rate` / `avg_confidence` ([AskUserQuestionConsulter in consulter.py](tools/ledgers/consulter.py)); a telemetry dashboard ([telemetry_dashboard.py](tools/ledgers/telemetry_dashboard.py)); a weekly calibration report ([ask_user_question_weekly_report.py](ops_scripts/calibration/ask_user_question_weekly_report.py)); and green tests for the full read/write/consult pipeline ([test_ask_user_question_shadow_loop.py](tests/unit/ledgers/test_ask_user_question_shadow_loop.py), [test_ask_user_question_consulter.py](tests/unit/ledgers/test_ask_user_question_consulter.py)). The live native-tool path has one hook today — the PreToolUse SHAPE gate [pre_ask_user_question_recommendation_gate.py](.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py) (via [before_ask_user_question.py](.claude/hooks/before_ask_user_question.py)), which enforces that a recommended option carries a `[confidence=0.NN]` signal.
-- **Complication** — The loop is **open, not closed**. ADG fan-in is **0** for both `tools/ledgers/ask_user_question_ledger.py` (module id 11598) and the packet builder `tools/decisions/enriched_choice_builder.py` (module id 11289): no live (non-test) code imports them. Three seams are broken: (1) **no live WRITE** — the PreToolUse gate validates shape but never calls `write_decision`, so firing AskUserQuestion persists nothing; (2) **no SELECTION capture** — [settings.json](.claude/settings.json) has **no `PostToolUse` matcher for `AskUserQuestion`**, so the user's chosen option is never read and `selected_index` is only ever set in tests; (3) **no CONSULT** — nothing in the authoring path calls `AskUserQuestionConsulter` to bias a new question's confidence on prior acceptance/override. The dashboard + weekly report run over an empty table. The scaffolding was built for the retired Author-Gate `ASK_USER_QUESTION_PACKET` pipeline (ADR-093 / `claude-native-supersession-9d3f7a`), whose builder now has 0 callers, and was never reconnected to the native tool.
+- **Situation** — A full `ask_user_question_decisions` ledger subsystem already exists: a SQLite schema with `confidence_score`, `confidence_source`, `recommended_index`, `selected_index`, `context`, `packet_json` ([ask_user_question_ledger.py](tools/ledgers/ask_user_question_ledger.py) + [ask_user_question_ledger.schema.sql](.codex/schemas/ask_user_question_ledger.schema.sql)); a precedent-read consulter that computes `acceptance_rate` / `override_rate` / `avg_confidence` ([AskUserQuestionConsulter in consulter.py](tools/ledgers/consulter.py)); a telemetry dashboard ([telemetry_dashboard.py](tools/ledgers/telemetry_dashboard.py)); a weekly calibration report ([ask_user_question_weekly_report.py](ops_scripts/calibration/ask_user_question_weekly_report.py)); and green tests for the full read/write/consult pipeline ([test_ask_user_question_shadow_loop.py](tests/unit/ledgers/test_ask_user_question_shadow_loop.py), [test_ask_user_question_consulter.py](tests/unit/ledgers/test_ask_user_question_consulter.py)). The live native-tool path has one hook today — the PreToolUse SHAPE gate [pre_ask_user_question_recommendation_gate.py](.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py) (via [before_ask_user_question.py](.codex/hooks/before_ask_user_question.py)), which enforces that a recommended option carries a `[confidence=0.NN]` signal.
+- **Complication** — The loop is **open, not closed**. ADG fan-in is **0** for both `tools/ledgers/ask_user_question_ledger.py` (module id 11598) and the packet builder `tools/decisions/enriched_choice_builder.py` (module id 11289): no live (non-test) code imports them. Three seams are broken: (1) **no live WRITE** — the PreToolUse gate validates shape but never calls `write_decision`, so firing AskUserQuestion persists nothing; (2) **no SELECTION capture** — [hooks.json](.codex/hooks.json) has **no `PostToolUse` matcher for `AskUserQuestion`**, so the user's chosen option is never read and `selected_index` is only ever set in tests; (3) **no CONSULT** — nothing in the authoring path calls `AskUserQuestionConsulter` to bias a new question's confidence on prior acceptance/override. The dashboard + weekly report run over an empty table. The scaffolding was built for the retired Author-Gate `ASK_USER_QUESTION_PACKET` pipeline (ADR-093 / `claude-native-supersession-9d3f7a`), whose builder now has 0 callers, and was never reconnected to the native tool.
 - **Question** — How do we close the meta-learning loop so AskUserQuestion confidence is recorded against the user's real selections and those records calibrate future confidence — reusing the existing ledger/consulter, not rebuilding it?
 - **Answer** — Add the two missing live seams (a PostToolUse capture hook + a consult/calibration step), reusing every existing component. One atomic PostToolUse hook writes both the question's options+confidence and the user's selection (it receives `tool_input` and `tool_response` together); a calibration helper + skill step feeds prior acceptance back into the confidence the model states; the existing dashboard/weekly report then have real data and prove closure.
 
@@ -54,7 +54,7 @@ LAST_UPDATED: 2026-06-14
 | Phase | Title | Status |
 |-------|-------|--------|
 | W1.1 | Probe & confirm the AskUserQuestion PostToolUse payload shape | 🔲 TODO |
-| W1.2 | `after_ask_user_question.py` capture hook → `write_decision` + settings.json registration | 🔲 TODO |
+| W1.2 | `after_ask_user_question.py` capture hook → `write_decision` + hooks.json registration | 🔲 TODO |
 | W2.1 | `ask_user_question_calibration.py` — empirical acceptance → calibrated-confidence suggestion | 🔲 TODO |
 | W2.2 | Wire consult into authoring path (skill step + advisory calibration note in the PreToolUse gate) | 🔲 TODO |
 | W3.1 | Per-context calibration curve in weekly report + loop-wiring health check | 🔲 TODO |
@@ -79,11 +79,11 @@ WAVE_COMPLETE: NO
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: A
 
-**Authorization**: NOT_REQUIRED — additive new hook + settings.json registration; no shared runtime contract weakened.
+**Authorization**: NOT_REQUIRED — additive new hook + hooks.json registration; no shared runtime contract weakened.
 
 **Phases**:
 - **W1.1** — Probe & confirm the AskUserQuestion PostToolUse payload shape | ~15K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** — `after_ask_user_question.py` capture hook → `write_decision` + settings.json registration | ~30K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.2** — `after_ask_user_question.py` capture hook → `write_decision` + hooks.json registration | ~30K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Acceptance**:
 - A temporary logging hook captures one real `AskUserQuestion` PostToolUse payload to an artifact; the selected option index/label is located in `tool_response` (or the precise shape is documented and the capture logic adapted to it).
@@ -106,7 +106,7 @@ CHECKPOINT: B
 **Acceptance**:
 - `AskUserQuestionConsulter.lookup(context=...)` returns nonzero `acceptance_rate`/`avg_confidence` once the table is populated (W1 data).
 - A new `tools/ledgers/ask_user_question_calibration.py` maps `(context, stated_confidence)` → empirical acceptance with a Wilson lower bound (reusing [loop_metrics.py](tools/calibration/loop_metrics.py)) and returns a `calibrated_confidence` suggestion + sample size.
-- The [ask-user-question-recommendation skill](.claude/skills/ask-user-question-recommendation/SKILL.md) procedure documents: "consult precedent for this context, then state confidence calibrated to prior acceptance."
+- The [ask-user-question-recommendation skill](.codex/skills/ask-user-question-recommendation/SKILL.md) procedure documents: "consult precedent for this context, then state confidence calibrated to prior acceptance."
 - The PreToolUse gate surfaces an **advisory** stderr note when stated confidence diverges sharply from empirical acceptance for the context (never blocks on this; existing block semantics unchanged).
 
 ---
@@ -125,7 +125,7 @@ CHECKPOINT: C
 
 **Acceptance**:
 - The weekly report ([ask_user_question_weekly_report.py](ops_scripts/calibration/ask_user_question_weekly_report.py)) renders a per-context curve of stated confidence vs empirical acceptance over the live table.
-- A health check (`ops_scripts/ci/check_ask_user_question_loop_wired.py`) asserts the `PostToolUse` `AskUserQuestion` hook is registered in settings.json and the ledger path is writable; advisory by default.
+- A health check (`ops_scripts/ci/check_ask_user_question_loop_wired.py`) asserts the `PostToolUse` `AskUserQuestion` hook is registered in hooks.json and the ledger path is writable; advisory by default.
 - An end-to-end test extends [test_ask_user_question_shadow_loop.py](tests/unit/ledgers/test_ask_user_question_shadow_loop.py) to drive the **actual capture hook** with a synthetic PostToolUse payload and assert a row lands with correct `selected_index`.
 - Memory entity + ADR note + Notion Plans row recorded.
 
@@ -145,11 +145,11 @@ python -c "import json,pathlib;print(pathlib.Path('artifacts/governance/auq_payl
 ```
 
 ### W1.2 — `after_ask_user_question.py` capture hook → `write_decision`
-**Scope**: Single atomic PostToolUse hook (`.claude/hooks/after_ask_user_question.py` → testable SSOT `.claude/governance/scripts/post_ask_user_question_capture.py`). Parse `tool_input` (question text, option labels, `(Recommended)` position → `recommended_index`, `[confidence=0.NN]` from the recommended option's description → `confidence_score` + `confidence_source="explicit"`), parse `tool_response` for the selected option(s) → `selected_index`, derive `context` from the question header, then call `tools.ledgers.ask_user_question_ledger.write_decision(...)`. Fail-soft (a capture error must never wedge a turn). Register a `PostToolUse` block with `matcher: "AskUserQuestion"` in [settings.json](.claude/settings.json).
+**Scope**: Single atomic PostToolUse hook (`.codex/hooks/after_ask_user_question.py` → testable SSOT `.codex/governance/scripts/post_ask_user_question_capture.py`). Parse `tool_input` (question text, option labels, `(Recommended)` position → `recommended_index`, `[confidence=0.NN]` from the recommended option's description → `confidence_score` + `confidence_source="explicit"`), parse `tool_response` for the selected option(s) → `selected_index`, derive `context` from the question header, then call `tools.ledgers.ask_user_question_ledger.write_decision(...)`. Fail-soft (a capture error must never wedge a turn). Register a `PostToolUse` block with `matcher: "AskUserQuestion"` in [hooks.json](.codex/hooks.json).
 
 **Commands**:
 ```bash
-python -m pytest tests/unit/ops_scripts/hooks/claude/test_post_ask_user_question_capture.py -q
+python -m pytest tests/unit/ops_scripts/hooks/codex/test_post_ask_user_question_capture.py -q
 python -m tools.ledgers.ask_user_question_ledger --list   # row present after a live call
 ```
 
@@ -162,11 +162,11 @@ python -m pytest tests/unit/ledgers/test_ask_user_question_calibration.py -q
 ```
 
 ### W2.2 — Wire the consult into the authoring path
-**Scope**: Update the [ask-user-question-recommendation skill](.claude/skills/ask-user-question-recommendation/SKILL.md) to add a "consult precedent first" step; add an **advisory** divergence note to [pre_ask_user_question_recommendation_gate.py](.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py) (`question_findings` gains a soft `advisory` finding when `|stated − empirical|` is large for the context). No change to block semantics.
+**Scope**: Update the [ask-user-question-recommendation skill](.codex/skills/ask-user-question-recommendation/SKILL.md) to add a "consult precedent first" step; add an **advisory** divergence note to [pre_ask_user_question_recommendation_gate.py](.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py) (`question_findings` gains a soft `advisory` finding when `|stated − empirical|` is large for the context). No change to block semantics.
 
 **Commands**:
 ```bash
-python -m pytest tests/unit/ops_scripts/hooks/claude/test_pre_ask_user_question_recommendation_gate.py -q
+python -m pytest tests/unit/ops_scripts/hooks/codex/test_pre_ask_user_question_recommendation_gate.py -q
 ```
 
 ### W3.1 — Reporting + wiring health check
@@ -196,7 +196,7 @@ python ops_scripts/ci/run_contract_gates.py
 - Impact: every AskUserQuestion records nothing → the ledger stays empty → dashboard + weekly report describe an empty table.
 
 **GAP-2: No SELECTION capture.**
-- [settings.json](.claude/settings.json) has no `PostToolUse` matcher for `AskUserQuestion` (PostToolUse only matches `Edit|Write|MultiEdit|NotebookEdit`). The chosen option is never read; `selected_index` is set only in tests.
+- [hooks.json](.codex/hooks.json) has no `PostToolUse` matcher for `AskUserQuestion` (PostToolUse only matches `Edit|Write|MultiEdit|NotebookEdit`). The chosen option is never read; `selected_index` is set only in tests.
 - Impact: the core learning signal (recommended vs selected → acceptance/override) is never captured live, so confidence can never be calibrated against reality.
 
 **GAP-3: No CONSULT to inform future confidence.**
@@ -224,7 +224,7 @@ DoD-4: CI gates green / no new violations.
 - Status: TODO
 
 DoD-5: Documentation + memory writeback.
-- Evidence: memory entity `askq-confidence-meta-learning-loop` written; ADR note added; [ask-user-question-recommendation skill](.claude/skills/ask-user-question-recommendation/SKILL.md) documents the consult step; Notion Plans row synced.
+- Evidence: memory entity `askq-confidence-meta-learning-loop` written; ADR note added; [ask-user-question-recommendation skill](.codex/skills/ask-user-question-recommendation/SKILL.md) documents the consult step; Notion Plans row synced.
 - Status: TODO
 
 DoD-6: Hook-driven closure test proves the live path (not just direct API calls).

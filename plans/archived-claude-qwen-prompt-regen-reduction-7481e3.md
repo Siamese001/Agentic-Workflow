@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\qwen-prompt-regen-reduction-7481e3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\qwen-prompt-regen-reduction-7481e3.md'
 original_relative_path: 'qwen-prompt-regen-reduction-7481e3.md'
 source_sha256: 00da3182325c8d5d9f6d673e6665e469f84e4e93f20e26e226b22f7aea3abbd3
 recovered_status: LEGACY_EXISTING

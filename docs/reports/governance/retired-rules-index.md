@@ -1,11 +1,11 @@
 # Retired Rules Index — Zero-Loss Redirect Map
 
 > Created by plan [enforcement-surface-consolidation-d8b3f6](../../../plans/enforcement-surface-consolidation-d8b3f6.md), Wave **W3.1**.
-> Single canonical record of where each retired `.claude/rules/*.md` redirect stub's signal now lives.
+> Single canonical record of where each retired `.codex/rules/*.md` redirect stub's signal now lives.
 > Preserves the redirect map (constitutional §21 zero-loss) so the stub files can be deleted in **W3.2**
 > without losing any pointer.
 >
-> **Location note:** kept under `docs/reports/governance/` (governance evidence), **not** `.claude/rules/`,
+> **Location note:** kept under `docs/reports/governance/` (governance evidence), **not** `.codex/rules/`,
 > because the rules-validation gates (`check_rule_frontmatter_schema.py`, `check_rules_filesystem_integrity.py`,
 > `check_rule_cross_references.py`) `glob("*.md")` over the rules dir and would reject a non-rule index file.
 >
@@ -16,14 +16,14 @@
 
 ## Redirect map (stub → canonical home)
 
-| Retired stub (`.claude/rules/`) | Canonical home for its signal | Superseded by |
+| Retired stub (`.codex/rules/`) | Canonical home for its signal | Superseded by |
 |---|---|---|
-| `003-author-gate-hitl.md` | `CLAUDE.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
-| `author-gate-enforcement.md` | `CLAUDE.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
-| `author-gate-decision-points.md` | `CLAUDE.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
-| `author-gate-queue-drain.md` | `CLAUDE.md` §Author-Gate + `constitutional.md` §6 / §35 (retired slot) | native `AskUserQuestion` (ADR-093, W1) |
-| `author-gate-svp-calibration.md` | `CLAUDE.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
-| `anti-pattern-author-gate.md` | `approval-exception-policy.md` + `CLAUDE.md` §Author-Gate | native `AskUserQuestion` (ADR-093, W1) |
+| `003-author-gate-hitl.md` | `AGENTS.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
+| `author-gate-enforcement.md` | `AGENTS.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
+| `author-gate-decision-points.md` | `AGENTS.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
+| `author-gate-queue-drain.md` | `AGENTS.md` §Author-Gate + `constitutional.md` §6 / §35 (retired slot) | native `AskUserQuestion` (ADR-093, W1) |
+| `author-gate-svp-calibration.md` | `AGENTS.md` §Author-Gate + `constitutional.md` §6 | native `AskUserQuestion` (ADR-093, W1) |
+| `anti-pattern-author-gate.md` | `approval-exception-policy.md` + `AGENTS.md` §Author-Gate | native `AskUserQuestion` (ADR-093, W1) |
 | `next-step-capture.md` | `constitutional.md` §24 | native `spawn_task` (ADR-096, W4) |
 | `deferred-scope-capture.md` | `constitutional.md` §24 + `scope-containment.md` | native `spawn_task` (ADR-096, W4) |
 | `mcp-serialization.md` | `pre_mcp_gate.py` (Notion-token + GitKraken checks retained) | native parallel MCP (ADR-097, W5) |
@@ -46,7 +46,7 @@ home above (or to this index) before/with deleting the stubs:
 
 | Active file citing a stub | Stubs it references |
 |---|---|
-| `CLAUDE.md` (Specialized-rules index + "Deprecated rules" note) | nearly all of the above |
+| `AGENTS.md` (Specialized-rules index + "Deprecated rules" note) | nearly all of the above |
 | `constitutional.md` (Extended Doctrine repoint line) | `adg-repair-discipline`, `adg-hotspot-enforcement`, `adg-graph-layer-enforcement`, `adg-test-accelerator-enforcement`, `anti-pattern-author-gate`, `author-gate-enforcement`, `deferred-scope-capture`, `plan-registration-enforcement` |
 | `approval-exception-policy.md` | `author-gate-enforcement`, `author-gate-svp-calibration`, `anti-pattern-author-gate` |
 | `refactor-decision-memory.md` | `author-gate-enforcement`, `author-gate-decision-points` |

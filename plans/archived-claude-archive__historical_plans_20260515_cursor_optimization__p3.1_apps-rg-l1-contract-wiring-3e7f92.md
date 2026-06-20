@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p3.1_apps-rg-l1-contract-wiring-3e7f92.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p3.1_apps-rg-l1-contract-wiring-3e7f92.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p3.1_apps-rg-l1-contract-wiring-3e7f92.md'
 source_sha256: 60512e7356966d46d729cdd3af06379ac791a5a8c0718753ea05151fb337e805
 recovered_status: LEGACY_EXISTING

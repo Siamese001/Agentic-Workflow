@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-closeout-2026-05-02-e4f8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-closeout-2026-05-02-e4f8a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-closeout-2026-05-02-e4f8a1.md'
 source_sha256: 0b03e8e7cb1b5701f540dd4477c9f03f40585831dde9abfa5c9c913e5aa7d088
 recovered_status: LEGACY_EXISTING

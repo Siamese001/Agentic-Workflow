@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\apps-qna-deferred-e5-f7a2b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\apps-qna-deferred-e5-f7a2b1.md'
 original_relative_path: '_archive\\2026-04\\apps-qna-deferred-e5-f7a2b1.md'
 source_sha256: a970812669caceac4f7a6ed3f2a2d5c8260708682c20429c7ed0a81c05d67d04
 recovered_status: LEGACY_EXISTING

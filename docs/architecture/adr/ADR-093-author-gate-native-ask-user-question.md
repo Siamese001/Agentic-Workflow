@@ -21,7 +21,7 @@ recommended choice — exactly what the pipeline emulated.
 
 Retire the emulation; keep the invariant.
 
-- **Invariant kept** (CLAUDE.md § Author-Gate + constitutional §6): stop and ask via `AskUserQuestion`
+- **Invariant kept** (AGENTS.md § Author-Gate + constitutional §6): stop and ask via `AskUserQuestion`
   when ≥2 plausible approaches have different blast radius and no unambiguous directive; mark the
   recommended option; don't fire for typos / single-path fixes / explicit instructions.
 - **Retired:** the packet/render/marker/queue/ledger pipeline.
@@ -29,7 +29,7 @@ Retire the emulation; keep the invariant.
   - `.pre-commit-config.yaml`: T6d, T6d2, T7e, T7t removed.
   - `after_agent_governance_dispatch.py`: 8 AG audit scripts dropped from the Stop chain (non-AG
     audits retained).
-  - `.claude/settings.json`: `pre_user_prompt_author_gate_reminder` hook removed.
+  - `.codex/hooks.json`: `pre_user_prompt_author_gate_reminder` hook removed.
   - Constitutional **§30** (capture health) and **§35** (queue drain) marked RETIRED; slots kept for
     stable numbering (§-citations are load-bearing across rules).
   - 6 rule files reduced to deprecation stubs pointing at the native flow.
@@ -51,5 +51,5 @@ Retire the emulation; keep the invariant.
 
 ## Verification
 
-`run_contract_gates.py`, the dispatch hook, and `settings.json` parse cleanly; `.pre-commit-config.yaml`
+`run_contract_gates.py`, the dispatch hook, and `hooks.json` parse cleanly; `.pre-commit-config.yaml`
 is valid YAML; constitutional §6 reads native and §30/§35 read RETIRED.

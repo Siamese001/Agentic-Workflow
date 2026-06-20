@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\sections-pa-core-law-rollout-c3a8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\sections-pa-core-law-rollout-c3a8f1.md'
 original_relative_path: '_archive\\2026-05\\sections-pa-core-law-rollout-c3a8f1.md'
 source_sha256: d0eb64be73b3f85318c3e42e309e56a9968b87f9c95897d24e4afdba0e484b7d
 recovered_status: LEGACY_EXISTING

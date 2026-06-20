@@ -50,11 +50,11 @@ This skill is specifically about *secrets, logs, dependencies, and authorization
 
 ## References
 
-- Rule: `.claude/rules/security-hardening.md`
-- Policy: `.claude/rules/approval-exception-policy.md` (Category A/B/C)
+- Rule: `.codex/rules/security-hardening.md`
+- Policy: `.codex/rules/approval-exception-policy.md` (Category A/B/C)
 - Gates: `ops_scripts/ci/check_secrets_scan.py`, `check_sensitive_logs.py`, `dependency_security_scan.py`, `check_authorization.py`, `run_contract_gates.py`
 - Sibling skills: `boundary-enforcement`, `ask-user-question-recommendation`
-- Author-Gate prompt: native `AskUserQuestion` (CLAUDE.md § Author-Gate)
+- Author-Gate prompt: native `AskUserQuestion` (AGENTS.md § Author-Gate)
 
 ## MANUAL MIGRATION REQUIRED
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\bge-m3-deferred-scope-remaining-c4e7a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\bge-m3-deferred-scope-remaining-c4e7a1.md'
 original_relative_path: '_archive\\2026-05\\bge-m3-deferred-scope-remaining-c4e7a1.md'
 source_sha256: a8a5c295d5b4c7dcbabbe470e2d0bd0427957fdb6b7cfb018eef2719c4291a20
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-cert-d4-cert-decision-smoke-7acad5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-cert-d4-cert-decision-smoke-7acad5.md'
 original_relative_path: '_archive\\2026-05\\runtime-cert-d4-cert-decision-smoke-7acad5.md'
 source_sha256: c57fb756117bb84efad6322d8bc936561967d1f457416278125d342d6a0ae246
 recovered_status: LEGACY_EXISTING

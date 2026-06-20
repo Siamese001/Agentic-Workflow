@@ -3,7 +3,7 @@
 **Status**: Accepted (catalog implemented)
 **Date**: 2026-04-29
 **Deciders**: Architecture leads + L5 owners
-**Plan**: `.claude/plans/w4-p8-guardrail-family-e93f8a.md` (Wave 1, Phase P8.01)
+**Plan**: `.codex/plans/w4-p8-guardrail-family-e93f8a.md` (Wave 1, Phase P8.01)
 **Source**: 14 P1 Notion rows in W4 P8.x decomposition
 **ADG snapshot**: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
 
@@ -106,7 +106,7 @@ This ADR is a classification overlay, not a code change. Reversible by removing 
 
 ## References
 
-- Plan: `.claude/plans/w4-p8-guardrail-family-e93f8a.md`
+- Plan: `.codex/plans/w4-p8-guardrail-family-e93f8a.md`
 - Inventory: `docs/reports/maintenance/l5_guardrail_family_catalog.csv`
 - ADG snapshot: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
 - Notion W4 P8.x rows: 14 P1 items (top-25 backlog snapshot 2026-04-29)

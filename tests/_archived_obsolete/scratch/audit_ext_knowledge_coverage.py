@@ -1,7 +1,7 @@
 """
 Audit ext_knowledge collection in ChromaDB.
 Proves 95%+ coverage of agent-framework external docs:
-  - anthropic (docs.anthropic.com / platform.claude.com)
+  - anthropic (docs.anthropic.com / platform.codex.com)
   - openai agents (openai.github.io/openai-agents-python)
   - autogen (microsoft.github.io/autogen)
 

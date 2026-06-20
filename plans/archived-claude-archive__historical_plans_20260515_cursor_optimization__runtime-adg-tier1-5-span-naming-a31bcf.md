@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier1-5-span-naming-a31bcf.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier1-5-span-naming-a31bcf.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-adg-tier1-5-span-naming-a31bcf.md'
 source_sha256: 1eb823dd695c2fbc604eb3419ed273acf0ecf2f2e5c206b69a5b3dc6279d4459
 recovered_status: LEGACY_EXISTING

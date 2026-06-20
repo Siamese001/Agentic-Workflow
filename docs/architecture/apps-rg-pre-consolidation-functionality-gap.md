@@ -3,8 +3,8 @@ status: decision-input
 type: architecture-decision-input
 created: 2026-05-10
 related:
-  - .claude/plans/apps-rg-runtime-wiring-completion-d4e8a1.md  # the consolidation plan
-  - .claude/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md  # original re-architecture
+  - .codex/plans/apps-rg-runtime-wiring-completion-d4e8a1.md  # the consolidation plan
+  - .codex/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md  # original re-architecture
   - docs/reference/_notes/Exit Criteria X1-X2-X3.md  # X1/X2/X3 framework spec
   - agentic_core/L3_orchestration/exit_eval/v6/x1_gates.py  # X1A-X1J implementation (orphaned)
   - agentic_core/L5_safety/runtime_gates/  # 29-gate G01-G29 mesh (orphaned)
@@ -63,7 +63,7 @@ The Restore-the-Mesh path is the architecturally cleanest because the framework 
 
 ## Cross-References
 
-Sibling raw-evidence files (preserved for trace) live in `.claude/plans/_orphan_review/`:
+Sibling raw-evidence files (preserved for trace) live in `.codex/plans/_orphan_review/`:
 - `OLD_apps_rg_main.py`, `OLD_rg_ingress_runner.py`, `OLD_rg_types.py` (OLD pipeline)
 - `OLD_reasoning_toggles.py`, `OLD_hop_pipeline.py`, `OLD_agent_spec_config.py` (OLD configs)
 

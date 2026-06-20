@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-chromadb-retrieval-assessment-8a3f2b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-chromadb-retrieval-assessment-8a3f2b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-chromadb-retrieval-assessment-8a3f2b.md'
 source_sha256: cee94d378ad44d33d21b3a9111ef278c3006235ade05a61b9be77ca9873cce85
 recovered_status: LEGACY_EXISTING

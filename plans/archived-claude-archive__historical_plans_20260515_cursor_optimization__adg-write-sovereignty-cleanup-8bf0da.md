@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-write-sovereignty-cleanup-8bf0da.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-write-sovereignty-cleanup-8bf0da.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-write-sovereignty-cleanup-8bf0da.md'
 source_sha256: cf2d388efb4c9c60bb79397e53188e49ebd9d42fe66c315d8b2171b9c352c5c5
 recovered_status: LEGACY_EXISTING

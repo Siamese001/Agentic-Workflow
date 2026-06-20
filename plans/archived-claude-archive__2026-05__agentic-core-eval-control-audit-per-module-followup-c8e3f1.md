@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-eval-control-audit-per-module-followup-c8e3f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-eval-control-audit-per-module-followup-c8e3f1.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-eval-control-audit-per-module-followup-c8e3f1.md'
 source_sha256: 057a5d42b9c05147f7c46f8fcfad6e516dd8fe2c16d9e58baf907b48477c11db
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-pipeline-deferred-e9f2a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-pipeline-deferred-e9f2a4.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-pipeline-deferred-e9f2a4.md'
 source_sha256: 8703208a1584feaa0aa263e5694230dd5ec55aeaa581cedb5d34626923de3354
 recovered_status: LEGACY_EXISTING

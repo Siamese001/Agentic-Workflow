@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\shadow-eval-v6-gap-d4a9c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\shadow-eval-v6-gap-d4a9c2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\shadow-eval-v6-gap-d4a9c2.md'
 source_sha256: 479d494d5f92a02b00a715a4370160b5f36bad92e16405bd5103bb143a60d067
 recovered_status: LEGACY_EXISTING

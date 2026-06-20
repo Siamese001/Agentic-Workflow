@@ -14,7 +14,7 @@ supersedes: []
 
 # Always-On Rule Surface Cut — ~205 KB to ~50 KB, zero rigor loss
 
-Trim the always-on `.claude/rules/*.md` context surface ~75% by demoting narrow-context reference rules to pointer stubs (detail already lives in skills/hooks), keep+compress the every-turn invariant floor, and fix the budget gate that is blind to the real surface.
+Trim the always-on `.codex/rules/*.md` context surface ~75% by demoting narrow-context reference rules to pointer stubs (detail already lives in skills/hooks), keep+compress the every-turn invariant floor, and fix the budget gate that is blind to the real surface.
 
 > plan_id discipline: marker `plan=always-on-rule-surface-cut-c7f3a1`.
 
@@ -32,7 +32,7 @@ LAST_UPDATED: 2026-06-15
 
 ## Context (SCQA)
 
-- **Situation** — Every session injects CLAUDE.md (16.3 KB) + all 43 `.claude/rules/*.md` (188.9 KB) = 205,257 B (~51,314 tokens) as always-on project instructions, via the native Claude Code loader globbing the directory (no `@`-import, no settings key, no hook does it).
+- **Situation** — Every session injects AGENTS.md (16.3 KB) + all 43 `.codex/rules/*.md` (188.9 KB) = 205,257 B (~51,314 tokens) as always-on project instructions, via the native Claude Code loader globbing the directory (no `@`-import, no settings key, no hook does it).
 - **Complication** — Enforcement rigor lives in 17 hooks + 62 governance scripts + CI gates + ~50 on-demand skills, NOT in the always-on prose. ~150 KB is narrow-context reference duplicated in skills + dead stubs. The budget gate scanned non-existent `.mdc` files + a `trigger: always_on` marker none of the `.md` files carry, so it measured ~0 (just AGENTS.md, 12,577 B) and was blind to the real 189 KB.
 - **Question** — How do we cut the always-on surface ~75% without losing any enforcement rigor?
 - **Answer** — Trim narrow-context rules to pointer stubs (detail stays in skills, enforcement stays in hooks/CI), keep+compress the every-turn floor, fix the gate to measure the real surface.
@@ -46,10 +46,10 @@ LAST_UPDATED: 2026-06-15
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1 | Confirm/tighten dead stubs (global_rules, fortknox) | ~3K | already near-stub | DONE | dead rules are pointer stubs, refs intact |
-| W2 | W2.1 | Gate honesty: measure all `.claude/rules/*.md` (advisory) | ~8K | advisory until trim lands (coupling) | DONE | gate reports the real 205 KB surface |
+| W2 | W2.1 | Gate honesty: measure all `.codex/rules/*.md` (advisory) | ~8K | advisory until trim lands (coupling) | DONE | gate reports the real 205 KB surface |
 | W3 | W3.1, W3.2 | Demote ~32 narrow-context rules to pointer stubs | ~60K | skill/hook backs each | DONE (-110 KB; 205,257 to 94,965 B) | demoted rules small stubs; skills cover detail |
-| W4 | W4.1 | Tighten 34 stubs + collapse constitutional retired slots + CLAUDE.md index + delete fortknox + deep-compress 001/work-item | ~20K | invariants preserved | DONE | 94,965→72,032 B; templates/§-numbers/invariants intact |
-| W5 | W5.1 | Re-baseline ceiling to 86,016 B + flip enforcing + verify | ~10K | realistic ceiling for CLAUDE.md+rules | DONE | gate PASS enforcing (13,984 B headroom); skill-desc FIXED; only env ADG-snapshot-missing remains (not this change) |
+| W4 | W4.1 | Tighten 34 stubs + collapse constitutional retired slots + AGENTS.md index + delete fortknox + deep-compress 001/work-item | ~20K | invariants preserved | DONE | 94,965→72,032 B; templates/§-numbers/invariants intact |
+| W5 | W5.1 | Re-baseline ceiling to 86,016 B + flip enforcing + verify | ~10K | realistic ceiling for AGENTS.md+rules | DONE | gate PASS enforcing (13,984 B headroom); skill-desc FIXED; only env ADG-snapshot-missing remains (not this change) |
 
 ### Phase Progress
 
@@ -99,7 +99,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W2.1** — Measure all `.claude/rules/*.md` (advisory) | ~8K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.1** — Measure all `.codex/rules/*.md` (advisory) | ~8K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - governance_tier_measurement.py gained scan_claude_rules_all_md() + claude_always_on_total(); gate reports the real surface (205,257 B).
@@ -121,7 +121,7 @@ CHECKPOINT: C
 
 **Acceptance**:
 - Each demoted rule is a small pointer stub; doctrine-only rules (artifact-provenance-discipline, agent-taxonomy-spine-truth) keep their invariant inline.
-- CLAUDE.md index links still resolve (to stubs).
+- AGENTS.md index links still resolve (to stubs).
 
 ---
 
@@ -162,7 +162,7 @@ CHECKPOINT: E
 ## Execution Details
 
 ### W2.1 — Honest advisory measurement
-**Scope**: Added scan_claude_rules_all_md() + claude_always_on_total() to governance_tier_measurement.py (measure CLAUDE.md + ALL `.claude/rules/*.md`); check_always_on_token_budget.py prints the real-surface total + headroom, ADVISORY by default, enforcing under ALWAYS_ON_CLAUDE_RULES_ENFORCE=1.
+**Scope**: Added scan_claude_rules_all_md() + claude_always_on_total() to governance_tier_measurement.py (measure AGENTS.md + ALL `.codex/rules/*.md`); check_always_on_token_budget.py prints the real-surface total + headroom, ADVISORY by default, enforcing under ALWAYS_ON_CLAUDE_RULES_ENFORCE=1.
 
 ### W3.1 — Big-three trim
 **Scope**: Trim git-branch-per-chat.md (-> worktree-per-chat skill + 4 hooks), adg-analysis-procedures.md (-> adg-sqlite/graph-analysis skills + adg-canonical-invariants.md), local-llm-wsl2-gpu.md (git mv -> docs/reference, pure hardware reference). ~34 KB removed.
@@ -178,8 +178,8 @@ DoD-1: Always-on surface under the re-baselined ceiling (86,016 B / 84 KiB; the 
 - Evidence: gate reports 72,032 B (−65% from 205,257), PASS enforcing, 13,984 B headroom — ~70 KB target met
 - Status: DONE (deep-compressed 001 10.8K→6.8K + work-item 6.5K→2.6K with templates/matrix preserved; fortknox rule deleted)
 
-DoD-2: Budget gate measures the real `.claude/rules/*.md` surface (no longer blind).
-- Evidence: gate output lists CLAUDE.md + all `.claude/rules/*.md` bytes (confirmed 205,257 B)
+DoD-2: Budget gate measures the real `.codex/rules/*.md` surface (no longer blind).
+- Evidence: gate output lists AGENTS.md + all `.codex/rules/*.md` bytes (confirmed 205,257 B)
 - Status: DONE
 
 DoD-3: Zero enforcement regression — all hooks + CI gates intact.
@@ -187,7 +187,7 @@ DoD-3: Zero enforcement regression — all hooks + CI gates intact.
 - Status: DONE (no regression from this work)
 
 DoD-4: Demoted rules are pointer stubs; doctrine-only rules retain invariant; index links resolve.
-- Evidence: `for f in .claude/rules/*.md; do wc -c "$f"; done` + grep that stubs reference a skill/hook
+- Evidence: `for f in .codex/rules/*.md; do wc -c "$f"; done` + grep that stubs reference a skill/hook
 - Status: TODO
 
 DoD-5: Plan + memory writeback updated.

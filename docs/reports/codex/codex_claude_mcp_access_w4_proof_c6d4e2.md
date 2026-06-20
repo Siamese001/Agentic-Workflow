@@ -32,7 +32,7 @@ W4 is complete. The result is honest parity classification, not blanket success.
 
 ## Operating Procedure
 
-1. Read `.mcp.json` and `.claude/mcp-notes.md` first. They remain the MCP SSOT.
+1. Read `.mcp.json` and `.codex/mcp-notes.md` first. They remain the MCP SSOT.
 2. Run:
 
    ```bash

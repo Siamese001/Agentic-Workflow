@@ -14,7 +14,7 @@ supersedes: []
 
 # Codex MCP Transport Parity with Claude SSOT
 
-Make Codex mirror the Claude Code MCP setup exactly: root `.mcp.json` remains the live server SSOT, `.claude/mcp-notes.md` remains the dormant/re-add block SSOT, and Codex exposes each access pattern through either the same MCP, an explicitly named plugin substitute, or a documented degraded fallback.
+Make Codex mirror the Claude Code MCP setup exactly: root `.mcp.json` remains the live server SSOT, `.codex/mcp-notes.md` remains the dormant/re-add block SSOT, and Codex exposes each access pattern through either the same MCP, an explicitly named plugin substitute, or a documented degraded fallback.
 
 > **plan_id discipline**: `plan_id` matches the filename stem `codex-mcp-transport-parity-4b9c7e`. Wave markers use `plan=codex-mcp-transport-parity-4b9c7e`.
 
@@ -63,7 +63,7 @@ LAST_UPDATED: 2026-06-10
 
 > **W5 COMPLETE OUT-OF-ORDER (2026-06-10).** Executed by explicit user request
 > while W2.3 remains blocked. Updated Codex adapter docs/skills as thin pointers
-> to `.mcp.json`, `.claude/mcp-notes.md`, and `mcp-integration` without copying
+> to `.mcp.json`, `.codex/mcp-notes.md`, and `mcp-integration` without copying
 > Claude rule bodies. Created W5 closeout artifacts:
 > `docs/reports/codex/codex_mcp_w5_verification.md` and
 > `docs/reports/codex/codex_mcp_w5_verification.json`. Notion Plans row exists
@@ -87,17 +87,17 @@ LAST_UPDATED: 2026-06-10
 > **W1 COMPLETE (2026-06-10).** Created the Codex MCP capability matrix artifacts:
 > `docs/reports/codex/codex_mcp_capability_matrix.md` and
 > `docs/reports/codex/codex_mcp_capability_matrix.json`. The matrix covers every
-> live `.mcp.json` server plus dormant/re-add blocks from `.claude/mcp-notes.md`.
+> live `.mcp.json` server plus dormant/re-add blocks from `.codex/mcp-notes.md`.
 > Fresh Codex discovery confirmed Memory, Vector DB, GitKraken, and DeepWiki remain
 > unavailable as Codex-callable MCP tools; `adg_sqlite` is green; Notion, Playwright,
 > and Tavily have plugin/substitute surfaces; Redis and Tavily are intentionally
-> dormant in `.mcp.json` and stored as re-add blocks in `.claude/mcp-notes.md`.
+> dormant in `.mcp.json` and stored as re-add blocks in `.codex/mcp-notes.md`.
 
 ---
 
 ## Context (SCQA)
 
-- **Situation** - The ADG SQLite MCP is now open in Codex with `mode=full`, `sqlite=healthy`, and `redis=healthy`. The root `.mcp.json` lists Claude Code live servers: `GitKraken`, `adg_sqlite`, `deepwiki`, `memory`, `vector_db`, `notion`, `context7`, and `playwright`. `CLAUDE.md` and `.claude/mcp-notes.md` explicitly say `pytest_mcp`, `redis`, `otel_mcp`, and `tavily` are not in `.mcp.json`; they use native substitutes unless re-added from `.claude/mcp-notes.md`.
+- **Situation** - The ADG SQLite MCP is now open in Codex with `mode=full`, `sqlite=healthy`, and `redis=healthy`. The root `.mcp.json` lists Claude Code live servers: `GitKraken`, `adg_sqlite`, `deepwiki`, `memory`, `vector_db`, `notion`, `context7`, and `playwright`. `AGENTS.md` and `.codex/mcp-notes.md` explicitly say `pytest_mcp`, `redis`, `otel_mcp`, and `tavily` are not in `.mcp.json`; they use native substitutes unless re-added from `.codex/mcp-notes.md`.
 - **Complication** - Codex currently exposes only a subset of those stable MCP IDs. `memory`, `vector_db`, `GitKraken`, `deepwiki`, raw `context7`, raw `playwright`, and standalone `redis` are not directly callable through Codex tool discovery. Codex has plugin substitutes for some surfaces, but they do not preserve the Claude tool names, health gates, or access patterns. Process inspection also shows duplicate MCP subprocesses for several Node/Python servers.
 - **Question** - How do we make Codex replicate the Claude MCP setup exactly while preserving the repo's access ladder, dormant-server policy, health gates, and fallback semantics?
 - **Answer** - Build a Codex MCP parity layer that reads Claude SSOT configuration, records a capability matrix, restores or maps each server's exact access pattern, and adds transport health/process hygiene checks so Codex can prove parity without creating a second registry.
@@ -110,7 +110,7 @@ LAST_UPDATED: 2026-06-10
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | W1.1, W1.2, W1.3 | Claude SSOT inventory and Codex capability matrix | ~6K | `.mcp.json`, `CLAUDE.md`, `.claude/mcp-notes.md`, and `mcp-integration` remain authoritative | DONE | Machine-readable matrix lists every live, dormant, plugin, and fallback access pattern with evidence |
+| W1 | W1.1, W1.2, W1.3 | Claude SSOT inventory and Codex capability matrix | ~6K | `.mcp.json`, `AGENTS.md`, `.codex/mcp-notes.md`, and `mcp-integration` remain authoritative | DONE | Machine-readable matrix lists every live, dormant, plugin, and fallback access pattern with evidence |
 | W2 | W2.1, W2.2, W2.3 | Live server parity for configured `.mcp.json` servers | ~10K | Codex can expose deferred MCP tools or route to local validated fallbacks | BLOCKED | W2.1/W2.2 route contracts complete; W2.3 blocked by live ADG primary-checkout Redis decode mismatch |
 | W3 | W3.1, W3.2, W3.3 | Dormant Redis/Tavily/pytest/OTel policy replication | ~8K | Dormant means not re-added unless explicitly selected; substitutes still must be exact | DONE | Redis and Tavily answer "where stored now" and implement exact current substitute/re-add paths |
 | W4 | W4.1, W4.2, W4.3 | Transport lifecycle and duplicate-process hygiene | ~8K | Existing MCP bootstrap guards can be reused or extended | DONE | Health probes detect closed transports, duplicate MCP processes, stale env placeholders, and recoverable restart paths |
@@ -121,7 +121,7 @@ LAST_UPDATED: 2026-06-10
 | Phase | Title | Status |
 |-------|-------|--------|
 | W1.1 | Inventory Claude live MCP servers from root `.mcp.json` | DONE |
-| W1.2 | Inventory dormant/re-add MCP blocks from `.claude/mcp-notes.md` | DONE |
+| W1.2 | Inventory dormant/re-add MCP blocks from `.codex/mcp-notes.md` | DONE |
 | W1.3 | Generate Codex capability matrix and gap taxonomy | DONE |
 | W2.1 | Restore or map Memory, Vector, GitKraken, and DeepWiki access | DONE |
 | W2.2 | Normalize Notion, Context7, and Playwright Codex plugin/raw MCP routes | DONE |
@@ -132,7 +132,7 @@ LAST_UPDATED: 2026-06-10
 | W4.1 | Add transport health probes for Codex-visible and local MCP surfaces | DONE |
 | W4.2 | Add duplicate-process detection and cleanup guidance | DONE |
 | W4.3 | Add env placeholder and credential preflight checks | DONE |
-| W5.1 | Update Codex backup adapter docs/skills as thin SSOT pointers | DONE |
+| W5.1 | Update Codex primary adapter docs/skills as thin SSOT pointers | DONE |
 | W5.2 | Register and sync the plan in Notion Plans DB | DONE |
 | W5.3 | Run governance, MCP parity, and focused transport tests | DONE |
 
@@ -142,25 +142,25 @@ LAST_UPDATED: 2026-06-10
 
 **Tavily**
 - **Current live `.mcp.json` status**: not present.
-- **Current storage/SSOT**: `CLAUDE.md` "Not in `.mcp.json`" line and `.claude/mcp-notes.md` dropped-server block.
+- **Current storage/SSOT**: `AGENTS.md` "Not in `.mcp.json`" line and `.codex/mcp-notes.md` dropped-server block.
 - **Current credential**: Windows OS env var `TAVILY_API_KEY`.
 - **Current Claude substitute**: native WebSearch/WebFetch, while `mcp-integration` §8 remains dormant reference.
 - **Current Codex substitute**: Codex Tavily plugin tools when exposed (`_tavily_search`, `_tavily_extract`, `_tavily_crawl`, `_tavily_research`), otherwise web tooling with explicit degraded note.
-- **Exact re-add block**: `.claude/mcp-notes.md` contains `"tavily": {"command": "cmd", "args": ["/c", "npx", "-y", "tavily-mcp"], "env": {"TAVILY_API_KEY": "${TAVILY_API_KEY}"}}`.
+- **Exact re-add block**: `.codex/mcp-notes.md` contains `"tavily": {"command": "cmd", "args": ["/c", "npx", "-y", "tavily-mcp"], "env": {"TAVILY_API_KEY": "${TAVILY_API_KEY}"}}`.
 
 **Redis**
 - **Current live `.mcp.json` status**: no standalone `redis` server. `ADG_REDIS_URL` is still used by `adg_sqlite` and `memory`.
-- **Current storage/SSOT**: `CLAUDE.md` "Not in `.mcp.json`" line, `.claude/mcp-notes.md` dropped-server block, `mcp-integration` §2, and the ADG Redis hot-cache code path.
+- **Current storage/SSOT**: `AGENTS.md` "Not in `.mcp.json`" line, `.codex/mcp-notes.md` dropped-server block, `mcp-integration` §2, and the ADG Redis hot-cache code path.
 - **Current credential/config**: Windows OS env var `ADG_REDIS_URL`; local Redis service at the configured URL.
 - **Current Claude substitute**: `redis-cli` via Bash for standalone cache inspection; ADG access goes through `adg_sqlite` MCP first, then SQLite direct only with `DEGRADED_FALLBACK`.
 - **Current Codex substitute**: ADG MCP `adg_health`/`adg_node`/`backend_used=redis` for ADG hot projection; local Python/Redis CLI fallback only with an explicit degraded note for standalone key inspection.
-- **Exact re-add block**: `.claude/mcp-notes.md` contains `"redis": {"command": "python", "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"], "env": {"REDIS_DB": "0", "REDIS_HOST": "localhost", "REDIS_PORT": "6379", "REDIS_TIMEOUT": "5", "PYTHONPATH": "${AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1"}}`.
+- **Exact re-add block**: `.codex/mcp-notes.md` contains `"redis": {"command": "python", "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"], "env": {"REDIS_DB": "0", "REDIS_HOST": "localhost", "REDIS_PORT": "6379", "REDIS_TIMEOUT": "5", "PYTHONPATH": "${AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1"}}`.
 
 ---
 
 ## Out Of Scope
 
-- Migrating plan SSOT back into `.claude/plans`.
+- Migrating plan SSOT back into `.codex/plans`.
 - Rewriting Claude MCP skills or duplicating their rule bodies in Codex.
 - Making Redis authoritative over SQLite ADG data.
 - Re-adding dormant MCP servers to `.mcp.json` without an explicit decision.
@@ -180,13 +180,13 @@ CHECKPOINT: A
 
 **Phases**:
 - **W1.1** - Inventory Claude live MCP servers from root `.mcp.json` | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
-- **W1.2** - Inventory dormant/re-add MCP blocks from `.claude/mcp-notes.md` | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** - Inventory dormant/re-add MCP blocks from `.codex/mcp-notes.md` | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 - **W1.3** - Generate Codex capability matrix and gap taxonomy | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - Matrix contains columns: `server_id`, `claude_status`, `claude_tool_names`, `codex_surface`, `fallback`, `env`, `health_probe`, `mutation_policy`, `gap_status`.
 - Matrix distinguishes live `.mcp.json`, dormant/re-add, plugin substitute, local fallback, and unsupported.
-- Tavily and Redis rows exactly match `CLAUDE.md` and `.claude/mcp-notes.md`.
+- Tavily and Redis rows exactly match `AGENTS.md` and `.codex/mcp-notes.md`.
 
 ---
 
@@ -228,8 +228,8 @@ CHECKPOINT: C
 - **W3.3** - Capture pytest_mcp and otel_mcp dormant policy with exact fallbacks | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
-- Redis row states: standalone server absent from `.mcp.json`; re-add block in `.claude/mcp-notes.md`; current substitute `redis-cli`; ADG path through `adg_sqlite`; mutation via `tools/adg/adg_redis_ingest.py`.
-- Tavily row states: server absent from `.mcp.json`; re-add block in `.claude/mcp-notes.md`; current substitute native web tools in Claude and Tavily plugin/web fallback in Codex; `TAVILY_API_KEY` required for re-add/plugin.
+- Redis row states: standalone server absent from `.mcp.json`; re-add block in `.codex/mcp-notes.md`; current substitute `redis-cli`; ADG path through `adg_sqlite`; mutation via `tools/adg/adg_redis_ingest.py`.
+- Tavily row states: server absent from `.mcp.json`; re-add block in `.codex/mcp-notes.md`; current substitute native web tools in Claude and Tavily plugin/web fallback in Codex; `TAVILY_API_KEY` required for re-add/plugin.
 - `pytest_mcp` row states: dormant; current substitute `python -m pytest` with repo pytest policy.
 - `otel_mcp` row states: dormant/on-demand; collector/runtime ADG prerequisites are explicit.
 - No dormant server is silently treated as live.
@@ -239,11 +239,11 @@ CHECKPOINT: C
   - `docs/reports/codex/codex_mcp_dormant_policy.md`
   - `docs/reports/codex/codex_mcp_dormant_policy.json`
 - Redis storage answer: standalone Redis MCP is absent from `.mcp.json`; the
-  exact re-add block is in `.claude/mcp-notes.md`; current local access is
+  exact re-add block is in `.codex/mcp-notes.md`; current local access is
   `redis-cli`; ADG access goes through `adg_sqlite`; Redis projection mutation
   goes through `tools/adg/adg_redis_ingest.py`.
 - Tavily storage answer: Tavily MCP is absent from `.mcp.json`; the exact re-add
-  block is in `.claude/mcp-notes.md`; `TAVILY_API_KEY` is present in the current
+  block is in `.codex/mcp-notes.md`; `TAVILY_API_KEY` is present in the current
   environment and `C:\Users\amita\env\.env`; Codex uses Tavily plugin/web
   substitute surfaces unless raw MCP is explicitly re-added.
 - `pytest_mcp` remains dormant with `python -m pytest` as the direct substitute
@@ -305,19 +305,19 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: E
 
 **Phases**:
-- **W5.1** - Update Codex backup adapter docs/skills as thin SSOT pointers | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W5.1** - Update Codex primary adapter docs/skills as thin SSOT pointers | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 - **W5.2** - Register and sync the plan in Notion Plans DB | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 - **W5.3** - Run governance, MCP parity, and focused transport tests | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
-- Codex docs do not copy Claude rule bodies; they point to `.mcp.json`, `.claude/mcp-notes.md`, and `mcp-integration` sections.
+- Codex docs do not copy Claude rule bodies; they point to `.mcp.json`, `.codex/mcp-notes.md`, and `mcp-integration` sections.
 - Plans DB row exists with `Status=Not Started`, `Exists On Disk=true`, and the correct `Plan File Path`.
-- `python scripts/governance/verify_codex_backup.py` passes after any Codex adapter doc/skill edits.
+- `python scripts/governance/verify_codex_primary.py` passes after any Codex adapter doc/skill edits.
 - `python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-transport-parity-4b9c7e.md` passes.
 
 **Result**:
 - Updated thin adapter pointers:
-  - `docs/codex-backup-adapter.md`
+  - `docs/codex-primary-execution.md`
   - `C:\Users\amita\.codex\skills\agentic-workflow-governance\SKILL.md`
   - `C:\Users\amita\.codex\skills\agentic-workflow-verification\SKILL.md`
 - W5 artifacts:
@@ -332,9 +332,9 @@ CHECKPOINT: E
   now intentionally `In Progress` because waves have executed and W2.3 remains
   blocked.
 - Verification passed:
-  - `python scripts/governance/verify_codex_backup.py`
+  - `python scripts/governance/verify_codex_primary.py`
   - `python scripts/governance/audit_codex_mcp_transports.py --json`
-  - `python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/verify_codex_backup.py`
+  - `python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/verify_codex_primary.py`
   - focused pytest slice: `14 passed, 5 warnings`
 
 ---
@@ -342,20 +342,20 @@ CHECKPOINT: E
 ## Execution Details
 
 ### W1.1 - Inventory Live MCP Registry
-**Scope**: Read root `.mcp.json`, `AGENTS.md` MCP Quick Reference, and `CLAUDE.md` live/dormant sections.
+**Scope**: Read root `.mcp.json`, `AGENTS.md` MCP Quick Reference, and `AGENTS.md` live/dormant sections.
 
 **Commands**:
 ```bash
 python -c "import json, pathlib; print(json.dumps(json.loads(pathlib.Path('.mcp.json').read_text())['mcpServers'], indent=2))"
-rg -n "MCP Quick Reference|Not in `.mcp.json`|redis|tavily" AGENTS.md CLAUDE.md .claude/mcp-notes.md
+rg -n "MCP Quick Reference|Not in `.mcp.json`|redis|tavily" AGENTS.md AGENTS.md .codex/mcp-notes.md
 ```
 
 ### W1.2 - Inventory Dormant/Re-add Blocks
-**Scope**: Parse `.claude/mcp-notes.md` JSONC blocks for `pytest_mcp`, `redis`, `otel_mcp`, and `tavily`.
+**Scope**: Parse `.codex/mcp-notes.md` JSONC blocks for `pytest_mcp`, `redis`, `otel_mcp`, and `tavily`.
 
 **Commands**:
 ```bash
-python -c "from pathlib import Path; print(Path('.claude/mcp-notes.md').read_text(encoding='utf-8'))"
+python -c "from pathlib import Path; print(Path('.codex/mcp-notes.md').read_text(encoding='utf-8'))"
 ```
 
 ### W1.3 - Generate Capability Matrix
@@ -363,7 +363,7 @@ python -c "from pathlib import Path; print(Path('.claude/mcp-notes.md').read_tex
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W2.1 - Restore Critical Missing Live MCP Routes
@@ -379,7 +379,7 @@ python -m py_compile tools/memory/adg_memory_server.py tools/mcp/vector_db_serve
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W2.3 - Protect ADG Redis Read-through
@@ -400,7 +400,7 @@ python tools/adg/adg_redis_ingest.py --check
 ```
 
 ### W3.2 - Tavily Dormant Policy
-**Scope**: Replicate Claude's current Tavily state exactly: absent from `.mcp.json`, re-add block in `.claude/mcp-notes.md`, `TAVILY_API_KEY` prerequisite, native/plugin substitute.
+**Scope**: Replicate Claude's current Tavily state exactly: absent from `.mcp.json`, re-add block in `.codex/mcp-notes.md`, `TAVILY_API_KEY` prerequisite, native/plugin substitute.
 
 **Commands**:
 ```bash
@@ -420,7 +420,7 @@ python -m pytest --version
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W4.2 - Duplicate Process Hygiene
@@ -444,7 +444,7 @@ python -m pytest -p pytest_timeout tests/unit/adg/test_path_resolver_sentinel_re
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W5.2 - Plans DB Registration
@@ -461,7 +461,7 @@ python ops_scripts/ci/check_plan_registration_freshness.py --help
 **Commands**:
 ```bash
 python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/codex-mcp-transport-parity-4b9c7e.md
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ---
@@ -489,11 +489,11 @@ python scripts/governance/verify_codex_backup.py
 - Impact: tool routing advice can drift from actual callable tools.
 
 **GAP-6: Redis standalone MCP is intentionally dormant, but Codex needs exact semantics**
-- Current state is not "missing accidentally"; Redis server block is stored in `.claude/mcp-notes.md` and substituted by `redis-cli`/ADG.
+- Current state is not "missing accidentally"; Redis server block is stored in `.codex/mcp-notes.md` and substituted by `redis-cli`/ADG.
 - Impact: Codex must not add a standalone Redis MCP without explicit re-add decision.
 
 **GAP-7: Tavily standalone MCP is intentionally dormant, but Codex needs exact semantics**
-- Current state is not "missing accidentally"; Tavily server block is stored in `.claude/mcp-notes.md` and substituted by native web tools or Codex Tavily plugin.
+- Current state is not "missing accidentally"; Tavily server block is stored in `.codex/mcp-notes.md` and substituted by native web tools or Codex Tavily plugin.
 - Impact: Codex must not claim raw `tavily-search` unless the MCP or plugin tool is actually exposed.
 
 **GAP-8: Duplicate MCP subprocesses**
@@ -505,7 +505,7 @@ python scripts/governance/verify_codex_backup.py
 ## Definition of Done
 
 DoD-1: Capability matrix exists and covers all Claude live and dormant MCPs.
-- Evidence: `docs/reports/codex/codex_mcp_capability_matrix.md` lists every server in `.mcp.json`, every dropped block in `.claude/mcp-notes.md`, Codex callable surface, fallback, and gap status.
+- Evidence: `docs/reports/codex/codex_mcp_capability_matrix.md` lists every server in `.mcp.json`, every dropped block in `.codex/mcp-notes.md`, Codex callable surface, fallback, and gap status.
 - Status: TODO
 
 DoD-2: Live critical transport smoke checks pass.
@@ -513,7 +513,7 @@ DoD-2: Live critical transport smoke checks pass.
 - Status: TODO
 
 DoD-3: Redis and Tavily semantics exactly match Claude current setup.
-- Evidence: plan/doc matrix states Redis and Tavily are absent from `.mcp.json`, stored as re-add blocks in `.claude/mcp-notes.md`, and routed through current substitutes.
+- Evidence: plan/doc matrix states Redis and Tavily are absent from `.mcp.json`, stored as re-add blocks in `.codex/mcp-notes.md`, and routed through current substitutes.
 - Status: TODO
 
 DoD-4: Transport hygiene script/procedure detects duplicate MCP processes and stale env placeholders.
@@ -521,7 +521,7 @@ DoD-4: Transport hygiene script/procedure detects duplicate MCP processes and st
 - Status: TODO
 
 DoD-5: Codex adapter verification remains green.
-- Evidence: `python scripts/governance/verify_codex_backup.py` exits 0 after any Codex docs/skills edits.
+- Evidence: `python scripts/governance/verify_codex_primary.py` exits 0 after any Codex docs/skills edits.
 - Status: TODO
 
 DoD-6: Plan format and registration are valid.

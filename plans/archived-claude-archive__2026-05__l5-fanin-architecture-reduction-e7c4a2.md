@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l5-fanin-architecture-reduction-e7c4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l5-fanin-architecture-reduction-e7c4a2.md'
 original_relative_path: '_archive\\2026-05\\l5-fanin-architecture-reduction-e7c4a2.md'
 source_sha256: 115a296ba1d9032ad3e6e81c51c8fc6915ad82be8f4bdd98159cc58bb0418237
 recovered_status: LEGACY_EXISTING

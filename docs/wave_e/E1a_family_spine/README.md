@@ -63,7 +63,7 @@ This lane IS ready for **E1b / E1c / E1d to start** — all downstream lanes hav
 | # | Blocker | Owner | Impact |
 |---|---|---|---|
 | B1 | F04 owning_layer: `C0` is not in the schema enum; provisional `L1` assigned. | E1c | Does NOT block E1b start. E1b atoms that depend on the layer choice MUST be marked `UNRESOLVED` or `WEAK_EVIDENCE` until E1c confirms. |
-| B2 | CONSTITUTIONAL authority_class for F02, F03, F09, F10, F11, F12 is provisional. | E1c | E1c MUST cite a rank-1 source (e.g. `.claude/rules/constitutional.md`) or downgrade. |
+| B2 | CONSTITUTIONAL authority_class for F02, F03, F09, F10, F11, F12 is provisional. | E1c | E1c MUST cite a rank-1 source (e.g. `.codex/rules/constitutional.md`) or downgrade. |
 | B3 | Provisional owning_layer on F01 (L0 vs L5), F08 (L5 vs L3), F09 (L4 vs L5). | E1c | Does NOT block E1b start. |
 | B4 | No atoms published by E1a (by scope). | E1b | Expected; E1b is the atom-drafting lane. |
 | B5 | No edges published by E1a (by scope). | E1d | Expected. |

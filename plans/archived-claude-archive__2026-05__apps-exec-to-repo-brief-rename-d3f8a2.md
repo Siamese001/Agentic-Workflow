@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-exec-to-repo-brief-rename-d3f8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-exec-to-repo-brief-rename-d3f8a2.md'
 original_relative_path: '_archive\\2026-05\\apps-exec-to-repo-brief-rename-d3f8a2.md'
 source_sha256: cceb728f407b8cfeb38c1aabb7385d36b64ca94eb40bfe38c13f7985ff3414e6
 recovered_status: LEGACY_EXISTING

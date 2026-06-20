@@ -110,7 +110,7 @@ Two pre-existing gates validate AGENTS.md ↔ `.mcp.json` consistency, both now 
 ## References
 
 - ADR-021 — legacy editor hooks cannot auto-recover red MCP servers (supersedes in spirit the auto-generation fallback idea)
-- `.claude/governance/scripts/_session_id_shared.py` — canonical session_id derivation
+- `.codex/governance/scripts/_session_id_shared.py` — canonical session_id derivation
 - `artifacts/windsurf/mcp_health/20260419_1126.json` — pre-hardening MCP sweep evidence
 - `docs/reports/plans/mcp-gate-hang-hardening-2026-04-19.md` — full RCA and implementation log
 - Memory MCP entities: `DebugSession:2026-04-19-MCPHooksAndPytest`, `ProceduralPattern:legacy editorHookSessionIdConsistency`, `ProceduralPattern:PytestMCPDiscoveryServialCollection`

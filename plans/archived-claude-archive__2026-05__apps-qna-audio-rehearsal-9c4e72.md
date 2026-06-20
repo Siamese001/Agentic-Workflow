@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-audio-rehearsal-9c4e72.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-audio-rehearsal-9c4e72.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-audio-rehearsal-9c4e72.md'
 source_sha256: bb71adcdff69325d7fd0dab70afa8c64a1e67f797cf89cff9ee6642bbff7efc8
 recovered_status: LEGACY_EXISTING

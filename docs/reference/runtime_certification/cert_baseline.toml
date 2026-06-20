@@ -22,9 +22,9 @@
 #   - docs/reports/runtime_cert/phase_e_runs/<YYYY-Www>.md (evidence)
 #
 # REFERENCES
-#   - Phase E.1 plan: .claude/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md
-#   - E1.W2 plan:     .claude/plans/runtime-cert-e1w2-gate-module-9a4b2e.md
-#   - E1.W3 plan:     .claude/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md
+#   - Phase E.1 plan: .codex/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md
+#   - E1.W2 plan:     .codex/plans/runtime-cert-e1w2-gate-module-9a4b2e.md
+#   - E1.W3 plan:     .codex/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md
 #   - ADR anchor:     docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md
 
 schema_version = "e1-baseline-v1"

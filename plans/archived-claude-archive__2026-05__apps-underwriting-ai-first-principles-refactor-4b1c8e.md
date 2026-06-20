@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-underwriting-ai-first-principles-refactor-4b1c8e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-underwriting-ai-first-principles-refactor-4b1c8e.md'
 original_relative_path: '_archive\\2026-05\\apps-underwriting-ai-first-principles-refactor-4b1c8e.md'
 source_sha256: 6b07a6727d48b2fc830df722a56d7b455dcb86cdec34c8595b39789cea81a054
 recovered_status: LEGACY_EXISTING

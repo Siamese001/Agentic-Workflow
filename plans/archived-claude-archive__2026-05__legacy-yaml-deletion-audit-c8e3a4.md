@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\legacy-yaml-deletion-audit-c8e3a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\legacy-yaml-deletion-audit-c8e3a4.md'
 original_relative_path: '_archive\\2026-05\\legacy-yaml-deletion-audit-c8e3a4.md'
 source_sha256: 0fa93b3ecf401f3c62220bb355a68d34fea198bd4f71fe245d35f319a364765e
 recovered_status: LEGACY_EXISTING

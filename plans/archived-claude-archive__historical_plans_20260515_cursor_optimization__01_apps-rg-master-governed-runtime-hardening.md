@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\01_apps-rg-master-governed-runtime-hardening.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\01_apps-rg-master-governed-runtime-hardening.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\01_apps-rg-master-governed-runtime-hardening.md'
 source_sha256: 4847d098d89928ca5f3cd01551ccc5a5eb1ad8fe000cf4fecc74f450322d40f6
 recovered_status: LEGACY_EXISTING

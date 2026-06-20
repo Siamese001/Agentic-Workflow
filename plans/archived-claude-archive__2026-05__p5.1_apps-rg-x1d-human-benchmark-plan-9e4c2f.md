@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md'
 original_relative_path: '_archive\\2026-05\\p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md'
 source_sha256: 1784c306042317dc4dd7802c65d4bce45be7606d860787499ed8b58fc5efaa32
 recovered_status: LEGACY_EXISTING

@@ -16,7 +16,7 @@ authority_classes:
     binds_whom: "All layers, all waves, all agents."
     overridable_by: "Explicit HITL constitutional amendment only."
     typical_sources:
-      - ".claude/rules/constitutional.md"
+      - ".codex/rules/constitutional.md"
       - "AGENTS.md always-on sections"
     notes: >
       Highest authority. Violations are CI-blocking. A Family bound to
@@ -27,7 +27,7 @@ authority_classes:
     binds_whom: "All production code and plans."
     overridable_by: "ADR superseding the prior ADR, with HITL approval."
     typical_sources:
-      - ".claude/rules/*.md (non-constitutional)"
+      - ".codex/rules/*.md (non-constitutional)"
       - "ADR Registry entries"
       - "HITL decision ledger entries"
     notes: >

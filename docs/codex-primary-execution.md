@@ -7,14 +7,14 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Concern | Source |
 | --- | --- |
 | Local run state, readiness, verification, and closeout evidence | Codex primary execution surface |
-| Shared governance rules during migration | `AGENTS.md`, `docs/codex-primary-execution.md`, `scripts/governance/**`, root `.mcp.json` |
+| Shared governance rules | `AGENTS.md`, `docs/codex-primary-execution.md`, `.codex/**`, `scripts/governance/**`, root `.mcp.json` |
 | Agentic Workflow project memory | `memory/MEMORY.md` plus Codex-specific project memory under `memory/codex/` |
 | MCP configured-server truth | `.mcp.json` |
 | Optional Codex live route evidence | `docs/reports/codex/` snapshots such as `codex_primary_mcp_live_snapshot.md` |
 | Route evidence and Codex preflight | `scripts/governance/audit_codex_mcp_transports.py` and `scripts/governance/codex_readiness.py` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
-No parallel registry: do not copy `.claude` rule bodies, MCP server definitions, or hook logic into a Codex-only store. Codex should consume the repo-owned files and produce fresh execution evidence.
+No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
@@ -28,12 +28,7 @@ Primary verification is repo-owned:
 python scripts/governance/verify_codex_primary.py
 ```
 
-Legacy compatibility verification treats personal skills as advisory by default. Run it only when changing backup-adapter docs or workstation bootstrap skills; use strict mode only when auditing the workstation bootstrap layer itself:
-
-```bash
-python scripts/governance/verify_codex_backup.py
-python scripts/governance/verify_codex_backup.py --require-personal-skills
-```
+Personal workstation skills are outside the repo verification contract. When they drift, update the repo-owned `.codex/**` guidance first and keep personal skills as bootstrap shims only.
 
 ## Required Preflight
 
@@ -149,11 +144,11 @@ python scripts/governance/cleanup_duplicate_mcp_cohorts.py --apply --codex-attac
 
 If a process-identity tool is absent, the live MCP child is still serving older code. Restart or reload the Codex MCP host and rerun strict readiness instead of killing child processes.
 
-## Hook Parity Contract
+## Native Hook Contract
 
-Codex primary enforcement does not depend on Claude hook parity. Any `.claude/hooks/**` or `.claude/settings.json` material is legacy compatibility only and is not part of the primary readiness contract.
+Codex primary enforcement uses the native Codex hook registry at `.codex/hooks.json`. Hook entrypoints live under `.codex/hooks/**`, and delegated governance scripts live under `.codex/governance/scripts/**`. The legacy Claude governance directory is forbidden.
 
-Workspace-specific avatar enforcement lives in `.claude/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
+Workspace-specific avatar enforcement lives in `.codex/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
 
 ## High-Signal Lessons
 
@@ -210,10 +205,4 @@ Run the primary verifier after changing Codex execution docs or scripts:
 python scripts/governance/verify_codex_primary.py
 ```
 
-The compatibility verifier is legacy/advisory for the backup-adapter name. Run it only when changing backup-adapter docs or personal bootstrap skills. It does not require personal Codex skills unless `--require-personal-skills` is supplied.
-
-```bash
-python scripts/governance/verify_codex_backup.py
-```
-
-The backup verifier name is compatibility terminology. The active Codex operating contract is this file plus `AGENTS.md`.
+The primary verifier also enforces the Codex-only migration: no legacy Claude governance directory, no tracked legacy Claude instruction or project-dir references, and no missing `.codex/hooks.json` command targets.

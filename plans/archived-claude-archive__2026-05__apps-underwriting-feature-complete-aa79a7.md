@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-underwriting-feature-complete-aa79a7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-underwriting-feature-complete-aa79a7.md'
 original_relative_path: '_archive\\2026-05\\apps-underwriting-feature-complete-aa79a7.md'
 source_sha256: 6f3e652c10c947a0c19a21e3dad0f9c3134e64ef30e183c9881e7b71ee1ccca3
 recovered_status: LEGACY_EXISTING

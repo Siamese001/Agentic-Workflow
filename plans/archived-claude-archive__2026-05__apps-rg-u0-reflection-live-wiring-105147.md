@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-u0-reflection-live-wiring-105147.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-u0-reflection-live-wiring-105147.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-u0-reflection-live-wiring-105147.md'
 source_sha256: a5d7b61e0f935942e4f4aa7fc716f2131cb2eef06ee4f13e5b9ae5c737550bb4
 recovered_status: LEGACY_EXISTING

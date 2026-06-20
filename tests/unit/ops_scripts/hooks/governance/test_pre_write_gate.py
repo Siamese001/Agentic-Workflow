@@ -34,7 +34,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 from pre_write_gate import (
     check_mcp_config,
@@ -450,7 +450,7 @@ class TestMain:
     def test_markdown_file_allowed_regardless(self):
         payload = {
             "tool_info": {
-                "file_path": ".claude/rules/constitutional.md",
+                "file_path": ".codex/rules/constitutional.md",
                 "edits": [{"old_string": "x", "new_string": "except:\n    pass\n"}],
             },
         }

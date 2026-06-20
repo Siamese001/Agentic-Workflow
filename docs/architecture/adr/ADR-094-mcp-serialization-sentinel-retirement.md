@@ -5,16 +5,16 @@
 - **Retired**: 2026-06-15 status reconciliation
 - **Supersedes**: prior MCP Registry row `_serialization_sentinel (Layer 1 — MCP serialization enforcement)` (archived with the MCP Registry DB on 2026-05-02 — see consolidation note in `AGENTS.md` Notion Workspace Map history)
 - **Superseded by**: ADR-097 (`mcp-serialization.md` retired; W5 cleanup scope)
-- **Related**: historical constitutional `§25` (MCP serialization), historical `.claude/rules/mcp-serialization.md`, upstream `anthropics/claude-agent-sdk-typescript#41`
+- **Related**: historical constitutional `§25` (MCP serialization), historical `.codex/rules/mcp-serialization.md`, upstream `anthropics/claude-agent-sdk-typescript#41`
 
 > **Current-state note (2026-06-15):** this ADR is retained as the retirement
 > runbook and historical rationale. Active MCP routing is governed by
-> `.mcp.json`, `.claude/mcp-notes.md`, and `.claude/skills/mcp-integration/`.
+> `.mcp.json`, `.codex/mcp-notes.md`, and `.codex/skills/mcp-integration/`.
 > Do not re-enable the sentinel from this file.
 
 ## Context
 
-The original constitutional `§25` "one remote MCP per response" rule (now scoped to remote MCPs only — see `.claude/rules/mcp-serialization.md`) is enforced at two layers:
+The original constitutional `§25` "one remote MCP per response" rule (now scoped to remote MCPs only — see `.codex/rules/mcp-serialization.md`) is enforced at two layers:
 
 | Layer | Mechanism | Posture |
 |---|---|---|
@@ -30,14 +30,14 @@ Layer 1 stays in effect until the upstream Anthropic SDK race is fixed and verif
 ## Implementation Surface
 
 **Files added (must be removed at retirement)**:
-- `.claude/governance/scripts/_serialization_sentinel.py` (~217 lines)
+- `.codex/governance/scripts/_serialization_sentinel.py` (~217 lines)
 - `tests/unit/ops_scripts/hooks/windsurf/test_serialization_sentinel.py` (18 tests)
 
 **Files partially modified (must be reverted at retirement, each has 1 import + 1 call site)**:
-- `.claude/governance/scripts/pre_mcp_gate.py` — import lines 43-46 + call lines 1359-1365
-- `.claude/governance/scripts/pre_run_gate.py` — import lines 23-27 + call lines 235-239
-- `.claude/governance/scripts/pre_read_gate.py` — import lines 131-132 + call lines 167-171
-- `.claude/governance/scripts/pre_write_gate.py` — import line 34 + call lines 325-329
+- `.codex/governance/scripts/pre_mcp_gate.py` — import lines 43-46 + call lines 1359-1365
+- `.codex/governance/scripts/pre_run_gate.py` — import lines 23-27 + call lines 235-239
+- `.codex/governance/scripts/pre_read_gate.py` — import lines 131-132 + call lines 167-171
+- `.codex/governance/scripts/pre_write_gate.py` — import line 34 + call lines 325-329
 
 (Line numbers reflect 2026-04-25 state; verify current line numbers before editing.)
 
@@ -76,7 +76,7 @@ The sentinel honors this immediately — `record_and_check()` and `block_if_viol
 
 **Step 3**. After ≥7 days with zero new entries in `artifacts/windsurf/mcp_serialization_violations.jsonl`, delete the files-added list and revert the files-modified list above.
 
-**Step 4**. Set `.claude/rules/mcp-serialization.md` front-matter to `trigger: manual` with a deprecation banner; remove from always-on load.
+**Step 4**. Set `.codex/rules/mcp-serialization.md` front-matter to `trigger: manual` with a deprecation banner; remove from always-on load.
 
 **Step 5**. Update `constitutional.md §25` to `status: retired (date <UTC>)` with link to this ADR.
 

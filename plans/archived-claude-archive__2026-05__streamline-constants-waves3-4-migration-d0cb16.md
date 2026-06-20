@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\streamline-constants-waves3-4-migration-d0cb16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\streamline-constants-waves3-4-migration-d0cb16.md'
 original_relative_path: '_archive\\2026-05\\streamline-constants-waves3-4-migration-d0cb16.md'
 source_sha256: 95f1e1a473775e062cda46305491aa67c6dc97ab4bcc57a32d4f1ed2486858f5
 recovered_status: LEGACY_EXISTING

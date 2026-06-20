@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-first-principles-refactor-8a3c2e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-first-principles-refactor-8a3c2e.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-first-principles-refactor-8a3c2e.md'
 source_sha256: 4d36eb45c40e5dfb55381b8976a0c21e4f1fa033c6e3a7ec03bf8bf64844ddae
 recovered_status: LEGACY_EXISTING

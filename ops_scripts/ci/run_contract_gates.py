@@ -47,13 +47,13 @@ def _script(rel_path: str) -> Path:
 
 
 # PFC1 (plan-format-simplification-rca-d4f8e2 W4): forward-only canonical scope.
-# Does NOT scan all of .claude/plans — explicit paths only (see W4 CI gate receipt).
+# Does NOT scan all of .codex/plans — explicit paths only (see W4 CI gate receipt).
 _PFC1_CANONICAL_PLAN_PATHS = (
-    ".claude/plans/plan-format-simplification-rca-d4f8e2.md",
-    ".claude/templates/execution-plan-template.md",
-    ".claude/plans/acceptance-gates-master-tracking-b5c3e1.md",
-    ".claude/plans/adg-antipattern-hardening-e5a569.md",
-    ".claude/plans/agentic-core-signoff-hardening-b8e2c4.md",
+    ".codex/plans/plan-format-simplification-rca-d4f8e2.md",
+    ".codex/templates/execution-plan-template.md",
+    ".codex/plans/acceptance-gates-master-tracking-b5c3e1.md",
+    ".codex/plans/adg-antipattern-hardening-e5a569.md",
+    ".codex/plans/agentic-core-signoff-hardening-b8e2c4.md",
 )
 
 
@@ -101,9 +101,9 @@ def validate_mcp_health():
     # MISSING_FILESYSTEM premise no longer holds. Retired.
 
     # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
-    # deleted legacy editor-era hooks/MCP config; Claude Code uses .claude/settings.json + root .mcp.json).
+    # deleted legacy editor-era hooks/MCP config; Claude Code uses .codex/hooks.json + root .mcp.json).
 
-    # Gate: every .claude/skills/<name>/SKILL.md must conform to Anthropic's
+    # Gate: every .codex/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
     # budget, third person, when-trigger, forward-slash paths).
     returncode, stdout, stderr = run_cmd(
@@ -184,7 +184,7 @@ def main():
     # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
     # it. Gate scripts under ops_scripts/ci/decision_ledger/ are dormant (uncalled); the
     # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
-    # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
+    # ambiguous edits) preserved in AGENTS.md + constitutional s6.
     # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md
 
     # Gate: P0 two-pass (preflight + full ADG enforcement)
@@ -462,7 +462,7 @@ def main():
         # Advisory by default (exit 0 with stderr report); fail-closed via
         # APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: APPS_DOM_FIXTURE_FRESHNESS_BYPASS=1. Plan:
-        # .claude/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
+        # .codex/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
         (
             "AD1 APPS-DOM harness fixture freshness (advisory)",
             "ops_scripts/ci/check_apps_dom_fixture_freshness.py",
@@ -739,7 +739,7 @@ def main():
         # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
         # out-of-scope work now surfaces via native spawn_task chips (ADR-096).
         # RULE-FMT — Rule frontmatter schema validation.
-        # Validates .claude/rules/*.md YAML frontmatter against canonical schema.
+        # Validates .codex/rules/*.md YAML frontmatter against canonical schema.
         # Baseline: many rules lack proper frontmatter (advisory).
         # Advisory by default; fail-closed via RULE_FRONTMATTER_FAIL_CLOSED=1.
         # Bypass: RULE_FRONTMATTER_BYPASS=1.
@@ -748,7 +748,7 @@ def main():
             "ops_scripts/ci/check_rule_frontmatter_schema.py",
         ),
         # RULES1 — Rules filesystem integrity check.
-        # Validates .claude/rules/*.md files for: frontmatter presence,
+        # Validates .codex/rules/*.md files for: frontmatter presence,
         # duplicate titles, kebab-case filenames, and broken internal refs.
         # Advisory by default; fail-closed via RULES_INTEGRITY_FAIL_CLOSED=1.
         # Bypass: RULES_INTEGRITY_BYPASS=1.
@@ -1053,7 +1053,7 @@ def main():
         # commit-time staged-file checks; this aggregator entry ensures CI
         # workflows that stage files (e.g., during release branches or merge
         # queues) also see the gate. Pass-through when no staged additions.
-        # Sibling legacy editor hook: .claude/governance/scripts/pre_write_gate.py.
+        # Sibling legacy editor hook: .codex/governance/scripts/pre_write_gate.py.
         ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
         # T8r — Phase E.1 advisory runtime-certification gate (ADR-080 §11).
         # Reads per-app Phase D cert-decision ledgers, compares latest

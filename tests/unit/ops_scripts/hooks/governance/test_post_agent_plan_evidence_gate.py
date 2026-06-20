@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_plan_evidence_gate.py"
+HOOK = REPO_ROOT / ".codex" / "governance/scripts" / "post_agent_plan_evidence_gate.py"
 
 
 def _run_hook(stdin_payload: str, env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:
@@ -49,14 +49,14 @@ def test_no_plan_edit_exits_zero():
 
 def test_bypass_env_skips_block():
     """PLAN_EVIDENCE_GATE_BYPASS=1 must short-circuit even with referenced plans."""
-    payload = json.dumps({"response": "docs/archive/windsurf/legacy-tree/plans/nonexistent-aa1234.md"})
+    payload = json.dumps({"response": ".codex/plans/nonexistent-aa1234.md"})
     r = _run_hook(payload, env_overrides={"PLAN_EVIDENCE_GATE_BYPASS": "1"})
     assert r.returncode == 0
 
 
 def test_nonexistent_plan_referenced_does_not_block():
     """If the referenced plan does not exist on disk, hook does not block."""
-    payload = json.dumps({"response": "docs/archive/windsurf/legacy-tree/plans/never-existed-zzzzzz.md"})
+    payload = json.dumps({"response": ".codex/plans/never-existed-zzzzzz.md"})
     r = _run_hook(payload)
     assert r.returncode == 0
 
@@ -65,7 +65,7 @@ def test_existing_plan_with_evidence_passes():
     """The plan we just authored has the evidence section — must pass."""
     payload = json.dumps(
         {
-            "response": "Updated docs/archive/windsurf/legacy-tree/plans/adg-enforcement-hardening-p1-p8-7e9c4a.md "
+            "response": "Updated .codex/plans/_archive/2026-orphaned/adg-enforcement-hardening-p1-p8-7e9c4a.md "
             "with new wave structure."
         }
     )
@@ -76,7 +76,8 @@ def test_existing_plan_with_evidence_passes():
 
 def test_plan_with_refactor_intent_missing_evidence_blocks():
     """Synthetic plan with refactor intent but no evidence section → exit 2."""
-    plans_dir = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = REPO_ROOT / ".codex" / "plans"
+    plans_dir.mkdir(parents=True, exist_ok=True)
     fake = plans_dir / "test-fake-refactor-aabbcc.md"
     try:
         fake.write_text(
@@ -85,7 +86,7 @@ def test_plan_with_refactor_intent_missing_evidence_blocks():
             "No evidence section here.\n",
             encoding="utf-8",
         )
-        payload = json.dumps({"response": "docs/archive/windsurf/legacy-tree/plans/test-fake-refactor-aabbcc.md"})
+        payload = json.dumps({"response": ".codex/plans/test-fake-refactor-aabbcc.md"})
         r = _run_hook(payload)
         assert r.returncode == 2
         assert "BLOCKING" in r.stderr

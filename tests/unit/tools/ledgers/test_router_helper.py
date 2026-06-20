@@ -48,8 +48,8 @@ def temp_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(writer_mod, "_WRITERS", {})
 
     repo_root = Path(__file__).resolve().parents[4]
-    base_sql = (repo_root / ".claude" / "schemas" / "ledger_base.schema.sql").read_text()
-    per_sql = (repo_root / ".claude" / "schemas" / "router_l1_c0_ledger.schema.sql").read_text()
+    base_sql = (repo_root / ".codex" / "schemas" / "ledger_base.schema.sql").read_text()
+    per_sql = (repo_root / ".codex" / "schemas" / "router_l1_c0_ledger.schema.sql").read_text()
     db_path = tmp_path / "router_l1_c0.sqlite"
     conn = sqlite3.connect(str(db_path))
     conn.executescript(base_sql)

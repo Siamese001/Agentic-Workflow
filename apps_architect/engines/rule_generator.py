@@ -1,6 +1,6 @@
 """Hardening rule generator — emits actionable rules from delta analysis.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P3.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P3.
 
 Consumes a DeltaReport and generates markdown hardening rules using the
 template at ``templates/hardening_rule.md``.

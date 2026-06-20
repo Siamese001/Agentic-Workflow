@@ -18,7 +18,7 @@
 
 | Absolute Path | Artifact Type Guess | Confidence | Content Hash | Proposed Disposition |
 |---|---:|---:|---|---|
-| `C:\Git\.vscode\settings.json` | `unscoped_candidate` | 0.250 | `048f53e6ca01ac583b48784cd2f6f7d248e0534849955b144e75f017f73188a3` | `inspect-manually` |
+| `C:\Git\.vscode\hooks.json` | `unscoped_candidate` | 0.250 | `048f53e6ca01ac583b48784cd2f6f7d248e0534849955b144e75f017f73188a3` | `inspect-manually` |
 | `C:\Git\Agentic AI\Agentic Architecture Design Dependencies.md` | `unscoped_candidate` | 0.250 | `141e542f129960283b310647056243ef55b28f3db98d090bd151b14c803334de` | `inspect-manually` |
 | `C:\Git\Agentic AI\Agentic Design Pillars.md` | `unscoped_candidate` | 0.250 | `56caed54134516265164c14f80aa3c3b9d9803db239731638a417b549af02402` | `inspect-manually` |
 | `C:\Git\Agentic AI\Agentic Folder Structure\markdown\agentic_core.md` | `unscoped_candidate` | 0.250 | `ea8e5441f8d8aec3bfd4de44f8969166c262f30bc6ff930ac93dadf92774f8d5` | `inspect-manually` |
@@ -1781,7 +1781,7 @@
 | `C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases_2.py` | `unscoped_candidate` | 0.250 | `054d8d341703f77285f2a2b4fbd292c6ac86f764a038705b62cac5799a2e94f8` | `ignore` |
 | `C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases_3.py` | `unscoped_candidate` | 0.250 | `054d8d341703f77285f2a2b4fbd292c6ac86f764a038705b62cac5799a2e94f8` | `ignore` |
 | `C:\Git\Agentic-Workflow\.pre-commit-config.yaml` | `unscoped_candidate` | 0.250 | `358ada4ca511f0e948e6578cea8273d3e52e02e516feff56defdaedd9ab6892b` | `inspect-manually` |
-| `C:\Git\Agentic-Workflow\.vscode\settings.json` | `unscoped_candidate` | 0.250 | `e79056cc590f67b9dca4219a771b31bd870f9ef0ae34744909c0eab0375567a1` | `inspect-manually` |
+| `C:\Git\Agentic-Workflow\.vscode\hooks.json` | `unscoped_candidate` | 0.250 | `e79056cc590f67b9dca4219a771b31bd870f9ef0ae34744909c0eab0375567a1` | `inspect-manually` |
 | `C:\Git\Agentic-Workflow\.windsurf\RULES_INDEX.md` | `unscoped_candidate` | 0.250 | `a890707540cb44c5f8c9216adaa70cb0a5de9dfdbbb3e52b140f6a8fea9bd544` | `inspect-manually` |
 | `C:\Git\Agentic-Workflow\.windsurf\plans\llm-alignment-gap-analysis-757c4b.md` | `unscoped_candidate` | 0.250 | `252ddf166535c3e3e8e1b0cbbe1f01dcee1e90b99a9ae320e25bfc24e1c0b839` | `inspect-manually` |
 | `C:\Git\Agentic-Workflow\.windsurf\plans\mcp-optimization-335d73.md` | `unscoped_candidate` | 0.250 | `73afdf74dde3a6bf87689557dca59688780a03a5026ef2fdecf12512856a83ad` | `inspect-manually` |
@@ -8446,7 +8446,7 @@
 
 ## Blockers and Unresolved Unsafe Artifacts
 
-- `C:\Git\.vscode\settings.json` :: `no strong classifier signal; weak confidence or unscoped bucket`
+- `C:\Git\.vscode\hooks.json` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic AI\Agentic Architecture Design Dependencies.md` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic AI\Agentic Design Pillars.md` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic AI\Agentic Folder Structure\markdown\agentic_core.md` :: `no strong classifier signal; weak confidence or unscoped bucket`
@@ -10077,7 +10077,7 @@
 - `C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases_2.py` :: `duplicate content hash; canonical=C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases.py`
 - `C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases_3.py` :: `duplicate content hash; canonical=C:\Git\Agentic-Workflow\.healing_backups\naming_violations\l5_safety_aliases.py`
 - `C:\Git\Agentic-Workflow\.pre-commit-config.yaml` :: `no strong classifier signal; weak confidence or unscoped bucket`
-- `C:\Git\Agentic-Workflow\.vscode\settings.json` :: `no strong classifier signal; weak confidence or unscoped bucket`
+- `C:\Git\Agentic-Workflow\.vscode\hooks.json` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic-Workflow\.windsurf\RULES_INDEX.md` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic-Workflow\.windsurf\plans\llm-alignment-gap-analysis-757c4b.md` :: `no strong classifier signal; weak confidence or unscoped bucket`
 - `C:\Git\Agentic-Workflow\.windsurf\plans\mcp-optimization-335d73.md` :: `no strong classifier signal; weak confidence or unscoped bucket`

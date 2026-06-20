@@ -19,7 +19,7 @@ The ADG materialized view `v_p2_duplicated_adapters` flagged three clusters as
 | `ADG::Symbol::redis` | 3 | `agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py`, `agentic_core/L4_state/utils/memory/semantic_cache_manager.py`, `agentic_core/cache/redis_cache_client.py` |
 | `ADG::Symbol::sqlite3` | 3 | `agentic_core/L4_state/cache/gptcache_client.py`, `apps_shared/data_adapters/repo_signal_adapter.py`, `tools/memory/sqlite_memory_store.py` |
 
-The plan (`.claude/plans/adg-dead-code-waves-efg-b2e4f7.md`) originally framed
+The plan (`.codex/plans/adg-dead-code-waves-efg-b2e4f7.md`) originally framed
 Wave E as "duplicate adapter consolidation" and anticipated in its Gap Register
 (§G1) that the premise might be refuted by composition-layer inspection.
 
@@ -99,7 +99,7 @@ overlap in API surface.
   sqlite3) until the view is renamed or narrowed. This is accepted drift
   — the view is a diagnostic, not a gate.
 - No consolidation work is scheduled. Wave E.1 is closed.
-- The plan `.claude/plans/adg-dead-code-waves-efg-b2e4f7.md` §G1 is
+- The plan `.codex/plans/adg-dead-code-waves-efg-b2e4f7.md` §G1 is
   marked resolved by this ADR.
 - The Notion P1 E.1 row in Wave/Phase Convergence will be closed with
   Status=Done and this ADR linked in Blocking Items.
@@ -123,7 +123,7 @@ Neither of those is committed in this ADR; both are backlog candidates.
 
 ## References
 
-- Plan: `.claude/plans/adg-dead-code-waves-efg-b2e4f7.md` (Wave E, Gap G1)
+- Plan: `.codex/plans/adg-dead-code-waves-efg-b2e4f7.md` (Wave E, Gap G1)
 - View: `v_p2_duplicated_adapters` in `artifacts/adg/adg_indexed_*.sqlite`
 - Prior related ADR: `ADR-019-adg-materialized-views.md`
 - Author-Gate decision: captured via harness author-gate 2026-04-23

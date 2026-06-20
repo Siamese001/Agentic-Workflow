@@ -30,4 +30,4 @@ Files under `Contextual Refinement/` here are **not** byte-identical to `docs/re
 
 ## Version naming
 
-- `agentic_process_mapping_v30.md` at this root is a **legacy full map** (v30-era layout). The current **executive / spine-substep** summary in `_notes` is `agentic_process_mapping_v40.md`, and the **runtime exec ASCII** is `agentic_system_process_map_exec.md`. When in doubt, follow `_notes` and operating-contract rules in `.claude/rules/`.
+- `agentic_process_mapping_v30.md` at this root is a **legacy full map** (v30-era layout). The current **executive / spine-substep** summary in `_notes` is `agentic_process_mapping_v40.md`, and the **runtime exec ASCII** is `agentic_system_process_map_exec.md`. When in doubt, follow `_notes` and operating-contract rules in `.codex/rules/`.

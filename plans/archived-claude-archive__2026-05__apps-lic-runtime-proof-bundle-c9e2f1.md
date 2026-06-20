@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-runtime-proof-bundle-c9e2f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-runtime-proof-bundle-c9e2f1.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-runtime-proof-bundle-c9e2f1.md'
 source_sha256: 5661f1a882c9485d4aab8edbf4b7d67c46d5bd2280c0e315ef06e4af7d35203f
 recovered_status: LEGACY_EXISTING

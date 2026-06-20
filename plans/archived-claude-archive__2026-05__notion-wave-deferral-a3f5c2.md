@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-wave-deferral-a3f5c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-wave-deferral-a3f5c2.md'
 original_relative_path: '_archive\\2026-05\\notion-wave-deferral-a3f5c2.md'
 source_sha256: 7e144a0df219c17b98d9ee06d0245f0c9a32c6d243a22520c5c5469179d5229e
 recovered_status: LEGACY_EXISTING

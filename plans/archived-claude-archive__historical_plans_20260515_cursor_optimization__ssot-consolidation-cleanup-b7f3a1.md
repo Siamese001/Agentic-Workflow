@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-cleanup-b7f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-cleanup-b7f3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-cleanup-b7f3a1.md'
 source_sha256: 61de9f78bd2a24e3db9cb56316f336b8d1335e121e2a082119e5ede5fb53d82f
 recovered_status: LEGACY_EXISTING

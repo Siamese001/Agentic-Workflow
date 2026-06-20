@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-contract-harness-modernization-f4e8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-contract-harness-modernization-f4e8b2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-contract-harness-modernization-f4e8b2.md'
 source_sha256: 0ec9d8565d8d2acf5582f73dd2f1307d831876a8501a944c4d8fad2057f0dc40
 recovered_status: LEGACY_EXISTING

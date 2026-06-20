@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Manifest view-rule executor for the ADG three-graph harness.
 
-Plan: ``.claude/plans/adg-three-graph-harness-e57cc7.md`` (W3.P1).
+Plan: ``.codex/plans/adg-three-graph-harness-e57cc7.md`` (W3.P1).
 
 Executes a single ``view_rule`` block from
 ``ops_scripts/ci/adg_gate_manifest.yaml`` against the latest static ADG

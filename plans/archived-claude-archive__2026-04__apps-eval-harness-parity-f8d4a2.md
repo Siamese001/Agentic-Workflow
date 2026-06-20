@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\apps-eval-harness-parity-f8d4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\apps-eval-harness-parity-f8d4a2.md'
 original_relative_path: '_archive\\2026-04\\apps-eval-harness-parity-f8d4a2.md'
 source_sha256: 5c4458c8eaa55340ee58f0828ea44667287be72da01223f84129cbcf4749bf4f
 recovered_status: LEGACY_EXISTING

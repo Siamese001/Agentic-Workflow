@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-complete-marker-enforcement-d2e9f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-complete-marker-enforcement-d2e9f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\plan-complete-marker-enforcement-d2e9f1.md'
 source_sha256: ed5f864a9e2bed8b6fe31fb05facd525c8e61ec6354894988b908c1d1da1ac1b
 recovered_status: LEGACY_EXISTING

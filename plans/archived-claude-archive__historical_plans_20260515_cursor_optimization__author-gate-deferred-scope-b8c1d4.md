@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-deferred-scope-b8c1d4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-deferred-scope-b8c1d4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\author-gate-deferred-scope-b8c1d4.md'
 source_sha256: 4cf173222542aee8bd730e517944713a607c16d616f40b57e91d8514f8ebe137
 recovered_status: LEGACY_EXISTING

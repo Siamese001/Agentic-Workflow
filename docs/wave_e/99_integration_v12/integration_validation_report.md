@@ -108,8 +108,8 @@ Summary: 5 of 8 weak edges have dual-NORMATIVE endpoints; 3 involve a WEAK atom 
 
 | Source | Locator | Resolves |
 |---|---|---|
-| SRC-RULE-001 | `.claude/rules/constitutional.md` | ✅ |
-| SRC-RULE-002 | `.claude/rules/global_rules.md` | ✅ |
+| SRC-RULE-001 | `.codex/rules/constitutional.md` | ✅ |
+| SRC-RULE-002 | `.codex/rules/global_rules.md` | ✅ |
 | SRC-INT-001 | `AGENTS.md` | ✅ |
 | SRC-INT-002 | `docs/wave_e/00_schema/downstream_lane_contract.md#1-governing-semantics-non-negotiable` | ✅ |
 | SRC-INT-003 | `docs/wave_e/00_schema/requirement_graph_schema.yaml#governing-semantics` | ✅ |

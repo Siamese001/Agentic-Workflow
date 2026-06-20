@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-agentic-core-binding-hardening-b7e3f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-agentic-core-binding-hardening-b7e3f1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-agentic-core-binding-hardening-b7e3f1.md'
 source_sha256: 5fb9ea1796f9d6131f3112b2c5dcff61a05fabbb179126384f6c42d5f27eb2aa
 recovered_status: LEGACY_EXISTING

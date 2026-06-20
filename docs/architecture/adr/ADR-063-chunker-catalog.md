@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `tools/ingestion/`, `tools/generate/ingestion/`, `agentic_core/knowledge/canonical/chunk_manifest.py`, `agentic_core/knowledge/retrieval/parent_child_hydrator.py`
-**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.1
+**Plan**: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.1
 **Relates-to**: ADR-045 (contextual retrieval), ADR-055 (provenance), ADR-056 (multi-head), ADR-059 (embedding-cosine semantic chunking)
 
 **Current-state note (2026-06-15):** `tools/ingestion/chunker_catalog.py` now provides the source-kind registry, markdown header lineage, Python thin-symbol recovery, pytest-node extraction, and trace causal-window grouping seed. Existing manifest lineage and parent-child hydration primitives remain compatible with the catalog metadata.
@@ -18,7 +18,7 @@ Today's chunking surface is single-strategy-per-source and lossy:
 | Source | Today's chunker | Documented loss |
 |---|---|---|
 | Python code | AST chunker (`ingest_code.py`) | Skips zero-arg functions, method-less classes, module-level constants. ~10–15 % of ADG nodes per sibling plan `e9aa09` §2.4. |
-| Markdown docs | Token-window chunker (`ingest_docs.py`) | No header-aware splitting; no H1/H2 lineage in metadata; AGENTS.md / `.claude/rules/*` not ingested at all. |
+| Markdown docs | Token-window chunker (`ingest_docs.py`) | No header-aware splitting; no H1/H2 lineage in metadata; AGENTS.md / `.codex/rules/*` not ingested at all. |
 | Tests | (mostly absent — tools/ingestion has no `ingest_tests.py` for code-style coverage) | Missing entirely from `repo_tests_guardrails`. |
 | Traces (JSONL) | Per-line chunker | No causal-window grouping (parent span + children); per-line embeddings lose flow. |
 | RCA / incidents | Token-window | No event-window grouping; no link to the underlying ADR / Wave row. |
@@ -46,7 +46,7 @@ Adopt a **chunker catalog** keyed by source kind, with one canonical strategy pe
    | `code/python` | `AstThinChunker` (new — extends current AST chunker) | `EmbeddingSemanticChunker` (ADR-059) | function/class/constant; thin chunks for zero-arg/empty cases |
    | `code/non-python` | `TreeSitterChunker` (new — opt-in once tree-sitter binding is on the dep allowlist) | `EmbeddingSemanticChunker` | symbol-level |
    | `docs/markdown` | `MarkdownHeaderChunker` (new) | `EmbeddingSemanticChunker` | section bounded by headers; lineage in metadata |
-   | `docs/rules-and-plans` | `MarkdownHeaderChunker` | — | same as docs/markdown but ingest-source `.claude/rules/*` and `.claude/plans/*` |
+   | `docs/rules-and-plans` | `MarkdownHeaderChunker` | — | same as docs/markdown but ingest-source `.codex/rules/*` and `.codex/plans/*` |
    | `tests/python` | `PytestNodeChunker` (new) | `AstThinChunker` | one chunk per test function with class context |
    | `traces/jsonl` | `CausalWindowChunker` (new) | — | trace_id + parent span tree, max N children per chunk |
    | `incidents-rca/markdown` | `MarkdownHeaderChunker` | — | section-bounded; `linked_adr_id` and `wave_phase_id` extracted to metadata |
@@ -142,4 +142,4 @@ Rollback: `CHUNKER_CATALOG_DISABLE=1` env knob falls back to the existing single
 - LangChain `MarkdownHeaderTextSplitter`, `RecursiveJsonSplitter` (2024)
 - In-repo: `agentic_core/knowledge/retrieval/parent_child_hydrator.py`, `agentic_core/knowledge/canonical/chunk_manifest.py`
 - Sibling plan: `chromadb-bge-retrieval-hardening-e9aa09` §2.4
-- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

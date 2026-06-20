@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\bge-review-apps-qna-c0-chroma-migration-f9a3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\bge-review-apps-qna-c0-chroma-migration-f9a3b2.md'
 original_relative_path: 'bge-review-apps-qna-c0-chroma-migration-f9a3b2.md'
 source_sha256: 7cfc9303a799030cbb5fdfde037bf87837f1ecd88e10cc52f97a543779fa6982
 recovered_status: LEGACY_EXISTING
@@ -175,4 +175,4 @@ Verification:
 - [x] Focused apps_qna and cache tests pass.
 - [x] Retention decision for `C:/AgenticEmbeddings` recorded with evidence.
 
-PLAN_CREATED: slug=bge-review-apps-qna-c0-chroma-migration-f9a3b2 path=.claude/plans/bge-review-apps-qna-c0-chroma-migration-f9a3b2.md status=Not Started
+PLAN_CREATED: slug=bge-review-apps-qna-c0-chroma-migration-f9a3b2 path=.codex/plans/bge-review-apps-qna-c0-chroma-migration-f9a3b2.md status=Not Started

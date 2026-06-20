@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w2-gate-module-9a4b2e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w2-gate-module-9a4b2e.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w2-gate-module-9a4b2e.md'
 source_sha256: d9287924a5d78cda2f6e1761ab03b4dc606be40d4828ebcbe120a3aafff34e04
 recovered_status: LEGACY_EXISTING

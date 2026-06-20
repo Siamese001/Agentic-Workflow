@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-dom-runtime-harness-followup-f2a7b3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-dom-runtime-harness-followup-f2a7b3.md'
 original_relative_path: '_archive\\2026-05\\apps-dom-runtime-harness-followup-f2a7b3.md'
 source_sha256: 76f638f69c260a9fd104958d9b64b9c336981c982bfb9d9931f20022819d837c
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-plans-status-rca-followups-b8e3f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-plans-status-rca-followups-b8e3f2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\notion-plans-status-rca-followups-b8e3f2.md'
 source_sha256: 55d0e6d98f0def2e721ad5a0df737fc122541c378ae7c6c8b4b3e15b9738949b
 recovered_status: LEGACY_EXISTING

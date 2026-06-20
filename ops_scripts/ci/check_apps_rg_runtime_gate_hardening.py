@@ -9,7 +9,7 @@ Exit policy:
     or on-disk test layout drifts (non-blocking in the contract plane).
   - ``APPS_RG_W8_GATE_FAIL_CLOSED=1`` — exits 1 when validation status is not PASS.
 
-Spec reference: .claude/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
+Spec reference: .codex/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
 """
 
 from __future__ import annotations

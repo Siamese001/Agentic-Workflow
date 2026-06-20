@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d2-decision-evaluator-227b38.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d2-decision-evaluator-227b38.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-d2-decision-evaluator-227b38.md'
 source_sha256: d9f94f04c23e4c0b5f8756f36d0e879b666e6e47166a8a129c5e301f17f1196b
 recovered_status: LEGACY_EXISTING

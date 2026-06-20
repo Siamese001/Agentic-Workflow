@@ -2,7 +2,7 @@
 
 Incident (2026-06-11): ``stop_task_audit`` used advisory ``warn()`` for PASS-without-proof
 violations, letting misleading PASS claims through. Hardened to ``block()`` (exit 2) and
-``ARTIFACTS`` was added to ``PROOF_WORDS`` in ``claude_hook_common``.
+``ARTIFACTS`` was added to ``PROOF_WORDS`` in ``codex_hook_common``.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOKS_DIR = REPO_ROOT / ".claude" / "hooks"
+HOOKS_DIR = REPO_ROOT / ".codex" / "hooks"
 SCRIPT = HOOKS_DIR / "stop_task_audit.py"
 
 

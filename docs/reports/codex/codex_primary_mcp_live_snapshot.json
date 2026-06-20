@@ -82,7 +82,7 @@
     {
       "server_id": "pytest_mcp",
       "codex_status": "dormant_by_policy",
-      "evidence": ".claude/mcp-notes.md keeps pytest_mcp dormant; repo pytest policy uses python -m pytest.",
+      "evidence": ".codex/mcp-notes.md keeps pytest_mcp dormant; repo pytest policy uses python -m pytest.",
       "run_policy": "Use python -m pytest with plugin autoload enabled unless pytest_mcp is explicitly re-added."
     },
     {
@@ -94,7 +94,7 @@
     {
       "server_id": "otel_mcp",
       "codex_status": "dormant_on_demand",
-      "evidence": "OTel MCP is dormant/on-demand in .claude/mcp-notes.md and not exposed in this session.",
+      "evidence": "OTel MCP is dormant/on-demand in .codex/mcp-notes.md and not exposed in this session.",
       "run_policy": "Use only for runtime trace diagnostics when collector prerequisites are ready."
     }
   ]

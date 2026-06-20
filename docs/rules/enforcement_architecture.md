@@ -228,7 +228,7 @@ Some rules have enforcement in BOTH layers:
    - Structural/observable → Pre-commit only
    - Both aspects → Both layers (legacy editor primary, pre-commit secondary)
 3. **Create artifacts**:
-   - legacy editor: Add skill to `.claude/skills/[skill-name]/` with `MANDATORY PRE-CONDITION` block
+   - legacy editor: Add skill to `.codex/skills/[skill-name]/` with `MANDATORY PRE-CONDITION` block
    - Pre-commit: Add script to `ops_scripts/ci/check_[rule].py`
 4. **Add metadata** to skill `SKILL.md`:
    ```yaml
@@ -263,7 +263,7 @@ Some rules have enforcement in BOTH layers:
 - **Decision**: legacy editor only
 
 **Enforcement**:
-- legacy editor skill: `.claude/skills/ast-first-gate/SKILL.md` with mandatory pre-condition
+- legacy editor skill: `.codex/skills/ast-first-gate/SKILL.md` with mandatory pre-condition
 - Pre-commit gate: None (would be too late)
 
 **Metadata**:
@@ -303,7 +303,7 @@ enforcement_type: structural
 - **Decision**: Both layers (legacy editor primary, pre-commit secondary)
 
 **Enforcement**:
-- legacy editor skill: `.claude/skills/rollback-gate/SKILL.md` with mandatory pre-condition (PRIMARY)
+- legacy editor skill: `.codex/skills/rollback-gate/SKILL.md` with mandatory pre-condition (PRIMARY)
 - Pre-commit gate: `ops_scripts/ci/check_rollback_checkpoints.py` verifies artifact exists (SECONDARY)
 
 **Metadata**:
@@ -358,7 +358,7 @@ enforcement_type: behavioural_primary_structural_secondary
 ## References
 
 - `.windsurf/RULES_INDEX.md` — Master index of all rules and gates
-- `.claude/rules/adg-repair-discipline.md` — ADG repair protocol
-- `.claude/skills/` — All legacy editor skill definitions
+- `.codex/rules/adg-repair-discipline.md` — ADG repair protocol
+- `.codex/skills/` — All legacy editor skill definitions
 - `ops_scripts/ci/` — All pre-commit gate scripts
 - `.pre-commit-config.yaml` — Pre-commit hook configuration

@@ -464,7 +464,7 @@ stores:
       - tools/memory/purge_sync.py (telemetry)
     reader_modules:
       - human operators
-      - .claude/governance/scripts/post_cursor_agent_*
+      - .codex/governance/scripts/post_cursor_agent_*
     durability: durable
     retention_behavior: >-
       artifacts/reports/: 2,687 files, 188.8 MB. No auto-pruning observed.
@@ -572,13 +572,13 @@ stores:
     kind: disk_artefact
     path_or_namespace: artifacts/windsurf/
     owner_modules:
-      - .claude/governance/scripts/post_cursor_agent_adg_audit.py
-      - .claude/governance/scripts/post_cursor_agent_hitl_capture.py
-      - .claude/governance/scripts/post_mcp_audit.py
+      - .codex/governance/scripts/post_cursor_agent_adg_audit.py
+      - .codex/governance/scripts/post_cursor_agent_hitl_capture.py
+      - .codex/governance/scripts/post_mcp_audit.py
     writer_modules:
-      - .claude/governance/scripts/post_*
+      - .codex/governance/scripts/post_*
     reader_modules:
-      - .claude/governance/scripts/pre_prompt_classifier.py
+      - .codex/governance/scripts/pre_prompt_classifier.py
       - human reviewers
     durability: durable
     retention_behavior: "14 files, 0.4 MB. Includes adg_first_violations.jsonl (append-only)."

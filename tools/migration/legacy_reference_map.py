@@ -38,10 +38,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 SCAN_ROOTS = [
-    "tools", "ops_scripts", "agentic_core", "tests", "config", "scripts", ".claude",
+    "tools", "ops_scripts", "agentic_core", "tests", "config", "scripts", ".codex",
 ]
 SCAN_ROOT_GLOBS = ["apps_*"]
-SCAN_FILES = [".pre-commit-config.yaml", "CLAUDE.md", "AGENTS.md"]
+SCAN_FILES = [".pre-commit-config.yaml", "AGENTS.md", "AGENTS.md"]
 
 EXCLUDE_PARTS = {".cursor", ".git", "__pycache__", "node_modules", ".windsurf"}
 EXCLUDE_PREFIXES = ("docs/archive/", "archives/")

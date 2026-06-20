@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-cert-d3-cert-decision-ledger-85989c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-cert-d3-cert-decision-ledger-85989c.md'
 original_relative_path: '_archive\\2026-05\\runtime-cert-d3-cert-decision-ledger-85989c.md'
 source_sha256: efbdf020a4801516c21adfb920a172fb93565d06f4bb9670c1e7dfd9321d4fac
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\config-drift-reconciliation-6e83dd.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\config-drift-reconciliation-6e83dd.md'
 original_relative_path: '_archive\\2026-05\\config-drift-reconciliation-6e83dd.md'
 source_sha256: be8340850c5b6d6ad2911ef16d74d8acdba93d60139f40cd98d4e11ab1291848
 recovered_status: LEGACY_EXISTING

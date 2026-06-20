@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\harness-enforcement-rename-a8f21c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\harness-enforcement-rename-a8f21c.md'
 original_relative_path: '_archive\\2026-04\\harness-enforcement-rename-a8f21c.md'
 source_sha256: e188cf04b7ce3fe4cf2d90f07a3fef30fa4ffe67b1c07bd6f7fcfb57e4d1b271
 recovered_status: LEGACY_EXISTING

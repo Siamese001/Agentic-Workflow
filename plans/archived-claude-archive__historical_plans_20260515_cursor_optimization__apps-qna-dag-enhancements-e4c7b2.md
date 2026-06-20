@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-dag-enhancements-e4c7b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-dag-enhancements-e4c7b2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-dag-enhancements-e4c7b2.md'
 source_sha256: 1e8e7251f4761127a2e0627e5d5ec3a093ba8c6e81a91ee10159ad1f0656badc
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-enforcement-hardening-p1-p8-7e9c4a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-enforcement-hardening-p1-p8-7e9c4a.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-enforcement-hardening-p1-p8-7e9c4a.md'
 source_sha256: 63bf4b05beee88051a49f0231895b1b6b568174fd523ae77cf7d9b2beba3cb75
 recovered_status: LEGACY_EXISTING

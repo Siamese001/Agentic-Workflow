@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-governance-remediation-c4e8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-governance-remediation-c4e8a2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-governance-remediation-c4e8a2.md'
 source_sha256: 45a13022c3b2a6b01017152e92616f4f12446fd45d4dfe47b70d1d3f1d0583f5
 recovered_status: LEGACY_EXISTING

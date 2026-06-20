@@ -4,10 +4,10 @@
   "wave": "W1",
   "sources": [
     ".mcp.json",
-    "CLAUDE.md",
-    ".claude/mcp-notes.md",
-    ".claude/skills/mcp-integration/SKILL.md",
-    ".claude/skills/mcp-integration/sections/*.md",
+    "AGENTS.md",
+    ".codex/mcp-notes.md",
+    ".codex/skills/mcp-integration/SKILL.md",
+    ".codex/skills/mcp-integration/sections/*.md",
     "Codex tool_search results"
   ],
   "servers": [

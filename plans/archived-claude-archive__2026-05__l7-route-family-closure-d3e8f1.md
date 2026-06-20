@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l7-route-family-closure-d3e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l7-route-family-closure-d3e8f1.md'
 original_relative_path: '_archive\\2026-05\\l7-route-family-closure-d3e8f1.md'
 source_sha256: 8bda903df90b3a8f57f481b7d488a41db2b0d779d6d576ccc99fad8259d387c1
 recovered_status: LEGACY_EXISTING

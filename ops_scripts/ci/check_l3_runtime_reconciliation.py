@@ -36,7 +36,7 @@ Run mode:
   --advisory (operator manual run): always exit 0, log violations to JSONL
   --report-only: skip MCP, replay last persisted observations
 
-Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-antipattern-tier1-9f2c8a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-antipattern-tier1-9f2c8a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-antipattern-tier1-9f2c8a.md'
 source_sha256: 23ff996d73af2719a94d044563aa7a4b0b36616d9bc7aab7313a2e850c9f74ab
 recovered_status: LEGACY_EXISTING

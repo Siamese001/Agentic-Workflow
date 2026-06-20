@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-pa-ssot-gap-b8e4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-pa-ssot-gap-b8e4f1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-pa-ssot-gap-b8e4f1.md'
 source_sha256: d8ce7591c4154b6f57f1b5ffe3ad21842e808b254e56c37c82dc329629004baa
 recovered_status: LEGACY_EXISTING

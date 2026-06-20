@@ -241,7 +241,7 @@ CHECKPOINT: E
 ```bash
 git status --short --branch
 git worktree list
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 If available in the active surface, use ADG/Memory/GitKraken/Pytest MCP equivalents first. If unavailable in Codex, record the unavailable MCP and use the closest local script or CLI fallback.

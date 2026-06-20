@@ -4,7 +4,7 @@
 This document describes the Model Context Protocol (MCP) servers configured in legacy editor for the Agentic-Workflow project.
 
 ## Installation Location
-**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
+**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\hooks.json`
 
 ## Configured MCP Servers
 
@@ -200,4 +200,4 @@ After configuration, restart legacy editor to load the MCP servers. You can then
 ---
 
 **Last Updated**: 2026-02-03
-**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
+**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\hooks.json`

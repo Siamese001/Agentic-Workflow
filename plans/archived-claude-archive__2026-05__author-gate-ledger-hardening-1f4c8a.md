@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ledger-hardening-1f4c8a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ledger-hardening-1f4c8a.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ledger-hardening-1f4c8a.md'
 source_sha256: 88daf505fd29b1549292a87fb0d2ad5513566c72697a317ec52778e4937ed5c5
 recovered_status: LEGACY_EXISTING

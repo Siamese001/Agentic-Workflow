@@ -25,7 +25,7 @@ it. See ``docs/reports/plans/`` for the full RCA.
 
 from __future__ import annotations
 
-# W4 ADG consumer mode declaration (per .claude/rules/adg-canonical-invariants.md
+# W4 ADG consumer mode declaration (per .codex/rules/adg-canonical-invariants.md
 # §6 + agentic_core/adg/artifact/consumer_mode.py).
 # Dangling imports surface UNRESOLVED_STATIC edges — risk signal, not verdict.
 __adg_consumer_mode__ = "risk"

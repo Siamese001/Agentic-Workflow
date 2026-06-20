@@ -206,7 +206,7 @@ Each revision must:
 
 Use this order unless the task clearly needs a different path:
 
-1. **Local context first**: `CLAUDE.md`, `.claude/` rules/skills, nearby docs, direct file reads
+1. **Local context first**: `AGENTS.md`, `.codex/` rules/skills, nearby docs, direct file reads
 2. **Exact retrieval**: paths, symbols, filenames, commands
 3. **Structured retrieval**: ADG for dependency questions, pytest MCP for tests, memory MCP for durable precedent
 4. **Semantic retrieval**: vector search only when exact lookup leaves gaps

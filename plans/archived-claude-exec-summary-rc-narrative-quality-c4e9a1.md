@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-rc-narrative-quality-c4e9a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-rc-narrative-quality-c4e9a1.md'
 original_relative_path: 'exec-summary-rc-narrative-quality-c4e9a1.md'
 source_sha256: ea048a1e5dd5044feb6031638fecccd059acf09b62b9ed056896771322f0594c
 recovered_status: LEGACY_EXISTING

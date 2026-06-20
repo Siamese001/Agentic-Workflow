@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\three-bucket-gap-remediation-069806.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\three-bucket-gap-remediation-069806.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\three-bucket-gap-remediation-069806.md'
 source_sha256: b0ad80c434b1dc70994a5794fb17df94106d7901cf432cc3d06d7090aeb9e3a2
 recovered_status: LEGACY_EXISTING

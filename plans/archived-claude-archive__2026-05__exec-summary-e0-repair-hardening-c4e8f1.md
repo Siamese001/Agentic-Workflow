@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-e0-repair-hardening-c4e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-e0-repair-hardening-c4e8f1.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-e0-repair-hardening-c4e8f1.md'
 source_sha256: a237729408acc5753ee86c6174c213cc4cdb5ae0c28d62f4bcc7101ccc6b5916
 recovered_status: LEGACY_EXISTING

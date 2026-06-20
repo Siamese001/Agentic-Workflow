@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\headline-fixed-prefix-refactor-c8e3b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\headline-fixed-prefix-refactor-c8e3b1.md'
 original_relative_path: '_archive\\2026-05\\headline-fixed-prefix-refactor-c8e3b1.md'
 source_sha256: e0d3126370794d1273c3c4a5357613e68d21540d6be77bfb8fe494427c01f548
 recovered_status: LEGACY_EXISTING

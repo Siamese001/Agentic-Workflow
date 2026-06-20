@@ -16,12 +16,12 @@ Updated thin Codex adapter pointers:
 
 | File | Update |
 |---|---|
-| `docs/codex-backup-adapter.md` | Added `.claude/mcp-notes.md`, MCP report evidence pointers, and the read-only transport audit helper. |
-| `C:\Users\amita\.codex\skills\agentic-workflow-governance\SKILL.md` | Added `.claude/mcp-notes.md` as a canonical source and named the transport audit helper. |
+| `docs/codex-primary-execution.md` | Added `.codex/mcp-notes.md`, MCP report evidence pointers, and the read-only transport audit helper. |
+| `C:\Users\amita\.codex\skills\agentic-workflow-governance\SKILL.md` | Added `.codex/mcp-notes.md` as a canonical source and named the transport audit helper. |
 | `C:\Users\amita\.codex\skills\agentic-workflow-verification\SKILL.md` | Added the transport audit helper and reiterated that report files are evidence snapshots, not routing SSOT. |
 
 No Claude rule bodies were copied into Codex. Live MCP routing still comes from
-`.mcp.json`; dormant/re-add routing still comes from `.claude/mcp-notes.md`;
+`.mcp.json`; dormant/re-add routing still comes from `.codex/mcp-notes.md`;
 procedure still comes from `mcp-integration`.
 
 ## Notion Registration
@@ -44,9 +44,9 @@ executed. It should not be marked `Completed` while W2.3 remains blocked.
 
 | Gate | Result |
 |---|---|
-| `python scripts/governance/verify_codex_backup.py` | PASS |
+| `python scripts/governance/verify_codex_primary.py` | PASS |
 | `python scripts/governance/audit_codex_mcp_transports.py --json` | PASS |
-| `python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/verify_codex_backup.py` | PASS |
+| `python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/verify_codex_primary.py` | PASS |
 | Focused pytest slice | PASS: `14 passed, 5 warnings` |
 
 Focused pytest command:

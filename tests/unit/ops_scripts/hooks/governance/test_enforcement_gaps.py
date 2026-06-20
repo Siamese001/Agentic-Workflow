@@ -43,7 +43,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 
 # ---------------------------------------------------------------------------
@@ -424,15 +424,15 @@ class TestGap4PromptSubmitHookInClaudeSettings:
     """
 
     def setup_method(self):
-        self.settings_path = Path(__file__).resolve().parents[5] / ".claude" / "settings.json"
+        self.settings_path = Path(__file__).resolve().parents[5] / ".codex" / "hooks.json"
 
     def test_claude_settings_exists(self):
-        assert self.settings_path.exists(), ".claude/settings.json must exist"
+        assert self.settings_path.exists(), ".codex/hooks.json must exist"
 
     def test_user_prompt_submit_hook_configured(self):
         data = json.loads(self.settings_path.read_text(encoding="utf-8"))
         hooks = data.get("hooks", {})
-        assert "UserPromptSubmit" in hooks, "settings.json must contain UserPromptSubmit hook configuration"
+        assert "UserPromptSubmit" in hooks, "hooks.json must contain UserPromptSubmit hook configuration"
 
     def test_user_prompt_submit_has_no_retired_show_output_false(self):
         data = json.loads(self.settings_path.read_text(encoding="utf-8"))
@@ -458,7 +458,7 @@ class TestGap4PromptSubmitHookInClaudeSettings:
     def test_claude_settings_is_valid_json(self):
         text = self.settings_path.read_text(encoding="utf-8")
         data = json.loads(text)  # raises if invalid
-        assert isinstance(data, dict), ".claude/settings.json must be a JSON object"
+        assert isinstance(data, dict), ".codex/hooks.json must be a JSON object"
 
 
 # ---------------------------------------------------------------------------

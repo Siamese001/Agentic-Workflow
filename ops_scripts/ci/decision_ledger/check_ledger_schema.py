@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MIGRATOR = REPO_ROOT / ".claude" / "governance/scripts" / "apply_ledger_schema.py"
+MIGRATOR = REPO_ROOT / ".codex" / "governance/scripts" / "apply_ledger_schema.py"
 
 
 def main() -> int:
@@ -49,7 +49,7 @@ def main() -> int:
         return 0
     if result.returncode == 1:
         print(
-            "[check_ledger_schema] FAIL — drift detected. Run: python .claude/governance/scripts/apply_ledger_schema.py"
+            "[check_ledger_schema] FAIL — drift detected. Run: python .codex/governance/scripts/apply_ledger_schema.py"
         )
         return 1
     sys.stderr.write(result.stderr)

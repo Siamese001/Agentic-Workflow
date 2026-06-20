@@ -219,7 +219,7 @@ tracking.
 
 ## 9. References
 
-- Parent plan: `.claude/plans/routing-followups-7a2c91.md` F2.2
+- Parent plan: `.codex/plans/routing-followups-7a2c91.md` F2.2
 - RCA H9: `docs/reports/plans/rca-h9-mv-routing-materialized-views.md`
 - Constitutional §22 (ADG graph layer primary)
 - ADR-019 (ADG materialized views — predecessor pattern)

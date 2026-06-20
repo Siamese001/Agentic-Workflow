@@ -1,6 +1,6 @@
 # L2 Execute — Best-Practices Primitives (2026-Q2)
 
-Developer-facing index for the 14 additive L2 modules landed by plan `@c:/Git/Agentic-Workflow/.claude/plans/l2-execute-best-practices-gap-b7c4e2.md`.
+Developer-facing index for the 14 additive L2 modules landed by plan `@c:/Git/Agentic-Workflow/.codex/plans/l2-execute-best-practices-gap-b7c4e2.md`.
 
 **All primitives are additive.** No existing consumer breaks. Call sites opt in by passing a `ToolContract` (W1-P1.3) or by directly importing a registry / class (W2-W5). Default-safe lookups ensure that tools without registered metadata behave as they did before.
 

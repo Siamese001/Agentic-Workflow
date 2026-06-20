@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\prompt-judge-x2-alignment-closeout-c8e4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\prompt-judge-x2-alignment-closeout-c8e4a2.md'
 original_relative_path: '_archive\\2026-05\\prompt-judge-x2-alignment-closeout-c8e4a2.md'
 source_sha256: e6f5abad6948c1150dfe5c48a1321cf5cc2a812c4baebcde13bf0d028fc27d59
 recovered_status: LEGACY_EXISTING

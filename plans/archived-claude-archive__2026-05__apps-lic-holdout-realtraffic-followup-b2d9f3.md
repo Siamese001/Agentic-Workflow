@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-holdout-realtraffic-followup-b2d9f3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-holdout-realtraffic-followup-b2d9f3.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-holdout-realtraffic-followup-b2d9f3.md'
 source_sha256: a0284650a3c2cc7a622976093f94ef44ab49b8021fee8ad334f7b1b180eb7547
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave-status-completion-enforcement-d4f8e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave-status-completion-enforcement-d4f8e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wave-status-completion-enforcement-d4f8e2.md'
 source_sha256: d384a7f6604e537bbc6c8dba3ec9b3e35ccc833da9eab57fcc8570daa808b935
 recovered_status: LEGACY_EXISTING

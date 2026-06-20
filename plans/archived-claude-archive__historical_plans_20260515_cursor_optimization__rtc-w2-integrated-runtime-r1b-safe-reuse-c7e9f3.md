@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md'
 source_sha256: 91237e6a1daf8b5574eec1d79074d440749f65ef16346e4820c333b1637e564e
 recovered_status: LEGACY_EXISTING

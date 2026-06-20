@@ -11,8 +11,8 @@
 - **Deciders:** L3 orchestration owner, L5 safety owner, compliance reviewer
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related plan:** `.claude/plans/runtime-hitl-exit-control-c4e7b3.md`
-- **Related sibling plan (distinct concern):** `.claude/plans/harness-enforcement-rename-a8f21c.md`
+- **Related plan:** `.codex/plans/runtime-hitl-exit-control-c4e7b3.md`
+- **Related sibling plan (distinct concern):** `.codex/plans/harness-enforcement-rename-a8f21c.md`
 - **Related contract:** `docs/contracts/L5_exit_control_hitl.md` (P0.2 deliverable)
 - **Impact layers:** L3 orchestration, L5 safety, L6 observability, apps_*
 
@@ -183,7 +183,7 @@ Full mapping deferred to W7 of the plan.
 
 ## 7. Resolutions to Plan Gaps
 
-Each gap in `.claude/plans/runtime-hitl-exit-control-c4e7b3.md` §Gap Register, resolved
+Each gap in `.codex/plans/runtime-hitl-exit-control-c4e7b3.md` §Gap Register, resolved
 by this ADR:
 
 | Gap | Resolution |
@@ -225,8 +225,8 @@ This ADR is accepted when:
 ## 10. References
 
 - `docs/reference/_notes/agentic_process_mapping_v34.md` — canonical v30 map (step [5])
-- `.claude/plans/runtime-hitl-exit-control-c4e7b3.md` — execution plan (waves W0–W7)
-- `.claude/plans/harness-enforcement-rename-a8f21c.md` — sibling (distinct concern, do not merge)
+- `.codex/plans/runtime-hitl-exit-control-c4e7b3.md` — execution plan (waves W0–W7)
+- `.codex/plans/harness-enforcement-rename-a8f21c.md` — sibling (distinct concern, do not merge)
 - Fowler, M. "Humans and Agents in Software Engineering Loops" (2026-03) — taxonomy
 - Anthropic "Claude Code auto mode" — classifier + deny-and-continue patterns (informs G5)
 - LangGraph interrupt + checkpointer docs — suspend/resume inspiration

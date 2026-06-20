@@ -100,5 +100,5 @@ history and re-enables the existing certification callers.
 ## References
 
 - Related ADRs: ADR-017 (L7_AUDITABILITY mandate), ADR-081 (canonical hop pipeline), ADR-082 (apps folder taxonomy)
-- Related plans: `.claude/plans/apps-l7-deferred-scope-followup-a1d9e3.md`, `.claude/plans/apps-l7-w2-w4-followup-a2e8f4.md`
-- Related rules: `.claude/rules/adg-canonical-invariants.md` §17 (L7 mandatory)
+- Related plans: `.codex/plans/apps-l7-deferred-scope-followup-a1d9e3.md`, `.codex/plans/apps-l7-w2-w4-followup-a2e8f4.md`
+- Related rules: `.codex/rules/adg-canonical-invariants.md` §17 (L7 mandatory)

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\windsurf-config-efficiency-optimization-8f3e9d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\windsurf-config-efficiency-optimization-8f3e9d.md'
 original_relative_path: '_archive\\2026-05\\windsurf-config-efficiency-optimization-8f3e9d.md'
 source_sha256: 6c439a9abe1f49ec587ea505da20880b2c198a1e7cb3deca6c6e350a5bedef00
 recovered_status: LEGACY_EXISTING

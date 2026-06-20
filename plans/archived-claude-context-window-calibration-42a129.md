@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\context-window-calibration-42a129.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\context-window-calibration-42a129.md'
 original_relative_path: 'context-window-calibration-42a129.md'
 source_sha256: d75a5d585b7c289ffd37b4fedc8cbb3eea8d71333bd95eb886c5f1c9ec188ad7
 recovered_status: LEGACY_EXISTING

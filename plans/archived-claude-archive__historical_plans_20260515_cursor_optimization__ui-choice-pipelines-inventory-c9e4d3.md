@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-pipelines-inventory-c9e4d3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-pipelines-inventory-c9e4d3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ui-choice-pipelines-inventory-c9e4d3.md'
 source_sha256: 3d7b8007e9f7d0f70436fdec36cf963f164c1179fb8e9bb7a04b573a3c5b94f5
 recovered_status: LEGACY_EXISTING

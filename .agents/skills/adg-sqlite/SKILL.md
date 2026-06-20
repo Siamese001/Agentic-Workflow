@@ -8,7 +8,7 @@ description: "AST Dependency Graph analysis \u2014 node lookup by ID/file/layer,
 In-house MCP — no upstream vendor. The canonical static dependency graph for this repo.
 
 **Sibling skill:** `graph-analysis` (decision tree for picking ADG MCP vs grep vs SQLite-direct vs semantic)
-**Doctrine:** `.claude/rules/adg-canonical-invariants.md`, `.claude/rules/adg-analysis-procedures.md`
+**Doctrine:** `.codex/rules/adg-canonical-invariants.md`, `.codex/rules/adg-analysis-procedures.md`
 
 **Canonical retrieval ladder (one line):** Redis warm projection → **`adg_sqlite` MCP** (read-only gateway) → SQLite direct only with **`DEGRADED_FALLBACK: reason=<…>`** unless matching a **named CI parity script**.
 

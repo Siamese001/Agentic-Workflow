@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-otel-spec-coverage-7c4d2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-otel-spec-coverage-7c4d2a.md'
 original_relative_path: '_archive\\2026-05\\runtime-otel-spec-coverage-7c4d2a.md'
 source_sha256: fc814599232f7b27ee8fc0538222d7db3e1a20407a3dcfeaaabc7c1ad2fe089f
 recovered_status: LEGACY_EXISTING

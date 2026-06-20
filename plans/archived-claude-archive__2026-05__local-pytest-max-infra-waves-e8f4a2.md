@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\local-pytest-max-infra-waves-e8f4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\local-pytest-max-infra-waves-e8f4a2.md'
 original_relative_path: '_archive\\2026-05\\local-pytest-max-infra-waves-e8f4a2.md'
 source_sha256: ebf7dd1b0996a88529f42a0e3395491605da2d676d022a1ffadcbf49622433b4
 recovered_status: LEGACY_EXISTING

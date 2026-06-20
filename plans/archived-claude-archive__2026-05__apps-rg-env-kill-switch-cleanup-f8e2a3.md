@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-env-kill-switch-cleanup-f8e2a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-env-kill-switch-cleanup-f8e2a3.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-env-kill-switch-cleanup-f8e2a3.md'
 source_sha256: 119720ddaea9d8cce07e71f76034f1fb322783b2a622dc9705e5137ba83cd1c2
 recovered_status: LEGACY_EXISTING

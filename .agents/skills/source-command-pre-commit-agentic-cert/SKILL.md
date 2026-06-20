@@ -245,7 +245,7 @@ PRE_COMMIT_AGENTIC_CERT: status=<PASS|BLOCK>, violations=<count>, cert=<path>
 ## CI Enforcement
 
 This workflow is invoked automatically by:
-- `.claude/settings.json` pre-commit hook (W3)
+- `.codex/hooks.json` pre-commit hook (W3)
 - CI gate in `ops_scripts/ci/run_contract_gates.py` (W4)
 
 ## Related
@@ -253,7 +253,7 @@ This workflow is invoked automatically by:
 - Skill: `receipt-auditor` (Step 3)
 - Skill: `core-boundary-audit` (leakage detection)
 - Workflow: `/core-boundary-audit`
-- Rule: `.claude/rules/agentic-core-glob-lock.md`
+- Rule: `.codex/rules/agentic-core-glob-lock.md`
 
 ## MANUAL MIGRATION REQUIRED
 

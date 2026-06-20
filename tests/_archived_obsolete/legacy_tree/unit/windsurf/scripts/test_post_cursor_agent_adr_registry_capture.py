@@ -28,7 +28,7 @@ from types import ModuleType
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_SCRIPTS = _REPO_ROOT / ".codex" / "governance/scripts" / "_legacy_windsurf"
 
 
 def _load(mod_name: str = "adr_registry_t") -> ModuleType:

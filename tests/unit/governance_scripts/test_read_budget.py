@@ -1,4 +1,4 @@
-"""Unit tests for `.claude/governance/scripts/_legacy_windsurf/_post_handlers/read_budget.py`.
+"""Unit tests for `.codex/governance/scripts/_legacy_windsurf/_post_handlers/read_budget.py`.
 
 Coverage:
 - Counts native read_file invocations
@@ -20,7 +20,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 # Canonical path — _post_handlers/ lives in governance/scripts/, not _legacy_windsurf/
-HANDLERS_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
+HANDLERS_DIR = REPO_ROOT / ".codex" / "governance" / "scripts"
 sys.path.insert(0, str(HANDLERS_DIR))
 
 # Import the handler module directly.

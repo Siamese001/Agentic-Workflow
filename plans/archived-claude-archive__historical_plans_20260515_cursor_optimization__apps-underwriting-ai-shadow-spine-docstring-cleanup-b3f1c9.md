@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-shadow-spine-docstring-cleanup-b3f1c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-shadow-spine-docstring-cleanup-b3f1c9.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-shadow-spine-docstring-cleanup-b3f1c9.md'
 source_sha256: fe383755f5da6eccef7d8fa0fc040a3ee9e1cc0a8f3d8e71176b42e72462b799
 recovered_status: LEGACY_EXISTING

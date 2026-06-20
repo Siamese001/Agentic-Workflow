@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md'
 original_relative_path: '_archive\\2026-05\\p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md'
 source_sha256: d971adfb1d778503a1f02c3b2d9ff0fcf797cbc804dee17fa7cb0fc6827e006d
 recovered_status: LEGACY_EXISTING

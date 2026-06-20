@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-three-graph-harness-e57cc7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-three-graph-harness-e57cc7.md'
 original_relative_path: '_archive\\2026-05\\adg-three-graph-harness-e57cc7.md'
 source_sha256: ef548ec9b88892e5a2db6e858450382e97e69f9005ffc8d0ad27f8865a140c52
 recovered_status: LEGACY_EXISTING

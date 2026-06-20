@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\graph-skills-quality-enhancement-c4e8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\graph-skills-quality-enhancement-c4e8a1.md'
 original_relative_path: '_archive\\2026-05\\graph-skills-quality-enhancement-c4e8a1.md'
 source_sha256: 1aca530a992c3ac3da2a8c4662946d838a558d4d25bafc92818afbdf506ac43c
 recovered_status: LEGACY_EXISTING

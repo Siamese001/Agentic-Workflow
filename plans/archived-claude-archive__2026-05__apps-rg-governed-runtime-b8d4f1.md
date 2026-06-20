@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-governed-runtime-b8d4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-governed-runtime-b8d4f1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-governed-runtime-b8d4f1.md'
 source_sha256: 25c043688512cbd133f885fcf04e40cf19a0f18659446db4fe86f859ee56160d
 recovered_status: LEGACY_EXISTING

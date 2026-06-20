@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\w4-p8-guardrail-family-e93f8a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\w4-p8-guardrail-family-e93f8a.md'
 original_relative_path: '_archive\\2026-05\\w4-p8-guardrail-family-e93f8a.md'
 source_sha256: cc3ecb8953ea7f53e3ad7fc066ad17be3c2751025f8810d8ededee5959e40379
 recovered_status: LEGACY_EXISTING

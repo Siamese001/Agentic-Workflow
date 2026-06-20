@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-integration-consistency-audit-b2c4d8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-integration-consistency-audit-b2c4d8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\notion-integration-consistency-audit-b2c4d8.md'
 source_sha256: 79f39a69e9f9f6b08824d4d1f0f5b0402ab24a2e2c8951117765ed779e659caa
 recovered_status: LEGACY_EXISTING

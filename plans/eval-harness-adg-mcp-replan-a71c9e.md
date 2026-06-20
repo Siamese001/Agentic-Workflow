@@ -257,7 +257,7 @@ rg -n "X1D|X2|flywheel|replay|capability_regression|exit_eval" tools agentic_cor
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W3.1 - Replay Schema
@@ -330,7 +330,7 @@ python -m pytest -p pytest_timeout tests -q -k "flywheel or corpus or eval"
 **Commands**:
 ```bash
 python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/eval-harness-adg-mcp-replan-a71c9e.md
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ---

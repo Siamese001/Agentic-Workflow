@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\w6-emit-contract-deferred-scope-c3f7a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\w6-emit-contract-deferred-scope-c3f7a1.md'
 original_relative_path: '_archive\\2026-05\\w6-emit-contract-deferred-scope-c3f7a1.md'
 source_sha256: 9d7536cd4fdcfd0d9a64b1d9a842e2279cbcf373ccf0d5dcb26e6b736c39b5b5
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-hybrid-live-jd-selection-f8e2b3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-hybrid-live-jd-selection-f8e2b3.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-hybrid-live-jd-selection-f8e2b3.md'
 source_sha256: 43efa357dd60f3602ffbfffa847823ff043786eeb245435b36ca870ae8110813
 recovered_status: LEGACY_EXISTING

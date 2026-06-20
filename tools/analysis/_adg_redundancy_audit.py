@@ -10,7 +10,7 @@ Cross-references:
 Against:
   - CI gates in ops_scripts/ci/check_*.py
   - Test files in tests/unit/**/*.py
-  - Governance hooks in .claude/governance/scripts/
+  - Governance hooks in .codex/governance/scripts/
 
 Output: a markdown report listing each gate/test with overlap classification.
 """
@@ -97,7 +97,7 @@ def adg_inventory(con: sqlite3.Connection) -> dict:
 # ---------- CI / test inventory ----------
 
 CI_DIR = REPO / "ops_scripts" / "ci"
-WINDSURF_SCRIPTS = REPO / ".claude" / "governance" / "scripts"
+WINDSURF_SCRIPTS = REPO / ".codex" / "governance" / "scripts"
 
 
 def collect_ci_gates() -> list[tuple[Path, str]]:

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-judge-regen-prompt-loop-b9e4c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-judge-regen-prompt-loop-b9e4c3.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-judge-regen-prompt-loop-b9e4c3.md'
 source_sha256: cc6b85142238ad29ca6b70fc2281d1930ec73ae4a3eb791870c8c0ec4e485bdb
 recovered_status: LEGACY_EXISTING

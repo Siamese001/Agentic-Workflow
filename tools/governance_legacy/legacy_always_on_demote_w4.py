@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""W4: demote .claude/rules/*.md from trigger: always_on → model_decision."""
+"""W4: demote .codex/rules/*.md from trigger: always_on → model_decision."""
 from __future__ import annotations
 
 import json
@@ -9,12 +9,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-WINDSURF_RULES = REPO / ".claude" / "rules"
-CURSOR_RULES = REPO / ".claude" / "rules"
+WINDSURF_RULES = REPO / ".codex" / "rules"
+CURSOR_RULES = REPO / ".codex" / "rules"
 MAP_OUT = REPO / "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md"
 DEMOTION_NOTE = (
     "Demoted from always_on 2026-05-26 (governance-dedup-closeout-e8a4c2 W4). "
-    "legacy editor SSOT: .claude/rules/{stem}.mdc (alwaysApply: false)."
+    "legacy editor SSOT: .codex/rules/{stem}.mdc (alwaysApply: false)."
 )
 TRIGGER_RE = re.compile(r"^trigger:\s*always_on\s*$", re.MULTILINE)
 
@@ -82,7 +82,7 @@ def _demote_file(path: Path) -> dict[str, object]:
         "stem": stem,
         "action": "demoted",
         "windsurf_path": str(path.relative_to(REPO)).replace("\\", "/"),
-        "cursor_mdc": f".claude/rules/{stem}.mdc",
+        "cursor_mdc": f".codex/rules/{stem}.mdc",
         "before_bytes": before_bytes,
         "after_bytes": after_bytes,
     }
@@ -121,7 +121,7 @@ def _write_map(rows: list[dict[str, object]], before_total: int, after_total: in
             "",
             "## Policy",
             "",
-            "- legacy editor mirror is **read-only legacy** for CI parity; legacy editor agents use `.claude/rules/*.mdc`.",
+            "- legacy editor mirror is **read-only legacy** for CI parity; legacy editor agents use `.codex/rules/*.mdc`.",
             "- Physical demotion: `trigger: always_on` → `trigger: model_decision` with demotion note in `description`.",
             "- Tier-1 budget gate: `python ops_scripts/ci/check_always_on_token_budget.py` (legacy editor bytes reported separately).",
             "",

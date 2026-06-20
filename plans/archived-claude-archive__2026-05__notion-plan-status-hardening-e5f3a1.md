@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-plan-status-hardening-e5f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-plan-status-hardening-e5f3a1.md'
 original_relative_path: '_archive\\2026-05\\notion-plan-status-hardening-e5f3a1.md'
 source_sha256: 64debde8790c9a56ec70321434b91a425ca63d55495dc1d7ae89280e8e7ef4f3
 recovered_status: LEGACY_EXISTING

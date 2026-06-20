@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\graph-skills-deferred-followup-d7f2a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\graph-skills-deferred-followup-d7f2a8.md'
 original_relative_path: 'graph-skills-deferred-followup-d7f2a8.md'
 source_sha256: 59e44cf0f4c486c31a6d7fe49f43b72e4831ed3f18b4c36a17caab6255d68245
 recovered_status: LEGACY_EXISTING

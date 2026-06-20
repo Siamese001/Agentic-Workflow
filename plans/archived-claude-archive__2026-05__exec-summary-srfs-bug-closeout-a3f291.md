@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-srfs-bug-closeout-a3f291.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-srfs-bug-closeout-a3f291.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-srfs-bug-closeout-a3f291.md'
 source_sha256: d903a68060293fc8fe3c5d2c5dd267340ac7166255b7705e7d4fc42f074272bd
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-shared-stub-audit-7dfe16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-shared-stub-audit-7dfe16.md'
 original_relative_path: '_archive\\2026-05\\apps-shared-stub-audit-7dfe16.md'
 source_sha256: bcb38261cadec9d3966b3ded4f19e75ff2d67916e25ced21029db2245782ee61
 recovered_status: LEGACY_EXISTING

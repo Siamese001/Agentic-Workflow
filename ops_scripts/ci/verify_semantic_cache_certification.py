@@ -1,6 +1,6 @@
 """Verifier — Semantic-cache R1B subclaim certification (W1 phase 1, contract only).
 
-Plan: ``.claude/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.codex/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Author-Gate decision (2026-04-30, architecture_choice):
 ``map_to_RTC_REQ_055_plus_conditional_056_057_058``.
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-cascading-ratchet-defer-exit-a41828.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-cascading-ratchet-defer-exit-a41828.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-cascading-ratchet-defer-exit-a41828.md'
 source_sha256: 7a6121d62d63795ca91ec761389a5162a99bd9369deaefc75aa7ab703386c216
 recovered_status: LEGACY_EXISTING

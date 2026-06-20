@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\core-judge-panel-harness-f3c8d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\core-judge-panel-harness-f3c8d1.md'
 original_relative_path: '_archive\\2026-05\\core-judge-panel-harness-f3c8d1.md'
 source_sha256: dfbc4309c3a482f9ffb9f7b2495f23704ceae1b10ba41adf1870e5efec7725ed
 recovered_status: LEGACY_EXISTING

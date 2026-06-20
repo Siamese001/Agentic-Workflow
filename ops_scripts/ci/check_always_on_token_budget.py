@@ -1,11 +1,11 @@
 """CI gate — Anthropic two-tier Tier-1 budget (repo-native SSOT).
 
 Measures and enforces:
-- ``.claude/rules/*.mdc`` with ``alwaysApply: true``
+- ``.codex/rules/*.mdc`` with ``alwaysApply: true``
 - ``AGENTS.md``
 
 Reports separately (not summed into Tier-1 fail threshold):
-- ``.claude/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
+- ``.codex/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
 
 Writes: ``docs/reports/cursor/governance_tier_inventory.json``
 
@@ -27,8 +27,8 @@ from governance_tier_measurement import (
     write_inventory,
 )
 
-# Re-baselined always-on budget for the real Claude Code surface (root CLAUDE.md + every
-# .claude/rules/*.md, which the native loader injects each session). The legacy
+# Re-baselined always-on budget for the real Claude Code surface (root AGENTS.md + every
+# .codex/rules/*.md, which the native loader injects each session). The legacy
 # THRESHOLD_BYTES (51,200) was set for the retired 4-file .mdc design and is blind to the
 # real bundle; this is the enforced ceiling per plan always-on-rule-surface-cut-c7f3a1. 84 KiB.
 REAL_SURFACE_THRESHOLD = 86_016
@@ -88,7 +88,7 @@ def main() -> int:
         )
 
     # --- Real Claude Code always-on surface (plan always-on-rule-surface-cut-c7f3a1) -------
-    # The native loader globs CLAUDE.md + EVERY .claude/rules/*.md into the per-session
+    # The native loader globs AGENTS.md + EVERY .codex/rules/*.md into the per-session
     # bundle. The legacy Tier-1 measurement above is blind to it (no .mdc files;
     # no .md carries `trigger: always_on`). Measure + report the honest surface here.
     # ADVISORY by default to honour the coupling (an honest+enforcing gate on an
@@ -96,7 +96,7 @@ def main() -> int:
     # ALWAYS_ON_CLAUDE_RULES_ENFORCE=1 once the trim brings it under threshold (W5).
     real_total, real_rows = claude_always_on_total()
     print(
-        "\nclaude_code_always_on_surface (CLAUDE.md + ALL .claude/rules/*.md — the real injected bundle):"
+        "\nclaude_code_always_on_surface (AGENTS.md + ALL .codex/rules/*.md — the real injected bundle):"
     )
     print(f"  files: {len(real_rows)}")
     print(
@@ -115,7 +115,7 @@ def main() -> int:
             file=sys.stderr,
         )
         print(
-            "Demote .claude/rules/*.md reference rules to pointer stubs (detail lives in "
+            "Demote .codex/rules/*.md reference rules to pointer stubs (detail lives in "
             "skills; enforcement in hooks/CI); compress the floor.",
             file=sys.stderr,
         )

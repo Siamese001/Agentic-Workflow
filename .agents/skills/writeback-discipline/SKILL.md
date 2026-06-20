@@ -7,7 +7,7 @@ description: "Invoke when a non-trivial task completes and a writeback to file m
 
 **PURPOSE:** Produce ready-to-write file-memory fact shapes so writebacks are correct, consistent, and fast — no freestyling.
 
-This skill is **templates + routing logic only**. Policy SSOT is `.claude/rules/memory-management.md` + constitutional §17 (15/3 rule).
+This skill is **templates + routing logic only**. Policy SSOT is `.codex/rules/memory-management.md` + constitutional §17 (15/3 rule).
 
 > **Notion writeback removed (`notion-wave-enforcement-removal`).** The windsurf/cursor-era Notion
 > writeback machinery (ADR / MCP / Author-Gate / Wave-Phase / SC-AP row shapes, the

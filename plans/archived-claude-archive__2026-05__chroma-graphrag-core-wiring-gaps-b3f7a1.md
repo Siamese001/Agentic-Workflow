@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\chroma-graphrag-core-wiring-gaps-b3f7a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\chroma-graphrag-core-wiring-gaps-b3f7a1.md'
 original_relative_path: '_archive\\2026-05\\chroma-graphrag-core-wiring-gaps-b3f7a1.md'
 source_sha256: 311d7a085b5e46985451d2e675328d91efbab23690c7f3823fceeacc92479527
 recovered_status: LEGACY_EXISTING

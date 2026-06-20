@@ -3,7 +3,7 @@
 **Generated:** 2026-05-02
 **Source:** `python tools/analysis/audit_apps_shared_stubs.py`  
 **Input:** `artifacts/analysis/apps_shared_stub_census.json`  
-**Plan:** [`apps-shared-stub-audit-7dfe16`](../.claude/plans/apps-shared-stub-audit-7dfe16.md)
+**Plan:** [`apps-shared-stub-audit-7dfe16`](../.codex/plans/apps-shared-stub-audit-7dfe16.md)
 
 ## Summary
 

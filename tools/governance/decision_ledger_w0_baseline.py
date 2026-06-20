@@ -26,7 +26,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
-LOOKUP_SCRIPT = REPO_ROOT / ".claude/skills/refactor-decision-memory/lookup_refactor_decisions.py"
+LOOKUP_SCRIPT = REPO_ROOT / ".codex/skills/refactor-decision-memory/lookup_refactor_decisions.py"
 
 TARGET_TABLES = (
     "decisions",

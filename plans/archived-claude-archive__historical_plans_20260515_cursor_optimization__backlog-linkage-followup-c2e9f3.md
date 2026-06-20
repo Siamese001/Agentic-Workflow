@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\backlog-linkage-followup-c2e9f3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\backlog-linkage-followup-c2e9f3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\backlog-linkage-followup-c2e9f3.md'
 source_sha256: 8e2550c85d8183192dfcf1d53660526fcf7ac8e086b276f35e1d79c06de49005
 recovered_status: LEGACY_EXISTING

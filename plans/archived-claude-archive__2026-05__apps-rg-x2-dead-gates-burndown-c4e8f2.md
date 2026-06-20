@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-x2-dead-gates-burndown-c4e8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-x2-dead-gates-burndown-c4e8f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-x2-dead-gates-burndown-c4e8f2.md'
 source_sha256: 46794ed2f13a96d0efcbf95e59872a9f7275d9800392dddf2e5371e630c60356
 recovered_status: LEGACY_EXISTING

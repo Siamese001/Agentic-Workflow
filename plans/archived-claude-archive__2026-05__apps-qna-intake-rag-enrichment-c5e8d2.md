@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-intake-rag-enrichment-c5e8d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-intake-rag-enrichment-c5e8d2.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-intake-rag-enrichment-c5e8d2.md'
 source_sha256: 20b24fc1b7b2afb2f5535710008b649c0f8379a730284d5bd09359480b6fd411
 recovered_status: LEGACY_EXISTING

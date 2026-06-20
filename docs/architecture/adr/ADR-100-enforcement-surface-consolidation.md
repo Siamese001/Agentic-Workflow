@@ -13,7 +13,7 @@
 
 ## Context
 
-The `.claude/` governance layer — ported from the prior legacy editor/legacy editor IDE configs — accumulated
+The `.codex/` governance layer — ported from the prior legacy editor/legacy editor IDE configs — accumulated
 **emulation machinery** that native Claude Code features now supersede: an Author-Gate
 packet/marker/ledger pipeline (native `AskUserQuestion`), `SR_*` plan markers (native plan mode),
 a mandatory memory-MCP ritual (native file memory), `DEFERRED_SCOPE:`/`NEXT_STEP:` marker → hook →
@@ -24,7 +24,7 @@ capture hooks still loaded every session.
 
 ## Decision
 
-Apply the proven ADG/supersession pattern uniformly — **invariant-in-`CLAUDE.md`,
+Apply the proven ADG/supersession pattern uniformly — **invariant-in-`AGENTS.md`,
 procedure-in-native-feature, machinery-removed** — gating every deletion behind a reference sweep so
 nothing wired elsewhere is removed. Net-subtractive, zero governance lost.
 
@@ -35,7 +35,7 @@ nothing wired elsewhere is removed. Net-subtractive, zero governance lost.
 | W3 | Rule stubs | 18 pure-redirect rule stubs deleted (66→48 rule files); `retired-rules-index.md` preserves the redirect map | canonical rule targets + §-citations |
 | W4 | CI gates | 19 classifier-proven-dead orphan gates retired (of 103 registry-orphans, **84 proven still-referenced → kept**) | `gate_wiring_classification.json` |
 | W5 | Skills/aliases | 6 redundant tavily command aliases removed; dormant-MCP skills KEPT per documented intent | `mcp-notes.md` |
-| W6 | S6 legacy/serialization | legacy trees + `mcp-serialization.md` deleted (concurrent); dangling `CLAUDE.md` index row repointed; 3 retired-marker captures unwired from the per-Stop chain | native parallel MCP; `pre_mcp_gate` keeps Notion/GitKraken checks |
+| W6 | S6 legacy/serialization | legacy trees + `mcp-serialization.md` deleted (concurrent); dangling `AGENTS.md` index row repointed; 3 retired-marker captures unwired from the per-Stop chain | native parallel MCP; `pre_mcp_gate` keeps Notion/GitKraken checks |
 | W7 | S4 capture + closeout | S4 capture hooks (`post_agent_deferred_scope_capture`, `post_agent_next_step_capture`) + `_deferred_scope_plan_scaffold` + `next_step_miss_detector` deleted after decoupling `backfill_backlog_plan_relation` and emptying the MECE gate's writer list | native `spawn_task` + constitutional §24 |
 
 ### Kept (explicitly NOT retired — signal would be lost)

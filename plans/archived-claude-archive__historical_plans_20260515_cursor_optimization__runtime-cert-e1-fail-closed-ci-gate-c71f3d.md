@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1-fail-closed-ci-gate-c71f3d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1-fail-closed-ci-gate-c71f3d.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1-fail-closed-ci-gate-c71f3d.md'
 source_sha256: 878027e8b602268a4570f1ec71ca8f0c6e536d2521b0fd617754e3bbe14ffd25
 recovered_status: LEGACY_EXISTING

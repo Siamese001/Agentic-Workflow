@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-ci-unified-migration-a7f3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-ci-unified-migration-a7f3b2.md'
 original_relative_path: '_archive\\2026-05\\adg-ci-unified-migration-a7f3b2.md'
 source_sha256: 05461dbb205bc2f89a24a60f9165820421f39509af98fdbf01a25c18883244bb
 recovered_status: LEGACY_EXISTING

@@ -1,13 +1,13 @@
 # Outcome-Frame Enforcement — Feasibility & Options
 
 **Question:** Can the mandatory refactor-turn **Outcome frame** (rule
-[`001-cursor-runtime-seam-execution.md`](../../../.claude/rules/001-cursor-runtime-seam-execution.md)
+[`001-cursor-runtime-seam-execution.md`](../../../.codex/rules/001-cursor-runtime-seam-execution.md)
 § *Runtime failure ⇒ RCA mandatory*; constitutional §37) be enforced more strongly than the
 current advisory audit?
 
 **TL;DR — YES, and the mechanism is already running in this repo.** A Claude Code **Stop hook can
 block the turn from ending** (`{"decision":"block","reason":...}` + exit 2) and force the model to
-re-compose. [`.claude/hooks/stop_task_audit.py`](../../../.claude/hooks/stop_task_audit.py) already
+re-compose. [`.codex/hooks/stop_task_audit.py`](../../../.codex/hooks/stop_task_audit.py) already
 does exactly this for the `STATUS:`/proof contract. The Outcome-frame check can be promoted from
 *advisory-log* to *blocking* the same way. **Correction:** an earlier claim in the originating
 session — "Claude Code hooks can't enforce at Stop time, it's advisory only" — was **wrong**; Stop
@@ -25,8 +25,8 @@ hooks block via a documented decision, proven by `stop_task_audit.py`.
 | Layer | File | Behavior |
 |---|---|---|
 | Rule (SSOT) | `001-cursor-runtime-seam-execution.md` §; constitutional §37 | Describes the frame; always-on, shapes behavior |
-| Audit | `.claude/governance/scripts/post_agent_runtime_rca_audit.py` | Detects `missing_refactor_outcome` / `missing_rca` / `incomplete_rca` / `status_signal_mismatch` / `shallow_rca` |
-| Dispatch | `.claude/hooks/after_agent_governance_dispatch.py` | Runs the audit as a subprocess and **always `return 0`** → log-only to `artifacts/governance/runtime_rca_violations.jsonl` |
+| Audit | `.codex/governance/scripts/post_agent_runtime_rca_audit.py` | Detects `missing_refactor_outcome` / `missing_rca` / `incomplete_rca` / `status_signal_mismatch` / `shallow_rca` |
+| Dispatch | `.codex/hooks/after_agent_governance_dispatch.py` | Runs the audit as a subprocess and **always `return 0`** → log-only to `artifacts/governance/runtime_rca_violations.jsonl` |
 
 The audit is correct; it just never *acts* on its verdict. The forcing function today is the
 always-on rule + a post-hoc JSONL row nobody is blocked by.
@@ -44,9 +44,9 @@ always-on rule + a post-hoc JSONL row nobody is blocked by.
 | MessageDisplay | No | No | display-only (not saved, can't block) | Not enforcement |
 
 **In-repo proof the Stop-block works:** `stop_task_audit.py` is the **first** Stop hook (registered
-in `.claude/settings.json` `hooks.Stop` ahead of the advisory dispatch). It `raise SystemExit(block(
+in `.codex/hooks.json` `hooks.Stop` ahead of the advisory dispatch). It `raise SystemExit(block(
 reason))` when a repo-work response lacks `STATUS:` or a PASS lacks proof sections — and the model
-is forced to revise. Same lever, same helper (`lib.claude_hook_common.block`).
+is forced to revise. Same lever, same helper (`lib.codex_hook_common.block`).
 
 **Unknowns (flagged):** `stop_hook_active` (a documented loop-guard field) could not be confirmed in
 the current docs — do **not** rely on it; use explicit per-session block-count state. There is no
@@ -96,8 +96,8 @@ single highest-confidence, lowest-false-positive case.
 
 | Step | Change |
 |---|---|
-| 1 | New `.claude/hooks/post_agent_runtime_rca_gate.py` (blocking Stop hook). Reads payload via `lib.claude_hook_common`; imports `detect()` from the advisory audit; on `missing_refactor_outcome` with a confirmed edit-tool turn and `RUNTIME_RCA_ENFORCE=block`, emits `block(reason)` with the Outcome-frame template in the reason; else `warn()`/`allow()`. Loop guard via `write_receipt` + a session block-count file. |
-| 2 | Register it in `.claude/settings.json` `hooks.Stop` (sibling of `stop_task_audit.py`). |
+| 1 | New `.codex/hooks/post_agent_runtime_rca_gate.py` (blocking Stop hook). Reads payload via `lib.codex_hook_common`; imports `detect()` from the advisory audit; on `missing_refactor_outcome` with a confirmed edit-tool turn and `RUNTIME_RCA_ENFORCE=block`, emits `block(reason)` with the Outcome-frame template in the reason; else `warn()`/`allow()`. Loop guard via `write_receipt` + a session block-count file. |
+| 2 | Register it in `.codex/hooks.json` `hooks.Stop` (sibling of `stop_task_audit.py`). |
 | 3 | Keep `post_agent_runtime_rca_audit.py` advisory and unchanged (it stays the telemetry SSOT; the gate reuses its `detect()`). |
 | 4 | Tests `tests/unit/ops_scripts/hooks/cursor/test_post_agent_runtime_rca_gate.py`: warn-mode never blocks; block-mode blocks a frameless edit-turn; framed edit-turn allows; non-edit turn allows; bypass allows; loop guard stops after N. |
 | 5 | Rollout: ship in `warn` (shadow) → review `runtime_rca_violations.jsonl` + receipts for false positives → flip default to `block`. |

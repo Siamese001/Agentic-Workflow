@@ -39,7 +39,7 @@
         "status": "PASS"
       },
       {
-        "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_backup.py -q",
+        "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_primary.py -q",
         "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
         "exit_code": 0,
         "status": "PASS"
@@ -51,7 +51,7 @@
         "status": "PASS"
       },
       {
-        "command": "python scripts/governance/verify_codex_backup.py --repo-only",
+        "command": "python scripts/governance/verify_codex_primary.py --repo-only",
         "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-verify",
         "exit_code": 0,
         "status": "PASS"

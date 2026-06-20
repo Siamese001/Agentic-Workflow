@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ui-conformance-b4d1e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ui-conformance-b4d1e2.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ui-conformance-b4d1e2.md'
 source_sha256: 915745eedbf67952a837812c3cbdc7c0635f3431c60c953cfa9e533015939959
 recovered_status: LEGACY_EXISTING

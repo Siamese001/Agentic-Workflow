@@ -41,9 +41,9 @@ verdict = LedgerConsulter("apps_qna_pack_lifecycle").lookup(
 
 ## References
 
-- Base skill: `.claude/skills/ledger-consulter/SKILL.md`
+- Base skill: `.codex/skills/ledger-consulter/SKILL.md`
 - Writer API: `tools/ledgers/writer.py`
-- Schema: `.claude/schemas/apps_qna_pack_lifecycle_ledger.schema.sql`
+- Schema: `.codex/schemas/apps_qna_pack_lifecycle_ledger.schema.sql`
 - Writer hook: `apps_qna/builder/card_pack_builder.py`
 
 ## MANUAL MIGRATION REQUIRED

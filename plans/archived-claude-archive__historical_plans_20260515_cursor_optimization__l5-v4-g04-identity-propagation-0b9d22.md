@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l5-v4-g04-identity-propagation-0b9d22.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l5-v4-g04-identity-propagation-0b9d22.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\l5-v4-g04-identity-propagation-0b9d22.md'
 source_sha256: 6f0fa6e7f73697129ccb1f9509831caf01ae2524a061f7ee2bc52be918839b84
 recovered_status: LEGACY_EXISTING

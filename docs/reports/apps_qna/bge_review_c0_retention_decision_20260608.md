@@ -2,7 +2,7 @@
 
 Date: 2026-06-08
 
-Plan: `.claude/plans/bge-review-apps-qna-c0-chroma-migration-f9a3b2.md`
+Plan: `.codex/plans/bge-review-apps-qna-c0-chroma-migration-f9a3b2.md`
 
 ## Decision
 

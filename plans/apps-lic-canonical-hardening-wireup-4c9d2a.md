@@ -128,7 +128,7 @@ Objective: Plan the follow-up apps_lic hardening PR for the feedback in the atta
 Constraints:
 - Root `AGENTS.md` is always-on.
 - No implementation edits before execution approval.
-- Keep Claude Code governance as SSOT; Codex is only the backup adapter.
+- Keep Claude Code governance as SSOT; Codex is only the primary adapter.
 - Preserve the process map: L2 proposes, Exit clears, UWG commits, L4 stores.
 - Runtime gates decide live proceed/stop. Exit emits one X3. Only UWG writes durable state.
 - Prefer app-owned runtime adapters and wrappers. Stop for Author-Gate if `agentic_core` contract changes become necessary.
@@ -928,7 +928,7 @@ For future execution:
 - Run W8 runtime-proxy reachability checks and direct ADG SQLite `covers` queries before the post-W7 benchmark.
 - Run the post-W7 live 5x3 AIG/Citi/Neo4j canary only after W7 and W8 pass.
 - Review `git diff --stat` and `git diff --check`.
-- If Codex adapter files are touched, run `python scripts/governance/verify_codex_backup.py`.
+- If Codex adapter files are touched, run `python scripts/governance/verify_codex_primary.py`.
 - Confirm the Notion Plans DB row before starting W0.
 
 W0 execution receipt:

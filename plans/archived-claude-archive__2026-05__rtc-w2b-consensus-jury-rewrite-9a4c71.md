@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rtc-w2b-consensus-jury-rewrite-9a4c71.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rtc-w2b-consensus-jury-rewrite-9a4c71.md'
 original_relative_path: '_archive\\2026-05\\rtc-w2b-consensus-jury-rewrite-9a4c71.md'
 source_sha256: 9928f8a766b2b0608442a60b3bfb22996faa687a03c6fcb9b912198827cb5b1b
 recovered_status: LEGACY_EXISTING

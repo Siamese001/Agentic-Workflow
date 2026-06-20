@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-ci-guardian-hardening-consolidated-f8a2b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-ci-guardian-hardening-consolidated-f8a2b1.md'
 original_relative_path: '_archive\\2026-05\\adg-ci-guardian-hardening-consolidated-f8a2b1.md'
 source_sha256: e0d41fc4860a12670cc2e4ab7f8eed339af966485a28e4b1da8cc35fb89ab449
 recovered_status: LEGACY_EXISTING

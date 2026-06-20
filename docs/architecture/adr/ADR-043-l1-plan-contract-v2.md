@@ -6,7 +6,7 @@
 - **Impact Layers**: L1 (primary), L0 (consumer), L3 (replan path), L5 (policy envelope)
 - **Supersedes**: partial of `L1PlanContract` v1 at `agentic_core/L1_cognition/types/plan_contract_types.py`
 - **Related**: `ADR-023-runtime-hitl-exit-control.md` (orthogonal — runtime exit control, not planner output), `ADR-038-budget-envelope.md`, `ADR-039-output-contract-validator.md`
-- **Plan**: `.claude/plans/l1-reasoning-bestpractices-gaps-a7b2c9.md`
+- **Plan**: `.codex/plans/l1-reasoning-bestpractices-gaps-a7b2c9.md`
 
 Current-state note (2026-06-15): implemented by `agentic_core/L1_cognition/types/plan_contract_types.py` (`L1PlanContractV2`) and `agentic_core/L1_cognition/enforcement/plan_semantic_validators.py`, with focused L1 plan contract tests.
 - **Source doc**: `docs/reference/_notes/agentic_process_mapping_v34.md` §2

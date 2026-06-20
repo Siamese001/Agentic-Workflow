@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-deferred-a9f8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-deferred-a9f8b2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-deferred-a9f8b2.md'
 source_sha256: 222fdd44004a759014113473471cd7eb7cda508b62014fa5fabad56346e213e6
 recovered_status: LEGACY_EXISTING

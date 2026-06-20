@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\replace-r4-entrypoint-delete-old-path-b8e4f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\replace-r4-entrypoint-delete-old-path-b8e4f2.md'
 original_relative_path: '_archive\\2026-05\\replace-r4-entrypoint-delete-old-path-b8e4f2.md'
 source_sha256: c83f0105bff194c1b8dc802e7994ddeca766ccfc2a1a5b2e2f1ac0a493b76207
 recovered_status: LEGACY_EXISTING

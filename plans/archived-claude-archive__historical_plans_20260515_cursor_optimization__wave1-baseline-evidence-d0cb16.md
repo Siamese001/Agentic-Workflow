@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave1-baseline-evidence-d0cb16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave1-baseline-evidence-d0cb16.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wave1-baseline-evidence-d0cb16.md'
 source_sha256: 69f61fbc43f3dcd0aec6901ae793a35299298efd35e2ac9df2eb90b8c67e2126
 recovered_status: LEGACY_EXISTING

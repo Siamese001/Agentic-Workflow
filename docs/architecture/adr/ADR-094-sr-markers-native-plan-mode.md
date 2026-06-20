@@ -15,7 +15,7 @@ natively (`EnterPlanMode` / `ExitPlanMode`): the harness itself blocks edits unt
 
 - **Invariant kept:** T2/T3 ⇒ plan first, no edits before approval; retrieval discipline (local →
   exact → ADG → semantic → external) unchanged.
-- **Retired:** the `SR_*` marker scheme. `CLAUDE.md` "Plan First" now points at `EnterPlanMode` /
+- **Retired:** the `SR_*` marker scheme. `AGENTS.md` "Plan First" now points at `EnterPlanMode` /
   `ExitPlanMode`; `plan-first-enforcement.md` reduced to a plan-mode stub that preserves the
   retrieval-discipline guidance; the `structured-reasoning` skill keeps its decomposition/retrieval
   content under a deprecation banner (used *inside* plan mode, not as a marker emitter).

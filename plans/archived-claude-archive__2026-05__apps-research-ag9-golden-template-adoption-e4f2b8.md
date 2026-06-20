@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-ag9-golden-template-adoption-e4f2b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-ag9-golden-template-adoption-e4f2b8.md'
 original_relative_path: '_archive\\2026-05\\apps-research-ag9-golden-template-adoption-e4f2b8.md'
 source_sha256: 976d9b2f927017aba7994c06821995ef0baad78791a623ec3af2aaaafad56a78
 recovered_status: LEGACY_EXISTING

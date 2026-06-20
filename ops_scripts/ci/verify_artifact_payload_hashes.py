@@ -1,6 +1,6 @@
 """Verifier — Artifact payload content_hash recomputation (RTC-REQ-123).
 
-Plan: ``.claude/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``.codex/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Non-negotiable rule §11:
 

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\core-same-authority-incremental-regen-e7a4b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\core-same-authority-incremental-regen-e7a4b1.md'
 original_relative_path: '_archive\\2026-05\\core-same-authority-incremental-regen-e7a4b1.md'
 source_sha256: b30e46905189b56f86e3129084e296e0f618eae0a2d0e0d2131e9bf7caead2a3
 recovered_status: LEGACY_EXISTING

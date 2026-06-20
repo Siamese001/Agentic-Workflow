@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hotspot-coverage-pipeline-c4e8d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hotspot-coverage-pipeline-c4e8d2.md'
 original_relative_path: '_archive\\2026-05\\hotspot-coverage-pipeline-c4e8d2.md'
 source_sha256: db83bab568f22c199d6f1e6213ee7a7d0fcb4fe36f14bc8705a5e197f24e734e
 recovered_status: LEGACY_EXISTING

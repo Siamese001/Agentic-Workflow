@@ -1,6 +1,6 @@
 """apps_shared.cert.rubric_output_mapper — declarative YAML engine.
 
-W2.P1 of plan ``.claude/plans/apps-runtime-domain-enforcement-a7e9d4.md``.
+W2.P1 of plan ``.codex/plans/apps-runtime-domain-enforcement-a7e9d4.md``.
 
 Per Author-Gate decision AG-W2-mapper-scope (Option B, 2026-05-03):
 declarative YAML per app beats per-app Python boilerplate. Each runtime

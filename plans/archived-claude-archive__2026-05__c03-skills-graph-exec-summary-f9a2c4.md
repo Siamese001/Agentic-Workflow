@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\c03-skills-graph-exec-summary-f9a2c4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\c03-skills-graph-exec-summary-f9a2c4.md'
 original_relative_path: '_archive\\2026-05\\c03-skills-graph-exec-summary-f9a2c4.md'
 source_sha256: bf5e0af1121f01eb89c07d73b171e7ec20886bd00a160558aa1c8971b590cf15
 recovered_status: LEGACY_EXISTING

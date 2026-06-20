@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-end-to-end-quality-governance-72d4b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-end-to-end-quality-governance-72d4b8.md'
 original_relative_path: 'apps-lic-end-to-end-quality-governance-72d4b8.md'
 source_sha256: 7e3de59bc2c53a7cdc2a90e891ff02b070cfed6939959529aa344bfef960d815
 recovered_status: LEGACY_EXISTING

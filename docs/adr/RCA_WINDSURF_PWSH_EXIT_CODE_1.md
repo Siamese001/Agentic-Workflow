@@ -43,7 +43,7 @@ The error typically occurs when:
 
 ### 2.3 Specific to This Workspace
 
-This repository has **aggressive pre-hook scripts** (`.claude/governance/scripts/pre_*.py`) that run on every Codex interaction:
+This repository has **aggressive pre-hook scripts** (`.codex/governance/scripts/pre_*.py`) that run on every Codex interaction:
 
 - `pre_prompt_classifier.py` — Runs before every prompt
 - `pre_run_gate.py` — Blocks PowerShell commands (exit 2 for pwsh/powershell)
@@ -174,7 +174,7 @@ If you need to continue working **right now**:
    - Not PowerShell 7 — often more stable in legacy editor
 
 3. **Disable the most intrusive hooks temporarily:**
-   Rename `.claude/settings.json` to `.claude/settings.json.disabled` and restart legacy editor.
+   Rename `.codex/hooks.json` to `.codex/hooks.json.disabled` and restart legacy editor.
 
 ---
 
@@ -184,7 +184,7 @@ After applying a fix, verify:
 
 - [ ] Open new terminal in legacy editor → no exit code 1 error
 - [ ] Run a simple command: `echo "test"` → works
-- [ ] Run a Python script: `python .claude/governance/scripts/post_cursor_agent_heartbeat.py` → exit code 0
+- [ ] Run a Python script: `python .codex/governance/scripts/post_cursor_agent_heartbeat.py` → exit code 0
 - [ ] Check hooks still fire: Look for heartbeat in `artifacts/windsurf/post_cursor_agent_heartbeat.jsonl`
 
 ---
@@ -193,7 +193,7 @@ After applying a fix, verify:
 
 - **Regular PowerShell profile backups** — before any changes
 - **Antivirus exclusion policy** — document for team onboarding
-- **Hook script smoke tests** — run `.claude/governance/scripts/post_cursor_agent_heartbeat.py` manually after any script edits
+- **Hook script smoke tests** — run `.codex/governance/scripts/post_cursor_agent_heartbeat.py` manually after any script edits
 
 ---
 
@@ -201,7 +201,7 @@ After applying a fix, verify:
 
 - Constitutional §14: No PowerShell in subprocess calls
 - `pre_run_gate.py`: Blocks PowerShell commands at runtime
-- `.claude/settings.json`: 20+ Python hook scripts that may trigger terminal activity
+- `.codex/hooks.json`: 20+ Python hook scripts that may trigger terminal activity
 
 ---
 

@@ -29,7 +29,7 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 from pre_prompt_classifier import (  # noqa: E402, I001
     _detect_adg_graph_intent,
@@ -186,12 +186,12 @@ class TestCheckPlanExists:
             assert check_plan_exists("T2") is False
 
     def test_t2_empty_plans_dir_false(self, tmp_path):
-        (tmp_path / ".claude" / "plans").mkdir(parents=True)
+        (tmp_path / ".codex" / "plans").mkdir(parents=True)
         with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".claude" / "plans"
+        plans = tmp_path / ".codex" / "plans"
         plans.mkdir(parents=True)
         (plans / "my-plan-abc123.md").write_text("# Plan")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
@@ -202,14 +202,14 @@ class TestCheckPlanExists:
             assert check_plan_exists("T3") is False
 
     def test_t3_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".claude" / "plans"
+        plans = tmp_path / ".codex" / "plans"
         plans.mkdir(parents=True)
         (plans / "plan.md").write_text("# Plan")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T3") is True
 
     def test_non_md_file_in_plans_not_counted(self, tmp_path):
-        plans = tmp_path / ".claude" / "plans"
+        plans = tmp_path / ".codex" / "plans"
         plans.mkdir(parents=True)
         (plans / "not_a_plan.txt").write_text("text")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
@@ -431,7 +431,7 @@ class TestMain:
 
     # --- plan warning ---
     def test_no_plan_for_t3_emits_warning(self, capsys, tmp_path):
-        (tmp_path / ".claude" / "plans").mkdir(parents=True)
+        (tmp_path / ".codex" / "plans").mkdir(parents=True)
         payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
         self._run(payload, adg_red=False, redis_down=False, repo_root=tmp_path)
         captured = capsys.readouterr()
@@ -813,7 +813,7 @@ class TestRedisUrlResolution:
     def test_no_hardcoded_localhost_literal_in_source(self):
         # Regression lock: the only localhost form allowed is the named fallback const.
         src = Path(
-            str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts" / "pre_prompt_classifier.py")
+            str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts" / "pre_prompt_classifier.py")
         ).read_text(encoding="utf-8")
         # The socket pre-check and redis client must not pin localhost:6379 directly.
         assert 'socket.create_connection(("localhost", 6379)' not in src

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-rc-composition-hardcode-b3d7e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-rc-composition-hardcode-b3d7e1.md'
 original_relative_path: 'exec-summary-rc-composition-hardcode-b3d7e1.md'
 source_sha256: 00b02a8b5ac999b51094aa1861d80774911c22e14db77e0393fac89364271b00
 recovered_status: LEGACY_EXISTING

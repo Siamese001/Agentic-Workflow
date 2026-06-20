@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-proof-pool-c0-ssot-a7f3e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-proof-pool-c0-ssot-a7f3e2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-proof-pool-c0-ssot-a7f3e2.md'
 source_sha256: f207dcb5d15e2a08437cd494566635ebf18cf1be39dc18b8ac511de5584d7c35
 recovered_status: LEGACY_EXISTING

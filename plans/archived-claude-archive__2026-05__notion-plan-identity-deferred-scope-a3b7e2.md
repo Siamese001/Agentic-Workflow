@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-plan-identity-deferred-scope-a3b7e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-plan-identity-deferred-scope-a3b7e2.md'
 original_relative_path: '_archive\\2026-05\\notion-plan-identity-deferred-scope-a3b7e2.md'
 source_sha256: 6be8e78ed34fa9345845a38f105b44bf5d36f865ee2b8f878ba7a8f78aa0f950
 recovered_status: LEGACY_EXISTING

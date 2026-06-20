@@ -42,34 +42,34 @@ Author-Gate teardown, S4 capture removal, redirect-stub deletion, dead orphan CI
 ### Wave 1 — Unwire the live hooks (stop it firing) — do this FIRST
 Surgical edits to **kept** files; delete nothing yet.
 
-- **`.claude/settings.json`** — remove the `PostToolUse` entry calling
-  `.claude/governance/scripts/post_write_plan_reconcile.py`.
-- **`.claude/governance/scripts/post_agent_dispatch.py`** — drop these from `LEGACY_SCRIPTS`:
+- **`.codex/hooks.json`** — remove the `PostToolUse` entry calling
+  `.codex/governance/scripts/post_write_plan_reconcile.py`.
+- **`.codex/governance/scripts/post_agent_dispatch.py`** — drop these from `LEGACY_SCRIPTS`:
   `post_agent_wave_lifecycle_capture.py`, `post_agent_wave_completion_audit.py`,
   `post_agent_plan_registration_capture.py`, `post_agent_plan_supersession_retire.py`,
   `post_agent_writeback_audit.py`. (Keep `post_agent_scope_drift_detector`, `mcp_preflight`,
   `plan_evidence_gate`, `plan_wave_summary_audit`*, `fortknox_integrity`.)
   *`post_agent_plan_wave_summary_audit.py` is disk-side → KEEP, but fix its dead `.cursor/plans` regex
   to `plans/` (it currently never matches).
-- **`.claude/hooks/after_agent_governance_dispatch.py`** — remove the `NOTION_AUDITOR`
+- **`.codex/hooks/after_agent_governance_dispatch.py`** — remove the `NOTION_AUDITOR`
   (`tools/notion/unified_notion_status_auditor.py`) invocation block + `NOTION_STATUS_VIOLATIONS_VENDOR`
   env line.
-- **`.claude/hooks/after_file_edit.py`** — remove the Notion re-sync block
+- **`.codex/hooks/after_file_edit.py`** — remove the Notion re-sync block
   (`plan_creation_helper.patch_plan_notion_properties`), the `_plan_registration` enqueue, and the
   `wave_execution_state` import. **KEEP** the plan-format validation + `check_plan_wave_summary_top`
   call (disk-side).
-- **`.claude/hooks/before_mcp_execution.py`** — remove the `unified_plan_creation_auditor.py`
+- **`.codex/hooks/before_mcp_execution.py`** — remove the `unified_plan_creation_auditor.py`
   dispatch. Keep the `pre_mcp_gate.py` call.
-- **`.claude/governance/scripts/pre_mcp_gate.py`** — remove `check_notion_wave_deferral`,
+- **`.codex/governance/scripts/pre_mcp_gate.py`** — remove `check_notion_wave_deferral`,
   `check_notion_classification_gate`, `check_notion_gate` (defs + their dispatch + the
   `_wave_execution_state`/`_notion_constants` imports). Keep ADG-SSOT, quote-hazard, pager checks.
 
-**Verify W1:** `python .claude/governance/scripts/post_agent_dispatch.py < /dev/null` and
+**Verify W1:** `python .codex/governance/scripts/post_agent_dispatch.py < /dev/null` and
 `before_mcp_execution.py` / `after_file_edit.py` import-and-run clean; `python -m json.tool
-.claude/settings.json` passes.
+.codex/hooks.json` passes.
 
 ### Wave 2 — Delete the post-agent + pre-flight scripts (now unwired)
-Delete from `.claude/governance/scripts/`:
+Delete from `.codex/governance/scripts/`:
 - Live-cluster (just unwired): `post_agent_wave_lifecycle_capture.py`,
   `post_agent_wave_completion_audit.py`, `post_agent_plan_registration_capture.py`,
   `post_agent_plan_supersession_retire.py`, `post_agent_writeback_audit.py`,
@@ -121,25 +121,25 @@ Delete from `.claude/governance/scripts/`:
   - `ops_scripts/ci/governance_w3_hook_audit_matrix.py` references the deleted auditors — prune those rows.
 - Then `_notion_constants.py` / `_notion_plans_status_check.py` can be deleted (Wave 2 tail).
 
-### Wave 5 — Rules, skills, constitutional, CLAUDE.md (doctrine)
-- **Delete rules** (`.claude/rules/`): `notion-plans-taxonomy.md`, `notion-plan-wave-deferral.md`,
+### Wave 5 — Rules, skills, constitutional, AGENTS.md (doctrine)
+- **Delete rules** (`.codex/rules/`): `notion-plans-taxonomy.md`, `notion-plan-wave-deferral.md`,
   `plan-update-enforcement.md`, `notion-archived-databases.md`, `memory-notion-writeback.md`,
   `plan-lifecycle-procedures.md`, and the already-deprecated stubs `notion-backlog-plan-linkage.md`,
   `notion-plan-identity-verification.md`, `plan-registration-enforcement.md`,
   `wave-completion-discipline.md`.
 - **Edit `plan-location.md`** — keep the SSOT-location rule; strip the "Notion registration ordering"
   / Notion-status-discipline sections.
-- **`.claude/rules/constitutional.md`** — mark **§36** RETIRED (keep the slot number per the repo's
+- **`.codex/rules/constitutional.md`** — mark **§36** RETIRED (keep the slot number per the repo's
   stable-numbering convention; body → one-line "retired, native plan mode + disk lint only"); strip the
   §17 Notion-writeback half (keep file-memory recall); drop the NP-series enumerations from §-doctrine
   text. Update the "Extended Doctrine" pointer list.
-- **`.claude/rules/work-item-classification.md`** — remove the `PLAN_MULTI_WAVE → Notion Plans DB
+- **`.codex/rules/work-item-classification.md`** — remove the `PLAN_MULTI_WAVE → Notion Plans DB
   (§36)` routing rows; plans become disk-only.
-- **`.claude/rules/apps-rg-execution-bias.md`** — drop the "check Notion `In Progress`" WIP line.
-- **Skills** (`.claude/skills/`): delete `plan-governance/` and `notion/`; strip the Notion plan/wave/
+- **`.codex/rules/apps-rg-execution-bias.md`** — drop the "check Notion `In Progress`" WIP line.
+- **Skills** (`.codex/skills/`): delete `plan-governance/` and `notion/`; strip the Notion plan/wave/
   phase status-write content from `writeback-discipline/SKILL.md` and `mcp-integration/sections/07-notion.md`
   (leave generic "how to call the notion MCP" if any consumer wants manual use — enforcement only is removed).
-- **`CLAUDE.md`** — remove the "Plans & memory" Notion-registration lines, the rules-index rows for the
+- **`AGENTS.md`** — remove the "Plans & memory" Notion-registration lines, the rules-index rows for the
   deleted rules, the apps_rg "check Notion In Progress" standing order, and update the MCP-table `notion`
   row to drop the plan/wave/phase-status framing.
 - **`AGENTS.md`** — update the Notion Workspace Map / NOTION-MAP table to reflect removal.
@@ -148,14 +148,14 @@ Delete from `.claude/governance/scripts/`:
 - Delete/adjust tests asserting the removed enforcement, e.g.
   `tests/unit/windsurf_scripts/test_notion_status_ssot_consistency.py`, NP-gate tests, wave-lifecycle
   tests, plan-registration tests (find via `grep -rl` for the deleted module names under `tests/`).
-- Final sweep: `grep -rIn` across `.claude/ ops_scripts/ tools/ tests/` for any surviving reference to
+- Final sweep: `grep -rIn` across `.codex/ ops_scripts/ tools/ tests/` for any surviving reference to
   a deleted module, deleted gate, `§36`, `PLAN_CREATED`/`WAVE_COMPLETE`/`PHASE_COMPLETE`/`PLAN_COMPLETE`/
   `AUTHORIZATION_DECISION`, or `NP\d` — resolve each (delete dead ref or update).
 
 ---
 
 ## Verification (end-to-end)
-1. `python -m json.tool .claude/settings.json` — valid.
+1. `python -m json.tool .codex/hooks.json` — valid.
 2. Each kept live hook imports + runs on empty/synthetic stdin without error:
    `post_agent_dispatch.py`, `after_agent_governance_dispatch.py`, `after_file_edit.py`,
    `before_mcp_execution.py`, `pre_mcp_gate.py`.
@@ -165,7 +165,7 @@ Delete from `.claude/governance/scripts/`:
    `test_plan_wave_summary*` / `test_plan_definition_of_done*`).
 5. Dangling-reference grep sweep returns clean (Wave 6).
 6. `python tools/generate_full_adg.py` not required; but run a Python `compileall` over the edited
-   `.claude/governance/scripts` + `ops_scripts/ci` dirs to catch syntax breakage from surgical edits.
+   `.codex/governance/scripts` + `ops_scripts/ci` dirs to catch syntax breakage from surgical edits.
 
 ## Delivery
 Commit in waves on `feat/notion-wave-enforcement-removal`; push `feat/notion-wave-enforcement-removal`

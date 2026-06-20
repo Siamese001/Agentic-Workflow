@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-completeness-followups-287d2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-completeness-followups-287d2a.md'
 original_relative_path: '_archive\\2026-05\\apps-completeness-followups-287d2a.md'
 source_sha256: 49a0be7a830a4742c719e43b86f848f567c363827d84505d1006593e59f2f0f3
 recovered_status: LEGACY_EXISTING

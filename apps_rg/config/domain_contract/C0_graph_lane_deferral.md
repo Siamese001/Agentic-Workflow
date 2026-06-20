@@ -29,5 +29,5 @@ When spine FEC `support_status` is weak or
 
 ## Related
 
-- Plan: [graph-skills-quality-enhancement-c4e8a1](../../../.claude/plans/graph-skills-quality-enhancement-c4e8a1.md) wave W10-AG
+- Plan: [graph-skills-quality-enhancement-c4e8a1](../../../.codex/plans/graph-skills-quality-enhancement-c4e8a1.md) wave W10-AG
 - Receipt: [graph_skills_quality_w10_ag_receipt.json](../../../docs/reports/apps_rg/graph_skills_quality_w10_ag_receipt.json)

@@ -1,6 +1,6 @@
 # `apps_underwriting_ai` — Reference Implementation for AgentSpec
 
-> **Plan**: `.claude/plans/apps-underwriting-ai-first-principles-refactor-4b1c8e.md` (W1.2)
+> **Plan**: `.codex/plans/apps-underwriting-ai-first-principles-refactor-4b1c8e.md` (W1.2)
 > **Reference**: `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`
 > **Instance**: `apps_underwriting_ai/config/specs/agent_spec.underwriting_decisioning.v1.0.0.yaml`
 

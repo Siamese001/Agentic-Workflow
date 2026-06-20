@@ -15,7 +15,7 @@ compatibility or historical references.
 Commands:
 
 ```text
-git ls-files .cursor .windsurf .claude/governance/scripts/_legacy_windsurf .claude/governance/scripts/_legacy_cursor
+git ls-files .cursor .windsurf .codex/governance/scripts/_legacy_windsurf .codex/governance/scripts/_legacy_cursor
 python -c "from pathlib import Path; ..."
 ```
 
@@ -48,8 +48,8 @@ check_windsurf_deletion_readiness.py: deletion_safe=true, blockers=[]
 Updated active governance documentation/config and debug helpers from stale legacy names to current
 names:
 
-- `post_cursor_agent_*` references in active `.claude/templates`, `.claude/skills`, and
-  `.claude/rules` now point to `post_agent_*`.
+- `post_cursor_agent_*` references in active `.codex/templates`, `.codex/skills`, and
+  `.codex/rules` now point to `post_agent_*`.
 - `post_cascade` trigger prose in active config/tools now uses post-agent wording.
 - Active debug helpers no longer import or glob the deleted `_legacy_windsurf` tree.
 - `check_hook_consolidation.py` now exposes `--max-post-agent` and retains
@@ -61,7 +61,7 @@ Targeted active scan:
 
 ```text
 rg -n "post_cursor_agent|post-cursor-agent|Post-Cursor-Agent|post_cascade|_legacy_windsurf|_legacy_cursor" \
-  .claude/templates .claude/skills .claude/rules .claude/governance/scripts \
+  .codex/templates .codex/skills .codex/rules .codex/governance/scripts \
   config/notion_databases.yaml AGENTS.md tools/priority/validate_deferred_scope_marker.py \
   tools/plan_lifecycle/plan_lifecycle_manager.py tools/debug ops_scripts/ci
 ```

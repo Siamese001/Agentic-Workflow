@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-token-budget-a8f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-token-budget-a8f3c2.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-token-budget-a8f3c2.md'
 source_sha256: 7a8012ea2c68575f3aff3360ea60558d2a1c3da587d3b4b65853cd60a2920f8a
 recovered_status: LEGACY_EXISTING

@@ -2,13 +2,13 @@
 """
 check_ledger_coverage.py — CI gate over the Author-Gate decision ledger.
 
-Thin wrapper around .claude/governance/scripts/audit_ledger_coverage.py that runs in
+Thin wrapper around .codex/governance/scripts/audit_ledger_coverage.py that runs in
 --ci mode: exit 0 on OK/WARN, exit 2 on FAIL. Emits a human-readable report
 to stderr so PR reviewers see the breakdown.
 
 Wired into:
-    - .pre-commit-config.yaml (on staged changes to .claude/governance/scripts/** or
-      .claude/skills/refactor-decision-memory/**)
+    - .pre-commit-config.yaml (on staged changes to .codex/governance/scripts/** or
+      .codex/skills/refactor-decision-memory/**)
     - CI workflows that include gate invocation
 
 Bypass:
@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance" / "scripts" / "audit_ledger_coverage.py"
+AUDIT_SCRIPT = REPO_ROOT / ".codex" / "governance" / "scripts" / "audit_ledger_coverage.py"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "ledger_coverage_bypass.jsonl"
 
 
@@ -103,8 +103,8 @@ def main() -> int:
     if status == "FAIL":
         print("\n[check_ledger_coverage] FAIL — meta-learning ledger coverage below floor.", file=sys.stderr)
         print(
-            "  Fix: run `python .claude/governance/scripts/post_commit_outcome_binder.py "
-            "--lookback 100` then `python .claude/governance/scripts/promote_author_gate_patterns.py`.",
+            "  Fix: run `python .codex/governance/scripts/post_commit_outcome_binder.py "
+            "--lookback 100` then `python .codex/governance/scripts/promote_author_gate_patterns.py`.",
             file=sys.stderr,
         )
         print("  Bypass for unblocking (not recommended): LEDGER_COVERAGE_BYPASS=1", file=sys.stderr)

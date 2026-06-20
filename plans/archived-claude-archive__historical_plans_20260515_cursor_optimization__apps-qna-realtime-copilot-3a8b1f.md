@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-realtime-copilot-3a8b1f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-realtime-copilot-3a8b1f.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-realtime-copilot-3a8b1f.md'
 source_sha256: 60b7c08692e548b585cb3a6b0f070f54348aebf4e12bcdda61fc64ffa08705fe
 recovered_status: LEGACY_EXISTING

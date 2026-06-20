@@ -1,8 +1,8 @@
 # Executive Summary — Operator Guide
 
-> **Plan SSOT:** [.claude/plans/exec-summary-operator-ship-a3f7c2.md](../.claude/plans/exec-summary-operator-ship-a3f7c2.md)  
-> **Surgical judge regen:** [.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md](../.claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md)  
-> **Token / regen budget:** [.claude/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.claude/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
+> **Plan SSOT:** [.codex/plans/exec-summary-operator-ship-a3f7c2.md](../.codex/plans/exec-summary-operator-ship-a3f7c2.md)
+> **Surgical judge regen:** [.codex/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md](../.codex/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md)
+> **Token / regen budget:** [.codex/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.codex/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
 
 ## One command
 
@@ -61,28 +61,28 @@ flowchart LR
 
 Per spec § provider request proof:
 
-1. `system` (+ `developer` if any) — frozen prefix from Stage 1 compile  
-2. `user` — original generation turn (unchanged)  
-3. `assistant` — **anchor** = prior `resume_display_text` + `claim_ledger` JSON  
+1. `system` (+ `developer` if any) — frozen prefix from Stage 1 compile
+2. `user` — original generation turn (unchanged)
+3. `assistant` — **anchor** = prior `resume_display_text` + `claim_ledger` JSON
 4. `user` — **`REGEN_DELTA_v1`** = `PROMPT_LOCK` + delta lines only (no embedded anchor draft)
 
 Delta lines are packed in fixed order: **dimension → judge_feedback (verbatim) → floors → guards**. Code constant: `REGEN_DELTA_SECTION_ORDER` in `executive_summary_judge_remediation.py`. Prescriptive dimension lines include an **EDIT_BUDGET** tied to the G5v2 allowlist (e.g. `you may change S2–S5 (indexes 2, 3, 4, 5) … freeze all other sentences verbatim`).
 
 ### What judge regen must **not** do
 
-- Re-run or re-compile the **full scratch** prompt because a judge failed.  
-- Truncate or drop soft-failed judge findings to save tokens (there is **no** operator env knob for that).  
-- Substitute provider/model on the regen turn.  
-- Publish a regen candidate when **X2 regresses** (scratch remains publish baseline).  
+- Re-run or re-compile the **full scratch** prompt because a judge failed.
+- Truncate or drop soft-failed judge findings to save tokens (there is **no** operator env knob for that).
+- Substitute provider/model on the regen turn.
+- Publish a regen candidate when **X2 regresses** (scratch remains publish baseline).
 - Treat transport timeout or `budget_blocked` as a successful semantic rewrite.
 
 ### Per-cycle loop (default product path)
 
-1. Build full verbatim judge feedback + prescriptive dimension lines → `REGEN_DELTA`.  
-2. Qwen regen (same authority) → parse candidate JSON.  
-3. Re-run **X2** on candidate.  
-4. Rescore **soft-failed judges only** (`APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=soft_failed_only`).  
-5. **G5v2** allowlist gate — edits must fall in `cited_sentence_indexes` from soft-failed judges (plus `delta_class` fallback). Legacy numeric budget is **advisory only** (`g5_legacy_budget_advisory` in receipt).  
+1. Build full verbatim judge feedback + prescriptive dimension lines → `REGEN_DELTA`.
+2. Qwen regen (same authority) → parse candidate JSON.
+3. Re-run **X2** on candidate.
+4. Rescore **soft-failed judges only** (`APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=soft_failed_only`).
+5. **G5v2** allowlist gate — edits must fall in `cited_sentence_indexes` from soft-failed judges (plus `delta_class` fallback). Legacy numeric budget is **advisory only** (`g5_legacy_budget_advisory` in receipt).
 6. Accept cycle only if publish-eligible; else next cycle up to `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS`.
 
 **Artifacts:** `judge_remediation_receipt.json`, `judge_remediation_cycles.json`, `g5_delta_scope_cycle_*.json`, `regen_token_budget_receipt.json` under `artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_<ts>/`.
@@ -201,7 +201,7 @@ Seven facts were allowed as proof; eleven graph neighbors (GTM/revenue/partnersh
 | Product disposition | stdout `PRODUCT_X3_STATUS`, `x3_disposition.json` |
 | Operator tier | `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED` in `cli_section_execution_report.json` |
 
-Rule: [.claude/rules/apps-rg-executive-summary-response.mdc](../.claude/rules/apps-rg-executive-summary-response.mdc)
+Rule: [.codex/rules/apps-rg-executive-summary-response.mdc](../.codex/rules/apps-rg-executive-summary-response.mdc)
 
 ### Example layman (Brown run `exec_summary_20260524_233842`)
 
@@ -223,7 +223,7 @@ Per-run contract manifest: `generation_grade_contract_manifest.json` (digests, E
 
 Targeting parity (`targeting_context_parity_receipt.json`) proves JD/briefing bytes match — not full instructional parity. Judges run **after** structural X2 on `REAL_LLM` paths.
 
-Plan: [.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+Plan: [.codex/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md](../.codex/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 
 ## Debug: which rubric dimension failed? (triangulate → Qwen, not more judges)
 
@@ -246,7 +246,7 @@ After judges (or after X2 block with no judges), read **`dimension_upstream_tria
 
 **Regen hints:** Qwen receives judge feedback via `collect_judge_remediation_delta_lines` (`executive_summary_judge_remediation.py`). Trigger mode: `any_judge_below_floor`.
 
-**Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.claude/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
+**Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.codex/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.codex/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 
 ## Receipt & call-plan glossary (token / regen budget)
 

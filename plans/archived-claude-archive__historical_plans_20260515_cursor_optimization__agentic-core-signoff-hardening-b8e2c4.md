@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-signoff-hardening-b8e2c4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-signoff-hardening-b8e2c4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-signoff-hardening-b8e2c4.md'
 source_sha256: f8bf7cfb85049b5a9a633a2ba7e24830ff50d19529c64492f5901385b5676ac2
 recovered_status: LEGACY_EXISTING

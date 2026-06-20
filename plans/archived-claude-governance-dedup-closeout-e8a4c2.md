@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\governance-dedup-closeout-e8a4c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\governance-dedup-closeout-e8a4c2.md'
 original_relative_path: 'governance-dedup-closeout-e8a4c2.md'
 source_sha256: c29613686bc60982a06f513d6e63c2efa180ff49c234448bdac15e7f01fb8466
 recovered_status: LEGACY_EXISTING

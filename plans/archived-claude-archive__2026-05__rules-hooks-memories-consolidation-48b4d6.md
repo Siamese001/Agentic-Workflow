@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rules-hooks-memories-consolidation-48b4d6.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rules-hooks-memories-consolidation-48b4d6.md'
 original_relative_path: '_archive\\2026-05\\rules-hooks-memories-consolidation-48b4d6.md'
 source_sha256: 9a665b5a856f42dc78a4fe4003399b559b0a526a5f2e8befbd4be9e1d6fc2c49
 recovered_status: LEGACY_EXISTING

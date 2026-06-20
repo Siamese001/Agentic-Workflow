@@ -152,7 +152,7 @@ def _check_single_file_ast(file_path: Path, results: dict[str, Any]) -> None:
         "conftest",
         "apps_shared/cli/interactive_wizard.py",
         "docs/",
-        ".claude/plans/",
+        ".codex/plans/",
         "archives/",
     ]
 

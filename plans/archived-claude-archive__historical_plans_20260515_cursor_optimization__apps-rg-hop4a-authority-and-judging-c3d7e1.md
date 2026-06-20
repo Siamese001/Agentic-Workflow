@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-hop4a-authority-and-judging-c3d7e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-hop4a-authority-and-judging-c3d7e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-hop4a-authority-and-judging-c3d7e1.md'
 source_sha256: 0de09534fccc8dfb8598f7603ac478f6e707d4a82424d545a79202b774bbcb78
 recovered_status: LEGACY_EXISTING

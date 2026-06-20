@@ -26,7 +26,7 @@ PII-shaped name patterns (case-insensitive):
   credit_card, card_number, cvv, password, api_key, secret, tax_id, ein,
   passport, drivers_license
 
-Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
 """
 from __future__ import annotations
 

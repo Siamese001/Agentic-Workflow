@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l6-reorg-deferred-followup-f3a9c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l6-reorg-deferred-followup-f3a9c2.md'
 original_relative_path: '_archive\\2026-05\\l6-reorg-deferred-followup-f3a9c2.md'
 source_sha256: 1fe917fdd177129c577d92119b6ff5197898c6a9fbf3889c5412d3af3f95fe94
 recovered_status: LEGACY_EXISTING

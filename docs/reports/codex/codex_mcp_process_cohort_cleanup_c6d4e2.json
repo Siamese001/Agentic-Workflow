@@ -82,7 +82,7 @@
       "result": "pass: 10 passed, 3 warnings"
     },
     {
-      "command": "python scripts/governance/verify_codex_backup.py",
+      "command": "python scripts/governance/verify_codex_primary.py",
       "result": "pass"
     },
     {

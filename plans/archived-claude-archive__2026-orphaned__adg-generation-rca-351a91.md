@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-generation-rca-351a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-generation-rca-351a91.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-generation-rca-351a91.md'
 source_sha256: adab6ca33552c3bdce075678bc55f71cc16afc804b3d551b062afb828976a597
 recovered_status: LEGACY_EXISTING

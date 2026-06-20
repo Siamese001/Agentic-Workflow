@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p1p2-burndown-graph-driven-7e4a9c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p1p2-burndown-graph-driven-7e4a9c.md'
 original_relative_path: '_archive\\2026-05\\p1p2-burndown-graph-driven-7e4a9c.md'
 source_sha256: 5e70b46a2c9a8aecd4ef6e1907f6914e54209f00beaa1a1f77a55dc91f41ab40
 recovered_status: LEGACY_EXISTING

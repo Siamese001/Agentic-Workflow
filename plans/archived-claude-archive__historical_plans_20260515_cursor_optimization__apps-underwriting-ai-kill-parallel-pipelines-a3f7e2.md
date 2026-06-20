@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md'
 source_sha256: 73e8630448d6c05512e78d26b375401b13cecb651bf909e2d858b89718a9f1cb
 recovered_status: LEGACY_EXISTING

@@ -3,7 +3,7 @@
 > ⛔ **This is the canonical local-LLM stack.** Do not stand up a parallel
 > Docker/compose stack. Two parallel stacks caused a full-day-of-engineering
 > incident on 2026-04-24 (config drift, port fight, ~140 GB duplicated weights).
-> See `.claude/rules/local-llm-wsl2-gpu.md` and "Retired alternatives" below.
+> See `.codex/rules/local-llm-wsl2-gpu.md` and "Retired alternatives" below.
 
 Serves `Qwen/Qwen2.5-32B-Instruct-AWQ` via Docker vLLM on an RTX 5090 in WSL2 Ubuntu-24.04.
 OpenAI-compatible API at `http://localhost:8000/v1` consumed by all `apps_*`
@@ -92,4 +92,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File C:\Git\Agentic-Workflow-FRES
 | Stack B (Docker compose) | `~/llm-stack/` (deleted) | 2026-04-24 | WSL2 bind-mount + hf_transfer stalled; corrupt shard; redundant 102 GB images |
 | Qwen2.5-14B-Instruct-AWQ | `~/models/` (deleted) | 2026-04-25 | Superseded by 32B; freed 9.4 GB |
 
-See `.claude/rules/local-llm-wsl2-gpu.md` for full failure-mode documentation.
+See `.codex/rules/local-llm-wsl2-gpu.md` for full failure-mode documentation.

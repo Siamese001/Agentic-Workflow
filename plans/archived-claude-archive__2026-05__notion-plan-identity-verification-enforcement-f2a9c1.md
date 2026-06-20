@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-plan-identity-verification-enforcement-f2a9c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-plan-identity-verification-enforcement-f2a9c1.md'
 original_relative_path: '_archive\\2026-05\\notion-plan-identity-verification-enforcement-f2a9c1.md'
 source_sha256: 92a544f49aa0fe272872ddac00b0dc7e1f1ad63adaad87c871831ac57c0e3218
 recovered_status: LEGACY_EXISTING

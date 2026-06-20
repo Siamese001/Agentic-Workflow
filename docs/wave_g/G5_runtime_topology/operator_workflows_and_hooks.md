@@ -4,7 +4,7 @@ wave: G5
 produced_at: 2026-04-18
 adg_snapshot: artifacts/adg/adg_indexed_04182026_0814.sqlite
 upstream_artefacts:
-  - .claude/settings.json
+  - .codex/hooks.json
   - docs/archive/windsurf/legacy-tree/workflows/*.md
   - .github/workflows/*.yml
   - .pre-commit-config.yaml
@@ -13,17 +13,17 @@ ADG snapshot timestamp used: `04182026_0814`.
 
 ## 1) legacy editor hooks that directly alter runtime posture
 
-From `.claude/settings.json`:
+From `.codex/hooks.json`:
 
-- `pre_run_command` → `.claude/governance/scripts/pre_run_gate.py`
+- `pre_run_command` → `.codex/governance/scripts/pre_run_gate.py`
   - blocks PowerShell invocation and full-suite misuse in repair mode.
-- `pre_write_code` → `.claude/governance/scripts/pre_write_gate.py`
+- `pre_write_code` → `.codex/governance/scripts/pre_write_gate.py`
   - write-time governance gate.
-- `pre_mcp_tool_use` → `.claude/governance/scripts/pre_mcp_gate.py`
+- `pre_mcp_tool_use` → `.codex/governance/scripts/pre_mcp_gate.py`
   - MCP invocation policy gate.
-- `pre_user_prompt` → `.claude/governance/scripts/pre_prompt_classifier.py`
+- `pre_user_prompt` → `.codex/governance/scripts/pre_prompt_classifier.py`
   - tier classification and routing guardrails.
-- `post_write_code` → `.claude/governance/scripts/post_write_audit.py`, `.claude/governance/scripts/post_write_mcp_config_sync.py`
+- `post_write_code` → `.codex/governance/scripts/post_write_audit.py`, `.codex/governance/scripts/post_write_mcp_config_sync.py`
   - write audit + MCP config propagation.
 - `post_run_command` / `post_mcp_tool_use` / `post_cursor_agent_response`
   - audit/cleanup and ADG-first retroactive detection (`post_cursor_agent_adg_audit.py`).
@@ -73,9 +73,9 @@ These do not run as runtime daemons, but gate the deployable state that reaches 
 
 ## 5) Bootstrap and launcher scripts with runtime effects
 
-- `.claude/governance/scripts/filesystem_mcp_launcher.js`
+- `.codex/governance/scripts/filesystem_mcp_launcher.js`
   - Node wrapper for filesystem MCP with startup watchdog and deterministic cleanup.
-- `.claude/governance/scripts/sync_mcp_config.py`
+- `.codex/governance/scripts/sync_mcp_config.py`
   - config sync path that can change global MCP launch behavior.
 - `ops_scripts/dev_tools/start_metrics_sidecar.py`
   - optional observability sidecar (`:8000/metrics`) for live monitoring.

@@ -47,7 +47,7 @@ removed.
 
 WAVE_STATUS: DONE
 WAVE_COMPLETE: YES
-Edit `.claude/rules/work-item-classification.md`: change the `PLAN_MULTI_WAVE` condition from
+Edit `.codex/rules/work-item-classification.md`: change the `PLAN_MULTI_WAVE` condition from
 "≥2 waves, spans sessions" to "≥2 waves **OR** a large single-session change (≥~10 files / cross-layer
 T3) — single-session no longer exempts". Add the complexity→persisted-plan note; clarify native plan
 mode persists nowhere durable; update the Plan-Correction table, anti-reflex rule #4, and the decision
@@ -57,11 +57,11 @@ flow. SSOT only (Notion stays removed).
 
 WAVE_STATUS: DONE
 WAVE_COMPLETE: YES
-Extend `.claude/governance/scripts/post_agent_work_classification_audit.py` with a second, independent
+Extend `.codex/governance/scripts/post_agent_work_classification_audit.py` with a second, independent
 check (`missing_plan_persistence`): if the response shows multi-wave execution (≥2 distinct wave
 markers) + execution evidence (FILES_CHANGED / STATUS / commit / push) AND references no minted
 `plans/<slug>-<6hex>.md`, log an advisory (fail-open, never blocks). Add a unit test. No new hook and
-no `settings.json` change — reuse the already-wired auditor (lower machinery, consistent with the
+no `hooks.json` change — reuse the already-wired auditor (lower machinery, consistent with the
 de-bloating direction).
 
 ## Definition of Done
@@ -72,6 +72,6 @@ de-bloating direction).
 | 3 | Auditor flags unpersisted multi-wave execution | run auditor on synthetic multi-wave response |
 | 4 | Auditor suppresses when a minted plan IS referenced | run auditor on response citing plans/<slug>.md |
 | 5 | Unit test passes | pytest the new test |
-| 6 | No new hook / no settings.json change (reuse wired auditor) | git diff |
+| 6 | No new hook / no hooks.json change (reuse wired auditor) | git diff |
 
 Verification-vs-Deferral: all six verified this session; nothing deferred.

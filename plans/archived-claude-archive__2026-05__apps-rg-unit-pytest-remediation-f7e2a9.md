@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-unit-pytest-remediation-f7e2a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-unit-pytest-remediation-f7e2a9.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-unit-pytest-remediation-f7e2a9.md'
 source_sha256: 729df365a8397a4c90ceb1234eac7ae47ccbbbe3ac8f2afc98e1b56ba367d0a9
 recovered_status: LEGACY_EXISTING

@@ -1,6 +1,6 @@
 """Per-app FEC producers for the 5 grounded apps.
 
-Plan: `.claude/plans/apps-eval-harness-final-8f3e21.md` W1.P1.
+Plan: `.codex/plans/apps-eval-harness-final-8f3e21.md` W1.P1.
 
 Context
 -------

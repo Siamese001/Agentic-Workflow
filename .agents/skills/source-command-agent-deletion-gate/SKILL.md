@@ -83,7 +83,7 @@ Include ALL required markers in commit message per format above.
 
 ## References
 
-- Constitutional Rule: `.claude/rules/constitutional.md` §1.6
+- Constitutional Rule: `.codex/rules/constitutional.md` §1.6
 - Pre-commit hook: `guard-agent-deletion`
 
 ## MANUAL MIGRATION REQUIRED

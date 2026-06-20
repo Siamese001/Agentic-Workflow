@@ -7,7 +7,7 @@ description: "Semantic search, embeddings, and vector collection management via 
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §6 — Vector DB (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §6 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §6 for current guidance.
 
 ---
 

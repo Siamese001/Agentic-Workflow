@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\repo-tech-debt-wave1-b3c8d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\repo-tech-debt-wave1-b3c8d1.md'
 original_relative_path: '_archive\\2026-05\\repo-tech-debt-wave1-b3c8d1.md'
 source_sha256: e29d69f19aa06e56ec5ebc1458ac84e8cef6ff3fce74cb8a4165cdc95114346b
 recovered_status: LEGACY_EXISTING

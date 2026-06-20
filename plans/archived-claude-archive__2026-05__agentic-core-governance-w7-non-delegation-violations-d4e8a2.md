@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-governance-w7-non-delegation-violations-d4e8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-governance-w7-non-delegation-violations-d4e8a2.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-governance-w7-non-delegation-violations-d4e8a2.md'
 source_sha256: 5b5c79443c6e679b91044d0c29da9b52f845f79a8d347b03f1f6acf8bc465375
 recovered_status: LEGACY_EXISTING

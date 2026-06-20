@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-customization-uplift-7c4f12.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-customization-uplift-7c4f12.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-customization-uplift-7c4f12.md'
 source_sha256: 058978291d1b64950ff760132d435771c3c7377f05d69d8bfa2637dae53429f0
 recovered_status: LEGACY_EXISTING

@@ -53,7 +53,7 @@ LAST_UPDATED: 2026-06-14
 | W1.1 | Add missing_confidence + next_step_generic triggers | ✅ DONE |
 | W1.2 | Isolating tests + positive control | ✅ DONE |
 | W2.1 | New blocking Stop hook (reuse detect(); RUNTIME_RCA_ENFORCE=off/warn/block) | ✅ DONE |
-| W2.2 | Register in settings.json; shadow rollout then flip to block | ✅ DONE |
+| W2.2 | Register in hooks.json; shadow rollout then flip to block | ✅ DONE |
 
 ---
 
@@ -94,8 +94,8 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W2.1** — New `.claude/hooks/stop_runtime_rca_gate.py` reusing `detect()`; modes `RUNTIME_RCA_ENFORCE=off|warn|block`; per-session loop guard | ~9K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
-- **W2.2** — Register in `.claude/settings.json` Stop chain; ship in `warn` (shadow), flip default to `block` later | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.1** — New `.codex/hooks/stop_runtime_rca_gate.py` reusing `detect()`; modes `RUNTIME_RCA_ENFORCE=off|warn|block`; per-session loop guard | ~9K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.2** — Register in `.codex/hooks.json` Stop chain; ship in `warn` (shadow), flip default to `block` later | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - `warn` mode logs "would block" and never blocks.
@@ -111,7 +111,7 @@ CHECKPOINT: B
 
 **Commands**:
 ```bash
-python -c "import ast; ast.parse(open('.claude/governance/scripts/post_agent_runtime_rca_audit.py').read())"
+python -c "import ast; ast.parse(open('.codex/governance/scripts/post_agent_runtime_rca_audit.py').read())"
 ```
 
 ### W1.2 — Tests
@@ -119,19 +119,19 @@ python -c "import ast; ast.parse(open('.claude/governance/scripts/post_agent_run
 
 **Commands**:
 ```bash
-pytest tests/unit/ops_scripts/hooks/claude/test_post_agent_runtime_rca_audit.py --noconftest -o addopts="" -q
+pytest tests/unit/ops_scripts/hooks/codex/test_post_agent_runtime_rca_audit.py --noconftest -o addopts="" -q
 ```
 
 ### W2.1 — Blocking Stop hook
-**Scope**: New `.claude/hooks/stop_runtime_rca_gate.py` (named `stop_*` not `post_*` so the SSOT folder gate keeps it in `.claude/hooks/` and the `lib.claude_hook_common` import resolves). Imports `detect()` from the advisory audit; blocks only `missing_refactor_outcome`; modes `RUNTIME_RCA_ENFORCE=off|warn|block` (default warn); per-session loop guard `RUNTIME_RCA_GATE_MAX_BLOCKS` (default 1); honors `RUNTIME_RCA_AUDIT_BYPASS=1`.
+**Scope**: New `.codex/hooks/stop_runtime_rca_gate.py` (named `stop_*` not `post_*` so the SSOT folder gate keeps it in `.codex/hooks/` and the `lib.codex_hook_common` import resolves). Imports `detect()` from the advisory audit; blocks only `missing_refactor_outcome`; modes `RUNTIME_RCA_ENFORCE=off|warn|block` (default warn); per-session loop guard `RUNTIME_RCA_GATE_MAX_BLOCKS` (default 1); honors `RUNTIME_RCA_AUDIT_BYPASS=1`.
 
 **Commands**:
 ```bash
-pytest tests/unit/ops_scripts/hooks/claude/test_stop_runtime_rca_gate.py --noconftest -o addopts="" -q
+pytest tests/unit/ops_scripts/hooks/codex/test_stop_runtime_rca_gate.py --noconftest -o addopts="" -q
 ```
 
 ### W2.2 — Register + shadow rollout
-**Scope**: Added `stop_runtime_rca_gate.py` to `.claude/settings.json` `hooks.Stop` (sibling of `stop_task_audit.py`). Default `warn` = shadow (no behavior change until an operator sets `RUNTIME_RCA_ENFORCE=block`).
+**Scope**: Added `stop_runtime_rca_gate.py` to `.codex/hooks.json` `hooks.Stop` (sibling of `stop_task_audit.py`). Default `warn` = shadow (no behavior change until an operator sets `RUNTIME_RCA_ENFORCE=block`).
 
 ---
 
@@ -156,15 +156,15 @@ DoD-2: Next step coupled to root cause is enforced
 - Status: DONE
 
 DoD-3: No regression / positive control clean
-- Evidence: `pytest tests/unit/ops_scripts/hooks/claude/test_post_agent_runtime_rca_audit.py --noconftest -o addopts="" -q` → 22 passed
+- Evidence: `pytest tests/unit/ops_scripts/hooks/codex/test_post_agent_runtime_rca_audit.py --noconftest -o addopts="" -q` → 22 passed
 - Status: DONE
 
 DoD-4: Detector smoke-run (executable surface)
-- Evidence: `python .claude/governance/scripts/post_agent_runtime_rca_audit.py < /dev/null` exits 0 (advisory/fail-open)
+- Evidence: `python .codex/governance/scripts/post_agent_runtime_rca_audit.py < /dev/null` exits 0 (advisory/fail-open)
 - Status: DONE
 
 DoD-5: W2 Stop-gate ships in shadow (block on env flip)
-- Evidence: `.claude/hooks/stop_runtime_rca_gate.py` + `.claude/settings.json` Stop entry; `pytest …/test_stop_runtime_rca_gate.py` → 9 passed; subprocess smoke: default warn → exit 0 (logs "would block"), `RUNTIME_RCA_ENFORCE=block` → exit 2 + `{"decision":"block"}`, framed turn → exit 0
+- Evidence: `.codex/hooks/stop_runtime_rca_gate.py` + `.codex/hooks.json` Stop entry; `pytest …/test_stop_runtime_rca_gate.py` → 9 passed; subprocess smoke: default warn → exit 0 (logs "would block"), `RUNTIME_RCA_ENFORCE=block` → exit 2 + `{"decision":"block"}`, framed turn → exit 0
 - Status: DONE
 
 ### Verification vs Deferral

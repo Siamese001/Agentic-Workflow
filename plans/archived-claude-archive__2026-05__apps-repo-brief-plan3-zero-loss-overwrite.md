@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-repo-brief-plan3-zero-loss-overwrite.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-repo-brief-plan3-zero-loss-overwrite.md'
 original_relative_path: '_archive\\2026-05\\apps-repo-brief-plan3-zero-loss-overwrite.md'
 source_sha256: 9445d022dd117859371e63d265fad05c96a0b2165cd5dff7b26b0a05b02647e1
 recovered_status: LEGACY_EXISTING

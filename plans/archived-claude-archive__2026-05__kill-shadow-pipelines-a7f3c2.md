@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\kill-shadow-pipelines-a7f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\kill-shadow-pipelines-a7f3c2.md'
 original_relative_path: '_archive\\2026-05\\kill-shadow-pipelines-a7f3c2.md'
 source_sha256: c634aa7bc7f811bc46b7a14c91fd8f88193573722ea736c295d6f8bfc068ba2d
 recovered_status: LEGACY_EXISTING

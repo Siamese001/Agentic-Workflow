@@ -1,8 +1,8 @@
 # ADR-088: Product Spine Function Truth & Taxonomy Inventory Separation
 
-**Status:** Accepted  
-**Date:** 2026-05-25  
-**Plan:** [agent-inventory-spine-taxonomy-b4e9f2](../../../.claude/plans/agent-inventory-spine-taxonomy-b4e9f2.md) W0  
+**Status:** Accepted
+**Date:** 2026-05-25
+**Plan:** [agent-inventory-spine-taxonomy-b4e9f2](../../../.codex/plans/agent-inventory-spine-taxonomy-b4e9f2.md) W0
 **Evidence:** [Runtime assessment (PARTIAL)](../../reports/agentic_core_agent_inventory_runtime_assessment.md)
 
 ## Context

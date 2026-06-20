@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ssot-consolidation-b7c3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ssot-consolidation-b7c3e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ssot-consolidation-b7c3e1.md'
 source_sha256: cb49ce36b68326df05942477f97c8511ffbd89e76a682f7f65914dc96411297b
 recovered_status: LEGACY_EXISTING

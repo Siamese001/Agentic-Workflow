@@ -2,7 +2,7 @@
 plan_id: adg-redis-hotcache-enforcement-b9f4c2
 plan_type: infra    # refactor | governance | audit | doc | infra | tracker | platform_core_change
 touches_agentic_core: false
-touches_governance_ci: true   # modifies a pre_user_prompt hook + a CI gate + settings.json
+touches_governance_ci: true   # modifies a pre_user_prompt hook + a CI gate + hooks.json
 touches_cursor_rules: false
 touches_plan_templates: false
 core_addition_author_gate_required: false
@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-06-07
 
 ## Context (SCQA)
 
-- **Situation** — Constitutional §13 mandates a T2/T3 "MCP green light": Redis hot cache (`adg_redis_ingest.py --check`) → `adg_health` fallback, *"Both red = BLOCKED."* The gate is implemented in [pre_prompt_classifier.py](.claude/governance/scripts/pre_prompt_classifier.py). The rest of the ADG stack already treats SQLite as canonical and Redis as a hot projection ([adg-canonical-invariants.md](.claude/rules/adg-canonical-invariants.md) §1; [redis_cache.py:38-43](tools/adg/cache/redis_cache.py); CI gate [check_mcp_adg_redis_consistency.py](ops_scripts/ci/check_mcp_adg_redis_consistency.py)).
+- **Situation** — Constitutional §13 mandates a T2/T3 "MCP green light": Redis hot cache (`adg_redis_ingest.py --check`) → `adg_health` fallback, *"Both red = BLOCKED."* The gate is implemented in [pre_prompt_classifier.py](.codex/governance/scripts/pre_prompt_classifier.py). The rest of the ADG stack already treats SQLite as canonical and Redis as a hot projection ([adg-canonical-invariants.md](.codex/rules/adg-canonical-invariants.md) §1; [redis_cache.py:38-43](tools/adg/cache/redis_cache.py); CI gate [check_mcp_adg_redis_consistency.py](ops_scripts/ci/check_mcp_adg_redis_consistency.py)).
 - **Complication** — The gate never blocked a single turn. Six independent defects (Gap Register below): an orphaned `_hot` sentinel nobody reliably publishes; a hardcoded `localhost:6379` probe contradicting the `ADG_REDIS_URL` SSOT the rest of the stack enforces (S-03/S-08); a fail-open AND-condition; a **nonexistent** `ops_scripts/ci/mcp_health_check.py` that makes the fallback always read "green"; keyword tiering that skips the check; and **no registration** of the hook on the Claude Code surface. It carried over inert from prior IDE surfaces.
 - **Question** — How do we make the green-light gate enforce correctly, with ADG SQLite MCP as the authoritative SSOT signal and ADG Redis MCP as a non-authoritative hot cache?
 - **Answer** — Re-anchor the gate on ADG SQLite SSOT snapshot availability (a red SSOT blocks; a Redis hot-cache hit may not substitute for it), resolve Redis via the `ADG_REDIS_URL` SSOT, register the gate on the Claude Code `UserPromptSubmit` surface, and lock it with tests.
@@ -117,7 +117,7 @@ WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: C
 
-**Authorization**: self-authorized — modifies `.claude/hooks/before_submit_prompt.py` dispatch + constitutional §13 wording; no new `.claude/settings.json` entry needed (before_submit_prompt.py is already the registered `UserPromptSubmit` hook).
+**Authorization**: self-authorized — modifies `.codex/hooks/before_submit_prompt.py` dispatch + constitutional §13 wording; no new `.codex/hooks.json` entry needed (before_submit_prompt.py is already the registered `UserPromptSubmit` hook).
 
 **Phases**:
 - **W3.1** — Register gate via before_submit_prompt.py dispatch; sentinel publish on regen | PHASE_STATUS: DONE

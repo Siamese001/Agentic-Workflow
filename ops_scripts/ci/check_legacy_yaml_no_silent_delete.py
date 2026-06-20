@@ -1,6 +1,6 @@
 """CI gate: no silent deletion of legacy YAML files.
 
-Plan: `.claude/plans/legacy-yaml-deletion-audit-c8e3a4.md`.
+Plan: `.codex/plans/legacy-yaml-deletion-audit-c8e3a4.md`.
 Author-Gate: `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine).
 
 Enforces: any of the 13 enumerated legacy YAML files MUST exist on
@@ -86,7 +86,7 @@ def check(repo_root: Path = REPO_ROOT) -> int:
         print(
             "\nFix: either restore the file, OR run an Author-Gate referencing "
             f"plan {PLAN_SLUG} + the file path before deleting.\n"
-            f"Plan: .claude/plans/{PLAN_SLUG}.md.\n"
+            f"Plan: .codex/plans/{PLAN_SLUG}.md.\n"
             "Bypass: LEGACY_YAML_DELETION_BYPASS=1 (logged).",
             file=sys.stderr,
         )

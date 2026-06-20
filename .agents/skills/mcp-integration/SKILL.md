@@ -12,7 +12,7 @@ description: "Routes Claude Code to the correct MCP server (filesystem, Redis, D
 
 > ⚠️ Not every section below maps to an installed server. The routing tables describe the
 > **intended** surface; this block is the SSOT for what is actually callable. Cross-check
-> against `.mcp.json` and `CLAUDE.md` § "Not in `.mcp.json`".
+> against `.mcp.json` and `AGENTS.md` § "Not in `.mcp.json`".
 
 | Server | In `.mcp.json`? | Section | Use this instead when dormant |
 |---|---|---|---|
@@ -37,7 +37,7 @@ present, prefer it for web search; when absent, fall back to native `WebSearch`/
 way `.mcp.json` is unchanged — do not claim a repo-configured Tavily server.
 
 The §1/§2/§8/§9/§10/§13 sections below remain as **dormant reference** so re-adding a server is a
-one-step restore (`.claude/mcp-notes.md`). They are NOT evidence the server is currently callable.
+one-step restore (`.codex/mcp-notes.md`). They are NOT evidence the server is currently callable.
 
 ## Quick Reference
 

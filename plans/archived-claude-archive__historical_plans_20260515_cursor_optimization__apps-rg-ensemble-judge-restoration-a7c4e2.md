@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
 source_sha256: 26835003282a06e3ca0fef31e5720569276fb04cf9cdd56815f29e554d982097
 recovered_status: LEGACY_EXISTING

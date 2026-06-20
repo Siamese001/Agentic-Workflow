@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p2.2_core-l6-g29-promotion-proof-hardening-d9e3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p2.2_core-l6-g29-promotion-proof-hardening-d9e3b2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p2.2_core-l6-g29-promotion-proof-hardening-d9e3b2.md'
 source_sha256: 44bba6b7e445e965f59b7d31973287c44c2a3b97bbd0354b877d1b310544ca8d
 recovered_status: LEGACY_EXISTING

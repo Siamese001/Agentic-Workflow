@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-test-coverage-remediation-f5a9c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-test-coverage-remediation-f5a9c2.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-test-coverage-remediation-f5a9c2.md'
 source_sha256: f9b22572d2b62101ff83fd15a1927995517c8ffa5ec996b13fe24a586359c4ae
 recovered_status: LEGACY_EXISTING

@@ -7,7 +7,7 @@ description: "Git operations, GitLens-grade history/blame/worktree analysis, pul
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §11 — GitKraken (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §11 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §11 for current guidance.
 
 ---
 

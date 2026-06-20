@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-tree-sitter-parser-exploration-b1c517.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-tree-sitter-parser-exploration-b1c517.md'
 original_relative_path: '_archive\\2026-05\\adg-tree-sitter-parser-exploration-b1c517.md'
 source_sha256: d6d7586108108bd6e23ba54406615f62c064e6780556d585ada00b7c98e423f2
 recovered_status: LEGACY_EXISTING

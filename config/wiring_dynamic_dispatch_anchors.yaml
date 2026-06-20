@@ -20,7 +20,7 @@
 version: 1
 anchors:
   # ---------- Hook-dispatched scripts (Claude governance hooks) ----------
-  - pattern: ".claude/governance/scripts/post_agent_*.py"
+  - pattern: ".codex/governance/scripts/post_agent_*.py"
     reason: "Post-agent governance scripts invoked by dispatcher, not imported."
     issued: 2026-06-08
 

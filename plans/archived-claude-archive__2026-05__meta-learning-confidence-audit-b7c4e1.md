@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\meta-learning-confidence-audit-b7c4e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\meta-learning-confidence-audit-b7c4e1.md'
 original_relative_path: '_archive\\2026-05\\meta-learning-confidence-audit-b7c4e1.md'
 source_sha256: 8ab6086050594358675e1a0ad73e2dcf1281dbdba05f1c2e2e802980ebe23f11
 recovered_status: LEGACY_EXISTING

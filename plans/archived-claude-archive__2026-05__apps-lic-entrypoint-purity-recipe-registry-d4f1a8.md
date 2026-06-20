@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md'
 source_sha256: 624965a8383386e53d5a501b7ccbe737d6e69da3e7f3cfd8c496665a0f80100a
 recovered_status: LEGACY_EXISTING

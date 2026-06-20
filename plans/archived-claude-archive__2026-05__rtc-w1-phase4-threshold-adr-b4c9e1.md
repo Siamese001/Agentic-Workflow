@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rtc-w1-phase4-threshold-adr-b4c9e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rtc-w1-phase4-threshold-adr-b4c9e1.md'
 original_relative_path: '_archive\\2026-05\\rtc-w1-phase4-threshold-adr-b4c9e1.md'
 source_sha256: a69f5f514edbb07cc2e64ba29d3b97814505cb8ef01b4312d3d61f4a0f33685a
 recovered_status: LEGACY_EXISTING

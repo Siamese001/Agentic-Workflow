@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-interactive-enrichment-b8c3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-interactive-enrichment-b8c3e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-interactive-enrichment-b8c3e1.md'
 source_sha256: 45b4736bf02890270f3d2f0ae2b43247516abfd40dec29377c450f9dce9dbd96
 recovered_status: LEGACY_EXISTING

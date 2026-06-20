@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l6-alignment-deferred-scope-c5e8a7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l6-alignment-deferred-scope-c5e8a7.md'
 original_relative_path: '_archive\\2026-05\\l6-alignment-deferred-scope-c5e8a7.md'
 source_sha256: 62f0ead1dbbfb9327e72209a26b56f9255a1fbee8c520ca32a666e8d4ab47bb5
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-judge-display-override-parity-7c3e8a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-judge-display-override-parity-7c3e8a.md'
 original_relative_path: 'exec-summary-judge-display-override-parity-7c3e8a.md'
 source_sha256: a834de10357949ea4b5dc9f42c3f0bb43b90c6519d34b9cd1dd8b1b41dce6b4d
 recovered_status: LEGACY_EXISTING

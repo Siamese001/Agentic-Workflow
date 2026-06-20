@@ -2,8 +2,8 @@
 
 SSOT output: ``artifacts/adg/adg_action_queue_<ts>.json``
 
-Plan: ``.claude/plans/adg-action-dispatch-c9e4a2.md`` (W1)
-Schema: ``.claude/schemas/adg_action_queue.schema.json``
+Plan: ``.codex/plans/adg-action-dispatch-c9e4a2.md`` (W1)
+Schema: ``.codex/schemas/adg_action_queue.schema.json``
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from tools.reports.gate_signal_catalog import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
-SCHEMA_PATH = REPO_ROOT / ".claude" / "schemas" / "adg_action_queue.schema.json"
+SCHEMA_PATH = REPO_ROOT / ".codex" / "schemas" / "adg_action_queue.schema.json"
 
 DEFAULT_MAX_ACTIONS = 10
 BAND_ORD = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "L_APP": 4}

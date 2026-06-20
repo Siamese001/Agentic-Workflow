@@ -1,6 +1,6 @@
 """Pattern migration executor — DS-8.
 
-Plan: ``.claude/plans/apps-architect-deferred-scope-b8e3f1.md`` DW4 DS-8.
+Plan: ``.codex/plans/apps-architect-deferred-scope-b8e3f1.md`` DW4 DS-8.
 
 Auto-applies recommended pattern changes with backup and rollback support.
 """

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-complexity-test-radar-605dcc.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-complexity-test-radar-605dcc.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-complexity-test-radar-605dcc.md'
 source_sha256: f987158b3aba940069a61128d475564f35f21a4154ce05d014a6d855e334ce01
 recovered_status: LEGACY_EXISTING

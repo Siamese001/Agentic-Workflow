@@ -34,10 +34,10 @@ LAST_UPDATED: 2026-06-14
 
 ## Context (SCQA)
 
-- **Situation** — The `.claude/` governance layer (migrated from the prior Cursor/Windsurf IDE configs) carries **67 rules, 34 skills, 14 registered hooks, 111 governance scripts, and 408 CI gates (326 `check_*`)**. A prior plan — `claude-native-supersession-9d3f7a` (status **Not Started**) — mapped six emulation surfaces (S1–S6) and produced a complete **W0 coupling map** (`docs/reports/governance/claude_native_supersession_coupling_map.md`, 2026-06-07).
+- **Situation** — The `.codex/` governance layer (migrated from the prior Cursor/Windsurf IDE configs) carries **67 rules, 34 skills, 14 registered hooks, 111 governance scripts, and 408 CI gates (326 `check_*`)**. A prior plan — `claude-native-supersession-9d3f7a` (status **Not Started**) — mapped six emulation surfaces (S1–S6) and produced a complete **W0 coupling map** (`docs/reports/governance/claude_native_supersession_coupling_map.md`, 2026-06-07).
 - **Complication** — The supersession was **declared and half-wired but never cleaned**: `after_agent_governance_dispatch.py` already removed the Author-Gate chain ("[W1 claude-native-supersession-9d3f7a] Author-Gate audit members removed; native AskUserQuestion supersedes the packet/marker/ledger pipeline"), 5 AG rules are marked DEPRECATED, and §30/§35 are RETIRED slots — **yet ~16 AG scripts, 3 AG skills, ~10 AG CI gates, and ~21 redirect/inactive rule stubs still sit on disk and load every session**. Separately, **`memory/` does not exist** though constitutional §17 + two rules + the `memory-mcp` skill cite `memory/MEMORY.md` as the SSOT — a live signal-loss contradiction.
 - **Question** — How do we consolidate every enforcement surface to the lowest-mass form that **preserves 100% of the invariants**, in a wave order where no gate is ever orphaned and no machinery outlives its replacement?
-- **Answer** — Apply the proven ADG/supersession pattern uniformly — **invariant-in-`CLAUDE.md`, procedure-in-native-feature, machinery-to-`archives/`** — and gate every deletion behind a reference sweep so nothing wired elsewhere is removed. This plan **absorbs S1–S6 and the coupling map** and adds the cross-surface gate/rule-stub/skills/memory waves the supersession plan under-covered. It is **net-subtractive**: it adds one classifier tool, one retired-rules index, and one memory scaffold while removing 60+ artifacts.
+- **Answer** — Apply the proven ADG/supersession pattern uniformly — **invariant-in-`AGENTS.md`, procedure-in-native-feature, machinery-to-`archives/`** — and gate every deletion behind a reference sweep so nothing wired elsewhere is removed. This plan **absorbs S1–S6 and the coupling map** and adds the cross-surface gate/rule-stub/skills/memory waves the supersession plan under-covered. It is **net-subtractive**: it adds one classifier tool, one retired-rules index, and one memory scaffold while removing 60+ artifacts.
 
 ---
 
@@ -48,11 +48,11 @@ LAST_UPDATED: 2026-06-14
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Audit ratification · memory-drift fix · gate reference-sweep classifier (no deletions) | ~30K | Coupling map valid; `post_agent_*` rename already landed on this branch | ✅ DONE | Memory SSOT created; `classify_gate_wiring.py` emitted REGISTRY 151 / PRECOMMIT 22 / WORKFLOW 14 / TEST_ONLY 37 / ORPHANED 102 |
-| W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in CLAUDE.md | ✅ DONE (by `origin/main`) | **Completed independently on `origin/main`** (merged 2026-06-14): Tier-2 author-facing layer retired, `ci/author_gate/`→`ci/decision_ledger/`, 2 AG skills + ~15 AG scripts + AG test suite removed (shared ledger backbone preserved). My branch merged it cleanly; no separate archival needed. |
-| W3 | W3.1, W3.2 | Collapse redirect/inactive rule stubs → retired-rules index | ~28K | §-citations are number-based; no markdown links to stubs | ✅ DONE | 18 pure-redirect stubs deleted (`local-llm` excluded as active); CLAUDE.md + constitutional repoint notes → `retired-rules-index.md`; zero new broken cross-refs; 66→48 rule files |
+| W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in AGENTS.md | ✅ DONE (by `origin/main`) | **Completed independently on `origin/main`** (merged 2026-06-14): Tier-2 author-facing layer retired, `ci/author_gate/`→`ci/decision_ledger/`, 2 AG skills + ~15 AG scripts + AG test suite removed (shared ledger backbone preserved). My branch merged it cleanly; no separate archival needed. |
+| W3 | W3.1, W3.2 | Collapse redirect/inactive rule stubs → retired-rules index | ~28K | §-citations are number-based; no markdown links to stubs | ✅ DONE | 18 pure-redirect stubs deleted (`local-llm` excluded as active); AGENTS.md + constitutional repoint notes → `retired-rules-index.md`; zero new broken cross-refs; 66→48 rule files |
 | W4 | W4.1, W4.2 | CI-gate reference-swept retirement (uses W1.2 classifier) | ~38K | extended verification beyond registry/precommit/workflow/tests | ✅ DONE | 18 verified-dead orphan gates retired; of 103 registry-orphans, **84 proven still-referenced** → NOT deleted (blind mass-delete would have broken them); JSON 306/85; family-collapse parameterization deferred |
-| W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | dormant-MCP skills intentionally kept per CLAUDE.md | ✅ DONE | 6 redundant tavily command aliases deleted; dormant-MCP skills KEPT (documented intent); AG skills already removed via `origin/main` |
-| W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | ✅ DONE (residual deferred) | W6.2 done by concurrent work (legacy trees + `mcp-serialization.md` deleted upstream; `pre_mcp_gate` Notion/GitKraken checks intact; dangling CLAUDE.md index row repointed). W6.1: clean-orphan `next_step_miss_detector` deleted + 3 retired-marker captures unwired from per-Stop chain (13→10); capture-pair *file* deletion + scorer decouple + S5 wave→Notion bridge DEFERRED (live importers / load-bearing). Gates green. |
+| W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | dormant-MCP skills intentionally kept per AGENTS.md | ✅ DONE | 6 redundant tavily command aliases deleted; dormant-MCP skills KEPT (documented intent); AG skills already removed via `origin/main` |
+| W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | ✅ DONE (residual deferred) | W6.2 done by concurrent work (legacy trees + `mcp-serialization.md` deleted upstream; `pre_mcp_gate` Notion/GitKraken checks intact; dangling AGENTS.md index row repointed). W6.1: clean-orphan `next_step_miss_detector` deleted + 3 retired-marker captures unwired from per-Stop chain (13→10); capture-pair *file* deletion + scorer decouple + S5 wave→Notion bridge DEFERRED (live importers / load-bearing). Gates green. |
 | W7 | W7.1, W7.2 | Verification · ADRs · memory writeback · Notion + adjacent-plan reconcile | ~30K | One ADR per surface; predecessor auto-retired via Supersedes | ✅ DONE | ADR-100 closeout written; net-subtractive delta reported (gov-scripts 111→91, rules 66→48, per-Stop dispatch 13→10); plan closed out + predecessor `claude-native-supersession-9d3f7a` retired. NOTE: full `run_contract_gates.py` green is gated on **pre-existing main reds** (Fort Knox §32 cert tiers + ADG, red on the base commit) — W7 introduced ZERO new failures (proven by stash-at-base). |
 
 ### Phase Progress
@@ -64,7 +64,7 @@ LAST_UPDATED: 2026-06-14
 | W2.1 | Archive AG scripts + skills; remove coupled gates/pre-commit hooks | ✅ DONE (`origin/main`) |
 | W2.2 | Verify §6 invariant; ADR; gates green | ✅ DONE (`origin/main`) |
 | W3.1 | Build retired-rules index; identify stub set + inbound refs | ✅ DONE |
-| W3.2 | Delete 18 stubs; update CLAUDE.md/constitutional; validate | ✅ DONE |
+| W3.2 | Delete 18 stubs; update AGENTS.md/constitutional; validate | ✅ DONE |
 | W4.1 | Retire verified-dead orphan gates (18 of 103; 84 still-referenced) | ✅ DONE |
 | W4.2 | Parameterize mergeable gate families | ⏸ DEFERRED (W6+) |
 | W5.1 | Dormant-MCP skills KEPT per intent; AG skills gone via `origin/main` | ✅ DONE |
@@ -82,11 +82,11 @@ LAST_UPDATED: 2026-06-14
 
 | # | Opportunity | Artifacts eliminated | Invariant preserved (where it lives after) | Evidence | Safety |
 |---|---|---|---|---|---|
-| 1 | **Retire Author-Gate emulation (S1)** | 16 gov scripts · 2 skills (`author-gate-packet-builder`, `author-gate-ui-renderer`) · ~10 CI gates (4 top-level + `ci/author_gate/` subdir + `enriched_choice_ui_invariants_ast` + `decision_ledger_*`) · 4 pre-commit hooks · 5 DEPRECATED rules | "Stop & ask on ambiguity" → native `AskUserQuestion` (CLAUDE.md §Author-Gate + constitutional §6). Precedent → file memory, not SQLite ledger. | Dispatcher comment + coupling map S1 + 3 independent agent sweeps; not referenced in `run_contract_gates.py`, `.github/workflows/`, or `.pre-commit-config.yaml`; §30/§35 already RETIRED slots. | **Highest** |
+| 1 | **Retire Author-Gate emulation (S1)** | 16 gov scripts · 2 skills (`author-gate-packet-builder`, `author-gate-ui-renderer`) · ~10 CI gates (4 top-level + `ci/author_gate/` subdir + `enriched_choice_ui_invariants_ast` + `decision_ledger_*`) · 4 pre-commit hooks · 5 DEPRECATED rules | "Stop & ask on ambiguity" → native `AskUserQuestion` (AGENTS.md §Author-Gate + constitutional §6). Precedent → file memory, not SQLite ledger. | Dispatcher comment + coupling map S1 + 3 independent agent sweeps; not referenced in `run_contract_gates.py`, `.github/workflows/`, or `.pre-commit-config.yaml`; §30/§35 already RETIRED slots. | **Highest** |
 | 2 | **Collapse ~21 redirect/inactive rule stubs** | 19 `DEPRECATED` rules + `global_rules.md` (inactive) + `plan-lifecycle-procedures.md` (redirect); several redirect→redirect | Real content already at canonical targets; one `retired-rules-index.md` preserves the redirect map. | All 67 rule bodies inspected; cross-refs use §-numbers not filenames; glob-trigger stubs (e.g. `adg-test-accelerator`) fold trigger into canonical frontmatter. | High |
 | 3 | **Resolve memory-system drift (BLOCKING)** | 0 deletions — restores signal | "Recall at session start; write back significant decisions (15/3)" → native `memory/MEMORY.md` (created) **or** §17 re-pointed to the real mechanism. | `memory/` absent on disk vs §17 + `memory-management.md` + `memory-notion-writeback.md` + `memory-mcp` skill citing it as SSOT. Must precede MCP-script deletion (regret vector). | High (signal restoration) |
 | 4 | **CI-gate reference-swept retirement + family collapse** | Proven-orphan gates (subset of the 175 uncalled-by-registry) + 2 notion pairs→2 single parameterized gates | Each retired gate is proven dead across registry+workflows+pre-commit+tests by the W1.2 classifier first. | Registry refs 154, pre-commit 45, workflows 33 → "uncalled-by-registry" overcounts dead; **mass-deletion is forbidden** without the sweep. | Medium (sweep-gated) |
-| 5 | **Skills archival + alias cleanup** | 2 retired AG skills + 4 dormant-MCP skills (`redis-cache`, `pytest-mcp`, `otel-telemetry`, `tavily-research`) + 6 tavily command stubs (~600 lines) | MCP substitutes documented in `mcp-notes.md`; native `AskUserQuestion` covers AG. | `.mcp.json` lacks those servers; CLAUDE.md marks them dormant; agent-2 "DO NOT merge" verdict on orthogonal pairs honored. | High |
+| 5 | **Skills archival + alias cleanup** | 2 retired AG skills + 4 dormant-MCP skills (`redis-cache`, `pytest-mcp`, `otel-telemetry`, `tavily-research`) + 6 tavily command stubs (~600 lines) | MCP substitutes documented in `mcp-notes.md`; native `AskUserQuestion` covers AG. | `.mcp.json` lacks those servers; AGENTS.md marks them dormant; agent-2 "DO NOT merge" verdict on orthogonal pairs honored. | High |
 | 6 | **Slim dispatch · legacy trees · mcp-serialization (S2/S4/S5/S6)** | orphaned chain members · `_legacy_cursor/`+`_legacy_windsurf/` · SR/next-step/deferred-scope capture · `mcp-serialization.md` | Plan-mode (S2), `spawn_task` (S4), TodoWrite+explicit-Notion (S5), native parallel-MCP (S6) cover every invariant. | Coupling map S2/S4/S5/S6; legacy trees segregated; rules already DEPRECATED. | High |
 
 ### Explicit DO-NOT-CONSOLIDATE (signal would be lost)
@@ -167,12 +167,12 @@ CHECKPOINT: C
 
 **Phases**:
 - **W3.1** — Build `retired-rules-index.md` covering all ~21 stubs; re-home glob-triggers into canonical files | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W3.2** — Delete the ~21 stubs; update CLAUDE.md rules index; gates green | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.2** — Delete the ~21 stubs; update AGENTS.md rules index; gates green | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Acceptance**:
 - One `docs/reports/governance/retired-rules-index.md` maps every retired stub (19 DEPRECATED incl. the 5 AG rule stubs + `global_rules.md` + `plan-lifecycle-procedures.md`) → its canonical target (zero-loss redirect preservation per constitutional §21).
 - Glob-trigger stubs' triggers folded into their canonical file's frontmatter before deletion.
-- CLAUDE.md "Specialized rules" index updated; `python ops_scripts/ci/run_contract_gates.py` green.
+- AGENTS.md "Specialized rules" index updated; `python ops_scripts/ci/run_contract_gates.py` green.
 
 ---
 
@@ -209,11 +209,11 @@ CHECKPOINT: E
 
 **Phases**:
 - **W5.1** — Archive 2 retired AG skills + 4 dormant-MCP skills | ~13K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W5.2** — Remove 6 tavily + other thin-alias commands; update CLAUDE.md MCP table + skill index | ~13K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W5.2** — Remove 6 tavily + other thin-alias commands; update AGENTS.md MCP table + skill index | ~13K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Acceptance**:
-- `author-gate-packet-builder`, `author-gate-ui-renderer`, `redis-cache`, `pytest-mcp`, `otel-telemetry`, `tavily-research` moved to `.claude/skills/_archive/` with a deprecation pointer to the native substitute.
-- Thin-alias commands deleted; CLAUDE.md MCP Quick Reference + dormant-server note updated; orthogonal skill pairs left intact.
+- `author-gate-packet-builder`, `author-gate-ui-renderer`, `redis-cache`, `pytest-mcp`, `otel-telemetry`, `tavily-research` moved to `.codex/skills/_archive/` with a deprecation pointer to the native substitute.
+- Thin-alias commands deleted; AGENTS.md MCP Quick Reference + dormant-server note updated; orthogonal skill pairs left intact.
 
 ---
 
@@ -236,7 +236,7 @@ CHECKPOINT: F
 - `grep`-clean import scan proves zero references to the legacy trees before deletion; `mcp-serialization.md` retired while `pre_mcp_gate.py` keeps its Notion-token + GitKraken checks.
 
 **W6 progress (2026-06-14, branch `feat/enforcement-consolidation-w6`).** Most of W6 was **completed by concurrent decommission sessions** before this wave ran — verified against `origin/main` (`9bc20ba7dc`):
-- **W6.2 — DONE upstream + residual cleanup here.** `_legacy_cursor/`+`_legacy_windsurf/` already deleted (the AG-WIRE comment in `after_agent_governance_dispatch.py` confirms "decommissioned with the legacy tree"); `mcp-serialization.md` already deleted; `pre_mcp_gate.py` retains 88 Notion-token + GitKraken references (invariant intact). This wave completed the residual the deleter missed: the dangling active rules-index row in `CLAUDE.md` (`mcp-config-ssot.md / mcp-serialization.md`) was repointed to `mcp-config-ssot.md` only.
+- **W6.2 — DONE upstream + residual cleanup here.** `_legacy_cursor/`+`_legacy_windsurf/` already deleted (the AG-WIRE comment in `after_agent_governance_dispatch.py` confirms "decommissioned with the legacy tree"); `mcp-serialization.md` already deleted; `pre_mcp_gate.py` retains 88 Notion-token + GitKraken references (invariant intact). This wave completed the residual the deleter missed: the dangling active rules-index row in `AGENTS.md` (`mcp-config-ssot.md / mcp-serialization.md`) was repointed to `mcp-config-ssot.md` only.
 - **W6.1 — partial-DONE.** The `after_agent_governance_dispatch.py` AG chain was already removed (W1). This wave deleted the **clean orphan** `post_agent_next_step_miss_detector.py` + its test (zero importers; NEXT_STEP retired §24/ADR-096), and **unwired all three** retired-marker captures (`deferred_scope_capture`, `next_step_capture`, `next_step_miss_detector`) from `post_agent_dispatch.py` `LEGACY_SCRIPTS` (13→10 per-Stop in-process loads). `governance_w3_hook_audit_matrix.py` classification updated. `check_post_agent_payload` stays exit 0.
 
 **DISCOVERED_SCOPE — the S4 capture *files* are not clean orphans (deferred, not deleted):**
@@ -286,7 +286,7 @@ PLAN_COMPLETE: plan=enforcement-surface-consolidation-d8b3f6 note="5 enforcement
 
 **Commands**:
 ```bash
-git grep -n "memory/MEMORY.md" .claude/ docs/ | head
+git grep -n "memory/MEMORY.md" .codex/ docs/ | head
 python ops_scripts/ci/run_contract_gates.py --gate ALWAYS-ON-BUDGET
 ```
 
@@ -331,7 +331,7 @@ python ops_scripts/ci/run_contract_gates.py
 
 ## Definition of Done
 
-DoD-1: Every superseded surface keeps its invariant as a thin CLAUDE.md/rule line (no governance lost).
+DoD-1: Every superseded surface keeps its invariant as a thin AGENTS.md/rule line (no governance lost).
 - Evidence: rule-diff review per wave; constitutional §6/§17/§24 invariants present post-change.
 - Status: DONE
 
@@ -395,7 +395,7 @@ SCOPE_EXPANSION: plan=enforcement-surface-consolidation-d8b3f6 reason="<summary>
 
 ## ADG / Blast-Radius Note
 
-This plan touches `.claude/` governance config + `ops_scripts/ci/` gates — **not** the `agentic_core` L0–L6 spine — so an `ADG_HOTSPOT_REPORT` is not the right instrument. The real blast radius is **CI gates + constitutional §-citations + the Stop dispatch chain**, enumerated in the coupling map and the W1.2 classifier. No `agentic_core` edits; no migration receipt required.
+This plan touches `.codex/` governance config + `ops_scripts/ci/` gates — **not** the `agentic_core` L0–L6 spine — so an `ADG_HOTSPOT_REPORT` is not the right instrument. The real blast radius is **CI gates + constitutional §-citations + the Stop dispatch chain**, enumerated in the coupling map and the W1.2 classifier. No `agentic_core` edits; no migration receipt required.
 
 ---
 

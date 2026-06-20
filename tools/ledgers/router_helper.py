@@ -29,7 +29,7 @@ Design rules:
 - **Layer/router pair is the routing key** — every helper instance is bound
   to exactly one ledger.
 
-Plan: ``.claude/plans/_archive/windsurf_legacy_plans/closed-loop-router-fleet-rollout-d8f2a3.md``
+Plan: ``.codex/plans/_archive/windsurf_legacy_plans/closed-loop-router-fleet-rollout-d8f2a3.md``
 """
 
 from __future__ import annotations

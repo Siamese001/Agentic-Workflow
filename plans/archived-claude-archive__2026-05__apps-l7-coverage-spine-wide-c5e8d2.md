@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-l7-coverage-spine-wide-c5e8d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-l7-coverage-spine-wide-c5e8d2.md'
 original_relative_path: '_archive\\2026-05\\apps-l7-coverage-spine-wide-c5e8d2.md'
 source_sha256: f5a048af0a90346ad861a1771233c67326d5e5bfbe972be0efb28ffad9c68cd6
 recovered_status: LEGACY_EXISTING

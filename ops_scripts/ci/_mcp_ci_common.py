@@ -10,7 +10,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_MCP_PATH = REPO_ROOT / ".mcp.json"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
-REPO_SYNC_SCRIPT_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
+REPO_SYNC_SCRIPT_DIR = REPO_ROOT / ".codex" / "governance" / "scripts"
 
 PLAYWRIGHT_ALIASES = frozenset({"playwright"})
 

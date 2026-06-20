@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\10c-binding-wave-sweep-a3f2e7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\10c-binding-wave-sweep-a3f2e7.md'
 original_relative_path: '_archive\\2026-05\\10c-binding-wave-sweep-a3f2e7.md'
 source_sha256: 8e86391fade3153fccf31a6d8814ff1b59eee11ecea521f85616e6f4f44a06da
 recovered_status: LEGACY_EXISTING

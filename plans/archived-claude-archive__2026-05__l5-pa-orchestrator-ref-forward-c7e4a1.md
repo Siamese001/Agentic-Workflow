@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l5-pa-orchestrator-ref-forward-c7e4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l5-pa-orchestrator-ref-forward-c7e4a1.md'
 original_relative_path: '_archive\\2026-05\\l5-pa-orchestrator-ref-forward-c7e4a1.md'
 source_sha256: 6c8bf8b08a1cb4a7c025f3c8a6787d51744faa2f2bb3fd6a5e552f7bf85d17b3
 recovered_status: LEGACY_EXISTING

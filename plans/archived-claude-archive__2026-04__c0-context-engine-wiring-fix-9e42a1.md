@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\c0-context-engine-wiring-fix-9e42a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\c0-context-engine-wiring-fix-9e42a1.md'
 original_relative_path: '_archive\\2026-04\\c0-context-engine-wiring-fix-9e42a1.md'
 source_sha256: 4688c516626c168869f23cf10d14bed7a0c513dd4d8dd410c06fe9750b51b35e
 recovered_status: LEGACY_EXISTING

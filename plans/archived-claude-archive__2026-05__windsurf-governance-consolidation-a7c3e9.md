@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\windsurf-governance-consolidation-a7c3e9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\windsurf-governance-consolidation-a7c3e9.md'
 original_relative_path: '_archive\\2026-05\\windsurf-governance-consolidation-a7c3e9.md'
 source_sha256: 0a4bdc1beed9cc2bee99fdcc3390cb1ac52074194535e1c511403e088b3c61b0
 recovered_status: LEGACY_EXISTING

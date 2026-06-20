@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-global-verification-maintenance-before-w4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-global-verification-maintenance-before-w4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-global-verification-maintenance-before-w4.md'
 source_sha256: 3a5c57e31e3f517a32d1310705d0dbe9fbf79542db0b9b92e385f5f78f0656d0
 recovered_status: LEGACY_EXISTING

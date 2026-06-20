@@ -62,7 +62,7 @@
 
 - Related ADRs: ADR-NNN, ADR-MMM
 - Related plans: `plans/<slug>-<6hex>.md`
-- Related rules/skills: `.claude/rules/<rule>.md`, `.claude/skills/<skill>/SKILL.md`
+- Related rules/skills: `.codex/rules/<rule>.md`, `.codex/skills/<skill>/SKILL.md`
 - External: [paper / RFC / issue if relevant]
 
 ## Current Governance Notes

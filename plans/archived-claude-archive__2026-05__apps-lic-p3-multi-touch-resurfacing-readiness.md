@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-p3-multi-touch-resurfacing-readiness.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-p3-multi-touch-resurfacing-readiness.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-p3-multi-touch-resurfacing-readiness.md'
 source_sha256: 571ccea859f239724c223b2bb6a1e205d54b6e2a9339c0570884e5c7047e8a01
 recovered_status: LEGACY_EXISTING

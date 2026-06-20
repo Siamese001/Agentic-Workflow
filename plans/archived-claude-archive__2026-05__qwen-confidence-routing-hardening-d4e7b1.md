@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\qwen-confidence-routing-hardening-d4e7b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\qwen-confidence-routing-hardening-d4e7b1.md'
 original_relative_path: '_archive\\2026-05\\qwen-confidence-routing-hardening-d4e7b1.md'
 source_sha256: 4a2626745040452d42bbf2a24e55e4d196bed55ce39d9b284b4f9e188b639a95
 recovered_status: LEGACY_EXISTING

@@ -1,6 +1,6 @@
 """L6 ADG Layer-Tag Consistency Gate.
 
-Plan: .claude/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W5.
+Plan: .codex/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W5.
 
 Verifies that every Python module under `agentic_core/L6_system_learning/` is tagged
 `layer=L6` in the latest ADG SQLite snapshot. Surfaces drift if the

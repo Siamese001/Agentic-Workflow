@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\reasoning-execution-control-plane-f4e9a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\reasoning-execution-control-plane-f4e9a2.md'
 original_relative_path: '_archive\\2026-05\\reasoning-execution-control-plane-f4e9a2.md'
 source_sha256: e34dc35294efcfea245d86db9215888866f16a9018d1732a0b6e87c9231c9f9b
 recovered_status: LEGACY_EXISTING

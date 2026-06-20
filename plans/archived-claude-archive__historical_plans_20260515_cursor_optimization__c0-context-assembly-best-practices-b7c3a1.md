@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\c0-context-assembly-best-practices-b7c3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\c0-context-assembly-best-practices-b7c3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\c0-context-assembly-best-practices-b7c3a1.md'
 source_sha256: 63e2b912f804a7738f0869878ce46dd297d072ff3e1b775991b342a777b452b6
 recovered_status: LEGACY_EXISTING

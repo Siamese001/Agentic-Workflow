@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\holdout-corpus-authoring-b5d2f6.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\holdout-corpus-authoring-b5d2f6.md'
 original_relative_path: '_archive\\2026-05\\holdout-corpus-authoring-b5d2f6.md'
 source_sha256: 5da14644dd736eb19ccd47059a2b5f6a5af15ace5caa4164ad2cff53ef67b854
 recovered_status: LEGACY_EXISTING

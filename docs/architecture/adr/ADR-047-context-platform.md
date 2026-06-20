@@ -4,7 +4,7 @@
 **Date**: 2026-04-23
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/knowledge/engine` (new), `agentic_core/knowledge/retrieval`, `agentic_core/L4_state/memory`, MCP Registry, `apps_research` (pilot), `apps_shared`
-**Plan**: `.claude/plans/c0-context-assembly-best-practices-b7c3a1.md` (W4, W5)
+**Plan**: `.codex/plans/c0-context-assembly-best-practices-b7c3a1.md` (W4, W5)
 
 **Current-state note (2026-06-15):** Implemented by `agentic_core/knowledge/engine/context_platform.py` and the `context_assembly_manifest.schema.json` path, with `tests/unit/agentic_core/knowledge/engine/test_context_platform.py`.
 
@@ -126,4 +126,4 @@ Normative requirements:
 - Theory Ventures, *Context Platform* thesis, 2024–2025
 - Constitutional §22 (graph-layer primacy) and §24 (deferred-scope
   capture) both extend into the platform's eval and backlog hooks.
-- Plan: `.claude/plans/c0-context-assembly-best-practices-b7c3a1.md`
+- Plan: `.codex/plans/c0-context-assembly-best-practices-b7c3a1.md`

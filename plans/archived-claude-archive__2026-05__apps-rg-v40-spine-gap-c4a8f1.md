@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-v40-spine-gap-c4a8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-v40-spine-gap-c4a8f1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-v40-spine-gap-c4a8f1.md'
 source_sha256: 5625186eca80350298ecf54f9edd83ba9fd40a940b299d67b2e3c4ea149b8d5d
 recovered_status: LEGACY_EXISTING

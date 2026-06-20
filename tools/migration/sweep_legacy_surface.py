@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Scan-based .cursor/<surface> -> .claude/<target> sweeper (both path forms).
+"""Scan-based .cursor/<surface> -> .codex/<target> sweeper (both path forms).
 
 More thorough than repoint_cursor_surface.py (which only edits map-listed
 consumer files): this walks the live trees and rewrites BOTH the literal
 ``.cursor/<surface>`` form AND the segmented ``".cursor" / "<surface>"`` Python
 form (which the literal tool/map miss), across code AND docs (.md/.mdc).
 
-Excludes: .cursor, .claude/plans (the moved content itself), archives, caches,
+Excludes: .cursor, .codex/plans (the moved content itself), archives, caches,
 and a denylist of files that intentionally keep .cursor references.
 
 .py files are py_compile-verified after rewrite; any that fail to compile are
@@ -26,13 +26,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 SCAN_ROOTS = ["ops_scripts", "tools", "agentic_core", "tests", "config",
-              ".claude/rules", ".claude/skills", ".claude/hooks", ".claude/commands",
-              ".claude/governance"]
+              ".codex/rules", ".codex/skills", ".codex/hooks", ".codex/commands",
+              ".codex/governance"]
 SCAN_ROOT_GLOBS = ["apps_*"]
-SCAN_FILES = ["CLAUDE.md", "AGENTS.md", ".pre-commit-config.yaml"]
+SCAN_FILES = ["AGENTS.md", "AGENTS.md", ".pre-commit-config.yaml"]
 
 EXCLUDE_PARTS = {".cursor", ".git", "__pycache__", "node_modules", ".windsurf"}
-EXCLUDE_PREFIXES = ("docs/archive/", "archives/", ".claude/plans/")
+EXCLUDE_PREFIXES = ("docs/archive/", "archives/", ".codex/plans/")
 TEXT_EXTS = {".py", ".md", ".mdc", ".json", ".yaml", ".yml", ".toml",
              ".ini", ".sql", ".cfg", ".txt"}
 
@@ -45,7 +45,7 @@ DENYLIST = {
     "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
     "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
     "ops_scripts/ci/governance_w2_dedupe_report.py",
-    "scripts/governance/verify_codex_backup.py",
+    "scripts/governance/verify_codex_primary.py",
     "ops_scripts/ci/check_no_active_windsurf_changes.py",
     "ops_scripts/ci/check_windsurf_deletion_readiness.py",
     "ops_scripts/ci/check_mcp_config_sovereignty.py",
@@ -90,8 +90,8 @@ def main() -> int:
     g.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
-    literal_old, literal_new = f".cursor/{args.surface}", f".claude/{args.target}"
-    seg_old, seg_new = f'".cursor" / "{args.surface}"', f'".claude" / "{args.target}"'
+    literal_old, literal_new = f".cursor/{args.surface}", f".codex/{args.target}"
+    seg_old, seg_new = f'".cursor" / "{args.surface}"', f'".codex" / "{args.target}"'
 
     changed, reverted = [], []
     for p in _iter_files():

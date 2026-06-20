@@ -3,7 +3,7 @@
 **Status**: Accepted (implemented; stale Notion actions retired)
 **Date**: 2026-04-29
 **Deciders**: L0 routing owners + Apps team
-**Plan**: `.claude/plans/l0-authority-burndown-3a7b21.md` (Wave 1, Phase W1.1)
+**Plan**: `.codex/plans/l0-authority-burndown-3a7b21.md` (Wave 1, Phase W1.1)
 **Source**: 3 P1 Notion rows (#2 impact 676.6, #19 impact 416.5, #20 impact 416.1)
 **ADG snapshot**: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
 
@@ -82,7 +82,7 @@ Per constitutional §8 + §15, guardian exemptions require explicit Author-Gate 
 ### Positive
 
 - Wave shrinks from "17-site multi-week refactor" to "1-file exemption + 2 stale-row archives" — finishable in <1 hour vs. ~34k tokens of refactoring originally planned.
-- The plan file `.claude/plans/l0-authority-burndown-3a7b21.md` becomes 90% obsolete; only Wave 1 (catalog + exemption) remains.
+- The plan file `.codex/plans/l0-authority-burndown-3a7b21.md` becomes 90% obsolete; only Wave 1 (catalog + exemption) remains.
 
 ### Negative
 
@@ -102,7 +102,7 @@ The exemption is a comment + ADR. Reversible by removing the comment and re-open
 
 ## References
 
-- Plan (now mostly obsolete): `.claude/plans/l0-authority-burndown-3a7b21.md`
+- Plan (now mostly obsolete): `.codex/plans/l0-authority-burndown-3a7b21.md`
 - Inventory CSV: `docs/reports/maintenance/l0_authority_breaches_catalog.csv`
 - ADG snapshot: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
 - Affected file: `apps_shared/proof/scenario_base.py`

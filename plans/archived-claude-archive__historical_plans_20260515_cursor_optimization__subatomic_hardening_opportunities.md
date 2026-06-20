@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\subatomic_hardening_opportunities.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\subatomic_hardening_opportunities.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\subatomic_hardening_opportunities.md'
 source_sha256: b32dd40ba2a8a9c36ab55ac9fd96d80d02645a288ba4ae13f1dbd0265d6e3d21
 recovered_status: LEGACY_EXISTING

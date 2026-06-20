@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\runtime-cert-formula-driven-signoff-a8f5c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\runtime-cert-formula-driven-signoff-a8f5c2.md'
 original_relative_path: '_archive\\2026-05\\runtime-cert-formula-driven-signoff-a8f5c2.md'
 source_sha256: 324944a18cc97682fea071ef059a51c36952901a1cc850220f76cc7848ffb319
 recovered_status: LEGACY_EXISTING

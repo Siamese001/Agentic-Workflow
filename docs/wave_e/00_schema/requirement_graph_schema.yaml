@@ -45,7 +45,7 @@ Family:
   optional_fields:
     - summary               # longer prose description
     - related_adrs          # list of ADR IDs
-    - related_rules         # list of rule filenames in .claude/rules/
+    - related_rules         # list of rule filenames in .codex/rules/
     - notes                 # free-form, never normative
   forbidden_fields:
     - status_ad_hoc         # no ad-hoc enums
@@ -137,7 +137,7 @@ SourceAuthorityRecord:
     INT:  "Internal project artifact (AGENTS.md, plan, design note)"
     EXT:  "External standard (RFC, ISO, vendor spec)"
     ADR:  "Architectural Decision Record"
-    RULE: "A file under .claude/rules/"
+    RULE: "A file under .codex/rules/"
     CODE: "A specific code location (path + symbol)"
     DEC:  "HITL or governance decision log entry"
   required_fields:

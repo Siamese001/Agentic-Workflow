@@ -12,12 +12,12 @@ REPO = Path(__file__).resolve().parents[2]
 GATES: list[tuple[str, list[str]]] = [
     ("check_ag_hook_wiring", ["python", "ops_scripts/ci/check_ag_hook_wiring.py"]),
     ("check_agents_md_sync", ["python", "ops_scripts/ci/check_agents_md_sync.py"]),
-    ("check_optimized_config", ["python", ".claude/governance/scripts/check_optimized_config.py"]),
-    ("generate_rules_index_check", ["python", ".claude/governance/scripts/generate_rules_index.py", "--check"]),
+    ("check_optimized_config", ["python", ".codex/governance/scripts/check_optimized_config.py"]),
+    ("generate_rules_index_check", ["python", ".codex/governance/scripts/generate_rules_index.py", "--check"]),
     ("check_always_on_token_budget", ["python", "ops_scripts/ci/check_always_on_token_budget.py"]),
     (
         "check_cursor_native_config_strict",
-        ["python", ".claude/governance/scripts/check_cursor_native_config.py", "--strict"],
+        ["python", ".codex/governance/scripts/check_cursor_native_config.py", "--strict"],
     ),
     (
         "governance_w3_hook_audit_matrix",
@@ -35,7 +35,7 @@ REQUIRED_PATHS = [
     "docs/reports/cursor/governance_dedup_w4_receipt.json",
     "docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
     "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
-    ".claude/hooks/after_agent_governance_dispatch.py",
+    ".codex/hooks/after_agent_governance_dispatch.py",
     "plans",
     "docs/reports/decommission/legacy_tree_classification_9f2c47.json",
 ]
@@ -92,13 +92,13 @@ def _structural_checks() -> list[str]:
     for rel in REQUIRED_PATHS:
         if not (REPO / rel).exists():
             errors.append(f"missing path: {rel}")
-    settings_json = REPO / ".claude/settings.json"
+    settings_json = REPO / ".codex/hooks.json"
     if settings_json.is_file():
         text = settings_json.read_text(encoding="utf-8")
         if "after_agent_governance_dispatch.py" not in text:
-            errors.append("settings.json missing after_agent_governance_dispatch.py")
+            errors.append("hooks.json missing after_agent_governance_dispatch.py")
         if "after_agent_author_gate_audits.py" in text:
-            errors.append("settings.json still wires legacy after_agent_author_gate_audits.py")
+            errors.append("hooks.json still wires legacy after_agent_author_gate_audits.py")
     sys.path.insert(0, str(REPO / "ops_scripts" / "ci"))
     from governance_tier_measurement import scan_windsurf_always_on_md  # noqa: E402
 

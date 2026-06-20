@@ -91,7 +91,7 @@ Every MCP server configured in `.mcp.json`, classified by ingress/egress role an
 ### MCP-08 — `filesystem`
 
 - **Transport**: binary-subprocess (Node)
-- **Launcher**: `node .claude/governance/scripts/filesystem_mcp_launcher.js <AGENTIC_REPO_ROOT>`
+- **Launcher**: `node .codex/governance/scripts/filesystem_mcp_launcher.js <AGENTIC_REPO_ROOT>`
 - **Server**: `@modelcontextprotocol/server-filesystem` (installed globally via npm)
 - **External egress**: **none** (pure local FS)
 - **Auth**: scope-locked to repo root (per `_comment` in mcp_config.json)

@@ -1,7 +1,7 @@
 # Archive Lifecycle Policy
 
 **Effective Date:** 2026-05-06  
-**Applies To:** `archives/`, `.claude/plans/_archive/`
+**Applies To:** `archives/`, `.codex/plans/_archive/`
 
 ## Policy Goals
 
@@ -13,7 +13,7 @@
 ## Retention Tiers
 
 ### Tier 1: Hot Archive (0-90 days)
-- **Location:** `archives/tools_archive_2026/`, `.claude/plans/_archive/2026-*/`
+- **Location:** `archives/tools_archive_2026/`, `.codex/plans/_archive/2026-*/`
 - **State:** Uncompressed, direct file access
 - **Access:** Immediate
 - **Action:** Monitor for active references

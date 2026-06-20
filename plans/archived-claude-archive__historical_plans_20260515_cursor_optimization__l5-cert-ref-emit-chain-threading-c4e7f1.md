@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l5-cert-ref-emit-chain-threading-c4e7f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l5-cert-ref-emit-chain-threading-c4e7f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\l5-cert-ref-emit-chain-threading-c4e7f1.md'
 source_sha256: 4fb88f157e60fa9895b5b41193d3701d960f4a27884785057dd4ef85911350b1
 recovered_status: LEGACY_EXISTING

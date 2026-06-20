@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md'
 source_sha256: ba6c26a94f315bf50f7c9291da2b49d940a80e19ad46682f4b85b885822d229c
 recovered_status: LEGACY_EXISTING

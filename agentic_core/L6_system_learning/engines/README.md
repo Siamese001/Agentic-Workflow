@@ -1,7 +1,7 @@
 # `L6_system_learning/engines/` — Chapter Map
 
 **Layer:** L6 (active) · **Surface:** `__l6_chapter__` empty on package `__init__.py` (cross-chapter bucket)  
-**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../../.claude/plans/l6-reorg-deferred-followup-f3a9c2.md) W4.1
+**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../../.codex/plans/l6-reorg-deferred-followup-f3a9c2.md) W4.1
 
 This directory is a **flat cross-chapter engine bucket** (~128 modules). Do not assume a single doctrinal chapter; use the map below when placing new modules.
 

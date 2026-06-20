@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-fortknox-evidence-repackage-30f5ab.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-fortknox-evidence-repackage-30f5ab.md'
 original_relative_path: '_archive\\2026-05\\apps-fortknox-evidence-repackage-30f5ab.md'
 source_sha256: 2e323862923d4a5b77fab397aa4064d9142900fac5f1ca5cd5d28c0d69557206
 recovered_status: LEGACY_EXISTING

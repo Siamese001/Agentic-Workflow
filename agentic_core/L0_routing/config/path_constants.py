@@ -95,7 +95,7 @@ PROJECT_ROOT_MARKERS: Final[tuple[str, ...]] = (
     ".git",
     "pyproject.toml",
     ".mcp.json",
-    ".claude/rules",
+    ".codex/rules",
 )
 
 
@@ -176,15 +176,15 @@ REPORTS_DIR: Final[str] = "reports"
 # legacy editor-decommission compatibility aliases. The names remain for older imports,
 # but values point at the current SSOT locations.
 CURSOR_PLANS_DIR: Final[str] = PLANS_DIR
-CURSOR_STATE_DIR: Final[str] = ".claude/state"
-CURSOR_SCHEMAS_DIR: Final[str] = ".claude/schemas"
-CURSOR_TEMPLATES_DIR: Final[str] = ".claude/templates"
-CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".claude/governance/scripts"
+CURSOR_STATE_DIR: Final[str] = ".codex/state"
+CURSOR_SCHEMAS_DIR: Final[str] = ".codex/schemas"
+CURSOR_TEMPLATES_DIR: Final[str] = ".codex/templates"
+CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".codex/governance/scripts"
 CLAUDE_PLANS_DIR: Final[str] = PLANS_DIR
-CLAUDE_STATE_DIR: Final[str] = ".claude/state"
-CLAUDE_SCHEMAS_DIR: Final[str] = ".claude/schemas"
-CLAUDE_TEMPLATES_DIR: Final[str] = ".claude/templates"
-CLAUDE_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".claude/governance/scripts"
+CLAUDE_STATE_DIR: Final[str] = ".codex/state"
+CLAUDE_SCHEMAS_DIR: Final[str] = ".codex/schemas"
+CLAUDE_TEMPLATES_DIR: Final[str] = ".codex/templates"
+CLAUDE_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".codex/governance/scripts"
 GOVERNANCE_SCRIPTS_DIR: Final[str] = CLAUDE_GOVERNANCE_SCRIPTS_DIR
 # Deprecated compatibility alias for callers that have not completed the
 # legacy-tree rename yet. New code must use GOVERNANCE_SCRIPTS_DIR.
@@ -320,7 +320,7 @@ ROOT_PROTECTED_FILES: Final[frozenset[str]] = frozenset(
         ".gitattributes",
         ".pre-commit-config.yaml",
         ".mcp.json",
-        ".claude/rules",
+        ".codex/rules",
         "pyproject.toml",
         "requirements.txt",
         "setup.py",

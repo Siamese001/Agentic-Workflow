@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\prompt-categories-coverage-audit-b8f5d3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\prompt-categories-coverage-audit-b8f5d3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\prompt-categories-coverage-audit-b8f5d3.md'
 source_sha256: 62781e12b0b3ee6d84962dc4664bdbb9a277fd4e5bd1cd1978c5fa0f29045196
 recovered_status: LEGACY_EXISTING

@@ -26,7 +26,7 @@
     },
     "no_app_literal_test": {
       "result": "PASS",
-      "evidence": "Touched core files introduce only .claude/governance/scripts and GOVERNANCE_SCRIPTS_DIR, with no app-specific literals."
+      "evidence": "Touched core files introduce only .codex/governance/scripts and GOVERNANCE_SCRIPTS_DIR, with no app-specific literals."
     },
     "plugin_test": {
       "result": "PASS",

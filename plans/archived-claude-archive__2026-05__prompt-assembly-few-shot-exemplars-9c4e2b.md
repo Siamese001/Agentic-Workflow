@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\prompt-assembly-few-shot-exemplars-9c4e2b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\prompt-assembly-few-shot-exemplars-9c4e2b.md'
 original_relative_path: '_archive\\2026-05\\prompt-assembly-few-shot-exemplars-9c4e2b.md'
 source_sha256: 1cb9e6da95b6e311e0625a637e6c6146fbbcd5210b026e59533b56aebd424171
 recovered_status: LEGACY_EXISTING

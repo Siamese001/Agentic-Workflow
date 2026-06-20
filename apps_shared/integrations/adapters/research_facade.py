@@ -5,7 +5,7 @@ Provides a synchronous `fetch_company_brief()` entrypoint that:
 2. Otherwise invokes `python -m apps_research --mode company` and parses the
    produced artifact under `artifacts/apps_research/runs/<ts>/`.
 
-Plan: .claude/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P2.2).
+Plan: .codex/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P2.2).
 """
 
 from __future__ import annotations

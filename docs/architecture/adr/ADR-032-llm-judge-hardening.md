@@ -4,7 +4,7 @@
 
 - **Status**: Accepted (2026-04-23)
 - **Deciders**: Plan owner
-- **Related plan**: `.claude/plans/llm-as-judge-hardening-anthropic-e7b1a4.md`
+- **Related plan**: `.codex/plans/llm-as-judge-hardening-anthropic-e7b1a4.md`
 - **Impact layers**: L1 (cognition), L5 (safety/evaluation), L6 (observability)
 - **Source**: [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents), [Anthropic docs — Develop tests](https://docs.anthropic.com/fr/docs/build-with-claude/develop-tests)
 

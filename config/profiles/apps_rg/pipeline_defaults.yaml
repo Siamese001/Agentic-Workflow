@@ -5,7 +5,7 @@
 #   - This file: apps_rg product defaults for R4 integrated spine + Exit v6 carriers.
 #   - Core (`integrated_single_action_spine_run`): reads this profile via
 #     `RuntimeProfileResolver` only; it MUST NOT embed apps_rg policy literals.
-#   - Schema: `.claude/schemas/pipeline_defaults.schema.yaml` (required:
+#   - Schema: `.codex/schemas/pipeline_defaults.schema.yaml` (required:
 #     app_id, pipeline_config, namespace_defaults).
 # =============================================================================
 

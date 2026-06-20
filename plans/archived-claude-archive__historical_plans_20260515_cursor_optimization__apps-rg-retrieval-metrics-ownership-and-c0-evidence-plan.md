@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan.md'
 source_sha256: ced51ca7ffe6eed657e5e36eb0cf716b8773e310f1f3c6d4502c7b67f7f60e80
 recovered_status: LEGACY_EXISTING

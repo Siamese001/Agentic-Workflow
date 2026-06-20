@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-cert-hardening-a3f8c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-cert-hardening-a3f8c2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-cert-hardening-a3f8c2.md'
 source_sha256: e6bc2cd2eae8aaa9d59d487feaa59275f545aca819c3c88df5313654381d1c90
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\consensus-validator-unification-5e9f3a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\consensus-validator-unification-5e9f3a.md'
 original_relative_path: '_archive\\2026-05\\consensus-validator-unification-5e9f3a.md'
 source_sha256: a354a55f41b00515e516cb2450f119daa35dc7d0ceb1b7c03ce23a0d1e9b2a88
 recovered_status: LEGACY_EXISTING

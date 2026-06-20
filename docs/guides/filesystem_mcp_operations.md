@@ -7,7 +7,7 @@
 | Editor | Config SSOT | Launcher | Global / runtime config |
 |--------|-------------|----------|-------------------------|
 | **legacy editor** | [`.mcp.json`](../../.mcp.json) → `"filesystem"` | [`.cursor/scripts/filesystem_mcp_launcher.js`](../../.cursor/scripts/filesystem_mcp_launcher.js) | `~/.cursor/cursor/mcp.json` (sync via [`sync_mcp_config.py`](../../.cursor/scripts/sync_mcp_config.py)) |
-| **legacy editor** | [`.mcp.json`](../../.mcp.json) → `"filesystem"` | [`.claude/governance/scripts/filesystem_mcp_launcher.js`](../../.claude/governance/scripts/filesystem_mcp_launcher.js) | `~/.codeium/windsurf/mcp_config.json` (sync via `post_write_mcp_config_sync.py`) |
+| **legacy editor** | [`.mcp.json`](../../.mcp.json) → `"filesystem"` | [`.codex/governance/scripts/filesystem_mcp_launcher.js`](../../.codex/governance/scripts/filesystem_mcp_launcher.js) | `~/.codeium/windsurf/mcp_config.json` (sync via `post_write_mcp_config_sync.py`) |
 
 Both configs use the same args shape: `[<editor-launcher>, "${env:AGENTIC_REPO_ROOT}"]`. CI gate: `ops_scripts/ci/check_mcp_config_sovereignty.py`.
 
@@ -30,7 +30,7 @@ Write gate: [`.cursor/scripts/pre_mcp_gate.py`](../../.cursor/scripts/pre_mcp_ga
 legacy editor reads `~/.codeium/windsurf/mcp_config.json` at startup and spawns:
 
 ```
-node  .claude/governance/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
+node  .codex/governance/scripts/filesystem_mcp_launcher.js  <AGENTIC_REPO_ROOT>
 ```
 
 The launcher (`filesystem_mcp_launcher.js`) runs at startup and:
@@ -72,7 +72,7 @@ node --version
 # 2. The filesystem server package is globally installed
 npm list -g --depth=0 @modelcontextprotocol/server-filesystem
 
-# 3. The launcher exists in the repo (legacy editor path shown; legacy editor: .claude/governance/scripts/...)
+# 3. The launcher exists in the repo (legacy editor path shown; legacy editor: .codex/governance/scripts/...)
 Test-Path "$env:AGENTIC_REPO_ROOT\.cursor\scripts\filesystem_mcp_launcher.js"
 ```
 
@@ -105,7 +105,7 @@ node -e "
 
 The legacy editor `pre_mcp_gate.py` hook (`.cursor/scripts/pre_mcp_gate.py`, `pre_mcp_tool_use`) probes
 `node --version` and launcher file existence on every filesystem tool call, emitting a descriptive
-`BLOCKED` message to stderr if either check fails. legacy editor uses `.claude/governance/scripts/pre_mcp_gate.py`.
+`BLOCKED` message to stderr if either check fails. legacy editor uses `.codex/governance/scripts/pre_mcp_gate.py`.
 
 ---
 
@@ -217,7 +217,7 @@ The server is started with exactly one allowed directory: `C:/Git/Agentic-Workfl
 - Config SSOT: `.mcp.json` (legacy editor) and `.mcp.json` (legacy editor mirror) → key `"filesystem"`
 - Scope gate: `ops_scripts/ci/check_mcp_config_sovereignty.py` (Rule #0, pre-commit T11)
 - Write gate (legacy editor): `.cursor/scripts/pre_mcp_gate.py` → `FILESYSTEM_WRITE_TOOLS`, `check_filesystem_startup_gate`, `check_filesystem_write_gate`
-- Write gate (legacy editor): `.claude/governance/scripts/pre_mcp_gate.py`
+- Write gate (legacy editor): `.codex/governance/scripts/pre_mcp_gate.py`
 - Gate tests: `tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py` (archived); legacy editor gate covered by sovereignty unit tests
 - Write-gate RCA: `docs/reports/rca/filesystem_mcp_write_gate_bypass_rca.md`
 - MCP Registry: `docs/guides/MCP_Registry.md`

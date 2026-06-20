@@ -19,7 +19,7 @@
     "filesystem": {
       "command": "node",
       "args": [
-        "${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/filesystem_mcp_launcher.js",
+        "${env:AGENTIC_REPO_ROOT}/.codex/governance/scripts/filesystem_mcp_launcher.js",
         "${env:AGENTIC_REPO_ROOT}"
       ],
       "_startup": "Repo-root-only filesystem MCP launcher (Rule #0); resolves the server package dynamically and never expands scope beyond the repo root."

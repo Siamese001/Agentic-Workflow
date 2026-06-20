@@ -1,0 +1,3 @@
+# Plan Rules — Location / Format / Overwrite — stub
+
+> On-demand when writing a plan (plan `always-on-rule-surface-cut-c7f3a1`); enforcement unchanged. New plans → primary checkout `plans/<name>-<6hex>.md` (even from a worktree; `~/.codex/plans/` forbidden); disk-only (no Notion). `plan_format: v2` needs Status Tables (Wave+Phase) at top, ascending waves, `## Definition of Done` (≥5). Updating an existing plan = silent overwrite. Detail: `.codex/templates/execution-plan-template.md`, sibling `work-item-classification.md`. Enforced: `check_plan_format_compliance.py`, `check_plan_wave_summary_top.py`, `check_plan_definition_of_done.py`, `after_file_edit.py`.

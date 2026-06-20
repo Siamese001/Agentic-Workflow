@@ -1,6 +1,6 @@
 """apps_shared.contracts.outreach_history_contract — D6-P3 (DS4).
 
-Plan: .claude/plans/apps-lic-calibration-holdout-e8f1c4.md W2 DS4-P1
+Plan: .codex/plans/apps-lic-calibration-holdout-e8f1c4.md W2 DS4-P1
 
 Canonical data contract for outreach history passed to
 MultiTouchSequencer. Callers populate this contract; the engine accepts

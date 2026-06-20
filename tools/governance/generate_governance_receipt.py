@@ -91,11 +91,11 @@ def _build_receipt(plan_slug: str, test_result: dict) -> dict:
             "W2_skills_workflows": {
                 "status": "COMPLETE",
                 "artifacts": [
-                    ".claude/skills/core-boundary-audit/SKILL.md",
-                    ".claude/skills/u0-app-customization/SKILL.md",
-                    ".claude/skills/runtime-package-verifier/SKILL.md",
-                    ".claude/skills/receipt-auditor/SKILL.md",
-                    ".claude/skills/app-leakage-refactor/SKILL.md",
+                    ".codex/skills/core-boundary-audit/SKILL.md",
+                    ".codex/skills/u0-app-customization/SKILL.md",
+                    ".codex/skills/runtime-package-verifier/SKILL.md",
+                    ".codex/skills/receipt-auditor/SKILL.md",
+                    ".codex/skills/app-leakage-refactor/SKILL.md",
                     "docs/archive/windsurf/legacy-tree/workflows/core-boundary-audit.md",
                     "docs/archive/windsurf/legacy-tree/workflows/u0-customize-app.md",
                     "docs/archive/windsurf/legacy-tree/workflows/pre-commit-agentic-cert.md",

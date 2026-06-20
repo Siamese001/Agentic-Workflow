@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\unify-bullets-graph-compose-prompt-a3f7e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\unify-bullets-graph-compose-prompt-a3f7e2.md'
 original_relative_path: '_archive\\2026-05\\unify-bullets-graph-compose-prompt-a3f7e2.md'
 source_sha256: 03ce399f56f20cc07cdea6494d76de096b46c15eb06e92bd5976f30980586b9d
 recovered_status: LEGACY_EXISTING

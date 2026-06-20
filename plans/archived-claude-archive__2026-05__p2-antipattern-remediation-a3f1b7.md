@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p2-antipattern-remediation-a3f1b7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p2-antipattern-remediation-a3f1b7.md'
 original_relative_path: '_archive\\2026-05\\p2-antipattern-remediation-a3f1b7.md'
 source_sha256: 621946863af07cac564a89cb2be8969b8f19202c5583e7f0d20a2682e9c60674
 recovered_status: LEGACY_EXISTING

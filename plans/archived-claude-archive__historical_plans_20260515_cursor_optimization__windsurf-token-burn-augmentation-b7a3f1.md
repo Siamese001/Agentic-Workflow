@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\windsurf-token-burn-augmentation-b7a3f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\windsurf-token-burn-augmentation-b7a3f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\windsurf-token-burn-augmentation-b7a3f1.md'
 source_sha256: 7e2fbada6ba4ead3a3f93491499e5a29a2ad66ee057c1736645ff301947e44c0
 recovered_status: LEGACY_EXISTING

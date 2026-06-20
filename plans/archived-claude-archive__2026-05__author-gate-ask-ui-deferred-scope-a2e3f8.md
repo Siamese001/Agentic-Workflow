@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ask-ui-deferred-scope-a2e3f8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ask-ui-deferred-scope-a2e3f8.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ask-ui-deferred-scope-a2e3f8.md'
 source_sha256: ec1ebe64ff7116bbcf678fb8ecdb341e7635da24d80752210d81062c0464f475
 recovered_status: LEGACY_EXISTING

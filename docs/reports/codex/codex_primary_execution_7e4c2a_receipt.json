@@ -15,18 +15,18 @@
     "plan_id": "codex-primary-execution-7e4c2a",
     "files_changed": [
       "AGENTS.md",
-      "docs/codex-backup-adapter.md",
+      "docs/codex-primary-execution.md",
       "docs/codex-primary-execution.md",
       "docs/reports/codex/codex_primary_execution_7e4c2a_receipt.json",
       "docs/reports/codex/codex_primary_mcp_live_snapshot.json",
       "docs/reports/codex/codex_primary_mcp_live_snapshot.md",
       "plans/codex-primary-execution-7e4c2a.md",
       "scripts/governance/codex_readiness.py",
-      "scripts/governance/verify_codex_backup.py",
+      "scripts/governance/verify_codex_primary.py",
       "scripts/governance/verify_codex_primary.py",
       "scripts/governance/verify_codex_run_receipt.py",
       "tests/unit/scripts/governance/test_codex_readiness.py",
-      "tests/unit/scripts/governance/test_verify_codex_backup.py",
+      "tests/unit/scripts/governance/test_verify_codex_primary.py",
       "tests/unit/scripts/governance/test_verify_codex_primary.py",
       "tests/unit/scripts/governance/test_verify_codex_run_receipt.py",
       "C:/Users/amita/.codex/skills/agentic-workflow-governance/SKILL.md",
@@ -49,7 +49,7 @@
         "status": "PASS"
       },
       {
-        "command": "python -m pytest tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_backup.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
+        "command": "python -m pytest tests/unit/scripts/governance/test_codex_readiness.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_primary.py tests/unit/scripts/governance/test_verify_codex_run_receipt.py -q",
         "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
         "exit_code": 0,
         "status": "PASS"
@@ -61,13 +61,13 @@
         "status": "PASS"
       },
       {
-        "command": "python scripts/governance/verify_codex_backup.py",
+        "command": "python scripts/governance/verify_codex_primary.py",
         "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
         "exit_code": 0,
         "status": "PASS"
       },
       {
-        "command": "python scripts/governance/verify_codex_backup.py --require-personal-skills",
+        "command": "python scripts/governance/verify_codex_primary.py --require-personal-skills",
         "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-primary-execution",
         "exit_code": 0,
         "status": "PASS"
@@ -133,7 +133,7 @@
       {
         "name": "compatibility verifier",
         "status": "PASS",
-        "evidence": "Codex backup adapter verification passed."
+        "evidence": "Codex primary adapter verification passed."
       },
       {
         "name": "focused unit tests",

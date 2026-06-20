@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-embedding-gap-analysis-8f7d2e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-embedding-gap-analysis-8f7d2e.md'
 original_relative_path: '_archive\\2026-05\\apps-embedding-gap-analysis-8f7d2e.md'
 source_sha256: 379f75a0e110814a8d58f3e5afc112ac2c4ad7434342fbb0192b44c097e7a29d
 recovered_status: LEGACY_EXISTING

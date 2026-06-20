@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-mcp-redis-readthrough-enforcement-b2e7a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-mcp-redis-readthrough-enforcement-b2e7a9.md'
 original_relative_path: '_archive\\2026-05\\adg-mcp-redis-readthrough-enforcement-b2e7a9.md'
 source_sha256: 565af73a04e22488daaa3ad837531f8c4ed26862ad70559a8e34cf3093586a6c
 recovered_status: LEGACY_EXISTING

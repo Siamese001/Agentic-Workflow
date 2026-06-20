@@ -325,7 +325,7 @@ CURATED_SOURCES: list[dict] = [
     # ── Constitutional rules (covers UWG, C0, L5 policy, determinism) ────
     {
         "source_type": "local",
-        "path": ".claude/rules/constitutional.md",
+        "path": ".codex/rules/constitutional.md",
         "title": "Constitutional Floor — Hard Constraints",
         "doc_type": "markdown",
         "doc_family": "standard",
@@ -339,7 +339,7 @@ CURATED_SOURCES: list[dict] = [
     },
     {
         "source_type": "local",
-        "path": ".claude/rules/global_rules.md",
+        "path": ".codex/rules/global_rules.md",
         "title": "Global Rules — Always-On Policy",
         "doc_type": "markdown",
         "doc_family": "standard",

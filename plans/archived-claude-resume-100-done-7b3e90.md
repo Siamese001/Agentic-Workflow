@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\resume-100-done-7b3e90.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\resume-100-done-7b3e90.md'
 original_relative_path: 'resume-100-done-7b3e90.md'
 source_sha256: ad139db346411c3c9873979fa2db5e9510e4944652561ccbce55b2637d3cde6d
 recovered_status: LEGACY_EXISTING

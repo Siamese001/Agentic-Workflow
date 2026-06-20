@@ -30,7 +30,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 from post_mcp_audit import _mark_memory_recalled, main
 

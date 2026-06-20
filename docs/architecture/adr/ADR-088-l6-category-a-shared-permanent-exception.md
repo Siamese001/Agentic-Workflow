@@ -1,8 +1,8 @@
 # ADR-088: L6 Category A `_shared` Types — Permanent Exception
 
-**Status:** Accepted  
-**Date:** 2026-05-25  
-**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.claude/plans/l6-reorg-deferred-followup-f3a9c2.md) W3 (closeout)  
+**Status:** Accepted
+**Date:** 2026-05-25
+**Plan:** [l6-reorg-deferred-followup-f3a9c2](../../.codex/plans/l6-reorg-deferred-followup-f3a9c2.md) W3 (closeout)
 **Spike:** [l6_category_a_shared_spike_20260525.md](../../reports/cursor/l6_category_a_shared_spike_20260525.md)
 
 ## Context

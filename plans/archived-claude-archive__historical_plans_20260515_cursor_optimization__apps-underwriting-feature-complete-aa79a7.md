@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-feature-complete-aa79a7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-feature-complete-aa79a7.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-feature-complete-aa79a7.md'
 source_sha256: 1cd7a28caa25e4a9e5046744ae4a592452a3eaa840376d167465db5b89ce90e1
 recovered_status: LEGACY_EXISTING

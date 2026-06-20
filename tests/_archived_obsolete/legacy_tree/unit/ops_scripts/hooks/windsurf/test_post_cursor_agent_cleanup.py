@@ -31,8 +31,8 @@ from unittest.mock import patch
 
 import pytest
 
-# Module lives under .claude/governance/scripts (authoritative); .claude/governance/scripts/_legacy_windsurf has no copy.
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
+# Module lives under .codex/governance/scripts (authoritative); .codex/governance/scripts/_legacy_windsurf has no copy.
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 from post_agent_cleanup import (
     _count_lines,

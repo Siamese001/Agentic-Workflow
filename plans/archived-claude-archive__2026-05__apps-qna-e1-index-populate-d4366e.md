@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-e1-index-populate-d4366e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-e1-index-populate-d4366e.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-e1-index-populate-d4366e.md'
 source_sha256: 3ea29e1b9499f6ce934c1bf3f5475f744c62ae0c32dad3c3b544adefc854f980
 recovered_status: LEGACY_EXISTING

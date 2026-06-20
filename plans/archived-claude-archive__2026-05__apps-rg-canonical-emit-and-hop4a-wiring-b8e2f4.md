@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4.md'
 source_sha256: c9232c7c10c858b60505bb91ad46e14d2040ed1a7e9595b677dcfbe5f2f8aa29
 recovered_status: LEGACY_EXISTING

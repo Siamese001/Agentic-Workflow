@@ -1,7 +1,7 @@
 """W12 — Author-Gate decision -> hitl_decision edge ingester.
 
 Reads the existing Author-Gate decision ledger
-(``.claude/state/refactor_decisions/refactor_decision_ledger.sqlite``, SSOT)
+(``.codex/state/refactor_decisions/refactor_decision_ledger.sqlite``, SSOT)
 and writes one `hitl_decision` edge per recorded decision into the
 ADG SQLite snapshot.
 

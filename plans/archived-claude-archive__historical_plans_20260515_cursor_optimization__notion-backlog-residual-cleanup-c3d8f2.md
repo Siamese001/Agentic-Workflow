@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-backlog-residual-cleanup-c3d8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\notion-backlog-residual-cleanup-c3d8f2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\notion-backlog-residual-cleanup-c3d8f2.md'
 source_sha256: bed9df0b86028843bf8178750a6667b16051f0437196a8b05ea201d8affe4a66
 recovered_status: LEGACY_EXISTING

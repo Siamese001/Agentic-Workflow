@@ -174,8 +174,8 @@ If you find a private key file at a path NOT in this table, treat it as a leaked
 
 ## References
 
-- Plan SSOT: `.claude/plans/apps-fort-knox-parity-c5d9a3.md` W5 + W10
-- Constitutional rule: `.claude/rules/constitutional.md` \u00a732 (Fort Knox certification integrity, two arms)
+- Plan SSOT: `.codex/plans/apps-fort-knox-parity-c5d9a3.md` W5 + W10
+- Constitutional rule: `.codex/rules/constitutional.md` \u00a732 (Fort Knox certification integrity, two arms)
 - Signer source: `tools/cert/apps_e2e/sign_apps_release_bundle.py`
 - Verifier source: `tools/cert/apps_e2e/verify_apps_release_signature.py`
 - CI gate: `ops_scripts/ci/check_apps_fortknox_signed_proof.py` (T7s.4)

@@ -1,6 +1,6 @@
 # apps_rg AIG E2E — Wave 0 RCA Receipt
 
-Plan: [apps-rg-aig-e2e-remediation-e4b7c1.md](../../../.claude/plans/apps-rg-aig-e2e-remediation-e4b7c1.md)
+Plan: [apps-rg-aig-e2e-remediation-e4b7c1.md](../../../.codex/plans/apps-rg-aig-e2e-remediation-e4b7c1.md)
 Wave: W0 (Evidence Harness & Truthful Instrumentation)
 Generated: 2026-06-07
 

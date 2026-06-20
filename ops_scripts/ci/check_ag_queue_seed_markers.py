@@ -2,7 +2,7 @@
 """
 check_ag_queue_seed_markers.py — Pre-commit gate: plan-prose ↔ AG_QUEUE_SEED parity.
 
-For each staged `.claude/plans/*.md` file, count:
+For each staged `.codex/plans/*.md` file, count:
   - Prose lines mentioning future Author-Gate decisions
     (patterns: "Author-Gate required for", "Author-Gate pending for",
                "Author-Gate needed for")
@@ -36,9 +36,9 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+PLANS_DIR = REPO_ROOT / ".codex" / "plans"
 # Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
-# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+# canonical NEW plans live in repo-root plans/; .codex/plans/ stays legacy-valid.
 PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 
 # Prose patterns that signal a future Author-Gate decision in the plan text.
@@ -76,7 +76,7 @@ def _staged_plans() -> list[Path]:
         p = line.strip()
         if not p:
             continue
-        if (p.startswith("plans/") or p.startswith(".claude/plans/")) and p.endswith(".md"):
+        if (p.startswith("plans/") or p.startswith(".codex/plans/")) and p.endswith(".md"):
             full = REPO_ROOT / p
             if full.exists():
                 out.append(full)
@@ -160,7 +160,7 @@ def main() -> int:
         "\nRemediation: for every 'Author-Gate required for X' prose mention in the plan,\n"
         "add a matching marker line like:\n"
         "  AG_QUEUE_SEED: plan=<slug-6hex> id=<packet_id> depends_on=<id1,id2> title=<short>\n"
-        "Constitutional §35; rule .claude/rules/author-gate-queue-drain.md.\n"
+        "Constitutional §35; rule .codex/rules/author-gate-queue-drain.md.\n"
         "Bypass (rare): AG_QUEUE_SEED_MARKERS_BYPASS=1",
         file=sys.stderr,
     )

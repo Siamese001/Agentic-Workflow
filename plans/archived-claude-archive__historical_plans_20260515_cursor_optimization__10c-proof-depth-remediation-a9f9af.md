@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\10c-proof-depth-remediation-a9f9af.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\10c-proof-depth-remediation-a9f9af.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\10c-proof-depth-remediation-a9f9af.md'
 source_sha256: 63b3f696104e3b9ad0ee99b469790668b559d6fb4c691b383ac7ed547d9ecc2c
 recovered_status: LEGACY_EXISTING

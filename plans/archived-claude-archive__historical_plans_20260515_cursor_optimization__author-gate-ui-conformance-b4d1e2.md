@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ui-conformance-b4d1e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ui-conformance-b4d1e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\author-gate-ui-conformance-b4d1e2.md'
 source_sha256: a7b315aebb6054d0de429ea0f7aa43c70289826f7425cb3ea605e2891359656f
 recovered_status: LEGACY_EXISTING

@@ -1,7 +1,7 @@
 """W2 decision_signals writer — mirrors emit_packet signal weights (advisory only).
 
 Plan: author-gate-feedback-loop-d4e8f1. Aligns with
-``.claude/skills/author-gate-packet-builder/emit_packet.py`` ``_attach_signal_vectors``.
+``.codex/skills/author-gate-packet-builder/emit_packet.py`` ``_attach_signal_vectors``.
 """
 
 from __future__ import annotations

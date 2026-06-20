@@ -14,7 +14,7 @@
     "request": "Tighten avatar enforcement by running selected_avatar_guard.py before every tool execution.",
     "plan_id": "avatar-pretooluse-enforcement-20260619",
     "files_changed": [
-      ".claude/settings.json",
+      ".codex/hooks.json",
       "docs/codex-primary-execution.md",
       "docs/reports/codex/codex_avatar_pretooluse_enforcement_20260619_receipt.json"
     ]
@@ -23,13 +23,13 @@
     "status": "PASS",
     "commands": [
       {
-        "command": "python -m json.tool .claude/settings.json",
+        "command": "python -m json.tool .codex/hooks.json",
         "cwd": "C:/Git/Agentic-Workflow-FRESH",
         "exit_code": 0,
         "status": "PASS"
       },
       {
-        "command": "python -m py_compile .claude/hooks/selected_avatar_guard.py",
+        "command": "python -m py_compile .codex/hooks/selected_avatar_guard.py",
         "cwd": "C:/Git/Agentic-Workflow-FRESH",
         "exit_code": 0,
         "status": "PASS"
@@ -54,7 +54,7 @@
       {
         "name": "settings json parse",
         "status": "PASS",
-        "evidence": "python -m json.tool parsed .claude/settings.json successfully."
+        "evidence": "python -m json.tool parsed .codex/hooks.json successfully."
       },
       {
         "name": "PreToolUse hook smoke test",

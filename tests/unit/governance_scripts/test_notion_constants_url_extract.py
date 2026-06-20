@@ -13,7 +13,7 @@ import sys
 import os
 
 # Canonical path — _notion_constants.py lives in governance/scripts/, not _legacy_windsurf/
-_SCRIPTS = os.path.join(os.path.dirname(__file__), "../../../.claude/governance/scripts")
+_SCRIPTS = os.path.join(os.path.dirname(__file__), "../../../.codex/governance/scripts")
 if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
 

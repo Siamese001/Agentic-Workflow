@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\apps-rg-pa-prompt-hardening-a7f3d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\apps-rg-pa-prompt-hardening-a7f3d2.md'
 original_relative_path: '_archive\\apps-rg-pa-prompt-hardening-a7f3d2.md'
 source_sha256: 30e2a51150ec57ba9d8fc0f6c1e10d23a842dd36f5d91c8c0f753defc8cf43c7
 recovered_status: LEGACY_EXISTING

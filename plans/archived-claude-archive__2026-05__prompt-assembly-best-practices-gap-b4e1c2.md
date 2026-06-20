@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\prompt-assembly-best-practices-gap-b4e1c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\prompt-assembly-best-practices-gap-b4e1c2.md'
 original_relative_path: '_archive\\2026-05\\prompt-assembly-best-practices-gap-b4e1c2.md'
 source_sha256: c5589c4f9c00610f1561e0504221a39e6850d6f96fcbb15f4b71d96d31406fe4
 recovered_status: LEGACY_EXISTING

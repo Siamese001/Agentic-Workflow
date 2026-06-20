@@ -1,7 +1,7 @@
 """
 Test Rigor Enforcer
 
-Enforces §1 TESTING & EVIDENCE requirements from .claude/rules during code generation.
+Enforces §1 TESTING & EVIDENCE requirements from .codex/rules during code generation.
 Provides automated validation that code changes comply with constitutional testing requirements.
 
 Constitutional Requirements:

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-wave-lifecycle-deferred-scope-d4e8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-wave-lifecycle-deferred-scope-d4e8a1.md'
 original_relative_path: '_archive\\2026-05\\notion-wave-lifecycle-deferred-scope-d4e8a1.md'
 source_sha256: e407e09623883bafb876faf9a4f556e73c3ed2fe62339a0e400b5486537196a2
 recovered_status: LEGACY_EXISTING

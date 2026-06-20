@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-research-first-principles-refactor-2f5e7a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-research-first-principles-refactor-2f5e7a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-research-first-principles-refactor-2f5e7a.md'
 source_sha256: ae2b5c085b03d3b936c0ae8fbe483eb205f20ea3163f347f4dbb1c43bc8dcb09
 recovered_status: LEGACY_EXISTING

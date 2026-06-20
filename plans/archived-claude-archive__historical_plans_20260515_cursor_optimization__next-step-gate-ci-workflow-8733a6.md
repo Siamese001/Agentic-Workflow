@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\next-step-gate-ci-workflow-8733a6.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\next-step-gate-ci-workflow-8733a6.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\next-step-gate-ci-workflow-8733a6.md'
 source_sha256: 1f136117226679ecd48486fecb3c2fba465fe41fbf4ddf781d4a66be8c296f80
 recovered_status: LEGACY_EXISTING

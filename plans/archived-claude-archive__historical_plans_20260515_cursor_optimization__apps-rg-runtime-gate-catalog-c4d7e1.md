@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-catalog-c4d7e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-catalog-c4d7e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-runtime-gate-catalog-c4d7e1.md'
 source_sha256: 85b3b6d8894b7423cdb54347b4d7aa9fd3bfa8cc0c7f8eda7bcfe0e3eda6659b
 recovered_status: LEGACY_EXISTING

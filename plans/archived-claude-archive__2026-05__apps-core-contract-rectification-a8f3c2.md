@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-core-contract-rectification-a8f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-core-contract-rectification-a8f3c2.md'
 original_relative_path: '_archive\\2026-05\\apps-core-contract-rectification-a8f3c2.md'
 source_sha256: c7affc64b687a02ab057844c9c073fcaab7a9611b3ee31ff4d4a15d19a0626fd
 recovered_status: LEGACY_EXISTING

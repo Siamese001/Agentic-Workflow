@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-repo-brief-plan4-spine-handoff-f2a3c8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-repo-brief-plan4-spine-handoff-f2a3c8.md'
 original_relative_path: '_archive\\2026-05\\apps-repo-brief-plan4-spine-handoff-f2a3c8.md'
 source_sha256: 6d05a2b7ab075c1d45358771488a8bd4971c31705308051ed937ed6a2e0fbb8d
 recovered_status: LEGACY_EXISTING

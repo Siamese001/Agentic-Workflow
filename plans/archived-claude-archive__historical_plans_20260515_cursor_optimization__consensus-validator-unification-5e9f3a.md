@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\consensus-validator-unification-5e9f3a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\consensus-validator-unification-5e9f3a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\consensus-validator-unification-5e9f3a.md'
 source_sha256: 46cf3a01eaebe7c090d82f541b87e8d047e32f938cfdd92f01ae45c3c6a3de66
 recovered_status: LEGACY_EXISTING

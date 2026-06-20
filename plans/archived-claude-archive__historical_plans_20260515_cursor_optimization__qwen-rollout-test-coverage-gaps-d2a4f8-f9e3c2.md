@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md'
 source_sha256: 2ab885957790a74a82da6f1ad3fcb590e9c39b2e3c605545a987bc3d8f60967b
 recovered_status: LEGACY_EXISTING

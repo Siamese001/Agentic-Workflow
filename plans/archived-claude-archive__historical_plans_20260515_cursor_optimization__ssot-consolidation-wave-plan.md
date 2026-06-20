@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-wave-plan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-wave-plan.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ssot-consolidation-wave-plan.md'
 source_sha256: 42abff3a860013dde940e8b8b9a0d0ff81b16acf306d09d365f78aec4fd05260
 recovered_status: LEGACY_EXISTING

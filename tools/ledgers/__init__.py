@@ -1,7 +1,7 @@
 """tools.ledgers — Intelligence-capture ledger infrastructure.
 
 Implements the W0 shared framework for the 10-ledger rollout
-(see .claude/plans/_archive/windsurf_legacy_plans/intelligence-ledgers-ten-a7c3e2.md).
+(see .codex/plans/_archive/windsurf_legacy_plans/intelligence-ledgers-ten-a7c3e2.md).
 
 Public surface:
     - LedgerWriter   : thread-safe idempotent row writer

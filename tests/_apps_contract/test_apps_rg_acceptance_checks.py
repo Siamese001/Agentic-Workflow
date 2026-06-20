@@ -27,7 +27,7 @@ _DISPATCH_SEAM = (
 _BACKLOG_W13_PA_SURFACES = (
     "Historical apps_rg.prompt_assembly.pa_local / integrations.hops / reasoning "
     "surfaces removed; restore or replace under apps-rg-w13. "
-    "Ref: .claude/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md"
+    "Ref: .codex/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md"
 )
 
 

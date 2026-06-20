@@ -40,15 +40,15 @@ Exit codes:
     2 — runner error (no snapshot, no manifest, schema invalid, etc.)
 
 References:
-    .claude/plans/adg-wiring-ci-hardening-7a5d84.md  (W1.3)
-    .claude/plans/c0-context-engine-wiring-fix-9e42a1.md
+    .codex/plans/adg-wiring-ci-hardening-7a5d84.md  (W1.3)
+    .codex/plans/c0-context-engine-wiring-fix-9e42a1.md
     config/canonical_pipelines.yaml
     config/schemas/canonical_pipeline.schema.json
 """
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .claude/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .codex/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 

@@ -150,7 +150,7 @@ is itself pattern P3.** I recommend against it, and defend that below.
    7-day north-star %. No rule fires; the mirror does the work. You can't game a number you stare at.
 3. **Meta-work freeze (fixes P3/P4/P7).** No new rules/hooks/skills/governance/plan files until
    11/11 green. Enforce by *removing* the ability, not adding a rule — flip `pre_write_plan_mint_gate`
-   to default-deny, and block writes under `.claude/rules|hooks|governance` behind an explicit
+   to default-deny, and block writes under `.codex/rules|hooks|governance` behind an explicit
    in-turn override.
 4. **Subtraction quota (fixes P2).** Adopt the repo's own dormant rule: any change that adds
    machinery must remove at least as much. Better: a standing target to cut the 282 gates to <50.
@@ -257,7 +257,7 @@ add more output on top.
 |---|---|---|---|---|
 | H1 | **Parking-lot weekly-review nudge** (SessionStart): if `PARKING_LOT.md` has lines unreviewed >7 days, surface them | capture-support | **the fear directly** — makes "you WILL see this again" true; without it the lot is a black hole and the build-now reflex returns | ADD |
 | H2 | **North-star scoreboard** (SessionStart banner): lanes `n/11` + 7-day north-star % | mirror | target visibility; replaces reading 43 rules at startup | ADD |
-| H3 | **Judgment brake** (PreToolUse on Write to `.claude/rules\|hooks\|governance\|plans/`): one prompt — "not north-star code; 1-line: why now, or park it?" — answer logged | external friction (the one missing brake, §3c P1b) | the displacement *act*, at the moment it happens; the only gate that asks *should this exist* | ADD (replaces ~230 others) |
+| H3 | **Judgment brake** (PreToolUse on Write to `.codex/rules\|hooks\|governance\|plans/`): one prompt — "not north-star code; 1-line: why now, or park it?" — answer logged | external friction (the one missing brake, §3c P1b) | the displacement *act*, at the moment it happens; the only gate that asks *should this exist* | ADD (replaces ~230 others) |
 | H4 | **Plan-mint default-DENY** (`pre_write_plan_mint_gate.py`) | constraint | plan-as-displacement (P4); flip warn→block | FLIP |
 | H5 | **Subtraction quota** (PreToolUse): an additive governance commit blocks unless it removes ≥ as much (the repo's dormant rule, wired) | constraint | build-then-demolish + sprawl (P2/P3) | WIRE |
 | H6 | **Time-edge nudge** (Stop/SessionStart): flag round-the-clock / no-recovery-day cadence | gentle | the binge + time-blindness (V1/V2) | ADD (optional) |

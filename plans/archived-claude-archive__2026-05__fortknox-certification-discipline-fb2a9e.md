@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\fortknox-certification-discipline-fb2a9e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\fortknox-certification-discipline-fb2a9e.md'
 original_relative_path: '_archive\\2026-05\\fortknox-certification-discipline-fb2a9e.md'
 source_sha256: 55751b6ab05944decc9db205ed433b4266f682e297499297e560890de57e1649
 recovered_status: LEGACY_EXISTING

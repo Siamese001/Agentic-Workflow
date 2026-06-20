@@ -32,14 +32,14 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-RULES_DIR: Path = Path(".claude/rules")
+RULES_DIR: Path = Path(".codex/rules")
 ARTIFACTS_DIR: Path = Path("artifacts/ci")
 
 # Cross-reference patterns in markdown
 REF_PATTERNS: list[tuple[str, str]] = [
     # Markdown link: [text](path/to/file.md)
     (r"\[([^\]]+)\]\(([^)]+\.md)\)", "link"),
-    # Rule citation: @.claude/rules/file.md or @file.md (legacy .cursor accepted)
+    # Rule citation: @.codex/rules/file.md or @file.md (legacy .cursor accepted)
     (r"@(?:\.(?:claude|cursor)/rules/)?([^\s]+\.md)", "citation"),
     # Reference block: see `file.md` or see `path/file.md`
     (r"see\s+`([^`]+\.md)`", "reference"),
@@ -78,7 +78,7 @@ def extract_cross_references(rule_file: Path) -> list[CrossRef]:
                 
                 # Normalize target path
                 if not target.startswith("."):
-                    target = f".claude/rules/{target}"
+                    target = f".codex/rules/{target}"
                 
                 refs.append(CrossRef(
                     source_file=str(rule_file),

@@ -1,9 +1,9 @@
 # ADR-084 — W6 Emit-Contract Enrichment
 
-**Status**: Accepted  
-**Date**: 2026-05-09  
-**Plan**: `.claude/plans/w6-emit-contract-enrichment-d8b2a4.md` (W0–W9)  
-**Supersedes**: None  
+**Status**: Accepted
+**Date**: 2026-05-09
+**Plan**: `.codex/plans/w6-emit-contract-enrichment-d8b2a4.md` (W0–W9)
+**Supersedes**: None
 **Related**: ADR-043 (L1PlanContract v2), ADR-049 (L5 v4 governance), ADR-083 (apps_rg PA boundary)
 
 ---
@@ -53,8 +53,8 @@ All new fields are **default-empty or default-safe** to avoid breaking existing 
 | C10 | Write firewall | `is_uwg_write_authority: bool`, `is_future_run_only: bool` | default False; 4 contracts only |
 | —  | RuntimePosture | `POSTURE_READ_ONLY`, `POSTURE_GENERATION`, `POSTURE_WRITE_INTENT`, `POSTURE_HITL_REQUIRED`, `POSTURE_RETRIEVAL` | canonical sentinels in `posture.py` |
 
-> **Concern #2 (L5 cert ref wiring)** was delivered by plan `l5-cert-ref-emit-chain-threading-c4e7f1`; this plan closes the one remaining gap (`X3Disposition`).  
-> **Concern #8 (capability/sandbox/egress)** was delivered by `apps-rg-runtime-wiring-completion-d4e8a1`.  
+> **Concern #2 (L5 cert ref wiring)** was delivered by plan `l5-cert-ref-emit-chain-threading-c4e7f1`; this plan closes the one remaining gap (`X3Disposition`).
+> **Concern #8 (capability/sandbox/egress)** was delivered by `apps-rg-runtime-wiring-completion-d4e8a1`.
 > **Concern #6** was intentionally out of scope.
 
 ### Write-Firewall Contracts (C10)
@@ -97,8 +97,8 @@ Only 4 contracts are write-eligible and receive `is_uwg_write_authority` / `is_f
 
 **W6ECE1** — `ops_scripts/ci/check_w6_emit_contract_enrichment.py`
 
-Structural field scan (dataclass introspection) across all 11 contracts. Checks all 9 concerns.  
-Advisory by default; fail-closed via `W6_EMIT_CONTRACT_GATE_FAIL_CLOSED=1`.  
+Structural field scan (dataclass introspection) across all 11 contracts. Checks all 9 concerns.
+Advisory by default; fail-closed via `W6_EMIT_CONTRACT_GATE_FAIL_CLOSED=1`.
 Bypass: `W6_EMIT_CONTRACT_GATE_BYPASS=1`.
 
 ---
@@ -121,7 +121,7 @@ Total runtime_contracts suite: **221 passing** (P9.4 final sweep).
 
 ## 6. References
 
-- Plan: `.claude/plans/w6-emit-contract-enrichment-d8b2a4.md`
+- Plan: `.codex/plans/w6-emit-contract-enrichment-d8b2a4.md`
 - Gate: `ops_scripts/ci/check_w6_emit_contract_enrichment.py`
 - Posture module: `agentic_core/runtime/contracts/posture.py`
 - L5 verify: `agentic_core/L5_safety/contracts/verify.py`

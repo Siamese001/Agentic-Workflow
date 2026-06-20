@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-wave-lifecycle-autosync-f4a2b8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-wave-lifecycle-autosync-f4a2b8.md'
 original_relative_path: '_archive\\2026-05\\notion-wave-lifecycle-autosync-f4a2b8.md'
 source_sha256: 0747e40db06944d8c2a650f7a4764d1911f10fa0d609686d8e8c5a5eaf787cab
 recovered_status: LEGACY_EXISTING

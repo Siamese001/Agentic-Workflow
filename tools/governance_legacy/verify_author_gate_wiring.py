@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """verify_cursor_author_gate_wiring.py — operator smoke check (non-interactive).
 
-Validates that precedent lookup targets ``.claude/state/...``, capture targets the
+Validates that precedent lookup targets ``.codex/state/...``, capture targets the
 same, ``author_gate_prepare_ask`` emits ``AUTHOR_GATE_PACKET:``, and capture inserts
 on a synthetic ``DECISION_CAPTURED`` marker into a temp ledger.
 
@@ -36,18 +36,18 @@ def main() -> int:
 
     lookup = _load(
         "lookup_verify",
-        REPO_ROOT / ".claude" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py",
+        REPO_ROOT / ".codex" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py",
     )
     cpath = str(lookup.DB_PATH).replace("\\", "/")
-    if ".claude/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath:
+    if ".codex/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath:
         errors.append(f"lookup DB_PATH not legacy editor ledger: {lookup.DB_PATH}")
 
     cap = _load(
         "capture_verify",
-        REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
+        REPO_ROOT / ".codex" / "governance/scripts" / "post_agent_author_gate_capture.py",
     )
     cpath2 = str(cap.DB_PATH).replace("\\", "/")
-    if ".claude/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath2:
+    if ".codex/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath2:
         errors.append(f"capture DB_PATH not legacy editor ledger: {cap.DB_PATH}")
 
     proc = subprocess.run(
@@ -120,7 +120,7 @@ def main() -> int:
         tdb = Path(td) / "ledger.sqlite"
         cap_mod = _load(
             "cap_run",
-            REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
+            REPO_ROOT / ".codex" / "governance/scripts" / "post_agent_author_gate_capture.py",
         )
         cap_mod.DB_DIR = tdb.parent
         cap_mod.DB_PATH = tdb

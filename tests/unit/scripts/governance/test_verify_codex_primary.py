@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import json
 from pathlib import Path
 
 
@@ -20,6 +21,7 @@ def _write(path: Path, text: str = "placeholder") -> None:
 def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
+    _write(tmp_path / ".codex" / "hooks.json", json.dumps({"hooks": {}}))
     _write(
         tmp_path / "AGENTS.md",
         "\n".join(
@@ -32,6 +34,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/verify_codex_primary.py",
                 "GitKraken",
                 "Codex must ask a plain-text clarifying question directly in the assistant response",
+                ".codex/hooks.json",
             ]
         ),
     )
@@ -47,6 +50,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "scripts/governance/verify_codex_primary.py",
                 "No parallel registry",
                 "Codex must ask a plain-text clarifying question directly in the assistant response",
+                ".codex/hooks.json",
             ]
         ),
     )

@@ -110,7 +110,7 @@
 - `agentic_process_mapping_exec.md`, `agentic_process_mapping_v29.md`
 - `governed-app-contract.md`, `eval_pipeline_acceptance.md`
 - `Retrieval_System_SVP.md`, `Technical_Implementation_Guide.md`
-- `.claude/rules/constitutional.md`, `.claude/rules/global_rules.md`
+- `.codex/rules/constitutional.md`, `.codex/rules/global_rules.md`
 - `docs/STANDARDS.md`, `docs/architecture/adg-graph-projection.md`
 - `AGENTS.md`
 

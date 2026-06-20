@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-fail-closed-repair-f8c4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-fail-closed-repair-f8c4e2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-fail-closed-repair-f8c4e2.md'
 source_sha256: 49dc4c7efd5eef84939099de242a901f0cc510af58e56c6d6a6e91779211ab7d
 recovered_status: LEGACY_EXISTING

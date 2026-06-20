@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-backlog-human-scoring-e7a941.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-backlog-human-scoring-e7a941.md'
 original_relative_path: '_archive\\2026-05\\notion-backlog-human-scoring-e7a941.md'
 source_sha256: 462aaf9580b37bc0ff2b361e160477dafc3d9f0b779c6736ab634d3d8266e6b8
 recovered_status: LEGACY_EXISTING

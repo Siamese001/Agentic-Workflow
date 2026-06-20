@@ -75,6 +75,6 @@ acknowledged runbook deviation in the MCP Registry.
 ## 7. References
 
 - R1B spec — `docs/reference/03_L0_Routing/R1B Semantic Cache.md`
-- Gap plan — `.claude/plans/r1b-semantic-cache-best-practices-gap-a7c3e1.md`
+- Gap plan — `.codex/plans/r1b-semantic-cache-best-practices-gap-a7c3e1.md`
 - Production rollout — `docs/runbooks/d2_semantic_cache_production_rollout.md`
 - External source: tianpan.co 2026-04 "Cache Invalidation for AI"

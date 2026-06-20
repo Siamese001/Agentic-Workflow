@@ -53,7 +53,7 @@ for these six reasons:
 These approvals authorize Phase C **planning continuity** toward C.1.
 They explicitly do NOT authorize the following:
 
-- ❌ They do NOT authorize starting C.1 implementation directly. **C.1 requires its own scoped Author-Gate prompt** with its own plan file (target: `.claude/plans/runtime-cert-c1-query-adapter-<6hex>.md`) before any Python is written.
+- ❌ They do NOT authorize starting C.1 implementation directly. **C.1 requires its own scoped Author-Gate prompt** with its own plan file (target: `.codex/plans/runtime-cert-c1-query-adapter-<6hex>.md`) before any Python is written.
 - ❌ They do NOT certify any `apps_*` app. All 9 apps remain `NOT_CERTIFIED`. The cohort classification is unchanged: 6 `APP_OVERLAY_STATIC_EVIDENCE` + 3 `FORMAL_EXCEPTION_STATIC_EVIDENCE` + 0 `RUNTIME_CERTIFIED` + 0 `FORMAL_EXCEPTION_VERIFIED`.
 - ❌ They do NOT authorize scanner classification changes during C.1–C.7 (AG-C-4 is explicit).
 - ❌ They do NOT authorize new CI gates during C.1–C.7 (§1 non-goals preserved; the Phase E CI gate is a separate phase).

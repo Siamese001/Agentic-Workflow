@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\repo-dedup-deferred-followup-d5e2a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\repo-dedup-deferred-followup-d5e2a9.md'
 original_relative_path: '_archive\\2026-05\\repo-dedup-deferred-followup-d5e2a9.md'
 source_sha256: 191e03a3000ecb52c5d126132f9f108d554d159d5e483562d2bfadc4a596b3d4
 recovered_status: LEGACY_EXISTING

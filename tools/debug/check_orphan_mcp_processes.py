@@ -13,7 +13,7 @@ MCP fleets sharing the same workspace stdio pool cause:
     * Phantom "Step was canceled by user" messages
     * Intermittent hangs at what looks like simple tool calls
 
-See ``.claude/rules/mcp-serialization.md`` for the upstream race this
+See ``.codex/rules/mcp-serialization.md`` for the upstream race this
 interacts with (``anthropics/claude-agent-sdk-typescript#41``).
 
 Usage

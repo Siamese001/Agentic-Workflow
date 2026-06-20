@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-canonical-dispatch-l7-gate-c8a4d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-canonical-dispatch-l7-gate-c8a4d1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-canonical-dispatch-l7-gate-c8a4d1.md'
 source_sha256: 96fbde98da69a613225d8072188eec371f8dfe111d679b4b2246bc8edbc0237b
 recovered_status: LEGACY_EXISTING

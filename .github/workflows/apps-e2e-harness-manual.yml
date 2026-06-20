@@ -1,7 +1,7 @@
 name: apps-e2e-harness-manual
 # Manual apps_* end-to-end auditability harness.
 #
-# Historical plan: .claude/plans/_archive/2026-05/apps-e2e-auditability-harness-7c2a91.md
+# Historical plan: .codex/plans/_archive/2026-05/apps-e2e-auditability-harness-7c2a91.md
 #
 # Two jobs:
 #   1. harness-verifier (manual)

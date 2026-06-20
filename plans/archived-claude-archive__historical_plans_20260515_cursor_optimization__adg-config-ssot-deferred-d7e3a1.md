@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-config-ssot-deferred-d7e3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-config-ssot-deferred-d7e3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-config-ssot-deferred-d7e3a1.md'
 source_sha256: 9f4011c11a9afcaa2023747fcd21a0dc03f1c27f2cfa7864114e5a910e8891fc
 recovered_status: LEGACY_EXISTING

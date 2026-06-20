@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_virtual\\unlinked-backlog-orphan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_virtual\\unlinked-backlog-orphan.md'
 original_relative_path: '_virtual\\unlinked-backlog-orphan.md'
 source_sha256: 1b37e4b9d55551c9d59f31ca0c0be419c2c01a06e836c888785242d738ac4ee4
 recovered_status: LEGACY_EXISTING

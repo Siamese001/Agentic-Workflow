@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-test-hardening-deferred-scope-a7b4c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-test-hardening-deferred-scope-a7b4c9.md'
 original_relative_path: '_archive\\2026-05\\notion-test-hardening-deferred-scope-a7b4c9.md'
 source_sha256: b8c18f02e634bdfe72140b22c6be7693cb2d6b6b67888d464f840f6c42e2a7f3
 recovered_status: LEGACY_EXISTING

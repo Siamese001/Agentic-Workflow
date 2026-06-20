@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\whole-run-phase1-x3-dispatch-remediation-f2a8c4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\whole-run-phase1-x3-dispatch-remediation-f2a8c4.md'
 original_relative_path: 'whole-run-phase1-x3-dispatch-remediation-f2a8c4.md'
 source_sha256: 403cc7dde35d8cd511027aa2f4adf46ac20b0ff31dd7c8c0ce1e49b7a8745acf
 recovered_status: LEGACY_EXISTING

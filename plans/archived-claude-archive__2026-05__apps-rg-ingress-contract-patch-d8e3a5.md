@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-ingress-contract-patch-d8e3a5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-ingress-contract-patch-d8e3a5.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-ingress-contract-patch-d8e3a5.md'
 source_sha256: 5a5d748c0da49e881dfc9b1cad3b33726d3eb23d93d3e4b8eaedebd3574d4e6c
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\section-product-shape-alignment-b4e7a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\section-product-shape-alignment-b4e7a1.md'
 original_relative_path: '_archive\\2026-05\\section-product-shape-alignment-b4e7a1.md'
 source_sha256: 8ccd1f6d282fcdf229281d3210972940db19d18a2944d0cc445be9f1cbd40d44
 recovered_status: LEGACY_EXISTING

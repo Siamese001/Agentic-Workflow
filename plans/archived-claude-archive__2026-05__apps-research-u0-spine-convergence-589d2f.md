@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-u0-spine-convergence-589d2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-u0-spine-convergence-589d2f.md'
 original_relative_path: '_archive\\2026-05\\apps-research-u0-spine-convergence-589d2f.md'
 source_sha256: dbbd12171b9aba9a475bef778b1a2d83988cdce11454dbdacd90e02d4b870260
 recovered_status: LEGACY_EXISTING

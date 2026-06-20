@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-l7-route-family-cert-fix-b8f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-l7-route-family-cert-fix-b8f3a1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-l7-route-family-cert-fix-b8f3a1.md'
 source_sha256: bf8cd0ab5a93f1a04b8554f98a8cb5dfc0777b2cf6c1ed06bba3bf8d6300c6de
 recovered_status: LEGACY_EXISTING

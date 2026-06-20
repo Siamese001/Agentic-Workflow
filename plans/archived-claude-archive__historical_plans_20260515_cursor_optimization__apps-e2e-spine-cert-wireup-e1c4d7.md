@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-e2e-spine-cert-wireup-e1c4d7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-e2e-spine-cert-wireup-e1c4d7.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-e2e-spine-cert-wireup-e1c4d7.md'
 source_sha256: 1668671439dd66df038e53b9ca4f2121cf219e71ceebab64ab6dc12700e1b8a8
 recovered_status: LEGACY_EXISTING

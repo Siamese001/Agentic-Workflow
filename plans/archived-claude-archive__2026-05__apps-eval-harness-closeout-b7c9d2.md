@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-eval-harness-closeout-b7c9d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-eval-harness-closeout-b7c9d2.md'
 original_relative_path: '_archive\\2026-05\\apps-eval-harness-closeout-b7c9d2.md'
 source_sha256: 4e77581ab7358eadc9ceee51c56ed469e1e76f11579becad8cb42a5ca649e60d
 recovered_status: LEGACY_EXISTING

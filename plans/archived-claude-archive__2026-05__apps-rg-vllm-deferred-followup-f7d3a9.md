@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-vllm-deferred-followup-f7d3a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-vllm-deferred-followup-f7d3a9.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-vllm-deferred-followup-f7d3a9.md'
 source_sha256: bc7733da80511abba41e914b444bed9163f17accf309efcf86d918d204bb09f4
 recovered_status: LEGACY_EXISTING

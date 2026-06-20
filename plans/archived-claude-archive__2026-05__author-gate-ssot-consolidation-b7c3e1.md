@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ssot-consolidation-b7c3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ssot-consolidation-b7c3e1.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ssot-consolidation-b7c3e1.md'
 source_sha256: c9da0b844bfa6ba4651be6841b21db6bed0f31d32841fc82b8e0481cd6fef95c
 recovered_status: LEGACY_EXISTING

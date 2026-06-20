@@ -311,8 +311,8 @@ An approver must:
 ## References
 
 - Sweep evidence: `{adr['sweep_source']['path']}` (SHA-256: `{adr['sweep_source']['sha256']}`)
-- W1p3 plan: `.claude/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
-- W1p4 plan: `.claude/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
+- W1p3 plan: `.codex/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
+- W1p4 plan: `.codex/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
 - Composer: `scripts/compose_semantic_cache_subclaims.py`
 - Threshold SSOT: `agentic_core/L4_state/utils/memory/semantic_cache_manager.py`
 """

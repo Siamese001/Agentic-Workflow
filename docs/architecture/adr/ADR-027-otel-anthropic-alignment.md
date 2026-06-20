@@ -6,7 +6,7 @@
 - **Related**:
   - ADR-023 Runtime HITL Exit Control
   - ADR-025 Unified Heal-Router OTel Schema
-- **Plan**: `.claude/plans/otel-anthropic-alignment-b4c8e1.md`
+- **Plan**: `.codex/plans/otel-anthropic-alignment-b4c8e1.md`
 
 ## Context
 
@@ -103,7 +103,7 @@ at discovery.
 
 ## References
 
-- Anthropic Agent SDK Observability: https://code.claude.com/docs/en/agent-sdk/observability
+- Anthropic Agent SDK Observability: https://code.codex.com/docs/en/agent-sdk/observability
 - Anthropic Claude Code Monitoring: https://docs.anthropic.com/en/docs/claude-code/monitoring-usage
 - W3C Trace Context: https://www.w3.org/TR/trace-context/
 - OTel Semantic Conventions (Resource): https://opentelemetry.io/docs/specs/semconv/resource/

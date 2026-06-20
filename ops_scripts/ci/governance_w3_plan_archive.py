@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Archive stale top-level .claude/plans/*.md to _archive/YYYY-MM/ (W3B)."""
+"""Archive stale top-level .codex/plans/*.md to _archive/YYYY-MM/ (W3B)."""
 from __future__ import annotations
 
 import json
@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PLANS = REPO / ".claude" / "plans"
+PLANS = REPO / ".codex" / "plans"
 ARCHIVE_MONTH = "2026-05"
 ARCHIVE_DIR = PLANS / "_archive" / ARCHIVE_MONTH
 OUT_JSON = REPO / "docs/reports/cursor/governance_w3_plan_archive_manifest.json"
@@ -144,7 +144,7 @@ def main() -> int:
         "generated_at": ts,
         "plan_id": "cursor-governance-two-tier-b4e8f2",
         "wave": "W3B",
-        "archive_date_folder": f".claude/plans/_archive/{ARCHIVE_MONTH}/",
+        "archive_date_folder": f".codex/plans/_archive/{ARCHIVE_MONTH}/",
         "pass_number": pass_number,
         "active_plans_before": before_count,
         "active_plans_after": after_count,

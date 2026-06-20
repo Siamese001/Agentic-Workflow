@@ -92,7 +92,7 @@ REQ-<NAMESPACE>-<SEMANTIC-NAME>-<3-DIGIT-SEQ>
 | `REQ-UWG-*` | `00B_L4_State_Archive_and_UWG/` | `00B.6_UWG_Durable_Write_Gateway.md` | Sole durable-write admission gateway invariants |
 | `REQ-GATE-G01-*`..`REQ-GATE-G29-*` | `00C_Runtime_Gates_Current_Run_Mesh/` | `00C_Runtime_Gates_Current_Run_Mesh.md` | Per-gate verdict law (G01..G29) |
 
-**Parent-pack gap matrix (2026-05-23):** [l5-l4-00c-parent-gap-matrix-b8e4f2.json](../reports/plans/l5-l4-00c-parent-gap-matrix-b8e4f2.json) — plan [l5-l4-00c-parent-gap-b8e4f2.md](../../.claude/plans/l5-l4-00c-parent-gap-b8e4f2.md); 00C schema SSOT: [ADR-00C-7-gate-verdict-ssot-b8e4f2.md](../adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md).
+**Parent-pack gap matrix (2026-05-23):** [l5-l4-00c-parent-gap-matrix-b8e4f2.json](../reports/plans/l5-l4-00c-parent-gap-matrix-b8e4f2.json) — plan [l5-l4-00c-parent-gap-b8e4f2.md](../../.codex/plans/l5-l4-00c-parent-gap-b8e4f2.md); 00C schema SSOT: [ADR-00C-7-gate-verdict-ssot-b8e4f2.md](../adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md).
 | `REQ-U0-*` | `01_Request_Intake/` | `01_request_intake.md` | Request envelope, identity, schema, idempotency |
 | `REQ-L1-*` | `02_L1_Reasoning_Plan/` | `02_L1_Reasoning_Plan_Generation.md` | Plan, route hints, support expectation |
 | `REQ-L0-*` | `03_L0_Route_Decision/` | `03_L0_Route_Decision_Switching_L3.md` | Deterministic RouteContract |

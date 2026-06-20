@@ -9,7 +9,7 @@ dod_exempt: true
 
 - **Situation:** The Notion Plans DB (`ac53d31b-3068-4039-9ebe-856c12caab32`) held 13 `Not Started`
   and 5 `Lower Priority` rows — many created weeks ago and referencing the now-removed `.cursor/plans/`
-  tree (files migrated to `.claude/plans/`).
+  tree (files migrated to `.codex/plans/`).
 - **Complication:** Old `Not Started`/`Lower Priority` rows accumulate as a graveyard. The user wants a
   per-plan recommendation: **complete the scope, or retire it** — and for the "not" cases, adjust the
   Notion status to `Retired`/`Completed` with an explanatory comment.

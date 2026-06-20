@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-ensemble-judge-restoration-a7c4e2.md'
 source_sha256: 50aecacc4eb6ea17d7c63930b03a33d49536f45b27940d6923688eaa22c84222
 recovered_status: LEGACY_EXISTING

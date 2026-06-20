@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-feedback-loop-d4e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-feedback-loop-d4e8f1.md'
 original_relative_path: '_archive\\2026-05\\author-gate-feedback-loop-d4e8f1.md'
 source_sha256: 2932821dd2273a16346471be3a8369eb4b6ae240a16615a2caff16e97d9f6df1
 recovered_status: LEGACY_EXISTING

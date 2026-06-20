@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-GUARD_PATH = REPO_ROOT / ".claude" / "hooks" / "before_file_edit_branch_guard.py"
+GUARD_PATH = REPO_ROOT / ".codex" / "hooks" / "before_file_edit_branch_guard.py"
 
 
 def _load(mod_name: str, path: Path):
@@ -39,13 +39,13 @@ class TestIsPlanFile:
         assert self.guard._is_plan_file("plans/foo-abc123.md")
 
     def test_legacy_claude_plans_is_plan_file(self):
-        assert self.guard._is_plan_file(".claude/plans/legacy-abc123.md")
-        assert self.guard._is_plan_file("C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\legacy-abc123.md")
+        assert self.guard._is_plan_file(".codex/plans/legacy-abc123.md")
+        assert self.guard._is_plan_file("C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\legacy-abc123.md")
 
     def test_archived_plan_is_not_exempt(self):
         # Archives must not be silently editable — fall through to the branch guard.
         assert not self.guard._is_plan_file("plans/_archive/2026-05/old-abc123.md")
-        assert not self.guard._is_plan_file(".claude/plans/_archive/old-abc123.md")
+        assert not self.guard._is_plan_file(".codex/plans/_archive/old-abc123.md")
 
     def test_non_plan_paths_are_not_plan_files(self):
         assert not self.guard._is_plan_file("agentic_core/x.py")

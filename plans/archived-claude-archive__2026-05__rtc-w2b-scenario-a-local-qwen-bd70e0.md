@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rtc-w2b-scenario-a-local-qwen-bd70e0.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rtc-w2b-scenario-a-local-qwen-bd70e0.md'
 original_relative_path: '_archive\\2026-05\\rtc-w2b-scenario-a-local-qwen-bd70e0.md'
 source_sha256: b60234c0bdaa39cebe7b878ec514d66981111a3b6e9b74c8b129808c0e06f3c4
 recovered_status: LEGACY_EXISTING

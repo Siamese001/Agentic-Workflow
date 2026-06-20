@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-e2e-auditability-harness-7c2a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-e2e-auditability-harness-7c2a91.md'
 original_relative_path: '_archive\\2026-05\\apps-e2e-auditability-harness-7c2a91.md'
 source_sha256: e5c25d12fab2bd3956b41abb57795b9fc9249125c1b1ae981208bd0fa4c9469f
 recovered_status: LEGACY_EXISTING

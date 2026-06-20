@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-targeting-ingress-u0-b8e4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-targeting-ingress-u0-b8e4f1.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-targeting-ingress-u0-b8e4f1.md'
 source_sha256: e3083a1f4fe11de9ea5f52819e35323661d9a26265ac911ba32e08ba4b02d63c
 recovered_status: LEGACY_EXISTING

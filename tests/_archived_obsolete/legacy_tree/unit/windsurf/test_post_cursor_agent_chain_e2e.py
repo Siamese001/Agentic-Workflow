@@ -31,7 +31,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 HOOKS_JSON = REPO / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-SCRIPTS = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf"
+SCRIPTS = REPO / ".codex" / "governance/scripts" / "_legacy_windsurf"
 ARTIFACTS = REPO / "artifacts" / "governance"
 
 
@@ -42,7 +42,7 @@ def _load_chain() -> list[Path]:
     scripts: list[Path] = []
     for entry in chain:
         cmd = entry["command"]
-        # Format: "python .claude/governance/scripts/_legacy_windsurf/<name>.py"
+        # Format: "python .codex/governance/scripts/_legacy_windsurf/<name>.py"
         parts = cmd.split()
         rel = parts[-1].replace("\\", "/")
         if rel.startswith("./"):

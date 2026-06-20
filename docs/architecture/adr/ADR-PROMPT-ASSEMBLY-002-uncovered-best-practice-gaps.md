@@ -4,7 +4,7 @@
 - **Decision Date**: 2026-04-23 (approved by user same-day)
 - **Deciders**: Codex + user (implementation mode execution of plan `prompt-assembly-best-practices-gap-b4e1c2`). Author-Gate resolution: `DECISION_CAPTURED: type=architecture_choice, selected=adopt-ADR-PA-002-and-launch-EQ1, confidence=0.90, outcome=executed`.
 - **Impact Layers**: L0, L2, L4, L5, L_PG, L_KR, L_SHARED, L_TOOLS
-- **Plan**: `.claude/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
+- **Plan**: `.codex/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
 - **Supersedes / complements**: `ADR-PROMPT-ASSEMBLY-001` (provider-aware
   structured prompt rendering). ADR-001 resolved Q1/Q2/Q3/Q4 (slot order, provider
   adapter contract, long-context composition, structured-output schema source).
@@ -305,7 +305,7 @@ format for emitted edits:
 
 ## 16. Execution plan
 
-Executed under parent plan `.claude/plans/prompt-assembly-best-practices-gap-b4e1c2.md`:
+Executed under parent plan `.codex/plans/prompt-assembly-best-practices-gap-b4e1c2.md`:
 
 | Wave | ADR § | Phases |
 |------|-------|--------|
@@ -316,9 +316,9 @@ Executed under parent plan `.claude/plans/prompt-assembly-best-practices-gap-b4e
 
 ## 17. References
 
-- Parent plan: `.claude/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
+- Parent plan: `.codex/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
 - Sibling ADR: `docs/architecture/adr/ADR-PROMPT-ASSEMBLY-001-provider-aware-structured-prompt-rendering.md`
-- Sibling plan: `.claude/plans/prompt-assembly-reception-hardening-9c4e2b.md`
+- Sibling plan: `.codex/plans/prompt-assembly-reception-hardening-9c4e2b.md`
 - Vendor best-practices: `docs/reference/_primers/prompting/{anthropic,openai,gemini}_best_practices_2026.md`
 - Cross-map: `docs/reference/_primers/prompting/current_architecture_crossmap.md`
 - Refreshed prompt-assembly doc: `docs/reference/03_L0_Routing/Prompt Assembly/Prompt Assembly.md`

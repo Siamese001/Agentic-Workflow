@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\prompt-assembly-reception-hardening-9c4e2b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\prompt-assembly-reception-hardening-9c4e2b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\prompt-assembly-reception-hardening-9c4e2b.md'
 source_sha256: e2199dbfb854873c8bb1e9f755ea310ba3ef4a2f640b468a8b07f6447c9d287e
 recovered_status: LEGACY_EXISTING

@@ -66,7 +66,7 @@ Efficiency plan:
 1. Start with topology commands, not file-by-file branch exploration.
 2. Reuse one detached merge worktree for the full publish path when the primary checkout is dirty.
 3. Prefer the smallest verification selector that still covers the merged surface.
-4. Stop normal merge investigation early when conflict files cluster in `.claude/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, or `tools/git/*`; that pattern already justifies an `ours` merge for archival containment.
+4. Stop normal merge investigation early when conflict files cluster in `.codex/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, or `tools/git/*`; that pattern already justifies an `ours` merge for archival containment.
 
 Pitfalls and fixes:
 - Symptom: edits land in the wrong checkout or worktree.

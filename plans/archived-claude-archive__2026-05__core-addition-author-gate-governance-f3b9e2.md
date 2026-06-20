@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\core-addition-author-gate-governance-f3b9e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\core-addition-author-gate-governance-f3b9e2.md'
 original_relative_path: '_archive\\2026-05\\core-addition-author-gate-governance-f3b9e2.md'
 source_sha256: 918596e5e5009a6dabd9a229fd32ac0d7a0da1e0ac98177b1d737eb46bcef28e
 recovered_status: LEGACY_EXISTING

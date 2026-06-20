@@ -63,13 +63,13 @@ The `.windsurf` control surface enforces discipline at three points: **before** 
 
 | Surface | Role | SSOT |
 |---|---|---|
-| Constitutional rules | Always-on invariants the agent reads every turn | `.claude/rules/constitutional.md`, `global_rules.md` |
+| Constitutional rules | Always-on invariants the agent reads every turn | `.codex/rules/constitutional.md`, `global_rules.md` |
 | Conditional rules | Loaded on demand by trigger phrase | frontmatter `trigger: model_decision` |
-| Skills | Procedural how-to, on-demand (third-person, deterministic) | `.claude/skills/<name>/SKILL.md` |
+| Skills | Procedural how-to, on-demand (third-person, deterministic) | `.codex/skills/<name>/SKILL.md` |
 | Workflows | Slash-command runbooks for repeatable sequences | `docs/archive/windsurf/legacy-tree/workflows/*.md` |
-| Hook scripts | Deterministic Python at pre/post action moments | `.claude/governance/scripts/*.py` |
+| Hook scripts | Deterministic Python at pre/post action moments | `.codex/governance/scripts/*.py` |
 | Schemas | Machine-validated contracts for ledgers, manifests, certs | `.windsurf/schemas/*.{sql,json,yaml}` |
-| Plans | Per-task SSOT with wave/phase decomposition | `.claude/plans/<slug>-<6hex>.md` |
+| Plans | Per-task SSOT with wave/phase decomposition | `.codex/plans/<slug>-<6hex>.md` |
 
 The two-tier model is deliberate. **Rules state invariants; skills carry procedure; hooks enforce.** Adding rules without a hook is advisory; adding hooks without a rule is brittle. Every load-bearing invariant lives in one SSOT and is enforced by all three layers, so drift is structurally hard.
 
@@ -77,15 +77,15 @@ Key files to inspect:
 
 ```text
 .windsurf/RULES_INDEX.md
-.claude/settings.json
-.claude/rules/constitutional.md
-.claude/rules/global_rules.md
-.claude/rules/adg-canonical-invariants.md
-.claude/rules/author-gate-enforcement.md
-.claude/rules/ssot-folder-enforcement.md
-.claude/skills/*/SKILL.md
+.codex/hooks.json
+.codex/rules/constitutional.md
+.codex/rules/global_rules.md
+.codex/rules/adg-canonical-invariants.md
+.codex/rules/author-gate-enforcement.md
+.codex/rules/ssot-folder-enforcement.md
+.codex/skills/*/SKILL.md
 docs/archive/windsurf/legacy-tree/workflows/*.md
-.claude/governance/scripts/*.py
+.codex/governance/scripts/*.py
 ```
 
 ### Hook coverage
@@ -306,8 +306,8 @@ Look for:
 ### 2. Inspect active hook enforcement
 
 ```text
-.claude/settings.json
-.claude/governance/scripts/
+.codex/hooks.json
+.codex/governance/scripts/
 ```
 
 Look for:

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-repo-brief-c0-runtime-wiring-f4a8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-repo-brief-c0-runtime-wiring-f4a8b2.md'
 original_relative_path: '_archive\\2026-05\\apps-repo-brief-c0-runtime-wiring-f4a8b2.md'
 source_sha256: 6eddcacb8030d84bce72a35acae6cc5ba3a5211ab8ebae664ce7b9362a0913e2
 recovered_status: LEGACY_EXISTING

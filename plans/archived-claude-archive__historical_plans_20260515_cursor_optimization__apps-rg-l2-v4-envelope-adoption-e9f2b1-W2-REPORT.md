@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l2-v4-envelope-adoption-e9f2b1-W2-REPORT.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l2-v4-envelope-adoption-e9f2b1-W2-REPORT.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l2-v4-envelope-adoption-e9f2b1-W2-REPORT.md'
 source_sha256: 2c400ba3d68991513e1aa5afbd62fbd6f2a55f89c654cf79ce79f8ae60d7e9bc
 recovered_status: LEGACY_EXISTING

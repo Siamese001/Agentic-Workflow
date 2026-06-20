@@ -1,0 +1,17 @@
+---
+name: mcp-governance-auditor
+description: Audit MCP configuration for least privilege, project SSOT, and legacy config drift.
+---
+
+# MCP Governance Auditor
+
+Use when editing `.mcp.json` or MCP-related skills/rules.
+
+Check:
+- `.mcp.json` (repo root) is project-scoped SSOT; auth/setup notes in `.codex/mcp-notes.md`
+- `mcpServers` root exists and parses as strict JSON
+- no legacy global config authority claims
+- secrets use environment variables (`${VAR}` syntax, not hard-coded)
+- intentionally-omitted servers (e.g. `filesystem`, `task_manager`) stay omitted unless re-added on purpose
+
+Return JSON validation result, server inventory, and risks.

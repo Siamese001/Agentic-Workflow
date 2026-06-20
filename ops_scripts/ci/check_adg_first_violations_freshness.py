@@ -24,7 +24,7 @@ Bypass: ``ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1`` emits a warning and returns 
 Window override: ``ADG_FIRST_STALENESS_DAYS`` (int, default 7).
 
 Constitutional refs: §28 (ADG over grep), §34 (retrieval budgets).
-Sibling hook: ``.claude/governance/scripts/post_agent_adg_audit.py``.
+Sibling hook: ``.codex/governance/scripts/post_agent_adg_audit.py``.
 """
 
 from __future__ import annotations

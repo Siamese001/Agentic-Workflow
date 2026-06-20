@@ -8,13 +8,13 @@
 | **Status** | Accepted |
 | **Decision Date** | 2026-05-01 |
 | **Impact Layers** | apps_rg, apps_research, apps_eval, apps_shared |
-| **Plan** | `.claude/plans/apps-rg-narrative-and-company-research-e3f8c1.md` §8 |
+| **Plan** | `.codex/plans/apps-rg-narrative-and-company-research-e3f8c1.md` §8 |
 | **Deciders** | Codex (per user directive: "finish all next steps") |
 | **Supersedes** | none |
 
 ## Summary
 
-Resolves six Author-Gate trigger points called out in the narrative pipeline plan §8. Each is a deterministic-with-rationale decision, captured here for the audit trail rather than surfaced as interactive options because the user issued an explicit directive to complete all NEXT_STEPs without confirmation. The bypass condition in `.claude/rules/author-gate-enforcement.md` §"Bypass Conditions" applies: *"user gave explicit unambiguous directive."*
+Resolves six Author-Gate trigger points called out in the narrative pipeline plan §8. Each is a deterministic-with-rationale decision, captured here for the audit trail rather than surfaced as interactive options because the user issued an explicit directive to complete all NEXT_STEPs without confirmation. The bypass condition in `.codex/rules/author-gate-enforcement.md` §"Bypass Conditions" applies: *"user gave explicit unambiguous directive."*
 
 ## W1.2 — Tavily research query template structure
 
@@ -127,8 +127,8 @@ DECISION_CAPTURED: type=architecture_choice, repo_area=apps_rg/__main__.py, sele
 
 ## References
 
-- Plan: `.claude/plans/apps-rg-narrative-and-company-research-e3f8c1.md`
-- Sibling governance plan: `.claude/plans/apps-rg-governed-runtime-b8d4f1.md`
-- Constitutional rules: `.claude/rules/author-gate-enforcement.md`, `.claude/rules/constitutional.md` §6 (Author-Gate)
+- Plan: `.codex/plans/apps-rg-narrative-and-company-research-e3f8c1.md`
+- Sibling governance plan: `.codex/plans/apps-rg-governed-runtime-b8d4f1.md`
+- Constitutional rules: `.codex/rules/author-gate-enforcement.md`, `.codex/rules/constitutional.md` §6 (Author-Gate)
 - Live LLM client: `apps_rg/integrations/hops/_llm_client.py`
 - Judge scorer: `apps_eval/engines/narrative_judge_scorer.py`

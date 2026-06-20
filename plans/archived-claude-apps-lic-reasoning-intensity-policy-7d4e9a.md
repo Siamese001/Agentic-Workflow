@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-reasoning-intensity-policy-7d4e9a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-reasoning-intensity-policy-7d4e9a.md'
 original_relative_path: 'apps-lic-reasoning-intensity-policy-7d4e9a.md'
 source_sha256: 14dd47a8223a2fb2dcebd75c007e32e71eade0a0831b92ac8ddd22d0ad986071
 recovered_status: LEGACY_EXISTING

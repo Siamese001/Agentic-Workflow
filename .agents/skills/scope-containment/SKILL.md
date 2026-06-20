@@ -78,7 +78,7 @@ Chunks served their purpose (locating files); paths are the durable artifact.
 
 ## References
 
-- Rule: `.claude/rules/scope-containment.md` (invariants)
+- Rule: `.codex/rules/scope-containment.md` (invariants)
 - Sibling: constitutional §24 (native `spawn_task`)
 - Constitutional: §18 (no hidden scope expansion), §28 (ADG over grep), §31 (SSOT folder routing)
 

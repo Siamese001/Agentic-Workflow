@@ -5,7 +5,7 @@
 **Deciders:** Consensus-validator-unification plan owner; L1 cognition owners
 **Impact layers:** L0 (path_constants, model_registry), L1 (cognition.consensus_validator), L6 (observability)
 **Supersedes:** N/A — additive
-**Relates to:** ADR-025 (heal_router.v1 OTEL schema — sibling pattern); `.claude/plans/consensus-validator-unification-5e9f3a.md`
+**Relates to:** ADR-025 (heal_router.v1 OTEL schema — sibling pattern); `.codex/plans/consensus-validator-unification-5e9f3a.md`
 
 ---
 
@@ -129,7 +129,7 @@ The emitter preserves the best-effort contract: OTEL backend failures must NEVER
 
 ## 7. References
 
-- Plan: `.claude/plans/consensus-validator-unification-5e9f3a.md`
+- Plan: `.codex/plans/consensus-validator-unification-5e9f3a.md`
 - Evidence: `docs/reports/plans/rca-h4-consensus-validator-juror-set.md`
 - Sibling ADR: `docs/architecture/adr/ADR-025-unified-heal-router-otel-schema.md`
 - Constitutional §22 (ADG graph-layer primary); §23 (canonical invariants)

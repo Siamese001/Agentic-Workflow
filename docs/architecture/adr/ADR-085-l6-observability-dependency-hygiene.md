@@ -1,9 +1,9 @@
 # ADR-085: L6 Observability / System Learning Dependency Hygiene
 
-**Status:** Accepted  
-**Date:** 2026-05-25  
-**Plan:** [l6-repo-reorganization-mental-model-c4e8f2](../../.claude/plans/l6-repo-reorganization-mental-model-c4e8f2.md) W6  
-**Child plan:** [l6-gravity-hybrid-7c4e2a](../../.claude/plans/_archive/2026-05/l6-gravity-hybrid-7c4e2a.md) (Option 1 hybrid — partial execution)
+**Status:** Accepted
+**Date:** 2026-05-25
+**Plan:** [l6-repo-reorganization-mental-model-c4e8f2](../../.codex/plans/l6-repo-reorganization-mental-model-c4e8f2.md) W6
+**Child plan:** [l6-gravity-hybrid-7c4e2a](../../.codex/plans/_archive/2026-05/l6-gravity-hybrid-7c4e2a.md) (Option 1 hybrid — partial execution)
 
 ## Context
 

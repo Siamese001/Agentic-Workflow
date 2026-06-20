@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-deferred-scope-completion-record-d9e4f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-deferred-scope-completion-record-d9e4f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-deferred-scope-completion-record-d9e4f2.md'
 source_sha256: 0c821094d1d0f93055b253cda664ebb45fc73520591f6c16e85c95abb4c41c27
 recovered_status: LEGACY_EXISTING

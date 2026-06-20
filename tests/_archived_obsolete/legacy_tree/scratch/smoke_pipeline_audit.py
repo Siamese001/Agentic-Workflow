@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-AUDIT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_author_gate_pipeline_audit.py"
+AUDIT = REPO / ".codex" / "governance/scripts" / "_legacy_windsurf" / "post_agent_author_gate_pipeline_audit.py"
 LOG = REPO / "artifacts" / "governance" / "author_gate_pipeline_violations.jsonl"
 
 

@@ -36,8 +36,8 @@ changed_files = [
 
 core_files = [f for f in changed_files if f.startswith('agentic_core/')]
 app_files = [f for f in changed_files if f.startswith('apps_')]
-rule_files = [f for f in changed_files if f.startswith('.claude/rules/')]
-skill_files = [f for f in changed_files if f.startswith('.claude/skills/')]
+rule_files = [f for f in changed_files if f.startswith('.codex/rules/')]
+skill_files = [f for f in changed_files if f.startswith('.codex/skills/')]
 ```
 
 ### Step 3: Classify Core Changes
@@ -157,8 +157,8 @@ Generate boundary receipt:
 | `agentic_core/**/*.py` | Core Python files |
 | `agentic_core/**/*.yaml` | Core YAML configs |
 | `agentic_core/**/apps_*_*.py` | App-specific bindings |
-| `.claude/rules/*.md` | Rule changes |
-| `.claude/skills/**/SKILL.md` | Skill changes |
+| `.codex/rules/*.md` | Rule changes |
+| `.codex/skills/**/SKILL.md` | Skill changes |
 | `apps_*/**` | App files (for reference) |
 
 ## Classification Categories
@@ -214,8 +214,8 @@ CORE_BOUNDARY_AUDIT: outcome=<OUTCOME>, receipt=<path>, leakage=<count>
 ## Related
 
 - Skill: `core-boundary-audit`
-- Rule: `.claude/rules/boundary-audit-required.md`
-- Rule: `.claude/rules/agentic-core-glob-lock.md`
+- Rule: `.codex/rules/boundary-audit-required.md`
+- Rule: `.codex/rules/agentic-core-glob-lock.md`
 
 ## MANUAL MIGRATION REQUIRED
 

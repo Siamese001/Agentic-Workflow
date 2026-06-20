@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hardcoded-exclusion-burndown-4a8f2c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hardcoded-exclusion-burndown-4a8f2c.md'
 original_relative_path: '_archive\\2026-05\\hardcoded-exclusion-burndown-4a8f2c.md'
 source_sha256: 13be982900b7b1a3ca699b623d0efe6e5492e6ad9bfced81bd956bfadbd08282
 recovered_status: LEGACY_EXISTING

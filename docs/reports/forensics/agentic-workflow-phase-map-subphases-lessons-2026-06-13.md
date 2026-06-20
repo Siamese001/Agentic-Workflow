@@ -49,7 +49,7 @@ file/artifact upload
 | 6 | 2026-04-15 to 2026-04-28 | Overage-era control-plane shock | Author-Gate, deferred-scope capture, runtime gates, Qwen cost-control | Truth-recovery work done after spend starts is more expensive than proof-first design. |
 | 7 | 2026-04-29 to 2026-05-14 | Product breakthrough + certification ice | DOCX/export paths, Fort Knox/L7, runtime certification | When the artifact appears, freeze and ship before expanding certification. |
 | 8 | 2026-05-15 to 2026-06-06 | Cursor app-binding / proof-contract grind | Cursor migration, PA/app binding, static-vs-runtime certification | Static evidence must be labeled static until a live packet traverses the spine. |
-| 9 | 2026-06-07 to 2026-06-13 | Claude Code reset / execution-bias recovery | `.claude` SSOT, Cursor decommission, Qwen removal, final11 | The recovery move is WIP=1, provider demotion, and product trace first. |
+| 9 | 2026-06-07 to 2026-06-13 | Claude Code reset / execution-bias recovery | `.codex` SSOT, Cursor decommission, Qwen removal, final11 | The recovery move is WIP=1, provider demotion, and product trace first. |
 
 ---
 

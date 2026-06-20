@@ -6,14 +6,14 @@ description: "Single SSOT for shaping a native AskUserQuestion call on an Author
 # AskUserQuestion Recommendation Convention (SSOT)
 
 The **one** authoring convention for native `AskUserQuestion` on **Author-Gate-class**
-decisions (constitutional §6 / CLAUDE.md Author-Gate). This skill is the sole survivor of the
+decisions (constitutional §6 / AGENTS.md Author-Gate). This skill is the sole survivor of the
 retired Author-Gate UI pipeline: the W1 native-supersession (ADR-093 /
 `claude-native-supersession-9d3f7a`) dropped the bespoke packet-builder → ui-renderer →
 `AUTHOR_GATE_PACKET:`/`DECISION_CAPTURED:` → ledger machinery that used to *manufacture* a
 recommendation marker and a confidence band. The native tool gives a clickable option list;
 the recommendation + confidence now live **in the option text**, produced by hand to this
 convention. The companion deterministic check is
-`.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py` (PreToolUse hook
+`.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py` (PreToolUse hook
 `before_ask_user_question.py`), which blocks a marked recommendation that lacks confidence,
 pros/cons, or flip criteria.
 
@@ -83,7 +83,7 @@ condition** explicitly — it is the load-bearing half of a confidence signal
 ## Consult precedent before stating confidence (meta-learning loop)
 
 Every AskUserQuestion is **captured** to the `ask_user_question_decisions` ledger
-(`.claude/hooks/after_ask_user_question.py` → `post_ask_user_question_capture.py`): the
+(`.codex/hooks/after_ask_user_question.py` → `post_ask_user_question_capture.py`): the
 recommended option, the stated confidence, and the user's actual selection. That history is how
 the confidence you state should improve over time — consult it before finalizing a number:
 
@@ -130,11 +130,11 @@ with this confidence shape — never as a prose menu or a bare "I recommend X".
 
 ## References
 
-- Invariant: `CLAUDE.md` § Author-Gate; `.claude/rules/constitutional.md` §6.
-- Gate: `.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py`.
-- Hook: `.claude/hooks/before_ask_user_question.py` (PreToolUse `AskUserQuestion`).
-- Capture (PostToolUse `AskUserQuestion`): `.claude/hooks/after_ask_user_question.py` →
-  `.claude/governance/scripts/post_ask_user_question_capture.py` → `ask_user_question_decisions` ledger.
+- Invariant: `AGENTS.md` § Author-Gate; `.codex/rules/constitutional.md` §6.
+- Gate: `.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py`.
+- Hook: `.codex/hooks/before_ask_user_question.py` (PreToolUse `AskUserQuestion`).
+- Capture (PostToolUse `AskUserQuestion`): `.codex/hooks/after_ask_user_question.py` →
+  `.codex/governance/scripts/post_ask_user_question_capture.py` → `ask_user_question_decisions` ledger.
 - Calibration helper: `tools/ledgers/ask_user_question_calibration.py` (precedent → calibrated confidence).
 - Plan: `plans/askq-confidence-meta-learning-loop-c4e7a1.md` (the meta-learning loop).
 - Prose-menu trigger auditor (Stop): `post_agent_recommendation_gate_audit.py`.

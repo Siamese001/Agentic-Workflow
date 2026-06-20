@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-qwen-vllm-reliability-waves-f8e3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-qwen-vllm-reliability-waves-f8e3c2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-qwen-vllm-reliability-waves-f8e3c2.md'
 source_sha256: 92d38dd90e8e35f1b1eee0c7a696dac77b1fad11f59dede1855399417f472447
 recovered_status: LEGACY_EXISTING

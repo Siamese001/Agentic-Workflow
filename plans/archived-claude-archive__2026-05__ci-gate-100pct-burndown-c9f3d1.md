@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ci-gate-100pct-burndown-c9f3d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ci-gate-100pct-burndown-c9f3d1.md'
 original_relative_path: '_archive\\2026-05\\ci-gate-100pct-burndown-c9f3d1.md'
 source_sha256: fe0a3598f5a1ac154096c6c508be188ca039fc8e6d4bf87106a0b4e2fc7f4c91
 recovered_status: LEGACY_EXISTING

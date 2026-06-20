@@ -8,7 +8,7 @@ This document contains the **complete MCP server configuration** for legacy edit
 ---
 
 ## Installation Location
-**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
+**File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\hooks.json`
 
 ---
 
@@ -353,5 +353,5 @@ From `agentic_core/config/mcp_mappings.yaml`:
 
 **Last Updated**: 2026-02-03
 **Total Servers**: 29
-**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\settings.json`
+**Configuration File**: `C:\Users\amita\AppData\Roaming\legacy editor\User\hooks.json`
 **Historical Commit**: `b61340122` (Dec 31, 2025)

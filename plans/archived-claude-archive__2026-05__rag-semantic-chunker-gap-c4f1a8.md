@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rag-semantic-chunker-gap-c4f1a8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rag-semantic-chunker-gap-c4f1a8.md'
 original_relative_path: '_archive\\2026-05\\rag-semantic-chunker-gap-c4f1a8.md'
 source_sha256: eb0a30e1130c05660e0df0feb8c6d6275c2e9b53a283e2176fb1e5c418dcb6df
 recovered_status: LEGACY_EXISTING

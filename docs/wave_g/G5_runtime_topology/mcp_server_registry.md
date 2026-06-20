@@ -31,7 +31,7 @@ ADG snapshot timestamp used: `04182026_0814`.
 | `enhanced_http` | `python -u tools/mcp/enhanced_http_server.py` | python stdio subprocess | stdio loopback | yes, arbitrary HTTP by design | `test_connectivity`, request-level failures |
 | `notion` | `cmd /c npx -y @notionhq/notion-mcp-server` | node stdio subprocess | stdio loopback | yes (`api.notion.com`) | `API-get-self` |
 | `task_manager` | `cmd /c npx -y @blizzy/mcp-task-manager stdio` | node stdio subprocess | stdio loopback | none | `task_info` |
-| `filesystem` | `node .claude/governance/scripts/filesystem_mcp_launcher.js <repo_root>` | binary subprocess | node wrapper stdio | none | launcher readiness marker + startup watchdog |
+| `filesystem` | `node .codex/governance/scripts/filesystem_mcp_launcher.js <repo_root>` | binary subprocess | node wrapper stdio | none | launcher readiness marker + startup watchdog |
 | `GitKraken` | `${env:GITKRAKEN_GK_PATH} mcp --host=codex ...` | binary subprocess | vendor bridge | conditional to git providers | `git_status` |
 | `deepwiki` | `https://mcp.deepwiki.com/mcp` | external endpoint | HTTPS MCP | yes (remote endpoint) | endpoint connectivity |
 

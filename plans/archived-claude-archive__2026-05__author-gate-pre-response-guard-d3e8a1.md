@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-pre-response-guard-d3e8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-pre-response-guard-d3e8a1.md'
 original_relative_path: '_archive\\2026-05\\author-gate-pre-response-guard-d3e8a1.md'
 source_sha256: 7fc35683a6620bb4d2e4a0d7848f5340ba170b00232cd27b5cf56ef51c356f6e
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-prior-art-gap-closure-3e3d5b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-prior-art-gap-closure-3e3d5b.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-prior-art-gap-closure-3e3d5b.md'
 source_sha256: d01938214f0b4058b7186d8b6c8e75e07b382c2925ae14ff8768952b912fe5e5
 recovered_status: LEGACY_EXISTING

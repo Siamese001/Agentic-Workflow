@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\qwen3-32b-vllm-upgrade-d7a3f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\qwen3-32b-vllm-upgrade-d7a3f1.md'
 original_relative_path: 'qwen3-32b-vllm-upgrade-d7a3f1.md'
 source_sha256: c66667f83dd3a0ea0d806f97fc888b8584b554584c0109112b57b4451843d3e4
 recovered_status: LEGACY_EXISTING

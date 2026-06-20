@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\test-coverage-waves-f8f5a7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\test-coverage-waves-f8f5a7.md'
 original_relative_path: '_archive\\2026-05\\test-coverage-waves-f8f5a7.md'
 source_sha256: cb3c0ee476c0ee7d4e0adf087dd2ad25cd82264623622b316f57f3362a69d010
 recovered_status: LEGACY_EXISTING

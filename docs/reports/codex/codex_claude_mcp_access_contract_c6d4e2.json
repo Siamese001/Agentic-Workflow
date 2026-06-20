@@ -4,7 +4,7 @@
   "wave": "W2",
   "sources": [
     ".mcp.json",
-    ".claude/mcp-notes.md",
+    ".codex/mcp-notes.md",
     "docs/reports/codex/codex_claude_mcp_access_inventory_c6d4e2.json",
     "scripts/governance/audit_codex_mcp_transports.py --json",
     "direct Codex tool-call evidence from W2"

@@ -1,5 +1,5 @@
 """
-Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_plan_complete_audit.py
+Unit tests for .codex/governance/scripts/_legacy_windsurf/post_agent_plan_complete_audit.py
 
 Plan: plan-complete-marker-enforcement-d2e9f1 W3.1
 """
@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_SCRIPT = REPO_ROOT / ".claude" / "governance" / "scripts" / "_legacy_cursor" / "post_cursor_agent_plan_complete_audit.py"
+_SCRIPT = REPO_ROOT / ".codex" / "governance" / "scripts" / "_legacy_cursor" / "post_cursor_agent_plan_complete_audit.py"
 
 spec = importlib.util.spec_from_file_location("post_agent_plan_complete_audit", _SCRIPT)
 _mod = importlib.util.module_from_spec(spec)

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-pa-hardening-same-grain-a4f7c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-pa-hardening-same-grain-a4f7c2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-pa-hardening-same-grain-a4f7c2.md'
 source_sha256: 5ce4dfccb35dabb793914728d4e697000c8e09f7db3eadf5f75322cf91754d17
 recovered_status: LEGACY_EXISTING

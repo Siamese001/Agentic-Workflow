@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hook-consolidation-debt-cleanup-f2b8d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hook-consolidation-debt-cleanup-f2b8d1.md'
 original_relative_path: '_archive\\2026-05\\hook-consolidation-debt-cleanup-f2b8d1.md'
 source_sha256: 615832cf79181fbc3de3a93607a91842313a6d4e767fe5cad962b9172372f261
 recovered_status: LEGACY_EXISTING

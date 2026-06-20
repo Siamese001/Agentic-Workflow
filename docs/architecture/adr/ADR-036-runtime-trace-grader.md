@@ -99,7 +99,7 @@ applies identically.
    Note: all `hitl_class` references below use the canonical `HitlClass` enum
    values from `agentic_core/L5_safety/exit_control/hitl_classes.py`.
 5. Periodic human calibration against `data/judge_calibration/` ledger is
-   enforced by `.claude/rules/judge-calibration-cadence.md` (ADR-040 companion
+   enforced by `.codex/rules/judge-calibration-cadence.md` (ADR-040 companion
    rule).
 
 ## 5. Reason-Code Registry (partial — full registry in `ExitDecision.reason_code`)

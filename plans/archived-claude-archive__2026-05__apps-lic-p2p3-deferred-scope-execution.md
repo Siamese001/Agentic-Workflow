@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-p2p3-deferred-scope-execution.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-p2p3-deferred-scope-execution.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-p2p3-deferred-scope-execution.md'
 source_sha256: add88105988df8a878cffb120da7090ff776020e0c3391bc11ff518e0ba62691
 recovered_status: LEGACY_EXISTING

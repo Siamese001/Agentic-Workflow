@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-w3-burndown-b3d5e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-w3-burndown-b3d5e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\d-bucket-w3-burndown-b3d5e2.md'
 source_sha256: 2b31a69e4e21b941f3e54c4d1bfc874f7f9f30113a40d2fdadf48ac32ce66927
 recovered_status: LEGACY_EXISTING

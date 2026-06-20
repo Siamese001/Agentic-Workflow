@@ -1,6 +1,6 @@
 ---
 name: "ledger-consulter"
-description: "Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; per-ledger consulting skills inherit this contract. STATUS \u2014 template only: of the per-ledger skills below, exactly ONE is built (`ledger-consulter-ask-user-question`); the rest are PLANNED, not on disk. See `.claude/plans/intelligence-ledgers-ten-a7c3e2.md` for the rollout."
+description: "Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; per-ledger consulting skills inherit this contract. STATUS \u2014 template only: of the per-ledger skills below, exactly ONE is built (`ledger-consulter-ask-user-question`); the rest are PLANNED, not on disk. See `.codex/plans/intelligence-ledgers-ten-a7c3e2.md` for the rollout."
 ---
 
 # Ledger-Consulter Template
@@ -17,7 +17,7 @@ description: "Base template for consulting a single intelligence ledger before a
 > Prior versions of this file and `closed-loop-router-enforcement.md` cited three different
 > counts (10 / 12 / 24) for the same roster. The roster table below is the single source of
 > truth for *intended* coverage; do not infer that any row is a callable skill until a folder
-> `.claude/skills/<row-skill-name>/` actually exists. Per repo doctrine (`apps-rg-execution-bias`
+> `.codex/skills/<row-skill-name>/` actually exists. Per repo doctrine (`apps-rg-execution-bias`
 > "subtraction before addition"), build a per-ledger skill **only when a concrete task needs it**,
 > using the contract below — do not bulk-generate the roster.
 
@@ -96,8 +96,8 @@ Every per-ledger consulting skill MUST:
 - Registry: `tools/ledgers/schema_registry.py`
 - Reader API: `tools/ledgers/consulter.py`
 - Writer API: `tools/ledgers/writer.py`
-- Base DDL: `.claude/schemas/ledger_base.schema.sql`
-- Decision-ledger precedent: `.claude/skills/refactor-decision-memory/SKILL.md`
+- Base DDL: `.codex/schemas/ledger_base.schema.sql`
+- Decision-ledger precedent: `.codex/skills/refactor-decision-memory/SKILL.md`
 
 ## MANUAL MIGRATION REQUIRED
 

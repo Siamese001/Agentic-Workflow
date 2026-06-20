@@ -1,6 +1,6 @@
 """apps_shared.config.legacy_yaml_deprecation — legacy YAML deprecation shim.
 
-Plan: ``.claude/plans/apps-eval-harness-closeout-b7c9d2.md`` W4.P1.
+Plan: ``.codex/plans/apps-eval-harness-closeout-b7c9d2.md`` W4.P1.
 
 Problem: several apps still ship ``*_policies.yaml`` / ``*_thresholds.yaml``
 alongside the canonical ``config/domain_contract/`` bundle. The canonical

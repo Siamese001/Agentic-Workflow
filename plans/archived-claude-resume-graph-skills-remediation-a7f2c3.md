@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\resume-graph-skills-remediation-a7f2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\resume-graph-skills-remediation-a7f2c3.md'
 original_relative_path: 'resume-graph-skills-remediation-a7f2c3.md'
 source_sha256: fbe562af0295b1041985e59d9a299c51eae17ee1912a9a7e4a0c4eaf1e4d63bb
 recovered_status: LEGACY_EXISTING

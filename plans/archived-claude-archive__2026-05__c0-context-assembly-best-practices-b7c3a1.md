@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\c0-context-assembly-best-practices-b7c3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\c0-context-assembly-best-practices-b7c3a1.md'
 original_relative_path: '_archive\\2026-05\\c0-context-assembly-best-practices-b7c3a1.md'
 source_sha256: d970434da6eee6e743a2c4391d351324af838f425a931fb774f2251a016122fd
 recovered_status: LEGACY_EXISTING

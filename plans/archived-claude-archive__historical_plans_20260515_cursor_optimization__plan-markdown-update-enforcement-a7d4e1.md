@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-markdown-update-enforcement-a7d4e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-markdown-update-enforcement-a7d4e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\plan-markdown-update-enforcement-a7d4e1.md'
 source_sha256: 8919296bad405eba6694aa06a2661fbdb72f3529b0ec347ba9f8b6ead5606e62
 recovered_status: LEGACY_EXISTING

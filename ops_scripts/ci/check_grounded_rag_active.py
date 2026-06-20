@@ -1,6 +1,6 @@
 """check_grounded_rag_active — RAG dim activation gate for grounded apps.
 
-Plan: ``.claude/plans/apps-core-contract-rectification-a8f3c2.md`` Phase 5.3.
+Plan: ``.codex/plans/apps-core-contract-rectification-a8f3c2.md`` Phase 5.3.
 
 When C0 retrieval is wired, the 5 grounded apps must promote their RAG dims from
 tracked-only (weight=0, fail_closed_if_unknown=false) to active

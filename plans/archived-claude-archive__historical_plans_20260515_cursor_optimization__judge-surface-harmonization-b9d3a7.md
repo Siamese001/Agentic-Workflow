@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\judge-surface-harmonization-b9d3a7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\judge-surface-harmonization-b9d3a7.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\judge-surface-harmonization-b9d3a7.md'
 source_sha256: 99a6a3a4fdee3bf3edd6a3acd0d5cd9f57bdbe07b35e38dd707f195c609daffd
 recovered_status: LEGACY_EXISTING

@@ -70,6 +70,6 @@ Override remains available via `SEMANTIC_CACHE_D2_ENABLED=0`.
 
 ## References
 
-- Plan: `.claude/plans/p1-d2-default-enable-b7e3f9.md`
+- Plan: `.codex/plans/p1-d2-default-enable-b7e3f9.md`
 - Commit: `6c0bf44`
 - Parent: `deferred-scope-spine-refinement-5e3d1b`

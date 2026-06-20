@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-repo-gap-analysis-351a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-repo-gap-analysis-351a91.md'
 original_relative_path: '_archive\\2026-05\\agentic-repo-gap-analysis-351a91.md'
 source_sha256: 2b75a9b369fe4cd5f6baa12fc5665cb96444c7963c2663ef05a5852ad5e4172c
 recovered_status: LEGACY_EXISTING

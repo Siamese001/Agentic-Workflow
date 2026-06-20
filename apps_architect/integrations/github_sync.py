@@ -1,6 +1,6 @@
 """GitHub API integration — README sync via PR creation.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P2.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P2.
 
 Flow: detect drift → create branch → commit README → open PR.
 Uses GitHub REST API with token resolved via CredentialManager.

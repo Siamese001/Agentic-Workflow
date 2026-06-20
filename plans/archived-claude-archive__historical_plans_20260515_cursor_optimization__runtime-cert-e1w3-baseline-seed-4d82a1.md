@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w3-baseline-seed-4d82a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w3-baseline-seed-4d82a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-e1w3-baseline-seed-4d82a1.md'
 source_sha256: 0aab8a780f7026f2698997c2f2ca9c22866aacd171bc53bb05c57b15ea408aec
 recovered_status: LEGACY_EXISTING

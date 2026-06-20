@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-check_rules_filesystem_integrity.py — CI gate for .claude/rules/ validation.
+check_rules_filesystem_integrity.py — CI gate for .codex/rules/ validation.
 
 Validates:
-1. All .md files in .claude/rules/ have frontmatter (--- delimited)
+1. All .md files in .codex/rules/ have frontmatter (--- delimited)
 2. No duplicate rule titles (based on first h1 heading)
 3. File names follow kebab-case convention
 4. All internal references in rules point to valid files
@@ -26,25 +26,25 @@ def _find_repo_root() -> Path:
     """Find repo root from script location or CWD."""
     # Try script location first (parents[3] from ops_scripts/ci/)
     script_root = Path(__file__).resolve().parents[3]
-    if (script_root / ".claude" / "rules").exists():
+    if (script_root / ".codex" / "rules").exists():
         return script_root
     # Fall back to CWD
     cwd = Path.cwd()
-    if (cwd / ".claude" / "rules").exists():
+    if (cwd / ".codex" / "rules").exists():
         return cwd
     # Last resort: try to find by walking up from CWD
     for parent in [cwd] + list(cwd.parents):
-        if (parent / ".claude" / "rules").exists():
+        if (parent / ".codex" / "rules").exists():
             return parent
     # Known repo location (when running in legacy editor environment)
     known_path = Path("C:/Git/Agentic-Workflow-FRESH")
-    if (known_path / ".claude" / "rules").exists():
+    if (known_path / ".codex" / "rules").exists():
         return known_path
     return script_root  # Default to script-based root
 
 
 REPO_ROOT = _find_repo_root()
-RULES_DIR = REPO_ROOT / ".claude" / "rules"
+RULES_DIR = REPO_ROOT / ".codex" / "rules"
 OUTPUT_PATH = REPO_ROOT / "artifacts" / "ci" / "rules_integrity_gate.json"
 
 # Kebab-case pattern: lowercase, hyphens, numbers, no leading hyphen
@@ -56,8 +56,8 @@ FRONTMATTER_RE = re.compile(r"^---\s*$", re.MULTILINE)
 # First h1 heading: # Title
 H1_RE = re.compile(r"^#\s+(.+)$", re.MULTILINE)
 
-# Internal rule references: `rule-name.md` or @.claude/rules/rule-name.md
-RULE_REF_RE = re.compile(r"[@`]\.claude/rules/([a-z0-9-]+\.md)`|([a-z0-9-]+\.md)`")
+# Internal rule references: `rule-name.md` or @.codex/rules/rule-name.md
+RULE_REF_RE = re.compile(r"[@`]\.codex/rules/([a-z0-9-]+\.md)`|([a-z0-9-]+\.md)`")
 
 
 def _log_event(event: dict[str, Any]) -> None:

@@ -20,7 +20,7 @@ relates_to:
 
 ## Context (SCQA)
 
-- **Situation.** A review of `.claude/rules/constitutional.md` + its always-on rules found a residue of
+- **Situation.** A review of `.codex/rules/constitutional.md` + its always-on rules found a residue of
   non-IDE staleness: a duplicated/dead constitutional slot, a missing slot number, several `§` pointers into
   **deprecated stub** rule files, references to **MCP servers already trimmed from `.mcp.json`**, and the
   Cursor-era lowercase `ask_user_question` tool-name (real tool is `AskUserQuestion`).
@@ -44,7 +44,7 @@ relates_to:
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | R1.1–R1.2 | Constitutional floor hygiene — §0≡§14 dup + missing §25 (annotate, no renumber) | ~5k | `§14`/`§25` cited elsewhere → numbering must stay stable | ✅ Done (2026-06-07) | §14 now explicit alias-of-§0; §25 reserved-note added; citation map proved §14 cited by 2 rules (no renumber); token-budget gate EXIT 0 |
 | W2 | R2.1–R2.2 | Repoint deprecated-stub pointers (§22 + Extended-Doctrine list) | ~6k | Live targets exist in `adg-analysis-procedures.md` / `adg-canonical-invariants.md` | ✅ Done (2026-06-07) | §22 → `adg-analysis-procedures.md` §3; Extended-Doctrine list collapsed 5 deprecated stubs + dropped inactive `global_rules.md`. **§5 had no stub pointer — review over-flagged; left intact.** |
-| W3 | R3.1–R3.2 | Correct retired-MCP references | ~6k | Native substitutes per `CLAUDE.md` "Not in `.mcp.json`" table | ✅ Done (2026-06-07) | `sequential-thinking-enforcement.md` "Task Manager MCP" → `structured-reasoning`. **§13 verified script-based (`adg_redis_ingest.py` exists) + §17 uses live memory MCP — both non-stale, left intact (review over-flagged).** |
+| W3 | R3.1–R3.2 | Correct retired-MCP references | ~6k | Native substitutes per `AGENTS.md` "Not in `.mcp.json`" table | ✅ Done (2026-06-07) | `sequential-thinking-enforcement.md` "Task Manager MCP" → `structured-reasoning`. **§13 verified script-based (`adg_redis_ingest.py` exists) + §17 uses live memory MCP — both non-stale, left intact (review over-flagged).** |
 | W4 | R4.1–R4.2 | `ask_user_question` → `AskUserQuestion` | ~8k | Token load-bearing + W5-rename in flight | ✅ Done — handed off (2026-06-07) | Blast-radius confirmed the functional token is owned by the in-flight `cursor-naming-rename-w5` rename (already renaming `post_*_ask_user_question_packet_audit.py`). Parallel prose sweep would collide → **deferred to that plan by design**; no edit here. |
 | W5 | R5.1 | Verify + close | ~3k | All prior waves green | ✅ Done (2026-06-07) | token-budget gate EXIT 0; all 4 governance markers confirmed on `origin/main`; plan artifact committed + FF to main |
 
@@ -52,11 +52,11 @@ relates_to:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| R1.1 | Grep `§14`/`§0`/`§25` citation map | `.claude/rules/**` | Must know who cites the slots before touching them | ~2k | ✅ |
-| R1.2 | Annotate §0≡§14 + reserve §25 | `.claude/rules/constitutional.md` | Keep numbering stable | ~3k | ✅ |
+| R1.1 | Grep `§14`/`§0`/`§25` citation map | `.codex/rules/**` | Must know who cites the slots before touching them | ~2k | ✅ |
+| R1.2 | Annotate §0≡§14 + reserve §25 | `.codex/rules/constitutional.md` | Keep numbering stable | ~3k | ✅ |
 | R2.1 | Confirm live targets + map | `adg-analysis-procedures.md`, `adg-canonical-invariants.md` | Stubs redirect; cite the real § | ~2k | ✅ |
 | R2.2 | Repoint §22 + Extended-Doctrine list | `constitutional.md` | `global_rules.md` inactive — dropped | ~4k | ✅ |
-| R3.1 | Map retired servers → substitutes | `CLAUDE.md`, `.mcp.json` | Verify `adg_redis_ingest.py` still exists (it does) | ~3k | ✅ |
+| R3.1 | Map retired servers → substitutes | `AGENTS.md`, `.mcp.json` | Verify `adg_redis_ingest.py` still exists (it does) | ~3k | ✅ |
 | R3.2 | Correct sequential-thinking Task-Manager ref | `sequential-thinking-enforcement.md` | §13/§17 verified non-stale, left intact | ~3k | ✅ |
 | R4.1 | Blast-radius: `ask_user_question` token | hooks, governance scripts, markers | Token load-bearing + live rename in flight | ~4k | ✅ |
 | R4.2 | Handoff to `cursor-naming-rename-w5` | — | No parallel sweep; avoid collision | ~4k | ✅ (handed off) |
@@ -113,5 +113,5 @@ correctly handed off to `cursor-naming-rename-w5` (the functional `ask_user_ques
   `origin/main` (PR `#247`). Confirmed present on `origin/main`.
 - W4 handed off to `cursor-naming-rename-w5`. W5 verification gate green.
 - This artifact created on a fresh branch off `origin/main` and fast-forwarded to main to close the plan.
-- RCA captured this session: the `.claude/` edit-guard is pierced only by scoped `Edit/Write(.claude/<sub>/**)`
+- RCA captured this session: the `.codex/` edit-guard is pierced only by scoped `Edit/Write(.codex/<sub>/**)`
   allow rules, NOT by `bypassPermissions` — memory `claude-folder-relocatability` corrected accordingly.

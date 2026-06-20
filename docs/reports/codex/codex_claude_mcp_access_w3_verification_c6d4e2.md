@@ -78,4 +78,4 @@ Per-server result:
 
 ## W4 Inputs
 
-W4 should run callable proof calls where Codex tools are exposed, record blocked/degraded proof rows for absent or closed routes, and update the Codex backup adapter documentation with the final access procedure.
+W4 should run callable proof calls where Codex tools are exposed, record blocked/degraded proof rows for absent or closed routes, and update the Codex primary adapter documentation with the final access procedure.

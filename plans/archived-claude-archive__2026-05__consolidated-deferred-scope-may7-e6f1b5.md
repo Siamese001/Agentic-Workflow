@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\consolidated-deferred-scope-may7-e6f1b5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\consolidated-deferred-scope-may7-e6f1b5.md'
 original_relative_path: '_archive\\2026-05\\consolidated-deferred-scope-may7-e6f1b5.md'
 source_sha256: 33b91abc8b6a1fc1dd445d7017314a0a9d879c03b2cbcd32dbd85bd7ee46e06e
 recovered_status: LEGACY_EXISTING

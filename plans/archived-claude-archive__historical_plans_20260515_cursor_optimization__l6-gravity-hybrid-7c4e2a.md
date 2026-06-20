@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l6-gravity-hybrid-7c4e2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\l6-gravity-hybrid-7c4e2a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\l6-gravity-hybrid-7c4e2a.md'
 source_sha256: ba2781bb68f95de5961ec6b6f9640bf6df4ba47801914cab25d5ad4f27df551a
 recovered_status: LEGACY_EXISTING

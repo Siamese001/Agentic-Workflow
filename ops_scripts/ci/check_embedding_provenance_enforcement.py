@@ -11,7 +11,7 @@ Exit codes:
     1 — one or more checks fail
     2 — unexpected import error
 
-Plan: .claude/plans/bge-m3-gap-closure-c8f3a2.md W3.1
+Plan: .codex/plans/bge-m3-gap-closure-c8f3a2.md W3.1
 """
 
 from __future__ import annotations

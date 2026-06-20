@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
+SCRIPTS_DIR = REPO_ROOT / ".codex" / "governance" / "scripts"
 TIMEOUT_S = 15.0
 
 TARGETS = [

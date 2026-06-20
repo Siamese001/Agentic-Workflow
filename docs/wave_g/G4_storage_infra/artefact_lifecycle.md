@@ -153,7 +153,7 @@ See `vector_collections.md` for full detail.
 ### 5.6 legacy editor telemetry
 
 - `artifacts/windsurf/`: 14 files / 0.4 MB. Includes `adg_first_violations.jsonl` (append-only).
-- Authored by `.claude/governance/scripts/post_*` hooks.
+- Authored by `.codex/governance/scripts/post_*` hooks.
 
 ### 5.7 Anomaly watchlist
 

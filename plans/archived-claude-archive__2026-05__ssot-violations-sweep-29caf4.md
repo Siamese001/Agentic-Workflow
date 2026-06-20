@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ssot-violations-sweep-29caf4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ssot-violations-sweep-29caf4.md'
 original_relative_path: '_archive\\2026-05\\ssot-violations-sweep-29caf4.md'
 source_sha256: 74d6e48db33e92e741f961e221e9ffe303252ec75e7c9e9d2f19e02d6bf4c365
 recovered_status: LEGACY_EXISTING

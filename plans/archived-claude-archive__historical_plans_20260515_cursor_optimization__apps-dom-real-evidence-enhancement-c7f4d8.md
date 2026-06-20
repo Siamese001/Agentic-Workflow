@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-dom-real-evidence-enhancement-c7f4d8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-dom-real-evidence-enhancement-c7f4d8.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-dom-real-evidence-enhancement-c7f4d8.md'
 source_sha256: 25c56bede3566ac307d4375eb3093632629284c9269bd8f97b21310cae5b6bc8
 recovered_status: LEGACY_EXISTING

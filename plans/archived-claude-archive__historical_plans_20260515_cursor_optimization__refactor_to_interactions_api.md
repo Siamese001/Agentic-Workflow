@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\refactor_to_interactions_api.md'
 source_sha256: 612c3dbc13396552c6ec43115377d870b8df2ad69faace9b6f7e53b8b3d1b274
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-portfolio-integrated-evaluation-7d3a91.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-portfolio-integrated-evaluation-7d3a91.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-portfolio-integrated-evaluation-7d3a91.md'
 source_sha256: 3c8bc8ec78b832d83cfb1efa0861fdb30251f91f0c0b918e512b89d7beaea8e9
 recovered_status: LEGACY_EXISTING

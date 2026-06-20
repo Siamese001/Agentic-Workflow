@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-l7-w2-w4-followup-a2e8f4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-l7-w2-w4-followup-a2e8f4.md'
 original_relative_path: '_archive\\2026-05\\apps-l7-w2-w4-followup-a2e8f4.md'
 source_sha256: aa0a20e0eace091a3f69830fc2d14b8e36d4bbfa5ab805afb1a1d2f9a98142d4
 recovered_status: LEGACY_EXISTING

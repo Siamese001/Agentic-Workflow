@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-mcp-reopen-hardening-e8f9a0.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-mcp-reopen-hardening-e8f9a0.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-mcp-reopen-hardening-e8f9a0.md'
 source_sha256: 843679ebe5eeb739f00d2a1665d8616b4f30ea0bb487869ed47767f56a7a53e4
 recovered_status: LEGACY_EXISTING

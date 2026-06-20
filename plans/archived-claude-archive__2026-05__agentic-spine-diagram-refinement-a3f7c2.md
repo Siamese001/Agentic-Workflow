@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-spine-diagram-refinement-a3f7c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-spine-diagram-refinement-a3f7c2.md'
 original_relative_path: '_archive\\2026-05\\agentic-spine-diagram-refinement-a3f7c2.md'
 source_sha256: 2ad3c39648e248ae9c01d65f04771e6a1bd89dc832c0908f78970935ecb3392f
 recovered_status: LEGACY_EXISTING

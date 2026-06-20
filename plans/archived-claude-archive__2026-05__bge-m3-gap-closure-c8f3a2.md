@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\bge-m3-gap-closure-c8f3a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\bge-m3-gap-closure-c8f3a2.md'
 original_relative_path: '_archive\\2026-05\\bge-m3-gap-closure-c8f3a2.md'
 source_sha256: 99067e8f1ad7f89e0faf6d2f451768df3fcd06bd7e7649c341ac7ee331795d88
 recovered_status: LEGACY_EXISTING

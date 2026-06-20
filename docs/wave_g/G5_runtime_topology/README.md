@@ -22,9 +22,9 @@
   - `docs/wave_e/99_integration_v14/canonical/*` (preferred baseline present)
 - Primary runtime surfaces inspected:
   - `.mcp.json`
-  - `.claude/settings.json`
+  - `.codex/hooks.json`
   - `docs/archive/windsurf/legacy-tree/workflows/*.md`
-  - `.claude/governance/scripts/*`
+  - `.codex/governance/scripts/*`
   - `tools/mcp/*`, `tools/adg/*`, `tools/memory/*`, `tools/retrieval/*`, `tools/otel/*`
   - `apps_*/__main__.py`, `apps_rg/bootstrap_runtime.py`, `apps_exec/_optional_agentic_core.py`
   - `.github/workflows/*.yml`, `.pre-commit-config.yaml`, `pytest.ini`

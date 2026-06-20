@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ci-runtime-enforcement-0be75b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ci-runtime-enforcement-0be75b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-ci-runtime-enforcement-0be75b.md'
 source_sha256: c135b1755b9e73e77376246144f786d3b29f2daf813c846fb99558ed1d3efba5
 recovered_status: LEGACY_EXISTING

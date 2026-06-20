@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\judge-base-and-four-judges-c5e1f3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\judge-base-and-four-judges-c5e1f3.md'
 original_relative_path: '_archive\\2026-05\\judge-base-and-four-judges-c5e1f3.md'
 source_sha256: 03aab7b467d0b28fce442af482b0d3c94d3ae6bb6358026dc836d323e5e06fb7
 recovered_status: LEGACY_EXISTING

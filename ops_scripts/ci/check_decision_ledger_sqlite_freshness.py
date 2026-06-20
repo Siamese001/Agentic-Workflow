@@ -2,7 +2,7 @@
 """check_decision_ledger_sqlite_freshness.py — CI gate for decision-ledger health.
 
 Validates that the canonical SQLite decision ledger
-(.claude/state/refactor_decisions/refactor_decision_ledger.sqlite) is being
+(.codex/state/refactor_decisions/refactor_decision_ledger.sqlite) is being
 written to. The ledger is fed by:
 
     Codex response  -->  tools/capture/append_marker.py  -->  markers.jsonl
@@ -38,7 +38,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SQLITE_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+SQLITE_PATH = REPO_ROOT / ".codex" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 QUEUE_PATH = REPO_ROOT / "artifacts" / "capture" / "markers.jsonl"
 
 MAX_QUEUE_AGE_HOURS = 1

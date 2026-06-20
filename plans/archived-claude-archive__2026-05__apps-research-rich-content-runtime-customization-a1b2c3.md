@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-rich-content-runtime-customization-a1b2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-rich-content-runtime-customization-a1b2c3.md'
 original_relative_path: '_archive\\2026-05\\apps-research-rich-content-runtime-customization-a1b2c3.md'
 source_sha256: cf03bb24d0a3bd1eedebe071b1b3e074da0e12bec87f6ebf56001155154a779a
 recovered_status: LEGACY_EXISTING

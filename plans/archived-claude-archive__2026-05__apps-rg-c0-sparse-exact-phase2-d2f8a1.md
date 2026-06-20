@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-c0-sparse-exact-phase2-d2f8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-c0-sparse-exact-phase2-d2f8a1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-c0-sparse-exact-phase2-d2f8a1.md'
 source_sha256: 81298d61174eae2808cdcd52d206bf4d9bac527b95a16bd43b6c825c0bd5291c
 recovered_status: LEGACY_EXISTING

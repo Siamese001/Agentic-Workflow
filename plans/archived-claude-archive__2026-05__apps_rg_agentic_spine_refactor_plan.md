@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps_rg_agentic_spine_refactor_plan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps_rg_agentic_spine_refactor_plan.md'
 original_relative_path: '_archive\\2026-05\\apps_rg_agentic_spine_refactor_plan.md'
 source_sha256: 35a1e94b5673760d9e6c18eed47b28331d620bf1f54249802e62afe665fb892a
 recovered_status: LEGACY_EXISTING

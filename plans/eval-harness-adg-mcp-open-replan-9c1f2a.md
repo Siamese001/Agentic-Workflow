@@ -299,7 +299,7 @@ CHECKPOINT: E
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W2.1 - Replay Schema
@@ -396,7 +396,7 @@ rg -n "UWG|promotion|regression|calibration" .github tools docs agentic_core
 **Commands**:
 ```bash
 python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/eval-harness-adg-mcp-open-replan-9c1f2a.md
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ---

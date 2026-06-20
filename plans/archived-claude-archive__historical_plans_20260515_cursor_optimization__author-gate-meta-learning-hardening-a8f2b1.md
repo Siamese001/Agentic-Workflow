@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-meta-learning-hardening-a8f2b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-meta-learning-hardening-a8f2b1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\author-gate-meta-learning-hardening-a8f2b1.md'
 source_sha256: 85289ae854ccee9abb0ab47294944280ced4484a558d495a77be453ad30c3ea5
 recovered_status: LEGACY_EXISTING

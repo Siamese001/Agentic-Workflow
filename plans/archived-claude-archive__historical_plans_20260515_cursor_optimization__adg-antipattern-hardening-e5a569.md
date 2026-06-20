@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-antipattern-hardening-e5a569.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\adg-antipattern-hardening-e5a569.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\adg-antipattern-hardening-e5a569.md'
 source_sha256: 85b4afe4fd3d76186577714c57e1923e9392b955852ea2532ee69f5d60149553
 recovered_status: LEGACY_EXISTING

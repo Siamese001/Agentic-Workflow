@@ -4,7 +4,7 @@
 #   - No agentic_core/ diffs while plan touches_agentic_core=false (W10-AG may opt in via env)
 #   - Unit contract tests for graph-skills authority, capsule, FEC, hybrid, rubric, v2 migration
 #
-# Historical plan: .claude/plans/_archive/2026-05/graph-skills-quality-enhancement-c4e8a1.md
+# Historical plan: .codex/plans/_archive/2026-05/graph-skills-quality-enhancement-c4e8a1.md
 # Local mirror: python ops_scripts/apps_rg/emit_graph_skills_quality_w7.py
 
 name: Graph Skills Authority Ratchet

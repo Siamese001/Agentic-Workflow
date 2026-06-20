@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\10c-binding-wave-sweep-a3f2e7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\10c-binding-wave-sweep-a3f2e7.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\10c-binding-wave-sweep-a3f2e7.md'
 source_sha256: a5bea3b34e29c5e32e2b7b327acd2a7f105cecc50f95880556ddb96dc7b4e47b
 recovered_status: LEGACY_EXISTING

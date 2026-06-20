@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\windsurf-governance-w2-deferred-b6b-unblock-a8d4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\windsurf-governance-w2-deferred-b6b-unblock-a8d4e2.md'
 original_relative_path: '_archive\\2026-05\\windsurf-governance-w2-deferred-b6b-unblock-a8d4e2.md'
 source_sha256: 23a3f2c182cb723eea718e382c24284768a6f56db1b9f345c07a5573539943d5
 recovered_status: LEGACY_EXISTING

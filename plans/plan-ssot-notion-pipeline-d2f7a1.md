@@ -61,11 +61,11 @@ One plan: make every plan file land in `C:\Git\Agentic-Workflow-FRESH\plans` (no
 | W4.1 | Content-drift detection in `check_plan_registration_freshness` / `drift_report` | 🔲 TODO |
 
 ## RCA evidence (file:line)
-- Guard, no plans exemption: `.claude/hooks/before_file_edit_branch_guard.py:106-127` (blocks primary checkout on protected branch; `plans/**` not exempt).
-- Worktree routing: `.claude/hooks/session_start_branch_guard.py` + `git-branch-per-chat.md`; reaper `.claude/hooks/prune_merged_chat_worktrees.py`.
+- Guard, no plans exemption: `.codex/hooks/before_file_edit_branch_guard.py:106-127` (blocks primary checkout on protected branch; `plans/**` not exempt).
+- Worktree routing: `.codex/hooks/session_start_branch_guard.py` + `git-branch-per-chat.md`; reaper `.codex/hooks/prune_merged_chat_worktrees.py`.
 - Marker-driven, metadata-only capture: `post_agent_plan_registration_capture.py:7-16,102-124` (scans response, queues slug/path/status; "register via API-post-page").
 - No content in queue row: `_plan_registration.py:175-196` (`enqueue_plan` row = slug/path/declared_status/captured_at/registered — no digest, no body, no ai_summary).
-- Legacy path default documented: `post_agent_plan_registration_capture.py:15`; resolver prefers `plans/` (`_plan_registration.py:126-135`) but marker examples still cite `.claude/plans/`.
+- Legacy path default documented: `post_agent_plan_registration_capture.py:15`; resolver prefers `plans/` (`_plan_registration.py:126-135`) but marker examples still cite `.codex/plans/`.
 
 ## Wave 1 — Path: plans always to the main SSOT
 
@@ -73,7 +73,7 @@ WAVE_ID: W1
 WAVE_STATUS: TODO
 
 **Phases**:
-- **W1.1** — Exempt `plans/**` (parent dir == `plans`, `.md`, not `_archive`) from the worktree edit guard so plan files write to the primary checkout regardless of branch. Add `canonical_plans_dir()` resolving to `$CLAUDE_PROJECT_DIR/plans` (primary checkout) even when CWD is a worktree.
+- **W1.1** — Exempt `plans/**` (parent dir == `plans`, `.md`, not `_archive`) from the worktree edit guard so plan files write to the primary checkout regardless of branch. Add `canonical_plans_dir()` resolving to `$AGENTIC_REPO_ROOT/plans` (primary checkout) even when CWD is a worktree.
 - **W1.2** — `plan-location.md` + template: mandate the absolute main SSOT path (`C:\Git\Agentic-Workflow-FRESH\plans`), no exceptions; note worktree code stays in the worktree but plans are a shared SSOT.
 
 **Acceptance**: a Write to `C:/Git/Agentic-Workflow-FRESH/plans/<slug>.md` is ALLOWED by the guard; non-plan edits to the primary checkout stay BLOCKED.

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rca-wave-marker-emission-gap-c7d3f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rca-wave-marker-emission-gap-c7d3f1.md'
 original_relative_path: '_archive\\2026-05\\rca-wave-marker-emission-gap-c7d3f1.md'
 source_sha256: 843d54c5ccc0d1e1b72a86fc5eb1db4f2b1837df2c0045aa4a58e9df45f60488
 recovered_status: LEGACY_EXISTING

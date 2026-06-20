@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\02_apps-rg-structured-resume-refactor-f8c2a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\02_apps-rg-structured-resume-refactor-f8c2a1.md'
 original_relative_path: '_archive\\2026-05\\02_apps-rg-structured-resume-refactor-f8c2a1.md'
 source_sha256: 37cc4d96fc06acd2278d1a08d069ba932e89a7f1767100d5525d54852c5a4c0c
 recovered_status: LEGACY_EXISTING

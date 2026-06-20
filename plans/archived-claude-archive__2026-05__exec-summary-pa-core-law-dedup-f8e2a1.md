@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exec-summary-pa-core-law-dedup-f8e2a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exec-summary-pa-core-law-dedup-f8e2a1.md'
 original_relative_path: '_archive\\2026-05\\exec-summary-pa-core-law-dedup-f8e2a1.md'
 source_sha256: 0cd5732a74dc5ccf224a72945c592e3c5e5571311a6886f04f198e36a88635b3
 recovered_status: LEGACY_EXISTING

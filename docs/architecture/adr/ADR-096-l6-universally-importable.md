@@ -84,4 +84,4 @@ For the 10 sites enumerated above, guardian comments land as part of this ADR's 
 - ADR-095 — L6 Observability Dependency Hygiene (symmetric: L6 imports FROM lower)
 - `adg-canonical-invariants.md` §6 — Layer Criticality Multipliers (L0 = ×0.75 at bottom, L6 = ×0.75 at top — both boundaries)
 - `tools/adg/core/guardian_filter.py` — `is_layer_violation_exempted()` is the SSOT for exemption recognition
-- Parent plan: `.claude/plans/p1p2-burndown-followup-a2e4c7.md` W2-01
+- Parent plan: `.codex/plans/p1p2-burndown-followup-a2e4c7.md` W2-01

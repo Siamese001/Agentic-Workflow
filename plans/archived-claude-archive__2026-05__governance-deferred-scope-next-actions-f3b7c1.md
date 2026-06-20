@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\governance-deferred-scope-next-actions-f3b7c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\governance-deferred-scope-next-actions-f3b7c1.md'
 original_relative_path: '_archive\\2026-05\\governance-deferred-scope-next-actions-f3b7c1.md'
 source_sha256: 8c05495175cfa1ca74620102514ce2f81168e2282a96588619547a81cd905bf5
 recovered_status: LEGACY_EXISTING

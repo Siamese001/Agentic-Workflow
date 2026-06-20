@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\three-bucket-otel-view-5db409.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\three-bucket-otel-view-5db409.md'
 original_relative_path: '_archive\\2026-05\\three-bucket-otel-view-5db409.md'
 source_sha256: 8101dddee22fd35193b3e533844a6f8e8b492b3585be3ba52141d0e99a68e578
 recovered_status: LEGACY_EXISTING

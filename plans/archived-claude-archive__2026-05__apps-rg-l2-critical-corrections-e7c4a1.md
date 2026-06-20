@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-l2-critical-corrections-e7c4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-l2-critical-corrections-e7c4a1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-l2-critical-corrections-e7c4a1.md'
 source_sha256: f5d1f26409f0136e976c9b2ba19038f2b06e28caea5efd26a9d409895f59fe83
 recovered_status: LEGACY_EXISTING

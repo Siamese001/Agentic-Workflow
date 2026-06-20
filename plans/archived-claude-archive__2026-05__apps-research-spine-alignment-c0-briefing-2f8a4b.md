@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-spine-alignment-c0-briefing-2f8a4b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-spine-alignment-c0-briefing-2f8a4b.md'
 original_relative_path: '_archive\\2026-05\\apps-research-spine-alignment-c0-briefing-2f8a4b.md'
 source_sha256: 4ff530dc55a6e8bae8867b1b42842547f48b989fcf04c14820b2307d667e0329
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\skill-frontmatter-budget-fix-f3a1c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\skill-frontmatter-budget-fix-f3a1c9.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\skill-frontmatter-budget-fix-f3a1c9.md'
 source_sha256: e0395e7ea145a82ee33e80870e1647969375cacc898ca2cf41a577f08cca43ed
 recovered_status: LEGACY_EXISTING

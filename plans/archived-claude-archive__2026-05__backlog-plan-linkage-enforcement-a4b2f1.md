@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\backlog-plan-linkage-enforcement-a4b2f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\backlog-plan-linkage-enforcement-a4b2f1.md'
 original_relative_path: '_archive\\2026-05\\backlog-plan-linkage-enforcement-a4b2f1.md'
 source_sha256: 64ac218ee51ca2ce06a654b0738c3fdf1971860aec61d5348f7802186324bea6
 recovered_status: LEGACY_EXISTING

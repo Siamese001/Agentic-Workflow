@@ -334,7 +334,7 @@ class TestDefaultProtectedRootPolicy:
         assert isinstance(policy, mp.ProtectedRootPolicy)
         # Must include the canonical immutable roots
         assert ".github" in policy.immutable_roots
-        assert ".claude/rules" in policy.immutable_roots
+        assert ".codex/rules" in policy.immutable_roots
         # log_path is a string (JSONL destination)
         assert isinstance(policy.log_path, str) and policy.log_path
 

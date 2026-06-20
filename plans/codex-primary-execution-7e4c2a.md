@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-06-16
 
 ## Context (SCQA)
 
-- **Situation** - Codex can run repo work and now has callable Memory, GitKraken, and Vector DB surfaces in-session, but repo docs still describe it as a backup adapter.
+- **Situation** - Codex can run repo work and now has callable Memory, GitKraken, and Vector DB surfaces in-session, but repo docs still describe it as a primary adapter.
 - **Complication** - Claude API rate limits make Claude-first execution brittle, while stale Codex MCP evidence can push agents into degraded fallbacks even when live tools are callable.
 - **Question** - How do we make Codex the practical execution SSOT without creating a second governance registry?
 - **Answer** - Add a Codex-primary contract, executable readiness checks, run receipt validation, a refreshed live MCP snapshot, and advisory-only local Codex skill checks while preserving repo-owned files as versioned governance inputs during migration.
@@ -43,7 +43,7 @@ LAST_UPDATED: 2026-06-16
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | W1.1, W1.2 | Contract and plan | ~4K | Existing `.claude` rules remain repo-owned governance inputs. | DONE | Primary contract and AGENTS/doc pointers exist. |
+| W1 | W1.1, W1.2 | Contract and plan | ~4K | Existing `.codex` rules remain repo-owned governance inputs. | DONE | Primary contract and AGENTS/doc pointers exist. |
 | W2 | W2.1, W2.2 | Readiness and receipts | ~8K | Shell-side scripts cannot directly introspect Codex MCP tools, so callable proof can be supplied by env/status evidence. | DONE | Readiness and receipt validators pass focused unit tests. |
 | W3 | W3.1, W3.2 | Evidence refresh and verification | ~5K | MCP reports are evidence snapshots, not routing registries. | DONE | Live snapshot documents callable/degraded routes and governance checks pass. |
 | W4 | W4.1, W4.2 | Local skill dependency cleanup | ~4K | Personal Codex skills are workstation bootstrap shims, not repo governance SSOT. | DONE | Compatibility verifier no longer hard-fails on missing personal skills by default. |
@@ -68,7 +68,7 @@ LAST_UPDATED: 2026-06-16
 
 ## Out Of Scope
 
-- Rewriting `.claude` rule bodies into Codex-specific skills.
+- Rewriting `.codex` rule bodies into Codex-specific skills.
 - Changing credentials, MCP secrets, or provider API keys.
 - Removing Claude compatibility files in this pass.
 - Solving raw DeepWiki or ADG MCP host exposure if the Codex host does not expose those tools.
@@ -91,7 +91,7 @@ CHECKPOINT: A
 
 **Acceptance**:
 - `docs/codex-primary-execution.md` exists and defines Codex as the primary local execution surface.
-- AGENTS and adapter docs point to the new contract without duplicating `.claude` rule bodies.
+- AGENTS and adapter docs point to the new contract without duplicating `.codex` rule bodies.
 
 ---
 
@@ -146,7 +146,7 @@ CHECKPOINT: D
 - **W4.2** - Preserve strict bootstrap audit flag | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
-- `scripts/governance/verify_codex_backup.py` passes by default when repo anchors are valid even if personal Codex skills are absent.
+- `scripts/governance/verify_codex_primary.py` passes by default when repo anchors are valid even if personal Codex skills are absent.
 - `--require-personal-skills` preserves hard-fail behavior for workstation bootstrap audits.
 - `--repo-only` still suppresses personal-skill checks entirely for CI.
 
@@ -165,7 +165,7 @@ CHECKPOINT: E
 - **W5.2** - Verify follow-up wave | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
-- `AGENTS.md`, `docs/codex-primary-execution.md`, and `docs/codex-backup-adapter.md` state that personal Codex skills are optional bootstrap shims.
+- `AGENTS.md`, `docs/codex-primary-execution.md`, and `docs/codex-primary-execution.md` state that personal Codex skills are optional bootstrap shims.
 - Unit tests cover default advisory, repo-only, and strict personal-skill behavior.
 - Primary and compatibility verifiers pass.
 
@@ -202,7 +202,7 @@ python scripts/governance/verify_codex_run_receipt.py <receipt.json>
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py
+python scripts/governance/verify_codex_primary.py
 ```
 
 ### W4.2 - Preserve Strict Bootstrap Audit
@@ -210,7 +210,7 @@ python scripts/governance/verify_codex_backup.py
 
 **Commands**:
 ```bash
-python scripts/governance/verify_codex_backup.py --require-personal-skills
+python scripts/governance/verify_codex_primary.py --require-personal-skills
 ```
 
 ---
@@ -242,7 +242,7 @@ DoD-3: Run receipt validator enforces failure RCA
 - Status: DONE
 
 DoD-4: Existing compatibility verifier still passes
-- Evidence: `python scripts/governance/verify_codex_backup.py` exits 0
+- Evidence: `python scripts/governance/verify_codex_primary.py` exits 0
 - Status: DONE
 
 DoD-5: Targeted unit tests pass
@@ -250,7 +250,7 @@ DoD-5: Targeted unit tests pass
 - Status: DONE
 
 DoD-6: Personal Codex skills are advisory by default
-- Evidence: `python -m pytest tests/unit/scripts/governance/test_verify_codex_backup.py -q` passes
+- Evidence: `python -m pytest tests/unit/scripts/governance/test_verify_codex_primary.py -q` passes
 - Status: DONE
 
 DoD-7: Follow-up docs and receipt validate

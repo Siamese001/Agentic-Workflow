@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\sqlite-graphstore-implementation-7a3b2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\sqlite-graphstore-implementation-7a3b2f.md'
 original_relative_path: '_archive\\2026-05\\sqlite-graphstore-implementation-7a3b2f.md'
 source_sha256: d71d48723a314ee5b3115161196c0df87d2a45f82b960c61b957c0eea0d23a4a
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-context-limits-ssot-b7e4a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-context-limits-ssot-b7e4a1.md'
 original_relative_path: 'exec-summary-context-limits-ssot-b7e4a1.md'
 source_sha256: 6a59d0ee3bea72568c7d20f315f726d38fcfb494b5d6c89b5f5f971b67eedc80
 recovered_status: LEGACY_EXISTING

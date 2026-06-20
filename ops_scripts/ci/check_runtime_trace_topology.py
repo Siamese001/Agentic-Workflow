@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-RUNTIME-TRACE-TOPOLOGY — runtime evidence is more than row shape.
 
-Plan: ``.claude/plans/adg-three-graph-harness-e57cc7.md`` (W2.P2).
+Plan: ``.codex/plans/adg-three-graph-harness-e57cc7.md`` (W2.P2).
 
 Sister gate to ``check_runtime_proof_view_well_formed.py``. That gate checks
 ROW SHAPE (closed-enum status, non-empty fields, attesting_trace_count >= 1).

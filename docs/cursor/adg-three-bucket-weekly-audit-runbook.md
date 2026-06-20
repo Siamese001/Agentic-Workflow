@@ -46,4 +46,4 @@ Re-run audit after every snapshot regen you intend to certify against.
 - Not `ADG_CERTIFIED` strict mode
 - Not mandatory on every `generate_full_adg` run
 
-See [ADR-079](../architecture/adr/ADR-079-adg-pipeline-three-bucket-opt-in.md) and plan [adg-three-bucket-pipeline-redesign-c8e4f1.md](../../.claude/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md).
+See [ADR-079](../architecture/adr/ADR-079-adg-pipeline-three-bucket-opt-in.md) and plan [adg-three-bucket-pipeline-redesign-c8e4f1.md](../../.codex/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md).

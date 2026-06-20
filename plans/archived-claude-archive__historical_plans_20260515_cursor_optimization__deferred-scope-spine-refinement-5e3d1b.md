@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-spine-refinement-5e3d1b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-spine-refinement-5e3d1b.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\deferred-scope-spine-refinement-5e3d1b.md'
 source_sha256: 44c20fea4c39436f018d7206d6b3564da2c381056631a7a17bc48f882b45f26b
 recovered_status: LEGACY_EXISTING

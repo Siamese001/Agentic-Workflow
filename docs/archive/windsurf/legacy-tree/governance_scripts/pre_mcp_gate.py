@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shim — SSOT: ``.claude/governance/scripts/pre_mcp_gate.py``.
+"""Shim — SSOT: ``.codex/governance/scripts/pre_mcp_gate.py``.
 
 Windsurf ``pre_mcp_tool_use`` may still invoke this path. Library tests that
 ``sys.path.insert(0, ".../.windsurf/scripts")`` and ``import pre_mcp_gate`` load
@@ -15,8 +15,8 @@ from pathlib import Path
 
 _SSOT = (
     # parent       = _legacy_windsurf/
-    # parent.parent = .claude/governance/scripts/  ← real SSOT lives here
-    # (old: parents[2] = .claude/governance/ → double-path bug)
+    # parent.parent = .codex/governance/scripts/  ← real SSOT lives here
+    # (old: parents[2] = .codex/governance/ → double-path bug)
     Path(__file__).resolve().parent.parent
     / "pre_mcp_gate.py"
 )

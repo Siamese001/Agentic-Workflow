@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-pa-bom-compiled-artifact-final-b8e2d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-pa-bom-compiled-artifact-final-b8e2d1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-pa-bom-compiled-artifact-final-b8e2d1.md'
 source_sha256: e4c3a1c91c8161cee3b2c7f9baf2629622b1c178b00b7f3f4b05590b5ba380ac
 recovered_status: LEGACY_EXISTING

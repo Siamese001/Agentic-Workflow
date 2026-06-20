@@ -1,7 +1,7 @@
 # Operator Runbook — Wave B2 Collection Topology
 
-**Status**: Active (Wave B2) · **Last validated**: 2026-07 (Wave B2 topology refactor)  
-**Collections**: `ext_authority`, `repo_evidence`, `ext_raw` · **Embedding model**: `BAAI/bge-m3` (1024-dim)  
+**Status**: Active (Wave B2) · **Last validated**: 2026-07 (Wave B2 topology refactor)
+**Collections**: `ext_authority`, `repo_evidence`, `ext_raw` · **Embedding model**: `BAAI/bge-m3` (1024-dim)
 **ChromaDB path**: `data/cache/chromadb`
 
 > **RETIRED collections**: `curated_agent_docs`, `arch_docs`, `ext_knowledge` — do NOT rebuild these
@@ -173,50 +173,50 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 ## 5. Failure Patterns to Watch For
 
 ### F1: Required source fetch failure
-**Symptom**: `Required OK/FAIL : X/1` or more in dry-run output.  
-**Cause**: External URL returned 403/404, or internal file path deleted/moved.  
+**Symptom**: `Required OK/FAIL : X/1` or more in dry-run output.
+**Cause**: External URL returned 403/404, or internal file path deleted/moved.
 **Fix**: Update the `path` in `EXT_AUTHORITY_SOURCES` in `ingest_ext_authority.py` or `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py`. Re-run dry-run first.
 
 ### F2: Dedup collisions > 0
-**Symptom**: `Dedup collisions: N` in dry-run report.  
-**Cause**: Same (source_url, heading_path, chunk_index) appears in two distinct CURATED_SOURCES entries.  
+**Symptom**: `Dedup collisions: N` in dry-run report.
+**Cause**: Same (source_url, heading_path, chunk_index) appears in two distinct CURATED_SOURCES entries.
 **Fix**: Remove the duplicate entry from `EXT_AUTHORITY_SOURCES` or `REPO_CANONICAL_SOURCES`. The `collapse_group` field documents intentional clusters.
 
 ### F3: Redundancy rate > 0.5 in eval
-**Symptom**: `redundancy_rate` column > 0.50 for `ext_authority` in eval report.  
-**Cause**: Multiple sources pointing to the same URL, or very large documents producing many chunks from one source dominating top-K.  
+**Symptom**: `redundancy_rate` column > 0.50 for `ext_authority` in eval report.
+**Cause**: Multiple sources pointing to the same URL, or very large documents producing many chunks from one source dominating top-K.
 **Fix**: Check for duplicate paths in `EXT_AUTHORITY_SOURCES`. Consider adding a `max_chunks_per_source` guard in `ingest_ext_authority.py`.
 
 ### F4: Normative-use gate incorrect
-**Symptom**: `invalid_for_normative_use=True` chunks appearing in normative bundles for `ext_authority`.  
-**Cause**: A source was added to CURATED_SOURCES with `canonical=False`.  
+**Symptom**: `invalid_for_normative_use=True` chunks appearing in normative bundles for `ext_authority`.
+**Cause**: A source was added to CURATED_SOURCES with `canonical=False`.
 **Fix (Wave B2)**: All ext_authority sources are normative by construction (`invalid_for_normative_use=False`). Remove any source with mismatched `source_band` or add it to the excluded section.
 
 ### F5: Overall win rate drops below 95%
-**Symptom**: Eval harness reports `All queries: X/40 (Y%)` where Y < 95.  
-**Cause A**: arch_docs was rebuilt WITHOUT Phase 0 authority metadata (`invalid_for_normative_use`, `source_collection`, etc.), causing `_is_canonical` in the eval harness to over-count arch_docs as canonical, boosting its win_score.  
-**Fix A**: Re-run `ingest_repo_evidence.py` to restore `repo_evidence` with correct `invalid_for_normative_use=True` on all Lane D chunks.  
-**Cause B**: A high-signal ext_authority source was removed or fetched at a stale URL.  
+**Symptom**: Eval harness reports `All queries: X/40 (Y%)` where Y < 95.
+**Cause A**: arch_docs was rebuilt WITHOUT Phase 0 authority metadata (`invalid_for_normative_use`, `source_collection`, etc.), causing `_is_canonical` in the eval harness to over-count arch_docs as canonical, boosting its win_score.
+**Fix A**: Re-run `ingest_repo_evidence.py` to restore `repo_evidence` with correct `invalid_for_normative_use=True` on all Lane D chunks.
+**Cause B**: A high-signal ext_authority source was removed or fetched at a stale URL.
 **Fix B**: Check dry-run output for `Required FAIL` entries in `ingest_ext_authority.py`. Restore missing sources.
 
 ### F9: arch_docs_contamination > 0 for normative query classes
-**Symptom**: `ext_authority` chunks from repo-evidence or ext_raw appearing in normative bundles.  
+**Symptom**: `ext_authority` chunks from repo-evidence or ext_raw appearing in normative bundles.
 **Fix**: Verify `ext_authority` contains only sources from `EXT_AUTHORITY_SOURCES`. Check that no `repo_evidence` or `ext_raw` chunks were accidentally ingested into `ext_authority`.
 
 
 ### F6: POLICY category wins drop (UWG / C0 / determinism queries)
-**Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.  
-**Cause**: `.claude/rules/constitutional.md` or `global_rules.md` were removed or significantly rewritten.  
+**Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.
+**Cause**: `.codex/rules/constitutional.md` or `global_rules.md` were removed or significantly rewritten.
 **Fix**: These are in `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py` and are marked `required=True`. Dry-run will catch removals. If content changed, re-run ingestion.
 
 ### F8: POLICY-05 regressed (constitutional hard constraints query)
-**Symptom**: POLICY-05 wins for arch_docs after adding new orchestration pattern docs.  
-**Cause**: Anthropic/LangGraph/AutoGen pattern docs surface for "constraints" queries, diluting constitutional.md signal in top-K.  
+**Symptom**: POLICY-05 wins for arch_docs after adding new orchestration pattern docs.
+**Cause**: Anthropic/LangGraph/AutoGen pattern docs surface for "constraints" queries, diluting constitutional.md signal in top-K.
 **Fix**: Apply `collapse_group_dedup(max_per_group=2)` in `HybridSearchEngine` before returning results for `tool_contracts` and `best_practice` routed queries. This caps Anthropic pattern cluster at 2 slots, letting constitutional.md surface.
 
 ### F7: Embedding model mismatch
-**Symptom**: `IngestionError: Model dim mismatch: got X, expected 1024`.  
-**Cause**: EMBEDDING_MODEL changed or a different model was loaded from cache.  
+**Symptom**: `IngestionError: Model dim mismatch: got X, expected 1024`.
+**Cause**: EMBEDDING_MODEL changed or a different model was loaded from cache.
 **Fix**: Ensure `BAAI/bge-m3` is the model at all three ingestion scripts (`EMBEDDING_MODEL = "BAAI/bge-m3"`). The collections were built with 1024-dim embeddings — a dim change requires full rebuild of all three collections.
 
 ---
@@ -259,7 +259,7 @@ repo implementation / ADG/code  → repo_evidence (Lane D)→ implementation
 unvetted web background         → ext_raw               → (excluded from normative bundles)
 ```
 
-Routing is implemented in `query_router.py` via `QueryIntentDetector.detect_topic_domain()`.  
-Apply `collapse_group_dedup(max_per_group=2)` from `evidence_shaper.py` for `tool_contracts` and `best_practice` routed results.  
+Routing is implemented in `query_router.py` via `QueryIntentDetector.detect_topic_domain()`.
+Apply `collapse_group_dedup(max_per_group=2)` from `evidence_shaper.py` for `tool_contracts` and `best_practice` routed results.
 
 See `query_router.py` for domain-aware collection routing implementation.

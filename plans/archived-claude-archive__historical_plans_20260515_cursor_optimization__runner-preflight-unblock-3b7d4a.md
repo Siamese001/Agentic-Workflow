@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runner-preflight-unblock-3b7d4a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runner-preflight-unblock-3b7d4a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runner-preflight-unblock-3b7d4a.md'
 source_sha256: 006fedd9aa92ec16236cde245d8fb770127461c871baa7449a6c8cead5bbdf43
 recovered_status: LEGACY_EXISTING

@@ -1,6 +1,6 @@
 """CI gate: holdout corpus isolation contract.
 
-Plan: `.claude/plans/holdout-corpus-authoring-b5d2f6.md`.
+Plan: `.codex/plans/holdout-corpus-authoring-b5d2f6.md`.
 Author-Gate: `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine).
 
 Enforces: every row in `apps_eval/fixtures/holdout/<app>.jsonl` MUST

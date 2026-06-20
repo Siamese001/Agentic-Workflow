@@ -44,14 +44,14 @@ Give Codex the same practical MCP access as Claude Code for this repository: the
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W1.1 | Read `.mcp.json`, `.claude/mcp-notes.md`, and Codex tool inventory | DONE |
+| W1.1 | Read `.mcp.json`, `.codex/mcp-notes.md`, and Codex tool inventory | DONE |
 | W1.2 | Produce desired-vs-exposed MCP capability matrix | DONE |
 | W2.1 | Select exposure mechanism per MCP: native Codex tool, plugin MCP, host-loaded MCP, or fallback | DONE |
 | W2.2 | Define no-parallel-registry invariants and failure messages | DONE |
 | W3.1 | Extend Codex MCP audit to distinguish callable tools from process presence | DONE |
 | W3.2 | Add focused tests or fixtures for the audit classification | DONE |
 | W4.1 | Run callable verification for each configured MCP | DONE |
-| W4.2 | Update Codex backup adapter docs with the final access procedure | DONE |
+| W4.2 | Update Codex primary adapter docs with the final access procedure | DONE |
 
 ## Plan State Markers
 
@@ -97,7 +97,7 @@ LAST_UPDATED: 2026-06-11
 > **W4 COMPLETE / PLAN COMPLETE (2026-06-11).** Created W4 closeout artifacts:
 > `docs/reports/codex/codex_claude_mcp_access_w4_proof_c6d4e2.md` and
 > `docs/reports/codex/codex_claude_mcp_access_w4_proof_c6d4e2.json`.
-> Updated `docs/codex-backup-adapter.md` with the final route-evidence
+> Updated `docs/codex-primary-execution.md` with the final route-evidence
 > operating procedure. W4 proof results: `notion` is a callable plugin
 > substitute; `playwright` is a callable node/browser substitute; `adg_sqlite`
 > is exposed but blocked by closed transport; `memory`, `vector_db`, and
@@ -186,7 +186,7 @@ WAVE_ID: W1
 WAVE_STATUS: DONE
 WAVE_COMPLETE: YES
 
-- W1.1: Read root `.mcp.json`, `.claude/mcp-notes.md`, and active Codex tool inventory.
+- W1.1: Read root `.mcp.json`, `.codex/mcp-notes.md`, and active Codex tool inventory.
 - W1.2: Generate a table that separates configured, process-visible, and callable states.
 
 ### Wave 2 - Contract
@@ -214,7 +214,7 @@ WAVE_STATUS: DONE
 WAVE_COMPLETE: YES
 
 - W4.1: Run one proof call per MCP or record a blocked/degraded result.
-- W4.2: Update Codex backup adapter documentation with the access procedure and verification command.
+- W4.2: Update Codex primary adapter documentation with the access procedure and verification command.
 
 ## Definition of Done
 
@@ -224,7 +224,7 @@ WAVE_COMPLETE: YES
 | 2 | Capability matrix distinguishes configured/process/callable states | Generated report reviewed |
 | 3 | Every configured MCP has a proof call or explicit degraded fallback | Verification report reviewed |
 | 4 | Codex docs explain same-access procedure and limits | Doc diff reviewed |
-| 5 | Codex backup adapter still verifies | `python scripts/governance/verify_codex_backup.py` |
+| 5 | Codex primary adapter still verifies | `python scripts/governance/verify_codex_primary.py` |
 
 ## Risks
 

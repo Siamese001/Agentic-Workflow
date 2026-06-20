@@ -194,7 +194,7 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 
 **Replacement**: Use the structured reasoning pattern instead:
 - Workflow: `/structured-reasoning`
-- Skill: `.claude/skills/structured-reasoning/SKILL.md`
+- Skill: `.codex/skills/structured-reasoning/SKILL.md`
 - Reference: `docs/mcp/sequential-thinking-replacement.md`
 
 **If you see `sequentialthinking` tool calls in old code or logs**: These are stale references to the retired `@modelcontextprotocol/server-sequential-thinking` package. Update them to use native plan mode with `structured-reasoning` decomposition guidance.

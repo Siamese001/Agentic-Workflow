@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\agent-inventory-deferred-followup-c2a8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\agent-inventory-deferred-followup-c2a8f1.md'
 original_relative_path: 'agent-inventory-deferred-followup-c2a8f1.md'
 source_sha256: 4b56dae8dec5f810c7cdf7e7b987dabd157669bc7139779153efba44031b1c39
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\cursor-only-governance-ssot-d9e4b1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\cursor-only-governance-ssot-d9e4b1.md'
 original_relative_path: '_archive\\2026-05\\cursor-only-governance-ssot-d9e4b1.md'
 source_sha256: fea343e9dacf476e8cb3838c8683a57c914cce1f7988292f657691ba4186cdb1
 recovered_status: LEGACY_EXISTING

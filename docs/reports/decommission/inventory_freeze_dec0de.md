@@ -4,13 +4,13 @@
 > prior exploration estimates. All counts below were re-derived via Glob/Grep on 2026-06-07 — not
 > agent recollection. **This file is the deletion source-of-truth for W2/W5.**
 
-- **Plan:** [.claude/plans/cursor-windsurf-codeium-decommission-dec0de.md](../../../.claude/plans/cursor-windsurf-codeium-decommission-dec0de.md)
+- **Plan:** [.codex/plans/cursor-windsurf-codeium-decommission-dec0de.md](../../../.codex/plans/cursor-windsurf-codeium-decommission-dec0de.md)
 - **Notion row:** Plans DB page `37827693-f55c-8167-8e3a-dd8b650a1773` (Status = Not Started)
 - **Frozen at:** 2026-06-07
 - **Branch:** `fix/apps01-ledger-sqlite-adapter`
 - **Rollback tag (P1.2):** `pre-decommission-dec0de` → HEAD `7729ce863ee59fd61bf54ff53663671d25e9de67`
 - **Working tree note:** 7 unrelated files already modified on this branch (constitutional.md,
-  4 other rules, plan-governance SKILL, CLAUDE.md). **W2 deletions MUST be a separate commit** so the
+  4 other rules, plan-governance SKILL, AGENTS.md). **W2 deletions MUST be a separate commit** so the
   rollback tag and the unrelated edits stay disentangled.
 
 ---
@@ -22,7 +22,7 @@ The original plan inherited counts from the scoping exploration. The freeze inva
 | Plan claim | Reality (verified) | Action |
 |---|---|---|
 | `docs/archive/windsurf/` (~913 files) | **Does not exist.** Real path is `docs/archive/cursor/` (~27 files, includes `windsurf_compat/`). | Retarget W2 to `docs/archive/cursor/`. |
-| `.claude/plans/_archive/windsurf_legacy*` (~450) | **Does not exist.** `.claude/plans/_archive/` is the **general** plan archive (hundreds of unrelated historical plans). | **Do NOT bulk-delete.** Only the 17 brand-named files (see §B) are targets. |
+| `.codex/plans/_archive/windsurf_legacy*` (~450) | **Does not exist.** `.codex/plans/_archive/` is the **general** plan archive (hundreds of unrelated historical plans). | **Do NOT bulk-delete.** Only the 17 brand-named files (see §B) are targets. |
 | `.codeiumignore` "eliminated 2026-04-19" (per pre-commit T6h comment) | **File still exists at repo root.** | Delete in W3 (it was never actually removed). |
 
 > ⚠️ **Prior decommission already in flight.** `.pre-commit-config.yaml` carries comments
@@ -38,14 +38,14 @@ The original plan inherited counts from the scoping exploration. The freeze inva
 |---|------|-------------------|-----------------|-------------|
 | 1 | `.cursor/` | ~70 files, **all `__pycache__/*.pyc`** (zero source) | ⚠️ `.cursor` deletion-token block | `git rm -r` via pathspec file |
 | 2 | `tests/.windsurf/` | 2 files (`skills/test_plan_validation.py` + 1 `.pyc`) | ⛔ contains `.windsurf` | pathspec file |
-| 3 | `.claude/governance/scripts/_legacy_windsurf/` | 100+ `.py` source + ~160 incl `.pyc` + `.active_archive_1.py` variants + `_post_handlers/` | ✅ passes (`_legacy_windsurf`, no dot) | `git rm -r` direct |
-| 4 | `.claude/governance/scripts/_legacy_cursor/` | 12 `post_cursor_agent_*.py` + README.md + `.pyc` | ⛔ contains `post_cursor_agent` | pathspec file |
+| 3 | `.codex/governance/scripts/_legacy_windsurf/` | 100+ `.py` source + ~160 incl `.pyc` + `.active_archive_1.py` variants + `_post_handlers/` | ✅ passes (`_legacy_windsurf`, no dot) | `git rm -r` direct |
+| 4 | `.codex/governance/scripts/_legacy_cursor/` | 12 `post_cursor_agent_*.py` + README.md + `.pyc` | ⛔ contains `post_cursor_agent` | pathspec file |
 | 5 | `docs/archive/cursor/` | ~27 files (migration docs, `windsurf_compat/`, `_zero_loss_originals/`, `RULES_INDEX*`) | ✅ passes (lowercase, no dot) | `git rm -r` direct |
-| 6 | `.claude/plans/_archive/2026-05/` brand plans | 11 files matching `*windsurf*`/`*cursor*` | ✅ passes | pathspec file (targeted) |
-| 7 | `.claude/plans/_archive/historical_plans_20260515_cursor_optimization/` brand plans | 6 files matching `*windsurf*`/`*cursor*` | ✅ passes | pathspec file (targeted) |
-| 8 | root `AGENTS.md` | 1 file (legacy Cursor-era contract, references `.cursor/mcp.json`) | ✅ passes | delete or stub → `CLAUDE.md` (W2/P2.3) |
+| 6 | `.codex/plans/_archive/2026-05/` brand plans | 11 files matching `*windsurf*`/`*cursor*` | ✅ passes | pathspec file (targeted) |
+| 7 | `.codex/plans/_archive/historical_plans_20260515_cursor_optimization/` brand plans | 6 files matching `*windsurf*`/`*cursor*` | ✅ passes | pathspec file (targeted) |
+| 8 | root `AGENTS.md` | 1 file (legacy Cursor-era contract, references `.cursor/mcp.json`) | ✅ passes | delete or stub → `AGENTS.md` (W2/P2.3) |
 
-\* **Guard** = `.claude/hooks/before_shell_execution.py` via `LEGACY_EXECUTION_TOKENS`
+\* **Guard** = `.codex/hooks/before_shell_execution.py` via `LEGACY_EXECUTION_TOKENS`
 (`.windsurf`, `mcp_config.json`, `post_cursor_agent`, `pre_cursor_agent`, `Cursor Agent`, `Windsurf` —
 **case-sensitive** substring on the *command text*).
 
@@ -75,8 +75,8 @@ windsurf-maintenance-2026-q2-0f3564, windsurf-token-burn-augmentation-b7a3f1.
 ---
 
 ## D. Category 3 (LIVE wiring, historically named — W5, gated) — unchanged from plan
-26+ `post_cursor_agent_*.py` (active, dispatched by `after_agent_governance_dispatch.py` + `lib/claude_hook_common.py`),
-`artifacts/cursor/` write target, `tools/windsurf/` (3 tools + consumers), `.claude/.cursor/` ledger,
+26+ `post_cursor_agent_*.py` (active, dispatched by `after_agent_governance_dispatch.py` + `lib/codex_hook_common.py`),
+`artifacts/cursor/` write target, `tools/windsurf/` (3 tools + consumers), `.codex/.cursor/` ledger,
 the guard itself, ~20 rules' prose. **No change in W1.** Re-map via ADG/Grep at P5.1.
 
 ---

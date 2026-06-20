@@ -116,7 +116,7 @@ Route publications through `enhanced_http` or a queue. Rejected because it intro
 
 ## 6. References
 
-- Plan: `.claude/plans/eval-meta-otel-gap-review-ef4a20.md`
-- Plan: `.claude/plans/eval-meta-otel-deferred-completion-d6b4e0.md`
+- Plan: `.codex/plans/eval-meta-otel-gap-review-ef4a20.md`
+- Plan: `.codex/plans/eval-meta-otel-deferred-completion-d6b4e0.md`
 - Review: `docs/reports/plans/eval-meta-otel-gap-review.md`
 - Commits: `9468dcb3ec` (initial wiring), `5c99fa635d` (μW-1 guardian + HITL + scenario), `11ee7a8644` (retrieval engine), `a3cca1afea` (W-D2 L_SL/L6 tracer wiring)

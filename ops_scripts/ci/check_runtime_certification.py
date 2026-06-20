@@ -9,7 +9,7 @@ advisory mode and build-pass/build-fail signals in strict mode.
 This module does **no** promotion. Every record it reads carries
 ``runtime_certification_status = NOT_CERTIFIED`` (enforced at five layers
 by Phase D). The gate's exit code is a build signal, never a
-certification signal. See ``.claude/plans/runtime-cert-e1w2-gate-module-9a4b2e.md``.
+certification signal. See ``.codex/plans/runtime-cert-e1w2-gate-module-9a4b2e.md``.
 """
 
 from __future__ import annotations

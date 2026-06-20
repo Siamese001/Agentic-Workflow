@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-spine-only-unification-d8f4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-spine-only-unification-d8f4a2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-spine-only-unification-d8f4a2.md'
 source_sha256: c97f31fed5e7b444ce6cbc72d47933686eea2f27183df185c2d4d1a81a2e3afc
 recovered_status: LEGACY_EXISTING

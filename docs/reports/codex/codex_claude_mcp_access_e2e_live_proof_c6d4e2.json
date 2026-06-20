@@ -161,9 +161,9 @@
       "stdout": "[PASS] codex-claude-mcp-access-parity-c6d4e2.md: 0 FAIL, 0 ERROR, 0 WARN, 0 INFO"
     },
     {
-      "command": "python scripts/governance/verify_codex_backup.py",
+      "command": "python scripts/governance/verify_codex_primary.py",
       "returncode": 0,
-      "stdout": "Codex backup adapter verification passed"
+      "stdout": "Codex primary adapter verification passed"
     },
     {
       "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q",

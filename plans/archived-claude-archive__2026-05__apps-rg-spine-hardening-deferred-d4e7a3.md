@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-spine-hardening-deferred-d4e7a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-spine-hardening-deferred-d4e7a3.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-spine-hardening-deferred-d4e7a3.md'
 source_sha256: 8c8e8f1feffce044bfd63df500f39df56e0d0722e3f48103f0685bb89c7a2fd2
 recovered_status: LEGACY_EXISTING

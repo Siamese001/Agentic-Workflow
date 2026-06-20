@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\04_apps-rg-c0-architecture-analysis-f3d8b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\04_apps-rg-c0-architecture-analysis-f3d8b2.md'
 original_relative_path: '_archive\\2026-05\\04_apps-rg-c0-architecture-analysis-f3d8b2.md'
 source_sha256: 0f7e77308e46c9a6912d7c6ac677076f13300bd572a01ade6fb5b66e6db2231f
 recovered_status: LEGACY_EXISTING

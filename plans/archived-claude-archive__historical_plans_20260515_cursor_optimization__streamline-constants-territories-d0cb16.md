@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\streamline-constants-territories-d0cb16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\streamline-constants-territories-d0cb16.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\streamline-constants-territories-d0cb16.md'
 source_sha256: 77e880d9112e50debd34bc2f3e73e7648816f31678181d0e79d608dd68276382
 recovered_status: LEGACY_EXISTING

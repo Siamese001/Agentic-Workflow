@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\always-on-budget-compression-ds2-c7f4a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\always-on-budget-compression-ds2-c7f4a3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\always-on-budget-compression-ds2-c7f4a3.md'
 source_sha256: 10d2a44e5bf127021a8cd638795f5c5de175767df1b57eb9d2e4181ef6a0e1ce
 recovered_status: LEGACY_EXISTING

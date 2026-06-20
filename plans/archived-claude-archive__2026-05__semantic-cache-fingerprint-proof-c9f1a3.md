@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\semantic-cache-fingerprint-proof-c9f1a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\semantic-cache-fingerprint-proof-c9f1a3.md'
 original_relative_path: '_archive\\2026-05\\semantic-cache-fingerprint-proof-c9f1a3.md'
 source_sha256: 90bbb1db43dc6f6cadf1e406a0b2dc1769b810261e7204e99a4b1e243375b810
 recovered_status: LEGACY_EXISTING

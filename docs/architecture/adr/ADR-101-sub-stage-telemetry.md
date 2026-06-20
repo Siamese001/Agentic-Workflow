@@ -72,7 +72,7 @@ Extend the HowTrace schema to v1.1 with sub-stage telemetry:
 
 ## References
 
-- Plan: `.claude/plans/agentic-spine-diagram-refinement-a3f7c2.md` W2
+- Plan: `.codex/plans/agentic-spine-diagram-refinement-a3f7c2.md` W2
 - Schema: `agentic_core/L7_auditability/contracts/how_trace.py`
 - Builder: `agentic_core/L7_auditability/how_trace/how_trace_builder.py`
 - Verification: W4 (HowTrace v1.1 confirmed)

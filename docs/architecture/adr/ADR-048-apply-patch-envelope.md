@@ -151,7 +151,7 @@ Rationale:
 
 - Constitutional §4 — UWG write authority
 - ADR-023 — runtime HITL exit control (envelope failures may need to escalate to runtime HITL, not just author-gate)
-- Plan: `.claude/plans/post-wave10-roadmap-a1e7f2.md` — W14.a row
+- Plan: `.codex/plans/post-wave10-roadmap-a1e7f2.md` — W14.a row
 - Notion row: Wave/Phase Convergence INDEX `[INDEX] Post-Wave-10 Roadmap — W11 through W18` (`34c27693-f55c-813a-a19a-d052c901b8d5`)
 - Anthropic apply_patch reference — Claude Code public docs (format definition)
 - RFC 6902 — JSON Patch (Option 2 reference)

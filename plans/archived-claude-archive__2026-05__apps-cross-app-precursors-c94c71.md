@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-cross-app-precursors-c94c71.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-cross-app-precursors-c94c71.md'
 original_relative_path: '_archive\\2026-05\\apps-cross-app-precursors-c94c71.md'
 source_sha256: 1f00f6a175da4f701c73de611e16233f898df71660464b25f5f5e60a48dbc6cd
 recovered_status: LEGACY_EXISTING

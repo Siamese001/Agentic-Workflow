@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\l7-section-shim-legacy-removal-followup-a9c4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\l7-section-shim-legacy-removal-followup-a9c4e2.md'
 original_relative_path: 'l7-section-shim-legacy-removal-followup-a9c4e2.md'
 source_sha256: 04e1ee3a29a6f67c1d94fdeb0379512504a38e9271888bd268e800a0fbbdc74f
 recovered_status: LEGACY_EXISTING

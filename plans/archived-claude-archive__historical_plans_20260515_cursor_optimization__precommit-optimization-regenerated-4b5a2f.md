@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\precommit-optimization-regenerated-4b5a2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\precommit-optimization-regenerated-4b5a2f.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\precommit-optimization-regenerated-4b5a2f.md'
 source_sha256: 2a35b16b8604b3abcae81b159fb61431edd5047207b5c889f0b92b78b3983b0f
 recovered_status: LEGACY_EXISTING

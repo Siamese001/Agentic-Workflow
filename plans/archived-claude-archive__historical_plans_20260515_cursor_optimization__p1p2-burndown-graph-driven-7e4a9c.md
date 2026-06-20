@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p1p2-burndown-graph-driven-7e4a9c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p1p2-burndown-graph-driven-7e4a9c.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p1p2-burndown-graph-driven-7e4a9c.md'
 source_sha256: 70250aaaf7e469509132a583938599e8fe4bfdd19a780223275f2fc747d3cca3
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-x1d-repair-loop-hardening-490f55.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-x1d-repair-loop-hardening-490f55.md'
 original_relative_path: 'apps-lic-x1d-repair-loop-hardening-490f55.md'
 source_sha256: 5b2b19f75dc846e9b33382326f3584b0e02ed0d7b5657a7ca580aaa89ba6ff41
 recovered_status: LEGACY_EXISTING
@@ -19,7 +19,7 @@ archived_reason: historical consolidation for review, lessons learned, and anti-
 ---
 # apps_lic X1D Repair Loop Hardening
 
-PLAN_CREATED: slug=apps-lic-x1d-repair-loop-hardening-490f55 path=.claude/plans/apps-lic-x1d-repair-loop-hardening-490f55.md status=Completed
+PLAN_CREATED: slug=apps-lic-x1d-repair-loop-hardening-490f55 path=.codex/plans/apps-lic-x1d-repair-loop-hardening-490f55.md status=Completed
 
 Status: Completed - W5 main live gate accepted 2026-06-10  
 Created: 2026-06-09  

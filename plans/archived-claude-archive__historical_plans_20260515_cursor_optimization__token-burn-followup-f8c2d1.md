@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\token-burn-followup-f8c2d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\token-burn-followup-f8c2d1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\token-burn-followup-f8c2d1.md'
 source_sha256: 7c5cb68e94a3064e5e677c6cecd330271d8742865efd3b58990e935856fb03b2
 recovered_status: LEGACY_EXISTING

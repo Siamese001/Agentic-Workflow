@@ -179,8 +179,8 @@ Waivers live in `config/wiring_gate_waivers.yaml`. Every waiver entry MUST speci
 
 ## References
 
-- Plan: `.claude/plans/adg-wiring-ci-hardening-7a5d84.md`
-- Plan: `.claude/plans/c0-context-engine-wiring-fix-9e42a1.md`
+- Plan: `.codex/plans/adg-wiring-ci-hardening-7a5d84.md`
+- Plan: `.codex/plans/c0-context-engine-wiring-fix-9e42a1.md`
 - Constitutional rule: §22 (ADG graph layer primary)
 - ADG Canonical Invariants: §1-§4 (SSOT hierarchy, ADG wins conflicts, surfaces, deadly catch-site antipatterns)
 - Doctrine: `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG - SQLite vs. Redis.md`

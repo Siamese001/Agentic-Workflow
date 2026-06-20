@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\app-wizard-lic-scope-capture-f8d3e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\app-wizard-lic-scope-capture-f8d3e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\app-wizard-lic-scope-capture-f8d3e1.md'
 source_sha256: 795eaf25ff59aa774a7fa41c24a8860fa0c241f774c0c3b84936d05b787c1f89
 recovered_status: LEGACY_EXISTING

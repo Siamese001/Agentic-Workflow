@@ -185,7 +185,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": ".claude/rules/constitutional.md",
+        "path": ".codex/rules/constitutional.md",
         "title": "Constitutional Floor — Hard Constraints",
         "doc_family": "standard",
         "topic_bucket": "safety_eval",
@@ -193,7 +193,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": ".claude/rules/global_rules.md",
+        "path": ".codex/rules/global_rules.md",
         "title": "Global Rules — Always-On Policy",
         "doc_family": "standard",
         "topic_bucket": "arch_standards",

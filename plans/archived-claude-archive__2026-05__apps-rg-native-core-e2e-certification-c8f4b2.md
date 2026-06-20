@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-native-core-e2e-certification-c8f4b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-native-core-e2e-certification-c8f4b2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-native-core-e2e-certification-c8f4b2.md'
 source_sha256: d6558e6c47c0791dedf6e640d85a07326ee0e06a97b254c6cfd15bee5efcce75
 recovered_status: LEGACY_EXISTING

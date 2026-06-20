@@ -180,7 +180,7 @@ def _write_register(rows: list[dict[str, str]], counts: dict[str, int], pytest_t
     lines = [
         "# Apps RG Contract Harness — Failure Register (W0)",
         "",
-        f"**Plan:** [{PLAN_ID}](../../.claude/plans/{PLAN_ID}.md)  ",
+        f"**Plan:** [{PLAN_ID}](../../.codex/plans/{PLAN_ID}.md)  ",
         f"**Generated:** {datetime.now(timezone.utc).isoformat()}  ",
         f"**Filter:** `pytest tests/_apps_contract/ -k \"{PYTEST_K}\"`  ",
         "",

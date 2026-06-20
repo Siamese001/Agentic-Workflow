@@ -64,7 +64,7 @@ WAVE_COMPLETE: YES
 `prune_merged_chat_worktrees._DEFAULT_REAP_PREFIXES` → `("chat/", "feat/")` so delivered `feat/*`
 worktrees are auto-reaped at the next SessionStart (backstop for PR-merged or `--no-reap` deliveries);
 the existing merged+clean+grace guards already protect unmerged/in-progress work. Document the
-deliver+reap flow in `.claude/rules/git-branch-per-chat.md` (NO new skill — document in the rule to
+deliver+reap flow in `.codex/rules/git-branch-per-chat.md` (NO new skill — document in the rule to
 avoid skill bloat). Add `tests/unit/tools/git/test_deliver_worktree.py`: build a temp git repo + bare
 remote, deliver `--mode push --reap`, assert the worktree dir and branch are gone; assert `--mode pr`
 and `--no-reap` do not reap.

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-core-governance-w9-runtime-migration-a7e3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-core-governance-w9-runtime-migration-a7e3b2.md'
 original_relative_path: '_archive\\2026-05\\agentic-core-governance-w9-runtime-migration-a7e3b2.md'
 source_sha256: 8fe6e5cbf07aef5d5c0fad06d7715907634d1b033ba5c3e47e594944780a162a
 recovered_status: LEGACY_EXISTING

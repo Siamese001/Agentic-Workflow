@@ -31,7 +31,7 @@ Fort Knox paths were relocated off the repo root (2026-05-24). SSOT is centraliz
 | `docs/certification/README_REVIEW.md` | This file |
 
 The two review-bundle subfolders are repopulated automatically on every write to any input
-above or to any file under `artifacts/certification/` by `.claude/governance/scripts/post_write_cert_stage.py`,
+above or to any file under `artifacts/certification/` by `.codex/governance/scripts/post_write_cert_stage.py`,
 which invokes `tools/certification/_stage_review_bundle.ps1`.
 
 Constitutional §32 (Fort Knox integrity) governs both arms: compiler output MUST NOT be

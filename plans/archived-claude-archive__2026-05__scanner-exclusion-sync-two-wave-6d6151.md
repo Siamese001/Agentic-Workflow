@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\scanner-exclusion-sync-two-wave-6d6151.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\scanner-exclusion-sync-two-wave-6d6151.md'
 original_relative_path: '_archive\\2026-05\\scanner-exclusion-sync-two-wave-6d6151.md'
 source_sha256: ed7efd9b103da33a98d111aab4b4f72399c5df565ecbfd0eac7d2a0c20471053
 recovered_status: LEGACY_EXISTING

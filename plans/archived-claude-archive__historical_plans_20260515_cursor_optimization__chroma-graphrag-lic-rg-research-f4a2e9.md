@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chroma-graphrag-lic-rg-research-f4a2e9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\chroma-graphrag-lic-rg-research-f4a2e9.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\chroma-graphrag-lic-rg-research-f4a2e9.md'
 source_sha256: bb0c8f0fff07f21f288c4632ad8eee9d759bc0921cd5053c02353fc7d092dda5
 recovered_status: LEGACY_EXISTING

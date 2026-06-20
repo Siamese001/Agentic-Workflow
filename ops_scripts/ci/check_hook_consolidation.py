@@ -2,7 +2,7 @@
 Hook Consolidation / Growth CI Gate
 
 Detects hook proliferation and validates hook metadata integrity.
-Parses .claude/settings.json to report statistics and detect growth risks.
+Parses .codex/hooks.json to report statistics and detect growth risks.
 
 Usage:
     python ops_scripts/ci/check_hook_consolidation.py [--advisory|--strict] [options]
@@ -23,7 +23,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-HOOKS_CONFIG_PATH = REPO_ROOT / ".claude" / "settings.json"
+HOOKS_CONFIG_PATH = REPO_ROOT / ".codex" / "hooks.json"
 
 # Default thresholds
 DEFAULT_MAX_HOOKS = 70  # Allow some growth from current 59

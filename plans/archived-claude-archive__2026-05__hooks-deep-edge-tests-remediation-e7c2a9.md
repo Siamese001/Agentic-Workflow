@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hooks-deep-edge-tests-remediation-e7c2a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hooks-deep-edge-tests-remediation-e7c2a9.md'
 original_relative_path: '_archive\\2026-05\\hooks-deep-edge-tests-remediation-e7c2a9.md'
 source_sha256: da2d3e119e1effd4f206daad1649c56ac1fab5d83dc1b4ade817ba7c3cf519a5
 recovered_status: LEGACY_EXISTING

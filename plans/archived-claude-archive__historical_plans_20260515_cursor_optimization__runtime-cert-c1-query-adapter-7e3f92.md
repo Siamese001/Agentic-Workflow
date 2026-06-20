@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-c1-query-adapter-7e3f92.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-c1-query-adapter-7e3f92.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-c1-query-adapter-7e3f92.md'
 source_sha256: e22d5348397640fc3c588ab6ba7a91c63a3b4fbeb374c5b7f6d6da726990a7e0
 recovered_status: LEGACY_EXISTING

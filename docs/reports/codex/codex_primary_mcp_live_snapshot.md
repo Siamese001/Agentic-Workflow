@@ -4,7 +4,7 @@ Generated: 2026-06-16
 
 Scope: current Codex-primary route evidence for `C:\Git\Agentic-Workflow-FRESH`.
 
-This is an evidence snapshot, not a second MCP registry. Configured-server truth remains root `.mcp.json`; procedural routing remains `.claude/skills/mcp-integration/SKILL.md` and `.claude/mcp-notes.md`.
+This is an evidence snapshot, not a second MCP registry. Configured-server truth remains root `.mcp.json`; procedural routing remains `.codex/skills/mcp-integration/SKILL.md` and `.codex/mcp-notes.md`.
 
 ## Summary
 
@@ -19,7 +19,7 @@ This is an evidence snapshot, not a second MCP registry. Configured-server truth
 | `playwright` | substitute_callable | Browser/node routes are available. | Use Codex Browser/node verification unless raw parity is required. |
 | `context7` | degraded_fallback | Raw Context7 tools not exposed. | Use primary official docs and cite them. |
 | `tavily` | plugin_substitute | Plugin available and `TAVILY_API_KEY` configured. | Use for web search/extract/crawl/map when available. |
-| `pytest_mcp` | dormant_by_policy | Dormant in `.claude/mcp-notes.md`. | Use `python -m pytest` with plugin autoload enabled. |
+| `pytest_mcp` | dormant_by_policy | Dormant in `.codex/mcp-notes.md`. | Use `python -m pytest` with plugin autoload enabled. |
 | `redis` | dormant_cli_fallback | Redis TCP reachable; standalone MCP dormant. | Treat Redis as ADG hot projection only. |
 | `otel_mcp` | dormant_on_demand | Not exposed in this session. | Use only when collector prerequisites are ready. |
 

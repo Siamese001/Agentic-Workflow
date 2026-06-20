@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-deferred-scope-a9f2e3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-deferred-scope-a9f2e3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-declarative-ingress-deferred-scope-a9f2e3.md'
 source_sha256: 1def01fe11f7069fd343435522eeadca148a477776d96f3da0a51d4f9c691707
 recovered_status: LEGACY_EXISTING

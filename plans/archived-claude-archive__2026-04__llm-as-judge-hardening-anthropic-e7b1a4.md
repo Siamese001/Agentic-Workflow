@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-04\\llm-as-judge-hardening-anthropic-e7b1a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-04\\llm-as-judge-hardening-anthropic-e7b1a4.md'
 original_relative_path: '_archive\\2026-04\\llm-as-judge-hardening-anthropic-e7b1a4.md'
 source_sha256: 9f75c488469fb9db1a28fa4b636aecc630a97f1e55cd5349dafaf94b90bd1845
 recovered_status: LEGACY_EXISTING

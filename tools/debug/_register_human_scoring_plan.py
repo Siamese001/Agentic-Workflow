@@ -76,7 +76,7 @@ WAVES = [
     (
         "2",
         "Score 22 governance rows (W1.x / W2.x / W2-P1.x)",
-        "Human audits each governance row against .claude/rules/ and .claude/settings.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
+        "Human audits each governance row against .codex/rules/ and .codex/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
         5000,
         22,
     ),

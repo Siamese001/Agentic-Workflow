@@ -1,6 +1,6 @@
-"""Rule pattern extractor — parses .claude/rules/*.md for hardening patterns.
+"""Rule pattern extractor — parses .codex/rules/*.md for hardening patterns.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P3.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W2.P3.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ _ALWAYS_ON_RE = re.compile(r"always_on|always-on")
 _PRE_HOOK_RE = re.compile(r"pre_\w+\.py")
 _POST_HOOK_RE = re.compile(r"post_\w+\.py")
 _MCP_RE = re.compile(r"`(mcp\d+_|adg_|redis_|memory_|otel_)")
-_SKILL_RE = re.compile(r"\.claude/skills/(\w[\w-]*)/")
+_SKILL_RE = re.compile(r"\.codex/skills/(\w[\w-]*)/")
 
 
 class RulePatternEngine:

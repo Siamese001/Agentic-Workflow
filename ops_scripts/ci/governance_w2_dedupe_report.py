@@ -18,17 +18,17 @@ def _bytes(path: Path) -> int:
 def main() -> int:
     clusters = {
         "author_gate": {
-            "tier_1": ".claude/rules/003-cursor-author-gate-hitl.mdc",
+            "tier_1": ".codex/rules/003-cursor-author-gate-hitl.mdc",
             "on_demand_rules": [
-                ".claude/rules/author-gate-enforcement.mdc",
-                ".claude/rules/author-gate-decision-points.mdc",
-                ".claude/rules/anti-pattern-author-gate.mdc",
-                ".claude/rules/author-gate-svp-calibration.mdc",
+                ".codex/rules/author-gate-enforcement.mdc",
+                ".codex/rules/author-gate-decision-points.mdc",
+                ".codex/rules/anti-pattern-author-gate.mdc",
+                ".codex/rules/author-gate-svp-calibration.mdc",
             ],
             "skills": [
-                ".claude/skills/author-gate-packet-builder/SKILL.md",
-                ".claude/skills/author-gate-ui-renderer/SKILL.md",
-                ".claude/skills/refactor-decision-memory/SKILL.md",
+                ".codex/skills/author-gate-packet-builder/SKILL.md",
+                ".codex/skills/author-gate-ui-renderer/SKILL.md",
+                ".codex/skills/refactor-decision-memory/SKILL.md",
             ],
             "workflows_thinned": [
                 "docs/archive/windsurf/legacy-tree/workflows/author-gate-decision-gate.md",
@@ -44,13 +44,13 @@ def main() -> int:
         },
         "adg": {
             "on_demand_rules": [
-                ".claude/rules/adg-analysis-procedures.mdc",
-                ".claude/rules/adg-canonical-invariants.mdc",
-                ".claude/rules/adg-p-band-burn-down-discipline.mdc",
+                ".codex/rules/adg-analysis-procedures.mdc",
+                ".codex/rules/adg-canonical-invariants.mdc",
+                ".codex/rules/adg-p-band-burn-down-discipline.mdc",
             ],
             "skills": [
-                ".claude/skills/adg-sqlite/SKILL.md",
-                ".claude/skills/graph-analysis/SKILL.md",
+                ".codex/skills/adg-sqlite/SKILL.md",
+                ".codex/skills/graph-analysis/SKILL.md",
             ],
             "workflows_thinned": [
                 "docs/archive/windsurf/legacy-tree/workflows/adg-repair-loop.md",
@@ -63,8 +63,8 @@ def main() -> int:
             "no_loss_assertion": "Full repair/hotspot procedures remain in adg-analysis-procedures.mdc; invariants in adg-canonical-invariants.mdc",
         },
         "structured_reasoning": {
-            "on_demand_rules": [".claude/rules/sequential-thinking-enforcement.mdc"],
-            "skills": [".claude/skills/structured-reasoning/SKILL.md"],
+            "on_demand_rules": [".codex/rules/sequential-thinking-enforcement.mdc"],
+            "skills": [".codex/skills/structured-reasoning/SKILL.md"],
             "workflows_thinned": ["docs/archive/windsurf/legacy-tree/workflows/structured-reasoning.md"],
             "removed_duplicate_locations": [
                 "workflows/structured-reasoning.md: SR_INTAKE through SR_SUMMARY phase bodies",
@@ -73,8 +73,8 @@ def main() -> int:
         },
         "tavily": {
             "skills": [
-                ".claude/skills/tavily-research/SKILL.md",
-                ".claude/skills/mcp-integration/SKILL.md",
+                ".codex/skills/tavily-research/SKILL.md",
+                ".codex/skills/mcp-integration/SKILL.md",
             ],
             "workflows_thinned": [
                 "docs/archive/windsurf/legacy-tree/workflows/tavily-search.md",
@@ -91,11 +91,11 @@ def main() -> int:
         },
         "notion_plan": {
             "on_demand_rules": [
-                ".claude/rules/plan-location.mdc",
-                ".claude/rules/plan-update-enforcement.mdc",
-                ".claude/rules/plan-lifecycle-procedures.mdc",
+                ".codex/rules/plan-location.mdc",
+                ".codex/rules/plan-update-enforcement.mdc",
+                ".codex/rules/plan-lifecycle-procedures.mdc",
             ],
-            "skills": [".claude/skills/plan-governance/SKILL.md"],
+            "skills": [".codex/skills/plan-governance/SKILL.md"],
             "workflows_thinned": [],
             "removed_duplicate_locations": [
                 "plan-lifecycle-procedures.mdc: full procedural body (moved to plan-governance skill)",

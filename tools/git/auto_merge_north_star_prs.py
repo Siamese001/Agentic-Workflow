@@ -1,7 +1,7 @@
 """Auto-merge green, north-star-relevant PRs via the GitHub REST API.
 
 This is the CLOUD-FLOW complement to the optional LOCAL worktree delivery hook
-(``.claude/hooks/auto_deliver_on_scope_complete.py`` → ``tools/git/deliver_worktree.py``).
+(``.codex/hooks/auto_deliver_on_scope_complete.py`` → ``tools/git/deliver_worktree.py``).
 Where the local hook can push a *completed worktree* to a PR when the assistant declares
 ``SCOPE_COMPLETE`` and the hook is explicitly enabled, this tool closes the loop on the GitHub
 side: it scans the
@@ -23,7 +23,7 @@ Why squash is FORBIDDEN
 Operator directive (``memory/MEMORY.md``): merge PRs with ``merge`` or ``rebase``, NEVER
 ``squash``. A squash-merge rewrites the commits, so the PR branch tip is no longer an
 ancestor of ``main``. The manual cleanup script
-(``.claude/hooks/prune_merged_chat_worktrees.py``) uses ancestry/no-unique-commits checks to
+(``.codex/hooks/prune_merged_chat_worktrees.py``) uses ancestry/no-unique-commits checks to
 identify delivered local branches; a squash defeats that proof and leaves stale local worktrees
 and branches. This tool DEFAULTS to ``merge``,
 accepts ``rebase``, and HARD-REFUSES ``squash`` (usage error → exit 2).
@@ -52,8 +52,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _STATE_REL = "config/north_star_state.json"
 
-# North-star relevance — mirrored VERBATIM from .claude/hooks/pre_write_north_star_gate.py
-# ``_NORTH_PREFIXES``. Kept as a literal copy (that hook lives under .claude/hooks/ and is not
+# North-star relevance — mirrored VERBATIM from .codex/hooks/pre_write_north_star_gate.py
+# ``_NORTH_PREFIXES``. Kept as a literal copy (that hook lives under .codex/hooks/ and is not
 # a cleanly-importable package module), so we replicate the single source of truth here with
 # this pointer. If the gate's tuple changes, update this one to match. See that file for the
 # authoritative definition.

@@ -41,12 +41,12 @@ FORBIDDEN_PATH_FRAGMENTS: tuple[str, ...] = (
     r"c:\users",
     r"c:/users",
     "/users/",
-    ".claude/plans",
-    ".claude\\plans",
+    ".codex/plans",
+    ".codex\\plans",
 )
 
 PROFILE_LAUNCHERS: dict[str, tuple[Path, str]] = {
-    "repo": (REPO_MCP_PATH, ".claude/governance/scripts/filesystem_mcp_launcher.js"),
+    "repo": (REPO_MCP_PATH, ".codex/governance/scripts/filesystem_mcp_launcher.js"),
 }
 
 

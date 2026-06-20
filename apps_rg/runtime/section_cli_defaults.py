@@ -110,7 +110,7 @@ def default_lane_provider_for_section(section_id: str | None = None) -> str:
 
 # Judges are CROSS-PROVIDER ONLY (never anthropic_claude). Claude Sonnet 4.6 is the GENERATOR for
 # every lane, so a Claude judge is a self-judge with correlated blind spots. Recalibrated 2026-06-08
-# from the older 3-provider panel; see .claude/rules/judge-calibration-cadence.md.
+# from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
 # Explicit CLI/env overrides still win.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
 _SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"

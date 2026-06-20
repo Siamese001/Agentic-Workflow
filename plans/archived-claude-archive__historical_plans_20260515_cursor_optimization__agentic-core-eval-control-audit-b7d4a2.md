@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-b7d4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-b7d4a2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-eval-control-audit-b7d4a2.md'
 source_sha256: 28025bb7f92fa973d524cf21ceedd208bf240190cf5fa54c7192f5416c30a8e8
 recovered_status: LEGACY_EXISTING

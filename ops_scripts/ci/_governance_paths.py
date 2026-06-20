@@ -11,10 +11,10 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-CURSOR_PLANS_DIR = REPO_ROOT / ".claude" / "plans"
-CURSOR_SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts"
-CURSOR_SCHEMAS_DIR = REPO_ROOT / ".claude" / "schemas"
-CURSOR_STATE_DIR = REPO_ROOT / ".claude" / "state"
+CURSOR_PLANS_DIR = REPO_ROOT / ".codex" / "plans"
+CURSOR_SCRIPTS_DIR = REPO_ROOT / ".codex" / "governance/scripts"
+CURSOR_SCHEMAS_DIR = REPO_ROOT / ".codex" / "schemas"
+CURSOR_STATE_DIR = REPO_ROOT / ".codex" / "state"
 CURSOR_REFACTOR_DECISIONS_DIR = CURSOR_STATE_DIR / "refactor_decisions"
 
 # Primary alias used by plan drift / registration gates

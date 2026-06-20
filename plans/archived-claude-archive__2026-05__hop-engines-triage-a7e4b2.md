@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\hop-engines-triage-a7e4b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\hop-engines-triage-a7e4b2.md'
 original_relative_path: '_archive\\2026-05\\hop-engines-triage-a7e4b2.md'
 source_sha256: 03b6def15b3a359a35d284f7c12c5ee63cfa17d5353d1d382c45ea666ac375b9
 recovered_status: LEGACY_EXISTING

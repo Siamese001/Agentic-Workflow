@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\briefing-jd-c0-enhancements-ee0b1d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\briefing-jd-c0-enhancements-ee0b1d.md'
 original_relative_path: 'briefing-jd-c0-enhancements-ee0b1d.md'
 source_sha256: 24cd22779fdb06381c41b2bfcf0e9a152bf305b42e31c3104d83ad9839b26ff0
 recovered_status: LEGACY_EXISTING

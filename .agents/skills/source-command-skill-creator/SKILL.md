@@ -1,6 +1,6 @@
 ---
 name: "source-command-skill-creator"
-description: "Scaffold a new Claude Code skill (.claude/skills/<slug>/SKILL.md) from the house-style template. Use when authoring a new skill so it inherits the canonical frontmatter, trigger table, hard rules, procedure, forbidden patterns, and references shape."
+description: "Scaffold a new Claude Code skill (.codex/skills/<slug>/SKILL.md) from the house-style template. Use when authoring a new skill so it inherits the canonical frontmatter, trigger table, hard rules, procedure, forbidden patterns, and references shape."
 ---
 
 # source-command-skill-creator
@@ -11,11 +11,11 @@ Use this skill when the user asks to run the migrated source command `skill-crea
 
 # /skill-creator — Scaffold a New Skill
 
-This workflow stamps a new skill from `.claude/templates/skill-template.md` so every skill in this repo shares the same shape that auto-invocation, `pre_prompt_classifier.py`, and the MCP Registry expect.
+This workflow stamps a new skill from `.codex/templates/skill-template.md` so every skill in this repo shares the same shape that auto-invocation, `pre_prompt_classifier.py`, and the MCP Registry expect.
 
 ## When to use
 
-- You are about to author a new skill in `.claude/skills/<slug>/SKILL.md`.
+- You are about to author a new skill in `.codex/skills/<slug>/SKILL.md`.
 - You want auto-invocation to fire reliably — that requires a specific frontmatter `description` shape.
 - You want the new skill to declare its sibling-skill boundaries up front (prevents overlap drift).
 
@@ -39,7 +39,7 @@ Do NOT use for: editing an existing skill (just edit it directly), or for one-sh
 Search existing skills for overlapping capability before authoring:
 
 ```
-.claude/skills/  →  list_dir
+.codex/skills/  →  list_dir
 ```
 
 If a skill within ~80% capability already exists, edit it instead of creating a new one. The MCP authority rule (`global_rules.md` §MCP Authority) requires one SSOT per capability.
@@ -47,12 +47,12 @@ If a skill within ~80% capability already exists, edit it instead of creating a 
 ### 2. Create the skill folder
 
 ```
-.claude/skills/<slug>/
+.codex/skills/<slug>/
 ```
 
 ### 3. Stamp SKILL.md from template
 
-Copy `.claude/templates/skill-template.md` to `.claude/skills/<slug>/SKILL.md` and fill in:
+Copy `.codex/templates/skill-template.md` to `.codex/skills/<slug>/SKILL.md` and fill in:
 
 - **Frontmatter `name`** — `<slug>` exactly (must match folder).
 - **Frontmatter `description`** — capability sentence + invocation triggers + sibling distinctions + upstream citation. ~3–5 sentences. This is the auto-invocation match surface; be specific.
@@ -75,7 +75,7 @@ Most skills fit cleanly in a single SKILL.md.
 
 If the skill should be SR_MANDATE-injected for tier-2/3 prompts:
 
-- Add `_<SKILL>_SIGNALS = (...)` and `_detect_<skill>_intent(text)` in `.claude/governance/scripts/pre_prompt_classifier.py`.
+- Add `_<SKILL>_SIGNALS = (...)` and `_detect_<skill>_intent(text)` in `.codex/governance/scripts/pre_prompt_classifier.py`.
 - Add a routing trace and SR-hint block following the existing patterns (e.g. `_NOTION_SIGNALS`, `_MEMORY_INTENT_SIGNALS`).
 
 Skip this for skills that should only auto-invoke from the description match.
@@ -85,7 +85,7 @@ Skip this for skills that should only auto-invoke from the description match.
 If the skill wraps an MCP server, run:
 
 ```
-python .claude/governance/scripts/sync_mcp_config.py
+python .codex/governance/scripts/sync_mcp_config.py
 ```
 
 This rewrites the MCP Quick Reference block with a row pointing at the new skill.
@@ -110,11 +110,11 @@ Both must pass before commit.
 
 ## References
 
-- Skill template: `.claude/templates/skill-template.md`
-- Plan template (sibling pattern): `.claude/templates/execution-plan-template.md`
-- Sync script: `.claude/governance/scripts/sync_mcp_config.py`
+- Skill template: `.codex/templates/skill-template.md`
+- Plan template (sibling pattern): `.codex/templates/execution-plan-template.md`
+- Sync script: `.codex/governance/scripts/sync_mcp_config.py`
 - Coverage gates: `ops_scripts/ci/check_mcp_sync_integrity.py`, `check_agents_mcp_coverage.py`
-- Frontmatter precedent: `.claude/skills/tavily-research/SKILL.md`, `.claude/skills/adg-sqlite/SKILL.md`
+- Frontmatter precedent: `.codex/skills/tavily-research/SKILL.md`, `.codex/skills/adg-sqlite/SKILL.md`
 - Constitutional rule §17 (Memory Lifecycle), §25 (MCP serialization), §29 (Closed-Loop Router) — common cite targets in skill bodies
 
 ## MANUAL MIGRATION REQUIRED

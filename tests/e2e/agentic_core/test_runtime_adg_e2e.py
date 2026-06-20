@@ -22,7 +22,7 @@ ROBUSTNESS_MATRIX:
 | test_pattern_extraction_accuracy | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | test_evolution_log_integrity | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-Reference: system_learning/runtime_adg/, .claude/rules §1 Testing & Evidence
+Reference: system_learning/runtime_adg/, .codex/rules §1 Testing & Evidence
 """
 
 from __future__ import annotations

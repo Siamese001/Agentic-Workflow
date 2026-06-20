@@ -1,6 +1,6 @@
 # apps_rg Runtime Proof — Operator Checklist (W8.2)
 
-Plan: [apps-rg-runtime-substitute-burndown-c4e8f1.md](../../.claude/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md) · Env cleanup: [apps-rg-env-kill-switch-cleanup-f8e2a3.md](../../.claude/plans/apps-rg-env-kill-switch-cleanup-f8e2a3.md)
+Plan: [apps-rg-runtime-substitute-burndown-c4e8f1.md](../../.codex/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md) · Env cleanup: [apps-rg-env-kill-switch-cleanup-f8e2a3.md](../../.codex/plans/apps-rg-env-kill-switch-cleanup-f8e2a3.md)
 
 ## Proof classification (closeout 2026-05-22)
 
@@ -17,7 +17,7 @@ Receipt: [runtime_substitute_burndown_w0_w8_receipt.md](../../artifacts/apps_rg/
 
 ## Brown & Brown executive_summary (strict product)
 
-Child plan (live hybrid + W2B): [apps-rg-hybrid-live-jd-selection-f8e2b3](../../.claude/plans/apps-rg-hybrid-live-jd-selection-f8e2b3.md) · W1 receipt: [apps_rg_hybrid_live_proof_w1_receipt.md](../reports/apps_rg/apps_rg_hybrid_live_proof_w1_receipt.md)
+Child plan (live hybrid + W2B): [apps-rg-hybrid-live-jd-selection-f8e2b3](../../.codex/plans/apps-rg-hybrid-live-jd-selection-f8e2b3.md) · W1 receipt: [apps_rg_hybrid_live_proof_w1_receipt.md](../reports/apps_rg/apps_rg_hybrid_live_proof_w1_receipt.md)
 
 ### Pre-run (index write — not product PASS)
 

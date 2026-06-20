@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-spearman-spine-remediation-f3c9a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-spearman-spine-remediation-f3c9a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-spearman-spine-remediation-f3c9a1.md'
 source_sha256: 4805ffd3aa73dc20a04474990d4a56586d4b4346eea40baba8afa41cd311d5c1
 recovered_status: LEGACY_EXISTING

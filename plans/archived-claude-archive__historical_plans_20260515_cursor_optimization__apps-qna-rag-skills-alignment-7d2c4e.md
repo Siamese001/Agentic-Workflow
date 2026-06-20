@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-rag-skills-alignment-7d2c4e.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-rag-skills-alignment-7d2c4e.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-rag-skills-alignment-7d2c4e.md'
 source_sha256: 8f2b99b1dc8f17ba07b7fd5163e9a2ba9d1f7d024c276aa45fc11dc655fcafdf
 recovered_status: LEGACY_EXISTING

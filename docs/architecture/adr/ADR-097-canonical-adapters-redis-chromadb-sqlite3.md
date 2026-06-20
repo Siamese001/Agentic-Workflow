@@ -81,4 +81,4 @@ This classifier refinement is DEFERRED to a separate T2 tooling session (slug: `
 
 - ADR-035 — Layered adapter composition is not duplication
 - `adg-canonical-invariants.md` §5 — Hotspot archetypes (STATE_NODE applies here)
-- Parent plan: `.claude/plans/p1p2-burndown-followup-a2e4c7.md` W3-01
+- Parent plan: `.codex/plans/p1p2-burndown-followup-a2e4c7.md` W3-01

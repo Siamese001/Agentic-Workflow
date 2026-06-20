@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\underwriting-judge-remaining-deferred-b3c1f9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\underwriting-judge-remaining-deferred-b3c1f9.md'
 original_relative_path: '_archive\\2026-05\\underwriting-judge-remaining-deferred-b3c1f9.md'
 source_sha256: dde9b231f4c93cea2e9c8fba62246c647caaa7cad069dbe2962aaab86283c7fc
 recovered_status: LEGACY_EXISTING

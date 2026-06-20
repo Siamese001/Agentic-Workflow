@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\adg-gate-pipeline-efficiency-e4b1c7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\adg-gate-pipeline-efficiency-e4b1c7.md'
 original_relative_path: 'adg-gate-pipeline-efficiency-e4b1c7.md'
 source_sha256: 9b60b7393381d2c561e5c62b67bdd45806fc052e375b31a57795f6a965f24af1
 recovered_status: LEGACY_EXISTING
@@ -328,7 +328,7 @@ DoD-4: Manifest 16-gate contract intact + no new ADG violations
 - Status: TODO
 
 DoD-5: Measured speedup + memory/ADR writeback
-- Evidence: before/after wall-clock table (MV refresh, dispatcher fleet, full run); `mem:` ProceduralPattern updated; sibling note in `.claude/rules` if gate behavior changed.
+- Evidence: before/after wall-clock table (MV refresh, dispatcher fleet, full run); `mem:` ProceduralPattern updated; sibling note in `.codex/rules` if gate behavior changed.
 - Status: TODO
 
 DoD-6: Connection-count reduction verified

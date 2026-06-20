@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-claim-coverage-hardening-a1f3e8.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-claim-coverage-hardening-a1f3e8.md'
 original_relative_path: 'exec-summary-claim-coverage-hardening-a1f3e8.md'
 source_sha256: 020122c85e9dfb6a43be74b30c2c23c3d276f29c7a524be8a6e40344b3139fc0
 recovered_status: LEGACY_EXISTING

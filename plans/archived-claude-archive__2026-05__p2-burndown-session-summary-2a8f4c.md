@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p2-burndown-session-summary-2a8f4c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p2-burndown-session-summary-2a8f4c.md'
 original_relative_path: '_archive\\2026-05\\p2-burndown-session-summary-2a8f4c.md'
 source_sha256: d187f58708200d0bdcff52bd400d6f5b8cce3e697d4679b3abb056c6a0750f40
 recovered_status: LEGACY_EXISTING

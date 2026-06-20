@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\plan-format-simplification-rca-d4f8e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\plan-format-simplification-rca-d4f8e2.md'
 original_relative_path: '_archive\\2026-05\\plan-format-simplification-rca-d4f8e2.md'
 source_sha256: 8919dfbe9d35728ba8e148be6a0066818051c53d8cdc5eff4dbfb5727cb4d94a
 recovered_status: LEGACY_EXISTING

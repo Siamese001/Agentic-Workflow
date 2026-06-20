@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\03_apps-rg-l4-boundary-hardening-c8f2a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\03_apps-rg-l4-boundary-hardening-c8f2a1.md'
 original_relative_path: '_archive\\2026-05\\03_apps-rg-l4-boundary-hardening-c8f2a1.md'
 source_sha256: 3d9ef4081813fced936146c80af05de0b95af0181cb571e1baf1f3e00244ad08
 recovered_status: LEGACY_EXISTING

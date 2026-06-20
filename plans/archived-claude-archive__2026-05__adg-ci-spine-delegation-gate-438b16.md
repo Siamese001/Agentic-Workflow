@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-ci-spine-delegation-gate-438b16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-ci-spine-delegation-gate-438b16.md'
 original_relative_path: '_archive\\2026-05\\adg-ci-spine-delegation-gate-438b16.md'
 source_sha256: 73ee16820147198ab3d9f8dec573d6c439cf46672aaf069e89335f29def05105
 recovered_status: LEGACY_EXISTING

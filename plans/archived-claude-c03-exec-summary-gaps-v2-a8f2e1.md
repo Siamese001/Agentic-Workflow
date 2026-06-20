@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\c03-exec-summary-gaps-v2-a8f2e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\c03-exec-summary-gaps-v2-a8f2e1.md'
 original_relative_path: 'c03-exec-summary-gaps-v2-a8f2e1.md'
 source_sha256: b8aa07085b3f10bfee8ba285e2ab4133fc119bbd7edc667f8bc59f866174bae7
 recovered_status: LEGACY_EXISTING

@@ -38,7 +38,7 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 | Session starts with HEAD on `main`/`master` | REUSE the existing named worktree whose workstream matches; create a new sibling (e.g. `<repo-parent>/<repo-name>-worktrees/codex-apps-rg` on `codex-apps-rg`) ONLY on a material scope change |
 | Edit/Write refused (exit 2) citing the branch guard | Move the edit into an existing named worktree or create one explicitly |
 | "Where should this change go?" | Feature CODE -> named workstream worktree. Plan files (`plans/**`) -> primary checkout, regardless of branch |
-| Worktrees or branches piling up | Run `python .claude/hooks/prune_merged_chat_worktrees.py --dry-run`; delete only with explicit `--delete-merged` |
+| Worktrees or branches piling up | Run `python .codex/hooks/prune_merged_chat_worktrees.py --dry-run`; delete only with explicit `--delete-merged` |
 
 ## Hard Routing Rules
 
@@ -69,8 +69,8 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 6. Clean up delivered local worktrees only after review:
 
    ```bash
-   python .claude/hooks/prune_merged_chat_worktrees.py --dry-run
-   python .claude/hooks/prune_merged_chat_worktrees.py --delete-merged
+   python .codex/hooks/prune_merged_chat_worktrees.py --dry-run
+   python .codex/hooks/prune_merged_chat_worktrees.py --delete-merged
    ```
 
 ## Forbidden Patterns
@@ -83,8 +83,8 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 
 ## References
 
-- Rule: `.claude/rules/git-branch-per-chat.md`
-- Hooks: `.claude/hooks/session_start_branch_guard.py`, `before_file_edit_branch_guard.py`, `prune_merged_chat_worktrees.py`
+- Rule: `.codex/rules/git-branch-per-chat.md`
+- Hooks: `.codex/hooks/session_start_branch_guard.py`, `before_file_edit_branch_guard.py`, `prune_merged_chat_worktrees.py`
 - Config envs: `BRANCH_PER_CHAT_BYPASS`, `BRANCH_PER_CHAT_PROTECTED`, `CHAT_WORKTREE_ROOT`, `WORKTREE_IDE_OWNER`
 - Sibling skills: `gitkraken`, `scope-containment`; plan placement -> `plan-location.md` rule
 

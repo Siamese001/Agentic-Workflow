@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-rg-parity-gap-close-f7a4c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-rg-parity-gap-close-f7a4c9.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-rg-parity-gap-close-f7a4c9.md'
 source_sha256: 160fccaae722632e603b3ca14487f369a6cc33c6bf58a716944aed3d237b1b46
 recovered_status: LEGACY_EXISTING

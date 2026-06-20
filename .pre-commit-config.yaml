@@ -67,7 +67,7 @@ repos:
   # worktree version, eats the staged half, and `git commit` reports
   # 'Everything up-to-date'. Detects any file in dual state (staged AND
   # worktree-dirty) and aborts with a clear recovery message.
-  # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
+  # Plan: .codex/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
   # Bypass: PRECOMMIT_MM_GUARD_BYPASS=1.
   - repo: local
     hooks:
@@ -164,7 +164,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_sync_integrity.py
         language: system
         pass_filenames: false
-        files: ^(\.mcp\.json|AGENTS\.md|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        files: ^(\.mcp\.json|AGENTS\.md|\.codex/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.codex/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
         always_run: false
         require_serial: true
 
@@ -174,10 +174,10 @@ repos:
       # check personal Codex skills under ~/.codex/skills.
       - id: codex-adapter-drift
         name: "T6b1: Codex Backup Adapter Drift"
-        entry: py scripts/governance/verify_codex_backup.py --repo-only
+        entry: py scripts/governance/verify_codex_primary.py --repo-only
         language: system
         pass_filenames: false
-        files: ^(AGENTS\.md|CLAUDE\.md|\.mcp\.json|\.claude/mcp-notes\.md|\.claude/settings\.json|docs/codex-backup-adapter\.md|scripts/governance/verify_codex_backup\.py|\.github/workflows/contract-gates\.yml|\.claude/hooks/.*|\.claude/rules/.*|\.claude/skills/structured-reasoning/.*|\.claude/skills/mcp-integration/.*)$
+        files: ^(AGENTS\.md|CLAUDE\.md|\.mcp\.json|\.codex/mcp-notes\.md|\.codex/settings\.json|docs/codex-backup-adapter\.md|scripts/governance/verify_codex_backup\.py|\.github/workflows/contract-gates\.yml|\.codex/hooks/.*|\.codex/rules/.*|\.codex/skills/structured-reasoning/.*|\.codex/skills/mcp-integration/.*)$
         always_run: false
         require_serial: true
 
@@ -292,17 +292,17 @@ repos:
         require_serial: true
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
-      # .claude/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
+      # .codex/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
       # (<=64 chars, lowercase-hyphen, no reserved words) and `description`
       # (<=1024 chars, third person, includes a when-trigger), plus the 500-line
       # SKILL.md body budget and forward-slash path discipline.
-      # Reference: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+      # Reference: https://platform.codex.com/docs/en/agents-and-tools/agent-skills/best-practices
       - id: skill-frontmatter
         name: "T6e: Skill Frontmatter (Anthropic spec)"
         entry: py ops_scripts/ci/check_skill_frontmatter.py
         language: system
         pass_filenames: false
-        files: ^\.claude/skills/.+/SKILL\.md$
+        files: ^\.codex/skills/.+/SKILL\.md$
         always_run: false
         require_serial: true
       # -- T6e2 REMOVED (cursor-decommission W7) ---------------------------------------
@@ -312,7 +312,7 @@ repos:
 
       # -- T6e2b REMOVED (cursor-decommission W7) --------------------------------------
       # cursor-config-schema validated deleted Cursor-era hooks/MCP structure,
-      # both deleted in the Cursor-to-Claude migration (Claude Code uses .claude/settings.json
+      # both deleted in the Cursor-to-Claude migration (Claude Code uses .codex/hooks.json
       # + root .mcp.json). Validator script removed; hook retired.
 
       # -- T6e2c / T11 REMOVED (cursor-decommission W7) --------------------------------
@@ -324,14 +324,14 @@ repos:
       # byte-identical to the SSOT generator output. Currently covers:
       #   - MCP-QUICK-REFERENCE (.mcp.json)
       #   - NOTION-MAP          (config/notion_databases.yaml)
-      # Fix drift: `python .claude/governance/scripts/sync_mcp_config.py`
+      # Fix drift: `python .codex/governance/scripts/sync_mcp_config.py`
       # RENAME 2026-05-05: was labelled T6d (collision with author-gate-ledger-schema).
       - id: agents-md-autogen-sync
         name: "T6d3: AGENTS.md Autogen Sync"
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
-        files: ^(\.mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.claude/governance/scripts/sync_mcp_config\.py|\.claude/governance/scripts/sync_mcp_config\.py)$
+        files: ^(\.mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.codex/governance/scripts/sync_mcp_config\.py|\.codex/governance/scripts/sync_mcp_config\.py)$
         always_run: false
         require_serial: true
 
@@ -349,7 +349,7 @@ repos:
         entry: py ops_scripts/ci/check_hardcoded_exclusions.py
         language: system
         pass_filenames: false
-        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.claude/governance/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
+        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.codex/governance/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
         always_run: false
         require_serial: true
 
@@ -401,16 +401,16 @@ repos:
         name: "T7c: HITL Packet Format"
         entry: py ops_scripts/ci/validate_hitl_format.py
         language: system
-        files: ^\.claude/rules/(hitl-|.*hitl).*\.md$
+        files: ^\.codex/rules/(hitl-|.*hitl).*\.md$
         always_run: false
         require_serial: true
 
       # -- T7e2 REMOVED (cursor-decommission W1.2c, 2026-06-07) --------------------------
       # The `hitl-rules-corpus` hook (ops_scripts/ci/validate_hitl_rules.py) was a dormant,
-      # never-functional gate: its `files:` glob matched `.claude/rules/*.md` but only
+      # never-functional gate: its `files:` glob matched `.codex/rules/*.md` but only
       # `.mdc` ever existed there, so it never fired; and it asserts §HITL-9/§HITL-10 +
       # "Surface 1–N options" / "LOW_CONFIDENCE_AMBIGUITY" markers that are absent from BOTH
-      # the legacy Cursor rules AND the `.claude/*.md` SSOT. Removed during the
+      # the legacy Cursor rules AND the `.codex/*.md` SSOT. Removed during the
       # Cursor-to-Claude rules migration rather than wired to fail against the SSOT. The
       # validator script + tests/governance/test_hitl_validators.py remain on disk pending a
       # separate retire-or-rewrite decision.
@@ -419,7 +419,7 @@ repos:
       # (legacy-era ADG-pipeline band-aid; also cut from the runner in W1).
 
       # -- T7g: ADG Graph-Layer Evidence (Constitutional §22) --------------------------
-      # Validates that T2/T3 refactoring plans in .claude/plans/ include the
+      # Validates that T2/T3 refactoring plans in .codex/plans/ include the
       # ## ADG_HOTSPOT_REPORT (with archetype + surface classification) and
       # ## ADG_GRAPH_LAYER_EVIDENCE (with ≥3 materialized views + semantic edges/P-views).
       # Triggers on plan file changes only.
@@ -428,7 +428,7 @@ repos:
         entry: py ops_scripts/ci/check_graph_layer_evidence.py
         language: system
         pass_filenames: false
-        files: ^((?:plans|\.claude/plans)/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
+        files: ^((?:plans|\.codex/plans)/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
         always_run: false
         require_serial: true
 
@@ -513,12 +513,12 @@ repos:
       # -- T7q: SSOT Folder Routing (Constitutional §31) -----------------------------
       # Blocks NEW Python files written into forbidden roots: scripts/,
       # repo-root, tools/_oneoff/, tools/_oneshot/, or hook-prefix files
-      # outside .claude/governance/scripts/. Pre-existing files are never flagged.
+      # outside .codex/governance/scripts/. Pre-existing files are never flagged.
       # Bypass: SSOT_FOLDER_BYPASS=1.
-      # Sibling Windsurf hook: .claude/governance/scripts/pre_write_gate.py
-      # (imports the same helper at .claude/governance/scripts/_ssot_folder_check.py
+      # Sibling Windsurf hook: .codex/governance/scripts/pre_write_gate.py
+      # (imports the same helper at .codex/governance/scripts/_ssot_folder_check.py
       # to keep the author-time and commit-time decisions identical).
-      # Rule SSOT: .claude/rules/ssot-folder-enforcement.md
+      # Rule SSOT: .codex/rules/ssot-folder-enforcement.md
       - id: ssot-folder-routing
         name: "T7q: SSOT Folder Routing (§31)"
         entry: py ops_scripts/ci/check_ssot_folder_routing.py
@@ -533,7 +533,7 @@ repos:
       # file change. Advisory mode local-only via CORE_ADDITION_GATE_ADVISORY=1.
       # CI must not set advisory mode. Bypass: CORE_ADDITION_GATE_BYPASS=1 (audit-logged).
       # Artifact: artifacts/ci/agentic_core_addition_gate.json
-      # Plan: .claude/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
+      # Plan: .codex/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
       - id: gov3-core-addition-author-gate
         name: "GOV-3: Core Addition Author-Gate (fail-closed)"
         entry: py ops_scripts/ci/check_agentic_core_addition.py
@@ -544,7 +544,7 @@ repos:
         require_serial: true
 
       # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
-      # Sums bytes of all .claude/rules/*.md with `trigger: always_on` and
+      # Sums bytes of all .codex/rules/*.md with `trigger: always_on` and
       # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic
       # "Architecture of Agentic RAG" (Apr 2026): always-on rules >50 KB
       # trigger autonomous context compaction, where the model arbitrarily
@@ -563,7 +563,7 @@ repos:
 
       # -- T7s.1–.3: Fort Knox Certification Integrity — REMOVED 2026-06-14 -----------
       # Constitutional §32 decommissioned (dead input certification/evidence_assertions.jsonl).
-      # Rule: .claude/rules/fortknox-certification-discipline.md (DEPRECATED stub).
+      # Rule: .codex/rules/fortknox-certification-discipline.md (DEPRECATED stub).
 
       # -- T8r: Runtime Certification Advisory Gate (Phase E.1) -----------------
       # Phase E.1 advisory gate per ADR-080 §11 — reads the per-app Phase D
@@ -597,7 +597,7 @@ repos:
       # Asserts every apps_*/ top-level package imports the agentic_core spine
       # (L0_routing | L1_cognition | L2_execution). Catches the forbidden
       # `apps_* standalone mini-runtime` mode via direct ADG SQLite query.
-      # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
+      # Plan: .codex/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
       # Default: STRICT (W5 P5.1 flip, 2026-04-30) — exit 1 on violation.
       # Rollback: APPS_SPINE_DELEGATION_GATE_MODE=advisory (exit 0, JSON only).
       # Bypass:   APPS_SPINE_DELEGATION_GATE_BYPASS=1 (skip entirely).
@@ -679,7 +679,7 @@ repos:
       # apps_shared purity — block any import from apps_shared/ into a domain app.
       # SQLite-direct query against the canonical ADG snapshot (constitutional §28).
       # Currently 0 violations; gate locks the boundary at zero.
-      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
+      # Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
       - id: check-apps-shared-purity
         name: "CI: apps_shared purity (no domain-app imports)"
         entry: py ops_scripts/ci/check_apps_shared_purity.py
@@ -693,7 +693,7 @@ repos:
       # through telemetry/logging/OTEL emit call sites. Closes Boundary 2
       # in apps_underwriting_ai + apps_lic threat models.
       # Currently 0 violations (3 explicit waivers for env-var-name-only logs).
-      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+      # Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
       - id: check-pii-in-telemetry
         name: "CI: PII in telemetry sinks"
         entry: py ops_scripts/ci/check_pii_in_telemetry.py
@@ -708,7 +708,7 @@ repos:
       # ADR-075 decorator). Locked at 133/133 (100%) on 2026-04-30 after
       # W-OTEL-1/2/3 mass remediation (Phase A: module-load emits).
       # Phase B (per-method spans on execute() paths) is its own plan.
-      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
+      # Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
       - id: check-apps-otel-coverage
         name: "CI: apps_* OTEL coverage (locked at 100%)"
         entry: py ops_scripts/ci/check_apps_otel_coverage.py
@@ -723,7 +723,7 @@ repos:
       # marker). Removing a decorator from a manifest-listed method is
       # a breaking observability contract change requiring Author-Gate.
       # Locked at 24/24 (100%) on 2026-04-30.
-      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
+      # Plan: .codex/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
       - id: check-required-spans-coverage
         name: "CI: required spans manifest (Layer 3)"
         entry: py ops_scripts/ci/check_required_spans_coverage.py

@@ -35,7 +35,7 @@ root_directories:
   - docs
   - data
   - config
-  - plans            # relocated plans SSOT (repo root; superseded .claude/plans)
+  - plans            # relocated plans SSOT (repo root; superseded .codex/plans)
   - memory           # native file-memory SSOT (constitutional §17 / ADR-095)
   # Infrastructure / generated
   - artifacts
@@ -51,7 +51,7 @@ root_directories:
   - .gravity_state
   - .backup
   - .vscode
-  - .claude          # Claude Code governance tree (rules/hooks/skills/schemas) — SSOT
+  - .codex          # Claude Code governance tree (rules/hooks/skills/schemas) — SSOT
   - .locks           # git-lfs / xet lock directory (runtime artifact)
   # git-xet extension working directory
   - xet

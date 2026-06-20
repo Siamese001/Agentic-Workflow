@@ -1,8 +1,8 @@
 # Retire `_legacy_windsurf` / `tools/windsurf` Mirror Trees
 
-**Plan slug:** `retire-legacy-windsurf-mirrors-a9d3f7`  
-**SSOT:** `plans/retire-legacy-windsurf-mirrors-a9d3f7.md`  
-**Notion page:** `37927693-f55c-819e-b4ae-fadefa94827a`  
+**Plan slug:** `retire-legacy-windsurf-mirrors-a9d3f7`
+**SSOT:** `plans/retire-legacy-windsurf-mirrors-a9d3f7.md`
+**Notion page:** `37927693-f55c-819e-b4ae-fadefa94827a`
 **Worktree:** `C:/Git/apps_rg_e2e` (branch `apps_rg_e2e`)
 
 ---
@@ -12,7 +12,7 @@
 **Situation:** The repo has two legacy mirror trees left over from the Windsurf→Claude Code
 migration:
 
-1. `.claude/governance/scripts/_legacy_windsurf/` — ~100 Windsurf cascade scripts copied
+1. `.codex/governance/scripts/_legacy_windsurf/` — ~100 Windsurf cascade scripts copied
    verbatim. The shim `_notion_plans_status_check.py` tries to re-export from
    `.cursor/scripts/_notion_plans_status_check.py` via `spec_from_file_location`. That path
    does not exist in any worktree → `FileNotFoundError` → **26 pytest collection errors** in
@@ -53,11 +53,11 @@ mirror tests (W2, immediate), migrate the `windsurf_scripts` tests to canonical 
 
 | Phase ID | Title | Scope | Status |
 |----------|-------|-------|--------|
-| W1.P1 | Fix broken shim probe | `.claude/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py` | ✅ |
+| W1.P1 | Fix broken shim probe | `.codex/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py` | ✅ |
 | W2.P1 | Fix stale mirror test refs | `tests/unit/tools/notion/test_wave_lifecycle_guard.py` | ✅ |
 | W3.P1 | Batch import migration | `tests/unit/windsurf_scripts/*.py` (25 files) | ✅ |
 | W4.P1 | Delete `tools/windsurf/` | `tools/windsurf/*.py` (3 files) | ✅ git rm done |
-| W4.P2 | Archive `_legacy_windsurf/` + fix all production references | `.claude/governance/scripts/_legacy_windsurf/` + ~60 files | ✅ Archived to `docs/archive/windsurf/legacy-tree/governance_scripts/`; all production imports fixed |
+| W4.P2 | Archive `_legacy_windsurf/` + fix all production references | `.codex/governance/scripts/_legacy_windsurf/` + ~60 files | ✅ Archived to `docs/archive/windsurf/legacy-tree/governance_scripts/`; all production imports fixed |
 
 ---
 
@@ -80,11 +80,11 @@ _SSOT_PATH = Path(__file__).resolve().parents[2] / ".cursor" / "scripts" / "_not
 # Fixed — points to parent directory (the real SSOT):
 _SSOT_PATH = Path(__file__).resolve().parent.parent / "_notion_plans_status_check.py"
 
-# parent       = .claude/governance/scripts/_legacy_windsurf/
-# parent.parent = .claude/governance/scripts/   ← _notion_plans_status_check.py IS here
+# parent       = .codex/governance/scripts/_legacy_windsurf/
+# parent.parent = .codex/governance/scripts/   ← _notion_plans_status_check.py IS here
 ```
 
-**File:** `.claude/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py`  
+**File:** `.codex/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py`
 **Change:** lines 8–12 — update `_SSOT_PATH` construction.
 
 **Verification:** `python -m pytest tests/unit/tools_notion/ -q --tb=short` — 0 collection errors.
@@ -124,15 +124,15 @@ path = REPO_ROOT / "tools" / "plan_lifecycle" / "wave_execution_state.py"
 
 **Pattern:** each file does:
 ```python
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".codex" / "governance/scripts" / "_legacy_windsurf"))
 ```
 Replace with:
 ```python
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".codex" / "governance" / "scripts"))
 ```
 
-Since `.claude/governance/scripts/_notion_plans_status_check.py` (and all other governance
-scripts) already live directly in `.claude/governance/scripts/`, removing the `_legacy_windsurf`
+Since `.codex/governance/scripts/_notion_plans_status_check.py` (and all other governance
+scripts) already live directly in `.codex/governance/scripts/`, removing the `_legacy_windsurf`
 path segment is the only change needed per file.
 
 **Files to migrate** (representative — all `tests/unit/windsurf_scripts/*.py`):
@@ -158,7 +158,7 @@ Three files, all shadowed by `tools/plan_lifecycle/`:
 
 ### W4.P2 — Archive `_legacy_windsurf/`
 
-Move entire `_legacy_windsurf/` directory to `archives/legacy_windsurf_2026-06-08/`.  
+Move entire `_legacy_windsurf/` directory to `archives/legacy_windsurf_2026-06-08/`.
 Add a one-line redirect `README.md` in `_legacy_windsurf/` if directory is kept as a tombstone.
 
 **Pre-condition:** W3 green (no remaining imports of `_legacy_windsurf`).
@@ -182,5 +182,5 @@ W3+W4 are deferred waves (bulk migration, safe to do incrementally).
 
 ## Files Changed (W1+W2 — this session)
 
-- `.claude/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py` — fix probe path
+- `.codex/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py` — fix probe path
 - `tests/unit/tools/notion/test_wave_lifecycle_guard.py` — redirect stale mirror refs

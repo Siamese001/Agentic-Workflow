@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-06-11
 
 ## Context (SCQA)
 
-- **Situation** - The approved active plans SSOT is `C:\Git\Agentic-Workflow-FRESH\plans`, but historical plans are scattered across `.claude/plans`, `docs/reports/plans`, and recovered Windsurf material under `C:\Git\windsurf-plans-recovered`.
+- **Situation** - The approved active plans SSOT is `C:\Git\Agentic-Workflow-FRESH\plans`, but historical plans are scattered across `.codex/plans`, `docs/reports/plans`, and recovered Windsurf material under `C:\Git\windsurf-plans-recovered`.
 - **Complication** - The historical material includes active-plan-shaped files, archives, RCAs, evidence reports, duplicate names, and recovered files. Leaving it scattered makes it hard to query failures, repeated work, and lessons learned.
 - **Question** - How do we create one flat review plane in `plans/` without turning historical material into executable work or overwriting current active plans?
 - **Answer** - Copy historical material into `plans/` with collision-safe archived filenames, prepend a non-executable memorial metadata block, preserve originals, and emit a manifest for audit.
@@ -62,7 +62,7 @@ LAST_UPDATED: 2026-06-11
 
 ## Out Of Scope
 
-- Deleting `.claude/plans` or recovered Windsurf source folders.
+- Deleting `.codex/plans` or recovered Windsurf source folders.
 - Registering each historical archive record as active Notion work.
 - Reclassifying the current active root `plans/*.md` files as archived.
 - Changing code, ADG extraction, CI gates, or governance rules.
@@ -80,7 +80,7 @@ CHECKPOINT: A
 **Authorization**: GRANTED - User explicitly requested plan creation and implementation.
 
 **Phases**:
-- **W1.1** - Inventory `plans/`, `.claude/plans`, `docs/reports/plans`, and recovered Windsurf folders | ~1K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.1** - Inventory `plans/`, `.codex/plans`, `docs/reports/plans`, and recovered Windsurf folders | ~1K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 - **W1.2** - Define archived metadata, collision-safe naming, and manifest shape | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
@@ -119,12 +119,12 @@ CHECKPOINT: C
 
 **Phases**:
 - **W3.1** - Verify file counts, target uniqueness, and archive metadata | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
-- **W3.2** - Summarize remaining cleanup decisions for `.claude/plans` | ~1K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W3.2** - Summarize remaining cleanup decisions for `.codex/plans` | ~1K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - The root `plans/` folder is the single flat review plane.
 - Current active root plans remain distinguishable from imported archived records.
-- `.claude/plans` is left as source evidence pending a later pointer-only cleanup.
+- `.codex/plans` is left as source evidence pending a later pointer-only cleanup.
 
 ---
 
@@ -137,7 +137,7 @@ CHECKPOINT: C
 | Imported records are non-executable | Aggregate metadata check for `status: Archived` and `do_not_execute: true` passed | DONE |
 | No current active plan overwritten | Pre-import active filenames were preserved and collision-safe targets were used | DONE |
 | Manifest written | `plans/historical-plans-memorial-manifest.csv` exists with source, target, hash, and import status | DONE |
-| Source folders preserved | `.claude/plans`, `docs/reports/plans`, and recovered folders still exist | DONE |
+| Source folders preserved | `.codex/plans`, `docs/reports/plans`, and recovered folders still exist | DONE |
 
 ---
 

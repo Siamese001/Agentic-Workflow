@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-research-blend-baseline-c74787.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-research-blend-baseline-c74787.md'
 original_relative_path: '_archive\\2026-05\\apps-research-blend-baseline-c74787.md'
 source_sha256: 291407a72a1e043130c360b9a888c6a43f2df1dcbea268bc3567684b1b98ff6b
 recovered_status: LEGACY_EXISTING

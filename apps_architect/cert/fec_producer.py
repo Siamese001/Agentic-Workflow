@@ -1,6 +1,6 @@
 """apps_architect FEC producer — builds FinalEvidenceContract dict.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W1.P2.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W1.P2.
 
 Pattern source: ``apps_research/cert/fec_producer.py``. apps_architect is a
 pattern collection and repo hardening engine; FEC surfaces retrieval sources

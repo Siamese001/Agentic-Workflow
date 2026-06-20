@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-stub-gap-closure-f4b2e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-stub-gap-closure-f4b2e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-stub-gap-closure-f4b2e1.md'
 source_sha256: e3d8a863aa64b8e411cef9a2868b80fd35452f9f3feeadd2674c05f0b241dfee
 recovered_status: LEGACY_EXISTING

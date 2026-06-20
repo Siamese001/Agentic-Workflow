@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-cross-section-mock-judge-policy-d8e4f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-cross-section-mock-judge-policy-d8e4f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-cross-section-mock-judge-policy-d8e4f2.md'
 source_sha256: 4f14bae176845039b67ac549a3942337829273a668f6da890276ff462e639161
 recovered_status: LEGACY_EXISTING

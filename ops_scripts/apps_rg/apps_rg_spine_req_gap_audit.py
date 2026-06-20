@@ -141,7 +141,7 @@ def main() -> int:
         "waves_completed": ["W0", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
         "gap_analysis_report": "docs/reports/apps_rg/apps_rg_spine_req_gap_analysis_20260523.md",
         "pa_drill_down": "docs/reports/apps_rg/pa_exec_flowchart_gap_analysis_20260523.md",
-        "execution_plan": ".claude/plans/pa-exec-flowchart-gap-f2a8c3.md",
+        "execution_plan": ".codex/plans/pa-exec-flowchart-gap-f2a8c3.md",
         "target_architecture": {
             "apps_rg_owns": "domain_contract refs, prompt_assembly content, section templates",
             "core_owns": "generic engines U0-L6, PA pipeline, signing, Exit aggregation",

@@ -112,7 +112,7 @@ Legend:
 ## G4b — Config / prompts / rules / env / feature-flag control plane
 
 - **Scope**: Every knob that tunes runtime behaviour at start or request time. Organized into four planes: (i) constitutional rules + AGENTS.md, (ii) config files (YAML/JSON/TOML), (iii) env vars + feature flags, (iv) prompts / prompt-governance surfaces.
-- **Surfaces**: `.claude/rules/`, `.claude/skills/`, `AGENTS.md`, `config/`, `agentic_core/config/`, `agentic_core/runtime/config/`, `apps_*/config/`, `.env` (key names), `agentic_core/prompt_governance/`, `apps_shared/prompts/`, any `os.getenv` consumer surfaced by G2b.
+- **Surfaces**: `.codex/rules/`, `.codex/skills/`, `AGENTS.md`, `config/`, `agentic_core/config/`, `agentic_core/runtime/config/`, `apps_*/config/`, `.env` (key names), `agentic_core/prompt_governance/`, `apps_shared/prompts/`, any `os.getenv` consumer surfaced by G2b.
 - **Outputs**:
   - `G4b_control_plane/README.md`
   - `G4b_control_plane/rules_and_skills_map.md` (rule → enforcer)
@@ -120,13 +120,13 @@ Legend:
   - `G4b_control_plane/env_and_flags.md` (env keys + feature flags with consumers)
   - `G4b_control_plane/prompt_surface_map.md` (prompt files + governance rules)
 - **Reuses from E/F**: F11.01 (L5 authority), F11.04 (L5 binds UWG), SRC-RULE-001 / SRC-RULE-002 / SRC-INT-001 / SRC-INT-004.
-- **Stop**: Every rule in `.claude/rules/` is mapped to an enforcer. Every top-level config file has consumers listed. Every `.env` key name appears in `env_and_flags.md`.
+- **Stop**: Every rule in `.codex/rules/` is mapped to an enforcer. Every top-level config file has consumers listed. Every `.env` key name appears in `env_and_flags.md`.
 - **Risks**: (a) prompt governance may be distributed across core and apps. (b) some rules are doctrine-only with no code enforcer — flag explicitly. (c) env vars used only in CI workflows.
 
 ## G5 — Deployment / MCP / hooks / ops-scripts / CI topology
 
 - **Scope**: The operational envelope: MCP servers (process lifecycle), hooks, ops scripts, CI workflows, pre-commit, pytest orchestration. Deployment here is "what runs where when an operator starts the system", not cloud IaC.
-- **Surfaces**: `tools/mcp/`, `tools/adg/mcp/`, `.mcp.json`, `.claude/settings.json`, `.claude/governance/scripts/`, `docs/archive/windsurf/legacy-tree/workflows/`, `ops_scripts/`, `.github/`, `pyproject.toml`, `pytest.ini`, `conftest.py`, `.pre-commit-config.yaml`.
+- **Surfaces**: `tools/mcp/`, `tools/adg/mcp/`, `.mcp.json`, `.codex/hooks.json`, `.codex/governance/scripts/`, `docs/archive/windsurf/legacy-tree/workflows/`, `ops_scripts/`, `.github/`, `pyproject.toml`, `pytest.ini`, `conftest.py`, `.pre-commit-config.yaml`.
 - **Outputs**:
   - `G5_deployment_ops/README.md`
   - `G5_deployment_ops/mcp_server_registry.yaml` (server → transport → launch cmd → env → lifecycle)

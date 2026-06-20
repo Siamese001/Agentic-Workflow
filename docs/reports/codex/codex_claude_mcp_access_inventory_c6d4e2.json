@@ -4,7 +4,7 @@
   "wave": "W1",
   "sources": [
     ".mcp.json",
-    ".claude/mcp-notes.md",
+    ".codex/mcp-notes.md",
     "scripts/governance/audit_codex_mcp_transports.py --json",
     "tool_search discovery results",
     "direct Codex tool-call evidence from this session"

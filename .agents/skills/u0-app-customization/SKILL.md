@@ -209,5 +209,5 @@ Receipt includes:
 ## Related
 
 - Workflow: `/u0-customize-app`
-- Rule: `.claude/rules/apps-customization.md`
+- Rule: `.codex/rules/apps-customization.md`
 - Skill: `core-boundary-audit` (Step 7)

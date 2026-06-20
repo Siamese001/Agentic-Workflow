@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-notion-registration-enforcement-c8f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\plan-notion-registration-enforcement-c8f3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\plan-notion-registration-enforcement-c8f3a1.md'
 source_sha256: 03d0686f7bfdc627e338be7663a50b0d5dd4d58d212ea8b44c7b44c3d0d6893c
 recovered_status: LEGACY_EXISTING

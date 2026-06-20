@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: new `agentic_core/L1_cognition/reasoning/query_transforms/`, `agentic_core/L1_cognition/reasoning/multi_query_fusion.py`, `agentic_core/knowledge/retrieval/retrieval_plan.py`
-**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W3.1
+**Plan**: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W3.1
 **Relates-to**: ADR-045 (contextual retrieval, ingest-side), ADR-046 (rerank), ADR-056/057 (embedder mechanics), `multi_query_fusion.py` (existing query-side work)
 
 **Current-state note (2026-06-15):** `RetrievalRouter` routes `hyde`, `multi_query`, `decomposition`, `step_back`, and `self_query`, and RAG semconv has query-transform spans. The dedicated `query_transforms/` package split is superseded by the router-level strategy contract; a new core transform package would require a fresh Author-Gate plan.
@@ -145,4 +145,4 @@ Rollback: set `QUERY_TRANSFORM=identity` globally. Transform modules stay on dis
 - Khot et al., *Decomposed Prompting* (ICLR 2023)
 - In-repo: `agentic_core/L1_cognition/reasoning/multi_query_fusion.py`
 - Routing rubric: `docs/reports/plans/query-transform-routing-rubric.md` (W3.2)
-- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

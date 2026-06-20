@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\config-refactoring-remove-core-a3b2c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\config-refactoring-remove-core-a3b2c1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\config-refactoring-remove-core-a3b2c1.md'
 source_sha256: 7d97c9c1eb5703c5d3060ca8228994d5505dac7b4e374c9e684f3c888bdf8143
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\w6-emit-contract-enrichment-d8b2a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\w6-emit-contract-enrichment-d8b2a4.md'
 original_relative_path: '_archive\\2026-05\\w6-emit-contract-enrichment-d8b2a4.md'
 source_sha256: f3515438edfdd2e1d35af42ca43e0b64c2cfc202d6ed2c7afbc6f047c33cc0f3
 recovered_status: LEGACY_EXISTING

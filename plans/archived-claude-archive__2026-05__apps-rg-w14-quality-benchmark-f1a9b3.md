@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-w14-quality-benchmark-f1a9b3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-w14-quality-benchmark-f1a9b3.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-w14-quality-benchmark-f1a9b3.md'
 source_sha256: d6482326c3971d5ca1b2218d5f2b27c3862fdb072d20268469634f686a0ed7bd
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\mcp-serial-defense-l2l5-7d4f1a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\mcp-serial-defense-l2l5-7d4f1a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\mcp-serial-defense-l2l5-7d4f1a.md'
 source_sha256: 85faa3bae304369dc3ae1ef8d91b4bb26189a0d848bfd48c71e01af01d955362
 recovered_status: LEGACY_EXISTING

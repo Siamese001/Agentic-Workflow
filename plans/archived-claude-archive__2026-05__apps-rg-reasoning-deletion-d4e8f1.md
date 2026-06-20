@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-reasoning-deletion-d4e8f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-reasoning-deletion-d4e8f1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-reasoning-deletion-d4e8f1.md'
 source_sha256: e772772335dd92940f559d173d7cc7256979cb9a814894750c77c37f4456c9f8
 recovered_status: LEGACY_EXISTING

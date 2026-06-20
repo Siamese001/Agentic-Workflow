@@ -51,7 +51,7 @@ haystack_parts = []
 for pat in (
     "pyproject.toml",
     ".pre-commit-config.yaml",
-    ".claude/settings.json",
+    ".codex/hooks.json",
 ):
     p = ROOT / pat
     if p.exists():

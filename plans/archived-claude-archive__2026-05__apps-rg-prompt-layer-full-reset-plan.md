@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-prompt-layer-full-reset-plan.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-prompt-layer-full-reset-plan.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-prompt-layer-full-reset-plan.md'
 source_sha256: 4b831992fc1b7a50a7fb023214b5d5a25dc2d8a067936bd235e7ba8f42f82eca
 recovered_status: LEGACY_EXISTING

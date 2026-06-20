@@ -27,7 +27,7 @@ Remove **100% of the Notion-coupled + wave/phase plan-status enforcement**, **ke
 disk-side plan-markdown lint, and **keep** the (separate, working) Notion-ID literal SSOT hygiene.
 
 **Removed:**
-- Hooks/dispatch: `post_write_plan_reconcile` (settings.json), `plan_driven_closer`,
+- Hooks/dispatch: `post_write_plan_reconcile` (hooks.json), `plan_driven_closer`,
   `post_agent_wave_lifecycle_capture`, `post_agent_wave_completion_audit`,
   `post_agent_plan_registration_capture`, `post_agent_plan_supersession_retire`,
   `unified_plan_creation_auditor`, `unified_notion_status_auditor`; the `after_file_edit` Notion
@@ -38,7 +38,7 @@ disk-side plan-markdown lint, and **keep** the (separate, working) Notion-ID lit
 - CI: 24 gate files + their registry entries in `run_contract_gates.py`; the T7u pre-commit hook.
 - Doctrine: 10 rules (`notion-plans-taxonomy`, `notion-plan-wave-deferral`, `plan-update-enforcement`,
   `notion-archived-databases`, `memory-notion-writeback`, `plan-lifecycle-procedures` + 4 stubs);
-  the `plan-governance` and `notion` skills; constitutional **§36 retired**; CLAUDE.md/AGENTS.md updates.
+  the `plan-governance` and `notion` skills; constitutional **§36 retired**; AGENTS.md/AGENTS.md updates.
 - ~42 tests asserting the removed surface.
 
 **Kept (deliberately):**
@@ -64,6 +64,6 @@ disk-side plan-markdown lint, and **keep** the (separate, working) Notion-ID lit
 
 ## Verification
 
-`python -m json.tool .claude/settings.json`; the kept live hooks import+run clean on synthetic stdin;
+`python -m json.tool .codex/hooks.json`; the kept live hooks import+run clean on synthetic stdin;
 `run_contract_gates.py` references only existing gate files (one pre-existing dangling ref unrelated);
 kept disk-side plan tests pass; dangling-reference sweep clean.

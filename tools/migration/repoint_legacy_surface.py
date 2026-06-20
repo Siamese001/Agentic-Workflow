@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Repoint a .cursor/<surface> mirror to its .claude SSOT across consumers.
+"""Repoint a .cursor/<surface> mirror to its .codex SSOT across consumers.
 
 Reads the consumer file list from artifacts/migration/cursor_reference_map.json
 (consumer_files_by_subpath) for a given surface, then replaces the literal
-``.cursor/<surface>`` with ``.claude/<target>`` in each consumer, EXCEPT files on
+``.cursor/<surface>`` with ``.codex/<target>`` in each consumer, EXCEPT files on
 the denylist (which intentionally keep .cursor refs or need bespoke handling).
 
 For .py files: py_compile after rewrite; auto-revert that file on failure.
@@ -34,7 +34,7 @@ DENYLIST = {
     "tools/migration/deprecate_windsurf_refs.py",            # historical migration tool
     "ops_scripts/ci/check_cursor_governance_mirror_health.py",     # obsolete gate (separate removal)
     "ops_scripts/ci/governance_w2_dedupe_report.py",         # obsolete one-time report
-    "scripts/governance/verify_codex_backup.py",             # untracked peer work — do not touch
+    "scripts/governance/verify_codex_primary.py",             # untracked peer work — do not touch
     "ops_scripts/ci/check_no_active_windsurf_changes.py",    # legitimately inspects .cursor presence
     "ops_scripts/ci/check_windsurf_deletion_readiness.py",   # legitimately inspects .cursor presence
     "ops_scripts/ci/check_mcp_config_sovereignty.py",        # references legacy config surfaces by design
@@ -44,14 +44,14 @@ DENYLIST = {
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--surface", required=True, help="e.g. skills (matches .cursor/<surface>)")
-    ap.add_argument("--target", required=True, help="e.g. skills (becomes .claude/<target>)")
+    ap.add_argument("--target", required=True, help="e.g. skills (becomes .codex/<target>)")
     group = ap.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true")
     group.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
     old = f".cursor/{args.surface}"
-    new = f".claude/{args.target}"
+    new = f".codex/{args.target}"
     report = json.loads(MAP.read_text(encoding="utf-8"))
     consumers = report.get("consumer_files_by_subpath", {}).get(old, [])
 

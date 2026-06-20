@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-truth-expansion-r5w1-a8f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-truth-expansion-r5w1-a8f3c2.md'
 original_relative_path: '_archive\\2026-05\\adg-truth-expansion-r5w1-a8f3c2.md'
 source_sha256: d1685729917142866fabcbc81db91da8e16989188c290ffd4470867f4e360763
 recovered_status: LEGACY_EXISTING

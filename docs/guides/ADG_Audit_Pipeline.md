@@ -1,7 +1,7 @@
 # ADG Audit Pipeline
 
 > **SSOT entrypoint**: `python tools/adg/run_full_adg_audit.py`
-> **Plan**: `.claude/plans/adg-audit-pipeline-integration-7f2c93.md`
+> **Plan**: `.codex/plans/adg-audit-pipeline-integration-7f2c93.md`
 > **Status**: Implemented 2026-05-03 (Waves W1–W5)
 
 The ADG audit pipeline is a two-stage, certifiable flow that binds

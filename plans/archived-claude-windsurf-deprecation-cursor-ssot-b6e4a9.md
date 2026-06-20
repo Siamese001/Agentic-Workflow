@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\windsurf-deprecation-cursor-ssot-b6e4a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\windsurf-deprecation-cursor-ssot-b6e4a9.md'
 original_relative_path: 'windsurf-deprecation-cursor-ssot-b6e4a9.md'
 source_sha256: b042753d414fe426f6f37374929fbb2e11788fe2fcc5eac5ebdb220091945aec
 recovered_status: LEGACY_EXISTING

@@ -3,7 +3,7 @@
 **Status:** Accepted (skeleton implemented; migration tracked separately)
 **Date:** 2026-04-30
 **Deciders:** apps_* owners, ADG layer owner
-**Source plan:** `.claude/plans/apps-svp-plus-hardening-7c4e3a.md` (W4.2)
+**Source plan:** `.codex/plans/apps-svp-plus-hardening-7c4e3a.md` (W4.2)
 **Related:** ADR-050 (intelligence ledger family), constitutional §22 (graph-layer primary driver)
 
 **Current-state note (2026-06-15):** Runtime trace, RAG semconv, ADG ingest primitives, `runtime_telemetry_decorators.py`, and the decorator unit tests exist. The broad `_emit_*` call-site migration is successor-plan scope outside this skeleton ADR.

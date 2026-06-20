@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-dom-runtime-evidence-real-b4c9e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-dom-runtime-evidence-real-b4c9e2.md'
 original_relative_path: '_archive\\2026-05\\apps-dom-runtime-evidence-real-b4c9e2.md'
 source_sha256: b1eb8a76f949d55a6707f25cebbd2e2925db1c3d54d6ae6d117347df62a3fbfe
 recovered_status: LEGACY_EXISTING

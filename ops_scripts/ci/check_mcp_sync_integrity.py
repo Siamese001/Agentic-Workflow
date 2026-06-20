@@ -3,7 +3,7 @@
 
 Validates:
 1) Root `.mcp.json` (repo MCP SSOT) is structurally valid.
-2) AGENTS.md MCP Quick Reference matches `.claude/governance/scripts/sync_mcp_config.py` output.
+2) AGENTS.md MCP Quick Reference matches `.codex/governance/scripts/sync_mcp_config.py` output.
 3) Optional: compare a candidate mirror against the repo SSOT (`--check-global`).
 
 Usage:
@@ -56,7 +56,7 @@ def _check_agents_sync(sync) -> list[str]:
     elif current != expected:
         issues.append(
             "AGENTS.md MCP Quick Reference drift detected; run "
-            "'python .claude/governance/scripts/sync_mcp_config.py'"
+            "'python .codex/governance/scripts/sync_mcp_config.py'"
         )
     return issues
 
@@ -75,7 +75,7 @@ def _check_global_sync(sync) -> list[str]:
     if repo_data != global_data:
         issues.append(
             "mirror config drift detected; run "
-            "'python .claude/governance/scripts/sync_mcp_config.py'"
+            "'python .codex/governance/scripts/sync_mcp_config.py'"
         )
     return issues
 

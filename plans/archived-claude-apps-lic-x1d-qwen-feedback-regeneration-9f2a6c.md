@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\apps-lic-x1d-qwen-feedback-regeneration-9f2a6c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\apps-lic-x1d-qwen-feedback-regeneration-9f2a6c.md'
 original_relative_path: 'apps-lic-x1d-qwen-feedback-regeneration-9f2a6c.md'
 source_sha256: c15ad3780b335fcea452a754dac8edc22185705d79bd790384f83a82135e503b
 recovered_status: LEGACY_EXISTING

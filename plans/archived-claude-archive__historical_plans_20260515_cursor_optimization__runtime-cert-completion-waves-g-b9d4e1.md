@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-completion-waves-g-b9d4e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-completion-waves-g-b9d4e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\runtime-cert-completion-waves-g-b9d4e1.md'
 source_sha256: aa77a796550d8ca1f9654410af617924e780f883687dc851c049251a4c1a730e
 recovered_status: LEGACY_EXISTING

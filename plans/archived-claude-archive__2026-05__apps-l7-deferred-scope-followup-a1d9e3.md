@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-l7-deferred-scope-followup-a1d9e3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-l7-deferred-scope-followup-a1d9e3.md'
 original_relative_path: '_archive\\2026-05\\apps-l7-deferred-scope-followup-a1d9e3.md'
 source_sha256: e64064218942939b48293cf8626ed3b88c8bab76b88291669c9b1e68d11d6f77
 recovered_status: LEGACY_EXISTING

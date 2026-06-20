@@ -5,7 +5,7 @@ developer_instructions = """# MCP Governance Auditor
 Use when editing `.mcp.json` or MCP-related skills/rules.
 
 Check:
-- `.mcp.json` (repo root) is project-scoped SSOT; auth/setup notes in `.claude/mcp-notes.md`
+- `.mcp.json` (repo root) is project-scoped SSOT; auth/setup notes in `.codex/mcp-notes.md`
 - `mcpServers` root exists and parses as strict JSON
 - no legacy global config authority claims
 - secrets use environment variables (`${VAR}` syntax, not hard-coded)

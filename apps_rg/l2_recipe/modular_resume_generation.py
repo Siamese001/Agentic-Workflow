@@ -5,7 +5,7 @@ PHASE0_SMOKE_ONLY: synthetic lane payloads here are wiring stubs — forbidden a
 Writes **only** under ``Path(artifact_dir) / \"modular_r4\"`` for pipeline artifacts
 (does not use ``artifacts/apps_rg/runtime_proofs`` for canonical outputs).
 
-See ``.claude/plans/apps-rg-r4-modular-section-migration-d4e8a1.md``.
+See ``.codex/plans/apps-rg-r4-modular-section-migration-d4e8a1.md``.
 """
 
 from __future__ import annotations

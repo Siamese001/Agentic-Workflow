@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\artifacts-reorganization-7a3f2d.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\artifacts-reorganization-7a3f2d.md'
 original_relative_path: '_archive\\2026-05\\artifacts-reorganization-7a3f2d.md'
 source_sha256: fb620880d324e1ec537683646b9620270fbcc36b0f639d44a351a1160d5baa93
 recovered_status: LEGACY_EXISTING

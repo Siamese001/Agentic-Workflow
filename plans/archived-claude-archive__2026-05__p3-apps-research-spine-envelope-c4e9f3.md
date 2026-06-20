@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p3-apps-research-spine-envelope-c4e9f3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p3-apps-research-spine-envelope-c4e9f3.md'
 original_relative_path: '_archive\\2026-05\\p3-apps-research-spine-envelope-c4e9f3.md'
 source_sha256: 76f86b2c7540f3c8f97b6f505dcd52f515b957b6f489cb8cde7222627846bc83
 recovered_status: LEGACY_EXISTING

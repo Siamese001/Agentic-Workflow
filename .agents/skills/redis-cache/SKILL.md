@@ -7,7 +7,7 @@ description: "Redis cache inspection \u2014 health, key scanning, TTL checks, na
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §2 — Redis Cache (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
-> **Action**: Consult `.claude/skills/mcp-integration/SKILL.md` §2 for current guidance.
+> **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §2 for current guidance.
 
 ---
 | User intent | Use redis MCP? |

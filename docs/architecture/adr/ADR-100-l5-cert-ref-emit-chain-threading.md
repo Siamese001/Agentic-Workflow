@@ -200,4 +200,4 @@ from agentic_core.L5_safety.contracts.registry import verify_certification_ref
 - `docs/reference/00A_L5_Governance_Safety/00A.6_L5_Replay_Audit_and_Certification_Evidence.md` — replay/audit evidence contract (cert ref enables audit traceability)
 - ADR-049, ADR-051 — L5 governance plane versions 4 and 5
 - ADR-080 — runtime certification Phase D planning (cert-ref threading is a prerequisite for Phase E)
-- Plan: `.claude/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md`
+- Plan: `.codex/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md`

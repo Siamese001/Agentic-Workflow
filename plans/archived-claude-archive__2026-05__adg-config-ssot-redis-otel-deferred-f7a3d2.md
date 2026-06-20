@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-config-ssot-redis-otel-deferred-f7a3d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-config-ssot-redis-otel-deferred-f7a3d2.md'
 original_relative_path: '_archive\\2026-05\\adg-config-ssot-redis-otel-deferred-f7a3d2.md'
 source_sha256: 5718e7c1ecad070852873933b018b1e0f6c53d37e925aaec166cecc454c4c0e4
 recovered_status: LEGACY_EXISTING

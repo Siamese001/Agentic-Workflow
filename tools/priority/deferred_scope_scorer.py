@@ -8,8 +8,8 @@ ADG-surface intersection. This is the single source of truth invoked by
 `docs/archive/windsurf/legacy-tree/governance_scripts/post_agent_deferred_scope_capture.py` and any manual
 CLI/review tooling.
 
-Policy SSOT: .claude/rules/deferred-scope-capture.md
-ADG layer multipliers SSOT: .claude/rules/adg-canonical-invariants.md §6
+Policy SSOT: .codex/rules/deferred-scope-capture.md
+ADG layer multipliers SSOT: .codex/rules/adg-canonical-invariants.md §6
 Operational signals SSOT: docs/architecture/adr/ADR-031-priority-scoring-operational-signals.md
 
 Formula (v2 — ADR-031):

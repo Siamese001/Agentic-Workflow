@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-spine-deferred-e9c5b3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-spine-deferred-e9c5b3.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-spine-deferred-e9c5b3.md'
 source_sha256: aedd2971bbae86c4b45c2992176c5d28de02afd6268a2f542df5a9c30154a179
 recovered_status: LEGACY_EXISTING

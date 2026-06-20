@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-ci-agentic-core-purity-a7c3e9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-ci-agentic-core-purity-a7c3e9.md'
 original_relative_path: '_archive\\2026-05\\adg-ci-agentic-core-purity-a7c3e9.md'
 source_sha256: 3872ab3aa85be9c7858fcfd2940ebb7ee6349caa35a54f39dad8510074a4ca25
 recovered_status: LEGACY_EXISTING

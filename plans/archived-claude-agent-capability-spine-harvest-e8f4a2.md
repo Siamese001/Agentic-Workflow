@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\agent-capability-spine-harvest-e8f4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\agent-capability-spine-harvest-e8f4a2.md'
 original_relative_path: 'agent-capability-spine-harvest-e8f4a2.md'
 source_sha256: 11a582cf85ded8e96dfc16b4636bb7a44733ec07f6fede90f8e0a7241406888a
 recovered_status: LEGACY_EXISTING

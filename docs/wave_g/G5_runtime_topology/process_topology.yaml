@@ -224,7 +224,7 @@ processes:
   - id: PROC-FILESYSTEM-MCP
     process_name: filesystem MCP server launcher
     launch_mode: windsurf_mcp_autostart
-    entrypoint: node .claude/governance/scripts/filesystem_mcp_launcher.js <repo_root>
+    entrypoint: node .codex/governance/scripts/filesystem_mcp_launcher.js <repo_root>
     process_type: binary subprocess
     transport_mode: node wrapper stdio
     depends_on: [PROC-NODE-GLOBAL-NPM]
@@ -336,7 +336,7 @@ processes:
   - id: PROC-HOOK-ENFORCERS
     process_name: legacy editor hook gate chain
     launch_mode: IDE lifecycle hooks
-    entrypoint: .claude/settings.json -> pre_* / post_* python scripts
+    entrypoint: .codex/hooks.json -> pre_* / post_* python scripts
     process_type: CI/hook/operator trigger surface
     transport_mode: hook subprocess execution
     depends_on: [PROC-ADG-SQLITE-MCP]

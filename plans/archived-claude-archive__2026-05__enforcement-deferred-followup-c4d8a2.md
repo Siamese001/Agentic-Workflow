@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\enforcement-deferred-followup-c4d8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\enforcement-deferred-followup-c4d8a2.md'
 original_relative_path: '_archive\\2026-05\\enforcement-deferred-followup-c4d8a2.md'
 source_sha256: 853cb74fdbcbeeef698b3ec3cdf8feb8373fb75c673a77fff74142ecb28b3f1d
 recovered_status: LEGACY_EXISTING

@@ -112,5 +112,5 @@ When adding new `apps_lic` behavior:
 
 - Root `AGENTS.md` — Architecture law
 - `agentic_core/AGENTS.md` — Core boundary rules
-- `.claude/rules/apps-customization.md` — App customization guidance
-- `.claude/rules/boundary-audit-required.md` — Audit triggers
+- `.codex/rules/apps-customization.md` — App customization guidance
+- `.codex/rules/boundary-audit-required.md` — Audit triggers

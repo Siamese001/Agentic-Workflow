@@ -3,13 +3,13 @@
 **Status:** Active index
 **Last reconciled:** 2026-06-15
 
-This directory is the filesystem source of truth for architecture decisions. The retired Notion ADR Registry is not a write target. Historical `.windsurf/` and `.cursor/` links inside older ADRs are evidence pointers only unless a current `.claude/` rule or root plan still references them.
+This directory is the filesystem source of truth for architecture decisions. The retired Notion ADR Registry is not a write target. Historical `.windsurf/` and `.cursor/` links inside older ADRs are evidence pointers only unless a current `.codex/` rule or root plan still references them.
 
 ## Current Rules
 
 - New ADRs use `ADR-template.md`.
 - New plans referenced by ADRs live under `plans/<slug>-<6hex>.md`.
-- Current governance rules and skills live under `.claude/rules/` and `.claude/skills/`.
+- Current governance rules and skills live under `.codex/rules/` and `.codex/skills/`.
 - Do not add Notion ADR Registry write steps. The registry was archived; ADR files are canonical.
 - Do not reuse an ADR number until the duplicate-number cleanup below is resolved.
 

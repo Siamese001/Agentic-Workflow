@@ -9,12 +9,12 @@
   "blocker": "ADG-LIVE-CODE-MISMATCH",
   "adapter_updates": [
     {
-      "path": "docs/codex-backup-adapter.md",
+      "path": "docs/codex-primary-execution.md",
       "summary": "Added dormant MCP SSOT, evidence snapshot pointers, and read-only transport audit helper."
     },
     {
       "path": "C:/Users/amita/.codex/skills/agentic-workflow-governance/SKILL.md",
-      "summary": "Added .claude/mcp-notes.md as a canonical source and named audit_codex_mcp_transports.py."
+      "summary": "Added .codex/mcp-notes.md as a canonical source and named audit_codex_mcp_transports.py."
     },
     {
       "path": "C:/Users/amita/.codex/skills/agentic-workflow-verification/SKILL.md",
@@ -23,8 +23,8 @@
   ],
   "ssot_policy": {
     "live_mcp": ".mcp.json",
-    "dormant_readd_mcp": ".claude/mcp-notes.md",
-    "procedure": ".claude/skills/mcp-integration/SKILL.md",
+    "dormant_readd_mcp": ".codex/mcp-notes.md",
+    "procedure": ".codex/skills/mcp-integration/SKILL.md",
     "reports_are_evidence_snapshots": true,
     "codex_specific_mcp_registry_created": false
   },

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\adg-config-ssot-audit-c7e4a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\adg-config-ssot-audit-c7e4a2.md'
 original_relative_path: '_archive\\2026-05\\adg-config-ssot-audit-c7e4a2.md'
 source_sha256: 19c15782cb3727daff885900e32ed1cc7d8737d4ce421012f290be54319982ba
 recovered_status: LEGACY_EXISTING

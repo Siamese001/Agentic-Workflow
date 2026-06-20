@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\l6-repo-reorganization-mental-model-c4e8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\l6-repo-reorganization-mental-model-c4e8f2.md'
 original_relative_path: '_archive\\2026-05\\l6-repo-reorganization-mental-model-c4e8f2.md'
 source_sha256: 6408bbe5ea4f10998500f5767c5f46d6c98c2edb0d345b77a728f06a92e7e548
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-sync-enforcement-hardening-f5a2c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-sync-enforcement-hardening-f5a2c1.md'
 original_relative_path: '_archive\\2026-05\\notion-sync-enforcement-hardening-f5a2c1.md'
 source_sha256: 0e2b5876de96183176bb3f913f85787a9e73ed5b3474381a8f7689d7884db47f
 recovered_status: LEGACY_EXISTING

@@ -1,6 +1,6 @@
 """OpenAIJudge — per-dimension LLM-as-Judge via OpenAI Responses API (LJH3.1).
 
-Mirrors the structure of :class:`agentic_core.evaluation.judges.claude_judge.ClaudeJudge`:
+Mirrors the structure of :class:`agentic_core.evaluation.judges.codex_judge.ClaudeJudge`:
 one LLM call per dimension, ``temperature=0`` for determinism, JSON-mode
 response format, Unknown escape hatch honored, provider errors surface
 as Unknown on the affected dimension (never a guessed numeric score).

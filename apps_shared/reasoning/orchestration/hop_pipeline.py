@@ -34,7 +34,7 @@ This module imports only from ``agentic_core`` and stdlib. It MUST NOT
 import from any ``apps_<name>/`` package — apps depend on apps_shared,
 never the reverse. Enforced by ``check_apps_shared_no_app_imports``.
 
-See: .claude/plans/apps-hop-substrate-f7751b.md
+See: .codex/plans/apps-hop-substrate-f7751b.md
 """
 
 from __future__ import annotations

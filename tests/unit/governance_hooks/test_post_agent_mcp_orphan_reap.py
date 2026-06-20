@@ -22,8 +22,8 @@ from unittest import mock
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_mcp_orphan_reap.py"
-HYGIENE_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_mcp_hygiene_audit.py"
+HOOK_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "post_agent_mcp_orphan_reap.py"
+HYGIENE_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "post_agent_mcp_hygiene_audit.py"
 
 
 def _load_hook(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

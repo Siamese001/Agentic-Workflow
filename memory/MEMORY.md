@@ -38,7 +38,7 @@
   not move-to-archives; verify a name is not a *live import* before any mv; `memory/` is whitelisted in
   `config/structure_blueprint/structure_policy.yaml`; rule files are validated by
   `check_rule_frontmatter_schema`/`check_rules_index_freshness`/`check_rule_cross_references` (W3 must
-  repoint inbound refs + keep CLAUDE.md's index fresh in lockstep).
+  repoint inbound refs + keep AGENTS.md's index fresh in lockstep).
 - "Uncalled by `run_contract_gates.py`" ≠ dead: pre-commit references 45 gates, workflows 33. Gate
   retirement (W4) is gated by `tools/governance/classify_gate_wiring.py`.
 

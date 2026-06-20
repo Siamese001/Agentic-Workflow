@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\phase2-gtm-presales-remaining-f7a2c9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\phase2-gtm-presales-remaining-f7a2c9.md'
 original_relative_path: 'phase2-gtm-presales-remaining-f7a2c9.md'
 source_sha256: 99982d2a358f9f7978831b568e5bc8794f887cd7dadc150d64d1318a6b90797e
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-s5-bridge-hardening-acc0f0.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-s5-bridge-hardening-acc0f0.md'
 original_relative_path: 'exec-summary-s5-bridge-hardening-acc0f0.md'
 source_sha256: 1f7126b340e53e0f23c970bf52708b140eee3d3620a4ad83cc92599d4140353a
 recovered_status: LEGACY_EXISTING

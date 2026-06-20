@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-chroma-ingestion-wiring-c7f2d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-chroma-ingestion-wiring-c7f2d9.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-chroma-ingestion-wiring-c7f2d9.md'
 source_sha256: 1fb173f41a1f7dfa44fd14f28a9371d701855a37801284dac8b4fe45eb5eedf2
 recovered_status: LEGACY_EXISTING

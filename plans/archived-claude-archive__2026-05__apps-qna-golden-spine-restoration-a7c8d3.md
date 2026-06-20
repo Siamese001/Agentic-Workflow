@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-golden-spine-restoration-a7c8d3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-golden-spine-restoration-a7c8d3.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-golden-spine-restoration-a7c8d3.md'
 source_sha256: 5fe02e21e3b995fdfcd32dab7d9a8dc37e68709deed53fb1a663b40231cf5d25
 recovered_status: LEGACY_EXISTING

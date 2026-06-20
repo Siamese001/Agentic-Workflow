@@ -68,7 +68,7 @@ validated = {
         "validated_count": 21,
         "validation_method": "direct evidence-pattern match in violations table",
         "false_positive_rate": "0%",
-        "verdict": "CONFIRMED REAL — all 21 are NOTION literals in docs/archive/windsurf/legacy-tree/governance_scripts/ (archived from .claude/governance/scripts/_legacy_windsurf/)",
+        "verdict": "CONFIRMED REAL — all 21 are NOTION literals in docs/archive/windsurf/legacy-tree/governance_scripts/ (archived from .codex/governance/scripts/_legacy_windsurf/)",
         "breakdown": {
             "NOTION_API_VERSION (literal '2025-09-03')": 10,
             "NOTION_BASE (literal URL)": 3,

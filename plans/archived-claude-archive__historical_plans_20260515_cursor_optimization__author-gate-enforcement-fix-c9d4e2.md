@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-enforcement-fix-c9d4e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\author-gate-enforcement-fix-c9d4e2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\author-gate-enforcement-fix-c9d4e2.md'
 source_sha256: d68a2c51c0b33275689b2c4495149c2d7571e077c25769a8bbb8b0d612b5194b
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave1-p1-remediation-revision-0f0783.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave1-p1-remediation-revision-0f0783.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wave1-p1-remediation-revision-0f0783.md'
 source_sha256: ed5f4fd6577f2bc249bd7d5cc8a093d34ca71e731cf71540c4195956d3245cdd
 recovered_status: LEGACY_EXISTING

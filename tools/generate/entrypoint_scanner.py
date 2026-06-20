@@ -4,7 +4,7 @@ Scans configuration files for Python entrypoint references and emits
 entrypoint_kind edges into the ADG edge list.
 
 Sources:
-  - .claude/settings.json → entrypoint_kind=hook
+  - .codex/hooks.json → entrypoint_kind=hook
   - .mcp.json → entrypoint_kind=mcp
   - .pre-commit-config.yaml → entrypoint_kind=hook
   - .github/workflows/*.yml → entrypoint_kind=ci
@@ -69,11 +69,11 @@ def _extract_py_files_from_command(command: str) -> list[str]:
 
 
 def _scan_hooks_json() -> list[tuple[str, str]]:
-    """Scan .claude/settings.json for hook entrypoints.
+    """Scan .codex/hooks.json for hook entrypoints.
 
     Returns list of (repo_relative_path, entrypoint_kind).
     """
-    settings_path = REPO / ".claude" / "settings.json"
+    settings_path = REPO / ".codex" / "hooks.json"
     if not settings_path.is_file():
         return []
 

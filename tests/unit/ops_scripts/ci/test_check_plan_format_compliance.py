@@ -55,6 +55,14 @@ CURRENT_WAVE: W1
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-01-01
 
+## Status Tables
+
+### Wave Progress
+
+| Wave | Focus | Status |
+| --- | --- | --- |
+| W1 | Test | TODO |
+
 ## Wave 1
 
 WAVE_ID: W1
@@ -123,6 +131,8 @@ CURRENT_WAVE: W1
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-01-01
 
+## Status Tables
+
 ## Wave 1
 
 WAVE_ID: W1
@@ -142,6 +152,14 @@ PLAN_STATUS: TODO
 CURRENT_WAVE: W1
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-01-01
+
+## Status Tables
+
+### Wave Progress
+
+| Wave | Focus | Status |
+| --- | --- | --- |
+| W1 | Test | TODO |
 
 ## Wave 1
 
@@ -338,6 +356,14 @@ CURRENT_WAVE: W1
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-01-01
 
+## Status Tables
+
+### Wave Progress
+
+| Wave | Focus | Status |
+| --- | --- | --- |
+| W1 | Test | TODO |
+
 ## Wave 1
 
 WAVE_ID: W1
@@ -378,7 +404,7 @@ class TestW3PilotPlans:
         import subprocess
         result = subprocess.run(
             ["python", "ops_scripts/ci/check_plan_format_compliance.py",
-             "--advisory", "--paths", "docs/archive/windsurf/legacy-tree/plans/plan-format-simplification-rca-d4f8e2.md"],
+             "--advisory", "--paths", ".codex/plans/_archive/2026-05/plan-format-simplification-rca-d4f8e2.md"],
             capture_output=True,
             text=True,
         )
@@ -390,7 +416,7 @@ class TestW3PilotPlans:
         import subprocess
         result = subprocess.run(
             ["python", "ops_scripts/ci/check_plan_format_compliance.py",
-             "--advisory", "--paths", ".claude/templates/execution-plan-template.md"],
+             "--advisory", "--paths", ".codex/templates/execution-plan-template.md"],
             capture_output=True,
             text=True,
         )

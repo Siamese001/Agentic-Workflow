@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\phase-b-blocker-burndown-a8c4f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\phase-b-blocker-burndown-a8c4f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\phase-b-blocker-burndown-a8c4f1.md'
 source_sha256: c29dbb40fb0ec9c64fb2d62cd5c581e3e14b77b164f9744ce11325c383daedbb
 recovered_status: LEGACY_EXISTING

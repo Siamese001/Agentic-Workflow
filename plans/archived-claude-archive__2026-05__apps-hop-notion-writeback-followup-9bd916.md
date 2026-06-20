@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-hop-notion-writeback-followup-9bd916.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-hop-notion-writeback-followup-9bd916.md'
 original_relative_path: '_archive\\2026-05\\apps-hop-notion-writeback-followup-9bd916.md'
 source_sha256: e07ef4b99d208afafc2abb20b0ff0a6a4bc5530dfa132f53ead58b803cb9e9e8
 recovered_status: LEGACY_EXISTING

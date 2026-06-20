@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+PLANS_DIR = REPO_ROOT / ".codex" / "plans"
 APPENDIX = Path(__file__).with_name("graph_layer_plan_appendix.md")
 EXCLUDE = frozenset({"README.md", "CURSOR_RUNTIME_SEAM_TEMPLATE.md"})
 

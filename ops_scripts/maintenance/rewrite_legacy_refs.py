@@ -30,17 +30,17 @@ SKIP_DIR_PARTS = (
 TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".json"}
 
 REPLACEMENTS: list[tuple[str, str]] = [
-    (".claude/rules/", ".claude/rules/"),
-    ("docs/archive/windsurf/legacy-tree/plans/", ".claude/plans/"),
+    (".codex/rules/", ".codex/rules/"),
+    ("docs/archive/windsurf/legacy-tree/plans/", ".codex/plans/"),
     (".cursor/state/", ".cursor/state/"),
-    (".claude/governance/scripts/", ".cursor/scripts/"),
-    (".claude/skills/", ".claude/skills/"),
+    (".codex/governance/scripts/", ".cursor/scripts/"),
+    (".codex/skills/", ".codex/skills/"),
     ("docs/archive/windsurf/legacy-tree/config/", ".cursor/config/"),
     (' / "docs/archive/windsurf/legacy-tree" / "config" / ', ' / ".cursor" / "config" / '),
-    (".claude/settings.json", ".claude/settings.json"),
+    (".codex/hooks.json", ".codex/hooks.json"),
     (".cursor/schemas/", ".cursor/schemas/"),
     ("docs/archive/windsurf/legacy-tree/workflows/", "docs/archive/windsurf/legacy-tree/workflows/"),
-    (".claude/templates/", ".claude/templates/"),
+    (".codex/templates/", ".codex/templates/"),
     ("docs/archive/windsurf/legacy-tree/commands/", ".cursor/commands/"),
     ("docs/archive/windsurf/legacy-tree/agents/", ".cursor/agents/"),
     (".cursor/RULES_INDEX.md", ".cursor/RULES_INDEX.md"),
@@ -51,7 +51,7 @@ REPLACEMENTS: list[tuple[str, str]] = [
     (r"\.windsurf[/\\]scripts[/\\]", r".cursor[/\\]scripts[/\\]"),
     (r"\.windsurf[/\\]plans[/\\]", r".cursor[/\\]plans[/\\]"),
     (r"\\\.windsurf[/\\]plans", r"\\\.cursor[/\\]plans"),
-    ("@.claude/rules/", "@.claude/rules/"),
+    ("@.codex/rules/", "@.codex/rules/"),
     ("tools/windsurf/wave_execution_state.py", "tools/plan_lifecycle/wave_execution_state.py"),
     ("python tools/windsurf/wave_execution_state.py", "python tools/plan_lifecycle/wave_execution_state.py"),
     ("docs/windsurf/", "docs/cursor/"),
@@ -68,39 +68,39 @@ PHRASE_REPLACEMENTS: list[tuple[str, str]] = [
         "invoke the `structured-reasoning` skill. Emit `SR_INTAKE`",
     ),
     (
-        "See `.claude/rules/sequential-thinking-enforcement.md`",
-        "See `.claude/rules/sequential-thinking-enforcement.mdc`",
+        "See `.codex/rules/sequential-thinking-enforcement.md`",
+        "See `.codex/rules/sequential-thinking-enforcement.mdc`",
     ),
     (
-        "See `.claude/rules/sequential-thinking-enforcement.md`",
-        "See `.claude/rules/sequential-thinking-enforcement.mdc`",
+        "See `.codex/rules/sequential-thinking-enforcement.md`",
+        "See `.codex/rules/sequential-thinking-enforcement.mdc`",
     ),
     (
-        "See `.claude/rules/windsurf-config-lookup.md`",
-        "See `.claude/rules/cursor-config-lookup.mdc`",
+        "See `.codex/rules/windsurf-config-lookup.md`",
+        "See `.codex/rules/cursor-config-lookup.mdc`",
     ),
     (
-        "See `.claude/rules/windsurf-config-lookup.md` for the full local-first lookup order. Local docs mirror: `docs/windsurf/`. Plans SSOT: `docs/archive/windsurf/legacy-tree/plans/<name>-<6hex>.md`",
-        "See `.claude/rules/cursor-config-lookup.mdc` for the full local-first lookup order. Plans SSOT: `.claude/plans/<name>-<6hex>.md`",
+        "See `.codex/rules/windsurf-config-lookup.md` for the full local-first lookup order. Local docs mirror: `docs/windsurf/`. Plans SSOT: `docs/archive/windsurf/legacy-tree/plans/<name>-<6hex>.md`",
+        "See `.codex/rules/cursor-config-lookup.mdc` for the full local-first lookup order. Plans SSOT: `.codex/plans/<name>-<6hex>.md`",
     ),
     (
-        "Full rules: `.claude/rules/` and `.cursor/RULES_INDEX.md`",
-        "Full rules: `.claude/rules/` and `.cursor/RULES_INDEX.md`",
+        "Full rules: `.codex/rules/` and `.cursor/RULES_INDEX.md`",
+        "Full rules: `.codex/rules/` and `.cursor/RULES_INDEX.md`",
     ),
     (
         "2. **legacy editor Rules** — Static analysis and editing-time guidance",
         "2. **legacy editor Rules** — Static analysis and editing-time guidance",
     ),
     (
-        "Sync legacy editor mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor",
-        "Sync legacy editor mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor (optional)",
+        "Sync legacy editor mirror via `.codex/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor",
+        "Sync legacy editor mirror via `.codex/governance/scripts/post_write_mcp_config_sync.py` when using legacy editor (optional)",
     ),
     (
-        "Change gate behavior in `.claude/governance/scripts/pre_mcp_gate.py`",
+        "Change gate behavior in `.codex/governance/scripts/pre_mcp_gate.py`",
         "Change gate behavior in `.cursor/scripts/pre_mcp_gate.py`",
     ),
     (
-        "python .claude/governance/scripts/sync_mcp_config.py",
+        "python .codex/governance/scripts/sync_mcp_config.py",
         "python .cursor/scripts/sync_mcp_config.py",
     ),
     (
@@ -108,8 +108,8 @@ PHRASE_REPLACEMENTS: list[tuple[str, str]] = [
         "Filesystem SSOT (legacy editor mirror): `.mcp.json`",
     ),
     (
-        "Filesystem SSOT: `.claude/rules/*.md`",
-        "Filesystem SSOT: `.claude/rules/*.mdc`",
+        "Filesystem SSOT: `.codex/rules/*.md`",
+        "Filesystem SSOT: `.codex/rules/*.mdc`",
     ),
 ]
 

@@ -167,7 +167,7 @@ To emit `DEFERRED_SCOPE:` marker(s) for anything not completed in this plan — 
 
 ## References
 
-- Anthropic — Observability with OpenTelemetry (Agent SDK): https://code.claude.com/docs/en/agent-sdk/observability
+- Anthropic — Observability with OpenTelemetry (Agent SDK): https://code.codex.com/docs/en/agent-sdk/observability
 - Anthropic — Monitoring (Claude Code): https://docs.anthropic.com/en/docs/claude-code/monitoring-usage
 - ADR-023 Runtime HITL Exit Control (in-repo): `docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md`
 - Constitutional invariants: `.windsurf/rules/constitutional.md` §15, §22, §23, §24

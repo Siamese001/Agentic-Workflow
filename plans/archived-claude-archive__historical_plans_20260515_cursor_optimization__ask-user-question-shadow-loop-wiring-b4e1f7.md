@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-shadow-loop-wiring-b4e1f7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-shadow-loop-wiring-b4e1f7.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\ask-user-question-shadow-loop-wiring-b4e1f7.md'
 source_sha256: 65164f8ec924cc799cb8f1b168406b1f3339d0d123f559ddb507292b17b173a8
 recovered_status: LEGACY_EXISTING

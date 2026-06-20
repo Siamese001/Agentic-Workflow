@@ -3,7 +3,7 @@
 check_decision_required.py — W4.2 pre-commit gate.
 
 If a commit touches paths on the Author-Gate trigger list (derived from
-`.claude/schemas/author_gate_triggers.yaml`), require that a decision
+`.codex/schemas/author_gate_triggers.yaml`), require that a decision
 row exists in the refactor_decision_ledger within --recent-hours AND
 whose `normalized_intent` or `request_summary` overlaps the changed paths.
 
@@ -31,17 +31,17 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-TRIGGERS_YAML = REPO_ROOT / ".claude" / "schemas" / "author_gate_triggers.yaml"
+LEDGER_DB = REPO_ROOT / ".codex" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+TRIGGERS_YAML = REPO_ROOT / ".codex" / "schemas" / "author_gate_triggers.yaml"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "decision_required_violations.jsonl"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "decision_required_bypass.jsonl"
 
 # Fallback trigger paths if author_gate_triggers.yaml cannot be parsed.
 # These are the narrow set we KNOW are always gate-class (harness infra).
 _FALLBACK_TRIGGER_PATHS = (
-    ".claude/governance/scripts/",
-    ".claude/rules/",
-    ".claude/skills/",
+    ".codex/governance/scripts/",
+    ".codex/rules/",
+    ".codex/skills/",
     "ops_scripts/ci/",
     "agentic_core/L5_safety/",
     "agentic_core/L0_routing/",

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p0-layer-violation-remediation-7c4e1a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p0-layer-violation-remediation-7c4e1a.md'
 original_relative_path: '_archive\\2026-05\\p0-layer-violation-remediation-7c4e1a.md'
 source_sha256: 212716c846988524a4a0e9b21fba4620fe58c7fdffa73b52e1b459d4a807dace
 recovered_status: LEGACY_EXISTING

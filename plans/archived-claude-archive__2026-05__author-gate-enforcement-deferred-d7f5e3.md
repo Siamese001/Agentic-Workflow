@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-enforcement-deferred-d7f5e3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-enforcement-deferred-d7f5e3.md'
 original_relative_path: '_archive\\2026-05\\author-gate-enforcement-deferred-d7f5e3.md'
 source_sha256: 2e35a3dced6ab12e91c584cc893e40128576eda636bfd67622177d3f005f47f5
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-pa-spine-hardening-498d20.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-pa-spine-hardening-498d20.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-pa-spine-hardening-498d20.md'
 source_sha256: 68213ed146fbda82aacd04fdf1081ee155d1872a2c73338208bbf35cb09fd302
 recovered_status: LEGACY_EXISTING

@@ -39,7 +39,7 @@ categories:
   docs_plans:
     description: Writes to documentation and plan files — not runtime production
     paths:
-      - ".claude/plans/"
+      - ".codex/plans/"
       - "docs/"
       - "artifacts/governance/"
 

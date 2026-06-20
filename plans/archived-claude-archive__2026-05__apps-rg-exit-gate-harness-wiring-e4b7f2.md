@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-exit-gate-harness-wiring-e4b7f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-exit-gate-harness-wiring-e4b7f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-exit-gate-harness-wiring-e4b7f2.md'
 source_sha256: 2156753b488aad68d9278dd545d856f45c177bd5c08225f5f0f2286927524f75
 recovered_status: LEGACY_EXISTING

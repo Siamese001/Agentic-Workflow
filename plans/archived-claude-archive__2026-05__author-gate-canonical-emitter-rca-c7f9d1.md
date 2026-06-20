@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-canonical-emitter-rca-c7f9d1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-canonical-emitter-rca-c7f9d1.md'
 original_relative_path: '_archive\\2026-05\\author-gate-canonical-emitter-rca-c7f9d1.md'
 source_sha256: 8846bc5a3f7e504cdd532e105b1075b582af23b1778a2dec566eb9f6fb010132
 recovered_status: LEGACY_EXISTING

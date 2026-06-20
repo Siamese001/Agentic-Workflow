@@ -10,7 +10,7 @@ missing — no TTY restriction. In non-TTY environments (IDE, CI), it uses
 a file-based input mechanism: writes a template, user fills it, wizard
 reads it back automatically.
 
-Pattern (sibling rule: ``.claude/rules/apps-rg-interactive-discipline.md``):
+Pattern (sibling rule: ``.codex/rules/apps-rg-interactive-discipline.md``):
   1. Parse argparse args
   2. If any required field missing → run_wizard() (ALWAYS, not just TTY)
   3. After wizard, run argparse error-checks anyway (for defense in depth)

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-architect-pattern-hardening-d7e4f9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-architect-pattern-hardening-d7e4f9.md'
 original_relative_path: '_archive\\2026-05\\apps-architect-pattern-hardening-d7e4f9.md'
 source_sha256: afa6859c69792b73f1fb4cb4f444d1ba3a26d57cd97bd1f6ed41151f21a9f173
 recovered_status: LEGACY_EXISTING

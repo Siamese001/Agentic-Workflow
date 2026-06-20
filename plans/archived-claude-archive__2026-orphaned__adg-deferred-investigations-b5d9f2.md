@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-orphaned\\adg-deferred-investigations-b5d9f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-orphaned\\adg-deferred-investigations-b5d9f2.md'
 original_relative_path: '_archive\\2026-orphaned\\adg-deferred-investigations-b5d9f2.md'
 source_sha256: 3036112b5b78a799ad523d43c40a1cd616e600c8873aa88f945f04a5b5eb05f0
 recovered_status: LEGACY_EXISTING

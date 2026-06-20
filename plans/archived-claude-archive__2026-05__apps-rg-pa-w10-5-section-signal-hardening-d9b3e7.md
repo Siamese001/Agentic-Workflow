@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md'
 source_sha256: f3405d94506f740265f53f58768aa95c2ceb37c5f222c499378da6f8f17d9f4d
 recovered_status: LEGACY_EXISTING

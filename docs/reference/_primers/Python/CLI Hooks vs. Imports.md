@@ -33,7 +33,7 @@
 +-----------------------------------------------+-----------------------------------------------+
 | YOUR CASE                                     |                                               |
 +-----------------------------------------------+-----------------------------------------------+
-| .claude/governance/scripts/                            | usually scanned first as EXECUTION TARGETS    |
+| .codex/governance/scripts/                            | usually scanned first as EXECUTION TARGETS    |
 | ops_scripts/                                  | then inspect what they IMPORT underneath      |
 | tools/                                        | some may be entry points, some may be helpers |
 +-----------------------------------------------+-----------------------------------------------+

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave2-l2-native-persistence-0a0f93.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wave2-l2-native-persistence-0a0f93.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wave2-l2-native-persistence-0a0f93.md'
 source_sha256: e0bec5ab1e49612b7e8cfa12440a81362ca788c9232c2408718704eb630c185e
 recovered_status: LEGACY_EXISTING

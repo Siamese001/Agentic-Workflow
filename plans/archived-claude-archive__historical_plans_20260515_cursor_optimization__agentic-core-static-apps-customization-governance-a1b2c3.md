@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-static-apps-customization-governance-a1b2c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-static-apps-customization-governance-a1b2c3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\agentic-core-static-apps-customization-governance-a1b2c3.md'
 source_sha256: cc9aa6696ab21334a98157c9810acd9f8d5aa18dd17fbbccbbc0db3668cc5640
 recovered_status: LEGACY_EXISTING

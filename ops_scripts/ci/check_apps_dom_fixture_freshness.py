@@ -1,6 +1,6 @@
 """Evidence-freshness gate for APPS-DOM runtime harness fixtures.
 
-Plan: .claude/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.P1.
+Plan: .codex/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.P1.
 
 Guards against stale fixtures masking regressions. The APPS-DOM runtime
 evidence chain (harness -> emitter -> merger -> compiler) depends on

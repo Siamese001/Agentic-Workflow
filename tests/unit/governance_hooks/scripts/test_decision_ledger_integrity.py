@@ -1,5 +1,5 @@
 # pylint: disable=protected-access
-"""Unit tests for .claude/governance/scripts/decision_ledger_integrity.py.
+"""Unit tests for .codex/governance/scripts/decision_ledger_integrity.py.
 
 Coverage:
     canonicalize_row    - excludes mutable + self-referential columns,
@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts"
+_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".codex" / "governance/scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
 import decision_ledger_integrity as _m  # noqa: E402

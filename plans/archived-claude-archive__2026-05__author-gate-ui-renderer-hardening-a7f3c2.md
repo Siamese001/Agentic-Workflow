@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\author-gate-ui-renderer-hardening-a7f3c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\author-gate-ui-renderer-hardening-a7f3c2.md'
 original_relative_path: '_archive\\2026-05\\author-gate-ui-renderer-hardening-a7f3c2.md'
 source_sha256: 7ac713dd5095631d47dd76784a30831da08e9c9c820af2af079becbabb3c2e49
 recovered_status: LEGACY_EXISTING

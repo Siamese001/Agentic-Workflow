@@ -1,6 +1,6 @@
 """apps_architect type definitions — Pattern, PatternCollection, delta types.
 
-Plan: ``.claude/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P1.
+Plan: ``.codex/plans/apps-architect-pattern-hardening-d7e4f9.md`` W3.P1.
 Brought forward to W2 as engines depend on Pattern objects.
 """
 

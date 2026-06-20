@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-spine-integration-e8f3a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-spine-integration-e8f3a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-qna-spine-integration-e8f3a1.md'
 source_sha256: 68b262fb0597206867182c326d2fa6cebc710798005841fc3b2f3e39115244da
 recovered_status: LEGACY_EXISTING

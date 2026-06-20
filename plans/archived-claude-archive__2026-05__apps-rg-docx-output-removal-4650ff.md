@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-docx-output-removal-4650ff.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-docx-output-removal-4650ff.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-docx-output-removal-4650ff.md'
 source_sha256: 427fb36cd735daf08b205a1e09a03a66b4fb271c0720f4c4d0099d5f32a79493
 recovered_status: LEGACY_EXISTING

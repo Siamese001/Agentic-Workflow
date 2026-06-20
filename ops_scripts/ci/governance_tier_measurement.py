@@ -1,6 +1,6 @@
 """Shared legacy editor governance tier measurement (W0 SSOT for always-on budget).
 
-Tier-1 (repo-native): ``.claude/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
+Tier-1 (repo-native): ``.codex/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
 legacy editor legacy ``trigger: always_on`` ``.md`` files are reported separately (not summed into Tier-1).
 """
 
@@ -14,11 +14,11 @@ from pathlib import Path
 
 THRESHOLD_BYTES = 51_200
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CURSOR_RULES_DIR = REPO_ROOT / ".claude" / "rules"
+CURSOR_RULES_DIR = REPO_ROOT / ".codex" / "rules"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
-WINDSURF_RULES_DIR = REPO_ROOT / ".claude" / "rules"
+WINDSURF_RULES_DIR = REPO_ROOT / ".codex" / "rules"
 INVENTORY_PATH = REPO_ROOT / "docs" / "reports" / "cursor" / "governance_tier_inventory.json"
-CLAUDE_MD = REPO_ROOT / "CLAUDE.md"
+CLAUDE_MD = REPO_ROOT / "AGENTS.md"
 
 ALWAYS_APPLY_RE = re.compile(r"alwaysApply:\s*true", re.IGNORECASE)
 TRIGGER_RE = re.compile(r"^trigger:\s*(\w+)", re.MULTILINE)
@@ -85,12 +85,12 @@ def scan_windsurf_always_on_md() -> list[FileBytes]:
 
 
 def scan_claude_rules_all_md() -> list[FileBytes]:
-    """Real Claude Code always-on surface: EVERY ``.claude/rules/*.md``.
+    """Real Claude Code always-on surface: EVERY ``.codex/rules/*.md``.
 
     The native Claude Code / Agent SDK context loader globs the whole
-    ``.claude/rules/`` directory into the per-session "project instructions"
+    ``.codex/rules/`` directory into the per-session "project instructions"
     bundle — regardless of any ``trigger:``/``alwaysApply:`` frontmatter. So the
-    honest always-on byte count is every ``.md`` here (plus root ``CLAUDE.md``),
+    honest always-on byte count is every ``.md`` here (plus root ``AGENTS.md``),
     NOT just the legacy ``trigger: always_on`` subset (which is empty post-migration).
     """
     rows: list[FileBytes] = []
@@ -103,11 +103,11 @@ def scan_claude_rules_all_md() -> list[FileBytes]:
 
 
 def claude_always_on_total() -> tuple[int, list[FileBytes]]:
-    """Total injected always-on bytes: root ``CLAUDE.md`` + all ``.claude/rules/*.md``."""
+    """Total injected always-on bytes: root ``AGENTS.md`` + all ``.codex/rules/*.md``."""
     rows = scan_claude_rules_all_md()
     total = sum(r.bytes for r in rows)
     if CLAUDE_MD.is_file():
-        claude_md = FileBytes(rel_path="CLAUDE.md", bytes=_file_bytes(CLAUDE_MD))
+        claude_md = FileBytes(rel_path="AGENTS.md", bytes=_file_bytes(CLAUDE_MD))
         rows = [claude_md, *rows]
         total += claude_md.bytes
     return total, rows
@@ -139,7 +139,7 @@ def build_inventory(*, policy_option: str = "A", wave: str = "W0") -> dict:
         always_apply_set - OPTION_A_ALWAYS_APPLY - OPTION_A_TRANSITIONAL_EXTRAS
     )
     tier1_status = "PASS" if tier1_total <= THRESHOLD_BYTES else "FAIL"
-    plans_dir = REPO_ROOT / ".claude" / "plans"
+    plans_dir = REPO_ROOT / ".codex" / "plans"
     active_plan_count = (
         len([p for p in plans_dir.iterdir() if p.is_file()]) if plans_dir.is_dir() else 0
     )

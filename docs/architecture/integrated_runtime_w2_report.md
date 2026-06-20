@@ -1,7 +1,7 @@
 # RTC W2 — Integrated Runtime Proof for RTC-REQ-059 Safe-Reuse Composite
 
 **Date:** 2026-05-01
-**Plan:** `.claude/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md`
+**Plan:** `.codex/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md`
 **Predecessor:** W1p6 (RTC-REQ-059 ACCEPTED at E5)
 **Status:** W2 COMPLETE — fail-closed leg proven, infrastructure landed.
 RTC-REQ-056 remains **PENDING** in the honest committed state: the ALLOW
@@ -257,7 +257,7 @@ entry point. Both are documented inline:
 
 ## References
 
-- Plan: `.claude/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md`
+- Plan: `.codex/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md`
 - W1p6 migration report: `docs/architecture/requirement_architecture_alignment_report.md`
 - ADR (threshold, unchanged): `docs/architecture/adr/SEMCACHE-THRESH-001.md` (PENDING_APPROVAL)
 - Hardened CSV (87 rows): `docs/reference/contracts/certification/runtime_certification_requirements_100_percent_hardened.csv`

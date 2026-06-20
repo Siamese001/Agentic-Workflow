@@ -14,7 +14,7 @@ class TestSchemaLoading:
     """Test schema loading from canonical location."""
 
     def test_schema_file_exists(self):
-        """Canonical schema file should exist in .claude/schemas/."""
+        """Canonical schema file should exist in .codex/schemas/."""
         assert _SCHEMA_FILE.exists(), f"Schema file not found: {_SCHEMA_FILE}"
 
     def test_schema_file_contains_entities_table(self):
@@ -120,7 +120,7 @@ class TestSchemaSync:
         
         repo_root = Path(__file__).resolve().parents[4]
         python_file = repo_root / "tools" / "memory" / "sqlite_memory_store.py"
-        schema_file = repo_root / ".claude" / "schemas" / "knowledge_graph.schema.sql"
+        schema_file = repo_root / ".codex" / "schemas" / "knowledge_graph.schema.sql"
         
         embedded = _extract_embedded_schema(python_file)
         canonical = schema_file.read_text(encoding="utf-8")

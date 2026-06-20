@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-activation-e8a3c5.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-activation-e8a3c5.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-underwriting-ai-activation-e8a3c5.md'
 source_sha256: 143171b5d92dd6a017abda3bb9c71b9fc248849b3a749c3c3e3b51bfa9017051
 recovered_status: LEGACY_EXISTING

@@ -56,7 +56,7 @@ Audit exit code: `0`.
 |---|---|
 | `python -m py_compile scripts/governance/audit_codex_mcp_transports.py` | Pass |
 | `python tools/analysis/check_plan_format_forward.py plans/codex-claude-mcp-access-parity-c6d4e2.md` | Pass: 0 FAIL, 0 ERROR, 0 WARN, 0 INFO |
-| `python scripts/governance/verify_codex_backup.py` | Pass |
+| `python scripts/governance/verify_codex_primary.py` | Pass |
 | `python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q` | Pass: 7 passed, 3 warnings |
 
 ## Residual Notes

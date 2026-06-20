@@ -12,8 +12,8 @@ current authority remains:
 | Source | Role |
 |---|---|
 | `.mcp.json` | Live Claude MCP server SSOT; these dormant servers are intentionally absent |
-| `.claude/mcp-notes.md` | Exact re-add blocks for dormant servers |
-| `.claude/skills/mcp-integration/sections/*.md` | Access ladders, substitutes, and safety rules |
+| `.codex/mcp-notes.md` | Exact re-add blocks for dormant servers |
+| `.codex/skills/mcp-integration/sections/*.md` | Access ladders, substitutes, and safety rules |
 | `C:\Users\amita\env\.env` | Local credential storage for `TAVILY_API_KEY` |
 
 ## Evidence Snapshot
@@ -35,15 +35,15 @@ current authority remains:
 
 | Server ID | `.mcp.json` Status | Current Storage / Re-add SSOT | Current Substitute | Re-add Prerequisites | Codex Policy |
 |---|---|---|---|---|---|
-| `redis` | Absent as standalone server | `.claude/mcp-notes.md` `redis` block; `mcp-integration` Redis section | `redis-cli` for standalone cache inspection; ADG graph access through `adg_sqlite`; Redis hot projection via `ADG_REDIS_URL` | Local Redis on `localhost:6379`; `tools/mcp/redis_mcp_server.py`; `PYTHONPATH=${AGENTIC_REPO_ROOT}` | Do not expose standalone Redis as live unless explicitly re-added. SQLite remains ADG canonical; mutate/warm projection via `tools/adg/adg_redis_ingest.py`, not ad hoc key writes. |
-| `tavily` | Absent | `.claude/mcp-notes.md` `tavily` block; local key in `C:\Users\amita\env\.env` | Claude: native WebSearch/WebFetch. Codex: Tavily plugin tools when exposed, otherwise web tooling with degraded note. | `TAVILY_API_KEY`; `npx -y tavily-mcp` from re-add block | Do not claim raw `tavily` MCP availability in Codex unless re-added. Use only for external web content, not repo code or structural analysis. |
-| `pytest_mcp` | Absent | `.claude/mcp-notes.md` `pytest_mcp` block; pytest policy in repo governance | `python -m pytest` with repo pytest policy | `tools/mcp/pytest_server.py`; `PYTHONPATH=${AGENTIC_REPO_ROOT}`; `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` for runs | Keep dormant. For Codex verification, run direct pytest commands with plugin autoload disabled and no weakened assertions/skips. |
-| `otel_mcp` | Absent, on-demand only | `.claude/mcp-notes.md` `otel_mcp` block; OTel section of `mcp-integration` | No live substitute for trace/anomaly MCP; use static ADG for static dependency analysis | Collector/runtime trace source must be running; `OTEL_MCP_RUNTIME_ADG_DIR=${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg` | Keep dormant/on-demand. First live health call after re-add is `otel_server_info`; do not use it for static graph work. |
+| `redis` | Absent as standalone server | `.codex/mcp-notes.md` `redis` block; `mcp-integration` Redis section | `redis-cli` for standalone cache inspection; ADG graph access through `adg_sqlite`; Redis hot projection via `ADG_REDIS_URL` | Local Redis on `localhost:6379`; `tools/mcp/redis_mcp_server.py`; `PYTHONPATH=${AGENTIC_REPO_ROOT}` | Do not expose standalone Redis as live unless explicitly re-added. SQLite remains ADG canonical; mutate/warm projection via `tools/adg/adg_redis_ingest.py`, not ad hoc key writes. |
+| `tavily` | Absent | `.codex/mcp-notes.md` `tavily` block; local key in `C:\Users\amita\env\.env` | Claude: native WebSearch/WebFetch. Codex: Tavily plugin tools when exposed, otherwise web tooling with degraded note. | `TAVILY_API_KEY`; `npx -y tavily-mcp` from re-add block | Do not claim raw `tavily` MCP availability in Codex unless re-added. Use only for external web content, not repo code or structural analysis. |
+| `pytest_mcp` | Absent | `.codex/mcp-notes.md` `pytest_mcp` block; pytest policy in repo governance | `python -m pytest` with repo pytest policy | `tools/mcp/pytest_server.py`; `PYTHONPATH=${AGENTIC_REPO_ROOT}`; `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` for runs | Keep dormant. For Codex verification, run direct pytest commands with plugin autoload disabled and no weakened assertions/skips. |
+| `otel_mcp` | Absent, on-demand only | `.codex/mcp-notes.md` `otel_mcp` block; OTel section of `mcp-integration` | No live substitute for trace/anomaly MCP; use static ADG for static dependency analysis | Collector/runtime trace source must be running; `OTEL_MCP_RUNTIME_ADG_DIR=${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg` | Keep dormant/on-demand. First live health call after re-add is `otel_server_info`; do not use it for static graph work. |
 
 ## Redis Storage Answer
 
 Standalone Redis MCP is not stored in `.mcp.json`. Its exact re-add definition is
-stored in `.claude/mcp-notes.md`. Runtime Redis connectivity is stored in
+stored in `.codex/mcp-notes.md`. Runtime Redis connectivity is stored in
 environment variables, primarily `ADG_REDIS_URL` for ADG/memory and
 `REDIS_HOST`/`REDIS_PORT`/`REDIS_DB` in the dormant re-add block. Redis data is a
 hot projection/cache; ADG SQLite artifacts remain canonical. Cache population
@@ -52,7 +52,7 @@ and mutation go through `tools/adg/adg_redis_ingest.py`.
 ## Tavily Storage Answer
 
 Tavily MCP is not stored in `.mcp.json`. Its exact re-add definition is stored in
-`.claude/mcp-notes.md`. The local Tavily credential is present in
+`.codex/mcp-notes.md`. The local Tavily credential is present in
 `C:\Users\amita\env\.env` as `TAVILY_API_KEY` and is also set in the current
 Codex environment. Codex may use Tavily plugin tools when exposed, but that is a
 plugin substitute, not proof that the dormant raw MCP is live.
@@ -62,7 +62,7 @@ plugin substitute, not proof that the dormant raw MCP is live.
 - A dormant server row must always include `dormant`, `substitute`, and `re-add`
   fields before it is considered compliant.
 - Re-adding a dormant server requires copying the exact block from
-  `.claude/mcp-notes.md` and satisfying every listed env/script prerequisite.
+  `.codex/mcp-notes.md` and satisfying every listed env/script prerequisite.
 - Substitutes must be labeled as substitutes, even when they cover the same user
   workflow.
 - Redis cache mutation must be script-mediated; direct key inspection is allowed

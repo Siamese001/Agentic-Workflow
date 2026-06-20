@@ -216,7 +216,7 @@ The PA SSOT gap row says examples YAML existed for multiple lanes but was not wi
 
 ### 5.9 Docker/WSL/Windows vLLM topology churn
 
-**Evidence:** `2342596dcee09edb66ea0738b9ef3a05abfefd5c`, `3c7ec370a882c0a8751dd90d2cb64c39243e5b1b`, `b2565cae5823bdc8b6216c375788ec3bd330944e`, `tools/vllm/README.md`, `.claude/rules/local-llm-wsl2-gpu.md`, `docs/architecture/qwen-vllm-topology.md`, `docker-compose.qwen.yml`.
+**Evidence:** `2342596dcee09edb66ea0738b9ef3a05abfefd5c`, `3c7ec370a882c0a8751dd90d2cb64c39243e5b1b`, `b2565cae5823bdc8b6216c375788ec3bd330944e`, `tools/vllm/README.md`, `.codex/rules/local-llm-wsl2-gpu.md`, `docs/architecture/qwen-vllm-topology.md`, `docker-compose.qwen.yml`.
 
 The local LLM runtime moved through too many substrate definitions: WSL2 Ubuntu native venv/systemd, Windows PowerShell launchers, Docker Desktop with WSL2 CUDA passthrough, and later a canonical `local-qwen-vllm` Docker container. The current docs preserve the scar tissue: do not stand up a parallel Docker/compose stack; two parallel stacks caused a full-day incident with config drift, port fight, and duplicated weights/images. The later rule says the WSL2 native systemd-user path was deprecated 2026-05-06; Docker became canonical, but compose had to run from WSL so the bind mount resolved and did not create an empty `/models/qwen`.
 

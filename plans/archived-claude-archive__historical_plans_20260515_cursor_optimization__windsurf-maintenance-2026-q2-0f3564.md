@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\windsurf-maintenance-2026-q2-0f3564.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\windsurf-maintenance-2026-q2-0f3564.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\windsurf-maintenance-2026-q2-0f3564.md'
 source_sha256: d936e58457a78c9f336f943442c37d9ddb6b1b59da939274a2c8ec6ad2a5463e
 recovered_status: LEGACY_EXISTING

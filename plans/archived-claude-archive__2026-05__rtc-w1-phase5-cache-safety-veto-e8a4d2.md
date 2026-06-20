@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\rtc-w1-phase5-cache-safety-veto-e8a4d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\rtc-w1-phase5-cache-safety-veto-e8a4d2.md'
 original_relative_path: '_archive\\2026-05\\rtc-w1-phase5-cache-safety-veto-e8a4d2.md'
 source_sha256: 9ea36c0162416025c79a7b708e0190cfbdf818f6b8097a416c229b890c807bd7
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\enforcement-mechanisms-top5-c4d8a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\enforcement-mechanisms-top5-c4d8a2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\enforcement-mechanisms-top5-c4d8a2.md'
 source_sha256: d5256b2c5328675e8a425df7e388dfbdb78dc84528c0262e3f284b4b87dc45df
 recovered_status: LEGACY_EXISTING

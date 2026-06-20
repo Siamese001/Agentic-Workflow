@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\plan-complete-marker-enforcement-d2e9f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\plan-complete-marker-enforcement-d2e9f1.md'
 original_relative_path: '_archive\\2026-05\\plan-complete-marker-enforcement-d2e9f1.md'
 source_sha256: 07d78b8e8a132cc39ca18b0c314077c2007972c2248958aa87f968ab1e19d7a4
 recovered_status: LEGACY_EXISTING

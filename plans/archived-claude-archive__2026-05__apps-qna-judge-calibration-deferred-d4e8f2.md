@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-qna-judge-calibration-deferred-d4e8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-qna-judge-calibration-deferred-d4e8f2.md'
 original_relative_path: '_archive\\2026-05\\apps-qna-judge-calibration-deferred-d4e8f2.md'
 source_sha256: 1443282f24ddea99c858c821615dd3a305886d222f1d1c4ca3f53d3718780ade
 recovered_status: LEGACY_EXISTING

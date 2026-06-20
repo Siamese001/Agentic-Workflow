@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\nist-ai-rmf-l5-profile-e7a3c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\nist-ai-rmf-l5-profile-e7a3c1.md'
 original_relative_path: '_archive\\2026-05\\nist-ai-rmf-l5-profile-e7a3c1.md'
 source_sha256: d05a81b18977be8141f585fa627a1c9a4a619ac27eccda9b76b0623abd6979ad
 recovered_status: LEGACY_EXISTING

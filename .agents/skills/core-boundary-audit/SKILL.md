@@ -155,5 +155,5 @@ artifacts/governance/migration_receipts/<timestamp>_<binding_name>.json
 ## Related
 
 - Workflow: `/core-boundary-audit`
-- Rule: `.claude/rules/boundary-audit-required.md`
-- Rule: `.claude/rules/agentic-core-glob-lock.md`
+- Rule: `.codex/rules/boundary-audit-required.md`
+- Rule: `.codex/rules/agentic-core-glob-lock.md`

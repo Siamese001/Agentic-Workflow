@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md'
 original_relative_path: '_archive\\2026-05\\fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md'
 source_sha256: 2932eb62b06bf59f10f33764879ff376a6aca8a12d94eb08e262825677fa035c
 recovered_status: LEGACY_EXISTING

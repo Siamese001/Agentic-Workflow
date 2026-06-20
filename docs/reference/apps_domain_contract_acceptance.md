@@ -1,7 +1,7 @@
 # apps_* Domain Contract — W8 Acceptance Report
 
 > **Status**: **ALL 13 ACCEPTANCE-BAR CRITERIA SATISFIED** (in-memory spine; ingress-runner migration to L4 reads is a follow-up).
-> **Plan**: `.claude/plans/apps-domain-contract-fortknox-c4d8e2.md`
+> **Plan**: `.codex/plans/apps-domain-contract-fortknox-c4d8e2.md`
 > **Discovery**: `docs/reference/apps_domain_contract_discovery.md`
 > **Implementation status (W1–W3)**: `docs/reference/apps_domain_contract_implementation_status.md`
 > **Date**: 2026-05-01

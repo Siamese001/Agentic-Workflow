@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-failed-run-persistence-notion-e7c4b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-failed-run-persistence-notion-e7c4b2.md'
 original_relative_path: 'exec-summary-failed-run-persistence-notion-e7c4b2.md'
 source_sha256: da6c82e2ccd3194778fa33416ef613067452027e9aba9c18997772b580e05d35
 recovered_status: LEGACY_EXISTING

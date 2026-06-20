@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\exit-eval-spine-gap-ce683b.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\exit-eval-spine-gap-ce683b.md'
 original_relative_path: '_archive\\2026-05\\exit-eval-spine-gap-ce683b.md'
 source_sha256: 07d44f033eedfaf791e1afa192cb1dbe8dcda5dadb22bb09504424afa253f976
 recovered_status: LEGACY_EXISTING

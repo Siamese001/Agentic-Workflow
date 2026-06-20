@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\plan-wave-inline-status-sync-8b4d2f.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\plan-wave-inline-status-sync-8b4d2f.md'
 original_relative_path: '_archive\\2026-05\\plan-wave-inline-status-sync-8b4d2f.md'
 source_sha256: edad0e450499b64da1de55010d08c33279c02d3293fff49cadf299087076932f
 recovered_status: LEGACY_EXISTING

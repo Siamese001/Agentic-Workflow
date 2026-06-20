@@ -81,7 +81,7 @@ or did it create architecture/control-plane objects before runtime consumption?
 | 6 | 2026-04-15 to 2026-04-28 | Overage-era control-plane shock | Author-Gate, receipts, runtime gates, Qwen cost-control workaround | Reactive truth-recovery is expensive; the proof system should predate costly execution. |
 | 7 | 2026-04-29 to 2026-05-14 | Product breakthrough + certification ice | DOCX path, OTEL, Fort Knox/L7, Qwen rollout, app-domain contracts | When the artifact appears, freeze and ship before widening certification. |
 | 8 | 2026-05-15 to 2026-06-06 | Cursor app-binding / proof-contract grind | Cursor filesystem, PA contracts, C0/runtime slices, Notion/status work | Static evidence, imports, manifests, and scorecards must not be called runtime certification. |
-| 9 | 2026-06-07 to 2026-06-13 | Claude Code reset / execution-bias recovery | `.claude`, Qwen removal, worktrees, final-lane proofs, postmortems | Mature operating model: make plans expensive, shipping cheap, and provider topology demotable. |
+| 9 | 2026-06-07 to 2026-06-13 | Claude Code reset / execution-bias recovery | `.codex`, Qwen removal, worktrees, final-lane proofs, postmortems | Mature operating model: make plans expensive, shipping cheap, and provider topology demotable. |
 
 ---
 
@@ -347,7 +347,7 @@ Anything less is static evidence.
 
 | Subphase | Dates | Pattern / artifacts | Lesson learned |
 |---|---|---|---|
-| P9.1 | 2026-06-07 | `.claude` SSOT migration and Cursor decommission. | Operating rules should live where the active tool actually reads them. |
+| P9.1 | 2026-06-07 | `.codex` SSOT migration and Cursor decommission. | Operating rules should live where the active tool actually reads them. |
 | P9.2 | 2026-06-08 | Qwen/vLLM removed from `apps_rg`; external Claude becomes sole generator. | Demotion is a strength. Local runtime should not own product default until it wins the scorecard. |
 | P9.3 | 2026-06-09 to 2026-06-10 | Worktree/runtime-state recovery and AIG final lanes. | Fresh-worktree replay is the product-proof standard. Hidden state is not proof. |
 | P9.4 | 2026-06-11 to 2026-06-13 | Forensic reports, phase map, operating-model correction. | L6 learns after the run boundary. Postmortem learning should produce future-run constraints, not current-run rescue theater. |

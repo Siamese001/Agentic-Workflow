@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\pa-exec-flowchart-gap-f2a8c3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\pa-exec-flowchart-gap-f2a8c3.md'
 original_relative_path: '_archive\\2026-05\\pa-exec-flowchart-gap-f2a8c3.md'
 source_sha256: d77faea4cab3e058d409334e909798d9f2e57cbf56db0351e3c8563d2f384979
 recovered_status: LEGACY_EXISTING

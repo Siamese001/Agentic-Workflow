@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-dry-run-migrate-delete-b9e4f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-dry-run-migrate-delete-b9e4f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-dry-run-migrate-delete-b9e4f2.md'
 source_sha256: e47f76cb325bab04416e3bbe47e2e034d1ba9b8db8e9d0d13c3123bb6272cf55
 recovered_status: LEGACY_EXISTING

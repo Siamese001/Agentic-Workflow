@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md'
 source_sha256: bd57e7e09f5385cb346c626ad06836133cfa738e060ad16f0160939c7851e04d
 recovered_status: LEGACY_EXISTING

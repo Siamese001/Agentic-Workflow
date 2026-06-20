@@ -1,8 +1,8 @@
 # Briefing — Local Qwen vLLM Docker boot (legacy editor / Windows)
 
-> **Date:** 2026-05-26  
-> **Audience:** Operator (future legacy editor sessions)  
-> **Full runbook:** [local_qwen_docker_boot.md](local_qwen_docker_boot.md)  
+> **Date:** 2026-05-26
+> **Audience:** Operator (future legacy editor sessions)
+> **Full runbook:** [local_qwen_docker_boot.md](local_qwen_docker_boot.md)
 > **Compose SSOT:** [docker-compose.qwen.yml](../../docker-compose.qwen.yml)
 
 ---
@@ -63,7 +63,7 @@ If this fails → empty bind; re-boot via **WSL** (step 1), not PowerShell-only 
 curl -fsS http://localhost:8000/v1/models
 ```
 
-Expect `"id":"Qwen/Qwen2.5-32B-Instruct-AWQ"`, `"max_model_len":24576`.  
+Expect `"id":"Qwen/Qwen2.5-32B-Instruct-AWQ"`, `"max_model_len":24576`.
 Cold load from local disk: **~2–4 minutes**. Empty curl reply = still loading.
 
 ### 4. Repo diagnostic
@@ -145,6 +145,6 @@ Override weights path: `QWEN_MODEL_HOST_PATH` in `.env` or shell (see [.env.exam
 
 ## Related docs
 
-- [local_qwen_docker_boot.md](local_qwen_docker_boot.md) — expanded runbook  
-- [qwen-vllm-topology.md](../architecture/qwen-vllm-topology.md) — architecture + apps_rg env tables  
-- [.claude/rules/local-llm-wsl2-gpu.mdc](../../.claude/rules/local-llm-wsl2-gpu.mdc) — VRAM / Blackwell quirks for agents  
+- [local_qwen_docker_boot.md](local_qwen_docker_boot.md) — expanded runbook
+- [qwen-vllm-topology.md](../architecture/qwen-vllm-topology.md) — architecture + apps_rg env tables
+- [.codex/rules/local-llm-wsl2-gpu.mdc](../../.codex/rules/local-llm-wsl2-gpu.mdc) — VRAM / Blackwell quirks for agents

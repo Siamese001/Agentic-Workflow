@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\ag4-evidence-contract-carrier-repair-d2f9a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\ag4-evidence-contract-carrier-repair-d2f9a3.md'
 original_relative_path: '_archive\\2026-05\\ag4-evidence-contract-carrier-repair-d2f9a3.md'
 source_sha256: 80e161b923b581e9dee2f891caeb2e56eb685ea6177e052e9e5a0cab44e4e903
 recovered_status: LEGACY_EXISTING

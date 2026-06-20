@@ -1,7 +1,7 @@
 # ADR (design addendum W2): Reasoning execution control plane
 
-**Status:** Accepted (implementation W3)  
-**Related plan:** `.claude/plans/reasoning-execution-control-plane-f4e9a2.md`  
+**Status:** Accepted (implementation W3)
+**Related plan:** `.codex/plans/reasoning-execution-control-plane-f4e9a2.md`
 **Audit:** `docs/reports/reasoning_execution_audit.md`
 
 ## Problem

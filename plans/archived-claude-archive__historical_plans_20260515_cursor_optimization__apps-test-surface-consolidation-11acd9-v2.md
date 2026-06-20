@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-test-surface-consolidation-11acd9-v2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-test-surface-consolidation-11acd9-v2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-test-surface-consolidation-11acd9-v2.md'
 source_sha256: 8140429ebce7fb73c818227388ec0d27c68c9da78dc7e1a42b7f8c788645bafc
 recovered_status: LEGACY_EXISTING

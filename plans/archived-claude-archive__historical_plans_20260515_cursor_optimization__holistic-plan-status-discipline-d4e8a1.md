@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\holistic-plan-status-discipline-d4e8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\holistic-plan-status-discipline-d4e8a1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\holistic-plan-status-discipline-d4e8a1.md'
 source_sha256: 332c16dcc3c3aedcb88a3c6b5e226ab90c8949396dbda4615781e3d8032c185b
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-fort-knox-parity-c5d9a3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-fort-knox-parity-c5d9a3.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-fort-knox-parity-c5d9a3.md'
 source_sha256: 1259be4a5a3ebe0f2d4f451ff599794094c6cac905ad7f14cc90fe82ffe6d1da
 recovered_status: LEGACY_EXISTING

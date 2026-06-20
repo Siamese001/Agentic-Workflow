@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-interactive-wizard-a3e7c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-interactive-wizard-a3e7c1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-interactive-wizard-a3e7c1.md'
 source_sha256: 508716110beb091dc6c35e3eb5490860e7fb4e44041c2c7762993c94fde0623a
 recovered_status: LEGACY_EXISTING

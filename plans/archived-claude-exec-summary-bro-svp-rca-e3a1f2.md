@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\exec-summary-bro-svp-rca-e3a1f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\exec-summary-bro-svp-rca-e3a1f2.md'
 original_relative_path: 'exec-summary-bro-svp-rca-e3a1f2.md'
 source_sha256: 824199abccd26a60e77b03ae676a2b5bd01a152ceb0f0d6ca64768a582bfe2c6
 recovered_status: LEGACY_EXISTING

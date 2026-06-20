@@ -49,12 +49,12 @@ supersedes: []
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P0.1 | Define `## Supersedes` grammar | `.claude/templates/execution-plan-template.md` | Must be both human-readable + machine-parseable | ~3k | Not Started |
-| P0.2 | Doc the trigger | `.claude/rules/notion-plans-taxonomy.md`, `.claude/skills/plan-governance/SKILL.md` | Keep invariant wording aligned with new hook | ~3k | Not Started |
-| P1.1 | Resolver + status guard | `.claude/governance/scripts/_plan_supersession.py` (new) | Slug→page_id for Notion-only rows; terminal-status guard | ~7k | Not Started |
+| P0.1 | Define `## Supersedes` grammar | `.codex/templates/execution-plan-template.md` | Must be both human-readable + machine-parseable | ~3k | Not Started |
+| P0.2 | Doc the trigger | `.codex/rules/notion-plans-taxonomy.md`, `.codex/skills/plan-governance/SKILL.md` | Keep invariant wording aligned with new hook | ~3k | Not Started |
+| P1.1 | Resolver + status guard | `.codex/governance/scripts/_plan_supersession.py` (new) | Slug→page_id for Notion-only rows; terminal-status guard | ~7k | Not Started |
 | P1.2 | Notion comment writer | `_plan_supersession.py`, reuse `plan_driven_closer._notion_request` | No existing `/v1/comments` writer; idempotent comment de-dup | ~7k | Not Started |
-| P2.1 | Post-agent hook | `.claude/governance/scripts/post_agent_plan_supersession_retire.py` (new) | Fail-soft; never block turn | ~7k | Not Started |
-| P2.2 | Dispatch wiring + flags | `.claude/hooks/after_agent_governance_dispatch.py` (or `post_agent_dispatch.py`) | Dry-run default, `--execute`, bypass env | ~5k | Not Started |
+| P2.1 | Post-agent hook | `.codex/governance/scripts/post_agent_plan_supersession_retire.py` (new) | Fail-soft; never block turn | ~7k | Not Started |
+| P2.2 | Dispatch wiring + flags | `.codex/hooks/after_agent_governance_dispatch.py` (or `post_agent_dispatch.py`) | Dry-run default, `--execute`, bypass env | ~5k | Not Started |
 | P3.1 | CI sweep gate | `ops_scripts/ci/check_plan_supersession_consistency.py` (new), `run_contract_gates.py` | Cross-worktree plan discovery | ~8k | Not Started |
 | P4.1 | Backfill sweep | (run only) | Existing plans may declare informal supersession | ~4k | Not Started |
 | P4.2 | Live E2E proof | throwaway Notion pair | Cleanup of disposable rows | ~5k | Not Started |
@@ -94,7 +94,7 @@ plus optional frontmatter `supersedes: [<slug>, ...]` for fast parsing.
 ## ADG_HOTSPOT_REPORT
 
 Greenfield governance addition — no existing hotspot is refactored. New files land in
-`.claude/governance/scripts/` (hook layer) and `ops_scripts/ci/` (gate layer); zero `agentic_core/`
+`.codex/governance/scripts/` (hook layer) and `ops_scripts/ci/` (gate layer); zero `agentic_core/`
 spine edits, so layer multipliers (L0/L5 ×2.0 etc.) do not apply. Blast radius is confined to the
 Stop-dispatch chain and the Plans Notion DB. No `## Supersedes` predecessor → hook is a no-op.
 
@@ -113,7 +113,7 @@ evidence is N/A for a greenfield leaf and is deferred to the W1 implementation P
 | 1 | `## Supersedes` grammar documented in template + `notion-plans-taxonomy.md` + `plan-governance` skill | Read the three files; grammar identical |
 | 2 | Core lib unit tests green with mocked `_notion_request` — Retire payload + comment payload shapes asserted | `python -m pytest tests/unit/governance/test_plan_supersession.py -q` |
 | 3 | Hook registered in Stop dispatch and runs fail-soft (never non-zero into the turn) | Inspect `after_agent_governance_dispatch.py`; dry-run a malformed payload → exit 0 |
-| 4 | **Smoke-run:** hook executes on a sample response and exits 0 | `python .claude/governance/scripts/post_agent_plan_supersession_retire.py --dry-run < sample_response.json` → exit 0 |
+| 4 | **Smoke-run:** hook executes on a sample response and exits 0 | `python .codex/governance/scripts/post_agent_plan_supersession_retire.py --dry-run < sample_response.json` → exit 0 |
 | 5 | **Live E2E:** `--execute` on a throwaway predecessor/successor pair flips predecessor→`Retired` AND posts a comment | `API-retrieve-a-page` shows `Retired`; `API-get-comments` shows the supersession comment |
 | 6 | Idempotency: re-run on already-`Retired` predecessor makes no second patch and no duplicate comment | Re-run `--execute`; JSONL log shows `skipped=terminal`/`skipped=comment_exists` |
 | 7 | CI sweep gate wired into `run_contract_gates.py` and runs clean (or lists known misses) | `python ops_scripts/ci/check_plan_supersession_consistency.py` → exit 0/advisory |

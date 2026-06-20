@@ -7,8 +7,8 @@ sections (``## Wave N —``).
 Used by:
 - ``check_plan_format_compliance.py`` (per-path strict/advisory)
 - ``check_plan_wave_summary_top.py`` (repo scan)
-- ``.claude/governance/scripts/after_file_edit.py`` (post-edit warn/block)
-- ``.claude/governance/scripts/post_agent_plan_wave_summary_audit.py``
+- ``.codex/governance/scripts/after_file_edit.py`` (post-edit warn/block)
+- ``.codex/governance/scripts/post_agent_plan_wave_summary_audit.py``
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ _WAVE_BEFORE_RE = re.compile(
 def is_plan_wave_summary_exempt(content: str, filepath: str = "") -> bool:
     """True for dod_exempt frontmatter or archive paths."""
     norm = filepath.replace("\\", "/")
-    if "/plans/_archive/" in norm or norm.startswith(".claude/plans/_archive/"):
+    if "/plans/_archive/" in norm or norm.startswith(".codex/plans/_archive/"):
         return True
     fm = _FRONTMATTER_RE.match(content)
     if fm and _DOD_EXEMPT_RE.search(fm.group(1)):

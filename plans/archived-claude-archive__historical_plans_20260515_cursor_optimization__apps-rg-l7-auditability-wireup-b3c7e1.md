@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l7-auditability-wireup-b3c7e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l7-auditability-wireup-b3c7e1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-l7-auditability-wireup-b3c7e1.md'
 source_sha256: d3be1d77c227e0ee5eb1bddd217bd49b06531fadbcef5050767cbf4c5ed57dc0
 recovered_status: LEGACY_EXISTING

@@ -1,7 +1,7 @@
 # apps_architect spine manifest
 #
 # Declares R3_grounded_read route with mandatory C0 retrieval over
-# pattern collections (.claude/plans/, agentic_core/, .claude/rules/).
+# pattern collections (.codex/plans/, agentic_core/, .codex/rules/).
 #
 # Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
 #         §"Route-Shape Taxonomy for apps_*"
@@ -15,7 +15,7 @@ claimed_routes:
   - type: R3_grounded_read
     description: >-
       Pattern collection and delta analysis over recent methodology.
-      Scans .claude/plans/, agentic_core/, and .claude/rules/
+      Scans .codex/plans/, agentic_core/, and .codex/rules/
       via C0 retrieval to extract canonical patterns, computes drift
       from current repo state, and emits hardening rules. Output is
       a sealed pattern-collection artifact carrying grounded citations

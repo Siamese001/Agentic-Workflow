@@ -33,16 +33,16 @@ plan-governance files only so it cherry-picks to `main` via the forward-port tas
 
 | ID | Sev | Wave | Gap | Acceptance |
 |---|---|---|---|---|
-| T1 | HIGH | W1 | Creation gate checks the `Exists On Disk` checkbox (a claim), not the file | `_validate_disk_file` blocks when `plans/<slug>.md` and `.claude/plans/<slug>.md` both absent |
+| T1 | HIGH | W1 | Creation gate checks the `Exists On Disk` checkbox (a claim), not the file | `_validate_disk_file` blocks when `plans/<slug>.md` and `.codex/plans/<slug>.md` both absent |
 | T2 | HIGH | W2 | `check_plan_registration_freshness` advisory by default → disk plan can commit with no Notion row | `_fail_closed()` defaults True; bypass `=0`; no-token still SKIP exit 0 |
 | T3 | MEDIUM | W3 | `pre_notion_plan_write_gate.run_gate` advisory by default → identity mismatch allowed | mismatch → exit 2 by default; bypass `=0` or `NOTION_PLAN_IDENTITY_BYPASS=1` |
 
 ## Changes (files)
 
-- `.claude/governance/scripts/pre_notion_plan_creation_gate.py` — add `REPO_ROOT`, `_extract_slug`,
+- `.codex/governance/scripts/pre_notion_plan_creation_gate.py` — add `REPO_ROOT`, `_extract_slug`,
   `_validate_disk_file`; call it in `_check_payload`.
 - `ops_scripts/ci/check_plan_registration_freshness.py` — `_fail_closed()` defaults True.
-- `.claude/governance/scripts/pre_notion_plan_write_gate.py` — `run_gate` fail-closed default.
+- `.codex/governance/scripts/pre_notion_plan_write_gate.py` — `run_gate` fail-closed default.
 - `tests/unit/windsurf_scripts/test_plan_notion_disk_tandem.py` — new.
 
 ## Definition of Done

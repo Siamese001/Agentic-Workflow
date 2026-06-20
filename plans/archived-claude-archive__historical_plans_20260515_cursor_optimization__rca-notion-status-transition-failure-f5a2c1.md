@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rca-notion-status-transition-failure-f5a2c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\rca-notion-status-transition-failure-f5a2c1.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\rca-notion-status-transition-failure-f5a2c1.md'
 source_sha256: bf9add68d198c3029ad1de4fcbdef868eba10fe1dc2d77e05ba62d2161f0dc6e
 recovered_status: LEGACY_EXISTING

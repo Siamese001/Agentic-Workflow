@@ -9,7 +9,7 @@
 
 ## Context
 
-The legacy editor skill system had grown organically to 32 individual skill directories under `.claude/skills/`. This created several operational challenges:
+The legacy editor skill system had grown organically to 32 individual skill directories under `.codex/skills/`. This created several operational challenges:
 
 1. **Cognitive Overload**: 32 skills made it difficult for developers to know which skill to invoke
 2. **Overlapping Responsibilities**: Multiple skills addressed similar concerns (e.g., 3 different graph-related skills)
@@ -59,7 +59,7 @@ The legacy editor skill system had grown organically to 32 individual skill dire
 
 1. **Operational Simplicity**: Reduce moving parts from 32 → 5 canonical entrypoints
 2. **Dependency Hygiene**: Eliminate overlapping enforcement mechanisms
-3. **Archival over Deletion**: Preserve history in `tools/archive/.claude/skills/`
+3. **Archival over Deletion**: Preserve history in `tools/archive/.codex/skills/`
 4. **Documentation**: Maintain clear consolidation mapping in `RULES_INDEX.md`
 5. **Zero-Regression**: All CI gates must pass; functionality preserved
 
@@ -75,10 +75,10 @@ The legacy editor skill system had grown organically to 32 individual skill dire
 
 ### Archive Strategy
 
-All 30 non-canonical skills archived to `tools/archive/.claude/skills/`:
+All 30 non-canonical skills archived to `tools/archive/.codex/skills/`:
 - 27 skills replaced by consolidated skills
 - 17 CI-specific/utility skills (not consolidated but archived for reference)
-- Full manifest: `tools/archive/.claude/skills/manifests/consolidation-archive-20260403.json`
+- Full manifest: `tools/archive/.codex/skills/manifests/consolidation-archive-20260403.json`
 
 ---
 
@@ -109,7 +109,7 @@ All 30 non-canonical skills archived to `tools/archive/.claude/skills/`:
 ## Implementation
 
 ### Wave 1 — Archive (Complete)
-- Created `tools/archive/.claude/skills/` structure
+- Created `tools/archive/.codex/skills/` structure
 - Archived 30 individual skills with full directory contents
 - Created consolidation manifest JSON
 
@@ -135,9 +135,9 @@ All 30 non-canonical skills archived to `tools/archive/.claude/skills/`:
 ## References
 
 - **Plan**: `docs/reports/plans/skills-consolidation-438efb.md`
-- **Archive Manifest**: `tools/archive/.claude/skills/manifests/consolidation-archive-20260403.json`
+- **Archive Manifest**: `tools/archive/.codex/skills/manifests/consolidation-archive-20260403.json`
 - **Updated Index**: `.windsurf/RULES_INDEX.md`
-- **Updated Rules**: `.claude/rules/.windsurfrules`
+- **Updated Rules**: `.codex/rules/.windsurfrules`
 
 ---
 

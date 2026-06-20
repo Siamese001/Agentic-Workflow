@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-repo-brief-l3-workflow-e2c7d9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-repo-brief-l3-workflow-e2c7d9.md'
 original_relative_path: '_archive\\2026-05\\apps-repo-brief-l3-workflow-e2c7d9.md'
 source_sha256: 0b4f039b25dd6516343116c3ffd70c555167f43cfe9add23d60a00ab971fe803
 recovered_status: LEGACY_EXISTING

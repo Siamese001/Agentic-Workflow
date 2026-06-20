@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-exec-summary-arsenal-w4-c4e8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-exec-summary-arsenal-w4-c4e8f2.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-exec-summary-arsenal-w4-c4e8f2.md'
 source_sha256: 8e0e74fb93530c7f7d9ed5958e810e66fa30717902af28a62655098f9cf08706
 recovered_status: LEGACY_EXISTING

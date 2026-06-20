@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-plans-db-hygiene-deferred-scope-d4f7c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-plans-db-hygiene-deferred-scope-d4f7c1.md'
 original_relative_path: '_archive\\2026-05\\notion-plans-db-hygiene-deferred-scope-d4f7c1.md'
 source_sha256: 8e4fb6666d0b330528a533d55cec854476643525e329a0c58be9fbac11d762d8
 recovered_status: LEGACY_EXISTING

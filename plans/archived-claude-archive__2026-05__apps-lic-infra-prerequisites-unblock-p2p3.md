@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-lic-infra-prerequisites-unblock-p2p3.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-lic-infra-prerequisites-unblock-p2p3.md'
 original_relative_path: '_archive\\2026-05\\apps-lic-infra-prerequisites-unblock-p2p3.md'
 source_sha256: 46a894545d5435528b04270193e39b35c77d22db852dba38082bf027bb39ec4a
 recovered_status: LEGACY_EXISTING

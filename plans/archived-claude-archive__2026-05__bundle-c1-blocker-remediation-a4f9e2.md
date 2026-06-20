@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\bundle-c1-blocker-remediation-a4f9e2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\bundle-c1-blocker-remediation-a4f9e2.md'
 original_relative_path: '_archive\\2026-05\\bundle-c1-blocker-remediation-a4f9e2.md'
 source_sha256: f3a89120fcba34dbf6b2ef20501eae101fc278fdfcccc05a7fb4982fbf91dd4a
 recovered_status: LEGACY_EXISTING

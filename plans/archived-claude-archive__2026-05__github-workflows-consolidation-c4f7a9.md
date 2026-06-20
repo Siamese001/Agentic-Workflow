@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\github-workflows-consolidation-c4f7a9.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\github-workflows-consolidation-c4f7a9.md'
 original_relative_path: '_archive\\2026-05\\github-workflows-consolidation-c4f7a9.md'
 source_sha256: de902d66551805ccecbdb9bbf64fad81230b71bc61e7822eb1704c033562acd3
 recovered_status: LEGACY_EXISTING

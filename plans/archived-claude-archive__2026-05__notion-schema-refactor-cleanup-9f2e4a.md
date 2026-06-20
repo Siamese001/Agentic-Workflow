@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\notion-schema-refactor-cleanup-9f2e4a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\notion-schema-refactor-cleanup-9f2e4a.md'
 original_relative_path: '_archive\\2026-05\\notion-schema-refactor-cleanup-9f2e4a.md'
 source_sha256: b5e8ed5999cbf08d4918072c3114fc679e616eb67f55ca20153a99b26a84b5c0
 recovered_status: LEGACY_EXISTING

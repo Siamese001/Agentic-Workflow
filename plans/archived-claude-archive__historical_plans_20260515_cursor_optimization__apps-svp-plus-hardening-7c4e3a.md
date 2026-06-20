@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-svp-plus-hardening-7c4e3a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-svp-plus-hardening-7c4e3a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-svp-plus-hardening-7c4e3a.md'
 source_sha256: 8b625f8f95c51d7a3b8f2a44dddf6322579a79f109d81925a60234bf3654246c
 recovered_status: LEGACY_EXISTING

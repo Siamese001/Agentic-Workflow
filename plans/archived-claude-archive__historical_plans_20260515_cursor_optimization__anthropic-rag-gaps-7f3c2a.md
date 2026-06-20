@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\anthropic-rag-gaps-7f3c2a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\anthropic-rag-gaps-7f3c2a.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\anthropic-rag-gaps-7f3c2a.md'
 source_sha256: 1809cbff35412176921c7589ad2705b20edb1750a86e47fe2eac38b908882d09
 recovered_status: LEGACY_EXISTING

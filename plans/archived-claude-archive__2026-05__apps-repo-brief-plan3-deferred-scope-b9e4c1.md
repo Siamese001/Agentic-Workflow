@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-repo-brief-plan3-deferred-scope-b9e4c1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-repo-brief-plan3-deferred-scope-b9e4c1.md'
 original_relative_path: '_archive\\2026-05\\apps-repo-brief-plan3-deferred-scope-b9e4c1.md'
 source_sha256: 43e3876b1eeddd5a4a9fbb75d30382fb36899a5d560b3ea85e318be01cce6265
 recovered_status: LEGACY_EXISTING

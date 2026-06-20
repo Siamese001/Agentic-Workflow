@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\agentic-antipattern-tier1-9f2c8a.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\agentic-antipattern-tier1-9f2c8a.md'
 original_relative_path: '_archive\\2026-05\\agentic-antipattern-tier1-9f2c8a.md'
 source_sha256: 6848a7b83c3d0024ab11ffac60449dcd7939459b7a85b3ba432884059c4b036a
 recovered_status: LEGACY_EXISTING

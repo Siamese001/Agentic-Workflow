@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\cursor-author-gate-native-f8c2e4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\cursor-author-gate-native-f8c2e4.md'
 original_relative_path: '_archive\\2026-05\\cursor-author-gate-native-f8c2e4.md'
 source_sha256: 3b47bdb7b47455a083bd25a3316b25ec6a47f0afe374fe54d6749eb84db0f96d
 recovered_status: LEGACY_EXISTING

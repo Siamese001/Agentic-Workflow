@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-underwriting-ai-spine-hardening-d7f3b2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-underwriting-ai-spine-hardening-d7f3b2.md'
 original_relative_path: '_archive\\2026-05\\apps-underwriting-ai-spine-hardening-d7f3b2.md'
 source_sha256: 9b5e9dcf352460be26c4f2d4ae680758e4b158b2a75108d53bb921165731084c
 recovered_status: LEGACY_EXISTING

@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\semantic-cache-reconciliation-0a0f93.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\semantic-cache-reconciliation-0a0f93.md'
 original_relative_path: '_archive\\2026-05\\semantic-cache-reconciliation-0a0f93.md'
 source_sha256: 38f2d23287b2e867e0a6c74acd18fa6d657d3ee66a23e844a0a27fbaf7310b3e
 recovered_status: LEGACY_EXISTING

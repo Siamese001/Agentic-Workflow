@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p4-out-of-scope-backlog-d5f0a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\p4-out-of-scope-backlog-d5f0a4.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\p4-out-of-scope-backlog-d5f0a4.md'
 source_sha256: 037f9dcbcb84e9f01c881cd737999a80fbe90028297e51cb6eda9d7107b5d37b
 recovered_status: LEGACY_EXISTING

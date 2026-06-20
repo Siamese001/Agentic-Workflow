@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\p4.1_apps-rg-l5-governance-gap-report-hardened-f8c2e1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\p4.1_apps-rg-l5-governance-gap-report-hardened-f8c2e1.md'
 original_relative_path: '_archive\\2026-05\\p4.1_apps-rg-l5-governance-gap-report-hardened-f8c2e1.md'
 source_sha256: 69ba17401e012be8935a3c0b523053fd8b24e0e4ac09d4c647283c98fc426e50
 recovered_status: LEGACY_EXISTING

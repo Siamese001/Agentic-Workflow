@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wire-sqlite-decision-ledger-e8f3a2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\wire-sqlite-decision-ledger-e8f3a2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\wire-sqlite-decision-ledger-e8f3a2.md'
 source_sha256: 50bcbc9db9574c720be6d5a135f3af42f4c44e1e3761f7f309f73d04dbb1e365
 recovered_status: LEGACY_EXISTING

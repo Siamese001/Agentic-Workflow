@@ -1,5 +1,5 @@
 {
-  "_doc": "North-star state consumed by .claude/hooks/pre_write_north_star_gate.py. The gate stays armed while enabled=true and lanes_passing < lanes_total; update lanes_passing as apps_rg E2E lanes go X3_ALLOW. recent_north_star_pct seeds the EARNED confidence in the AskUserQuestion (lower north-star % => higher 'park it' confidence). goals[] is the human-readable, time-boxed program; gate logic reads only lanes_passing/lanes_total/enabled/recent_north_star_pct.",
+  "_doc": "North-star state consumed by .codex/hooks/pre_write_north_star_gate.py. The gate stays armed while enabled=true and lanes_passing < lanes_total; update lanes_passing as apps_rg E2E lanes go X3_ALLOW. recent_north_star_pct seeds the EARNED confidence in the AskUserQuestion (lower north-star % => higher 'park it' confidence). goals[] is the human-readable, time-boxed program; gate logic reads only lanes_passing/lanes_total/enabled/recent_north_star_pct.",
   "north_star": "Multi-app delivery program (2026-06-15). Ship apps_rg + apps_lic on deadline, then apps_eval + L6 shadow observability (apps_eval feeds eval signals into ALL apps_*), then apps_underwriting_ai as the next major app. See goals[].",
   "goals": [
     {

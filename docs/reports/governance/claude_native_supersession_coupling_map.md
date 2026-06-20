@@ -19,7 +19,7 @@ baseline names** — that is what this branch actually contains.
 
 ## Active enforcement surface (baseline)
 
-- **Hooks** (`.claude/settings.json`): `before_submit_prompt`, `pre_user_prompt_author_gate_reminder`
+- **Hooks** (`.codex/hooks.json`): `before_submit_prompt`, `pre_user_prompt_author_gate_reminder`
   (UserPromptSubmit); `before_shell_execution`, `before_read_file`, `before_grep`, `before_mcp_execution`
   (PreToolUse); `after_file_edit` (PostToolUse); `stop_task_audit`, `after_agent_governance_dispatch` (Stop).
 - **Stop dispatch chain** (`after_agent_governance_dispatch.py`): runs `post_cursor_agent_adg_audit.py`
@@ -41,7 +41,7 @@ baseline names** — that is what this branch actually contains.
 | **Rules** | `003-author-gate-hitl.md`, `author-gate-enforcement.md`, `author-gate-decision-points.md`, `author-gate-svp-calibration.md`, `author-gate-queue-drain.md`, `anti-pattern-author-gate.md` (already deprecated) |
 | **Constitutional** | §6 (Author-Gate for ambiguous decisions — **invariant kept**), §30 (capture health — retire), §35 (queue drain — retire) |
 | **Markers retired** | `AUTHOR_GATE_PACKET:`, `DECISION_CAPTURED:`, `AG_QUEUE_SEED:`, `AG_QUEUE_PENDING:` |
-| **Invariant preserved** | "Stop and ask via `AskUserQuestion` before edits when ≥2 plausible approaches with different blast radius and no unambiguous directive." (one CLAUDE.md line) |
+| **Invariant preserved** | "Stop and ask via `AskUserQuestion` before edits when ≥2 plausible approaches with different blast radius and no unambiguous directive." (one AGENTS.md line) |
 | **Reversibility** | High — scripts archived not deleted; gates removed from registries (re-addable). Ledger SQLite preserved read-only. |
 
 #### S1 execution status (2026-06-13, branch `feat/askq-authorgate-dedup`)
@@ -74,7 +74,7 @@ against current `origin/main` split S1 into two tiers with very different blast 
 | Coupling type | Artifacts |
 |---|---|
 | **Governance scripts** | `pre_prompt_classifier.py` (hosts SR classification **and** ADG step-0 — split, keep ADG) |
-| **Rules** | `plan-first-enforcement.md`, `CLAUDE.md` "Plan First" section |
+| **Rules** | `plan-first-enforcement.md`, `AGENTS.md` "Plan First" section |
 | **Skills** | `structured-reasoning` (+ `/structured-reasoning` alias) — keep retrieval-discipline content, drop marker scheme |
 | **Markers retired** | `SR_INTAKE`, `SR_PLAN`, `SR_APPROVAL`, `SR_EXECUTE`, `SR_VERIFY` |
 | **Invariant preserved** | "T2/T3 ⇒ enter plan mode (no edits before approval)." |
@@ -118,15 +118,15 @@ against current `origin/main` split S1 into two tiers with very different blast 
 | Coupling type | Artifacts |
 |---|---|
 | **Dispatch** | `after_agent_governance_dispatch.py` (slim the 12-subprocess chain to survivors) |
-| **Legacy trees** | `.claude/governance/scripts/_legacy_cursor/`, `_legacy_windsurf/` (delete after zero-import proof) |
-| **Commands** | thin-alias `.claude/commands/*.md`: `tavily-*` (6), `adg-repair-loop`, `adg-test-triage-gate`, `antipattern-author-gate`, `author-gate-decision-gate`, `structured-reasoning`, `author-gate-calibration-report` |
+| **Legacy trees** | `.codex/governance/scripts/_legacy_cursor/`, `_legacy_windsurf/` (delete after zero-import proof) |
+| **Commands** | thin-alias `.codex/commands/*.md`: `tavily-*` (6), `adg-repair-loop`, `adg-test-triage-gate`, `antipattern-author-gate`, `author-gate-decision-gate`, `structured-reasoning`, `author-gate-calibration-report` |
 | **Rules** | `mcp-serialization.md` (one-MCP-per-block batching — Cursor constraint, retire) |
 | **Governance** | `pre_mcp_gate.py` serialization sentinel (keep Notion-token + GitKraken checks; drop batching) |
 | **Reversibility** | High — mechanical cleanup; legacy trees already segregated. |
 
 ## Lockstep retirement order (per wave)
 
-For each wave Wn: **(1)** rewrite invariant into CLAUDE.md/rule → **(2)** move procedure to native feature →
+For each wave Wn: **(1)** rewrite invariant into AGENTS.md/rule → **(2)** move procedure to native feature →
 **(3)** remove coupled CI-gate entries from `run_contract_gates.py` **and** `.pre-commit-config.yaml` →
 **(4)** drop the chain members from `after_agent_governance_dispatch.py` →
 **(5)** `git mv` scripts to `archives/claude_native_supersession_2026-06-07/` →

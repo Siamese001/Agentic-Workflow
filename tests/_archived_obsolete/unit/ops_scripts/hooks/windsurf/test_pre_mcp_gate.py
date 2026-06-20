@@ -39,7 +39,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts" / "_legacy_windsurf"))
 
 import pre_mcp_gate as _gate_module
 from pre_mcp_gate import (

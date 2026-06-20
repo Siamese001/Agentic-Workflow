@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\decision-router-policy-tables-b3a4d2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\decision-router-policy-tables-b3a4d2.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\decision-router-policy-tables-b3a4d2.md'
 source_sha256: 8a1f033afdac10e3ccec6586a4e32593d4ebaadda58e3d41ae4f3543f5e37b30
 recovered_status: LEGACY_EXISTING

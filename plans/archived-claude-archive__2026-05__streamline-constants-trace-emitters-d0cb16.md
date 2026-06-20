@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\streamline-constants-trace-emitters-d0cb16.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\streamline-constants-trace-emitters-d0cb16.md'
 original_relative_path: '_archive\\2026-05\\streamline-constants-trace-emitters-d0cb16.md'
 source_sha256: 2527fb8bcaf956e236fa7fb6239397142426183c848c8df64135f313df37ddce
 recovered_status: LEGACY_EXISTING

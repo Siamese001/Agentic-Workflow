@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\cursor-windsurf-hook-migration-e7c1a4.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\cursor-windsurf-hook-migration-e7c1a4.md'
 original_relative_path: '_archive\\2026-05\\cursor-windsurf-hook-migration-e7c1a4.md'
 source_sha256: 456793776b843d147a3000ee1d135c7f61f807024c95a4b9487b02abf33f3dc0
 recovered_status: LEGACY_EXISTING

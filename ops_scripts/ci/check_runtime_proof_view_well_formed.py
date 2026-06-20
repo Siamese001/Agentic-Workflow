@@ -32,7 +32,7 @@ Failure modes detected:
     authority_status=AUTHORITATIVE_RUNTIME)
 
 Tier: B (advisory until activation flag set).
-Plan: ``.claude/plans/three-bucket-otel-view-5db409.md`` (W4.P4.1).
+Plan: ``.codex/plans/three-bucket-otel-view-5db409.md`` (W4.P4.1).
 
 USAGE
 =====

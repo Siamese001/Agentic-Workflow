@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\skills-graph-hardening-gap-closure-53576c.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\skills-graph-hardening-gap-closure-53576c.md'
 original_relative_path: 'skills-graph-hardening-gap-closure-53576c.md'
 source_sha256: 947286615c659eeaa5b469f48b0ddea2776695a8a452287119e93cf019f0b86e
 recovered_status: LEGACY_EXISTING

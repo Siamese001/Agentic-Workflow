@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\cursor-governance-two-tier-b4e8f2.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\cursor-governance-two-tier-b4e8f2.md'
 original_relative_path: '_archive\\2026-05\\cursor-governance-two-tier-b4e8f2.md'
 source_sha256: 11e67c78bdef9455454c6cc007b8fe59eb15c0c36695c3484d4fa63704fbfc17
 recovered_status: LEGACY_EXISTING

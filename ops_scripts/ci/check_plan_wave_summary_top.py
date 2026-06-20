@@ -4,7 +4,7 @@ Requires (for ``plan_format: v2`` plans) ``## Status Tables`` → ``### Wave Pro
 7 columns) AND ``### Phase Progress`` summary tables **before** the first ``## Wave N`` detail
 section, and waves numbered in ascending execution order with no backward dependency.
 
-Scan: ``plans/*.md`` + ``.claude/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
+Scan: ``plans/*.md`` + ``.codex/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
 
 Enforce-going-forward: v2 plans (the template carries the marker) are enforced — any FAIL → exit 1.
 Legacy plans (no marker) are grandfathered to advisory WARN unless
@@ -30,9 +30,9 @@ from ops_scripts.ci.plan_wave_summary_top import (
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_PLANS_DIR = _REPO_ROOT / ".claude" / "plans"
+_PLANS_DIR = _REPO_ROOT / ".codex" / "plans"
 # Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
-# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+# canonical NEW plans live in repo-root plans/; .codex/plans/ stays legacy-valid.
 _PLANS_DIRS = [_REPO_ROOT / "plans", _PLANS_DIR]
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_wave_summary_top_gate.json"
 

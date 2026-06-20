@@ -4,7 +4,7 @@
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L1_cognition/reasoning/`, `agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py`, `agentic_core/knowledge/retrieval/`, `agentic_core/knowledge/engine/rag_orchestrator.py`
-**Plan**: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W4.1
+**Plan**: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W4.1
 **Relates-to**: ADR-045 (contextual retrieval), ADR-046 (rerank), ADR-056 (multi-head), ADR-058 (query transforms), ADR-023 (runtime HITL — distinct from this dev-loop pattern)
 
 **Current-state note (2026-06-15):** Implemented by `agentic_core/L1_cognition/reasoning/retrieval_reflexion.py`, `retrieval_grader.py`, and shared reflection types, with retrieval reflexion and router tests.
@@ -126,4 +126,4 @@ Rollback: `RETRIEVAL_REFLECTIVE=0` env var disables the loop globally; orchestra
 - Shinn et al., *Reflexion: Language Agents with Verbal Reinforcement Learning* (NeurIPS 2023)
 - In-repo: `agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py`, `agentic_core/knowledge/engine/rag_orchestrator.py`
 - Sibling spec: `docs/reports/plans/reflexion-retriever-binding.md` (W4.2)
-- Parent plan: `.claude/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`
+- Parent plan: `.codex/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

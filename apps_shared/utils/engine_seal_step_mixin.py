@@ -1,6 +1,6 @@
 """Auto-wrap concrete engine `execute` methods with `seal_step()`.
 
-Plan: `.claude/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md`
+Plan: `.codex/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md`
 
 This module exposes one primitive, `install_seal_step_autowrap(cls)`, that
 base engine classes call from `__init_subclass__`. Whenever a concrete

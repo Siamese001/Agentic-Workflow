@@ -1,6 +1,6 @@
 """apps_shared.contracts.connection_data_contract — D6-P5 (DS5).
 
-Plan: .claude/plans/apps-lic-calibration-holdout-e8f1c4.md W2 DS5-P1
+Plan: .codex/plans/apps-lic-calibration-holdout-e8f1c4.md W2 DS5-P1
 
 Canonical data contract for mutual-network connection data passed to
 MutualNetworkEngine. Callers populate this contract from their

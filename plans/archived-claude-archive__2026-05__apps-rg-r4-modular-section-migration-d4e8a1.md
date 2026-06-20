@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\2026-05\\apps-rg-r4-modular-section-migration-d4e8a1.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\2026-05\\apps-rg-r4-modular-section-migration-d4e8a1.md'
 original_relative_path: '_archive\\2026-05\\apps-rg-r4-modular-section-migration-d4e8a1.md'
 source_sha256: 65478e70c342bc7c7c93300d225b12a015707203a71f08c9207e279a6041039c
 recovered_status: LEGACY_EXISTING

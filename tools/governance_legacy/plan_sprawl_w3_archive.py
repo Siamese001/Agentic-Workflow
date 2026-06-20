@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PLANS = REPO / ".claude" / "plans"
+PLANS = REPO / ".codex" / "plans"
 ARCHIVE_DIR = PLANS / "_archive" / "2026-05"
 CSV_OUT = REPO / "docs/reports/cursor/plan_sprawl_inventory_20260526.csv"
 

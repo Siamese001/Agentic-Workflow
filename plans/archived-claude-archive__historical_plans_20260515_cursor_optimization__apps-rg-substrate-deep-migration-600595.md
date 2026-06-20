@@ -4,7 +4,7 @@ do_not_execute: true
 memorialized: true
 source_surface: claude_legacy_plans
 source_key: claude
-original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.claude\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-substrate-deep-migration-600595.md'
+original_path: 'C:\\Git\\Agentic-Workflow-FRESH\\.codex\\plans\\_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-substrate-deep-migration-600595.md'
 original_relative_path: '_archive\\historical_plans_20260515_cursor_optimization\\apps-rg-substrate-deep-migration-600595.md'
 source_sha256: b456ff7cf65a305d1323b1146ee8e2244afe1b7dcf4ed3ef2e87b960204170f9
 recovered_status: LEGACY_EXISTING
