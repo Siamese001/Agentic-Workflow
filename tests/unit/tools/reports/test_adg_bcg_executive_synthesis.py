@@ -476,13 +476,11 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "### 12. Honest Bottom Line",
         "Action impact:",
         "No deletions are approved in this run",
-        "| Priority | Move | Why it matters | Evidence | Next step |",
+        "| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |",
+        "Why this order:",
         "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
     ]:
         assert section in md
-    assert "Business reason" not in md
-    assert "Technical reason" not in md
-    assert "Why this order" not in md
     assert "fix_blocker" not in md
     assert "ADG source:" in md
     assert "adg_indexed_run.sqlite" in md

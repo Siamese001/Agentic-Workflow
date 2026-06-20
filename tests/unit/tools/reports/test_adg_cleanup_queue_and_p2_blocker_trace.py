@@ -222,7 +222,5 @@ def test_emit_cleanup_queue_and_p2_trace_inline_uses_bcg_brief(tmp_path: Path, c
         "decisions, explicit prioritization, and technical evidence a layperson can "
         "follow."
     ) in captured.out
-    assert "| Priority | Move | Why it matters | Evidence | Next step |" in md
-    assert "Business reason" not in md
-    assert "Technical reason" not in md
-    assert "Why this order" not in md
+    assert "| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |" in md
+    assert "Why this order:" in md

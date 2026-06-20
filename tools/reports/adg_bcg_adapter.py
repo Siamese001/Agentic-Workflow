@@ -78,6 +78,13 @@ def _row_value(row: dict[str, Any], *keys: str) -> str:
     return ""
 
 
+def _decision_value(row: dict[str, Any]) -> str:
+    value = _row_value(row, "decision", "next_step")
+    if value and "_" in value and " " not in value:
+        return value.replace("_", " ")
+    return value
+
+
 def _normalize_priority_row(row: dict[str, Any] | ExecutivePriorityRow | None) -> dict[str, Any]:
     if row is None:
         row = {}
@@ -203,8 +210,8 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     priority_rows = [_normalize_priority_row(row) for row in list(brief.get("priority_rows") or [])]
     if priority_rows:
         a("")
-        a("| Priority | Move | Why it matters | Evidence | Next step |")
-        a("|---------:|------|----------------|----------|-----------|")
+        a("| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |")
+        a("|---------:|------|-------|----------------|-----------------|----------------|----------|")
         limit = brief.get("table_limit")
         if not isinstance(limit, int) or limit < 0:
             limit = len(priority_rows)
@@ -212,10 +219,18 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
             a(
                 f"| {_row_value(row, 'priority', 'rank')} | "
                 f"{_row_value(row, 'move', 'work', 'priority_work', 'action')} | "
-                f"{_row_value(row, 'why_it_matters', 'business_reason', 'business', 'why_now')} | "
-                f"{_row_value(row, 'evidence', 'technical_reason', 'technical', 'testing_mv_action')} | "
-                f"{_row_value(row, 'next_step', 'decision', 'why_this_rank', 'why')} |"
+                f"{_row_value(row, 'scope', 'band', 'target', 'affected_system')} | "
+                f"{_row_value(row, 'business_reason', 'why_it_matters', 'business', 'why_now')} | "
+                f"{_row_value(row, 'technical_reason', 'evidence', 'technical', 'testing_mv_action')} | "
+                f"{_row_value(row, 'why_this_rank', 'why', 'why_this_priority', 'next_step')} | "
+                f"{_decision_value(row)} |"
             )
+    why_this_order = _text_list(brief.get("why_this_order"))
+    if why_this_order:
+        a("")
+        a("Why this order:")
+        for item in why_this_order:
+            a(f"- {_md(item)}")
     next_step = str(brief.get("next_step") or "").strip()
     if next_step:
         a("")

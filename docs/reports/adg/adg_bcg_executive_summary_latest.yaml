@@ -2,10 +2,10 @@ schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
   run_id: 06192026_0917
-  generated_at_utc: '2026-06-19T23:00:56+00:00'
+  generated_at_utc: '2026-06-20T10:42:39+00:00'
   snapshot_ts: '2026-06-19T13:22:35.342598+00:00'
-  commit_sha: 89620cdb87e64f6329cca6541537c6c796530c1f
-  repo_state_hash: 419a5b0f8c977eec
+  commit_sha: 815583c17d56995ae776d3f8480960b414a4f06b
+  repo_state_hash: 79bf87269ea4cfc0
   decision_grade_status: PASS
   degradation_reasons: []
 plain_english_context:

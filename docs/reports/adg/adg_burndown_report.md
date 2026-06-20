@@ -1,6 +1,6 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-19T23:00:55+00:00
+- **Generated:** 2026-06-20T10:42:37+00:00
 - **Gate-results source:** `artifacts\adg\adg_gate_results_20260619_132235.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
 - **Snapshot timestamp:** 2026-06-19T13:22:35.342598+00:00
@@ -25,12 +25,17 @@
   - Aggregate verdict rows: block_pass=13; block_fail=1; ratchet_pass=23; ratchet_regressed=4; warn=6.
 - **Priority rule:** Fix blockers first, then burn down ratchets, then keep advisory backlog visible.
 
-| Priority | Move | Why it matters | Evidence | Next step |
-|---------:|------|----------------|----------|-----------|
-| 1 | Fix P0 red gates | P0 failures block the run and need immediate attention. | FIX=2; TRACK gates=5; TRACK rows=5,272; CLEAR=8. | fix red gates first |
-| 2 | Burn down P1 ratchets | P1 debt is the next highest maintenance drag. | FIX=1; TRACK gates=8; TRACK rows=4,650; CLEAR=9. | fix red gates first |
-| 3 | Burn down P2 ratchets | P2 debt is accepted backlog and should follow higher bands. | FIX=1; TRACK gates=2; TRACK rows=1,082; CLEAR=4. | fix red gates first |
-| 4 | Close P3 advisory backlog | P3 items are lowest urgency and should trail higher bands. | FIX=1; TRACK gates=3; TRACK rows=1,552; CLEAR=4. | fix red gates first |
+| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
+|---------:|------|-------|----------------|-----------------|----------------|----------|
+| 1 | Fix P0 red gates | P0 | P0 failures block the run and need immediate attention. | FIX=2; TRACK gates=5; TRACK rows=5,272; CLEAR=8. | P0 is the blocking band. | fix red gates first |
+| 2 | Burn down P1 ratchets | P1 | P1 debt is the next highest maintenance drag. | FIX=1; TRACK gates=8; TRACK rows=4,650; CLEAR=9. | P1 follows the blocker band. | fix red gates first |
+| 3 | Burn down P2 ratchets | P2 | P2 debt is accepted backlog and should follow higher bands. | FIX=1; TRACK gates=2; TRACK rows=1,082; CLEAR=4. | P2 remains below P1. | fix red gates first |
+| 4 | Close P3 advisory backlog | P3 | P3 items are lowest urgency and should trail higher bands. | FIX=1; TRACK gates=3; TRACK rows=1,552; CLEAR=4. | P3 is the least urgent band. | fix red gates first |
+
+Why this order:
+- P0 blockers define whether the run is actually usable.
+- P1 and P2 ratchets are accepted debt and should be reduced after blockers are clear.
+- P3 items are the lowest urgency and should trail higher bands.
 
 Next step: Clear red gates first, then burn down the largest tracked backlog.
 

@@ -177,6 +177,8 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         validated_request,
         active_generation_mode=active_generation,
     )
+    if non_product_path:
+        apps_research_required = False
     briefing_validate_or_raise(
         validated_request,
         active_generation_mode=active_generation,

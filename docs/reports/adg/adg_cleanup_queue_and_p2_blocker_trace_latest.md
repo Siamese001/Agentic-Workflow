@@ -1,6 +1,6 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-19T23:00:55+00:00
+- **Generated:** 2026-06-20T10:42:37+00:00
 - **Status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
 - **Published sqlite:** `artifacts/adg/adg_indexed_06192026_0917.sqlite`
@@ -22,14 +22,20 @@
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
-| Priority | Move | Why it matters | Evidence | Next step |
-|---------:|------|----------------|----------|-----------|
-| 1 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
-| 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
-| 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
-| 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
-| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Lower the noise floor, then rerun the scan. |
-| 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
+| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
+|---------:|------|-------|----------------|-----------------|----------------|----------|
+| 1 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
+| 2 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
+| 3 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
+| 4 | Triage unresolved imports | ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. | investigate |
+| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Lower the noise floor, then rerun the scan. | stabilize |
+| 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. | deprecate |
+
+Why this order:
+- Confirmed dead code is the highest-confidence waste and should be removed first.
+- Unresolved imports are the biggest uncertainty and can hide real cleanup work.
+- Low-confidence and inferred-symbol noise should be reduced before taking more aggressive action.
+- Low-value diagnostics are cheap to deprecate once the evidence layer is cleaner.
 
 Next step: Deprecate first, then delete after the evidence stays clean.
 
@@ -75,14 +81,19 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
   - Latest failed run: 2026-06-19T13:25:50Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
-| Priority | Move | Why it matters | Evidence | Next step |
-|---------:|------|----------------|----------|-----------|
-| 1 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 5 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 2 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 4 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 3 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 4 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 1 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 5 | Remove star imports | Star imports hide dependencies and make deprecation decisions harder to defend. | 1 MEDIUM hygiene record(s) are explicit star imports. | Replace star imports with explicit imports. |
-| 6 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=19; ceiling=19; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
+| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
+|---------:|------|-------|----------------|-----------------|----------------|----------|
+| 1 | Reduce MEDIUM hygiene debt | apps_rg/runtime/c0/fact_vector_write_back.py | This is a live surface where removing hygiene debt improves trust in the next run. | 5 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. | reduce |
+| 2 | Reduce MEDIUM hygiene debt | apps_rg/runtime/bindings/u0_package_ingest.py | This is a live surface where removing hygiene debt improves trust in the next run. | 4 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. | reduce |
+| 3 | Reduce MEDIUM hygiene debt | apps_rg/runtime/section_graph_skills_proof_pool.py | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. | reduce |
+| 4 | Reduce MEDIUM hygiene debt | apps_rg/runtime/c0/c02_semantic_cache_payload.py | This is a live surface where removing hygiene debt improves trust in the next run. | 1 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. | reduce |
+| 5 | Remove star imports | apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py | Star imports hide dependencies and make deprecation decisions harder to defend. | 1 MEDIUM hygiene record(s) are explicit star imports. | Easy wins should follow the largest live runtime hotspots. | deprecate |
+| 6 | Re-run ADG and keep the ceiling honest | p2_ratchet.json | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=19; ceiling=19; delta=0. | Re-baselining before cleanup only hides the blocker. | rebaseline if intentional |
+
+Why this order:
+- The highest-count live runtime surfaces move the ceiling fastest.
+- Star imports are low-ambiguity cleanup once the larger exception paths are underway.
+- Re-baselining too early hides the blocker instead of paying it down.
 
 Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.
 

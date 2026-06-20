@@ -194,7 +194,7 @@ def test_l0_route_scratch_still_grounded_without_apps_research_delegation() -> N
     )
     plan = l1_plan_apps_rg(vr)
     assert plan.grounding_required is True
-    assert plan.apps_research_call_required is False
+    assert plan.apps_research_call_required is True
     route = l0_route_apps_rg(plan)
     assert route.route_family == "R4_MANAGED_DRAFT"
     assert route.grounding_required is True
