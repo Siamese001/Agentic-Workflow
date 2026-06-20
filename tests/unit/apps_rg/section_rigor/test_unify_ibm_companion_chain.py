@@ -135,20 +135,36 @@ def test_narrative_real_llm_fails_without_finalized_companion(lane: str, run_nar
 
 
 def test_load_companion_unify_from_latest_successful_pointer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Simulate pointer write + load_companion after live-style finalize."""
-    from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, lane_root
+    """Simulate same-run modular pointer write + load_companion after live-style finalize."""
+    from apps_rg.runtime.runtime_proof_layout import (
+        LATEST_SUCCESSFUL_REAL_FILENAME,
+        MODULAR_R4_SECTIONS_ROOT_ENV,
+        finalize_runtime_proof_run,
+    )
     from apps_rg.runtime.sections.unify_narrative_lane import load_companion_unify_bullets_context
+    from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest
 
-    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
     parsed, _allowed = unify_bullets_parsed_from_mock()
-    art = (
+    msr = (
         REPO
         / "artifacts"
         / "apps_rg"
         / "runtime_proofs"
         / "contract_harness"
-        / "_test_companion_chain_unify"
+        / "_test_companion_chain_unify_modular"
     )
+    msr.mkdir(parents=True, exist_ok=True)
+    emit_sections_root_manifest(
+        repo_root=REPO,
+        sections_root_abs=msr,
+        source_env_literal=MODULAR_R4_SECTIONS_ROOT_ENV,
+        correlation_id="test-companion-chain",
+        integrated_run_ref="test-integrated-run",
+        run_links_ref=None,
+    )
+    monkeypatch.setenv(MODULAR_R4_SECTIONS_ROOT_ENV, str(msr))
+    art = msr / "unify_bullets" / "real" / "unify_bullets_test_chain"
     art.mkdir(parents=True, exist_ok=True)
     l2 = {
         "section_id": "unify_bullets",
@@ -176,9 +192,22 @@ def test_load_companion_unify_from_latest_successful_pointer(tmp_path: Path, mon
         provider_requested="external_claude",
         provider_attempted=True,
     )
-    ptr = lane_root(REPO, "unify_bullets") / "latest_successful_real_run.json"
+    ptr = msr / "unify_bullets" / LATEST_SUCCESSFUL_REAL_FILENAME
     assert ptr.is_file()
     ctx = load_companion_unify_bullets_context()
     assert ctx["status"] == ACCEPTED_FINALIZED_COMPANION_STATUS
     assert ctx["x3_code"] == "X3_REVIEW_JUDGE_PROVIDER_BLOCKED"
     assert len(ctx.get("bullet_ids") or []) == len(UNIFY_BULLET_IDS)
+
+
+def test_legacy_latest_successful_pointer_alone_is_not_companion_authority(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+    from apps_rg.runtime.sections.unify_narrative_lane import load_companion_unify_bullets_context
+
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    monkeypatch.delenv(MODULAR_R4_SECTIONS_ROOT_ENV, raising=False)
+    ctx = load_companion_unify_bullets_context()
+    assert ctx["status"] == "MISSING"
+    assert "no_modular_accepted_upstream_in_current_run" in ctx["reason"]

@@ -7,13 +7,30 @@ legacy payload shapes.
 
 from __future__ import annotations
 
+import importlib.util
+import io
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 HOOK = REPO_ROOT / ".claude" / "hooks" / "stop_task_audit.py"
+HOOK_DIR = HOOK.parent
+if str(HOOK_DIR) not in sys.path:
+    sys.path.insert(0, str(HOOK_DIR))
+
+
+def _load_hook():
+    spec = importlib.util.spec_from_file_location("stop_task_audit_direct", HOOK)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+HOOK_MOD = _load_hook()
 
 _ALLOW = 0
 _BLOCK = 2
@@ -36,6 +53,8 @@ def _write_transcript(tmp_path: Path, final_text: str) -> Path:
 
 def _run(payload) -> subprocess.CompletedProcess:
     raw = payload if isinstance(payload, str) else json.dumps(payload)
+    env = os.environ.copy()
+    env["STOP_TASK_AUDIT_WORKTREE_HYGIENE_BYPASS"] = "1"
     return subprocess.run(
         [sys.executable, str(HOOK)],
         input=raw,
@@ -43,6 +62,7 @@ def _run(payload) -> subprocess.CompletedProcess:
         capture_output=True,
         timeout=60,
         cwd=str(REPO_ROOT),
+        env=env,
     )
 
 
@@ -290,3 +310,36 @@ class TestStopTaskAuditFalseBlockFix:
             tr = _write_transcript(subdir, text)
             proc = _run({"session_id": session, "transcript_path": str(tr)})
             assert proc.returncode == _ALLOW, f"{session}: " + proc.stdout + proc.stderr
+
+
+class TestStopTaskAuditProtectedWorktreeHygiene:
+    def test_repo_work_turn_blocks_on_dirty_protected_worktree(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(HOOK_MOD, "_load_detect", lambda: (lambda text: ("PASS", [])))
+        monkeypatch.setattr(
+            HOOK_MOD,
+            "_protected_worktree_reason",
+            lambda: (
+                "Protected worktree hygiene failure: a protected checkout still has local changes.\n"
+                "- main @ C:/Git/Agentic-Workflow-FRESH-gk-publish: docs/reports/adg/foo.md\n"
+                "Clean or commit the protected worktree before continuing."
+            ),
+        )
+        monkeypatch.setattr(HOOK_MOD, "write_receipt", lambda *args, **kwargs: None)
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"response": _PASS_FULL_PROOF})))
+        out = io.StringIO()
+        monkeypatch.setattr(sys, "stdout", out)
+
+        assert HOOK_MOD.main() == _BLOCK
+        assert "protected worktree hygiene failure" in out.getvalue().lower()
+        assert "main @ C:/Git/Agentic-Workflow-FRESH-gk-publish" in out.getvalue()
+
+    def test_non_repo_prose_skips_protected_worktree_hygiene(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(HOOK_MOD, "_load_detect", lambda: (lambda text: (None, [])))
+        monkeypatch.setattr(HOOK_MOD, "_protected_worktree_reason", lambda: "should-not-block")
+        monkeypatch.setattr(HOOK_MOD, "write_receipt", lambda *args, **kwargs: None)
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"response": "thanks"})))
+        out = io.StringIO()
+        monkeypatch.setattr(sys, "stdout", out)
+
+        assert HOOK_MOD.main() == _ALLOW
+        assert "decision" not in out.getvalue()

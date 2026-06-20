@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from apps_rg.fact_inventory.track_weighted_graph_expansion import TrackWeightedExpansionContractError
 from apps_rg.runtime.c0.c03_allowlist_coherence import (
-    assert_pre_l2_allowlist_coherence,
     filter_c03_evidence_to_allowed_pool,
 )
 from apps_rg.runtime.c0.exec_summary_graph_targeting_capsule import (
@@ -66,34 +66,17 @@ def test_graph_targeting_capsule_non_proof_banner_and_caps() -> None:
     assert "GRAPH_TARGETING_CAPSULE" in pa
 
 
-def test_resolve_executive_summary_proof_pool_allowlist_coherent(brown_jd: str) -> None:
-    pool = resolve_section_proof_pool(
-        section="executive_summary",
-        target_company="Brown & Brown",
-        target_role="SVP IT Strategy & Innovation",
-        jd_text=brown_jd,
-        product_visible=False,
-    )
-    allowed = set(pool.allowed_fact_ids)
-    meta = pool.proof_pool_metadata
-    receipt = meta.get("exec_summary_allowlist_receipt") or {}
-    assert meta.get("canonical_c0_3_claimed") is False
-    assert receipt.get("dg1_decision") == "A"
-    assert meta.get("graph_targeting_capsule")
-    for fid in receipt.get("c03_filtered_out_fact_ids") or []:
-        assert fid not in allowed
-    promo = receipt.get("c03_promotion_candidates") or meta.get("c03_promotion_candidates")
-    assert isinstance(promo, dict)
-    assert promo.get("promoted_fact_ids") == []
-    if receipt.get("c03_filtered_out_fact_ids"):
-        assert promo.get("candidate_count", 0) >= 1
-        assert all(c.get("promotion_eligible") is False for c in promo.get("candidates") or [])
-    c03 = meta.get("c03_graphrag_bound") or {}
-    assert c03.get("graph_hop_paths_by_fact_id"), "W4: hop paths materialized on c03 bound"
-    assert int(c03.get("graph_hop_paths_count") or 0) > 0
-    reason = assert_pre_l2_allowlist_coherence(
-        allowed_fact_ids=allowed,
-        c03_bound=meta.get("c03_graphrag_bound"),
-        track_expansion=meta.get("track_weighted_graph_expansion"),
-    )
-    assert reason is None
+def test_resolve_executive_summary_proof_pool_blocks_when_allowed_facts_lack_hop_paths(
+    brown_jd: str,
+) -> None:
+    with pytest.raises(
+        TrackWeightedExpansionContractError,
+        match="seed_fact_ids have no matching track-weighted graph hop paths",
+    ):
+        resolve_section_proof_pool(
+            section="executive_summary",
+            target_company="Brown & Brown",
+            target_role="SVP IT Strategy & Innovation",
+            jd_text=brown_jd,
+            product_visible=False,
+        )

@@ -14,6 +14,8 @@ def _result(
     status: str = "BLOCKED",
     error: str | None = "External provider HTTP 429: rate_limit_error",
     raw: str = "",
+    started_at: str = "2026-06-20T16:00:00+00:00",
+    completed_at: str = "2026-06-20T16:00:01+00:00",
 ) -> ProviderResult:
     return ProviderResult(
         provider_requested=provider_requested,
@@ -23,7 +25,10 @@ def _result(
         runtime_generation_status=status,
         model="claude-sonnet-4-6",
         raw_model_output=raw,
-        provider_response=None,
+        provider_response={
+            "attempt_started_at_utc": started_at,
+            "attempt_completed_at_utc": completed_at,
+        },
     )
 
 
@@ -55,6 +60,24 @@ def test_successful_bad_content_does_not_fallback() -> None:
     ) is initial
 
 
+def test_parse_or_validation_failure_wording_does_not_fallback() -> None:
+    for error in (
+        "section parse failure: missing JSON",
+        "X2 validation failed: weak output",
+        "content quality failure: empty bullets",
+        "missing evidence packet",
+        "bad input: required graph packet absent",
+    ):
+        initial = _result(status="BLOCKED", error=error)
+        assert not subject.is_claude_generation_availability_failure(initial)
+        assert subject.maybe_fallback_to_openai_for_claude_availability(
+            initial,
+            SimpleNamespace(run_id="run"),
+            token_budget=100,
+            temperature=0.2,
+        ) is initial
+
+
 def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(monkeypatch) -> None:
     created: dict[str, object] = {}
 
@@ -79,9 +102,9 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
             )
 
     monkeypatch.setattr(subject, "ExternalProvider", _FallbackProvider)
-    monkeypatch.setattr(subject, "external_openai_generation_model_from_ssot", lambda: "gpt-ssot")
+    monkeypatch.setattr(subject, "external_openai_generation_model", lambda: "gpt-ssot")
 
-    initial = _result(error="External provider HTTP 529: overloaded_error")
+    initial = _result(error="External provider HTTP 429: rate_limit_error")
     result = subject.maybe_fallback_to_openai_for_claude_availability(
         initial,
         SimpleNamespace(run_id="run"),
@@ -100,8 +123,28 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
     assert result.model == "gpt-ssot"
     receipt = result.reasoning_execution_receipt["apps_rg_availability_fallback"]
     assert receipt["scope"] == "apps_rg_generation_only"
+    assert receipt["fallback_allowed"] is True
+    assert receipt["fallback_allowed_reason_category"] == "provider_throttling_failure"
+    assert receipt["no_fallback_on_quality_content_or_validation_failure"] is True
+    assert "parsing_failure" in receipt["fallback_forbidden_reason_categories"]
+    assert receipt["requested_provider"] == ProviderProfile.EXTERNAL_CLAUDE.value
+    assert receipt["requested_model"] == "claude-sonnet-4-6"
+    assert receipt["initial_attempt_started_at_utc"] == "2026-06-20T16:00:00+00:00"
+    assert receipt["initial_attempt_completed_at_utc"] == "2026-06-20T16:00:01+00:00"
     assert receipt["fallback_provider_actual"] == ProviderProfile.EXTERNAL_OPENAI.value
     assert receipt["fallback_model"] == "gpt-ssot"
+    assert receipt["fallback_attempt_started_at_utc"]
+    assert receipt["fallback_attempt_completed_at_utc"]
+    assert receipt["fallback_output_accepted"] is True
+    assert receipt["accepted_output_provider"] == ProviderProfile.EXTERNAL_OPENAI.value
+    assert receipt["accepted_output_model"] == "gpt-ssot"
+    attempts = receipt["model_attempts"]
+    assert attempts[0]["provider"] == ProviderProfile.EXTERNAL_CLAUDE.value
+    assert attempts[0]["model"] == "claude-sonnet-4-6"
+    assert attempts[0]["started_at_utc"] == "2026-06-20T16:00:00+00:00"
+    assert attempts[1]["provider"] == ProviderProfile.EXTERNAL_OPENAI.value
+    assert attempts[1]["model"] == "gpt-ssot"
+    assert attempts[1]["started_at_utc"]
 
 
 def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(monkeypatch) -> None:
@@ -122,7 +165,7 @@ def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(mon
             )
 
     monkeypatch.setattr(subject, "ExternalProvider", _BlockedFallbackProvider)
-    monkeypatch.setattr(subject, "external_openai_generation_model_from_ssot", lambda: "gpt-ssot")
+    monkeypatch.setattr(subject, "external_openai_generation_model", lambda: "gpt-ssot")
 
     initial = _result(error="External provider HTTP 503: unavailable")
     result = subject.maybe_fallback_to_openai_for_claude_availability(
@@ -138,3 +181,7 @@ def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(mon
     receipt = result.reasoning_execution_receipt["apps_rg_availability_fallback"]
     assert receipt["fallback_attempted"] is False
     assert receipt["fallback_runtime_generation_status"] == "BLOCKED"
+    assert receipt["fallback_output_accepted"] is False
+    assert receipt["accepted_output_provider"] is None
+    assert receipt["accepted_output_model"] is None
+    assert receipt["accepted_output_source"] == "initial_blocked_result"

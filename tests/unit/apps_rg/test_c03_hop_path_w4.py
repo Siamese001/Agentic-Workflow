@@ -7,8 +7,10 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.track_weighted_graph_expansion import GRAPH_EXPANSION_MODE_TRACK_WEIGHTED
+from apps_rg.fact_inventory.track_weighted_graph_expansion import TrackWeightedExpansionContractError
 from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
 from apps_rg.runtime.c0.c03_hop_path_materialization import (
+    GraphHopPathAllowlistError,
     attach_track_weighted_hop_paths_to_c03_bound,
     materialize_c03_hop_paths,
 )
@@ -53,6 +55,23 @@ def test_materialize_hop_paths_from_track_expansion() -> None:
     assert doc["graph_hop_paths_count"] == 1
     assert doc["graph_hop_paths_count_semantics"] == GRAPH_HOP_PATHS_COUNT_SEMANTICS_TRACK_WEIGHTED
     assert "fact_exec_001" in doc["graph_hop_paths_by_fact_id"]
+
+
+def test_materialize_hop_paths_fails_when_allowed_ids_do_not_match() -> None:
+    track = {
+        "graph_expansion_mode": GRAPH_EXPANSION_MODE_TRACK_WEIGHTED,
+        "selected_facts": [
+            {
+                "fact_id": "fact_exec_001",
+                "graph_hop_path": [{"edge_type": "career_track_contains_pillar"}],
+            }
+        ],
+    }
+    with pytest.raises(GraphHopPathAllowlistError, match="do not match allowed_fact_ids"):
+        materialize_c03_hop_paths(
+            track_expansion=track,
+            allowed_fact_ids={"fact_governance_001"},
+        )
 
 
 def test_attach_hop_paths_updates_c03_bound_and_evidence() -> None:
@@ -110,20 +129,15 @@ def test_c0_graph_lane_receipt_from_bridge_includes_hop_paths() -> None:
     assert receipt["graph_hop_paths_count"] == 1
 
 
-def test_brown_exec_summary_pool_materializes_hop_paths(brown_jd: str) -> None:
-    pool = resolve_section_proof_pool(
-        section="executive_summary",
-        target_company="Brown & Brown",
-        target_role="SVP IT Strategy & Innovation",
-        jd_text=brown_jd,
-        product_visible=False,
-    )
-    meta = pool.proof_pool_metadata
-    c03 = meta.get("c03_graphrag_bound") or {}
-    by_fact = c03.get("graph_hop_paths_by_fact_id") or meta.get("graph_hop_paths_by_fact_id") or {}
-    assert by_fact, "allowed facts should have materialized hop paths"
-    assert int(c03.get("graph_hop_paths_count") or 0) > 0
-    assert c03.get("graph_expansion_mode") == GRAPH_EXPANSION_MODE_TRACK_WEIGHTED_MULTI_HOP
-    bridge = {"section_id": "executive_summary", "proof_pool_metadata": meta}
-    lane = build_c0_graph_lane_receipt_from_bridge(bridge)
-    assert lane["graph_hop_paths_by_fact_id"]
+def test_brown_exec_summary_pool_fails_when_allowed_facts_have_no_hop_paths(brown_jd: str) -> None:
+    with pytest.raises(
+        TrackWeightedExpansionContractError,
+        match="seed_fact_ids have no matching track-weighted graph hop paths",
+    ):
+        resolve_section_proof_pool(
+            section="executive_summary",
+            target_company="Brown & Brown",
+            target_role="SVP IT Strategy & Innovation",
+            jd_text=brown_jd,
+            product_visible=False,
+        )

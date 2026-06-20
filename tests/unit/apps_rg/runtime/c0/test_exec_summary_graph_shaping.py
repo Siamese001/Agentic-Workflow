@@ -9,6 +9,7 @@ import pytest
 from apps_rg.runtime.c0.c03_graph_expansion import expand_c03_graph_bindings
 from apps_rg.runtime.c0.c03_graph_ref_policy import (
     MAX_CLAIM_SUPPORT_SKILLS_PER_FACT,
+    RoleFamilyProjectionError,
     build_graph_targeting_for_pa,
     compress_binding_for_executive_summary,
     resolve_role_family_projection,
@@ -25,15 +26,16 @@ REPO = Path(__file__).resolve().parents[5]
 
 def test_resolve_role_family_brokerage_not_generic_fallback() -> None:
     proj = resolve_role_family_projection("INSURANCE_BROKERAGE_IT_INNOVATION", repo_root=REPO)
-    assert proj["projection_source"] in (
-        "sqlite_role_family_projection",
-        "taxonomy_pillar_hints_synthesized",
-    )
+    assert proj["projection_source"] == "sqlite_role_family_projection"
     assert proj["fallback_pillar_bridge_used"] is False
     assert "pillar_insurance_brokerage_distribution" in proj["pillar_hint_ids"]
-    if proj["projection_source"] == "taxonomy_pillar_hints_synthesized":
-        assert proj["targeting_degraded_explicit"] is True
-        assert proj["release_eligible_targeting_proof"] is False
+    assert proj["targeting_degraded_explicit"] is False
+    assert proj["release_eligible_targeting_proof"] is True
+
+
+def test_resolve_role_family_projection_unknown_role_fails_closed() -> None:
+    with pytest.raises(RoleFamilyProjectionError, match="missing role_family_projection row"):
+        resolve_role_family_projection("COMPLETELY_UNKNOWN_ROLE_XYZ_NO_MATCH", repo_root=REPO)
 
 
 def test_compress_overloaded_engineering_platform_binding() -> None:
@@ -123,7 +125,7 @@ def test_jd_alignment_fails_on_fallback_pillar_bridge() -> None:
     assert reason and "fallback_pillar_bridge" in reason
 
 
-def test_jd_alignment_passes_degraded_taxonomy_projection() -> None:
+def test_jd_alignment_rejects_degraded_taxonomy_projection() -> None:
     parsed = {
         "jd_alignment": {
             "targeting_only": True,
@@ -138,8 +140,9 @@ def test_jd_alignment_passes_degraded_taxonomy_projection() -> None:
             },
         }
     }
-    ok, _ = check_exec_summary_jd_alignment_proof_flags(parsed)
-    assert ok is True
+    ok, reason = check_exec_summary_jd_alignment_proof_flags(parsed)
+    assert ok is False
+    assert reason and "sqlite_role_family_projection" in reason
 
 
 def test_mechanism_gate_reports_dominant_fact_and_bindings() -> None:

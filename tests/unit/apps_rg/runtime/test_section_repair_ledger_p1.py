@@ -42,9 +42,12 @@ def test_deterministic_rewrite_blocked_on_product_fail_closed(monkeypatch, artif
     _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
     assert deterministic_rewrite_allowed() is False
     from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        GRAPH_ONLY_REPAIR_MODE_ENV,
         RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED,
     )
 
+    assert graph_only_reformat_allowed() is False
+    monkeypatch.setenv(GRAPH_ONLY_REPAIR_MODE_ENV, "1")
     assert graph_only_reformat_allowed() is bool(RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED)
 
 
@@ -79,7 +82,7 @@ def test_ledger_blocks_pass_after_deterministic_rewrite_without_regen(
     assert "deterministic_rewrite" in pq_reason
 
 
-def test_ledger_allows_graph_only_quality_repair_without_blocking_product_pass(
+def test_ledger_blocks_graph_only_quality_repair_without_explicit_repair_mode_receipt(
     monkeypatch, artifact_dir: Path
 ) -> None:
     _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
@@ -89,6 +92,30 @@ def test_ledger_allows_graph_only_quality_repair_without_blocking_product_pass(
         operation="graph_only_generation_quality_repair",
         reason="synthesis_violations",
         replaced_l2=True,
+    )
+    ledger = json.loads((artifact_dir / "section_repair_ledger.json").read_text(encoding="utf-8"))
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert blocked is True
+    assert "graph_only_generation_quality_repair" in reason
+
+
+def test_ledger_allows_graph_only_quality_repair_with_explicit_repair_mode_receipt(
+    monkeypatch, artifact_dir: Path
+) -> None:
+    _bootstrap_product_fail_closed(monkeypatch, artifact_dir)
+    record_repair(
+        artifact_dir,
+        kind=KIND_DETERMINISTIC_REWRITE,
+        operation="graph_only_generation_quality_repair",
+        reason="synthesis_violations",
+        replaced_l2=True,
+        detail={
+            "section_id": "executive_summary",
+            "repair_mode": "explicit_graph_only_repair",
+            "explicit_repair_mode": True,
+            "repair_mode_env": "1",
+            "evidence_authority": "augmented_skills_graph",
+        },
     )
     ledger = json.loads((artifact_dir / "section_repair_ledger.json").read_text(encoding="utf-8"))
     blocked, reason = ledger_blocks_product_pass(ledger)

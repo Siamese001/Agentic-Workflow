@@ -798,7 +798,7 @@ def build_track_weighted_expansion(
             links = [str(x) for x in (row.get("fact_id_links") or []) if str(x).strip()]
             for fid in links:
                 if seed and fid not in seed and fid.split("_metric_")[0] not in seed:
-                    pass  # still allow graph-backed facts without SRFS seed
+                    continue
                 hop = _build_hop_path(
                     track_id=track_id,
                     pillar=pillar,
@@ -838,6 +838,10 @@ def build_track_weighted_expansion(
     skills_by_track = {k: _uniq(v) for k, v in skills_by_track.items()}
     facts_by_track = {k: _uniq(v) for k, v in facts_by_track.items()}
     tracks_with_facts = [t for t, fids in facts_by_track.items() if fids]
+    if seed and not selected_facts:
+        raise TrackWeightedExpansionContractError(
+            "seed_fact_ids have no matching track-weighted graph hop paths"
+        )
     concentration_policy = build_graph_skill_concentration_policy(
         counts={k: len(v) for k, v in skills_by_track.items()},
         distribution_kind="career_track",

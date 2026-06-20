@@ -74,7 +74,13 @@ def _jd_alignment_fixture(**overrides: object) -> dict[str, object]:
         "targeting_only": True,
         "jd_used_as_proof": False,
         "briefing_used_as_proof": False,
-        "graph_targeting": {"targeting_degraded_explicit": True},
+        "graph_targeting": {
+            "projection_source": "sqlite_role_family_projection",
+            "sqlite_projection_row_found": True,
+            "fallback_pillar_bridge_used": False,
+            "release_eligible_targeting_proof": True,
+            "targeting_degraded_explicit": False,
+        },
     }
     base.update(overrides)
     return {"jd_alignment": base}

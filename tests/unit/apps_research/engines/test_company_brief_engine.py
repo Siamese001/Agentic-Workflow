@@ -1,6 +1,6 @@
 """Wave 5 ADG testing-hotspots — apps_research.company_brief_engine.
 
-CompanyBriefEngine.execute() drives Tavily + an LLM synthesis cascade, but the
+CompanyBriefEngine.execute() drives SearXNG + an LLM synthesis cascade, but the
 engine carries a substantial *pure* static/deterministic surface that needs no
 provider: payload extraction, the env-flagged V2 toggle, prompt construction,
 tolerant JSON parsing with fail-closed errors, the stub-disabled synthesis gate, JD
@@ -155,7 +155,7 @@ class TestResolveJdContext:
 
 
 class TestCuratedTargetingFallback:
-    def test_adaptive_research_uses_curated_anthropic_pack_when_tavily_is_empty(
+    def test_adaptive_research_blocks_when_search_is_empty_instead_of_curated_pack(
         self, monkeypatch, engine
     ):
         def _boom(*_args, **_kwargs):
@@ -166,21 +166,18 @@ class TestCuratedTargetingFallback:
             _boom,
         )
 
-        findings = engine._run_research_adaptive(
-            topic="Anthropic",
-            depth_profile="COMPANY_BRIEF_STANDARD",
-            jd_context={
-                "company_name": "Anthropic",
-                "job_title": "Manager of Applied AI Architecture, Partnerships",
-            },
-        )
-
-        assert findings["partner_ecosystem"]
-        assert findings["commercial_motion"]
-        assert findings["leadership"]
-        assert findings["recent_moves"]
-        assert "co-sell" in findings["partner_ecosystem"].lower()
-        assert "partner-led" in findings["commercial_motion"].lower()
+        with pytest.raises(
+            CompanyBriefUnavailableError,
+            match="adaptive research returned no grounded findings",
+        ):
+            engine._run_research_adaptive(
+                topic="Anthropic",
+                depth_profile="COMPANY_BRIEF_STANDARD",
+                jd_context={
+                    "company_name": "Anthropic",
+                    "job_title": "Manager of Applied AI Architecture, Partnerships",
+                },
+            )
 
 
 class TestAssembleBrief:

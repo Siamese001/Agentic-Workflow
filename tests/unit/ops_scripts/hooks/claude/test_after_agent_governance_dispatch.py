@@ -51,10 +51,16 @@ def hook(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
         calls.append("post_agent_dispatch.py")
         return mod._TEST_STATUS.get("post_agent_dispatch.py", "ok")  # type: ignore[attr-defined]
 
+    def _fake_cleanup() -> str:
+        calls.append("worktree_cleanup")
+        return mod._TEST_CLEANUP_STATUS  # type: ignore[attr-defined]
+
     mod._TEST_STATUS = {}  # type: ignore[attr-defined]
+    mod._TEST_CLEANUP_STATUS = "ok"  # type: ignore[attr-defined]
     mod._TEST_CALLS = calls  # type: ignore[attr-defined]
     monkeypatch.setattr(mod, "_run_script", _fake_run_script)
     monkeypatch.setattr(mod, "_run_dispatch", _fake_dispatch)
+    monkeypatch.setattr(mod, "_run_worktree_cleanup", _fake_cleanup)
     return mod
 
 
@@ -118,6 +124,7 @@ class TestRealStopPayload:
         assert len(rows) == 1
         assert rows[0]["response_present"] is True
         assert rows[0]["dispatch_result"] == "dispatched"
+        assert hook._TEST_CALLS[-1] == "worktree_cleanup"
 
     def test_old_guard_would_have_no_opped(self, hook, monkeypatch, tmp_path) -> None:
         # Documents the bug: the real Stop payload has NO "response" key, which the old
@@ -184,7 +191,7 @@ class TestDegradedPayloads:
     def test_empty_payload_writes_unavailable_receipt_no_chain(self, hook, monkeypatch) -> None:
         rc = _run(hook, "", monkeypatch)
         assert rc == 0
-        assert hook._TEST_CALLS == []  # chain must NOT run
+        assert hook._TEST_CALLS == ["worktree_cleanup"]  # chain must NOT run; cleanup still does
         rows = _receipts(hook)
         assert len(rows) == 1
         assert rows[0]["response_present"] is False
@@ -193,13 +200,13 @@ class TestDegradedPayloads:
     def test_malformed_json_payload_no_crash(self, hook, monkeypatch) -> None:
         rc = _run(hook, "this is not json {", monkeypatch)
         assert rc == 0
-        assert hook._TEST_CALLS == []
+        assert hook._TEST_CALLS == ["worktree_cleanup"]
         assert _receipts(hook)[0]["dispatch_result"] == "response_unavailable"
 
     def test_transcript_path_missing_file_is_unavailable(self, hook, monkeypatch, tmp_path) -> None:
         rc = _run(hook, {"session_id": "s3", "transcript_path": str(tmp_path / "absent.jsonl")}, monkeypatch)
         assert rc == 0
-        assert hook._TEST_CALLS == []
+        assert hook._TEST_CALLS == ["worktree_cleanup"]
         assert _receipts(hook)[0]["dispatch_result"] == "response_unavailable"
 
 

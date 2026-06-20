@@ -149,7 +149,52 @@ def test_strip_credential_dump_removes_cert_sentence():
     assert ok is True
 
 
-def test_exec_summary_authority_repairs_graph_only_fallback_on_bad_llm_shape() -> None:
+def test_exec_summary_authority_repairs_blocks_graph_only_fallback_by_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_GRAPH_ONLY_REPAIR_MODE", raising=False)
+    bad = (
+        "This executive has extensive experience in designing governed agentic AI platforms. "
+        "This expertise led to productization generating $22M in IP-led revenue. "
+        "Additionally, Basel III/CCAR validation reduced reporting errors by 40%. "
+        "The executive holds quantitative finance credentials including derivatives pricing."
+    )
+    facts = [
+        {
+            "fact_id": "fact_engineering_platform_001",
+            "claim_text": "Designed governed agentic AI platforms for regulated workflows.",
+        },
+        {
+            "fact_id": "fact_engineering_platform_006",
+            "claim_text": "Platform commercialization generated $22M in IP-led revenue.",
+        },
+        {"fact_id": "fact_governance_003", "claim_text": "Implemented Basel III/CCAR validation frameworks."},
+        {"fact_id": "fact_exec_002", "claim_text": "Scaled ML engineering organization from 8 to 28."},
+        {"fact_id": "fact_quant_hpc_001", "claim_text": "Delivered HPC quant pipelines for risk analytics."},
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "Applied stochastic calculus for derivatives pricing."},
+        {"fact_id": "fact_partner_001", "claim_text": "Led joint GTM motions with cloud alliance partners."},
+    ]
+    parsed = {
+        "resume_display_text": bad,
+        "claim_ledger": [{"claim_text": "x", "source_fact_ids": ["fact_engineering_platform_001"]}],
+        "change_log": [],
+        "selected_fact_plan": {"facts": facts},
+    }
+    out = apply_exec_summary_display_authority_repairs(
+        parsed,
+        allowed_fact_ids={f["fact_id"] for f in facts},
+        plan_facts=facts,
+    )
+    assert out["resume_display_text"] == bad
+    assert not any(
+        c.get("operation") == "graph_only_display_authority_fallback" for c in out.get("change_log") or []
+    )
+
+
+def test_exec_summary_authority_repairs_graph_only_fallback_on_bad_llm_shape(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_GRAPH_ONLY_REPAIR_MODE", "1")
     bad = (
         "This executive has extensive experience in designing governed agentic AI platforms. "
         "This expertise led to productization generating $22M in IP-led revenue. "

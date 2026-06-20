@@ -89,6 +89,25 @@ def test_graph_hop_path_uses_skill_supported_by_fact_when_edge_exists(ledger: di
     assert "skill_supported_by_fact" in edge_types or "skill_row_fact_id_links" in edge_types
 
 
+def test_seed_fact_ids_are_hard_allowlist_for_selected_facts(ledger: dict) -> None:
+    expanded = build_track_weighted_expansion(
+        graph=ledger,
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        jd_text=HYBRID_JD_FIXTURE,
+        enforce_hybrid_contract=False,
+    )
+    seed_fact = str(expanded["selected_facts"][0]["fact_id"])
+    out = build_track_weighted_expansion(
+        graph=ledger,
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        jd_text=HYBRID_JD_FIXTURE,
+        seed_fact_ids=[seed_fact],
+        enforce_hybrid_contract=False,
+    )
+    selected = {str(row.get("fact_id")) for row in out["selected_facts"]}
+    assert selected == {seed_fact}
+
+
 def test_write_p1_w4_receipts_on_disk() -> None:
     paths = write_p1_w4_receipts(repo_root=REPO)
     receipt = Path(paths["receipt_json"])

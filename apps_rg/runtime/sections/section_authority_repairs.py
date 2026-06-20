@@ -328,6 +328,9 @@ def apply_exec_summary_display_authority_repairs(
     )
     parsed["change_log"] = clog
     if artifact_dir is not None:
+        from apps_rg.runtime.sections.executive_summary_repair_policy import (
+            graph_only_repair_mode_env_state,
+        )
         from apps_rg.runtime.section_repair_ledger import (
             KIND_DETERMINISTIC_REWRITE,
             record_repair,
@@ -339,6 +342,13 @@ def apply_exec_summary_display_authority_repairs(
             operation="graph_only_display_authority_fallback",
             reason=(reject_reason or "")[:240],
             replaced_l2=True,
+            detail={
+                "section_id": "executive_summary",
+                "repair_mode": "explicit_graph_only_repair",
+                "explicit_repair_mode": True,
+                "repair_mode_env": graph_only_repair_mode_env_state(),
+                "evidence_authority": "augmented_skills_graph",
+            },
         )
     return parsed
 

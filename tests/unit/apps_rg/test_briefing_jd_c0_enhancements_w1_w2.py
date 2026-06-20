@@ -8,6 +8,7 @@ import pytest
 
 from apps_rg.runtime.c0.c01_retrieval_plan import _smart_jd_excerpt, build_c01_retrieval_plan
 from apps_rg.runtime.c0.c03_graph_ref_policy import (
+    RoleFamilyProjectionError,
     extract_briefing_targeting_supplement,
     merge_graph_targeting_jd_alignment,
     resolve_role_family_projection,
@@ -194,17 +195,13 @@ def test_briefing_h_empty_when_no_briefing_key():
 # ---------------------------------------------------------------------------
 
 
-def test_targeting_degraded_gate_emitted_for_unknown_role_family(caplog):
-    """resolve_role_family_projection emits TARGETING_DEGRADED gate and warning for unknown role."""
+def test_unknown_role_family_projection_fails_closed(caplog):
+    """Missing role-family graph targeting must block instead of using generic targeting."""
     with caplog.at_level(logging.WARNING, logger="apps_rg.runtime.c0.c03_graph_ref_policy"):
-        result = resolve_role_family_projection("COMPLETELY_UNKNOWN_ROLE_XYZ_NO_MATCH")
-    assert result["targeting_degraded_explicit"] is True
-    assert "targeting_degraded_gate" in result
-    gate = result["targeting_degraded_gate"]
-    assert gate["gate_id"] == "TARGETING_DEGRADED"
-    assert gate["verdict"] == "WARN"
+        with pytest.raises(RoleFamilyProjectionError, match="missing role_family_projection row"):
+            resolve_role_family_projection("COMPLETELY_UNKNOWN_ROLE_XYZ_NO_MATCH")
     warning_msgs = [r for r in caplog.records if r.levelno == logging.WARNING]
-    assert any("targeting degraded" in m.getMessage().lower() for m in warning_msgs)
+    assert not any("targeting degraded" in m.getMessage().lower() for m in warning_msgs)
 
 
 # ---------------------------------------------------------------------------
@@ -320,11 +317,11 @@ def test_merge_graph_targeting_proof_invariants_preserved():
     """The proof-authority invariants must hold regardless of briefing input."""
     projection = {
         "role_family_key": "ANY",
-        "projection_source": "missing_no_taxonomy_pillars",
-        "sqlite_projection_row_found": False,
-        "fallback_pillar_bridge_used": True,
-        "release_eligible_targeting_proof": False,
-        "targeting_degraded_explicit": True,
+        "projection_source": "sqlite_role_family_projection",
+        "sqlite_projection_row_found": True,
+        "fallback_pillar_bridge_used": False,
+        "release_eligible_targeting_proof": True,
+        "targeting_degraded_explicit": False,
         "pillar_hint_ids": [],
     }
     result = merge_graph_targeting_jd_alignment(
