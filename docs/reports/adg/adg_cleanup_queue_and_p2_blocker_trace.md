@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-19T13:23:52+00:00
-- **Status:** present
+- **Generated:** 2026-06-19T14:54:00+00:00
+- **Status:** degraded
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06192026_0917.sqlite`
-- **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06192026_0209.json`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06192026_1037.sqlite`
+- **P2 ratchet:** `missing`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06192026_1035.json`
 
 ### BCG Cleanup Brief
 
@@ -13,20 +13,21 @@
 - **Status:** NO_DELETIONS_APPROVED
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06192026_0917.sqlite (snapshot 06192026_0917)
+  - ADG source: artifacts/adg/adg_indexed_06192026_1037.sqlite (snapshot 06192026_1037)
   - Dead code candidates: 0
-  - Dead imports: 971
+  - Dead imports: 935
   - Unresolved imports: 486
   - First-party low-confidence ratio: 1.59%
   - Inferred-symbol ratio: 10.16%
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
+- **Column key:** Business reason = why the item matters to delivery or governance; Technical reason = the measured evidence; Why this order = why this item is ahead of the next row.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
-| 2 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
-| 3 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 1 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 2 | Remove confirmed dead imports | tests/unit/apps_exec/services/test_brief_assembler_service.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 12 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 3 | Remove confirmed dead imports | tests/apps_eval/test_eval_to_bus_roundtrip_micro.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 11 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
 | 4 | Triage unresolved imports | ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | We need a cleaner signal before we can trust deletion decisions. | investigate |
 | 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
 | 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
@@ -70,16 +71,17 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 ### BCG P2 Ratchet Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Status:** WITHIN_CEILING
-- **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
+- **Status:** OVER_CEILING
+- **Business read:** The published snapshot is still 19 over the P2 ceiling, so the ratchet remains blocked.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_0917.sqlite
-  - P2 ceiling: 19
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_1037.sqlite
+  - P2 ceiling: 0
   - Current MEDIUM hygiene count: 19
-  - Delta vs ceiling: +0
+  - Delta vs ceiling: +19
   - Baseline snapshot: missing
-  - Latest failed run: 2026-06-19T06:12:56Z (failed)
+  - Latest failed run: 2026-06-19T14:36:52Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
+- **Column key:** Business reason = why the item matters to delivery or governance; Technical reason = the measured evidence; Why this order = why this item is ahead of the next row.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
@@ -88,7 +90,7 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 | 3 | Reduce MEDIUM hygiene debt | apps_rg/runtime/section_graph_skills_proof_pool.py | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Highest-count paths should be reduced first to move the ceiling fastest. | reduce |
 | 4 | Reduce MEDIUM hygiene debt | apps_rg/runtime/c0/c02_semantic_cache_payload.py | This is a live surface where removing hygiene debt improves trust in the next run. | 1 MEDIUM hygiene record(s) in the published snapshot. | Highest-count paths should be reduced first to move the ceiling fastest. | reduce |
 | 5 | Remove star imports | apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py | Star imports hide dependencies and make deprecation decisions harder to defend. | 1 MEDIUM hygiene record(s) are explicit star imports. | Easy wins should follow the largest live runtime hotspots. | deprecate |
-| 6 | Re-run ADG and keep the ceiling honest | p2_ratchet.json | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=19; ceiling=19; delta=0. | Re-baselining before cleanup only hides the blocker. | rebaseline_if_intentional |
+| 6 | Re-run ADG and keep the ceiling honest | p2_ratchet.json | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=19; ceiling=0; delta=19. | Re-baselining before cleanup only hides the blocker. | rebaseline_if_intentional |
 
 Why this order:
 - The highest-count live runtime surfaces move the ceiling fastest.
@@ -100,11 +102,11 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 ### Trace Summary
 
 - **Current MEDIUM hygiene count:** 19
-- **Ceiling:** 19
-- **Delta:** +0
+- **Ceiling:** 0
+- **Delta:** +19
 - **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_06192026_0917.sqlite
-- **Latest failed run:** 2026-06-19T06:12:56Z (failed)
+- **Published snapshot:** artifacts/adg/adg_indexed_06192026_1037.sqlite
+- **Latest failed run:** 2026-06-19T14:36:52Z (failed)
 
 ### Evidence Buckets
 

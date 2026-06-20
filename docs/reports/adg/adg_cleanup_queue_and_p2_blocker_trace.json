@@ -23,8 +23,8 @@
           "decision": "remove_imports",
           "move": "Remove confirmed dead imports",
           "priority": 1,
-          "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-          "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
           "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
         },
         {
@@ -32,8 +32,8 @@
           "decision": "remove_imports",
           "move": "Remove confirmed dead imports",
           "priority": 2,
-          "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-          "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+          "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
           "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
         },
         {
@@ -41,8 +41,8 @@
           "decision": "remove_imports",
           "move": "Remove confirmed dead imports",
           "priority": 3,
-          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+          "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
           "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
         },
         {
@@ -77,9 +77,9 @@
       "status": "NO_DELETIONS_APPROVED",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_06192026_0917.sqlite (snapshot 06192026_0917)",
+        "ADG source: artifacts/adg/adg_indexed_06192026_1037.sqlite (snapshot 06192026_1037)",
         "Dead code candidates: 0",
-        "Dead imports: 971",
+        "Dead imports: 935",
         "Unresolved imports: 486",
         "First-party low-confidence ratio: 1.59%",
         "Inferred-symbol ratio: 10.16%",
@@ -192,8 +192,8 @@
         "decision": "remove_imports",
         "move": "Remove confirmed dead imports",
         "priority": 1,
-        "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-        "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
         "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
       },
       {
@@ -201,8 +201,8 @@
         "decision": "remove_imports",
         "move": "Remove confirmed dead imports",
         "priority": 2,
-        "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-        "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+        "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
         "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
       },
       {
@@ -210,8 +210,8 @@
         "decision": "remove_imports",
         "move": "Remove confirmed dead imports",
         "priority": 3,
-        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+        "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
         "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
       },
       {
@@ -247,10 +247,10 @@
     "summary": {
       "cleanup_candidate_count": 0,
       "dead_code_candidates": 0,
-      "dead_imports": 971,
+      "dead_imports": 935,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.591459820551444,
-      "inferred_symbol_ratio": 10.155649444852239,
+      "first_party_low_confidence_ratio": 1.5915119363395225,
+      "inferred_symbol_ratio": 10.155405678751206,
       "unresolved_imports": 486,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -260,10 +260,10 @@
       ]
     }
   },
-  "generated_at_utc": "2026-06-19T13:23:52+00:00",
+  "generated_at_utc": "2026-06-19T14:54:00+00:00",
   "p2": {
     "brief": {
-      "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+      "business_read": "The published snapshot is still 19 over the P2 ceiling, so the ratchet remains blocked.",
       "next_step": "Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.",
       "north_star": "Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.",
       "priority_rows": [
@@ -318,20 +318,20 @@
           "move": "Re-run ADG and keep the ceiling honest",
           "priority": 6,
           "scope": "p2_ratchet.json",
-          "technical_reason": "Current count=19; ceiling=19; delta=0.",
+          "technical_reason": "Current count=19; ceiling=0; delta=19.",
           "why_this_rank": "Re-baselining before cleanup only hides the blocker."
         }
       ],
       "priority_rule": "Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.",
-      "status": "WITHIN_CEILING",
+      "status": "OVER_CEILING",
       "table_limit": 6,
       "technical_read": [
-        "Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_0917.sqlite",
-        "P2 ceiling: 19",
+        "Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_1037.sqlite",
+        "P2 ceiling: 0",
         "Current MEDIUM hygiene count: 19",
-        "Delta vs ceiling: +0",
+        "Delta vs ceiling: +19",
         "Baseline snapshot: missing",
-        "Latest failed run: 2026-06-19T06:12:56Z (failed)"
+        "Latest failed run: 2026-06-19T14:36:52Z (failed)"
       ],
       "title": "BCG P2 Ratchet Brief",
       "why_this_order": [
@@ -340,7 +340,7 @@
         "Re-baselining too early hides the blocker instead of paying it down."
       ]
     },
-    "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+    "business_read": "The published snapshot is still 19 over the P2 ceiling, so the ratchet remains blocked.",
     "evidence_buckets": [
       {
         "count": 9,
@@ -526,7 +526,7 @@
         "move": "Re-run ADG and keep the ceiling honest",
         "priority": 6,
         "scope": "p2_ratchet.json",
-        "technical_reason": "Current count=19; ceiling=19; delta=0.",
+        "technical_reason": "Current count=19; ceiling=0; delta=19.",
         "why_this_rank": "Re-baselining before cleanup only hides the blocker."
       }
     ],
@@ -628,15 +628,15 @@
         "violation_class": "hygiene"
       }
     ],
-    "status": "within_ceiling",
+    "status": "over_ceiling",
     "summary": {
       "baseline_snapshot": "",
-      "ceiling": 19,
+      "ceiling": 0,
       "current_medium_hygiene_count": 19,
-      "delta": 0,
+      "delta": 19,
       "failed_run_status": "failed",
-      "failed_run_timestamp": "2026-06-19T06:12:56Z",
-      "published_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite"
+      "failed_run_timestamp": "2026-06-19T14:36:52Z",
+      "published_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite"
     }
   },
   "source_snapshots": {
@@ -650,14 +650,6 @@
       },
       "dead_imports": {
         "dead_import_hotspots": [
-          [
-            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-            19
-          ],
-          [
-            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-            14
-          ],
           [
             "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
             13
@@ -689,6 +681,14 @@
           [
             "tests/unit/apps_exec/services/test_document_ingestion_service.py",
             9
+          ],
+          [
+            "tests/apps_eval/test_validators.py",
+            8
+          ],
+          [
+            "tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
+            8
           ]
         ],
         "dead_imports_by_confidence": {},
@@ -696,21 +696,21 @@
         "dead_imports_by_layer": {},
         "l4_dead_imports": 0,
         "overlay_dead_imports_by_severity": {
-          "HIGH": 971
+          "HIGH": 935
         },
         "source_counts": {
           "legacy_dead_import_edges": 0,
-          "overlay_dead_import_resolved": 971
+          "overlay_dead_import_resolved": 935
         },
-        "total_dead_imports": 971
+        "total_dead_imports": 935
       },
       "errors": [],
       "executive_readiness": {
         "executive_metrics": {
           "dead_code_count": 0,
           "dead_import_count": 0,
-          "first_party_low_confidence_ratio": 1.591459820551444,
-          "inferred_symbol_ratio": 10.155649444852239,
+          "first_party_low_confidence_ratio": 1.5915119363395225,
+          "inferred_symbol_ratio": 10.155405678751206,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 486,
           "unresolved_import_count": 486
@@ -727,7 +727,7 @@
       },
       "inferred_symbols": {
         "inferred_by_confidence": {
-          "MEDIUM": 17571
+          "MEDIUM": 17572
         },
         "inferred_by_layer": {
           "L0": 1349,
@@ -737,7 +737,7 @@
           "L4": 606,
           "L5": 1291,
           "L6": 1304,
-          "L_APP": 5205,
+          "L_APP": 5206,
           "L_OPS": 487,
           "L_PG": 497,
           "L_RUNTIME": 1076,
@@ -746,12 +746,12 @@
           "L_TOOLS": 2323,
           "L_UNKNOWN": 216
         },
-        "inferred_symbol_ratio": 10.155649444852239,
-        "total_inferred_symbols": 17571,
-        "total_symbols": 173017
+        "inferred_symbol_ratio": 10.155405678751206,
+        "total_inferred_symbols": 17572,
+        "total_symbols": 173031
       },
       "low_confidence_zones": {
-        "first_party_low_confidence_ratio": 1.591459820551444,
+        "first_party_low_confidence_ratio": 1.5915119363395225,
         "governance_low_confidence_ratio": 0.0,
         "low_conf_by_entity_type": {
           "symbol": 486
@@ -771,8 +771,8 @@
         "total_low_confidence": 486
       },
       "source": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-        "adg_snapshot_ts": "06192026_0917",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
+        "adg_snapshot_ts": "06192026_1037",
         "dead_code_signal_sources": [
           "overlay_violations.category=dead_import_resolved",
           "mv_dead_import_hotspots_overlay",
@@ -782,14 +782,14 @@
       },
       "status": "PASS",
       "summary": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-        "adg_snapshot_ts": "06192026_0917",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
+        "adg_snapshot_ts": "06192026_1037",
         "executive_ready": true,
-        "first_party_low_confidence_ratio": 1.591459820551444,
-        "inferred_symbol_ratio": 10.155649444852239,
+        "first_party_low_confidence_ratio": 1.5915119363395225,
+        "inferred_symbol_ratio": 10.155405678751206,
         "l4_unresolved_imports": 0,
         "total_dead_code_candidates": 0,
-        "total_dead_imports": 971,
+        "total_dead_imports": 935,
         "total_low_confidence": 486,
         "total_unresolved_imports": 486
       },
@@ -858,72 +858,57 @@
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T06:09:13Z",
+          "finished_at_utc": "2026-06-19T14:35:07Z",
           "kind": "python_function",
           "message": null,
           "name": "mcp_config_drift",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T06:09:13Z",
+          "started_at_utc": "2026-06-19T14:35:07Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.6560000000172295,
+          "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T06:09:14Z",
+          "finished_at_utc": "2026-06-19T14:35:07Z",
           "kind": "python_function",
           "message": null,
           "name": "wal_checkpoint",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T06:09:14Z",
+          "started_at_utc": "2026-06-19T14:35:07Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T06:09:14Z",
+          "finished_at_utc": "2026-06-19T14:35:07Z",
           "kind": "python_function",
           "message": null,
           "name": "locked_files",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T06:09:14Z",
-          "status": "pass"
-        },
-        {
-          "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
-          "exit_code": null,
-          "finished_at_utc": "2026-06-19T06:10:10Z",
-          "kind": "validation",
-          "message": null,
-          "name": "p2_ratchet",
-          "phase": "build",
-          "script_rel": null,
-          "started_at_utc": "2026-06-19T06:10:10Z",
+          "started_at_utc": "2026-06-19T14:35:07Z",
           "status": "pass"
         }
       ],
       "generation_exit_code": null,
       "generator_entrypoint": "tools/generate/generate_full_adg.py",
       "sqlite_path": null,
-      "timestamp": "2026-06-19T06:12:56Z",
+      "timestamp": "2026-06-19T14:36:52Z",
       "unexpected_skips": []
     },
-    "p2_ratchet": {
-      "exception_swallow_ceiling": 19
-    },
+    "p2_ratchet": {},
     "sqlite_manifest": {}
   },
   "sources": {
     "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06192026_0209.json",
-    "ratchet": "artifacts/adg/p2_ratchet.json",
-    "sqlite": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
+    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06192026_1035.json",
+    "ratchet": "",
+    "sqlite": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
     "sqlite_manifest": ""
   },
-  "status": "present"
+  "status": "degraded"
 }

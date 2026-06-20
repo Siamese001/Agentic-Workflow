@@ -9,14 +9,6 @@
   "dead_imports": {
     "dead_import_hotspots": [
       [
-        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-        19
-      ],
-      [
-        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-        14
-      ],
-      [
         "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
         13
       ],
@@ -47,6 +39,14 @@
       [
         "tests/unit/apps_exec/services/test_document_ingestion_service.py",
         9
+      ],
+      [
+        "tests/apps_eval/test_validators.py",
+        8
+      ],
+      [
+        "tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
+        8
       ]
     ],
     "dead_imports_by_confidence": {},
@@ -54,21 +54,21 @@
     "dead_imports_by_layer": {},
     "l4_dead_imports": 0,
     "overlay_dead_imports_by_severity": {
-      "HIGH": 971
+      "HIGH": 935
     },
     "source_counts": {
       "legacy_dead_import_edges": 0,
-      "overlay_dead_import_resolved": 971
+      "overlay_dead_import_resolved": 935
     },
-    "total_dead_imports": 971
+    "total_dead_imports": 935
   },
   "errors": [],
   "executive_readiness": {
     "executive_metrics": {
       "dead_code_count": 0,
       "dead_import_count": 0,
-      "first_party_low_confidence_ratio": 1.591459820551444,
-      "inferred_symbol_ratio": 10.155649444852239,
+      "first_party_low_confidence_ratio": 1.5915119363395225,
+      "inferred_symbol_ratio": 10.155405678751206,
       "l4_unresolved_import_count": 0,
       "low_confidence_count": 486,
       "unresolved_import_count": 486
@@ -85,7 +85,7 @@
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17571
+      "MEDIUM": 17572
     },
     "inferred_by_layer": {
       "L0": 1349,
@@ -95,7 +95,7 @@
       "L4": 606,
       "L5": 1291,
       "L6": 1304,
-      "L_APP": 5205,
+      "L_APP": 5206,
       "L_OPS": 487,
       "L_PG": 497,
       "L_RUNTIME": 1076,
@@ -104,12 +104,12 @@
       "L_TOOLS": 2323,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.155649444852239,
-    "total_inferred_symbols": 17571,
-    "total_symbols": 173017
+    "inferred_symbol_ratio": 10.155405678751206,
+    "total_inferred_symbols": 17572,
+    "total_symbols": 173031
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.591459820551444,
+    "first_party_low_confidence_ratio": 1.5915119363395225,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
       "symbol": 486
@@ -129,8 +129,8 @@
     "total_low_confidence": 486
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-    "adg_snapshot_ts": "06192026_0917",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
+    "adg_snapshot_ts": "06192026_1037",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -140,14 +140,14 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_0917.sqlite",
-    "adg_snapshot_ts": "06192026_0917",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
+    "adg_snapshot_ts": "06192026_1037",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.591459820551444,
-    "inferred_symbol_ratio": 10.155649444852239,
+    "first_party_low_confidence_ratio": 1.5915119363395225,
+    "inferred_symbol_ratio": 10.155405678751206,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 0,
-    "total_dead_imports": 971,
+    "total_dead_imports": 935,
     "total_low_confidence": 486,
     "total_unresolved_imports": 486
   },
