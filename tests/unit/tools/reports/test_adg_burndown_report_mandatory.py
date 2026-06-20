@@ -96,14 +96,6 @@ def test_emit_prints_markdown_to_stdout(
     assert emit_mandatory_adg_burndown_report(gate_results=gate, burndown=burndown) == 0
     captured = capsys.readouterr()
     assert "# ADG CI Burndown Report" in captured.out
-    assert "### BCG Burndown Brief" in captured.out
-    assert (
-        "- **North star:** Maintain SVP engineer-level repo standards: executive "
-        "decisions, explicit prioritization, and technical evidence a layperson can "
-        "follow."
-    ) in captured.out
-    assert "Gate-results source:" in captured.out
-    assert "Burndown source:" in captured.out
 
 
 def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:

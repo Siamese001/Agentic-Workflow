@@ -37,7 +37,6 @@ class ResumeBriefingReady:
     run_id: str
     trace_id: str
     briefing_text: str
-    briefing_sidecar: dict[str, Any]
     research_run_id: str
     research_evidence_count: int
     confidence_score: float
@@ -148,7 +147,6 @@ def dispatch_resume_research_briefing(
     # Fail closed: the delegated briefing MUST be a sealed, contract-valid
     # company_brief_text. No evidence-label or generic-heading fallback.
     briefing_text = str(research_result.company_brief_text or "").strip()
-    briefing_sidecar = dict(getattr(research_result, "briefing_sidecar", None) or {})
     if not briefing_text:
         return ResearchDispatchFailure(
             request_id=request.request_id,
@@ -156,24 +154,6 @@ def dispatch_resume_research_briefing(
             trace_id=request.trace_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_EMPTY.value,
             detail="missing company_brief_text (no valid delegated briefing)",
-            dispatch_duration_ms=_utc_ms() - t_start,
-        )
-    if not briefing_sidecar:
-        return ResearchDispatchFailure(
-            request_id=request.request_id,
-            run_id=request.run_id,
-            trace_id=request.trace_id,
-            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_EMPTY.value,
-            detail="missing briefing sidecar",
-            dispatch_duration_ms=_utc_ms() - t_start,
-        )
-    if not bool(briefing_sidecar.get("handoff_eligible", False)):
-        return ResearchDispatchFailure(
-            request_id=request.request_id,
-            run_id=request.run_id,
-            trace_id=request.trace_id,
-            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_WEAK_SUPPORT.value,
-            detail=f"briefing sidecar not eligible: {briefing_sidecar.get('reason', 'unknown')}",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
 
@@ -193,7 +173,6 @@ def dispatch_resume_research_briefing(
         run_id=request.run_id,
         trace_id=request.trace_id,
         briefing_text=briefing_text,
-        briefing_sidecar=briefing_sidecar,
         research_run_id=str(research_result.run_id or uuid.uuid4()),
         research_evidence_count=len(research_result.evidence_items),
         confidence_score=research_result.confidence_score,

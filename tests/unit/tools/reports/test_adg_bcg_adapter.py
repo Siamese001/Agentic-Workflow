@@ -18,15 +18,11 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
             {
                 "priority": 1,
                 "move": "Fix blocker",
-                "why_it_matters": "Keeps the run credible.",
-                "evidence": "1 red gate.",
-                "next_step": "Fix the blocker now.",
+                "scope": "P0",
                 "business_reason": "Keeps the run credible.",
                 "technical_reason": "1 red gate.",
                 "why_this_rank": "Blocks green.",
                 "decision": "now",
-                "decision_options": [{"label": "Fix", "description": "Remove the direct dependency."}],
-                "done_condition": "The gate is green.",
             }
         ],
         why_this_order=["Confirmed waste first.", "Noise comes after evidence is clean."],
@@ -35,26 +31,12 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
 
     md = render_bcg_brief_md(brief)
 
-    assert brief["north_star"] == (
-        "Maintain SVP engineer-level repo standards: executive decisions, explicit "
-        "prioritization, and technical evidence a layperson can follow."
-    )
-    assert (
-        "- **North star:** Maintain SVP engineer-level repo standards: executive "
-        "decisions, explicit prioritization, and technical evidence a layperson can "
-        "follow."
-    ) in md
+    assert "Maintain SVP engineer-level repo standards" in md
     assert "### BCG Sample Brief" in md
     assert "- **Business read:** Fix the blocker first, then clean the waste." in md
+    assert "- **Column key:** Business reason = why the item matters to delivery or governance;" in md
     assert "| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |" in md
-    assert "| 1 | Fix blocker |  | Keeps the run credible. | 1 red gate. | Blocks green. | now |" in md
     assert "Why this order:" in md
-    assert "- Confirmed waste first." in md
-    assert "- Noise comes after evidence is clean." in md
-    assert "fix_blocker" not in md
-    row = brief["priority_rows"][0]
-    assert row["decision_options"]
-    assert row["done_condition"] == "The gate is green."
 
 
 def test_deprecation_deletion_plan_brief_prioritizes_dead_code_before_noise() -> None:

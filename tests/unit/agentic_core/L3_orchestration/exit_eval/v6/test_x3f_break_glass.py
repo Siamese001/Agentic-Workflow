@@ -27,8 +27,6 @@ from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
 
 from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import base_packet
 
-_CERT_REF = "l5:cert:break-glass"
-
 
 def _ok_kwargs(**overrides):
     """Default valid X3F kwargs; tests override one field at a time."""
@@ -47,7 +45,7 @@ def _ok_kwargs(**overrides):
 
 def _packet_with_break_glass_token(**token_overrides):
     """Packet with a valid break-glass capability token."""
-    p = base_packet(l5_certification_refs=(_CERT_REF,))
+    p = base_packet()
     p.capability_token = {
         "break_glass": True,
         "operator_id": "oncall-alice",
@@ -90,7 +88,6 @@ def test_x3f_minimal_valid_invocation_returns_packet() -> None:
     assert pkt.customer_facing_l4_commit_allowed is False
     assert pkt.expiry_ms - pkt.granted_at_ms == _X3F_MAX_DURATION_MS
     assert pkt.post_mortem_due_at_ms == pkt.granted_at_ms + _X3F_POST_MORTEM_OFFSET_MS
-    assert pkt.l5_certification_ref == _CERT_REF
     assert pkt.trace_root == p.trace_root
 
 
@@ -242,7 +239,7 @@ def test_x3f_explicit_customer_l4_commit_allowed_recorded() -> None:
 
 def test_dispatcher_rejects_x3f_via_aggregate_dispatch() -> None:
     """build_x3_packet must NOT auto-dispatch to X3F — H3.2.1 capability gate."""
-    p = _packet_with_break_glass_token()
+    p = base_packet()
     decision = AggregateDecision(
         disposition=V6Disposition.BREAK_GLASS_ALLOW,
         rationale="not an operator invocation",
@@ -257,7 +254,7 @@ def test_dispatcher_rejects_x3f_via_aggregate_dispatch() -> None:
 def test_dispatcher_still_routes_x3e_safe_abstain() -> None:
     """Regression: X3E SAFE_ABSTAIN must still dispatch normally; X3F doesn't
     affect X3E."""
-    p = _packet_with_break_glass_token()
+    p = base_packet()
     decision = AggregateDecision(
         disposition=V6Disposition.SAFE_ABSTAIN,
         rationale="abstain",

@@ -145,22 +145,6 @@ class TestCapabilityFamilyCoverageRequired:
         result = check_competencies_capability_family_coverage(competencies, min_families=2)
         assert result.passed
 
-    def test_bundle_family_metadata_is_authority_when_present(self):
-        competencies = [
-            {
-                "category_label": "Cloud & Partner Ecosystems",
-                "capability_family": "platform_productization",
-                "terms": [_make_term("databricks lakehouse cloud kubernetes distributed")],
-            }
-        ]
-
-        result = check_competencies_capability_family_coverage(competencies, min_families=2)
-
-        assert not result.passed
-        assert result.observed_value["bundle_families"] == ["productization"]
-        assert "distributed_infra" in result.observed_value["token_families"]
-        assert result.signals == ["productization"]
-
 
 # ---------------------------------------------------------------------------
 # 4. Graph skill node IDs — generic category without graph terms fails

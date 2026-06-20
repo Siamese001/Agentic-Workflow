@@ -461,18 +461,9 @@ def assert_section_pa_fec_preconditions(
                 raise SectionFecBridgePreconditionError(
                     "FinalEvidenceContractBridge cannot claim canonical FEC authority"
                 )
-            # A bare canonical_c0_5 claim is forbidden overreach — UNLESS it is backed by a
-            # genuine spine-emitted FinalEvidenceContract (canonical_c0_5_fec=True, set together by
-            # merge_spine_fec_into_bridge_doc when the spine actually ran C0.5). A shape-only bridge
-            # sets canonical_c0_5_claimed without canonical_c0_5_fec and is still rejected here; the
-            # separate final_evidence_contract_authoritative guard above blocks claiming to BE the
-            # canonical authority regardless.
-            if bool(bridge.get("canonical_c0_5_claimed")) and not bool(
-                bridge.get("canonical_c0_5_fec")
-            ):
+            if bool(bridge.get("canonical_c0_5_claimed")):
                 raise SectionFecBridgePreconditionError(
-                    "FinalEvidenceContractBridge cannot set canonical_c0_5_claimed "
-                    "without a spine-emitted canonical_c0_5_fec"
+                    "FinalEvidenceContractBridge cannot set canonical_c0_5_claimed"
                 )
 
 

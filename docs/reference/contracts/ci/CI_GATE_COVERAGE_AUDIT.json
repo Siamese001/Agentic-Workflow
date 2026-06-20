@@ -1,15 +1,100 @@
 {
-  "schema_version": "1.1",
-  "audit_name": "ci_gate_coverage_audit",
-  "status": "ARCHIVED",
-  "superseded_by": ".github/workflow-config.yaml",
-  "current_required_checks": [
-    "workflow-reference-check",
-    "contract-summary",
-    "smoke-summary"
+  "schema_version": "1.0",
+  "audit_name": "tier0_tier1_gate_ci_coverage_audit",
+  "purpose": "Static audit confirming the five Tier 0 / Tier 1 gate workflows exist, share the canonical trigger shape, pin Python 3.12, run only their intended verifier command, and never invoke full pytest, the proof harness, replay machinery, or any OTEL exporter.",
+  "audit_disclaimer": "Static-only. This audit reads the on-disk YAML for each workflow. It does not execute any workflow, runtime, replay, OTEL exporter, or proof harness.",
+  "audit_invariants": [
+    "workflow_file_exists",
+    "triggers_on_pull_request_all_branches",
+    "triggers_on_push_main_master",
+    "python_version_pinned_to_3_12",
+    "runs_only_its_intended_verifier_command",
+    "no_full_pytest_invocation",
+    "no_proof_harness_invocation",
+    "no_replay_machinery_invocation",
+    "no_otel_exporter_invocation"
   ],
-  "historical_reference": {
-    "scope": "Tier 0 / Tier 1 workflow coverage snapshot",
-    "note": "The pre-consolidation five-workflow audit is retained only as archival evidence."
-  }
+  "expected_workflows": [
+    {
+      "workflow_file": ".github/workflows/tier0-enforcement-gate.yml",
+      "intended_command": "python scripts/verify_tier0_enforcement_gate.py",
+      "exists": true,
+      "triggers_on_pull_request": true,
+      "triggers_on_push_main_master": true,
+      "python_version": "3.12",
+      "runs_only_intended_command": true,
+      "no_full_pytest": true,
+      "no_proof_harness": true,
+      "no_replay_machinery": true,
+      "no_otel_exporter": true,
+      "result": "PASSED"
+    },
+    {
+      "workflow_file": ".github/workflows/tier0-runtime-proof-gate.yml",
+      "intended_command": "python scripts/verify_tier0_runtime_proof_gate.py",
+      "exists": true,
+      "triggers_on_pull_request": true,
+      "triggers_on_push_main_master": true,
+      "python_version": "3.12",
+      "runs_only_intended_command": true,
+      "installs_pytest_for_two_targeted_files_only": true,
+      "no_full_pytest": true,
+      "no_proof_harness": true,
+      "no_replay_machinery": true,
+      "no_otel_exporter": true,
+      "result": "PASSED"
+    },
+    {
+      "workflow_file": ".github/workflows/tier1-enforcement-gate.yml",
+      "intended_command": "python scripts/verify_tier1_enforcement_gate.py",
+      "exists": true,
+      "triggers_on_pull_request": true,
+      "triggers_on_push_main_master": true,
+      "python_version": "3.12",
+      "runs_only_intended_command": true,
+      "no_full_pytest": true,
+      "no_proof_harness": true,
+      "no_replay_machinery": true,
+      "no_otel_exporter": true,
+      "result": "PASSED"
+    },
+    {
+      "workflow_file": ".github/workflows/tier1-runtime-proof-gate.yml",
+      "intended_command": "python scripts/verify_tier1_runtime_proof_gate.py",
+      "exists": true,
+      "triggers_on_pull_request": true,
+      "triggers_on_push_main_master": true,
+      "python_version": "3.12",
+      "runs_only_intended_command": true,
+      "installs_pytest_for_targeted_runner_only": true,
+      "no_full_pytest": true,
+      "no_proof_harness": true,
+      "no_replay_machinery": true,
+      "no_otel_exporter": true,
+      "result": "PASSED"
+    },
+    {
+      "workflow_file": ".github/workflows/tier-gate-hardening.yml",
+      "intended_command": "python scripts/verify_tier_gate_hardening.py",
+      "exists": true,
+      "triggers_on_pull_request": true,
+      "triggers_on_push_main_master": true,
+      "python_version": "3.12",
+      "runs_only_intended_command": true,
+      "installs_pytest_for_targeted_runner_only": true,
+      "no_full_pytest": true,
+      "no_proof_harness": true,
+      "no_replay_machinery": true,
+      "no_otel_exporter": true,
+      "result": "PASSED"
+    }
+  ],
+  "summary": {
+    "expected_count": 5,
+    "exists_count": 5,
+    "passed_count": 5,
+    "failed_count": 0,
+    "result": "PASSED"
+  },
+  "non_proof_disclaimer": "PASSED here means the five workflows match their declared shape. It is NOT a runtime-proof claim, NOT a full-architecture-proven claim, and NOT a replay-execution claim."
 }

@@ -14,10 +14,9 @@ supersedes: ["typed-edge-role-facet-guardrails-a6f3d2"]
 
 # apps_rg 11-Lane Closeout
 
-FORMAT_VERSION: simplified-plan-format-v1
+FORMAT_VERSION: simplified-closeout-plan-v1
 PLAN_STATUS: IN_PROGRESS
 CURRENT_WAVE: B-SHIP
-LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-06-16
 
 ## Decision
@@ -61,31 +60,6 @@ python -m pytest tests\_apps_contract\test_apps_rg_c0_ownership_split.py `
 ```
 
 Result: `37 passed, 1 skipped`.
-
-## Status Tables
-
-### Wave Progress
-
-| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
-|------|-----------|-------|-------------|-------------|--------|------------------|
-| B-SHIP | B1, B2, B3 | First durable Anthropic 11/11 run | ~12K | Current `main` can run Anthropic apps_rg E2E from a clean checkout | IN_PROGRESS | 11 lanes reach `X3_ALLOW`; final JSON and DOCX exist; run summary rendered |
-| G-SSOT | G1, G2 | GraphDB skills and metrics authority | ~6K | GraphDB-backed selectors remain the only skills/metrics authority | TODO | Static/runtime tests prove JD, briefing, fact ledger, and proof-pool cannot mint authority |
-| W-DIAG | W1, W2 | Waterfall diagnostic, not ship blocker | ~5K | Selection diagnostics can run without provider calls | TODO | Assembly report exists after B-SHIP; five-target diagnostic emits causal deltas |
-| S-PCT | S1, S2 | Sliding-scale percent policy | ~7K | Active enforcement waits until dry-run diagnostics are stable | TODO | Dry-run diagnostics are emitted; active enforcement only starts after proof |
-
-### Phase Progress
-
-| Phase | Title | Status |
-|-------|-------|--------|
-| B1 | Preflight | TODO |
-| B2 | Full Anthropic E2E | TODO |
-| B3 | Single-lane iterate if needed | TODO |
-| G1 | GraphDB skills authority tests | TODO |
-| G2 | GraphDB metrics authority tests | TODO |
-| W1 | Assembly-based utilization after successful run | TODO |
-| W2 | Provider-free selection diagnostic | TODO |
-| S1 | Sliding-scale dry-run diagnostics | TODO |
-| S2 | Sliding-scale active enforcement | TODO |
 
 ## Non-Goals
 

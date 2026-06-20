@@ -19,12 +19,6 @@ Usage:
         --suite capability \
         --out artifacts/eval/capability_run.json
 
-    python tools/eval/run_capability_regression.py \
-        --rubrics config/judges/rubrics.yaml \
-        --suite capability \
-        --smoke \
-        --out artifacts/eval/capability_smoke.json
-
 Exit codes:
     0  — all suites within thresholds.
     1  — at least one suite breached a threshold (build should fail).
@@ -42,7 +36,6 @@ from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
-DEFAULT_SMOKE_LIMIT = 2
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,14 +76,7 @@ def _rubric_families(rubrics: dict[str, Any]) -> dict[str, dict[str, Any]]:
 _FAMILY_DIR: dict[str, str] = {"rag": "rag", "governance": "gov", "security": "sec"}
 
 
-def _load_trials(
-    family: str,
-    dim: str,
-    golden_root: Path,
-    *,
-    smoke: bool = False,
-    smoke_limit: int = DEFAULT_SMOKE_LIMIT,
-) -> list[dict[str, Any]]:
+def _load_trials(family: str, dim: str, golden_root: Path) -> list[dict[str, Any]]:
     """Load golden items for a dimension. Items with gold_outcome == 'pending'
     are excluded from the trial set — they do not contribute to pass-rate."""
     fam_dir = golden_root / _FAMILY_DIR.get(family, family) / dim
@@ -103,8 +89,6 @@ def _load_trials(
                 items.append(json.load(fh))
         except (OSError, json.JSONDecodeError) as exc:
             logger.warning("skipping malformed golden item %s: %s", path, exc)
-    if smoke:
-        return items[: max(smoke_limit, 0)]
     return items
 
 
@@ -129,9 +113,6 @@ def _evaluate_dimension(
     suite: str,
     taxonomy: dict[str, Any],
     golden_root: Path,
-    *,
-    smoke: bool = False,
-    smoke_limit: int = DEFAULT_SMOKE_LIMIT,
 ) -> SuiteResult:
     """Evaluate a single rubric dimension against its golden dataset.
 
@@ -143,7 +124,7 @@ def _evaluate_dimension(
     warn_threshold = float(spec.get("warn_threshold", 3.0))
     unknown_budget = float(spec.get("unknown_budget", 0.2))
 
-    items = _load_trials(family, dim, golden_root, smoke=smoke, smoke_limit=smoke_limit)
+    items = _load_trials(family, dim, golden_root)
     buckets: dict[str, int] = {"pass": 0, "warn": 0, "fail": 0, "unknown": 0, "pending": 0}
     for item in items:
         buckets[_classify(item, pass_threshold, warn_threshold)] += 1
@@ -162,8 +143,6 @@ def _evaluate_dimension(
         notes_parts.append("no calibrated items; pending only")
     if buckets["pending"]:
         notes_parts.append(f"{buckets['pending']} pending seed items excluded from pass-rate")
-    if smoke:
-        notes_parts.append(f"smoke sample limit={max(smoke_limit, 0)}")
     if unknown_rate > unknown_budget:
         notes_parts.append(f"unknown_rate {unknown_rate:.2f} > budget {unknown_budget:.2f}")
 
@@ -184,15 +163,7 @@ def _evaluate_dimension(
     )
 
 
-def run(
-    rubrics_path: Path,
-    suite: str,
-    out_path: Path | None,
-    golden_root: Path,
-    *,
-    smoke: bool = False,
-    smoke_limit: int = DEFAULT_SMOKE_LIMIT,
-) -> int:
+def run(rubrics_path: Path, suite: str, out_path: Path | None, golden_root: Path) -> int:
     if not rubrics_path.exists():
         logger.error("rubrics file not found: %s", rubrics_path)
         return 2
@@ -206,24 +177,11 @@ def run(
     results: list[SuiteResult] = []
     for family, dims in families.items():
         for dim, spec in dims.items():
-            results.append(
-                _evaluate_dimension(
-                    family,
-                    dim,
-                    spec,
-                    suite,
-                    taxonomy,
-                    golden_root,
-                    smoke=smoke,
-                    smoke_limit=smoke_limit,
-                )
-            )
+            results.append(_evaluate_dimension(family, dim, spec, suite, taxonomy, golden_root))
 
     any_breach = any(r.breached for r in results)
     report = {
         "suite": suite,
-        "mode": "smoke" if smoke else "full",
-        "smoke_limit": smoke_limit if smoke else None,
         "rubrics_file": str(rubrics_path),
         "results": [asdict(r) for r in results],
         "breached": any_breach,
@@ -245,13 +203,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--suite", choices=["capability", "regression"], default="capability")
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--golden-root", type=Path, default=Path("data/eval/golden"))
-    parser.add_argument("--smoke", action="store_true", help="Limit each dimension to a tiny deterministic sample")
-    parser.add_argument(
-        "--smoke-limit",
-        type=int,
-        default=DEFAULT_SMOKE_LIMIT,
-        help="Maximum calibrated/pending items to read per dimension in smoke mode",
-    )
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args(argv)
 
@@ -260,14 +211,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
         stream=sys.stderr,
     )
-    return run(
-        args.rubrics,
-        args.suite,
-        args.out,
-        args.golden_root,
-        smoke=args.smoke,
-        smoke_limit=args.smoke_limit,
-    )
+    return run(args.rubrics, args.suite, args.out, args.golden_root)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from apps_research.types.role_profile import RoleProfile
 
 
 def test_engine_produces_schema_valid_profile_offline(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("SEARXNG_BASE_URL", raising=False)
+    monkeypatch.delenv("TAVILY_API_KEY", raising=False)
     monkeypatch.delenv("APPS_RESEARCH_RETRIEVAL_V2", raising=False)
     engine = RoleProfileEngine()
     payload = engine.execute({"role": "VP Data Science", "depth": "shallow"})

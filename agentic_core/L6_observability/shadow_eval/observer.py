@@ -26,7 +26,6 @@ from agentic_core.L6_observability.shadow_eval._digest import stamp_digest
 from agentic_core.L6_observability.shadow_eval.contracts import (
     ArtifactInventory,
     EvalReadinessReceipt,
-    ExhaustGapReport,
     G28_AUDIT_COMPLETENESS,
     G29_LEARNING_FIREWALL,
     L6DeniedWriteAttemptRecord,
@@ -42,7 +41,10 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     StageBarrierReceipt,
     SurfaceIsolationManifest,
 )
-from agentic_core.L6_observability.shadow_eval.ingest import is_unresolved_l5_certification_ref
+from agentic_core.L6_observability.shadow_eval.ingest import (
+    MISSING_CERT_REF_SENTINEL,
+    is_missing_l5_certification_ref,
+)
 
 
 class ObserverViolation(Exception):
@@ -208,7 +210,7 @@ def build_g28_audit_completeness_receipt(
         "policy_hash": bool(bundle.policy_hash),
         "replay_key": bool(bundle.replay_key),
         "route_contract_ref": bool(bundle.route_contract_ref),
-        "l5_certification_ref": not is_unresolved_l5_certification_ref(bundle.l5_certification_ref),
+        "l5_certification_ref": not is_missing_l5_certification_ref(bundle.l5_certification_ref),
         "source_lineage_or_normalized_records": lineage_or_records_present,
         "sealed_artifacts": sealed_present,
     }
@@ -225,7 +227,7 @@ def build_g28_audit_completeness_receipt(
         missing_refs=missing,
         assertion_results=assertions,
         reason_codes=[f"MISSING_{name.upper()}" for name in missing],
-        notes="UNKNOWN is fail-closed; missing or generated L5 certification refs are unresolved evidence.",
+        notes="UNKNOWN is fail-closed; sentinel L5 certification is missing evidence.",
     )
     return stamp_digest(receipt)
 
@@ -320,7 +322,6 @@ def evaluate_readiness(
     normalized: list[NormalizedEvidenceRecord],
     *,
     artifact_inventory: ArtifactInventory | None = None,
-    gap_report: ExhaustGapReport | None = None,
     g28_receipt: L6GateReceipt | None = None,
     g29_receipt: L6GateReceipt | None = None,
     replay_dependent: bool = True,
@@ -343,7 +344,7 @@ def evaluate_readiness(
     evaluator_status = "PRESENT" if normalized else "MISSING"
     l5_status = (
         "MISSING"
-        if is_unresolved_l5_certification_ref(bundle.l5_certification_ref)
+        if is_missing_l5_certification_ref(bundle.l5_certification_ref)
         else "PRESENT"
     )
     sealed_status = "PRESENT" if sealed_artifacts_present else "MISSING"
@@ -376,13 +377,6 @@ def evaluate_readiness(
         missing_field_refs.extend(
             ref for ref in g29_receipt.forbidden_attempts if ref not in missing_field_refs
         )
-    if gap_report is not None and gap_report.repair_required:
-        missing_field_refs.extend(
-            ref for ref in gap_report.gap_codes if ref not in missing_field_refs
-        )
-        missing_field_refs.extend(
-            ref for ref in gap_report.missing_evidence_refs if ref not in missing_field_refs
-        )
 
     reason_codes: list[str] = list(missing_field_refs)
     missing_map: MissingEvidenceMap | None = None
@@ -409,15 +403,6 @@ def evaluate_readiness(
             non_evaluable_id=_gen_id("noneval"),
             runtime_exhaust_bundle_id=bundle.runtime_exhaust_bundle_id,
             reason_codes=reason_codes,
-        )
-    elif gap_report is not None and gap_report.repair_required:
-        decision = READINESS_HOLD
-        missing_map = MissingEvidenceMap(
-            missing_evidence_map_id=_gen_id("miss"),
-            runtime_exhaust_bundle_id=bundle.runtime_exhaust_bundle_id,
-            missing_field_refs=missing_field_refs,
-            blocking=True,
-            repair_hints={"ingest_gap_report": gap_report.gap_report_id},
         )
     elif (
         "replay_key" in missing_field_refs

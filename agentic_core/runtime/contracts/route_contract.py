@@ -154,9 +154,8 @@ class RouteContract:
     # L0 reads graph_traverse block from app route profile; does NOT call run_graph_traverse().
     # chroma-graphrag-core-wiring-gaps-b3f7a1 W2
     graph_traverse_policy: Optional["GraphTraversePolicy"] = None
-    # Debug-default: do not silently mark apps_research unnecessary while
-    # apps_rg briefing integration is under investigation.
-    apps_research_call_required: bool = True
+    # apps_rg migration compatibility: retained while apps_research delegation is disabled.
+    apps_research_call_required: bool = False
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

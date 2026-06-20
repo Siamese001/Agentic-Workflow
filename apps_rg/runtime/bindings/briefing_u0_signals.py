@@ -4,9 +4,7 @@ Vocabulary split (product):
 - ``grounding_required``: resume fact evidence binding (C0.1-C0.7) — always True
   for active apps_rg generation modes.
 - ``briefing_required``: targeting briefing is mandatory for product-visible
-  active generation. During the graph-skills/apps_research debugging window,
-  active product generation also marks apps_research as required so route
-  receipts cannot silently claim the briefing path was irrelevant.
+  active generation. apps_research delegation is disabled.
 """
 
 from __future__ import annotations
@@ -62,15 +60,10 @@ def apps_research_call_required_at_u0(
     *,
     active_generation_mode: bool,
 ) -> bool:
-    """Return whether active product generation should require apps_research.
+    """Deprecated migration shim: apps_research delegation is disabled."""
 
-    This is intentionally true-by-default while debugging apps_research briefing
-    integration. Callers may still suppress it for non-product fixture paths
-    before writing the L1/Route contracts.
-    """
-
-    _ = validated_request
-    return bool(active_generation_mode)
+    _ = validated_request, active_generation_mode
+    return False
 
 
 def briefing_required_for_run(
@@ -112,7 +105,7 @@ def briefing_validate_or_raise(
         return
     msg = (
         "apps_rg requires an uploaded briefing artifact or authoritative "
-        "briefing text; apps_research is required for active product generation"
+        "briefing text; apps_research delegation is disabled"
     )
     if context:
         msg = f"{msg}. Context: {context}"

@@ -8,7 +8,7 @@
 # Each profile specifies:
 #   min_sources          — minimum distinct sources required before C0-to-PA gate passes
 #   min_citation_anchors — minimum citation anchor objects in FinalEvidenceContract
-#   max_queries          — maximum SearXNG / KB query fan-out per coverage family
+#   max_queries          — maximum Tavily / KB query fan-out per coverage family
 #   coverage_families    — which coverage families C0 MUST populate (see briefing_coverage_matrix_schema.yaml)
 #   coverage_families_optional — families populated when available but not gate-blocking
 #   gate_thresholds      — C0-to-PA gate verdict thresholds for this profile

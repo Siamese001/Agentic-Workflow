@@ -74,7 +74,6 @@ def _git_commit(repo_root: Path) -> str:
             capture_output=True,
             text=True,
             check=True,
-            timeout=30,
         )
     except (OSError, subprocess.CalledProcessError):
         return ""
@@ -552,9 +551,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     Path(paths["eval_record"]).write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
     Path(paths["report"]).write_text(render_report(record, findings), encoding="utf-8")
     if request.emit_l6_handoff:
-        from agentic_core.L6_observability.shadow_eval.adapters import (
-            emit_completed_eval_l6_shadow_bridge,
-        )
+        from apps_eval.l6_shadow_bridge import emit_completed_eval_l6_shadow_bridge
 
         bridge_paths = emit_completed_eval_l6_shadow_bridge(
             record,

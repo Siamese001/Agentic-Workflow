@@ -1,7 +1,7 @@
 schema_version: '1.0'
 artifact_kind: adg_run_review_template
 run_id: 06192026_0917
-generated_at_utc: '2026-06-20T10:42:37+00:00'
+generated_at_utc: '2026-06-19T13:23:52+00:00'
 snapshot_ts: '2026-06-19T13:22:35.342598+00:00'
 review_template:
   reviewer: ''
@@ -1130,8 +1130,8 @@ adg_attack_order: &id019
     rank: 14
   - band: P3
     work_class: Severity audit
-    target: 18,788 non-exempt from 18,876 gross
-    records: 18788
+    target: 18,789 non-exempt from 18,877 gross
+    records: 18789
     why_this_priority: Review-only audit signal; not Fix now unless it maps to a failing
       gate.
     next_step: Audit or map to a gate; do not treat as a CI blocker by itself.
@@ -1792,9 +1792,9 @@ severity_inventory:
   formula: net = gross - guardian
 - band: P3
   label: style_warnings
-  gross: 18876
+  gross: 18877
   guardian: 88
-  net: 18788
+  net: 18789
   diff_vs_prev: 88
   formula: net = gross - guardian
 high_signal_review:
@@ -2068,8 +2068,8 @@ decision_synthesis:
     missing_required: []
     required_count: 2
     present_required_count: 2
-    present_count: 7
-    optional_present_count: 5
+    present_count: 6
+    optional_present_count: 4
   audit_notes:
   - FIX/TRACK/CLEAR routing is synthesized once and projected into JSON, YAML, and
     markdown.
@@ -2087,19 +2087,19 @@ artifacts:
     path: artifacts\adg\adg_burndown_table.json
     exists: true
     required: true
-    sha256: 5b8234a9b43a23154c4b7fdd6f6c944e92ecde2e4890f149b0bf44975ed18777
+    sha256: bb1fd17b39625e0e08ae64527f34aa1aed7f80c3f8b1af794e8192c0d32f0067
   action_queue:
     artifact_key: action_queue
     path: artifacts\adg\adg_action_queue_06192026_0917.json
     exists: true
     required: false
-    sha256: f3455328a2e67af8ad462634fb839e20f2f179faa6be391734afe8668d074fe2
+    sha256: 637a101fb2eeacc2b8c30d695aa512dc7dfbe209ea2cf79842a445de02ca764c
   generation_manifest:
     artifact_key: generation_manifest
     path: artifacts\adg\adg_generation_manifest_06192026_0917.json
-    exists: true
+    exists: false
     required: false
-    sha256: 653c779089cbeddcc62a13d952a01211f1d2fc550782fa32bb936e0a1cc1530f
+    sha256: null
   enforcement_report:
     artifact_key: enforcement_report
     path: artifacts\adg\adg_enforcement_report_latest.json
@@ -2111,13 +2111,13 @@ artifacts:
     path: artifacts\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed
+    sha256: 0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213
   docs_markdown_burndown:
     artifact_key: docs_markdown_burndown
     path: docs\reports\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed
+    sha256: 0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213
 raw_rollups:
   gate_results_summary:
     block_pass: 13
@@ -2130,18 +2130,5 @@ raw_rollups:
     p0_clean: false
     p1_no_ratchet: true
     counting_mode: violations_plus_exempted_edge_inference
-  generation_manifest:
-    timestamp: '2026-06-19T13:25:50Z'
-    sqlite_path: null
-    snapshot_path: null
-    commit_sha: null
-    repo_state_hash: null
-    generation_exit_code: null
-    p0_status: unknown
-    gate_manifest_path: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_gate_invocation_manifest_06192026_0917.json
-    runtime_proof_status: view_absent
-    runtime_attested_edge_count: 0
-    registry_bucket_edge_count: 0
-    created_at_utc: '2026-06-19T13:25:50Z'
-    certification_status: failed
+  generation_manifest: {}
   enforcement_report_status: NOT_CERTIFIED

@@ -6,7 +6,6 @@ from apps_research.types.apps_rg_targeting_brief_contract import (
     BRIEFING_PROFILES,
     MAX_BULLETS,
     BriefStatus,
-    assess_targeting_brief_semantics,
     blocked_targeting_brief,
     seal_targeting_brief,
     validate_targeting_brief_text,
@@ -199,92 +198,3 @@ def test_blocked_artifact_factory() -> None:
     assert art.status is BriefStatus.DEGRADED
     assert not art.is_sealed
     assert art.block_reason == "no_sources"
-
-
-_PARTNERSHIP_RESEARCH_NOTES = (
-    "### overview\n"
-    "Anthropic has grown through a disciplined company DNA around trusted AI deployment.\n"
-    "### strategic_priorities\n"
-    "Partnership motion prioritizes co-sell, partner enablement, and ecosystem revenue.\n"
-    "### leadership\n"
-    "Leadership emphasizes operating model rigor and the discipline to close with partners.\n"
-    "### recent_moves\n"
-    "Recent urgency comes from channel expansion and faster enterprise adoption cycles.\n"
-    "### partner_ecosystem\n"
-    "GSIs and ISVs are used to widen reach and keep technical close coordinated.\n"
-    "### commercial_motion\n"
-    "Commercial motion centers on joint solution development and partner-led pipeline.\n"
-    "### adoption_motion\n"
-    "Adoption motion focuses on enablement so customers can move from interest to usage.\n"
-    "### tech_stack_signals\n"
-    "Technical close requires clear proof on governance, integration, and reliability.\n"
-)
-
-
-_PARTNERSHIP_BRIEF = (
-    "Anthropic partnership briefing\n"
-    "=== JD COMPLEMENT ===\n"
-    "- This brief complements a partnership-heavy JD without restating it.\n"
-    "- It frames the company DNA, operating model, and urgency behind partnerships.\n\n"
-    "=== COMPANY DNA & OPERATING MODEL ===\n"
-    "- Anthropic has built a company DNA around trusted AI adoption and measured scale.\n"
-    "- The operating model rewards partner enablement, disciplined co-sell, and clear handoffs.\n\n"
-    "=== COMPANY STRATEGY & OPERATING PRESSURE ===\n"
-    "- Strategic pressure comes from converting interest into repeatable ecosystem revenue.\n"
-    "- Partner motion must shorten technical close and raise adoption quality.\n\n"
-    "=== LEADERSHIP & STAKEHOLDER MAP ===\n"
-    "- Leadership cares about partner leverage, not generic alliance theater.\n"
-    "- The stakeholder map spans sales, partner, product, and solution engineering.\n\n"
-    "=== AI, DATA, PLATFORM, ARCHITECTURE SIGNALS ===\n"
-    "- Platform and architecture decisions need to support governance, integration, and reliability.\n"
-    "- Data and AI signals should map to enterprise adoption, not frontier research poetry.\n\n"
-    "=== PARTNERSHIP / ECOSYSTEM MOTION ===\n"
-    "- Co-sell with GSIs and ISVs by showing joint value, partner enablement, and a technical close.\n"
-    "- Use the ecosystem to expand reach, accelerate adoption, and convert into revenue.\n\n"
-    "=== RECENT EVENTS & URGENCY ===\n"
-    "- Recent urgency reflects ecosystem revenue pressure and the need to scale adoption faster.\n"
-    "- The near-term push is to make partner motion repeatable and measurable.\n\n"
-    "=== APPS_RG POSITIONING THEMES ===\n"
-    "- Use the JD plus research notes to steer wording, ordering, and emphasis only.\n"
-    "- The goal is high-signal phrasing, not invented proof.\n\n"
-    "=== APPS_LIC OUTREACH ANGLES ===\n"
-    "- Outreach should stay targeted to the company DNA and the JD family signals.\n"
-    "- Avoid generic AI-company prose and adjacent technical depth that does not help selection.\n\n"
-    "=== DO NOT USE AS PROOF ===\n"
-    "- This briefing is targeting context only and does not become resume evidence.\n"
-)
-
-
-def test_assess_targeting_brief_semantics_accepts_dense_partnership_brief() -> None:
-    assessment = assess_targeting_brief_semantics(
-        _PARTNERSHIP_BRIEF,
-        jd_text="Anthropic partnership co-sell GSI ISV channel ecosystem role",
-        research_notes=_PARTNERSHIP_RESEARCH_NOTES,
-        profile="apps_rg",
-    )
-    assert assessment.role_archetype == "partnerships"
-    assert assessment.handoff_eligible is True, assessment.as_dict()
-    assert assessment.judge_model == "gemini-3.1-pro-preview"
-    assert assessment.judge_name == "gemini-pro-3.1-preview"
-    assert assessment.missing_sections == ()
-    assert assessment.source_families_missing == ()
-    assert "co-sell" in assessment.signal_terms_present
-
-
-def test_assess_targeting_brief_semantics_rejects_thin_partnership_brief() -> None:
-    thin_notes = (
-        "### overview\n"
-        "Anthropic has company DNA around trusted AI deployment.\n"
-        "### leadership\n"
-        "Leadership emphasizes operating model rigor.\n"
-    )
-    assessment = assess_targeting_brief_semantics(
-        _PARTNERSHIP_BRIEF.replace("=== PARTNERSHIP / ECOSYSTEM MOTION ===\n- Co-sell with GSIs and ISVs by showing joint value, partner enablement, and a technical close.\n- Use the ecosystem to expand reach, accelerate adoption, and convert into revenue.\n\n", ""),
-        jd_text="Anthropic partnership co-sell GSI ISV channel ecosystem role",
-        research_notes=thin_notes,
-        profile="apps_rg",
-    )
-    assert assessment.role_archetype == "partnerships"
-    assert assessment.handoff_eligible is False
-    assert "partnership / ecosystem motion" in " ".join(assessment.missing_sections)
-    assert "partner_ecosystem" in assessment.source_families_missing

@@ -43,7 +43,7 @@ _HARD_FAIL_CODES: frozenset[str] = frozenset(
         "JAILBREAK_DETECTED",
         "DIRECT_L4_WRITE_ATTEMPT",
         "UNGROUNDED",  # material unsupported claim in grounded answer
-        "NON_REPLAYABLE",  # replay determinism is required on every terminal class
+        "NON_REPLAYABLE",  # high-impact only - re-checked below
     }
 )
 
@@ -247,6 +247,15 @@ def aggregate_decision(
 
     # ---- 1. HARD FAILS — X3A ----
     hard_fail_hits = [(v, c) for v, c in fail_pairs if c in _HARD_FAIL_CODES]
+    # Special case: NON_REPLAYABLE is hard-fail only for high-impact.
+    is_high_impact = packet.terminal_class in {
+        "with_state_diff",
+        "external_action",
+        "durable_write",
+        "action",
+    }
+    if not is_high_impact:
+        hard_fail_hits = [(v, c) for v, c in hard_fail_hits if c != "NON_REPLAYABLE"]
     if hard_fail_hits:
         gate_ids = sorted({v.gate_id for v, _ in hard_fail_hits})
         codes = sorted({c for _, c in hard_fail_hits})

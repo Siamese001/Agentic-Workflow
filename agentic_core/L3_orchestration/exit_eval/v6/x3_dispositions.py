@@ -311,7 +311,6 @@ def build_x3f_break_glass_allow(
     return X3BreakGlassAllowPacket(
         operator_id=operator_id,
         capability_token_ref=capability_token_ref,
-        l5_certification_ref=_extract_cert_ref(packet),
         written_justification=written_justification,
         granted_at_ms=grant_ms,
         expiry_ms=final_expiry,

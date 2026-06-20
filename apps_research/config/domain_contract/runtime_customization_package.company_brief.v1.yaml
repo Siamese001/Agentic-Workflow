@@ -47,7 +47,7 @@ defaults:
   depth_profile: standard
   freshness_window: "30d"
   source_scope:
-    - searxng
+    - tavily
     - manual_brief
     - company_website
 

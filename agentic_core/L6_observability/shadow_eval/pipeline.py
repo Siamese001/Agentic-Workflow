@@ -254,7 +254,6 @@ def run_observer(state: L6PipelineState) -> EvalReadinessReceipt:
         observer_receipt,
         state.ingest.normalized,
         artifact_inventory=state.ingest.artifact_inventory,
-        gap_report=state.ingest.gap_report,
         g28_receipt=g28,
         g29_receipt=g29,
     )

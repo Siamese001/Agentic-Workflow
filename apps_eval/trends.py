@@ -1,4 +1,4 @@
-"""Historical trend dashboard and advisory regression checks for apps_eval."""
+"""Historical trend dashboard and release gate for apps_eval."""
 
 from __future__ import annotations
 
@@ -16,10 +16,7 @@ from apps_eval.contracts import (
     TrendSample,
     TrendSuiteSummary,
 )
-from agentic_core.L6_observability.shadow_eval.adapters import (
-    L6_SHADOW_BRIDGE_ARTIFACT,
-    emit_driver_l6_shadow_bridge,
-)
+from apps_eval.l6_shadow_bridge import L6_SHADOW_BRIDGE_ARTIFACT, emit_driver_l6_shadow_bridge
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -593,13 +590,11 @@ def evaluate_release_gate(
 
 def render_release_gate(decision: ReleaseGateDecision) -> str:
     lines = [
-        f"# apps_eval advisory regression check: {decision.gate_id}",
+        f"# apps_eval release gate: {decision.gate_id}",
         "",
         "## Status",
         "",
         f"Schema version: `{decision.schema_version}`",
-        f"Decision kind: `{decision.decision_kind}`",
-        f"Release authority: `{decision.release_authority}`",
         f"Generated at: `{decision.generated_at}`",
         f"Status: `{decision.status}`",
         f"Records root: `{decision.records_root}`",

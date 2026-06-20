@@ -21,7 +21,7 @@ from apps_rg.runtime.validators.bullet_ngram_overlap_x2 import (
 )
 
 # ---------------------------------------------------------------------------
-# Capability families required for graph-backed executive competencies.
+# Capability families required for SVP Engineering posture
 # ---------------------------------------------------------------------------
 
 REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
@@ -53,22 +53,6 @@ REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
         "engineering", "leadership", "organization", "operating", "model",
         "talent", "hiring", "recruiting", "team", "staff",
     }),
-    "partnerships_ecosystem_execution": frozenset({
-        "partner", "partners", "partnership", "partnerships", "alliance",
-        "alliances", "ecosystem", "co-sell", "cosell", "gtm", "go-to-market",
-        "hyperscaler", "channel", "joint", "revenue",
-    }),
-}
-
-CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY: dict[str, str] = {
-    "agentic_platforms": "agentic_platform",
-    "runtime_governance": "runtime_governance",
-    "retrieval_context_engineering": "retrieval_context",
-    "llmops_reliability": "llmops",
-    "distributed_systems_engineering": "distributed_infra",
-    "platform_productization": "productization",
-    "engineering_leadership": "engineering_leadership",
-    "partnerships_ecosystem_execution": "partnerships_ecosystem_execution",
 }
 
 # ---------------------------------------------------------------------------
@@ -144,7 +128,7 @@ def _category_terms(cat: Any) -> list[Any]:
 
 
 def _is_graph_backed(term: Any) -> bool:
-    """Term is graph-backed when it carries explicit skill or fact support."""
+    """Term is graph-backed if it has graph_skill_node_ids, source_skill_ids, or is NOT default_fid_backfill."""
     if not isinstance(term, dict):
         return False
     if term.get("proof_source") == "default_fid_backfill":
@@ -156,29 +140,6 @@ def _is_graph_backed(term: Any) -> bool:
     return bool(fact_ids)
 
 
-def _cat_graph_skill_ids(cat: Any) -> list[str]:
-    if not isinstance(cat, dict):
-        return []
-    raw = cat.get("graph_skill_node_ids") or cat.get("source_skill_ids") or []
-    if isinstance(raw, str):
-        raw = [raw]
-    return [str(item).strip() for item in raw if str(item).strip()]
-
-
-def _term_support_ids(term: Any) -> list[str]:
-    if not isinstance(term, dict):
-        return []
-    raw = (
-        term.get("graph_skill_node_ids")
-        or term.get("source_skill_ids")
-        or term.get("source_fact_ids")
-        or []
-    )
-    if isinstance(raw, str):
-        raw = [raw]
-    return [str(item).strip() for item in raw if str(item).strip()]
-
-
 # ---------------------------------------------------------------------------
 # Gate: capability family coverage
 # ---------------------------------------------------------------------------
@@ -188,35 +149,23 @@ def check_competencies_capability_family_coverage(
     competencies: list[Any],
     min_families: int = 5,
 ) -> CompQualityResult:
-    """Require ≥min_families capability families, preferring bundle metadata over token proxies."""
+    """Require ≥min_families of 7 capability families across all terms."""
     all_tokens: set[str] = set()
-    bundle_matched_families: set[str] = set()
     for cat in (competencies or []):
-        if isinstance(cat, dict):
-            family = str(cat.get("capability_family") or "").strip()
-            gate_family = CAPABILITY_BUNDLE_FAMILY_TO_GATE_FAMILY.get(family, family)
-            if gate_family in REQUIRED_CAPABILITY_FAMILIES:
-                bundle_matched_families.add(gate_family)
         for term in _category_terms(cat):
             all_tokens |= _term_tokens(term)
         all_tokens.update(_tokenize(_category_label(cat)))
 
-    token_matched_families: list[str] = []
+    matched_families: list[str] = []
     for family_name, signals in REQUIRED_CAPABILITY_FAMILIES.items():
         if signals & all_tokens:
-            token_matched_families.append(family_name)
-
-    matched_families = sorted(bundle_matched_families) if bundle_matched_families else token_matched_families
+            matched_families.append(family_name)
 
     passed = len(matched_families) >= min_families
     return CompQualityResult(
         gate_id="x2_competencies_capability_family_coverage",
         passed=passed,
-        observed_value={
-            "bundle_families": sorted(bundle_matched_families),
-            "token_families": token_matched_families,
-            "matched_families": matched_families,
-        },
+        observed_value=matched_families,
         threshold=f">={min_families} of {len(REQUIRED_CAPABILITY_FAMILIES)} capability families",
         failure_reason=(
             None
@@ -224,9 +173,8 @@ def check_competencies_capability_family_coverage(
             else (
                 f"Only {len(matched_families)}/{len(REQUIRED_CAPABILITY_FAMILIES)} capability families "
                 f"detected (need {min_families}): {matched_families}. "
-                "Competencies must cover the required graph capability families: Agentic Platform, "
-                "Runtime Governance, Retrieval Context, LLMOps, Distributed Infra, Productization, "
-                "Engineering Leadership, and Partnerships/Ecosystem when present in the required bundle set."
+                "SVP Engineering competencies must cover Agentic Platform, Runtime Governance, "
+                "Retrieval Context, LLMOps, Distributed Infra, Productization, Engineering Leadership."
             )
         ),
         signals=matched_families,
@@ -499,51 +447,6 @@ def _cat_source_fact_ids(cat: Any) -> list[str]:
     return out
 
 
-def _category_and_term_source_fact_ids(cat: Any) -> list[str]:
-    out: list[str] = []
-    seen: set[str] = set()
-    for fid in _cat_source_fact_ids(cat):
-        fid_s = str(fid).strip()
-        if fid_s and fid_s not in seen:
-            seen.add(fid_s)
-            out.append(fid_s)
-    for term in _category_terms(cat):
-        if not isinstance(term, dict):
-            continue
-        raw = term.get("source_fact_ids") or []
-        if isinstance(raw, str):
-            raw = [raw]
-        primary = term.get("source_fact_id")
-        if primary:
-            raw = [primary, *list(raw)]
-        for fid in raw:
-            fid_s = str(fid).strip()
-            if fid_s and fid_s not in seen:
-                seen.add(fid_s)
-                out.append(fid_s)
-    return out
-
-
-def _bundle_records_by_id(
-    proof_pool_metadata: dict[str, Any] | None,
-) -> dict[str, dict[str, Any]]:
-    if not isinstance(proof_pool_metadata, dict):
-        return {}
-    records = proof_pool_metadata.get("competency_capability_bundles") or []
-    if not records:
-        packet = proof_pool_metadata.get("competency_capability_section_packet") or {}
-        if isinstance(packet, dict):
-            records = packet.get("competency_bundles") or []
-    out: dict[str, dict[str, Any]] = {}
-    for rec in records:
-        if not isinstance(rec, dict):
-            continue
-        bid = str(rec.get("competency_bundle_id") or "").strip()
-        if bid:
-            out[bid] = rec
-    return out
-
-
 def check_competency_bundle_id_per_category(competencies: list[Any]) -> CompQualityResult:
     missing = [
         _category_label(c) or f"idx{i}"
@@ -596,118 +499,6 @@ def check_source_fact_ids_or_graph_lineage_per_category(competencies: list[Any])
     )
 
 
-def check_competency_bundle_source_fact_alignment(
-    competencies: list[Any],
-    proof_pool_metadata: dict[str, Any] | None,
-) -> CompQualityResult:
-    """Each emitted category must preserve at least one linked fact from its bound bundle."""
-    bundle_by_id = _bundle_records_by_id(proof_pool_metadata)
-    if not bundle_by_id:
-        return CompQualityResult(
-            gate_id="x2_competency_bundle_source_fact_alignment",
-            passed=True,
-            observed_value="no_bundle_records",
-            threshold="category source facts intersect bound bundle linked_source_fact_ids",
-            failure_reason=None,
-            signals=[],
-        )
-
-    violations: list[dict[str, Any]] = []
-    for index, cat in enumerate(competencies or []):
-        if not isinstance(cat, dict):
-            continue
-        bundle_id = _cat_bundle_id(cat)
-        if not bundle_id:
-            continue
-        bundle = bundle_by_id.get(bundle_id)
-        if not bundle:
-            violations.append({
-                "category": _category_label(cat) or f"idx{index}",
-                "competency_bundle_id": bundle_id,
-                "reason": "unknown_competency_bundle_id",
-                "observed_source_fact_ids": _category_and_term_source_fact_ids(cat),
-                "expected_linked_source_fact_ids": [],
-            })
-            continue
-        expected = {
-            str(fid).strip()
-            for fid in (bundle.get("linked_source_fact_ids") or [])
-            if str(fid).strip()
-        }
-        if not expected:
-            continue
-        observed = set(_category_and_term_source_fact_ids(cat))
-        if observed.intersection(expected):
-            continue
-        violations.append({
-            "category": _category_label(cat) or f"idx{index}",
-            "competency_bundle_id": bundle_id,
-            "reason": "no_bundle_fact_intersection",
-            "observed_source_fact_ids": sorted(observed),
-            "expected_linked_source_fact_ids": sorted(expected),
-        })
-
-    passed = not violations
-    return CompQualityResult(
-        gate_id="x2_competency_bundle_source_fact_alignment",
-        passed=passed,
-        observed_value=violations if violations else "all_categories_intersect_bound_bundle_facts",
-        threshold="every known competency_bundle_id has category/term source_fact_ids intersecting linked_source_fact_ids",
-        failure_reason=None if passed else f"Competency categories use facts outside their bound bundles: {violations[:6]}",
-        signals=[str(v.get("category")) for v in violations[:6]],
-    )
-
-
-def check_competency_source_fact_dominance(
-    competencies: list[Any],
-    *,
-    max_category_share: float = 0.5,
-    max_category_count: int = 4,
-) -> CompQualityResult:
-    """No single source fact may dominate the emitted competency categories."""
-    category_count = len([c for c in (competencies or []) if isinstance(c, dict)])
-    if category_count == 0:
-        return CompQualityResult(
-            gate_id="x2_competency_source_fact_dominance",
-            passed=True,
-            observed_value={"category_count": 0, "source_fact_category_counts": {}},
-            threshold=f"no fact in >{max_category_share:.0%} categories or >{max_category_count} categories",
-            failure_reason=None,
-            signals=[],
-        )
-
-    fact_category_counts: dict[str, int] = {}
-    for cat in competencies or []:
-        if not isinstance(cat, dict):
-            continue
-        for fid in set(_category_and_term_source_fact_ids(cat)):
-            fact_category_counts[fid] = fact_category_counts.get(fid, 0) + 1
-
-    dominant: list[dict[str, Any]] = []
-    for fid, count in sorted(fact_category_counts.items(), key=lambda item: (-item[1], item[0])):
-        share = count / category_count
-        if count > max_category_count or share > max_category_share:
-            dominant.append({
-                "source_fact_id": fid,
-                "category_count": count,
-                "category_share": round(share, 4),
-            })
-
-    passed = not dominant
-    return CompQualityResult(
-        gate_id="x2_competency_source_fact_dominance",
-        passed=passed,
-        observed_value={
-            "category_count": category_count,
-            "source_fact_category_counts": fact_category_counts,
-            "dominant_source_facts": dominant,
-        },
-        threshold=f"no source fact may support >{max_category_share:.0%} categories or >{max_category_count} categories",
-        failure_reason=None if passed else f"Source fact reuse dominates competency categories: {dominant[:6]}",
-        signals=[str(v.get("source_fact_id")) for v in dominant[:6]],
-    )
-
-
 def check_default_fid_only_support_forbidden(competencies: list[Any]) -> CompQualityResult:
     """HARD variant: any term whose only support is default_fid backfill fails."""
     laundered: list[str] = []
@@ -731,47 +522,23 @@ def check_default_fid_only_support_forbidden(competencies: list[Any]) -> CompQua
 
 
 def check_generic_taxonomy_only_category_forbidden(competencies: list[Any]) -> CompQualityResult:
-    """Generic labels require bundle, category graph skills, and enough supported graph terms."""
-    violations: list[dict[str, Any]] = []
+    """A generic category label with no graph-backed terms and no bundle binding fails."""
+    violations: list[str] = []
     for cat in (competencies or []):
         label = _category_label(cat)
         if label not in GENERIC_CATEGORIES_REQUIRING_GRAPH:
             continue
-        terms = _category_terms(cat)
-        graph_terms = [t for t in terms if _is_graph_backed(t)]
-        unsupported_graph_terms = [
-            str(t.get("term") or t.get("text") or "unknown")
-            for t in graph_terms
-            if not _term_support_ids(t)
-        ]
-        reasons: list[str] = []
-        if not _cat_bundle_id(cat):
-            reasons.append("missing_competency_bundle_id")
-        if not _cat_graph_skill_ids(cat):
-            reasons.append("missing_category_graph_skill_node_ids")
-        if len(graph_terms) < GENERIC_CATEGORY_MIN_GRAPH_TERMS:
-            reasons.append("too_few_graph_backed_terms")
-        if unsupported_graph_terms:
-            reasons.append("graph_terms_missing_skill_or_fact_support")
-        if reasons:
-            violations.append({
-                "category": label,
-                "reasons": reasons,
-                "graph_terms": len(graph_terms),
-                "required_graph_terms": GENERIC_CATEGORY_MIN_GRAPH_TERMS,
-                "unsupported_graph_terms": unsupported_graph_terms[:5],
-            })
+        graph_terms = sum(1 for t in _category_terms(cat) if _is_graph_backed(t))
+        if graph_terms < GENERIC_CATEGORY_MIN_GRAPH_TERMS and not _cat_bundle_id(cat):
+            violations.append(label)
     passed = not violations
     return CompQualityResult(
         gate_id="x2_generic_taxonomy_only_category_forbidden",
         passed=passed,
         observed_value=violations if violations else "none",
-        threshold=(
-            "generic categories require bundle id, category graph_skill_node_ids, "
-            f">={GENERIC_CATEGORY_MIN_GRAPH_TERMS} graph-backed terms, and term skill/fact support"
-        ),
-        failure_reason=None if passed else f"Generic taxonomy categories failed graph depth contract: {violations}",
-        signals=[str(v.get("category")) for v in violations],
+        threshold="generic categories require graph-backed terms or bundle binding",
+        failure_reason=None if passed else f"Generic taxonomy-only categories: {violations}",
+        signals=violations,
     )
 
 
@@ -893,13 +660,12 @@ def check_technical_density_floor(
 def check_required_capability_families_covered(
     competencies: list[Any], *, min_families: int = 7
 ) -> CompQualityResult:
-    """Required-coverage gate: at least min_families required capability families present."""
-    family_count = len(REQUIRED_CAPABILITY_FAMILIES)
+    """Required-coverage gate: at least min_families of the 7 capability families present."""
     return CompQualityResult(
         gate_id="x2_required_capability_families_covered",
         passed=check_competencies_capability_family_coverage(competencies, min_families=min_families).passed,
         observed_value=check_competencies_capability_family_coverage(competencies, min_families=min_families).observed_value,
-        threshold=f">={min_families} of {family_count} required capability families",
+        threshold=f">={min_families} of 7 required capability families",
         failure_reason=check_competencies_capability_family_coverage(competencies, min_families=min_families).failure_reason,
         signals=[],
     )
@@ -936,10 +702,8 @@ __all__ = [
     "check_competencies_e0_ngram_overlap",
     "check_competencies_generic_category_has_graph_terms",
     "check_competencies_no_default_fid_proof",
-    "check_competency_bundle_source_fact_alignment",
     "check_competency_bundle_id_per_category",
     "check_competency_rigor_floor",
-    "check_competency_source_fact_dominance",
     "check_default_fid_only_support_forbidden",
     "check_generic_taxonomy_only_category_forbidden",
     "check_graph_skill_node_ids_per_category",

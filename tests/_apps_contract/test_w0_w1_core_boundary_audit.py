@@ -54,7 +54,7 @@ class TestNoAppsResearchPolicyHardcodedInCore:
         
         # Look for route order hardcoding
         route_terms = [
-            "searxng", "tavily", "manual_brief", "company_website"  # apps_research source scope
+            "tavily", "manual_brief", "company_website"  # apps_research source scope
         ]
         
         excluded_files = [
@@ -111,7 +111,6 @@ class TestNoAppsResearchPolicyHardcodedInCore:
         
         # Source mix is app-specific
         source_terms = [
-            "searxng",
             "tavily",
             "manual_brief",
             "company_website",

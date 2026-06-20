@@ -67,11 +67,11 @@ class TestNewFieldDefaults:
         assert s.waiver_owner is None
         assert s.waiver_expiry is None
 
-    def test_existing_7_specs_load_with_defaults(self):
+    def test_existing_8_specs_load_with_defaults(self):
         # Regression: extending AppSpec must not break the live registry.
         # Post-W6: certification_required may be False on waived apps; all
         # other invariants still hold.
-        assert len(APP_SPECS) == 7
+        assert len(APP_SPECS) == 8
         for s in APP_SPECS:
             assert isinstance(s.certification_required, bool)
             assert s.expected_execution_form in VALID_EXECUTION_FORMS

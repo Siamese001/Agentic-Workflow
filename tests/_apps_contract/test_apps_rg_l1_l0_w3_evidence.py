@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+import json
 
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.l0_route_evidence import compute_route_digest
 from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
 
@@ -55,8 +56,6 @@ def test_l0_emits_route_digest_and_hmac_sig() -> None:
     assert len(route.route_digest) == 64
     assert len(route.hmac_sig) == 64
     assert route.signature == route.hmac_sig
-    assert any(code.startswith("l1_planning_capsule_ref=") for code in route.reason_codes)
-    assert any(code.startswith("l1_planning_prior_set_ref=") for code in route.reason_codes)
 
 
 def test_route_digest_deterministic_for_same_plan() -> None:
@@ -66,23 +65,6 @@ def test_route_digest_deterministic_for_same_plan() -> None:
     route_b = l0_route_apps_rg(plan)
     assert route_a.route_digest == route_b.route_digest
     assert route_a.hmac_sig == route_b.hmac_sig
-
-
-def test_route_digest_changes_when_planning_capsule_ref_changes() -> None:
-    env = apps_rg_parse(_thin())
-    plan = l1_plan_apps_rg(u0_validate_apps_rg(env))
-    plan_variant = replace(
-        plan,
-        policy_refs={
-            **dict(plan.policy_refs),
-            "l1_planning_prior_set_ref": "l1priors-variant",
-            "l1_planning_capsule_ref": "l1plan-variant",
-        },
-    )
-    route_base = l0_route_apps_rg(plan)
-    route_variant = l0_route_apps_rg(plan_variant)
-    assert route_base.route_digest != route_variant.route_digest
-    assert any(code == "l1_planning_capsule_ref=l1plan-variant" for code in route_variant.reason_codes)
 
 
 def test_route_digest_changes_when_apps_research_call_changes() -> None:

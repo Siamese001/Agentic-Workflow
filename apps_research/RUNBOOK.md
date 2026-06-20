@@ -25,7 +25,7 @@ A research run is misbehaving
 
 **Triage:**
 1. Check `research_source_validator.py` — is it rejecting too many sources as low-confidence?
-2. Check upstream retrieval (SearXNG / vector_db) — is it returning fewer sources than usual?
+2. Check upstream retrieval (Tavily / vector_db) — is it returning fewer sources than usual?
 3. Spot-check the rendered claims: are they hallucinations (no source exists) or grounding bugs (source exists but wasn't linked)?
 
 **Mitigation:**
@@ -95,7 +95,7 @@ apps_research outputs are **stateless** — no durable side-effects beyond the r
 
 - **Primary on-call:** see `CODEOWNERS`
 - **L3 inference owner:** see `agentic_core/L3_orchestration/inference/CODEOWNERS`
-- **SearXNG / retrieval owner:** see `infrastructure/sdks_mcps/CODEOWNERS`
+- **Tavily / retrieval owner:** see `infrastructure/sdks_mcps/CODEOWNERS`
 
 ## Eval Harness (apps-eval-harness-closeout-b7c9d2 W3.P1)
 

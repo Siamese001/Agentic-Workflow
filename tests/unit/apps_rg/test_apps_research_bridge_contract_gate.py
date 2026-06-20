@@ -29,7 +29,6 @@ def test_mock_bridge_default_brief_passes_contract_gate() -> None:
     result = _fetch(MockAppsResearchBridge(confidence_score=0.9))
     assert not result.is_blocked
     assert result.company_brief_text.strip()
-    assert result.briefing_sidecar["handoff_eligible"] is True
 
 
 def test_bridge_rejects_missing_brief_text() -> None:
@@ -66,7 +65,6 @@ def test_delegation_returns_ready_with_valid_brief() -> None:
     )
     assert isinstance(outcome, ResumeBriefingReady)
     assert outcome.briefing_text.strip()
-    assert outcome.briefing_sidecar["handoff_eligible"] is True
 
 
 def test_delegation_fails_closed_on_blocked_brief() -> None:

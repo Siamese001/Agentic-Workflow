@@ -12,7 +12,6 @@ import pytest
 
 from apps_rg.runtime.judges.bullet_pool_claude_selector import (
     PoolSelectionResult,
-    PoolSelectorUnavailableError,
     run_claude_bullet_pool_selection,
 )
 from apps_rg.runtime.providers.provider_contract import ProviderResult
@@ -61,46 +60,6 @@ def _path_with_categories(
         parse_error="",
         provider_result=None,
     )
-
-
-class _FakeSelectorJudge:
-    def __init__(
-        self,
-        *,
-        provider_key: str = "openai_chatgpt",
-        model_name: str = "gpt-5.5",
-        passed: bool = True,
-        status: str = "MODEL_BACKED_PASS",
-        exact_provider_error: str | None = None,
-        rationale: str = "yaml_judge_models",
-    ) -> None:
-        self.judge_id = f"x1d_{provider_key}_bullet_pool_selector"
-        self.provider_name = "OpenAI ChatGPT"
-        self.provider_key = provider_key
-        self.evaluator_mode = "MODEL_BACKED"
-        self.provider_status = status
-        self.model_name = model_name
-        self.provider_available = True
-        self.provider_blocked = not passed
-        self.exact_provider_error = exact_provider_error
-        self.pass_ = passed
-        self.rationale = rationale
-
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "judge_id": self.judge_id,
-            "provider_name": self.provider_name,
-            "provider_key": self.provider_key,
-            "evaluator_mode": self.evaluator_mode,
-            "provider_status": self.provider_status,
-            "model_name": self.model_name,
-            "provider_available": self.provider_available,
-            "provider_blocked": self.provider_blocked,
-            "exact_provider_error": self.exact_provider_error,
-            "pass": self.pass_,
-            "pass_": self.pass_,
-            "rationale": self.rationale,
-        }
 
 
 def test_competencies_pool_generation_mode_detected() -> None:
@@ -157,28 +116,8 @@ def test_evaluate_competencies_gate_requires_eight_passing_categories() -> None:
     assert gate.categories_in_merged == COMPETENCIES_FINAL_CATEGORY_COUNT
 
 
-def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_claude_competencies_selection_mocked_emits_eight_categories() -> None:
     paths = [_path_with_categories(0)]
-    selections = [
-        {
-            "category_label": f"Category_0_{i}",
-            "path_index": 0,
-            "score": 0.9,
-            "passes": True,
-            "rationale": f"slot {i}",
-        }
-        for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)
-    ]
-
-    monkeypatch.setenv("OPENAI_API_KEY", "fake-openai-key")
-    monkeypatch.setattr(
-        "apps_rg.runtime.judges.bullet_pool_claude_selector.bootstrap_apps_rg_env",
-        lambda: None,
-    )
-    monkeypatch.setattr(
-        "apps_rg.runtime.judges.bullet_pool_claude_selector._call_openai_pool_selector",
-        lambda **_: (_FakeSelectorJudge(), {"selections": selections, "pool_summary": {}}),
-    )
     pool: PoolSelectionResult = run_claude_bullet_pool_selection(
         section_id="competencies",
         slot_kind="competencies",
@@ -188,69 +127,15 @@ def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytes
             "allowed_skill_ids": [],
             "resume_support_blob_lower": "bul_001 alpha beta",
         },
-        mode="blocked_if_unavailable",
+        mode="mocked",
     )
-    assert pool.selection_mode == "openai_competencies_top_8_pass"
-    assert pool.judge_output is not None
-    assert pool.judge_output.provider_key == "openai_chatgpt"
-    assert pool.judge_output.model_name == "gpt-5.5"
+    assert pool.selection_mode == "competencies_graph_top_8_heuristic"
     comps = pool.merged_parsed.get("competencies") or []
     assert len(comps) == COMPETENCIES_FINAL_CATEGORY_COUNT
 
 
-def test_openai_competencies_selector_fails_closed_without_credentials(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    paths = [_path_with_categories(0)]
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.setattr(
-        "apps_rg.runtime.judges.bullet_pool_claude_selector.bootstrap_apps_rg_env",
-        lambda: None,
-    )
-
-    with pytest.raises(
-        PoolSelectorUnavailableError,
-        match="competencies selector unavailable: missing OpenAI credentials",
-    ):
-        run_claude_bullet_pool_selection(
-            section_id="competencies",
-            slot_kind="competencies",
-            paths=paths,
-            targeting_context={
-                "allowed_fact_ids": ["bul_001"],
-                "allowed_skill_ids": [],
-                "resume_support_blob_lower": "bul_001 alpha beta",
-            },
-            mode="blocked_if_unavailable",
-        )
-
-
 def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.MonkeyPatch) -> None:
     paths = [_path_with_categories(i, n_categories=COMPETENCIES_FINAL_CATEGORY_COUNT) for i in range(8)]
-
-    class _Judge:
-        provider_key = "openai_chatgpt"
-        provider_name = "OpenAI ChatGPT"
-        model_name = "gpt-5.5"
-        provider_status = "MODEL_BACKED_PASS"
-        exact_provider_error = None
-        pass_ = True
-        rationale = "yaml_judge_models"
-
-        def to_dict(self) -> dict[str, object]:
-            return {
-                "judge_id": "x1d_openai_chatgpt_bullet_pool_selector",
-                "provider_name": self.provider_name,
-                "provider_key": self.provider_key,
-                "provider_status": self.provider_status,
-                "model_name": self.model_name,
-                "provider_available": True,
-                "provider_blocked": False,
-                "exact_provider_error": self.exact_provider_error,
-                "pass": True,
-                "pass_": True,
-                "rationale": self.rationale,
-            }
 
     def _fake_paths(**_: object) -> tuple[list[SelfConsistencyPath], ProviderResult]:
         return paths, ProviderResult(
@@ -267,30 +152,6 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
     monkeypatch.setattr(
         "apps_rg.runtime.reasoning.bullet_lane_generation.run_provider_self_consistency_paths",
         _fake_paths,
-    )
-    monkeypatch.setenv("OPENAI_API_KEY", "fake-openai-key")
-    monkeypatch.setattr(
-        "apps_rg.runtime.judges.bullet_pool_claude_selector.bootstrap_apps_rg_env",
-        lambda: None,
-    )
-    monkeypatch.setattr(
-        "apps_rg.runtime.judges.bullet_pool_claude_selector._call_openai_pool_selector",
-        lambda **_: (
-            _Judge(),
-            {
-                "selections": [
-                    {
-                        "category_label": f"Category_0_{i}",
-                        "path_index": 0,
-                        "score": 0.9,
-                        "passes": True,
-                        "rationale": f"slot {i}",
-                    }
-                    for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)
-                ],
-                "pool_summary": {},
-            },
-        ),
     )
 
     result, raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
@@ -363,7 +224,7 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
     gen_meta = {
         "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
         "selection_gate": {"ok": True, "categories_in_merged": COMPETENCIES_FINAL_CATEGORY_COUNT},
-        "selection_mode": "openai_competencies_top_8_pass",
+        "selection_mode": "claude_competencies_top_8_pass",
     }
     rows = competencies_pool_x1d_judge_rows(
         artifact_dir=tmp_path,
@@ -371,11 +232,7 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
         gen_meta=gen_meta,
     )
     assert len(rows) == 1
-    assert rows[0]["judge_id"] == "x1d_openai_chatgpt_competencies_pool"
-    assert rows[0]["provider_key"] == "openai_chatgpt"
-    assert rows[0]["provider_name"] == "OpenAI ChatGPT"
-    assert rows[0]["model_name"] == "gpt-5.5"
-    assert rows[0]["selection_mode"] == "openai_competencies_top_8_pass"
+    assert rows[0]["provider_key"] == "anthropic_claude"
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
     assert rows[0]["advisory_only"] is True
     assert rows[0]["proof_eligible_judge"] is False

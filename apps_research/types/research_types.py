@@ -164,10 +164,6 @@ class ResearchResult(BaseModel):
     local_first_disposition: dict | None = Field(
         None, description="Current-run routing disposition packet for local-first Qwen lane"
     )
-    briefing_sidecar: dict = Field(
-        default_factory=dict,
-        description="Targeting-brief sidecar metadata for downstream apps_rg handoff",
-    )
 
     @property
     def passed_gate(self) -> bool:

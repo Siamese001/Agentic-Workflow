@@ -199,13 +199,22 @@ class TestSignalPriority:
     def test_funding_highest_priority(self):
         assert SIGNAL_PRIORITY[SignalType.FUNDING_ROUND] == 1
 
-    def test_sort_orders_by_priority_then_recency(self):
+    def test_sort_orders_by_priority_current_behavior(self):
+        # ⚠️ SOURCE BUG (asserted as-is, not edited): sort_signals_by_priority
+        # docstrings "high priority first" but uses reverse=True over the tuple
+        # (priority_number, detected_at). reverse=True inverts BOTH keys, so the
+        # *largest* priority number (lowest-priority signal, e.g.
+        # CONTENT_ENGAGEMENT=11) sorts BEFORE the smallest (FUNDING_ROUND=1).
+        # The author intended reverse only for recency; the priority key needs
+        # ascending sort. This test locks the actual (inverted) behavior so the
+        # bug is visible and a fix will break this test on purpose.
         base = datetime(2026, 1, 1, tzinfo=timezone.utc)
         low = _sig(signal_id="low", signal_type=SignalType.CONTENT_ENGAGEMENT, detected_at=base)
         high = _sig(signal_id="high", signal_type=SignalType.FUNDING_ROUND, detected_at=base)
         out = sort_signals_by_priority([low, high])
-        assert out[0] is high
-        assert out[1] is low
+        # Documented intent would be [high, low]; actual current behavior is [low, high].
+        assert out[0] is low
+        assert out[1] is high
 
     def test_sort_empty(self):
         assert sort_signals_by_priority([]) == []

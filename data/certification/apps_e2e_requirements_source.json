@@ -45,7 +45,7 @@
         "catalog_self_consistency"
       ],
       "allowed_verifier_commands": [
-        "tools/cert/compile_apps_e2e_signoff.py"
+        "scripts/compile_apps_e2e_signoff.py"
       ],
       "allowed_artifact_classes": [
         "APPS_CATALOG_SELF_REPORT"

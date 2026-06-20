@@ -518,15 +518,11 @@ def _review_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             {
                 "priority": row.get("rank"),
                 "move": row.get("priority_work"),
-                "why_it_matters": row.get("why_now"),
+                "scope": row.get("testing_mv_action"),
                 "business_reason": row.get("why_now"),
-                "evidence": row.get("testing_mv_action"),
                 "technical_reason": row.get("testing_mv_action"),
-                "next_step": row.get("done_when"),
-                "why_this_rank": row.get("done_when"),
+                "why_this_rank": row.get("why_now"),
                 "decision": row.get("done_when"),
-                "decision_options": [],
-                "done_condition": row.get("done_when") or "",
             }
         )
     return build_bcg_brief(

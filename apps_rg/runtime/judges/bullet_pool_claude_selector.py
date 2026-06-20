@@ -1,4 +1,4 @@
-"""Pool selector: score self-consistency candidates and pick per-slot winners."""
+"""Claude-only pool selector: score self-consistency candidates and pick per-slot winners."""
 
 from __future__ import annotations
 
@@ -15,7 +15,6 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _artifact_path,
     _extract_anthropic_message_text,
     _extract_json_from_text,
-    _is_openai_gpt5_chat_model,
     _resolve_anthropic_model,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
@@ -107,22 +106,8 @@ class PoolSelectionResult:
     source_path_by_slot: dict[str, int]
 
 
-class PoolSelectorUnavailableError(RuntimeError):
-    """Raised when the selector cannot produce a real selection."""
-
-
 def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
-
-
-def _resolve_openai_model(meta: dict[str, Any], *, section_id: str) -> tuple[str, str]:
-    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
-
-    resolution = resolve_section_proof_judge_model(section_id, "openai_chatgpt")
-    if resolution.model_actual and not resolution.blocked:
-        return resolution.model_actual, resolution.model_source
-    default = str(meta.get("default_model") or "gpt-5.5").strip() or "gpt-5.5"
-    return default, "default"
 
 
 def _bullet_by_id(parsed: dict[str, Any], bullet_id: str) -> dict[str, Any] | None:
@@ -468,7 +453,6 @@ def _competencies_graph_selection_prompt(
     pool_text: str,
     targeting_context: dict[str, Any] | None,
     min_score_threshold: float,
-    selector_name: str,
     regen_note: str = "",
 ) -> str:
     n_paths = COMPETENCIES_SC_PATH_COUNT
@@ -494,10 +478,10 @@ def _competencies_graph_selection_prompt(
         f"Briefing (targeting only):\n{briefing[:resolve_bullet_selector_briefing_max_chars()]}\n\n"
         f"Skills graph ref: {skills_ref}\n\n"
         "Return JSON only:\n"
-        f'{{"selections":[{{"category_label":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}}],'
+        '{"selections":[{"category_label":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}],'
         f'"pool_summary":{{"paths_scored":{n_paths},"final_category_count":{n_final},'
         f'"candidate_category_count":{n_candidate},'
-        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"{selector_name}","mode":"graph_8x8"}}}}\n\n'
+        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"anthropic_claude","mode":"graph_8x8"}}}}\n\n'
         "CANDIDATE POOL:\n"
         f"{pool_text}"
     )
@@ -549,7 +533,6 @@ def _employment_bullet_selection_prompt(
     required_bullet_ids: tuple[str, ...],
     targeting_context: dict[str, Any] | None,
     min_score_threshold: float,
-    selector_name: str,
     regen_note: str = "",
 ) -> str:
     n_final = FINAL_BULLET_COUNT.get(section_id, len(required_bullet_ids))
@@ -574,9 +557,9 @@ def _employment_bullet_selection_prompt(
         f"Briefing (targeting only):\n{briefing[:resolve_bullet_selector_briefing_max_chars()]}\n\n"
         f"Skills graph ref: {skills_ref}\n\n"
         "Return JSON only:\n"
-        f'{{"selections":[{{"bullet_id":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}}],'
+        '{"selections":[{"bullet_id":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}],'
         f'"pool_summary":{{"paths_scored":{n_paths},"final_bullet_count":{n_final},'
-        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"{selector_name}"}}}}\n\n'
+        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"anthropic_claude"}}}}\n\n'
         "CANDIDATE POOL:\n"
         f"{pool_text}"
     )
@@ -590,7 +573,6 @@ def _selection_prompt(
     required_bullet_ids: tuple[str, ...] | None,
     targeting_context: dict[str, Any] | None,
     min_score_threshold: float | None = None,
-    selector_name: str = "anthropic_claude",
     regen_note: str = "",
 ) -> str:
     if _is_competencies_graph_pool(section_id, slot_kind):
@@ -603,7 +585,6 @@ def _selection_prompt(
             pool_text=pool_text,
             targeting_context=targeting_context,
             min_score_threshold=floor,
-            selector_name=selector_name,
             regen_note=regen_note,
         )
     if slot_kind == "bullets" and is_employment_bullet_lane(section_id) and required_bullet_ids:
@@ -618,7 +599,6 @@ def _selection_prompt(
             required_bullet_ids=required_bullet_ids,
             targeting_context=targeting_context,
             min_score_threshold=floor,
-            selector_name=selector_name,
             regen_note=regen_note,
         )
     if slot_kind == "bullets":
@@ -631,8 +611,8 @@ def _selection_prompt(
             "Pick exactly one winning path_index per bullet_id."
         )
         schema = (
-            f'{{"selections":[{{"bullet_id":"...","path_index":0,"score":0.0,"rationale":"..."}}],'
-            f'"pool_summary":{{"paths_scored":N,"selector":"{selector_name}"}}}}'
+            '{"selections":[{"bullet_id":"...","path_index":0,"score":0.0,"rationale":"..."}],'
+            '"pool_summary":{"paths_scored":N,"selector":"anthropic_claude"}}'
         )
     else:
         task = (
@@ -642,8 +622,8 @@ def _selection_prompt(
             "and anti_keyword_stuffing. Pick exactly one winning path_index per category_label."
         )
         schema = (
-            f'{{"selections":[{{"category_label":"...","path_index":0,"score":0.0,"rationale":"..."}}],'
-            f'"pool_summary":{{"paths_scored":N,"selector":"{selector_name}"}}}}'
+            '{"selections":[{"category_label":"...","path_index":0,"score":0.0,"rationale":"..."}],'
+            '"pool_summary":{"paths_scored":N,"selector":"anthropic_claude"}}'
         )
     ctx = ""
     if targeting_context:
@@ -723,12 +703,10 @@ def _parse_selections(text: str) -> dict[str, Any] | None:
 def _load_selection_doc_from_judge_artifacts(
     judge_out: JudgeOutput,
     artifact_dir: Path | None,
-    *,
-    provider_key: str,
 ) -> dict[str, Any] | None:
     if artifact_dir is not None:
         parse_path = _artifact_path(
-            provider_key,
+            "anthropic_claude",
             "provider_parse_result",
             artifact_base=artifact_dir,
         )
@@ -741,23 +719,16 @@ def _load_selection_doc_from_judge_artifacts(
             except (json.JSONDecodeError, OSError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
         raw_path = _artifact_path(
-            provider_key,
+            "anthropic_claude",
             "provider_response_raw",
             artifact_base=artifact_dir,
         )
         if raw_path.is_file():
             try:
                 doc = json.loads(raw_path.read_text(encoding="utf-8"))
-                if provider_key == "anthropic_claude":
-                    text = _extract_anthropic_message_text(doc)
-                else:
-                    raw_response = str(doc.get("raw_response") or "")
-                    response_doc = json.loads(raw_response) if raw_response else {}
-                    choice = response_doc["choices"][0]
-                    message = choice.get("message") or {}
-                    text = str(message.get("content") or "")
+                text = _extract_anthropic_message_text(doc)
                 return _parse_selections(text)
-            except (json.JSONDecodeError, OSError, TypeError, KeyError, IndexError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
+            except (json.JSONDecodeError, OSError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
     if judge_out.rationale:
         return _parse_selections(str(judge_out.rationale))
@@ -948,208 +919,6 @@ def _call_anthropic_pool_selector(
         judge_id="x1d_anthropic_claude_bullet_pool_selector",
         provider_name="Anthropic Claude",
         provider_key="anthropic_claude",
-        evaluator_mode="MODEL_BACKED",
-        provider_status="MODEL_BACKED_PASS",
-        model_name=model,
-        provider_available=True,
-        provider_blocked=False,
-        exact_provider_error=None,
-        raw_response_ref=str(raw_path),
-        input_hash=input_hash,
-        pass_=True,
-        rationale=str(model_source),
-    )
-    return judge_stub, selection_doc
-
-
-def _call_openai_pool_selector(
-    *,
-    api_key: str,
-    prompt: str,
-    model: str,
-    input_hash: str,
-    model_source: str,
-    artifact_dir: Path | None,
-) -> tuple[JudgeOutput, dict[str, Any] | None]:
-    """OpenAI call for pool JSON (competencies only)."""
-    import time
-    import urllib.error
-    import urllib.request
-    from datetime import datetime, timezone
-
-    from apps_rg.runtime.judges.executive_summary_x1d import (
-        _judge_live_https_allowed_under_pytest,
-        _make_blocked_output,
-        _pytest_network_disabled_blocked_output,
-        _resolved_x1d_judge_max_output_tokens,
-        _write_artifact,
-    )
-
-    timeout_s = pool_selector_timeout_s()
-    max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=1)
-    payload: dict[str, Any] = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": POOL_SELECTOR_SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-    }
-    if _is_openai_gpt5_chat_model(model):
-        payload["max_completion_tokens"] = max_tokens
-    else:
-        payload["max_tokens"] = max_tokens
-        payload["temperature"] = 0.1
-        payload["response_format"] = {"type": "json_object"}
-
-    started_wall = datetime.now(timezone.utc).isoformat()
-    req_path = _artifact_path("openai_chatgpt", "provider_request", artifact_base=artifact_dir)
-    _write_artifact(
-        req_path,
-        {
-            "payload": payload,
-            "input_hash": input_hash,
-            "purpose": "bullet_pool_openai_selector",
-            "effective_timeout_seconds": timeout_s,
-            "timestamp": started_wall,
-        },
-    )
-    _write_selector_timing_receipt(
-        artifact_dir,
-        {
-            "phase": "started",
-            "started_at": started_wall,
-            "effective_timeout_seconds": timeout_s,
-            "model": model,
-            "input_hash": input_hash,
-        },
-    )
-    if not _judge_live_https_allowed_under_pytest():
-        _write_selector_timing_receipt(
-            artifact_dir,
-            {
-                "phase": "blocked_pytest_network_disabled",
-                "started_at": started_wall,
-                "effective_timeout_seconds": timeout_s,
-                "outcome": "provider_unavailable",
-            },
-        )
-        blocked = _pytest_network_disabled_blocked_output(
-            provider_key="openai_chatgpt",
-            input_hash=input_hash,
-            model=model,
-            service_label="OpenAI",
-        )
-        return blocked, None
-
-    req = urllib.request.Request(
-        "https://api.openai.com/v1/chat/completions",
-        data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
-        method="POST",
-    )
-    t0 = time.monotonic()
-    try:
-        with urllib.request.urlopen(req, timeout=timeout_s) as response:
-            raw_response = response.read().decode()
-    except urllib.error.HTTPError as exc:
-        body = exc.read().decode()
-        _write_selector_timing_receipt(
-            artifact_dir,
-            {
-                "phase": "error",
-                "outcome": "provider_http_error",
-                "http_status": exc.code,
-                "elapsed_s": round(time.monotonic() - t0, 4),
-                "effective_timeout_seconds": timeout_s,
-            },
-        )
-        blocked = _make_blocked_output(
-            "openai_chatgpt",
-            input_hash,
-            "BLOCKED_PROVIDER_UNAVAILABLE",
-            "BLOCKED_PROVIDER_UNAVAILABLE",
-            f"OpenAI pool selector HTTP {exc.code}: {body[:400]}",
-            model_name=model,
-        )
-        return blocked, None
-    except (TimeoutError, urllib.error.URLError, OSError) as exc:
-        elapsed = round(time.monotonic() - t0, 4)
-        is_timeout = isinstance(exc, TimeoutError) or "timed out" in str(exc).lower()
-        outcome = "selector_timeout" if is_timeout else "provider_transport_error"
-        _write_selector_timing_receipt(
-            artifact_dir,
-            {
-                "phase": "error",
-                "outcome": outcome,
-                "elapsed_s": elapsed,
-                "effective_timeout_seconds": timeout_s,
-                "error": f"{type(exc).__name__}: {exc}",
-            },
-        )
-        blocked = _make_blocked_output(
-            "openai_chatgpt",
-            input_hash,
-            "BLOCKED_SELECTOR_TIMEOUT" if is_timeout else "BLOCKED_PROVIDER_UNAVAILABLE",
-            "BLOCKED_SELECTOR_TIMEOUT" if is_timeout else "BLOCKED_PROVIDER_UNAVAILABLE",
-            f"OpenAI pool selector {outcome} after {elapsed}s "
-            f"(budget {timeout_s}s): {type(exc).__name__}: {exc}",
-            model_name=model,
-        )
-        return blocked, None
-
-    completed_after_s = round(time.monotonic() - t0, 4)
-    _write_selector_timing_receipt(
-        artifact_dir,
-        {
-            "phase": "finished",
-            "outcome": "response_received",
-            "started_at": started_wall,
-            "completed_after_s": completed_after_s,
-            "effective_timeout_seconds": timeout_s,
-            "raw_output_chars": len(raw_response or ""),
-        },
-    )
-    raw_path = _artifact_path("openai_chatgpt", "provider_response_raw", artifact_base=artifact_dir)
-    _write_artifact(raw_path, {"raw_response": raw_response, "input_hash": input_hash})
-    try:
-        data = json.loads(raw_response)
-        choice = data["choices"][0]
-        message = choice.get("message") or {}
-        text = str(message.get("content") or "").strip()
-    except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
-        blocked = _make_blocked_output(
-            "openai_chatgpt",
-            input_hash,
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            f"OpenAI pool selector parse error: {exc}",
-            raw_response_ref=str(raw_path),
-            model_name=model,
-        )
-        return blocked, None
-
-    selection_doc = _parse_selections(text)
-    sel_path = _artifact_path("openai_chatgpt", "provider_parse_result", artifact_base=artifact_dir)
-    _write_artifact(
-        sel_path,
-        {"result": selection_doc, "raw_response_ref": str(raw_path), "purpose": "bullet_pool_openai_selector"},
-    )
-    if selection_doc is None:
-        blocked = _make_blocked_output(
-            "openai_chatgpt",
-            input_hash,
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            "BLOCKED_RESPONSE_PARSE_ERROR",
-            "Pool selector JSON missing selections array",
-            raw_response_ref=str(raw_path),
-            model_name=model,
-        )
-        return blocked, None
-
-    judge_stub = JudgeOutput(
-        judge_id="x1d_openai_chatgpt_bullet_pool_selector",
-        provider_name="OpenAI ChatGPT",
-        provider_key="openai_chatgpt",
         evaluator_mode="MODEL_BACKED",
         provider_status="MODEL_BACKED_PASS",
         model_name=model,
@@ -1439,14 +1208,9 @@ def run_claude_bullet_pool_selection(
     min_score_threshold: float | None = None,
     regen_note: str = "",
 ) -> PoolSelectionResult:
-    """Invoke the provider-backed pool selector and merge per-slot winners."""
-    competencies_selector = _is_competencies_graph_pool(section_id, slot_kind)
+    """Invoke Claude only; merge per-slot winners into one parsed section payload."""
     valid_paths = [p for p in paths if p.parsed is not None]
     if not valid_paths:
-        if competencies_selector:
-            raise PoolSelectorUnavailableError(
-                "competencies selector unavailable: no parsed candidate paths"
-            )
         return _fallback_first_complete_path(
             paths,
             slot_kind=slot_kind,
@@ -1483,10 +1247,6 @@ def run_claude_bullet_pool_selection(
             slot_kind=slot_kind,
             targeting_context=targeting_context,
         ):
-            if competencies_selector:
-                raise PoolSelectorUnavailableError(
-                    "competencies selector unavailable: no eligible candidates after graph/fact filtering"
-                )
             return PoolSelectionResult(
                 merged_parsed={},
                 selections=[],
@@ -1505,12 +1265,11 @@ def run_claude_bullet_pool_selection(
         required_bullet_ids=required_bullet_ids,
         targeting_context=targeting_context,
         min_score_threshold=min_score_threshold,
-        selector_name="openai_chatgpt" if competencies_selector else "anthropic_claude",
         regen_note=regen_note,
     )
     input_hash = _sha16(prompt)
 
-    if mode == "mocked" and not competencies_selector:
+    if mode == "mocked":
         return _fallback_first_complete_path(
             valid_paths,
             slot_kind=slot_kind,
@@ -1518,15 +1277,10 @@ def run_claude_bullet_pool_selection(
             targeting_context=targeting_context,
         )
 
-    provider_key = "openai_chatgpt" if competencies_selector else "anthropic_claude"
-    meta = PROVIDERS.get(provider_key) or {}
+    meta = PROVIDERS.get("anthropic_claude") or {}
     bootstrap_apps_rg_env()
-    api_key = os.environ.get(str(meta.get("env") or ""), "").strip()
+    api_key = os.environ.get(str(meta.get("env", "ANTHROPIC_API_KEY")), "").strip()
     if not api_key:
-        if competencies_selector:
-            raise PoolSelectorUnavailableError(
-                "competencies selector unavailable: missing OpenAI credentials"
-            )
         return _fallback_first_complete_path(
             valid_paths,
             slot_kind=slot_kind,
@@ -1534,26 +1288,15 @@ def run_claude_bullet_pool_selection(
             targeting_context=targeting_context,
         )
 
-    if competencies_selector:
-        model, model_source = _resolve_openai_model(meta, section_id=section_id)
-        judge_out, parsed_sel = _call_openai_pool_selector(
-            api_key=api_key,
-            prompt=prompt,
-            model=model,
-            input_hash=input_hash,
-            model_source=model_source,
-            artifact_dir=artifact_dir,
-        )
-    else:
-        model, model_source = _resolve_anthropic_model(meta, section_id=section_id)
-        judge_out, parsed_sel = _call_anthropic_pool_selector(
-            api_key=api_key,
-            prompt=prompt,
-            model=model,
-            input_hash=input_hash,
-            model_source=model_source,
-            artifact_dir=artifact_dir,
-        )
+    model, model_source = _resolve_anthropic_model(meta, section_id=section_id)
+    judge_out, parsed_sel = _call_anthropic_pool_selector(
+        api_key=api_key,
+        prompt=prompt,
+        model=model,
+        input_hash=input_hash,
+        model_source=model_source,
+        artifact_dir=artifact_dir,
+    )
 
     if artifact_dir is not None:
         (artifact_dir / "bullet_pool_claude_selector_judge.json").write_text(
@@ -1562,16 +1305,7 @@ def run_claude_bullet_pool_selection(
         )
 
     if parsed_sel is None:
-        parsed_sel = _load_selection_doc_from_judge_artifacts(
-            judge_out,
-            artifact_dir,
-            provider_key=judge_out.provider_key,
-        )
-    if competencies_selector and (parsed_sel is None or judge_out.pass_ is False):
-        raise PoolSelectorUnavailableError(
-            "competencies selector unavailable: "
-            f"{judge_out.exact_provider_error or judge_out.provider_status or 'unavailable'}"
-        )
+        parsed_sel = _load_selection_doc_from_judge_artifacts(judge_out, artifact_dir)
     if parsed_sel is None and judge_out.pass_ is False:
         return _fallback_first_complete_path(
             valid_paths,
@@ -1606,7 +1340,7 @@ def run_claude_bullet_pool_selection(
             allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
             resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
         )
-        selection_mode = "openai_competencies_top_8_pass"
+        selection_mode = "claude_competencies_top_8_pass"
     else:
         merged, source_map = merge_competency_selections(valid_paths, selections, base_parsed=base)
         selection_mode = "claude_per_slot_selection"
@@ -1622,7 +1356,6 @@ def run_claude_bullet_pool_selection(
 
 __all__ = [
     "PoolSelectionResult",
-    "PoolSelectorUnavailableError",
     "SELECTOR_TIMING_RECEIPT_FILENAME",
     "merge_bullet_selections",
     "merge_competency_selections",

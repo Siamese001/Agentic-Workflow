@@ -90,26 +90,6 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "query_template": "{topic} news 2024 2025 announcements funding acquisition",
         "min_sources": 2,
     },
-    "investor_day_signals": {
-        "query_template": "{topic} investor day earnings call transcript strategy outlook",
-        "min_sources": 2,
-    },
-    "leadership_interviews": {
-        "query_template": "{topic} executive interview podcast leadership transcript",
-        "min_sources": 2,
-    },
-    "partner_ecosystem_motion": {
-        "query_template": "{topic} partnerships co-sell ecosystem channel GSI ISV",
-        "min_sources": 2,
-    },
-    "partner_enablement": {
-        "query_template": "{topic} partner enablement joint solution development technical close",
-        "min_sources": 2,
-    },
-    "customer_case_studies": {
-        "query_template": "{topic} customer case study implementation deployment outcomes",
-        "min_sources": 2,
-    },
     "competitive_landscape": {
         "query_template": "{topic} competitors alternatives market positioning",
         "min_sources": 1,
@@ -293,28 +273,12 @@ def decompose_coverage_families(
     resolved = _resolve_depth_profile(depth_profile)
     base_families = list(_PROFILE_REQUIRED_FAMILIES.get(resolved, _PROFILE_REQUIRED_FAMILIES["COMPANY_BRIEF_STANDARD"]))
 
-    jd_blob = " ".join(str(v) for v in (jd_context or {}).values() if v).lower()
-
     # JD presence activates role_context + tech_stack_and_tools if not already present
     jd_boosted_families: list[str] = []
     if jd_context:
         for fam in ("role_context", "tech_stack_and_tools"):
             if fam not in base_families:
                 jd_boosted_families.append(fam)
-        if any(token in jd_blob for token in ("partnership", "partner", "alliance", "co-sell", "cosell", "ecosystem", "channel", "gsi", "isv")):
-            for fam in (
-                "partner_ecosystem_motion",
-                "partner_enablement",
-                "leadership_interviews",
-                "customer_case_studies",
-                "investor_day_signals",
-            ):
-                if fam not in base_families and fam not in jd_boosted_families:
-                    jd_boosted_families.append(fam)
-        if any(token in jd_blob for token in ("regulat", "bank", "insurance", "risk", "compliance")):
-            for fam in ("financials_and_growth", "regulatory_and_legal", "recent_news_and_signals"):
-                if fam not in base_families and fam not in jd_boosted_families:
-                    jd_boosted_families.append(fam)
 
     plans: List[QueryPlan] = []
     for fam in base_families:

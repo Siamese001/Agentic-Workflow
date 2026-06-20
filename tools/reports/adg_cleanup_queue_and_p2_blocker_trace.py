@@ -176,32 +176,19 @@ def _cleanup_queue_rows(dead_code_report: dict[str, Any] | None) -> tuple[list[d
         if not scope:
             continue
         count = int(hotspot[1] or 0)
-        archived = _is_archived_surface(scope)
-        move = "Triage unresolved imports" if not archived else "Defer archived unresolved imports"
-        why_it_matters = (
-            "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy."
-        )
-        evidence = f"{count} unresolved import(s) on this surface."
-        next_step = (
-            "Trace the live imports, then rerun the scan."
-            if not archived
-            else "Leave archived noise deferred unless it affects live paths."
-        )
         row = {
             "priority": rank,
             "scope": scope,
             "count": count,
-            "surface": "archived" if archived else "live",
-            "move": move,
-            "why_it_matters": why_it_matters,
-            "business_reason": why_it_matters,
-            "evidence": evidence,
-            "technical_reason": evidence,
-            "next_step": next_step,
-            "why_this_rank": next_step,
-            "decision": "investigate" if not archived else "defer",
-            "decision_options": [],
-            "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+            "surface": "archived" if _is_archived_surface(scope) else "live",
+            "business_reason": (
+                "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy."
+            ),
+            "technical_reason": f"{count} unresolved import(s) on this surface.",
+            "why_this_rank": (
+                "Start where a single pass can remove the most noise from the current report."
+            ),
+            "decision": "investigate" if not _is_archived_surface(scope) else "defer",
         }
         if row["surface"] == "archived":
             archived_rows.append(row)
@@ -262,16 +249,12 @@ def _p2_summary(
                     "apps" if file_path.startswith("apps_") else "other"
                 )
             ),
-            "move": "Reduce MEDIUM hygiene debt",
-            "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
-            "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
-            "evidence": f"{count} MEDIUM hygiene record(s) in the published snapshot.",
+            "business_reason": (
+                "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface."
+            ),
             "technical_reason": f"{count} MEDIUM hygiene record(s) in the published snapshot.",
-            "next_step": "Burn down the highest-count files, then rerun ADG.",
-            "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
+            "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest.",
             "decision": "reduce",
-            "decision_options": [],
-            "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
         }
         for file_path, count in file_counts.most_common()
     ]
@@ -293,17 +276,14 @@ def _p2_summary(
         priority_rows.append(
             {
                 "priority": len(priority_rows) + 1,
-                "move": row["move"],
+                "move": "Reduce MEDIUM hygiene debt",
                 "scope": row["scope"],
-                "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
-                "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
-                "evidence": row["evidence"],
+                "business_reason": (
+                    "This is a live surface where removing hygiene debt improves trust in the next run."
+                ),
                 "technical_reason": row["technical_reason"],
-                "next_step": row["next_step"],
                 "why_this_rank": row["why_this_rank"],
                 "decision": row["decision"],
-                "decision_options": [],
-                "done_condition": row["done_condition"],
             }
         )
     star_import_rows = [row for row in rows if "import *" in str(row.get("evidence") or "")]
@@ -321,15 +301,12 @@ def _p2_summary(
                         }
                     )
                 ),
-                "why_it_matters": "Star imports hide dependencies and make deprecation decisions harder to defend.",
-                "business_reason": "Star imports hide dependencies and make deprecation decisions harder to defend.",
-                "evidence": f"{len(star_import_rows)} MEDIUM hygiene record(s) are explicit star imports.",
+                "business_reason": (
+                    "Star imports hide dependencies and make deprecation decisions harder to defend."
+                ),
                 "technical_reason": f"{len(star_import_rows)} MEDIUM hygiene record(s) are explicit star imports.",
-                "next_step": "Replace star imports with explicit imports.",
                 "why_this_rank": "Easy wins should follow the largest live runtime hotspots.",
                 "decision": "deprecate",
-                "decision_options": [],
-                "done_condition": "Star imports are gone from the published snapshot.",
             }
         )
     priority_rows.append(
@@ -337,15 +314,12 @@ def _p2_summary(
             "priority": len(priority_rows) + 1,
             "move": "Re-run ADG and keep the ceiling honest",
             "scope": str((ratchet_doc or {}).get("snapshot") or "p2_ratchet.json"),
-            "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
-            "business_reason": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
-            "evidence": f"Current count={current_count}; ceiling={ceiling}; delta={delta}.",
+            "business_reason": (
+                "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted."
+            ),
             "technical_reason": f"Current count={current_count}; ceiling={ceiling}; delta={delta}.",
-            "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
             "why_this_rank": "Re-baselining before cleanup only hides the blocker.",
             "decision": "rebaseline_if_intentional",
-            "decision_options": [],
-            "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
         }
     )
 
@@ -504,14 +478,16 @@ def _render_cleanup_section(cleanup: dict[str, Any]) -> list[str]:
         lines.append("")
         lines.append(
             _table(
-                ["Priority", "Move", "Why it matters", "Evidence", "Next step"],
+                ["Priority", "Surface", "Scope", "Count", "Business reason", "Technical reason", "Decision"],
                 [
                     [
                         row.get("priority"),
-                        row.get("move"),
-                        row.get("why_it_matters"),
-                        row.get("evidence"),
-                        row.get("next_step"),
+                        row.get("surface"),
+                        row.get("scope"),
+                        row.get("count"),
+                        row.get("business_reason"),
+                        row.get("technical_reason"),
+                        row.get("decision"),
                     ]
                     for row in live_rows
                 ],
@@ -523,14 +499,16 @@ def _render_cleanup_section(cleanup: dict[str, Any]) -> list[str]:
         lines.append("")
         lines.append(
             _table(
-                ["Priority", "Move", "Why it matters", "Evidence", "Next step"],
+                ["Priority", "Surface", "Scope", "Count", "Business reason", "Technical reason", "Decision"],
                 [
                     [
                         row.get("priority"),
-                        row.get("move"),
-                        row.get("why_it_matters"),
-                        row.get("evidence"),
-                        row.get("next_step"),
+                        row.get("surface"),
+                        row.get("scope"),
+                        row.get("count"),
+                        row.get("business_reason"),
+                        row.get("technical_reason"),
+                        row.get("decision"),
                     ]
                     for row in archived_rows
                 ],
@@ -593,14 +571,16 @@ def _render_p2_section(p2: dict[str, Any]) -> list[str]:
         lines.append("")
         lines.append(
             _table(
-                ["Priority", "Move", "Why it matters", "Evidence", "Next step"],
+                ["Priority", "Surface", "Scope", "Count", "Business reason", "Technical reason", "Decision"],
                 [
                     [
                         idx,
-                        row.get("move"),
-                        row.get("why_it_matters"),
-                        row.get("evidence"),
-                        row.get("next_step"),
+                        row.get("surface"),
+                        row.get("scope"),
+                        row.get("count"),
+                        row.get("business_reason"),
+                        row.get("technical_reason"),
+                        row.get("decision"),
                     ]
                     for idx, row in enumerate(file_hotspots[:8], start=1)
                 ],

@@ -22,13 +22,7 @@ from agentic_core.L3_orchestration.exit_eval.v6 import (
     run_l5_reclearance,
 )
 
-from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import base_packet as _base_packet
-
-_CERT_REF = "l5:cert:hitl"
-
-
-def base_packet(**overrides: object):
-    return _base_packet(l5_certification_refs=(_CERT_REF,), **overrides)
+from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import base_packet
 
 
 # ---- X2 aggregate matrix ----

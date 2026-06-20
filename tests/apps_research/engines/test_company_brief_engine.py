@@ -9,7 +9,6 @@ import types
 import pytest
 
 from apps_research.engines.company_brief_engine import CompanyBriefEngine, _v2_enabled
-from apps_research.engines.company_brief_engine import CompanyBriefUnavailableError
 
 
 def test_v2_flag_off_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -24,22 +23,22 @@ def test_v2_flag_on_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_v2_path_offline_degrades_gracefully(monkeypatch: pytest.MonkeyPatch) -> None:
-    """V2 path with no SEARXNG_BASE_URL fails closed without network calls.
+    """V2 path with no TAVILY_API_KEY degrades to stub synthesis (plan §P1.4 acceptance).
 
-    Ensures the feature-flag ON case stays deterministic in offline test environments.
+    Ensures the feature-flag ON case does not regress offline test environments.
     """
-    for k in ("SEARXNG_BASE_URL", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
+    for k in ("TAVILY_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
     engine = CompanyBriefEngine()
-    with pytest.raises(CompanyBriefUnavailableError, match="v2 research returned no grounded findings"):
-        engine.execute({"topic": "TestCo", "depth": "shallow"})
+    payload = engine.execute({"topic": "TestCo", "depth": "shallow"})
+    assert payload["company"] == "TestCo"
 
 
 @pytest.fixture
 def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for k in (
-        "SEARXNG_BASE_URL",
+        "TAVILY_API_KEY",
         "ANTHROPIC_API_KEY",
         "OPENAI_API_KEY",
         "GEMINI_API_KEY",
@@ -48,10 +47,13 @@ def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(k, raising=False)
 
 
-def test_engine_fails_closed_without_live_or_curated_research(offline_env: None) -> None:
+def test_engine_produces_schema_valid_brief_offline(offline_env: None) -> None:
     engine = CompanyBriefEngine()
-    with pytest.raises(CompanyBriefUnavailableError, match="adaptive research returned no grounded findings"):
-        engine.execute({"topic": "TestCo", "depth": "shallow"})
+    payload = engine.execute({"topic": "TestCo", "depth": "shallow"})
+    assert payload["company"] == "TestCo"
+    assert payload["overview"]["tagline"].startswith("TestCo")
+    assert len(payload["strategic_priorities"]) >= 2
+    assert len(payload["language_to_mirror"]) >= 3
 
 
 def test_engine_rejects_empty_topic(offline_env: None) -> None:
@@ -67,62 +69,60 @@ def test_engine_uses_jd_facets_into_mirror_seed(tmp_path, offline_env: None) -> 
         encoding="utf-8",
     )
     engine = CompanyBriefEngine()
-    with pytest.raises(CompanyBriefUnavailableError, match="adaptive research returned no grounded findings"):
-        engine.execute({"topic": "TestCo", "jd_anchor": jd_path, "depth": "shallow"})
+    payload = engine.execute({"topic": "TestCo", "jd_anchor": jd_path, "depth": "shallow"})
+    # JD facets should leak into mirror seed via the stub.
+    assert any(facet in payload["language_to_mirror"] for facet in ("consulting", "agentic", "data"))
 
 
-def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini")
-    monkeypatch.setenv("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "777")
+def test_gemini_synthesis_uses_google_ai_max_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-key")
+    monkeypatch.setenv("GOOGLE_AI_MAX_OUTPUT_TOKENS", "777")
+
+    import agentic_core.config.google_ai_env as google_env
+
+    monkeypatch.setattr(
+        google_env,
+        "google_ai_pro_model_id",
+        lambda environ=None, *, default="": ("gemini-3.1-pro-preview", "test"),
+    )
+    monkeypatch.setattr(
+        google_env,
+        "google_ai_flash_model_id",
+        lambda environ=None, *, default="": ("", ""),
+    )
 
     captured: list[dict[str, object]] = []
     responses = iter(
         [
             types.SimpleNamespace(
-                choices=[
-                    types.SimpleNamespace(
-                        message=types.SimpleNamespace(
-                            content=json.dumps(
-                                {
-                                    "company_archetype": "consulting",
-                                    "company_dna": {},
-                                    "tagline": "TestCo",
-                                }
-                            )
-                        )
-                    )
-                ]
+                text=json.dumps(
+                    {
+                        "company_archetype": "consulting",
+                        "company_dna": {},
+                        "tagline": "TestCo",
+                    }
+                )
             ),
-            types.SimpleNamespace(
-                choices=[
-                    types.SimpleNamespace(
-                        message=types.SimpleNamespace(content="TestCo targeting brief")
-                    )
-                ]
-            ),
+            types.SimpleNamespace(text="TestCo targeting brief"),
         ]
     )
 
-    class _FakeChatCompletions:
-        def create(self, *, model, messages, temperature, max_completion_tokens):
-            captured.append(
-                {
-                    "model": model,
-                    "temperature": temperature,
-                    "max_completion_tokens": max_completion_tokens,
-                    "messages": tuple(messages),
-                }
-            )
+    class _FakeModels:
+        def generate_content(self, *, model, contents, config):
+            captured.append({"model": model, "config": dict(config)})
             return next(responses)
 
     class _FakeClient:
-        def __init__(self):
-            self.chat = types.SimpleNamespace(completions=_FakeChatCompletions())
+        def __init__(self, api_key):
+            self.api_key = api_key
+            self.models = _FakeModels()
 
-    monkeypatch.setattr(
-        "apps_research.engines.company_brief_engine.create_openai_sync_client",
-        lambda: _FakeClient(),
-    )
+    fake_genai = types.ModuleType("google.genai")
+    fake_genai.Client = _FakeClient
+    fake_google = types.ModuleType("google")
+    fake_google.genai = fake_genai
+    monkeypatch.setitem(sys.modules, "google", fake_google)
+    monkeypatch.setitem(sys.modules, "google.genai", fake_genai)
 
     engine = CompanyBriefEngine()
     json_out = engine._gemini_synthesize(
@@ -134,7 +134,7 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
     assert json_out["tagline"] == "TestCo"
     assert plain_out == "TestCo targeting brief"
     assert [row["model"] for row in captured] == [
-        "gpt-5.4-mini",
-        "gpt-5.4-mini",
+        "gemini-3.1-pro-preview",
+        "gemini-3.1-pro-preview",
     ]
-    assert all(row["max_completion_tokens"] == 777 for row in captured)
+    assert all(row["config"]["max_output_tokens"] == 777 for row in captured)

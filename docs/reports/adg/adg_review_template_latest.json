@@ -137,8 +137,8 @@
         "band": "P3",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
         "rank": 15,
-        "records": 18788,
-        "target": "18,788 non-exempt from 18,876 gross",
+        "records": 18789,
+        "target": "18,789 non-exempt from 18,877 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
         "work_class": "Severity audit"
       }
@@ -730,21 +730,21 @@
       "exists": true,
       "path": "artifacts\\adg\\adg_action_queue_06192026_0917.json",
       "required": false,
-      "sha256": "f3455328a2e67af8ad462634fb839e20f2f179faa6be391734afe8668d074fe2"
+      "sha256": "637a101fb2eeacc2b8c30d695aa512dc7dfbe209ea2cf79842a445de02ca764c"
     },
     "burndown": {
       "artifact_key": "burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_table.json",
       "required": true,
-      "sha256": "5b8234a9b43a23154c4b7fdd6f6c944e92ecde2e4890f149b0bf44975ed18777"
+      "sha256": "bb1fd17b39625e0e08ae64527f34aa1aed7f80c3f8b1af794e8192c0d32f0067"
     },
     "docs_markdown_burndown": {
       "artifact_key": "docs_markdown_burndown",
       "exists": true,
       "path": "docs\\reports\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed"
+      "sha256": "0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213"
     },
     "enforcement_report": {
       "artifact_key": "enforcement_report",
@@ -762,17 +762,17 @@
     },
     "generation_manifest": {
       "artifact_key": "generation_manifest",
-      "exists": true,
+      "exists": false,
       "path": "artifacts\\adg\\adg_generation_manifest_06192026_0917.json",
       "required": false,
-      "sha256": "653c779089cbeddcc62a13d952a01211f1d2fc550782fa32bb936e0a1cc1530f"
+      "sha256": null
     },
     "markdown_burndown": {
       "artifact_key": "markdown_burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "ec952e05e42f845fdf9ab4142d42ef5f99a254acef02ca91af804fc7be900fed"
+      "sha256": "0305bd20b9678f9a555ff5c1d13efd3e796c125260ad1226ed9fbe39cc365213"
     }
   },
   "decision_synthesis": {
@@ -830,8 +830,8 @@
     "artifact_consistency": {
       "fail_closed": true,
       "missing_required": [],
-      "optional_present_count": 5,
-      "present_count": 7,
+      "optional_present_count": 4,
+      "present_count": 6,
       "present_required_count": 2,
       "required_count": 2,
       "status": "ok"
@@ -948,7 +948,7 @@
       "Do not run broad cleanup before red gates and ratchet floors are controlled."
     ]
   },
-  "generated_at_utc": "2026-06-20T10:42:37+00:00",
+  "generated_at_utc": "2026-06-19T13:23:52+00:00",
   "graphdb_mv_analyst_summary": {
     "mv_inventory": [
       {
@@ -2048,8 +2048,8 @@
           "band": "P3",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
           "rank": 15,
-          "records": 18788,
-          "target": "18,788 non-exempt from 18,876 gross",
+          "records": 18789,
+          "target": "18,789 non-exempt from 18,877 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
           "work_class": "Severity audit"
         }
@@ -2753,21 +2753,7 @@
       "ratchet_seed_missing": 0,
       "warn": 6
     },
-    "generation_manifest": {
-      "certification_status": "failed",
-      "commit_sha": null,
-      "created_at_utc": "2026-06-19T13:25:50Z",
-      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06192026_0917.json",
-      "generation_exit_code": null,
-      "p0_status": "unknown",
-      "registry_bucket_edge_count": 0,
-      "repo_state_hash": null,
-      "runtime_attested_edge_count": 0,
-      "runtime_proof_status": "view_absent",
-      "snapshot_path": null,
-      "sqlite_path": null,
-      "timestamp": "2026-06-19T13:25:50Z"
-    }
+    "generation_manifest": {}
   },
   "review_template": {
     "decision": "pending",
@@ -2809,10 +2795,10 @@
       "band": "P3",
       "diff_vs_prev": 88,
       "formula": "net = gross - guardian",
-      "gross": 18876,
+      "gross": 18877,
       "guardian": 88,
       "label": "style_warnings",
-      "net": 18788
+      "net": 18789
     }
   ],
   "snapshot_ts": "2026-06-19T13:22:35.342598+00:00",

@@ -1,8 +1,7 @@
-"""apps_eval record adapter into core L6 shadow observability.
+"""apps_eval bridge into core L6 shadow observability.
 
-apps_eval is an exam instrument. This adapter lets L6 observe completed
-apps_eval records as boundary-only evidence; it never requests current-run
-mutation or durable writes.
+apps_eval is a proof harness. This bridge emits completed-eval evidence for L6
+observation only; it never requests current-run mutation or durable writes.
 """
 
 from __future__ import annotations
@@ -19,10 +18,11 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
+from apps_eval.contracts import CURRENT_EVAL_RECORD_SCHEMA_VERSION, CompletedEvalRecord
+
 L6_SHADOW_BRIDGE_ARTIFACT = "l6_shadow_bridge.json"
 L6_SHADOW_BRIDGE_SPANS_ARTIFACT = "l6_shadow_bridge_spans.json"
 L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT = "l6_shadow_bridge_spans.jsonl"
-L6_SHADOW_BRIDGE_BOUNDARY_SCOPE = "L6_1_2_BOUNDARY_ONLY"
 
 
 def _jsonable(value: object) -> object:
@@ -54,7 +54,7 @@ def _write_json_artifact(path: Path, payload: Any) -> Path:
 
 
 def build_completed_eval_shadow_exhaust(
-    record: Any,
+    record: CompletedEvalRecord,
     *,
     eval_record_path: str,
     l6_handoff_path: str = "",
@@ -89,13 +89,13 @@ def build_completed_eval_shadow_exhaust(
         "prompt_envelope_refs": [],
         "l2_artifact_refs": [record_ref],
         "source_lineage_manifest_ref": record_ref,
-        "l5_certification_ref": "l5-cert-ref:MISSING",
+        "l5_certification_ref": f"l5-cert-ref:apps_eval:{record.record_id}",
         "source_exhaust": [
             {
                 "source_type": "apps_eval_completed_eval_record",
                 "source_ref": record_ref,
                 "source_hash": _hash_ref(record.to_dict()),
-                "source_schema_version": getattr(record, "schema_version", "apps_eval.completed_eval.unknown"),
+                "source_schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
                 "observed_stage": "EXIT",
                 "expected_stage_order": 7,
                 "lineage_parent_refs": [trace_root],
@@ -131,7 +131,7 @@ def build_completed_eval_shadow_exhaust(
 
 
 def emit_completed_eval_l6_shadow_bridge(
-    record: Any,
+    record: CompletedEvalRecord,
     run_dir: Path,
     *,
     eval_record_path: str,
@@ -157,13 +157,11 @@ def emit_completed_eval_l6_shadow_bridge(
     )
     bridge = {
         "schema_version": "apps_eval.l6_shadow_bridge.v1",
-        "boundary_scope": L6_SHADOW_BRIDGE_BOUNDARY_SCOPE,
         "record_id": record.record_id,
         "suite_id": record.suite_id,
         "app_id": record.app_id,
         "runtime_exhaust_bundle_id": ingest.bundle.runtime_exhaust_bundle_id,
         "readiness_decision": readiness.readiness_decision,
-        "ingest_gap_report": _jsonable(ingest.gap_report),
         "readiness_receipt": _jsonable(readiness),
         "g28_audit_completeness": _jsonable(state.g28),
         "g29_learning_firewall": _jsonable(state.g29),
@@ -210,7 +208,6 @@ def build_driver_l6_shadow_bridge_payload(
     """Build a lightweight bridge payload for apps_shared proof drivers."""
     return {
         "schema_version": "apps_eval.driver_l6_shadow_bridge.v1",
-        "boundary_scope": L6_SHADOW_BRIDGE_BOUNDARY_SCOPE,
         "eval_id": eval_id,
         "scorecard_count": len(app_scorecards),
         "output_refs": dict(output_refs),
@@ -226,7 +223,6 @@ def build_driver_l6_shadow_bridge_payload(
 
 __all__ = [
     "L6_SHADOW_BRIDGE_ARTIFACT",
-    "L6_SHADOW_BRIDGE_BOUNDARY_SCOPE",
     "L6_SHADOW_BRIDGE_SPANS_ARTIFACT",
     "L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT",
     "build_completed_eval_shadow_exhaust",

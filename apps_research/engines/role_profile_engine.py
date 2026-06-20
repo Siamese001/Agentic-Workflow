@@ -2,8 +2,8 @@
 
 Produces a RoleProfile dict conforming to
 ``apps_research.types.role_profile.RoleProfile``. Uses the V2 retrieval
-pipeline (query decomposer -> SearXNG -> reranker) when ``SEARXNG_BASE_URL``
-is set and ``APPS_RESEARCH_RETRIEVAL_V2=1``; otherwise returns a structured
+pipeline (query decomposer → Tavily → reranker) when TAVILY_API_KEY is
+set and ``APPS_RESEARCH_RETRIEVAL_V2=1``; otherwise returns a structured
 stub so the pipeline stays green in offline environments.
 """
 
@@ -71,7 +71,7 @@ class RoleProfileEngine:
     def _fetch_sources_v2(self, *, role: str, depth: str) -> list[dict[str, str]]:
         from apps_research.engines.query_decomposer import decompose
         from apps_research.integrations.reranker_adapter import rerank
-        from apps_research.integrations.search_retrieval import retrieve
+        from apps_research.integrations.tavily_retrieval import retrieve
 
         depth_norm = depth if depth in {"shallow", "standard", "deep"} else "standard"
         try:

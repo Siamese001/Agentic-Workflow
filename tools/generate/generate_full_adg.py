@@ -1661,7 +1661,6 @@ def generate_full_adg(
             adg_artifacts_dir=adg_artifacts_dir,
             ts=ts,
             fail_closed=False,
-            print_inline=True,
         )
         if _action_queue_rc != 0:
             print(

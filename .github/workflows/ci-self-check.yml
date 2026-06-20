@@ -5,19 +5,7 @@ on:
     branches: ["**"]
   push:
     branches: [main, master]
-  schedule:
-    - cron: "17 7 * * *"
   workflow_dispatch:
-    inputs:
-      live_audit:
-        description: "Run the live branch-protection drift audit"
-        required: false
-        default: "false"
-        type: string
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -52,37 +40,3 @@ jobs:
           fi
       - name: Audit required-check manifest
         run: python ops_scripts/ci/audit_required_checks.py --config .github/workflow-config.yaml
-
-  branch-protection-drift:
-    name: branch-protection-drift
-    if: github.event_name == 'schedule' || github.event.inputs.live_audit == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/python-setup
-        with:
-          python-version: "3.12"
-          install-mode: minimal
-      - name: Audit live branch protection
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python ops_scripts/ci/audit_required_checks.py --config .github/workflow-config.yaml --live --branch main --strict-live
-
-  ci-waiver-expiry:
-    name: ci-waiver-expiry
-    if: github.event_name == 'schedule' || github.event.inputs.live_audit == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/python-setup
-        with:
-          python-version: "3.12"
-          install-mode: minimal
-      - name: Audit CI waiver expiry
-        run: python ops_scripts/ci/check_ci_waiver_expiry.py

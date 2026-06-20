@@ -65,7 +65,7 @@ C0-to-PA gate with `PASS / WEAK_WITH_CAVEATS / FAIL` verdicts.
 | File | Change |
 |------|--------|
 | `apps_research/config/domain_contract/cache_profiles.yaml` | JD-digest cache participation; per-depth TTL variants; R1A/R1B terminal spec |
-| `apps_research/config/domain_contract/retrieval_profiles.yaml` | SearXNG + web sources; per-depth retrieval config; JD retrieval families |
+| `apps_research/config/domain_contract/retrieval_profiles.yaml` | Tavily + web sources; per-depth retrieval config; JD retrieval families |
 | `apps_research/config/domain_contract/prompt_profiles.yaml` | JD/depth/C0 output slots; DATA/JD_CONTEXT/ANALYSIS fence rules |
 
 ### Wave 4 — C0 Engine Augmentation
@@ -145,7 +145,7 @@ C0-to-PA gate with `PASS / WEAK_WITH_CAVEATS / FAIL` verdicts.
 | Gap | Reason deferred |
 |-----|----------------|
 | GAP-8 full FEC ↔ Exit v6 integration test (live pipeline) | Requires `apps_research --apps-e2e-live`; deferred to E2E wave |
-| Real SearXNG retrieval with live COMPANY_BRIEF_DOSSIER depth | Network-bound; offline test suite uses stubs |
+| Real Tavily retrieval with live COMPANY_BRIEF_DOSSIER depth | Network-bound; offline test suite uses stubs |
 | `query_decomposer.py` C0 query fan-out wiring (referenced in W4 plan) | Not in W4 explicit scope; deferred |
 
 ---

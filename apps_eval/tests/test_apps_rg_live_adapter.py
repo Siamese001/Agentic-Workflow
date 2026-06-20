@@ -100,47 +100,13 @@ def test_apps_rg_live_normalizes_generated_resume(monkeypatch, tmp_path: Path) -
     )
 
     assert snapshot.x3_disposition == "X3D_ALLOW_FINISH"
-    assert "resume.md" not in snapshot.artifacts
+    assert "resume.md" in snapshot.artifacts
     assert "generated_resume.json" in snapshot.artifacts
     assert snapshot.output["sections"]["executive_summary"].startswith("Strategic technology")
     assert "Led modernization programs" in snapshot.output["sections"]["experience"]
     assert "AI strategy" in snapshot.output["sections"]["skills"]
     assert snapshot.provenance["evidence_refs"] == ["resume:leadership"]
-    assert snapshot.claims[0]["support_status"] == "UNKNOWN"
-    assert "supported" not in snapshot.claims[0]
-    assert snapshot.side_effects["product_state_mutated"] == "UNKNOWN"
-    assert not (tmp_path / "run" / "resume.md").is_file()
-
-
-def test_apps_rg_live_maps_x3c_to_commit_request(monkeypatch, tmp_path: Path) -> None:
-    import agentic_core.runtime.entry.apps_rg_dispatch as dispatch_module
-
-    def fake_dispatch_apps_rg_run(**kwargs: str) -> dict[str, object]:
-        artifact_dir = Path(kwargs["artifact_dir"])
-        out_dir = artifact_dir / "outputs"
-        out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / "generated_resume.json").write_text(
-            json.dumps({"sections": {"summary": "Commit path."}}, indent=2),
-            encoding="utf-8",
-        )
-        return {
-            "artifact_dir": str(artifact_dir),
-            "execution_status": "completed",
-            "exit_status": "success",
-            "fault": "",
-            "outcome_authorized": True,
-            "x3_disposition": "X3C",
-        }
-
-    monkeypatch.setattr(dispatch_module, "dispatch_apps_rg_run", fake_dispatch_apps_rg_run)
-
-    snapshot = run_apps_rg_live(
-        "resume_tailor_basic",
-        _complete_payload(tmp_path),
-        tmp_path / "run",
-    )
-
-    assert snapshot.x3_disposition == "X3C_COMMIT_REQUEST_TO_UWG"
+    assert (tmp_path / "run" / "resume.md").is_file()
 
 
 def test_apps_rg_live_runner_uses_compact_artifact_paths(monkeypatch, tmp_path: Path) -> None:

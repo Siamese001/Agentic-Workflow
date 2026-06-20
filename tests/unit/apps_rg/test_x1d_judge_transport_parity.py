@@ -318,10 +318,10 @@ def test_section_retry_profile_is_proportional() -> None:
     assert _section_x1d_judge_max_attempts("unify_bullets") == 2
     assert _section_x1d_judge_max_attempts("executive_summary") == 3
 
-    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=1) == 4096
+    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=1) == 2048
     assert _resolved_section_x1d_judge_max_output_tokens("unify_bullets", attempt=1) == 4096
     assert _resolved_section_x1d_judge_max_output_tokens("executive_summary", attempt=1) == 8192
-    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=2) == 8192
+    assert _resolved_section_x1d_judge_max_output_tokens("competencies", attempt=2) == 2048
     assert _resolved_section_x1d_judge_max_output_tokens("unify_bullets", attempt=2) == 8192
     assert _resolved_section_x1d_judge_max_output_tokens("executive_summary", attempt=2) == 8192
 

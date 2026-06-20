@@ -12,7 +12,6 @@ from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
     EMPLOYMENT_BULLET_RUBRIC_VERSION,
     pool_selector_dimension_ids,
 )
-from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
 from apps_rg.runtime.reasoning.competencies_graph_pool import COMPETENCIES_SC_PATH_COUNT
 from apps_rg.runtime.section_execution_plan import (
     BULLET_LANES,
@@ -322,17 +321,11 @@ def competencies_pool_x1d_judge_rows(
             else "no_selection_input_artifact"
         )
 
-    selector_provider_key = "openai_chatgpt" if lane == "competencies" else "anthropic_claude"
-    selector_meta = PROVIDERS.get(selector_provider_key) or {}
-    selector_default_model = str(selector_meta.get("default_model") or "unknown")
-    selector_provider_name = str(selector_meta.get(
-        "provider_name",
-        "OpenAI ChatGPT" if selector_provider_key == "openai_chatgpt" else "Anthropic Claude",
-    ))
-    row.setdefault("judge_id", f"x1d_{selector_provider_key}_{lane}_pool")
-    row.setdefault("provider_name", selector_provider_name)
-    row.setdefault("model_name", selector_default_model)
-    row["provider_key"] = selector_provider_key
+    anthropic_meta = PROVIDERS.get("anthropic_claude") or {}
+    row.setdefault("judge_id", f"x1d_anthropic_claude_{lane}_pool")
+    row.setdefault("provider_name", anthropic_meta.get("provider_name", "Anthropic Claude"))
+    row.setdefault("model_name", anthropic_meta.get("default_model", "unknown"))
+    row["provider_key"] = "anthropic_claude"
     row["section_id"] = lane
     row["evaluator_mode"] = "MODEL_BACKED"
     row["provider_available"] = True
@@ -352,8 +345,7 @@ def competencies_pool_x1d_judge_rows(
     row["rubric_ref"] = "apps_rg/runtime/judges/competencies_x1d.py#graph_pool"
     row["rubric_version"] = JUDGE_RUBRIC_VERSION
     row["selection_mode"] = str(
-        (gen_meta or {}).get("selection_mode")
-        or ("openai_competencies_top_8_pass" if lane == "competencies" else "claude_competencies_top_8_pass")
+        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_8_pass"
     )
     row["final_category_count"] = n_final
     if empty_selection:

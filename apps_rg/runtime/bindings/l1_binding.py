@@ -51,10 +51,6 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         )
     _verify_l1_planning_profile_digest(app_payload)
     generation_mode = _extract_generation_mode(app_payload)
-    active_generation = (
-        generation_mode in _FULL_RESUME_GENERATION_MODES
-        or generation_mode in _SINGLE_SECTION_MODES
-    )
 
     # Derive work-shape hints based on generation mode
     work_shape_hints = _derive_work_shape_hints(generation_mode)
@@ -79,7 +75,6 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     # Build core planning fields
     task_plan = _derive_task_plan(generation_mode)
     required_capabilities = _derive_capabilities(generation_mode)
-    target_level = _extract_target_level(app_payload)
 
     # Extract L5 cert ref from validated request (U0→L1 handoff)
     l5_cert_ref = getattr(validated_request, "l5_certification_ref", None) or ""
@@ -113,61 +108,20 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     )
     from apps_rg.runtime.bindings.l1_plan_evidence import (
         build_ambiguity_register,
-        build_completion_criteria,
-        build_planning_capsule_ref,
-        build_planning_prior_set_ref,
         build_validation_receipt_id,
     )
-
-    ambiguity_register = build_ambiguity_register(app_payload)
-    planning_prior_set_ref = build_planning_prior_set_ref(
-        generation_mode=generation_mode,
-        target_level=target_level,
-        planning_prior_refs=planning_prior_refs,
-        prompt_bom_refs=prompt_bom_refs,
-        profile_manifest_digest=manifest_digest,
-        planning_profile_digest=planning_digest,
-    )
-    completion_criteria = build_completion_criteria(
-        active_generation_mode=active_generation,
-        planning_prior_set_ref=planning_prior_set_ref,
-        ambiguity_register=ambiguity_register,
-        planning_prior_refs=planning_prior_refs,
-        prompt_bom_refs=prompt_bom_refs,
-        profile_manifest_digest=manifest_digest,
-        planning_profile_digest=planning_digest,
-    )
-    planning_capsule_ref = build_planning_capsule_ref(
-        generation_mode=generation_mode,
-        target_level=target_level,
-        task_plan=task_plan,
-        required_capabilities=required_capabilities,
-        planning_prior_set_ref=planning_prior_set_ref,
-        completion_criteria=completion_criteria,
-        profile_manifest_digest=manifest_digest,
-        planning_profile_digest=planning_digest,
-    )
-    output_expectation["completion_criteria"] = completion_criteria
-    route_hints = {
-        **route_hints,
-        "completion_policy": str(completion_criteria.get("planning_mode", "bounded_refinement")),
-        "max_refinement_passes": str(completion_criteria.get("max_refinement_passes", 0)),
-        "max_ambiguity_severity": str(completion_criteria.get("max_ambiguity_severity", "none")),
-        "planning_prior_set_ref": planning_prior_set_ref,
-        "planning_capsule_ref": planning_capsule_ref,
-    }
-    policy_refs_out = {
-        **dict(policy_refs_out),
-        "l1_planning_prior_set_ref": planning_prior_set_ref,
-        "l1_planning_capsule_ref": planning_capsule_ref,
-    }
 
     validation_receipt_id = build_validation_receipt_id(
         request_id=validated_request.request_id,
         profile_manifest_digest=manifest_digest,
         planning_profile_digest=planning_digest,
     )
+    ambiguity_register = build_ambiguity_register(app_payload)
 
+    active_generation = (
+        generation_mode in _FULL_RESUME_GENERATION_MODES
+        or generation_mode in _SINGLE_SECTION_MODES
+    )
     non_product_path = bool(
         app_payload.get("fixture_dev_only")
         or app_payload.get("non_product_certified")
@@ -177,8 +131,6 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         validated_request,
         active_generation_mode=active_generation,
     )
-    if non_product_path:
-        apps_research_required = False
     briefing_validate_or_raise(
         validated_request,
         active_generation_mode=active_generation,
@@ -200,7 +152,7 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         write_authority_present=False,
         profile_manifest_digest=validated_request.payload_digest,
         tenant_id=getattr(validated_request, "tenant_id", ""),
-        target_level=target_level,
+        target_level=_extract_target_level(app_payload),
         task_spec=task_spec,
         query_spec=query_spec,
         support_expectation=support_expectation,
@@ -367,9 +319,6 @@ def _derive_task_plan(generation_mode: str) -> tuple[str, ...]:
     base_plan = (
         "validate_ingress",
         "load_profiles",
-        "classify_ambiguity",
-        "bind_planning_priors",
-        "derive_completion_criteria",
     )
     if generation_mode in _FULL_RESUME_GENERATION_MODES:
         return base_plan + (
@@ -393,15 +342,7 @@ def _derive_capabilities(generation_mode: str) -> tuple[str, ...]:
     """Derive required capabilities from generation mode."""
     caps = ["ingress_validation"]
     if generation_mode in _FULL_RESUME_GENERATION_MODES or generation_mode in _SINGLE_SECTION_MODES:
-        caps.extend(
-            [
-                "planning_projection",
-                "ambiguity_classification",
-                "completion_validation",
-                "evidence_collection",
-                "model_generation",
-            ]
-        )
+        caps.extend(["evidence_collection", "model_generation"])
     return tuple(caps)
 
 

@@ -117,34 +117,6 @@ def _sqlite(path: Path) -> None:
         conn.execute("create table mv_empty_noise(path text)")
         conn.execute("create table mv_guardian_inventory(path text)")
         conn.execute("insert into mv_guardian_inventory values ('guardian.py')")
-        conn.execute("create table nodes(id int primary key, resolved_path text, layer text, type_surface text)")
-        conn.execute("create table edges(src_id int, dst_id int, relation_type text)")
-        conn.executemany(
-            "insert into nodes values (?,?,?,?)",
-            [
-                (1, "agentic_core/L3/consumer.py", "L3", "surface"),
-                (2, "agentic_core/L5/provider.py", "L5", "surface"),
-                (3, "agentic_core/L1/wrapper.py", "L1", "surface"),
-                (4, "agentic_core/L3/untyped.py", "L3", ""),
-            ],
-        )
-        conn.executemany(
-            "insert into edges values (?,?,?)",
-            [
-                (1, 2, "imports"),
-                (1, 2, "imports"),
-                (1, 2, "imports"),
-                (1, 2, "imports"),
-                (3, 4, "imports"),
-            ],
-        )
-        conn.execute(
-            "create table mv_gateway_bypass_paths(src_file text, src_layer text, provider_symbol text, line_no int, bypass_type text)"
-        )
-        conn.execute(
-            "insert into mv_gateway_bypass_paths values (?,?,?,?,?)",
-            ("agentic_core/providers/tool_call.py", "L5", "provider_tool", 42, "provider"),
-        )
 
 
 def _repo_tests(repo: Path) -> None:
@@ -195,7 +167,7 @@ def test_testing_map_can_prioritize_apps_testing_over_p0_ratchet(tmp_path: Path)
     assert any(r["action_type"] == "add_tests" and r["scope"].startswith("apps_sales") for r in actions["rows"])
 
 
-def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> None:
+def test_fix_blocker_rows_carry_business_and_technical_priority_backing() -> None:
     gate_rows = [
         {
             "gate_id": "B2_layer_skip_ratchet",
@@ -225,8 +197,6 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
             "classification": "regressed",
         },
     ]
-    db = tmp_path / "adg_bcg_executive_synthesis_test.sqlite"
-    _sqlite(db)
     actions = build_canonical_next_best_actions(
         gate_rows,
         {"top_graph_risks": []},
@@ -234,8 +204,6 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
         {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
         {"rows": []},
         {},
-        sqlite_path=db,
-        run_id="run-123",
     )
 
     first_three = actions["rows"][:3]
@@ -244,17 +212,12 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
         "C2_l5_bypass_pview",
         "F1_untyped_seam_ratchet",
     ]
-    assert first_three[0]["move"] == "Clear layer-jump regression"
-    assert first_three[1]["move"] == "Stop L5 gateway bypass"
-    assert first_three[2]["move"] == "Close untyped cross-layer seams"
-    assert "direct dependency links" in first_three[0]["evidence"].lower()
-    assert "provider/tool calls bypassing the l5 gateway" in first_three[1]["evidence"].lower()
-    assert "cross-layer imports with empty type surfaces" in first_three[2]["evidence"].lower()
-    assert "fix convenience coupling" in first_three[0]["next_step"].lower()
-    assert "fix convenience coupling" in first_three[1]["next_step"].lower()
-    assert "fix convenience coupling" in first_three[2]["next_step"].lower()
-    assert first_three[0]["decision_options"][0]["label"] == "Fix"
-    assert first_three[0]["done_condition"].startswith("Rerun ADG")
+    assert "broad architecture drift" in first_three[0]["business_reason"].lower()
+    assert "zero-tolerance governance breach" in first_three[1]["business_reason"].lower()
+    assert "contract-seam debt" in first_three[2]["business_reason"].lower()
+    assert "layer-hop pattern" in first_three[0]["why_this_rank"].lower()
+    assert "control breach" in first_three[1]["why_this_rank"].lower()
+    assert "broad technical debt" in first_three[2]["why_this_rank"].lower()
 
 
 def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path: Path) -> None:
@@ -476,12 +439,10 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "### 12. Honest Bottom Line",
         "Action impact:",
         "No deletions are approved in this run",
-        "| Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |",
-        "Why this order:",
-        "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
+        "Priority",
+        "Maintain SVP engineer-level repo standards",
     ]:
         assert section in md
-    assert "fix_blocker" not in md
     assert "ADG source:" in md
     assert "adg_indexed_run.sqlite" in md
     assert "(snapshot run)" in md

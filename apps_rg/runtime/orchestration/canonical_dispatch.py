@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -87,13 +88,64 @@ def _materialize_fallback_brief(
     run_id: str,
     trace_id: str,
 ) -> str:
-    """Deprecated fallback materializer.
+    """Generate a repo-local briefing.md when the caller omitted a brief.
 
-    The product path now fails closed instead of generating a synthetic or
-    delegated fallback brief when the caller omitted a briefing input.
+    Prefer the managed apps_research delegation path so the resulting brief
+    is JD-grounded and contract-sealed. Fall back to the older materializer
+    only if the managed bridge cannot produce a usable brief.
     """
-    del target_company, target_role, jd_path, request_id, run_id, trace_id
-    raise RuntimeError("fallback brief materialization is disabled")
+    if not str(target_company).strip():
+        return ""
+
+    repo_root = find_repo_root()
+    artifact_root = repo_root / "artifacts" / "apps_rg" / "generated_briefs"
+    try:
+        from apps_rg.integrations.apps_research_bridge import AppsResearchBridge
+        from apps_rg.integrations.managed_research_delegation import (
+            RequestForResumeBriefing,
+            ResumeBriefingReady,
+            dispatch_resume_research_briefing,
+        )
+
+        bridge = AppsResearchBridge(capability_ref="apps_research.v1")
+        req = RequestForResumeBriefing(
+            request_id=str(request_id or f"req-{uuid.uuid4().hex[:12]}"),
+            run_id=str(run_id or f"research-{uuid.uuid4().hex[:12]}"),
+            trace_id=str(trace_id or f"trace-{uuid.uuid4().hex[:12]}"),
+            company_name=target_company,
+            job_title=str(target_role or target_company).strip(),
+            research_authorized=True,
+        )
+        outcome = dispatch_resume_research_briefing(req, bridge=bridge)
+        if isinstance(outcome, ResumeBriefingReady):
+            brief_path = (
+                artifact_root
+                / f"research_{(outcome.research_run_id or req.run_id)[:8]}"
+                / "briefing.md"
+            )
+            brief_path.parent.mkdir(parents=True, exist_ok=True)
+            brief_path.write_text(outcome.briefing_text.rstrip() + "\n", encoding="utf-8")
+            return str(brief_path)
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
+    try:
+        from apps_shared.adapters.research_l3_adapter import (
+            materialize_company_brief_markdown,
+        )
+    except ImportError:
+        return ""
+
+    brief_path = materialize_company_brief_markdown(
+        company=target_company,
+        jd_path=jd_path,
+        depth="standard",
+        request_id=request_id,
+        run_id=run_id,
+        trace_root=trace_id,
+        artifact_root=artifact_root,
+    )
+    return str(brief_path) if brief_path else ""
 
 
 def _resolve_lane_manual_brief(manual_brief: str) -> str:
@@ -166,6 +218,23 @@ def build_raw_request_for_r4(
     }
     resolved_manual_brief = str(manual_brief or "").strip()
     brief_text = _read_optional_brief(manual_brief)
+    if not brief_text:
+        fallback_jd_path: Path | None = None
+        for candidate in (jd_ref, jd_legacy):
+            if candidate and Path(candidate).is_file():
+                fallback_jd_path = Path(candidate)
+                break
+        generated_brief = _materialize_fallback_brief(
+            target_company=str(target_company),
+            target_role=str(target_role),
+            jd_path=fallback_jd_path,
+            request_id="",
+            run_id="",
+            trace_id="",
+        )
+        if generated_brief:
+            resolved_manual_brief = generated_brief
+            brief_text = _read_optional_brief(generated_brief)
     rp = str(resume_path).strip()
     st = str(source_resume_text).strip()
     res_resolved = resolve_resume_for_lanes(

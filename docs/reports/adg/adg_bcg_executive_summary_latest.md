@@ -2,7 +2,7 @@
 
 ### BCG Executive Brief
 
-- **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
+- **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
 - **Status:** PASS
 - **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree.. Spend executive time on blockers and test gaps before accepted debt.
 - **Technical evidence:**
@@ -13,13 +13,14 @@
   - GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.
   - Action rows emitted: 7
 - **Priority rule:** Fix blockers first, then close testing exposure, then reduce accepted debt.
+- **Column key:** Business reason = why the item matters to delivery or governance; Technical reason = the measured evidence; Why this order = why this item is ahead of the next row.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Clear layer-jump regression | B2_layer_skip_ratchet | Direct layer jumps increase coupling and make future changes harder to contain. | ADG `06192026_0917`: `B2_layer_skip_ratchet` found 895 direct dependency links, +4 above baseline 891. All +345 are direct dependency links from L5 -> L0, skipping L1/L2/L3/L4. Examples: 46 links from agentic_core/L5_safety/config/structure_blueprint/__init__.py to agentic_core/L0_routing/config/path_constants.py, 14 links from agentic_core/L5_safety/enforcement/mission_utils_enforcer.py to agentic_core/L0_routing/config/path_constants.py, and 12 links from agentic_core/L5_safety/reasoning/location_validator.py to agentic_core/L0_routing/config/path_constants.py. | Review the breakout: All +345 are direct dependency links from L5 -> L0, skipping L1/L2/L3/L4. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. | fix blocker |
-| 2 | Stop L5 gateway bypass | C2_l5_bypass_pview | Gateway bypass weakens control assurances and makes provider routing harder to defend. | ADG `06192026_0917`: `C2_l5_bypass_pview` found 2 provider/tool calls bypassing the L5 gateway. 2 provider/tool calls from L_APP bypass the L5 gateway. Examples: 2 rows from apps_rg/runtime/providers/external_provider.py:254. | Review the breakout: 2 provider/tool calls from L_APP bypass the L5 gateway. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. | fix blocker |
-| 3 | Close untyped cross-layer seams | F1_untyped_seam_ratchet | Untyped seams slow safe change and increase integration risk across callers. | ADG `06192026_0917`: `F1_untyped_seam_ratchet` found 1,026 cross-layer imports with empty type surfaces, +7 above baseline 1019. 345 cross-layer imports land on empty type surfaces from L5 to L0. Examples: 46 links from agentic_core/L5_safety/config/structure_blueprint/__init__.py to agentic_core/L0_routing/config/path_constants.py, 14 links from agentic_core/L5_safety/enforcement/mission_utils_enforcer.py to agentic_core/L0_routing/config/path_constants.py, and 12 links from agentic_core/L5_safety/reasoning/location_validator.py to agentic_core/L0_routing/config/path_constants.py. | Review the breakout: 345 cross-layer imports land on empty type surfaces from L5 to L0. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. | fix blocker |
-| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. | add tests |
+| 1 | Clear red gate B2_layer_skip_ratchet | B2_layer_skip_ratchet | Broad architecture drift: layer skipping increases future change cost across the repo and weakens the authority model. | B2_layer_skip_ratchet: 895 finding(s), +4 vs baseline 891, P1; imports are skipping more than one layer ordinal. | Ranks first because a cross-cutting layer-hop pattern will keep generating rework in every later slice. | fix_blocker |
+| 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Zero-tolerance governance breach: a small number of L5 bypasses can invalidate control assurances even when the footprint is small. | C2_l5_bypass_pview: 2 finding(s), P0; provider/tool calls are skipping the L5 gateway. | Ranks second because the control breach is severe, but the affected surface is narrower than the broader layer-skip regression above. | fix_blocker |
+| 3 | Clear red gate F1_untyped_seam_ratchet | F1_untyped_seam_ratchet | Contract-seam debt: wide untyped seams slow safe change and increase integration risk across many callers. | F1_untyped_seam_ratchet: 1,026 finding(s), +7 vs baseline 1,019, P2; cross-layer imports land on empty type surfaces. | Ranks third because it is broad technical debt, but not as cross-cutting as the layer-hop problem or as severe as the P0 control bypass. | fix_blocker |
+| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | This follows the blocker slice because mapped tests reduce repeat-risk after the failing surface is identified. | add_tests |
 
 Why this order:
 - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
@@ -27,7 +28,7 @@ Why this order:
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
 
-Next step: Clear layer-jump regression
+Next step: Clear red gate B2_layer_skip_ratchet
 
 ### 1. What ADG Is
 
@@ -35,7 +36,7 @@ ADG is the X-ray of the codebase. It maps code connections and lets the system a
 
 ### 2. Patient Size
 
-This patient has 12310 Python files: 7124 production files and 5186 test files. agentic_core contributes 2892 files; apps_* contributes 1431 files. Current snapshot/run ID: 06192026_0917.
+This patient has 12303 Python files: 7119 production files and 5184 test files. agentic_core contributes 2891 files; apps_* contributes 1431 files. Current snapshot/run ID: 06192026_0917.
 
 ### 3. Executive Decision
 
@@ -202,21 +203,21 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 
 ### 10. Next Best Actions
 
-| Priority | Move | Why it matters | Evidence | Next step |
-|---|---|---|---|---|
-| 1 | Clear layer-jump regression | Direct layer jumps increase coupling and make future changes harder to contain. | ADG `06192026_0917`: `B2_layer_skip_ratchet` found 895 direct dependency links, +4 above baseline 891. All +345 are direct dependency links from L5 -> L0, skipping L1/L2/L3/L4. Examples: 46 links from agentic_core/L5_safety/config/structure_blueprint/__init__.py to agentic_core/L0_routing/config/path_constants.py, 14 links from agentic_core/L5_safety/enforcement/mission_utils_enforcer.py to agentic_core/L0_routing/config/path_constants.py, and 12 links from agentic_core/L5_safety/reasoning/location_validator.py to agentic_core/L0_routing/config/path_constants.py. | Review the breakout: All +345 are direct dependency links from L5 -> L0, skipping L1/L2/L3/L4. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. |
-| 2 | Stop L5 gateway bypass | Gateway bypass weakens control assurances and makes provider routing harder to defend. | ADG `06192026_0917`: `C2_l5_bypass_pview` found 2 provider/tool calls bypassing the L5 gateway. 2 provider/tool calls from L_APP bypass the L5 gateway. Examples: 2 rows from apps_rg/runtime/providers/external_provider.py:254. | Review the breakout: 2 provider/tool calls from L_APP bypass the L5 gateway. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. |
-| 3 | Close untyped cross-layer seams | Untyped seams slow safe change and increase integration risk across callers. | ADG `06192026_0917`: `F1_untyped_seam_ratchet` found 1,026 cross-layer imports with empty type surfaces, +7 above baseline 1019. 345 cross-layer imports land on empty type surfaces from L5 to L0. Examples: 46 links from agentic_core/L5_safety/config/structure_blueprint/__init__.py to agentic_core/L0_routing/config/path_constants.py, 14 links from agentic_core/L5_safety/enforcement/mission_utils_enforcer.py to agentic_core/L0_routing/config/path_constants.py, and 12 links from agentic_core/L5_safety/reasoning/location_validator.py to agentic_core/L0_routing/config/path_constants.py. | Review the breakout: 345 cross-layer imports land on empty type surfaces from L5 to L0. Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval. |
-| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
-| 5 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
-| 6 | Burn down ratchet G_REACH_l0_reachability | Accepted baseline debt should fall after red gates are clear. | 2,788 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
-| 7 | Refine/deprecate low-value ADG signal mv_graph_scc_clusters | Suppress or retire signals that do not affect decisions. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Deprecate only after the higher-risk surfaces are handled. |
+| Rank | Action | Scope | Why now | Evidence used | Testing requirement | Done condition |
+|---:|---|---|---|---|---|---|
+| 1 | Clear red gate B2_layer_skip_ratchet | B2_layer_skip_ratchet | Broad architecture drift: layer skipping increases future change cost across the repo and weakens the authority model. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 2 | Clear red gate C2_l5_bypass_pview | C2_l5_bypass_pview | Zero-tolerance governance breach: a small number of L5 bypasses can invalidate control assurances even when the footprint is small. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 3 | Clear red gate F1_untyped_seam_ratchet | F1_untyped_seam_ratchet | Contract-seam debt: wide untyped seams slow safe change and increase integration risk across many callers. | gate | Add mapped tests when touched scope overlaps a hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | testing_hotspot | Add mapped tests/regression coverage for agentic_core. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 5 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | graphdb | Add mapped tests before refactoring this seam. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 6 | Burn down ratchet G_REACH_l0_reachability | G_REACH_l0_reachability | Accepted baseline debt should fall after red gates are clear. | gate | Add tests only when touched scope overlaps hotspot. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 7 | Refine/deprecate low-value ADG signal mv_graph_scc_clusters | mv_graph_scc_clusters | Suppress or retire signals that do not affect decisions. | mv | No test required unless generator logic changes. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 
 ### 11. Defer / Delete / Deprecate
 
 ### BCG Deletion Brief
 
-- **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
+- **North star:** Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.
 - **Status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
@@ -228,15 +229,16 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
   - Inferred-symbol ratio: 10.16%
   - Cleanup candidates surfaced: 18
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
+- **Column key:** Business reason = why the item matters to delivery or governance; Technical reason = the measured evidence; Why this order = why this item is ahead of the next row.
 
 | Priority | Move | Scope | Business reason | Technical reason | Why this order | Decision |
 |---------:|------|-------|----------------|-----------------|----------------|----------|
-| 1 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
-| 2 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
-| 3 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. | remove imports |
-| 4 | Triage unresolved imports | ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. | investigate |
-| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Lower the noise floor, then rerun the scan. | stabilize |
-| 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. | deprecate |
+| 1 | Remove confirmed dead imports | artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 2 | Remove confirmed dead imports | artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 3 | Remove confirmed dead imports | tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Delete the most certain waste first so we do not spend time cleaning speculative targets. | remove_imports |
+| 4 | Triage unresolved imports | ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | We need a cleaner signal before we can trust deletion decisions. | investigate |
+| 5 | Reduce low-confidence noise | first-party nodes | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%. | Noise reduction improves the quality of the next scan and makes future deletions safer. | stabilize |
+| 6 | Deprecate low-value ADG signals | materialized views and unused artifacts | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | This is cheap cleanup, but it should follow the evidence cleanup work above. | deprecate |
 
 Why this order:
 - Confirmed dead code is the highest-confidence waste and should be removed first.
@@ -269,5 +271,5 @@ Current low-value cleanup candidates:
 - Actually blocking now: 5 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
-- Clear layer-jump regression
+- Clear red gate B2_layer_skip_ratchet
 - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role.

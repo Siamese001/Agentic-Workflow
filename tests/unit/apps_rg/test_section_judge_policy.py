@@ -86,8 +86,8 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["unify_narrative"]["judge_runtime_profile"] == matrix["unify_bullets"]["judge_runtime_profile"]
     assert matrix["competencies"]["judge_runtime_profile"] == {
         "judge_weight": 1,
-        "max_output_tokens": 4096,
-        "max_output_tokens_hard_cap": 8192,
+        "max_output_tokens": 2048,
+        "max_output_tokens_hard_cap": 2048,
         "max_attempts": 1,
         "retry_backoff_base_seconds": 0.25,
         "retry_backoff_max_seconds": 0.25,

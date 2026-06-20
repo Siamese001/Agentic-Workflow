@@ -1,4 +1,4 @@
-"""apps_rg L1 vocabulary: grounding on; apps_research required during debugging."""
+"""apps_rg L1 vocabulary: grounding on; apps_research delegation disabled."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -66,7 +66,7 @@ def test_generate_scratch_product_visible_without_briefing_fails_closed() -> Non
             "profile_manifest": _pm(),
         }
     )
-    with pytest.raises(BriefingMissingError, match="apps_research is required"):
+    with pytest.raises(BriefingMissingError, match="apps_research delegation is disabled"):
         l1_plan_apps_rg(vr)
 
 
@@ -101,9 +101,9 @@ def test_tailor_with_briefing_grounded_not_apps_research() -> None:
     )
     plan = l1_plan_apps_rg(vr)
     assert plan.grounding_required is True
-    assert plan.apps_research_call_required is True
+    assert plan.apps_research_call_required is False
     route = l0_route_apps_rg(plan)
-    assert route.apps_research_call_required is True
+    assert route.apps_research_call_required is False
     assert route.route_profile_ref.endswith("full_resume_managed::v1")
 
 
@@ -114,4 +114,4 @@ def test_apps_research_call_helper_matches_plan() -> None:
             "profile_manifest": _pm(),
         }
     )
-    assert apps_research_call_required_at_u0(vr, active_generation_mode=True) is True
+    assert apps_research_call_required_at_u0(vr, active_generation_mode=True) is False

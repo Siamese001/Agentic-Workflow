@@ -49,13 +49,7 @@ def rg_bundle() -> dict:
     paths = AppCertPaths("apps_rg")
     if not paths.proof_bundle.exists():
         pytest.skip("apps_rg baseline bundle not present; emit before negative-control suite")
-    bundle = json.loads(paths.proof_bundle.read_text(encoding="utf-8"))
-    if not bundle.get("success"):
-        pytest.skip(
-            "apps_rg baseline bundle is fail-closed in this environment; "
-            "negative-control suite requires a certified baseline bundle"
-        )
-    return bundle
+    return json.loads(paths.proof_bundle.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")

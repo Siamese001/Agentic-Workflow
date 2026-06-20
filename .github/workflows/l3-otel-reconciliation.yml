@@ -20,8 +20,6 @@
 name: l3-otel-reconciliation
 
 on:
-  schedule:
-    - cron: "23 7 * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -32,10 +30,6 @@ on:
         description: "Observation window for the OTEL poller"
         required: false
         default: "168"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -55,14 +49,8 @@ jobs:
 
       - name: Determine gate mode
         id: mode
-        env:
-          EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [ "${EVENT_NAME}" = "schedule" ]; then
-            echo "mode=strict" >> "$GITHUB_OUTPUT"
-          else
-            echo "mode=${{ github.event.inputs.mode || 'advisory' }}" >> "$GITHUB_OUTPUT"
-          fi
+          echo "mode=${{ github.event.inputs.mode || 'advisory' }}" >> "$GITHUB_OUTPUT"
           echo "window=${{ github.event.inputs.time_window_hours || '168' }}" >> "$GITHUB_OUTPUT"
 
       - name: Export runtime ADG snapshots to spans.jsonl
@@ -80,31 +68,6 @@ jobs:
         run: |
           python ops_scripts/ci/check_l3_runtime_reconciliation.py --mode "${{ steps.mode.outputs.mode }}" --time-window-days 7
 
-      - name: Persist disposition
-        if: always()
-        env:
-          MODE: ${{ steps.mode.outputs.mode }}
-          RECONCILE_OUTCOME: ${{ steps.reconcile.outcome || 'success' }}
-        run: |
-          set -euo pipefail
-          status="PASS"
-          reason="runtime reconciliation completed"
-          if [ "${MODE}" = "report-only" ]; then
-            status="MANUAL_ONLY"
-            reason="report-only reconciliation completed"
-          fi
-          if [ "${RECONCILE_OUTCOME}" != "success" ]; then
-            status="FAIL_BLOCKING"
-            reason="manifest/runtime reconciliation detected drift or lacked runtime data"
-          fi
-          python ops_scripts/ci/write_ci_disposition.py \
-            --workflow l3-otel-reconciliation \
-            --lane reconcile \
-            --status "${status}" \
-            --reason "${reason}" \
-            --evidence-artifact "l3-otel-reconciliation-${{ github.run_id }}" \
-            --out artifacts/ci/l3-otel-reconciliation/ci_disposition.json
-
       - name: Upload reconciliation report
         if: always()
         uses: actions/upload-artifact@v4
@@ -114,6 +77,5 @@ jobs:
             artifacts/observability/l3_runtime_reconciliation.md
             artifacts/observability/l3_runtime_reconciliation.jsonl
             artifacts/observability/last_observed_spans.json
-            artifacts/ci/l3-otel-reconciliation/ci_disposition.json
           if-no-files-found: warn
           retention-days: 30

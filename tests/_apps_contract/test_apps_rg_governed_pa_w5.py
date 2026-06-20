@@ -121,7 +121,6 @@ def test_pa_compose_apps_rg_uses_core_pipeline(
     assert artifact.compilation_hash
     assert any("pa_manifest:" in ref for ref in artifact.gate_verdict_refs)
     assert any("pa_hmac:" in ref for ref in artifact.gate_verdict_refs)
-    assert "planning_capsule_ref=" in artifact.slot_lineage_map["user_block_1"]
     assert not any("L5CertRefViolation" in r.message for r in caplog.records)
 
 

@@ -22,7 +22,7 @@ research_depth:
 # Evidence source priorities (advisory)
 evidence_sources:
   priority_order:
-    - searxng          # Primary: self-hosted web metasearch
+    - tavily           # Primary: web search + AI
     - manual_brief     # Secondary: user-provided
     - company_website  # Tertiary: official source
   minimum_sources: 1

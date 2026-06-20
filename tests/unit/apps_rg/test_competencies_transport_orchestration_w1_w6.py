@@ -300,14 +300,12 @@ def test_graph_authority_preserved_in_selection_prompt():
         pool_text="POOL",
         targeting_context={"jd_text": "j", "briefing": "b", "skills_graph_ref": "ref"},
         min_score_threshold=0.72,
-        selector_name="openai_chatgpt",
     )
     assert "augmented_skills_graph" in prompt
     assert "selected_fact_plan" in prompt
     # JD/briefing are targeting-only and base-resume skills are explicitly not proof.
     assert "base-resume" in prompt
     assert "targeting" in prompt.lower()
-    assert "openai_chatgpt" in prompt
 
 
 if __name__ == "__main__":  # pragma: no cover

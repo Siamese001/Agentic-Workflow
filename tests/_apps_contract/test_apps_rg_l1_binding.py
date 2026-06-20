@@ -53,7 +53,6 @@ def _ap_base(**extra: Any) -> dict[str, Any]:
     base: dict[str, Any] = {
         "task_spec": {"generation_mode": "strategic_tailor"},
         "profile_manifest": _profile_manifest_digest_only(),
-        "briefing_artifact_ref": "apps_rg/config/targeting/briefing.md",
     }
     base.update(extra)
     return base
@@ -198,10 +197,6 @@ class TestRouteHints:
 
         assert "execution_shape_hint" in plan.route_hints
         assert plan.route_hints["execution_shape_hint"] == "multi_work_unit_managed_candidate"
-        assert plan.route_hints["completion_policy"] == "bounded_refinement"
-        assert plan.route_hints["planning_prior_set_ref"].startswith("l1priors-")
-        assert plan.route_hints["planning_capsule_ref"].startswith("l1plan-")
-        assert plan.route_hints["max_refinement_passes"] == "1"
 
     def test_single_section_mode_sets_direct_hint(self) -> None:
         """Single-section mode sets single_work_unit_direct hint."""
@@ -223,8 +218,6 @@ class TestRouteHints:
 
         assert "execution_shape_hint" in plan.route_hints
         assert plan.route_hints["execution_shape_hint"] == "single_work_unit_direct"
-        assert plan.route_hints["completion_policy"] == "bounded_refinement"
-        assert plan.route_hints["planning_capsule_ref"].startswith("l1plan-")
 
 
 class TestPlanningPriorRefs:
@@ -244,14 +237,12 @@ class TestPlanningPriorRefs:
             app_payload={
                 "task_spec": {"generation_mode": "strategic_tailor"},
                 "profile_manifest": {"rg_planning_profile": "custom/planning.yaml"},
-                "briefing_artifact_ref": "apps_rg/config/targeting/briefing.md",
             },
         )
 
         plan = l1_plan_apps_rg(validated)
 
         assert "custom/planning.yaml" in plan.planning_prior_refs
-        assert plan.policy_refs["l1_planning_prior_set_ref"].startswith("l1priors-")
 
     def test_uses_canonical_default_when_no_profile(self) -> None:
         """Uses canonical default when no profile ref in payload."""
@@ -267,14 +258,12 @@ class TestPlanningPriorRefs:
             app_payload={
                 "task_spec": {"generation_mode": "strategic_tailor"},
                 "profile_manifest": {"prompt_registry_ref": "apps_rg/prompt_assembly/x.yaml"},
-                "briefing_artifact_ref": "apps_rg/config/targeting/briefing.md",
             },
         )
 
         plan = l1_plan_apps_rg(validated)
 
         assert "apps_rg/profiles/rg_planning_profile.yaml" in plan.planning_prior_refs
-        assert plan.policy_refs["l1_planning_capsule_ref"].startswith("l1plan-")
 
 
 class TestImportScan:
@@ -382,8 +371,6 @@ class TestL1PlanOutput:
         assert plan.grounding_required is True
         assert plan.model_generation_required is True
         assert plan.write_authority_present is False
-        assert plan.output_expectation["completion_criteria"]["max_refinement_passes"] == 1
-        assert plan.policy_refs["l1_planning_capsule_ref"].startswith("l1plan-")
 
     def test_task_plan_contains_expected_steps(self) -> None:
         """Task plan contains expected pipeline steps."""
@@ -402,9 +389,6 @@ class TestL1PlanOutput:
 
         assert "validate_ingress" in plan.task_plan
         assert "load_profiles" in plan.task_plan
-        assert "classify_ambiguity" in plan.task_plan
-        assert "bind_planning_priors" in plan.task_plan
-        assert "derive_completion_criteria" in plan.task_plan
         assert "collect_evidence" in plan.task_plan
         assert "generate_resume" in plan.task_plan
         assert "exit_eval" in plan.task_plan
@@ -426,9 +410,6 @@ class TestL1PlanOutput:
         plan = l1_plan_apps_rg(validated)
 
         assert "ingress_validation" in plan.required_capabilities
-        assert "planning_projection" in plan.required_capabilities
-        assert "ambiguity_classification" in plan.required_capabilities
-        assert "completion_validation" in plan.required_capabilities
         assert "evidence_collection" in plan.required_capabilities
         assert "model_generation" in plan.required_capabilities
 

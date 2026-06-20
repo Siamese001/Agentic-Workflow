@@ -77,11 +77,7 @@ def test_compiled_prompt_smaller_without_duplicate_allowed_id_json():
     assert "proof_law_v1" in content
     assert "proof_law_v1" in content
     est = estimate_tokens_approximate(content)
-    # Ratchet re-baselined 13000 -> 13500 (prior bump was 12000 -> 13000) to track legitimate
-    # exec_summary prompt growth — the retained L2 E0 many-shot exemplars and the graph-era I0
-    # brushstroke/judge-alignment laws. No removable duplication remains (the ALLOWED_SOURCE_FACT_IDS
-    # JSON dedup asserted above holds); the budget tracks intentional content, not accidental bloat.
-    assert est < 13500, f"compiled prompt still large for minimal fixture: {est}"
+    assert est < 13000, f"compiled prompt still large for minimal fixture: {est}"
 
 
 def test_capsule_enabled_for_augmented_skills_graph_authority():

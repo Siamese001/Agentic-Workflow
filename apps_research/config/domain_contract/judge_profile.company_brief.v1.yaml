@@ -56,6 +56,6 @@ llm_gateway:
   mode: PROFILE_ONLY  # W9: deterministic only
   # Future activation:
   # mode: PASS_THROUGH
-  # provider: gemini_pro
+  # provider: qwen_vllm
   # timeout_seconds: 30
   # fail_closed: true

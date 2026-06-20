@@ -4,8 +4,8 @@ Plan: apps-research-spine-deferred-followup-9c3e1a W3.
 
 Requirements
 ------------
-- ``SEARXNG_BASE_URL`` must be set in the environment.
-- Test is skipped automatically when the base URL is absent; CI can mark
+- ``TAVILY_API_KEY`` must be set in the environment (real key, not a stub).
+- Test is skipped automatically when the key is absent; CI can mark
   this file as ``--ignore`` on offline builds.
 
 SLO baseline targets (per ``apps_research/SLO.md`` DOSSIER extension):
@@ -30,11 +30,17 @@ from pathlib import Path
 
 import pytest
 
-_SEARXNG_BASE_URL = os.environ.get("SEARXNG_BASE_URL", "").strip()
+_TAVILY_KEY = os.environ.get("TAVILY_API_KEY", "").strip()
+
+try:
+    from tools.retrieval.tavily_client import TavilySearchClient as _TavilySearchClient  # noqa: F401
+    _TAVILY_CLIENT_AVAILABLE = True
+except ImportError:
+    _TAVILY_CLIENT_AVAILABLE = False
 
 pytestmark = pytest.mark.skipif(
-    not _SEARXNG_BASE_URL,
-    reason="SEARXNG_BASE_URL not set — live DOSSIER test skipped",
+    not _TAVILY_KEY or not _TAVILY_CLIENT_AVAILABLE,
+    reason="TAVILY_API_KEY not set or TavilySearchClient not importable — live DOSSIER test skipped",
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -52,13 +58,13 @@ def _emit_slo_artifact(run_id: str, result: dict) -> None:
 
 
 class TestAppsResearchDossierLive:
-    """Live integration tests for DOSSIER-depth retrieval via real SearXNG.
+    """Live integration tests for DOSSIER-depth retrieval via real Tavily.
 
-    All tests in this class are automatically skipped when ``SEARXNG_BASE_URL``
+    All tests in this class are automatically skipped when ``TAVILY_API_KEY``
     is not set — this keeps CI green on offline builds.
 
     The fixture ``dossier_result`` runs the engine once and caches the output
-    so all assertions share a single SearXNG-backed run.
+    so all assertions share a single Tavily call (cost-bounded).
     """
 
     @pytest.fixture(scope="class")
@@ -111,10 +117,10 @@ class TestAppsResearchDossierLive:
         assert dossier_result["brief"].get("_depth_profile") == "COMPANY_BRIEF_DOSSIER"
 
     def test_dossier_live_gate_verdict_not_fail(self, dossier_result):
-        """Gate verdict must not be FAIL with real SearXNG sources."""
+        """Gate verdict must not be FAIL with real Tavily sources."""
         verdict = dossier_result["brief"].get("_gate_verdict")
         assert verdict in ("PASS", "WEAK_WITH_CAVEATS"), (
-            f"DOSSIER live gate verdict was FAIL — check SearXNG connectivity: {verdict}"
+            f"DOSSIER live gate verdict was FAIL — check Tavily connectivity: {verdict}"
         )
 
     def test_dossier_live_total_final_sources_meets_slo(self, dossier_result):

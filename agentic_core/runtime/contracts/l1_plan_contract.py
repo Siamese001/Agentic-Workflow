@@ -29,10 +29,9 @@ class L1PlanContract:
 
     # Execution prerequisites (determine routing)
     # apps_rg: grounding_required=True always for active generation modes (C0.1–C0.7).
-    # Debug-default: active apps_rg runs should not silently claim apps_research
-    # is irrelevant while briefing integration is under investigation.
+    # apps_rg migration compatibility: field retained, delegation disabled.
     grounding_required: bool = False
-    apps_research_call_required: bool = True
+    apps_research_call_required: bool = False
     model_generation_required: bool = False  # L2 model execution needed
     write_authority_present: bool = False  # State modification required
 

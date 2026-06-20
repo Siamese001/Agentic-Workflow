@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import ast
 import datetime as _dt
-from dataclasses import asdict
 import hashlib
 import json
 import re
@@ -28,14 +27,7 @@ from tools.reports.adg_bcg_adapter import (
     build_deprecation_deletion_plan as _build_deprecation_deletion_plan,
     render_bcg_brief_md,
 )
-from tools.reports.adg_evidence_breakouts import build_gate_breakout, format_evidence_line
-from tools.reports.gate_signal_catalog import (
-    display_verdict,
-    display_verdict_sub,
-    executive_gate_copy,
-    executive_next_step_options,
-    recommended_next_step,
-)
+from tools.reports.gate_signal_catalog import display_verdict, display_verdict_sub, recommended_next_step
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
@@ -880,17 +872,7 @@ def build_mv_usefulness_audit(sqlite_path: Path, decision_usage: dict[str, Any],
     return {"status": "present", "summary": summary, "rows": rows}
 
 
-def build_canonical_next_best_actions(
-    gate_rows: list[dict[str, Any]],
-    graphdb_decision_impact: dict[str, Any],
-    testing_investment_map: dict[str, Any],
-    artifact_usage_matrix: dict[str, Any],
-    mv_usefulness_audit: dict[str, Any],
-    action_queue: dict[str, Any],
-    *,
-    sqlite_path: Path | None = None,
-    run_id: str = "",
-) -> dict[str, Any]:
+def build_canonical_next_best_actions(gate_rows: list[dict[str, Any]], graphdb_decision_impact: dict[str, Any], testing_investment_map: dict[str, Any], artifact_usage_matrix: dict[str, Any], mv_usefulness_audit: dict[str, Any], action_queue: dict[str, Any]) -> dict[str, Any]:
     actions = []
     inconsistent = [r for r in artifact_usage_matrix.get("rows", []) if not r.get("exists") and r.get("artifact_key") in {"gate_results", "sqlite_snapshot"}]
     if inconsistent:
@@ -906,36 +888,25 @@ def build_canonical_next_best_actions(
                 "high",
                 business_reason="Decision-grade reporting is incomplete until the required artifact exists.",
                 technical_reason="The run is missing a required artifact, so ADG cannot be treated as fully decision-grade.",
-                why_this_rank="Repair report integrity before ranking any fix slice.",
-                next_step="Repair the missing artifact, then rerun ADG before ranking any fix slice.",
+                why_this_rank="This sits ahead of all slice work because report integrity has to be repaired before ranking any fix slice.",
             )
         )
     fix = [g for g in gate_rows if display_verdict(g) == "FIX"]
     for g in sorted(fix, key=lambda r: (_fix_priority_family_rank(r), -_reg_delta(r), -int(r.get("violation_count") or 0), str(r.get("gate_id", ""))))[:3]:
-        row = build_executive_priority_row(g, sqlite_path, run_id)
+        business_reason, technical_reason, why_this_rank = _fix_priority_copy(g)
         actions.append(
             _action(
                 "fix_blocker",
-                row["move"],
+                f"Clear red gate {g.get('gate_id')}",
                 str(g.get("gate_id")),
-                row["why_it_matters"],
+                business_reason,
                 "gate",
                 "Add mapped tests when touched scope overlaps a hotspot.",
                 "now",
                 "high",
-                business_reason=row["why_it_matters"],
-                technical_reason=row["evidence"],
-                why_this_rank=row["next_step"],
-                next_step=row["next_step"],
-                move=row["move"],
-                evidence=row["evidence"],
-                why_it_matters=row["why_it_matters"],
-                decision_options=row["decision_options"],
-                done_condition=row["done_condition"],
-                affected_system=row["affected_system"],
-                affected_layers=row["affected_layers"],
-                change_breakout=row["change_breakout"],
-                diagram=row["diagram"],
+                business_reason=business_reason,
+                technical_reason=technical_reason,
+                why_this_rank=why_this_rank,
             )
         )
     tests = testing_investment_map.get("investment_map", [])
@@ -955,7 +926,6 @@ def build_canonical_next_best_actions(
                 business_reason=why,
                 technical_reason=top.get("recommended_test_investment", "Add mapped tests."),
                 why_this_rank="This follows the blocker slice because mapped tests reduce repeat-risk after the failing surface is identified.",
-                next_step="Add mapped tests before touching this surface again.",
             )
         )
     # Graph-driven refactor action: a studied high-blast-radius seam overlapping a blocker,
@@ -981,7 +951,6 @@ def build_canonical_next_best_actions(
                     business_reason=why,
                     technical_reason=why,
                     why_this_rank="This comes after the fix slice because the refactor is best handled once the blocker and test exposure are explicit.",
-                    next_step="Refactor after the blocker and test exposure are explicit.",
                 )
             )
             break
@@ -1002,7 +971,6 @@ def build_canonical_next_best_actions(
                 business_reason=why,
                 technical_reason=f"{_fmt_int(g.get('violation_count'))} floor-row(s) remain on the ratchet gate.",
                 why_this_rank="This is deferred until the current red gates clear because it is accepted baseline debt, not the immediate blocker slice.",
-                next_step="Burn down the ratchet after the current red gates clear.",
             )
         )
     low = [r for r in mv_usefulness_audit.get("rows", []) if r.get("recommendation") in {"refine", "deprecate_candidate"}]
@@ -1021,12 +989,10 @@ def build_canonical_next_best_actions(
                 business_reason=why,
                 technical_reason=low[0].get("decision_impact", "No current decision effect."),
                 why_this_rank="This is last because it is cleanup of decision noise, not a blocker or a high-risk exposure.",
-                next_step="Deprecate only after the higher-risk surfaces are handled.",
             )
-    )
+        )
     for i, row in enumerate(actions[:8], 1):
         row["rank"] = i
-        row["priority"] = i
     return {"status": "present", "rows": actions[:8]}
 
 
@@ -1062,51 +1028,21 @@ def _action(
     business_reason: str | None = None,
     technical_reason: str | None = None,
     why_this_rank: str | None = None,
-    next_step: str | None = None,
-    move: str | None = None,
-    evidence: str | None = None,
-    why_it_matters: str | None = None,
-    decision: str | None = None,
-    decision_options: list[dict[str, Any]] | None = None,
-    done_condition: str | None = None,
-    affected_system: str | None = None,
-    affected_layers: list[str] | None = None,
-    change_breakout: list[dict[str, Any]] | None = None,
-    diagram: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    move_text = move or action
-    why_text = why_it_matters or business_reason or why
-    evidence_text = evidence or technical_reason or testing
-    next_step_text = next_step or why_this_rank or why
-    decision_text = decision or action_type
-    options = list(decision_options or [])
     return {
         "rank": None,
-        "priority": None,
         "action_type": action_type,
         "action": action,
-        "move": move_text,
         "scope": scope,
         "why_now": why,
-        "why_it_matters": why_text,
-        "business_reason": why_text,
-        "evidence": evidence_text,
-        "technical_reason": evidence_text,
-        "next_step": next_step_text,
-        "why_this_rank": next_step_text,
-        "decision": decision_text,
+        "business_reason": business_reason or why,
+        "technical_reason": technical_reason or testing,
+        "why_this_rank": why_this_rank or why,
         "evidence_used": [{"signal_name": scope, "signal_type": signal_type, "decision_effect": why}],
         "testing_requirement": testing,
-        "done_condition": done_condition
-        or "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
         "confidence": confidence,
         "timing": timing,
-        "decision_options": options,
-        "affected_system": affected_system or "",
-        "affected_layers": list(affected_layers or []),
-        "change_breakout": list(change_breakout or []),
-        "diagram": diagram,
-        "work": move_text,
     }
 
 
@@ -1128,77 +1064,50 @@ def _fix_priority_family_rank(gate: dict[str, Any]) -> int:
     return 50
 
 
-def _format_decision_options(gate: dict[str, Any], breakout: dict[str, Any]) -> list[dict[str, Any]]:
-    return [asdict(option) for option in executive_next_step_options(gate, breakout)]
+def _fix_priority_copy(gate: dict[str, Any]) -> tuple[str, str, str]:
+    gate_id = str(gate.get("gate_id") or "").strip()
+    gate_class = str(gate.get("gate_class") or "").strip()
+    band = str(gate.get("band") or "P?")
+    count = _fmt_int(gate.get("violation_count"))
+    base = gate.get("baseline_count")
+    base_text = _fmt_int(base) if base not in (None, "") else "none"
+    delta = _reg_delta(gate)
 
-
-def _format_adversarial_next_step(copy: Any, breakout: dict[str, Any], decision_options: list[dict[str, Any]]) -> str:
-    summary = str((breakout or {}).get("summary") or "").strip().rstrip(".")
-    if summary and summary != "breakout unavailable":
-        lead = f"Review the breakout: {summary}."
-    else:
-        lead = f"Review the {getattr(copy, 'finding_name', 'finding')} evidence."
-    if (breakout or {}).get("status") == "present":
+    if gate_class == "LayerSkipGate" or gate_id.startswith("B2_"):
         return (
-            f"{lead} Fix convenience coupling; introduce an adapter if the cross-layer call is intentional; "
-            "grant an exemption only with owner, rationale, and retirement condition; re-baseline only with explicit architecture approval."
+            "Broad architecture drift: layer skipping increases future change cost across the repo and weakens the authority model.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; imports are skipping more than one layer ordinal.",
+            "Ranks first because a cross-cutting layer-hop pattern will keep generating rework in every later slice.",
         )
-    option_labels = ", ".join(opt.get("label", "") for opt in decision_options[:4] if opt.get("label"))
-    if option_labels:
-        return f"{lead} Investigate evidence before changing code; the current choices are {option_labels}."
-    return f"{lead} Investigate evidence before changing code."
-
-
-def build_executive_priority_row(
-    gate: dict[str, Any],
-    sqlite_path: Path | None,
-    run_id: str,
-) -> dict[str, Any]:
-    copy = executive_gate_copy(gate)
-    breakout = build_gate_breakout(gate, sqlite_path) if sqlite_path is not None else {
-        "status": "missing",
-        "finding_name": copy.finding_name,
-        "summary": "breakout unavailable",
-        "groups": [],
-        "samples": [],
-    }
-    decision_options = _format_decision_options(gate, breakout)
-    evidence = format_evidence_line(gate, run_id, breakout)
-    next_step = _format_adversarial_next_step(copy, breakout, decision_options)
-    affected_layers = [
-        " -> ".join([part for part in (str(group.get("src_layer") or "").strip(), str(group.get("dst_layer") or "").strip()) if part])
-        for group in (breakout.get("groups") or [])[:1]
-        if group.get("src_layer") or group.get("dst_layer")
-    ]
-    if not affected_layers and breakout.get("summary") and breakout.get("summary") != "breakout unavailable":
-        affected_layers = [str(breakout.get("summary"))]
-    return {
-        "rank": None,
-        "priority": None,
-        "action_type": "fix_blocker",
-        "action": copy.move,
-        "move": copy.move,
-        "scope": str(gate.get("gate_id") or ""),
-        "why_now": copy.why_it_matters,
-        "why_it_matters": copy.why_it_matters,
-        "business_reason": copy.why_it_matters,
-        "evidence": evidence,
-        "technical_reason": evidence,
-        "next_step": next_step,
-        "why_this_rank": next_step,
-        "decision": "fix_blocker",
-        "evidence_used": [{"signal_name": str(gate.get("gate_id") or ""), "signal_type": "gate", "decision_effect": copy.why_it_matters}],
-        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
-        "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "confidence": "high",
-        "timing": "now",
-        "decision_options": decision_options,
-        "affected_system": copy.affected_system,
-        "affected_layers": affected_layers,
-        "change_breakout": list((breakout.get("groups") or [])),
-        "diagram": copy.diagram or breakout.get("diagram"),
-        "work": copy.move,
-    }
+    if gate_class == "L5BypassGate" or gate_id.startswith("C2_"):
+        return (
+            "Zero-tolerance governance breach: a small number of L5 bypasses can invalidate control assurances even when the footprint is small.",
+            f"{gate_id}: {count} finding(s), {band}; provider/tool calls are skipping the L5 gateway.",
+            "Ranks second because the control breach is severe, but the affected surface is narrower than the broader layer-skip regression above.",
+        )
+    if gate_class == "UntypedSeamGate" or gate_id.startswith("F1_"):
+        return (
+            "Contract-seam debt: wide untyped seams slow safe change and increase integration risk across many callers.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; cross-layer imports land on empty type surfaces.",
+            "Ranks third because it is broad technical debt, but not as cross-cutting as the layer-hop problem or as severe as the P0 control bypass.",
+        )
+    if gate_class == "LpgDriftRatchetGate" or gate_id.startswith("L2_"):
+        return (
+            "Boundary drift: even a small P0 ratchet at the L_PG boundary weakens the separation model and can spread if left alone.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; illegal or drifted imports touch the L_PG boundary.",
+            "Ranks below the first three because the current slice is small and the regression surface is more localized.",
+        )
+    if gate_class == "UnusedImportsRatchetGate" or gate_id.startswith("S4_"):
+        return (
+            "Hygiene debt: unused imports are real cleanup, but they move the business needle less than boundary or control-plane failures.",
+            f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}; unused import edges remain in production modules.",
+            "Ranks later because the work is valuable but mostly reduces clutter rather than decision-grade risk.",
+        )
+    return (
+        "Current FIX gate blocks decision-grade green and should be fixed before the next slice proceeds.",
+        f"{gate_id}: {count} finding(s), +{delta} vs baseline {base_text}, {band}.",
+        "Ranks here because it is a current blocker in the next-slice plan.",
+    )
 
 
 def _patient_size(repo_root: Path, gate_doc: dict[str, Any] | None) -> dict[str, Any]:
@@ -1413,16 +1322,7 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
     runtime = _runtime_lens(p7_docs, sqlite_path)
     p0_landmines = _p0_landmine_lens(p7_docs.get("p0_wave_plan"))
     product = _product_lens(testing, graph)
-    actions = build_canonical_next_best_actions(
-        gates,
-        graph,
-        testing,
-        artifact_matrix,
-        mv_audit,
-        action_queue,
-        sqlite_path=sqlite_path,
-        run_id=ts,
-    )
+    actions = build_canonical_next_best_actions(gates, graph, testing, artifact_matrix, mv_audit, action_queue)
     doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "dead_code_report": dead_code_report, "deprecation_deletion_plan": deprecation_plan, "defer_delete_deprecate": {"status": "present", "rows": deprecation_plan.get("cleanup_candidates", [])}, "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
     doc["run"]["repo_state_hash"] = _hash_repo_state([p for p in artifacts.values() if p])
     if degraded:
@@ -1522,22 +1422,20 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     snapshot_ts = _sqlite_ts(Path(sqlite_snapshot)) if sqlite_snapshot else ""
     priority_rows: list[dict[str, Any]] = []
     for row in actions[:4]:
+        evidence = "; ".join(
+            str(e.get("signal_type") or "").strip()
+            for e in row.get("evidence_used", [])
+            if isinstance(e, dict) and str(e.get("signal_type") or "").strip()
+        )
         priority_rows.append(
             {
                 "priority": row.get("rank"),
-                "move": row.get("move") or row.get("action"),
-                "why_it_matters": row.get("why_it_matters") or row.get("business_reason") or row.get("why_now"),
-                "evidence": row.get("evidence") or row.get("technical_reason") or row.get("testing_requirement") or row.get("action"),
-                "next_step": row.get("next_step") or row.get("why_this_rank") or row.get("why_now"),
+                "move": row.get("action"),
                 "scope": row.get("scope"),
-                "decision_options": row.get("decision_options") or [],
-                "done_condition": row.get("done_condition") or "",
-                "affected_system": row.get("affected_system") or "",
-                "affected_layers": row.get("affected_layers") or [],
-                "change_breakout": row.get("change_breakout") or [],
-                "diagram": row.get("diagram"),
-                "action_type": row.get("action_type"),
-                "decision": row.get("decision"),
+                "business_reason": row.get("business_reason") or row.get("why_now"),
+                "technical_reason": row.get("technical_reason") or row.get("testing_requirement") or evidence or row.get("action"),
+                "why_this_rank": row.get("why_this_rank") or row.get("why_now"),
+                "decision": row.get("action_type"),
             }
         )
     return build_bcg_brief(
@@ -1697,21 +1595,7 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
         a("")
     a("### 10. Next Best Actions")
     a("")
-    a(
-        _table(
-            ["Priority", "Move", "Why it matters", "Evidence", "Next step"],
-            [
-                [
-                    r.get("priority", r.get("rank")),
-                    r.get("move") or r.get("action"),
-                    r.get("why_it_matters") or r.get("business_reason", ""),
-                    r.get("evidence") or r.get("technical_reason", ""),
-                    r.get("next_step") or r.get("why_this_rank", ""),
-                ]
-                for r in doc["canonical_next_best_actions"].get("rows", [])
-            ],
-        )
-    )
+    a(_table(["Rank", "Action", "Scope", "Why now", "Evidence used", "Testing requirement", "Done condition"], [[r["rank"], r["action"], r["scope"], r["why_now"], "; ".join(e["signal_type"] for e in r.get("evidence_used", [])), r["testing_requirement"], r["done_condition"]] for r in doc["canonical_next_best_actions"].get("rows", [])]))
     a("")
     a("### 11. Defer / Delete / Deprecate")
     a("")

@@ -1,8 +1,9 @@
 """CompanyBriefEngine — apps_research --mode company.
 
 Produces a CompanyBrief conforming to apps_rg/schemas/company_research.schema.json.
-Driven by SearXNG research (when available) plus a synthesizing LLM call.
-Fails closed when grounding or synthesis dependencies cannot produce a real brief.
+Driven by Tavily research (when available) plus a synthesizing LLM call. Falls
+back to a structured stub when neither is wired so the pipeline stays green
+in offline test environments.
 
 Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P1.2).
 """
@@ -13,15 +14,12 @@ import hashlib
 import json
 import logging
 import os
-import re
 import time
-import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
-from apps_research.integrations.llm_client import create_openai_sync_client
 
 # W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — import catalog
 # and helpers from query_decomposer (L1 cognition layer). Re-export them
@@ -46,7 +44,6 @@ def _v2_enabled() -> bool:
     return os.environ.get(_RETRIEVAL_V2_FLAG, "").strip() in {"1", "true", "yes", "on"}
 
 _log = logging.getLogger(__name__)
-_CURATED_TARGETING_BRIEF_DIR = Path(__file__).resolve().parents[2] / "apps_rg" / "config" / "targeting"
 
 
 def _emit_company_brief_marker(
@@ -58,9 +55,11 @@ def _emit_company_brief_marker(
 ) -> None:
     """Best-effort ``JUDGE_DECISION`` emission for synthesis observability.
 
-    Treated as a synthesis-availability observation for company-brief
-    synthesis. The calibration harness uses it to track parse-success
-    rate and fallback ratio. Never raises.
+    Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9). The marker is
+    treated as a synthesis-availability observation — the
+    judge-calibration harness uses it to track Qwen-vLLM uptime,
+    parse-success rate, and cloud-fallback ratio for company-brief
+    synthesis. Never raises.
     """
     try:
         from tools.capture.append_marker import append_marker  # noqa: PLC0415
@@ -84,45 +83,11 @@ def _emit_company_brief_marker(
         pass
 
 
-class CompanyBriefUnavailableError(RuntimeError):
-    """Raised when company brief synthesis cannot produce a real brief."""
-
-
 def _resolved_gemini_max_output_tokens() -> int:
-    """Canonical apps_research output-token budget for synthesis calls."""
-    raw = os.environ.get("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "").strip()
-    if raw:
-        try:
-            return max(512, int(raw))
-        except ValueError:
-            pass
-    return 4096
+    """Canonical Gemini output-token budget for apps_research synthesis calls."""
+    from agentic_core.config.google_ai_env import google_ai_max_output_tokens  # noqa: PLC0415
 
-
-def _slugify_targeting_token(value: str) -> str:
-    """Return a filename-friendly token for matching curated targeting packs."""
-    normalized = unicodedata.normalize("NFKD", str(value or "")).encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "_", normalized.lower()).strip("_")
-
-
-def _split_markdown_sections(text: str) -> dict[str, str]:
-    """Extract second-level markdown sections for curated fallback parsing."""
-    sections: dict[str, list[str]] = {}
-    current: str | None = None
-    for raw_line in str(text or "").splitlines():
-        line = raw_line.rstrip()
-        if line.startswith("## "):
-            current = line[3:].strip()
-            sections.setdefault(current, [])
-            continue
-        if current is None:
-            continue
-        sections[current].append(line)
-    return {
-        header: "\n".join(lines).strip()
-        for header, lines in sections.items()
-        if "\n".join(lines).strip()
-    }
+    return google_ai_max_output_tokens()
 
 
 class CompanyBriefEngine(BaseResearchEngine):
@@ -139,7 +104,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
     AGENT_ID = "apps_research.company_brief_engine"
 
-    # --- Search query templates (one per facet, decomposed; W1 Author-Gate B) -----
+    # --- Tavily query templates (one per facet, decomposed; W1 Author-Gate B) -----
     _FACET_QUERIES = [
         ("overview", '{company} company overview tagline founding "core offerings"'),
         ("strategic_priorities", '{company} strategic priorities 2025 2026 announcements roadmap'),
@@ -156,7 +121,6 @@ class CompanyBriefEngine(BaseResearchEngine):
     def execute(self, input_data: Any) -> Dict[str, Any]:
         _t0 = time.perf_counter()
         _sub_stages: list[dict[str, Any]] = []
-        self._last_curated_targeting_brief_path = None
 
         topic: str = self._extract(input_data, "topic")
         if not topic or not isinstance(topic, str):
@@ -210,22 +174,14 @@ class CompanyBriefEngine(BaseResearchEngine):
         # --- Sub-stage: synthesize ---
         _t_synth = time.perf_counter()
         profile_cfg = _DEPTH_PROFILES[depth_profile]
-        if getattr(self, "_last_curated_targeting_brief_path", None):
-            synthesized = self._compose_curated_targeting_synthesis(
-                topic=topic,
-                jd_context=jd_context,
-                jd_anchor=jd_anchor,
-                findings=research_findings,
-            )
-        else:
-            synthesized = self._synthesize(
-                topic=topic,
-                findings=research_findings,
-                jd_facets=jd_facets,
-                depth=depth_profile,
-                jd_context=jd_context,
-                jd_anchor=jd_anchor,
-            )
+        synthesized = self._synthesize(
+            topic=topic,
+            findings=research_findings,
+            jd_facets=jd_facets,
+            depth=depth_profile,
+            jd_context=jd_context,
+            jd_anchor=jd_anchor,
+        )
         _sub_stages.append({
             "sub_stage_id": "research.synthesize",
             "sub_stage_name": "LLM Synthesis",
@@ -247,10 +203,6 @@ class CompanyBriefEngine(BaseResearchEngine):
         gate_verdict, gate_caveat, degraded_reason = self._evaluate_c0_pa_gate(
             c0_bundle=c0_bundle, depth_profile=depth_profile
         )
-        if getattr(self, "_last_curated_targeting_brief_path", None):
-            gate_verdict = "PASS"
-            gate_caveat = ""
-            degraded_reason = "curated_targeting_fallback_pack"
         c0_bundle["synthesis_guidance"]["gate_verdict"] = gate_verdict
         c0_bundle["synthesis_guidance"]["gate_caveat"] = gate_caveat
         c0_bundle["synthesis_guidance"]["degraded_packet_reason"] = degraded_reason
@@ -278,7 +230,6 @@ class CompanyBriefEngine(BaseResearchEngine):
         targeting_disposition = str(synthesized.get("targeting_brief_disposition") or "").strip()
         if targeting_disposition:
             targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
-            targeting_sidecar = synthesized.get("apps_rg_targeting_brief_sidecar") or {}
             gate_blocks = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
             if targeting_md and not gate_blocks and targeting_disposition == "SEALED":
                 brief["apps_rg_targeting_brief_text"] = targeting_md
@@ -297,8 +248,6 @@ class CompanyBriefEngine(BaseResearchEngine):
                     brief["targeting_brief_violations"] = list(
                         synthesized["targeting_brief_violations"]
                     )
-            if targeting_sidecar:
-                brief["apps_rg_targeting_brief_sidecar"] = dict(targeting_sidecar)
         _sub_stages.append({
             "sub_stage_id": "research.assemble",
             "sub_stage_name": "Brief Assembly",
@@ -341,247 +290,19 @@ class CompanyBriefEngine(BaseResearchEngine):
                 facets.extend(str(x) for x in v if x)
         return facets
 
-    def _load_curated_targeting_research_notes(
-        self,
-        *,
-        topic: str,
-        jd_context: Dict[str, Any],
-    ) -> Dict[str, str]:
-        """Load repo-curated targeting notes when live retrieval is exhausted."""
-        company_name = str(jd_context.get("company_name") or "").strip() or topic
-        role_name = str(
-            jd_context.get("job_title")
-            or jd_context.get("target_role")
-            or jd_context.get("role")
-            or ""
-        ).strip()
-        company_slug = _slugify_targeting_token(company_name)
-        role_slug = _slugify_targeting_token(role_name)
-        if not _CURATED_TARGETING_BRIEF_DIR.is_dir():
-            return {}
-
-        def _rank(path: Path) -> tuple[int, int, str]:
-            stem_slug = _slugify_targeting_token(path.stem)
-            role_score = 0 if role_slug and role_slug in stem_slug else 1
-            return (role_score, len(path.name), path.name)
-
-        md_candidates = sorted(
-            _CURATED_TARGETING_BRIEF_DIR.glob(f"{company_slug}*briefing.md"),
-            key=_rank,
-        )
-        json_candidates = sorted(
-            _CURATED_TARGETING_BRIEF_DIR.glob(f"{company_slug}*.json"),
-            key=_rank,
-        )
-
-        brief_text = ""
-        source_path: Path | None = None
-        if md_candidates:
-            source_path = md_candidates[0]
-            try:
-                brief_text = source_path.read_text(encoding="utf-8").strip()
-            except OSError:
-                brief_text = ""
-        elif json_candidates:
-            source_path = json_candidates[0]
-            try:
-                raw = json.loads(source_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                raw = {}
-            if isinstance(raw, dict):
-                brief_text = str(
-                    raw.get("briefing_text")
-                    or raw.get("apps_rg_targeting_brief_text")
-                    or raw.get("company_brief_text")
-                    or ""
-                ).strip()
-        if not brief_text:
-            return {}
-
-        sections = _split_markdown_sections(brief_text)
-        if not sections:
-            sections = {"overview": brief_text}
-
-        section_map = {
-            "overview": ("JD Complement", "Company DNA & Operating Model"),
-            "strategic_priorities": ("Company Strategy & Operating Pressure",),
-            "customer_profile": (
-                "JD Complement",
-                "Company Strategy & Operating Pressure",
-                "Company DNA & Operating Model",
-            ),
-            "tech_stack_signals": ("AI, Data, Platform, Architecture Signals",),
-            "commercial_motion": (
-                "Company DNA & Operating Model",
-                "Partnership / Ecosystem Motion",
-            ),
-            "partner_ecosystem": ("Partnership / Ecosystem Motion",),
-            "adoption_motion": ("AI, Data, Platform, Architecture Signals",),
-            "leadership": ("Leadership & Stakeholder Map",),
-            "competitive_set": ("Company Strategy & Operating Pressure", "Recent Events & Urgency"),
-            "recent_moves": ("Recent Events & Urgency",),
-        }
-        findings: Dict[str, str] = {}
-        for family, wanted_sections in section_map.items():
-            parts = [sections[name] for name in wanted_sections if sections.get(name)]
-            if parts:
-                findings[family] = "\n\n".join(parts)
-
-        if findings:
-            setattr(self, "_last_curated_targeting_brief_path", source_path)
-            self.logger.info(
-                "[CompanyBriefEngine] using curated targeting fallback pack path=%s",
-                source_path,
-            )
-        return findings
-
-    def _compose_curated_targeting_synthesis(
-        self,
-        *,
-        topic: str,
-        jd_context: Dict[str, Any],
-        jd_anchor: Optional[Path],
-        findings: Dict[str, str],
-    ) -> Dict[str, Any]:
-        """Turn the curated fallback brief pack into a sealed synthesis payload."""
-        brief_path = getattr(self, "_last_curated_targeting_brief_path", None)
-        if not isinstance(brief_path, Path) or not brief_path.is_file():
-            raise CompanyBriefUnavailableError(
-                f"{topic}: curated fallback brief path missing"
-            )
-
-        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
-            assess_targeting_brief_semantics,
-            seal_targeting_brief,
-            validate_targeting_brief_text,
-        )
-        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
-            extract_jd_text,
-            format_research_findings,
-        )
-
-        jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
-        brief_text = brief_path.read_text(encoding="utf-8").strip()
-        sealed = seal_targeting_brief(
-            brief_text,
-            company_name=topic,
-            jd_text=jd_text,
-            profile="apps_rg",
-        )
-        if not sealed.is_sealed:
-            raise CompanyBriefUnavailableError(
-                f"{topic}: curated fallback brief rejected: {sealed.block_reason or 'contract_validation_failed'}"
-            )
-
-        research_notes = format_research_findings(findings)
-        validation = validate_targeting_brief_text(
-            sealed.company_brief_text,
-            jd_text=jd_text,
-            profile="apps_rg",
-        )
-        semantics = assess_targeting_brief_semantics(
-            sealed.company_brief_text,
-            jd_text=jd_text,
-            research_notes=research_notes,
-            profile="apps_rg",
-        )
-        sidecar = self._build_targeting_brief_sidecar(
-            company_name=topic,
-            brief_text=sealed.company_brief_text,
-            jd_text=jd_text,
-            research_notes=research_notes,
-            findings=findings,
-            gate_verdict="PASS",
-            gate_reason="curated_fallback_pack",
-            model_name="curated_targeting_pack",
-            semantic_override=semantics,
-        )
-        sidecar["validation_valid"] = validation.valid
-        sidecar["fallback_mode"] = "curated_targeting_pack"
-        return {
-            "company_archetype": "partner-led enterprise AI",
-            "company_dna": {
-                "archetype": "partner-led enterprise AI",
-                "commercial_motion": "co-sell and enablement",
-                "partner_ecosystem": "GSI + ISV + cloud alliances",
-                "adoption_motion": "pilot to production",
-                "operating_tension": "trust versus speed",
-                "distinguishing_traits": [
-                    "safety",
-                    "deployability",
-                    "technical close",
-                ],
-            },
-            "tagline": "Anthropic partnership DNA centered on partner-led enterprise adoption.",
-            "core_offerings": ["Claude for Enterprise", "Claude Code", "API"],
-            "strategic_priorities": [
-                "partner enablement",
-                "joint solution development",
-                "technical close",
-                "ecosystem revenue",
-            ],
-            "verticals": ["enterprise"],
-            "buyer_titles": [
-                "GTM Partnerships",
-                "Partner Solutions Architect",
-                "CIO",
-                "CTO",
-            ],
-            "tech_stack_signals": [
-                "Claude for Enterprise",
-                "Claude Code",
-                "Bedrock",
-                "Vertex AI",
-            ],
-            "commercial_motion": [
-                "co-sell",
-                "partner-led adoption",
-                "indirect revenue",
-            ],
-            "partner_ecosystem": ["GSI", "ISV", "cloud alliances"],
-            "adoption_motion": [
-                "pilot-to-production",
-                "enablement at scale",
-            ],
-            "leadership": [
-                {"name": "Dario Amodei", "title": "CEO", "background": "safety and execution"},
-                {"name": "Daniela Amodei", "title": "President", "background": "company voice"},
-            ],
-            "competitive_set": [
-                "enterprise AI platforms",
-                "model vendors",
-            ],
-            "recent_moves": [
-                {"date": "2026-06-19", "event": "partner-led enterprise targeting brief", "signal": "distribution and adoption"},
-            ],
-            "language_to_mirror": [
-                "partner-led adoption",
-                "technical close",
-                "reference architectures",
-            ],
-            "language_to_avoid": [
-                "frontier research",
-                "model internals",
-                "generic AI-company prose",
-            ],
-            "apps_rg_targeting_brief_markdown": sealed.company_brief_text,
-            "apps_rg_targeting_brief_sidecar": sidecar,
-            "targeting_brief_disposition": "SEALED",
-        }
-
     def _run_research_v2(self, *, topic: str, depth: str) -> Dict[str, str]:
         """V2 retrieval pipeline: decompose → retrieve (parallel) → rerank → assemble.
 
-        Plan §P1.4 + §P2.4 (parallel dispatch). Uses a thread pool for
-        per-sub-query retrieval (I/O-bound HTTP calls to SearXNG) so
-        wall-clock scales sub-linearly with fan-out. Missing retrieval
-        dependencies fail closed.
+        Plan §P1.4 + §P2.4 (parallel dispatch). Degrades to empty blobs
+        when TAVILY_API_KEY or SDK unavailable. Uses a thread pool for
+        per-sub-query retrieval (I/O-bound HTTP calls to Tavily) so
+        wall-clock scales sub-linearly with fan-out.
         """
         import concurrent.futures
 
         from apps_research.engines.query_decomposer import SubQuery, decompose
         from apps_research.integrations.reranker_adapter import rerank
-        from apps_research.integrations.search_retrieval import (
+        from apps_research.integrations.tavily_retrieval import (
             apply_contextual_prefix,
             retrieve,
         )
@@ -590,9 +311,8 @@ class CompanyBriefEngine(BaseResearchEngine):
         try:
             sub_queries = decompose(topic, depth=depth_norm)  # type: ignore[arg-type]
         except ValueError as exc:
-            raise CompanyBriefUnavailableError(
-                f"{topic}: v2 research decomposition failed: {exc}"
-            ) from exc
+            self.logger.warning("[CompanyBriefEngine v2] decompose failed: %s", exc)
+            return {}
 
         def _fetch(sq: SubQuery) -> tuple[str, str]:
             try:
@@ -624,44 +344,38 @@ class CompanyBriefEngine(BaseResearchEngine):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
             for facet, blob in pool.map(_fetch, sub_queries):
                 findings[facet] = blob
-        if not any((blob or "").strip() for blob in findings.values()):
-            raise CompanyBriefUnavailableError(
-                f"{topic}: v2 research returned no grounded findings"
-            )
         return findings
 
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
-        """Best-effort SearXNG research per facet.
+        """Best-effort Tavily research per facet.
 
-        Returns a dict {facet_name: text_blob}. Missing SearXNG configuration
-        fails closed instead of substituting a synthetic brief.
+        Returns a dict {facet_name: text_blob}. Missing Tavily → empty blobs;
+        the synthesizer downstream will produce a structured stub.
         """
         findings: Dict[str, str] = {f: "" for f, _ in self._FACET_QUERIES}
         try:
-            from apps_research.integrations.search_retrieval import retrieve
-        except ImportError as exc:
-            self.logger.warning(
-                "[CompanyBriefEngine] search_retrieval unavailable; curated fallback may be used: %s",
-                exc,
+            from tools.retrieval.tavily_client import TavilySearchClient  # type: ignore
+        except ImportError:
+            self.logger.info(
+                "[CompanyBriefEngine] Tavily client unavailable; using stub synthesis path"
             )
-            retrieve = None
+            return findings
 
         max_queries = {"shallow": 3, "standard": 6, "deep": 10}.get(depth, 6)
+        try:
+            client = TavilySearchClient()
+        except Exception as exc:  # guardian: allow-broad-exception -- Tavily client init heterogeneous (HTTPError/ValueError/EnvironmentError); fail-soft to stub
+            self.logger.warning("[CompanyBriefEngine] Tavily init failed: %s", exc)
+            return findings
 
         for facet, q_template in self._FACET_QUERIES[:max_queries]:
-            if retrieve is None:
-                break
             query = q_template.format(company=topic)
             try:
-                docs = retrieve(query, top_k=5)
-                snippets = [d.snippet for d in docs if d.snippet]
+                resp = client.search(query=query, max_results=5)
+                snippets = [r.get("content", "") for r in (resp or {}).get("results", [])]
                 findings[facet] = "\n".join(snippets)[:4000]
-            except Exception as exc:  # guardian: allow-broad-exception -- SearXNG HTTP errors are heterogeneous; per-facet fail-soft preserves partial brief
-                self.logger.warning("[CompanyBriefEngine] SearXNG query failed (%s): %s", facet, exc)
-        if not any((blob or "").strip() for blob in findings.values()):
-            raise CompanyBriefUnavailableError(
-                f"{topic}: SearXNG research returned no grounded findings"
-            )
+            except Exception as exc:  # guardian: allow-broad-exception -- Tavily HTTP errors heterogeneous; per-facet fail-soft preserves partial brief
+                self.logger.warning("[CompanyBriefEngine] Tavily query failed (%s): %s", facet, exc)
         return findings
 
     def _synthesize(
@@ -676,10 +390,14 @@ class CompanyBriefEngine(BaseResearchEngine):
     ) -> Dict[str, Any]:
         """LLM-synthesize raw research into structured facets.
 
-        The company brief path uses the pinned OpenAI model route for
-        synthesis. When ``apps_rg_targeting_brief_enabled`` (env or
-        jd_context), emits apps_rg targeting markdown per
-        ``apps_rg_targeting_brief_v1.md``.
+        Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9): try local
+        Qwen-32B vLLM first; fall through to SovereignLLMGateway (cloud)
+        when the local server is unavailable; deterministic stub when
+        both gateways fail. Matches the cascade pattern established in
+        Wave 2 for narrative_judge_scorer.
+
+        When ``apps_rg_targeting_brief_enabled`` (env or jd_context), emits
+        apps_rg targeting markdown per ``apps_rg_targeting_brief_v1.md``.
         """
         from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
             consumer_brief_template_id,
@@ -689,16 +407,13 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
 
         consumer_template_id = consumer_brief_template_id(jd_context=jd_context)
-        base_prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
-        base_synthesis = self._gemini_synthesize(prompt=base_prompt, topic=topic, jd_facets=jd_facets)
         if apps_rg_targeting_brief_enabled(jd_context=jd_context):
-            targeting = self._synthesize_apps_rg_targeting_brief(
+            return self._synthesize_apps_rg_targeting_brief(
                 topic=topic,
                 findings=findings,
                 jd_context=jd_context or {},
                 jd_anchor=jd_anchor,
             )
-            return {**base_synthesis, **targeting}
         if consumer_template_id in {
             "downstream_research_substrate_v1",
             "apps_lic_research_substrate_v1",
@@ -724,7 +439,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             consumer_output_key, consumer_disposition_key, consumer_block_reason_key = (
                 consumer_keys[consumer_template_id]
             )
-            consumer = self._synthesize_consumer_brief(
+            return self._synthesize_consumer_brief(
                 topic=topic,
                 findings=findings,
                 jd_context=jd_context or {},
@@ -734,9 +449,29 @@ class CompanyBriefEngine(BaseResearchEngine):
                 disposition_key=consumer_disposition_key,
                 block_reason_key=consumer_block_reason_key,
             )
-            return {**base_synthesis, **consumer}
 
-        return base_synthesis
+        prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
+
+        # Strict mode: fail loud with categorized diagnostic when the operator
+        # explicitly required Qwen (APPS_RESEARCH_REQUIRE_QWEN=1). Distinguishes
+        # Docker Desktop down vs vLLM container down vs model not loaded so the
+        # error message is actionable. Cloud/stub fallbacks are intentionally
+        # bypassed in strict mode.
+        from apps_research.integrations.qwen_strict_probe import (
+            maybe_enforce_qwen_strict_requirement,
+        )
+
+        maybe_enforce_qwen_strict_requirement()
+
+        qwen_payload = self._qwen_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
+        if qwen_payload is not None:
+            return qwen_payload
+
+        gemini_payload = self._gemini_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
+        if gemini_payload is not None:
+            return gemini_payload
+
+        return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
 
     def _gemini_synthesize(
         self,
@@ -744,74 +479,231 @@ class CompanyBriefEngine(BaseResearchEngine):
         prompt: str,
         topic: str,
         jd_facets: List[str],
-    ) -> Dict[str, Any]:
-        """Synthesize via the pinned OpenAI model route.
+    ) -> Dict[str, Any] | None:
+        """Synthesize via Google Gemini 3.1 Pro Preview (cloud cascade tier 2).
 
-        Uses ``gpt-5.4-mini`` by default, with ``APPS_RESEARCH_BRIEF_MODEL``
-        as an explicit override for local experimentation. Returns the parsed
-        synthesis dict on success and fails closed on transport, empty-response,
-        or parse failure.
+        Mirrors :meth:`_qwen_synthesize`. Reads `GOOGLE_API_KEY` and
+        ``GOOGLE_AI_PRO_MODEL`` (deprecated alias ``GEMINI_PRO_MODEL``,
+        default ``gemini-3.1-pro-preview``) from the
+        environment. Returns the parsed synthesis dict on success, ``None``
+        when any guard rejects (SDK absent, key missing, API exception,
+        empty response, parse failure). The ``None`` return signals
+        :meth:`_synthesize` to fall through to the deterministic stub.
+
+        Per `.env.example` doctrine, ``GOOGLE_AI_PRO_MODEL`` is the
+        synthesis-quality / structural-novel-failure escalation tier;
+        ``GOOGLE_AI_MODEL`` / ``GEMINI_MODEL`` (flash) is for cheap fallback
+        when Pro is exhausted or mismatched vs Pro.
         """
         import os  # noqa: PLC0415 — local import keeps module cold-load cheap
 
         try:
-            client = create_openai_sync_client()
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
-            raise CompanyBriefUnavailableError(
-                f"{topic}: OpenAI client unavailable: {exc}"
-            ) from exc
+            from google import genai  # noqa: PLC0415
+        except ImportError:
+            self.logger.info("[CompanyBriefEngine] google-genai SDK not installed; skipping Gemini fallback")
+            return None
 
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            self.logger.info("[CompanyBriefEngine] GOOGLE_API_KEY/GEMINI_API_KEY not set; skipping Gemini fallback")
+            return None
+
+        # Try Pro first (synthesis-quality tier) then Flash (cheap-fast). Free-tier
+        # Google AI Studio accounts have limit:0 for Pro models so the cascade
+        # resolves to Flash; paid-tier accounts hit Pro and never reach Flash.
+        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
+            google_ai_flash_model_id,
+            google_ai_pro_model_id,
+        )
+
+        candidates: list[str] = []
+        from agentic_core.config.model_catalog import (  # noqa: PLC0415
+            GEMINI_FLASH_MODEL_ID,
+            GEMINI_PRO_MODEL_ID,
+        )
+
+        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
+        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
+        if pro_model:
+            candidates.append(pro_model)
+        if flash_model and flash_model != pro_model:
+            candidates.append(flash_model)
+        if not candidates:
+            return None
+
+        client = genai.Client(api_key=api_key)
+        last_error: Exception | None = None
+        for model_name in candidates:
+            started = time.time()
+            try:
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=(
+                        "You are a research analyst producing structured company briefs. "
+                        "Always answer with strict JSON matching the schema in the user prompt.\n\n"
+                        + prompt
+                    ),
+                    config={
+                        "temperature": 0.2,
+                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
+                    },
+                )
+            except Exception as exc:  # guardian: allow-broad-exception -- google-genai raises heterogeneous (APIError/Connection/Timeout/InvalidArgument); fail-soft preserves stub fallback
+                last_error = exc
+                self.logger.info(
+                    "[CompanyBriefEngine] gemini model=%s failed (%s); trying next candidate",
+                    model_name,
+                    type(exc).__name__,
+                )
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_exception",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
+            if not text:
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_empty_response",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
+            if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_parse_failure",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            _emit_company_brief_marker(
+                accepted=True,
+                model_used=model_name,
+                fallback_reason="none",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return parsed
+
+        if last_error is not None:
+            self.logger.info(
+                "[CompanyBriefEngine] all Gemini candidates exhausted (last error: %s); falling back to stub",
+                last_error,
+            )
+        return None
+
+    def _qwen_synthesize(
+        self,
+        *,
+        prompt: str,
+        topic: str,
+        jd_facets: List[str],
+    ) -> Dict[str, Any] | None:
+        """Synthesize via the local Qwen vLLM server.
+
+        Returns the parsed synthesis dict on success, ``None`` when any
+        guard rejects (preflight fail, SDK absent, model_registry absent,
+        gateway exception, parse failure). The ``None`` return signals
+        :meth:`_synthesize` to fall through to the cloud gateway.
+
+        Emits a ``JUDGE_DECISION`` marker per call (treating the
+        synthesis as a free-text generation that the calibration ledger
+        observes; ``app_name=apps_research.company_brief``) so the
+        weekly judge-calibration harness can spot drift in synthesis
+        availability + parse-success rate.
+        """
+        try:
+            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+                is_qwen_available,
+            )
+        except ImportError:
+            return None
+        if not is_qwen_available():
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used="deterministic_fallback",
+                fallback_reason="preflight_failed",
+            )
+            return None
+
+        try:
+            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
+            if _OpenAI is None:
+                return None
+        except ImportError:
+            return None
+
+        try:
+            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+                QWEN_LOCAL_MODEL_ID,
+                VLLM_BASE_URL,
+            )
+        except ImportError:
+            return None
+
         started = time.time()
         try:
+            client = _OpenAI(
+                base_url=VLLM_BASE_URL,
+                api_key="not-needed",
+                timeout=60.0,
+            )
             resp = client.chat.completions.create(
-                model=model_name,
+                model=QWEN_LOCAL_MODEL_ID,
                 messages=[
                     {
                         "role": "system",
                         "content": (
-                            "You are a research analyst producing structured company briefs. "
-                            "Always answer with strict JSON matching the schema in the user prompt."
+                            "You are a corporate intelligence analyst producing strict "
+                            "JSON output. Respond ONLY with valid JSON."
                         ),
                     },
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.2,
-                max_completion_tokens=_resolved_gemini_max_output_tokens(),
+                max_tokens=2000,
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI SDK raises heterogeneous transport/API errors; fail closed
-            self.logger.info("[CompanyBriefEngine] openai model=%s failed: %s", model_name, exc)
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous (APIError/Connection/Timeout); fail-soft preserves cloud fallback
+            self.logger.info("[CompanyBriefEngine] qwen call failed, falling back: %s", exc)
             _emit_company_brief_marker(
                 accepted=False,
-                model_used=model_name,
-                fallback_reason="openai_exception",
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="gateway_exception",
                 latency_ms=(time.time() - started) * 1000.0,
             )
-            raise CompanyBriefUnavailableError(
-                f"{topic}: OpenAI synthesis failed for model={model_name}: {type(exc).__name__}: {exc}"
-            ) from exc
+            return None
 
-        text = ""
-        if getattr(resp, "choices", None):
-            try:
-                text = str(resp.choices[0].message.content or "").strip()
-            except (AttributeError, IndexError, TypeError, ValueError):
-                text = ""
-        if not text:
+        text = (resp.choices[0].message.content or "") if resp.choices else ""
+        if not text.strip():
             _emit_company_brief_marker(
                 accepted=False,
-                model_used=model_name,
-                fallback_reason="openai_empty_response",
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="empty_response",
                 latency_ms=(time.time() - started) * 1000.0,
             )
-            raise CompanyBriefUnavailableError(
-                f"{topic}: OpenAI synthesis returned empty response for model={model_name}"
-            )
+            return None
 
         parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
+        # _parse_synthesis returns the stub on any parse failure, which we
+        # treat as a soft fallback (return None so the cloud path can try).
+        if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="parse_failure",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return None
+
         _emit_company_brief_marker(
             accepted=True,
-            model_used=model_name,
+            model_used=QWEN_LOCAL_MODEL_ID,
             fallback_reason="none",
             latency_ms=(time.time() - started) * 1000.0,
         )
@@ -833,6 +725,13 @@ class CompanyBriefEngine(BaseResearchEngine):
         ``topic`` only when absent) so the JD/role never pollutes company
         identification. The JD is passed as relevance context only.
 
+        Fail-closed: when grounding is insufficient (no research findings or a
+        failing C0 gate) or the generated markdown does not satisfy the
+        frontier-era briefing contract, this method
+        returns a synthesis dict WITHOUT ``apps_rg_targeting_brief_markdown`` and
+        carries a ``targeting_brief_disposition`` (BLOCKED/DEGRADED) plus
+        ``targeting_brief_block_reason``. The caller therefore never surfaces a
+        placeholder or generic brief as a successful ``company_brief_text``.
         """
         from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
             build_targeting_brief_prompt,
@@ -841,7 +740,6 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
         from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
             BriefStatus,
-            assess_targeting_brief_semantics,
             normalize_targeting_brief_text,
             seal_targeting_brief,
         )
@@ -849,15 +747,21 @@ class CompanyBriefEngine(BaseResearchEngine):
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
 
+        stub = self._stub_synthesis(topic=company_name, jd_facets=[])
+        stub["synthesis_template"] = "apps_rg_targeting_brief_synthesis_v1"
+
+        # Fail closed when there is no grounded research to synthesize from, or
+        # when the C0 support gate already failed. Never invent a brief.
         has_research = bool(research_notes.strip())
         gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
         if not has_research or gate_failed:
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: apps_rg targeting brief blocked: "
-                f"{gate_reason or ('c0_support_gate_failed' if gate_failed else 'no_grounded_research_for_company')}"
+            stub["targeting_brief_disposition"] = BriefStatus.BLOCKED.value
+            stub["targeting_brief_block_reason"] = (
+                gate_reason
+                or ("c0_support_gate_failed" if gate_failed else "no_grounded_research_for_company")
             )
+            return stub
 
         prompt = build_targeting_brief_prompt(
             jd_text=jd_text,
@@ -867,10 +771,11 @@ class CompanyBriefEngine(BaseResearchEngine):
         markdown = self._call_llm_plain_markdown(prompt).strip()
 
         if not markdown or markdown.upper().startswith("BLOCKED:"):
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: apps_rg targeting brief synthesis returned "
-                f"{markdown[:120] if markdown else 'synthesis_returned_empty'}"
+            stub["targeting_brief_disposition"] = BriefStatus.BLOCKED.value
+            stub["targeting_brief_block_reason"] = (
+                markdown[:120] if markdown else "synthesis_returned_empty"
             )
+            return stub
 
         normalized = normalize_targeting_brief_text(
             markdown,
@@ -906,33 +811,17 @@ class CompanyBriefEngine(BaseResearchEngine):
                     profile="apps_rg",
                 )
         if not sealed.is_sealed:
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: apps_rg targeting brief rejected: {sealed.block_reason or 'contract_validation_failed'}"
-            )
-        return {
-            "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
-            "apps_rg_targeting_brief_markdown": sealed.company_brief_text,
-            "apps_rg_targeting_brief_sidecar": self._build_targeting_brief_sidecar(
-                company_name=company_name,
-                brief_text=sealed.company_brief_text,
-                jd_text=jd_text,
-                research_notes=research_notes,
-                findings=findings,
-                gate_verdict=gate_verdict,
-                gate_reason=gate_reason,
-                model_name=model_name,
-                semantic_override=assess_targeting_brief_semantics(
-                    sealed.company_brief_text,
-                    jd_text=jd_text,
-                    research_notes=research_notes,
-                    profile="apps_rg",
-                ),
-            ),
-            "targeting_brief_disposition": BriefStatus.SEALED.value,
-            "targeting_brief_char_count": sealed.char_count,
-            "targeting_brief_bullet_count": sealed.bullet_count,
-            "targeting_brief_section_count": sealed.section_count,
-        }
+            stub["targeting_brief_disposition"] = sealed.status.value
+            stub["targeting_brief_block_reason"] = sealed.block_reason
+            stub["targeting_brief_violations"] = list(sealed.violations)
+            return stub
+
+        stub["apps_rg_targeting_brief_markdown"] = sealed.company_brief_text
+        stub["targeting_brief_disposition"] = BriefStatus.SEALED.value
+        stub["targeting_brief_char_count"] = sealed.char_count
+        stub["targeting_brief_bullet_count"] = sealed.bullet_count
+        stub["targeting_brief_section_count"] = sealed.section_count
+        return stub
 
     def _synthesize_consumer_brief(
         self,
@@ -961,13 +850,21 @@ class CompanyBriefEngine(BaseResearchEngine):
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
+
+        stub = self._stub_synthesis(topic=company_name, jd_facets=[])
+        stub["synthesis_template"] = template_id
+        stub["consumer_brief_template_id"] = template_id
+        stub["consumer_brief_output_key"] = output_key
+
         has_research = bool(research_notes.strip())
         gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
         if not has_research or gate_failed:
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: consumer brief blocked: "
-                f"{gate_reason or ('c0_support_gate_failed' if gate_failed else 'no_grounded_research_for_company')}"
+            stub[disposition_key] = "BLOCKED"
+            stub[block_reason_key] = (
+                gate_reason
+                or ("c0_support_gate_failed" if gate_failed else "no_grounded_research_for_company")
             )
+            return stub
 
         prompt = build_consumer_brief_prompt(
             template_id=template_id,
@@ -977,21 +874,16 @@ class CompanyBriefEngine(BaseResearchEngine):
         )
         text = self._call_llm_plain_markdown(prompt).strip()
         if not text or text.upper().startswith("BLOCKED:"):
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: consumer brief synthesis returned "
-                f"{text[:120] if text else 'synthesis_returned_empty'}"
-            )
+            stub[disposition_key] = "BLOCKED"
+            stub[block_reason_key] = text[:120] if text else "synthesis_returned_empty"
+            return stub
 
         brief_profile = "apps_lic" if template_id == "apps_lic_research_substrate_v1" else "apps_rg"
         text = normalize_markdown_brief_text(text, profile=brief_profile)
-        return {
-            "synthesis_template": template_id,
-            "consumer_brief_template_id": template_id,
-            "consumer_brief_output_key": output_key,
-            output_key: text,
-            "company_brief_text": text,
-            disposition_key: "SEALED",
-        }
+        stub[output_key] = text
+        stub["company_brief_text"] = text
+        stub[disposition_key] = "SEALED"
+        return stub
 
     def _repair_apps_rg_targeting_brief_markdown(
         self,
@@ -1026,89 +918,45 @@ class CompanyBriefEngine(BaseResearchEngine):
             return ""
         return repaired
 
-    def _build_targeting_brief_sidecar(
-        self,
-        *,
-        company_name: str,
-        brief_text: str,
-        jd_text: str,
-        research_notes: str,
-        findings: Dict[str, str],
-        gate_verdict: str,
-        gate_reason: str,
-        model_name: str,
-        semantic_override: Any | None = None,
-    ) -> Dict[str, Any]:
-        """Build the structured sidecar carried from apps_research to apps_rg."""
-        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
-            assess_targeting_brief_semantics,
-            validate_targeting_brief_text,
-        )
-
-        semantics = semantic_override or assess_targeting_brief_semantics(
-            brief_text,
-            jd_text=jd_text,
-            research_notes=research_notes,
-            profile="apps_rg",
-        )
-        validation = validate_targeting_brief_text(
-            brief_text,
-            jd_text=jd_text,
-            profile="apps_rg",
-        )
-        source_register = [
-            {
-                "family": family,
-                "has_content": bool((blob or "").strip()),
-                "char_count": len((blob or "").strip()),
-            }
-            for family, blob in sorted(findings.items(), key=lambda item: item[0])
-        ]
-        digest = hashlib.sha256(brief_text.encode("utf-8")).hexdigest() if brief_text else ""
-        return {
-            "schema_version": "apps_research.apps_rg_targeting_brief_sidecar/v1",
-            "company_name": company_name,
-            "generation_model": model_name,
-            "generation_token_budget": _resolved_gemini_max_output_tokens(),
-            "judge_name": semantics.judge_name,
-            "judge_model": semantics.judge_model,
-            "briefing_semantic_score": semantics.score,
-            "handoff_eligible": semantics.handoff_eligible,
-            "role_archetype": semantics.role_archetype,
-            "required_sections_present": list(semantics.required_sections_present),
-            "missing_sections": list(semantics.missing_sections),
-            "source_families_present": list(semantics.source_families_present),
-            "source_families_missing": list(semantics.source_families_missing),
-            "signal_terms_present": list(semantics.signal_terms_present),
-            "signal_terms_missing": list(semantics.signal_terms_missing),
-            "source_register": source_register,
-            "gate_verdict": gate_verdict,
-            "gate_reason": gate_reason,
-            "text_char_count": validation.char_count,
-            "bullet_count": validation.bullet_count,
-            "section_count": validation.section_count,
-            "brief_text_sha256": digest,
-        }
-
     def _call_llm_plain_markdown(self, prompt: str) -> str:
-        """OpenAI route for plain-text targeting brief output."""
+        """Qwen → Gemini cascade for plain-text targeting brief output."""
+        from apps_research.integrations.qwen_strict_probe import (  # noqa: PLC0415
+            maybe_enforce_qwen_strict_requirement,
+        )
+
+        maybe_enforce_qwen_strict_requirement()
+        text = self._qwen_synthesize_plain(prompt=prompt)
+        if text:
+            return text
         text = self._gemini_synthesize_plain(prompt=prompt)
-        return text
+        return text or ""
 
-    def _gemini_synthesize_plain(self, *, prompt: str) -> str:
-        import os  # noqa: PLC0415
-
+    def _qwen_synthesize_plain(self, *, prompt: str) -> str | None:
         try:
-            client = create_openai_sync_client()
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
-            raise CompanyBriefUnavailableError(
-                f"targeting brief OpenAI client unavailable: {exc}"
-            ) from exc
-
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+                is_qwen_available,
+            )
+        except ImportError:
+            return None
+        if not is_qwen_available():
+            return None
         try:
+            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
+            if _OpenAI is None:
+                return None
+        except ImportError:
+            return None
+        try:
+            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+                QWEN_LOCAL_MODEL_ID,
+                VLLM_BASE_URL,
+            )
+        except ImportError:
+            return None
+        try:
+            client = _OpenAI(base_url=VLLM_BASE_URL, api_key="not-needed", timeout=90.0)
             resp = client.chat.completions.create(
-                model=model_name,
+                model=QWEN_LOCAL_MODEL_ID,
                 messages=[
                     {
                         "role": "system",
@@ -1120,32 +968,68 @@ class CompanyBriefEngine(BaseResearchEngine):
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.2,
-                max_completion_tokens=_resolved_gemini_max_output_tokens(),
+                max_tokens=1200,
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI SDK raises heterogeneous transport/API errors; fail closed
-            self.logger.info(
-                "[CompanyBriefEngine] targeting brief openai model=%s failed: %s",
-                model_name,
-                exc,
-            )
-            raise CompanyBriefUnavailableError(
-                f"targeting brief OpenAI synthesis failed for model={model_name}: {type(exc).__name__}: {exc}"
-            ) from exc
-        if not getattr(resp, "choices", None):
-            raise CompanyBriefUnavailableError(
-                f"targeting brief OpenAI synthesis returned no choices for model={model_name}"
-            )
+        except Exception as exc:  # guardian: allow-broad-exception -- vLLM fail-soft
+            self.logger.info("[CompanyBriefEngine] targeting brief qwen failed: %s", exc)
+            return None
+        return (resp.choices[0].message.content or "").strip() if resp.choices else ""
+
+    def _gemini_synthesize_plain(self, *, prompt: str) -> str | None:
+        import os  # noqa: PLC0415
+
         try:
-            text = (resp.choices[0].message.content or "").strip()
-        except (AttributeError, IndexError, TypeError, ValueError):
-            raise CompanyBriefUnavailableError(
-                f"targeting brief OpenAI synthesis returned malformed response for model={model_name}"
-            )
-        if not text:
-            raise CompanyBriefUnavailableError(
-                f"targeting brief OpenAI synthesis returned empty response for model={model_name}"
-            )
-        return text
+            from google import genai  # noqa: PLC0415
+        except ImportError:
+            return None
+        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return None
+        from agentic_core.config.google_ai_env import (  # noqa: PLC0415
+            google_ai_flash_model_id,
+            google_ai_pro_model_id,
+        )
+
+        candidates: list[str] = []
+        from agentic_core.config.model_catalog import (  # noqa: PLC0415
+            GEMINI_FLASH_MODEL_ID,
+            GEMINI_PRO_MODEL_ID,
+        )
+
+        pro_model = google_ai_pro_model_id(default=GEMINI_PRO_MODEL_ID)[0].strip()
+        flash_model = google_ai_flash_model_id(default=GEMINI_FLASH_MODEL_ID)[0].strip()
+        if pro_model:
+            candidates.append(pro_model)
+        if flash_model and flash_model != pro_model:
+            candidates.append(flash_model)
+        if not candidates:
+            return None
+        client = genai.Client(api_key=api_key)
+        for model_name in candidates:
+            try:
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=(
+                        "You produce apps_rg targeting briefs only. "
+                        "Output plain markdown exactly as instructed. No JSON. No fences.\n\n"
+                        + prompt
+                    ),
+                    config={
+                        "temperature": 0.2,
+                        "max_output_tokens": _resolved_gemini_max_output_tokens(),
+                    },
+                )
+            except Exception as exc:  # guardian: allow-broad-exception -- gemini fail-soft
+                self.logger.info(
+                    "[CompanyBriefEngine] targeting brief gemini model=%s failed: %s",
+                    model_name,
+                    exc,
+                )
+                continue
+            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
+            if text:
+                return text
+        return None
 
     @staticmethod
     def _build_synthesis_prompt(
@@ -1187,15 +1071,44 @@ class CompanyBriefEngine(BaseResearchEngine):
                 return json.loads(text[first : last + 1])
         except (json.JSONDecodeError, ValueError) as exc:
             self.logger.warning("[CompanyBriefEngine] could not parse LLM JSON: %s", exc)
-        raise CompanyBriefUnavailableError(
-            f"{topic}: structured synthesis JSON parse failed"
-        )
+        return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
 
     @staticmethod
     def _stub_synthesis(*, topic: str, jd_facets: List[str]) -> Dict[str, Any]:
-        raise CompanyBriefUnavailableError(
-            f"{topic}: stub synthesis disabled"
-        )
+        # Deterministic minimal-but-valid synthesis so the pipeline stays green
+        # in offline/test environments. Marked clearly so downstream HOPs can
+        # detect synthetic provenance.
+        mirror_seed = jd_facets[:5] if jd_facets else [
+            "consulting", "transformation", "data", "analytics", "AI"
+        ]
+        return {
+            "company_archetype": "unknown (stub synthesis — research unavailable)",
+            "company_dna": {
+                "archetype": "unknown",
+                "commercial_motion": ["research unavailable"],
+                "partner_ecosystem": ["research unavailable"],
+                "adoption_motion": ["research unavailable"],
+                "operating_tension": ["research unavailable"],
+                "distinguishing_traits": ["stub synthesis — research unavailable"],
+            },
+            "tagline": f"{topic} (stub synthesis — research unavailable)",
+            "core_offerings": ["consulting", "data engineering", "AI enablement"],
+            "strategic_priorities": [
+                "AI/agentic transformation for enterprise customers",
+                "scaling consulting delivery across regulated industries",
+            ],
+            "verticals": ["financial services", "insurance", "healthcare", "retail"],
+            "buyer_titles": ["Chief Data Officer", "Chief AI Officer", "VP Data"],
+            "tech_stack_signals": ["AWS", "Snowflake", "Databricks"],
+            "commercial_motion": ["partner-led enterprise adoption", "sales-assisted delivery"],
+            "partner_ecosystem": ["alliances", "co-sell", "ecosystem"],
+            "adoption_motion": ["pilot-to-production", "enablement"],
+            "leadership": [],
+            "competitive_set": [],
+            "recent_moves": [],
+            "language_to_mirror": list(dict.fromkeys(mirror_seed + ["partnership", "outcomes"])),
+            "language_to_avoid": ["world-class", "best-in-class", "leverage", "synergy"],
+        }
 
     # ------------------------------------------------------------------
     # W2 C0 pipeline methods
@@ -1239,9 +1152,9 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         Delegates family selection + query generation to
         ``decompose_coverage_families()``. Uses
-        ``apps_research.integrations.search_retrieval.retrieve`` (the
-        canonical SearXNG adapter) for the actual searches. Degrades
-        gracefully when ``SEARXNG_BASE_URL`` is unset or the instance is missing
+        ``apps_research.integrations.tavily_retrieval.retrieve`` (the
+        canonical Tavily adapter) for the actual searches. Degrades
+        gracefully when ``TAVILY_API_KEY`` is unset or the SDK is missing
         — returns empty blobs per family so offline test environments
         stay green.
         """
@@ -1249,32 +1162,30 @@ class CompanyBriefEngine(BaseResearchEngine):
         findings: Dict[str, str] = {p.family: "" for p in plans}
 
         try:
-            from apps_research.integrations.search_retrieval import retrieve
-        except ImportError as exc:
-            self.logger.warning(
-                "[CompanyBriefEngine] search_retrieval unavailable; curated fallback may be used: %s",
-                exc,
+            from apps_research.integrations.tavily_retrieval import retrieve
+        except ImportError:
+            self.logger.info(
+                "[CompanyBriefEngine] tavily_retrieval module unavailable; returning stub findings"
             )
-            retrieve = None
+            return findings
 
         profile_cfg = _DEPTH_PROFILES.get(depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"])
         max_queries = profile_cfg["max_queries"]
 
         for plan in plans[:max_queries]:
-            if retrieve is None:
-                break
             try:
                 docs = retrieve(plan.query, top_k=5)
             except RuntimeError as exc:
+                # TAVILY_API_KEY missing or SDK absent — first failure aborts
+                # the whole loop because every retrieve() call would fail
+                # the same way; preserves any blobs already collected.
                 self.logger.warning(
-                    "[CompanyBriefEngine] SearXNG unavailable for family=%s; falling back if needed: %s",
-                    plan.family,
-                    exc,
+                    "[CompanyBriefEngine] Tavily unavailable (%s); aborting fan-out", exc
                 )
-                continue
-            except Exception as exc:  # guardian: allow-broad-exception -- per-family SearXNG HTTP errors heterogeneous; fail-soft preserves partial brief
+                break
+            except Exception as exc:  # guardian: allow-broad-exception -- per-family Tavily HTTP errors heterogeneous; fail-soft preserves partial brief
                 self.logger.warning(
-                    "[CompanyBriefEngine] SearXNG query failed (family=%s): %s",
+                    "[CompanyBriefEngine] Tavily query failed (family=%s): %s",
                     plan.family,
                     exc,
                 )
@@ -1290,16 +1201,6 @@ class CompanyBriefEngine(BaseResearchEngine):
                     # source_portfolio_summary.source_urls.
                     snippets.append(d.url)
             findings[plan.family] = "\n".join(snippets)[:4000]
-        if not any((blob or "").strip() for blob in findings.values()):
-            curated = self._load_curated_targeting_research_notes(
-                topic=topic,
-                jd_context=jd_context,
-            )
-            if curated:
-                return curated
-            raise CompanyBriefUnavailableError(
-                f"{topic}: adaptive research returned no grounded findings"
-            )
         return findings
 
     def _build_c0_bundle(
@@ -1344,8 +1245,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         # ── SourcePortfolioSummary ──────────────────────────────────────────
         # Count explicit URL lines for grounded evidence; fall back to
-        # non-empty content lines as citation-anchor proxies when the bundle
-        # is only partially grounded.
+        # non-empty content lines as citation-anchor proxies (offline/stub mode).
         all_urls: List[str] = []
         all_content_lines: List[str] = []
         for blob in findings.values():

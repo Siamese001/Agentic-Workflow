@@ -336,48 +336,25 @@ def stamp_competency_bundle_bindings(
     if not isinstance(competencies, list):
         return competencies
     pkt = packet or build_competency_capability_section_packet("competencies")
-    # Several taxonomy display categories are intentionally broad enough to be
-    # eligible for more than one bundle. Resolve those overlaps deterministically
-    # so the 8-category surface covers the canonical graph families instead of
-    # letting JSON order collapse them onto the first matching bundle.
-    preferred_bundle_by_category: dict[str, str] = {
-        "tech_strategy_innovation": "ccb_retrieval_context_engineering",
-        "ai_platform_leadership": "ccb_agentic_platforms",
-        "governance_risk_compliance": "ccb_runtime_governance",
-        "engineering_delivery_leadership": "ccb_engineering_leadership",
-        "data_analytics_modernization": "ccb_distributed_systems_engineering",
-        "llmops_reliability": "ccb_llmops_reliability",
-        "commercial_operating_impact": "ccb_platform_productization",
-        "cloud_partner_ecosystems": "ccb_partnerships_ecosystem_execution",
-    }
-    by_category: dict[str, list[dict[str, Any]]] = {}
+    by_category: dict[str, dict[str, Any]] = {}
     by_family: dict[str, dict[str, Any]] = {}
-    by_bundle_id: dict[str, dict[str, Any]] = {}
     for rec in pkt.get("competency_bundles") or []:
-        bid = str(rec.get("competency_bundle_id") or "").strip()
-        if bid:
-            by_bundle_id[bid] = rec
         for cat_id in rec.get("target_taxonomy_category_ids") or []:
-            by_category.setdefault(str(cat_id), []).append(rec)
+            by_category.setdefault(str(cat_id), rec)
         # Family fallback: a category whose id/label names a capability family (e.g.
         # "llmops_reliability") but is not a bundle taxonomy *target* still binds to that
         # family's bundle (ccb_llmops_reliability) — it is graph-backed, just not a top taxonomy slot.
         fam = str(rec.get("capability_family") or "").strip()
         if fam:
             by_family.setdefault(fam, rec)
+        bid = str(rec.get("competency_bundle_id") or "").strip()
         if bid.startswith("ccb_"):
             by_family.setdefault(bid[len("ccb_"):], rec)
     for cat in competencies:
         if not isinstance(cat, dict):
             continue
         cid = str(cat.get("category_id") or "").strip()
-        rec = None
-        preferred_bid = preferred_bundle_by_category.get(cid)
-        if preferred_bid:
-            rec = by_bundle_id.get(preferred_bid)
-        if rec is None:
-            matches = by_category.get(cid) or []
-            rec = matches[0] if matches else by_family.get(cid)
+        rec = by_category.get(cid) or by_family.get(cid)
         if not rec:
             label_key = re.sub(r"[^a-z0-9]+", "_", str(cat.get("category_label") or "").lower()).strip("_")
             rec = by_family.get(label_key)
@@ -433,21 +410,8 @@ def _make_anchor_term(rec: dict[str, Any], anchor: str, fid: str) -> dict[str, A
         "source_fact_id": fid,
         "source_fact_ids": [fid],
         "source_skill_ids": skill_ids,
-        "graph_skill_node_ids": skill_ids,
         "support_class": "FACT_ONLY",
     }
-
-
-def _bind_category_to_bundle_record(cat: dict[str, Any], rec: dict[str, Any]) -> None:
-    """Attach bundle lineage to a category without touching its display label."""
-    cat["competency_bundle_id"] = rec["competency_bundle_id"]
-    cat["capability_family"] = rec["capability_family"]
-    existing_nodes = [str(x) for x in (cat.get("graph_skill_node_ids") or []) if str(x).strip()]
-    for sid in rec.get("graph_skill_node_ids") or []:
-        sid_s = str(sid)
-        if sid_s and sid_s not in existing_nodes:
-            existing_nodes.append(sid_s)
-    cat["graph_skill_node_ids"] = existing_nodes
 
 
 def _nonempty_term_count(cat: dict[str, Any]) -> int:
@@ -592,14 +556,10 @@ def augment_bound_category_family_terms(
                     target = cat
         if target is None:
             continue
-        _bind_category_to_bundle_record(target, rec)
         _append(target, rec, anchor, fid)
         covered_tokens |= _family_tokenize(anchor)
 
-    # Pass 1: local capability-family coverage. A category stamped to a bundle
-    # must carry at least one term from that bundle's family vocabulary; global
-    # coverage elsewhere is not enough because it lets stale terms survive under
-    # newly corrected graph lineage.
+    # Pass 1: capability-family coverage.
     for cat in categories:
         if not isinstance(cat, dict):
             continue
@@ -608,16 +568,7 @@ def augment_bound_category_family_terms(
             continue
         gate_family = _BUNDLE_TO_GATE_FAMILY.get(str(rec.get("capability_family") or ""))
         family_tokens = _GATE_FAMILY_TOKENS.get(gate_family) if gate_family else None
-        if not family_tokens:
-            continue
-        cat_tokens: set[str] = set()
-        for term in cat.get("terms") or []:
-            if isinstance(term, dict):
-                cat_tokens |= _family_tokenize(term.get("text") or term.get("term") or "")
-            else:
-                cat_tokens |= _family_tokenize(str(term))
-        cat_tokens |= _family_tokenize(cat.get("category_label") or "")
-        if cat_tokens & set(family_tokens):
+        if not family_tokens or (covered_tokens & set(family_tokens)):
             continue
         fid = _allowed_fid(rec)
         if not fid:

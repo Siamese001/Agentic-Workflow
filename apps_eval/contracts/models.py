@@ -14,7 +14,7 @@ CURRENT_EVAL_RUN_METADATA_SCHEMA_VERSION = "apps_eval.run_metadata.v1"
 CURRENT_FIXTURE_PROVENANCE_SCHEMA_VERSION = "apps_eval.fixture_provenance.v1"
 CURRENT_REGRESSION_FLYWHEEL_SCHEMA_VERSION = "apps_eval.regression_flywheel.v1"
 CURRENT_TREND_DASHBOARD_SCHEMA_VERSION = "apps_eval.trend_dashboard.v1"
-CURRENT_RELEASE_GATE_SCHEMA_VERSION = "apps_eval.advisory_eval_regression_check.v1"
+CURRENT_RELEASE_GATE_SCHEMA_VERSION = "apps_eval.release_gate.v1"
 CURRENT_SCORER_VERSION = "apps_eval.graders.deterministic.v2"
 
 
@@ -292,8 +292,6 @@ class TrendDashboardSummary:
 @dataclass(frozen=True)
 class ReleaseGateDecision:
     schema_version: str = CURRENT_RELEASE_GATE_SCHEMA_VERSION
-    decision_kind: str = "ADVISORY_EVAL_REGRESSION_CHECK"
-    release_authority: str = "NONE"
     generated_at: str = ""
     gate_id: str = ""
     status: str = "blocked"
