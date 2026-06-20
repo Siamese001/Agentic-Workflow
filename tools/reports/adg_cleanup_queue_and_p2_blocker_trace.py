@@ -352,6 +352,7 @@ def _p2_summary(
     brief = build_bcg_brief(
         title="BCG P2 Ratchet Brief",
         status=status.upper(),
+        status_label="P2 ratchet status",
         business_read=business_read,
         technical_read=[
             f"Published sqlite snapshot: {_repo_rel(sqlite_path)}" if sqlite_path else "Published sqlite snapshot: missing",
@@ -414,6 +415,7 @@ def _build_cleanup_payload(
         brief["status"] = "NO_DELETIONS_APPROVED"
     elif not brief.get("status"):
         brief["status"] = str((dead_code_report or {}).get("status") or "UNKNOWN")
+    brief["status_label"] = "Deletion status"
     brief["title"] = "BCG Cleanup Brief"
 
     return {
@@ -553,6 +555,7 @@ def _render_p2_section(p2: dict[str, Any]) -> list[str]:
         business_read="P2 trace unavailable.",
         technical_read=["No P2 data could be loaded."],
         status="MISSING",
+        status_label="P2 ratchet status",
     )
     lines.extend(render_bcg_brief_md(p2_brief).splitlines())
     lines.append("")
@@ -616,7 +619,7 @@ def render_adg_cleanup_queue_and_p2_blocker_trace(doc: dict[str, Any]) -> str:
     a("# ADG Cleanup Queue and P2 Ratchet Trace")
     a("")
     a(f"- **Generated:** {_md(doc.get('generated_at_utc') or '')}")
-    a(f"- **Status:** {_md(doc.get('status') or '')}")
+    a(f"- **Report status:** {_md(doc.get('status') or '')}")
     sources = doc.get("sources") or {}
     if sources:
         a(f"- **Dead-code source:** `{_md(sources.get('dead_code_report') or 'missing')}`")
@@ -631,6 +634,7 @@ def render_adg_cleanup_queue_and_p2_blocker_trace(doc: dict[str, Any]) -> str:
         business_read="Cleanup report unavailable.",
         technical_read=["No dead-code report could be loaded."],
         status="MISSING",
+        status_label="Deletion status",
     )
     lines.extend(render_bcg_brief_md(cleanup_brief).splitlines())
     a("")

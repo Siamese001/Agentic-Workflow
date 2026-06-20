@@ -442,6 +442,17 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert data["schema_version"] == "1.0"
     assert data["artifact_kind"] == "adg_bcg_executive_summary"
     assert data["raw_inputs"]["artifacts"]["sqlite_snapshot"].endswith("adg_indexed_run.sqlite")
+    assert data["run"]["emit_status"] == "PASS"
+    assert data["run"]["decision_grade_status"] in {
+        "BLOCKED",
+        "GREEN_WITH_DEBT",
+        "REPORT_INCONSISTENT",
+        "DEGRADED",
+        "CLEAN",
+        "NEEDS_RUNTIME_PROOF",
+        "TESTING_CONTROL_GAP",
+        "RUNTIME_PROOF_FAILING",
+    }
     assert data["lens_0_p0_landmines"]["summary"]["wrong_way_imports"] == 1
     assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
@@ -488,6 +499,40 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "adg_indexed_run.sqlite" in md
     assert "(snapshot run)" in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
+
+
+def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite_structural(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blocker", records=1)]})
+
+    rc, out = emit_bcg_executive_summary(
+        artifacts,
+        "run",
+        db,
+        gate,
+        None,
+        None,
+        None,
+        {},
+        print_inline=False,
+        docs_dir=tmp_path / "docs_mirror",
+    )
+
+    assert rc == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["run"]["emit_status"] == "PASS"
+    assert doc["run"]["decision_grade_status"] == "REPORT_INCONSISTENT"
+
+    md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
+    assert "- **Decision status:** REPORT_INCONSISTENT" in md
+    assert "- **Emit status:** PASS" in md
+    assert "- **Status:** PASS" not in md
+    assert "| 1 | Repair graph/report consistency | Repair report consistency first" in md
+    assert "Next step: Repair graph/report consistency first." in md
 
 
 def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:

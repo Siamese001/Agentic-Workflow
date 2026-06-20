@@ -84,6 +84,19 @@ def _table_exists(cursor: sqlite3.Cursor, table_name: str) -> bool:
     return cursor.fetchone() is not None
 
 
+def _relation_surface_exists(cursor: sqlite3.Cursor, name: str) -> bool:
+    return _table_exists(cursor, name)
+
+
+def _nodes_path_expr(cursor: sqlite3.Cursor, alias: str = "n") -> str:
+    columns = {row[1] for row in cursor.execute("PRAGMA table_info(nodes)").fetchall()}
+    if "resolved_path" in columns:
+        return f"{alias}.resolved_path"
+    if "file_path" in columns:
+        return f"{alias}.file_path"
+    raise DeadCodeZoneControlError("nodes table is missing a path column")
+
+
 def _merge_hotspots(*groups: list[tuple[Any, ...]]) -> list[tuple[str, int]]:
     merged: dict[str, int] = {}
     for group in groups:
@@ -99,12 +112,97 @@ def _merge_hotspots(*groups: list[tuple[Any, ...]]) -> list[tuple[str, int]]:
     return sorted(merged.items(), key=lambda item: (-item[1], item[0]))[:10]
 
 
-def _overlay_dead_imports_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
+def _overlay_dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str] | None = None) -> dict[str, Any]:
+    if _table_exists(cursor, "mv_dead_import_hotspots_overlay"):
+        node_path_expr = _nodes_path_expr(cursor, "n")
+        total_dead_imports = _fetch_count(
+            cursor, "SELECT COALESCE(SUM(dead_count), 0) FROM mv_dead_import_hotspots_overlay"
+        )
+        dead_imports_by_layer = _fetch_count_map(
+            cursor,
+            """
+            SELECT n.layer, COALESCE(SUM(v.dead_count), 0) FROM mv_dead_import_hotspots_overlay v
+            JOIN nodes n ON {node_path_expr} = v.file
+            WHERE n.entity_type = 'module'
+              AND n.layer IS NOT NULL
+            GROUP BY n.layer
+            ORDER BY SUM(v.dead_count) DESC
+            """.format(node_path_expr=node_path_expr),
+        )
+        try:
+            dead_imports_by_domain = _fetch_count_map(
+                cursor,
+                """
+                SELECT n.domain, COALESCE(SUM(v.dead_count), 0) FROM mv_dead_import_hotspots_overlay v
+                JOIN nodes n ON {node_path_expr} = v.file
+                WHERE n.entity_type = 'module'
+                  AND n.domain IS NOT NULL
+                GROUP BY n.domain
+                ORDER BY SUM(v.dead_count) DESC
+                """.format(node_path_expr=node_path_expr),
+            )
+        except sqlite3.OperationalError:
+            if warnings is not None:
+                warnings.append("Domain field not available for dead import analysis")
+            dead_imports_by_domain = {}
+        dead_imports_by_confidence = _fetch_count_map(
+            cursor,
+            """
+            SELECT n.confidence, COALESCE(SUM(v.dead_count), 0) FROM mv_dead_import_hotspots_overlay v
+            JOIN nodes n ON {node_path_expr} = v.file
+            WHERE n.entity_type = 'module'
+              AND n.confidence IS NOT NULL
+            GROUP BY n.confidence
+            ORDER BY SUM(v.dead_count) DESC
+            """.format(node_path_expr=node_path_expr),
+        )
+        dead_imports_by_entity_type = _fetch_count_map(
+            cursor,
+            """
+            SELECT n.entity_type, COALESCE(SUM(v.dead_count), 0) FROM mv_dead_import_hotspots_overlay v
+            JOIN nodes n ON {node_path_expr} = v.file
+            WHERE n.entity_type IS NOT NULL
+            GROUP BY n.entity_type
+            ORDER BY SUM(v.dead_count) DESC
+            """.format(node_path_expr=node_path_expr),
+        )
+        dead_import_hotspots = _fetch_rows(
+            cursor,
+            """
+            SELECT file, dead_count
+            FROM mv_dead_import_hotspots_overlay
+            ORDER BY dead_count DESC, file ASC
+            LIMIT 10
+            """,
+        )
+        l4_dead_imports = int(dead_imports_by_layer.get("L4", 0) or 0)
+        if warnings is not None and l4_dead_imports > 5:
+            warnings.append(f"L4 has {l4_dead_imports} dead imports (should trend to zero)")
+        return {
+            "total_overlay_dead_imports": total_dead_imports,
+            "total_dead_imports": total_dead_imports,
+            "overlay_dead_imports_by_severity": {},
+            "overlay_dead_import_hotspots": dead_import_hotspots,
+            "dead_imports_by_layer": dead_imports_by_layer,
+            "dead_imports_by_domain": dead_imports_by_domain,
+            "dead_imports_by_confidence": dead_imports_by_confidence,
+            "dead_imports_by_entity_type": dead_imports_by_entity_type,
+            "dead_import_hotspots": dead_import_hotspots,
+            "l4_dead_imports": l4_dead_imports,
+        }
+
     if not _table_exists(cursor, "overlay_violations"):
         return {
             "total_overlay_dead_imports": 0,
+            "total_dead_imports": 0,
             "overlay_dead_imports_by_severity": {},
             "overlay_dead_import_hotspots": [],
+            "dead_imports_by_layer": {},
+            "dead_imports_by_domain": {},
+            "dead_imports_by_confidence": {},
+            "dead_imports_by_entity_type": {},
+            "dead_import_hotspots": [],
+            "l4_dead_imports": 0,
         }
 
     total_overlay_dead_imports = _fetch_count(
@@ -144,14 +242,21 @@ def _overlay_dead_imports_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
 
     return {
         "total_overlay_dead_imports": total_overlay_dead_imports,
+        "total_dead_imports": total_overlay_dead_imports,
         "overlay_dead_imports_by_severity": overlay_dead_imports_by_severity,
         "overlay_dead_import_hotspots": overlay_dead_import_hotspots,
+        "dead_imports_by_layer": {},
+        "dead_imports_by_domain": {},
+        "dead_imports_by_confidence": {},
+        "dead_imports_by_entity_type": {},
+        "dead_import_hotspots": overlay_dead_import_hotspots,
+        "l4_dead_imports": 0,
     }
 
 
 def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[str, Any]:
     legacy_dead_import_edges = _fetch_count(cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'")
-    overlay_dead_imports = _overlay_dead_imports_section(cursor)
+    overlay_dead_imports = _overlay_dead_imports_section(cursor, warnings)
     total_dead_imports = legacy_dead_import_edges + int(
         overlay_dead_imports.get("total_overlay_dead_imports", 0) or 0
     )
@@ -206,7 +311,9 @@ def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[s
     )
     dead_import_hotspots = _merge_hotspots(
         legacy_dead_import_hotspots,
-        overlay_dead_imports.get("overlay_dead_import_hotspots") or [],
+        overlay_dead_imports.get("dead_import_hotspots")
+        or overlay_dead_imports.get("overlay_dead_import_hotspots")
+        or [],
     )
     l4_dead_imports = int(dead_imports_by_layer.get("L4", 0) or 0)
     if l4_dead_imports > 5:
@@ -221,12 +328,23 @@ def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[s
         "dead_imports_by_domain": dead_imports_by_domain,
         "dead_imports_by_confidence": dead_imports_by_confidence,
         "overlay_dead_imports_by_severity": overlay_dead_imports.get("overlay_dead_imports_by_severity", {}),
+        "dead_imports_by_entity_type": overlay_dead_imports.get("dead_imports_by_entity_type", {}),
         "dead_import_hotspots": dead_import_hotspots,
         "l4_dead_imports": l4_dead_imports,
     }
 
 
 def _dead_code_candidates_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
+    if _relation_surface_exists(cursor, "mv_dead_import_hotspots_overlay"):
+        overlay = _overlay_dead_imports_section(cursor, None)
+        return {
+            "source": "dead_import_overlay",
+            "total_dead_code_candidates": overlay["total_dead_imports"],
+            "dead_code_by_layer": overlay["dead_imports_by_layer"],
+            "dead_code_by_entity_type": overlay["dead_imports_by_entity_type"],
+            "dead_code_by_confidence": overlay["dead_imports_by_confidence"],
+            "dead_code_hotspots": overlay["dead_import_hotspots"],
+        }
     total_dead_code_candidates = _fetch_count(
         cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_code_candidate'"
     )
@@ -435,9 +553,21 @@ def _inferred_symbol_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dic
 
 
 def _executive_readiness_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
+    overlay_dead_imports = _relation_surface_exists(cursor, "mv_dead_import_hotspots_overlay")
+    node_path_expr = _nodes_path_expr(cursor, "n")
+    dead_import_count_query = (
+        "SELECT COALESCE(SUM(dead_count), 0) FROM mv_dead_import_hotspots_overlay"
+        if overlay_dead_imports
+        else "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'"
+    )
+    dead_code_count_query = (
+        "SELECT COALESCE(SUM(dead_count), 0) FROM mv_dead_import_hotspots_overlay"
+        if overlay_dead_imports
+        else "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_code_candidate'"
+    )
     executive_metrics = {
-        "dead_import_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'",
-        "dead_code_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_code_candidate'",
+        "dead_import_count": dead_import_count_query,
+        "dead_code_count": dead_code_count_query,
         "unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import'",
         "low_confidence_count": "SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW'",
         "l4_unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import' AND layer = 'L4'",
@@ -464,7 +594,15 @@ def _executive_readiness_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
     for metric_name, query in executive_metrics.items():
         if query in {"calculated", "calculated_first_party_low_confidence_ratio"}:
             continue
-        if "edges" in query:
+        if overlay_dead_imports and metric_name in {"dead_import_count", "dead_code_count"}:
+            fp_query = (
+                "SELECT COALESCE(SUM(v.dead_count), 0) "
+                "FROM mv_dead_import_hotspots_overlay v "
+                f"JOIN nodes n ON {node_path_expr} = v.file "
+                "WHERE n.entity_type = 'module' AND "
+                f"{_first_party_filter('n')}"
+            )
+        elif "edges" in query:
             fp_query = query.replace("FROM edges", "FROM edges e JOIN nodes n ON e.src_id = n.id", 1)
             fp_query = f"{fp_query} AND {_first_party_filter('n')}"
         elif "nodes" in query:
