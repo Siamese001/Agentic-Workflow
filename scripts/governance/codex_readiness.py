@@ -5,6 +5,10 @@ evidence, process hygiene, and ADG fallback state before expensive Codex runs.
 Shell scripts cannot directly inspect the live Codex MCP namespace, so callable
 proof is supplied through the existing CODEX_MCP_CALLABLE_* environment values
 or a route contract consumed by audit_codex_mcp_transports.py.
+
+The ``--git-publication`` mode is narrower: it runs the git publication safety
+gate used before Codex main-publish automation and intentionally excludes MCP
+route/process checks so branch/worktree hazards are not masked by runtime noise.
 """
 
 from __future__ import annotations
@@ -24,6 +28,8 @@ if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
 
 import audit_codex_mcp_transports  # noqa: E402
+import codex_publication_audit  # noqa: E402
+from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
 
 DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "vector_db")
 CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
@@ -91,6 +97,95 @@ def _check_git_state(root: Path, require_clean: bool) -> ReadinessCheck:
         severity = "critical" if require_clean else "advisory"
         return ReadinessCheck("git.clean", status, severity, "Working tree has uncommitted changes.", stdout[:2000])
     return ReadinessCheck("git.clean", "PASS", "critical", "Working tree is clean.")
+
+
+def _check_protected_worktree_hygiene(root: Path, require_clean: bool) -> ReadinessCheck:
+    issues = find_dirty_protected_worktrees(root, skip_paths=(root,))
+    if issues:
+        status = "FAIL" if require_clean else "WARN"
+        severity = "critical" if require_clean else "advisory"
+        return ReadinessCheck(
+            "git.protected_worktrees",
+            status,
+            severity,
+            "Protected worktrees have uncommitted changes.",
+            summarize_dirty_worktrees(issues),
+        )
+    return ReadinessCheck(
+        "git.protected_worktrees",
+        "PASS",
+        "advisory",
+        "Protected worktrees are clean.",
+    )
+
+
+def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck]:
+    checks: list[ReadinessCheck] = []
+    current = audit.get("current_worktree", {})
+    checks.append(
+        ReadinessCheck(
+            "git.publication.current_worktree",
+            "FAIL" if current.get("dirty") else "PASS",
+            "critical",
+            "Current publication worktree is clean." if not current.get("dirty") else "Current publication worktree has uncommitted changes.",
+            str(current.get("raw", "")),
+        )
+    )
+    checks.append(
+        ReadinessCheck(
+            "git.publication.conflicts",
+            "FAIL" if current.get("conflicted") else "PASS",
+            "critical",
+            "Current publication worktree has no conflicted paths." if not current.get("conflicted") else "Current publication worktree has conflicted paths.",
+            str(current.get("raw", "")),
+        )
+    )
+    dirty_summary = str(audit.get("dirty_protected_summary") or "")
+    checks.append(
+        ReadinessCheck(
+            "git.publication.protected_worktrees",
+            "WARN" if audit.get("dirty_protected_worktrees") else "PASS",
+            "advisory" if audit.get("dirty_protected_worktrees") else "critical",
+            "Protected worktrees are clean." if not audit.get("dirty_protected_worktrees") else "Protected worktrees have uncommitted changes.",
+            dirty_summary,
+        )
+    )
+    refs = audit.get("refs", {})
+    checks.append(
+        ReadinessCheck(
+            "git.publication.origin_vs_github_main",
+            "PASS" if refs.get("origin_main_equals_github_main") else "FAIL",
+            "critical",
+            "origin/main matches GitHub main." if refs.get("origin_main_equals_github_main") else "origin/main does not match GitHub main.",
+            json.dumps(refs, sort_keys=True),
+        )
+    )
+    fetch = audit.get("fetch")
+    if isinstance(fetch, dict):
+        checks.append(
+            ReadinessCheck(
+                "git.publication.fetch",
+                "PASS" if fetch.get("ok") else "FAIL",
+                "critical",
+                "git fetch origin --prune succeeded." if fetch.get("ok") else "git fetch origin --prune failed.",
+                str(fetch.get("stderr") or fetch.get("stdout") or ""),
+            )
+        )
+    unmerged = audit.get("unmerged_branches") or []
+    unique_count = 0
+    for row in unmerged:
+        if isinstance(row, dict):
+            unique_count += len(row.get("patch_unique_commits") or [])
+    checks.append(
+        ReadinessCheck(
+            "git.publication.unmerged_branch_audit",
+            "WARN" if unmerged else "PASS",
+            "advisory",
+            "Local branches not merged to origin/main were audited." if unmerged else "No local branches are unmerged from origin/main.",
+            f"branches={len(unmerged)} patch_unique_commits={unique_count}",
+        )
+    )
+    return checks
 
 
 def _check_env(report: dict[str, Any]) -> list[ReadinessCheck]:
@@ -249,15 +344,29 @@ def build_readiness_report(
     root: Path = REPO_ROOT,
     *,
     require_clean: bool = False,
+    git_publication: bool = False,
     fail_duplicate_processes: bool = False,
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
     allow_adg_sqlite_fallback: bool = True,
     route_contract: Path | None = None,
 ) -> dict[str, Any]:
+    if git_publication:
+        audit = codex_publication_audit.build_publication_audit(root, fetch=True)
+        checks = [*_check_contract_files(root), *_checks_from_publication_audit(audit)]
+        return {
+            "schema_version": "codex-readiness/v1",
+            "mode": "git-publication",
+            "repo_root": str(root),
+            "status": summarize(checks),
+            "checks": [asdict(check) for check in checks],
+            "publication_audit": audit,
+        }
+
     transport_report = audit_codex_mcp_transports.build_report(route_contract)
     checks: list[ReadinessCheck] = []
     checks.extend(_check_contract_files(root))
     checks.append(_check_git_state(root, require_clean))
+    checks.append(_check_protected_worktree_hygiene(root, require_clean))
     checks.extend(_check_env(transport_report))
     checks.extend(_check_required_routes(transport_report, required_callable_routes))
     vector_guard = _check_vector_semantic_guard(required_callable_routes)
@@ -282,6 +391,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="Emit JSON output")
     parser.add_argument("--require-clean-worktree", action="store_true", help="Fail when git status is dirty")
+    parser.add_argument(
+        "--git-publication",
+        action="store_true",
+        help="Run only git publication safety checks and skip MCP route/process readiness.",
+    )
     parser.add_argument("--fail-duplicate-processes", action="store_true", help="Fail on duplicate MCP process cohorts")
     parser.add_argument(
         "--require-callable-route",
@@ -309,6 +423,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         required_routes = DEFAULT_REQUIRED_CALLABLE_ROUTES + supplied
     report = build_readiness_report(
         require_clean=args.require_clean_worktree,
+        git_publication=args.git_publication,
         fail_duplicate_processes=args.fail_duplicate_processes,
         required_callable_routes=required_routes,
         allow_adg_sqlite_fallback=not args.no_adg_sqlite_fallback,

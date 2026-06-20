@@ -120,3 +120,51 @@ def test_summarize_prefers_failure_over_warning() -> None:
     ]
 
     assert mod.summarize(checks) == "FAIL"
+
+
+def test_protected_worktree_hygiene_warns_when_dirty(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): ["issue"])
+    monkeypatch.setattr(mod, "summarize_dirty_worktrees", lambda issues: "main @ /tmp/repo: docs/foo.md")
+
+    check = mod._check_protected_worktree_hygiene(tmp_path, False)
+    strict = mod._check_protected_worktree_hygiene(tmp_path, True)
+
+    assert check.status == "WARN"
+    assert check.id == "git.protected_worktrees"
+    assert "main @ /tmp/repo" in check.detail
+    assert strict.status == "FAIL"
+
+
+def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path) -> None:
+    def fail_if_called(route_contract=None):
+        raise AssertionError("MCP transport audit should not run in git-publication mode")
+
+    monkeypatch.setattr(mod.audit_codex_mcp_transports, "build_report", fail_if_called)
+    monkeypatch.setattr(
+        mod.codex_publication_audit,
+        "build_publication_audit",
+        lambda root, fetch=True: {
+            "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
+            "dirty_protected_worktrees": [],
+            "dirty_protected_summary": "",
+            "refs": {"origin_main_equals_github_main": True},
+            "fetch": {"ok": True, "stdout": "", "stderr": ""},
+            "unmerged_branches": [],
+        },
+    )
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+
+    report = mod.build_readiness_report(tmp_path, git_publication=True)
+
+    assert report["mode"] == "git-publication"
+    assert report["status"] == "PASS"
+    assert not any(check["id"].startswith("mcp.") for check in report["checks"])
