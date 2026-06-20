@@ -182,7 +182,7 @@ def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck
             "WARN" if unmerged else "PASS",
             "advisory",
             "Local branches not merged to origin/main were audited." if unmerged else "No local branches are unmerged from origin/main.",
-            f"branches={len(unmerged)} patch_unique_commits={unique_count}",
+            f"branches={len(unmerged)} patch_unique_commits={unique_count}; branch closeout requires ancestry containment, not patch equivalence",
         )
     )
     return checks

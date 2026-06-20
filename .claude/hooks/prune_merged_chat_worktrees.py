@@ -14,22 +14,20 @@ Hard safety envelope — a worktree is deleted ONLY when ALL hold:
     via ``WORKTREE_REAP_BRANCH_PREFIXES``; those may live anywhere (sibling worktrees);
   * it does NOT carry a ``.keep-worktree`` marker file (universal opt-out — kept regardless);
   * it is NOT the worktree this session is running in (never reap your own CWD);
-  * its branch is an ANCESTOR of ``origin/main`` (fully merged — unmerged work is never touched);
+  * its branch tip is an ANCESTOR of ``origin/main`` (fully merged by commit ancestry);
   * its working tree is CLEAN (``git status --porcelain`` empty — uncommitted work is never touched);
   * its HEAD commit is older than the grace window (protects a worktree another live chat just made).
 
 Branch-prune half (the local branch cleanup): the worktree deletion path only deletes a branch
 when it removes *that branch's worktree*. Merged branches whose worktree was already removed
 (or which never had one) accumulate forever. ``prune_merged_branches`` is the
-complement — after a merge+push, every local ``chat/``/``feat/`` branch that is (a) fully delivered
-into the trunk and (b) has NO checked-out worktree is deleted. Same zero-loss guarantee: a branch is
-only deleted when it carries no commits the trunk lacks.
+complement — after a merge+push, every local ``chat/``/``feat/`` branch that is (a) ancestor-contained
+in ``origin/main`` and (b) has NO checked-out worktree is deleted. Same zero-loss guarantee: a branch
+is only deleted when its exact tip is reachable from ``origin/main``.
 
-"Fully delivered" is computed against the trunk with a no-unique-commits test (``rev-list --count
-<trunk>..<branch> == 0``) rather than a strict ``origin/main`` ancestor walk, so it ALSO catches the
-common pileup where chat worktrees were cut from a *locally-stale* ``main`` (their branch == local
-``main`` tip, zero own commits) and therefore are not ancestors of ``origin/main`` yet carry nothing
-to lose. Both ``origin/main`` and local ``main`` are accepted trunks (item: worktree-deliver-reap).
+Patch-equivalence, cherry-pick equivalence, or "no unique commits" evidence is NOT cleanup proof.
+Those signals may justify a deliberate ``git merge -s ours --no-ff <branch>`` onto ``main`` to record
+the branch tip, but deletion waits until ``git merge-base --is-ancestor <branch> origin/main`` passes.
 
 Self-contained (no ``lib`` import). Best-effort, fail-soft, always exits 0 in hook mode — never
 blocks a session.
@@ -43,8 +41,8 @@ Reap prefixes: ``WORKTREE_REAP_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/`
 Branch-prune toggle: ``WORKTREE_PRUNE_MERGED_BRANCHES`` (default ``1`` — set ``0`` to disable the
   standalone merged-branch sweep and only reap worktrees).
 Branch-prune prefixes: ``WORKTREE_PRUNE_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``).
-Trunk acceptance refs: ``WORKTREE_TRUNK_REFS`` csv (default ``origin/main``,``main`` — a branch is
-  "delivered" when it has no commits absent from ANY of these).
+Trunk acceptance ref: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``). The branch tip must
+  be an ancestor of that ref.
 Opt-out marker: a ``.keep-worktree`` file in any worktree exempts it permanently.
 Legacy chat root override: ``CHAT_WORKTREE_ROOT`` (default ``<repo-parent>/.chat-worktrees``).
 Trunk ref override: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
@@ -168,11 +166,6 @@ def _prune_branches_enabled() -> bool:
     return os.environ.get("WORKTREE_PRUNE_MERGED_BRANCHES", "1").strip() != "0"
 
 
-def _trunk_refs() -> tuple[str, ...]:
-    """Accepted trunk refs for the "delivered" (no-unique-commits) test — origin AND local main."""
-    return _csv_env("WORKTREE_TRUNK_REFS", ("origin/main", "main"))
-
-
 def _prune_branch_prefixes() -> tuple[str, ...]:
     return _csv_env("WORKTREE_PRUNE_BRANCH_PREFIXES", ("chat/", "feat/"))
 
@@ -184,21 +177,13 @@ def _matched_prefix(branch: str, prefixes: tuple[str, ...]) -> str | None:
     return None
 
 
-def _has_no_unique_commits(ref: str, *, repo_root: Path, trunk_refs: tuple[str, ...]) -> bool:
-    """True if ``ref`` carries NO commits absent from at least one trunk ref (zero unique work).
+def _is_ancestor(ref: str, trunk_ref: str, *, repo_root: Path) -> bool:
+    """True only when ``ref`` is reachable from ``trunk_ref`` by commit ancestry."""
 
-    Strict ``merge-base --is-ancestor ref trunk`` answers "is ref reachable from trunk"; the
-    equivalent symmetric question here is ``rev-list --count trunk..ref == 0`` — ref introduces no
-    commit the trunk lacks. Checked against EACH trunk ref so a branch that is delivered relative
-    to either ``origin/main`` OR a locally-stale ``main`` is recognized as safe-to-delete. A missing
-    trunk ref (e.g. ``origin/main`` offline) simply does not match — never a false positive."""
-    for trunk in trunk_refs:
-        if not trunk:
-            continue
-        rc, out = _git("rev-list", "--count", f"{trunk}..{ref}", cwd=repo_root)
-        if rc == 0 and out.strip() == "0":
-            return True
-    return False
+    if not ref or not trunk_ref:
+        return False
+    rc, _ = _git("merge-base", "--is-ancestor", ref, trunk_ref, cwd=repo_root)
+    return rc == 0
 
 
 def _worktree_branches(porcelain: str) -> set[str]:
@@ -267,7 +252,6 @@ def reap_merged_chat_worktrees(
     min_age_seconds: int = 0,
     do_fetch: bool = True,
     reap_branch_prefixes: tuple[str, ...] = ("chat/",),
-    extra_trunk_refs: tuple[str, ...] = (),
 ) -> dict:
     """Report or delete fully delivered, clean worktrees. Returns a structured report.
 
@@ -322,16 +306,9 @@ def reap_merged_chat_worktrees(
             skip("keep_marker")
             continue
 
-        # Merged into trunk? Primary check: ancestor of the configured trunk. Fallback (item:
-        # worktree-deliver-reap): accept a worktree whose branch carries no commits absent from any
-        # ``extra_trunk_refs`` (e.g. a local-stale ``main``). This reaps the no-op chat worktrees cut
-        # from a behind-origin ``main`` — clean, zero own-commits — which never become ancestors of
-        # ``origin/main`` and would otherwise pile up forever. Still zero-loss: nothing unique is lost.
-        rc_anc, _ = _git("merge-base", "--is-ancestor", branch, trunk_ref, cwd=repo_root)
-        if rc_anc != 0 and not (
-            extra_trunk_refs
-            and _has_no_unique_commits(branch, repo_root=repo_root, trunk_refs=extra_trunk_refs)
-        ):
+        # Merged into trunk by exact commit ancestry. Patch-equivalent or no-unique-commit evidence
+        # is insufficient; record superseded branches with an explicit ours merge before cleanup.
+        if not _is_ancestor(branch, trunk_ref, repo_root=repo_root):
             skip("not_merged_into_trunk")
             continue
 
@@ -375,7 +352,7 @@ def reap_merged_chat_worktrees(
 def prune_merged_branches(
     *,
     repo_root: Path,
-    trunk_refs: tuple[str, ...] = ("origin/main", "main"),
+    trunk_ref: str = "origin/main",
     branch_prefixes: tuple[str, ...] = ("chat/", "feat/"),
     current_branch: str | None = None,
     dry_run: bool = False,
@@ -391,7 +368,7 @@ def prune_merged_branches(
       * it matches an enabled prefix (default ``chat/``, ``feat/``);
       * it is NOT protected (``main``/``master``/``release``) and NOT the current branch;
       * it has NO checked-out worktree (checked-out branches are handled by worktree cleanup);
-      * it has no commits absent from at least one trunk ref (delivered → zero committed work lost).
+      * its exact tip is ancestor-contained in ``trunk_ref`` (delivered → zero committed work lost).
     Never deletes anything unmerged. Fail-soft, never raises; returns a structured report.
     """
     report: dict = {"scanned": 0, "deleted": [], "skipped": [], "dry_run": dry_run, "status": "ok"}
@@ -427,17 +404,14 @@ def prune_merged_branches(
         if branch in worktree_branches:
             skip("has_worktree")  # owned by worktree cleanup
             continue
-        if not _has_no_unique_commits(branch, repo_root=repo_root, trunk_refs=trunk_refs):
+        if not _is_ancestor(branch, trunk_ref, repo_root=repo_root):
             skip("not_merged_into_trunk")
             continue
         if dry_run:
             report["deleted"].append({"branch": branch, "dry_run": True})
             continue
-        # -d is the safe form; we already proved zero unique commits, so -D is an equivalent
-        # zero-loss fallback when -d's own upstream heuristic balks.
+        # -d is the safe form; we already proved exact ancestry containment.
         rc_d, _ = _git("branch", "-d", branch, cwd=repo_root)
-        if rc_d != 0:
-            rc_d, _ = _git("branch", "-D", branch, cwd=repo_root)
         if rc_d == 0:
             report["deleted"].append({"branch": branch})
         else:
@@ -507,7 +481,6 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=dry_run,
         min_age_seconds=min_age_seconds,
         reap_branch_prefixes=_reap_prefixes(),
-        extra_trunk_refs=_trunk_refs(),
     )
     reaped = report.get("reaped") or []
     if reaped:
@@ -521,7 +494,7 @@ def main(argv: list[str] | None = None) -> int:
     if prune_branches:
         breport = prune_merged_branches(
             repo_root=primary,
-            trunk_refs=_trunk_refs(),
+            trunk_ref=_trunk_ref(),
             branch_prefixes=_prune_branch_prefixes(),
             dry_run=dry_run,
         )

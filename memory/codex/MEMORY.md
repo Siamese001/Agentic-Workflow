@@ -35,7 +35,7 @@ applies_to: cwd=C:\Git\Agentic-Workflow-FRESH; reuse_rule=reuse for this repo's 
 
 ### keywords
 
-- codex/preserve-local-main-20260614, git merge -s ours --no-edit, branch containment, generated ADG reports, ops_scripts/ci/baselines, tools/git, Automatic merge failed
+- codex/preserve-local-main-20260614, git merge -s ours --no-ff, branch containment, generated ADG reports, ops_scripts/ci/baselines, tools/git, Automatic merge failed
 
 - Related skill: skills/repo-main-merge-publish/SKILL.md
 
@@ -56,13 +56,13 @@ applies_to: cwd=C:\Git\Agentic-Workflow-FRESH; reuse_rule=reuse for this repo's 
 - `work/apps-lic-w1-model-ssot` merged cleanly and the targeted verification selector was `python -m pytest tests/apps_lic/test_w4_eval_lane_matrix.py tests/apps_lic/test_w5_c0_readiness_and_jd_gate.py tests/apps_lic/test_w6_shared_ssot_briefing_ops.py -q` -> `11 passed, 4 warnings` [Task 2]
 - a direct push to `origin/main` can succeed while GitHub reports "Bypassed rule violations for refs/heads/main" and "3 of 3 required status checks are expected"; preserve that signal in rollout reporting instead of assuming branch protections enforced the push [Task 2]
 - when an archival/preservation branch conflicts broadly in generated/governance-owned surfaces such as `.claude/hooks/*`, `docs/reports/adg/*`, `ops_scripts/ci/baselines/*`, and `tools/git/*`, treat it as branch-containment work rather than content replay [Task 3]
-- `git merge -s ours --no-edit codex/preserve-local-main-20260614` created merge commit `4ca3997164` with no tree changes, which is the right pattern when the goal is to mark stale preservation content as merged while preserving current `main` [Task 3]
+- `git merge -s ours --no-ff --no-edit <branch>` is the current pattern when the goal is to mark stale preservation content as merged while preserving current `main`; the older `codex/preserve-local-main-20260614` run created merge commit `4ca3997164` with no tree changes [Task 3]
 
 ## Failures and how to do differently
 
 - symptom: patch landed in the wrong checkout during merge-worktree work -> cause: the patch tool did not inherit the merge worktree path -> fix: delete the accidental file and apply the patch by absolute path to the intended worktree [Task 1]
 - symptom: broad `apps_rg` collection failed with `ModuleNotFoundError: No module named 'tools.archive'` from `tests/unit/tools/archive/test_archive_old_adg_sqlite_guard.py` -> cause: stale compatibility import, not an apps_rg product regression -> fix: restore only the tiny compatibility surface the test imports, rerun the archive regression, then rerun the collection gate [Task 1]
-- symptom: normal merge of a preservation branch explodes into many conflicts -> cause: stale archival content replaying old generated/governance files -> fix: abort the content merge and switch to `git merge -s ours --no-edit` when the goal is branch containment [Task 3]
+- symptom: normal merge of a preservation branch explodes into many conflicts -> cause: stale archival content replaying old generated/governance files -> fix: abort the content merge and switch to `git merge -s ours --no-ff --no-edit` when the goal is branch containment [Task 3]
 - symptom: remote main moved after the initial merge stack -> cause: `origin/main` advanced while the local merge workflow was in progress -> fix: fetch again and merge the new remote tip before pushing instead of force-pushing [Task 1]
 
 # Task Group: Agentic-Workflow-FRESH apps_rg ADG hotspot coverage-gap analysis

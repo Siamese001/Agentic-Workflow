@@ -86,6 +86,7 @@ def build_publication_audit(
     fetch: bool = True,
     base_ref: str = "origin/main",
     branch_limit: int = 100,
+    require_ancestor_cleanup: bool = False,
 ) -> dict[str, Any]:
     fetch_result: dict[str, Any] | None = None
     if fetch:
@@ -116,6 +117,18 @@ def build_publication_audit(
         blockers.append("origin_main_differs_from_github_main")
     if fetch_result is not None and not fetch_result["ok"]:
         blockers.append("fetch_failed")
+    if unmerged:
+        if require_ancestor_cleanup:
+            blockers.append("branches_not_ancestor_contained")
+        else:
+            warnings.append("branches_not_ancestor_contained")
+
+    unique_count = 0
+    equivalent_count = 0
+    for row in unmerged:
+        if isinstance(row, dict):
+            unique_count += len(row.get("patch_unique_commits") or [])
+            equivalent_count += len(row.get("patch_equivalent_commits") or [])
 
     return {
         "schema_version": "codex-publication-audit/v1",
@@ -146,6 +159,14 @@ def build_publication_audit(
             if status["dirty"] or protected_issues
             else "current_worktree"
         ),
+        "ancestor_cleanup": {
+            "required": require_ancestor_cleanup,
+            "clean": not bool(unmerged),
+            "unmerged_branch_count": len(unmerged),
+            "patch_unique_commit_count": unique_count,
+            "patch_equivalent_commit_count": equivalent_count,
+            "rule": "A branch is done only when its tip is ancestor-contained in origin/main. Patch equivalence is evidence for an ours merge, not cleanup proof.",
+        },
         "unmerged_branches": unmerged,
     }
 
@@ -156,6 +177,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-fetch", action="store_true", help="Skip git fetch origin --prune")
     parser.add_argument("--base-ref", default="origin/main", help="Base ref for branch containment checks")
     parser.add_argument("--branch-limit", type=int, default=100, help="Maximum unmerged branches to inspect")
+    parser.add_argument(
+        "--require-ancestor-cleanup",
+        action="store_true",
+        help="Fail if any local branch is not ancestor-contained in the base ref.",
+    )
     return parser.parse_args()
 
 
@@ -165,6 +191,7 @@ def main() -> int:
         fetch=not args.no_fetch,
         base_ref=args.base_ref,
         branch_limit=args.branch_limit,
+        require_ancestor_cleanup=args.require_ancestor_cleanup,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))

@@ -36,10 +36,24 @@ def test_publication_audit_reports_patch_unique_and_equivalent(monkeypatch, tmp_
 
     report = mod.build_publication_audit(tmp_path)
 
-    assert report["status"] == "PASS"
+    assert report["status"] == "WARN"
+    assert "branches_not_ancestor_contained" in report["warnings"]
+    assert report["ancestor_cleanup"] == {
+        "required": False,
+        "clean": False,
+        "unmerged_branch_count": 1,
+        "patch_unique_commit_count": 1,
+        "patch_equivalent_commit_count": 1,
+        "rule": "A branch is done only when its tip is ancestor-contained in origin/main. Patch equivalence is evidence for an ours merge, not cleanup proof.",
+    }
     branch = report["unmerged_branches"][0]
     assert branch["patch_unique_commits"] == ["+ 111 unique work"]
     assert branch["patch_equivalent_commits"] == ["- 222 equivalent work"]
+
+    closeout = mod.build_publication_audit(tmp_path, require_ancestor_cleanup=True)
+
+    assert closeout["status"] == "FAIL"
+    assert "branches_not_ancestor_contained" in closeout["blockers"]
 
 
 def test_publication_audit_warns_dirty_protected_worktree(monkeypatch, tmp_path: Path) -> None:

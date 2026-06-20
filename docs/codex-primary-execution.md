@@ -58,6 +58,40 @@ The readiness gate checks:
 - ADG is callable or a named direct SQLite fallback exists.
 - Duplicate MCP process cohorts are visible before the run starts.
 
+## Main Publication And Cleanup Contract
+
+For Codex branch publication, "on main" means commit ancestry, not just equivalent file content.
+A branch is done only when its tip is reachable from `origin/main`:
+
+```bash
+git merge-base --is-ancestor <branch> origin/main
+git branch --no-merged origin/main
+```
+
+`git cherry -v origin/main <branch>` is diagnostic evidence only. A `-` row means patch-equivalent
+content is represented, but it does not make the branch safe to delete and it does not satisfy
+closeout. If a branch is superseded or manually transplanted, record that decision in main history
+with an explicit non-squash ancestry merge, normally:
+
+```bash
+git merge -s ours --no-ff <branch>
+```
+
+Use that only after confirming the desired content is already on `main` or intentionally superseded.
+Then rerun `git branch --no-merged origin/main` after pushing. Cleanup may delete local branches or
+worktrees only after the exact branch tip is ancestor-contained in `origin/main` and the worktree is
+clean.
+
+The publication audit exposes this contract directly:
+
+```bash
+python scripts/governance/codex_publication_audit.py --json
+python scripts/governance/codex_publication_audit.py --json --require-ancestor-cleanup
+```
+
+The first form reports remaining branches as warnings for planning. The `--require-ancestor-cleanup`
+form is a closeout gate and fails while any branch remains outside `origin/main`.
+
 Shell-side scripts cannot see the live Codex MCP namespace. When a route is proven callable by the active Codex session, pass evidence through the existing environment convention:
 
 ```text

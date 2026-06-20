@@ -27,10 +27,10 @@ Inputs / context to gather first:
 2. Read the current git state:
    - `git status --short --branch`
    - `git worktree list --porcelain`
-   - `git branch --merged main`
-   - `git branch --no-merged main`
    - `git fetch origin`
    - `git rev-parse --short origin/main`
+   - `git branch --merged origin/main`
+   - `git branch --no-merged origin/main`
 3. Identify whether `main` is dirty, whether the target branch is already checked out in another worktree, and whether the request covers one branch or all local branches.
 4. For branch-containment requests, inspect conflict shape before choosing merge strategy.
 
@@ -38,7 +38,8 @@ Procedure:
 1. If the request is multi-step or cross-branch, present a short plan first and wait for explicit approval before merging or pushing.
 2. Audit topology before touching refs:
    - Use `git worktree list --porcelain` to enumerate checked-out worktrees.
-   - Use `git branch --merged/--no-merged main` to split already-contained branches from active ones.
+   - Use `git branch --merged/--no-merged origin/main` to split already-contained branches from active ones after fetching.
+   - Use `git cherry -v origin/main <branch>` only as diagnostic evidence; `-` rows do not satisfy closeout.
    - Treat "Merge all" literally; include preservation branches unless they are provably unsafe to replay.
 3. Choose the execution surface:
    - If `main` is dirty, create or use a detached merge worktree rooted from current `origin/main`.
@@ -49,13 +50,17 @@ Procedure:
    - Run the smallest targeted regression that covers the changed surface.
 5. For preservation or archival branches:
    - Attempt a normal merge only long enough to validate conflict shape.
-   - If conflicts are broad and center on generated or governance-owned files, abort and switch to `git merge -s ours --no-edit <branch>`.
+   - If conflicts are broad and center on generated or governance-owned files, abort and switch to `git merge -s ours --no-ff --no-edit <branch>`.
+   - Use an `ours` merge to record ancestry only after confirming the branch content is already represented or intentionally superseded.
 6. Before push:
    - Fetch `origin` again if the workflow took time or if any earlier remote SHA is stale.
    - Ensure `origin/main` is an ancestor of `HEAD` or merge the new remote tip first.
    - Rerun the targeted verification gate; for broad repo publication, add a collection or smoke gate when available.
 7. Push `HEAD:main`, then verify remote state with `git ls-remote origin refs/heads/main`.
-8. Report the merge commit(s), verification commands/results, and any bypassed-rule output from the remote push.
+8. Verify branch closeout by ancestry, not patch equivalence:
+   - `git branch --no-merged origin/main` is empty or contains only explicitly retained branches.
+   - For every branch being cleaned up: `git merge-base --is-ancestor <branch> origin/main` succeeds.
+9. Report the merge commit(s), verification commands/results, and any bypassed-rule output from the remote push.
 
 Efficiency plan:
 1. Start with topology commands, not file-by-file branch exploration.
@@ -75,10 +80,11 @@ Pitfalls and fixes:
   Fix: fetch again and merge the newer remote tip before pushing; do not force-push.
 - Symptom: normal merge produces many conflicts across generated/governance files.
   Likely cause: stale preservation branch.
-  Fix: abort the content merge and use `git merge -s ours --no-edit <branch>` if the goal is branch containment.
+  Fix: abort the content merge and use `git merge -s ours --no-ff --no-edit <branch>` if the goal is branch containment.
 
 Verification checklist:
-- `git worktree list --porcelain` and `git branch --no-merged main` match the intended post-merge state.
+- `git worktree list --porcelain` and `git branch --no-merged origin/main` match the intended post-merge state.
+- Every branch deleted or declared done is exact-tip ancestor-contained in `origin/main`; patch-equivalence alone is not enough.
 - Required targeted tests or collection gates passed.
 - If `tools/archive/` was touched, the archive regression passed and the ignored path was force-added intentionally.
 - `git ls-remote origin refs/heads/main` matches the local pushed `HEAD`.
@@ -86,4 +92,4 @@ Verification checklist:
 
 Minimal usage example:
 - Merge one approved branch with dirty local `main`: audit topology, create detached merge worktree from `origin/main`, merge branch, run focused regression, refetch, push `HEAD:main`, confirm remote SHA.
-- Merge "all" local branches: audit worktrees + merged state, merge active worktree branches normally, switch preservation branches with broad generated/governance conflicts to `-s ours`, verify `git branch --no-merged main` is empty, then push.
+- Merge "all" local branches: audit worktrees + merged state, merge active worktree branches normally, switch preservation branches with broad generated/governance conflicts to `-s ours --no-ff`, verify `git branch --no-merged origin/main` is empty after push, then clean up.

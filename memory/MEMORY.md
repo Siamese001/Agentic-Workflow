@@ -65,6 +65,11 @@
   local branch are auto-deleted cleanly, which is the desired lifecycle (deleting the merged worktree +
   local branch IS the correct behavior).
 
+- 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
+  patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit
+  `git merge -s ours --no-ff <branch>` to record a superseded/transplanted branch, but local
+  branch/worktree cleanup must wait for `git merge-base --is-ancestor <branch> origin/main`.
+
 ## Project context
 
 - Notion Plans DB `data_source_id`: `ac53d31b-3068-4039-9ebe-856c12caab32`. Registration helper:

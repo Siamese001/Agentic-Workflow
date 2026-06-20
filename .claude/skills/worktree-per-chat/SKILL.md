@@ -55,7 +55,7 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 | Editing an `apps_<x>` file requires an `apps-<x>-<scope>` branch topic (`claude-apps-rg-…`); core/`agentic_core`/infra needs no app segment | The branch self-documents which app a change impacts; the edit guard ties it to the touched path |
 | Match the worktree folder basename exactly to the local branch name | Windows folders cannot represent slash branch namespaces as a single basename |
 | Plan files are exempt; write them to the primary checkout's `plans/` | A plan in a worktree can miss the shared SSOT |
-| Cleanup is explicit | No SessionStart hook should delete branches or folders while a user is starting work |
+| Cleanup is explicit and ancestry-gated | No SessionStart hook should delete branches or folders while a user is starting work; deletion waits for exact branch-tip ancestry in `origin/main` |
 | Branch creation is advisory at the shell layer | The Bash hook should not force rebaselining or reminting; invalid edit lanes are caught when files are edited |
 
 ## Standard Procedure
@@ -70,7 +70,18 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 
 4. Work and commit inside that worktree.
 5. Open a PR or run a deliberate delivery command; do not rely on Stop-hook direct push.
-6. Clean up delivered local worktrees only after review:
+6. For every branch declared done, prove exact ancestry after push:
+
+   ```bash
+   git merge-base --is-ancestor <branch> origin/main
+   git branch --no-merged origin/main
+   ```
+
+   Patch-equivalent `git cherry -v` rows are not enough for cleanup. If work was cherry-picked or
+   manually transplanted, record the branch tip in `main` with a deliberate non-squash ancestry merge
+   such as `git merge -s ours --no-ff <branch>` before deleting the branch.
+
+7. Clean up delivered local worktrees only after review:
 
    ```bash
    python .claude/hooks/prune_merged_chat_worktrees.py --dry-run
@@ -83,7 +94,7 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 - Creating new timestamped `chat/*` branches for ordinary work.
 - Creating or continuing editable work on `codex/*`, `claude/*`, `work/*`, or `feat/*` slash namespaces without migrating to `codex-*` or `claude-*`.
 - Depending on SessionStart to create or delete worktrees.
-- Hand-deleting an unmerged or dirty worktree.
+- Hand-deleting an unmerged, patch-equivalent-only, or dirty worktree.
 
 ## References
 

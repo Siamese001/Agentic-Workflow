@@ -270,29 +270,22 @@ def test_grace_window_protects_fresh_worktree_with_old_head(repo: Path) -> None:
     assert any(s["reason"] == "within_grace_window" for s in report["skipped"])
 
 
-# --- worktree-deliver-reap: no-unique-commits acceptance (stale-local-main pileup) --------------
+# --- ancestry containment: patch/no-unique equivalence is not cleanup proof ---------------------
 
 
-def test_has_no_unique_commits_helper(repo: Path) -> None:
-    # A fresh chat worktree shares main's tip → zero unique commits vs "main".
+def test_ancestor_helper_requires_reachability(repo: Path) -> None:
     _add_chat_worktree(repo, "20260608-noop")
-    assert reaper._has_no_unique_commits("chat/20260608-noop", repo_root=repo, trunk_refs=("main",))
-    # A diverged worktree has its own commit → not delivered.
+    assert reaper._is_ancestor("chat/20260608-noop", "main", repo_root=repo)
     _add_chat_worktree(repo, "20260608-work", diverge=True)
-    assert not reaper._has_no_unique_commits(
-        "chat/20260608-work", repo_root=repo, trunk_refs=("main",)
-    )
-    # A trunk ref that does not exist never yields a false positive.
-    assert not reaper._has_no_unique_commits(
-        "chat/20260608-work", repo_root=repo, trunk_refs=("origin/does-not-exist",)
-    )
+    assert not reaper._is_ancestor("chat/20260608-work", "main", repo_root=repo)
+    assert not reaper._is_ancestor("chat/20260608-work", "origin/does-not-exist", repo_root=repo)
 
 
-def test_extra_trunk_refs_reaps_noop_worktree_not_ancestor_of_primary_trunk(repo: Path) -> None:
-    # Reproduce the real pileup: local ``main`` is STALE — it diverged from the configured (origin)
-    # trunk. The chat worktree sits at local main's tip, so its branch is NOT an ancestor of the
-    # origin trunk (it carries main's stale commit), yet it has ZERO unique commits vs local main.
-    # Build a divergent "otrunk" (stands in for origin/main):
+def test_stale_local_main_noop_worktree_is_kept_until_ancestor_merged(repo: Path) -> None:
+    # Reproduce the confusing pileup: local ``main`` diverged from the configured origin trunk.
+    # The chat worktree sits at local main's tip, but it is NOT an ancestor of the origin trunk.
+    # Even if its patch content is equivalent/no-unique relative to local main, cleanup must keep
+    # it until an explicit merge records the branch tip on the configured trunk.
     _git(repo, "checkout", "-q", "-b", "otrunk")
     (repo / "real.txt").write_text("real work on origin", encoding="utf-8")
     _git(repo, "add", "-A")
@@ -301,10 +294,8 @@ def test_extra_trunk_refs_reaps_noop_worktree_not_ancestor_of_primary_trunk(repo
     (repo / "stale.txt").write_text("stale plan commit on local main", encoding="utf-8")
     _git(repo, "add", "-A")
     _git(repo, "commit", "-qm", "stale local-main commit")
-    # Worktree branch == local main tip → diverged from otrunk, zero unique commits vs main.
     wt = _add_chat_worktree(repo, "20260608-stale")
 
-    # Without extra_trunk_refs the worktree is NOT reaped vs the divergent origin trunk.
     kept = reaper.reap_merged_chat_worktrees(
         repo_root=repo, trunk_ref="otrunk", do_fetch=False
     )
@@ -312,10 +303,10 @@ def test_extra_trunk_refs_reaps_noop_worktree_not_ancestor_of_primary_trunk(repo
     assert any(s["reason"] == "not_merged_into_trunk" for s in kept["skipped"])
     assert wt.exists()
 
-    # With extra_trunk_refs=("main",) the no-op worktree IS reaped (zero unique commits vs main).
-    got = reaper.reap_merged_chat_worktrees(
-        repo_root=repo, trunk_ref="otrunk", do_fetch=False, extra_trunk_refs=("main",)
-    )
+    _git(repo, "checkout", "-q", "otrunk")
+    _git(repo, "merge", "-s", "ours", "--no-ff", "--no-edit", "chat/20260608-stale")
+
+    got = reaper.reap_merged_chat_worktrees(repo_root=repo, trunk_ref="otrunk", do_fetch=False)
     assert [r["branch"] for r in got["reaped"]] == ["chat/20260608-stale"]
     assert not wt.exists()
 
@@ -324,7 +315,7 @@ def test_extra_trunk_refs_reaps_noop_worktree_not_ancestor_of_primary_trunk(repo
 
 
 def _prune(repo: Path, **kw):
-    kw.setdefault("trunk_refs", ("main",))
+    kw.setdefault("trunk_ref", "main")
     return reaper.prune_merged_branches(repo_root=repo, do_fetch=False, **kw)
 
 

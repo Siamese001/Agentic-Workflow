@@ -124,7 +124,7 @@ Preference signals:
 Reusable knowledge:
 - The archival branch `codex/preserve-local-main-20260614` was the only local branch not contained in `main` after the first push.
 - A normal merge of that branch conflicted in generated ADG report files, ratchet baselines, hook files, and `tools/git/*`, which is a strong sign the branch is stale preservation content rather than active work.
-- `git merge -s ours --no-edit codex/preserve-local-main-20260614` succeeded and created merge commit `4ca3997164` without tree changes, which is the safe way to mark an archival branch as merged while preserving current `main` content.
+- `git merge -s ours --no-edit codex/preserve-local-main-20260614` succeeded and created merge commit `4ca3997164` without tree changes; current guidance is to use `git merge -s ours --no-ff --no-edit <branch>` so branch-tip ancestry is explicit even when Git could otherwise fast-forward or omit a merge commit.
 - Final verification showed every local branch contained in `main` and `origin/main` pointing at `4ca3997164`.
 
 Failures and how to do differently:
