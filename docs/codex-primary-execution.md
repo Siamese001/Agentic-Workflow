@@ -18,9 +18,15 @@ No parallel registry: `.codex` is the only repo governance tree for Codex rules,
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
+Repo-specific Codex enforcement must live under this repository, not under the Windows user-profile Codex home. Cadence automation contracts live in `.codex/automations/`, repo-specific bootstrap skills live in `.codex/skills/`, and the guard is:
+
+```bash
+python scripts/governance/verify_codex_enforcement_home.py --json
+```
+
 ## Local Codex Skills
 
-Personal Codex skills under `C:\Users\amita\.codex\skills` are optional bootstrap shims. They help a new Codex session route into this repo contract quickly, but they are not required for normal verification and must not become a second source of truth.
+Agentic-Workflow Codex skills are repo-owned under `.codex/skills`. Personal Codex skills under `C:\Users\amita\.codex\skills` must not carry Agentic-Workflow enforcement.
 
 Primary verification is repo-owned:
 
@@ -28,7 +34,7 @@ Primary verification is repo-owned:
 python scripts/governance/verify_codex_primary.py
 ```
 
-Personal workstation skills are outside the repo verification contract. When they drift, update the repo-owned `.codex/**` guidance first and keep personal skills as bootstrap shims only.
+The primary verifier includes `verify_codex_enforcement_home.py`, so it fails when Agentic-Workflow automation or skill enforcement drifts back into the user profile.
 
 ## Required Preflight
 

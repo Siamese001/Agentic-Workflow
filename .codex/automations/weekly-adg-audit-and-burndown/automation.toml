@@ -1,0 +1,13 @@
+version = 1
+id = "weekly-adg-audit-and-burndown"
+kind = "cron"
+name = "ADG Audit and Burndown"
+prompt = "Run the Agentic-Workflow full ADG audit and burndown from a clean main-branch state. Use the repo governance adapter, avoid changing source files, and execute `python tools/adg/run_full_adg_audit.py --mode certification --format both`. After it finishes, summarize the certification status, blocking gates, top prioritized burndown recommendations from `artifacts/adg/adg_burndown_report.md`, the top action queue items from the newest `artifacts/adg/adg_action_queue_*.json`, and the key artifact paths. If the command fails, include an RCA block with symptom, root cause if evident, evidence, fix or next step, and recurrence guard."
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=2;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "local"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
+created_at = 1781555471411
+updated_at = 1781951576779

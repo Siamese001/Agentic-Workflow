@@ -18,9 +18,47 @@ def _write(path: Path, text: str = "placeholder") -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def _automation_toml(automation_id: str, prompt: str, root: Path) -> str:
+    escaped_prompt = prompt.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    escaped_root = str(root).replace("\\", "\\\\")
+    return "\n".join(
+        [
+            "version = 1",
+            f'id = "{automation_id}"',
+            'kind = "cron"',
+            f'name = "{automation_id}"',
+            f'prompt = "{escaped_prompt}"',
+            'status = "ACTIVE"',
+            'rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
+            'model = "gpt-5.4-mini"',
+            'reasoning_effort = "xhigh"',
+            'execution_environment = "local"',
+            f'cwds = ["{escaped_root}"]',
+            "created_at = 1",
+            "updated_at = 1",
+        ]
+    )
+
+
 def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
+    _write(
+        tmp_path / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml",
+        _automation_toml(
+            "on-demand-pr-main-publisher",
+            "\n".join(mod.verify_codex_enforcement_home.PUBLICATION_REQUIRED_PROMPT_SNIPPETS),
+            tmp_path,
+        ),
+    )
+    _write(
+        tmp_path / ".codex" / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml",
+        _automation_toml(
+            "weekly-adg-audit-and-burndown",
+            "\n".join(mod.verify_codex_enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS),
+            tmp_path,
+        ),
+    )
     _write(tmp_path / ".codex" / "hooks.json", json.dumps({"hooks": {}}))
     _write(
         tmp_path / "AGENTS.md",
@@ -30,11 +68,13 @@ def _valid_root(tmp_path: Path) -> Path:
                 "docs/codex-primary-execution.md",
                 "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
+                "scripts/governance/verify_codex_enforcement_home.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "GitKraken",
                 "Codex must ask a plain-text clarifying question directly in the assistant response",
                 ".codex/hooks.json",
+                ".codex/automations/",
             ]
         ),
     )
@@ -46,11 +86,13 @@ def _valid_root(tmp_path: Path) -> Path:
                 "GitKraken",
                 "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
+                "scripts/governance/verify_codex_enforcement_home.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
                 "No parallel registry",
                 "Codex must ask a plain-text clarifying question directly in the assistant response",
                 ".codex/hooks.json",
+                ".codex/automations/",
             ]
         ),
     )

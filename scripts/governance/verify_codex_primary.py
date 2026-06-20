@@ -14,6 +14,8 @@ import subprocess
 from pathlib import Path
 from collections.abc import Mapping, Sequence
 
+import verify_codex_enforcement_home
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_FILES = [
@@ -22,11 +24,16 @@ REQUIRED_FILES = [
     "scripts/governance/audit_codex_mcp_transports.py",
     "scripts/governance/check_windows_path_budget.py",
     "scripts/governance/codex_readiness.py",
+    "scripts/governance/verify_codex_enforcement_home.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",
     ".codex/config.toml",
+    ".codex/automations/on-demand-pr-main-publisher/automation.toml",
+    ".codex/automations/weekly-adg-audit-and-burndown/automation.toml",
     ".codex/hooks.json",
     ".codex/hooks/selected_avatar_guard.py",
+    ".codex/skills/agentic-workflow-governance/SKILL.md",
+    ".codex/skills/agentic-workflow-verification/SKILL.md",
     ".codex/hooks/lib/codex_hook_common.py",
     ".codex/governance/scripts/filesystem_mcp_launcher.js",
 ]
@@ -36,21 +43,25 @@ REQUIRED_ANCHORS = {
         "## Codex primary execution adapter",
         "docs/codex-primary-execution.md",
         "scripts/governance/codex_readiness.py",
+        "scripts/governance/verify_codex_enforcement_home.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
         "Codex must ask a plain-text clarifying question directly in the assistant response",
         ".codex/hooks.json",
+        ".codex/automations/",
     ],
     "docs/codex-primary-execution.md": [
         "Codex primary execution surface",
         "scripts/governance/codex_readiness.py",
+        "scripts/governance/verify_codex_enforcement_home.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
         "GitKraken",
         "No parallel registry",
         "Codex must ask a plain-text clarifying question directly in the assistant response",
         ".codex/hooks.json",
+        ".codex/automations/",
     ],
 }
 
@@ -144,6 +155,10 @@ def validate(root: Path = REPO_ROOT) -> list[str]:
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
     failures.extend(hook_target_failures(root / ".codex" / "hooks.json", root))
     failures.extend(codex_only_failures(root))
+    failures.extend(
+        f"{issue.code}: {issue.detail}"
+        for issue in verify_codex_enforcement_home.validate(root)
+    )
     return failures
 
 

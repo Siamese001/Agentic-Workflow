@@ -110,7 +110,9 @@ Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/gov
 Codex is the primary local execution surface for this repo. Repo-owned governance files remain the versioned rule inputs; Codex owns run readiness, execution evidence, and closeout receipts.
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
+- Repo-specific Codex enforcement files, including cadence automation contracts, live under `.codex/automations/` and must not live under `C:\Users\amita\.codex`.
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
+- Validate the repo-owned enforcement home with `python scripts/governance/verify_codex_enforcement_home.py --json`.
 - Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement must not depend on the legacy Claude governance directory or hook parity path.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
