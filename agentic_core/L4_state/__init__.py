@@ -7,8 +7,7 @@ Only persistence contracts, state lifecycle, and governance are exported.
 """
 
 from enum import Enum
-
-from agentic_core.L4_state import cache as _cache  # noqa: F401  -- re-exports L4 cache sub-package
+from importlib import import_module
 
 # P3/L4 State Lifecycle Governance exports
 from agentic_core.L4_state.utils.lifecycle.lifecycle_policy_applier import (
@@ -44,6 +43,13 @@ from agentic_core.L4_state.utils.lifecycle.state_lifecycle import (
     get_state_lifecycle_registry,
     reset_state_lifecycle_registry,
 )
+
+
+def __getattr__(name: str):
+    """Lazily expose heavyweight L4 subpackages on explicit access."""
+    if name == "cache":
+        return import_module("agentic_core.L4_state.cache")
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     # Lifecycle Records

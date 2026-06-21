@@ -16,15 +16,36 @@ GraphMemoryBridge can use it as a drop-in replacement for mcp11 calls.
 from __future__ import annotations
 
 import datetime as _dt
+import importlib.util
 import logging as _logging
 import math
 import os
+import sys
 import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
 
-from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_SQLITE_ADAPTER_PATH = _REPO_ROOT / "agentic_core" / "L4_state" / "adapters" / "sqlite3_adapter.py"
+
+
+def _load_l4_sqlite_adapter() -> Any:
+    """Load the sanctioned L4 SQLite adapter without L4 package side effects."""
+    module_name = "_agentic_core_l4_sqlite3_adapter_lightweight"
+    if module_name in sys.modules:
+        return sys.modules[module_name]
+
+    spec = importlib.util.spec_from_file_location(module_name, _SQLITE_ADAPTER_PATH)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load L4 sqlite3 adapter from {_SQLITE_ADAPTER_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+sqlite3 = _load_l4_sqlite_adapter()
 
 _logger = _logging.getLogger(__name__)
 
@@ -89,10 +110,10 @@ from tools.memory.memory_decay import (
     reinforced_confidence,
 )
 
-_DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
+_DEFAULT_DB = _REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
 # Schema SSOT: canonical schema lives in .codex/schemas/
-_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".codex" / "schemas"
+_SCHEMA_DIR = _REPO_ROOT / ".codex" / "schemas"
 _SCHEMA_FILE = _SCHEMA_DIR / "knowledge_graph.schema.sql"
 _MIGRATIONS_FILE = _SCHEMA_DIR / "knowledge_graph_migrations.sql"
 
