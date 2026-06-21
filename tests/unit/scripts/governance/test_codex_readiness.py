@@ -113,6 +113,61 @@ def test_duplicate_process_can_fail_strict_mode() -> None:
     assert checks[0].status == "FAIL"
 
 
+def test_major_mcp_exposure_check_is_advisory_warn() -> None:
+    check = mod._check_major_mcp_exposure(
+        {
+            "available": True,
+            "readiness_status": "FAIL",
+            "counts": {"GREEN": 1, "YELLOW": 2, "RED": 1},
+        }
+    )
+
+    assert check.id == "mcp.major_exposure"
+    assert check.status == "WARN"
+    assert check.severity == "advisory"
+
+
+def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_path: Path) -> None:
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+    monkeypatch.setattr(mod, "_run_git_status", lambda root: (0, "", ""))
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", "ready")
+    monkeypatch.setattr(
+        mod.audit_codex_mcp_transports,
+        "build_report",
+        lambda route_contract=None: _transport_report(
+            {
+                "memory": "CALLABLE",
+                "GitKraken": "SUBSTITUTE_CALLABLE",
+                "vector_db": "CALLABLE",
+                "adg_sqlite": "CALLABLE",
+            }
+        ),
+    )
+    exposure = {
+        "available": True,
+        "readiness_status": "PASS",
+        "counts": {"GREEN": 8, "YELLOW": 0, "RED": 0},
+        "servers": {},
+    }
+    monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: exposure)
+
+    report = mod.build_readiness_report(tmp_path)
+
+    assert report["status"] == "PASS"
+    assert report["transport_summary"]["major_mcp_exposure"] == exposure
+    assert any(check["id"] == "mcp.major_exposure" for check in report["checks"])
+
+
 def test_summarize_prefers_failure_over_warning() -> None:
     checks = [
         mod.ReadinessCheck("a", "WARN", "advisory", "warn"),

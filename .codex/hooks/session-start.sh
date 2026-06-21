@@ -16,17 +16,43 @@
 
 set -uo pipefail
 
-# Web-only: on local machines the developer already has their full environment.
-if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
-  exit 0
-fi
-
 PROJECT_DIR="${AGENTIC_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 cd "$PROJECT_DIR" || exit 0
 
 REDIS_URL="redis://localhost:6379/0"
 LOG="/tmp/agentic_session_start.log"
 : > "$LOG"
+
+export PYTHONPATH="${PYTHONPATH:-$PROJECT_DIR}" AGENTIC_REPO_ROOT="$PROJECT_DIR" ADG_REDIS_URL="${ADG_REDIS_URL:-$REDIS_URL}"
+
+if [ -z "${GITKRAKEN_GK_PATH:-}" ]; then
+  for candidate in \
+    "${LOCALAPPDATA:-}/GitKrakenCLI/gk.exe" \
+    "$HOME/AppData/Local/GitKrakenCLI/gk.exe" \
+    "/c/Users/amita/AppData/Local/GitKrakenCLI/gk.exe" \
+    "/mnt/c/Users/amita/AppData/Local/GitKrakenCLI/gk.exe"
+  do
+    if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+      export GITKRAKEN_GK_PATH="$candidate"
+      break
+    fi
+  done
+fi
+
+# Lightweight local+remote visibility check: config sync alone does not prove
+# Codex mounted major MCPs into the deferred tool registry.
+if [ -f "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" ]; then
+  python "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" --advisory \
+    >> "$LOG" 2>&1
+  audit_rc=$?
+  echo "[session-start] mcp tool exposure audit complete (advisory rc=$audit_rc; log=$LOG)"
+fi
+
+# Web-only from this point: on local machines the developer already has their
+# dependency surface. Keep the exposure audit above active locally.
+if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
+  exit 0
+fi
 
 # --- Persist env vars for the session (consumed by .mcp.json ${...} substitution) ----------
 if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
