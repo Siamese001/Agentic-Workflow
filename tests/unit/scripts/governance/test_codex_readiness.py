@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -35,6 +36,27 @@ def test_required_route_must_be_callable() -> None:
 
     assert checks[0].status == "FAIL"
     assert checks[0].id == "mcp.memory"
+    assert "missing route/callability proof" in checks[0].detail
+
+
+def test_required_route_failure_detail_is_actionable_for_missing_host_route() -> None:
+    report = _transport_report({"GitKraken": "PROCESS_ONLY"})
+    report["route_evidence"]["servers"]["GitKraken"] = {
+        "classification": "PROCESS_ONLY",
+        "callable_status": "absent",
+        "selected_codex_route": None,
+        "process_classification": "duplicate",
+        "process_count": 3,
+    }
+
+    check = mod._check_required_routes(report, ["GitKraken"])[0]
+    detail = json.loads(check.detail)
+
+    assert check.status == "FAIL"
+    assert check.summary == "GitKraken is missing Codex route/callability proof."
+    assert detail["blocker"] == "missing route/callability proof"
+    assert "only proves startup" in detail["why"]
+    assert "CODEX_MCP_CALLABLE_GITKRAKEN=healthy" in detail["unblock"]
 
 
 def test_required_route_accepts_callable() -> None:
@@ -127,6 +149,30 @@ def test_duplicate_process_can_fail_strict_mode() -> None:
     )
 
     assert checks[0].status == "FAIL"
+
+
+def test_duplicate_process_hygiene_is_separate_from_route_failure() -> None:
+    report = _transport_report(
+        {"memory": "PROCESS_ONLY"},
+        {"memory": {"classification": "duplicate", "process_count": 3}},
+    )
+    report["route_evidence"]["servers"]["memory"].update(
+        {
+            "callable_status": "absent",
+            "process_classification": "duplicate",
+            "process_count": 3,
+        }
+    )
+
+    route_check = mod._check_required_routes(report, ["memory"])[0]
+    process_check = mod._check_process_hygiene(report, fail_duplicates=False)[0]
+
+    assert route_check.id == "mcp.memory"
+    assert route_check.status == "FAIL"
+    assert "missing route/callability proof" in route_check.detail
+    assert process_check.id == "process.memory"
+    assert process_check.status == "WARN"
+    assert process_check.severity == "advisory"
 
 
 def test_major_mcp_exposure_check_is_advisory_warn() -> None:
