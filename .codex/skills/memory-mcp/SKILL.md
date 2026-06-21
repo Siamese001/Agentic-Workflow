@@ -1,6 +1,6 @@
 ---
 name: memory-mcp
-description: Persistent SQLite-backed knowledge graph for Claude Code — survives legacy editor restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from legacy editor's built-in.
+description: Persistent SQLite-backed knowledge graph. Invoke at session start, when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions, patterns, or architectural invariants need to persist across sessions.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work

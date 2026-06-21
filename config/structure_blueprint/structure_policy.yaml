@@ -52,6 +52,7 @@ root_directories:
   - .backup
   - .vscode
   - .codex          # Claude Code governance tree (rules/hooks/skills/schemas) — SSOT
+  - .agents         # tracked local agent skill mirror used by Codex skill roots
   - .locks           # git-lfs / xet lock directory (runtime artifact)
   # git-xet extension working directory
   - xet
@@ -114,6 +115,7 @@ excluded_directories:
   - .mypy_cache
   - .hypothesis
   - .tox
+  - .playwright-mcp
   - dist
   - build
   - .egg-info

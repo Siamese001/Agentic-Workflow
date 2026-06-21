@@ -60,6 +60,9 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
     echo "export PYTHONPATH=\"$PROJECT_DIR\""
     echo "export AGENTIC_REPO_ROOT=\"$PROJECT_DIR\""
     echo "export ADG_REDIS_URL=\"$REDIS_URL\""
+    if [ -n "${GITKRAKEN_GK_PATH:-}" ]; then
+      echo "export GITKRAKEN_GK_PATH=\"$GITKRAKEN_GK_PATH\""
+    fi
   } >> "$CLAUDE_ENV_FILE"
 fi
 export PYTHONPATH="$PROJECT_DIR" AGENTIC_REPO_ROOT="$PROJECT_DIR" ADG_REDIS_URL="$REDIS_URL"

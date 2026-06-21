@@ -28,6 +28,7 @@ PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "git diff --stat has no output",
     "git diff --cached --stat has no output",
     "exactly one git worktree remains",
+    "3-row proof table with columns requirement, runtime evidence, and result",
     "codex_main_closeout.py --apply --fetch --json",
     "codex_main_closeout.py --check --fetch --json",
     "The merge command must chain local closeout proof in the same shell command",

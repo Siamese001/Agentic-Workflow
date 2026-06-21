@@ -1,6 +1,6 @@
 ---
 name: agentic-workflow-verification
-description: Use when verifying Codex primary-execution changes in C:\Git\Agentic-Workflow-FRESH. Runs repo-owned verification gates only.
+description: Use when verifying Codex primary-execution changes in C:/Git/Agentic-Workflow-FRESH. Runs repo-owned verification gates only.
 ---
 
 # Agentic-Workflow Verification Adapter

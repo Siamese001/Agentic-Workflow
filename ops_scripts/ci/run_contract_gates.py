@@ -318,6 +318,14 @@ def main():
             "TSP1 apps_* test surface parity (advisory)",
             "ops_scripts/ci/check_apps_test_surface_parity.py",
         ),
+        # APPS-TEST-MODEL — changed app test files must declare which governed
+        # testing bucket they protect. Changed-file scoped to allow incremental
+        # annotation of historical tests.
+        (
+            "APPS-TEST-MODEL apps_* testing model classification",
+            "ops_scripts/ci/check_apps_test_model.py",
+            "APPS-TEST-MODEL",
+        ),
         # EPE1 — Embedding provenance enforcement (ADR-055 W3.1).
         # Verifies EmbeddingProvenanceMismatchError is importable and
         # SovereignChromaClient references the hard-fail block.

@@ -1,6 +1,6 @@
 ---
 name: agentic-workflow-governance
-description: Use when working in C:\Git\Agentic-Workflow-FRESH as Codex. Treat repo-owned Codex files under .codex as the only Agentic-Workflow enforcement home.
+description: Use when working in C:/Git/Agentic-Workflow-FRESH as Codex. Treat repo-owned Codex files under .codex as the only Agentic-Workflow enforcement home.
 ---
 
 # Agentic-Workflow Governance Adapter

@@ -20,6 +20,7 @@ Consolidated skill that merges `test-rigor-enforcement` and `pytest-integrity` i
 - **`collection_execution_integrity.md`** — Validates pytest collection vs execution counts, prevents silent test deselection.
 - **`skip_management_protocol.md`** — Zero-tolerance skip management with allowlist requirements and registry tracking.
 - **`post_code_validation.md`** — MANDATORY after code changes. Runs coverage verification and count validation.
+- **`apps_testing_model.md`** — Required for `apps_*`, `apps_eval`, and `tests/_apps_contract` testing work. Classifies app tests as LAW, APP CONTRACT, SPINE BINDING, EVAL CONTRACT, HARNESS, MIGRATION, ARCHAEOLOGY, or FUTURE.
 
 ## When to use
 
@@ -28,6 +29,7 @@ Consolidated skill that merges `test-rigor-enforcement` and `pytest-integrity` i
 - **ALWAYS after code changes:** Use `post_code_validation.md` to verify compliance
 - **ALWAYS when triaging a test failure:** Follow the 5-check decision tree to assign repair class before any edit
 - **When running pytest:** Use `collection_execution_integrity.md` to verify integrity
+- **When changing app-owned tests:** Use `apps_testing_model.md` and include an `apps-test-model: <bucket>` marker in changed app test files.
 
 ## Constitutional Requirements Enforced
 
