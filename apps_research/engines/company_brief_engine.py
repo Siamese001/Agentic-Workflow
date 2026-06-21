@@ -301,7 +301,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         """V2 retrieval pipeline: decompose → retrieve (parallel) → rerank → assemble.
 
         Plan §P1.4 + §P2.4 (parallel dispatch). Uses a thread pool for
-        per-sub-query retrieval (I/O-bound HTTP calls to Tavily) so
+        per-sub-query retrieval (I/O-bound HTTP calls to SearXNG) so
         wall-clock scales sub-linearly with fan-out. Missing retrieval
         dependencies fail closed.
         """
@@ -309,7 +309,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         from apps_research.engines.query_decomposer import SubQuery, decompose
         from apps_research.integrations.reranker_adapter import rerank
-        from apps_research.integrations.tavily_retrieval import (
+        from apps_research.integrations.search_retrieval import (
             apply_contextual_prefix,
             retrieve,
         )
@@ -359,17 +359,17 @@ class CompanyBriefEngine(BaseResearchEngine):
         return findings
 
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
-        """Best-effort Tavily research per facet.
+        """Best-effort SearXNG research per facet.
 
-        Returns a dict {facet_name: text_blob}. Missing Tavily configuration
+        Returns a dict {facet_name: text_blob}. Missing SearXNG configuration
         fails closed instead of substituting a synthetic brief.
         """
         findings: Dict[str, str] = {f: "" for f, _ in self._FACET_QUERIES}
         try:
-            from apps_research.integrations.tavily_retrieval import retrieve
+            from apps_research.integrations.search_retrieval import retrieve
         except ImportError as exc:
             self.logger.warning(
-                "[CompanyBriefEngine] tavily_retrieval unavailable; failing closed: %s",
+                "[CompanyBriefEngine] search_retrieval unavailable; failing closed: %s",
                 exc,
             )
             retrieve = None
@@ -384,11 +384,11 @@ class CompanyBriefEngine(BaseResearchEngine):
                 docs = retrieve(query, top_k=5)
                 snippets = [d.snippet for d in docs if d.snippet]
                 findings[facet] = "\n".join(snippets)[:4000]
-            except Exception as exc:  # guardian: allow-broad-exception -- Tavily HTTP errors are heterogeneous; per-facet fail-soft preserves partial brief
-                self.logger.warning("[CompanyBriefEngine] Tavily query failed (%s): %s", facet, exc)
+            except Exception as exc:  # guardian: allow-broad-exception -- SearXNG HTTP errors are heterogeneous; per-facet fail-soft preserves partial brief
+                self.logger.warning("[CompanyBriefEngine] SearXNG query failed (%s): %s", facet, exc)
         if not any((blob or "").strip() for blob in findings.values()):
             raise CompanyBriefUnavailableError(
-                f"{topic}: Tavily research returned no grounded findings"
+                f"{topic}: SearXNG research returned no grounded findings"
             )
         return findings
 
@@ -979,8 +979,8 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         Delegates family selection + query generation to
         ``decompose_coverage_families()``. Uses
-        ``apps_research.integrations.tavily_retrieval.retrieve`` (the
-        canonical Tavily adapter) for the actual searches. Missing or empty
+        ``apps_research.integrations.search_retrieval.retrieve`` (the
+        canonical SearXNG adapter) for the actual searches. Missing or empty
         retrieval fails closed; no curated company pack may stand in for
         grounded research.
         """
@@ -988,10 +988,10 @@ class CompanyBriefEngine(BaseResearchEngine):
         findings: Dict[str, str] = {p.family: "" for p in plans}
 
         try:
-            from apps_research.integrations.tavily_retrieval import retrieve
+            from apps_research.integrations.search_retrieval import retrieve
         except ImportError as exc:
             self.logger.warning(
-                "[CompanyBriefEngine] tavily_retrieval unavailable; failing closed: %s",
+                "[CompanyBriefEngine] search_retrieval unavailable; failing closed: %s",
                 exc,
             )
             retrieve = None
@@ -1006,14 +1006,14 @@ class CompanyBriefEngine(BaseResearchEngine):
                 docs = retrieve(plan.query, top_k=5)
             except RuntimeError as exc:
                 self.logger.warning(
-                    "[CompanyBriefEngine] Tavily unavailable for family=%s: %s",
+                    "[CompanyBriefEngine] SearXNG unavailable for family=%s: %s",
                     plan.family,
                     exc,
                 )
                 continue
-            except Exception as exc:  # guardian: allow-broad-exception -- per-family Tavily HTTP errors heterogeneous; fail-soft preserves partial brief
+            except Exception as exc:  # guardian: allow-broad-exception -- per-family SearXNG HTTP errors heterogeneous; fail-soft preserves partial brief
                 self.logger.warning(
-                    "[CompanyBriefEngine] Tavily query failed (family=%s): %s",
+                    "[CompanyBriefEngine] SearXNG query failed (family=%s): %s",
                     plan.family,
                     exc,
                 )

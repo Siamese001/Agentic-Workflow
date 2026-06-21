@@ -83,8 +83,8 @@ Per-profile retrieval SLOs enforced by the C0 PA gate (`_evaluate_c0_pa_gate`).
 
 ### DOSSIER SLO Baseline (W3 — apps-research-spine-deferred-followup-9c3e1a)
 
-- **Status:** TARGETS — first live run with `TAVILY_API_KEY` establishes concrete baseline.
-- **Measurement:** `tests/e2e/test_apps_research_live.py::TestAppsResearchDossierLive` (skipped without `TAVILY_API_KEY`).
+- **Status:** TARGETS — first live run with `SEARXNG_BASE_URL` establishes concrete baseline.
+- **Measurement:** `tests/e2e/test_apps_research_live.py::TestAppsResearchDossierLive` (skipped without `SEARXNG_BASE_URL`).
 - **Artifacts:** Emitted to `artifacts/slo/apps_research_dossier_<run_id>.json` per live run.
 - **Verified mocked (P3.1):** 25 stub URL sources → `gate_verdict` in {PASS, WEAK_WITH_CAVEATS}.
 

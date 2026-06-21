@@ -9,14 +9,14 @@ Design note
 The ``apps_qna.router.reranker`` module is route-centric (reranks
 capability descriptors), not document-centric. A future upgrade may wire
 this adapter to the spine ``BgeRerankerAdapter`` for cross-encoder
-scoring. For now we trust Tavily's ``score`` field and apply stable
+scoring. For now we trust the search provider's ``score`` field and apply stable
 sort-then-cutoff semantics, keeping the interface identical so the
 upgrade path is drop-in.
 """
 
 from __future__ import annotations
 
-from apps_research.integrations.tavily_retrieval import RetrievedDoc
+from apps_research.integrations.search_retrieval import RetrievedDoc
 
 
 def rerank(
@@ -29,7 +29,7 @@ def rerank(
     Args:
         sub_query: the sub-query these docs were retrieved for (reserved
             for future cross-encoder rerank; unused today).
-        docs: the retrieved-doc list (from :func:`tavily_retrieval.retrieve`).
+        docs: the retrieved-doc list (from :func:`search_retrieval.retrieve`).
         cutoff: maximum docs to return. If ``len(docs) < cutoff``, all
             docs are returned (no padding).
 
