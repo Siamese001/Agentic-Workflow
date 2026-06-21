@@ -49,6 +49,11 @@ if [ -f "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" ]; t
   python "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" --advisory \
     >> "$LOG" 2>&1
   audit_rc=$?
+  {
+    echo ""
+    echo "[session-start] mcp tool exposure audit json:"
+    python "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" --advisory --json
+  } >> "$LOG" 2>&1
   echo "[session-start] mcp tool exposure audit complete (advisory rc=$audit_rc; log=$LOG)"
 fi
 

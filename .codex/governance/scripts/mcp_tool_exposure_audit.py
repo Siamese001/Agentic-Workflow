@@ -60,6 +60,7 @@ class ExposureResult:
     observed_tools: list[str] = field(default_factory=list)
     missing_tools: list[str] = field(default_factory=list)
     reasons: list[str] = field(default_factory=list)
+    rca: dict[str, str] = field(default_factory=dict)
 
 
 def _read_config(path: Path) -> dict[str, Any]:
@@ -208,6 +209,46 @@ def _host_exposure(
     return bool(observed), observed, missing
 
 
+def _rca_for_result(
+    *,
+    server_id: str,
+    declared: bool,
+    host_ok: bool | None,
+    native_ok: bool | None,
+) -> dict[str, str]:
+    if declared and host_ok is True and native_ok is not False:
+        return {}
+    if not declared:
+        return {
+            "symptom": f"{server_id} is absent from the configured MCP registry.",
+            "root_cause": "The repo-owned .mcp.json does not declare the required MCP server.",
+            "fix_or_next": f"fix:add {server_id} to .mcp.json before expecting Codex host exposure.",
+            "recurrence_guard": "Keep .mcp.json and .codex/config.toml aligned for always-on MCP servers.",
+        }
+    if server_id == "memory" and native_ok is False:
+        return {
+            "symptom": "Memory MCP is not available to Codex readiness.",
+            "root_cause": "The Memory Python MCP process is not alive, and no callable Codex Memory route was proven.",
+            "fix_or_next": "next:restart or reattach the Codex MCP host so memory starts, then prove a live mcp__memory call before setting CODEX_MCP_CALLABLE_MEMORY=healthy.",
+            "recurrence_guard": "Do not treat local script compilation or file-memory fallback as Memory MCP callability.",
+        }
+    if server_id == "GitKraken" and host_ok is not True:
+        return {
+            "symptom": "GitKraken MCP is not available to Codex readiness.",
+            "root_cause": "The GitKraken CLI can list MCP tools, but the active Codex host did not expose a callable GitKraken tool surface.",
+            "fix_or_next": "next:reload or reconfigure the Codex host so GitKraken tools are mounted, then prove a live GitKraken tool call before setting CODEX_MCP_CALLABLE_GITKRAKEN=healthy.",
+            "recurrence_guard": "Keep native gk availability separate from host-exposed GitKraken MCP callability.",
+        }
+    if host_ok is not True:
+        return {
+            "symptom": f"{server_id} host exposure is unproven.",
+            "root_cause": "No Codex tool-search exposure snapshot proved a callable host route.",
+            "fix_or_next": f"next:prove a live Codex tool call for {server_id} or keep reporting the degraded route.",
+            "recurrence_guard": "Require callable-route proof before marking host MCP parity healthy.",
+        }
+    return {}
+
+
 def audit(
     config_path: Path = REPO_CONFIG,
     observed_host_tools: set[str] | None = None,
@@ -270,6 +311,12 @@ def audit(
                 observed_tools=observed_tools,
                 missing_tools=missing_tools,
                 reasons=reasons,
+                rca=_rca_for_result(
+                    server_id=server_id,
+                    declared=declared,
+                    host_ok=host_ok,
+                    native_ok=native_ok,
+                ),
             )
         )
     return results

@@ -56,6 +56,8 @@ def test_tool_search_snapshot_missing_gitkraken_is_red(tmp_path: Path):
     assert gitkraken.status == "RED"
     assert gitkraken.host_exposed is False
     assert "not exposed in Codex tool_search snapshot" in gitkraken.reasons
+    assert gitkraken.rca["root_cause"].startswith("The GitKraken CLI can list MCP tools")
+    assert gitkraken.rca["fix_or_next"].startswith("next:")
 
 
 def test_tool_search_snapshot_with_major_tools_is_green(tmp_path: Path):
@@ -89,6 +91,8 @@ def test_python_mcp_dead_is_red_without_host_snapshot(tmp_path: Path):
     assert by_server["memory"].status == "RED"
     assert by_server["memory"].native_ok is False
     assert "python MCP process dead" in by_server["memory"].reasons
+    assert by_server["memory"].rca["root_cause"].startswith("The Memory Python MCP process is not alive")
+    assert by_server["memory"].rca["fix_or_next"].startswith("next:")
 
 
 def test_missing_major_server_declaration_is_red(tmp_path: Path):
