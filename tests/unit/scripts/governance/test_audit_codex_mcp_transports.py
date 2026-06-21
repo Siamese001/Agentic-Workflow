@@ -36,6 +36,20 @@ def test_process_only_when_server_runs_but_no_callable_surface() -> None:
     assert mod.classify_route(route, process_state) == "PROCESS_ONLY"
 
 
+def test_duplicate_process_only_is_not_callable() -> None:
+    route = _route("memory", "host_mcp_required", "no_substitute")
+    process_state = {"process_count": 3, "classification": "duplicate"}
+
+    assert mod.classify_route(route, process_state) == "PROCESS_ONLY"
+
+
+def test_healthy_callable_status_overrides_process_evidence() -> None:
+    route = _route("memory", "host_mcp_required", "no_substitute")
+    process_state = {"process_count": 3, "classification": "duplicate"}
+
+    assert mod.classify_route(route, process_state, "healthy") == "CALLABLE"
+
+
 def test_raw_mcp_callable_requires_process_presence() -> None:
     route = _route("adg_sqlite", "raw_mcp_callable", "")
 

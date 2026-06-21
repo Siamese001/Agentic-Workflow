@@ -260,11 +260,28 @@ def _check_required_routes(report: dict[str, Any], required_routes: Sequence[str
                     f"mcp.{server_id}",
                     "FAIL",
                     "critical",
-                    f"{server_id} is not proven callable for Codex primary execution.",
-                    json.dumps(state, sort_keys=True),
+                    f"{server_id} is missing Codex route/callability proof.",
+                    _route_failure_detail(server_id, state),
                 )
             )
     return checks
+
+
+def _route_failure_detail(server_id: str, state: dict[str, Any]) -> str:
+    """Explain route proof failures without conflating them with process hygiene."""
+    detail = dict(state)
+    detail["blocker"] = "missing route/callability proof"
+    detail["why"] = (
+        "MCP process presence only proves startup. It does not prove the active "
+        "Codex host exposes a callable tool route."
+    )
+    detail["process_hygiene"] = "Duplicate process cohorts are reported separately under process.* checks."
+    detail["unblock"] = (
+        f"Prove a live callable route for {server_id} in the active Codex host, "
+        f"or set CODEX_MCP_CALLABLE_{server_id.upper()}=healthy only after that API-level proof. "
+        "If Codex Desktop exposes no callable API for this server in this session, keep this check failing."
+    )
+    return json.dumps(detail, sort_keys=True)
 
 
 def _check_vector_semantic_guard(required_routes: Sequence[str]) -> ReadinessCheck | None:
