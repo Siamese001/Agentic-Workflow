@@ -161,8 +161,11 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
 
 def _forbidden_user_profile_paths(user_codex_home: Path) -> list[Path]:
     paths: list[Path] = []
-    paths.extend(user_codex_home / "automations" / automation_id for automation_id in AUTOMATION_IDS)
-    paths.extend(user_codex_home / "skills" / skill_id for skill_id in REPO_SKILL_IDS)
+    paths.extend(
+        user_codex_home / "automations" / automation_id / "automation.toml"
+        for automation_id in AUTOMATION_IDS
+    )
+    paths.extend(user_codex_home / "skills" / skill_id / "SKILL.md" for skill_id in REPO_SKILL_IDS)
     return paths
 
 

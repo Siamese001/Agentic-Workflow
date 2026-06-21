@@ -176,12 +176,40 @@ def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_pat
         "servers": {},
     }
     monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: exposure)
+    monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
 
     report = mod.build_readiness_report(tmp_path)
 
     assert report["status"] == "PASS"
     assert report["transport_summary"]["major_mcp_exposure"] == exposure
     assert any(check["id"] == "mcp.major_exposure" for check in report["checks"])
+    assert any(check["id"] == "docker.searxng" for check in report["checks"])
+
+
+def test_searxng_check_passes_when_report_ready(monkeypatch) -> None:
+    report = mod.ensure_searxng_readiness.SearxngReadinessReport(status="PASS")
+    report.running = True
+    report.restart_policy = "unless-stopped"
+    report.json_search_ready = True
+    monkeypatch.setattr(mod.ensure_searxng_readiness, "build_report", lambda **kwargs: report)
+
+    check = mod._check_searxng()
+
+    assert check.id == "docker.searxng"
+    assert check.status == "PASS"
+
+
+def test_searxng_check_warns_when_not_ready(monkeypatch) -> None:
+    report = mod.ensure_searxng_readiness.SearxngReadinessReport(status="FAIL")
+    report.running = True
+    report.restart_policy = "no"
+    report.json_search_ready = False
+    monkeypatch.setattr(mod.ensure_searxng_readiness, "build_report", lambda **kwargs: report)
+
+    check = mod._check_searxng()
+
+    assert check.status == "WARN"
+    assert check.severity == "advisory"
 
 
 def test_summarize_prefers_failure_over_warning() -> None:

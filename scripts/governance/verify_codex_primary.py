@@ -25,6 +25,7 @@ REQUIRED_FILES = [
     "scripts/governance/check_windows_path_budget.py",
     "scripts/governance/codex_main_closeout.py",
     "scripts/governance/codex_readiness.py",
+    "scripts/governance/ensure_searxng_readiness.py",
     "scripts/governance/verify_codex_enforcement_home.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",

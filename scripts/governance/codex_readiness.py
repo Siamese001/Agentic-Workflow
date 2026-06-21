@@ -31,6 +31,7 @@ if str(GOVERNANCE_DIR) not in sys.path:
 
 import audit_codex_mcp_transports  # noqa: E402
 import codex_publication_audit  # noqa: E402
+import ensure_searxng_readiness  # noqa: E402
 from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
 
 DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken")
@@ -418,6 +419,43 @@ def _check_major_mcp_exposure(summary: dict[str, Any]) -> ReadinessCheck:
     )
 
 
+def _check_searxng(
+    *,
+    restart: bool = False,
+    set_restart_policy: bool = False,
+) -> ReadinessCheck:
+    try:
+        report = ensure_searxng_readiness.build_report(
+            restart=restart,
+            set_restart_policy=set_restart_policy,
+            restart_wait_seconds=2.0,
+        )
+    except ensure_searxng_readiness.DockerCommandError as exc:
+        return ReadinessCheck(
+            "docker.searxng",
+            "WARN",
+            "advisory",
+            "SearXNG Docker readiness could not be proven.",
+            str(exc),
+        )
+    detail = json.dumps(asdict(report), sort_keys=True)
+    if report.status == "PASS":
+        return ReadinessCheck(
+            "docker.searxng",
+            "PASS",
+            "advisory",
+            "SearXNG Docker search is running, restart-managed, and JSON-ready.",
+            detail,
+        )
+    return ReadinessCheck(
+        "docker.searxng",
+        "WARN",
+        "advisory",
+        "SearXNG Docker search is not fully ready for apps_research.",
+        detail,
+    )
+
+
 def summarize(checks: Sequence[ReadinessCheck]) -> str:
     if any(check.status == "FAIL" for check in checks):
         return "FAIL"
@@ -436,6 +474,8 @@ def build_readiness_report(
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
     allow_adg_sqlite_fallback: bool = False,
     route_contract: Path | None = None,
+    check_searxng: bool = True,
+    restart_searxng: bool = False,
 ) -> dict[str, Any]:
     if git_publication:
         audit = codex_publication_audit.build_publication_audit(
@@ -467,6 +507,13 @@ def build_readiness_report(
     checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
     checks.extend(_check_process_hygiene(transport_report, fail_duplicate_processes))
     checks.append(_check_major_mcp_exposure(exposure_summary))
+    if check_searxng:
+        checks.append(
+            _check_searxng(
+                restart=restart_searxng,
+                set_restart_policy=restart_searxng,
+            )
+        )
 
     return {
         "schema_version": "codex-readiness/v1",
@@ -518,6 +565,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Compatibility alias for strict ADG callable mode.",
     )
     parser.add_argument("--route-contract", type=Path, help="Optional route contract JSON")
+    parser.add_argument(
+        "--skip-searxng",
+        action="store_true",
+        help="Skip advisory SearXNG Docker readiness check.",
+    )
+    parser.add_argument(
+        "--restart-searxng",
+        action="store_true",
+        help="Start/restart agentic_searxng and set restart policy while checking readiness.",
+    )
     return parser.parse_args(argv)
 
 
@@ -538,6 +595,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         required_callable_routes=required_routes,
         allow_adg_sqlite_fallback=allow_adg_sqlite_fallback,
         route_contract=args.route_contract,
+        check_searxng=not args.skip_searxng,
+        restart_searxng=args.restart_searxng,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))

@@ -70,7 +70,7 @@ def test_repo_owned_enforcement_passes(tmp_path: Path) -> None:
 def test_user_profile_automation_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
-    (user_codex_home / "automations" / "on-demand-pr-main-publisher").mkdir(parents=True)
+    _write(user_codex_home / "automations" / "on-demand-pr-main-publisher" / "automation.toml")
 
     issues = mod.validate(root, user_codex_home)
 
@@ -80,7 +80,7 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
 def test_user_profile_skill_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
-    (user_codex_home / "skills" / "agentic-workflow-governance").mkdir(parents=True)
+    _write(user_codex_home / "skills" / "agentic-workflow-governance" / "SKILL.md")
 
     issues = mod.validate(root, user_codex_home)
 

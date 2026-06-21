@@ -52,6 +52,13 @@ if [ -f "$PROJECT_DIR/.codex/governance/scripts/mcp_tool_exposure_audit.py" ]; t
   echo "[session-start] mcp tool exposure audit complete (advisory rc=$audit_rc; log=$LOG)"
 fi
 
+if [ -f "$PROJECT_DIR/scripts/governance/ensure_searxng_readiness.py" ]; then
+  python "$PROJECT_DIR/scripts/governance/ensure_searxng_readiness.py" \
+    --restart --set-restart-policy --json >> "$LOG" 2>&1
+  searxng_rc=$?
+  echo "[session-start] searxng readiness complete (advisory rc=$searxng_rc; log=$LOG)"
+fi
+
 # Web-only from this point: on local machines the developer already has their
 # dependency surface. Keep the exposure audit above active locally.
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
