@@ -89,6 +89,7 @@ PROCESS_MARKERS = {
 
 CALLABLE_STATUS_ENV_PREFIX = "CODEX_MCP_CALLABLE_"
 ROUTE_CONTRACT_GLOB = "codex_mcp_live_route_contract.json"
+ALWAYS_ON_CORE_SERVERS = frozenset({"GitKraken", "adg_sqlite", "memory"})
 
 
 def _safe_cmdline(cmdline: list[str]) -> list[str]:
@@ -237,10 +238,48 @@ def _callable_status(server_id: str) -> str:
     return "absent"
 
 
+def _normalize_selected_route(route: dict[str, Any]) -> str:
+    selected = str(route.get("selected_codex_route") or route.get("codex_route") or "").strip()
+    if selected == "raw_mcp":
+        return "host_mcp_required" if str(route.get("server_id", "")) in ALWAYS_ON_CORE_SERVERS else "degraded_fallback"
+    if selected == "none":
+        server_id = str(route.get("server_id", ""))
+        status = str(route.get("status", ""))
+        if server_id in ALWAYS_ON_CORE_SERVERS:
+            return "host_mcp_required"
+        if status == "blocked_degraded":
+            return "degraded_fallback"
+        if status == "callable_substitute":
+            return "substitute_callable"
+    if selected == "node_repl_or_browser_plugin":
+        return "substitute_callable"
+    return selected
+
+
+def _normalize_fallback_key(route: dict[str, Any]) -> str:
+    fallback = str(route.get("fallback_message_key") or "").strip()
+    if fallback:
+        return fallback
+
+    status = str(route.get("status", ""))
+    server_id = str(route.get("server_id", ""))
+    if status == "transport_green_payload_blocked":
+        return "closed_transport"
+    if status == "blocked_degraded":
+        return "raw_mcp_unavailable"
+    if status == "blocked":
+        return "no_substitute" if server_id in ALWAYS_ON_CORE_SERVERS else "raw_mcp_unavailable"
+    if status in {"callable", "plugin_substitute"}:
+        return "plugin_substitute"
+    if status == "callable_substitute":
+        return "plugin_substitute"
+    return ""
+
+
 def classify_route(route: dict[str, Any], process_state: dict[str, Any], callable_status: str = "absent") -> str:
     """Classify a Codex MCP route without treating process presence as parity."""
-    selected = str(route.get("selected_codex_route", ""))
-    fallback_key = str(route.get("fallback_message_key", ""))
+    selected = _normalize_selected_route(route)
+    fallback_key = _normalize_fallback_key(route)
     process_count = int(process_state.get("process_count") or 0)
 
     if callable_status == "healthy":
