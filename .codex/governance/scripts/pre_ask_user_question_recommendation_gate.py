@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""pre_ask_user_question_recommendation_gate.py — native AskUserQuestion contract gate.
+"""pre_ask_user_question_recommendation_gate.py — native question-tool contract gate.
 
 Companion thin hook: ``.codex/hooks/before_ask_user_question.py`` (registered under
-``PreToolUse`` matcher ``AskUserQuestion``).
+``PreToolUse`` for native question tools).
 
 Why this exists
 ---------------
 Constitutional §6 / AGENTS.md Author-Gate require: when ≥2 plausible approaches have
-different blast radius and no unambiguous directive, call the native ``AskUserQuestion``
-tool **and mark the recommended option**. The retired W1 Author-Gate pipeline
+different blast radius and no unambiguous directive, call the native question tool
+(``AskUserQuestion`` in Claude Code, ``request_user_input`` in Codex) **and mark the
+recommended option**. The retired W1 Author-Gate pipeline
 (``author-gate-packet-builder`` → ``author-gate-ui-renderer``; ADR-093 /
 ``claude-native-supersession-9d3f7a``) used to *manufacture* two load-bearing fields
 deterministically — a STAR recommendation and a confidence band. The native tool dropped
@@ -18,7 +19,7 @@ signal).
 
 This gate re-adds the missing deterministic control on the *native tool input*. It is the
 post-supersession successor to the retired legacy AskUserQuestion routing gate. It inspects
-the proposed ``AskUserQuestion`` options and flags when:
+the proposed native question-tool options and flags when:
 
 * no option label ends with ``(Recommended)`` — the §6 marker is absent (Finding 1);
 * the recommended option's description does not begin with the canonical confidence prefix;
@@ -38,7 +39,7 @@ Decision contract (``evaluate``)
 --------------------------------
 Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.
 
-* Not an ``AskUserQuestion`` call ............ allow
+* Not a native question-tool call ............ allow
 * ``ASK_REC_GUARD_BYPASS=1`` ................. allow (logged)
 * Every question has a marked + canonical recommendation ... allow
 * A marked ``(Recommended)`` option with a non-canonical shape ... **BLOCK (exit 2) by
@@ -72,12 +73,15 @@ _STRICT_ENV = "ASK_REC_GUARD_STRICT"
 # set to 0 to silence. NEVER affects the allow/block decision.
 _CALIB_ADVISORY_ENV = "ASK_REC_CALIBRATION_ADVISORY"
 
+_QUESTION_TOOL_NAMES = frozenset({"AskUserQuestion", "request_user_input", "functions.request_user_input"})
+
 # A "(Recommended)" suffix on an option label (case-insensitive, trailing-space tolerant).
 _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
 # Canonical visible option description prefixes.
-_NUMERIC_PREFIX_RE = re.compile(r"^\[confidence=([01]\.\d{2})\]\s*", re.IGNORECASE)
+_CONFIDENCE_VALUE = r"(0\.\d{2}|1\.00)"
+_NUMERIC_PREFIX_RE = re.compile(rf"^\[confidence=({_CONFIDENCE_VALUE})\]\s*", re.IGNORECASE)
 _RECOMMENDED_PREFIX_RE = re.compile(
-    r"^\[RECOMMENDED\s+⭐\s+confidence=([01]\.\d{2})\]\s*",
+    rf"^\[RECOMMENDED\s+⭐\s+confidence=({_CONFIDENCE_VALUE})\]\s*",
     re.IGNORECASE,
 )
 _PROS_RE = re.compile(r"\bPros:\s*\S", re.IGNORECASE)
@@ -91,6 +95,12 @@ def _bypass() -> bool:
 
 def _strict() -> bool:
     return os.environ.get(_STRICT_ENV) == "1"
+
+
+def _is_question_tool(tool_name: object) -> bool:
+    if not isinstance(tool_name, str):
+        return False
+    return tool_name in _QUESTION_TOOL_NAMES or tool_name.endswith(".request_user_input")
 
 
 _NUM_CONFIDENCE_RE = re.compile(r"confidence\s*=\s*([01](?:\.\d+)?)", re.IGNORECASE)
@@ -181,7 +191,7 @@ def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
         findings.append((
             "block",
             f"[{header}] recommended description must begin "
-            "'[RECOMMENDED ⭐ confidence=0.NN]'",
+            "'[RECOMMENDED ⭐ confidence=0.NN]' with a numeric 0.00-1.00 confidence value",
         ))
     if rec_desc.count("⭐") != 1:
         findings.append(("block", f"[{header}] recommended description must contain exactly one ⭐"))
@@ -199,7 +209,7 @@ def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
         if not has_prefix:
             findings.append((
                 "block",
-                f"[{header}] {label} description must begin with numeric confidence prefix",
+                f"[{header}] {label} description must begin with numeric 0.00-1.00 confidence prefix",
             ))
         if not (_PROS_RE.search(desc) and _CONS_RE.search(desc)):
             findings.append((
@@ -213,8 +223,8 @@ def evaluate(payload: dict) -> tuple[int, str]:
     """Pure decision function. Returns (exit_code, reason). Logs on non-compliance."""
     if not isinstance(payload, dict):
         return 0, "non-dict payload — allow (fail-open)"
-    if payload.get("tool_name") != "AskUserQuestion":
-        return 0, "not AskUserQuestion — allow"
+    if not _is_question_tool(payload.get("tool_name")):
+        return 0, "not a native question tool — allow"
     if _bypass():
         return 0, f"{_BYPASS_ENV}=1 — allow (logged)"
 
@@ -232,19 +242,19 @@ def evaluate(payload: dict) -> tuple[int, str]:
             (block_findings if severity == "block" else advisory_findings).append(message)
 
     if not block_findings and not advisory_findings:
-        return 0, "ok: every question has canonical AskUserQuestion output criteria"
+        return 0, "ok: every question has canonical native question-tool output criteria"
 
     _log_violation(payload, "; ".join(block_findings + advisory_findings))
 
     # Default to enforcement: a marked (Recommended) option with non-canonical output criteria
     # is the exact contract violation — block by default.
     if block_findings:
-        return 2, f"AskUserQuestion recommendation/confidence contract: {'; '.join(block_findings)}"
+        return 2, f"native question-tool recommendation/confidence contract: {'; '.join(block_findings)}"
     # Soft findings (no recommendation marked — possibly a symmetric question; or not-first):
     # advisory by default, blocking only under strict mode.
     if _strict():
-        return 2, f"AskUserQuestion recommendation/confidence contract (strict): {'; '.join(advisory_findings)}"
-    return 0, f"ADVISORY (AskUserQuestion recommendation/confidence): {'; '.join(advisory_findings)}"
+        return 2, f"native question-tool recommendation/confidence contract (strict): {'; '.join(advisory_findings)}"
+    return 0, f"ADVISORY (native question-tool recommendation/confidence): {'; '.join(advisory_findings)}"
 
 
 def _log_violation(payload: dict, reason: str) -> None:

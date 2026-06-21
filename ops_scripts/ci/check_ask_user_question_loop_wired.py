@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""check_ask_user_question_loop_wired.py — verify the AskUserQuestion meta-learning loop is wired.
+"""check_ask_user_question_loop_wired.py — verify the native question-tool loop is wired.
 
 Plan: askq-confidence-meta-learning-loop-c4e7a1 (W3.1).
 
-The loop only learns if three seams are connected:
-  1. CAPTURE — a ``PostToolUse`` hook on ``AskUserQuestion`` is registered in
-     ``.codex/hooks.json`` and points at ``after_ask_user_question.py``.
-  2. The capture SSOT (``post_ask_user_question_capture.py``) and the calibration helper
+The loop only learns if the native question-tool seams are connected:
+  1. SHAPE — a ``PreToolUse`` hook on ``AskUserQuestion`` and Codex ``request_user_input``
+     is registered in ``.codex/hooks.json`` and points at ``before_ask_user_question.py``.
+  2. CAPTURE — a ``PostToolUse`` hook on those same native question-tool names is registered
+     and points at ``after_ask_user_question.py``.
+  3. The capture SSOT (``post_ask_user_question_capture.py``) and the calibration helper
      (``tools/ledgers/ask_user_question_calibration.py``) exist on disk.
-  3. WRITABLE — the ``ask_user_question_decisions`` ledger can be opened/created.
+  4. WRITABLE — the ``ask_user_question_decisions`` ledger can be opened/created.
 
 A regression on any of these silently re-opens the loop (decisions stop being recorded and
 confidence stops being calibrated), which no test would otherwise catch. This gate makes that
@@ -30,30 +32,43 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SETTINGS = ROOT / ".codex" / "hooks.json"
+SHAPE_HOOK = ROOT / ".codex" / "hooks" / "before_ask_user_question.py"
 CAPTURE_HOOK = ROOT / ".codex" / "hooks" / "after_ask_user_question.py"
 CAPTURE_SSOT = ROOT / ".codex" / "governance" / "scripts" / "post_ask_user_question_capture.py"
 CALIB_HELPER = ROOT / "tools" / "ledgers" / "ask_user_question_calibration.py"
+QUESTION_TOOL_MATCH_TOKENS = ("AskUserQuestion", "request_user_input")
 
 
 def _fail_closed() -> bool:
     return os.environ.get("ASKQ_LOOP_WIRED_FAIL_CLOSED", "").strip().lower() in ("1", "true", "yes")
 
 
-def _post_hook_registered() -> bool:
-    """True when hooks.json has a PostToolUse matcher 'AskUserQuestion' → after_ask_user_question.py."""
+def _hook_registered(stage: str, hook_name: str) -> bool:
+    """True when hooks.json has a stage matcher covering Claude and Codex question tools."""
     try:
         data = json.loads(SETTINGS.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return False
-    for block in data.get("hooks", {}).get("PostToolUse", []):
+    for block in data.get("hooks", {}).get(stage, []):
         if not isinstance(block, dict):
             continue
-        if block.get("matcher") != "AskUserQuestion":
+        matcher = str(block.get("matcher") or "")
+        if not all(token in matcher for token in QUESTION_TOOL_MATCH_TOKENS):
             continue
         for hook in block.get("hooks", []):
-            if isinstance(hook, dict) and "after_ask_user_question.py" in str(hook.get("command", "")):
+            if isinstance(hook, dict) and hook_name in str(hook.get("command", "")):
                 return True
     return False
+
+
+def _pre_hook_registered() -> bool:
+    """True when PreToolUse covers native question-tool shape enforcement."""
+    return _hook_registered("PreToolUse", "before_ask_user_question.py")
+
+
+def _post_hook_registered() -> bool:
+    """True when PostToolUse covers native question-tool decision capture."""
+    return _hook_registered("PostToolUse", "after_ask_user_question.py")
 
 
 def _ledger_writable() -> bool:
@@ -81,8 +96,11 @@ def run_checks() -> list[tuple[str, bool, str]]:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     return [
+        ("pre_tool_use_hook_registered", _pre_hook_registered(),
+         "hooks.json PreToolUse matcher covers AskUserQuestion/request_user_input -> before_ask_user_question.py"),
         ("post_tool_use_hook_registered", _post_hook_registered(),
-         "hooks.json PostToolUse matcher 'AskUserQuestion' -> after_ask_user_question.py"),
+         "hooks.json PostToolUse matcher covers AskUserQuestion/request_user_input -> after_ask_user_question.py"),
+        ("shape_hook_exists", SHAPE_HOOK.is_file(), str(SHAPE_HOOK.relative_to(ROOT))),
         ("capture_hook_exists", CAPTURE_HOOK.is_file(), str(CAPTURE_HOOK.relative_to(ROOT))),
         ("capture_ssot_exists", CAPTURE_SSOT.is_file(), str(CAPTURE_SSOT.relative_to(ROOT))),
         ("calibration_helper_exists", CALIB_HELPER.is_file(), str(CALIB_HELPER.relative_to(ROOT))),

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""beforeAskUserQuestion — PreToolUse relay for the native ``AskUserQuestion`` tool.
+"""beforeAskUserQuestion — PreToolUse relay for native question tools.
 
 Thin relay: reads the Claude Code event JSON once, delegates the decision to
 ``.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py`` (the testable
@@ -8,11 +8,12 @@ SSOT), and translates the gate's exit code into a Claude Code allow/block.
 Self-contained on purpose — it does not depend on ``lib.codex_hook_common`` (absent in some
 checkouts). Fail-open on every error so a broken gate never wedges a turn.
 
-Contract enforced by the gate: §6 / AGENTS.md Author-Gate — an AskUserQuestion for an
-Author-Gate-class decision must mark the recommended option ``(Recommended)``, place it first,
-and put numeric confidence plus Pros/Cons in every option description. A marked recommendation
-with non-canonical output criteria **blocks by default** (``ASK_REC_GUARD_BYPASS=1`` overrides);
-a missing recommendation stays advisory unless ``ASK_REC_GUARD_STRICT=1``.
+Contract enforced by the gate: §6 / AGENTS.md Author-Gate — a native question-tool call
+(``AskUserQuestion`` or Codex ``request_user_input``) for an Author-Gate-class decision must
+mark the recommended option ``(Recommended)``, place it first, and put numeric confidence plus
+Pros/Cons in every option description. A marked recommendation with non-canonical output
+criteria **blocks by default** (``ASK_REC_GUARD_BYPASS=1`` overrides); a missing recommendation
+stays advisory unless ``ASK_REC_GUARD_STRICT=1``.
 """
 
 from __future__ import annotations

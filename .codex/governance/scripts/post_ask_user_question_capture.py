@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""post_ask_user_question_capture.py — PostToolUse capture for the native AskUserQuestion tool.
+"""post_ask_user_question_capture.py — PostToolUse capture for native question tools.
 
 Plan: askq-confidence-meta-learning-loop-c4e7a1 (W1.2). Companion thin hook:
-``.codex/hooks/after_ask_user_question.py`` (registered under ``PostToolUse`` matcher
-``AskUserQuestion``).
+``.codex/hooks/after_ask_user_question.py`` (registered under ``PostToolUse`` for native
+question tools).
 
 Why this exists
 ---------------
@@ -16,7 +16,7 @@ seam: a single PostToolUse event carries both ``tool_input`` (options + confiden
 
 Selection-shape robustness
 ---------------------------
-Claude Code's ``tool_input`` shape for AskUserQuestion is reliable (questions[] → options[] with
+The native question ``tool_input`` shape is reliable (questions[] → options[] with
 label/description; the recommended option's label ends ``(Recommended)`` and its description
 carries ``[confidence=0.NN]`` — guaranteed by the PreToolUse gate). The ``tool_response``
 selected-option representation is NOT authoritatively documented, so selection extraction is
@@ -51,10 +51,17 @@ _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
 # Word-band fallback (the gate tolerates legacy high/medium/low).
 _BAND_RE = re.compile(r"\b(high|medium|low)\b", re.IGNORECASE)
 _BAND_SCORE = {"high": 0.9, "medium": 0.7, "low": 0.5}
+_QUESTION_TOOL_NAMES = frozenset({"AskUserQuestion", "request_user_input", "functions.request_user_input"})
 
 
 def _bypass() -> bool:
     return os.environ.get("ASKQ_CAPTURE_BYPASS", "").strip().lower() in ("1", "true", "yes")
+
+
+def _is_question_tool(tool_name: object) -> bool:
+    if not isinstance(tool_name, str):
+        return False
+    return tool_name in _QUESTION_TOOL_NAMES or tool_name.endswith(".request_user_input")
 
 
 def _norm_label(label: str) -> str:
@@ -285,8 +292,8 @@ def _dump_debug(payload: dict, decision_ids: list[str]) -> None:
 
 
 def capture(payload: dict) -> list[str]:
-    """Capture one AskUserQuestion decision per question. Returns written decision_ids."""
-    if not isinstance(payload, dict) or payload.get("tool_name") != "AskUserQuestion":
+    """Capture one native question-tool decision per question. Returns written decision_ids."""
+    if not isinstance(payload, dict) or not _is_question_tool(payload.get("tool_name")):
         return []
     tool_input = payload.get("tool_input")
     if not isinstance(tool_input, dict):
