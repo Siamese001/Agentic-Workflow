@@ -240,6 +240,8 @@ def _callable_status(server_id: str) -> str:
 
 def _normalize_selected_route(route: dict[str, Any]) -> str:
     selected = str(route.get("selected_codex_route") or route.get("codex_route") or "").strip()
+    if selected == "raw_mcp_callable":
+        return "raw_mcp_callable"
     if selected == "raw_mcp":
         return "host_mcp_required" if str(route.get("server_id", "")) in ALWAYS_ON_CORE_SERVERS else "degraded_fallback"
     if selected == "none":
@@ -286,6 +288,8 @@ def classify_route(route: dict[str, Any], process_state: dict[str, Any], callabl
         return "CALLABLE"
     if callable_status == "closed_transport" or fallback_key == "closed_transport":
         return "EXPOSED_BLOCKED"
+    if selected == "raw_mcp_callable" and process_count > 0:
+        return "CALLABLE"
     if callable_status == "plugin_callable" or selected == "plugin_substitute":
         return "PLUGIN_SUBSTITUTE"
     if callable_status == "substitute_callable" or selected == "substitute_callable":

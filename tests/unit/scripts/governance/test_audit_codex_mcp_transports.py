@@ -36,6 +36,13 @@ def test_process_only_when_server_runs_but_no_callable_surface() -> None:
     assert mod.classify_route(route, process_state) == "PROCESS_ONLY"
 
 
+def test_raw_mcp_callable_requires_process_presence() -> None:
+    route = _route("adg_sqlite", "raw_mcp_callable", "")
+
+    assert mod.classify_route(route, {"process_count": 1, "classification": "single"}) == "CALLABLE"
+    assert mod.classify_route(route, {"process_count": 0, "classification": "none"}) == "NOT_EXPOSED"
+
+
 def test_adg_launcher_marker_matches_current_mcp_command() -> None:
     markers = mod.PROCESS_MARKERS["adg_sqlite"]["markers"]
     normalized = "python -u -m tools.mcp.launch_adg_sqlite_mcp"

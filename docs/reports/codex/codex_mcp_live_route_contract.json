@@ -1,23 +1,21 @@
 {
-  "generated_at": "2026-06-10",
+  "generated_at": "2026-06-21",
   "plan_id": "codex-mcp-transport-parity-4b9c7e",
   "wave": "W2",
-  "status": "blocked",
-  "blocked_phase": "W2.3",
+  "status": "degraded",
+  "blocked_phase": "W2.4",
   "blocker": {
-    "id": "ADG-LIVE-CODE-MISMATCH",
-    "summary": "Live Codex ADG MCP serves primary checkout code, while the Redis decode/write compatibility fix exists in the eval-harness worktree.",
+    "id": "HOST-MCP-ROUTES-UNMOUNTED",
+    "summary": "Memory and GitKraken are configured but not mounted as callable tools in the active Codex host session.",
     "evidence": {
-      "runtime_sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06082026_1212.sqlite",
-      "adg_node_backend_used": "redis",
-      "adg_node_bad_field_example": "id=__json__:\"1\"",
-      "worktree_has_decode_patch": true,
-      "primary_has_decode_patch": false
+      "memory_heartbeat": "dead",
+      "gitkraken_native_list_tools": "ok",
+      "codex_tool_surface": "Memory and GitKraken namespaces absent in this running session"
     },
     "valid_unblock_paths": [
-      "Merge or apply the ADG Redis fixes from eval-harness into C:\\Git\\Agentic-Workflow-FRESH, then restart Codex MCP.",
-      "Relaunch Codex with AGENTIC_REPO_ROOT=C:\\Git\\eval-harness, then restart Codex MCP.",
-      "After live code parity is restored, delete and re-warm affected Redis keys."
+      "Restart or reattach the Codex host after loading C:\\Git\\Agentic-Workflow-FRESH\\.codex\\config.toml.",
+      "Prove a live mcp__memory call before setting CODEX_MCP_CALLABLE_MEMORY=healthy.",
+      "Prove a live GitKraken tool call before setting CODEX_MCP_CALLABLE_GITKRAKEN=healthy."
     ]
   },
   "always_on_core": [
@@ -29,8 +27,21 @@
     {
       "server_id": "adg_sqlite",
       "codex_route": "raw_mcp",
-      "status": "transport_green_payload_blocked",
-      "contract": "Use adg_health first; Redis payloads are valid only after live MCP decode parity is restored."
+      "selected_codex_route": "raw_mcp_callable",
+      "status": "callable",
+      "contract": "Use adg_health or adg_runtime_info first; live Codex ADG MCP is callable when process hygiene reports a single adg_sqlite process.",
+      "proof": {
+        "proved_at": "2026-06-21T13:30:00-04:00",
+        "tool_calls": [
+          "mcp__adg_sqlite.adg_runtime_info",
+          "mcp__adg_sqlite.adg_status"
+        ],
+        "pid": 35788,
+        "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06192026_0917.sqlite",
+        "snapshot_id": "06192026_0917",
+        "node_count": 184837,
+        "edge_count": 1066263
+      }
     },
     {
       "server_id": "memory",
