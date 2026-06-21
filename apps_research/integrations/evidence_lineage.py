@@ -87,7 +87,7 @@ def evidence_from_company_brief(
     if items:
         return tuple(items)
 
-    # Grounded content lines (non-URL) when Tavily is offline but findings exist.
+    # Grounded content lines (non-URL) when web retrieval is offline but findings exist.
     claim_map = c0_bundle.get("claim_evidence_map") or {}
     supported = int(claim_map.get("supported_count", 0) or 0)
     if supported > 0:

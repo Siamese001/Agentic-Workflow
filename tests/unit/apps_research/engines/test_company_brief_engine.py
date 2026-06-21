@@ -162,7 +162,7 @@ class TestCuratedTargetingFallback:
             raise RuntimeError("usage limit")
 
         monkeypatch.setattr(
-            "apps_research.integrations.tavily_retrieval.retrieve",
+            "apps_research.integrations.search_retrieval.retrieve",
             _boom,
         )
 
@@ -178,6 +178,12 @@ class TestCuratedTargetingFallback:
                     "job_title": "Manager of Applied AI Architecture, Partnerships",
                 },
             )
+
+    def test_active_company_brief_retrieval_path_does_not_import_tavily(self):
+        import inspect
+
+        source = inspect.getsource(CompanyBriefEngine)
+        assert "apps_research.integrations.tavily_retrieval" not in source
 
 
 class TestAssembleBrief:
