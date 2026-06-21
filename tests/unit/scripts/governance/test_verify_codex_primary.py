@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -68,6 +69,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "docs/codex-primary-execution.md",
                 "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
+                "scripts/governance/codex_main_closeout.py",
                 "scripts/governance/verify_codex_enforcement_home.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
@@ -86,6 +88,7 @@ def _valid_root(tmp_path: Path) -> Path:
                 "GitKraken",
                 "scripts/governance/audit_codex_mcp_transports.py",
                 "scripts/governance/codex_readiness.py",
+                "scripts/governance/codex_main_closeout.py",
                 "scripts/governance/verify_codex_enforcement_home.py",
                 "scripts/governance/verify_codex_run_receipt.py",
                 "scripts/governance/verify_codex_primary.py",
@@ -100,7 +103,26 @@ def _valid_root(tmp_path: Path) -> Path:
 
 
 def test_valid_primary_contract_passes(tmp_path: Path) -> None:
-    assert mod.validate(_valid_root(tmp_path)) == []
+    assert mod.validate(_valid_root(tmp_path), repo_only=True) == []
+
+
+def test_parse_args_accepts_repo_only_flag() -> None:
+    args = mod.parse_args(["--repo-only"])
+
+    assert args.repo_only is True
+    assert args.root == mod.REPO_ROOT
+
+
+def test_repo_only_skips_enforcement_home_checks(tmp_path: Path, monkeypatch) -> None:
+    root = _valid_root(tmp_path)
+    monkeypatch.setattr(
+        mod.verify_codex_enforcement_home,
+        "validate",
+        lambda _root: [SimpleNamespace(code="sentinel", detail="boom")],
+    )
+
+    assert mod.validate(root, repo_only=True) == []
+    assert any("sentinel" in failure for failure in mod.validate(root))
 
 
 def test_missing_anchor_fails(tmp_path: Path) -> None:

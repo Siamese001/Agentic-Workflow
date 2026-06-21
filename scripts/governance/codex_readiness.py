@@ -14,6 +14,7 @@ route/process checks so branch/worktree hazards are not masked by runtime noise.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess
 import sys
@@ -24,6 +25,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GOVERNANCE_DIR = Path(__file__).resolve().parent
+MCP_TOOL_EXPOSURE_AUDIT_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "mcp_tool_exposure_audit.py"
 if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
 
@@ -348,6 +350,74 @@ def _check_process_hygiene(report: dict[str, Any], fail_duplicates: bool) -> lis
     return checks
 
 
+def _load_mcp_tool_exposure_audit() -> Any:
+    spec = importlib.util.spec_from_file_location("_codex_readiness_mcp_tool_exposure_audit", MCP_TOOL_EXPOSURE_AUDIT_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load MCP exposure audit at {MCP_TOOL_EXPOSURE_AUDIT_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _build_major_mcp_exposure_summary() -> dict[str, Any]:
+    try:
+        module = _load_mcp_tool_exposure_audit()
+        results = module.audit()
+    except Exception as exc:  # pragma: no cover - defensive preflight boundary
+        return {
+            "available": False,
+            "readiness_status": "WARN",
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+
+    counts = {"GREEN": 0, "YELLOW": 0, "RED": 0}
+    servers: dict[str, Any] = {}
+    for result in results:
+        counts[result.status] = counts.get(result.status, 0) + 1
+        servers[result.server_id] = {
+            "status": result.status,
+            "declared": result.declared,
+            "host_exposed": result.host_exposed,
+            "native_ok": result.native_ok,
+            "reasons": list(result.reasons),
+        }
+    readiness_status = "FAIL" if counts.get("RED") else ("WARN" if counts.get("YELLOW") else "PASS")
+    return {
+        "available": True,
+        "readiness_status": readiness_status,
+        "counts": counts,
+        "servers": servers,
+    }
+
+
+def _check_major_mcp_exposure(summary: dict[str, Any]) -> ReadinessCheck:
+    if not summary.get("available"):
+        return ReadinessCheck(
+            "mcp.major_exposure",
+            "WARN",
+            "advisory",
+            "Major MCP exposure audit could not run.",
+            str(summary.get("reason", "")),
+        )
+    readiness_status = str(summary.get("readiness_status", "WARN"))
+    if readiness_status == "PASS":
+        return ReadinessCheck(
+            "mcp.major_exposure",
+            "PASS",
+            "advisory",
+            "Major MCP exposure audit is green.",
+            json.dumps(summary.get("counts", {}), sort_keys=True),
+        )
+    return ReadinessCheck(
+        "mcp.major_exposure",
+        "WARN",
+        "advisory",
+        "Major MCP exposure audit found unproven or unavailable tools.",
+        json.dumps(summary.get("counts", {}), sort_keys=True),
+    )
+
+
 def summarize(checks: Sequence[ReadinessCheck]) -> str:
     if any(check.status == "FAIL" for check in checks):
         return "FAIL"
@@ -384,6 +454,7 @@ def build_readiness_report(
         }
 
     transport_report = audit_codex_mcp_transports.build_report(route_contract)
+    exposure_summary = _build_major_mcp_exposure_summary()
     checks: list[ReadinessCheck] = []
     checks.extend(_check_contract_files(root))
     checks.append(_check_git_state(root, require_clean))
@@ -395,6 +466,7 @@ def build_readiness_report(
         checks.append(vector_guard)
     checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
     checks.extend(_check_process_hygiene(transport_report, fail_duplicate_processes))
+    checks.append(_check_major_mcp_exposure(exposure_summary))
 
     return {
         "schema_version": "codex-readiness/v1",
@@ -404,6 +476,7 @@ def build_readiness_report(
         "transport_summary": {
             "route_counts": transport_report.get("route_evidence", {}).get("counts", {}),
             "route_contract_path": transport_report.get("route_contract_path"),
+            "major_mcp_exposure": exposure_summary,
         },
     }
 
