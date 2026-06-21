@@ -2,7 +2,7 @@
   "mcpServers": {
     "GitKraken": {
       "command": "${GITKRAKEN_GK_PATH}",
-      "args": ["mcp", "--host=codex", "--source=gitlens", "--scheme=codex"]
+      "args": ["mcp"]
     },
     "adg_sqlite": {
       "command": "python",

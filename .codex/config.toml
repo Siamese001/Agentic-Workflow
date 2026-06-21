@@ -10,7 +10,8 @@ max_threads = 6
 
 [mcp_servers.GitKraken]
 command = "${GITKRAKEN_GK_PATH}"
-args = ["mcp", "--host=codex", "--source=gitlens", "--scheme=codex"]
+args = ["mcp"]
+required = true
 
 [mcp_servers.adg_sqlite]
 command = "python"
@@ -32,6 +33,7 @@ args = ["${env:AGENTIC_REPO_ROOT}/.codex/governance/scripts/filesystem_mcp_launc
 command = "python"
 args = ["-u", "${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"]
 env_vars = ["ADG_REDIS_URL"]
+required = true
 
 [mcp_servers.memory.env]
 MEMORY_DB = "${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite"
