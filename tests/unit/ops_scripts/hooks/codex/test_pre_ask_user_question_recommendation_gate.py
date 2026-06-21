@@ -45,9 +45,9 @@ def _clean_env(monkeypatch, tmp_path):
     return monkeypatch
 
 
-def _auq(*options: dict, header: str = "Approach") -> dict:
+def _auq(*options: dict, header: str = "Approach", tool_name: str = "AskUserQuestion") -> dict:
     return {
-        "tool_name": "AskUserQuestion",
+        "tool_name": tool_name,
         "tool_input": {
             "questions": [
                 {"question": "Which approach?", "header": header, "options": list(options)}
@@ -67,7 +67,7 @@ def _opt(label: str, description: str = "a trade-off") -> dict:
 def test_non_ask_user_question_allowed():
     code, reason = gate.evaluate({"tool_name": "Grep", "tool_input": {}})
     assert code == 0
-    assert "not AskUserQuestion" in reason
+    assert "not a native question tool" in reason
 
 
 def test_bypass_allows(_clean_env):
@@ -91,6 +91,43 @@ def test_compliant_recommended_first_with_confidence():
     assert reason.startswith("ok:")
 
 
+def test_compliant_codex_request_user_input_passes():
+    payload = _auq(
+        _opt(
+            "Patch gate (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.91] Pros: closes the Codex gap. Cons: touches hook wiring. Flips if Codex does not emit this tool name.",
+        ),
+        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
+        tool_name="request_user_input",
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 0
+    assert reason.startswith("ok:")
+
+
+def test_codex_request_user_input_recommended_without_ui_contract_blocks():
+    payload = _auq(
+        _opt("Patch gate (Recommended)", "Confidence high. Pros: closes gap. Cons: churn. Flips if unavailable."),
+        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
+        tool_name="request_user_input",
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "native question-tool recommendation/confidence contract" in reason
+    assert "[RECOMMENDED ⭐ confidence=0.NN]" in reason
+
+
+def test_qualified_codex_request_user_input_recommended_without_ui_contract_blocks():
+    payload = _auq(
+        _opt("Patch gate (Recommended)", "[confidence=0.91] Pros: closes gap. Cons: churn. Flips if unavailable."),
+        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
+        tool_name="functions.request_user_input",
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "recommended description must begin '[RECOMMENDED ⭐ confidence=0.NN]'" in reason
+
+
 def test_confidence_keyword_without_numeric_prefix_blocks():
     payload = _auq(
         _opt("Merge as-is (Recommended)", "Confidence: medium. Pros: quick. Cons: risky. Flips if tests fail."),
@@ -99,6 +136,32 @@ def test_confidence_keyword_without_numeric_prefix_blocks():
     code, reason = gate.evaluate(payload)
     assert code == 2
     assert "must begin" in reason
+
+
+def test_out_of_range_confidence_value_blocks_visible_ui_contract():
+    payload = _auq(
+        _opt(
+            "Patch gate (Recommended)",
+            "[RECOMMENDED ⭐ confidence=1.20] Pros: closes gap. Cons: impossible confidence. Flips if evidence changes.",
+        ),
+        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "recommended description must begin '[RECOMMENDED ⭐ confidence=0.NN]'" in reason
+
+
+def test_non_recommended_out_of_range_confidence_value_blocks_visible_ui_contract():
+    payload = _auq(
+        _opt(
+            "Patch gate (Recommended)",
+            "[RECOMMENDED ⭐ confidence=1.00] Pros: closes gap. Cons: absolute confidence. Flips if evidence changes.",
+        ),
+        _opt("Document only", "[confidence=1.20] Pros: low churn. Cons: impossible confidence."),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "Document only description must begin with numeric 0.00-1.00 confidence prefix" in reason
 
 
 # --------------------------------------------------------------------------------------

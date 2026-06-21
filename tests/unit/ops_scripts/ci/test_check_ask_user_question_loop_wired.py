@@ -27,7 +27,9 @@ _spec.loader.exec_module(gate)
 def test_all_seams_wired_on_this_branch():
     results = {name: ok for name, ok, _ in gate.run_checks()}
     # On the feat branch every seam is present.
+    assert results["pre_tool_use_hook_registered"] is True
     assert results["post_tool_use_hook_registered"] is True
+    assert results["shape_hook_exists"] is True
     assert results["capture_hook_exists"] is True
     assert results["capture_ssot_exists"] is True
     assert results["calibration_helper_exists"] is True
@@ -39,18 +41,23 @@ def test_main_passes_when_wired():
 
 
 def test_post_hook_detection_reads_settings():
-    # The detector must specifically match the AskUserQuestion PostToolUse → after_ask_user_question.py.
+    # The detector must match native question-tool PostToolUse → after_ask_user_question.py.
     assert gate._post_hook_registered() is True
 
 
+def test_pre_hook_detection_reads_settings():
+    # The detector must match native question-tool PreToolUse → before_ask_user_question.py.
+    assert gate._pre_hook_registered() is True
+
+
 def test_fail_closed_flips_exit_on_missing_seam(monkeypatch):
-    monkeypatch.setattr(gate, "_post_hook_registered", lambda: False)
+    monkeypatch.setattr(gate, "_pre_hook_registered", lambda: False)
     monkeypatch.setenv("ASKQ_LOOP_WIRED_FAIL_CLOSED", "1")
     assert gate.main() == 1
 
 
 def test_advisory_default_stays_zero_on_missing_seam(monkeypatch):
-    monkeypatch.setattr(gate, "_post_hook_registered", lambda: False)
+    monkeypatch.setattr(gate, "_pre_hook_registered", lambda: False)
     monkeypatch.delenv("ASKQ_LOOP_WIRED_FAIL_CLOSED", raising=False)
     assert gate.main() == 0
 

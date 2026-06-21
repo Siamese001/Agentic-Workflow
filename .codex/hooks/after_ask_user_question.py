@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""afterAskUserQuestion — PostToolUse relay for the native ``AskUserQuestion`` tool.
+"""afterAskUserQuestion — PostToolUse relay for native question tools.
 
 Thin relay: reads the Claude Code event JSON once and delegates to
 ``.codex/governance/scripts/post_ask_user_question_capture.py`` (the testable SSOT), which

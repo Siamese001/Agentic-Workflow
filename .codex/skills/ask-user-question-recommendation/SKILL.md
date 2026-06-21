@@ -6,8 +6,9 @@ trigger: model_decision
 
 # AskUserQuestion Recommendation Convention (SSOT)
 
-The **one** authoring convention for native `AskUserQuestion` on **Author-Gate-class**
-decisions (constitutional §6 / AGENTS.md Author-Gate). This skill is the sole survivor of the
+The **one** authoring convention for native question tools (`AskUserQuestion` in Claude Code,
+`request_user_input` in Codex) on **Author-Gate-class** decisions (constitutional §6 /
+AGENTS.md Author-Gate). This skill is the sole survivor of the
 retired Author-Gate UI pipeline: the W1 native-supersession (ADR-093 /
 `claude-native-supersession-9d3f7a`) dropped the bespoke packet-builder → ui-renderer →
 `AUTHOR_GATE_PACKET:`/`DECISION_CAPTURED:` → ledger machinery that used to *manufacture* a
@@ -15,8 +16,8 @@ recommendation marker and a confidence band. The native tool gives a clickable o
 the recommendation + confidence now live **in the option text**, produced by hand to this
 convention. The companion deterministic check is
 `.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py` (PreToolUse hook
-`before_ask_user_question.py`), which blocks a marked recommendation that lacks confidence,
-pros/cons, or flip criteria.
+`before_ask_user_question.py`), which blocks a marked recommendation that lacks visible
+numeric confidence, the recommendation star, pros/cons, or flip criteria.
 
 > There is exactly **one** convention — this file. The legacy `author-gate-packet-builder`
 > and `author-gate-ui-renderer` skills were retired and archived (ADR-093); do not invoke
@@ -33,14 +34,15 @@ directive** — i.e. a genuine Author-Gate decision. Do **not** apply to symmetr
 questions ("which color theme?") where no option is objectively recommended (a question with
 no `(Recommended)` option is fine there — the gate treats it as advisory, not a miss).
 
-The two legal moves at a decision point are: **fire `AskUserQuestion`** (this convention) or
-**decide-and-proceed** when one option dominates. A prose "do you want X or Y?" menu is the
+The two legal moves at a decision point are: **fire the native question tool** (this convention)
+or **decide-and-proceed** when one option dominates. A prose "do you want X or Y?" menu is the
 forbidden third move (see memory `no-prose-options-menus`).
 
 ## The required shape (canonical — user directives 2026-06-13 and 2026-06-15)
 
 1. **Recommended option goes first**, and its `label` ends with `(Recommended)`.
-2. **Every option's `description` begins with a numeric `[confidence=0.NN]` prefix.**
+2. **Every option's `description` begins with a numeric `[confidence=0.NN]` prefix.** The
+   accepted range is `0.00` through `1.00`; word bands like `high` do not satisfy the UI contract.
 3. The **recommended option's `description` begins with `[RECOMMENDED ⭐ confidence=0.NN]`** —
    the `⭐` appears exactly once, on the recommended option only.
 4. After the prefix, each description carries `Pros:` and `Cons:` in one line; the recommended
@@ -78,7 +80,8 @@ Always emit the **number** (`[confidence=0.72]`), not the band word. State the *
 condition** explicitly — it is the load-bearing half of a confidence signal
 ("`[RECOMMENDED ⭐ confidence=0.72]` … flips if CI red turns out to be caused by our diff").
 
-> The numeric `[confidence=0.NN]` prefix is the **only canonical form**. Word-band confidence
+> The numeric `[confidence=0.NN]` prefix is the **only canonical form**, and the recommended
+> option must use `[RECOMMENDED ⭐ confidence=0.NN]` with exactly one star. Word-band confidence
 > (`high`/`medium`/`low`) is useful prose context, but it does not satisfy the output contract.
 
 ## Consult precedent before stating confidence (meta-learning loop)

@@ -223,6 +223,32 @@ class TestCaptureEndToEnd:
         assert rows[0]["confidence_score"] == 0.88
         assert rows[0]["confidence_source"] == "explicit"
 
+    def test_capture_accepts_codex_request_user_input(self, temp_ledger):
+        payload = {
+            "tool_name": "functions.request_user_input",
+            "tool_input": {
+                "questions": [
+                    {
+                        "header": "Codex ask",
+                        "question": "Which question surface?",
+                        "options": [
+                            {"label": "Native Codex hook (Recommended)", "description": "[RECOMMENDED ⭐ confidence=0.86] atomic"},
+                            {"label": "Claude-only hook", "description": "[confidence=0.20] misses Codex"},
+                        ],
+                    }
+                ]
+            },
+            "tool_response": {"answers": [{"selected_label": "Native Codex hook (Recommended)"}]},
+        }
+        ids = cap.capture(payload)
+        assert len(ids) == 1
+
+        rows = temp_ledger.list_recent_decisions(context="codex-ask")
+        assert len(rows) == 1
+        assert rows[0]["recommended_index"] == 0
+        assert rows[0]["selected_index"] == 0
+        assert rows[0]["confidence_score"] == 0.86
+
     def test_capture_ignores_non_ask_user_question(self, temp_ledger):
         assert cap.capture({"tool_name": "Write", "tool_input": {}}) == []
 
