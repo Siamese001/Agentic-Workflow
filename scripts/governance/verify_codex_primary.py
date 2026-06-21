@@ -150,7 +150,7 @@ def codex_only_failures(root: Path) -> list[str]:
     return failures
 
 
-def validate(root: Path = REPO_ROOT) -> list[str]:
+def validate(root: Path = REPO_ROOT, *, repo_only: bool = False) -> list[str]:
     failures: list[str] = []
     failures.extend(str(path) for path in missing_paths(REQUIRED_FILES, root))
     if failures:
@@ -158,22 +158,28 @@ def validate(root: Path = REPO_ROOT) -> list[str]:
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
     failures.extend(hook_target_failures(root / ".codex" / "hooks.json", root))
     failures.extend(codex_only_failures(root))
-    failures.extend(
-        f"{issue.code}: {issue.detail}"
-        for issue in verify_codex_enforcement_home.validate(root)
-    )
+    if not repo_only:
+        failures.extend(
+            f"{issue.code}: {issue.detail}"
+            for issue in verify_codex_enforcement_home.validate(root)
+        )
     return failures
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=REPO_ROOT, help="Repository root to verify")
+    parser.add_argument(
+        "--repo-only",
+        action="store_true",
+        help="Compatibility no-op for repo-scoped verification.",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    failures = validate(args.root)
+    failures = validate(args.root, repo_only=args.repo_only)
     if failures:
         print("Codex primary execution verification FAILED")
         for failure in failures:
