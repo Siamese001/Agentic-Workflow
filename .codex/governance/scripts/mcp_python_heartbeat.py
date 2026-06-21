@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -43,6 +44,7 @@ from typing import Any
 
 _REPO = Path(__file__).resolve().parents[3]
 _MCP_CONFIG = _REPO / ".mcp.json"
+_PLACEHOLDER_RE = re.compile(r"\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}")
 
 
 def _load_python_mcp_servers() -> dict[str, str]:
@@ -66,7 +68,7 @@ def _load_python_mcp_servers() -> dict[str, str]:
         # Pattern 1: python -u <path/to/script.py>
         for arg in args:
             if isinstance(arg, str) and arg.endswith(".py"):
-                marker = re.sub(r"\$\{env:[^}]+\}/?", "", arg).strip("/\\")
+                marker = arg
                 break
         # Pattern 2: python -u -m tools.adg.mcp.something
         if marker is None:
@@ -77,6 +79,59 @@ def _load_python_mcp_servers() -> dict[str, str]:
         if marker:
             out[server_id] = marker
     return out
+
+
+def _expand_env_placeholders(value: str) -> str:
+    """Expand `${VAR}` and `${env:VAR}` placeholders used in MCP config."""
+
+    def repl(match: re.Match[str]) -> str:
+        name = match.group(1)
+        if name == "AGENTIC_REPO_ROOT":
+            return os.environ.get(name, str(_REPO))
+        return os.environ.get(name, "")
+
+    return _PLACEHOLDER_RE.sub(repl, value)
+
+
+def _normalize_command_fragment(value: str) -> str:
+    """Normalize command/path fragments for process-table substring checks."""
+    return _expand_env_placeholders(value).replace("\\", "/").strip('"').lower()
+
+
+def _marker_candidates(marker: str) -> set[str]:
+    """Return acceptable process-table markers for a configured MCP script.
+
+    Configured markers may be unresolved placeholders, absolute paths, or
+    repo-relative paths, while Windows process command lines can vary in slash
+    style. For Python script MCPs, a basename candidate catches cases where the
+    host resolves the script path differently but still runs the same entrypoint.
+    """
+    normalized = _normalize_command_fragment(marker).strip("/ ")
+    candidates = {normalized} if normalized else set()
+
+    if not normalized.endswith(".py"):
+        return candidates
+
+    repo = _normalize_command_fragment(str(_REPO)).rstrip("/")
+    repo_prefix = f"{repo}/"
+    if normalized.startswith(repo_prefix):
+        candidates.add(normalized[len(repo_prefix):])
+
+    for anchor in ("/tools/", "/scripts/", "/.codex/"):
+        if anchor in normalized:
+            tail = normalized.split(anchor, 1)[1]
+            candidates.add(f"{anchor.strip('/')}/{tail}")
+
+    basename = normalized.rsplit("/", 1)[-1]
+    if basename:
+        candidates.add(basename)
+    return {candidate for candidate in candidates if candidate}
+
+
+def _marker_matches_process(marker: str, command_line: str) -> bool:
+    """Return True when a configured MCP marker identifies a process line."""
+    normalized_line = _normalize_command_fragment(command_line)
+    return any(candidate in normalized_line for candidate in _marker_candidates(marker))
 
 
 def _list_python_processes() -> list[str]:
@@ -115,7 +170,7 @@ def check() -> dict[str, Any]:
     alive: list[str] = []
     dead: list[str] = []
     for server_id, marker in servers.items():
-        found = any(marker in line for line in cmdlines)
+        found = any(_marker_matches_process(marker, line) for line in cmdlines)
         (alive if found else dead).append(server_id)
     return {
         "ok": len(dead) == 0,
