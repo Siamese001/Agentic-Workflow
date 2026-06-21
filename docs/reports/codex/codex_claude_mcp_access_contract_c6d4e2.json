@@ -43,17 +43,22 @@
     "plugin_substitute": "SUBSTITUTE_ROUTE: <server_id> is available through a Codex plugin or adjacent tool with different API shape; verify schema/tool-name differences before mutation.",
     "no_substitute": "BLOCKED: <server_id> is unavailable in Codex and has no honest substitute for this operation."
   },
+  "always_on_core": [
+    "adg_sqlite",
+    "memory",
+    "GitKraken"
+  ],
   "routes": [
     {
       "server_id": "GitKraken",
       "desired_claude_contract": "Git/PR authority via git_status, git_add_or_commit, git_log_or_diff, pull_request_create.",
-      "selected_codex_route": "degraded_fallback",
+      "selected_codex_route": "host_mcp_required",
       "route_owner": "Codex host for parity exposure; Codex agent for fallback disclosure.",
-      "codex_route": "native git CLI and GitHub plugin only when task scope permits.",
+      "codex_route": "host_mcp_required",
       "fallback_message_key": "raw_mcp_unavailable",
       "mutation_allowed": true,
       "mutation_constraints": "Follow Codex git safety rules; do not claim GitKraken authority.",
-      "w2_decision": "Require host-level GitKraken MCP exposure for parity. Native git is acceptable only as an explicit degraded fallback."
+      "w2_decision": "Require host-level GitKraken MCP exposure for parity. Native git is a degraded fallback only until the host route is callable."
     },
     {
       "server_id": "adg_sqlite",
