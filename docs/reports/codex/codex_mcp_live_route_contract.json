@@ -2,21 +2,11 @@
   "generated_at": "2026-06-21",
   "plan_id": "codex-mcp-transport-parity-4b9c7e",
   "wave": "W2",
-  "status": "degraded",
+  "status": "callable",
   "blocked_phase": "W2.4",
   "blocker": {
-    "id": "HOST-MCP-ROUTES-UNMOUNTED",
-    "summary": "Memory and GitKraken are configured but not mounted as callable tools in the active Codex host session.",
-    "evidence": {
-      "memory_heartbeat": "dead",
-      "gitkraken_native_list_tools": "ok",
-      "codex_tool_surface": "Memory and GitKraken namespaces absent in this running session"
-    },
-    "valid_unblock_paths": [
-      "Restart or reattach the Codex host after loading C:\\Git\\Agentic-Workflow-FRESH\\.codex\\config.toml.",
-      "Prove a live mcp__memory call before setting CODEX_MCP_CALLABLE_MEMORY=healthy.",
-      "Prove a live GitKraken tool call before setting CODEX_MCP_CALLABLE_GITKRAKEN=healthy."
-    ]
+    "id": "NONE",
+    "summary": "Required Memory and GitKraken callable-route proofs are recorded."
   },
   "always_on_core": [
     "adg_sqlite",
@@ -45,9 +35,19 @@
     },
     {
       "server_id": "memory",
-      "codex_route": "host_mcp_required",
-      "status": "blocked",
-      "contract": "Memory MCP is part of the always-on core; do not claim compliance without a callable host route."
+      "codex_route": "raw_mcp",
+      "status": "callable",
+      "contract": "Callable only when backed by explicit active Codex MCP tool-call proof.",
+      "selected_codex_route": "raw_mcp_callable",
+      "callable_status": "healthy",
+      "proof": {
+        "proved_at": "2026-06-21T16:02:39.4664076-04:00",
+        "tool": "mcp__memory.mem_get_stats",
+        "tool_calls": [
+          "mcp__memory.mem_get_stats"
+        ],
+        "evidence": "shape={total_entities,total_observations,total_relations,db_path}; totals=351/190/532"
+      }
     },
     {
       "server_id": "vector_db",
@@ -57,9 +57,19 @@
     },
     {
       "server_id": "GitKraken",
-      "codex_route": "host_mcp_required",
-      "status": "blocked_degraded",
-      "contract": "GitKraken MCP is part of the always-on core; native git/GitHub access is a degraded fallback only."
+      "codex_route": "raw_mcp",
+      "status": "callable",
+      "contract": "Callable only when backed by explicit active Codex MCP tool-call proof.",
+      "selected_codex_route": "raw_mcp_callable",
+      "callable_status": "healthy",
+      "proof": {
+        "proved_at": "2026-06-21T16:02:39.4664076-04:00",
+        "tool": "mcp__GitKraken.git_status",
+        "tool_calls": [
+          "mcp__GitKraken.git_status"
+        ],
+        "evidence": "shape=[{type:text,text:{data:{output}}}]; output starts with On branch fix/codex-mcp-callable-route-proof"
+      }
     },
     {
       "server_id": "deepwiki",
