@@ -112,6 +112,8 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Repo-specific Codex enforcement files, including cadence automation contracts, live under `.codex/automations/` and must not live under `C:\Users\amita\.codex`.
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
+- For post-publication closeout, use `python scripts/governance/codex_main_closeout.py --check --json`; local cleanup may use `--apply` only for clean, ancestor-contained branches/worktrees.
+- Direct PR completion commands (`gh pr merge` or push-to-main) must chain `codex_main_closeout.py --apply --fetch --json` and `codex_main_closeout.py --check --fetch --json` in the same shell command.
 - Validate the repo-owned enforcement home with `python scripts/governance/verify_codex_enforcement_home.py --json`.
 - Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement must not depend on the legacy Claude governance directory or hook parity path.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.

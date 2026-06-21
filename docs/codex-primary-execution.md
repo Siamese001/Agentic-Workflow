@@ -83,7 +83,28 @@ Then rerun `git branch --no-merged origin/main` after pushing. Cleanup may delet
 worktrees only after the exact branch tip is ancestor-contained in `origin/main` and the worktree is
 clean.
 
-The publication audit exposes this contract directly:
+The strict local closeout authority is:
+
+```bash
+python scripts/governance/codex_main_closeout.py --check --json
+python scripts/governance/codex_main_closeout.py --apply --json
+```
+
+The read-only check fails unless local `main` equals `origin/main`, the index and worktree are clean,
+only the expected main worktree remains, and no non-main local branches remain. The apply mode is
+cleanup-only: it may fast-forward clean local `main` and remove clean ancestor-contained non-main
+branches/worktrees, but it never resets, force-pushes, deletes dirty worktrees, or deletes unmerged
+branches.
+
+The shell hook enforces this for local PR completion commands. A direct `gh pr merge` or push to
+`main` must chain both closeout commands in the same shell command, normally after switching back to
+`main`:
+
+```bash
+gh pr merge <number> --merge && git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json && python scripts/governance/codex_main_closeout.py --check --fetch --json
+```
+
+The publication audit remains the broader planning view:
 
 ```bash
 python scripts/governance/codex_publication_audit.py --json

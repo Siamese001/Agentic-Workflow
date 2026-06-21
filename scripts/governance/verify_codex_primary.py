@@ -23,6 +23,7 @@ REQUIRED_FILES = [
     "docs/codex-primary-execution.md",
     "scripts/governance/audit_codex_mcp_transports.py",
     "scripts/governance/check_windows_path_budget.py",
+    "scripts/governance/codex_main_closeout.py",
     "scripts/governance/codex_readiness.py",
     "scripts/governance/verify_codex_enforcement_home.py",
     "scripts/governance/verify_codex_run_receipt.py",
@@ -43,6 +44,7 @@ REQUIRED_ANCHORS = {
         "## Codex primary execution adapter",
         "docs/codex-primary-execution.md",
         "scripts/governance/codex_readiness.py",
+        "scripts/governance/codex_main_closeout.py",
         "scripts/governance/verify_codex_enforcement_home.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",
@@ -54,6 +56,7 @@ REQUIRED_ANCHORS = {
     "docs/codex-primary-execution.md": [
         "Codex primary execution surface",
         "scripts/governance/codex_readiness.py",
+        "scripts/governance/codex_main_closeout.py",
         "scripts/governance/verify_codex_enforcement_home.py",
         "scripts/governance/verify_codex_run_receipt.py",
         "scripts/governance/verify_codex_primary.py",

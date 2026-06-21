@@ -1,3 +1,4 @@
+import re
 import sys
 from pathlib import Path
 
@@ -27,6 +28,52 @@ def _command_text(p: dict) -> str:
     return ""
 
 
+def _normal_command(command: str) -> str:
+    return re.sub(r"\s+", " ", command.strip())
+
+
+def _is_pr_completion_command(command: str) -> bool:
+    """Return True for commands that complete PR/main publication locally."""
+    normalized = _normal_command(command)
+    if re.search(r"(?i)(^|[;&|]\s*)gh(?:\.exe)?\s+pr\s+merge\b", normalized):
+        return True
+    return bool(
+        re.search(
+            r"(?i)(^|[;&|]\s*)git(?:\.exe)?\s+push\s+origin\s+"
+            r"(?:main\b|head:main\b|head:refs/heads/main\b|[^\s;&|]+:refs/heads/main\b)",
+            normalized,
+        )
+        or re.search(
+            r"(?i)(^|[;&|]\s*)git(?:\.exe)?\s+push\s+(?:-[^\s]+\s+)+origin\s+"
+            r"(?:main\b|head:main\b|head:refs/heads/main\b|[^\s;&|]+:refs/heads/main\b)",
+            normalized,
+        )
+    )
+
+
+def _has_main_closeout_chain(command: str) -> bool:
+    """Require same-command closeout proof after PR/main completion."""
+    normalized = _normal_command(command).casefold()
+    return (
+        "&&" in normalized
+        and normalized.count("codex_main_closeout.py") >= 2
+        and re.search(r"codex_main_closeout\.py\b[^&|;]*--apply\b[^&|;]*--fetch\b", normalized)
+        and re.search(r"codex_main_closeout\.py\b[^&|;]*--check\b[^&|;]*--fetch\b", normalized)
+    )
+
+
+def pr_completion_block_reason(command: str) -> str | None:
+    if not _is_pr_completion_command(command):
+        return None
+    if _has_main_closeout_chain(command):
+        return None
+    return (
+        "PR/main completion commands must chain local main closeout proof in the same command: "
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json"
+    )
+
+
 payload = read_payload()
 text = text_from_payload(payload)
 legacy = contains_legacy_execution_token(text)
@@ -44,9 +91,14 @@ if risky:
     write_receipt("beforeShellExecution", payload, "block", reason)
     raise SystemExit(block(reason))
 
+command = _command_text(payload)
+completion_reason = pr_completion_block_reason(command)
+if completion_reason:
+    write_receipt("beforeShellExecution", payload, "block", completion_reason)
+    raise SystemExit(block(completion_reason))
+
 # Turn-hanging command guard (quote-hazard / interactive / pager), enforced via pre_run_gate.
 if shell_command_block_reason is not None:
-    command = _command_text(payload)
     if command:
         hang_reason = shell_command_block_reason(command)
         if hang_reason:

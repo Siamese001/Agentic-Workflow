@@ -78,6 +78,43 @@ def test_hook_allows_safe_command():
     assert proc.returncode == 0
 
 
+def test_hook_blocks_direct_gh_pr_merge_without_closeout_chain():
+    proc = _run_hook("gh pr merge 123 --merge")
+
+    assert proc.returncode == 2
+    assert "codex_main_closeout.py --apply --fetch --json" in proc.stdout
+
+
+def test_hook_blocks_direct_push_to_main_without_closeout_chain():
+    proc = _run_hook("git push origin HEAD:refs/heads/main")
+
+    assert proc.returncode == 2
+    assert "PR/main completion commands must chain local main closeout proof" in proc.stdout
+
+
+def test_hook_allows_pr_merge_when_closeout_is_chained():
+    proc = _run_hook(
+        "gh pr merge 123 --merge && "
+        "git switch main && "
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json"
+    )
+
+    assert proc.returncode == 0
+
+
+def test_hook_allows_feature_branch_push_without_closeout_chain():
+    proc = _run_hook("git push origin HEAD:refs/heads/codex/feature")
+
+    assert proc.returncode == 0
+
+
+def test_hook_allows_read_only_pr_commands_without_closeout_chain():
+    for command in ("gh pr list --state open", "gh pr view 123", "gh pr checks 123"):
+        proc = _run_hook(command)
+        assert proc.returncode == 0
+
+
 def test_hook_allows_slash_namespace_worktree_branch_creation():
     proc = _run_hook(
         "git worktree add C:/Git/Agentic-Workflow-FRESH-worktrees/zen-mcnulty-654733 "
