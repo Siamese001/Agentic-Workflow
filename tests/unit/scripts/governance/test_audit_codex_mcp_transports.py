@@ -115,6 +115,26 @@ def test_build_route_evidence_counts_and_fields(monkeypatch) -> None:
     assert evidence["servers"]["notion"]["fallback_message_key"] == "plugin_substitute"
 
 
+def test_legacy_codex_route_shape_is_normalized() -> None:
+    contract = {
+        "routes": [
+            {"server_id": "GitKraken", "codex_route": "host_mcp_required", "status": "blocked_degraded"},
+            {"server_id": "memory", "codex_route": "host_mcp_required", "status": "blocked"},
+            {"server_id": "adg_sqlite", "codex_route": "raw_mcp", "status": "transport_green_payload_blocked"},
+        ]
+    }
+
+    evidence = mod.build_route_evidence(contract, {})
+
+    assert evidence["counts"] == {
+        "EXPOSED_BLOCKED": 1,
+        "HOST_MCP_REQUIRED": 2,
+    }
+    assert evidence["servers"]["GitKraken"]["classification"] == "HOST_MCP_REQUIRED"
+    assert evidence["servers"]["memory"]["classification"] == "HOST_MCP_REQUIRED"
+    assert evidence["servers"]["adg_sqlite"]["classification"] == "EXPOSED_BLOCKED"
+
+
 def test_build_route_evidence_without_contract_is_explicit() -> None:
     evidence = mod.build_route_evidence(None, {})
 
