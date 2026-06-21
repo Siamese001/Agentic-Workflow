@@ -1,8 +1,8 @@
-"""Tests for apps_research.integrations.tavily_retrieval.apply_contextual_prefix (§P4.5)."""
+"""Tests for apps_research.integrations.search_retrieval.apply_contextual_prefix (§P4.5)."""
 
 from __future__ import annotations
 
-from apps_research.integrations.tavily_retrieval import apply_contextual_prefix
+from apps_research.integrations.search_retrieval import apply_contextual_prefix
 
 
 def test_prefix_wraps_chunk_with_template():

@@ -1,7 +1,7 @@
-"""Tests for apps_research.integrations.tavily_retrieval (plan P1.2).
+"""Legacy tests for dormant apps_research.integrations.tavily_retrieval (plan P1.2).
 
-Integration test with real Tavily is gated on ``TAVILY_API_KEY`` env —
-skipped when absent to keep the default pytest run offline-clean.
+The live Tavily call is opt-in via ``APPS_RESEARCH_LEGACY_TAVILY_TEST=1`` so
+normal test runs do not exercise the deprecated provider.
 """
 
 from __future__ import annotations
@@ -35,9 +35,10 @@ def _tavily_sdk_available() -> bool:
 
 
 @pytest.mark.skipif(
-    not os.environ.get("TAVILY_API_KEY", "").strip()
+    os.environ.get("APPS_RESEARCH_LEGACY_TAVILY_TEST", "").strip() not in {"1", "true", "yes", "on"}
+    or not os.environ.get("TAVILY_API_KEY", "").strip()
     or not _tavily_sdk_available(),
-    reason="TAVILY_API_KEY not set or tavily-python SDK not installed",
+    reason="legacy Tavily live test is opt-in and needs TAVILY_API_KEY + tavily-python",
 )
 def test_live_retrieval_returns_docs():
     docs = retrieve("Blend360 agentic AI transformation services", top_k=10)
