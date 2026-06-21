@@ -20,10 +20,14 @@ PROJECT_DIR="${AGENTIC_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." &&
 cd "$PROJECT_DIR" || exit 0
 
 REDIS_URL="redis://localhost:6379/0"
+MEMORY_DB="${MEMORY_DB:-$PROJECT_DIR/artifacts/memory/knowledge_graph.sqlite}"
 LOG="/tmp/agentic_session_start.log"
 : > "$LOG"
 
-export PYTHONPATH="${PYTHONPATH:-$PROJECT_DIR}" AGENTIC_REPO_ROOT="$PROJECT_DIR" ADG_REDIS_URL="${ADG_REDIS_URL:-$REDIS_URL}"
+export PYTHONPATH="${PYTHONPATH:-$PROJECT_DIR}"
+export AGENTIC_REPO_ROOT="$PROJECT_DIR"
+export ADG_REDIS_URL="${ADG_REDIS_URL:-$REDIS_URL}"
+export MEMORY_DB="$MEMORY_DB"
 
 if [ -z "${GITKRAKEN_GK_PATH:-}" ]; then
   for candidate in \
@@ -60,12 +64,16 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
     echo "export PYTHONPATH=\"$PROJECT_DIR\""
     echo "export AGENTIC_REPO_ROOT=\"$PROJECT_DIR\""
     echo "export ADG_REDIS_URL=\"$REDIS_URL\""
+    echo "export MEMORY_DB=\"$MEMORY_DB\""
     if [ -n "${GITKRAKEN_GK_PATH:-}" ]; then
       echo "export GITKRAKEN_GK_PATH=\"$GITKRAKEN_GK_PATH\""
     fi
   } >> "$CLAUDE_ENV_FILE"
 fi
-export PYTHONPATH="$PROJECT_DIR" AGENTIC_REPO_ROOT="$PROJECT_DIR" ADG_REDIS_URL="$REDIS_URL"
+export PYTHONPATH="$PROJECT_DIR"
+export AGENTIC_REPO_ROOT="$PROJECT_DIR"
+export ADG_REDIS_URL="$REDIS_URL"
+export MEMORY_DB="$MEMORY_DB"
 
 # --- Python dependencies (idempotent) ------------------------------------------------------
 # Sentinel: one import each from main / infra / mcp-SDK groups. If all present, skip install.

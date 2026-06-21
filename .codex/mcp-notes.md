@@ -57,8 +57,10 @@ want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from htt
   `gitlens.gitkraken.mcp.autoEnabled=false` (see `.vscode/hooks.json`).
 - **Major MCP exposure audit**: config sync is not enough. Run
   `python .codex/governance/scripts/mcp_tool_exposure_audit.py` to distinguish declared
-  MCPs, native server health, and optional Codex `tool_search` exposure evidence. Session
-  start runs the audit in advisory mode and logs details to `/tmp/agentic_session_start.log`.
+  MCPs, native server health, and optional Codex `tool_search` exposure evidence. The
+  always-on core is `memory`, `adg_sqlite`, and `GitKraken`; the rest remain on-demand so
+  the session surface stays small. Session start runs the audit in advisory mode and logs
+  details to `/tmp/agentic_session_start.log`.
 - **vector_db** runtime defaults (batch sizes, timeouts) live in `tools/retrieval/vector_config.py`;
   only non-default overrides + required vars are pinned in `.mcp.json`.
 - **playwright** writes browser session output to repo-root `.playwright-mcp/` (gitignored).

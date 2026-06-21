@@ -49,6 +49,10 @@ def test_required_route_accepts_substitute_callable() -> None:
     assert checks[0].status == "PASS"
 
 
+def test_default_required_callable_routes_cover_core_only() -> None:
+    assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == ("memory", "GitKraken")
+
+
 def test_vector_semantic_guard_warns_without_explicit_state(monkeypatch) -> None:
     monkeypatch.delenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", raising=False)
 
@@ -87,6 +91,18 @@ def test_adg_sqlite_fallback_warns_when_snapshot_exists(monkeypatch, tmp_path: P
 
     assert check.status == "WARN"
     assert "direct SQLite fallback" in check.summary
+
+
+def test_adg_sqlite_fallback_is_strict_by_default(monkeypatch, tmp_path: Path) -> None:
+    snapshot = tmp_path / "artifacts" / "adg" / "adg_indexed_06162026_1200.sqlite"
+    snapshot.parent.mkdir(parents=True)
+    snapshot.write_text("", encoding="utf-8")
+    monkeypatch.setattr(mod, "_latest_adg_snapshot", lambda root: snapshot)
+
+    check = mod._check_adg(_transport_report({"adg_sqlite": "HOST_MCP_REQUIRED"}), tmp_path, False)
+
+    assert check.status == "FAIL"
+    assert "no acceptable SQLite fallback" in check.summary
 
 
 def test_adg_sqlite_fallback_checks_primary_root(tmp_path: Path) -> None:

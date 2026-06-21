@@ -33,7 +33,7 @@ import audit_codex_mcp_transports  # noqa: E402
 import codex_publication_audit  # noqa: E402
 from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
 
-DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "vector_db")
+DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken")
 CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
 DUPLICATE_PROCESS_CLASSIFICATIONS = {"duplicate", "duplicate_launch_tree"}
 VECTOR_SEMANTIC_READY_VALUES = {"ready", "healthy", "true", "1", "semantic_ready"}
@@ -434,7 +434,7 @@ def build_readiness_report(
     require_single_main_worktree: bool = False,
     fail_duplicate_processes: bool = False,
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
-    allow_adg_sqlite_fallback: bool = True,
+    allow_adg_sqlite_fallback: bool = False,
     route_contract: Path | None = None,
 ) -> dict[str, Any]:
     if git_publication:
@@ -507,7 +507,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Only require routes supplied by --require-callable-route.",
     )
-    parser.add_argument("--no-adg-sqlite-fallback", action="store_true", help="Fail if ADG MCP is not callable")
+    parser.add_argument(
+        "--allow-adg-sqlite-fallback",
+        action="store_true",
+        help="Allow direct SQLite fallback when ADG MCP is not callable.",
+    )
+    parser.add_argument(
+        "--no-adg-sqlite-fallback",
+        action="store_true",
+        help="Compatibility alias for strict ADG callable mode.",
+    )
     parser.add_argument("--route-contract", type=Path, help="Optional route contract JSON")
     return parser.parse_args(argv)
 
@@ -520,13 +529,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         required_routes = supplied
     else:
         required_routes = DEFAULT_REQUIRED_CALLABLE_ROUTES + supplied
+    allow_adg_sqlite_fallback = bool(args.allow_adg_sqlite_fallback and not args.no_adg_sqlite_fallback)
     report = build_readiness_report(
         require_clean=args.require_clean_worktree,
         git_publication=args.git_publication,
         require_single_main_worktree=args.require_single_main_worktree,
         fail_duplicate_processes=args.fail_duplicate_processes,
         required_callable_routes=required_routes,
-        allow_adg_sqlite_fallback=not args.no_adg_sqlite_fallback,
+        allow_adg_sqlite_fallback=allow_adg_sqlite_fallback,
         route_contract=args.route_contract,
     )
     if args.json:

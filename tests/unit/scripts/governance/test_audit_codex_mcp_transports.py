@@ -58,22 +58,20 @@ def test_plugin_substitute_classification_without_process_requirement() -> None:
     assert mod.classify_route(route, process_state) == "PLUGIN_SUBSTITUTE"
 
 
-def test_degraded_fallback_when_not_process_visible(monkeypatch) -> None:
-    monkeypatch.setattr(mod, "_gitkraken_cli_ready", lambda: False)
+def test_degraded_fallback_when_not_process_visible() -> None:
     route = _route("GitKraken", "degraded_fallback")
     process_state = {"process_count": 0, "classification": "none"}
 
     assert mod.classify_route(route, process_state) == "DEGRADED_FALLBACK"
 
 
-def test_gitkraken_cli_upgrades_degraded_route(monkeypatch) -> None:
-    monkeypatch.setattr(mod, "_gitkraken_cli_ready", lambda: True)
-    contract = {"routes": [_route("GitKraken", "degraded_fallback")]}
+def test_gitkraken_host_required_route_stays_blocked_without_callable_status() -> None:
+    contract = {"routes": [_route("GitKraken", "host_mcp_required", "no_substitute")]}
     process_state = {"GitKraken": {"process_count": 0, "classification": "none"}}
 
     evidence = mod.build_route_evidence(contract, process_state)
 
-    assert evidence["servers"]["GitKraken"]["classification"] == "SUBSTITUTE_CALLABLE"
+    assert evidence["servers"]["GitKraken"]["classification"] == "HOST_MCP_REQUIRED"
 
 
 def test_substitute_callable_classification() -> None:
@@ -84,7 +82,6 @@ def test_substitute_callable_classification() -> None:
 
 
 def test_build_route_evidence_counts_and_fields(monkeypatch) -> None:
-    monkeypatch.setattr(mod, "_gitkraken_cli_ready", lambda: True)
     contract = {
         "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
         "wave": "W2",
@@ -92,7 +89,7 @@ def test_build_route_evidence_counts_and_fields(monkeypatch) -> None:
             _route("adg_sqlite", "host_mcp_required", "closed_transport"),
             _route("memory", "host_mcp_required", "no_substitute"),
             _route("notion", "plugin_substitute", "plugin_substitute"),
-            _route("GitKraken", "degraded_fallback"),
+            _route("GitKraken", "host_mcp_required", "no_substitute"),
         ],
     }
     process_servers = {
@@ -110,11 +107,11 @@ def test_build_route_evidence_counts_and_fields(monkeypatch) -> None:
         "EXPOSED_BLOCKED": 1,
         "PLUGIN_SUBSTITUTE": 1,
         "PROCESS_ONLY": 1,
-        "SUBSTITUTE_CALLABLE": 1,
+        "HOST_MCP_REQUIRED": 1,
     }
     assert evidence["servers"]["adg_sqlite"]["classification"] == "EXPOSED_BLOCKED"
     assert evidence["servers"]["memory"]["classification"] == "PROCESS_ONLY"
-    assert evidence["servers"]["GitKraken"]["classification"] == "SUBSTITUTE_CALLABLE"
+    assert evidence["servers"]["GitKraken"]["classification"] == "HOST_MCP_REQUIRED"
     assert evidence["servers"]["notion"]["fallback_message_key"] == "plugin_substitute"
 
 

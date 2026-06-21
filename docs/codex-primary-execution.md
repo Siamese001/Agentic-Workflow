@@ -114,13 +114,14 @@ python scripts/governance/codex_publication_audit.py --json --require-ancestor-c
 The first form reports remaining branches as warnings for planning. The `--require-ancestor-cleanup`
 form is a closeout gate and fails while any branch remains outside `origin/main`.
 
-Shell-side scripts cannot see the live Codex MCP namespace. When a route is proven callable by the active Codex session, pass evidence through the existing environment convention:
+The always-on MCP core is `memory`, `adg_sqlite`, and `GitKraken`. `vector_db`, DeepWiki, Context7, Notion, Playwright, and the rest stay on-demand so the session surface stays small.
+
+Shell-side scripts cannot see the live Codex MCP namespace. When a core route is proven callable by the active Codex session, pass evidence through the existing environment convention:
 
 ```text
 CODEX_MCP_CALLABLE_MEMORY=healthy
 CODEX_MCP_CALLABLE_GITKRAKEN=healthy
-CODEX_MCP_CALLABLE_VECTOR_DB=healthy
-CODEX_MCP_CALLABLE_ADG_SQLITE=closed_transport
+CODEX_MCP_CALLABLE_ADG_SQLITE=healthy
 ```
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.

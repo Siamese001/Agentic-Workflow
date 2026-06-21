@@ -27,6 +27,7 @@ HEARTBEAT_PATH = Path(__file__).resolve().parent / "mcp_python_heartbeat.py"
 DEFAULT_SUBPROCESS_TIMEOUT = 15
 
 MAJOR_MCP_TOOLS: dict[str, tuple[str, ...]] = {
+    # Always-on core MCPs. Keep this list small so the session surface stays usable.
     "GitKraken": (
         "git_status",
         "git_add_or_commit",
@@ -39,12 +40,7 @@ MAJOR_MCP_TOOLS: dict[str, tuple[str, ...]] = {
         "adg_edge_fanin",
         "adg_edge_fanout",
     ),
-    "context7": ("resolve_library_id", "query_docs", "get-library-docs"),
-    "deepwiki": ("read_wiki_structure", "read_wiki_contents", "ask_question"),
     "memory": ("mem_recall_session_start", "create_entities", "add_observations", "search_nodes"),
-    "notion": ("API_query_data_source", "API_retrieve_a_page", "API_patch_page"),
-    "playwright": ("browser_navigate", "browser_snapshot", "browser_click", "browser_take_screenshot"),
-    "vector_db": ("semantic_search", "query_collection", "vector_stats", "list_collections"),
 }
 
 PYTHON_PROCESS_REQUIRED = frozenset({"adg_sqlite", "memory", "vector_db"})

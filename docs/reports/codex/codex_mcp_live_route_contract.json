@@ -20,6 +20,11 @@
       "After live code parity is restored, delete and re-warm affected Redis keys."
     ]
   },
+  "always_on_core": [
+    "adg_sqlite",
+    "memory",
+    "GitKraken"
+  ],
   "routes": [
     {
       "server_id": "adg_sqlite",
@@ -29,9 +34,9 @@
     },
     {
       "server_id": "memory",
-      "codex_route": "none",
+      "codex_route": "host_mcp_required",
       "status": "blocked",
-      "contract": "Do not claim mem_recall_session_start compliance; local fallback must be marked DEGRADED_FALLBACK."
+      "contract": "Memory MCP is part of the always-on core; do not claim compliance without a callable host route."
     },
     {
       "server_id": "vector_db",
@@ -41,9 +46,9 @@
     },
     {
       "server_id": "GitKraken",
-      "codex_route": "none",
+      "codex_route": "host_mcp_required",
       "status": "blocked_degraded",
-      "contract": "Use native git/GitHub plugin only with explicit delta from GitKraken MCP."
+      "contract": "GitKraken MCP is part of the always-on core; native git/GitHub access is a degraded fallback only."
     },
     {
       "server_id": "deepwiki",

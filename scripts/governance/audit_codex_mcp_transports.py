@@ -237,28 +237,6 @@ def _callable_status(server_id: str) -> str:
     return "absent"
 
 
-def _gitkraken_cli_ready() -> bool:
-    gk = shutil.which("gk")
-    if not gk:
-        return False
-    try:
-        proc = subprocess.run(
-            [gk, "mcp", "--list-tools"],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            timeout=20,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    if proc.returncode != 0:
-        return False
-    output = f"{proc.stdout}\n{proc.stderr}"
-    required_tools = ("pull_request_create", "git_status", "git_add_or_commit", "git_push")
-    return all(tool in output for tool in required_tools)
-
-
 def classify_route(route: dict[str, Any], process_state: dict[str, Any], callable_status: str = "absent") -> str:
     """Classify a Codex MCP route without treating process presence as parity."""
     selected = str(route.get("selected_codex_route", ""))
@@ -295,8 +273,6 @@ def build_route_evidence(
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
         callable_status = _callable_status(server_id)
-        if server_id == "GitKraken" and callable_status != "healthy" and _gitkraken_cli_ready():
-            callable_status = "substitute_callable"
         classification = classify_route(route, process_state, callable_status)
         counts[classification] = counts.get(classification, 0) + 1
         classified[server_id] = {

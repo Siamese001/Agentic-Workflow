@@ -71,9 +71,9 @@ def test_tool_search_snapshot_with_major_tools_is_green(tmp_path: Path):
     )
 
     by_server = {item.server_id: item for item in results}
+    assert set(by_server) == {"GitKraken", "adg_sqlite", "memory"}
     assert by_server["GitKraken"].status == "GREEN"
     assert by_server["memory"].status == "GREEN"
-    assert by_server["vector_db"].status == "GREEN"
 
 
 def test_python_mcp_dead_is_red_without_host_snapshot(tmp_path: Path):
