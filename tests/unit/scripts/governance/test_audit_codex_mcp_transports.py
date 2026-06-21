@@ -50,6 +50,28 @@ def test_healthy_callable_status_overrides_process_evidence() -> None:
     assert mod.classify_route(route, process_state, "healthy") == "CALLABLE"
 
 
+def test_contract_healthy_proof_classifies_memory_callable_without_process(monkeypatch) -> None:
+    monkeypatch.delenv("CODEX_MCP_CALLABLE_MEMORY", raising=False)
+    contract = {
+        "routes": [
+            {
+                "server_id": "memory",
+                "selected_codex_route": "raw_mcp_callable",
+                "callable_status": "healthy",
+                "proof": {
+                    "tool": "mcp__memory.mem_get_stats",
+                    "evidence": '{"total_entities": 1}',
+                },
+            }
+        ]
+    }
+
+    evidence = mod.build_route_evidence(contract, {})
+
+    assert evidence["servers"]["memory"]["classification"] == "CALLABLE"
+    assert evidence["servers"]["memory"]["callable_status"] == "healthy"
+
+
 def test_raw_mcp_callable_requires_process_presence() -> None:
     route = _route("adg_sqlite", "raw_mcp_callable", "")
 

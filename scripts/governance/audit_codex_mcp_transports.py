@@ -90,6 +90,7 @@ PROCESS_MARKERS = {
 CALLABLE_STATUS_ENV_PREFIX = "CODEX_MCP_CALLABLE_"
 ROUTE_CONTRACT_GLOB = "codex_mcp_live_route_contract.json"
 ALWAYS_ON_CORE_SERVERS = frozenset({"GitKraken", "adg_sqlite", "memory"})
+PROVEN_CALLABLE_STATUSES = frozenset({"healthy"})
 
 
 def _safe_cmdline(cmdline: list[str]) -> list[str]:
@@ -238,6 +239,18 @@ def _callable_status(server_id: str) -> str:
     return "absent"
 
 
+def _route_callable_status(route: dict[str, Any]) -> str:
+    status = str(route.get("callable_status") or "").strip().lower()
+    if status not in PROVEN_CALLABLE_STATUSES:
+        return "absent"
+    proof = route.get("proof")
+    if not isinstance(proof, dict):
+        return "absent"
+    tool = str(proof.get("tool") or "").strip()
+    evidence = str(proof.get("evidence") or "").strip()
+    return status if tool and evidence else "absent"
+
+
 def _normalize_selected_route(route: dict[str, Any]) -> str:
     selected = str(route.get("selected_codex_route") or route.get("codex_route") or "").strip()
     if selected == "raw_mcp_callable":
@@ -315,7 +328,9 @@ def build_route_evidence(
     for route in contract.get("routes", []):
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
-        callable_status = _callable_status(server_id)
+        callable_status = _route_callable_status(route)
+        if callable_status == "absent":
+            callable_status = _callable_status(server_id)
         classification = classify_route(route, process_state, callable_status)
         counts[classification] = counts.get(classification, 0) + 1
         classified[server_id] = {

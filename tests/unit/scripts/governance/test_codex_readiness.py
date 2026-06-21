@@ -39,6 +39,19 @@ def test_required_route_must_be_callable() -> None:
     assert "missing route/callability proof" in checks[0].detail
 
 
+def test_process_only_without_callable_contract_remains_route_failure() -> None:
+    report = _transport_report(
+        {"memory": "PROCESS_ONLY"},
+        {"memory": {"classification": "single", "process_count": 1}},
+    )
+
+    check = mod._check_required_routes(report, ["memory"])[0]
+
+    assert check.status == "FAIL"
+    assert check.severity == "critical"
+    assert check.summary == "memory is missing Codex route/callability proof."
+
+
 def test_required_route_failure_detail_is_actionable_for_missing_host_route() -> None:
     report = _transport_report({"GitKraken": "PROCESS_ONLY"})
     report["route_evidence"]["servers"]["GitKraken"] = {
