@@ -1,0 +1,198 @@
+{
+  "schema_version": "graph_hardening_refactor_manifest_v1",
+  "generated_at_utc": "2026-06-22T10:49:49.432456+00:00",
+  "repository": "apps_research",
+  "source_archive": "apps_research.zip",
+  "source_archive_sha256": "a883a94d6b049be7adf1e19ed796829c2af0449d12d2cd29c03878cab7ba14d8",
+  "review_only": true,
+  "implementation_changes_performed": false,
+  "zero_loss_copy_policy": "Every packaged production source file is copied byte-for-byte from the uploaded archive. No source text, line ending, metadata field, or JSON content was modified.",
+  "package_root": "apps_research",
+  "source_file_count": 11,
+  "all_source_copies_byte_identical": true,
+  "source_files": [
+    {
+      "path": "apps_research/types/apps_rg_targeting_brief_contract.py",
+      "source_size_bytes": 24248,
+      "packaged_size_bytes": 24248,
+      "source_sha256": "1d5a36f5ca735741b70cbf3bfe4138e660937e048eabc6bb66495b2edcf3b26e",
+      "packaged_sha256": "1d5a36f5ca735741b70cbf3bfe4138e660937e048eabc6bb66495b2edcf3b26e",
+      "byte_identical": true,
+      "finding_ids": [
+        "F4",
+        "F5"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Make semantic/source eligibility part of the authoritative sealed handoff contract."
+    },
+    {
+      "path": "apps_research/engines/company_brief_engine.py",
+      "source_size_bytes": 56586,
+      "packaged_size_bytes": 56586,
+      "source_sha256": "929c1f60928841127dea3b72fca84ae02a8c394d3a8a68610b3ede171aee2429",
+      "packaged_sha256": "929c1f60928841127dea3b72fca84ae02a8c394d3a8a68610b3ede171aee2429",
+      "byte_identical": true,
+      "finding_ids": [
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Produce role-specific research plans, real source/claim evidence, and canonical envelope artifacts."
+    },
+    {
+      "path": "apps_research/engines/query_decomposer.py",
+      "source_size_bytes": 11635,
+      "packaged_size_bytes": 11635,
+      "source_sha256": "3a27034e7425e64a35d62f22bf188cf1b2ce79db3927142cbbbaf8cdd5e48f21",
+      "packaged_sha256": "3a27034e7425e64a35d62f22bf188cf1b2ce79db3927142cbbbaf8cdd5e48f21",
+      "byte_identical": true,
+      "finding_ids": [
+        "F5"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Use one canonical family taxonomy and partnership-critical retrieval plan."
+    },
+    {
+      "path": "apps_research/__main__.py",
+      "source_size_bytes": 19539,
+      "packaged_size_bytes": 19539,
+      "source_sha256": "2edee37352edc6ad17eaecae4b0fea8fb843fc4aa662ad53139d579a9a9656a1",
+      "packaged_sha256": "2edee37352edc6ad17eaecae4b0fea8fb843fc4aa662ad53139d579a9a9656a1",
+      "byte_identical": true,
+      "finding_ids": [
+        "F4",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Atomically emit Markdown plus the eligible digest-bound handoff envelope."
+    },
+    {
+      "path": "apps_research/validators/research_source_validator.py",
+      "source_size_bytes": 17561,
+      "packaged_size_bytes": 17561,
+      "source_sha256": "fb2dbcb7c4683c4a5336299e55748454195b8ff32b8d96ed402dfefe5f4991e2",
+      "packaged_sha256": "fb2dbcb7c4683c4a5336299e55748454195b8ff32b8d96ed402dfefe5f4991e2",
+      "byte_identical": true,
+      "finding_ids": [
+        "F6"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Validate authority, freshness, canonical document identity, and claim bindings."
+    },
+    {
+      "path": "apps_research/validators/research_gate_validator.py",
+      "source_size_bytes": 2988,
+      "packaged_size_bytes": 2988,
+      "source_sha256": "6c7a43476e5abee587e7f1b183c9b9dfb214c65dd48ac0a0502d174c5c6e7b70",
+      "packaged_sha256": "6c7a43476e5abee587e7f1b183c9b9dfb214c65dd48ac0a0502d174c5c6e7b70",
+      "byte_identical": true,
+      "finding_ids": [
+        "F6"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Replace count/presence sufficiency with source- and claim-quality gates."
+    },
+    {
+      "path": "apps_research/integrations/evidence_lineage.py",
+      "source_size_bytes": 5351,
+      "packaged_size_bytes": 5351,
+      "source_sha256": "d9dd97977c36c1c888ca98d63c8c722dde34da4f6577863f6eeb220c0da8f4a4",
+      "packaged_sha256": "d9dd97977c36c1c888ca98d63c8c722dde34da4f6577863f6eeb220c0da8f4a4",
+      "byte_identical": true,
+      "finding_ids": [
+        "F6"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Carry claim-to-source lineage, document identity, contradiction, and freshness."
+    },
+    {
+      "path": "apps_research/integrations/governed_research_run.py",
+      "source_size_bytes": 16855,
+      "packaged_size_bytes": 16855,
+      "source_sha256": "352bf248ad9ee315fd669d68783bf9c8e61f7baa6f29d53c4a92746e2d4658fd",
+      "packaged_sha256": "352bf248ad9ee315fd669d68783bf9c8e61f7baa6f29d53c4a92746e2d4658fd",
+      "byte_identical": true,
+      "finding_ids": [
+        "F6",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Bind governed run identity and evidence receipts into the handoff envelope."
+    },
+    {
+      "path": "apps_research/types/research_types.py",
+      "source_size_bytes": 9580,
+      "packaged_size_bytes": 9580,
+      "source_sha256": "ecbfd9790e876dbb1721fef0a6dc00dbeaf41a0b378de10474bce4e0fe1d0517",
+      "packaged_sha256": "ecbfd9790e876dbb1721fef0a6dc00dbeaf41a0b378de10474bce4e0fe1d0517",
+      "byte_identical": true,
+      "finding_ids": [
+        "F6",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Represent canonical source, claim, freshness, and handoff metadata."
+    },
+    {
+      "path": "apps_research/prompt_assembly/apps_rg_targeting_brief.py",
+      "source_size_bytes": 2403,
+      "packaged_size_bytes": 2403,
+      "source_sha256": "7b4e828cd677163609bec8c349ae654a368faf37664d594dfa34abd40b9a0dab",
+      "packaged_sha256": "7b4e828cd677163609bec8c349ae654a368faf37664d594dfa34abd40b9a0dab",
+      "byte_identical": true,
+      "finding_ids": [
+        "F5"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Align synthesis output with the canonical family/axis contract; not the primary enforcement surface."
+    },
+    {
+      "path": "apps_research/outputs/envelope_emitter.py",
+      "source_size_bytes": 4169,
+      "packaged_size_bytes": 4169,
+      "source_sha256": "ad51784387853b97df7b80bc93065edbcb70f36bcd662d5935e9e8d0fd943c30",
+      "packaged_sha256": "ad51784387853b97df7b80bc93065edbcb70f36bcd662d5935e9e8d0fd943c30",
+      "byte_identical": true,
+      "finding_ids": [
+        "F4",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 3"
+      ],
+      "refactor_rationale": "Emit the first-class apps_rg targeting brief envelope and digest chain."
+    }
+  ],
+  "added_review_files": [
+    {
+      "path": "apps_research/HARDENING_REVIEW.md",
+      "purpose": "Integrated findings, rubric, roadmap, tests, artifacts, and non-goals requested by the user.",
+      "sha256": "ded946f70e5d031207906d15c13fbfb03bf63e21a9148ee13de6dae553af3397"
+    },
+    {
+      "path": "apps_research/REFACTOR_MANIFEST.json",
+      "purpose": "Refactor-surface inventory and zero-loss source-copy integrity evidence."
+    }
+  ]
+}
