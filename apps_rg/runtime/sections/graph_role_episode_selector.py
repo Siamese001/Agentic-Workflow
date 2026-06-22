@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 from pathlib import Path
 from typing import Any
@@ -187,6 +188,12 @@ _COMPETENCY_FAMILIES_BY_PROFILE: dict[str, tuple[str, ...]] = {
 def _load_bundle_doc(repo_root: Path, filename: str) -> dict[str, Any]:
     path = repo_root / "apps_rg" / "fact_inventory" / filename
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _stable_digest(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
 
 
 def _bundle_metric_nodes(doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -589,9 +596,11 @@ def build_selected_graph_evidence_plan_for_section(
     excluded_due_to_root_cap: list[dict[str, Any]] = []
     excluded_due_to_metric_cap: list[dict[str, Any]] = []
     selected_metric_ids_seen: set[str] = set()
+    selected_root_ids_seen: set[str] = set()
 
     for score, employer_lane, bundle, metric_nodes in selected:
         bundle_id = str(bundle.get("role_episode_bundle_id") or "").strip()
+        selected_root_ids_seen.add(bundle_id)
         weight = employer_weights.get(employer_lane, 0.0)
         skill_cap, metric_cap, band = _caps_for(section_id=section_id, weight=weight)
         raw_skill_ids = [str(x).strip() for x in (bundle.get("graph_skill_node_ids") or []) if str(x).strip()]
@@ -737,6 +746,130 @@ def build_selected_graph_evidence_plan_for_section(
         if selected_skill_counts_by_employer
         else ""
     )
+    root_decisions: list[dict[str, Any]] = []
+    selected_root_scores = {
+        str(bundle.get("role_episode_bundle_id") or ""): score
+        for score, _employer_lane, bundle, _metric_nodes in selected
+    }
+    for score, employer_lane, bundle, metric_nodes in candidates:
+        bundle_id = str(bundle.get("role_episode_bundle_id") or "").strip()
+        if not bundle_id:
+            continue
+        raw_skill_ids = [str(x).strip() for x in (bundle.get("graph_skill_node_ids") or []) if str(x).strip()]
+        raw_metric_ids = [str(x).strip() for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
+        selected_status = bundle_id in selected_root_ids_seen
+        best_selected_score = selected_root_scores.get(bundle_id)
+        root_decisions.append(
+            {
+                "schema_version": "graph_candidate_decision_v1",
+                "section_id": section_id,
+                "candidate_id": bundle_id,
+                "candidate_type": "role_episode_root",
+                "employer_lane": employer_lane,
+                "hop_depth": 0,
+                "selector_score": round(float(score), 6),
+                "decision": "selected" if selected_status else "rejected",
+                "reason_codes": ["selected_by_budget"] if selected_status else ["root_budget_not_selected"],
+                "graph_skill_node_ids": raw_skill_ids,
+                "metric_outcome_ids": raw_metric_ids,
+                "selected_score_for_root": best_selected_score,
+            }
+        )
+    child_decisions = [
+        {
+            "schema_version": "graph_candidate_decision_v1",
+            "section_id": section_id,
+            "candidate_id": str(row.get("skill_id") or ""),
+            "candidate_type": "leaf_skill",
+            "parent_id": str(row.get("role_episode_bundle_id") or ""),
+            "root_id": str(row.get("role_episode_bundle_id") or ""),
+            "employer_lane": str(row.get("employer_lane") or ""),
+            "hop_depth": 1,
+            "decision": "selected",
+            "reason_codes": ["selected_with_root"],
+        }
+        for row in selected_skills
+    ] + [
+        {
+            "schema_version": "graph_candidate_decision_v1",
+            "section_id": section_id,
+            "candidate_id": str(row.get("metric_outcome_id") or ""),
+            "candidate_type": "metric_outcome",
+            "parent_id": str(row.get("role_episode_bundle_id") or ""),
+            "root_id": str(row.get("role_episode_bundle_id") or ""),
+            "employer_lane": str(row.get("employer_lane") or ""),
+            "hop_depth": 2,
+            "decision": "selected",
+            "reason_codes": ["selected_with_root"],
+        }
+        for row in selected_metrics_detail
+    ] + [
+        {
+            "schema_version": "graph_candidate_decision_v1",
+            "section_id": section_id,
+            "candidate_id": str(row.get("graph_evidence_id") or ""),
+            "candidate_type": "leaf_skill",
+            "parent_id": str(row.get("role_episode_bundle_id") or ""),
+            "root_id": str(row.get("role_episode_bundle_id") or ""),
+            "employer_lane": str(row.get("employer_lane") or ""),
+            "hop_depth": 1,
+            "decision": "rejected",
+            "reason_codes": [str(row.get("reason") or "skill_root_cap")],
+        }
+        for row in excluded_due_to_root_cap
+    ] + [
+        {
+            "schema_version": "graph_candidate_decision_v1",
+            "section_id": section_id,
+            "candidate_id": str(row.get("graph_evidence_id") or ""),
+            "candidate_type": "metric_outcome",
+            "parent_id": str(row.get("role_episode_bundle_id") or ""),
+            "root_id": str(row.get("role_episode_bundle_id") or ""),
+            "employer_lane": str(row.get("employer_lane") or ""),
+            "hop_depth": 2,
+            "decision": "rejected",
+            "reason_codes": [str(row.get("reason") or "metric_root_cap")],
+        }
+        for row in excluded_due_to_metric_cap
+    ]
+    candidate_decision_ledger = sorted(
+        root_decisions + child_decisions,
+        key=lambda row: (
+            int(row.get("hop_depth") or 0),
+            str(row.get("candidate_type") or ""),
+            str(row.get("root_id") or row.get("candidate_id") or ""),
+            str(row.get("candidate_id") or ""),
+        ),
+    )
+    total_roots = len(root_decisions)
+    selected_roots_count = sum(1 for row in root_decisions if row.get("decision") == "selected")
+    rejected_roots_count = sum(1 for row in root_decisions if row.get("decision") == "rejected")
+    unexplained_roots = max(0, total_roots - selected_roots_count - rejected_roots_count)
+    graph_traversal_receipt = {
+        "schema_version": "graph_traversal_receipt_v1",
+        "producer": "apps_rg.runtime.sections.graph_role_episode_selector.build_selected_graph_evidence_plan_for_section",
+        "section_id": section_id,
+        "target_role_profile": target_role_profile,
+        "candidate_conservation": {
+            "role_episode_roots_total": total_roots,
+            "role_episode_roots_selected": selected_roots_count,
+            "role_episode_roots_rejected": rejected_roots_count,
+            "role_episode_roots_unexplained": unexplained_roots,
+            "pass": unexplained_roots == 0,
+        },
+        "frontier_size_by_hop_depth": {
+            "0_role_episode_roots": total_roots,
+            "1_leaf_skill_candidates": len(set(selected_skill_ids_all) | {str(row.get("graph_evidence_id") or "") for row in excluded_due_to_root_cap}),
+            "2_metric_outcome_candidates": len(set(selected_metrics) | {str(row.get("graph_evidence_id") or "") for row in excluded_due_to_metric_cap}),
+        },
+        "visited_edges_count": len(selected_edges),
+        "selected_root_ids": selected_nodes,
+        "rejected_root_ids": [
+            str(row.get("candidate_id") or "")
+            for row in root_decisions
+            if row.get("decision") == "rejected"
+        ],
+    }
     plan = {
         "section_id": section_id,
         "selection_method": selection_method_for_section(section_id),
@@ -795,7 +928,29 @@ def build_selected_graph_evidence_plan_for_section(
         },
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
+        "graph_candidate_decision_ledger": candidate_decision_ledger,
+        "graph_candidate_receipt": {
+            "schema_version": "graph_candidate_receipt_v1",
+            "producer": "apps_rg.runtime.sections.graph_role_episode_selector.build_selected_graph_evidence_plan_for_section",
+            "section_id": section_id,
+            "candidate_decision_count": len(candidate_decision_ledger),
+            "selected_candidate_count": sum(1 for row in candidate_decision_ledger if row.get("decision") == "selected"),
+            "rejected_candidate_count": sum(1 for row in candidate_decision_ledger if row.get("decision") == "rejected"),
+            "candidate_conservation_pass": unexplained_roots == 0,
+        },
+        "graph_traversal_receipt": graph_traversal_receipt,
     }
+    plan_digest_payload = {k: v for k, v in plan.items() if k not in {"plan_digest", "plan_id"}}
+    plan_digest = _stable_digest(plan_digest_payload)
+    plan["plan_digest"] = plan_digest
+    plan["plan_id"] = f"{section_id}:{plan_digest[:16]}"
+    for row in plan["graph_candidate_decision_ledger"]:
+        row["plan_digest"] = plan_digest
+        row["plan_id"] = plan["plan_id"]
+    plan["graph_candidate_receipt"]["plan_digest"] = plan_digest
+    plan["graph_candidate_receipt"]["plan_id"] = plan["plan_id"]
+    plan["graph_traversal_receipt"]["plan_digest"] = plan_digest
+    plan["graph_traversal_receipt"]["plan_id"] = plan["plan_id"]
     plan["graph_evidence_depth_pre_report"] = pre_depth_report
     plan["graph_evidence_depth_report"] = post_depth_report
     plan["graph_evidence_depth_post_report"] = post_depth_report

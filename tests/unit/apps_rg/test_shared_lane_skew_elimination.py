@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
+from apps_rg.runtime.sections.competencies_pa import build_competencies_assembly_input
 from apps_rg.runtime.sections.competency_capability_evidence import (
     attach_competency_bundles_to_proof_pool_metadata,
     build_competency_capability_section_packet,
@@ -104,6 +107,82 @@ def test_competencies_proof_pool_exposes_pre_and_post_depth_reports() -> None:
     assert meta["graph_evidence_depth_report"]["status"] == "judge_grade"
     assert meta["graph_evidence_depth_post_report"]["status"] == "judge_grade"
     assert meta["graph_evidence_depth_comparison_report"]["delta"]["thin_item_count"] == -1
+
+
+def test_competencies_proof_pool_binds_to_single_canonical_graph_plan() -> None:
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    pool = resolve_section_proof_pool(
+        section="competencies",
+        repo_root=REPO_ROOT,
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+        product_visible=False,
+    )
+
+    meta = pool.proof_pool_metadata
+    plan = meta["selected_graph_evidence_plan"]
+    receipt = meta["graph_selection_binding_receipt"]
+
+    assert pool.selected_fact_plan["plan_digest"] == plan["plan_digest"]
+    assert pool.proof_pool_digest == plan["plan_digest"]
+    assert meta["canonical_section_graph_plan_digest"] == plan["plan_digest"]
+    assert receipt["schema_version"] == "graph_selection_binding_receipt_v1"
+    assert receipt["selected_graph_plan_is_selected_fact_plan"] is True
+    assert receipt["proof_pool_digest"] == plan["plan_digest"]
+    assert receipt["pass"] is True
+
+
+def test_selected_graph_plan_emits_candidate_conservation_receipts() -> None:
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    plan = _build_plan(
+        "competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+
+    traversal = plan["graph_traversal_receipt"]
+    candidate_receipt = plan["graph_candidate_receipt"]
+    decision_ledger = plan["graph_candidate_decision_ledger"]
+
+    assert plan["plan_id"].startswith("competencies:")
+    assert len(plan["plan_digest"]) == 64
+    assert traversal["schema_version"] == "graph_traversal_receipt_v1"
+    assert traversal["candidate_conservation"]["pass"] is True
+    assert traversal["candidate_conservation"]["role_episode_roots_rejected"] > 0
+    assert traversal["frontier_size_by_hop_depth"]["0_role_episode_roots"] > len(plan["selected_nodes"])
+    assert candidate_receipt["schema_version"] == "graph_candidate_receipt_v1"
+    assert candidate_receipt["candidate_conservation_pass"] is True
+    assert candidate_receipt["rejected_candidate_count"] > 0
+    assert all(row["plan_digest"] == plan["plan_digest"] for row in decision_ledger)
+
+
+def test_competencies_prompt_assembly_blocks_missing_canonical_graph_plan() -> None:
+    with pytest.raises(ValueError, match="canonical selected_graph_evidence_plan missing"):
+        build_competencies_assembly_input(
+            {
+                "target_title": "Manager, Applied AI Architecture Partnerships",
+                "target_company": "Anthropic",
+                "jd_text": "partnerships co-sell applied AI architecture",
+                "briefing_text": "partnership ecosystem and commercial motion",
+                "product_visible": False,
+                "allowed_fact_ids": ["bul_test"],
+                "canonical_final_evidence_contract": {"allowed_fact_ids": ["bul_test"]},
+                "selected_fact_plan": {
+                    "section_id": "competencies",
+                    "selection_method": "test",
+                    "required_fact_ids": ["bul_test"],
+                },
+                "proof_pool_metadata": {"competency_capability_bundle_consumption": {"present": True}},
+            },
+            "bul_test: governed platform proof",
+            request_id="test",
+            run_id="test",
+            trace_root="test",
+        )
 
 
 def test_insurance_shared_lane_selection_reweights_to_insurance_roots() -> None:

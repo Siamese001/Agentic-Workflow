@@ -177,9 +177,6 @@ def build_competencies_assembly_input(
         attach_competency_bundles_to_proof_pool_metadata,
         format_competency_capability_evidence_pack,
     )
-    from apps_rg.runtime.sections.graph_role_episode_selector import (
-        build_selected_graph_evidence_plan_for_section,
-    )
 
     def _competencies_plan_has_selection(plan: Any) -> bool:
         if not isinstance(plan, dict) or not plan:
@@ -197,12 +194,9 @@ def build_competencies_assembly_input(
     if not _competencies_plan_has_selection(selected_graph_plan):
         selected_graph_plan = runtime_payload.get("selected_graph_evidence_plan")
     if not _competencies_plan_has_selection(selected_graph_plan):
-        selected_graph_plan, _, _ = build_selected_graph_evidence_plan_for_section(
-            repo_root=_REPO_ROOT,
-            section_id="competencies",
-            target_role=t_title,
-            jd_text=jd,
-            briefing_text=briefing,
+        raise ValueError(
+            "competencies: canonical selected_graph_evidence_plan missing; "
+            "prompt assembly must not reselect graph evidence"
         )
     if not pp_meta.get("competency_capability_bundle_consumption"):
         if bool(runtime_payload.get("product_visible", True)):
