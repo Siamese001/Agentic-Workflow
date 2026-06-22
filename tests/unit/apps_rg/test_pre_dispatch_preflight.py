@@ -2,22 +2,24 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+import os
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-
-import json
-import os
 
 from apps_rg.runtime.pre_dispatch_preflight import (
     evaluate_jd_cli_input,
     evaluate_manual_brief_cli_input,
     run_pre_dispatch_preflight,
     targeting_override_allowed,
+    write_pre_dispatch_preflight_receipt,
 )
 from apps_rg.runtime.section_cli_defaults import (
     CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
-    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
 )
 from tests.unit.apps_rg.section_rigor.unify_ibm_lane_fixtures import unify_bullets_parsed_from_mock
 
@@ -49,7 +51,7 @@ def test_run_preflight_dispatch_false_when_jd_missing() -> None:
         jd="",
         manual_brief="Updated briefing for unit test lane validation.",
         lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
     )
     assert result.dispatch_started is False
     assert result.jd_status == "MISSING"
@@ -70,6 +72,91 @@ def test_provider_readiness_not_applicable_after_local_provider_removal() -> Non
     assert result.qwen_model_ready_status == "NOT_APPLICABLE"
 
 
+def _write_apps_research_envelope(
+    tmp_path: Path,
+    *,
+    brief_text: str = "Fresh apps_research handoff briefing for pytest.",
+    jd_text: str | None = None,
+    **overrides,
+) -> tuple[Path, Path]:
+    brief = tmp_path / "briefing.md"
+    brief.write_text(brief_text, encoding="utf-8")
+    jd = tmp_path / "jd.txt"
+    jd.write_text(jd_text if jd_text is not None else _FRESH_JD.read_text(encoding="utf-8"), encoding="utf-8")
+    now = datetime.now(timezone.utc)
+    envelope = {
+        "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
+        "producer_app": "apps_research",
+        "consumer_app": "apps_rg",
+        "run_id": "research-run-pytest",
+        "target_company": "Anthropic",
+        "target_role": "Manager Applied AI Architecture Partnerships",
+        "generated_at_utc": now.isoformat(),
+        "expires_at_utc": (now + timedelta(days=7)).isoformat(),
+        "dry_run": False,
+        "stub_detected": False,
+        "is_stale": False,
+        "handoff_eligible": True,
+        "brief_sha256": hashlib.sha256(brief_text.encode("utf-8")).hexdigest(),
+        "jd_sha256": hashlib.sha256(jd.read_text(encoding="utf-8").strip().encode("utf-8")).hexdigest(),
+        "semantic_assessment": {"score": 0.91},
+    }
+    envelope.update(overrides)
+    (tmp_path / "apps_research_briefing_envelope.json").write_text(
+        json.dumps(envelope, indent=2),
+        encoding="utf-8",
+    )
+    return brief, jd
+
+
+def test_apps_research_handoff_gate_blocks_digest_mismatch(tmp_path: Path) -> None:
+    brief, jd = _write_apps_research_envelope(
+        tmp_path,
+        brief_text="Fresh apps_research handoff briefing for pytest.",
+        brief_sha256="0" * 64,
+    )
+
+    result = run_pre_dispatch_preflight(
+        section="competencies",
+        jd=str(jd),
+        manual_brief=str(brief),
+        lane_provider="mock",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
+    )
+
+    assert result.dispatch_started is False
+    assert "apps_research handoff gate blocked" in result.decisive_reason
+    assert "brief_sha256_mismatch" in result.decisive_reason
+    assert result.apps_research_handoff_validation is not None
+    assert result.apps_research_handoff_validation["valid"] is False
+
+
+def test_apps_research_handoff_receipts_written(tmp_path: Path) -> None:
+    brief, jd = _write_apps_research_envelope(tmp_path)
+    result = run_pre_dispatch_preflight(
+        section="competencies",
+        jd=str(jd),
+        manual_brief=str(brief),
+        lane_provider="mock",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
+    )
+    assert result.dispatch_started is True
+
+    receipt_path = tmp_path / "apps_rg_pre_dispatch_preflight.json"
+    write_pre_dispatch_preflight_receipt(receipt_path, result)
+
+    validation = json.loads(
+        (tmp_path / "apps_research_handoff_validation_receipt.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    copied_envelope = json.loads(
+        (tmp_path / "apps_research_briefing_envelope.json").read_text(encoding="utf-8")
+    )
+    assert validation["valid"] is True
+    assert validation["brief_sha256"] == copied_envelope["brief_sha256"]
+
+
 def test_narrative_preflight_blocked_without_upstream_bullets(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -88,7 +175,7 @@ def test_narrative_preflight_blocked_without_upstream_bullets(
         jd=str(_FRESH_JD),
         manual_brief="Lane briefing with non-default digest for pytest unit scope.",
         lane_provider="mock",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
     )
     assert result.dispatch_started is False
     assert result.upstream_bullets_status == "BLOCKED"
@@ -119,7 +206,7 @@ def test_ibm_narrative_preflight_blocked_without_upstream_bullets(
         jd=str(_FRESH_JD),
         manual_brief="Lane briefing with non-default digest for pytest unit scope.",
         lane_provider="mock",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
     )
     assert result.dispatch_started is False
     assert result.upstream_bullets_lane == "ibm_bullets"
@@ -159,7 +246,7 @@ def test_narrative_preflight_passes_with_modular_finalized_upstream(
         jd=str(_FRESH_JD),
         manual_brief="Lane briefing with non-default digest for pytest unit scope.",
         lane_provider="mock",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
     )
     assert result.upstream_bullets_status == "PASS"
     assert result.upstream_bullets_lane == "unify_bullets"
