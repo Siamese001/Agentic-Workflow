@@ -985,6 +985,68 @@ def run_competencies_lane_execution(
         runtime_generation_status=runtime_generation_status,
         bundle=bundle,
     )
+    graph_gate_ids = {
+        "x2_competencies_rejected_neighbor_audit_present",
+        "x2_competencies_graph_traversal_sufficiency",
+        "x2_competencies_graph_granularity_gates",
+        "x2_competencies_source_fact_concentration_limit",
+        "x2_competencies_per_category_confidence_nonconstant",
+        "x2_competencies_selected_graph_evidence_depth_sufficient",
+    }
+    graph_gate_rows = [row for row in x2 if row.get("gate_id") in graph_gate_ids]
+    deterministic_graph_failures = [
+        str(row.get("gate_id") or "")
+        for row in graph_gate_rows
+        if not bool(row.get("pass"))
+    ]
+    judge_rows = [
+        {
+            "provider_key": row.get("provider_key"),
+            "provider_status": row.get("provider_status"),
+            "evaluator_mode": row.get("evaluator_mode"),
+            "score": row.get("normalized_score"),
+            "pass": bool(row.get("pass")),
+            "decisive_failure": bool(row.get("decisive_failure")),
+        }
+        for row in (x1d or [])
+        if isinstance(row, dict)
+    ]
+    judge_failures = [
+        str(row.get("provider_key") or row.get("provider_status") or "judge")
+        for row in judge_rows
+        if not bool(row.get("pass")) or bool(row.get("decisive_failure"))
+    ]
+    selector_pass = bool(graph_candidate_receipt.get("candidate_conservation_pass"))
+    final_disposition = (
+        "BLOCK"
+        if deterministic_graph_failures or not selector_pass
+        else ("REVIEW" if judge_failures else "ALLOW")
+    )
+    arbitration_receipt = {
+        "schema_version": "graph_selector_judge_arbitration_receipt_v1",
+        "producer": "apps_rg.runtime.sections.competencies_lane_execution",
+        "section_id": "competencies",
+        "plan_id": graph_candidate_receipt.get("plan_id"),
+        "plan_digest": graph_candidate_receipt.get("plan_digest"),
+        "selector": {
+            "candidate_conservation_pass": selector_pass,
+            "selected_candidate_count": graph_candidate_receipt.get("selected_candidate_count"),
+            "rejected_candidate_count": graph_candidate_receipt.get("rejected_candidate_count"),
+        },
+        "deterministic_graph_gates": graph_gate_rows,
+        "deterministic_graph_failures": deterministic_graph_failures,
+        "judge_rows": judge_rows,
+        "judge_failures": judge_failures,
+        "precedence_rule": "deterministic_graph_failure_blocks; judge_failure_reviews; all_clear_allows",
+        "final_disposition": final_disposition,
+        "x3_code": x3.x3_code,
+        "pass": final_disposition == "ALLOW",
+        "human_readable_explanation": (
+            "Selector and judge agreement cannot override deterministic graph proof gaps; "
+            "any graph authority/traversal/granularity/concentration/confidence failure blocks."
+        ),
+    }
+    write_json(artifact_dir / "graph_selector_judge_arbitration_receipt.json", arbitration_receipt)
     jd_al_out = jd_alignment_final
     section_agg: dict[str, Any] = {
         "schema_version": "1",
@@ -1018,6 +1080,10 @@ def run_competencies_lane_execution(
         ),
         "competencies_graph_sufficiency_receipt_ref": graph_sufficiency_receipt_ref,
         "competencies_graph_traversal_sufficiency_receipt_ref": graph_traversal_receipt_ref,
+        "graph_selector_judge_arbitration_receipt_ref": _artifact_repo_rel(
+            artifact_dir / "graph_selector_judge_arbitration_receipt.json",
+            REPO_ROOT,
+        ),
         "proof_eligible": bool(bundle.get("proof_eligible")),
         "proof_scope": bundle.get("proof_scope"),
         "product_quality_status": product_quality_status,

@@ -127,6 +127,7 @@ def test_competencies_lane_writes_graph_hardening_receipt_filenames() -> None:
         "graph_candidate_receipt.json",
         "graph_granularity_gate_receipt.json",
         "graph_fact_concentration_receipt.json",
+        "graph_selector_judge_arbitration_receipt.json",
         "runtime_graph_sourcing_assessment.json",
     ):
         assert filename in source
