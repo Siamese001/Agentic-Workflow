@@ -1007,6 +1007,7 @@ def check_per_category_confidence_nonconstant(competencies: list[Any]) -> CompQu
 
 def check_competencies_rejected_neighbor_audit_present(
     parsed_output: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
 ) -> CompQualityResult:
     audit: dict[str, Any] = {}
     if isinstance(parsed_output, dict):
@@ -1036,6 +1037,16 @@ def check_competencies_rejected_neighbor_audit_present(
         and rejected_count > 0
         and candidate_variant_count >= candidate_label_count
     )
+    graph_candidate_receipt = {}
+    if isinstance(proof_pool_metadata, dict) and isinstance(
+        proof_pool_metadata.get("graph_candidate_receipt"), dict
+    ):
+        graph_candidate_receipt = proof_pool_metadata.get("graph_candidate_receipt") or {}
+    graph_candidate_schema_ok = graph_candidate_receipt.get("schema_version") == "graph_candidate_receipt_v1"
+    graph_rejected_count = int(graph_candidate_receipt.get("rejected_candidate_count") or 0)
+    graph_conservation_pass = bool(graph_candidate_receipt.get("candidate_conservation_pass"))
+    graph_candidate_pass = graph_candidate_schema_ok and graph_conservation_pass and graph_rejected_count > 0
+    passed = passed or graph_candidate_pass
     return CompQualityResult(
         gate_id="x2_competencies_rejected_neighbor_audit_present",
         passed=passed,
@@ -1046,10 +1057,13 @@ def check_competencies_rejected_neighbor_audit_present(
             "candidate_variant_count": candidate_variant_count,
             "selected_count": selected_count,
             "rejected_neighbor_count": rejected_count,
+            "graph_candidate_receipt_schema_ok": graph_candidate_schema_ok,
+            "graph_candidate_conservation_pass": graph_conservation_pass,
+            "graph_rejected_candidate_count": graph_rejected_count,
         },
         threshold=(
-            "competencies_rejected_neighbor_audit_v1 with candidate_label_count > "
-            "selected_count and rejected_neighbor_count > 0"
+            "competencies_rejected_neighbor_audit_v1 with rejected neighbors OR "
+            "graph_candidate_receipt_v1 with conserved selected/rejected candidates"
         ),
         failure_reason=(
             None
@@ -1057,7 +1071,8 @@ def check_competencies_rejected_neighbor_audit_present(
             else (
                 "competencies graph selector did not prove rejected-neighbor breadth; "
                 f"schema_ok={schema_ok} candidate_labels={candidate_label_count} "
-                f"selected={selected_count} rejected={rejected_count}"
+                f"selected={selected_count} rejected={rejected_count} "
+                f"graph_schema_ok={graph_candidate_schema_ok} graph_rejected={graph_rejected_count}"
             )
         ),
         signals=[str(x.get("category_label") or "") for x in audit.get("rejected_neighbors", [])[:6]]

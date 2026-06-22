@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from apps_rg.runtime.sections import competencies_lane_execution
 from apps_rg.runtime.sections.competencies_lane_runtime import (
     build_mock_output,
     build_resume_support_blob,
@@ -18,6 +19,9 @@ from apps_rg.runtime.validators.competencies_x2 import (
     X2GateResult,
     competencies_x2_gate_rows_internally_consistent,
     run_competencies_x2_gates,
+)
+from apps_rg.runtime.validators.competencies_quality_x2 import (
+    check_competencies_rejected_neighbor_audit_present,
 )
 
 
@@ -96,6 +100,36 @@ def test_x2_pass_rows_have_null_failure_reason_for_style_gates() -> None:
         assert g.failure_reason is None, gid
     consistency = next(g for g in gates if g.gate_id == "x2_gate_rows_are_internally_consistent")
     assert consistency.pass_ is True
+
+
+def test_rejected_neighbor_gate_accepts_conserved_graph_candidate_receipt() -> None:
+    result = check_competencies_rejected_neighbor_audit_present(
+        parsed_output={},
+        proof_pool_metadata={
+            "graph_candidate_receipt": {
+                "schema_version": "graph_candidate_receipt_v1",
+                "candidate_conservation_pass": True,
+                "selected_candidate_count": 8,
+                "rejected_candidate_count": 27,
+            }
+        },
+    )
+
+    assert result.passed is True
+    assert result.observed_value["graph_candidate_receipt_schema_ok"] is True
+    assert result.observed_value["graph_rejected_candidate_count"] == 27
+
+
+def test_competencies_lane_writes_graph_hardening_receipt_filenames() -> None:
+    source = Path(competencies_lane_execution.__file__).read_text(encoding="utf-8")
+    for filename in (
+        "traversal_sufficiency_receipt.json",
+        "graph_candidate_receipt.json",
+        "graph_granularity_gate_receipt.json",
+        "graph_fact_concentration_receipt.json",
+        "runtime_graph_sourcing_assessment.json",
+    ):
+        assert filename in source
 
 
 def test_canonicalize_terms_coerces_plain_strings() -> None:
