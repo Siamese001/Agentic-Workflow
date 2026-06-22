@@ -15,6 +15,7 @@ from apps_rg.runtime.sections import competency_capability_registry as reg
 from apps_rg.runtime.sections.competency_capability_evidence import (
     COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER,
     attach_competency_bundles_to_proof_pool_metadata,
+    append_competencies_path_diversity_to_messages,
     build_competency_capability_section_packet,
     format_competency_capability_evidence_pack,
     is_flat_taxonomy_only_packet,
@@ -23,9 +24,16 @@ from apps_rg.runtime.sections.competency_capability_evidence import (
 from apps_rg.runtime.sections.graph_role_episode_selector import (
     build_selected_graph_evidence_plan_for_section,
 )
+from apps_rg.runtime.sections.competencies_lane_execution import (
+    _format_competencies_graph_sourcing_assessment,
+)
 from apps_rg.runtime.validators import competencies_quality_x2 as q
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
+ANTHROPIC_JD = _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
+ANTHROPIC_BRIEF = (
+    _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -103,6 +111,60 @@ def _competencies_proof_meta(extra_fields: dict | None = None) -> dict:
     if extra_fields:
         meta.update(extra_fields)
     return attach_competency_bundles_to_proof_pool_metadata(meta, section_id="competencies")
+
+
+def _competencies_from_graph_plan(plan: dict) -> list[dict]:
+    labels = [
+        "Platform Productization",
+        "Partnerships Ecosystem Execution",
+        "Distributed Systems Engineering",
+        "Engineering Leadership",
+        "Cloud HPC Modernization",
+        "Data Governance Security",
+        "Agentic Platforms",
+        "Runtime Governance",
+    ]
+    competencies: list[dict] = []
+    for idx, fact in enumerate(plan.get("facts") or []):
+        if not isinstance(fact, dict):
+            continue
+        label = labels[idx % len(labels)]
+        source_fact_id = str(fact.get("fact_id") or f"fact_{idx}")
+        skill_ids = [str(x) for x in (fact.get("graph_skill_node_ids") or []) if str(x).strip()]
+        if not skill_ids:
+            skill_ids = [f"skill_fallback_{idx}"]
+        terms = [
+            {
+                "term": f"{label.lower()} proof path",
+                "text": f"{label.lower()} proof path",
+                "source_fact_id": source_fact_id,
+                "source_fact_ids": [source_fact_id],
+                "graph_skill_node_ids": skill_ids[:2],
+                "source_skill_ids": skill_ids[:2],
+                "support_class": "FACT_AND_SKILL_GRAPH",
+            },
+            {
+                "term": f"{label.lower()} operating model",
+                "text": f"{label.lower()} operating model",
+                "source_fact_id": source_fact_id,
+                "source_fact_ids": [source_fact_id],
+                "graph_skill_node_ids": skill_ids[:2],
+                "source_skill_ids": skill_ids[:2],
+                "support_class": "FACT_AND_SKILL_GRAPH",
+            },
+        ]
+        competencies.append(
+            {
+                "category_id": label.lower().replace(" ", "_"),
+                "category_label": label,
+                "competency_bundle_id": f"ccb_{label.lower().replace(' ', '_')}",
+                "graph_skill_node_ids": skill_ids[:3],
+                "source_fact_ids": [source_fact_id],
+                "selection_score": round(0.94 - idx * 0.03, 2),
+                "terms": terms,
+            }
+        )
+    return competencies
 
 
 # ---------------------------------------------------------------------------
@@ -209,6 +271,19 @@ def test_c0_evidence_pack_has_marker_and_authority_lines():
     assert "jd_usage = targeting_only" in pack
     assert "competency_bundle_id" in pack
     assert payload.get("competency_bundle_ids")
+
+
+def test_competencies_path_diversity_framing_biases_graph_neighborhoods():
+    msgs = append_competencies_path_diversity_to_messages(
+        [{"role": "user", "content": "base"}],
+        path_index=3,
+        temperature=0.41,
+    )
+    text = msgs[-1]["content"]
+    assert "COMPETENCIES_PATH_DIVERSITY" in text
+    assert "llmops evaluation and reliability" in text
+    assert "candidate-neighborhood expansion" in text
+    assert "JD and briefing text are targeting context only, never proof" in text
 
 
 def test_proof_pool_attach_sets_consumption_flags():
@@ -324,6 +399,207 @@ def test_rigor_and_density_floors_fail_on_thin_output():
     assert not q.check_technical_density_floor(thin).passed
 
 
+def test_source_fact_concentration_limit_fails_anthropic_shape():
+    comps = _good_competencies() + [
+        _good_category(
+            "partner",
+            "Cloud & Partner Ecosystems",
+            ["hyperscaler alliance co-sell", "partner ecosystem gtm", "joint revenue execution"],
+        )
+    ]
+    for idx, cat in enumerate(comps):
+        cat["selection_score"] = round(0.91 - idx * 0.01, 2)
+    for cat in comps[:7]:
+        cat["source_fact_ids"] = ["fact_engineering_platform_001"]
+        for term in cat["terms"]:
+            term["source_fact_ids"] = ["fact_engineering_platform_001"]
+    comps[7]["source_fact_ids"] = [
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_002",
+    ]
+    for term in comps[7]["terms"]:
+        term["source_fact_ids"] = ["fact_partnerships_gtm_001"]
+
+    receipt = q.build_competencies_graph_sufficiency_receipt(comps)
+    assert receipt["dominant_source_fact_id"] == "fact_engineering_platform_001"
+    assert receipt["dominant_source_fact_category_share"] == pytest.approx(0.875)
+
+    result = q.check_source_fact_concentration_limit(comps)
+    assert result.passed is False
+    assert "fact_engineering_platform_001" in str(result.observed_value)
+
+
+def test_per_category_confidence_nonconstant_requires_real_category_scores():
+    comps = _good_competencies()[:3]
+    assert q.check_per_category_confidence_nonconstant(comps).passed is False
+
+    for cat in comps:
+        cat["selection_score"] = 0.9
+    assert q.check_per_category_confidence_nonconstant(comps).passed is False
+
+    comps[1]["selection_score"] = 0.86
+    comps[2]["selection_score"] = 0.78
+    assert q.check_per_category_confidence_nonconstant(comps).passed is True
+
+
+def test_rejected_neighbor_audit_required_for_bundle_mode_traversal_proof():
+    assert q.check_competencies_rejected_neighbor_audit_present({}).passed is False
+    parsed = {
+        "competencies_rejected_neighbor_audit": {
+            "schema_version": "competencies_rejected_neighbor_audit_v1",
+            "audit_status": "present",
+            "candidate_label_count": 10,
+            "candidate_variant_count": 12,
+            "selected_count": 8,
+            "rejected_neighbor_count": 2,
+            "rejected_neighbors": [
+                {"category_label": "Alternative Platform Governance"},
+                {"category_label": "Alliance Operating Systems"},
+            ],
+        }
+    }
+    result = q.check_competencies_rejected_neighbor_audit_present(parsed)
+    assert result.passed is True
+    assert result.gate_id == "x2_competencies_rejected_neighbor_audit_present"
+
+
+def test_anthropic_partnership_traversal_receipt_proves_graph_breadth_and_axes():
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": plan,
+        },
+        section_id="competencies",
+    )
+    comps = _competencies_from_graph_plan(plan)
+    parsed = {
+        "competencies_rejected_neighbor_audit": {
+            "schema_version": "competencies_rejected_neighbor_audit_v1",
+            "audit_status": "present",
+            "candidate_label_count": 12,
+            "candidate_variant_count": 48,
+            "selected_count": len(comps),
+            "rejected_neighbor_count": 40,
+            "rejected_neighbors": [{"category_label": "Alternative Partnership Operating Model"}],
+        }
+    }
+
+    receipt = q.build_competencies_graph_sufficiency_receipt(
+        comps,
+        proof_pool_metadata=meta,
+        parsed_output=parsed,
+        jd_text=jd_text,
+        briefing_text=brief_text,
+        x1d_judges=[{"provider_key": "fixture_judge", "score": 0.84}],
+    )
+    traversal = receipt["traversal_sufficiency_receipt"]
+
+    assert traversal["target_role_profile"] == "ai_partnerships_gtm"
+    assert traversal["graph_evidence_depth_status"] == "judge_grade"
+    assert traversal["candidate_nodes_visited_count"] > traversal["selected_unique_leaf_skill_count"]
+    assert traversal["selected_role_episode_root_ids"]
+    assert traversal["selected_leaf_skill_ids"]
+    assert traversal["selected_metric_outcome_ids"]
+    assert traversal["rejected_sibling_skill_ids"]
+    assert traversal["frontier_size_by_hop_depth"]["1_leaf_skill_candidates"] >= 16
+    assert traversal["frontier_size_by_hop_depth"]["2_metric_outcome_candidates"] >= 8
+    assert traversal["rejected_sibling_skill_count"] > 0
+    assert traversal["selected_vs_rejected_candidate_comparison"]["selector_rejected_neighbor_count"] == 40
+    assert traversal["role_specific_axis_coverage"]["missing_axes"] == []
+    assert receipt["confidence_nonconstant"] is True
+    assert len(receipt["unique_category_confidence_values"]) > 1
+    first_breakdown = receipt["categories"][0]["confidence_breakdown"]
+    assert first_breakdown["judge_score_available"] is True
+    assert set(first_breakdown) >= {
+        "graph_path_specificity",
+        "source_fact_diversity",
+        "selector_score",
+        "judge_score",
+        "jd_brief_alignment",
+        "penalties",
+    }
+    output_lines = _format_competencies_graph_sourcing_assessment(
+        receipt,
+        x2_gates=[
+            {"gate_id": "x2_competencies_graph_traversal_sufficiency", "pass": True},
+            {"gate_id": "x2_competencies_graph_granularity_gates", "pass": True},
+        ],
+        traversal_receipt_ref="artifacts/test/competencies_graph_traversal_sufficiency_receipt.json",
+    )
+    output_text = "\n".join(output_lines)
+    assert "GRAPH_SOURCING_ASSESSMENT:" in output_text
+    assert "SCHEMA_ORDER: role -> role_episode_roots -> skills -> metrics" in output_text
+    assert "ROLE: profile=ai_partnerships_gtm" in output_text
+    assert "ROLE_EPISODE_ROOTS:" in output_text
+    assert "SKILLS:" in output_text
+    assert "METRICS:" in output_text
+    assert "REJECTED_SIBLINGS:" in output_text
+    assert "SELECTED_VS_REJECTED:" in output_text
+    assert "ROLE_AXIS_COVERAGE:" in output_text
+    assert "CONFIDENCE:" in output_text
+    assert "ASSESSMENT: ACCEPTABLE" in output_text
+    assert "GRAPH_RECEIPT: artifacts/test/competencies_graph_traversal_sufficiency_receipt.json" in output_text
+
+
+def test_anthropic_partnership_graph_sufficiency_and_granularity_gates_pass():
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": plan,
+        },
+        section_id="competencies",
+    )
+    comps = _competencies_from_graph_plan(plan)
+    parsed = {
+        "competencies_rejected_neighbor_audit": {
+            "schema_version": "competencies_rejected_neighbor_audit_v1",
+            "audit_status": "present",
+            "candidate_label_count": 12,
+            "candidate_variant_count": 48,
+            "selected_count": len(comps),
+            "rejected_neighbor_count": 40,
+        }
+    }
+
+    traversal_result = q.check_competencies_graph_traversal_sufficiency(
+        comps,
+        meta,
+        parsed,
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    granularity_result = q.check_competencies_graph_granularity_gates(
+        comps,
+        meta,
+        parsed,
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+
+    assert traversal_result.passed is True
+    assert traversal_result.observed_value["target_role_profile"] == "ai_partnerships_gtm"
+    assert granularity_result.passed is True
+    assert granularity_result.observed_value["missing_role_axes"] == []
+
+
 # ---------------------------------------------------------------------------
 # X2 orchestrator emits bundle gates only in bundle mode
 # ---------------------------------------------------------------------------
@@ -369,6 +645,11 @@ def test_run_competencies_x2_emits_bundle_gates_in_bundle_mode():
         "x2_required_capability_families_covered",
         "x2_competency_rigor_floor_met",
         "x2_technical_density_floor_met",
+        "x2_competencies_source_fact_concentration_limit",
+        "x2_competencies_per_category_confidence_nonconstant",
+        "x2_competencies_rejected_neighbor_audit_present",
+        "x2_competencies_graph_traversal_sufficiency",
+        "x2_competencies_graph_granularity_gates",
     ):
         assert gid in gate_ids, f"missing bundle gate {gid}"
 

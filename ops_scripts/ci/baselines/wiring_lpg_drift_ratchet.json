@@ -1,12 +1,12 @@
 {
   "gate_id": "L2_lpg_drift_ratchet",
-  "count": 1,
+  "count": 0,
   "seeded_at": "2026-05-17T11:54:29.726145+00:00",
-  "snapshot": "adg_indexed_05252026_1012.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-06-13T17:29:18.371586+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1324.sqlite",
-  "tightened_at": "2026-05-25T14:22:42.305930+00:00",
+  "snapshot": "adg_indexed_06222026_0432.sqlite",
+  "zero_run_streak": 2,
+  "last_run_at": "2026-06-22T08:46:54.181317+00:00",
+  "last_run_snapshot": "adg_indexed_06222026_0432.sqlite",
+  "tightened_at": "2026-06-22T08:46:00.753329+00:00",
   "tighten_history": [
     {
       "at": "2026-05-21T08:53:38.456939+00:00",
@@ -18,6 +18,12 @@
       "at": "2026-05-25T14:22:42.305930+00:00",
       "snapshot": "adg_indexed_05252026_1012.sqlite",
       "from": 28,
+      "to": 0
+    },
+    {
+      "at": "2026-06-22T08:46:00.753329+00:00",
+      "snapshot": "adg_indexed_06222026_0432.sqlite",
+      "from": 1,
       "to": 0
     }
   ],

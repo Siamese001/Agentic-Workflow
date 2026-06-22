@@ -6,83 +6,171 @@
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 7,
         "decision": "defer",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "7 unresolved import(s) on this surface.",
+        "move": "Defer archived unresolved imports",
+        "next_step": "Leave archived noise deferred unless it affects live paths.",
         "priority": 10,
         "scope": "ADG::Module::tests/_archived_obsolete/integration/apps_exec/test_eval_to_learning_bridge.py",
         "surface": "archived",
         "technical_reason": "7 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Leave archived noise deferred unless it affects live paths."
       }
     ],
     "brief": {
       "business_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
       "next_step": "Deprecate first, then delete after the evidence stays clean.",
-      "north_star": "Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.",
+      "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
       "priority_rows": [
         {
+          "action": "Remove confirmed dead imports",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "change_breakout": [],
           "decision": "remove_imports",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "19 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
+          "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 1,
+          "rank": 1,
+          "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+          "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+          "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+          "work": "Remove confirmed dead imports"
+        },
+        {
+          "action": "Remove confirmed dead imports",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "change_breakout": [],
+          "decision": "remove_imports",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+          "move": "Remove confirmed dead imports",
+          "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+          "priority": 2,
+          "rank": 2,
+          "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+          "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+          "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+          "work": "Remove confirmed dead imports"
+        },
+        {
+          "action": "Remove confirmed dead imports",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "change_breakout": [],
+          "decision": "remove_imports",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+          "move": "Remove confirmed dead imports",
+          "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+          "priority": 3,
+          "rank": 3,
           "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
           "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
-          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+          "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+          "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+          "work": "Remove confirmed dead imports"
         },
         {
-          "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
-          "decision": "remove_imports",
-          "move": "Remove confirmed dead imports",
-          "priority": 2,
-          "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-          "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
-          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
-        },
-        {
-          "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
-          "decision": "remove_imports",
-          "move": "Remove confirmed dead imports",
-          "priority": 3,
-          "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-          "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
-          "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
-        },
-        {
+          "action": "Triage unresolved imports",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
+          "change_breakout": [],
           "decision": "investigate",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
           "move": "Triage unresolved imports",
+          "next_step": "Trace the top unresolved scope before deleting anything else.",
           "priority": 4,
+          "rank": 4,
           "scope": "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
-          "technical_reason": "486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
-          "why_this_rank": "We need a cleaner signal before we can trust deletion decisions."
+          "technical_reason": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+          "why_it_matters": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
+          "why_this_rank": "Trace the top unresolved scope before deleting anything else.",
+          "work": "Triage unresolved imports"
         },
         {
+          "action": "Reduce low-confidence noise",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
+          "change_breakout": [],
           "decision": "stabilize",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "First-party low-confidence ratio = 1.58% and inferred-symbol ratio = 10.14%.",
           "move": "Reduce low-confidence noise",
+          "next_step": "Lower the noise floor, then rerun the scan.",
           "priority": 5,
+          "rank": 5,
           "scope": "first-party nodes",
-          "technical_reason": "First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%.",
-          "why_this_rank": "Noise reduction improves the quality of the next scan and makes future deletions safer."
+          "technical_reason": "First-party low-confidence ratio = 1.58% and inferred-symbol ratio = 10.14%.",
+          "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
+          "why_this_rank": "Lower the noise floor, then rerun the scan.",
+          "work": "Reduce low-confidence noise"
         },
         {
+          "action": "Deprecate low-value ADG signals",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
+          "change_breakout": [],
           "decision": "deprecate",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+          "evidence": "0 MV candidates and 0 unused artifacts surfaced by the report.",
           "move": "Deprecate low-value ADG signals",
+          "next_step": "Deprecate only after higher-confidence cleanup is complete.",
           "priority": 6,
+          "rank": 6,
           "scope": "materialized views and unused artifacts",
           "technical_reason": "0 MV candidates and 0 unused artifacts surfaced by the report.",
-          "why_this_rank": "This is cheap cleanup, but it should follow the evidence cleanup work above."
+          "why_it_matters": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
+          "why_this_rank": "Deprecate only after higher-confidence cleanup is complete.",
+          "work": "Deprecate low-value ADG signals"
         }
       ],
       "priority_rule": "Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.",
-      "status": "NO_DELETIONS_APPROVED",
+      "secondary_statuses": {
+        "Source report status": "PASS"
+      },
+      "status": "DELETION_CANDIDATES",
+      "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_06192026_1037.sqlite (snapshot 06192026_1037)",
-        "Dead code candidates: 0",
-        "Dead imports: 935",
-        "Unresolved imports: 486",
-        "First-party low-confidence ratio: 1.59%",
-        "Inferred-symbol ratio: 10.16%",
+        "ADG source: artifacts/adg/adg_indexed_06222026_0539.sqlite (snapshot 06222026_0539)",
+        "Dead code candidates: 965",
+        "Dead imports: 965",
+        "Unresolved imports: 483",
+        "First-party low-confidence ratio: 1.58%",
+        "Inferred-symbol ratio: 10.14%",
         "Cleanup candidates surfaced: 0"
       ],
       "title": "BCG Cleanup Brief",
@@ -99,159 +187,291 @@
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 9,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "9 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 1,
         "scope": "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
         "surface": "live",
         "technical_reason": "9 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 9,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "9 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 2,
         "scope": "ADG::Module::tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
         "surface": "live",
         "technical_reason": "9 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 8,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "8 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 3,
         "scope": "ADG::Module::agentic_core/L3_orchestration/enforcement/mission_runner.py",
         "surface": "live",
         "technical_reason": "8 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 8,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "8 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 4,
         "scope": "ADG::Module::agentic_core/L4_state/utils/memory/case_library.py",
         "surface": "live",
         "technical_reason": "8 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 8,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "8 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 5,
         "scope": "ADG::Module::tests/apps_shared/test_validators.py",
         "surface": "live",
         "technical_reason": "8 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 7,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "7 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 6,
         "scope": "ADG::Module::agentic_core/interfaces/meta_control.py",
         "surface": "live",
         "technical_reason": "7 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 7,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "7 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 7,
         "scope": "ADG::Module::ops_scripts/dev_tools/L0_routing_scripts/forward_rolling_facade.py",
         "surface": "live",
         "technical_reason": "7 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 7,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "7 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 8,
         "scope": "ADG::Module::tests/_apps_contract/test_apps_rg_acceptance_checks.py",
         "surface": "live",
         "technical_reason": "7 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       },
       {
         "business_reason": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
         "count": 6,
         "decision": "investigate",
+        "decision_options": [],
+        "done_condition": "Rerun ADG and confirm the unresolved-import noise is lower or intentionally archived.",
+        "evidence": "6 unresolved import(s) on this surface.",
+        "move": "Triage unresolved imports",
+        "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 9,
         "scope": "ADG::Module::agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
         "surface": "live",
         "technical_reason": "6 unresolved import(s) on this surface.",
-        "why_this_rank": "Start where a single pass can remove the most noise from the current report."
+        "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
+        "why_this_rank": "Trace the live imports, then rerun the scan."
       }
     ],
     "priority_rows": [
       {
+        "action": "Remove confirmed dead imports",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
         "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "change_breakout": [],
         "decision": "remove_imports",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "19 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
+        "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 1,
+        "rank": 1,
+        "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+        "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+        "work": "Remove confirmed dead imports"
+      },
+      {
+        "action": "Remove confirmed dead imports",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "change_breakout": [],
+        "decision": "remove_imports",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+        "move": "Remove confirmed dead imports",
+        "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+        "priority": 2,
+        "rank": 2,
+        "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+        "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+        "work": "Remove confirmed dead imports"
+      },
+      {
+        "action": "Remove confirmed dead imports",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "change_breakout": [],
+        "decision": "remove_imports",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+        "move": "Remove confirmed dead imports",
+        "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+        "priority": 3,
+        "rank": 3,
         "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
         "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
-        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
+        "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
+        "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
+        "work": "Remove confirmed dead imports"
       },
       {
-        "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
-        "decision": "remove_imports",
-        "move": "Remove confirmed dead imports",
-        "priority": 2,
-        "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-        "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
-        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
-      },
-      {
-        "business_reason": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
-        "decision": "remove_imports",
-        "move": "Remove confirmed dead imports",
-        "priority": 3,
-        "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-        "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
-        "why_this_rank": "Delete the most certain waste first so we do not spend time cleaning speculative targets."
-      },
-      {
+        "action": "Triage unresolved imports",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
         "business_reason": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
+        "change_breakout": [],
         "decision": "investigate",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
         "move": "Triage unresolved imports",
+        "next_step": "Trace the top unresolved scope before deleting anything else.",
         "priority": 4,
+        "rank": 4,
         "scope": "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
-        "technical_reason": "486 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
-        "why_this_rank": "We need a cleaner signal before we can trust deletion decisions."
+        "technical_reason": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+        "why_it_matters": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
+        "why_this_rank": "Trace the top unresolved scope before deleting anything else.",
+        "work": "Triage unresolved imports"
       },
       {
+        "action": "Reduce low-confidence noise",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
         "business_reason": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
+        "change_breakout": [],
         "decision": "stabilize",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "First-party low-confidence ratio = 1.58% and inferred-symbol ratio = 10.14%.",
         "move": "Reduce low-confidence noise",
+        "next_step": "Lower the noise floor, then rerun the scan.",
         "priority": 5,
+        "rank": 5,
         "scope": "first-party nodes",
-        "technical_reason": "First-party low-confidence ratio = 1.59% and inferred-symbol ratio = 10.16%.",
-        "why_this_rank": "Noise reduction improves the quality of the next scan and makes future deletions safer."
+        "technical_reason": "First-party low-confidence ratio = 1.58% and inferred-symbol ratio = 10.14%.",
+        "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
+        "why_this_rank": "Lower the noise floor, then rerun the scan.",
+        "work": "Reduce low-confidence noise"
       },
       {
+        "action": "Deprecate low-value ADG signals",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
         "business_reason": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
+        "change_breakout": [],
         "decision": "deprecate",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
+        "evidence": "0 MV candidates and 0 unused artifacts surfaced by the report.",
         "move": "Deprecate low-value ADG signals",
+        "next_step": "Deprecate only after higher-confidence cleanup is complete.",
         "priority": 6,
+        "rank": 6,
         "scope": "materialized views and unused artifacts",
         "technical_reason": "0 MV candidates and 0 unused artifacts surfaced by the report.",
-        "why_this_rank": "This is cheap cleanup, but it should follow the evidence cleanup work above."
+        "why_it_matters": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
+        "why_this_rank": "Deprecate only after higher-confidence cleanup is complete.",
+        "work": "Deprecate low-value ADG signals"
       }
     ],
     "source": "artifacts/adg/dead_code_zone_control_report_latest.json",
     "status": "PASS",
     "summary": {
       "cleanup_candidate_count": 0,
-      "dead_code_candidates": 0,
-      "dead_imports": 935,
+      "dead_code_candidates": 965,
+      "dead_imports": 965,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5915119363395225,
-      "inferred_symbol_ratio": 10.155405678751206,
-      "unresolved_imports": 486,
+      "first_party_low_confidence_ratio": 1.5760107025157437,
+      "inferred_symbol_ratio": 10.143983584257487,
+      "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
         "Unresolved imports are the biggest uncertainty and can hide real cleanup work.",
@@ -260,78 +480,158 @@
       ]
     }
   },
-  "generated_at_utc": "2026-06-19T14:54:00+00:00",
+  "generated_at_utc": "2026-06-22T09:55:33+00:00",
   "p2": {
     "brief": {
-      "business_read": "The published snapshot is still 19 over the P2 ceiling, so the ratchet remains blocked.",
+      "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
       "next_step": "Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.",
-      "north_star": "Maintain SVP engineer-level repo standards: business-first decisions, explicit prioritization, and technical evidence a layperson can follow.",
+      "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
       "priority_rows": [
         {
+          "action": "Reduce MEDIUM hygiene debt",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "change_breakout": [],
           "decision": "reduce",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+          "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
+          "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 1,
+          "rank": 1,
           "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
           "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
-          "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+          "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
+          "work": "Reduce MEDIUM hygiene debt"
         },
         {
+          "action": "Reduce MEDIUM hygiene debt",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "change_breakout": [],
           "decision": "reduce",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+          "evidence": "4 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
+          "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 2,
+          "rank": 2,
           "scope": "apps_rg/runtime/bindings/u0_package_ingest.py",
           "technical_reason": "4 MEDIUM hygiene record(s) in the published snapshot.",
-          "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+          "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
+          "work": "Reduce MEDIUM hygiene debt"
         },
         {
+          "action": "Reduce MEDIUM hygiene debt",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "change_breakout": [],
           "decision": "reduce",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+          "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
+          "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 3,
+          "rank": 3,
           "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
           "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
-          "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+          "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
+          "work": "Reduce MEDIUM hygiene debt"
         },
         {
+          "action": "Reduce MEDIUM hygiene debt",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "change_breakout": [],
           "decision": "reduce",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+          "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
+          "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 4,
+          "rank": 4,
           "scope": "apps_rg/runtime/c0/c02_semantic_cache_payload.py",
           "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-          "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+          "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+          "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
+          "work": "Reduce MEDIUM hygiene debt"
         },
         {
+          "action": "Remove star imports",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "Star imports hide dependencies and make deprecation decisions harder to defend.",
+          "change_breakout": [],
           "decision": "deprecate",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "Star imports are gone from the published snapshot.",
+          "evidence": "1 MEDIUM hygiene record(s) are explicit star imports.",
           "move": "Remove star imports",
+          "next_step": "Replace star imports with explicit imports.",
           "priority": 5,
+          "rank": 5,
           "scope": "apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py",
           "technical_reason": "1 MEDIUM hygiene record(s) are explicit star imports.",
-          "why_this_rank": "Easy wins should follow the largest live runtime hotspots."
+          "why_it_matters": "Star imports hide dependencies and make deprecation decisions harder to defend.",
+          "why_this_rank": "Easy wins should follow the largest live runtime hotspots.",
+          "work": "Remove star imports"
         },
         {
+          "action": "Re-run ADG and keep the ceiling honest",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
           "business_reason": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
+          "change_breakout": [],
           "decision": "rebaseline_if_intentional",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
+          "evidence": "Current count=18; ceiling=18; delta=0.",
           "move": "Re-run ADG and keep the ceiling honest",
+          "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
           "priority": 6,
-          "scope": "p2_ratchet.json",
-          "technical_reason": "Current count=19; ceiling=0; delta=19.",
-          "why_this_rank": "Re-baselining before cleanup only hides the blocker."
+          "rank": 6,
+          "scope": "adg_indexed_06222026_0539.sqlite",
+          "technical_reason": "Current count=18; ceiling=18; delta=0.",
+          "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
+          "why_this_rank": "Re-baselining before cleanup only hides the blocker.",
+          "work": "Re-run ADG and keep the ceiling honest"
         }
       ],
       "priority_rule": "Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.",
-      "status": "OVER_CEILING",
+      "secondary_statuses": {},
+      "status": "WITHIN_CEILING",
+      "status_label": "P2 ratchet status",
       "table_limit": 6,
       "technical_read": [
-        "Published sqlite snapshot: artifacts/adg/adg_indexed_06192026_1037.sqlite",
-        "P2 ceiling: 0",
-        "Current MEDIUM hygiene count: 19",
-        "Delta vs ceiling: +19",
-        "Baseline snapshot: missing",
-        "Latest failed run: 2026-06-19T14:36:52Z (failed)"
+        "Published sqlite snapshot: artifacts/adg/adg_indexed_06222026_0539.sqlite",
+        "P2 ceiling: 18",
+        "Current MEDIUM hygiene count: 18",
+        "Delta vs ceiling: +0",
+        "Baseline snapshot: adg_indexed_06222026_0539.sqlite",
+        "Latest failed run: 2026-06-22T09:28:21Z (failed)"
       ],
       "title": "BCG P2 Ratchet Brief",
       "why_this_order": [
@@ -340,7 +640,7 @@
         "Re-baselining too early hides the blocker instead of paying it down."
       ]
     },
-    "business_read": "The published snapshot is still 19 over the P2 ceiling, so the ratchet remains blocked.",
+    "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
     "evidence_buckets": [
       {
         "count": 9,
@@ -353,14 +653,14 @@
         "interpretation": "Filesystem / IO error handling needs to be narrowed."
       },
       {
-        "count": 2,
-        "evidence": "ImportError",
-        "interpretation": "Import fallback logic should be explicit and local."
-      },
-      {
         "count": 1,
         "evidence": "NotADirectoryError",
         "interpretation": "Hygiene debt on the current published snapshot."
+      },
+      {
+        "count": 1,
+        "evidence": "ImportError",
+        "interpretation": "Import fallback logic should be explicit and local."
       },
       {
         "count": 1,
@@ -378,155 +678,236 @@
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 5,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
         "surface": "live runtime",
         "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 4,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "4 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/bindings/u0_package_ingest.py",
         "surface": "live runtime",
         "technical_reason": "4 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 2,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
         "surface": "live runtime",
         "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/c0/c02_semantic_cache_payload.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
-        "scope": "apps_rg/runtime/orchestration/canonical_dispatch.py",
-        "surface": "live runtime",
-        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
-      },
-      {
-        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
-        "count": 1,
-        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/orchestration/patch_run.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/orchestration/section_lane_executor.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/reasoning/bullet_fact_entailment.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "count": 1,
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/sections/upstream_evidence_block.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       }
     ],
     "priority_rows": [
       {
         "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 1,
         "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
         "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "4 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 2,
         "scope": "apps_rg/runtime/bindings/u0_package_ingest.py",
         "technical_reason": "4 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 3,
         "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
         "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 4,
         "scope": "apps_rg/runtime/c0/c02_semantic_cache_payload.py",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
-        "why_this_rank": "Highest-count paths should be reduced first to move the ceiling fastest."
+        "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
       {
         "business_reason": "Star imports hide dependencies and make deprecation decisions harder to defend.",
         "decision": "deprecate",
+        "decision_options": [],
+        "done_condition": "Star imports are gone from the published snapshot.",
+        "evidence": "1 MEDIUM hygiene record(s) are explicit star imports.",
         "move": "Remove star imports",
+        "next_step": "Replace star imports with explicit imports.",
         "priority": 5,
         "scope": "apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py",
         "technical_reason": "1 MEDIUM hygiene record(s) are explicit star imports.",
+        "why_it_matters": "Star imports hide dependencies and make deprecation decisions harder to defend.",
         "why_this_rank": "Easy wins should follow the largest live runtime hotspots."
       },
       {
         "business_reason": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
         "decision": "rebaseline_if_intentional",
+        "decision_options": [],
+        "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
+        "evidence": "Current count=18; ceiling=18; delta=0.",
         "move": "Re-run ADG and keep the ceiling honest",
+        "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
         "priority": 6,
-        "scope": "p2_ratchet.json",
-        "technical_reason": "Current count=19; ceiling=0; delta=19.",
+        "scope": "adg_indexed_06222026_0539.sqlite",
+        "technical_reason": "Current count=18; ceiling=18; delta=0.",
+        "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
         "why_this_rank": "Re-baselining before cleanup only hides the blocker."
       }
     ],
@@ -613,43 +994,67 @@
       },
       {
         "disposition": "untriaged",
-        "evidence": "ImportError",
-        "file_path": "apps_rg/runtime/orchestration/canonical_dispatch.py",
-        "line_no": 129,
+        "evidence": "OSError",
+        "file_path": "apps_rg/runtime/orchestration/patch_run.py",
+        "line_no": 73,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       },
       {
         "disposition": "untriaged",
         "evidence": "OSError",
-        "file_path": "apps_rg/runtime/orchestration/patch_run.py",
-        "line_no": 73,
+        "file_path": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py",
+        "line_no": 142,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       }
     ],
-    "status": "over_ceiling",
+    "status": "within_ceiling",
     "summary": {
-      "baseline_snapshot": "",
-      "ceiling": 0,
-      "current_medium_hygiene_count": 19,
-      "delta": 19,
+      "baseline_snapshot": "adg_indexed_06222026_0539.sqlite",
+      "ceiling": 18,
+      "current_medium_hygiene_count": 18,
+      "delta": 0,
       "failed_run_status": "failed",
-      "failed_run_timestamp": "2026-06-19T14:36:52Z",
-      "published_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite"
+      "failed_run_timestamp": "2026-06-22T09:28:21Z",
+      "published_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite"
     }
   },
   "source_snapshots": {
     "dead_code_report": {
       "dead_code_candidates": {
-        "dead_code_by_confidence": {},
-        "dead_code_by_entity_type": {},
-        "dead_code_by_layer": {},
-        "dead_code_hotspots": [],
-        "total_dead_code_candidates": 0
-      },
-      "dead_imports": {
-        "dead_import_hotspots": [
+        "dead_code_by_confidence": {
+          "HIGH": 898
+        },
+        "dead_code_by_entity_type": {
+          "module": 898,
+          "symbol": 413
+        },
+        "dead_code_by_layer": {
+          "L0": 8,
+          "L1": 114,
+          "L2": 18,
+          "L3": 41,
+          "L4": 37,
+          "L5": 30,
+          "L6": 27,
+          "L_APP": 18,
+          "L_OPS": 38,
+          "L_PG": 6,
+          "L_RUNTIME": 18,
+          "L_SHARED": 34,
+          "L_TEST": 418,
+          "L_TOOLS": 91
+        },
+        "dead_code_hotspots": [
+          [
+            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+            19
+          ],
+          [
+            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+            14
+          ],
           [
             "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
             13
@@ -681,53 +1086,93 @@
           [
             "tests/unit/apps_exec/services/test_document_ingestion_service.py",
             9
+          ]
+        ],
+        "source": "dead_import_overlay",
+        "total_dead_code_candidates": 965
+      },
+      "dead_imports": {
+        "dead_import_hotspots": [
+          [
+            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+            19
           ],
           [
-            "tests/apps_eval/test_validators.py",
-            8
+            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+            14
           ],
           [
-            "tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
-            8
+            "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+            13
+          ],
+          [
+            "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+            12
+          ],
+          [
+            "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+            11
+          ],
+          [
+            "tools/demo/apps_evidence_demo.py",
+            10
+          ],
+          [
+            "tools/eval/retrieval_benchmark.py",
+            10
+          ],
+          [
+            "tests/apps_eval/test_apps_eval_integration.py",
+            9
+          ],
+          [
+            "tests/apps_eval/test_eval_to_bus_roundtrip.py",
+            9
+          ],
+          [
+            "tests/unit/apps_exec/services/test_document_ingestion_service.py",
+            9
           ]
         ],
         "dead_imports_by_confidence": {},
         "dead_imports_by_domain": {},
+        "dead_imports_by_entity_type": {
+          "module": 898,
+          "symbol": 413
+        },
         "dead_imports_by_layer": {},
         "l4_dead_imports": 0,
-        "overlay_dead_imports_by_severity": {
-          "HIGH": 935
-        },
+        "overlay_dead_imports_by_severity": {},
         "source_counts": {
           "legacy_dead_import_edges": 0,
-          "overlay_dead_import_resolved": 935
+          "overlay_dead_import_resolved": 965
         },
-        "total_dead_imports": 935
+        "total_dead_imports": 965
       },
       "errors": [],
       "executive_readiness": {
         "executive_metrics": {
-          "dead_code_count": 0,
-          "dead_import_count": 0,
-          "first_party_low_confidence_ratio": 1.5915119363395225,
-          "inferred_symbol_ratio": 10.155405678751206,
+          "dead_code_count": 965,
+          "dead_import_count": 965,
+          "first_party_low_confidence_ratio": 1.5760107025157437,
+          "inferred_symbol_ratio": 10.143983584257487,
           "l4_unresolved_import_count": 0,
-          "low_confidence_count": 486,
-          "unresolved_import_count": 486
+          "low_confidence_count": 483,
+          "unresolved_import_count": 483
         },
         "executive_ready": true,
         "first_party_metrics": {
-          "dead_code_count": 0,
-          "dead_import_count": 0,
+          "dead_code_count": 898,
+          "dead_import_count": 898,
           "l4_unresolved_import_count": 0,
-          "low_confidence_count": 486,
-          "unresolved_import_count": 486
+          "low_confidence_count": 483,
+          "unresolved_import_count": 483
         },
         "readiness_issues": []
       },
       "inferred_symbols": {
         "inferred_by_confidence": {
-          "MEDIUM": 17572
+          "MEDIUM": 17599
         },
         "inferred_by_layer": {
           "L0": 1349,
@@ -737,42 +1182,42 @@
           "L4": 606,
           "L5": 1291,
           "L6": 1304,
-          "L_APP": 5206,
-          "L_OPS": 487,
+          "L_APP": 5223,
+          "L_OPS": 491,
           "L_PG": 497,
-          "L_RUNTIME": 1076,
+          "L_RUNTIME": 1077,
           "L_SHARED": 596,
           "L_TEST": 289,
-          "L_TOOLS": 2323,
+          "L_TOOLS": 2328,
           "L_UNKNOWN": 216
         },
-        "inferred_symbol_ratio": 10.155405678751206,
-        "total_inferred_symbols": 17572,
-        "total_symbols": 173031
+        "inferred_symbol_ratio": 10.143983584257487,
+        "total_inferred_symbols": 17599,
+        "total_symbols": 173492
       },
       "low_confidence_zones": {
-        "first_party_low_confidence_ratio": 1.5915119363395225,
+        "first_party_low_confidence_ratio": 1.5760107025157437,
         "governance_low_confidence_ratio": 0.0,
         "low_conf_by_entity_type": {
-          "symbol": 486
+          "symbol": 483
         },
         "low_conf_by_identity_kind": {
-          "unresolved_import": 486
+          "unresolved_import": 483
         },
         "low_conf_by_layer": {
-          "": 486
+          "": 483
         },
         "low_conf_hotspots": [
           [
             "",
-            486
+            483
           ]
         ],
-        "total_low_confidence": 486
+        "total_low_confidence": 483
       },
       "source": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
-        "adg_snapshot_ts": "06192026_1037",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+        "adg_snapshot_ts": "06222026_0539",
         "dead_code_signal_sources": [
           "overlay_violations.category=dead_import_resolved",
           "mv_dead_import_hotspots_overlay",
@@ -782,25 +1227,25 @@
       },
       "status": "PASS",
       "summary": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
-        "adg_snapshot_ts": "06192026_1037",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+        "adg_snapshot_ts": "06222026_0539",
         "executive_ready": true,
-        "first_party_low_confidence_ratio": 1.5915119363395225,
-        "inferred_symbol_ratio": 10.155405678751206,
+        "first_party_low_confidence_ratio": 1.5760107025157437,
+        "inferred_symbol_ratio": 10.143983584257487,
         "l4_unresolved_imports": 0,
-        "total_dead_code_candidates": 0,
-        "total_dead_imports": 935,
-        "total_low_confidence": 486,
-        "total_unresolved_imports": 486
+        "total_dead_code_candidates": 965,
+        "total_dead_imports": 965,
+        "total_low_confidence": 483,
+        "total_unresolved_imports": 483
       },
       "unresolved_imports": {
         "l4_unresolved": 0,
-        "total_unresolved_imports": 486,
+        "total_unresolved_imports": 483,
         "unresolved_by_confidence": {
-          "LOW": 486
+          "LOW": 483
         },
         "unresolved_by_layer": {
-          "": 486
+          "": 483
         },
         "unresolved_hotspots": [
           [
@@ -846,69 +1291,349 @@
         ]
       },
       "warnings": [
+        "Domain field not available for dead import analysis",
+        "L4 has 37 dead imports (should trend to zero)",
         "Domain field not available for dead import analysis"
       ]
     },
     "failed_run_manifest": {
       "certification_status": "failed",
       "deferred_failures": [],
-      "failed_gates": [],
+      "failed_gates": [
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": null,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:24:45Z",
+          "kind": "subprocess",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260622_092445.json",
+          "name": "adg_gate_dispatcher",
+          "phase": "post-commit-validation",
+          "script_rel": "ops_scripts/ci/adg_gates/run.py",
+          "started_at_utc": "2026-06-22T09:24:45Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 26.20300000000134,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
+          "name": "lifecycle",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.4850000000005821,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
+          "name": "test-coverage",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "fail"
+        }
+      ],
       "gates": [
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T14:35:07Z",
+          "finished_at_utc": "2026-06-22T09:10:58Z",
           "kind": "python_function",
           "message": null,
           "name": "mcp_config_drift",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T14:35:07Z",
+          "started_at_utc": "2026-06-22T09:10:58Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.5160000000032596,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T14:35:07Z",
+          "finished_at_utc": "2026-06-22T09:10:59Z",
           "kind": "python_function",
           "message": null,
           "name": "wal_checkpoint",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T14:35:07Z",
+          "started_at_utc": "2026-06-22T09:10:59Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-19T14:35:07Z",
+          "finished_at_utc": "2026-06-22T09:10:59Z",
           "kind": "python_function",
           "message": null,
           "name": "locked_files",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-19T14:35:07Z",
+          "started_at_utc": "2026-06-22T09:10:59Z",
           "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.01600000000325963,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:11:57Z",
+          "kind": "validation",
+          "message": null,
+          "name": "p2_ratchet",
+          "phase": "build",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:11:57Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": null,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:24:45Z",
+          "kind": "subprocess",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260622_092445.json",
+          "name": "adg_gate_dispatcher",
+          "phase": "post-commit-validation",
+          "script_rel": "ops_scripts/ci/adg_gates/run.py",
+          "started_at_utc": "2026-06-22T09:24:45Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.014999999999417923,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:25:53Z",
+          "kind": "validation",
+          "message": null,
+          "name": "p0_violations",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:25:53Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.0,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:25:53Z",
+          "kind": "validation",
+          "message": null,
+          "name": "p1_ratchet",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:25:53Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.26600000000325963,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:25:54Z",
+          "kind": "validation",
+          "message": null,
+          "name": "dead_production_imports",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:25:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.4219999999986612,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:25:54Z",
+          "kind": "validation",
+          "message": null,
+          "name": "structural_conformance",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:25:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.014999999999417923,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:25:54Z",
+          "kind": "validation",
+          "message": null,
+          "name": "agentic_antipatterns",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:25:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.0,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-22T09:26:04Z",
+          "kind": "validation",
+          "message": null,
+          "name": "witness_tier_gates",
+          "phase": "post-commit-validation",
+          "script_rel": null,
+          "started_at_utc": "2026-06-22T09:26:04Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:26:54Z",
+          "kind": "subprocess",
+          "message": "mandatory markdown burndown",
+          "name": "adg_burndown_report",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_burndown_report.py",
+          "started_at_utc": "2026-06-22T09:26:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:26:54Z",
+          "kind": "subprocess",
+          "message": "mandatory JSON/YAML review template",
+          "name": "adg_review_template",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_review_template.py",
+          "started_at_utc": "2026-06-22T09:26:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:26:54Z",
+          "kind": "subprocess",
+          "message": "mandatory JSON dead-code control report",
+          "name": "adg_dead_code_report",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_dead_code_report.py",
+          "started_at_utc": "2026-06-22T09:26:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:26:54Z",
+          "kind": "subprocess",
+          "message": "mandatory cleanup queue and P2 blocker trace report",
+          "name": "adg_cleanup_queue_and_p2_blocker_trace",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
+          "started_at_utc": "2026-06-22T09:26:54Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:27:07Z",
+          "kind": "subprocess",
+          "message": "mandatory JSON/YAML/Markdown BCG executive synthesis",
+          "name": "adg_bcg_executive_summary",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_bcg_executive_synthesis.py",
+          "started_at_utc": "2026-06-22T09:27:07Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.18800000000192085,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": null,
+          "name": "wiring",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_expected_wiring.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 9.25,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": null,
+          "name": "config-ref",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_config_references.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 26.20300000000134,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
+          "name": "lifecycle",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.5,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": null,
+          "name": "except-contract",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_exception_contract.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.4850000000005821,
+          "exit_code": 1,
+          "finished_at_utc": "2026-06-22T09:28:21Z",
+          "kind": "subprocess",
+          "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
+          "name": "test-coverage",
+          "phase": "post-ADG-subprocess",
+          "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
+          "started_at_utc": "2026-06-22T09:28:21Z",
+          "status": "fail"
         }
       ],
       "generation_exit_code": null,
       "generator_entrypoint": "tools/generate/generate_full_adg.py",
       "sqlite_path": null,
-      "timestamp": "2026-06-19T14:36:52Z",
+      "timestamp": "2026-06-22T09:28:21Z",
       "unexpected_skips": []
     },
-    "p2_ratchet": {},
+    "p2_ratchet": {
+      "absorbed_at": "2026-06-22T09:40:51.303152+00:00",
+      "exception_swallow_ceiling": 18,
+      "snapshot": "adg_indexed_06222026_0539.sqlite"
+    },
     "sqlite_manifest": {}
   },
   "sources": {
     "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06192026_1035.json",
-    "ratchet": "",
-    "sqlite": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
+    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06222026_0510.json",
+    "ratchet": "artifacts/adg/p2_ratchet.json",
+    "sqlite": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
     "sqlite_manifest": ""
   },
-  "status": "degraded"
+  "status": "present"
 }

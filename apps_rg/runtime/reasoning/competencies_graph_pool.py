@@ -243,6 +243,183 @@ def _collect_category_candidates(
     return out
 
 
+def _category_graph_skill_node_ids(cat: dict[str, Any]) -> list[str]:
+    out: set[str] = set()
+    for sid in cat.get("graph_skill_node_ids") or []:
+        if str(sid).strip():
+            out.add(str(sid).strip())
+    for term in cat.get("terms") or []:
+        if not isinstance(term, dict):
+            continue
+        for sid in term.get("graph_skill_node_ids") or term.get("source_skill_ids") or []:
+            if str(sid).strip():
+                out.add(str(sid).strip())
+    return sorted(out)
+
+
+def _category_source_fact_ids(cat: dict[str, Any]) -> list[str]:
+    out: set[str] = set()
+    for fid in cat.get("source_fact_ids") or []:
+        if str(fid).strip():
+            out.add(str(fid).strip())
+    for term in cat.get("terms") or []:
+        if not isinstance(term, dict):
+            continue
+        for fid in term.get("source_fact_ids") or []:
+            if str(fid).strip():
+                out.add(str(fid).strip())
+        fid = str(term.get("source_fact_id") or "").strip()
+        if fid:
+            out.add(fid)
+    return sorted(out)
+
+
+def _selection_score_maps(
+    selections: list[dict[str, Any]],
+) -> tuple[dict[tuple[str, int], float], dict[str, float], set[tuple[str, int]]]:
+    by_label_path: dict[tuple[str, int], float] = {}
+    best_by_label: dict[str, float] = {}
+    failed_rows: set[tuple[str, int]] = set()
+    for sel in selections:
+        if not isinstance(sel, dict):
+            continue
+        label = str(sel.get("category_label") or "").strip().lower()
+        if not label:
+            continue
+        try:
+            path_idx = int(sel.get("path_index", 0))
+        except (TypeError, ValueError):
+            path_idx = 0
+        score = _selection_row_score(sel)
+        by_label_path[(label, path_idx)] = score
+        best_by_label[label] = max(best_by_label.get(label, 0.0), score)
+        if not _selection_row_passes(sel):
+            failed_rows.add((label, path_idx))
+    return by_label_path, best_by_label, failed_rows
+
+
+def _all_category_candidate_rows(paths: list[Any]) -> list[tuple[str, int, dict[str, Any]]]:
+    rows: list[tuple[str, int, dict[str, Any]]] = []
+    for path in paths:
+        parsed = getattr(path, "parsed", None)
+        if not isinstance(parsed, dict):
+            continue
+        try:
+            path_idx = int(getattr(path, "path_index", 0))
+        except (TypeError, ValueError):
+            path_idx = 0
+        for cat in parsed.get("competencies") or parsed.get("categories") or []:
+            if not isinstance(cat, dict):
+                continue
+            label = str(cat.get("category_label") or "").strip()
+            if not label:
+                continue
+            rows.append((label, path_idx, dict(cat)))
+    return rows
+
+
+def build_competencies_rejected_neighbor_audit(
+    paths: list[Any],
+    selections: list[dict[str, Any]],
+    merged_parsed: dict[str, Any],
+    source_path_by_slot: dict[str, int],
+    *,
+    min_score_threshold: float | None = None,
+    allowed_fact_ids: set[str] | None = None,
+    allowed_skill_ids: set[str] | None = None,
+    resume_support_blob_lower: str = "",
+) -> dict[str, Any]:
+    """Record selected and rejected graph-pool candidates for auditability."""
+    threshold = (
+        min_score_threshold
+        if min_score_threshold is not None
+        else min_competencies_selection_score()
+    )
+    allowed_fact_ids = allowed_fact_ids or set()
+    allowed_skill_ids = allowed_skill_ids or set()
+    selected_categories = merged_parsed.get("competencies") or merged_parsed.get("categories") or []
+    selected_labels = {
+        str(cat.get("category_label") or "").strip().lower()
+        for cat in selected_categories
+        if isinstance(cat, dict) and str(cat.get("category_label") or "").strip()
+    }
+    source_map = {str(k).strip().lower(): int(v) for k, v in (source_path_by_slot or {}).items()}
+    score_by_label_path, score_by_label, failed_rows = _selection_score_maps(selections)
+
+    selected_neighbors: list[dict[str, Any]] = []
+    rejected_neighbors: list[dict[str, Any]] = []
+    candidate_label_keys: set[str] = set()
+
+    for label, path_idx, cat in _all_category_candidate_rows(paths):
+        label_key = label.lower()
+        candidate_label_keys.add(label_key)
+        selector_score = score_by_label_path.get((label_key, path_idx))
+        heuristic_score = _heuristic_category_score(
+            cat,
+            allowed_fact_ids=allowed_fact_ids,
+            allowed_skill_ids=allowed_skill_ids,
+            resume_support_blob_lower=resume_support_blob_lower,
+        )
+        effective_score = selector_score if selector_score is not None else heuristic_score
+        row = {
+            "category_label": label,
+            "path_index": path_idx,
+            "selector_score": round(float(selector_score), 4) if selector_score is not None else None,
+            "best_selector_score_for_label": (
+                round(float(score_by_label[label_key]), 4) if label_key in score_by_label else None
+            ),
+            "heuristic_support_score": round(float(heuristic_score), 4),
+            "effective_score": round(float(effective_score), 4),
+            "source_fact_ids": _category_source_fact_ids(cat),
+            "graph_skill_node_ids": _category_graph_skill_node_ids(cat),
+            "competency_bundle_id": str(cat.get("competency_bundle_id") or "").strip(),
+        }
+        selected_path_idx = source_map.get(label_key)
+        if label_key in selected_labels and selected_path_idx == path_idx:
+            selected_neighbors.append({**row, "selection_status": "selected"})
+            continue
+        if (label_key, path_idx) in failed_rows:
+            reason = "selector_marked_failed"
+        elif selector_score is not None and selector_score < threshold:
+            reason = "below_selector_threshold"
+        elif heuristic_score < 0.34 and allowed_fact_ids:
+            reason = "unsupported_by_allowed_graph_evidence"
+        elif label_key in selected_labels:
+            reason = "duplicate_label_lower_score"
+        elif score_by_label and label_key not in score_by_label:
+            reason = "not_selected_by_model"
+        else:
+            reason = "overflow_after_top_8"
+        rejected_neighbors.append(
+            {
+                **row,
+                "selection_status": "rejected",
+                "rejection_reason": reason,
+            }
+        )
+
+    selected_count = len(selected_labels)
+    candidate_label_count = len(candidate_label_keys)
+    rejected_count = len(rejected_neighbors)
+    audit_status = (
+        "present"
+        if candidate_label_count > selected_count and rejected_count > 0
+        else "thin_candidate_pool"
+    )
+    return {
+        "schema_version": "competencies_rejected_neighbor_audit_v1",
+        "audit_status": audit_status,
+        "min_score_threshold": threshold,
+        "candidate_variant_count": len(selected_neighbors) + rejected_count,
+        "candidate_label_count": candidate_label_count,
+        "selected_count": selected_count,
+        "rejected_neighbor_count": rejected_count,
+        "selected_labels": sorted(selected_labels),
+        "selected_neighbors": selected_neighbors,
+        "rejected_neighbors": rejected_neighbors,
+    }
+
+
 def merge_competencies_graph_pool_top_eight(
     paths: list[Any],
     selections: list[dict[str, Any]],
@@ -318,7 +495,9 @@ def merge_competencies_graph_pool_top_eight(
         if h_score < 0.34 and allowed_fact_ids:
             continue
         label = str(cat.get("category_label") or "").strip()
-        comps_out.append(dict(cat))
+        cat_out = dict(cat)
+        cat_out.setdefault("selection_score", round(float(score), 4))
+        comps_out.append(cat_out)
         source_map[label.lower()] = path_idx
 
     if len(comps_out) < COMPETENCIES_FINAL_CATEGORY_COUNT:
@@ -328,7 +507,9 @@ def merge_competencies_graph_pool_top_eight(
             label = str(cat.get("category_label") or "").strip()
             if not label or label.lower() in source_map:
                 continue
-            comps_out.append(dict(cat))
+            cat_out = dict(cat)
+            cat_out.setdefault("selection_score", round(float(_score), 4))
+            comps_out.append(cat_out)
             source_map[label.lower()] = path_idx
 
     merged = dict(anchor)
@@ -412,6 +593,7 @@ __all__ = [
     "COMPETENCIES_REGEN_EXTRA_PATHS",
     "COMPETENCIES_SC_PATH_COUNT",
     "CompetenciesSelectionGate",
+    "build_competencies_rejected_neighbor_audit",
     "build_competencies_targeting_context",
     "competencies_regen_extra_path_count",
     "e2e_closeout_mode_active",

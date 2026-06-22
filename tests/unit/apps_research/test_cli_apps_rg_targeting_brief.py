@@ -94,6 +94,37 @@ def test_cli_jd_path_fails_closed_without_targeting_markdown(
     assert not (tmp_path / "runs" / "research-run-empty" / "briefing.md").exists()
 
 
+def test_cli_jd_path_fails_closed_on_stub_targeting_markdown(
+    monkeypatch, tmp_path: Path
+) -> None:
+    from apps_research import __main__ as main_mod
+
+    jd_path = tmp_path / "jd.txt"
+    jd_path.write_text("Partner architecture JD", encoding="utf-8")
+    monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+    monkeypatch.setattr(
+        main_mod,
+        "_run_research_record",
+        lambda _request: _FakeRecord(
+            run_id="research-run-stub",
+            topic="Anthropic",
+            company_brief_text=(
+                "Stub Company\n\n"
+                "Stub executive summary from L2 execution\n"
+                "- Finding 1\n"
+            ),
+            hop_terminal_error="stub_fallback",
+        ),
+    )
+
+    code = main_mod._run_profile_spine(
+        ["--target-company", "Anthropic", "--target-role", "Manager", "--jd", str(jd_path)]
+    )
+
+    assert code == 1
+    assert not (tmp_path / "runs" / "research-run-stub" / "briefing.md").exists()
+
+
 def test_cli_dry_run_no_longer_enables_stub(monkeypatch) -> None:
     from apps_research import __main__ as main_mod
 

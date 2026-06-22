@@ -41,6 +41,123 @@ def _ensure_helpers_hydrated() -> None:
     _helpers_hydrated = True
 
 
+def _format_sample_ids(values: Any, *, limit: int = 6) -> str:
+    ids = [str(x).strip() for x in (values or []) if str(x).strip()]
+    sample = ids[:limit]
+    suffix = f" (+{len(ids) - limit} more)" if len(ids) > limit else ""
+    return ", ".join(sample) + suffix if sample else "none"
+
+
+def _format_competencies_graph_sourcing_assessment(
+    graph_sufficiency_receipt: dict[str, Any],
+    *,
+    x2_gates: list[dict[str, Any]] | None = None,
+    traversal_receipt_ref: str = "",
+) -> list[str]:
+    traversal = graph_sufficiency_receipt.get("traversal_sufficiency_receipt")
+    traversal = traversal if isinstance(traversal, dict) else {}
+    frontier = traversal.get("frontier_size_by_hop_depth")
+    frontier = frontier if isinstance(frontier, dict) else {}
+    comparison = traversal.get("selected_vs_rejected_candidate_comparison")
+    comparison = comparison if isinstance(comparison, dict) else {}
+    axes = traversal.get("role_specific_axis_coverage")
+    axes = axes if isinstance(axes, dict) else {}
+
+    gate_map = {
+        str(g.get("gate_id") or ""): bool(g.get("pass"))
+        for g in (x2_gates or [])
+        if isinstance(g, dict)
+    }
+    required_gate_ids = (
+        "x2_competencies_graph_traversal_sufficiency",
+        "x2_competencies_graph_granularity_gates",
+    )
+    missing_gate_ids = [gid for gid in required_gate_ids if gid not in gate_map]
+    failed_gate_ids = [gid for gid in required_gate_ids if gate_map.get(gid) is False]
+    derived_ok = (
+        str(traversal.get("graph_evidence_depth_status") or "").lower() == "judge_grade"
+        and not (axes.get("missing_axes") or [])
+        and int(traversal.get("rejected_sibling_skill_count") or 0) > 0
+        and bool(graph_sufficiency_receipt.get("confidence_nonconstant"))
+    )
+    acceptable = (
+        not failed_gate_ids and not missing_gate_ids
+        if gate_map
+        else derived_ok
+    )
+    verdict_reason = (
+        "required_graph_gates_passed"
+        if acceptable and gate_map
+        else ("derived_receipt_signals_passed" if acceptable else "failed_or_missing_graph_gates")
+    )
+
+    return [
+        "",
+        "GRAPH_SOURCING_ASSESSMENT:",
+        "SCHEMA_ORDER: role -> role_episode_roots -> skills -> metrics -> rejected_siblings -> confidence -> verdict",
+        (
+            "ROLE: "
+            f"profile={traversal.get('target_role_profile') or 'unknown'} "
+            f"selection_method={traversal.get('selection_method') or 'unknown'} "
+            f"depth_status={traversal.get('graph_evidence_depth_status') or 'unknown'}"
+        ),
+        (
+            "ROLE_EPISODE_ROOTS: "
+            f"selected={traversal.get('selected_role_episode_root_count') or 0} "
+            f"source_facts={traversal.get('selected_source_fact_count') or 0} "
+            f"root_ids=[{_format_sample_ids(traversal.get('selected_role_episode_root_ids'))}] "
+            f"source_fact_ids=[{_format_sample_ids(traversal.get('selected_source_fact_ids'))}]"
+        ),
+        (
+            "SKILLS: "
+            f"selected_unique={traversal.get('selected_unique_leaf_skill_count') or 0} "
+            f"candidate_frontier={frontier.get('1_leaf_skill_candidates') or 0} "
+            f"selected_ids=[{_format_sample_ids(traversal.get('selected_leaf_skill_ids'))}]"
+        ),
+        (
+            "METRICS: "
+            f"selected_unique={traversal.get('selected_unique_metric_count') or 0} "
+            f"candidate_frontier={frontier.get('2_metric_outcome_candidates') or 0} "
+            f"selected_ids=[{_format_sample_ids(traversal.get('selected_metric_outcome_ids'))}]"
+        ),
+        (
+            "REJECTED_SIBLINGS: "
+            f"skills={traversal.get('rejected_sibling_skill_count') or 0} "
+            f"metrics={traversal.get('rejected_sibling_metric_count') or 0} "
+            f"skill_ids=[{_format_sample_ids(traversal.get('rejected_sibling_skill_ids'))}] "
+            f"metric_ids=[{_format_sample_ids(traversal.get('rejected_sibling_metric_ids'))}]"
+        ),
+        (
+            "SELECTED_VS_REJECTED: "
+            f"graph_selected_leaf_skills={comparison.get('graph_selected_leaf_skill_count') or 0} "
+            f"graph_rejected_sibling_skills={comparison.get('graph_rejected_sibling_skill_count') or 0} "
+            f"selector_candidates={comparison.get('selector_candidate_label_count') or 0} "
+            f"selector_rejected={comparison.get('selector_rejected_neighbor_count') or 0}"
+        ),
+        (
+            "ROLE_AXIS_COVERAGE: "
+            f"covered=[{_format_sample_ids(axes.get('covered_axes'), limit=8)}] "
+            f"missing=[{_format_sample_ids(axes.get('missing_axes'), limit=8)}]"
+        ),
+        (
+            "CONFIDENCE: "
+            f"nonconstant={str(bool(graph_sufficiency_receipt.get('confidence_nonconstant'))).lower()} "
+            f"values=[{_format_sample_ids(graph_sufficiency_receipt.get('category_confidence_values'), limit=8)}]"
+        ),
+        (
+            "ASSESSMENT: "
+            f"{'ACCEPTABLE' if acceptable else 'NOT_ACCEPTABLE'} "
+            f"reason={verdict_reason} "
+            f"failed_gates=[{_format_sample_ids(failed_gate_ids, limit=4)}] "
+            f"missing_gates=[{_format_sample_ids(missing_gate_ids, limit=4)}]"
+        ),
+        (
+            "GRAPH_RECEIPT: "
+            f"{traversal_receipt_ref or 'competencies_graph_traversal_sufficiency_receipt.json'}"
+        ),
+    ]
+
+
 def run_competencies_lane_execution(
     args: argparse.Namespace,
     *,
@@ -644,6 +761,35 @@ def run_competencies_lane_execution(
             write_x2_source_fact_pool_receipt(artifact_dir, obs)
             break
 
+    from apps_rg.runtime.validators.competencies_quality_x2 import (
+        build_competencies_graph_sufficiency_receipt,
+    )
+
+    graph_sufficiency_receipt = build_competencies_graph_sufficiency_receipt(
+        competencies,
+        proof_pool_metadata=pp_x2,
+        parsed_output=parsed,
+        jd_text=args.jd_text,
+        briefing_text=getattr(args, "briefing", "") or "",
+        x1d_judges=x1d,
+    )
+    graph_sufficiency_receipt_ref = _artifact_repo_rel(
+        artifact_dir / "competencies_graph_sufficiency_receipt.json",
+        REPO_ROOT,
+    )
+    graph_traversal_receipt_ref = _artifact_repo_rel(
+        artifact_dir / "competencies_graph_traversal_sufficiency_receipt.json",
+        REPO_ROOT,
+    )
+    write_json(
+        artifact_dir / "competencies_graph_sufficiency_receipt.json",
+        graph_sufficiency_receipt,
+    )
+    write_json(
+        artifact_dir / "competencies_graph_traversal_sufficiency_receipt.json",
+        graph_sufficiency_receipt.get("traversal_sufficiency_receipt") or {},
+    )
+
     l2_output = {
         "run_id": runtime_payload["run_id"],
         "section_id": "competencies",
@@ -665,6 +811,8 @@ def run_competencies_lane_execution(
         "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
         "text_claim_coverage": coverage,
+        "competencies_graph_sufficiency_receipt_ref": graph_sufficiency_receipt_ref,
+        "competencies_graph_traversal_sufficiency_receipt_ref": graph_traversal_receipt_ref,
     }
     write_json(artifact_dir / "competencies_output.json", competencies)
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
@@ -789,6 +937,8 @@ def run_competencies_lane_execution(
             artifact_dir / "section_input_usage_ledger.json",
             REPO_ROOT,
         ),
+        "competencies_graph_sufficiency_receipt_ref": graph_sufficiency_receipt_ref,
+        "competencies_graph_traversal_sufficiency_receipt_ref": graph_traversal_receipt_ref,
         "proof_eligible": bool(bundle.get("proof_eligible")),
         "proof_scope": bundle.get("proof_scope"),
         "product_quality_status": product_quality_status,
@@ -928,6 +1078,13 @@ def run_competencies_lane_execution(
     lines.extend(["", "X2_DETERMINISTIC_GATE_OUTPUTS:"])
     for gate in x2:
         lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
+    lines.extend(
+        _format_competencies_graph_sourcing_assessment(
+            graph_sufficiency_receipt,
+            x2_gates=x2,
+            traversal_receipt_ref=graph_traversal_receipt_ref,
+        )
+    )
     status_hint = (
         "PASS_RUNTIME_PROOF_ELIGIBLE" if bundle["proof_eligible"] else "PASS_NONCERTIFYING_RUNTIME_PROOF"
     )

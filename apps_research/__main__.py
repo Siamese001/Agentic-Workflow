@@ -213,6 +213,20 @@ def _jsonable(value):
     return str(value)
 
 
+def _looks_like_stub_company_brief(text: str) -> bool:
+    blob = str(text or "").lower()
+    stub_markers = (
+        "stub company",
+        "stub executive summary",
+        "stub business description",
+        "stub research gap",
+        "finding 1",
+        "product a",
+        "service b",
+    )
+    return any(marker in blob for marker in stub_markers)
+
+
 def _write_research_artifacts(record, request) -> Path:
     """Persist a fresh apps_research run artifact bundle."""
     run_id = str(getattr(record, "run_id", "") or getattr(request, "trace_id", "") or uuid4().hex)
@@ -225,9 +239,9 @@ def _write_research_artifacts(record, request) -> Path:
         str((getattr(request, "jd_context", {}) or {}).get("output_format", ""))
         == "apps_rg_targeting_brief_v1"
     )
-    if is_targeting and not briefing_text:
+    if is_targeting and (not briefing_text or _looks_like_stub_company_brief(briefing_text)):
         raise RuntimeError(
-            "apps_research targeting run produced no company_brief_text; "
+            "apps_research targeting run produced no usable company_brief_text; "
             f"terminal_error={getattr(record, 'hop_terminal_error', '')!r}"
         )
 

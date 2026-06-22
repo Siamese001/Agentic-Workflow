@@ -44,10 +44,18 @@
 
 ## Procedural patterns (this environment)
 
+- **ADR liveness hygiene (2026-06-22):** ADRs are provenance/rationale, not executable policy.
+  Use `python ops_scripts/ci/inventory_adr_liveness.py --json` for live-binding classification and
+  `python ops_scripts/ci/check_adr_hygiene.py --advisory` for namespace drift; details:
+  `memory/codex/adr_liveness_hygiene.md`.
 - **apps_research targeting briefs fail closed (2026-06-21):** fresh `python -m apps_research
   --target-company <company> --target-role <role> --jd <jd-path>` must print an `artifact=<...briefing.md>`
   before apps_rg may consume it. Missing grounded `company_brief_text` is a failure; do not substitute stale
   populated artifacts or dry-run output. Detail: `memory/codex/apps_research_targeting_brief_fail_closed.md`.
+- **apps_rg competencies graph traversal receipts (2026-06-22):** bundle-mode competencies must prove
+  graph traversal breadth/depth, rejected siblings, per-category granularity, JD-critical partnership axes,
+  and decomposed confidence before certification. Detail:
+  `memory/codex/apps_rg_competencies_graph_traversal_receipt.md`.
 - **Codex repo-local memory placement (2026-06-16):** Agentic Workflow-specific Codex memory artifacts
   belong under `memory/codex/`, not only under the global user-profile path
   `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,

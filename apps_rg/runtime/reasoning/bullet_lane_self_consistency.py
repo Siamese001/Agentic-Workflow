@@ -182,6 +182,18 @@ def run_provider_self_consistency_paths(
                     msgs, path_index=idx, temperature=temp
                 ),
             }
+        if section_lane == "competencies":
+            from apps_rg.runtime.sections.competency_capability_evidence import (
+                append_competencies_path_diversity_to_messages,
+            )
+
+            msgs = list(tagged.get("messages") or [])
+            tagged = {
+                **tagged,
+                "messages": append_competencies_path_diversity_to_messages(
+                    msgs, path_index=idx, temperature=temp
+                ),
+            }
         result = call_section_model_provider(
             provider_profile,
             tagged,

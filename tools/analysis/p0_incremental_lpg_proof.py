@@ -35,6 +35,7 @@ LPG_DRIFT_SOURCES = [
     "agentic_core/L6_system_learning/pipelines/meta_learning_pipeline.py",
     "agentic_core/mixins/instructional_injection_mixin.py",
     "agentic_core/mixins/prompt_rendering_mixin.py",
+    "agentic_core/runtime/entry/u0_apps_research_binding.py",
     "apps_research/runtime/profile_builder_adapter.py",
     "apps_rg/runtime/bindings/c0_binding.py",
     "apps_rg/runtime/spine/governed_pa_compose.py",

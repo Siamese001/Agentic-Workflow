@@ -1,12 +1,19 @@
 {
-  "timestamp": "2026-06-17T00:01:43Z",
-  "certification_status": "diagnostic_only",
+  "timestamp": "2026-06-22T09:57:15Z",
+  "certification_status": "failed",
   "generator_exit_code": 1,
   "report_exit_code": null,
   "runtime_proof_status": "view_absent",
-  "generation_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06162026_2000.json",
-  "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06162026_2000.json",
+  "generation_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06222026_0539.json",
+  "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06222026_0539.json",
   "reasons": [
-    "snapshot path absent from generation manifest"
+    "generator exit_code=1",
+    "required gate 'adg_gate_dispatcher' status=fail",
+    "required gate 'lifecycle' status=fail",
+    "required gate 'test-coverage' status=fail",
+    "required gate 'three_bucket_manifest_quick' absent from manifest",
+    "adg_gate_dispatcher overall_exit_code=1",
+    "snapshot path absent from generation manifest",
+    "enforcement_report certified_rollup=NOT_CERTIFIED"
   ]
 }

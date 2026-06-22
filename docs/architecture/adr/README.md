@@ -3,7 +3,16 @@
 **Status:** Active index
 **Last reconciled:** 2026-06-15
 
-This directory is the filesystem source of truth for architecture decisions. The retired Notion ADR Registry is not a write target. Historical `.windsurf/` and `.cursor/` links inside older ADRs are evidence pointers only unless a current `.codex/` rule or root plan still references them.
+This directory is the filesystem source of truth for formal architecture
+decision records. The retired Notion ADR Registry is not a write target.
+Historical `.windsurf/` and `.cursor/` links inside older ADRs are evidence
+pointers only unless a current `.codex/` rule, gate, test, runtime/config
+surface, or root plan still references them.
+
+ADRs are rationale and provenance records, not executable policy. Active
+enforcement lives in gates, tests, hooks, `.codex` rules/skills, configs, and
+runtime code. Treat an ADR as current only when it has a live binding to one of
+those surfaces; otherwise treat it as historical context pending review.
 
 ## Current Rules
 
@@ -12,6 +21,10 @@ This directory is the filesystem source of truth for architecture decisions. The
 - Current governance rules and skills live under `.codex/rules/` and `.codex/skills/`.
 - Do not add Notion ADR Registry write steps. The registry was archived; ADR files are canonical.
 - Do not reuse an ADR number until the duplicate-number cleanup below is resolved.
+- Use `python ops_scripts/ci/inventory_adr_liveness.py --json` to classify
+  ADRs as live-bound, historical, noncanonical, or unbound-review.
+- Use `python ops_scripts/ci/check_adr_hygiene.py --advisory` to report new ADR
+  namespace drift without blocking on known cleanup debt.
 
 ## Reconciliation Summary
 

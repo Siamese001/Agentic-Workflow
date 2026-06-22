@@ -1,13 +1,37 @@
 {
   "dead_code_candidates": {
-    "dead_code_by_confidence": {},
-    "dead_code_by_entity_type": {},
-    "dead_code_by_layer": {},
-    "dead_code_hotspots": [],
-    "total_dead_code_candidates": 0
-  },
-  "dead_imports": {
-    "dead_import_hotspots": [
+    "dead_code_by_confidence": {
+      "HIGH": 898
+    },
+    "dead_code_by_entity_type": {
+      "module": 898,
+      "symbol": 413
+    },
+    "dead_code_by_layer": {
+      "L0": 8,
+      "L1": 114,
+      "L2": 18,
+      "L3": 41,
+      "L4": 37,
+      "L5": 30,
+      "L6": 27,
+      "L_APP": 18,
+      "L_OPS": 38,
+      "L_PG": 6,
+      "L_RUNTIME": 18,
+      "L_SHARED": 34,
+      "L_TEST": 418,
+      "L_TOOLS": 91
+    },
+    "dead_code_hotspots": [
+      [
+        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        19
+      ],
+      [
+        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        14
+      ],
       [
         "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
         13
@@ -39,53 +63,93 @@
       [
         "tests/unit/apps_exec/services/test_document_ingestion_service.py",
         9
+      ]
+    ],
+    "source": "dead_import_overlay",
+    "total_dead_code_candidates": 965
+  },
+  "dead_imports": {
+    "dead_import_hotspots": [
+      [
+        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        19
       ],
       [
-        "tests/apps_eval/test_validators.py",
-        8
+        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        14
       ],
       [
-        "tests/unit/apps_rg/utils/test_authenticity_patterns_util.py",
-        8
+        "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+        13
+      ],
+      [
+        "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+        12
+      ],
+      [
+        "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+        11
+      ],
+      [
+        "tools/demo/apps_evidence_demo.py",
+        10
+      ],
+      [
+        "tools/eval/retrieval_benchmark.py",
+        10
+      ],
+      [
+        "tests/apps_eval/test_apps_eval_integration.py",
+        9
+      ],
+      [
+        "tests/apps_eval/test_eval_to_bus_roundtrip.py",
+        9
+      ],
+      [
+        "tests/unit/apps_exec/services/test_document_ingestion_service.py",
+        9
       ]
     ],
     "dead_imports_by_confidence": {},
     "dead_imports_by_domain": {},
+    "dead_imports_by_entity_type": {
+      "module": 898,
+      "symbol": 413
+    },
     "dead_imports_by_layer": {},
     "l4_dead_imports": 0,
-    "overlay_dead_imports_by_severity": {
-      "HIGH": 935
-    },
+    "overlay_dead_imports_by_severity": {},
     "source_counts": {
       "legacy_dead_import_edges": 0,
-      "overlay_dead_import_resolved": 935
+      "overlay_dead_import_resolved": 965
     },
-    "total_dead_imports": 935
+    "total_dead_imports": 965
   },
   "errors": [],
   "executive_readiness": {
     "executive_metrics": {
-      "dead_code_count": 0,
-      "dead_import_count": 0,
-      "first_party_low_confidence_ratio": 1.5915119363395225,
-      "inferred_symbol_ratio": 10.155405678751206,
+      "dead_code_count": 965,
+      "dead_import_count": 965,
+      "first_party_low_confidence_ratio": 1.5760107025157437,
+      "inferred_symbol_ratio": 10.143983584257487,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 486,
-      "unresolved_import_count": 486
+      "low_confidence_count": 483,
+      "unresolved_import_count": 483
     },
     "executive_ready": true,
     "first_party_metrics": {
-      "dead_code_count": 0,
-      "dead_import_count": 0,
+      "dead_code_count": 898,
+      "dead_import_count": 898,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 486,
-      "unresolved_import_count": 486
+      "low_confidence_count": 483,
+      "unresolved_import_count": 483
     },
     "readiness_issues": []
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17572
+      "MEDIUM": 17599
     },
     "inferred_by_layer": {
       "L0": 1349,
@@ -95,42 +159,42 @@
       "L4": 606,
       "L5": 1291,
       "L6": 1304,
-      "L_APP": 5206,
-      "L_OPS": 487,
+      "L_APP": 5223,
+      "L_OPS": 491,
       "L_PG": 497,
-      "L_RUNTIME": 1076,
+      "L_RUNTIME": 1077,
       "L_SHARED": 596,
       "L_TEST": 289,
-      "L_TOOLS": 2323,
+      "L_TOOLS": 2328,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.155405678751206,
-    "total_inferred_symbols": 17572,
-    "total_symbols": 173031
+    "inferred_symbol_ratio": 10.143983584257487,
+    "total_inferred_symbols": 17599,
+    "total_symbols": 173492
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.5915119363395225,
+    "first_party_low_confidence_ratio": 1.5760107025157437,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
-      "symbol": 486
+      "symbol": 483
     },
     "low_conf_by_identity_kind": {
-      "unresolved_import": 486
+      "unresolved_import": 483
     },
     "low_conf_by_layer": {
-      "": 486
+      "": 483
     },
     "low_conf_hotspots": [
       [
         "",
-        486
+        483
       ]
     ],
-    "total_low_confidence": 486
+    "total_low_confidence": 483
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
-    "adg_snapshot_ts": "06192026_1037",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+    "adg_snapshot_ts": "06222026_0539",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -140,25 +204,25 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06192026_1037.sqlite",
-    "adg_snapshot_ts": "06192026_1037",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+    "adg_snapshot_ts": "06222026_0539",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.5915119363395225,
-    "inferred_symbol_ratio": 10.155405678751206,
+    "first_party_low_confidence_ratio": 1.5760107025157437,
+    "inferred_symbol_ratio": 10.143983584257487,
     "l4_unresolved_imports": 0,
-    "total_dead_code_candidates": 0,
-    "total_dead_imports": 935,
-    "total_low_confidence": 486,
-    "total_unresolved_imports": 486
+    "total_dead_code_candidates": 965,
+    "total_dead_imports": 965,
+    "total_low_confidence": 483,
+    "total_unresolved_imports": 483
   },
   "unresolved_imports": {
     "l4_unresolved": 0,
-    "total_unresolved_imports": 486,
+    "total_unresolved_imports": 483,
     "unresolved_by_confidence": {
-      "LOW": 486
+      "LOW": 483
     },
     "unresolved_by_layer": {
-      "": 486
+      "": 483
     },
     "unresolved_hotspots": [
       [
@@ -204,6 +268,8 @@
     ]
   },
   "warnings": [
+    "Domain field not available for dead import analysis",
+    "L4 has 37 dead imports (should trend to zero)",
     "Domain field not available for dead import analysis"
   ]
 }

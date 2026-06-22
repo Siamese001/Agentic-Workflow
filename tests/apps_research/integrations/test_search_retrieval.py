@@ -5,26 +5,31 @@ Tests for apps_research.integrations.search_retrieval.
 
 from __future__ import annotations
 
+import io
+import json
+import urllib.error
+import urllib.parse
+
 import pytest
-import requests
 
 from apps_research.integrations.search_retrieval import RetrievedDoc, retrieve
 
 
 class _FakeResponse:
-    def __init__(self, payload=None, *, status_code: int = 200, json_error: bool = False):
+    def __init__(self, payload=None, *, json_error: bool = False):
         self._payload = payload if payload is not None else {}
-        self.status_code = status_code
         self._json_error = json_error
 
-    def raise_for_status(self) -> None:
-        if self.status_code >= 400:
-            raise requests.HTTPError(response=self)
+    def __enter__(self):
+        return self
 
-    def json(self):
+    def __exit__(self, *_args):
+        return False
+
+    def read(self):
         if self._json_error:
-            raise ValueError("not json")
-        return self._payload
+            return b"{"
+        return json.dumps(self._payload).encode("utf-8")
 
 
 def test_missing_base_url_raises(monkeypatch):
@@ -86,9 +91,10 @@ def test_invalid_top_k_raises(monkeypatch):
 def test_retrieve_normalizes_searxng_results(monkeypatch):
     captured = {}
 
-    def _fake_get(url, *, params, timeout):
-        captured["url"] = url
-        captured["params"] = params
+    def _fake_urlopen(request, *, timeout):
+        parsed = urllib.parse.urlparse(request.full_url)
+        captured["url"] = urllib.parse.urlunparse(parsed._replace(query=""))
+        captured["params"] = dict(urllib.parse.parse_qsl(parsed.query))
         captured["timeout"] = timeout
         return _FakeResponse(
             {
@@ -111,7 +117,7 @@ def test_retrieve_normalizes_searxng_results(monkeypatch):
 
     monkeypatch.setenv("SEARXNG_BASE_URL", "https://search.example/")
     monkeypatch.setenv("SEARXNG_TIMEOUT_SECONDS", "7")
-    monkeypatch.setattr("apps_research.integrations.search_retrieval.requests.get", _fake_get)
+    monkeypatch.setattr("apps_research.integrations.search_retrieval.urllib.request.urlopen", _fake_urlopen)
 
     docs = retrieve("Blend360 agentic AI", top_k=5)
 
@@ -127,14 +133,14 @@ def test_retrieve_normalizes_searxng_results(monkeypatch):
 def test_retrieve_passes_optional_categories_and_engines(monkeypatch):
     captured = {}
 
-    def _fake_get(url, *, params, timeout):
-        captured["params"] = params
+    def _fake_urlopen(request, *, timeout):
+        captured["params"] = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(request.full_url).query))
         return _FakeResponse({"results": []})
 
     monkeypatch.setenv("SEARXNG_BASE_URL", "https://search.example")
     monkeypatch.setenv("SEARXNG_CATEGORIES", "general,news")
     monkeypatch.setenv("SEARXNG_ENGINES", "duckduckgo,brave")
-    monkeypatch.setattr("apps_research.integrations.search_retrieval.requests.get", _fake_get)
+    monkeypatch.setattr("apps_research.integrations.search_retrieval.urllib.request.urlopen", _fake_urlopen)
 
     assert retrieve("query", top_k=1) == []
     assert captured["params"]["categories"] == "general,news"
@@ -142,33 +148,33 @@ def test_retrieve_passes_optional_categories_and_engines(monkeypatch):
 
 
 def test_forbidden_response_explains_json_format(monkeypatch):
-    def _fake_get(url, *, params, timeout):
-        return _FakeResponse(status_code=403)
+    def _fake_urlopen(request, *, timeout):
+        raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", hdrs=None, fp=io.BytesIO())
 
     monkeypatch.setenv("SEARXNG_BASE_URL", "https://search.example")
-    monkeypatch.setattr("apps_research.integrations.search_retrieval.requests.get", _fake_get)
+    monkeypatch.setattr("apps_research.integrations.search_retrieval.urllib.request.urlopen", _fake_urlopen)
 
     with pytest.raises(RuntimeError, match="JSON output"):
         retrieve("query")
 
 
 def test_request_error_raises_runtime_error(monkeypatch):
-    def _fake_get(url, *, params, timeout):
-        raise requests.Timeout("slow")
+    def _fake_urlopen(request, *, timeout):
+        raise TimeoutError("slow")
 
     monkeypatch.setenv("SEARXNG_BASE_URL", "https://search.example")
-    monkeypatch.setattr("apps_research.integrations.search_retrieval.requests.get", _fake_get)
+    monkeypatch.setattr("apps_research.integrations.search_retrieval.urllib.request.urlopen", _fake_urlopen)
 
     with pytest.raises(RuntimeError, match="request failed"):
         retrieve("query")
 
 
 def test_invalid_json_raises_runtime_error(monkeypatch):
-    def _fake_get(url, *, params, timeout):
+    def _fake_urlopen(request, *, timeout):
         return _FakeResponse(json_error=True)
 
     monkeypatch.setenv("SEARXNG_BASE_URL", "https://search.example")
-    monkeypatch.setattr("apps_research.integrations.search_retrieval.requests.get", _fake_get)
+    monkeypatch.setattr("apps_research.integrations.search_retrieval.urllib.request.urlopen", _fake_urlopen)
 
     with pytest.raises(RuntimeError, match="not valid JSON"):
         retrieve("query")

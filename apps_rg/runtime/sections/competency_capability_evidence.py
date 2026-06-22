@@ -26,6 +26,17 @@ from apps_rg.runtime.sections.competency_capability_registry import (
 
 COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER = "COMPETENCY_CAPABILITY_EVIDENCE_PACK"
 
+COMPETENCIES_PATH_DIVERSITY_LENSES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("agentic platform architecture", ("agentic_platform", "control_plane", "multi_agent_orchestration")),
+    ("runtime governance and gates", ("runtime_governance", "policy_controls", "fail_closed_gates")),
+    ("retrieval and context engineering", ("retrieval_context", "graphrag", "grounding")),
+    ("llmops evaluation and reliability", ("llmops", "evaluation", "observability")),
+    ("distributed cloud data systems", ("distributed_infra", "cloud_data_platform", "microservices")),
+    ("platform productization", ("productization", "commercialization", "reusable_platforms")),
+    ("engineering operating model", ("engineering_leadership", "org_scale", "executive_alignment")),
+    ("partner ecosystem execution", ("ecosystem_gtm", "hyperscaler_alliances", "joint_value_creation")),
+)
+
 _AUTHORITY_HEADER_LINES: tuple[str, ...] = (
     "proof_authority = graph_competency_bundles_plus_linked_source_facts",
     "base_resume_usage = calibration_only",
@@ -257,6 +268,35 @@ def is_flat_taxonomy_only_packet(packet: dict[str, Any]) -> bool:
     if packet.get("graph_skill_node_ids") and not packet.get("competency_bundle_id"):
         return True
     return True
+
+
+def append_competencies_path_diversity_to_messages(
+    messages: list[dict[str, Any]],
+    *,
+    path_index: int,
+    temperature: float,
+) -> list[dict[str, Any]]:
+    """Append per-path graph-neighborhood framing for competencies SC generation."""
+    if not messages:
+        return messages
+    lens_name, graph_terms = COMPETENCIES_PATH_DIVERSITY_LENSES[
+        path_index % len(COMPETENCIES_PATH_DIVERSITY_LENSES)
+    ]
+    suffix = (
+        f"\n\nCOMPETENCIES_PATH_DIVERSITY (path_index={path_index}, temperature={temperature:.2f}):\n"
+        f"Primary graph-neighborhood lens: {lens_name}.\n"
+        f"Graph terms to bias this candidate path: {', '.join(graph_terms)}.\n"
+        "Treat this path as candidate-neighborhood expansion before final selection: generate exactly "
+        "eight competencies, but make at least four category labels lens-specific alternatives rather "
+        "than a reorder of the same canonical eight labels. Every category still needs competency_bundle_id, "
+        "graph_skill_node_ids, source_fact_ids, and compact graph-backed terms. JD and briefing text are "
+        "targeting context only, never proof.\n"
+    )
+    out = [dict(m) for m in messages]
+    last = out[-1]
+    prev = str(last.get("content") or "").rstrip()
+    out[-1] = {**last, "content": f"{prev}{suffix}" if prev else suffix.strip()}
+    return out
 
 
 def format_competency_capability_evidence_pack(
@@ -609,7 +649,9 @@ def augment_bound_category_family_terms(
 
 __all__ = [
     "COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER",
+    "COMPETENCIES_PATH_DIVERSITY_LENSES",
     "attach_competency_bundles_to_proof_pool_metadata",
+    "append_competencies_path_diversity_to_messages",
     "augment_bound_category_family_terms",
     "build_competency_capability_section_packet",
     "format_competency_capability_evidence_pack",

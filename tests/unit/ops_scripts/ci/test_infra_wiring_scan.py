@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -185,6 +186,29 @@ class TestScanDirectory:
         root.mkdir()
         violations = scan_directory(root)
         assert violations == {}
+
+    def test_search_retrieval_does_not_reintroduce_requests_import(self) -> None:
+        """Regression guard for the ADG P0 infra_wiring blocker."""
+        root = Path(__file__).resolve().parents[4]
+        violations = scan_directory(root)
+        assert not any(
+            Path(path).as_posix().endswith("apps_research/integrations/search_retrieval.py")
+            for path in violations
+        )
+
+    def test_search_retrieval_reach_absorb_is_documented(self) -> None:
+        """Regression guard for the one-file G_REACH ratchet absorb."""
+        root = Path(__file__).resolve().parents[4]
+        baseline_path = root / "ops_scripts/ci/baselines/wiring_graph_reach_ratchet.json"
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        latest_absorb = baseline["loosen_history"][-1]
+
+        assert baseline["count"] == 2789
+        assert latest_absorb["from"] == 2788
+        assert latest_absorb["to"] == 2789
+        assert latest_absorb["raw_violation_count"] == 2789
+        assert latest_absorb["margin"] == 0
+        assert "apps_research/integrations/search_retrieval.py" in latest_absorb["reason"]
 
 
 # ---------------------------------------------------------------------------

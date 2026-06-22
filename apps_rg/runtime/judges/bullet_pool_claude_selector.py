@@ -25,6 +25,7 @@ from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
+    build_competencies_rejected_neighbor_audit,
     merge_competencies_graph_pool_top_eight,
     min_competencies_selection_score,
 )
@@ -105,6 +106,7 @@ class PoolSelectionResult:
     judge_output: JudgeOutput | None
     selection_mode: str
     source_path_by_slot: dict[str, int]
+    rejected_neighbor_audit: dict[str, Any] | None = None
 
 
 class PoolSelectorUnavailableError(RuntimeError):
@@ -1164,6 +1166,42 @@ def _call_openai_pool_selector(
     return judge_stub, selection_doc
 
 
+def _merge_competencies_graph_pool_with_audit(
+    paths: list[SelfConsistencyPath],
+    selections: list[dict[str, Any]],
+    *,
+    base_parsed: dict[str, Any],
+    targeting_context: dict[str, Any] | None,
+    min_score_threshold: float | None = None,
+) -> tuple[dict[str, Any], dict[str, int], dict[str, Any]]:
+    tc = targeting_context or {}
+    allowed_fact_ids = set(tc.get("allowed_fact_ids") or [])
+    allowed_skill_ids = set(tc.get("allowed_skill_ids") or [])
+    resume_support_blob_lower = str(tc.get("resume_support_blob_lower") or "")
+    merged, source_map = merge_competencies_graph_pool_top_eight(
+        paths,
+        selections,
+        base_parsed=base_parsed,
+        min_score_threshold=min_score_threshold,
+        allowed_fact_ids=allowed_fact_ids,
+        allowed_skill_ids=allowed_skill_ids,
+        resume_support_blob_lower=resume_support_blob_lower,
+    )
+    audit = build_competencies_rejected_neighbor_audit(
+        paths,
+        selections,
+        merged,
+        source_map,
+        min_score_threshold=min_score_threshold,
+        allowed_fact_ids=allowed_fact_ids,
+        allowed_skill_ids=allowed_skill_ids,
+        resume_support_blob_lower=resume_support_blob_lower,
+    )
+    merged = dict(merged)
+    merged["competencies_rejected_neighbor_audit"] = audit
+    return merged, source_map, audit
+
+
 def _fallback_first_complete_path(
     paths: list[SelfConsistencyPath],
     *,
@@ -1186,14 +1224,11 @@ def _fallback_first_complete_path(
         elif slot_kind == "competencies":
             comps = path.parsed.get("competencies") or path.parsed.get("categories")
             if isinstance(comps, list) and len(comps) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
-                tc = targeting_context or {}
-                merged, source_map = merge_competencies_graph_pool_top_eight(
+                merged, source_map, audit = _merge_competencies_graph_pool_with_audit(
                     paths,
                     [],
                     base_parsed=dict(path.parsed),
-                    allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
-                    allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
-                    resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+                    targeting_context=targeting_context,
                 )
                 return PoolSelectionResult(
                     merged_parsed=merged,
@@ -1201,16 +1236,14 @@ def _fallback_first_complete_path(
                     judge_output=None,
                     selection_mode="competencies_graph_top_8_heuristic",
                     source_path_by_slot=source_map,
+                    rejected_neighbor_audit=audit,
                 )
     if slot_kind == "competencies":
-        tc = targeting_context or {}
-        merged, source_map = merge_competencies_graph_pool_top_eight(
+        merged, source_map, audit = _merge_competencies_graph_pool_with_audit(
             paths,
             [],
             base_parsed=paths[0].parsed if paths and paths[0].parsed else {},
-            allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
-            allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
-            resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+            targeting_context=targeting_context,
         )
         return PoolSelectionResult(
             merged_parsed=merged,
@@ -1218,6 +1251,7 @@ def _fallback_first_complete_path(
             judge_output=None,
             selection_mode="competencies_graph_top_8_heuristic",
             source_path_by_slot=source_map,
+            rejected_neighbor_audit=audit,
         )
     base = paths[0].parsed if paths and paths[0].parsed else {}
     return PoolSelectionResult(
@@ -1583,6 +1617,8 @@ def run_claude_bullet_pool_selection(
     selections = list((parsed_sel or {}).get("selections") or [])
     base = valid_paths[0].parsed
     tc = targeting_context or {}
+    rejected_neighbor_audit: dict[str, Any] | None = None
+
     if slot_kind == "bullets" and required_bullet_ids:
         floor = min_score_threshold
         if floor is None and is_employment_bullet_lane(section_id):
@@ -1597,14 +1633,12 @@ def run_claude_bullet_pool_selection(
         selection_mode = "claude_employment_top_n_pass"
     elif _is_competencies_graph_pool(section_id, slot_kind):
         floor = min_score_threshold or min_competencies_selection_score()
-        merged, source_map = merge_competencies_graph_pool_top_eight(
+        merged, source_map, rejected_neighbor_audit = _merge_competencies_graph_pool_with_audit(
             valid_paths,
             selections,
             base_parsed=base,
             min_score_threshold=floor,
-            allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
-            allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
-            resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+            targeting_context=tc,
         )
         selection_mode = "openai_competencies_top_8_pass"
     else:
@@ -1617,6 +1651,7 @@ def run_claude_bullet_pool_selection(
         judge_output=judge_out,
         selection_mode=selection_mode,
         source_path_by_slot=source_map,
+        rejected_neighbor_audit=rejected_neighbor_audit,
     )
 
 

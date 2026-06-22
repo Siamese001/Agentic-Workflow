@@ -13,11 +13,11 @@ import os
 import queue
 import threading
 import time
-import urllib.error
 import urllib.request
 from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import Any, Mapping
+from urllib.error import HTTPError
 
 from agentic_core.L0_routing.config.model_catalog import OPENAI_OMIT_TEMPERATURE_MODELS
 
@@ -251,18 +251,17 @@ class ExternalProvider:
                             break
                         elif etype == "error":
                             err = event.get("error") or {}
-                            raise urllib.error.URLError(
+                            raise ProviderGatewayError(
                                 f"anthropic stream error: {err.get('type')}: {err.get('message')}"
                             )
                         if progress is not None:
                             progress["chunk_count"] = chunk_count
                             progress["last_progress_after_s"] = round(now_after, 4)
                             progress["raw_output_chars"] = sum(len(p) for p in text_parts)
-            except urllib.error.HTTPError:
+            except HTTPError:
                 raise
             except (
                 TimeoutError,
-                urllib.error.URLError,
                 OSError,
                 json.JSONDecodeError,
                 ValueError,
@@ -372,10 +371,9 @@ class ExternalProvider:
         def _runner() -> None:
             try:
                 result_queue.put(("ok", transport(request)), block=False)
-            except urllib.error.HTTPError as exc:
+            except HTTPError as exc:
                 result_queue.put(("http_error", exc), block=False)
             except (
-                urllib.error.URLError,
                 TimeoutError,
                 OSError,
                 json.JSONDecodeError,
@@ -407,9 +405,7 @@ class ExternalProvider:
         if kind == "http_error":
             raise payload
         if kind == "error":
-            if isinstance(payload, urllib.error.URLError):
-                raise payload
-            raise urllib.error.URLError(f"{type(payload).__name__}: {payload}") from payload
+            raise ProviderGatewayError(f"{type(payload).__name__}: {payload}") from payload
         return payload
 
     def generate(
@@ -464,7 +460,7 @@ class ExternalProvider:
                 request,
                 timeout_seconds=provider_timeout_seconds,
             )
-        except urllib.error.HTTPError as exc:
+        except HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")[:1000]
             return ProviderResult(
                 provider_requested=self.provider_profile.value,
@@ -478,7 +474,7 @@ class ExternalProvider:
                     {"transport_progress": dict(progress_sink)} if progress_sink else {}
                 ),
             )
-        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
+        except (ProviderGatewayError, TimeoutError, OSError, json.JSONDecodeError) as exc:
             # Surface last-observed progress so a timeout reads as "slow, got N chars at +Ms",
             # not an opaque stall. progress_sink is populated in place by the streamed transport.
             prog = dict(progress_sink)

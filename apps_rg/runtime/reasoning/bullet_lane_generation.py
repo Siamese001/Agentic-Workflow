@@ -496,6 +496,8 @@ def _generate_competencies_graph_pool_lane(
 
     assert pool is not None
     merged = normalize_parsed(dict(pool.merged_parsed))
+    if pool.rejected_neighbor_audit:
+        merged["competencies_rejected_neighbor_audit"] = pool.rejected_neighbor_audit
     meta: dict[str, Any] = {
         "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
         "section_lane": section_lane,
@@ -513,8 +515,24 @@ def _generate_competencies_graph_pool_lane(
         "e2e_closeout_mode": e2e_closeout_mode_active(),
         "max_regen_rounds_allowed": max_regen,
     }
+    if pool.rejected_neighbor_audit:
+        meta["competencies_rejected_neighbor_audit"] = {
+            "schema_version": pool.rejected_neighbor_audit.get("schema_version"),
+            "audit_status": pool.rejected_neighbor_audit.get("audit_status"),
+            "candidate_label_count": pool.rejected_neighbor_audit.get("candidate_label_count"),
+            "candidate_variant_count": pool.rejected_neighbor_audit.get("candidate_variant_count"),
+            "selected_count": pool.rejected_neighbor_audit.get("selected_count"),
+            "rejected_neighbor_count": pool.rejected_neighbor_audit.get("rejected_neighbor_count"),
+        }
     meta.update(summarize_selector_emptiness(pool=pool, gate=gate))
     if artifact_dir is not None:
+        if pool.rejected_neighbor_audit:
+            audit_path = artifact_dir / "competencies_rejected_neighbor_audit.json"
+            audit_path.write_text(
+                json.dumps(pool.rejected_neighbor_audit, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            meta["competencies_rejected_neighbor_audit_ref"] = str(audit_path)
         (artifact_dir / "bullet_pool_selection.json").write_text(
             json.dumps(
                 {
@@ -522,6 +540,7 @@ def _generate_competencies_graph_pool_lane(
                     "selections": pool.selections,
                     "source_path_by_slot": pool.source_path_by_slot,
                     "selection_gate": gate.to_dict(),
+                    "competencies_rejected_neighbor_audit": pool.rejected_neighbor_audit,
                 },
                 indent=2,
                 ensure_ascii=False,

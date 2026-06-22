@@ -244,6 +244,49 @@ def test_w4_progress_receipt_written_before_first_path_completes(tmp_path, monke
         assert row["provider_error"] == "simulated provider stall"
 
 
+def test_competencies_self_consistency_payload_gets_path_diversity_framing(
+    tmp_path,
+    monkeypatch,
+):
+    import apps_rg.runtime.reasoning.bullet_lane_self_consistency as scmod
+    from apps_rg.runtime.providers.provider_contract import ProviderResult
+
+    seen_contents: list[str] = []
+
+    def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
+        seen_contents.append(str((payload.get("messages") or [{}])[-1].get("content") or ""))
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output='{"competencies":[],"claim_ledger":[]}',
+            provider_response={},
+        )
+
+    monkeypatch.setattr(scmod, "call_section_model_provider", fake_call)
+
+    paths, _last = scmod.run_provider_self_consistency_paths(
+        section_lane="competencies",
+        provider_payload={"messages": [{"role": "user", "content": "base"}]},
+        parse_model_json=lambda raw: (json.loads(raw), ""),
+        artifact_dir=tmp_path,
+        run_id="run-1",
+        temperature_bounds=(0.30, 0.50),
+        base_temperature=0.4,
+        path_count=2,
+    )
+
+    assert len(paths) == 2
+    assert len(seen_contents) == 2
+    assert "COMPETENCIES_PATH_DIVERSITY (path_index=0" in seen_contents[0]
+    assert "COMPETENCIES_PATH_DIVERSITY (path_index=1" in seen_contents[1]
+    assert "agentic platform architecture" in seen_contents[0]
+    assert "runtime governance and gates" in seen_contents[1]
+
+
 # --------------------------------------------------------------------------------------------------
 # W5/W6 — closeout mode is auditable and does NOT weaken the competencies contract
 # --------------------------------------------------------------------------------------------------

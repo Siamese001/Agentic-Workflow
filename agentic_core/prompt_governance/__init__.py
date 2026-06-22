@@ -14,7 +14,9 @@ from .core.prompt_entry_types import (
 from .core.prompt_loader import PromptLoader, PromptLoadError, PromptSchemaError
 from .contracts import CompiledPromptArtifact, PromptBOM, TemplateManifest
 from .managed_workflow_pa_resolver import ManagedWorkflowPAResolver
+from .apps_research_pa_binding import pa_assemble_apps_research
 from .orchestrator import CompiledPromptEnvelope, assemble_prompt
+from .scripts.validate_assembly import validate_slot_order
 
 __all__ = [
     "EvalLoadError",
@@ -34,4 +36,6 @@ __all__ = [
     "assemble_prompt",
     "CompiledPromptEnvelope",
     "ManagedWorkflowPAResolver",
+    "pa_assemble_apps_research",
+    "validate_slot_order",
 ]

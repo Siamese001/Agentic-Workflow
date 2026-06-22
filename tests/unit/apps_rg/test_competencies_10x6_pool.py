@@ -22,9 +22,11 @@ from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
+    build_competencies_rejected_neighbor_audit,
     build_competencies_targeting_context,
     evaluate_competencies_selection_quality,
     is_competencies_pool_generation,
+    merge_competencies_graph_pool_top_eight,
     min_competencies_selection_score,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
@@ -157,6 +159,57 @@ def test_evaluate_competencies_gate_requires_eight_passing_categories() -> None:
     assert gate.categories_in_merged == COMPETENCIES_FINAL_CATEGORY_COUNT
 
 
+def test_merge_competencies_graph_pool_preserves_selector_scores() -> None:
+    labels = [f"Category_0_{i}" for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)]
+    scores = [0.91, 0.89, 0.88, 0.86, 0.84, 0.83, 0.81, 0.78]
+    selections = [
+        {"category_label": lab, "path_index": 0, "score": score, "passes": True}
+        for lab, score in zip(labels, scores, strict=True)
+    ]
+    merged, _ = merge_competencies_graph_pool_top_eight(
+        [_path_with_categories(0)],
+        selections,
+        min_score_threshold=0.72,
+    )
+
+    merged_scores = [
+        row.get("selection_score")
+        for row in (merged.get("competencies") or [])
+    ]
+    assert merged_scores == scores
+
+
+def test_competencies_rejected_neighbor_audit_records_unselected_candidates() -> None:
+    paths = [_path_with_categories(0), _path_with_categories(1)]
+    labels = [f"Category_0_{i}" for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)]
+    selections = [
+        {"category_label": lab, "path_index": 0, "score": 0.9 - idx * 0.01, "passes": True}
+        for idx, lab in enumerate(labels)
+    ]
+    merged, source_map = merge_competencies_graph_pool_top_eight(
+        paths,
+        selections,
+        min_score_threshold=0.72,
+    )
+
+    audit = build_competencies_rejected_neighbor_audit(
+        paths,
+        selections,
+        merged,
+        source_map,
+        min_score_threshold=0.72,
+    )
+
+    assert audit["schema_version"] == "competencies_rejected_neighbor_audit_v1"
+    assert audit["audit_status"] == "present"
+    assert audit["candidate_label_count"] == 16
+    assert audit["selected_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
+    assert audit["rejected_neighbor_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
+    assert {row["rejection_reason"] for row in audit["rejected_neighbors"]} == {
+        "not_selected_by_model"
+    }
+
+
 def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytest.MonkeyPatch) -> None:
     paths = [_path_with_categories(0)]
     selections = [
@@ -196,6 +249,9 @@ def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytes
     assert pool.judge_output.model_name == "gpt-5.5"
     comps = pool.merged_parsed.get("competencies") or []
     assert len(comps) == COMPETENCIES_FINAL_CATEGORY_COUNT
+    audit = pool.rejected_neighbor_audit
+    assert audit is not None
+    assert audit["schema_version"] == "competencies_rejected_neighbor_audit_v1"
 
 
 def test_openai_competencies_selector_fails_closed_without_credentials(

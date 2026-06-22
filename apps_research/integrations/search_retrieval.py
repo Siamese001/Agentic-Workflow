@@ -11,10 +11,12 @@ from __future__ import annotations
 
 import logging
 import os
+import json
+import urllib.parse
+import urllib.request
 from dataclasses import dataclass
 from typing import Any
-
-import requests
+from urllib.error import HTTPError
 
 _log = logging.getLogger("apps_research.search_retrieval")
 
@@ -134,6 +136,17 @@ def _normalize_results(payload: Any, *, top_k: int) -> list[RetrievedDoc]:
     return docs
 
 
+def _load_searxng_json(url: str, *, params: dict[str, str | int], timeout: float) -> Any:
+    query = urllib.parse.urlencode(params)
+    request = urllib.request.Request(
+        f"{url}?{query}",
+        headers={"Accept": "application/json"},
+        method="GET",
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
 def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
     """Fetch up to ``top_k`` docs for ``sub_query`` from SearXNG.
 
@@ -166,20 +179,18 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
 
     url = f"{base_url}/search"
     try:
-        response = requests.get(url, params=params, timeout=_timeout_seconds())
-        response.raise_for_status()
-        payload = response.json()
-    except requests.HTTPError as exc:
-        status_code = exc.response.status_code if exc.response is not None else "unknown"
+        payload = _load_searxng_json(url, params=params, timeout=_timeout_seconds())
+    except HTTPError as exc:
+        status_code = exc.code or "unknown"
         if status_code == 403:
             raise RuntimeError(
                 "SearXNG returned 403. Confirm the instance enables JSON output "
                 "for search.format=json."
             ) from exc
         raise RuntimeError(f"SearXNG search failed with HTTP status {status_code}") from exc
-    except requests.RequestException as exc:
+    except (TimeoutError, OSError) as exc:
         raise RuntimeError(f"SearXNG search request failed: {exc}") from exc
-    except ValueError as exc:
+    except (json.JSONDecodeError, ValueError) as exc:
         raise RuntimeError("SearXNG search response was not valid JSON") from exc
 
     docs = _normalize_results(payload, top_k=top_k)

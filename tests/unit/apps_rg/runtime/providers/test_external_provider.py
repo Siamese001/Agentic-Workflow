@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import urllib.error
 from types import SimpleNamespace
 
 from apps_rg.runtime.providers import external_provider as subject
@@ -111,7 +110,7 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
 def test_external_provider_transport_errors_fail_closed() -> None:
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
-        transport=lambda _request: (_ for _ in ()).throw(urllib.error.URLError("down")),
+        transport=lambda _request: (_ for _ in ()).throw(OSError("down")),
         environ={"OPENAI_API_KEY": "test-key"},
     )
 
@@ -120,7 +119,7 @@ def test_external_provider_transport_errors_fail_closed() -> None:
     assert result.runtime_generation_status == "BLOCKED"
     assert result.provider_attempted is True
     assert result.provider_available is False
-    assert "URLError" in str(result.exact_provider_error)
+    assert "ProviderGatewayError" in str(result.exact_provider_error)
     assert result.provider_response is not None
     assert result.provider_response["attempt_started_at_utc"]
     assert result.provider_response["attempt_completed_at_utc"]
