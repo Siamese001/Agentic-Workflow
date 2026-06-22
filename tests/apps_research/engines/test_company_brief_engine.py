@@ -1,4 +1,7 @@
-"""Tests for apps_research.engines.company_brief_engine fail-closed retrieval."""
+"""apps-test-model: APP CONTRACT.
+
+Tests for apps_research.engines.company_brief_engine fail-closed retrieval.
+"""
 
 from __future__ import annotations
 
@@ -26,11 +29,11 @@ def test_v2_flag_on_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_v2_path_offline_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
-    """V2 path with no SEARXNG_BASE_URL fails closed without network calls.
+    """V2 path with no web provider fails closed without network calls.
 
     Ensures the feature-flag ON case stays deterministic in offline test environments.
     """
-    for k in ("SEARXNG_BASE_URL", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
+    for k in ("SEARXNG_BASE_URL", "TAVILY_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
     engine = CompanyBriefEngine()
@@ -42,6 +45,7 @@ def test_v2_path_offline_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
 def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for k in (
         "SEARXNG_BASE_URL",
+        "TAVILY_API_KEY",
         "ANTHROPIC_API_KEY",
         "OPENAI_API_KEY",
         "GEMINI_API_KEY",

@@ -1,4 +1,5 @@
-"""
+"""apps-test-model: SPINE BINDING.
+
 W1 Hardening Tests for apps_research U0 Runtime Customization Package
 
 Validates that the canonical profile spine path is wired into the active
@@ -14,25 +15,23 @@ Required checks:
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
-
-from agentic_core.runtime.entry.u0_apps_research_binding import (
-    u0_validate_apps_research,
-)
-from apps_research.runtime.u0.binding import u0_validate_apps_research_v2
 from agentic_core.runtime.contracts.apps_research_runtime_package import (
     RuntimeCustomizationPackage,
 )
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-    RequestEnvelope,
     AppsRgIngressPayload,
+    RequestEnvelope,
 )
+from agentic_core.runtime.entry.u0_apps_research_binding import (
+    u0_validate_apps_research,
+)
+from apps_research.runtime.u0.binding import u0_validate_apps_research_v2
 
 
 class TestActiveEntrypointUsesProfileSpine:
-    """Verify active entrypoint uses canonical profile + core U0 binding."""
+    """Verify active entrypoint uses canonical profile + research handoff."""
 
     def test_profile_builder_binds_core_u0(self):
         from apps_research.runtime.profile_builder import build_app_runtime_contract
@@ -41,44 +40,42 @@ class TestActiveEntrypointUsesProfileSpine:
         assert profile.u0 is u0_validate_apps_research
         assert profile.app_id == "apps_research"
 
-    def test_main_module_uses_profile_spine_not_capability_registry(self):
+    def test_main_module_uses_spine_handoff_not_stub_l2(self):
         main_path = Path("apps_research/__main__.py")
         source = main_path.read_text(encoding="utf-8")
-        assert "build_app_runtime_contract" in source
-        assert "AppIngressRunner" in source
         assert "_run_profile_spine" in source
+        assert "run_research_via_spine" in source
+        assert "APPS_RESEARCH_L2_FORCE_STUB" not in source
         assert "resolve_company_brief_capability" not in source
         assert "from apps_research.integrations.governed_research_run import" not in source
         assert "GovernedResearchRun(" not in source
         assert "apps_research_dispatch" not in source
 
-    def test_main_profile_spine_invokes_u0_via_runner(self, monkeypatch):
-        monkeypatch.setenv("APPS_RESEARCH_L2_FORCE_STUB", "1")
+    def test_main_profile_spine_invokes_research_handoff(self, monkeypatch, tmp_path):
         from apps_research import __main__ as main_mod
-        from apps_research.runtime.profile_builder import build_app_runtime_contract
 
-        real_profile = build_app_runtime_contract()
+        class _Record:
+            run_id = "run-main-profile"
+            topic = "TestCorp"
+            company_brief_text = "TestCorp targeting brief"
+            confidence_score = 0.8
+            support_coverage = 0.8
+            hop_terminal_error = ""
+            fec_run_context = {}
 
         with patch(
-            "agentic_core.runtime.entry.app_ingress_runner.AppIngressRunner"
-        ) as mock_runner_cls:
-            mock_runner = MagicMock()
-            mock_runner.run.return_value = MagicMock(
-                exit_status="success",
-                outcome_authorized=True,
-                output_artifact_path="/tmp/test.json",
-            )
-            mock_runner_cls.return_value = mock_runner
+            "apps_research.integrations.spine_handoff.run_research_via_spine",
+            return_value=_Record(),
+        ) as run_handoff:
+            monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path)
 
             code = main_mod._run_profile_spine(
                 ["--topic", "TestCorp", "--mode", "brief", "--depth", "standard"]
             )
 
         assert code == 0
-        mock_runner.run.assert_called_once()
-        profile = mock_runner_cls.call_args.kwargs.get("profile") or mock_runner_cls.call_args[0][0]
-        assert profile.u0 is u0_validate_apps_research
-        assert profile.u0 is real_profile.u0
+        run_handoff.assert_called_once()
+        assert (tmp_path / "run-main-profile" / "company_brief.json").exists()
 
 
 class TestNoParallelRetiredDispatchPath:
@@ -88,14 +85,14 @@ class TestNoParallelRetiredDispatchPath:
         dispatch_path = Path("agentic_core/runtime/entry/apps_research_dispatch.py")
         assert not dispatch_path.exists(), (
             "agentic_core.runtime.entry.apps_research_dispatch must remain deleted; "
-            "use apps_research.runtime.profile_builder + AppIngressRunner"
+            "use apps_research.integrations.spine_handoff"
         )
 
     def test_runtime_entry_dispatch_module_removed(self):
         dispatch_path = Path("apps_research/runtime/entry/dispatch.py")
         assert not dispatch_path.is_file(), (
             "apps_research.runtime.entry.dispatch tombstone removed; "
-            "use apps_research.runtime.profile_builder + AppIngressRunner"
+            "use apps_research.integrations.spine_handoff"
         )
 
 

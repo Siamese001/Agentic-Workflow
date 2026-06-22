@@ -29,7 +29,7 @@
       "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"],
       "env": {
         "ADG_REDIS_URL": "${ADG_REDIS_URL}",
-        "MEMORY_DB": "${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
+        "MEMORY_DB": "artifacts/memory/knowledge_graph.sqlite",
         "PYTHONPATH": "${AGENTIC_REPO_ROOT}"
       }
     },

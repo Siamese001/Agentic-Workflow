@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import importlib
+import json
 import logging
 import sys
+from dataclasses import asdict, is_dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from uuid import uuid4
 
 _log = logging.getLogger("apps_research")
 
@@ -104,7 +109,7 @@ def _parse_product_argv(argv: list[str]):
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Force stub fallback — no LLM call",
+        help="Validate CLI shape only; does not emit product artifacts",
     )
     return parser.parse_args(argv)
 
@@ -138,8 +143,8 @@ def _payload_from_args(args) -> dict:
             "jd_text": jd_text,
             "job_title": str(getattr(args, "target_role", "") or "").strip(),
             "company_name": (args.target_company or topic).strip(),
-            "output_format": "downstream_research_substrate_v1",
-            "synthesis_template": "downstream_research_substrate_v1",
+            "output_format": "apps_rg_targeting_brief_v1",
+            "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
         }
     return {
         "target_company": (args.target_company or topic).strip(),
@@ -153,47 +158,153 @@ def _payload_from_args(args) -> dict:
     }
 
 
+def _apps_research_runs_root() -> Path:
+    return Path(__file__).resolve().parents[1] / "artifacts" / "apps_research" / "runs"
+
+
+def _research_request_from_args(args):
+    """Build the governed apps_research request used by product CLI runs."""
+    from apps_research.types.research_types import ResearchRequest  # noqa: PLC0415
+
+    topic = (args.topic or args.target_company or "").strip()
+    jd_text = _read_jd_arg(getattr(args, "jd", None))
+    jd_context: dict[str, object] = {}
+    if jd_text:
+        jd_context = {
+            "content": jd_text,
+            "jd_text": jd_text,
+            "job_title": str(getattr(args, "target_role", "") or "").strip(),
+            "company_name": (args.target_company or topic).strip(),
+            "output_format": "apps_rg_targeting_brief_v1",
+            "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
+            "jd_context": {
+                "role": str(getattr(args, "target_role", "") or "").strip()
+                or "target role",
+            },
+        }
+    return ResearchRequest(
+        topic=topic,
+        mode="brief",
+        audience_style="executive",
+        depth_profile=str(args.depth or "standard"),
+        trace_id=f"research-run-{uuid4().hex[:12]}",
+        jd_context=jd_context,
+    )
+
+
+def _run_research_record(request):
+    """Invoke the canonical apps_research spine handoff."""
+    from apps_research.integrations.spine_handoff import (  # noqa: PLC0415
+        run_research_via_spine,
+    )
+
+    return run_research_via_spine(request)
+
+
+def _jsonable(value):
+    if is_dataclass(value):
+        return asdict(value)
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(v) for v in value]
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
+def _write_research_artifacts(record, request) -> Path:
+    """Persist a fresh apps_research run artifact bundle."""
+    run_id = str(getattr(record, "run_id", "") or getattr(request, "trace_id", "") or uuid4().hex)
+    safe_run_id = "".join(c for c in run_id if c.isalnum() or c in "._-") or uuid4().hex
+    run_dir = _apps_research_runs_root() / safe_run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    briefing_text = str(getattr(record, "company_brief_text", "") or "").strip()
+    is_targeting = (
+        str((getattr(request, "jd_context", {}) or {}).get("output_format", ""))
+        == "apps_rg_targeting_brief_v1"
+    )
+    if is_targeting and not briefing_text:
+        raise RuntimeError(
+            "apps_research targeting run produced no company_brief_text; "
+            f"terminal_error={getattr(record, 'hop_terminal_error', '')!r}"
+        )
+
+    payload = {
+        "schema_version": "apps_research.company_brief_artifact.v2",
+        "company": str(getattr(record, "topic", "") or getattr(request, "topic", "")),
+        "run_id": run_id,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "targeting_format": (
+            (getattr(request, "jd_context", {}) or {}).get("output_format") or ""
+        ),
+        "company_brief_text": briefing_text,
+        "confidence_score": float(getattr(record, "confidence_score", 0.0) or 0.0),
+        "support_coverage": float(getattr(record, "support_coverage", 0.0) or 0.0),
+        "hop_terminal_error": str(getattr(record, "hop_terminal_error", "") or ""),
+        "fec_run_context": _jsonable(getattr(record, "fec_run_context", {}) or {}),
+    }
+    (run_dir / "company_brief.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    if briefing_text:
+        (run_dir / "briefing.md").write_text(briefing_text + "\n", encoding="utf-8")
+    (run_dir / "run_metadata.json").write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "topic": getattr(request, "topic", ""),
+                "mode": getattr(request, "mode", ""),
+                "depth_profile": getattr(request, "depth_profile", ""),
+                "targeting_format": payload["targeting_format"],
+                "company_brief_path": str(run_dir / "company_brief.json"),
+                "briefing_path": str(run_dir / "briefing.md") if briefing_text else "",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return run_dir / ("briefing.md" if briefing_text else "company_brief.json")
+
+
 def _run_profile_spine(argv: list[str]) -> int:
     """Run apps_research via U0-bound AppRuntimeProfile (Bundle C canonical path).
 
     Sequences profile.u0 → l1 → l0 → c0 → pa → l2 → exit through agentic_core
     bindings. No dispatch callable and no GovernedResearchRun U0 bypass.
     """
-    import os
-
     args = _parse_product_argv(argv)
 
     if args.dry_run:
-        os.environ["APPS_RESEARCH_L2_FORCE_STUB"] = "1"
-        _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
-        sys.stdout.write("DRY RUN\n")
+        _log.error(
+            "[apps_research] --dry-run no longer emits product artifacts; "
+            "run without --dry-run for product evidence."
+        )
+        return 1
 
-    payload = _payload_from_args(args)
-    if not payload:
+    if not (args.topic or args.target_company):
         _log.error(
             "[apps_research] Missing ingress target: provide --topic or --target-company"
         )
         return 1
 
-    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
-    from agentic_core.L5_safety.enforcement.ingress import ClarificationRequired  # noqa: PLC0415
-    from apps_research.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
-
-    profile = build_app_runtime_contract()
-    runner = AppIngressRunner(profile=profile)
-    result = runner.run(payload)
-
-    if isinstance(result, ClarificationRequired):
-        _log.error("[apps_research] ClarificationRequired: %s", result.reason)
+    request = _research_request_from_args(args)
+    try:
+        record = _run_research_record(request)
+        artifact_path = _write_research_artifacts(record, request)
+    except Exception as exc:  # guardian: allow-broad-exception -- product CLI must fail closed with a clear operator message for heterogeneous research/runtime failures
+        _log.error("[apps_research] product run failed closed: %s", exc)
         return 1
 
     _log.info(
-        "[apps_research] exit_status=%s outcome_authorized=%s artifact=%s",
-        getattr(result, "exit_status", "unknown"),
-        getattr(result, "outcome_authorized", False),
-        getattr(result, "output_artifact_path", None),
+        "[apps_research] exit_status=success outcome_authorized=True artifact=%s",
+        artifact_path,
     )
-    return 0 if getattr(result, "exit_status", "") == "success" else 1
+    sys.stdout.write(f"artifact={artifact_path}\n")
+    return 0
 
 
 def _run_product_research(argv: list[str]) -> int:

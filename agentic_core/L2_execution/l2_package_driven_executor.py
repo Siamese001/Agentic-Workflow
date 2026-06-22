@@ -280,69 +280,27 @@ def _validate_output(
     )
 
 
-def _call_provider_gateway_stub(
+def _call_provider_gateway(
     compiled_prompt: CompiledPromptArtifact,
     provider_profile: Dict[str, Any],
     attempt_number: int,
 ) -> Tuple[Dict[str, Any], int, int, str]:
     """
-    Stub for provider gateway call.
-    
-    In real implementation, this would:
-    - Call approved model lane through generic provider gateway
-    - Return structured output
-    - Track latency and tokens
-    
-    For W6, returns stub output demonstrating structure.
+    Provider gateway integration point.
+
+    This executor no longer fabricates app-specific output. Until a concrete
+    provider gateway is injected by the owning app/profile, L2 fails closed
+    instead of returning synthetic data.
     """
-    _LOGGER.info(f"Provider gateway stub called for attempt {attempt_number}")
-    
     # Get lane configuration
     lanes = provider_profile.get("approved_model_lanes", {})
     primary_lane = lanes.get("primary", {})
     lane_id = primary_lane.get("lane_id", "research_synthesis")
-    
-    # Simulate latency
-    latency_ms = 21000  # ~21s for Qwen 32B
-    tokens_in = 3500
-    tokens_out = 1500
-    
-    # Generate stub output
-    stub_output = {
-        "schema_version": "company_brief_v1.0",
-        "company_name": "Stub Company",
-        "synthesis_timestamp": datetime.now(timezone.utc).isoformat(),
-        "executive_summary": {
-            "overview": "Stub executive summary from L2 execution",
-            "key_findings": ["Finding 1", "Finding 2"],
-        },
-        "business_overview": {
-            "description": "Stub business description",
-            "products_services": ["Product A", "Service B"],
-            "customer_segments": ["Enterprise", "SMB"],
-        },
-        "leadership_profile": {},
-        "financial_highlights": {},
-        "market_position": {},
-        "recent_developments": [],
-        "research_gaps": ["Stub research gap"],
-        "confidence_assessment": {
-            "overall_confidence": "MEDIUM",
-            "evidence_quality": "Moderate based on available sources",
-            "caveats": ["Stub caveat"],
-        },
-        "source_attributions": [
-            {
-                "source_id": "src-001",
-                "source_type": "SEC_FILING",
-                "citation": "10-K 2024",
-                "retrieval_date": datetime.now(timezone.utc).isoformat(),
-            }
-        ],
-        "support_status": "PASS",
-    }
-    
-    return stub_output, latency_ms, tokens_in, tokens_out, lane_id
+    _ = (compiled_prompt, attempt_number)
+    raise RuntimeError(
+        "provider_gateway_unavailable: no configured provider implementation "
+        f"for lane_id={lane_id!r}; synthetic L2 output is disabled"
+    )
 
 
 def _perform_same_authority_repair(
@@ -474,10 +432,47 @@ def l2_execute_package_driven(
     for attempt in range(1, max_attempts + 1):
         _LOGGER.info(f"L2 execution attempt {attempt}/{max_attempts}")
         
-        # Call provider gateway
-        output, latency_ms, tokens_in, tokens_out, lane_id = _call_provider_gateway_stub(
-            compiled_prompt, provider_profile, attempt
-        )
+        # Call provider gateway. Missing gateway fails closed; never fabricate
+        # app-specific output in generic core.
+        try:
+            output, latency_ms, tokens_in, tokens_out, lane_id = _call_provider_gateway(
+                compiled_prompt, provider_profile, attempt
+            )
+        except RuntimeError as exc:
+            lane_id = (
+                provider_profile.get("approved_model_lanes", {})
+                .get("primary", {})
+                .get("lane_id", "unknown")
+            )
+            validation_receipt = ExecutionValidationReceipt(
+                receipt_id=f"evr-provider-{attempt}",
+                validation_passed=False,
+                schema_compliant=False,
+                required_fields_present=False,
+                json_syntax_valid=False,
+                citations_valid=False,
+                support_status_accurate=False,
+                errors=[str(exc)],
+                timestamp=datetime.now(timezone.utc).isoformat(),
+            )
+            attempt_receipts.append(
+                AttemptReceipt(
+                    attempt_number=attempt,
+                    status="PROVIDER_UNAVAILABLE",
+                    model_lane_used=lane_id,
+                    latency_ms=0,
+                    tokens_in=0,
+                    tokens_out=0,
+                    output_hash="",
+                    validation_receipt_id=validation_receipt.receipt_id,
+                    repair_triggered=False,
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                )
+            )
+            final_output = {}
+            final_validation = validation_receipt
+            _LOGGER.error("L2 provider gateway unavailable: %s", exc)
+            break
         
         # Validate output
         validation_receipt = _validate_output(output, output_schema, l2_profile)

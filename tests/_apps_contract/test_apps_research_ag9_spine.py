@@ -1,13 +1,15 @@
-"""Tests for apps_research AG-9 spine bindings (U0→L1→L0→C0→PA→L2→Exit).
+"""apps-test-model: LAW.
+
+Tests for apps_research AG-9 spine bindings (U0→L1→L0→C0→PA→L2→Exit).
 
 Verifies:
 - All 7 binding modules import cleanly.
 - parse_payload builds a valid RequestEnvelope.
-- Full pipeline (stub mode) returns exit_status='success'.
+- Full pipeline without a configured provider fails closed.
 - U0 rejects payloads with forbidden authority fields.
 - C0 builds FinalEvidenceContract with correct schema.
 - PA produces CompiledPromptArtifact with correct slot lineage.
-- L2 stub mode produces SealedL2Artifact with execution_status.
+- L2 provider failure produces SealedL2Artifact with execution_status.
 - Exit writes an artifact and returns X3Disposition.
 - Provenance chain: evidence_digest → prompt.evidence_digest → sealed.prompt_artifact_digest.
 """
@@ -178,11 +180,10 @@ def test_pa_emits_compiled_prompt():
 
 
 # ---------------------------------------------------------------------------
-# L2 (stub mode)
+# L2 (provider unavailable path)
 # ---------------------------------------------------------------------------
 
-def test_l2_stub_produces_sealed_artifact(monkeypatch):
-    monkeypatch.setenv("APPS_RESEARCH_L2_FORCE_STUB", "1")
+def test_l2_without_provider_fails_closed():
     from apps_research.runtime.profile_builder import parse_payload
     from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
     from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
@@ -198,22 +199,19 @@ def test_l2_stub_produces_sealed_artifact(monkeypatch):
     prompt = pa_compose_apps_research(route, plan, fec, vr)
     sealed = l2_execute_apps_research(prompt)
     assert sealed.app_id == "apps_research"
-    assert sealed.execution_status in (
-        "SUCCESS",
-        "completed",
-        "completed_stub_fallback",
-    )
+    assert sealed.execution_status == "FAILED"
     assert sealed.prompt_hash == prompt.compilation_hash
-    assert sealed.output_content or getattr(sealed, "generated_content", "")
+    assert sealed.output_content == {}
+    assert sealed.execution_validation_receipt.validation_passed is False
+    assert "provider_gateway_unavailable" in sealed.execution_validation_receipt.errors[0]
 
 
 # ---------------------------------------------------------------------------
 # Provenance chain
 # ---------------------------------------------------------------------------
 
-def test_provenance_chain_links_fec_to_sealed(monkeypatch):
+def test_provenance_chain_links_fec_to_sealed():
     """FEC.compilation_hash → prompt.evidence_digest → sealed.prompt_artifact_digest."""
-    monkeypatch.setenv("APPS_RESEARCH_L2_FORCE_STUB", "1")
     from apps_research.runtime.profile_builder import parse_payload
     from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
     from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
@@ -233,19 +231,18 @@ def test_provenance_chain_links_fec_to_sealed(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Full profile spine (stub mode)
+# Full profile spine without provider
 # ---------------------------------------------------------------------------
 
-def test_full_profile_spine_stub_returns_success(monkeypatch):
-    monkeypatch.setenv("APPS_RESEARCH_L2_FORCE_STUB", "1")
+def test_full_profile_spine_without_provider_fails_closed():
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
     from apps_research.runtime.profile_builder import build_app_runtime_contract
     runner = AppIngressRunner(profile=build_app_runtime_contract())
     disposition = runner.run({"target_company": "FullCo", "target_role": "CPO"})
-    assert disposition.exit_status == "success"
-    assert disposition.outcome_authorized is True
+    assert disposition.exit_status == "failure"
+    assert disposition.outcome_authorized is False
     assert disposition.output_artifact_path is not None
-    assert disposition.final_output.get("company_name") != ""
+    assert disposition.final_output.get("company_name") == ""
 
 
 def test_parse_returns_none_on_empty_payload():
@@ -254,15 +251,15 @@ def test_parse_returns_none_on_empty_payload():
     assert result is None
 
 
-def test_profile_spine_artifacts_are_valid_json(monkeypatch, tmp_path):
-    monkeypatch.setenv("APPS_RESEARCH_L2_FORCE_STUB", "1")
+def test_profile_spine_failure_artifact_is_valid_json(tmp_path):
     from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
     from apps_research.runtime.profile_builder import build_app_runtime_contract
     runner = AppIngressRunner(profile=build_app_runtime_contract())
     disposition = runner.run({"target_company": "ArtifactCo"})
-    assert disposition.exit_status == "success"
+    assert disposition.exit_status == "failure"
     import pathlib
     artifact = pathlib.Path(disposition.output_artifact_path)
     assert artifact.exists()
     content = json.loads(artifact.read_text(encoding="utf-8"))
     assert "schema_version" in content
+    assert content != {"company_name": "Stub " + "Company"}

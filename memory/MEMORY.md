@@ -44,6 +44,10 @@
 
 ## Procedural patterns (this environment)
 
+- **apps_research targeting briefs fail closed (2026-06-21):** fresh `python -m apps_research
+  --target-company <company> --target-role <role> --jd <jd-path>` must print an `artifact=<...briefing.md>`
+  before apps_rg may consume it. Missing grounded `company_brief_text` is a failure; do not substitute stale
+  populated artifacts or dry-run output. Detail: `memory/codex/apps_research_targeting_brief_fail_closed.md`.
 - **Codex repo-local memory placement (2026-06-16):** Agentic Workflow-specific Codex memory artifacts
   belong under `memory/codex/`, not only under the global user-profile path
   `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,

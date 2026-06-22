@@ -19,5 +19,10 @@ def test_session_start_persists_memory_db_into_claude_env_file() -> None:
     text = SESSION_START.read_text(encoding="utf-8")
 
     assert text.count("MEMORY_DB") >= 3
+    assert 'CANONICAL_MEMORY_DB="artifacts/memory/knowledge_graph.sqlite"' in text
+    assert 'MEMORY_DB="${MEMORY_DB:-$CANONICAL_MEMORY_DB}"' in text
+    assert 'PROJECT_DIR_WIN="$(cd "$PROJECT_DIR" && pwd -W 2>/dev/null || true)"' in text
+    assert '[[ "$MEMORY_DB" = */"$CANONICAL_MEMORY_DB" ]]' in text
     assert 'export MEMORY_DB="$MEMORY_DB"' in text
     assert 'echo "export MEMORY_DB=\\"$MEMORY_DB\\""' in text
+    assert 'MEMORY_DB="${MEMORY_DB:-$PROJECT_DIR/artifacts/memory/knowledge_graph.sqlite}"' not in text

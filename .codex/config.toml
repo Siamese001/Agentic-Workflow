@@ -45,7 +45,7 @@ startup_timeout_sec = 30
 
 [mcp_servers.memory.env]
 ADG_REDIS_URL = "${ADG_REDIS_URL}"
-MEMORY_DB = "${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite"
+MEMORY_DB = "artifacts/memory/knowledge_graph.sqlite"
 PYTHONPATH = "${AGENTIC_REPO_ROOT}"
 PYTHONUNBUFFERED = "1"
 

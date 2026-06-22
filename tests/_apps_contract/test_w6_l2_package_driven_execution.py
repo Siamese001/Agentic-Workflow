@@ -1,4 +1,5 @@
-"""
+"""apps-test-model: LAW.
+
 W6 Package-Driven L2 Execution Tests for apps_research
 
 Validates that:
@@ -214,6 +215,21 @@ class TestNoAppsResearchHardcodingInCore:
         
         for term in forbidden:
             assert term not in content, f"Generic L2 hardcodes apps_research: {term}"
+
+    def test_w6_generic_l2_does_not_emit_synthetic_company_brief(self):
+        """Generic L2 must fail closed instead of fabricating company data."""
+        repo_root = Path(__file__).parent.parent.parent
+        generic_l2 = repo_root / "agentic_core/L2_execution/l2_package_driven_executor.py"
+
+        content = generic_l2.read_text()
+
+        forbidden = [
+            "Stub " + "Company",
+            "Stub executive summary",
+            "stub_output",
+        ]
+        for term in forbidden:
+            assert term not in content, f"Generic L2 still contains synthetic output: {term}"
     
     def test_w6_no_vllm_url_hardcoded_in_generic_l2(self):
         """Generic L2 must not hardcode vLLM URL."""

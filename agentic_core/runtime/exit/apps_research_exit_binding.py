@@ -90,6 +90,12 @@ def _write_artifact(
             "schema_version": "company_brief_v1",
             "raw_content": sealed.generated_content,
         }
+    if isinstance(brief_dict, dict) and "schema_version" not in brief_dict:
+        brief_dict = {
+            "schema_version": "apps_research.company_brief_failure.v1",
+            "output": brief_dict,
+            "execution_status": sealed.execution_status,
+        }
 
     with brief_path.open("w", encoding="utf-8") as fh:
         json.dump(brief_dict, fh, ensure_ascii=False, indent=2)
@@ -148,11 +154,9 @@ def exit_finalize_apps_research(
     artifact_path = _write_artifact(sealed, prompt, repo_root, exit_ts)
     artifact_path_str = str(artifact_path.relative_to(repo_root))
 
-    # Determine exit_status — stub fallback still counts as success for
-    # pipeline reachability verification. Real content = 'success'.
+    # Determine exit_status. Product success requires completed L2 output;
+    # synthetic fallback output is not an authorized apps_research artifact.
     if sealed.execution_status == "completed":
-        exit_status = "success"
-    elif sealed.execution_status in ("completed_stub_fallback", "completed_stub"):
         exit_status = "success"
     else:
         exit_status = "failure"
@@ -178,7 +182,7 @@ def exit_finalize_apps_research(
             "section_keys": section_keys,
             "execution_status": sealed.execution_status,
             "artifact_path": artifact_path_str,
-            "stub_mode": sealed.proposed_state_diff.get("stub_mode", False),
+            "stub_mode": False,
         },
         output_artifact_path=artifact_path_str,
         tenant_id=sealed.tenant_id,

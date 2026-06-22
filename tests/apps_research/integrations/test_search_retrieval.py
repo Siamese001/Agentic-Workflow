@@ -1,4 +1,7 @@
-"""Tests for apps_research.integrations.search_retrieval."""
+"""apps-test-model: APP CONTRACT.
+
+Tests for apps_research.integrations.search_retrieval.
+"""
 
 from __future__ import annotations
 
@@ -26,8 +29,46 @@ class _FakeResponse:
 
 def test_missing_base_url_raises(monkeypatch):
     monkeypatch.delenv("SEARXNG_BASE_URL", raising=False)
+    monkeypatch.delenv("TAVILY_API_KEY", raising=False)
     with pytest.raises(RuntimeError, match="SEARXNG_BASE_URL"):
         retrieve("Blend360 agentic AI")
+
+
+def test_missing_searxng_uses_tavily_when_configured(monkeypatch):
+    captured = {}
+
+    def _fake_tavily(query, *, top_k):
+        from apps_research.integrations.tavily_retrieval import RetrievedDoc as TavilyDoc
+
+        captured["query"] = query
+        captured["top_k"] = top_k
+        return [
+            TavilyDoc(
+                url="https://example.com/tavily",
+                title="Tavily Result",
+                snippet="grounded result",
+                score=0.87,
+            )
+        ]
+
+    monkeypatch.delenv("SEARXNG_BASE_URL", raising=False)
+    monkeypatch.setenv("TAVILY_API_KEY", "test-key")
+    monkeypatch.setattr(
+        "apps_research.integrations.tavily_retrieval.retrieve",
+        _fake_tavily,
+    )
+
+    docs = retrieve("Anthropic partnerships", top_k=3)
+
+    assert captured == {"query": "Anthropic partnerships", "top_k": 3}
+    assert docs == [
+        RetrievedDoc(
+            url="https://example.com/tavily",
+            title="Tavily Result",
+            snippet="grounded result",
+            score=0.87,
+        )
+    ]
 
 
 def test_empty_subquery_raises(monkeypatch):

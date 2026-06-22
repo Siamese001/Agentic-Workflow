@@ -20,7 +20,15 @@ PROJECT_DIR="${AGENTIC_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." &&
 cd "$PROJECT_DIR" || exit 0
 
 REDIS_URL="redis://localhost:6379/0"
-MEMORY_DB="${MEMORY_DB:-$PROJECT_DIR/artifacts/memory/knowledge_graph.sqlite}"
+CANONICAL_MEMORY_DB="artifacts/memory/knowledge_graph.sqlite"
+MEMORY_DB="${MEMORY_DB:-$CANONICAL_MEMORY_DB}"
+PROJECT_DIR_WIN="$(cd "$PROJECT_DIR" && pwd -W 2>/dev/null || true)"
+if [ "$MEMORY_DB" = "$PROJECT_DIR/$CANONICAL_MEMORY_DB" ] || \
+   { [ -n "$PROJECT_DIR_WIN" ] && [ "$MEMORY_DB" = "$PROJECT_DIR_WIN/$CANONICAL_MEMORY_DB" ]; } || \
+   [[ "$MEMORY_DB" = */"$CANONICAL_MEMORY_DB" ]] || \
+   [[ "$MEMORY_DB" = *\\artifacts\\memory\\knowledge_graph.sqlite ]]; then
+  MEMORY_DB="$CANONICAL_MEMORY_DB"
+fi
 LOG="/tmp/agentic_session_start.log"
 : > "$LOG"
 

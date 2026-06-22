@@ -107,7 +107,7 @@ def _map_l2_sealed_to_contract(sealed: Any) -> ContractSealedL2Artifact:
 
     execution_status = getattr(sealed, "execution_status", "failed")
     if execution_status == "SUCCESS":
-        execution_status = "completed_stub_fallback"
+        execution_status = "completed"
 
     return ContractSealedL2Artifact(
         request_id=sealed.request_id,

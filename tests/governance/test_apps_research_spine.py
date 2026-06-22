@@ -50,13 +50,12 @@ def test_apps_research_manifest_claims_r3_grounded_read() -> None:
 
 @pytest.mark.governance
 def test_apps_research_main_routes_through_profile_spine() -> None:
-    """__main__.py must route default product CLI through U0-bound AppRuntimeProfile."""
+    """__main__.py must route default product CLI through the R3 spine handoff."""
     assert MAIN_PY.exists(), f"__main__.py missing: {MAIN_PY}"
     src = _src(MAIN_PY)
     profile_markers = [
-        "build_app_runtime_contract",
-        "AppIngressRunner",
         "_run_profile_spine",
+        "run_research_via_spine",
     ]
     missing = [m for m in profile_markers if m not in src]
     assert not missing, (

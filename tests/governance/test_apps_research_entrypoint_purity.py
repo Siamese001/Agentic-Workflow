@@ -7,9 +7,8 @@ no inline research closure.
 
 Plan: apps-research-spine-alignment-d4e8f2 P0.1.
 
-All 9 tests are expected to FAIL on the current codebase (RED) because
-__main__.py currently imports apps_research.scripts.run_research and
-delegates execution directly. They become GREEN after W1 implementation.
+The active CLI may call the canonical spine handoff, but it must not delegate
+to the retired apps_research.scripts.run_research entrypoint or import engines.
 """
 from __future__ import annotations
 
@@ -62,7 +61,8 @@ def test_apps_research_main_is_pure_shim() -> None:
     """
     src = _src()
     forbidden_patterns = [
-        "run_research",          # legacy script delegation
+        "apps_research.scripts.run_research",  # legacy script delegation
+        "run_research.main",
         "company_brief_engine",  # direct engine import/use
         "research_assembly_engine",
         "query_decomposer",
@@ -358,10 +358,11 @@ def test_apps_research_main_default_path_no_legacy_capability_registry() -> None
 
 @pytest.mark.governance
 def test_apps_research_main_default_path_uses_profile_spine_call_chain() -> None:
-    """main() must delegate product runs to _run_profile_spine (same as --spine alias)."""
+    """main() must delegate product runs to the non-stub spine handoff."""
     tree = _tree()
     has_run_profile_spine = False
     main_calls_product = False
+    product_calls_profile = False
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if node.name == "_run_profile_spine":
@@ -372,6 +373,12 @@ def test_apps_research_main_default_path_uses_profile_spine_call_chain() -> None
                         func = child.func
                         if isinstance(func, ast.Name) and func.id == "_run_profile_spine":
                             main_calls_product = True
+            if node.name == "_run_research_record":
+                for child in ast.walk(node):
+                    if isinstance(child, ast.Call):
+                        func = child.func
+                        if isinstance(func, ast.Name) and func.id == "run_research_via_spine":
+                            product_calls_profile = True
         if isinstance(node, ast.FunctionDef) and node.name == "main":
             for child in ast.walk(node):
                 if isinstance(child, ast.Call):
@@ -381,6 +388,9 @@ def test_apps_research_main_default_path_uses_profile_spine_call_chain() -> None
     assert has_run_profile_spine, "_run_profile_spine missing from __main__.py"
     assert main_calls_product, (
         "main() must call _run_product_research which calls _run_profile_spine"
+    )
+    assert product_calls_profile, (
+        "_run_research_record() must call run_research_via_spine, not the deleted L2 stub"
     )
 
 
