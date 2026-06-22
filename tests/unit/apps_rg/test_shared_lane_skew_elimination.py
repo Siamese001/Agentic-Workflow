@@ -23,6 +23,19 @@ from apps_rg.runtime.sections.headline_positioning_evidence import (
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ANTHROPIC_JD = REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
 ANTHROPIC_BRIEF = REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
+GRAPH_BACKED_SECTIONS = (
+    "executive_summary",
+    "headline",
+    "competencies",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "insurtech_bullets",
+    "insurtech_narrative",
+    "ey_bullets",
+    "ey_narrative",
+)
 
 
 def _build_plan(section_id: str, *, target_role: str, jd_text: str, briefing_text: str = "") -> dict:
@@ -157,6 +170,40 @@ def test_selected_graph_plan_emits_candidate_conservation_receipts() -> None:
     assert candidate_receipt["schema_version"] == "graph_candidate_receipt_v1"
     assert candidate_receipt["candidate_conservation_pass"] is True
     assert candidate_receipt["rejected_candidate_count"] > 0
+    assert all(row["plan_digest"] == plan["plan_digest"] for row in decision_ledger)
+
+
+@pytest.mark.parametrize("section_id", GRAPH_BACKED_SECTIONS)
+def test_graph_backed_sections_emit_selection_receipt_parity(section_id: str) -> None:
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+
+    plan = _build_plan(
+        section_id,
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+
+    candidate_receipt = plan.get("graph_candidate_receipt")
+    traversal_receipt = plan.get("graph_traversal_receipt")
+    decision_ledger = plan.get("graph_candidate_decision_ledger")
+
+    assert plan["plan_id"].startswith(f"{section_id}:")
+    assert len(plan["plan_digest"]) == 64
+    assert isinstance(decision_ledger, list)
+    assert decision_ledger
+    assert candidate_receipt["schema_version"] == "graph_candidate_receipt_v1"
+    assert candidate_receipt["section_id"] == section_id
+    assert candidate_receipt["plan_id"] == plan["plan_id"]
+    assert candidate_receipt["plan_digest"] == plan["plan_digest"]
+    assert candidate_receipt["candidate_conservation_pass"] is True
+    assert traversal_receipt["schema_version"] == "graph_traversal_receipt_v1"
+    assert traversal_receipt["section_id"] == section_id
+    assert traversal_receipt["plan_id"] == plan["plan_id"]
+    assert traversal_receipt["plan_digest"] == plan["plan_digest"]
+    assert traversal_receipt["candidate_conservation"]["pass"] is True
+    assert all(row["plan_id"] == plan["plan_id"] for row in decision_ledger)
     assert all(row["plan_digest"] == plan["plan_digest"] for row in decision_ledger)
 
 
