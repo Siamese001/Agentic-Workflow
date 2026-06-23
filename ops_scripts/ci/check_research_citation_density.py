@@ -2,11 +2,11 @@
 
 Per plan §P4.4 acceptance: enforces ≥ 1 URL citation per 200 rendered
 tokens in the latest ``company_research.json`` under
-``reports/research/runs/<ts>/``. Exits 1 on regression; 0 otherwise.
+``artifacts/apps_research/runs/<ts>/``. Exits 1 on regression; 0 otherwise.
 
 Usage:
     python ops_scripts/ci/check_research_citation_density.py
-    python ops_scripts/ci/check_research_citation_density.py --runs-dir reports/research
+    python ops_scripts/ci/check_research_citation_density.py --runs-dir artifacts/apps_research
     python ops_scripts/ci/check_research_citation_density.py --path path/to/company_research.json
 
 Constitutional §31 routing: gate lives under ``ops_scripts/ci/``.
@@ -105,8 +105,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="check_research_citation_density")
     parser.add_argument(
         "--runs-dir",
-        default=str(_REPO_ROOT / "reports" / "research"),
-        help="Runs root (default: reports/research)",
+        default=str(_REPO_ROOT / "artifacts" / "apps_research"),
+        help="Runs root (default: artifacts/apps_research)",
     )
     parser.add_argument("--path", default="", help="Explicit brief path (overrides --runs-dir)")
     parser.add_argument(

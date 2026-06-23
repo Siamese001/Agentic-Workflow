@@ -58,7 +58,8 @@ $directTargets = @(
     ".pytest_cache",
     ".ruff_cache",
     ".mypy_cache",
-    ".playwright-mcp"
+    "artifacts/mcp/playwright",
+    ".playwright-mcp"  # deprecated pre-2026-06 Playwright MCP output root
 )
 
 foreach ($target in $directTargets) {

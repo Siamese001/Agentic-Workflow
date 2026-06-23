@@ -20,30 +20,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
-
-# guardian: allow-silent-degradation -- Qwen vLLM is optional for research synthesis; graceful fallback to manual processing
-try:
-    from agentic_core.L3_orchestration.inference.qwen_vllm import (
-        AppsQwenGateway,
-        AppsQwenRequest,
-        apps_qwen_telemetry,
-    )
-
-    _QWEN_AVAILABLE = True
-except ImportError:
-    AppsQwenGateway = None  # type: ignore[assignment]
-    AppsQwenRequest = None  # type: ignore[assignment]
-    apps_qwen_telemetry = None  # type: ignore[assignment]
-    _QWEN_AVAILABLE = False
-
 from apps_research._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
@@ -111,7 +93,6 @@ from apps_research._telemetry import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -121,10 +102,9 @@ class ResearchOrchestrator:
     """Orchestrate end-to-end research artifact generation."""
 
     dry_run: bool = False
-    output_dir: str = "reports/research"
+    output_dir: str = "artifacts/apps_research"
     gate_mode: str = "HARD_FAIL"
     stage_checkpoints: list[dict[str, Any]] = field(default_factory=list)  # renamed from hop_checkpoints; back-compat alias below
-    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         self._assembly = None
@@ -139,41 +119,6 @@ class ResearchOrchestrator:
         except ImportError as exc:  # guardian: allow-log-and-swallow -- apps_research runtime is optional; bootstrap error recorded for later diagnostics
             self._bootstrap_error = f"apps_research runtime dependency unavailable: {exc}"
             _log.warning(self._bootstrap_error)
-
-        # Initialize Qwen vLLM for research synthesis
-        self._qwen_gateway = None
-        self._qwen_session_id = None
-        self._qwen_init_error: str | None = None
-
-        import os as _os_qwen_optout  # noqa: PLC0415
-
-        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in (
-            "1",
-            "true",
-            "True",
-            "yes",
-        )
-
-        if self.qwen_enabled and _QWEN_AVAILABLE and not _qwen_opt_out:
-            try:
-                self._qwen_gateway = AppsQwenGateway(model_id=QWEN_LOCAL_MODEL_ID)
-
-                if apps_qwen_telemetry is not None:
-                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_research")
-
-                _emit_records_execution_trace("ResearchOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
-
-            except (
-                OSError,
-                ValueError,
-                TypeError,
-                KeyError,
-                AttributeError,
-                RuntimeError,
-            ) as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
-                _emit_records_telemetry_event("ResearchOrchestrator", "L2_EXECUTION", "qwen_init_error")
-                _log.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
-                self._qwen_init_error = str(e)
 
         try:
             from apps_research.config import load_research_specs
@@ -216,129 +161,6 @@ class ResearchOrchestrator:
                 "app": "apps_research",
             },
         )
-
-        # --- Local-first Qwen routing (Phase 1 + adapter enforcement) ---
-        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (  # noqa: PLC0415
-            VLLMGatewayAdapter,
-        )
-        from agentic_core.L2_execution.types.local_first_disposition import (  # noqa: PLC0415
-            LocalFirstDisposition,
-        )
-        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: PLC0415
-            Provider,
-            evaluate as evaluate_routing,
-        )
-
-        # requires_policy_read / iteration_count / invalid_ast: repair-domain predicates.
-        # Generation apps are single-pass pipelines with no policy-read concept, no retry
-        # iterations, and no AST output — False/0/100 are semantically correct here, not
-        # placeholders.  Wire these only if a retry loop or policy-read path is introduced.
-        routing_ctx: dict[str, object] = {
-            "requires_policy_read": False,
-            "iteration_count": 0,
-            "max_iterations": 100,
-            "invalid_ast": False,
-            "routing_version": "1",
-        }
-        routing_decision = evaluate_routing(routing_ctx)
-        _dsp: LocalFirstDisposition | None = None
-
-        if routing_decision.provider == Provider.LOCAL_VLLM:
-            if self._qwen_init_error is not None:
-                _dsp = LocalFirstDisposition.for_fail_init(
-                    orchestrator="ResearchOrchestrator",
-                    run_id=trace_id,
-                    predicate_hash=routing_decision.predicate_evaluation_hash,
-                    init_error=self._qwen_init_error,
-                )
-                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-                raise RuntimeError(f"LOCAL_VLLM selected but Qwen init failed: {self._qwen_init_error}")
-            if self._qwen_gateway is not None:
-                # Adapter enforces token budget, backpressure, and circuit breaker
-                _adapter = VLLMGatewayAdapter()
-                _prompt_preview = request.topic[:512]
-                _adapter_result = _adapter.evaluate(
-                    prompt=_prompt_preview,
-                    task_class="research_synthesis",
-                    severity="medium",
-                )
-                _telem = _adapter_result.telemetry.as_dict() if _adapter_result.telemetry is not None else {}
-                if _adapter_result.route_to_gemini:
-                    _dsp = LocalFirstDisposition.for_escalate(
-                        orchestrator="ResearchOrchestrator",
-                        run_id=trace_id,
-                        predicate_hash=routing_decision.predicate_evaluation_hash,
-                        telem=_telem,
-                    )
-                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-                    _emit_records_telemetry_event(
-                        "ResearchOrchestrator",
-                        "L2_EXECUTION",
-                        "adapter_escalate",
-                    )
-                else:
-                    _emit_records_telemetry_event(
-                        "ResearchOrchestrator",
-                        "L2_EXECUTION",
-                        "adapter_allow",
-                    )
-                    try:
-                        qwen_result = await self.synthesize_research_with_qwen(
-                            research_topic=request.topic,
-                            sources=[],
-                        )
-                        _adapter.record_local_success(severity="medium")
-                    except (  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
-                        OSError,
-                        ValueError,
-                        TypeError,
-                        KeyError,
-                        AttributeError,
-                        RuntimeError,
-                    ) as _exc:  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
-                        _adapter.record_local_failure(severity="medium")
-                        _dsp = LocalFirstDisposition.for_fail_exec(
-                            orchestrator="ResearchOrchestrator",
-                            run_id=trace_id,
-                            predicate_hash=routing_decision.predicate_evaluation_hash,
-                            telem=_telem,
-                            exc=_exc,
-                        )
-                        _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-                        raise
-                    result.qwen_inference_result = qwen_result
-                    _dsp = LocalFirstDisposition.for_allow(
-                        orchestrator="ResearchOrchestrator",
-                        run_id=trace_id,
-                        predicate_hash=routing_decision.predicate_evaluation_hash,
-                        telem=_telem,
-                        qwen_result_present=qwen_result is not None,
-                    )
-                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-                    _emit_records_execution_trace(
-                        trace_id,
-                        LayerSegment.L3_ORCHESTRATION,
-                        "ResearchOrchestrator.run.qwen_local",
-                    )
-            else:
-                _dsp = LocalFirstDisposition.for_skip(
-                    orchestrator="ResearchOrchestrator",
-                    run_id=trace_id,
-                    provider_value="LOCAL_VLLM",
-                    predicate_hash=routing_decision.predicate_evaluation_hash,
-                    reason_code="gateway_not_initialized",
-                )
-                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-        else:
-            _dsp = LocalFirstDisposition.for_skip(
-                orchestrator="ResearchOrchestrator",
-                run_id=trace_id,
-                provider_value=routing_decision.provider.value,
-                predicate_hash=routing_decision.predicate_evaluation_hash,
-                reason_code="predicate_selected_opus",
-            )
-            _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
-        result.local_first_disposition = _dsp.as_dict() if _dsp is not None else None
 
         try:
             assembly = self._assembly.execute(request)
@@ -493,172 +315,6 @@ class ResearchOrchestrator:
     def hop_checkpoints(self) -> list[dict[str, Any]]:
         """Back-compat alias for stage_checkpoints."""
         return self.stage_checkpoints
-
-    async def synthesize_research_with_qwen(
-        self,
-        research_topic: str,
-        sources: list[dict[str, Any]],
-        synthesis_type: str = "comprehensive",
-    ) -> dict[str, Any]:
-        """Synthesize research content using Qwen vLLM inference.
-
-        Args:
-            research_topic: Main research topic/question
-            sources: List of source materials with titles, content, and metadata
-            synthesis_type: Type of synthesis (comprehensive, comparative, analytical)
-
-        Returns:
-            Dictionary with synthesized research content and metadata
-        """
-        if not self.qwen_enabled:
-            return {"success": False, "error": "qwen_disabled", "content": None}
-
-        if self._qwen_gateway is None or AppsQwenRequest is None:
-            return {"success": False, "error": "qwen_gateway_unavailable", "content": None}
-
-        if apps_qwen_telemetry is None or self._qwen_session_id is None:
-            return {"success": False, "error": "qwen_telemetry_unavailable", "content": None}
-
-        # Validate inputs
-        if not research_topic or not research_topic.strip():
-            return {"success": False, "error": "empty_research_topic", "content": None}
-
-        if not sources or not isinstance(sources, list):
-            return {"success": False, "error": "invalid_sources", "content": None}
-
-        try:
-            # Prepare research synthesis prompt
-            prompt = self._prepare_research_synthesis_prompt(research_topic, sources, synthesis_type)
-
-            # Create Qwen request
-            request = AppsQwenRequest(
-                app_name="apps_research",
-                prompt=prompt,
-                confidence_threshold=0.75,
-                max_tokens=3072,  # Higher token limit for research synthesis
-                temperature=0.4,  # Moderate temperature for creative synthesis
-            )
-
-            # Record telemetry start
-            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
-                apps_qwen_telemetry.record_request_start(
-                    session_id=self._qwen_session_id,
-                    app_name="apps_research",
-                    model_id=QWEN_LOCAL_MODEL_ID,
-                )
-
-            # Perform inference
-            response = await self._qwen_gateway.infer(request)
-
-            # Record telemetry result
-            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
-                if response.success:
-                    apps_qwen_telemetry.record_request_success(
-                        session_id=self._qwen_session_id,
-                        app_name="apps_research",
-                        model_id=response.model_used,
-                        latency_ms=response.latency_ms,
-                        confidence=response.confidence,
-                        tokens_used=len(prompt.split()) + len(response.response.split())
-                        if response.response
-                        else 0,
-                    )
-                else:
-                    apps_qwen_telemetry.record_request_error(
-                        session_id=self._qwen_session_id,
-                        app_name="apps_research",
-                        model_id=response.model_used,
-                        error_message=response.error_message or "unknown_error",
-                    )
-
-            _emit_captures_evaluation_metric("apps_research", "ResearchOrchestrator", "research_synthesis")
-
-            return {
-                "success": response.success,
-                "content": response.response,
-                "confidence": response.confidence,
-                "model_used": response.model_used,
-                "latency_ms": response.latency_ms,
-                "synthesis_type": synthesis_type,
-                "sources_count": len(sources),
-                "error_message": response.error_message,
-            }
-
-        except (
-            OSError,
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            RuntimeError,
-        ) as e:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure logged and returned as error dict
-            _emit_records_telemetry_event("apps_research", "ResearchOrchestrator", "research_synthesis_error")
-            return {"success": False, "error": f"synthesis_failed: {str(e)}", "content": None}
-
-    def _prepare_research_synthesis_prompt(
-        self,
-        research_topic: str,
-        sources: list[dict[str, Any]],
-        synthesis_type: str,
-    ) -> str:
-        """Prepare prompt for research synthesis using Qwen.
-
-        Args:
-            research_topic: Main research topic
-            sources: List of source materials
-            synthesis_type: Type of synthesis requested
-
-        Returns:
-            Formatted prompt string
-        """
-        # Format sources for the prompt
-        sources_text = ""
-        for i, source in tqdm(
-            enumerate(sources[:10], 1), desc="Processing", unit="item"
-        ):  # Limit to 10 sources for token limits
-            sources_text += f"\nSOURCE {i}:\n"
-            sources_text += f"Title: {source.get('title', 'Untitled')}\n"
-            sources_text += (
-                f"Content: {source.get('content', source.get('summary', 'No content available'))[:500]}...\n"
-            )
-            if source.get("author"):
-                sources_text += f"Author: {source['author']}\n"
-            if source.get("date"):
-                sources_text += f"Date: {source['date']}\n"
-            sources_text += "---\n"
-
-        synthesis_instructions = {
-            "comprehensive": "Provide a comprehensive synthesis that integrates all sources, identifies key themes, and presents a holistic view of the research topic.",
-            "comparative": "Compare and contrast the sources, identifying similarities, differences, and unique contributions of each source.",
-            "analytical": "Analyze the sources critically, identifying strengths, weaknesses, biases, and research gaps.",
-            "meta": "Provide a meta-analysis of the research landscape, identifying trends, controversies, and future directions.",
-        }
-
-        instruction = synthesis_instructions.get(synthesis_type, synthesis_instructions["comprehensive"])
-
-        prompt = f"""RESEARCH SYNTHESIS REQUEST
-
-TOPIC: {research_topic}
-SYNTHESIS TYPE: {synthesis_type}
-
-SOURCES:
-{sources_text}
-
-INSTRUCTIONS:
-{instruction}
-
-Please provide a well-structured synthesis that includes:
-1. Executive Summary
-2. Key Themes and Findings
-3. Source Analysis
-4. Critical Insights
-5. Research Gaps or Future Directions
-6. Conclusions
-
-Ensure proper academic tone, cite sources appropriately, and maintain objectivity throughout the synthesis.
-"""
-
-        return prompt
 
     @staticmethod
     def _make_trace_id(request: ResearchRequest) -> str:

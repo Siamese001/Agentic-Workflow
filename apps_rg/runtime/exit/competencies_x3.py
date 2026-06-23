@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from agentic_core.config.model_catalog import QWEN_VLLM_LABEL
 from apps_rg.runtime.exit.executive_summary_x3 import X3Disposition, aggregate_x3
 
 __all__ = [
@@ -21,13 +20,13 @@ def clarify_x3_for_competencies_live_provider_preflight(
     """Rewrite disposition copy when TCP preflight aborted generation.
 
     Raw ``aggregate_x3`` may classify empty-parse X2 failures ahead of the BLOCKED narrative; for
-    unreachable vLLM the authoritative blocker is the live provider gate (see
+    an unreachable live provider, the authoritative blocker is the live provider gate (see
     ``competencies_live_provider_gate.json``). X2 sidecars remain on disk for forensics.
     """
     if not live_preflight_blocked:
         return x3
     remediation = [r for r in x3.required_remediation if not r.startswith("Fix failed X2 gates")]
-    probe = f"Restore reachable {QWEN_VLLM_LABEL} endpoint (see competencies_live_provider_gate.json and stderr)."
+    probe = "Restore reachable live provider endpoint (see competencies_live_provider_gate.json and stderr)."
     if probe not in remediation:
         remediation.insert(0, probe)
     return replace(

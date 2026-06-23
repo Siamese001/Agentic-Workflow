@@ -107,7 +107,7 @@ server_rows = [
         "playwright",
         "Browser automation, accessibility snapshots, end-to-end UI verification",
         "browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot",
-        "Live UI/E2E; output in .playwright-mcp/ (gitignored). Close tabs after use.",
+        "Live UI/E2E; output in artifacts/mcp/playwright/ (gitignored). Close tabs after use.",
         "playwright",
     ),
     (

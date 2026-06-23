@@ -10,10 +10,10 @@ The following credentials are **live** in `~/.codeium/windsurf/mcp_config.json` 
 
 | Secret | Location | Action |
 |---|---|---|
-| `BSAr2wedArAn5uzkoHBpQegHvaEfPxZ` | `brave-search.env.BRAVE_API_KEY` | Rotate at brave.com |
-| `github_pat_11BP7NBKQ07p…` | `github.env.GITHUB_PERSONAL_ACCESS_TOKEN` | Revoke at github.com/settings/tokens |
-| `figd_ilNTaaCNfcZvO_LzBUgWOaRowYqTcgBzjUj2e-XG` | `figma.args[3]` | Revoke at figma.com/settings |
-| `postgresql://postgres:postgres@localhost:5432/mcp_db` | `postgres_memory.args[2]` | Rotate local DB password |
+| `REDACTED_BRAVE_API_KEY` | `brave-search.env.BRAVE_API_KEY` | Rotate at brave.com |
+| `REDACTED_GITHUB_PAT` | `github.env.GITHUB_PERSONAL_ACCESS_TOKEN` | Revoke at github.com/settings/tokens |
+| `REDACTED_FIGMA_TOKEN` | `figma.args[3]` | Revoke at figma.com/settings |
+| `postgresql://postgres:REDACTED@localhost:5432/mcp_db` | `postgres_memory.args[2]` | Rotate local DB password |
 
 Note: `.env` also contains live OpenAI, Anthropic, Pinecone, GitHub keys — confirm `.env` is in `.gitignore` and not committed.
 

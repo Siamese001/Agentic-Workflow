@@ -41,7 +41,6 @@ root_directories:
   - artifacts
   - infrastructure
   - logs
-  - reports
   - scripts        # Fort Knox allowlist: verify_tier*_gate.py, verify_all_requirements_*.py, scripts/proof/**
   - templates
   - test_artifacts
@@ -115,7 +114,6 @@ excluded_directories:
   - .mypy_cache
   - .hypothesis
   - .tox
-  - .playwright-mcp
   - dist
   - build
   - .egg-info
@@ -146,3 +144,5 @@ forbidden_root_directories:
   - certification         # inputs: data/certification/; review: artifacts/certification/review/
   - chroma                # Chroma persist leak — use data/cache/chromadb/
   - archives              # quarantine: artifacts/archives/
+  - reports               # durable reports: docs/reports/; generated output: artifacts/
+  - .playwright-mcp       # Playwright MCP output belongs under artifacts/mcp/playwright/

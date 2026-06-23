@@ -47,16 +47,20 @@ def _competencies_args() -> argparse.Namespace:
         briefing=BRIEFING_DEFAULT,
         broad_skills_ledger_path="",
         base_resume_ref="",
-        provider="qwen_vllm",
+        provider="external_claude",
     )
 
 
 @pytest.mark.skipif(not LEDGER.is_file(), reason="master candidate fact ledger missing")
 @pytest.mark.skipif(not MANIFEST.is_file(), reason="prior resume variant manifest missing")
-def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(tmp_path: Path) -> None:
+def test_competencies_c0_evidence_room_e2e_real_proof_pool_and_fec(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Real U0/L1/L0 front spine, proof pool, C0.1–C0.7, and FEC bridge artifacts — no mocks."""
     os.environ["APPS_RG_C0_EVIDENCE_ROOM"] = "1"
-    os.environ.pop("CHROMA_PERSIST_DIR", None)
+    monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "0")
     artifact_dir = tmp_path / "competencies_c0_e2e"
     args = _competencies_args()
     pool, _base, _path, _hash, front_spine = load_section_proof_for_lane(
@@ -146,20 +150,13 @@ def test_prior_manifest_on_disk_has_required_row_fields() -> None:
     reason="set PYTEST_APPS_RG_LIVE_L2=1 for live competencies CLI (no mocks, no stub)",
 )
 def test_competencies_cli_live_through_c0_room_artifacts(tmp_path: Path) -> None:
-    """Full ``python -m apps_rg --section competencies`` with live qwen — zero mock/stub flags."""
-    from apps_rg.runtime.providers.competencies_live_provider_gate import qwen_vllm_http_models_preflight
-
-    ok, detail, _snap = qwen_vllm_http_models_preflight(
-        provider_url=os.environ.get("APPS_RG_QWEN_OPENAI_BASE", "http://127.0.0.1:8000/v1"),
-        timeout_s=5.0,
-    )
-    if not ok:
-        pytest.skip(f"live qwen_vllm unavailable: {detail}")
+    """Full ``python -m apps_rg --section competencies`` with live provider, zero mock/stub flags."""
+    if not os.environ.get("ANTHROPIC_API_KEY", "").strip():
+        pytest.skip("live external_claude unavailable: ANTHROPIC_API_KEY is not set")
 
     env = dict(os.environ)
     env["PYTEST_APPS_RG_LIVE_L2"] = "1"
     env["APPS_RG_C0_EVIDENCE_ROOM"] = "1"
-    env.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
     env.pop("APPS_RG_TEST_HARNESS", None)
     env.pop("APPS_RG_MOCK_JUDGES", None)
     resume = REPO / "apps_rg/resume/base/amit_ayer_base_resume_v1.json"

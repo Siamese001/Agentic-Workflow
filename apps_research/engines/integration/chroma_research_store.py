@@ -24,6 +24,7 @@ W6 upgrade:
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Protocol, runtime_checkable
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
@@ -41,6 +42,16 @@ EMBEDDING_DIMENSIONS: int = 1024
 
 live_wiring_deferred: bool = True
 _WIRING_GATE: str = "APPS_RESEARCH_CHROMA_RUNTIME_WIRING_REQUIRED"
+
+
+def _resolve_embedding_device() -> str:
+    """Resolve the BGE device for the real Chroma path only."""
+    override = os.environ.get("APPS_RESEARCH_EMBEDDING_DEVICE", "").strip().lower()
+    if override in {"cpu", "cuda", "mps"}:
+        return override
+    from agentic_core.embeddings.bge_runtime import _resolve_device
+
+    return _resolve_device()
 
 
 # ---------------------------------------------------------------------------
@@ -190,7 +201,13 @@ class ChromaResearchStore:
                     "ChromaResearchStore requires sentence-transformers for real embeddings. "
                     "Install with: pip install sentence-transformers>=2.2.0"
                 ) from exc
-            cls._model = SentenceTransformer(EMBEDDING_MODEL)
+            device = _resolve_embedding_device()
+            _log.info(
+                "[ChromaResearchStore] loading embedding_model=%s device=%s",
+                EMBEDDING_MODEL,
+                device,
+            )
+            cls._model = SentenceTransformer(EMBEDDING_MODEL, device=device)
         return cls._model
 
     def _embed(self, text: str) -> list[float]:

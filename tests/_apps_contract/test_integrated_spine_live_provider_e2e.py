@@ -3,7 +3,7 @@
 Section lanes use ``test_one_spine_*`` / ``PYTEST_APPS_RG_LIVE_L2``; this file is the
 **canonical R4 integrated path** gate: cache preflight → ``run_integrated_single_action_spine``.
 
-Set ``PYTEST_APPS_RG_INTEGRATED_LIVE=1`` and ensure vLLM is reachable (``VLLM_BASE_URL``).
+Set ``PYTEST_APPS_RG_INTEGRATED_LIVE=1`` and ensure the external provider credentials are present.
 Without the flag, tests are skipped — not failed.
 """
 from __future__ import annotations
@@ -34,36 +34,26 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def _qwen_available() -> bool:
-    from apps_rg.runtime.providers.competencies_live_provider_gate import (
-        qwen_vllm_http_models_preflight,
-    )
-
-    url = (
-        os.environ.get("VLLM_BASE_URL")
-        or os.environ.get("APPS_RG_QWEN_OPENAI_BASE")
-        or "http://127.0.0.1:8000/v1"
-    )
-    ok, _detail, _snap = qwen_vllm_http_models_preflight(provider_url=url, timeout_s=10.0)
-    return ok
+def _external_provider_available() -> bool:
+    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
 
 
 @pytest.fixture(scope="module")
-def _require_qwen() -> None:
-    if not _qwen_available():
-        pytest.skip("live qwen_vllm unavailable — integrated spine requires provider")
+def _require_external_provider() -> None:
+    if not _external_provider_available():
+        pytest.skip("live external_claude unavailable: ANTHROPIC_API_KEY is not set")
 
 
 @pytest.fixture(scope="module")
-def integrated_run_dir(_require_qwen) -> Path:
+def integrated_run_dir(_require_external_provider) -> Path:
     root = REPO / "artifacts" / "apps_rg" / "runtime_proofs" / f"integrated_live_{uuid.uuid4().hex[:12]}"
     root.mkdir(parents=True, exist_ok=True)
     return root
 
 
-def test_integrated_spine_preflight_documents_provider_reachable(_require_qwen) -> None:
-    """Sanity: integrated live runs depend on the same vLLM preflight as section lanes."""
-    assert _qwen_available()
+def test_integrated_spine_preflight_documents_provider_reachable(_require_external_provider) -> None:
+    """Sanity: integrated live runs depend on the same external provider credential gate."""
+    assert _external_provider_available()
 
 
 def _integrated_canonical_argv() -> list[str]:

@@ -220,7 +220,7 @@ class ResearchGateConfig(BaseModel):
 class ResearchOutputConfig(BaseModel):
     """Output configuration."""
 
-    output_dir: str = Field(default="reports/research")
+    output_dir: str = Field(default="artifacts/apps_research")
     artifact_prefix: str = Field(default="research")
     emit_run_summary: bool = True
     emit_source_register: bool = True

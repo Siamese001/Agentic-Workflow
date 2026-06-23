@@ -23,7 +23,7 @@ def is_apps_rg_test_harness() -> bool:
 
 
 def product_fail_closed_runtime() -> bool:
-    """Live Qwen, BGE, judges required; no pseudo/mock substitutes on product path.
+    """Live generation provider, BGE, judges required; no pseudo/mock substitutes on product path.
 
     Default strict for every ``python -m apps_rg`` invocation. Opt-out only via
     ``APPS_RG_ALLOW_PRODUCT_SHORTCUTS=1`` or ``APPS_RG_TEST_HARNESS=1``.

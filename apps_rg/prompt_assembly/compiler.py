@@ -1,5 +1,5 @@
 # apps_rg Prompt Assembly Compiler
-# Local compile/validation path: model id matches the apps_rg vLLM serve name.
+# Local compile/validation path: model id matches the apps_rg section provider name.
 
 from __future__ import annotations
 

@@ -80,9 +80,9 @@ from apps_rg.runtime.judges.competencies_x1d import run_competencies_judges
 from apps_rg.runtime.providers.competencies_live_provider_gate import (
     REASON_PROVIDER_UNAVAILABLE,
     STATUS_BLOCKED_LIVE_PROVIDER,
-    competencies_vllm_preflight_disabled,
-    competencies_vllm_chat_timeout_s,
-    competencies_vllm_preflight_timeout_s,
+    competencies_provider_preflight_disabled,
+    competencies_provider_chat_timeout_s,
+    competencies_provider_preflight_timeout_s,
     live_provider_gate_audit_payload_failure,
 )
 from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request

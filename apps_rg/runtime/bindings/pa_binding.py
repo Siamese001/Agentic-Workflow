@@ -8,8 +8,6 @@ package-driven L2 spine via ``apps_rg.runtime.bindings.l2_binding`` (child plan 
 """
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
-
 from apps_rg.runtime.w3_execution_path_labels import (
     BUCKET_GOVERNED_PA_L2_EXIT,
     PLAN_SLUG,
@@ -36,6 +34,7 @@ from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidence
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_rg.runtime.section_model_limits import DEFAULT_EXTERNAL_CLAUDE_MODEL
 
 __all__ = [
     "PA_BOUNDARY_CERT_S3",
@@ -59,8 +58,8 @@ __all__ = [
 
 PA_BOUNDARY_CERT_S3: str = "pa-s3-tiered-prompt-patching-apps-rg-resume-shipping"
 APPS_RG_PA_CERT_REF: str = "pa-apps-rg-resume-generation-w3"
-APPS_RG_TARGET_MODEL: str = QWEN_LOCAL_MODEL_ID
-APPS_RG_TARGET_PROVIDER: str = "vllm_local"
+APPS_RG_TARGET_MODEL: str = DEFAULT_EXTERNAL_CLAUDE_MODEL
+APPS_RG_TARGET_PROVIDER: str = "external_claude"
 
 _PA_PROFILE_CACHE: dict[str, Any] = {}
 _PA_PROMPT_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"

@@ -1,6 +1,6 @@
-"""Live ``python -m apps_rg`` proof for Unify/IBM bullets+narrative (qwen_vllm, real bucket).
+"""Live ``python -m apps_rg`` proof for Unify/IBM bullets+narrative (real bucket).
 
-Set ``PYTEST_APPS_RG_LIVE_L2=1`` to execute. Requires reachable vLLM at VLLM_BASE_URL / :8000/v1.
+Set ``PYTEST_APPS_RG_LIVE_L2=1`` to execute. Requires external provider credentials.
 """
 
 from __future__ import annotations
@@ -20,26 +20,22 @@ from tests._apps_contract.lane_cli_common import (
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("PYTEST_APPS_RG_LIVE_L2", "").strip().lower() not in ("1", "true", "yes"),
-    reason="set PYTEST_APPS_RG_LIVE_L2=1 for live qwen_vllm lane proofs",
+    reason="set PYTEST_APPS_RG_LIVE_L2=1 for live external provider lane proofs",
 )
 
 
-def _qwen_available() -> bool:
-    from apps_rg.runtime.providers.competencies_live_provider_gate import qwen_vllm_http_models_preflight
-
-    url = os.environ.get("VLLM_BASE_URL") or os.environ.get("APPS_RG_QWEN_OPENAI_BASE") or "http://127.0.0.1:8000/v1"
-    ok, _detail, _snap = qwen_vllm_http_models_preflight(provider_url=url, timeout_s=10.0)
-    return ok
+def _external_provider_available() -> bool:
+    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
 
 
 @pytest.fixture(scope="module")
-def _require_qwen() -> None:
-    if not _qwen_available():
-        pytest.skip("live qwen_vllm unavailable at VLLM_BASE_URL / 127.0.0.1:8000/v1")
+def _require_external_provider() -> None:
+    if not _external_provider_available():
+        pytest.skip("live external_claude unavailable: ANTHROPIC_API_KEY is not set")
 
 
 @pytest.fixture(scope="module")
-def live_proof_bundle_dir(_require_qwen) -> Path:
+def live_proof_bundle_dir(_require_external_provider) -> Path:
     root = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs" / f"live_lane_proof_{uuid.uuid4().hex[:12]}"
     root.mkdir(parents=True, exist_ok=True)
     return root

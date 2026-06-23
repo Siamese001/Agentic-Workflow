@@ -345,7 +345,7 @@ def run_competencies_lane_execution(
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
         max_tokens=COMPETENCIES_MAX_OUTPUT_TOKENS,
-        timeout_seconds=competencies_vllm_chat_timeout_s(),
+        timeout_seconds=competencies_provider_chat_timeout_s(),
         model=section_model,
         provider_requested=str(args.provider),
     )
@@ -354,16 +354,16 @@ def run_competencies_lane_execution(
     req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
     _run_id = str(runtime_payload.get("run_id") or "")
     base_url = str(provider_request_data.get("provider_url") or "")
-    pre_timeout = competencies_vllm_preflight_timeout_s()
+    pre_timeout = competencies_provider_preflight_timeout_s()
     print(
         f"[competencies] provider preflight: shared HTTP /v1/models probe base_url={base_url!r} "
         f"model={req_model!r} timeout_s={pre_timeout}",
         file=sys.stderr,
         flush=True,
     )
-    if competencies_vllm_preflight_disabled():
+    if competencies_provider_preflight_disabled():
         print(
-            "[competencies] WARNING: APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE is set — "
+            "[competencies] WARNING: APPS_RG_COMPETENCIES_PROVIDER_PREFLIGHT_DISABLE is set - "
             "skipping HTTP models preflight in slice (not recommended for unattended runs).",
             file=sys.stderr,
             flush=True,

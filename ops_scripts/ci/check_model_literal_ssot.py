@@ -22,7 +22,6 @@ APPROVED_MODEL_SSOT_PATHS = {
 SKIP_PARTS = {
     ".git",
     ".mypy_cache",
-    ".playwright-mcp",
     ".pytest_cache",
     ".ruff_cache",
     ".venv",

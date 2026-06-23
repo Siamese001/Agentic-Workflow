@@ -100,7 +100,7 @@ def resolve_modular_latest_l2(repo: Path, lane: str) -> Path | None:
         rd = (repo / rel).resolve()
         l2 = rd / "l2_output.json"
         if l2.is_file() and (
-            not product_fail_closed_runtime() or _is_accepted_real_llm_qwen_bundle(rd)
+            not product_fail_closed_runtime() or _is_accepted_real_llm_provider_bundle(rd)
         ):
             return l2
     return None
@@ -186,7 +186,7 @@ def contract_harness_run_dir(repo: Path, run_key: str, *parts: str) -> Path:
 
 
 def proof_bucket_for_provider(provider: str) -> Bucket:
-    """Mock harness runs land in ``mock/``; live ``qwen_vllm`` generation uses ``real/``."""
+    """Mock harness runs land in ``mock/``; live generation uses ``real/``."""
     if str(provider or "").strip().lower() == "mock":
         return "mock"
     return "real"
@@ -255,11 +255,6 @@ def is_accepted_real_llm_provider_bundle(run_dir: Path) -> bool:
     return _is_accepted_real_llm_provider_bundle(run_dir)
 
 
-def is_accepted_real_llm_qwen_bundle(run_dir: Path) -> bool:
-    """Compatibility alias for historical Qwen-only imports."""
-    return _is_accepted_real_llm_provider_bundle(run_dir)
-
-
 def _is_accepted_real_llm_provider_bundle(run_dir: Path) -> bool:
     """Rollup/eligibility: REAL_LLM L2 exists and provider_requested is accepted."""
     l2_path = run_dir / "l2_output.json"
@@ -271,11 +266,6 @@ def _is_accepted_real_llm_provider_bundle(run_dir: Path) -> bool:
     if str(l2.get("runtime_generation_status", "")).strip() != "REAL_LLM":
         return False
     return _provider_requested_lower(run_dir) in ACCEPTED_REAL_LLM_PROVIDER_PROFILES
-
-
-def _is_accepted_real_llm_qwen_bundle(run_dir: Path) -> bool:
-    """Compatibility alias for old callers; accepts all live section providers."""
-    return _is_accepted_real_llm_provider_bundle(run_dir)
 
 
 # Repo-relative paths written under each proof run_dir (presence-checked at finalize).
@@ -475,7 +465,7 @@ def resolve_run_dir_from_latest_successful_pointer(repo: Path, lane: str) -> Pat
     p = (repo / rel).resolve()
     if not p.is_dir():
         return None
-    return p if _is_accepted_real_llm_qwen_bundle(p) else None
+    return p if _is_accepted_real_llm_provider_bundle(p) else None
 
 
 def _migration_latest_real_llm_provider_run_dir(repo: Path, lane: str) -> Path | None:
@@ -491,7 +481,7 @@ def _migration_latest_real_llm_provider_run_dir(repo: Path, lane: str) -> Path |
         l2p = child / "l2_output.json"
         if not l2p.is_file():
             continue
-        if not _is_accepted_real_llm_qwen_bundle(child):
+        if not _is_accepted_real_llm_provider_bundle(child):
             continue
         mtime = l2p.stat().st_mtime
         if mtime > best_mtime:
@@ -520,7 +510,7 @@ def resolve_accepted_real_rollup_run_dir(repo: Path, lane: str) -> tuple[Path | 
 
     legacy_root = lane_root(repo, lane)
     leg_l2 = legacy_root / "l2_output.json"
-    if leg_l2.is_file() and _is_accepted_real_llm_qwen_bundle(legacy_root):
+    if leg_l2.is_file() and _is_accepted_real_llm_provider_bundle(legacy_root):
         return legacy_root, "legacy_flat_real_llm_provider"
 
     return None, "missing_successful_real_run"

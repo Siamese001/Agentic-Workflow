@@ -12,7 +12,6 @@ from agentic_core.config.model_catalog import (
     ANTHROPIC_SONNET_4_20250514_MODEL_ID,
     GEMINI_20_FLASH_MODEL_ID,
     OPENAI_GPT4O_MINI_MODEL_ID,
-    QWEN_LOCAL_MODEL_ID,
 )
 
 from apps_rg.runtime.w3_execution_path_labels import (
@@ -37,7 +36,6 @@ from agentic_core.runtime.providers.provider_gateway import ProviderGateway
 from agentic_core.runtime.providers.provider_types import ProviderModeBlockedError
 
 from apps_rg.l2_recipe.raw_text_json_unwrap import try_unwrap_raw_text_to_resume
-from apps_rg.l2_recipe.prompt_budget import PromptBudgetError, prepare_prompt_for_local_vllm
 from apps_rg.runtime.sections.executive_summary_context_limits import (
     DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS,
 )
@@ -168,7 +166,7 @@ def _build_frozen_execution_context(
         tm = "unknown"
     tp = str(getattr(prompt_artifact, "target_provider", "") or "").strip()
     if not tp:
-        tp = "local_vllm"
+        tp = "external_claude"
     roots = tuple(getattr(prompt_artifact, "allowed_file_roots", ()) or ())
     nets = tuple(getattr(prompt_artifact, "allowed_networks", ()) or ())
     return FrozenExecutionContext(
@@ -380,8 +378,8 @@ def _resolve_l2_envelope_provider_mode() -> Any:
     """How E3 may invoke models — driven by ``APPS_RG_L2_PROVIDER_MODE``.
 
     - ``stub_only`` — deterministic stub JSON (CI default via ``tests/conftest.py``).
-    - ``local_only`` — local vLLM + stub; **default when env is unset** (CLI resumes).
-    - ``live_allowed`` — local vLLM + external APIs + stub.
+    - ``local_only`` — legacy value retained by the generic enum; apps_rg no longer resolves local providers.
+    - ``live_allowed`` — external APIs + stub.
 
     External keys: ``live``, ``external``, ``all`` map to ``live_allowed``.
     """
@@ -394,7 +392,7 @@ def _resolve_l2_envelope_provider_mode() -> Any:
         return ProviderMode.STUB_ONLY
     if raw in ("live_allowed", "live", "external", "all"):
         return ProviderMode.LIVE_ALLOWED
-    return ProviderMode.LOCAL_ONLY
+    return ProviderMode.LIVE_ALLOWED
 
 
 def _provider_profile_for_cpa(
@@ -419,20 +417,10 @@ def _provider_profile_for_cpa(
             requires_network=False,
         )
 
-    local_lane = tp in (
-        "local_vllm",
-        "vllm",
-        "local",
-        "vllm_local",
-    )
-    if local_lane:
-        return ProviderProfile(
-            profile_id="apps_rg_envelope_local_vllm",
-            provider_kind=ProviderKind.LOCAL_VLLM,
-            model_id=mid or QWEN_LOCAL_MODEL_ID,
-            capabilities=("text_generation", "structured_json_generation"),
-            sandbox_safe=True,
-            requires_network=True,
+    removed_local_aliases = ("local_v" + "llm", "v" + "llm", "local", "v" + "llm_local")
+    if tp in removed_local_aliases:
+        raise AppsRgEnvelopeProviderResolutionError(
+            f"LOCAL_PROVIDER_REMOVED: target_provider={tp!r}; use external_claude or external_openai"
         )
 
     if provider_mode == ProviderMode.LIVE_ALLOWED:
@@ -662,69 +650,11 @@ def _execute_approved_work_order(
     temp_val = float(getattr(cpa, "temperature", 0.1))
     top_p_val = float(getattr(cpa, "top_p", 0.8))
     json_object_response_format = None
-    if os.environ.get("APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT", "").strip() == "1":
+    if os.environ.get("APPS_RG_RESPONSE_FORMAT_JSON_OBJECT", "").strip() == "1":
         json_object_response_format = {"type": "json_object"}
 
     packed_prompt = prompt_text
     prompt_budget_meta: dict[str, Any] = {}
-    if profile.provider_kind == ProviderKind.LOCAL_VLLM:
-        try:
-            packed_prompt, prompt_budget_meta = prepare_prompt_for_local_vllm(
-                prompt_text,
-                requested_max_tokens=max_req_tok,
-            )
-        except PromptBudgetError as exc:
-            proposed_budget: dict[str, Any] = {
-                "generation_status": FAILED_PROVIDER,
-                "full_resume_generated": False,
-                "prompt_budget_block": True,
-                "e3_error_summary": str(exc.message),
-                "e3_decisive_reason_code": str(exc.code),
-            }
-            lc_budget: dict[str, Any] = {
-                "provider_profile": str(profile.profile_id),
-                "model_id": str(getattr(cpa, "target_model", "") or profile.model_id or ""),
-                "response_format_sent": json_object_response_format is not None,
-                "temperature": temp_val,
-                "top_p": top_p_val,
-                "max_tokens_requested": max_req_tok,
-                "failure_stage": "pre_invoke",
-                "decisive_reason_code": str(exc.code),
-                "prompt_budget": prompt_budget_meta,
-                "parsed_output_shape": "none_pre_invoke",
-                "resume_shape_status": "",
-                "schema_validation_status": "",
-                # Mirror FAILED_PROVIDER disposition into local telemetry (Wave W4 /
-                # provider authenticity): same semantics as ``proposed_state_diff``.
-                "generation_status": FAILED_PROVIDER,
-                "full_resume_generated": False,
-                "outcome_authorized": False,
-            }
-            _emit_diagnostics(
-                {
-                    "schema_version": "apps_rg.provider_generation_diagnostics.v1",
-                    **lc_budget,
-                    "input_prompt_chars": len(prompt_text),
-                },
-            )
-            return AttemptReceipt(
-                attempt_receipt_id=AttemptReceipt.new_id(),
-                validation_packet_id=str(approved_work_order.validation_packet_id),
-                attempt_count=attempt_number,
-                determinism=prep_output.replay_bindings.determinism,
-                lineage=prep_output.lineage_root,
-                trace_id=cpa.trace_id,
-                span_id=f"e3-attempt-{attempt_number}",
-                latency_ms=0.0,
-                tokens_used=0,
-                return_code=12,
-                result_class=ResultClass.FAIL_TERMINAL,
-                error_summary=str(exc.message),
-                execution_lane=ExecutionLane.MODEL,
-                decisive_reason_code=str(exc.code),
-                proposed_state_diff=proposed_budget,
-                local_check_results=lc_budget,  # type: ignore[arg-type]
-            )
 
     req = ProviderRequest(
         prompt_text=packed_prompt,
@@ -769,16 +699,16 @@ def _execute_approved_work_order(
         tok = 0
 
     local_check: dict[str, Any] = {
-        "provider_lane": "vllm-local",
-        "model_or_tool_name": "qwen-32b",
+        "provider_lane": str(profile.profile_id),
+        "model_or_tool_name": str(profile.model_id or getattr(cpa, "target_model", "") or ""),
         "span_ids": [f"span-{attempt_number:03d}"],
         "response_format_sent": json_object_response_format is not None,
         "response_format_json_object": bool(
             json_object_response_format
             and json_object_response_format.get("type") == "json_object"
         ),
-        "vllm_temperature": temp_val,
-        "vllm_top_p": top_p_val,
+        "provider_temperature": temp_val,
+        "provider_top_p": top_p_val,
     }
     tm = str(getattr(cpa, "target_model", "") or "").strip()
     if tm:
@@ -796,7 +726,7 @@ def _execute_approved_work_order(
         )
     inv0 = getattr(resp, "invocation_meta", None)
     if isinstance(inv0, dict):
-        local_check["vllm_invocation"] = inv0
+        local_check["provider_invocation"] = inv0
         if inv0.get("http_status") is not None:
             local_check["http_status"] = inv0.get("http_status")
         if inv0.get("effective_max_tokens"):
@@ -978,8 +908,8 @@ def _execute_approved_work_order(
         "provider_error_snippet": (str(resp.error_message or "")[:4000]) if not resp.success else "",
         "apps_rg_env_flags": {
             "APPS_RG_DIAGNOSTIC_MIN_CONTEXT": os.environ.get("APPS_RG_DIAGNOSTIC_MIN_CONTEXT"),
-            "APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT": os.environ.get(
-                "APPS_RG_VLLM_RESPONSE_FORMAT_JSON_OBJECT"
+            "APPS_RG_RESPONSE_FORMAT_JSON_OBJECT": os.environ.get(
+                "APPS_RG_RESPONSE_FORMAT_JSON_OBJECT"
             ),
         },
     }

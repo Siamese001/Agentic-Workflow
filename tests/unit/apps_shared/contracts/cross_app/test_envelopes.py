@@ -52,8 +52,8 @@ def _experience_payload() -> ExperienceLibraryPayload:
 
 def _research_payload() -> ResearchBriefPayload:
     return ResearchBriefPayload(
-        brief_path="reports/research/research_brief_abc123.md",
-        register_path="reports/research/source_register_abc123.json",
+        brief_path="artifacts/apps_research/research_brief_abc123.md",
+        register_path="artifacts/apps_research/source_register_abc123.json",
         company_brief="Acme is a widget leader.",
         role_areas_of_focus=["platform", "governance"],
         industry_trends=["verticalization"],

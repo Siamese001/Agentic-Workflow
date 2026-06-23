@@ -11,6 +11,7 @@ from agentic_core.config.model_catalog import (
 
 import hashlib
 import logging
+import os
 import time
 from collections import OrderedDict
 from typing import Any, Callable
@@ -240,6 +241,55 @@ _emit_reads_through("l4", "GlobalcacheStrategy", "urg_read_67")
 logger = logging.getLogger(__name__)
 
 
+def _env_truthy(name: str, *, default: str = "") -> bool:
+    return os.environ.get(name, default).strip().lower() in {"1", "true", "yes"}
+
+
+def _env_int(name: str, *, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return default
+
+
+def _shared_vector_gpu_enabled(row_count: int) -> bool:
+    if not _env_truthy("APPS_SHARED_VECTOR_GPU_ENABLED"):
+        return False
+    min_rows = _env_int("APPS_SHARED_VECTOR_GPU_MIN_ROWS", default=50000)
+    return row_count >= min_rows
+
+
+def _resolve_shared_embedding_device() -> str:
+    if not _env_truthy("APPS_SHARED_VECTOR_GPU_ENABLED"):
+        return "cpu"
+    override = os.environ.get("APPS_SHARED_EMBEDDING_DEVICE", "").strip().lower()
+    if override in {"cpu", "cuda", "mps"}:
+        return override
+    from agentic_core.embeddings.bge_runtime import _resolve_device
+
+    return _resolve_device()
+
+
+def _torch_cuda_dot(embeddings: np.ndarray, query_vec: np.ndarray) -> np.ndarray | None:
+    try:
+        import torch
+    except ImportError:
+        return None
+    try:
+        if not torch.cuda.is_available():
+            return None
+        with torch.no_grad():
+            emb = torch.as_tensor(embeddings, dtype=torch.float32, device="cuda")
+            query = torch.as_tensor(query_vec, dtype=torch.float32, device="cuda")
+            return torch.mv(emb, query).detach().cpu().numpy()
+    except (RuntimeError, TypeError, ValueError) as exc:
+        logger.debug("[GlobalCache] CUDA vector search unavailable, falling back to CPU: %s", exc)
+        return None
+
+
 class CacheEntry(BaseModel):
     """cache entry with metadata."""
 
@@ -353,9 +403,13 @@ class L2VectorStore:
         self.max_size = max_size
         self.entries: list[CacheEntry] = []
         self.embeddings: np.ndarray = np.array([]).reshape(0, 0)
+        self._last_similarity_backend = "cpu_numpy"
         self._hits = 0
         self._misses = 0
         logger.debug(f"Initialized L2 vector store with max_size={max_size}")
+
+    def _invalidate_gpu_cache(self) -> None:
+        self._last_similarity_backend = "cpu_numpy"
 
     def add(self, entry: CacheEntry) -> None:
         """Add entry to vector store.
@@ -370,6 +424,7 @@ class L2VectorStore:
                 self.entries[i] = entry
                 if self.embeddings.shape[0] > 0:
                     self.embeddings[i] = np.array(entry.embedding)
+                self._invalidate_gpu_cache()
                 return
         self.entries.append(entry)
         if self.embeddings.shape[0] == 0:
@@ -379,6 +434,16 @@ class L2VectorStore:
         while len(self.entries) > self.max_size:
             self.entries.pop(0)
             self.embeddings = self.embeddings[1:]
+        self._invalidate_gpu_cache()
+
+    def _compute_similarities(self, query_vec: np.ndarray) -> np.ndarray:
+        if _shared_vector_gpu_enabled(self.embeddings.shape[0]):
+            similarities = _torch_cuda_dot(self.embeddings, query_vec)
+            if similarities is not None:
+                self._last_similarity_backend = "cuda_torch"
+                return similarities
+        self._last_similarity_backend = "cpu_numpy"
+        return np.dot(self.embeddings, query_vec)
 
     # guardian: allow-magic-config
     def search(
@@ -406,7 +471,7 @@ class L2VectorStore:
             self._misses += 1
             return []
         query_vec = np.array(query_embedding)
-        similarities = np.dot(self.embeddings, query_vec)
+        similarities = self._compute_similarities(query_vec)
         results = []
         for i, similarity in enumerate(similarities):
             if similarity >= threshold:
@@ -426,6 +491,7 @@ class L2VectorStore:
         """Clear all entries."""
         self.entries.clear()
         self.embeddings = np.array([]).reshape(0, 0)
+        self._invalidate_gpu_cache()
         self._hits = 0
         self._misses = 0
 
@@ -444,6 +510,8 @@ class L2VectorStore:
             "misses": self._misses,
             "hit_rate": hit_rate,
             "embedding_dim": self.embeddings.shape[1] if self.embeddings.shape[0] > 0 else 0,
+            "similarity_backend": self._last_similarity_backend,
+            "gpu_enabled": _shared_vector_gpu_enabled(self.embeddings.shape[0]),
         }
 
 
@@ -467,8 +535,9 @@ class SimpleEmbedder:
             try:
                 from sentence_transformers import SentenceTransformer
 
-                self._model = SentenceTransformer(self.model_name)
-                logger.info(f"Loaded embedding model: {self.model_name}")
+                device = _resolve_shared_embedding_device()
+                self._model = SentenceTransformer(self.model_name, device=device)
+                logger.info("Loaded embedding model: %s (device=%s)", self.model_name, device)
             except ImportError:  # guardian: allow-silent-swallow -- optional dependency
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
@@ -702,6 +771,7 @@ class GlobalCache:
             self.l2.embeddings = np.array([e.embedding for e in self.l2.entries])
         else:
             self.l2.embeddings = np.array([]).reshape(0, 0)
+        self.l2._invalidate_gpu_cache()
         if cleaned > 0:
             logger.info(f"Cleaned up {cleaned} expired cache entries")
         return cleaned

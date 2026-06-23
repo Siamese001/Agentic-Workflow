@@ -67,15 +67,15 @@ def test_w1_ceiling_malformed_falls_back(monkeypatch):
 
 def test_w1_competencies_chat_timeout_caps_extended_budget(monkeypatch):
     from apps_rg.runtime.providers.competencies_live_provider_gate import (
-        competencies_vllm_chat_timeout_s,
+        competencies_provider_chat_timeout_s,
     )
 
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
     monkeypatch.setenv("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", "1000")
-    assert competencies_vllm_chat_timeout_s() == 300
+    assert competencies_provider_chat_timeout_s() == 300
 
     monkeypatch.delenv("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", raising=False)
-    assert competencies_vllm_chat_timeout_s() == 120  # default for normal runs stays bounded
+    assert competencies_provider_chat_timeout_s() == 120  # default for normal runs stays bounded
 
 
 # --------------------------------------------------------------------------------------------------

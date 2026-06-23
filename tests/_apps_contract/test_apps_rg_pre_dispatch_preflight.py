@@ -13,11 +13,11 @@ from apps_rg.runtime.pre_dispatch_preflight import (
     enforce_pre_dispatch_preflight,
     evaluate_jd_cli_input,
     evaluate_manual_brief_cli_input,
-    evaluate_qwen_readiness,
+    evaluate_provider_readiness,
     run_pre_dispatch_preflight,
 )
 from apps_rg.runtime.section_cli_defaults import (
-    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     SectionCliConfigError,
 )
 
@@ -30,11 +30,8 @@ _DEFAULT_BRIEF = REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"
 _STRIP_KEYS = frozenset(
     {
         "APPS_RG_MODULAR_LANE_PROVIDER",
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
-        "APPS_RG_SKIP_QWEN_VLLM_HEALTH",
         "APPS_RG_ALLOW_STALE_TARGETING_SSOT",
         "APPS_RG_ALLOW_DEFAULT_TARGETING_PATHS",
-        "VLLM_BASE_URL",
     }
 )
 
@@ -76,8 +73,8 @@ def test_section_cli_blocks_missing_jd_before_dispatch(section: str) -> None:
         section=section,
         jd="",
         manual_brief=str(_FRESH_BRIEF),
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     assert result.dispatch_started is False
     assert result.jd_status == "MISSING"
@@ -86,8 +83,8 @@ def test_section_cli_blocks_missing_jd_before_dispatch(section: str) -> None:
             section=section,
             jd="",
             manual_brief=str(_FRESH_BRIEF),
-            lane_provider="qwen_vllm",
-            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+            lane_provider="external_claude",
+            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
             artifact_dir=str(REPO / "artifacts" / "contract_preflight_smoke"),
         )
 
@@ -98,8 +95,8 @@ def test_section_cli_blocks_missing_briefing_before_dispatch(section: str) -> No
         section=section,
         jd=str(_FRESH_JD),
         manual_brief="",
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     assert result.dispatch_started is False
     assert result.manual_brief_status == "MISSING"
@@ -110,8 +107,8 @@ def test_section_cli_blocks_stale_default_jd_path_before_dispatch() -> None:
         section="headline",
         jd=str(_DEFAULT_JD),
         manual_brief=str(_FRESH_BRIEF),
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     assert result.dispatch_started is False
     err = result.decisive_reason.lower()
@@ -123,8 +120,8 @@ def test_section_cli_blocks_stale_default_briefing_path_before_dispatch() -> Non
         section="headline",
         jd=str(_FRESH_JD),
         manual_brief=str(_DEFAULT_BRIEF),
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     assert result.dispatch_started is False
     err = result.decisive_reason.lower()
@@ -144,76 +141,26 @@ def test_default_paths_allowed_with_explicit_override_env() -> None:
         ],
         env_extra={
             "APPS_RG_ALLOW_STALE_TARGETING_SSOT": "1",
-            "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1",
         },
     )
     assert r.returncode == 0, (r.stdout, r.stderr)
     assert "pre-dispatch" in (r.stdout or "").lower()
 
 
-def test_qwen_down_blocks_before_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("VLLM_BASE_URL", "http://127.0.0.1:9/")
-    monkeypatch.setenv("APPS_RG_QWEN_DISABLE_OFFLINE_STUB", "1")
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-    monkeypatch.delenv("APPS_RG_SKIP_QWEN_VLLM_HEALTH", raising=False)
-    monkeypatch.setattr(
-        "apps_rg.runtime.section_cli_preflight._docker_container_running",
-        lambda _c: (True, ""),
-    )
-
-    from apps_rg.__main__ import main
-
-    rc = main(
-        [
-            *_headline_base_argv(),
-            "--jd",
-            str(_FRESH_JD),
-            "--manual-brief",
-            str(_FRESH_BRIEF),
-        ]
-    )
-    assert rc == 2
+def test_provider_readiness_is_not_a_local_container_gate() -> None:
+    health, model, detail = evaluate_provider_readiness(lane_provider="external_claude")
+    assert health == "NOT_APPLICABLE"
+    assert model == "NOT_APPLICABLE"
+    assert detail is None
 
 
-def test_qwen_model_mismatch_blocks_before_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
-    monkeypatch.delenv("APPS_RG_SKIP_QWEN_VLLM_HEALTH", raising=False)
-    monkeypatch.setattr(
-        "apps_rg.runtime.section_cli_preflight._docker_container_running",
-        lambda _c: (True, ""),
-    )
-
-    def _http_model_mismatch() -> tuple[bool, str]:
-        return False, "wrong_or_missing_model_id: expected Qwen substring missing"
-
-    monkeypatch.setattr(
-        "apps_rg.runtime.section_cli_preflight._http_models_health_check",
-        _http_model_mismatch,
-    )
-
-    health, model, detail = evaluate_qwen_readiness(lane_provider="qwen_vllm")
-    assert health == "PASS"
-    assert model == "FAIL"
-    assert detail
-
-    result = run_pre_dispatch_preflight(
-        section="headline",
-        jd=str(_FRESH_JD),
-        manual_brief=str(_FRESH_BRIEF),
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
-    )
-    assert result.dispatch_started is False
-    assert "model" in result.decisive_reason.lower()
-
-
-def test_no_dev_default_mock_when_qwen_required(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_no_dev_default_mock_for_section_provider(monkeypatch: pytest.MonkeyPatch) -> None:
     from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
 
     monkeypatch.delenv("APPS_RG_MODULAR_LANE_PROVIDER", raising=False)
-    prov, src = resolve_cli_lane_provider_with_source(None)
-    assert prov == "qwen_vllm"
-    assert src == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+    prov, src = resolve_cli_lane_provider_with_source(None, section_id="headline")
+    assert prov == "external_claude"
+    assert src == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
     assert src != "mock"
 
 
@@ -228,7 +175,7 @@ def test_fresh_inputs_and_stub_allow_dry_run_dispatch_path() -> None:
             str(_FRESH_BRIEF),
             "--dry-run",
         ],
-        env_extra={"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"},
+        env_extra={},
     )
     assert r.returncode == 0, (r.stdout, r.stderr)
     assert "dispatch_started=true" in (r.stdout or "").lower() or "pre_dispatch_preflight" in (
@@ -246,8 +193,8 @@ def test_preflight_receipt_records_dispatch_not_started_on_block(tmp_path: Path)
         section="headline",
         jd="",
         manual_brief=str(_FRESH_BRIEF),
-        lane_provider="qwen_vllm",
-        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     path = tmp_path / "apps_rg_pre_dispatch_preflight.json"
     write_pre_dispatch_preflight_receipt(path, result)
@@ -261,8 +208,8 @@ def test_preflight_receipt_records_dispatch_not_started_on_block(tmp_path: Path)
             section="headline",
             jd="",
             manual_brief=str(_FRESH_BRIEF),
-            lane_provider="qwen_vllm",
-            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+            lane_provider="external_claude",
+            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
             artifact_dir=str(tmp_path),
         )
 

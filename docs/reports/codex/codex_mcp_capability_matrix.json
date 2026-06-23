@@ -96,7 +96,7 @@
       "fallback": "Use node_repl/Browser plugin with explicit delta from Claude browser_* tool names.",
       "env": [],
       "health_probe": "npx @playwright/mcp --help exits 0 locally.",
-      "mutation_policy": "Browser automation only; outputs under .playwright-mcp when raw MCP is used.",
+      "mutation_policy": "Browser automation only; outputs under artifacts/mcp/playwright when raw MCP is used.",
       "gap_status": "yellow"
     },
     {

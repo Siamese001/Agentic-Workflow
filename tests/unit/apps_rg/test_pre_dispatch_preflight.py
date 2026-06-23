@@ -50,7 +50,7 @@ def test_run_preflight_dispatch_false_when_jd_missing() -> None:
         section="competencies",
         jd="",
         manual_brief="Updated briefing for unit test lane validation.",
-        lane_provider="qwen_vllm",
+        lane_provider="external_openai",
         provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
     )
     assert result.dispatch_started is False
@@ -68,8 +68,8 @@ def test_provider_readiness_not_applicable_after_local_provider_removal() -> Non
         provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     )
     assert result.dispatch_started is True
-    assert result.qwen_health_status == "NOT_APPLICABLE"
-    assert result.qwen_model_ready_status == "NOT_APPLICABLE"
+    assert result.provider_health_status == "NOT_APPLICABLE"
+    assert result.provider_model_ready_status == "NOT_APPLICABLE"
 
 
 def _write_apps_research_envelope(

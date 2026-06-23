@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from apps_rg.cache.r1b_bge_embedding import (
+    embed_texts_bge,
     intent_vector_payload,
     reset_bge_model_for_testing,
     resolve_query_vector,
@@ -42,6 +43,35 @@ def test_intent_vector_payload_uses_bge_when_model_available(
     assert payload["embedding_model"] == "BAAI/bge-m3"
     assert payload["dimensions"] == 1024
     assert len(payload["values"]) == 1024
+
+
+def test_embed_texts_bge_batches_non_empty_texts_preserving_order() -> None:
+    fake = MagicMock()
+    fake.encode.return_value = np.array(
+        [
+            np.full((1024,), 1.0, dtype=np.float32),
+            np.full((1024,), 2.0, dtype=np.float32),
+        ],
+        dtype=np.float32,
+    )
+
+    with patch("apps_rg.cache.r1b_bge_embedding._get_bge_model", return_value=fake):
+        vectors = embed_texts_bge([" parent ", " ", "child"], batch_size=2)
+
+    fake.encode.assert_called_once_with(
+        ["parent", "child"],
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+        batch_size=2,
+    )
+    assert vectors[0] is not None
+    assert vectors[1] is None
+    assert vectors[2] is not None
+    assert vectors[0][0] == 1.0
+    assert vectors[2][0] == 2.0
+    assert len(vectors[0]) == 1024
+    assert len(vectors[2]) == 1024
 
 
 def test_resolve_query_vector_falls_back_without_bge(monkeypatch: pytest.MonkeyPatch) -> None:

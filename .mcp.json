@@ -60,7 +60,16 @@
     },
     "playwright": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "@playwright/mcp"]
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@playwright/mcp",
+        "--output-dir",
+        "artifacts/mcp/playwright",
+        "--output-mode",
+        "file"
+      ]
     }
   }
 }

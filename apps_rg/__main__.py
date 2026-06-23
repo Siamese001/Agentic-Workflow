@@ -24,8 +24,7 @@ Offline batch orchestration is library-only under ``tests.helpers.offline_lane_o
 there is no separate offline orchestrate module CLI.
 
 **L2 model execution (résumé body):** section lanes run on primary ``external_claude``
-through ``ProviderGateway`` (with an internal OpenAI availability fallback after Qwen
-removal, PR #256).
+through ``ProviderGateway`` (with an internal OpenAI availability fallback).
 Section lanes and integrated runs require a **live** provider bundle (no offline contract stub)
 and **live X1D judges** (no ``--mock-judges`` on this CLI; pytest uses
 ``APPS_RG_TEST_HARNESS=1`` + ``APPS_RG_MOCK_JUDGES=1`` only).
@@ -838,7 +837,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     parser = _build_parser()
     args = parser.parse_args(argv)
     # Short-circuit: assemble previously-pinned section artifacts into a single resume.md.
-    # Bypasses preflight/provider/qwen — pinning already proved REAL_LLM eligibility.
+    # Bypasses preflight/provider checks; pinning already proved REAL_LLM eligibility.
     if bool(getattr(args, "assemble_from_pinned", False)):
         return _assemble_from_pinned_dirs(
             repo_root=find_repo_root(),
@@ -1002,7 +1001,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
             return 2
 
-    # Local Qwen vLLM Docker restart removed with the local-model provider; the external
+    # Local-model Docker restart was removed; the external
     # generation provider owns its own transport and needs no container preflight.
     _ad = str(getattr(args, "artifact_dir", "") or "").strip()
 
@@ -1026,8 +1025,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(
                 f"pre_dispatch_preflight: dispatch_started={preflight.dispatch_started} "
                 f"jd_status={preflight.jd_status} manual_brief_status={preflight.manual_brief_status} "
-                f"qwen_health={preflight.qwen_health_status} "
-                f"qwen_model_ready={preflight.qwen_model_ready_status}",
+                f"provider_health={preflight.provider_health_status} "
+                f"provider_model_ready={preflight.provider_model_ready_status}",
                 flush=True,
             )
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
