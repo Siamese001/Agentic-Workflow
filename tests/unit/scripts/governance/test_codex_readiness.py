@@ -301,7 +301,7 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
@@ -309,6 +309,7 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
             "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
+            "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
         },
     )
     for path in (
@@ -333,7 +334,7 @@ def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
@@ -345,6 +346,7 @@ def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -
                 "issues": [{"code": "worktree_count", "detail": "expected=1 actual=2"}],
                 "summary": "- worktree_count: expected=1 actual=2",
             },
+            "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
         },
     )
     for path in (
@@ -368,3 +370,51 @@ def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -
     check = next(check for check in report["checks"] if check["id"] == "git.publication.single_main_worktree")
     assert check["status"] == "FAIL"
     assert "expected=1 actual=2" in check["detail"]
+
+
+def test_git_publication_require_pr_flow_fails_on_direct_push_contract(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        mod.codex_publication_audit,
+        "build_publication_audit",
+        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+            "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
+            "dirty_protected_worktrees": [],
+            "dirty_protected_summary": "",
+            "refs": {"origin_main_equals_github_main": True},
+            "fetch": {"ok": True, "stdout": "", "stderr": ""},
+            "unmerged_branches": [],
+            "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
+            "pr_flow": {
+                "required": require_pr_flow,
+                "clean": False,
+                "issues": [
+                    {"code": "allow_direct_main_push", "detail": "expected=false actual=True"},
+                    {"code": "require_github_ci_green", "detail": "expected=true actual=False"},
+                    {"code": "allow_bypass_merge", "detail": "expected=false actual=True"},
+                ],
+            },
+        },
+    )
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+
+    report = mod.build_readiness_report(
+        tmp_path,
+        git_publication=True,
+        require_pr_flow=True,
+    )
+
+    assert report["status"] == "FAIL"
+    check = next(check for check in report["checks"] if check["id"] == "git.publication.pr_flow_contract")
+    assert check["status"] == "FAIL"
+    assert "allow_direct_main_push" in check["detail"]
+    assert "require_github_ci_green" in check["detail"]
+    assert "allow_bypass_merge" in check["detail"]

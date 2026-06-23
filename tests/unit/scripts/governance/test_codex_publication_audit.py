@@ -122,3 +122,103 @@ def test_publication_audit_can_require_single_main_worktree(monkeypatch, tmp_pat
     assert strict["single_main_worktree"]["issues"] == [
         {"code": "worktree_count", "detail": "expected=1 actual=2"}
     ]
+
+
+def test_publication_audit_can_require_pr_flow_contract(monkeypatch, tmp_path: Path) -> None:
+    contract = tmp_path / "automation.toml"
+    contract.write_text(
+        '\n'.join(
+            (
+                'publication_mode = "pull_request"',
+                "allow_direct_main_push = false",
+                "require_github_ci_green = true",
+                "allow_bypass_merge = false",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("fetch", "origin", "--prune"):
+            return 0, "", ""
+        if command == ("rev-parse", "--verify", "origin/main"):
+            return 0, "abc", ""
+        if command == ("ls-remote", "origin", "refs/heads/main"):
+            return 0, "abc\trefs/heads/main", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod, "run_git", fake_git)
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(mod, "verify_single_main_worktree", lambda *args, **kwargs: [])
+
+    report = mod.build_publication_audit(
+        tmp_path,
+        require_pr_flow=True,
+        automation_contract_path=contract,
+    )
+
+    assert report["status"] == "PASS"
+    assert report["pr_flow"]["clean"] is True
+    assert report["pr_flow"]["publication_mode"] == "pull_request"
+    assert report["pr_flow"]["allow_direct_main_push"] is False
+    assert report["pr_flow"]["require_github_ci_green"] is True
+    assert report["pr_flow"]["allow_bypass_merge"] is False
+
+
+def test_publication_audit_fails_when_pr_flow_contract_allows_direct_push(monkeypatch, tmp_path: Path) -> None:
+    contract = tmp_path / "automation.toml"
+    contract.write_text(
+        '\n'.join(
+            (
+                'publication_mode = "direct_main"',
+                "allow_direct_main_push = true",
+                "require_github_ci_green = false",
+                "allow_bypass_merge = true",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("fetch", "origin", "--prune"):
+            return 0, "", ""
+        if command == ("rev-parse", "--verify", "origin/main"):
+            return 0, "abc", ""
+        if command == ("ls-remote", "origin", "refs/heads/main"):
+            return 0, "abc\trefs/heads/main", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod, "run_git", fake_git)
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(mod, "verify_single_main_worktree", lambda *args, **kwargs: [])
+
+    report = mod.build_publication_audit(
+        tmp_path,
+        require_pr_flow=True,
+        automation_contract_path=contract,
+    )
+
+    assert report["status"] == "FAIL"
+    assert "pr_flow_contract_violation" in report["blockers"]
+    assert report["pr_flow"]["issues"] == [
+        {"code": "publication_mode", "detail": "expected=pull_request actual='direct_main'"},
+        {"code": "allow_direct_main_push", "detail": "expected=false actual=True"},
+        {"code": "require_github_ci_green", "detail": "expected=true actual=False"},
+        {"code": "allow_bypass_merge", "detail": "expected=false actual=True"},
+    ]
