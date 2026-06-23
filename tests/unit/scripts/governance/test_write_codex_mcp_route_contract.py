@@ -47,7 +47,7 @@ def test_writer_emits_contract_consumed_by_audit(tmp_path: Path, monkeypatch) ->
         proved_at="2026-06-21T16:02:39.4664076-04:00",
     )
     written = json.loads(output.read_text(encoding="utf-8"))
-    evidence = audit.build_route_evidence(written, {})
+    evidence = audit.build_route_evidence(written, {}, trust_contract_callable_proof=True)
 
     assert contract["routes"][0]["selected_codex_route"] == "raw_mcp_callable"
     assert written["routes"][0]["proof"]["tool"] == "mcp__memory.mem_get_stats"

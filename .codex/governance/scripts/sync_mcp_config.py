@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +22,7 @@ repo_root = Path(__file__).resolve().parents[3]
 repo_config = repo_root / ".mcp.json"
 agents_md = repo_root / "AGENTS.md"
 notion_databases_yaml = repo_root / "config" / "notion_databases.yaml"
+default_user_config = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "config.toml"
 
 # Canonical aliases for downstream hooks/tests.
 REPO_ROOT = repo_root
@@ -27,7 +30,16 @@ REPO_CONFIG = repo_config
 GLOBAL_CONFIG = repo_config
 AGENTS_MD = agents_md
 NOTION_DATABASES_YAML = notion_databases_yaml
+DEFAULT_USER_CONFIG = default_user_config
 global_config = GLOBAL_CONFIG
+
+USER_CONFIG_BLOCK_START = "# AGENTIC-WORKFLOW-MCP:START"
+USER_CONFIG_BLOCK_END = "# AGENTIC-WORKFLOW-MCP:END"
+DEFAULT_REDIS_URL = "redis://localhost:6379/0"
+DEFAULT_STARTUP_TIMEOUT_SEC = 120
+DEFAULT_TOOL_TIMEOUT_SEC = 120
+_ENV_PLACEHOLDER_RE = re.compile(r"\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}")
+_EXACT_PLACEHOLDER_RE = re.compile(r"\A\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}\Z")
 
 # Each row: (server_id, use_for, example_tools, notes, skill)
 # `skill` is the slug under .codex/skills/<slug>/ that documents the
@@ -158,6 +170,186 @@ def validate_config(data: dict[str, Any]) -> list[str]:
         if env is not None and not isinstance(env, dict):
             issues.append(f"Server '{name}' env must be an object when present.")
     return issues
+
+
+def _repo_root_for_toml(root: Path = repo_root) -> str:
+    return str(root.resolve()).replace("\\", "/")
+
+
+def _default_env_value(name: str, root: Path = repo_root) -> str:
+    if name in {"AGENTIC_REPO_ROOT", "ADG_REPO_ROOT", "PYTHONPATH"}:
+        return _repo_root_for_toml(root)
+    if name == "ADG_REDIS_URL":
+        return os.environ.get(name, DEFAULT_REDIS_URL)
+    if name == "MEMORY_DB":
+        return os.environ.get(name, "artifacts/memory/knowledge_graph.sqlite")
+    if name == "GITKRAKEN_GK_PATH":
+        return os.environ.get(name, "gk")
+    return os.environ.get(name, "")
+
+
+def _expand_mcp_placeholders(value: str, root: Path = repo_root) -> str:
+    def _replace(match: re.Match[str]) -> str:
+        return _default_env_value(match.group(1), root)
+
+    return _ENV_PLACEHOLDER_RE.sub(_replace, value).replace("\\", "/")
+
+
+def _toml_string(value: str) -> str:
+    return json.dumps(value)
+
+
+def _toml_scalar(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(_toml_scalar(item) for item in value) + "]"
+    return _toml_string(str(value))
+
+
+def _server_timeout(_server_id: str, _cfg: dict[str, Any]) -> int:
+    return DEFAULT_STARTUP_TIMEOUT_SEC
+
+
+def _codex_command_projection(command: str, args: list[Any], root: Path) -> tuple[str, list[str]]:
+    expanded_command = _expand_mcp_placeholders(command, root)
+    expanded_args = [_expand_mcp_placeholders(str(arg), root) for arg in args]
+    if expanded_command.lower() == "cmd":
+        return expanded_command, expanded_args
+    return "cmd", ["/c", expanded_command, *expanded_args]
+
+
+def _env_projection(env: dict[str, Any], root: Path) -> tuple[dict[str, str], list[str]]:
+    static_env: dict[str, str] = {}
+    passthrough_vars: list[str] = []
+    for key, raw_value in sorted(env.items()):
+        value = str(raw_value)
+        match = _EXACT_PLACEHOLDER_RE.match(value)
+        if match and match.group(1) == key and key not in {"ADG_REDIS_URL", "MEMORY_DB"}:
+            passthrough_vars.append(key)
+            continue
+        static_env[key] = _expand_mcp_placeholders(value, root)
+    return static_env, passthrough_vars
+
+
+def render_codex_user_mcp_block(data: dict[str, Any], root: Path = repo_root) -> str:
+    """Render the repo MCP registry as the Codex Desktop runtime projection.
+
+    Every enabled `.mcp.json` server is marked `required = true` so new Codex
+    chats fail startup/resume instead of silently dropping an MCP.
+    """
+    servers = data.get("mcpServers", {}) or {}
+    lines: list[str] = [
+        USER_CONFIG_BLOCK_START,
+        "# Generated from repo .mcp.json by .codex/governance/scripts/sync_mcp_config.py.",
+        "# Keep repo-specific governance in the repository; this is the Codex Desktop runtime projection.",
+        "# Run: python .codex/governance/scripts/sync_mcp_config.py --sync-user-config",
+        "",
+    ]
+    cwd = _repo_root_for_toml(root)
+
+    for server_id, cfg_value in servers.items():
+        if not isinstance(cfg_value, dict) or cfg_value.get("disabled"):
+            continue
+        cfg = cfg_value
+        lines.append(f"[mcp_servers.{server_id}]")
+        if url := cfg.get("url") or cfg.get("serverUrl"):
+            lines.append(f"url = {_toml_string(_expand_mcp_placeholders(str(url), root))}")
+        if command := cfg.get("command"):
+            projected_command, projected_args = _codex_command_projection(
+                str(command),
+                list(cfg.get("args", []) or []),
+                root,
+            )
+            lines.append(f"command = {_toml_string(projected_command)}")
+            lines.append(f"args = {_toml_scalar(projected_args)}")
+            lines.append(f"cwd = {_toml_string(cwd)}")
+        lines.append("required = true")
+        lines.append(f"startup_timeout_sec = {_server_timeout(server_id, cfg)}")
+        lines.append(f"tool_timeout_sec = {DEFAULT_TOOL_TIMEOUT_SEC}")
+
+        env = cfg.get("env")
+        static_env: dict[str, str] = {}
+        passthrough_vars: list[str] = []
+        if isinstance(env, dict):
+            static_env, passthrough_vars = _env_projection(env, root)
+        if passthrough_vars:
+            lines.append(f"env_vars = {_toml_scalar(passthrough_vars)}")
+        if static_env:
+            lines.append("")
+            lines.append(f"[mcp_servers.{server_id}.env]")
+            for key, value in static_env.items():
+                lines.append(f"{key} = {_toml_string(value)}")
+        lines.append("")
+
+    lines.append(USER_CONFIG_BLOCK_END)
+    return "\n".join(lines)
+
+
+def replace_user_config_block(text: str, block: str) -> str:
+    start_idx = text.find(USER_CONFIG_BLOCK_START)
+    end_idx = text.find(USER_CONFIG_BLOCK_END)
+    block = block.rstrip() + "\n"
+    if start_idx == -1 and end_idx == -1:
+        if text and not text.endswith("\n"):
+            text += "\n"
+        return text + "\n" + block
+    if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
+        raise ValueError("malformed AGENTIC-WORKFLOW-MCP block in Codex user config")
+    return text[:start_idx] + block + text[end_idx + len(USER_CONFIG_BLOCK_END) :].lstrip("\n")
+
+
+def sync_user_config(
+    data: dict[str, Any],
+    user_config: Path = default_user_config,
+    *,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    block = render_codex_user_mcp_block(data)
+    existing = user_config.read_text(encoding="utf-8") if user_config.exists() else ""
+    updated = replace_user_config_block(existing, block)
+    changed = updated != existing
+    if changed and not dry_run:
+        user_config.parent.mkdir(parents=True, exist_ok=True)
+        user_config.write_text(updated, encoding="utf-8")
+    return {
+        "status": "PASS",
+        "user_config": str(user_config),
+        "changed": changed,
+        "dry_run": dry_run,
+        "server_count": len(data.get("mcpServers", {}) or {}),
+    }
+
+
+def check_user_config_projection(
+    data: dict[str, Any],
+    user_config: Path = default_user_config,
+) -> dict[str, Any]:
+    block = render_codex_user_mcp_block(data).rstrip()
+    if not user_config.exists():
+        return {
+            "status": "FAIL",
+            "user_config": str(user_config),
+            "reason": "missing_user_config",
+        }
+    text = user_config.read_text(encoding="utf-8")
+    start_idx = text.find(USER_CONFIG_BLOCK_START)
+    end_idx = text.find(USER_CONFIG_BLOCK_END)
+    if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
+        return {
+            "status": "FAIL",
+            "user_config": str(user_config),
+            "reason": "missing_or_malformed_agentic_workflow_block",
+        }
+    current = text[start_idx : end_idx + len(USER_CONFIG_BLOCK_END)].strip()
+    return {
+        "status": "PASS" if current == block else "FAIL",
+        "user_config": str(user_config),
+        "reason": "ok" if current == block else "projection_drift",
+        "server_count": len(data.get("mcpServers", {}) or {}),
+    }
 
 
 def generate_mcp_quick_reference_block() -> str:
@@ -406,14 +598,64 @@ def sync_global_config(data: dict[str, Any], global_path: Path = repo_config) ->
     return True
 
 
-def run(check_only: bool = False, dry_run: bool = False) -> int:
+def run(
+    check_only: bool = False,
+    dry_run: bool = False,
+    *,
+    sync_user_config_requested: bool = False,
+    check_user_config_requested: bool = False,
+    user_config: Path = default_user_config,
+    json_output: bool = False,
+) -> int:
     data = load_repo_config()
     issues = validate_config(data)
     if issues:
+        if json_output:
+            print(json.dumps({"status": "FAIL", "issues": issues}, indent=2, sort_keys=True))
+            return 1
         for issue in issues:
             print(f"[mcp_sync] ERROR: {issue}")
         return 1
+    if check_user_config_requested:
+        report = check_user_config_projection(data, user_config)
+        if json_output:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            print(f"[mcp_sync] user config projection: {report['status']} ({report.get('reason', 'ok')})")
+        return 0 if report["status"] == "PASS" else 1
+    if sync_user_config_requested:
+        try:
+            report = sync_user_config(data, user_config, dry_run=dry_run)
+        except (OSError, ValueError) as exc:
+            report = {
+                "status": "FAIL",
+                "user_config": str(user_config),
+                "error": str(exc),
+            }
+        if json_output:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        elif report["status"] == "PASS":
+            action = "would update" if report["dry_run"] and report["changed"] else (
+                "updated" if report["changed"] else "already current"
+            )
+            print(f"[mcp_sync] Codex user config projection {action}: {user_config}")
+        else:
+            print(f"[mcp_sync] ERROR: user config projection failed: {report.get('error')}")
+        return 0 if report["status"] == "PASS" else 1
     if check_only:
+        if json_output:
+            print(
+                json.dumps(
+                    {
+                        "status": "PASS",
+                        "server_count": len(data["mcpServers"]),
+                        "repo_config": str(repo_config),
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
         print(f"[mcp_sync] OK: {len(data['mcpServers'])} MCP servers validated.")
         return 0
     if dry_run:
@@ -437,8 +679,19 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--sync-user-config", action="store_true")
+    parser.add_argument("--check-user-config", action="store_true")
+    parser.add_argument("--user-config", type=Path, default=default_user_config)
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
-    return run(check_only=args.check, dry_run=args.dry_run)
+    return run(
+        check_only=args.check,
+        dry_run=args.dry_run,
+        sync_user_config_requested=args.sync_user_config,
+        check_user_config_requested=args.check_user_config,
+        user_config=args.user_config,
+        json_output=args.json,
+    )
 
 
 if __name__ == "__main__":

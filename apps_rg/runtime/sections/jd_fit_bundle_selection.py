@@ -65,6 +65,7 @@ def resolve_jd_fit_slot_bundle_map(
     section_id: str,
     skill_index: dict[str, dict[str, Any]],
     graph: dict[str, Any],
+    protected_slots: set[str] | None = None,
 ) -> dict[str, str]:
     """Fail-closed JD-fit slot→bundle map for graph-backed sections."""
     if not role_family_key:
@@ -86,9 +87,28 @@ def resolve_jd_fit_slot_bundle_map(
     )
     top_ids = [str(b.get("role_episode_bundle_id")) for b in ranked[: len(slot_ids)]]
     top_set = set(top_ids)
+    score_by_id = {
+        str(b.get("role_episode_bundle_id")): bundle_jd_fit_score(
+            b, pillar_weights, deprio, skill_index
+        )
+        for b in eligible
+    }
     retained = {slot: bid for slot, bid in default_map.items() if bid in top_set}
+    protected = set(protected_slots or set())
+    for slot in protected:
+        if slot not in default_map:
+            raise ValueError(f"{section_id}: protected slot {slot!r} missing from default map")
+        retained[slot] = default_map[slot]
     freed = [slot for slot in slot_ids if slot not in retained]
     promoted = [bid for bid in top_ids if bid not in default_map.values()]
+    if len(freed) < len(promoted):
+        release_candidates = [
+            slot for slot in retained if slot not in protected and slot in slot_ids
+        ]
+        release_candidates.sort(key=lambda slot: (score_by_id.get(retained[slot], 0.0), slot))
+        for slot in release_candidates[: len(promoted) - len(freed)]:
+            retained.pop(slot, None)
+            freed.append(slot)
     new_map = dict(retained)
     for slot, bid in zip(freed, promoted):
         new_map[slot] = bid

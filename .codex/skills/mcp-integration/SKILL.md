@@ -22,6 +22,12 @@ metadata:
 > MCPs, run `.codex/governance/scripts/mcp_tool_exposure_audit.py` when a tool is missing or
 > before MCP-dependent work. The audit distinguishes repo declaration, native server health
 > (for GitKraken/Python MCPs), and optional captured `tool_search` exposure evidence.
+>
+> **Codex startup policy (2026-06-23):** every enabled server in root `.mcp.json` is projected
+> into Codex Desktop config with `required = true` by
+> `.codex/governance/scripts/sync_mcp_config.py --sync-user-config`. New chats should fail
+> startup/resume rather than silently omit a configured MCP. Process liveness still is not
+> callable proof; prove live tool callability in-session before claiming parity.
 
 | Server | In `.mcp.json`? | Section | Use this instead when dormant |
 |---|---|---|---|
@@ -33,7 +39,7 @@ metadata:
 | `notion` | ✅ LIVE | §7 | — |
 | `playwright` | ✅ LIVE | §5 | — |
 | `vector_db` | ✅ LIVE | §6 | — |
-| `filesystem` | ❌ DORMANT | §1 | native `read_file`/`write`/`list_dir` |
+| `filesystem` | ✅ LIVE | §1 | native reads remain preferred for ordinary local files |
 | `redis` | ❌ DORMANT | §2 | `redis-cli` via `run_command` |
 | `tavily` | ❌ DORMANT* | §8 | native `WebSearch`/`WebFetch` |
 | `otel_mcp` | ❌ DORMANT | §9 | re-add on demand for runtime trace debugging |

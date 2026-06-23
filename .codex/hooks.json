@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$AGENTIC_REPO_ROOT/.codex/hooks/session-start.sh\""
+            "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/session_start_mcp_bootstrap.py\""
           }
         ]
       }

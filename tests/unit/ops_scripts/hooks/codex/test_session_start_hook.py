@@ -6,6 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 SESSION_START = REPO_ROOT / ".codex" / "hooks" / "session-start.sh"
+HOOKS_JSON = REPO_ROOT / ".codex" / "hooks.json"
 
 
 def test_session_start_persists_gitkraken_path_into_claude_env_file() -> None:
@@ -26,3 +27,10 @@ def test_session_start_persists_memory_db_into_claude_env_file() -> None:
     assert 'export MEMORY_DB="$MEMORY_DB"' in text
     assert 'echo "export MEMORY_DB=\\"$MEMORY_DB\\""' in text
     assert 'MEMORY_DB="${MEMORY_DB:-$PROJECT_DIR/artifacts/memory/knowledge_graph.sqlite}"' not in text
+
+
+def test_codex_session_start_uses_python_mcp_bootstrap() -> None:
+    text = HOOKS_JSON.read_text(encoding="utf-8")
+
+    assert "session_start_mcp_bootstrap.py" in text
+    assert "session-start.sh" not in text
