@@ -3,9 +3,9 @@
   "count": 0,
   "seeded_at": "2026-05-17T11:54:29.726145+00:00",
   "snapshot": "adg_indexed_06222026_0432.sqlite",
-  "zero_run_streak": 2,
-  "last_run_at": "2026-06-22T08:46:54.181317+00:00",
-  "last_run_snapshot": "adg_indexed_06222026_0432.sqlite",
+  "zero_run_streak": 3,
+  "last_run_at": "2026-06-23T06:14:28.610177+00:00",
+  "last_run_snapshot": "adg_indexed_06232026_0201.sqlite",
   "tightened_at": "2026-06-22T08:46:00.753329+00:00",
   "tighten_history": [
     {
@@ -36,5 +36,8 @@
       "reason": "Re-baseline 0->1: V1 (L0 dispatcher -> knowledge.gates.preretrieval_gate) FIXED at source by rerouting through the gates package public __init__; residual V2 (apps_research.runtime.profile_builder_adapter -> prompt_governance.apps_research_pa_binding) is a legitimate app->binding edge with no generic public-contract route, accepted as debt. Current snapshot still shows 2 until the next ADG regen reflects the V1 source fix (then current=1<=1). Operator-approved 2026-06-08."
     }
   ],
-  "loosened_at": "2026-06-08T12:37:25.432223+00:00"
+  "loosened_at": "2026-06-08T12:37:25.432223+00:00",
+  "auto_promoted_tier": "B",
+  "auto_promoted_at": "2026-06-23T06:14:28.610177+00:00",
+  "auto_promoted_after_streak": 3
 }

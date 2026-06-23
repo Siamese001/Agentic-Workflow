@@ -9,7 +9,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 1,
-        "records": 10747,
+        "records": 10749,
         "scope": "S4_unused_imports_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -33,7 +33,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 3,
-        "records": 2019,
+        "records": 2021,
         "scope": "C3_silent_writes_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -45,7 +45,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 4,
-        "records": 1558,
+        "records": 1563,
         "scope": "S2_uwg_bypass_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -57,7 +57,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 5,
-        "records": 1109,
+        "records": 1113,
         "scope": "Q2_cyclomatic_complexity_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -73,7 +73,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_gate_results_20260622_095420.json",
+        "path": "artifacts/adg/adg_gate_results_20260623_061545.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -87,9 +87,9 @@
         "exists": true,
         "loaded": true,
         "path": "artifacts/adg/adg_action_queue_06222026_0539.json",
-        "rationale": "Loaded and mapped to a decision lens.",
+        "rationale": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
         "recommendation": "keep",
-        "stale": false,
+        "stale": true,
         "used_for": [
           "decision"
         ]
@@ -99,7 +99,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_review_template_06222026_0539.json",
+        "path": "artifacts/adg/adg_review_template_latest.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -138,7 +138,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": false,
-        "path": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+        "path": "artifacts/adg/adg_indexed_06232026_0201.sqlite",
         "rationale": "Existing non-JSON artifact or SQLite snapshot mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -151,7 +151,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_generation_manifest_06222026_0539.json",
+        "path": "artifacts/adg/adg_generation_manifest_06232026_0201.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -165,9 +165,9 @@
         "exists": true,
         "loaded": true,
         "path": "artifacts/adg/adg_structural_outputs_06222026_0539.json",
-        "rationale": "Loaded and mapped to a decision lens.",
+        "rationale": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
         "recommendation": "keep",
-        "stale": false,
+        "stale": true,
         "used_for": [
           "graphdb"
         ]
@@ -178,9 +178,9 @@
         "exists": true,
         "loaded": true,
         "path": "artifacts/adg/adg_refactor_accelerator_06222026_0539.json",
-        "rationale": "Loaded and mapped to a decision lens.",
+        "rationale": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
         "recommendation": "keep",
-        "stale": false,
+        "stale": true,
         "used_for": [
           "graphdb"
         ]
@@ -191,9 +191,9 @@
         "exists": true,
         "loaded": true,
         "path": "artifacts/adg/adg_graphdb_queries_06222026_0539.json",
-        "rationale": "Loaded and mapped to a decision lens.",
+        "rationale": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
         "recommendation": "keep",
-        "stale": false,
+        "stale": true,
         "used_for": [
           "graphdb"
         ]
@@ -204,9 +204,9 @@
         "exists": true,
         "loaded": true,
         "path": "artifacts/adg/adg_runtime_spine_06222026_0539.json",
-        "rationale": "Loaded and mapped to a decision lens.",
+        "rationale": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
         "recommendation": "keep",
-        "stale": false,
+        "stale": true,
         "used_for": [
           "graphdb"
         ]
@@ -216,7 +216,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_projection_06222026_0539.json",
+        "path": "artifacts/adg/adg_graphdb_projection_06232026_0201.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -229,7 +229,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_metadata_06222026_0539.json",
+        "path": "artifacts/adg/adg_graphdb_metadata_06232026_0201.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -242,7 +242,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_index_06222026_0539.json",
+        "path": "artifacts/adg/adg_graphdb_index_06232026_0201.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -268,7 +268,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/issues/p0_remediation_wave_plan_06222026_0539.json",
+        "path": "artifacts/adg/issues/p0_remediation_wave_plan_06232026_0201.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -296,15 +296,15 @@
     "artifact_consistency": {
       "errors": [
         {
-          "delta": 89,
-          "detail": "meta=1069449 actual=1069538",
+          "delta": 90,
+          "detail": "meta=1070469 actual=1070559",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_edges"
         },
         {
           "delta": 1,
-          "detail": "meta=185329 actual=185330",
+          "detail": "meta=185429 actual=185430",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_nodes"
@@ -356,65 +356,6 @@
   "canonical_next_best_actions": {
     "rows": [
       {
-        "action": "Restore L_PG boundary discipline",
-        "action_type": "fix_blocker",
-        "affected_layers": [],
-        "affected_system": "agentic_core",
-        "business_reason": "Boundary drift weakens separation and can spread if left alone.",
-        "change_breakout": [],
-        "confidence": "high",
-        "decision": "fix_blocker",
-        "decision_options": [
-          {
-            "description": "Use when the breakout is too thin to distinguish the options yet.",
-            "label": "Investigate evidence",
-            "required_proof": "More detailed samples, counts, or path concentration from ADG."
-          },
-          {
-            "description": "Use when the dependency is convenience coupling or accidental reach-through.",
-            "label": "Fix",
-            "required_proof": "Code diff removes the direct dependency and ADG rerun clears the delta."
-          },
-          {
-            "description": "Use when cross-layer collaboration is valid but the dependency path is wrong.",
-            "label": "Adapter/interface",
-            "required_proof": "New approved interface or adapter in the owning layer, plus tests that cover the mediated path."
-          },
-          {
-            "description": "Use when the dependency is intentional but temporary or tightly constrained.",
-            "label": "Guardian exemption",
-            "required_proof": "Owner, rationale, expiry or retirement condition, and the scoped path list."
-          },
-          {
-            "description": "Use when the architecture policy intentionally changed.",
-            "label": "Re-baseline",
-            "required_proof": "Approval, new baseline artifact, reason, reviewer, and migration plan."
-          }
-        ],
-        "diagram": null,
-        "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "evidence": "ADG `06222026_0539`: `L2_lpg_drift_ratchet` found 1 L2_lpg_drift_ratchet, +1 above baseline 0. Breakout unavailable.",
-        "evidence_used": [
-          {
-            "decision_effect": "Boundary drift weakens separation and can spread if left alone.",
-            "signal_name": "L2_lpg_drift_ratchet",
-            "signal_type": "gate"
-          }
-        ],
-        "move": "Restore L_PG boundary discipline",
-        "next_step": "Review the imports touching the L_PG boundary evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption.",
-        "priority": 1,
-        "rank": 1,
-        "scope": "L2_lpg_drift_ratchet",
-        "technical_reason": "ADG `06222026_0539`: `L2_lpg_drift_ratchet` found 1 L2_lpg_drift_ratchet, +1 above baseline 0. Breakout unavailable.",
-        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
-        "timing": "now",
-        "why_it_matters": "Boundary drift weakens separation and can spread if left alone.",
-        "why_now": "Boundary drift weakens separation and can spread if left alone.",
-        "why_this_rank": "Review the imports touching the L_PG boundary evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption.",
-        "work": "Restore L_PG boundary discipline"
-      },
-      {
         "action": "Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py",
         "action_type": "add_tests",
         "affected_layers": [],
@@ -436,12 +377,12 @@
         ],
         "move": "Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py",
         "next_step": "Add mapped tests before touching this surface again.",
-        "priority": 2,
-        "rank": 2,
+        "priority": 1,
+        "rank": 1,
         "scope": "agentic_core/L5_safety/reasoning/hierarchy_healer.py",
         "technical_reason": "Add mapped tests/regression coverage for agentic_core.",
         "testing_requirement": "Add mapped tests/regression coverage for agentic_core.",
-        "timing": "if_touched",
+        "timing": "now",
         "why_it_matters": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
         "why_now": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
         "why_this_rank": "Add mapped tests before touching this surface again.",
@@ -469,12 +410,12 @@
         ],
         "move": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py",
         "next_step": "Refactor after the blocker and test exposure are explicit.",
-        "priority": 3,
-        "rank": 3,
+        "priority": 2,
+        "rank": 2,
         "scope": "agentic_core/adg/extraction/static_scanner.py",
         "technical_reason": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "testing_requirement": "Add mapped tests before refactoring this seam.",
-        "timing": "if_touched",
+        "timing": "after_green",
         "why_it_matters": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_now": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_this_rank": "Refactor after the blocker and test exposure are explicit.",
@@ -492,7 +433,7 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "10,747 floor-row(s) remain on the ratchet gate.",
+        "evidence": "10,749 floor-row(s) remain on the ratchet gate.",
         "evidence_used": [
           {
             "decision_effect": "Accepted baseline debt should fall after red gates are clear.",
@@ -502,10 +443,10 @@
         ],
         "move": "Burn down ratchet S4_unused_imports_ratchet",
         "next_step": "Burn down the ratchet after the current red gates clear.",
-        "priority": 4,
-        "rank": 4,
+        "priority": 3,
+        "rank": 3,
         "scope": "S4_unused_imports_ratchet",
-        "technical_reason": "10,747 floor-row(s) remain on the ratchet gate.",
+        "technical_reason": "10,749 floor-row(s) remain on the ratchet gate.",
         "testing_requirement": "Add tests only when touched scope overlaps hotspot.",
         "timing": "after_green",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
@@ -535,8 +476,8 @@
         ],
         "move": "Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps",
         "next_step": "Deprecate only after the higher-risk surfaces are handled.",
-        "priority": 5,
-        "rank": 5,
+        "priority": 4,
+        "rank": 4,
         "scope": "mv_capability_and_egress_gaps",
         "technical_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
         "testing_requirement": "No test required unless generator logic changes.",
@@ -827,7 +768,7 @@
   "defer_delete_deprecate": {
     "rows": [
       {
-        "current_value": "772 rows; diagnostic_monitor",
+        "current_value": "774 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -867,7 +808,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "196 rows; diagnostic_monitor",
+        "current_value": "197 rows; diagnostic_monitor",
         "item": "mv_critical_path_segments",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -883,7 +824,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6565 rows; diagnostic_monitor",
+        "current_value": "6567 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -899,7 +840,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3134 rows; diagnostic_monitor",
+        "current_value": "3135 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -1090,7 +1031,7 @@
     },
     "cleanup_candidates": [
       {
-        "current_value": "772 rows; diagnostic_monitor",
+        "current_value": "774 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -1130,7 +1071,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "196 rows; diagnostic_monitor",
+        "current_value": "197 rows; diagnostic_monitor",
         "item": "mv_critical_path_segments",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -1146,7 +1087,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6565 rows; diagnostic_monitor",
+        "current_value": "6567 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -1162,7 +1103,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3134 rows; diagnostic_monitor",
+        "current_value": "3135 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -1345,7 +1286,38 @@
         "why_needed": "Artifact not present this run."
       }
     ],
-    "stale_signals": [],
+    "stale_signals": [
+      {
+        "detected_timestamp": "",
+        "expected_timestamp": "",
+        "impact": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
+        "signal_name": "action_queue"
+      },
+      {
+        "detected_timestamp": "",
+        "expected_timestamp": "",
+        "impact": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
+        "signal_name": "structural_outputs"
+      },
+      {
+        "detected_timestamp": "",
+        "expected_timestamp": "",
+        "impact": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
+        "signal_name": "refactor_accelerator"
+      },
+      {
+        "detected_timestamp": "",
+        "expected_timestamp": "",
+        "impact": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
+        "signal_name": "graphdb_queries"
+      },
+      {
+        "detected_timestamp": "",
+        "expected_timestamp": "",
+        "impact": "Artifact timestamp diverges from this run; may reflect a different run \u2014 verify before trusting. Loaded and mapped to a decision lens.",
+        "signal_name": "runtime_spine"
+      }
+    ],
     "suppressed_signals": [
       {
         "revisit_condition": "Monitor and hide inline.",
@@ -1734,50 +1706,74 @@
   "honest_bottom_line": {
     "bullets": [
       "Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.",
-      "Actually blocking now: 1 FIX gates; inspect regression delta before declaring a platform crisis.",
+      "Actually blocking now: 0 FIX gates; inspect regression delta before declaring a platform crisis.",
       "Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.",
       "Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.",
-      "Restore L_PG boundary discipline",
+      "Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py",
       "Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role."
     ]
   },
   "lens_0_p0_landmines": {
     "action_impact_rows": [
       {
-        "impact": "No immediate action impact.",
-        "recommended_action": "No P0 landmine action required.",
-        "signal": "none"
+        "impact": "Fixing this improves trust in ADG ordering before ordinary gate cleanup.",
+        "recommended_action": "Route the dependency through an approved public surface or move the responsibility to the owning layer.",
+        "signal": "Wrong-way layer import"
       }
     ],
     "executive_read": "Clear dynamic execution, circular imports, protected-surface boundary breaks, and high fan-in wrong-way imports before treating lower-priority cleanup as reliable.",
-    "landmines": [],
+    "landmines": [
+      {
+        "action_impact": "Fixing this improves trust in ADG ordering before ordinary gate cleanup.",
+        "direct_fan_in": 0,
+        "issue_type": "layer_violation",
+        "landmine": "Wrong-way layer import",
+        "layer_path": "L_PG -> L_APP",
+        "line_no": 17,
+        "protected_surface": false,
+        "recommended_action": "Route the dependency through an approved public surface or move the responsibility to the owning layer.",
+        "source_file": "agentic_core/prompt_governance/__init__.py",
+        "wrong_way_import": true
+      }
+    ],
     "status": "present",
     "summary": {
       "circular_imports": 0,
       "dynamic_exec": 0,
-      "layer_violations": 0,
+      "layer_violations": 1,
       "max_direct_fan_in": 0,
       "protected_layer_violations": 0,
       "protected_surfaces": 0,
-      "remaining_layer_violations": 0,
-      "total_p0_issues": 0,
-      "wrong_way_imports": 0
+      "remaining_layer_violations": 1,
+      "total_p0_issues": 1,
+      "wrong_way_imports": 1
     },
-    "top_files": [],
+    "top_files": [
+      {
+        "direct_fan_in_max": 0,
+        "issue_count": 1,
+        "issue_kinds": [
+          "layer_violation"
+        ],
+        "priority_score": 250,
+        "protected_surface": false,
+        "source_file": "agentic_core/prompt_governance/__init__.py"
+      }
+    ],
     "why_it_matters": "P0 landmines are foundation cracks: they can make the graph incomplete, unstable, or misleading before ordinary gate counts are even interpreted."
   },
   "lens_1_health_gates": {
     "action_impact_rows": [
       {
-        "impact": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
-        "recommended_action": "Regression +1 over baseline 0 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
-        "signal": "L2_lpg_drift_ratchet"
+        "impact": "No immediate action impact.",
+        "recommended_action": "No red-gate action required.",
+        "signal": "none"
       }
     ],
     "buckets": [
       {
         "bucket": "CLEAR",
-        "count": 27,
+        "count": 28,
         "plain_meaning": "No action now."
       },
       {
@@ -1787,20 +1783,20 @@
       },
       {
         "bucket": "FIX",
-        "count": 1,
+        "count": 0,
         "plain_meaning": "Current blocker or regression requiring action before decision-grade green."
       }
     ],
     "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
     "managed_debt": {
-      "open_non_ratchet_records": 1047,
-      "ratchet_floor_records": 24219,
+      "open_non_ratchet_records": 1053,
+      "ratchet_floor_records": 24237,
       "top_ratchets": [
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "S4_unused_imports_ratchet",
-          "records": 10747
+          "records": 10749
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
@@ -1812,42 +1808,29 @@
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "C3_silent_writes_ratchet",
-          "records": 2019
+          "records": 2021
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "S2_uwg_bypass_ratchet",
-          "records": 1558
+          "records": 1563
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "Q2_cyclomatic_complexity_ratchet",
-          "records": 1109
+          "records": 1113
         }
       ]
     },
-    "red_gates": [
-      {
-        "band": "P0",
-        "baseline_records": 0,
-        "done_condition": "Gate returns CLEAR/TRACK with no current FIX verdict.",
-        "enforcement": "ratchet",
-        "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
-        "gate_id": "L2_lpg_drift_ratchet",
-        "next_action": "Regression +1 over baseline 0 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
-        "record_type": "gate records",
-        "regression_delta": 1,
-        "total_records": 1
-      }
-    ],
+    "red_gates": [],
     "status": "present",
     "summary": {
-      "clear_gates": 27,
+      "clear_gates": 28,
       "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.",
-      "fix_gates": 1,
-      "overall_verdict": "BLOCKED",
+      "fix_gates": 0,
+      "overall_verdict": "PASS",
       "total_gates": 48,
       "track_gates": 20
     },
@@ -3900,7 +3883,7 @@
     "test_scope_inventory": {
       "folders": [
         {
-          "file_count": 3141,
+          "file_count": 3143,
           "folder": "tests/unit",
           "mapped_production_scopes": [
             "agentic_core",
@@ -5002,7 +4985,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 772,
+        "row_count": 774,
         "signal": "mv_actionable_surface_without_schema",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5057,7 +5040,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 196,
+        "row_count": 197,
         "signal": "mv_critical_path_segments",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5079,7 +5062,7 @@
         "decision_role": "used_for_testing",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4862,
+        "row_count": 4865,
         "signal": "mv_debt_concentration_hotspots",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -5090,7 +5073,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11760,
+        "row_count": 11764,
         "signal": "mv_dependency_cone_risk",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -5101,7 +5084,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6565,
+        "row_count": 6567,
         "signal": "mv_determinism_provenance_drift",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5134,7 +5117,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 3134,
+        "row_count": 3135,
         "signal": "mv_exemptions_near_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5167,7 +5150,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 2045,
+        "row_count": 2046,
         "signal": "mv_graph_chokepoint_bridges",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -5244,7 +5227,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 10837,
+        "row_count": 10841,
         "signal": "mv_high_fan_in_out_with_defects",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5266,7 +5249,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11760,
+        "row_count": 11764,
         "signal": "mv_hotspot_centrality",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -5332,7 +5315,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4877,
+        "row_count": 4880,
         "signal": "mv_modified_area_regressions",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5343,7 +5326,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 182,
+        "row_count": 183,
         "signal": "mv_new_cross_layer_dependencies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5365,7 +5348,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 938,
+        "row_count": 944,
         "signal": "mv_new_write_bypass_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5376,7 +5359,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 8464,
+        "row_count": 8466,
         "signal": "mv_newly_introduced_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -5398,7 +5381,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11760,
+        "row_count": 11764,
         "signal": "mv_path_criticality_rollup",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5444,7 +5427,7 @@
           "I2_replay_surface_gaps_ratchet"
         ],
         "related_scopes": [],
-        "row_count": 981,
+        "row_count": 983,
         "signal": "mv_replay_surface_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5477,7 +5460,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 393075,
+        "row_count": 393775,
         "signal": "mv_snapshot_integrity_anomalies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5510,7 +5493,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1018,
+        "row_count": 1020,
         "signal": "mv_task_contract_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5543,7 +5526,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6565,
+        "row_count": 6567,
         "signal": "mv_unknown_taxonomy_and_orphans",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5565,7 +5548,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1097,
+        "row_count": 1103,
         "signal": "mv_write_sovereignty_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -5620,7 +5603,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 619269,
+        "row_count": 619550,
         "signal": "graphdb_projection",
         "signal_type": "graphdb_report",
         "used_inline": false,
@@ -5653,7 +5636,7 @@
         "decision_role": "used_after_green",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 3,
+        "row_count": 4,
         "signal": "p0_wave_plan",
         "signal_type": "structural_report",
         "used_inline": true,
@@ -5679,14 +5662,14 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "cone_risk_score",
-        "total_rows": 11760
+        "total_rows": 11764
       },
       "mv_graph_chokepoint_bridges": {
         "available": true,
         "queried": true,
         "rows_used": 25,
         "score_column": "bridge_score",
-        "total_rows": 2045
+        "total_rows": 2046
       },
       "mv_graph_critical_path_blast_radius": {
         "available": true,
@@ -5714,14 +5697,14 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "betweenness_approx",
-        "total_rows": 11760
+        "total_rows": 11764
       },
       "mv_newly_introduced_critical_paths": {
         "available": true,
         "queried": true,
         "rows_used": 25,
         "score_column": "criticality_score",
-        "total_rows": 8464
+        "total_rows": 8466
       }
     },
     "summary": {
@@ -5740,7 +5723,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 84.0,
-        "centrality": 2.1494,
+        "centrality": 2.1487,
         "chokepoint": 5055.4,
         "dependency_cone": 84.0,
         "executive_read": "High structural risk \u2014 newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot.",
@@ -5755,7 +5738,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 179.45,
-        "centrality": 0.8331,
+        "centrality": 0.8328,
         "chokepoint": 1959.4,
         "dependency_cone": 93.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -5770,7 +5753,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 175.43,
-        "centrality": 2.5416,
+        "centrality": 2.5407,
         "chokepoint": 247.02,
         "dependency_cone": 111.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -5785,7 +5768,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 125.07,
-        "centrality": 0.6061,
+        "centrality": 0.6059,
         "chokepoint": 254.57,
         "dependency_cone": 64.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -5800,7 +5783,7 @@
       {
         "action": "Monitor; promote when it overlaps a blocker or hotspot.",
         "blast_radius": 3243.84,
-        "centrality": 88.4555,
+        "centrality": 88.4255,
         "chokepoint": null,
         "dependency_cone": 1771.0,
         "executive_read": "High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot.",
@@ -5823,7 +5806,7 @@
         "mv_name": "mv_actionable_surface_without_schema",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 772,
+        "row_count": 774,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -5868,7 +5851,7 @@
         "mv_name": "mv_critical_path_segments",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 196,
+        "row_count": 197,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -5886,7 +5869,7 @@
         "mv_name": "mv_debt_concentration_hotspots",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 4862,
+        "row_count": 4865,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -5895,7 +5878,7 @@
         "mv_name": "mv_dependency_cone_risk",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11760,
+        "row_count": 11764,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -5904,7 +5887,7 @@
         "mv_name": "mv_determinism_provenance_drift",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6565,
+        "row_count": 6567,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -5931,7 +5914,7 @@
         "mv_name": "mv_exemptions_near_critical_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 3134,
+        "row_count": 3135,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -5958,7 +5941,7 @@
         "mv_name": "mv_graph_chokepoint_bridges",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 2045,
+        "row_count": 2046,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -6021,7 +6004,7 @@
         "mv_name": "mv_high_fan_in_out_with_defects",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 10837,
+        "row_count": 10841,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6039,7 +6022,7 @@
         "mv_name": "mv_hotspot_centrality",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11760,
+        "row_count": 11764,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -6093,7 +6076,7 @@
         "mv_name": "mv_modified_area_regressions",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 4877,
+        "row_count": 4880,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6102,7 +6085,7 @@
         "mv_name": "mv_new_cross_layer_dependencies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 182,
+        "row_count": 183,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6120,7 +6103,7 @@
         "mv_name": "mv_new_write_bypass_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 938,
+        "row_count": 944,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6129,7 +6112,7 @@
         "mv_name": "mv_newly_introduced_critical_paths",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 8464,
+        "row_count": 8466,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -6147,7 +6130,7 @@
         "mv_name": "mv_path_criticality_rollup",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 11760,
+        "row_count": 11764,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6183,7 +6166,7 @@
         "mv_name": "mv_replay_surface_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 981,
+        "row_count": 983,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6210,7 +6193,7 @@
         "mv_name": "mv_snapshot_integrity_anomalies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 393075,
+        "row_count": 393775,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6237,7 +6220,7 @@
         "mv_name": "mv_task_contract_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1018,
+        "row_count": 1020,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6264,7 +6247,7 @@
         "mv_name": "mv_unknown_taxonomy_and_orphans",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6565,
+        "row_count": 6567,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6282,7 +6265,7 @@
         "mv_name": "mv_write_sovereignty_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1097,
+        "row_count": 1103,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       }
     ],
@@ -6377,14 +6360,14 @@
       "total_files": 1432
     },
     "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.",
-    "production_python_files": 7131,
-    "snapshot_ts": "2026-06-22T09:54:20.578280+00:00",
+    "production_python_files": 7133,
+    "snapshot_ts": "2026-06-23T06:15:45.397917+00:00",
     "status": "present",
-    "test_python_files": 5197,
+    "test_python_files": 5199,
     "tests": {
       "folder_breakdown": [
         {
-          "file_count": 3035,
+          "file_count": 3037,
           "folder": "tests/unit"
         },
         {
@@ -6420,9 +6403,9 @@
           "folder": "tests/unknown"
         }
       ],
-      "total_files": 5197
+      "total_files": 5199
     },
-    "total_python_files": 12328
+    "total_python_files": 12332
   },
   "plain_english_context": {
     "what_adg_is": {
@@ -6496,18 +6479,18 @@
       "burndown_report": "artifacts/adg/adg_burndown_report.md",
       "burndown_table": "artifacts/adg/adg_burndown_table.json",
       "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-      "gate_results": "artifacts/adg/adg_gate_results_20260622_095420.json",
-      "generation_manifest": "artifacts/adg/adg_generation_manifest_06222026_0539.json",
+      "gate_results": "artifacts/adg/adg_gate_results_20260623_061545.json",
+      "generation_manifest": "artifacts/adg/adg_generation_manifest_06232026_0201.json",
       "graph_watchlist": "",
-      "graphdb_index": "artifacts/adg/adg_graphdb_index_06222026_0539.json",
-      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_06222026_0539.json",
-      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_06222026_0539.json",
+      "graphdb_index": "artifacts/adg/adg_graphdb_index_06232026_0201.json",
+      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_06232026_0201.json",
+      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_06232026_0201.json",
       "graphdb_queries": "artifacts/adg/adg_graphdb_queries_06222026_0539.json",
-      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_06222026_0539.json",
+      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_06232026_0201.json",
       "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_06222026_0539.json",
-      "review_template": "artifacts/adg/adg_review_template_06222026_0539.json",
+      "review_template": "artifacts/adg/adg_review_template_latest.json",
       "runtime_spine": "artifacts/adg/adg_runtime_spine_06222026_0539.json",
-      "sqlite_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
+      "sqlite_snapshot": "artifacts/adg/adg_indexed_06232026_0201.sqlite",
       "structural_outputs": "artifacts/adg/adg_structural_outputs_06222026_0539.json"
     },
     "loaded_status": {
@@ -6535,14 +6518,14 @@
     }
   },
   "run": {
-    "commit_sha": "159d8ef8cefe10a8336a7ec6f50b5c6b0d2e09e5",
+    "commit_sha": "ec7b60cee3fd3a2909667efd4d1dfbc2efe9143f",
     "decision_grade_status": "REPORT_INCONSISTENT",
     "degradation_reasons": [],
     "emit_status": "PASS",
-    "generated_at_utc": "2026-06-22T09:57:04+00:00",
-    "repo_state_hash": "b5918424ebd21cbe",
-    "run_id": "06222026_0539",
-    "snapshot_ts": "2026-06-22T09:54:20.578280+00:00"
+    "generated_at_utc": "2026-06-23T06:15:58+00:00",
+    "repo_state_hash": "a2c3550143634de9",
+    "run_id": "06232026_0201",
+    "snapshot_ts": "2026-06-23T06:15:45.397917+00:00"
   },
   "schema_version": "1.0"
 }
