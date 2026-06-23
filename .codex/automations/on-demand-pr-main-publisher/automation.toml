@@ -12,7 +12,7 @@ rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
 model = "gpt-5.4-mini"
 reasoning_effort = "xhigh"
 execution_environment = "local"
-cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-gpu-policy-invariant", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-competencies-evidence-closeout"]
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-gpu-policy-invariant", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-competencies-evidence-closeout", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-preserve-worktrees-folder-closeout"]
 created_at = 1781951933034
 updated_at = 1781990290962
 
