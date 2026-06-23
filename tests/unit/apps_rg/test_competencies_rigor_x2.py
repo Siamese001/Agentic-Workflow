@@ -174,6 +174,103 @@ def test_metrics_only_skill_fails():
     assert not _gate(results, "x2_competencies_no_metrics_as_skills_without_capability_context")
 
 
+def test_metric_value_competency_term_hard_fails_even_with_context():
+    cats = []
+    labels = (
+        "Technology Strategy & Innovation",
+        "AI Platform Leadership",
+        "Data & Analytics Modernization",
+        "Governance, Risk & Compliance",
+        "Engineering & Delivery Leadership",
+        "LLMOps & Reliability",
+        "Commercial & Operating Impact",
+        "Cloud & Partner Ecosystems",
+    )
+    for idx, label in enumerate(labels):
+        terms = [
+            _term("multi-agent orchestration"),
+            _term("runtime governance controls"),
+            _term("GraphRAG retrieval engineering"),
+        ]
+        if idx == 7:
+            terms[0] = _term("20% joint revenue")
+        cats.append(
+            {
+                "category_label": label,
+                "terms": terms,
+                "source_fact_ids": ["bul_unify_001"],
+            }
+        )
+
+    results = _run_gates(cats)
+
+    assert not _gate(results, "x2_competencies_no_metrics_as_skills_without_capability_context")
+
+
+def test_metric_source_fact_id_hard_fails_even_when_terms_are_clean():
+    cats = []
+    labels = (
+        "Technology Strategy & Innovation",
+        "AI Platform Leadership",
+        "Data & Analytics Modernization",
+        "Governance, Risk & Compliance",
+        "Engineering & Delivery Leadership",
+        "LLMOps & Reliability",
+        "Commercial & Operating Impact",
+        "Cloud & Partner Ecosystems",
+    )
+    for idx, label in enumerate(labels):
+        fid = "metric_ibm_20pct_joint_revenue_growth" if idx == 0 else "bul_unify_001"
+        cats.append(
+            {
+                "category_label": label,
+                "terms": [
+                    _term("agentic platform architecture", fid),
+                    _term("runtime governance controls", fid),
+                    _term("enterprise adoption model", fid),
+                ],
+                "source_fact_ids": [fid],
+            }
+        )
+
+    results = _run_gates(cats)
+
+    assert not _gate(results, "x2_competencies_no_metric_ids_in_source_fact_ids")
+
+
+def test_visible_competency_mundane_phrase_hard_fails_svp_agentic_richness():
+    cats = []
+    labels = (
+        "Technology Strategy & Innovation",
+        "AI Platform Leadership",
+        "Data & Analytics Modernization",
+        "Governance, Risk & Compliance",
+        "Engineering & Delivery Leadership",
+        "LLMOps & Reliability",
+        "Commercial & Operating Impact",
+        "Cloud & Partner Ecosystems",
+    )
+    for idx, label in enumerate(labels):
+        phrase = "hyperscaler co-sell" if idx == 0 else "governed multi-agent orchestration control planes"
+        cats.append(
+            {
+                "category_label": label,
+                "resume_display_label": label,
+                "visible_graph_surface": True,
+                "terms": [
+                    _term(phrase),
+                    _term("agentic workflow routing across enterprise systems"),
+                    _term("policy-bound execution architecture for AI agents"),
+                ],
+                "source_fact_ids": ["bul_unify_001"],
+            }
+        )
+
+    results = _run_gates(cats)
+
+    assert not _gate(results, "x2_competencies_visible_terms_svp_agentic_richness")
+
+
 def test_target_quality_competencies_pass_rigor_gates():
     cats = [
         {
@@ -235,7 +332,7 @@ def test_target_quality_competencies_pass_rigor_gates():
             "terms": [
                 _term("IP-led platform commercialization"),
                 _term("managed AI services"),
-                _term("operating margin expansion"),
+                _term("enterprise platform adoption"),
             ],
             "source_fact_ids": ["bul_unify_004"],
         },

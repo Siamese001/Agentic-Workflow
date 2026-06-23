@@ -22,7 +22,30 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "competencies_x1d_v2"
+JUDGE_RUBRIC_VERSION = "competencies_x1d_v3"
+
+COMPETENCIES_RUBRIC_DIMENSION_IDS: tuple[str, ...] = (
+    "factual_support",
+    "ats_alignment_without_stuffing",
+    "seniority_executive_relevance",
+    "complementarity",
+    "no_bullet_restatement",
+    "anti_overfit",
+    "category_clarity",
+    "svp_agentic_specificity",
+)
+
+COMPETENCIES_JUDGE_OUTPUT_CONTRACT = (
+    "Required competencies dimension_verdicts keys: "
+    + ", ".join(COMPETENCIES_RUBRIC_DIMENSION_IDS)
+    + ". Do not substitute executive_summary dimension ids.\n"
+    '"dimension_verdicts": {'
+    + ", ".join(
+        f'"{dim}": {{"pass": true, "severity": "none", "codes": []}}'
+        for dim in COMPETENCIES_RUBRIC_DIMENSION_IDS
+    )
+    + "}"
+)
 
 COMPETENCIES_RUBRIC = """
 You are evaluating exactly 8 executive resume competency categories (short labels plus compact capability phrases).
@@ -40,6 +63,7 @@ Rubric dimensions:
 5. no_bullet_restatement: avoids copying long bullet fragments, outcome laundry lists, repeated metric language, or employer-specific verbatim lines.
 6. anti_overfit: no JD-only or briefing-only skills framed as proof; company-specific targeting may influence label choice, not evidence; do not collapse multiple categories onto one metric family; no AI-authenticity dead giveaways such as template phrasing or buzzword soup.
 7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims) and each category should be semantically distinct, graph-backed, and tied to a different skill family.
+8. svp_agentic_specificity: no generic or mundane competency terms; phrases should sound like believable work by an SVP-level engineering leader and deep agentic AI practitioner, with concrete mechanisms plus operating/commercial context. Penalize table-stakes phrases such as "hyperscaler co-sell", "platform commercialization", "stakeholder alignment", "cloud architecture", or "runtime policy controls" when they appear without richer mechanism/context.
 
 Adversarial review lens:
 - Head of Talent Acquisition pass: would the taxonomy feel recruiter-clean and senior enough for the target company?
@@ -62,6 +86,7 @@ Advisory notes:
 - Terms require source_fact_ids / claim_ledger binding — no JD-only skills as proof.
 - When the categories collapse onto the same few metrics, fact surfaces, or employer lane, lower the score even if the shape is technically valid.
 - If the labels feel machine-generated or too generic to survive a TA skim, treat that as a quality flag.
+- If the terms could belong unchanged to any cloud/AI executive rather than this candidate's graph-backed SVP agentic work, fail or lower svp_agentic_specificity.
 
 Decisive failure triggers (advisory only):
 - JD or briefing used as primary evidence for unsupported clusters
@@ -69,6 +94,7 @@ Decisive failure triggers (advisory only):
 - format breaks (full sentences inside terms, bullet markers)
 - repeated metric/language loops across multiple categories
 - generic category labels with no graph-backed differentiation
+- mundane visible competency phrases that lack agentic mechanism, executive operating context, or believable SVP scope
 - company-specific targeting used as proof rather than label choice
 """.strip()
 
@@ -85,6 +111,7 @@ def _build_prompt(
     )
     return (
         f"{COMPETENCIES_RUBRIC}\n\n{JUDGE_COMPACT_OUTPUT}\n\n"
+        f"{COMPETENCIES_JUDGE_OUTPUT_CONTRACT}\n\n"
         f"COMPETENCIES_JSON:\n{competencies_json}\n"
         f"{block}\n"
         f"CLAIM_LEDGER:\n{json.dumps(claim_ledger, separators=(',', ':'))}"
@@ -117,6 +144,42 @@ def _mocked(provider_key: str, input_hash: str) -> JudgeOutput:
         cited_sentence_indexes=[],
         remediation_suggestions=[],
     )
+
+
+def _empty_competencies_dimension_verdict(*, pass_: bool) -> dict[str, Any]:
+    return {
+        "pass": pass_,
+        "severity": "none" if pass_ else "major",
+        "codes": [],
+    }
+
+
+def _normalize_competencies_dimension_verdicts(output: JudgeOutput) -> JudgeOutput:
+    raw = output.dimension_verdicts if isinstance(output.dimension_verdicts, dict) else {}
+    normalized: dict[str, dict[str, Any]] = {}
+    inferred = bool(output.dimension_verdicts_inferred)
+
+    for dim in COMPETENCIES_RUBRIC_DIMENSION_IDS:
+        verdict = raw.get(dim)
+        if not isinstance(verdict, dict):
+            normalized[dim] = _empty_competencies_dimension_verdict(pass_=bool(output.pass_))
+            inferred = True
+            continue
+        codes = verdict.get("codes")
+        normalized[dim] = {
+            "pass": bool(verdict.get("pass", output.pass_)),
+            "severity": str(verdict.get("severity") or ("none" if verdict.get("pass", output.pass_) else "major")),
+            "codes": codes if isinstance(codes, list) else [],
+        }
+
+    if set(raw) != set(COMPETENCIES_RUBRIC_DIMENSION_IDS):
+        inferred = True
+        if "competencies_dimension_verdicts_normalized" not in output.quality_flags:
+            output.quality_flags.append("competencies_dimension_verdicts_normalized")
+
+    output.dimension_verdicts = normalized
+    output.dimension_verdicts_inferred = inferred
+    return output
 
 
 def run_competencies_judges(
@@ -153,7 +216,7 @@ def run_competencies_judges(
             continue
 
         if mode == "mocked":
-            outputs.append(_mocked(key, input_hash))
+            outputs.append(_normalize_competencies_dimension_verdicts(_mocked(key, input_hash)))
             continue
 
         meta = PROVIDERS[key]
@@ -231,7 +294,7 @@ def run_competencies_judges(
             output.rubric_version = JUDGE_RUBRIC_VERSION
             output.advisory_only = True
             output.proof_eligible_judge = False
-            outputs.append(output)
+            outputs.append(_normalize_competencies_dimension_verdicts(output))
         except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             blocked = _make_blocked_output(
                 key,

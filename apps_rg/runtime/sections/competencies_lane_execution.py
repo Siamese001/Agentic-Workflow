@@ -311,6 +311,8 @@ def run_competencies_lane_execution(
     parse_error = ""
     runtime_generation_status = "BLOCKED"
     live_preflight_blocked = False
+    visible_graph_surface_receipt: dict[str, Any] | None = None
+    visible_graph_surface_receipt_ref = ""
 
     from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
@@ -559,6 +561,7 @@ def run_competencies_lane_execution(
             )
             from apps_rg.runtime.sections.competency_capability_evidence import (
                 augment_bound_category_family_terms,
+                enrich_competencies_visible_graph_surface,
                 hydrate_competency_bundle_graph_evidence,
                 stamp_competency_bundle_bindings,
             )
@@ -605,6 +608,21 @@ def run_competencies_lane_execution(
             # plus the bundle's graph_skill_node_ids — graph-backed proof under the GraphDB-SSOT
             # model, no fact-provenance stretch. Only fires for bundle-bound categories below floor.
             backfill_graph_bundle_min_terms(parsed)
+            visible_graph_surface_receipt = enrich_competencies_visible_graph_surface(
+                parsed,
+                packet=_pkt,
+                allowed_fact_ids=allowed_fact_ids,
+                selected_graph_evidence_plan=pp_meta.get("selected_graph_evidence_plan"),
+            )
+            if visible_graph_surface_receipt:
+                visible_graph_surface_receipt_ref = _artifact_repo_rel(
+                    artifact_dir / "competencies_visible_graph_surface_enrichment_receipt.json",
+                    REPO_ROOT,
+                )
+                write_json(
+                    artifact_dir / "competencies_visible_graph_surface_enrichment_receipt.json",
+                    visible_graph_surface_receipt,
+                )
             # Injected anchor terms need claim_ledger rows so x2_all_terms_source_fact_ids holds.
             rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
@@ -905,6 +923,7 @@ def run_competencies_lane_execution(
         "text_claim_coverage": coverage,
         "competencies_graph_sufficiency_receipt_ref": graph_sufficiency_receipt_ref,
         "competencies_graph_traversal_sufficiency_receipt_ref": graph_traversal_receipt_ref,
+        "competencies_visible_graph_surface_enrichment_receipt_ref": visible_graph_surface_receipt_ref,
     }
     write_json(artifact_dir / "competencies_output.json", competencies)
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
@@ -1093,6 +1112,7 @@ def run_competencies_lane_execution(
         ),
         "competencies_graph_sufficiency_receipt_ref": graph_sufficiency_receipt_ref,
         "competencies_graph_traversal_sufficiency_receipt_ref": graph_traversal_receipt_ref,
+        "competencies_visible_graph_surface_enrichment_receipt_ref": visible_graph_surface_receipt_ref,
         "graph_selector_judge_arbitration_receipt_ref": _artifact_repo_rel(
             artifact_dir / "graph_selector_judge_arbitration_receipt.json",
             REPO_ROOT,

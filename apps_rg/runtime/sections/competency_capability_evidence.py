@@ -16,6 +16,7 @@ from apps_rg.runtime.sections.graph_evidence_contract import (
     require_section_packet,
     require_selected_graph_evidence_plan,
 )
+from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 
 logger = logging.getLogger(__name__)
 from apps_rg.runtime.sections.competency_capability_registry import (
@@ -36,6 +37,77 @@ COMPETENCIES_PATH_DIVERSITY_LENSES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("engineering operating model", ("engineering_leadership", "org_scale", "executive_alignment")),
     ("partner ecosystem execution", ("ecosystem_gtm", "hyperscaler_alliances", "joint_value_creation")),
 )
+
+PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER: tuple[str, ...] = (
+    "ccb_partnerships_ecosystem_execution",
+    "ccb_agentic_platforms",
+    "ccb_runtime_governance",
+    "ccb_retrieval_context_engineering",
+    "ccb_platform_productization",
+    "ccb_llmops_reliability",
+    "ccb_distributed_systems_engineering",
+    "ccb_engineering_leadership",
+    "ccb_data_governance_security",
+    "ccb_devsecops_delivery_governance",
+    "ccb_insurance_domain_erm",
+)
+
+VISIBLE_GRAPH_TERMS_MIN = 3
+VISIBLE_GRAPH_TERMS_MAX = 3
+
+VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES: dict[str, tuple[str, ...]] = {
+    "ccb_partnerships_ecosystem_execution": (
+        "AI alliance commercialization with hyperscaler partners",
+        "co-sellable agentic solution factory motions",
+        "partner enablement for applied AI adoption",
+    ),
+    "ccb_agentic_platforms": (
+        "governed multi-agent orchestration control planes",
+        "agentic workflow routing across enterprise systems",
+        "policy-bound execution architecture for AI agents",
+    ),
+    "ccb_runtime_governance": (
+        "fail-closed runtime control gate design",
+        "policy enforcement across agent execution paths",
+        "sandboxed decision workflows with audit trails",
+    ),
+    "ccb_retrieval_context_engineering": (
+        "GraphRAG context grounding for enterprise workflows",
+        "dense-sparse retrieval with relationship-aware ranking",
+        "authority-ordered prompt context assembly pipelines",
+    ),
+    "ccb_platform_productization": (
+        "demoable AI accelerators for executive buyers",
+        "reusable platform IP commercialization motions",
+        "evaluation-ready delivery from prototype to adoption",
+    ),
+    "ccb_llmops_reliability": (
+        "audit-grade telemetry for agentic systems",
+        "evaluation gauntlets for behavior assurance",
+        "reliability lifecycle for governed AI workflows",
+    ),
+    "ccb_distributed_systems_engineering": (
+        "cloud-native AI data reference architectures",
+        "microservices integration for regulated ecosystems",
+        "lakehouse modernization for decision intelligence",
+    ),
+    "ccb_engineering_leadership": (
+        "executive-aligned engineering operating cadences for adoption",
+        "cross-functional delivery governance at scale",
+        "organization scale-out for platform execution",
+    ),
+}
+
+VISIBLE_GRAPH_SURFACE_TAXONOMY_BY_BUNDLE: dict[str, tuple[str, str]] = {
+    "ccb_partnerships_ecosystem_execution": ("cloud_partner_ecosystems", "Cloud & Partner Ecosystems"),
+    "ccb_agentic_platforms": ("ai_platform_leadership", "AI Platform Leadership"),
+    "ccb_runtime_governance": ("governance_risk_compliance", "Governance, Risk & Compliance"),
+    "ccb_retrieval_context_engineering": ("tech_strategy_innovation", "Technology Strategy & Innovation"),
+    "ccb_platform_productization": ("commercial_operating_impact", "Commercial & Operating Impact"),
+    "ccb_llmops_reliability": ("llmops_reliability", "LLMOps & Reliability"),
+    "ccb_distributed_systems_engineering": ("data_analytics_modernization", "Data & Analytics Modernization"),
+    "ccb_engineering_leadership": ("engineering_delivery_leadership", "Engineering & Delivery Leadership"),
+}
 
 _AUTHORITY_HEADER_LINES: tuple[str, ...] = (
     "proof_authority = graph_competency_bundles_plus_linked_source_facts",
@@ -583,6 +655,345 @@ def hydrate_competency_bundle_graph_evidence(
     return competencies
 
 
+def _graph_surface_phrase_key(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "").strip().lower()).rstrip(".")
+
+
+def _graph_surface_word_count(value: str) -> int:
+    return len(re.findall(r"[A-Za-z0-9][A-Za-z0-9+&/-]*", value))
+
+
+def _graph_surface_metric_value_phrase(value: str) -> bool:
+    return bool(
+        re.search(
+            r"(?:(?<!\w)\d+\s*%(?!\w)|\$\s*\d+|\b\d+(?:\.\d+)?\s*(?:m|mm|b|bn|k)\b|"
+            r"\boperating\s+margin\b|\bmargin\s+expansion\b|\brevenue\s+growth\b|"
+            r"\bgross\s+margins\b)",
+            str(value or ""),
+            re.IGNORECASE,
+        )
+    )
+
+
+def _graph_surface_phrases_for_bundle(rec: dict[str, Any]) -> list[str]:
+    phrases: list[str] = []
+    seen: set[str] = set()
+
+    def _add(raw: Any) -> None:
+        phrase = str(raw or "").strip()
+        if not phrase:
+            return
+        if _graph_surface_metric_value_phrase(phrase):
+            return
+        words = _graph_surface_word_count(phrase)
+        if words < 2 or words > 7:
+            return
+        key = _graph_surface_phrase_key(phrase)
+        if key in seen:
+            return
+        seen.add(key)
+        phrases.append(phrase)
+
+    bundle_id = str(rec.get("competency_bundle_id") or "")
+    for override in VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES.get(bundle_id, ()):
+        _add(override)
+    for anchor in rec.get("vocabulary_anchors") or []:
+        _add(anchor)
+    for skill in rec.get("bound_skills") or []:
+        if not isinstance(skill, dict):
+            continue
+        for phrase in skill.get("allowed_phrases") or []:
+            _add(phrase)
+    return phrases
+
+
+def _graph_surface_term(
+    phrase: str,
+    *,
+    fact_ids: list[str],
+    skill_ids: list[str],
+) -> dict[str, Any]:
+    term: dict[str, Any] = {
+        "term": phrase,
+        "text": phrase,
+        "source_skill_ids": list(skill_ids),
+        "graph_skill_node_ids": list(skill_ids),
+        "support_class": "FACT_AND_SKILL_GRAPH" if fact_ids else "GRAPH_BACKED_BUNDLE",
+        "proof_source": "competency_bundle_visible_surface",
+    }
+    if fact_ids:
+        term["source_fact_ids"] = list(fact_ids)
+        term["source_fact_id"] = fact_ids[0]
+    return term
+
+
+def _category_fact_ids(cat: dict[str, Any], allowed_fact_ids: set[str] | None) -> list[str]:
+    allowed = {str(x).split("_metric_", 1)[0] for x in (allowed_fact_ids or set()) if str(x).strip()}
+    out: list[str] = []
+    for raw in cat.get("source_fact_ids") or []:
+        fid = str(raw).split("_metric_", 1)[0].strip()
+        if str(raw).strip().startswith("metric_") or fid.startswith("metric_"):
+            continue
+        if not fid:
+            continue
+        if allowed and fid not in allowed:
+            continue
+        if fid not in out:
+            out.append(fid)
+    for term in cat.get("terms") or []:
+        if not isinstance(term, dict):
+            continue
+        for raw in list(term.get("source_fact_ids") or []) + [term.get("source_fact_id")]:
+            fid = str(raw or "").split("_metric_", 1)[0].strip()
+            if str(raw or "").strip().startswith("metric_") or fid.startswith("metric_"):
+                continue
+            if not fid:
+                continue
+            if allowed and fid not in allowed:
+                continue
+            if fid not in out:
+                out.append(fid)
+    return out
+
+
+def _category_skill_ids(cat: dict[str, Any], rec: dict[str, Any]) -> list[str]:
+    out: list[str] = []
+    for raw in list(cat.get("graph_skill_node_ids") or []) + list(rec.get("graph_skill_node_ids") or []):
+        sid = str(raw).strip()
+        if sid and sid not in out:
+            out.append(sid)
+    for term in cat.get("terms") or []:
+        if not isinstance(term, dict):
+            continue
+        for raw in list(term.get("source_skill_ids") or []) + list(term.get("graph_skill_node_ids") or []):
+            sid = str(raw).strip()
+            if sid and sid not in out:
+                out.append(sid)
+    return out
+
+
+def _plan_fact_ids_for_bundle(
+    rec: dict[str, Any],
+    *,
+    selected_graph_evidence_plan: dict[str, Any] | None,
+    allowed_fact_ids: set[str] | None,
+) -> list[str]:
+    allowed = {str(x).split("_metric_", 1)[0] for x in (allowed_fact_ids or set()) if str(x).strip()}
+    if not allowed:
+        allowed = {str(x) for x in (allowed_fact_ids or set()) if str(x).strip()}
+    bundle_skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
+    out: list[str] = []
+
+    def _append(raw: Any) -> None:
+        fid = str(raw or "").split("_metric_", 1)[0].strip()
+        raw_s = str(raw or "").strip()
+        for candidate in (fid, raw_s):
+            if not candidate:
+                continue
+            if candidate.startswith("metric_"):
+                continue
+            if allowed and candidate not in allowed:
+                continue
+            if candidate not in out:
+                out.append(candidate)
+
+    plan = selected_graph_evidence_plan if isinstance(selected_graph_evidence_plan, dict) else {}
+    for fact in plan.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        fact_skills = {str(x).strip() for x in (fact.get("graph_skill_node_ids") or []) if str(x).strip()}
+        if bundle_skills and fact_skills and not bundle_skills.intersection(fact_skills):
+            continue
+        _append(fact.get("fact_id"))
+        _append(fact.get("role_episode_bundle_id"))
+        for fid in fact.get("source_fact_ids") or []:
+            _append(fid)
+        for mid in fact.get("metric_outcome_ids") or []:
+            _append(mid)
+    for linked in rec.get("linked_source_fact_ids") or []:
+        _append(linked)
+    return out
+
+
+def _token_budget_allows(phrase: str, token_counts: dict[str, int], *, max_repeat: int = 3) -> bool:
+    for token in re.findall(r"[a-z][a-z0-9+/-]*", str(phrase or "").lower()):
+        if len(token) < 4:
+            continue
+        if token in {"design", "controls", "systems", "engineering"}:
+            continue
+        if token_counts.get(token, 0) >= max_repeat:
+            return False
+    return True
+
+
+def _register_visible_phrase_tokens(phrase: str, token_counts: dict[str, int]) -> None:
+    for token in re.findall(r"[a-z][a-z0-9+/-]*", str(phrase or "").lower()):
+        if len(token) < 4:
+            continue
+        if token in {"design", "controls", "systems", "engineering"}:
+            continue
+        token_counts[token] = token_counts.get(token, 0) + 1
+
+
+def enrich_competencies_visible_graph_surface(
+    parsed: dict[str, Any],
+    *,
+    packet: dict[str, Any] | None,
+    allowed_fact_ids: set[str] | None,
+    selected_graph_evidence_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Make the resume-visible competencies surface consume graph bundle evidence.
+
+    The taxonomy category label remains intact for the existing X2 taxonomy contract.
+    ``resume_display_label`` is the user-facing label and is sourced from the bound
+    competency bundle. Terms are rebuilt from curated bundle anchors and bound skill
+    phrases so graph improvements are visible in ``competencies_display.txt``.
+    """
+    if not isinstance(parsed, dict):
+        return {}
+    pkt = packet or build_competency_capability_section_packet("competencies")
+    records = [
+        rec for rec in (pkt.get("competency_bundles") or []) if isinstance(rec, dict)
+    ]
+    by_id = {
+        str(rec.get("competency_bundle_id") or ""): rec
+        for rec in records
+        if str(rec.get("competency_bundle_id") or "").strip()
+    }
+    if not by_id:
+        return {}
+
+    order = {bundle_id: idx for idx, bundle_id in enumerate(PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER)}
+    receipt_rows: list[dict[str, Any]] = []
+    token_counts: dict[str, int] = {}
+
+    def _rewrite(cats: Any, *, surface_name: str) -> list[dict[str, Any]]:
+        if not isinstance(cats, list):
+            return []
+        by_bundle: dict[str, dict[str, Any]] = {}
+        surplus: list[dict[str, Any]] = []
+        for cat in cats:
+            if not isinstance(cat, dict):
+                continue
+            bid = str(cat.get("competency_bundle_id") or "").strip()
+            if bid and bid not in by_bundle:
+                by_bundle[bid] = cat
+            else:
+                surplus.append(cat)
+        unassigned = list(surplus)
+        out: list[dict[str, Any]] = []
+        for bid in PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER:
+            rec = by_id.get(bid)
+            if not rec:
+                continue
+            cat = by_bundle.get(bid)
+            if cat is None and unassigned:
+                cat = unassigned.pop(0)
+            if cat is None:
+                cat = {"terms": []}
+            before_label = str(cat.get("resume_display_label") or cat.get("category_label") or "").strip()
+            display_label = str(rec.get("display_label_candidate") or before_label).strip()
+            taxonomy_id, taxonomy_label = VISIBLE_GRAPH_SURFACE_TAXONOMY_BY_BUNDLE.get(
+                bid,
+                (
+                    str((rec.get("target_taxonomy_category_ids") or [bid])[0]),
+                    before_label or display_label,
+                ),
+            )
+            fact_ids = _category_fact_ids(cat, allowed_fact_ids)
+            if not fact_ids:
+                fact_ids = _plan_fact_ids_for_bundle(
+                    rec,
+                    selected_graph_evidence_plan=selected_graph_evidence_plan,
+                    allowed_fact_ids=allowed_fact_ids,
+                )
+            skill_ids = _category_skill_ids(cat, rec)
+            phrases = _graph_surface_phrases_for_bundle(rec)
+            if len(phrases) < VISIBLE_GRAPH_TERMS_MIN:
+                existing = [term_phrase(t) for t in (cat.get("terms") or []) if term_phrase(t)]
+                for phrase in existing:
+                    if _graph_surface_phrase_key(phrase) not in {
+                        _graph_surface_phrase_key(p) for p in phrases
+                    }:
+                        phrases.append(phrase)
+                    if len(phrases) >= VISIBLE_GRAPH_TERMS_MIN:
+                        break
+            selected_phrases: list[str] = []
+            seen_phrase_keys: set[str] = set()
+            for phrase in phrases:
+                key = _graph_surface_phrase_key(phrase)
+                if not key or key in seen_phrase_keys:
+                    continue
+                if len(selected_phrases) >= VISIBLE_GRAPH_TERMS_MAX:
+                    break
+                if len(selected_phrases) >= VISIBLE_GRAPH_TERMS_MIN and not _token_budget_allows(
+                    phrase,
+                    token_counts,
+                ):
+                    continue
+                selected_phrases.append(phrase)
+                seen_phrase_keys.add(key)
+                _register_visible_phrase_tokens(phrase, token_counts)
+            if len(selected_phrases) >= VISIBLE_GRAPH_TERMS_MIN and skill_ids:
+                cat["terms"] = [
+                    _graph_surface_term(phrase, fact_ids=fact_ids, skill_ids=skill_ids)
+                    for phrase in selected_phrases
+                ]
+            cat["category_id"] = taxonomy_id
+            cat["category_label"] = taxonomy_label
+            cat["competency_bundle_id"] = bid
+            cat["capability_family"] = rec.get("capability_family")
+            cat["graph_skill_node_ids"] = list(skill_ids)
+            if fact_ids:
+                cat["source_fact_ids"] = list(fact_ids)
+            cat["resume_display_label"] = display_label
+            cat["resume_display_order_reason"] = "anthropic_partnership_relevance_first"
+            cat["visible_graph_surface"] = True
+            cat["graph_surface_term_source"] = "competency_bundle_vocabulary_anchors"
+            out.append(cat)
+            receipt_rows.append(
+                {
+                    "surface": surface_name,
+                    "category_label": cat.get("category_label"),
+                    "resume_display_label": display_label,
+                    "competency_bundle_id": bid,
+                    "capability_family": rec.get("capability_family"),
+                    "source_fact_ids": fact_ids,
+                    "graph_skill_node_ids": skill_ids,
+                    "visible_terms": selected_phrases,
+                    "old_display_label": before_label,
+                    "order_index": order.get(bid, 500),
+                }
+            )
+            if len(out) >= 8:
+                break
+        return out
+
+    if isinstance(parsed.get("categories"), list):
+        parsed["categories"] = _rewrite(parsed.get("categories"), surface_name="categories")
+    if isinstance(parsed.get("competencies"), list):
+        parsed["competencies"] = _rewrite(parsed.get("competencies"), surface_name="competencies")
+    receipt = {
+        "schema_version": "competencies_visible_graph_surface_enrichment_receipt_v1",
+        "producer": "apps_rg.runtime.sections.competency_capability_evidence.enrich_competencies_visible_graph_surface",
+        "section_id": "competencies",
+        "order_policy": "anthropic_partnership_relevance_first",
+        "bundle_order": list(PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER),
+        "visible_terms_min": VISIBLE_GRAPH_TERMS_MIN,
+        "visible_terms_max": VISIBLE_GRAPH_TERMS_MAX,
+        "enriched_category_count": len(
+            {
+                str(row.get("competency_bundle_id") or "")
+                for row in receipt_rows
+                if row.get("surface") == "competencies"
+            }
+        ),
+        "rows": receipt_rows,
+    }
+    parsed["competencies_visible_graph_surface_enrichment_receipt"] = receipt
+    return receipt
+
+
 # Map bundle capability_family -> the family key used by the X2 coverage gate
 # (apps_rg.runtime.validators.competencies_quality_x2.REQUIRED_CAPABILITY_FAMILIES).
 _BUNDLE_TO_GATE_FAMILY: dict[str, str] = {
@@ -811,10 +1222,12 @@ def augment_bound_category_family_terms(
 __all__ = [
     "COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER",
     "COMPETENCIES_PATH_DIVERSITY_LENSES",
+    "PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER",
     "attach_competency_bundles_to_proof_pool_metadata",
     "append_competencies_path_diversity_to_messages",
     "augment_bound_category_family_terms",
     "build_competency_capability_section_packet",
+    "enrich_competencies_visible_graph_surface",
     "format_competency_capability_evidence_pack",
     "hydrate_competency_bundle_graph_evidence",
     "is_flat_taxonomy_only_packet",

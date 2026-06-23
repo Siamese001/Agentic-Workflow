@@ -60,10 +60,10 @@
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "platform_operating_model",
    "target_relevance_rationale": "SVP Engineering agentic AI posture requires governed multi-agent platform architecture as the lead capability family.",
-   "vocabulary_anchors": [
-    "governed agentic systems architecture",
-    "multi-agent orchestration fabric",
-    "agentic control plane"
+    "vocabulary_anchors": [
+      "governed multi-agent orchestration control planes",
+      "agentic workflow routing across enterprise systems",
+      "policy-bound execution architecture for AI agents"
    ]
   },
   {
@@ -95,10 +95,10 @@
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "policy_gated_operating_controls",
    "target_relevance_rationale": "Runtime governance, deterministic gate meshes, and fail-closed exit control differentiate engineering leadership for regulated agentic AI.",
-   "vocabulary_anchors": [
-    "runtime gate mesh design",
-    "fail-closed gate semantics",
-    "policy-bound runtime controls"
+    "vocabulary_anchors": [
+      "fail-closed runtime control gate design",
+      "policy enforcement across agent execution paths",
+      "sandboxed decision workflows with audit trails"
    ]
   },
   {
@@ -131,10 +131,10 @@
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "grounded_generation_quality",
    "target_relevance_rationale": "Dense/sparse/exact retrieval design and graph-aware grounding are core to context engineering for agentic platforms.",
-   "vocabulary_anchors": [
-    "dense-sparse-exact retrieval design",
-    "graph-aware relationship grounding",
-    "authority-ordered prompt assembly"
+    "vocabulary_anchors": [
+      "GraphRAG context grounding for enterprise workflows",
+      "dense-sparse retrieval with relationship-aware ranking",
+      "authority-ordered prompt context assembly pipelines"
    ]
   },
   {
@@ -169,12 +169,10 @@
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "production_reliability_operating_model",
    "target_relevance_rationale": "Evaluation gauntlets, judge calibration, and audit-grade observability anchor LLMOps reliability for runtime agentic systems.",
-   "vocabulary_anchors": [
-    "audit-grade observability",
-    "evaluation gauntlet design",
-    "multi-judge calibration",
-    "fail-closed gate reliability",
-    "runtime resilience controls"
+    "vocabulary_anchors": [
+      "audit-grade telemetry for agentic systems",
+      "evaluation gauntlets for behavior assurance",
+      "reliability lifecycle for governed AI workflows"
    ]
   },
   {
@@ -211,10 +209,10 @@
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "cloud_native_platform_scale",
    "target_relevance_rationale": "Cloud-native microservices, reference architectures, and data platform engineering underpin distributed systems leadership.",
-   "vocabulary_anchors": [
-    "cloud-native data platform engineering",
-    "containerized microservices integration",
-    "regulated reference architecture reuse"
+    "vocabulary_anchors": [
+      "cloud-native AI data reference architectures",
+      "microservices integration for regulated ecosystems",
+      "lakehouse modernization for decision intelligence"
    ]
   },
   {
@@ -246,10 +244,10 @@
    "technical_density_signal": "medium_high",
    "commercial_or_operating_scope_signal": "ip_led_platform_commercialization",
    "target_relevance_rationale": "Reusable platform IP and demoable accelerators convert engineering capability into commercialized platform products.",
-   "vocabulary_anchors": [
-    "IP-led platform commercialization",
-    "reusable agentic platform architecture",
-    "demoable solution accelerators"
+    "vocabulary_anchors": [
+      "demoable AI accelerators for executive buyers",
+      "reusable platform IP commercialization motions",
+      "evaluation-ready delivery from prototype to adoption"
    ]
   },
   {
@@ -285,10 +283,10 @@
    "technical_density_signal": "medium",
    "commercial_or_operating_scope_signal": "hyperscaler_alliance_co_sell",
    "target_relevance_rationale": "Hyperscaler co-sell alliances and ecosystem GTM execution are differentiating when target relevance supports partnerships posture.",
-   "vocabulary_anchors": [
-    "hyperscaler alliance co-sell",
-    "cloud partner ecosystem GTM",
-    "joint revenue execution"
+    "vocabulary_anchors": [
+      "AI alliance commercialization with hyperscaler partners",
+      "co-sellable agentic solution factory motions",
+      "partner enablement for applied AI adoption"
    ]
   },
   {
@@ -318,10 +316,10 @@
    "technical_density_signal": "medium",
    "commercial_or_operating_scope_signal": "board_level_operating_model",
    "target_relevance_rationale": "Engineering organization scale-out and board-level operating alignment establish the senior engineering leadership posture.",
-   "vocabulary_anchors": [
-    "engineering organization scale-out",
-    "platform operating model design",
-    "board-level stakeholder alignment"
+    "vocabulary_anchors": [
+      "executive-aligned engineering operating cadences for adoption",
+      "cross-functional delivery governance at scale",
+      "organization scale-out for platform execution"
    ]
   },
   {

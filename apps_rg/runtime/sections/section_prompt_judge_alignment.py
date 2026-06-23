@@ -111,6 +111,7 @@ DIMENSION_PROMPT_PATTERNS: dict[str, tuple[str, ...]] = {
     "complementarity": (r"complement", r"executive summary", r"augments"),
     "no_bullet_restatement": (r"bullet", r"restate", r"paste", r"laundry"),
     "category_clarity": (r"category", r"label", r"compact", r"phrase"),
+    "svp_agentic_specificity": (r"SVP", r"agentic", r"specific", r"mechanism", r"generic", r"mundane"),
     "executive_summary_quality": (r"executive", r"synthesis", r"quality"),
     "alignment": (r"align", r"companion", r"bullet"),
     "concision": (r"concise", r"word", r"brevity"),

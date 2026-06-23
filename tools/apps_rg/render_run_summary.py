@@ -51,6 +51,15 @@ def _load_json(path: Path) -> Optional[Dict[str, Any]]:
         return None
 
 
+def _load_text(path: Path) -> str:
+    if not path.is_file():
+        return ""
+    try:
+        return path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
 def _latest_run_dir() -> Optional[Path]:
     if not RUNS_ROOT.is_dir():
         return None
@@ -89,6 +98,27 @@ def _yes_no(v: Any) -> str:
     return "—"
 
 
+def _sample_values(values: Any, *, limit: int = 8) -> str:
+    vals = [str(v).strip() for v in (values or []) if str(v).strip()]
+    if not vals:
+        return "none"
+    suffix = f" (+{len(vals) - limit} more)" if len(vals) > limit else ""
+    return ", ".join(vals[:limit]) + suffix
+
+
+def _gate_status(gates: Any, gate_id: str) -> str:
+    for gate in gates or []:
+        if not isinstance(gate, dict):
+            continue
+        if str(gate.get("gate_id") or gate.get("id") or gate.get("name") or "") != gate_id:
+            continue
+        passed = gate.get("pass")
+        if passed is None:
+            passed = gate.get("passed")
+        return "PASS" if bool(passed) else "FAIL"
+    return "missing"
+
+
 # ------------------------------------------------------------------- renderers
 
 
@@ -114,6 +144,151 @@ def _render_identity(run_dir: Path, identity: Optional[Dict[str, Any]],
     for k, v in rows:
         lines.append(f"| **{k}** | `{v}` |")
     lines.append("")
+    return lines
+
+
+def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
+    if not (run_dir / "competencies_display.txt").is_file():
+        return []
+    runtime = _load_json(run_dir / "runtime_graph_sourcing_assessment.json") or {}
+    x3 = _load_json(run_dir / "x3_disposition.json") or {}
+    x2 = _load_json(run_dir / "x2_gate_outputs.json") or {}
+    x1d = _load_json(run_dir / "x1d_llm_judge_outputs.json") or {}
+    visible = _load_json(run_dir / "competencies_visible_graph_surface_enrichment_receipt.json") or {}
+    display = _load_text(run_dir / "competencies_display.txt")
+
+    traversal = runtime.get("traversal")
+    traversal = traversal if isinstance(traversal, dict) else runtime
+    confidence = runtime.get("confidence_decomposition")
+    confidence = confidence if isinstance(confidence, dict) else {}
+    frontier = traversal.get("frontier_size_by_hop_depth")
+    frontier = frontier if isinstance(frontier, dict) else {}
+    comparison = traversal.get("selected_vs_rejected_candidate_comparison")
+    comparison = comparison if isinstance(comparison, dict) else {}
+    axes = traversal.get("role_specific_axis_coverage")
+    axes = axes if isinstance(axes, dict) else {}
+    depth = traversal.get("graph_evidence_depth_comparison")
+    depth = depth if isinstance(depth, dict) else {}
+    gates = x2.get("gates") or x2.get("gate_outputs") or []
+    judges = [row for row in (x1d.get("judges") or []) if isinstance(row, dict)]
+    visible_rows = [
+        row for row in (visible.get("rows") or [])
+        if isinstance(row, dict) and row.get("surface") == "competencies"
+    ]
+    display_order: dict[str, int] = {}
+    for idx, line in enumerate(display.splitlines(), 1):
+        label = line.split(":", 1)[0].strip()
+        if label and label not in display_order:
+            display_order[label] = idx
+
+    def _visible_row_sort_key(row: Dict[str, Any]) -> tuple[int, int]:
+        label = str(row.get("resume_display_label") or "").strip()
+        fallback = int(row.get("order_index") or 999)
+        return (display_order.get(label, 999), fallback)
+
+    judge_summary = ", ".join(
+        f"{j.get('provider_name') or j.get('provider_key')}: {j.get('provider_status') or 'unknown'}"
+        for j in judges
+    )
+    rubric_versions = sorted({str(j.get("rubric_version")) for j in judges if j.get("rubric_version")})
+    svp_judge_status = ", ".join(
+        f"{j.get('provider_name') or j.get('provider_key')}: "
+        f"{((j.get('dimension_verdicts') or {}).get('svp_agentic_specificity') or {}).get('pass', 'missing')}"
+        for j in judges
+    )
+
+    lines: List[str] = ["## BCG Competencies Improvement Report", ""]
+    lines.append(
+        "**Executive readout:** standalone competencies are graph-sourced, partnership-ordered, "
+        "and visibly enriched when the visible graph surface receipt is present."
+    )
+    lines.append("")
+    lines.append("| Signal | Value |")
+    lines.append("|---|---|")
+    lines.append(f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |")
+    lines.append(f"| Proof eligible | `{x3.get('proof_eligible')}` |")
+    lines.append(f"| Role profile | `{traversal.get('target_role_profile') or 'unknown'}` |")
+    lines.append(f"| Selection method | `{traversal.get('selection_method') or 'unknown'}` |")
+    lines.append(f"| Depth status | `{traversal.get('graph_evidence_depth_status') or 'unknown'}` |")
+    lines.append(
+        "| Frontier | "
+        f"roots `{frontier.get('0_role_episode_roots') or 0}`, "
+        f"skills `{frontier.get('1_leaf_skill_candidates') or 0}`, "
+        f"metrics `{frontier.get('2_metric_outcome_candidates') or 0}` |"
+    )
+    lines.append(
+        "| Selected graph evidence | "
+        f"roots `{traversal.get('selected_role_episode_root_count') or 0}`, "
+        f"skills `{traversal.get('selected_unique_leaf_skill_count') or 0}`, "
+        f"metrics `{traversal.get('selected_unique_metric_count') or 0}` |"
+    )
+    lines.append(
+        "| Rejected alternatives | "
+        f"sibling skills `{traversal.get('rejected_sibling_skill_count') or 0}`, "
+        f"sibling metrics `{traversal.get('rejected_sibling_metric_count') or 0}`, "
+        f"selector rejected `{comparison.get('selector_rejected_neighbor_count') or 0}` |"
+    )
+    lines.append(f"| Confidence values | `{_sample_values(confidence.get('category_confidence_values'), limit=12)}` |")
+    lines.append(f"| Covered role axes | `{_sample_values(axes.get('covered_axes'), limit=12)}` |")
+    lines.append(f"| Missing role axes | `{_sample_values(axes.get('missing_axes'), limit=12)}` |")
+    lines.append(f"| Visible graph surface | `{visible.get('schema_version') or 'missing'}` |")
+    if judges:
+        lines.append(f"| X1D judges | `{judge_summary}` |")
+        lines.append(f"| X1D rubric versions | `{_sample_values(rubric_versions, limit=8)}` |")
+        lines.append(f"| SVP agentic specificity judge | `{svp_judge_status}` |")
+    lines.append("")
+
+    lines.append("**Preserved Quality Controls**" if visible_rows else "**Open Improvement Opportunities**")
+    lines.append("")
+    if visible_rows:
+        lines.append("1. **Graph-bound visible surface:** each visible category has `resume_display_label`, `competency_bundle_id`, graph skills, and graph-derived terms.")
+    else:
+        lines.append("1. **Block generic visible output:** visible graph surface receipt is missing, so the section may still be using old taxonomy labels only.")
+    lines.append("2. **Partnership-first ordering:** prioritize ecosystem/co-sell fit before generic strategy and leadership wrappers for Anthropic partnership roles.")
+    lines.append("3. **Rejected-path evidence:** report rejected sibling skills/metrics so operators can see what graph paths were explored but not selected.")
+    lines.append("4. **Confidence diversity:** nonconstant per-category confidence remains visible to prevent all categories collapsing onto one default fact.")
+    lines.append("")
+
+    lines.append("**Graph / Richness Gates**")
+    lines.append("")
+    lines.append("| Gate | Status |")
+    lines.append("|---|---|")
+    for gate_id in [
+        "x2_competencies_graph_traversal_sufficiency",
+        "x2_competencies_graph_granularity_gates",
+        "x2_competencies_source_fact_concentration_limit",
+        "x2_competencies_per_category_confidence_nonconstant",
+        "x2_competencies_no_metrics_as_skills_without_capability_context",
+        "x2_competencies_no_metric_ids_in_source_fact_ids",
+        "x2_competencies_visible_terms_svp_agentic_richness",
+        "x2_competencies_keyword_repetition_limit",
+    ]:
+        lines.append(f"| `{gate_id}` | `{_gate_status(gates, gate_id)}` |")
+    lines.append("")
+
+    if visible_rows:
+        lines.append("**Visible Competency Order**")
+        lines.append("")
+        lines.append("| Order | Display label | Bundle | Visible terms |")
+        lines.append("|---:|---|---|---|")
+        for idx, row in enumerate(sorted(visible_rows, key=_visible_row_sort_key), 1):
+            lines.append(
+                f"| {idx} | {row.get('resume_display_label') or '—'} | "
+                f"`{row.get('competency_bundle_id') or '—'}` | "
+                f"{_sample_values(row.get('visible_terms'), limit=4)} |"
+            )
+        lines.append("")
+
+    if depth.get("summary"):
+        lines.append(f"Depth delta: `{depth.get('summary')}`")
+        lines.append("")
+    if display:
+        lines.append("**Competencies Display**")
+        lines.append("")
+        lines.append("```text")
+        lines.append(display)
+        lines.append("```")
+        lines.append("")
     return lines
 
 
@@ -330,6 +505,7 @@ def render(run_dir: Path) -> str:
     rendered_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     parts: List[str] = [title, "", f"_Rendered at {rendered_at}_", ""]
     parts += _render_identity(run_dir, identity, manifest)
+    parts += _render_bcg_competencies_report(run_dir)
     parts += _render_l2_substages(terminal)
     parts += _render_hop_checkpoints(run_report)
     parts += _render_section_verdicts(run_report)

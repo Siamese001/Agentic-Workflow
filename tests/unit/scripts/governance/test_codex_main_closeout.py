@@ -61,6 +61,100 @@ def test_closeout_check_fails_on_extra_local_branch(monkeypatch, tmp_path: Path)
     assert {"code": "extra_local_branches", "detail": "codex/merged"} in report["issues"]
 
 
+def test_closeout_check_fails_when_worktree_staging_root_remains(monkeypatch, tmp_path: Path) -> None:
+    staging_root = tmp_path.with_name(f"{tmp_path.name}-worktrees")
+    staging_root.mkdir()
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
+            return 0, "", ""
+        if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
+            return 0, "abc", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        if command == ("branch", "--format=%(refname:short)"):
+            return 0, "main", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+
+    report = mod.build_closeout_report(tmp_path)
+
+    assert report["status"] == "FAIL"
+    assert {"code": "leftover_worktree_staging_root", "detail": str(staging_root)} in report["issues"]
+
+
+def test_closeout_apply_removes_empty_worktree_staging_root(monkeypatch, tmp_path: Path) -> None:
+    staging_root = tmp_path.with_name(f"{tmp_path.name}-worktrees")
+    staging_root.mkdir()
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
+            return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
+        if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
+            return 0, "abc", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        if command == ("branch", "--format=%(refname:short)"):
+            return 0, "main", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+
+    report = mod.build_closeout_report(tmp_path, apply=True)
+
+    assert report["status"] == "PASS"
+    assert not staging_root.exists()
+    assert {"action": "remove_empty_worktree_staging_root", "detail": str(staging_root), "status": "applied"} in report[
+        "actions"
+    ]
+
+
+def test_closeout_apply_refuses_non_empty_worktree_staging_root(monkeypatch, tmp_path: Path) -> None:
+    staging_root = tmp_path.with_name(f"{tmp_path.name}-worktrees")
+    staging_root.mkdir()
+    retained = staging_root / "codex-leftover"
+    retained.mkdir()
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
+            return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
+        if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
+            return 0, "abc", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        if command == ("branch", "--format=%(refname:short)"):
+            return 0, "main", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+
+    report = mod.build_closeout_report(tmp_path, apply=True)
+
+    assert report["status"] == "FAIL"
+    assert staging_root.exists()
+    assert {"code": "worktree_staging_root_not_empty", "detail": str(retained)} in report["issues"]
+
+
 def test_closeout_apply_removes_clean_ancestor_contained_worktree_and_branch(
     monkeypatch,
     tmp_path: Path,

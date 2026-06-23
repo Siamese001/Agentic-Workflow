@@ -15,6 +15,9 @@ def test_build_prompt_marks_companion_context_read_only_and_compacts_ledger() ->
     assert "companion_context_used_as_proof must remain false" in prompt
     assert '"fact_id":"F1"' in prompt
     assert "Return JSON only" in prompt
+    assert "Required competencies dimension_verdicts keys" in prompt
+    assert "svp_agentic_specificity" in prompt
+    assert "Do not substitute executive_summary dimension ids" in prompt
 
 
 def test_competencies_rubric_mentions_ta_screen_and_ai_authenticity() -> None:
@@ -24,6 +27,9 @@ def test_competencies_rubric_mentions_ta_screen_and_ai_authenticity() -> None:
     assert "buzzword soup" in rubric
     assert "anti-ai filters" in rubric
     assert "no em dashes" in rubric
+    assert "svp_agentic_specificity" in rubric
+    assert "hyperscaler co-sell" in rubric
+    assert "deep agentic ai practitioner" in rubric
 
 
 def test_run_competencies_judges_uses_pinned_gemini_preview_model(monkeypatch) -> None:
@@ -76,6 +82,9 @@ def test_run_competencies_judges_mocked_provider_contract() -> None:
     assert out.provider_status == "MOCKED"
     assert out.rubric_version == competencies_x1d.JUDGE_RUBRIC_VERSION
     assert out.pass_ is True
+    assert out.dimension_verdicts
+    assert tuple(out.dimension_verdicts) == competencies_x1d.COMPETENCIES_RUBRIC_DIMENSION_IDS
+    assert out.dimension_verdicts["svp_agentic_specificity"]["pass"] is True
     assert out.findings == ["MOCKED plumbing judge. Not valid for X3_ALLOW."]
 
 

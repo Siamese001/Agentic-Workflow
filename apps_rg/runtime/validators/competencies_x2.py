@@ -319,12 +319,12 @@ def _term_compact_phrase_ok(
     primary_fact_id: str,
     proof_blob_lower: str,
 ) -> tuple[bool, str | None]:
-    """Compact phrase policy: typ. 2–5 words; single-token only when grounded or technical token; hard max 6 words."""
+    """Compact phrase policy: typ. 5-7 words; single-token only when grounded or technical token; hard max 7 words."""
     p = phrase.strip()
     if not p:
         return False, "empty"
     wc = len(p.split())
-    if wc > 6:
+    if wc > 7:
         return False, "over_max_words"
     if wc >= 2:
         return True, None
@@ -480,8 +480,10 @@ def run_competencies_x2_gates(
         check_competencies_min_items_per_category,
         check_competencies_no_credential_relisting,
         check_competencies_no_low_rigor_two_word_items,
+        check_competencies_no_metric_ids_in_source_fact_ids,
         check_competencies_no_metrics_as_skills_without_capability_context,
         check_competencies_no_all_generic_skill_phrase,
+        check_competencies_visible_terms_svp_agentic_richness,
         check_competencies_keyword_repetition_limit,
         check_competencies_role_alignment_terms,
     )
@@ -542,6 +544,15 @@ def run_competencies_x2_gates(
         None if metrics_ok else metrics_reason,
     )
 
+    metric_ids_ok, metric_ids_reason = check_competencies_no_metric_ids_in_source_fact_ids(competencies)
+    add(
+        "x2_competencies_no_metric_ids_in_source_fact_ids",
+        metric_ids_ok,
+        metric_ids_reason or "ok",
+        "no_metric_ids_in_competency_source_fact_ids",
+        None if metric_ids_ok else metric_ids_reason,
+    )
+
     from apps_rg.runtime.sections.competencies_rigor import (
         check_competencies_approved_category_labels,
         check_competencies_no_fragment_or_one_word_terms,
@@ -582,6 +593,15 @@ def run_competencies_x2_gates(
         generic_reason or "ok",
         "no_all_generic_token_phrases",
         None if generic_ok else generic_reason,
+    )
+
+    richness_ok, richness_reason = check_competencies_visible_terms_svp_agentic_richness(competencies)
+    add(
+        "x2_competencies_visible_terms_svp_agentic_richness",
+        richness_ok,
+        richness_reason or "ok",
+        "visible terms are 5+ word SVP/agentic mechanism phrases, not mundane skill scraps",
+        None if richness_ok else richness_reason,
     )
 
     repeat_ok, repeat_reason = check_competencies_keyword_repetition_limit(competencies, max_token_repeat=3)
@@ -683,7 +703,7 @@ def run_competencies_x2_gates(
         "x2_competency_term_compact_word_count",
         word_ok,
         word_bad or "ok",
-        "2–5 words typical; 1-token only when resume-grounded or technical/acronym token; hard max 6 words",
+        "5-7 words typical; 1-token only when resume-grounded or technical/acronym token; hard max 7 words",
         None if word_ok else "Term violates compact phrase policy (too long or unsupported one-token).",
     )
 
