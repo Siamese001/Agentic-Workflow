@@ -55,12 +55,16 @@ want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from htt
 ## Notes carried over
 - **GitKraken** is the project SSOT for git/PR MCP. GitLens duplicate disabled via
   `gitlens.gitkraken.mcp.autoEnabled=false` (see `.vscode/hooks.json`).
+- **Codex Desktop startup projection**: every enabled server in root `.mcp.json` must appear in
+  the Codex user config projection with `required = true`. Refresh and verify with:
+  `python .codex/governance/scripts/sync_mcp_config.py --sync-user-config --json` and
+  `python .codex/governance/scripts/sync_mcp_config.py --check-user-config --json`.
 - **Major MCP exposure audit**: config sync is not enough. Run
   `python .codex/governance/scripts/mcp_tool_exposure_audit.py` to distinguish declared
   MCPs, native server health, and optional Codex `tool_search` exposure evidence. The
-  always-on core is `memory`, `adg_sqlite`, and `GitKraken`; the rest remain on-demand so
-  the session surface stays small. Session start runs the audit in advisory mode and logs
-  details to `/tmp/agentic_session_start.log`.
+  startup set is all enabled servers in `.mcp.json`; historical route-contract snapshots do not
+  prove current-session callability. Session start runs the audit in advisory mode and logs
+  details to `artifacts/mcp/session_start_mcp_bootstrap.jsonl`.
 - **vector_db** runtime defaults (batch sizes, timeouts) live in `tools/retrieval/vector_config.py`;
   only non-default overrides + required vars are pinned in `.mcp.json`.
 - **playwright** writes browser session output to `artifacts/mcp/playwright/` (gitignored).

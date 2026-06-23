@@ -264,6 +264,8 @@ def _graph_ranked_unify_bullets_plan(
     plan = {
         "section_id": section_id,
         "selection_method": "augmented_skills_graph_unify_bullets_track_ranked",
+        "target_role_profile": role_key,
+        "role_family_key": role_key,
         "ledger_pick_order": ledger_pick_order,
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],

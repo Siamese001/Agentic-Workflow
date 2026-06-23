@@ -46,6 +46,8 @@ UNIFY_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_unify_006": "reb_unify_platform_commercialization_leadership",
 }
 
+UNIFY_METRIC_PROTECTED_BULLET_SLOT_IDS: set[str] = {"bul_unify_004", "bul_unify_006"}
+
 def resolve_unify_bullet_slot_bundle_map(
     role_family_key: str = "",
     *,
@@ -67,6 +69,7 @@ def resolve_unify_bullet_slot_bundle_map(
         section_id="unify_bullets",
         skill_index=_skill_rows_by_id(repo_root),
         graph=graph,
+        protected_slots=UNIFY_METRIC_PROTECTED_BULLET_SLOT_IDS,
     )
 
 UNIFY_FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
@@ -386,6 +389,7 @@ def assert_unify_section_may_consume_graph_context(context: dict[str, Any]) -> N
 __all__ = [
     "UNIFY_BULLET_SLOT_BUNDLE_MAP",
     "UNIFY_BULLET_SLOT_IDS",
+    "UNIFY_METRIC_PROTECTED_BULLET_SLOT_IDS",
     "UNIFY_ROLE_EPISODE_EVIDENCE_MARKER",
     "assert_unify_role_episode_evidence_pack_has_no_forbidden_leaks",
     "assert_unify_section_may_consume_graph_context",

@@ -88,6 +88,7 @@ PROCESS_MARKERS = {
 }
 
 CALLABLE_STATUS_ENV_PREFIX = "CODEX_MCP_CALLABLE_"
+TRUST_ROUTE_CONTRACT_ENV = "CODEX_MCP_TRUST_ROUTE_CONTRACT"
 ROUTE_CONTRACT_GLOB = "codex_mcp_live_route_contract.json"
 ALWAYS_ON_CORE_SERVERS = frozenset({"GitKraken", "adg_sqlite", "memory"})
 PROVEN_CALLABLE_STATUSES = frozenset({"healthy"})
@@ -239,7 +240,9 @@ def _callable_status(server_id: str) -> str:
     return "absent"
 
 
-def _route_callable_status(route: dict[str, Any]) -> str:
+def _route_callable_status(route: dict[str, Any], *, trust_contract_proof: bool = False) -> str:
+    if not trust_contract_proof:
+        return "absent"
     status = str(route.get("callable_status") or "").strip().lower()
     if status not in PROVEN_CALLABLE_STATUSES:
         return "absent"
@@ -301,8 +304,8 @@ def classify_route(route: dict[str, Any], process_state: dict[str, Any], callabl
         return "CALLABLE"
     if callable_status == "closed_transport" or fallback_key == "closed_transport":
         return "EXPOSED_BLOCKED"
-    if selected == "raw_mcp_callable" and process_count > 0:
-        return "CALLABLE"
+    if selected == "raw_mcp_callable":
+        return "PROCESS_ONLY" if process_count > 0 else "HOST_MCP_REQUIRED"
     if callable_status == "plugin_callable" or selected == "plugin_substitute":
         return "PLUGIN_SUBSTITUTE"
     if callable_status == "substitute_callable" or selected == "substitute_callable":
@@ -319,6 +322,8 @@ def classify_route(route: dict[str, Any], process_state: dict[str, Any], callabl
 def build_route_evidence(
     contract: dict[str, Any] | None,
     process_servers: dict[str, Any],
+    *,
+    trust_contract_callable_proof: bool = False,
 ) -> dict[str, Any]:
     if not contract:
         return {"available": False, "reason": "no route contract found", "servers": {}}
@@ -328,9 +333,12 @@ def build_route_evidence(
     for route in contract.get("routes", []):
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
-        callable_status = _route_callable_status(route)
+        callable_status = _callable_status(server_id)
         if callable_status == "absent":
-            callable_status = _callable_status(server_id)
+            callable_status = _route_callable_status(
+                route,
+                trust_contract_proof=trust_contract_callable_proof,
+            )
         classification = classify_route(route, process_state, callable_status)
         counts[classification] = counts.get(classification, 0) + 1
         classified[server_id] = {
@@ -400,6 +408,7 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
     env_contract = os.environ.get("CODEX_MCP_ROUTE_CONTRACT")
     contract_path = route_contract_path or (Path(env_contract) if env_contract else None) or _latest_route_contract_path()
     route_contract = _load_route_contract(contract_path)
+    trust_contract_callable_proof = os.environ.get(TRUST_ROUTE_CONTRACT_ENV, "").strip() == "1"
 
     return {
         "repo_root": str(ROOT),
@@ -417,7 +426,11 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
             "primary_artifacts_adg_exists": (PRIMARY_ROOT / "artifacts" / "adg").exists(),
         },
         "processes": processes,
-        "route_evidence": build_route_evidence(route_contract, processes.get("servers", {})),
+        "route_evidence": build_route_evidence(
+            route_contract,
+            processes.get("servers", {}),
+            trust_contract_callable_proof=trust_contract_callable_proof,
+        ),
     }
 
 

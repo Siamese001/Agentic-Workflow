@@ -1,5 +1,9 @@
 #!/bin/bash
-# SessionStart hook — replicate the local dependency surface on Claude Code on the web.
+# Legacy SessionStart shell helper — replicate the local dependency surface on web/remote runs.
+#
+# Local Codex Desktop MCP startup is owned by session_start_mcp_bootstrap.py plus the
+# user config projection generated from root .mcp.json. Keep this shell helper for
+# environments that execute the historical web dependency bootstrap.
 #
 # Runs ONLY in the remote (web) environment. Installs the pip dependency set declared in
 # pyproject.toml (main + dev + infra MINUS the GPU-only `vllm`) plus the `mcp` SDK that the
