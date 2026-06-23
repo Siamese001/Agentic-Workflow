@@ -559,6 +559,7 @@ def run_competencies_lane_execution(
             )
             from apps_rg.runtime.sections.competency_capability_evidence import (
                 augment_bound_category_family_terms,
+                hydrate_competency_bundle_graph_evidence,
                 stamp_competency_bundle_bindings,
             )
 
@@ -581,6 +582,18 @@ def run_competencies_lane_execution(
                 parsed.get("competencies") or [],
                 packet=_pkt,
                 allowed_fact_ids=allowed_fact_ids,
+            )
+            hydrate_competency_bundle_graph_evidence(
+                parsed.get("categories") or [],
+                packet=_pkt,
+                allowed_fact_ids=allowed_fact_ids,
+                selected_graph_evidence_plan=pp_meta.get("selected_graph_evidence_plan"),
+            )
+            hydrate_competency_bundle_graph_evidence(
+                parsed.get("competencies") or [],
+                packet=_pkt,
+                allowed_fact_ids=allowed_fact_ids,
+                selected_graph_evidence_plan=pp_meta.get("selected_graph_evidence_plan"),
             )
             # W2.2 (typed-edge-role-facet-guardrails-a6f3d2): final floor-filler for
             # graph-bundle categories that augment_bound_category_family_terms could NOT

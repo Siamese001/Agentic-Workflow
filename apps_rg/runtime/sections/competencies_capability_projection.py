@@ -597,6 +597,8 @@ def run_competencies_v3_post_llm_pipeline(
     allowed_fact_ids: set[str],
     allowed_skill_ids: set[str] | None = None,
     skill_rows_by_id: dict[str, dict[str, Any]] | None = None,
+    competency_capability_packet: dict[str, Any] | None = None,
+    selected_graph_evidence_plan: dict[str, Any] | None = None,
     resume_support_blob: str,
     c0_proof_blob: str,
     bullet_texts_lower: list[str],
@@ -642,13 +644,31 @@ def run_competencies_v3_post_llm_pipeline(
     dedupe_structured_competency_terms(parsed)
     rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
     prune_claim_ledger_bullet_paste(parsed)
-    return finalize_competencies_v3_output(
+    out = finalize_competencies_v3_output(
         parsed,
         allowed_fact_ids=allowed_fact_ids,
         allowed_skill_ids=allowed_skill_ids,
         skill_rows_by_id=skill_rows_by_id,
         resume_support_blob_lower=c0_proof_blob,
     )
+    if competency_capability_packet:
+        from apps_rg.runtime.sections.competency_capability_evidence import (
+            hydrate_competency_bundle_graph_evidence,
+            stamp_competency_bundle_bindings,
+        )
+        from apps_rg.runtime.sections.competencies_lane_runtime import rebuild_claim_ledger_from_competencies
+
+        for key in ("categories", "competencies"):
+            rows = out.get(key) or []
+            stamp_competency_bundle_bindings(rows, packet=competency_capability_packet)
+            hydrate_competency_bundle_graph_evidence(
+                rows,
+                packet=competency_capability_packet,
+                allowed_fact_ids=allowed_fact_ids,
+                selected_graph_evidence_plan=selected_graph_evidence_plan,
+            )
+        rebuild_claim_ledger_from_competencies(out, allowed_fact_ids)
+    return out
 
 
 def _swap_offending_term_for_safe_backfill(
