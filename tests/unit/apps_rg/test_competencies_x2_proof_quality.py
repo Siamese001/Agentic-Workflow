@@ -267,7 +267,7 @@ def test_single_token_unsupported_generic_fails_compact_gate():
     assert g.pass_ is False
 
 
-def test_seven_word_term_fails_compact_gate():
+def test_seven_word_term_passes_compact_gate():
     base, _, _ = load_base_resume()
     rows, allowed, bullet_lowers = collect_employment_bullets(base)
     blob = build_resume_support_blob(rows, "")
@@ -276,6 +276,38 @@ def test_seven_word_term_fails_compact_gate():
     parsed = dict(mo)
     parsed["competencies"][0]["terms"][0] = {
         "text": "one two three four five six seven",
+        "source_fact_id": "bul_unify_001",
+        "source_fact_ids": ["bul_unify_001"],
+    }
+    canonicalize_competency_terms_for_proof(parsed)
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    gates = run_competencies_x2_gates(
+        competencies=parsed["competencies"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        jd_text="",
+        briefing_text="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
+        cli_provider="qwen_vllm",
+        raw_output=json.dumps(parsed, sort_keys=True),
+        x1d_judges=_three_pass_judges(),
+    )
+    g = next(x for x in gates if x.gate_id == "x2_competency_term_compact_word_count")
+    assert g.pass_ is True
+
+
+def test_eight_word_term_fails_compact_gate():
+    base, _, _ = load_base_resume()
+    rows, allowed, bullet_lowers = collect_employment_bullets(base)
+    blob = build_resume_support_blob(rows, "")
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    mo = build_mock_output({"selected_fact_plan": plan})
+    parsed = dict(mo)
+    parsed["competencies"][0]["terms"][0] = {
+        "text": "one two three four five six seven eight",
         "source_fact_id": "bul_unify_001",
         "source_fact_ids": ["bul_unify_001"],
     }

@@ -1425,7 +1425,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
 def competencies_display_text(competencies: list[dict[str, Any]]) -> str:
     lines: list[str] = []
     for c in competencies:
-        label = str(c.get("category_label", "")).strip()
+        label = str(c.get("resume_display_label") or c.get("category_label", "")).strip()
         terms = c.get("terms") or []
         if isinstance(terms, list):
             phrases = [p for t in terms if (p := term_phrase(t))]

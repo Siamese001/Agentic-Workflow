@@ -6,11 +6,13 @@ local repository ended in the desired state after publication:
 - local ``main`` equals ``origin/main``;
 - the working tree and index are clean;
 - only the expected main worktree remains;
-- no non-main local branches remain.
+- no non-main local branches remain;
+- no sibling worktree staging directory remains.
 
 ``--apply`` is conservative cleanup only. It may fast-forward clean local main
-and delete clean, ancestor-contained non-main branches/worktrees. It never
-resets, force-pushes, deletes dirty worktrees, or deletes unmerged branches.
+and delete clean, ancestor-contained non-main branches/worktrees and empty
+worktree staging roots. It never resets, force-pushes, deletes dirty worktrees,
+deletes non-empty staging roots, or deletes unmerged branches.
 """
 
 from __future__ import annotations
@@ -71,6 +73,18 @@ def _status_rows(path: Path) -> tuple[list[str], CloseoutIssue | None]:
     if rc != 0:
         return [], CloseoutIssue("worktree_status_failed", f"{path}: {stderr}")
     return [line for line in stdout.splitlines() if line.strip()], None
+
+
+def _worktree_staging_root(expected_path: Path) -> Path:
+    expected = expected_path.resolve()
+    return expected.with_name(f"{expected.name}-worktrees")
+
+
+def _worktree_staging_root_issues(expected_path: Path) -> list[CloseoutIssue]:
+    staging_root = _worktree_staging_root(expected_path)
+    if not staging_root.exists():
+        return []
+    return [CloseoutIssue("leftover_worktree_staging_root", str(staging_root))]
 
 
 def _extra_local_branch_issues(root: Path) -> list[CloseoutIssue]:
@@ -165,6 +179,51 @@ def _remove_safe_extra_worktrees(
     return actions, issues
 
 
+def _remove_empty_worktree_staging_root(
+    root: Path,
+    *,
+    expected_path: Path,
+    base_ref: str,
+) -> tuple[list[CloseoutAction], list[CloseoutIssue]]:
+    actions: list[CloseoutAction] = []
+    issues: list[CloseoutIssue] = []
+    staging_root = _worktree_staging_root(expected_path)
+    if not staging_root.exists():
+        return actions, issues
+
+    verifier_issues = worktree_hygiene.verify_single_main_worktree(
+        root,
+        expected_path=expected_path,
+        base_ref=base_ref,
+    )
+    branch_issues = _extra_local_branch_issues(root)
+    if verifier_issues or branch_issues:
+        return actions, [
+            CloseoutIssue(
+                "worktree_staging_root_cleanup_prereq_failed",
+                "local main must be clean, synced, and branch-clean before staging root removal",
+            )
+        ]
+
+    expected_parent = expected_path.resolve().parent
+    resolved = staging_root.resolve()
+    if resolved.parent != expected_parent:
+        return actions, [CloseoutIssue("worktree_staging_root_path_unexpected", str(resolved))]
+
+    children = list(staging_root.iterdir())
+    if children:
+        detail = "\n".join(str(child) for child in children)
+        return actions, [CloseoutIssue("worktree_staging_root_not_empty", detail)]
+
+    try:
+        staging_root.rmdir()
+    except OSError as exc:
+        return actions, [CloseoutIssue("remove_empty_worktree_staging_root_failed", str(exc))]
+
+    actions.append(CloseoutAction("remove_empty_worktree_staging_root", str(resolved), "applied"))
+    return actions, issues
+
+
 def _delete_safe_extra_branches(root: Path, *, base_ref: str) -> tuple[list[CloseoutAction], list[CloseoutIssue]]:
     actions: list[CloseoutAction] = []
     issues: list[CloseoutIssue] = []
@@ -219,6 +278,7 @@ def apply_main_closeout(
         lambda: _remove_safe_extra_worktrees(root, expected_path=expected_path, base_ref=base_ref),
         lambda: _fast_forward_main(root, base_ref),
         lambda: _delete_safe_extra_branches(root, base_ref=base_ref),
+        lambda: _remove_empty_worktree_staging_root(root, expected_path=expected_path, base_ref=base_ref),
     ):
         step_actions, step_issues = step()
         actions.extend(step_actions)
@@ -252,6 +312,7 @@ def build_closeout_report(
     issues = [
         *(CloseoutIssue(issue.code, issue.detail) for issue in verifier_issues),
         *_extra_local_branch_issues(root),
+        *_worktree_staging_root_issues(expected),
         *apply_issues,
     ]
     return {
@@ -265,7 +326,8 @@ def build_closeout_report(
         "actions": [asdict(action) for action in actions],
         "rule": (
             "Closeout requires local main == origin/main, a clean worktree and index, "
-            "exactly one expected main worktree, and no non-main local branches."
+            "exactly one expected main worktree, no non-main local branches, and no "
+            "sibling worktree staging directory."
         ),
     }
 

@@ -130,15 +130,121 @@ CAPABILITY_CONTEXT_WORDS: frozenset[str] = frozenset(
     }
 )
 
-_METRICS_ONLY_RE = re.compile(
+_METRIC_VALUE_TERM_RE = re.compile(
     r"(?:\bteam\s+scaling\b|"
     r"\bmargin\s+expansion\b|"
+    r"\boperating\s+margin\b|"
+    r"\brevenue\s+growth\b|"
     r"\bexpanding\s+gross\s+margins\b|"
     r"\bsynergy\s+modeling\b|"
     r"\bpipeline\s+analytics\b|"
-    r"\b\d+\s*%\b|"
+    r"(?<!\w)\d+\s*%(?!\w)|"
+    r"\$\s*\d+|"
+    r"\b\d+(?:\.\d+)?\s*(?:m|mm|b|bn|k)\b|"
     r"\bgross\s+margins\b)",
     re.IGNORECASE,
+)
+_METRICS_ONLY_RE = _METRIC_VALUE_TERM_RE
+
+_MUNDANE_VISIBLE_COMPETENCY_PHRASES: frozenset[str] = frozenset(
+    {
+        "audit-grade observability",
+        "cloud architecture",
+        "cloud partner ecosystem gtm",
+        "cloud-native data engineering",
+        "delivery governance",
+        "enterprise adoption",
+        "hyperscaler alliance co-sell",
+        "hyperscaler co-sell",
+        "joint revenue execution",
+        "joint solution development",
+        "multi-agent orchestration",
+        "operating model design",
+        "partner enablement",
+        "platform commercialization",
+        "regulated reference architecture",
+        "runtime policy controls",
+        "stakeholder alignment",
+    }
+)
+
+_SVP_AGENTIC_MECHANISM_TOKENS: frozenset[str] = frozenset(
+    {
+        "agent",
+        "agentic",
+        "ai",
+        "applied",
+        "architecture",
+        "assembly",
+        "audit-grade",
+        "cloud-native",
+        "co-sellable",
+        "commercialization",
+        "context",
+        "control",
+        "decision",
+        "dense-sparse",
+        "engineering",
+        "evaluation",
+        "evaluation-ready",
+        "execution",
+        "fail-closed",
+        "graphrag",
+        "governance",
+        "governed",
+        "hyperscaler",
+        "lakehouse",
+        "microservices",
+        "operating",
+        "orchestration",
+        "policy",
+        "policy-bound",
+        "prompt",
+        "relationship-aware",
+        "reliability",
+        "retrieval",
+        "runtime",
+        "sandboxed",
+        "telemetry",
+        "workflow",
+        "workflows",
+    }
+)
+
+_SVP_EXECUTION_CONTEXT_TOKENS: frozenset[str] = frozenset(
+    {
+        "adoption",
+        "alliance",
+        "agents",
+        "architectures",
+        "assurance",
+        "behavior",
+        "buyers",
+        "cadences",
+        "design",
+        "ecosystems",
+        "enterprise",
+        "executive",
+        "executive-aligned",
+        "factory",
+        "gate",
+        "intelligence",
+        "motions",
+        "partners",
+        "paths",
+        "planes",
+        "pipelines",
+        "platform",
+        "prototype",
+        "ranking",
+        "reference",
+        "regulated",
+        "scale",
+        "scale-out",
+        "systems",
+        "trails",
+        "workflows",
+    }
 )
 
 
@@ -227,19 +333,16 @@ def check_competencies_no_metrics_as_skills_without_capability_context(
     competencies: list[dict[str, Any]],
 ) -> tuple[bool, str | None]:
     for label, ph in _flatten_phrases(competencies):
-        if not _METRICS_ONLY_RE.search(ph):
-            continue
-        low = ph.lower()
-        if any(ctx in low for ctx in CAPABILITY_CONTEXT_WORDS):
+        if not _METRIC_VALUE_TERM_RE.search(ph):
             continue
         if is_credential_competency_term(ph):
             continue
-        return False, f"metrics_as_skill label={label!r} phrase={ph!r}"
+        return False, f"metric_value_as_competency label={label!r} phrase={ph!r}"
     return True, None
 
 
 def _tokenize_phrase(phrase: str) -> list[str]:
-    return [w.lower() for w in re.findall(r"[a-z][a-z0-9+/-]*", phrase.strip())]
+    return re.findall(r"[a-z][a-z0-9+/-]*", phrase.strip().lower())
 
 
 def check_competencies_no_all_generic_skill_phrase(
@@ -293,6 +396,61 @@ def check_competencies_term_support_ids_present(
     return True, None
 
 
+def check_competencies_no_metric_ids_in_source_fact_ids(
+    competencies: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    for cat in competencies:
+        if not isinstance(cat, dict):
+            continue
+        label = str(cat.get("category_label") or "").strip()
+        for raw in cat.get("source_fact_ids") or []:
+            fid = str(raw).strip()
+            if fid.startswith("metric_"):
+                return False, f"metric_id_in_category_source_fact_ids label={label!r} id={fid!r}"
+        for term in cat.get("terms") or []:
+            if not isinstance(term, dict):
+                continue
+            phrase = term_phrase(term)
+            raw_ids = list(term.get("source_fact_ids") or [])
+            if term.get("source_fact_id") is not None:
+                raw_ids.append(term.get("source_fact_id"))
+            for raw in raw_ids:
+                fid = str(raw).strip()
+                if fid.startswith("metric_"):
+                    return False, f"metric_id_in_term_source_fact_ids label={label!r} phrase={phrase!r} id={fid!r}"
+    return True, None
+
+
+def check_competencies_visible_terms_svp_agentic_richness(
+    competencies: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    """Visible graph-surface terms must be specific, believable SVP/agentic capability phrases."""
+    if not isinstance(competencies, list):
+        return True, None
+    visible = [cat for cat in competencies if isinstance(cat, dict) and cat.get("visible_graph_surface") is True]
+    if not visible:
+        return True, None
+    for cat in visible:
+        label = str(cat.get("resume_display_label") or cat.get("category_label") or "").strip()
+        for raw in cat.get("terms") or []:
+            phrase = term_phrase(raw) if isinstance(raw, dict) else str(raw or "").strip()
+            if not phrase:
+                continue
+            normalized = re.sub(r"\s+", " ", phrase.strip().lower())
+            if normalized in _MUNDANE_VISIBLE_COMPETENCY_PHRASES:
+                return False, f"mundane_visible_competency label={label!r} phrase={phrase!r}"
+            if len(phrase.split()) < 5:
+                return False, f"visible_competency_too_short_for_svp_signal label={label!r} phrase={phrase!r}"
+            tokens = set(_tokenize_phrase(phrase))
+            mechanism_hits = sorted(tokens & _SVP_AGENTIC_MECHANISM_TOKENS)
+            context_hits = sorted(tokens & _SVP_EXECUTION_CONTEXT_TOKENS)
+            if not mechanism_hits:
+                return False, f"visible_competency_missing_agentic_mechanism label={label!r} phrase={phrase!r}"
+            if not context_hits:
+                return False, f"visible_competency_missing_svp_execution_context label={label!r} phrase={phrase!r}"
+    return True, None
+
+
 def check_competencies_no_fragment_or_one_word_terms(
     competencies: list[dict[str, Any]],
 ) -> tuple[bool, str | None]:
@@ -341,7 +499,9 @@ __all__ = [
     "check_competencies_no_fragment_or_one_word_terms",
     "check_competencies_no_low_rigor_two_word_items",
     "check_competencies_no_metrics_as_skills_without_capability_context",
+    "check_competencies_no_metric_ids_in_source_fact_ids",
     "check_competencies_no_all_generic_skill_phrase",
+    "check_competencies_visible_terms_svp_agentic_richness",
     "check_competencies_keyword_repetition_limit",
     "check_competencies_role_alignment_terms",
     "check_competencies_term_support_ids_present",

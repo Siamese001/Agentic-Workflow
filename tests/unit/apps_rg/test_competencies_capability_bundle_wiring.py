@@ -17,6 +17,7 @@ from apps_rg.runtime.sections.competency_capability_evidence import (
     attach_competency_bundles_to_proof_pool_metadata,
     append_competencies_path_diversity_to_messages,
     build_competency_capability_section_packet,
+    enrich_competencies_visible_graph_surface,
     format_competency_capability_evidence_pack,
     hydrate_competency_bundle_graph_evidence,
     is_flat_taxonomy_only_packet,
@@ -27,6 +28,9 @@ from apps_rg.runtime.sections.graph_role_episode_selector import (
 )
 from apps_rg.runtime.sections.competencies_lane_execution import (
     _format_competencies_graph_sourcing_assessment,
+)
+from apps_rg.runtime.sections.competencies_rigor import (
+    check_competencies_visible_terms_svp_agentic_richness,
 )
 from apps_rg.runtime.validators import competencies_quality_x2 as q
 
@@ -511,6 +515,78 @@ def test_bundle_graph_hydration_repairs_anthropic_default_fact_collapse():
         briefing_text=brief_text,
     )
     assert granularity.passed is True
+
+
+def test_visible_graph_surface_uses_partnership_first_bundle_labels_and_terms():
+    """apps-test-model: APP CONTRACT
+
+    Regression: graph receipts improved while competencies_display.txt still showed
+    the old generic taxonomy phrases in static order.
+    """
+    packet = build_competency_capability_section_packet("competencies")
+    by_id = {row["competency_bundle_id"]: row for row in packet["competency_bundles"]}
+    bundle_ids = [
+        "ccb_agentic_platforms",
+        "ccb_runtime_governance",
+        "ccb_retrieval_context_engineering",
+        "ccb_llmops_reliability",
+        "ccb_distributed_systems_engineering",
+        "ccb_platform_productization",
+        "ccb_partnerships_ecosystem_execution",
+        "ccb_engineering_leadership",
+    ]
+    parsed = {"competencies": []}
+    for idx, bundle_id in enumerate(bundle_ids):
+        rec = by_id[bundle_id]
+        parsed["competencies"].append(
+            {
+                "category_id": str((rec.get("target_taxonomy_category_ids") or [f"cat_{idx}"])[0]),
+                "category_label": "Technology Strategy & Innovation" if idx == 0 else "AI Platform Leadership",
+                "competency_bundle_id": bundle_id,
+                "graph_skill_node_ids": list(rec.get("graph_skill_node_ids") or []),
+                "source_fact_ids": ["fact_engineering_platform_001"],
+                "terms": [
+                    {
+                        "term": "Enterprise technology roadmap ownership",
+                        "text": "Enterprise technology roadmap ownership",
+                        "source_fact_ids": ["fact_engineering_platform_001"],
+                    }
+                ],
+            }
+        )
+
+    receipt = enrich_competencies_visible_graph_surface(
+        parsed,
+        packet=packet,
+        allowed_fact_ids={"fact_engineering_platform_001"},
+    )
+
+    competencies = parsed["competencies"]
+    assert competencies[0]["competency_bundle_id"] == "ccb_partnerships_ecosystem_execution"
+    assert competencies[0]["resume_display_label"] == "Strategic Partnerships & Ecosystem Execution"
+    assert "AI alliance commercialization with hyperscaler partners" in [
+        term["text"] for term in competencies[0]["terms"]
+    ]
+    assert competencies[1]["resume_display_label"] == "Governed Agentic AI Platform Architecture"
+    assert all(cat.get("visible_graph_surface") is True for cat in competencies)
+    assert receipt["order_policy"] == "anthropic_partnership_relevance_first"
+    assert receipt["enriched_category_count"] == 8
+    assert "Enterprise technology roadmap ownership" not in [
+        term["text"] for term in competencies[1]["terms"]
+    ]
+    assert all(
+        "20%" not in term["text"]
+        for cat in competencies
+        for term in cat["terms"]
+    )
+    assert all(len(cat["terms"]) == 3 for cat in competencies)
+    assert all(
+        5 <= len(term["text"].split()) <= 7
+        for cat in competencies
+        for term in cat["terms"]
+    )
+    richness_ok, richness_reason = check_competencies_visible_terms_svp_agentic_richness(competencies)
+    assert richness_ok, richness_reason
 
 
 def test_per_category_confidence_nonconstant_requires_real_category_scores():
