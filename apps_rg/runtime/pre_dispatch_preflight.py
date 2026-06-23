@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from agentic_core.config.model_catalog import QWEN_VLLM_LABEL
 from apps_rg.prerequisites.briefing_validator import (
     AppsResearchHandoffValidation,
     validate_apps_research_handoff,
@@ -28,7 +27,7 @@ from apps_rg.runtime.targeting_input_freshness import (
 )
 
 TargetingInputStatus = Literal["PASS", "MISSING", "EMPTY", "STALE", "DEFAULT_BLOCKED"]
-QwenGateStatus = Literal["PASS", "FAIL", "SKIPPED", "NOT_APPLICABLE"]
+ProviderGateStatus = Literal["PASS", "FAIL", "SKIPPED", "NOT_APPLICABLE"]
 UpstreamBulletsGateStatus = Literal["NOT_APPLICABLE", "PASS", "BLOCKED"]
 
 _ENV_ALLOW_STALE_TARGETING_SSOT = "APPS_RG_ALLOW_STALE_TARGETING_SSOT"
@@ -138,12 +137,12 @@ def evaluate_manual_brief_cli_input(brief_raw: str) -> tuple[TargetingInputStatu
     return "PASS", "inline:manual_brief"
 
 
-def evaluate_qwen_readiness(
+def evaluate_provider_readiness(
     *,
     lane_provider: str,
     docker_restart_audit: dict[str, Any] | None = None,
-) -> tuple[QwenGateStatus, QwenGateStatus, str | None]:
-    """Local-provider readiness gate removed with the Qwen/vLLM provider.
+) -> tuple[ProviderGateStatus, ProviderGateStatus, str | None]:
+    """Local-provider readiness gate removed with the local-model provider.
 
     The external generation provider owns its own transport and surfaces a BLOCKED
     ``ProviderResult`` on failure, so there is no pre-dispatch local-container readiness
@@ -161,8 +160,8 @@ class PreDispatchPreflightResult:
     manual_brief_status: TargetingInputStatus
     provider_resolution_source: str
     lane_provider: str
-    qwen_health_status: QwenGateStatus
-    qwen_model_ready_status: QwenGateStatus
+    provider_health_status: ProviderGateStatus
+    provider_model_ready_status: ProviderGateStatus
     upstream_bullets_status: UpstreamBulletsGateStatus
     upstream_bullets_lane: str
     upstream_bullets_detail: str
@@ -186,8 +185,8 @@ class PreDispatchPreflightResult:
             "manual_brief_status": self.manual_brief_status,
             "provider_resolution_source": self.provider_resolution_source,
             "lane_provider": self.lane_provider,
-            "qwen_health_status": self.qwen_health_status,
-            "qwen_model_ready_status": self.qwen_model_ready_status,
+            "provider_health_status": self.provider_health_status,
+            "provider_model_ready_status": self.provider_model_ready_status,
             "upstream_bullets_status": self.upstream_bullets_status,
             "upstream_bullets_lane": self.upstream_bullets_lane,
             "upstream_bullets_detail": self.upstream_bullets_detail,
@@ -261,23 +260,23 @@ def _apps_research_handoff_failure_message(
     )
 
 
-def _qwen_failure_message(
+def _provider_failure_message(
     *,
-    health: QwenGateStatus,
-    model_ready: QwenGateStatus,
+    health: ProviderGateStatus,
+    model_ready: ProviderGateStatus,
     detail: str | None,
 ) -> str | None:
     if health == "NOT_APPLICABLE" or health == "SKIPPED":
         return None
     if health == "PASS" and model_ready == "PASS":
         return None
-    base = f"Pre-dispatch {QWEN_VLLM_LABEL} readiness gate blocked"
+    base = "Pre-dispatch provider readiness gate blocked"
     if model_ready == "FAIL" and health == "PASS":
         return (
-            f"{base}: HTTP /v1/models probe succeeded but expected Qwen model id substring "
-            f"was not found. {detail or ''}".strip()
+            f"{base}: provider probe succeeded but expected model identifier was not found. "
+            f"{detail or ''}".strip()
         )
-    return f"{base}: {detail or 'qwen_vllm_unavailable'}".strip()
+    return f"{base}: {detail or 'provider_unavailable'}".strip()
 
 
 def _upstream_bullets_failure_message(
@@ -324,7 +323,7 @@ def run_pre_dispatch_preflight(
         brief_ref=manual_brief,
         jd_ref=jd,
     )
-    q_health, q_model, q_detail = evaluate_qwen_readiness(
+    provider_health, provider_model, provider_detail = evaluate_provider_readiness(
         lane_provider=lane_provider,
         docker_restart_audit=docker_restart_audit,
     )
@@ -359,13 +358,13 @@ def run_pre_dispatch_preflight(
                 decisive = upstream_err
                 dispatch_started = False
             else:
-                qwen_err = _qwen_failure_message(
-                    health=q_health,
-                    model_ready=q_model,
-                    detail=q_detail,
+                provider_err = _provider_failure_message(
+                    health=provider_health,
+                    model_ready=provider_model,
+                    detail=provider_detail,
                 )
-                if qwen_err:
-                    decisive = qwen_err
+                if provider_err:
+                    decisive = provider_err
                     dispatch_started = False
                 else:
                     decisive = "all_pre_dispatch_gates_passed"
@@ -378,8 +377,8 @@ def run_pre_dispatch_preflight(
         manual_brief_status=brief_status,
         provider_resolution_source=str(provider_resolution_source),
         lane_provider=str(lane_provider),
-        qwen_health_status=q_health,
-        qwen_model_ready_status=q_model,
+        provider_health_status=provider_health,
+        provider_model_ready_status=provider_model,
         upstream_bullets_status=upstream_status,
         upstream_bullets_lane=upstream_lane,
         upstream_bullets_detail=upstream_detail,
@@ -457,12 +456,12 @@ def enforce_pre_dispatch_preflight(
 __all__ = [
     "PreDispatchPreflightResult",
     "TargetingInputStatus",
-    "QwenGateStatus",
+    "ProviderGateStatus",
     "UpstreamBulletsGateStatus",
     "enforce_pre_dispatch_preflight",
     "evaluate_jd_cli_input",
     "evaluate_manual_brief_cli_input",
-    "evaluate_qwen_readiness",
+    "evaluate_provider_readiness",
     "run_pre_dispatch_preflight",
     "resolve_preflight_receipt_path",
     "targeting_override_allowed",

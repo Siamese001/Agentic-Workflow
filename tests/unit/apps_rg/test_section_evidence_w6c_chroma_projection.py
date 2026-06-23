@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+import apps_rg.cache.r1b_chroma_read_surface_projection as projection
 from apps_rg.cache.r1b_chroma_read_surface_projection import (
     CHROMA_COLLECTION_INDEX_ARTIFACT,
     CHROMA_READ_AFTER_WRITE_ARTIFACT,
@@ -29,6 +30,64 @@ from apps_rg.runtime.section_evidence_package import (
     finalize_section_evidence_package,
 )
 from apps_rg.runtime.section_l7_binding_manifest import build_section_l7_binding_manifest
+
+# apps-test-model: APP CONTRACT
+
+
+def _projection_chunk(chunk_id: str, text: str):
+    from apps_rg.cache.r1b_models import HistoricalOutputChunk
+
+    return HistoricalOutputChunk.from_dict(
+        {
+            "chunk_id": chunk_id,
+            "parent_intent_record_id": "record-1",
+            "chunk_type": "summary",
+            "section_id": "executive_summary",
+            "chunk_text": text,
+            "chunk_digest": f"digest-{chunk_id}",
+            "chunk_vector_ref": f"vectors/{chunk_id}.json",
+            "artifact_ref": f"artifacts/{chunk_id}.json",
+            "artifact_digest": f"artifact-{chunk_id}",
+            "source_fact_ids": [],
+            "proof_pool_refs": [],
+            "support_status": "PASS",
+            "x2_status": "PASS",
+            "x1d_status": "PASS",
+            "section_prompt_hash": "prompt",
+            "section_model_profile_hash": "model",
+            "generated_at_utc": "2026-06-23T00:00:00+00:00",
+        }
+    )
+
+
+def test_projection_embedding_payloads_batch_parent_and_chunks(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[list[str], int]] = []
+
+    def fake_embed_texts(texts: list[str], *, batch_size: int = 64):
+        calls.append((list(texts), batch_size))
+        return [
+            [0.1] * 1024,
+            [0.2] * 1024,
+            [0.3] * 1024,
+        ]
+
+    monkeypatch.setattr(projection, "embed_texts_bge", fake_embed_texts)
+    intent_payload, chunk_payloads = projection._build_projection_embedding_payloads(
+        intent_text="intent text",
+        digest="intent-digest",
+        chunks=[
+            _projection_chunk("chunk-1", "chunk one"),
+            _projection_chunk("chunk-2", "chunk two"),
+        ],
+    )
+
+    assert calls == [(["intent text", "chunk one", "chunk two"], 64)]
+    assert intent_payload["embedding_model"] == projection.BGE_M3_MODEL_ID
+    assert intent_payload["dimensions"] == 1024
+    assert intent_payload["values"] == [0.1] * 1024
+    assert set(chunk_payloads) == {"chunk-1", "chunk-2"}
+    assert chunk_payloads["chunk-1"]["values"] == [0.2] * 1024
+    assert chunk_payloads["chunk-2"]["values"] == [0.3] * 1024
 
 
 def _eligible_run_dir(repo: Path, ad: Path) -> None:

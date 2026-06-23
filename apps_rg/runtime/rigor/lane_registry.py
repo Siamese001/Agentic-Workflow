@@ -8,7 +8,7 @@ from typing import Callable, Literal
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES, REQUIRED_RELATIVE
 from apps_rg.runtime.sections.section_product_shape_ssot import section_product_shape
 
-ProviderMode = Literal["qwen_live"]
+ProviderMode = Literal["live_provider"]
 
 # Artifacts every mock/stub lane run must emit (rollup + section proof completeness).
 COMMON_PROOF_ARTIFACTS: tuple[str, ...] = (
@@ -81,7 +81,7 @@ def lane_specs() -> tuple[LaneRigorSpec, ...]:
     common_tail = ("--allow-non-allow-exit-zero",)
     specs: list[LaneRigorSpec] = []
     for lane in GENERATED_LANES:
-        provider_mode: ProviderMode = "qwen_live"
+        provider_mode: ProviderMode = "live_provider"
         targeting = (*jd_common, *brief_default)
         style = STYLE_CRITICAL_GATES if lane != "executive_summary" else frozenset()
         extra = (*targeting_company, *targeting, "--provider", "external_claude", *common_tail)

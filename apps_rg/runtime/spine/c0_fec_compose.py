@@ -626,7 +626,6 @@ def wire_spine_c0_fec_for_section(
                 section_id=section_id,
             )
 
-    emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     runtime_payload["section_fec_bridge"] = bridge.bridge_doc
     runtime_payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
     runtime_payload["final_evidence_contract_ref"] = FEC_BRIDGE_ARTIFACT
@@ -650,6 +649,9 @@ def wire_spine_c0_fec_for_section(
         runtime_payload=runtime_payload,
         bridge=bridge,
     )
+    # Write the final bridge after canonical materialization so disk, runtime payload,
+    # and the in-memory bridge doc all describe the same allowlist.
+    emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     emit_spine_span_event(
         artifact_dir,
         layer_key="C0",

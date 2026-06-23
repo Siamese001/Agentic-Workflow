@@ -13,7 +13,7 @@ from agentic_core.config.model_catalog import (
 
 import logging
 import threading
-from typing import Any
+from typing import Any, Sequence
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 
@@ -69,6 +69,13 @@ def reset_bge_model_for_testing() -> None:
         _bge_model = None
 
 
+def _coerce_bge_vector(vec: Any) -> list[float]:
+    values = [float(v) for v in vec]
+    if len(values) != _BGE_DIM:
+        raise RuntimeError(f"BGE_DIM_MISMATCH: got {len(values)}, expected {_BGE_DIM}")
+    return values
+
+
 def embed_text_bge(text: str) -> list[float] | None:
     """L2-normalized BGE-M3 embedding; None when BGE unavailable."""
     stripped = (text or "").strip()
@@ -85,10 +92,37 @@ def embed_text_bge(text: str) -> list[float] | None:
     )
     if encoded is None or len(encoded) != 1:
         return None
-    vec = encoded.tolist()[0]
-    if len(vec) != _BGE_DIM:
-        raise RuntimeError(f"BGE_DIM_MISMATCH: got {len(vec)}, expected {_BGE_DIM}")
-    return [float(v) for v in vec]
+    rows = encoded.tolist() if hasattr(encoded, "tolist") else encoded
+    return _coerce_bge_vector(rows[0])
+
+
+def embed_texts_bge(texts: Sequence[str], *, batch_size: int = 64) -> list[list[float] | None]:
+    """L2-normalized BGE-M3 embeddings, preserving input order for batch callers."""
+    outputs: list[list[float] | None] = [None] * len(texts)
+    indexed_texts: list[tuple[int, str]] = []
+    for idx, text in enumerate(texts):
+        stripped = (text or "").strip()
+        if stripped:
+            indexed_texts.append((idx, stripped))
+    if not indexed_texts:
+        return outputs
+    model = _get_bge_model()
+    if model is None:
+        return outputs
+    encode_kwargs: dict[str, Any] = {
+        "convert_to_numpy": True,
+        "normalize_embeddings": True,
+        "show_progress_bar": False,
+    }
+    if batch_size > 0:
+        encode_kwargs["batch_size"] = batch_size
+    encoded = model.encode([text for _idx, text in indexed_texts], **encode_kwargs)
+    if encoded is None or len(encoded) != len(indexed_texts):
+        return outputs
+    rows = encoded.tolist() if hasattr(encoded, "tolist") else encoded
+    for (idx, _text), row in zip(indexed_texts, rows):
+        outputs[idx] = _coerce_bge_vector(row)
+    return outputs
 
 
 def intent_vector_payload(*, intent_text: str, digest: str) -> dict[str, Any]:
@@ -174,6 +208,7 @@ __all__ = [
     "bge_embeddings_active",
     "chunk_vector_payload",
     "embed_text_bge",
+    "embed_texts_bge",
     "intent_vector_payload",
     "reset_bge_model_for_testing",
     "resolve_query_vector",

@@ -68,7 +68,7 @@ Every artifact includes a source register (`source_register_<trace_id>.json`) wi
 
 ## Artifacts
 
-All artifacts written to `reports/research/` by default:
+All artifacts are written to `artifacts/apps_research/` by default:
 
 - `research_<mode>_<trace_id[:8]>.md` — structured research artifact
 - `source_register_<trace_id[:8]>.json` — full source register

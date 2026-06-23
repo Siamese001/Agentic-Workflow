@@ -62,7 +62,8 @@ CORE_C03_PIPELINE = (
 
 _WIRING_GATE_W3N = "GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED"
 _WIRING_GATE_W4 = "CLEARED_BY_W4_GRAPH_RAG_EXECUTION"
-_VALID_WIRING_GATES = {_WIRING_GATE_W3N, _WIRING_GATE_W4}
+_WIRING_GATE_LIVE = "LIVE"
+_VALID_WIRING_GATES = {_WIRING_GATE_W3N, _WIRING_GATE_W4, _WIRING_GATE_LIVE}
 
 
 def _load_lic_route_profile() -> dict:
@@ -341,8 +342,8 @@ def test_apps_rg_semantic_cache_config_still_prepared() -> None:
     assert sc.get("namespace") == "apps_rg.resume_gen.section.v1", (
         f"apps_rg semantic_cache.namespace changed: {sc.get('namespace')!r}"
     )
-    assert sc.get("live_wiring_deferred") is True, (
-        "apps_rg semantic_cache live_wiring_deferred=true removed (W2N invariant violated)"
+    assert sc.get("live_wiring_deferred") is False, (
+        "apps_rg semantic_cache live_wiring_deferred=false is the current canonical state"
     )
 
 

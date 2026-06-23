@@ -2,7 +2,7 @@
 
 This module intentionally keeps the old import path because legacy
 apps_research/apps_rg bridge code still imports it. The contract itself is no
-longer the Qwen-era 2.4k / 17-bullet micro-brief. It validates a reviewed
+longer the legacy 2.4k / 17-bullet micro-brief. It validates a reviewed
 briefing artifact whose job is to add company/contact signal that complements
 the JD while remaining targeting-only context for apps_rg and apps_lic.
 

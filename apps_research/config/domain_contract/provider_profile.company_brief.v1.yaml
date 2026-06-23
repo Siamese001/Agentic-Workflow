@@ -1,7 +1,7 @@
 # Provider Profile for apps_research / company_brief
 #
 # Provider-specific configuration for L2 execution.
-# Defines approved model lanes, fallback policies, and gateway behavior.
+# Defines approved external model lanes, fallback policies, and gateway behavior.
 
 profile_id: apps_research_provider_profile_company_brief_v1
 app_id: apps_research
@@ -10,31 +10,30 @@ schema_version: "1.0"
 
 # Approved model lanes (from lowest to highest priority)
 approved_model_lanes:
-  # Primary lane: Qwen 32B AWQ via local vLLM
+  # Primary lane: external Claude via the generic provider gateway
   primary:
     lane_id: research_synthesis_primary
-    provider: local_vllm
-    model: Qwen/Qwen2.5-32B-Instruct-AWQ
-    quantization: awq_marlin
+    provider: external_claude
+    model: claude-sonnet-4-6
     
     capabilities:
       - json_mode
       - structured_output
-      - long_context_8k
+      - long_context
     
     capacity:
       max_concurrent: 4
       timeout_seconds: 120
       
     reliability:
-      health_check_endpoint: http://localhost:8000/v1/models
+      credential_env_var: ANTHROPIC_API_KEY
       circuit_breaker_threshold: 3
       
-  # Fallback lane: Same model with reduced context
+  # Fallback lane: external OpenAI-compatible provider with reduced context
   fallback_1:
     lane_id: research_synthesis_fallback
-    provider: local_vllm
-    model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    provider: external_openai
+    model: gpt-5.4-mini
     
     modifications:
       max_tokens: 2048
@@ -96,8 +95,7 @@ call_constraints:
 
 # Capacity management
 capacity:
-  # Local vLLM Docker container
-  local_vllm:
+  external_api:
     max_requests: 4
     max_tokens_per_minute: 100000
     queue_policy: fail_fast
@@ -107,7 +105,7 @@ health_monitoring:
   enabled: true
   
   checks:
-    - endpoint: http://localhost:8000/v1/models
+    - credential_env_var: ANTHROPIC_API_KEY
       interval_seconds: 30
       timeout_seconds: 5
       
@@ -129,6 +127,6 @@ fallback_cascade:
 
 # Cost/performance tradeoffs (for future budget controls)
 tradeoffs:
-  note: "Local vLLM is fixed cost (GPU rental). No per-token pricing."
+  note: "External providers are metered; keep company-brief synthesis scoped to reviewed sources."
   prioritize: quality_over_speed
   accept_latency: up_to_30_seconds

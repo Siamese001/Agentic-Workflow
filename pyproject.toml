@@ -119,7 +119,7 @@ minversion = "7.0"
 # - 24 workers with worksteal (default for mixed pytest workloads)
 # - Fixture-heavy: 18 workers with loadscope
 # - File-isolated: 20 workers with loadfile
-addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v -n 24 --dist=worksteal --timeout=180"
+addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:artifacts/reports/coverage_html --cov-fail-under=100 -ra -v -n 24 --dist=worksteal --timeout=180"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
@@ -163,7 +163,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.html]
-directory = "reports/coverage_html"
+directory = "artifacts/reports/coverage_html"
 
 [tool.black]
 line-length = 110

@@ -19,7 +19,7 @@ from apps_shared.contracts.cross_app.research_brief import (
     ResearchClaimRow,
 )
 
-_DEFAULT_RESEARCH_DIR = Path("reports/research")
+_DEFAULT_RESEARCH_DIR = Path("artifacts/apps_research")
 _BULLET_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*$", re.MULTILINE)
 
 

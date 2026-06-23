@@ -65,7 +65,7 @@ class EnterpriseResearchRequest:
     enable_validation: bool = True
     enable_repo_signals: bool = True
     update_baseline: bool = False
-    output_dir: str = "reports/research/enterprise"
+    output_dir: str = "artifacts/apps_research/enterprise"
     trace_id: str = ""
 
     def __post_init__(self) -> None:
@@ -473,7 +473,7 @@ async def run_enterprise_research(
     topic: str,
     artifact_mode: str = "brief",
     target_audience: str = "technical",
-    output_dir: str = "reports/research/enterprise",
+    output_dir: str = "artifacts/apps_research/enterprise",
 ) -> EnterpriseResearchResult:
     """Run enterprise research generation."""
     orchestrator = EnterpriseResearchOrchestrator()

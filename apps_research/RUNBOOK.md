@@ -53,7 +53,7 @@ A research run is misbehaving
 **Symptom:** a single section's assembly call hangs >90s.
 
 **Triage:**
-1. Check Qwen health (apps_eval RUNBOOK §1).
+1. Check external provider credentials and provider-gateway health.
 2. Check section length — sections >5K target tokens may overflow context.
 3. Check for retrieval timeout upstream.
 

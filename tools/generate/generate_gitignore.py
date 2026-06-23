@@ -130,7 +130,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     }
     version_control = {".git", ".svn", ".hg"}
     virtual_env = {".venv", "venv", "venv_stable", "env", ".env", "Lib", "site-packages"}
-    coverage = {"coverage_html", "htmlcov", ".coverage", ".test_artifacts", "test_artifacts", "reports"}
+    coverage = {"coverage_html", "htmlcov", ".coverage", ".test_artifacts", "test_artifacts"}
     archives = {
         "archives",
         "archive",

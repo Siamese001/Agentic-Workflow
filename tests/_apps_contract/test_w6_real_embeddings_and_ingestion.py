@@ -28,11 +28,14 @@ import importlib
 import importlib.util
 import subprocess
 import sys
+import types
 import unittest.mock as mock
 from pathlib import Path
 from typing import Any
 
 import pytest
+
+# apps-test-model: APP CONTRACT
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -162,6 +165,63 @@ def test_sentence_transformers_missing_raises_clear_error():
     assert "pip install" in msg, (
         f"ImportError message should contain pip install hint, got: {msg!r}"
     )
+
+
+def test_chroma_research_store_get_model_passes_app_embedding_device(monkeypatch: pytest.MonkeyPatch):
+    """APPS_RESEARCH_EMBEDDING_DEVICE controls only the real Chroma/BGE path."""
+    import apps_research.engines.integration.chroma_research_store as m
+
+    captured: dict[str, Any] = {}
+
+    class FakeSentenceTransformer:
+        def __init__(self, model_name: str, **kwargs: Any) -> None:
+            captured["model_name"] = model_name
+            captured["kwargs"] = kwargs
+
+    original_model = m.ChromaResearchStore._model
+    m.ChromaResearchStore._model = None
+    monkeypatch.setenv("APPS_RESEARCH_EMBEDDING_DEVICE", "cuda")
+    try:
+        with mock.patch.dict(
+            sys.modules,
+            {"sentence_transformers": types.SimpleNamespace(SentenceTransformer=FakeSentenceTransformer)},
+        ):
+            m.ChromaResearchStore._get_model()
+    finally:
+        m.ChromaResearchStore._model = original_model
+
+    assert captured["model_name"] == m.EMBEDDING_MODEL
+    assert captured["kwargs"]["device"] == "cuda"
+
+
+def test_chroma_research_store_get_model_falls_back_to_shared_embedding_device(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Without the app override, the shared EMBEDDING_DEVICE resolver is used."""
+    import apps_research.engines.integration.chroma_research_store as m
+
+    captured: dict[str, Any] = {}
+
+    class FakeSentenceTransformer:
+        def __init__(self, model_name: str, **kwargs: Any) -> None:
+            captured["model_name"] = model_name
+            captured["kwargs"] = kwargs
+
+    original_model = m.ChromaResearchStore._model
+    m.ChromaResearchStore._model = None
+    monkeypatch.delenv("APPS_RESEARCH_EMBEDDING_DEVICE", raising=False)
+    monkeypatch.setenv("EMBEDDING_DEVICE", "cpu")
+    try:
+        with mock.patch.dict(
+            sys.modules,
+            {"sentence_transformers": types.SimpleNamespace(SentenceTransformer=FakeSentenceTransformer)},
+        ):
+            m.ChromaResearchStore._get_model()
+    finally:
+        m.ChromaResearchStore._model = original_model
+
+    assert captured["model_name"] == m.EMBEDDING_MODEL
+    assert captured["kwargs"]["device"] == "cpu"
 
 
 # ---------------------------------------------------------------------------
@@ -360,8 +420,8 @@ def test_apps_rg_r1b_adapter_quarantine_untouched():
 
 @pytest.mark.parametrize("test_path,label", [
     ("tests/_apps_contract/test_w1_core_r1b_cache_wiring.py", "W1-R1B"),
-    ("tests/_apps_contract/test_w2_route_contract_graph_policy.py", "W2-RouteContract"),
-    ("tests/_apps_contract/test_w3_c03_adapter_registry.py", "W3-AdapterRegistry"),
+    ("tests/_apps_contract/test_w2n_semantic_cache_config_only.py", "W2N-SemanticCache"),
+    ("tests/_apps_contract/test_w3n_graph_profile_config_only.py", "W3N-GraphProfile"),
     ("tests/_apps_contract/test_w4_graph_rag_execution.py", "W4-GraphRAG"),
     ("tests/_apps_contract/test_w5_apps_rg_r1b_rca_decision.py", "W5-RCA"),
 ])

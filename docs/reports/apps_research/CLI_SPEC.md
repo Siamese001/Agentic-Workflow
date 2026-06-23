@@ -19,7 +19,7 @@ python apps_research/scripts/run_research.py [OPTIONS]
 | `--compare`    | str     | No       | `""`                 | Comma-separated comparison subjects                |
 | `--horizon`    | str     | No       | `""`                 | Time horizon for trend mode (e.g. `"12 months"`)   |
 | `--config`     | path    | No       | built-in defaults    | Path to `research_agent_specs.json`                |
-| `--out`        | path    | No       | `reports/research`   | Output directory                                   |
+| `--out`        | path    | No       | `artifacts/apps_research` | Output directory                              |
 | `--dry-run`    | flag    | No       | `False`              | Assemble + validate; do not emit files             |
 | `--trace-id`   | str     | No       | auto-generated       | Override trace ID                                  |
 | `--json-output`| flag    | No       | `False`              | Print JSON result summary to stdout                |

@@ -13,7 +13,6 @@ SKIP_PARTS = {
     "node_modules",
     ".pytest_cache",
     "artifacts",
-    ".playwright-mcp",
 }
 SKIP_FRAGMENTS = (
     "/_archive/",

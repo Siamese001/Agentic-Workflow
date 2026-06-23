@@ -32,7 +32,7 @@ Browser automation/E2E. **Upstream:** https://playwright.dev/agent-cli/skills
 ### Hard Rules
 1. **Always snapshot before clicking** — `browser_click` needs `ref`
 2. **Close tabs after use** — `browser_tabs(action='close')` or `browser_close`
-3. **Output to `.playwright-mcp/`** (gitignored)
+3. **Output to `artifacts/mcp/playwright/`** (gitignored)
 4. **Not for static HTML** — use direct `httpx` if no JS needed
 
 ---

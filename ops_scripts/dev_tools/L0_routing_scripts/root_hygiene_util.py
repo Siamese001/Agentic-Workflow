@@ -4,7 +4,7 @@ Path: agentic_core/L0_routing/scripts/RootHygieneEnforcer.py
 Rationale:
     Actively enforces the new Root Hygiene laws defined in structure_blueprint.
     1. Moves root 'scripts/*' to 'ops_scripts/' (standalone) or 'L0_routing/scripts/' (core).
-    2. Moves 'coverage_html' to 'reports/'.
+    2. Moves 'coverage_html' to 'artifacts/reports/'.
     3. Deletes the illegal root directories after evacuation.
 """
 
@@ -282,7 +282,7 @@ def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
 
     # 2. EVACUATE COVERAGE_HTML
     cov_html = root / "coverage_html"
-    reports_cov = root / REPORTS_DIR / "coverage_html"
+    reports_cov = root / "artifacts" / REPORTS_DIR / "coverage_html"
 
     if cov_html.exists():
         print("\n[DETECT] Illegal root 'coverage_html/' found.")
@@ -291,7 +291,7 @@ def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
         if reports_cov.exists() and not force:
             raise FileExistsError(f"Refusing to overwrite existing target: {reports_cov}")
 
-        print("  - Moving to reports/coverage_html")
+        print("  - Moving to artifacts/reports/coverage_html")
         _safe_move(cov_html, reports_cov, dry_run=dry_run, force=force)
         print("[SUCCESS] Coverage report relocated.")
     else:

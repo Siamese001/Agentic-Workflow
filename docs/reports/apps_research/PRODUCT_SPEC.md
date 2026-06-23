@@ -58,7 +58,7 @@ what is interpretation, and what is analyst inference.
 | `--audience`   | Enum           | No       | `technical`, `executive`, `market-facing`            |
 | `--compare`    | List[str]      | No       | Comparison subjects (for `comparison` mode)          |
 | `--horizon`    | str            | No       | Time horizon (e.g. "12 months") for `trend` mode     |
-| `--out`        | Path           | No       | Output directory (default: `reports/research/`)      |
+| `--out`        | Path           | No       | Output directory (default: `artifacts/apps_research/`) |
 | `--dry-run`    | Flag           | No       | Plan; do not emit artifacts                          |
 
 **Rejected inputs:**

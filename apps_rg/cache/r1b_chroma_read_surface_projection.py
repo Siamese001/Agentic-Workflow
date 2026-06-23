@@ -21,7 +21,11 @@ from typing import Any, Mapping
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM, R1B_UWG_TARGET_SURFACE
-from apps_rg.cache.r1b_bge_embedding import chunk_vector_payload, intent_vector_payload
+from apps_rg.cache.r1b_bge_embedding import (
+    chunk_vector_payload,
+    embed_texts_bge,
+    intent_vector_payload,
+)
 from apps_rg.cache.r1b_intent_vector import intent_text_from_request, normalized_intent_digest
 from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
 
@@ -159,6 +163,69 @@ def _assert_bge_vector_for_chroma_upsert(payload: Mapping[str, Any], *, context:
         )
 
 
+def _bge_intent_payload(*, digest: str, values: list[float]) -> dict[str, Any]:
+    return {
+        "subsystem": R1B_STORAGE_SUBSYSTEM,
+        "embedding_model": BGE_M3_MODEL_ID,
+        "embedding_provider": "bge_local",
+        "not_c0_fact_vectors": True,
+        "not_chroma_default_ef": True,
+        "normalized_intent_digest": digest,
+        "dimensions": 1024,
+        "values": values,
+    }
+
+
+def _bge_chunk_payload(*, chunk_id: str, values: list[float]) -> dict[str, Any]:
+    return {
+        "chunk_id": chunk_id,
+        "embedding_model": BGE_M3_MODEL_ID,
+        "dimensions": 1024,
+        "values": values,
+    }
+
+
+def _build_projection_embedding_payloads(
+    *,
+    intent_text: str,
+    digest: str,
+    chunks: list[HistoricalOutputChunk],
+    batch_size: int = 64,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    """Build parent + child embedding payloads with one BGE batch when possible."""
+    chunk_texts: list[tuple[HistoricalOutputChunk, str]] = []
+    for ch in chunks:
+        chunk_text = (ch.chunk_text or ch.chunk_type or ch.chunk_id).strip()
+        if chunk_text:
+            chunk_texts.append((ch, chunk_text))
+
+    texts = [intent_text] + [chunk_text for _ch, chunk_text in chunk_texts]
+    encoded = embed_texts_bge(texts, batch_size=batch_size)
+    intent_vec = encoded[0] if encoded else None
+    if intent_vec is not None:
+        intent_payload = _bge_intent_payload(
+            digest=digest,
+            values=[float(x) for x in intent_vec],
+        )
+    else:
+        intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
+
+    chunk_payloads: dict[str, dict[str, Any]] = {}
+    for offset, (ch, chunk_text) in enumerate(chunk_texts, start=1):
+        vec = encoded[offset] if offset < len(encoded) else None
+        if vec is not None:
+            chunk_payloads[ch.chunk_id] = _bge_chunk_payload(
+                chunk_id=ch.chunk_id,
+                values=[float(x) for x in vec],
+            )
+        else:
+            chunk_payloads[ch.chunk_id] = chunk_vector_payload(
+                chunk_text=chunk_text,
+                chunk_id=ch.chunk_id,
+            )
+    return intent_payload, chunk_payloads
+
+
 def _refresh_digest(artifact_dir: Path, record_id: str, commit_request_id: str) -> str:
     parts = [
         record_id,
@@ -178,6 +245,8 @@ def _upsert_governed_chroma(
     raw_request: dict[str, Any],
     commit_request_id: str,
     uwg_commit_receipt_id: str,
+    intent_payload: Mapping[str, Any] | None = None,
+    chunk_payloads_by_id: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
 
@@ -205,9 +274,10 @@ def _upsert_governed_chroma(
         intent_text_from_request(raw_request)
     )
     intent_text = record.request_intent_text or intent_text_from_request(raw_request)
-    intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
+    intent_payload = dict(intent_payload or intent_vector_payload(intent_text=intent_text, digest=digest))
     embedding = [float(x) for x in intent_payload["values"]]
     _assert_bge_vector_for_chroma_upsert(intent_payload, context="r1b_intent_parent")
+    chunk_payloads = dict(chunk_payloads_by_id or {})
     ids = [record.record_id]
     embeddings = [embedding]
     documents = [intent_text]
@@ -229,7 +299,10 @@ def _upsert_governed_chroma(
         chunk_text = (ch.chunk_text or ch.chunk_type or ch.chunk_id).strip()
         if not chunk_text:
             continue
-        cp = chunk_vector_payload(chunk_text=chunk_text, chunk_id=ch.chunk_id)
+        cp = dict(
+            chunk_payloads.get(ch.chunk_id)
+            or chunk_vector_payload(chunk_text=chunk_text, chunk_id=ch.chunk_id)
+        )
         _assert_bge_vector_for_chroma_upsert(cp, context=f"r1b_chunk:{ch.chunk_id}")
         cid = f"{record.record_id}:{ch.chunk_id}"
         ids.append(cid)
@@ -320,7 +393,12 @@ def project_governed_chroma_read_surface(
 
     intent_text = record.request_intent_text or intent_text_from_request(req)
     digest = record.normalized_intent_digest or normalized_intent_digest(intent_text)
-    intent_payload = intent_vector_payload(intent_text=intent_text, digest=digest)
+    projection_enabled = _chroma_projection_enabled()
+    intent_payload, chunk_payloads_by_id = _build_projection_embedding_payloads(
+        intent_text=intent_text,
+        digest=digest,
+        chunks=chunks if projection_enabled else [],
+    )
     _write_envelope(
         artifact_dir / REQUEST_INTENT_EMBEDDING_REF_ARTIFACT,
         {
@@ -381,7 +459,7 @@ def project_governed_chroma_read_surface(
     chain_refs = _chain_artifact_refs(artifact_dir)
 
     chroma_meta: dict[str, Any] = {}
-    if _chroma_projection_enabled():
+    if projection_enabled:
         try:
             chroma_meta = _upsert_governed_chroma(
                 persist_dir=_resolve_chroma_persist_dir(artifact_dir),
@@ -390,6 +468,8 @@ def project_governed_chroma_read_surface(
                 raw_request=req,
                 commit_request_id=commit_request_id,
                 uwg_commit_receipt_id=uwg_commit_receipt_id,
+                intent_payload=intent_payload,
+                chunk_payloads_by_id=chunk_payloads_by_id,
             )
         except Exception as exc:  # guardian: allow-default-fallback -- Chroma optional in CI; receipts record failure  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return GovernedChromaProjectionOutcome(

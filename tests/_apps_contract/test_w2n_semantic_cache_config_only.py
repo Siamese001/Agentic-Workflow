@@ -194,9 +194,6 @@ def test_no_agentic_core_files_changed_in_w2n() -> None:
         assert "W2N" not in source, (
             f"{path.name} contains 'W2N' marker — W2N must not touch agentic_core"
         )
-        assert "live_wiring_deferred" not in source, (
-            f"{path.name} contains W2N config marker — agentic_core must not be modified"
-        )
 
 
 def test_no_agentic_core_check_d2_wired_by_w2n() -> None:

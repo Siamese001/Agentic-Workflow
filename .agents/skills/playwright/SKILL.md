@@ -49,7 +49,7 @@ Claude Code-native adaptation of the upstream Playwright agent skills. The MCP s
 
 1. **Always snapshot before clicking.** `browser_click` needs `ref` from `browser_snapshot`.
 2. **Close tabs after use.** Call `browser_tabs(action='close')` or `browser_close` to free the headless browser.
-3. **Output goes to `.playwright-mcp/`** at repo root (gitignored). Don't commit screenshots there.
+3. **Output goes to `artifacts/mcp/playwright/`** (gitignored). Don't commit screenshots there.
 4. **Do not use for static HTML.** If JS isn't required, direct `httpx` in code (or native `read_url_content` for a one-off fetch with user approval) is faster and cheaper.
 
 ## Common Workflows

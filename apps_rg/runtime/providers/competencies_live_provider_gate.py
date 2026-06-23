@@ -1,9 +1,8 @@
 """Competencies lane live-provider policy helpers (timeouts + audit shape).
 
-The Qwen/vLLM HTTP reachability preflight was removed with the local-model provider; the
-external generation provider owns its own transport and surfaces a BLOCKED ``ProviderResult``
-on failure. Only the env-driven timeout/flag helpers, the status constants, and the audit
-payload shape remain — consumed by the competencies lane for provenance.
+The external generation provider owns its own transport and surfaces a BLOCKED
+``ProviderResult`` on failure. Only the env-driven timeout/flag helpers, the status constants,
+and the audit payload shape remain, consumed by the competencies lane for provenance.
 """
 from __future__ import annotations
 
@@ -13,15 +12,15 @@ STATUS_BLOCKED_LIVE_PROVIDER = "BLOCKED_LIVE_PROVIDER"
 REASON_PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
 
 
-def competencies_vllm_preflight_timeout_s() -> float:
-    raw = os.environ.get("APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_TIMEOUT_SECONDS", "5")
+def competencies_provider_preflight_timeout_s() -> float:
+    raw = os.environ.get("APPS_RG_COMPETENCIES_PROVIDER_PREFLIGHT_TIMEOUT_SECONDS", "5")
     try:
         return max(0.5, min(float(raw), 30.0))
     except ValueError:
         return 5.0
 
 
-def competencies_vllm_chat_timeout_s() -> int:
+def competencies_provider_chat_timeout_s() -> int:
     """Chat/completions wall-clock budget for the competencies lane (transport only; not an X2 gate).
 
     Honors ``APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS`` up to the shared
@@ -39,8 +38,8 @@ def competencies_vllm_chat_timeout_s() -> int:
         return 120
 
 
-def competencies_vllm_preflight_disabled() -> bool:
-    return os.environ.get("APPS_RG_COMPETENCIES_VLLM_PREFLIGHT_DISABLE", "").strip().lower() in (
+def competencies_provider_preflight_disabled() -> bool:
+    return os.environ.get("APPS_RG_COMPETENCIES_PROVIDER_PREFLIGHT_DISABLE", "").strip().lower() in (
         "1",
         "true",
         "yes",

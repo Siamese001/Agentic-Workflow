@@ -135,11 +135,11 @@ def resolve_competencies_provider_transport_x2(
         return False, cli, "blocked_http_models_preflight"
     if cli == "external_claude":
         if rgs == "REAL_LLM":
-            return True, cli, "qwen_vllm_http"
+            return True, cli, "external_provider_http"
         if rgs == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
             return True, cli, "offline_contract_stub"
         if rgs == "BLOCKED":
-            return False, cli, "qwen_vllm_transport_blocked"
+            return False, cli, "external_provider_transport_blocked"
         if rgs == "MOCKED":
             return False, cli, "mocked_generation"
         return False, cli, rgs.lower()

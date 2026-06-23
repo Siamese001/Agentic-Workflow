@@ -79,7 +79,7 @@ Stateless class. `execute(request: ResearchRequest) → ResearchAssemblyResult`
 @dataclass
 class ResearchOrchestrator:
     dry_run: bool = False
-    output_dir: str = "reports/research"
+    output_dir: str = "artifacts/apps_research"
     gate_mode: str = "HARD_FAIL"
     stage_checkpoints: list[dict] = field(default_factory=list)
 

@@ -1,4 +1,4 @@
-"""Mandatory budgeted provider dispatch for executive_summary regen/repair (apps_rg W1 SSOT; ex-Qwen-era naming)."""
+"""Mandatory budgeted provider dispatch for executive_summary regen/repair (apps_rg W1 SSOT)."""
 
 from __future__ import annotations
 
@@ -84,7 +84,7 @@ class ExecutiveSummaryRegenBudgetLedger:
         prov = resolve_context_window_provenance()
         prov_fields = context_window_provenance_receipt_fields(prov)
         plan = {
-            "schema": "executive_summary_qwen_call_plan_v1",
+            "schema": "executive_summary_provider_call_plan_v1",
             **prov_fields,
             "calls": list(self.calls),
         }
@@ -93,7 +93,7 @@ class ExecutiveSummaryRegenBudgetLedger:
             **prov_fields,
             "calls": list(self.calls),
         }
-        _write_json(self.artifact_dir / "executive_summary_qwen_call_plan.json", plan)
+        _write_json(self.artifact_dir / "executive_summary_provider_call_plan.json", plan)
         _write_json(self.artifact_dir / "regen_token_budget_receipt.json", receipt)
 
 
@@ -278,18 +278,10 @@ def mark_regen_call_parse(
     ledger.update_call(call_id, parse_ok=bool(parse_ok))
 
 
-# Deprecated aliases (Qwen-era names; the provider was removed in PR #256 — dispatch is
-# provider-neutral via generate_section → ProviderGateway → external_claude). Kept one
-# release for stragglers; new code imports the provider-neutral names above.
-BudgetedQwenRegenOutcome = BudgetedRegenOutcome
-budgeted_qwen_regen_call = budgeted_regen_call
-
 __all__ = [
-    "BudgetedQwenRegenOutcome",
     "BudgetedRegenOutcome",
     "ExecutiveSummaryRegenBudgetLedger",
     "allocate_call_id",
-    "budgeted_qwen_regen_call",
     "budgeted_regen_call",
     "clear_regen_budget_ledger",
     "mark_regen_call_parse",

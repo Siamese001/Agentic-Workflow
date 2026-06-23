@@ -63,6 +63,6 @@ want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from htt
   details to `/tmp/agentic_session_start.log`.
 - **vector_db** runtime defaults (batch sizes, timeouts) live in `tools/retrieval/vector_config.py`;
   only non-default overrides + required vars are pinned in `.mcp.json`.
-- **playwright** writes browser session output to repo-root `.playwright-mcp/` (gitignored).
+- **playwright** writes browser session output to `artifacts/mcp/playwright/` (gitignored).
 - **adg_sqlite** tool names appear as `mcp__adg_sqlite__<tool>` in Claude Code (e.g.
   `mcp__adg_sqlite__adg_health`).
