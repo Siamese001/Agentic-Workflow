@@ -204,6 +204,22 @@ def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck
             str(single_main.get("summary") or ""),
         )
     )
+    pr_flow = audit.get("pr_flow") or {}
+    pr_flow_issues = pr_flow.get("issues") or []
+    pr_flow_required = bool(pr_flow.get("required"))
+    checks.append(
+        ReadinessCheck(
+            "git.publication.pr_flow_contract",
+            "FAIL" if pr_flow_required and pr_flow_issues else "PASS",
+            "critical" if pr_flow_required else "advisory",
+            (
+                "Publication contract requires a GitHub PR flow."
+                if not pr_flow_issues
+                else "Publication contract does not enforce a GitHub PR flow."
+            ),
+            json.dumps(pr_flow, sort_keys=True),
+        )
+    )
     return checks
 
 
@@ -487,6 +503,7 @@ def build_readiness_report(
     require_clean: bool = False,
     git_publication: bool = False,
     require_single_main_worktree: bool = False,
+    require_pr_flow: bool = False,
     fail_duplicate_processes: bool = False,
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
     allow_adg_sqlite_fallback: bool = False,
@@ -499,6 +516,7 @@ def build_readiness_report(
             root,
             fetch=True,
             require_single_main_worktree=require_single_main_worktree,
+            require_pr_flow=require_pr_flow,
         )
         checks = [*_check_contract_files(root), *_checks_from_publication_audit(audit)]
         return {
@@ -559,6 +577,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="In --git-publication mode, fail unless the local repo is one clean main worktree.",
     )
+    parser.add_argument(
+        "--require-pr-flow",
+        action="store_true",
+        help="In --git-publication mode, fail unless the on-demand PR publisher forbids direct main push.",
+    )
     parser.add_argument("--fail-duplicate-processes", action="store_true", help="Fail on duplicate MCP process cohorts")
     parser.add_argument(
         "--require-callable-route",
@@ -608,6 +631,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         require_clean=args.require_clean_worktree,
         git_publication=args.git_publication,
         require_single_main_worktree=args.require_single_main_worktree,
+        require_pr_flow=args.require_pr_flow,
         fail_duplicate_processes=args.fail_duplicate_processes,
         required_callable_routes=required_routes,
         allow_adg_sqlite_fallback=allow_adg_sqlite_fallback,

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,7 @@ from worktree_hygiene import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_AUTOMATION_CONTRACT = REPO_ROOT / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
 
 
 def _branch_lines(stdout: str) -> list[str]:
@@ -82,6 +84,71 @@ def _unmerged_branches(root: Path, base_ref: str, limit: int) -> list[dict[str, 
     return branches
 
 
+def _pr_flow_contract(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {
+            "required": False,
+            "clean": False,
+            "path": str(path),
+            "issues": [{"code": "missing_contract", "detail": "automation contract file not found"}],
+        }
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as exc:
+        return {
+            "required": False,
+            "clean": False,
+            "path": str(path),
+            "issues": [{"code": "invalid_toml", "detail": str(exc)}],
+        }
+
+    publication_mode = data.get("publication_mode")
+    allow_direct_main_push = data.get("allow_direct_main_push")
+    require_github_ci_green = data.get("require_github_ci_green")
+    allow_bypass_merge = data.get("allow_bypass_merge")
+    issues: list[dict[str, str]] = []
+    if publication_mode != "pull_request":
+        issues.append(
+            {
+                "code": "publication_mode",
+                "detail": f"expected=pull_request actual={publication_mode!r}",
+            }
+        )
+    if allow_direct_main_push is not False:
+        issues.append(
+            {
+                "code": "allow_direct_main_push",
+                "detail": f"expected=false actual={allow_direct_main_push!r}",
+            }
+        )
+    if require_github_ci_green is not True:
+        issues.append(
+            {
+                "code": "require_github_ci_green",
+                "detail": f"expected=true actual={require_github_ci_green!r}",
+            }
+        )
+    if allow_bypass_merge is not False:
+        issues.append(
+            {
+                "code": "allow_bypass_merge",
+                "detail": f"expected=false actual={allow_bypass_merge!r}",
+            }
+        )
+
+    return {
+        "required": True,
+        "clean": not issues,
+        "path": str(path),
+        "publication_mode": publication_mode,
+        "allow_direct_main_push": allow_direct_main_push,
+        "require_github_ci_green": require_github_ci_green,
+        "allow_bypass_merge": allow_bypass_merge,
+        "issues": issues,
+        "rule": "This automation must publish through a GitHub Pull Request, wait for green GitHub CI, and avoid bypass/forced merges.",
+    }
+
+
 def build_publication_audit(
     root: Path = REPO_ROOT,
     *,
@@ -90,7 +157,9 @@ def build_publication_audit(
     branch_limit: int = 100,
     require_ancestor_cleanup: bool = False,
     require_single_main_worktree: bool = False,
+    require_pr_flow: bool = False,
     expected_worktree_path: Path | None = None,
+    automation_contract_path: Path | None = None,
 ) -> dict[str, Any]:
     fetch_result: dict[str, Any] | None = None
     if fetch:
@@ -107,6 +176,17 @@ def build_publication_audit(
         expected_path=expected_worktree_path,
         base_ref=base_ref,
         fetch=False,
+    )
+    pr_flow = (
+        _pr_flow_contract(automation_contract_path or DEFAULT_AUTOMATION_CONTRACT)
+        if require_pr_flow
+        else {
+            "required": False,
+            "clean": True,
+            "path": str(automation_contract_path or DEFAULT_AUTOMATION_CONTRACT),
+            "issues": [],
+            "rule": "PR flow contract is advisory unless --require-pr-flow is supplied.",
+        }
     )
 
     blockers: list[str] = []
@@ -137,6 +217,8 @@ def build_publication_audit(
             blockers.append("single_main_worktree_violation")
         else:
             warnings.append("single_main_worktree_violation")
+    if require_pr_flow and not pr_flow.get("clean"):
+        blockers.append("pr_flow_contract_violation")
 
     unique_count = 0
     equivalent_count = 0
@@ -192,6 +274,7 @@ def build_publication_audit(
             "summary": summarize_single_main_worktree_issues(single_main_issues),
             "rule": "Post-PR local closeout requires exactly one clean main worktree at the expected repo path, with HEAD equal to the base ref.",
         },
+        "pr_flow": pr_flow,
         "unmerged_branches": unmerged,
     }
 
@@ -213,6 +296,17 @@ def parse_args() -> argparse.Namespace:
         help="Fail unless the local repo is exactly one clean main worktree.",
     )
     parser.add_argument(
+        "--require-pr-flow",
+        action="store_true",
+        help="Fail unless the on-demand PR publisher contract forbids direct main push.",
+    )
+    parser.add_argument(
+        "--automation-contract",
+        type=Path,
+        default=None,
+        help="Automation TOML contract to inspect for --require-pr-flow.",
+    )
+    parser.add_argument(
         "--expected-worktree-path",
         type=Path,
         default=None,
@@ -229,7 +323,9 @@ def main() -> int:
         branch_limit=args.branch_limit,
         require_ancestor_cleanup=args.require_ancestor_cleanup,
         require_single_main_worktree=args.require_single_main_worktree,
+        require_pr_flow=args.require_pr_flow,
         expected_worktree_path=args.expected_worktree_path,
+        automation_contract_path=args.automation_contract,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
