@@ -744,11 +744,29 @@ def _build_traversal_sufficiency_receipt(
         if isinstance(plan.get("graph_evidence_depth_comparison_report"), dict)
         else {}
     )
+    selector_traversal = (
+        plan.get("graph_traversal_receipt")
+        if isinstance(plan.get("graph_traversal_receipt"), dict)
+        else {}
+    )
+    candidate_conservation = (
+        selector_traversal.get("candidate_conservation")
+        if isinstance(selector_traversal.get("candidate_conservation"), dict)
+        else {}
+    )
     return {
         "schema_version": "competencies_graph_traversal_sufficiency_receipt_v1",
+        "selector_traversal_schema_version": selector_traversal.get("schema_version") or "",
+        "selector_plan_id": selector_traversal.get("plan_id") or plan.get("plan_id") or "",
+        "selector_plan_digest": selector_traversal.get("plan_digest") or plan.get("plan_digest") or "",
+        "candidate_conservation": candidate_conservation,
+        "candidate_conservation_pass": bool(candidate_conservation.get("pass")),
         "target_role_profile": plan.get("target_role_profile") or "",
         "selection_method": plan.get("selection_method") or "",
-        "candidate_nodes_visited_count": candidate_nodes_visited_count,
+        "candidate_nodes_visited_count": max(
+            candidate_nodes_visited_count,
+            int(candidate_conservation.get("role_episode_roots_total") or 0),
+        ),
         "category_count": category_count,
         "selected_source_fact_count": len(selected_source_fact_ids),
         "selected_source_fact_ids": selected_source_fact_ids,
@@ -762,7 +780,8 @@ def _build_traversal_sufficiency_receipt(
         "rejected_sibling_skill_ids": rejected_skill_ids,
         "rejected_sibling_metric_count": len(rejected_metric_ids),
         "rejected_sibling_metric_ids": rejected_metric_ids,
-        "frontier_size_by_hop_depth": {
+        "frontier_size_by_hop_depth": selector_traversal.get("frontier_size_by_hop_depth")
+        or {
             "0_role_episode_roots": len(selected_root_ids),
             "1_leaf_skill_candidates": len(set(selected_skill_ids) | set(rejected_skill_ids)),
             "2_metric_outcome_candidates": len(set(selected_metric_ids) | set(rejected_metric_ids)),
@@ -988,6 +1007,7 @@ def check_per_category_confidence_nonconstant(competencies: list[Any]) -> CompQu
 
 def check_competencies_rejected_neighbor_audit_present(
     parsed_output: dict[str, Any] | None,
+    proof_pool_metadata: dict[str, Any] | None = None,
 ) -> CompQualityResult:
     audit: dict[str, Any] = {}
     if isinstance(parsed_output, dict):
@@ -1017,6 +1037,16 @@ def check_competencies_rejected_neighbor_audit_present(
         and rejected_count > 0
         and candidate_variant_count >= candidate_label_count
     )
+    graph_candidate_receipt = {}
+    if isinstance(proof_pool_metadata, dict) and isinstance(
+        proof_pool_metadata.get("graph_candidate_receipt"), dict
+    ):
+        graph_candidate_receipt = proof_pool_metadata.get("graph_candidate_receipt") or {}
+    graph_candidate_schema_ok = graph_candidate_receipt.get("schema_version") == "graph_candidate_receipt_v1"
+    graph_rejected_count = int(graph_candidate_receipt.get("rejected_candidate_count") or 0)
+    graph_conservation_pass = bool(graph_candidate_receipt.get("candidate_conservation_pass"))
+    graph_candidate_pass = graph_candidate_schema_ok and graph_conservation_pass and graph_rejected_count > 0
+    passed = passed or graph_candidate_pass
     return CompQualityResult(
         gate_id="x2_competencies_rejected_neighbor_audit_present",
         passed=passed,
@@ -1027,10 +1057,13 @@ def check_competencies_rejected_neighbor_audit_present(
             "candidate_variant_count": candidate_variant_count,
             "selected_count": selected_count,
             "rejected_neighbor_count": rejected_count,
+            "graph_candidate_receipt_schema_ok": graph_candidate_schema_ok,
+            "graph_candidate_conservation_pass": graph_conservation_pass,
+            "graph_rejected_candidate_count": graph_rejected_count,
         },
         threshold=(
-            "competencies_rejected_neighbor_audit_v1 with candidate_label_count > "
-            "selected_count and rejected_neighbor_count > 0"
+            "competencies_rejected_neighbor_audit_v1 with rejected neighbors OR "
+            "graph_candidate_receipt_v1 with conserved selected/rejected candidates"
         ),
         failure_reason=(
             None
@@ -1038,7 +1071,8 @@ def check_competencies_rejected_neighbor_audit_present(
             else (
                 "competencies graph selector did not prove rejected-neighbor breadth; "
                 f"schema_ok={schema_ok} candidate_labels={candidate_label_count} "
-                f"selected={selected_count} rejected={rejected_count}"
+                f"selected={selected_count} rejected={rejected_count} "
+                f"graph_schema_ok={graph_candidate_schema_ok} graph_rejected={graph_rejected_count}"
             )
         ),
         signals=[str(x.get("category_label") or "") for x in audit.get("rejected_neighbors", [])[:6]]
@@ -1075,6 +1109,11 @@ def check_competencies_graph_traversal_sufficiency(
     source_fact_count = int(traversal.get("selected_source_fact_count") or 0)
     candidate_count = int(traversal.get("candidate_nodes_visited_count") or 0)
     rejected_skill_count = int(traversal.get("rejected_sibling_skill_count") or 0)
+    conservation = traversal.get("candidate_conservation")
+    conservation = conservation if isinstance(conservation, dict) else {}
+    conservation_pass = bool(traversal.get("candidate_conservation_pass"))
+    unexplained_roots = int(conservation.get("role_episode_roots_unexplained") or 0)
+    rejected_roots = int(conservation.get("role_episode_roots_rejected") or 0)
     depth_status = str(traversal.get("graph_evidence_depth_status") or "").strip().lower()
     missing_axes = [str(x) for x in (role_axes.get("missing_axes") or []) if str(x).strip()]
     required_axes = [str(x) for x in (role_axes.get("required_axes") or []) if str(x).strip()]
@@ -1082,6 +1121,12 @@ def check_competencies_graph_traversal_sufficiency(
     failures: list[str] = []
     if traversal.get("schema_version") != "competencies_graph_traversal_sufficiency_receipt_v1":
         failures.append("missing_traversal_receipt_schema")
+    if traversal.get("selector_traversal_schema_version") != "graph_traversal_receipt_v1":
+        failures.append("missing_selector_emitted_traversal_receipt")
+    if not conservation_pass:
+        failures.append(f"candidate_conservation_failed:unexplained_roots={unexplained_roots}")
+    if rejected_roots <= 0:
+        failures.append("no_rejected_eligible_roots")
     if depth_status != "judge_grade":
         failures.append(f"depth_status:{depth_status or 'missing'}")
     if selected_count < MIN_SELECTED_UNIQUE_LEAF_SKILLS:
@@ -1108,6 +1153,8 @@ def check_competencies_graph_traversal_sufficiency(
             "selected_unique_metric_count": metric_count,
             "selected_source_fact_count": source_fact_count,
             "rejected_sibling_skill_count": rejected_skill_count,
+            "candidate_conservation": conservation,
+            "rejected_eligible_root_count": rejected_roots,
             "frontier_size_by_hop_depth": traversal.get("frontier_size_by_hop_depth") or {},
             "graph_evidence_depth_status": traversal.get("graph_evidence_depth_status") or "",
             "missing_role_axes": missing_axes,

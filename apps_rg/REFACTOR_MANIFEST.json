@@ -1,0 +1,600 @@
+{
+  "schema_version": "graph_hardening_refactor_manifest_v1",
+  "generated_at_utc": "2026-06-22T10:49:49.134340+00:00",
+  "repository": "apps_rg",
+  "source_archive": "apps_rg.zip",
+  "source_archive_sha256": "ec48a0ae0fa5a389327a8461354f75ed7d13910122541f390099537ea8cdc2c5",
+  "review_only": true,
+  "implementation_changes_performed": false,
+  "zero_loss_copy_policy": "Every packaged production source file is copied byte-for-byte from the uploaded archive. No source text, line ending, metadata field, or JSON content was modified.",
+  "package_root": "apps_rg",
+  "source_file_count": 35,
+  "all_source_copies_byte_identical": true,
+  "source_files": [
+    {
+      "path": "apps_rg/runtime/proof_pool_resolver.py",
+      "source_size_bytes": 47378,
+      "packaged_size_bytes": 47378,
+      "source_sha256": "6a97590590225835afe66a5477fb0665ec9960051e48550c6d7693c13125c499",
+      "packaged_sha256": "6a97590590225835afe66a5477fb0665ec9960051e48550c6d7693c13125c499",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1",
+        "F2",
+        "F7",
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Canonical plan construction, proof-pool identity, graph depth attachment, and section parity."
+    },
+    {
+      "path": "apps_rg/fact_inventory/competencies_graph_skills_proof_pool.py",
+      "source_size_bytes": 22464,
+      "packaged_size_bytes": 22464,
+      "source_sha256": "18e4d9d3574e91df8abbc70acd5334ba5ee3ff276d5c8a7c0cbd2a7f4462a180",
+      "packaged_sha256": "18e4d9d3574e91df8abbc70acd5334ba5ee3ff276d5c8a7c0cbd2a7f4462a180",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1"
+      ],
+      "roadmap_slices": [
+        "Slice 1"
+      ],
+      "refactor_rationale": "Competencies-specific plan construction must converge on the single canonical section plan."
+    },
+    {
+      "path": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+      "source_size_bytes": 23702,
+      "packaged_size_bytes": 23702,
+      "source_sha256": "5f5072ecd7d1d29cdfc8938cb1f83846a6de8012aa1218c937b2ca99fc297b47",
+      "packaged_sha256": "5f5072ecd7d1d29cdfc8938cb1f83846a6de8012aa1218c937b2ca99fc297b47",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1",
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Shared graph plan/proof-pool construction and cross-section contract wiring."
+    },
+    {
+      "path": "apps_rg/runtime/sections/graph_role_episode_selector.py",
+      "source_size_bytes": 30766,
+      "packaged_size_bytes": 30766,
+      "source_sha256": "fa12ed37527240af1bf5b66f86ba5089d5c97188881ed39d8a84a8326972956c",
+      "packaged_sha256": "fa12ed37527240af1bf5b66f86ba5089d5c97188881ed39d8a84a8326972956c",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1",
+        "F2",
+        "F3",
+        "F7",
+        "F9",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Slice 2"
+      ],
+      "refactor_rationale": "Pre-target authority filtering, actual traversal events, candidate accounting, specificity, and targeting-only ranking."
+    },
+    {
+      "path": "apps_rg/runtime/sections/graph_evidence_contract.py",
+      "source_size_bytes": 38936,
+      "packaged_size_bytes": 38936,
+      "source_sha256": "3e4a6d2b532078b5bc6b9ecb1739f568523b3dda294175dd4fa901fa86be77ad",
+      "packaged_sha256": "3e4a6d2b532078b5bc6b9ecb1739f568523b3dda294175dd4fa901fa86be77ad",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F7",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Slice 2"
+      ],
+      "refactor_rationale": "Separate structural depth from semantic evidence quality and bind edge/source authority."
+    },
+    {
+      "path": "apps_rg/runtime/sections/competencies_pa.py",
+      "source_size_bytes": 19139,
+      "packaged_size_bytes": 19139,
+      "source_sha256": "d1f709a6a5b52ed2ab76bd5fc6bd7574843ad284da1e60f3d67aa552a80d2846",
+      "packaged_sha256": "d1f709a6a5b52ed2ab76bd5fc6bd7574843ad284da1e60f3d67aa552a80d2846",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1"
+      ],
+      "roadmap_slices": [
+        "Slice 1"
+      ],
+      "refactor_rationale": "Remove independent plan reselection and consume only the canonical digest-bound plan."
+    },
+    {
+      "path": "apps_rg/runtime/sections/section_prompt_authority_ssot.py",
+      "source_size_bytes": 13646,
+      "packaged_size_bytes": 13646,
+      "source_sha256": "6997c9188577d0dcbb035b5ec6b6e650bb6292eaa6e88d3607e0f6b9fc715ac8",
+      "packaged_sha256": "6997c9188577d0dcbb035b5ec6b6e650bb6292eaa6e88d3607e0f6b9fc715ac8",
+      "byte_identical": true,
+      "finding_ids": [
+        "F1",
+        "F9",
+        "F10"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Slice 2"
+      ],
+      "refactor_rationale": "Bind prompt authority to canonical plan and preserve targeting-only discipline."
+    },
+    {
+      "path": "apps_rg/runtime/sections/competencies_lane_execution.py",
+      "source_size_bytes": 52010,
+      "packaged_size_bytes": 52010,
+      "source_sha256": "2a182c9f20e2e2bf30a2c40d623718af738517de57f9cada51b18ca90316341f",
+      "packaged_sha256": "2a182c9f20e2e2bf30a2c40d623718af738517de57f9cada51b18ca90316341f",
+      "byte_identical": true,
+      "finding_ids": [
+        "F3",
+        "F10",
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 2",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Emit real graph receipts, arbitration, and shared human-auditable assessment."
+    },
+    {
+      "path": "apps_rg/runtime/validators/competencies_quality_x2.py",
+      "source_size_bytes": 60868,
+      "packaged_size_bytes": 60868,
+      "source_sha256": "1f7320fac075d0aff6bd19987b1555e06d9c20b12c76beee9b14384719b7df89",
+      "packaged_sha256": "1f7320fac075d0aff6bd19987b1555e06d9c20b12c76beee9b14384719b7df89",
+      "byte_identical": true,
+      "finding_ids": [
+        "F3",
+        "F7",
+        "F9",
+        "F10"
+      ],
+      "roadmap_slices": [
+        "Slice 2"
+      ],
+      "refactor_rationale": "Replace synthetic traversal/count-shaped quality with immutable receipt validation and decomposed proof confidence."
+    },
+    {
+      "path": "apps_rg/runtime/validators/competencies_x2.py",
+      "source_size_bytes": 46960,
+      "packaged_size_bytes": 46960,
+      "source_sha256": "89727a714dcb34c3bb494a8412dcd7dd4bfa12fe125d85e6858a001acfbcd7e8",
+      "packaged_sha256": "89727a714dcb34c3bb494a8412dcd7dd4bfa12fe125d85e6858a001acfbcd7e8",
+      "byte_identical": true,
+      "finding_ids": [
+        "F8"
+      ],
+      "roadmap_slices": [
+        "Slice 2"
+      ],
+      "refactor_rationale": "Require claim-level evidence binding instead of broad ID/token membership."
+    },
+    {
+      "path": "apps_rg/runtime/exit/competencies_x3.py",
+      "source_size_bytes": 1503,
+      "packaged_size_bytes": 1503,
+      "source_sha256": "f07191a85536d232c10beab4260b7e16307283519b97a52b3035529c9d2cb3f7",
+      "packaged_sha256": "f07191a85536d232c10beab4260b7e16307283519b97a52b3035529c9d2cb3f7",
+      "byte_identical": true,
+      "finding_ids": [
+        "F10"
+      ],
+      "roadmap_slices": [
+        "Slice 2"
+      ],
+      "refactor_rationale": "Consume the central arbitration disposition."
+    },
+    {
+      "path": "apps_rg/runtime/exit/executive_summary_x3.py",
+      "source_size_bytes": 15928,
+      "packaged_size_bytes": 15928,
+      "source_sha256": "c910aad1b9a0bd341fc1c755ef8783afd37f343dcca4570f02ec97eb7d8b1b8c",
+      "packaged_sha256": "c910aad1b9a0bd341fc1c755ef8783afd37f343dcca4570f02ec97eb7d8b1b8c",
+      "byte_identical": true,
+      "finding_ids": [
+        "F10"
+      ],
+      "roadmap_slices": [
+        "Slice 2"
+      ],
+      "refactor_rationale": "Make graph authority/arbitration precedence explicit for shared X3 behavior."
+    },
+    {
+      "path": "apps_rg/runtime/graph/graph_skill_concentration_policy.py",
+      "source_size_bytes": 8810,
+      "packaged_size_bytes": 8810,
+      "source_sha256": "0ce9aab13a66ab663e18c7df7f1cd2c5b638a3d3dcc0d6f9509c9437afa52afa",
+      "packaged_sha256": "0ce9aab13a66ab663e18c7df7f1cd2c5b638a3d3dcc0d6f9509c9437afa52afa",
+      "byte_identical": true,
+      "finding_ids": [
+        "F7",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 2"
+      ],
+      "refactor_rationale": "Measure semantic/base-fact concentration after alias normalization."
+    },
+    {
+      "path": "apps_rg/runtime/section_proof/section_input_usage_ledger.py",
+      "source_size_bytes": 11920,
+      "packaged_size_bytes": 11920,
+      "source_sha256": "9bdc1b85fe618320dcb715478193148ed999ce6f1b153759ec30568195c6bad8",
+      "packaged_sha256": "9bdc1b85fe618320dcb715478193148ed999ce6f1b153759ec30568195c6bad8",
+      "byte_identical": true,
+      "finding_ids": [
+        "F8",
+        "F9",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 2",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Bind claims, canonical plan, and verified briefing envelope/digests."
+    },
+    {
+      "path": "apps_rg/runtime/orchestration/section_lane_executor.py",
+      "source_size_bytes": 6463,
+      "packaged_size_bytes": 6463,
+      "source_sha256": "7774b1a7786c8b60917bb2901cbffe2fd33f55f0c353a470ef08211ab2cb7aa7",
+      "packaged_sha256": "7774b1a7786c8b60917bb2901cbffe2fd33f55f0c353a470ef08211ab2cb7aa7",
+      "byte_identical": true,
+      "finding_ids": [
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Common lane-level receipt and whole-run graph assessment wiring."
+    },
+    {
+      "path": "apps_rg/runtime/spine/section_cli_runners.py",
+      "source_size_bytes": 35781,
+      "packaged_size_bytes": 35781,
+      "source_sha256": "9145453e47fc675870315be5f8d0b3ab7b06d96d6280a41a42822655158f3255",
+      "packaged_sha256": "9145453e47fc675870315be5f8d0b3ab7b06d96d6280a41a42822655158f3255",
+      "byte_identical": true,
+      "finding_ids": [
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Ensure section-only runs emit the same graph receipts and visible assessment."
+    },
+    {
+      "path": "apps_rg/runtime/sections/competency_capability_evidence.py",
+      "source_size_bytes": 31276,
+      "packaged_size_bytes": 31276,
+      "source_sha256": "af06d33abf6e596cf8c8ebbaac00a1bf338082a9f9ab3b77ec1bf329743cf43d",
+      "packaged_sha256": "af06d33abf6e596cf8c8ebbaac00a1bf338082a9f9ab3b77ec1bf329743cf43d",
+      "byte_identical": true,
+      "finding_ids": [
+        "F7",
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 2",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Align capability packets with semantic granularity and common receipt schema."
+    },
+    {
+      "path": "apps_rg/runtime/sections/headline_positioning_evidence.py",
+      "source_size_bytes": 14976,
+      "packaged_size_bytes": 14976,
+      "source_sha256": "6106cbc06b49d76efeee148e6240fdd247545750292c050aca9567d7b5c658cd",
+      "packaged_sha256": "6106cbc06b49d76efeee148e6240fdd247545750292c050aca9567d7b5c658cd",
+      "byte_identical": true,
+      "finding_ids": [
+        "F7",
+        "F11"
+      ],
+      "roadmap_slices": [
+        "Slice 2",
+        "Slice 4"
+      ],
+      "refactor_rationale": "Align headline packets with semantic granularity and common receipt schema."
+    },
+    {
+      "path": "apps_rg/fact_inventory/candidate_fact_ledger.py",
+      "source_size_bytes": 8531,
+      "packaged_size_bytes": 8531,
+      "source_sha256": "5b1bdbdf0658e55729aff79a4624cb3ccfc4bbcdd16fb6dc5bf8bb39e5f01ab0",
+      "packaged_sha256": "5b1bdbdf0658e55729aff79a4624cb3ccfc4bbcdd16fb6dc5bf8bb39e5f01ab0",
+      "byte_identical": true,
+      "finding_ids": [
+        "F16"
+      ],
+      "roadmap_slices": [
+        "Slice 1"
+      ],
+      "refactor_rationale": "Declare and preflight the external candidate-ledger authority dependency."
+    },
+    {
+      "path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "source_size_bytes": 2241847,
+      "packaged_size_bytes": 2241847,
+      "source_sha256": "fd382a6b185ddd485ffece8a110c4f31879d1abe294f2aff9ebbb1cbba54cf57",
+      "packaged_sha256": "fd382a6b185ddd485ffece8a110c4f31879d1abe294f2aff9ebbb1cbba54cf57",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Later / optional"
+      ],
+      "refactor_rationale": "Policy/leaf/alias metadata is authoritative input; edit only where metadata is demonstrably inconsistent."
+    },
+    {
+      "path": "apps_rg/fact_inventory/unify_role_episode_bundles.json",
+      "source_size_bytes": 53715,
+      "packaged_size_bytes": 53715,
+      "source_sha256": "15b0a11d6c60fda2ce59f0a2b208a606ac056077c30dbaf183df12e1cae9a8c9",
+      "packaged_sha256": "15b0a11d6c60fda2ce59f0a2b208a606ac056077c30dbaf183df12e1cae9a8c9",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Later / optional"
+      ],
+      "refactor_rationale": "Role-root skill/metric bindings require policy-clean validation and, where needed, metadata correction."
+    },
+    {
+      "path": "apps_rg/fact_inventory/ibm_role_episode_bundles.json",
+      "source_size_bytes": 53066,
+      "packaged_size_bytes": 53066,
+      "source_sha256": "0d00ecd2f0e4776a2ee0c3d4e9a2ab9ebc178eb48b04e4ec7457b82925013826",
+      "packaged_sha256": "0d00ecd2f0e4776a2ee0c3d4e9a2ab9ebc178eb48b04e4ec7457b82925013826",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Later / optional"
+      ],
+      "refactor_rationale": "Role-root skill/metric bindings require policy-clean validation and, where needed, metadata correction."
+    },
+    {
+      "path": "apps_rg/fact_inventory/insurtech_role_episode_bundles.json",
+      "source_size_bytes": 70227,
+      "packaged_size_bytes": 70227,
+      "source_sha256": "635180ada98f20159751788d6210fffdc7223b7222169d8981619b7dad53168b",
+      "packaged_sha256": "635180ada98f20159751788d6210fffdc7223b7222169d8981619b7dad53168b",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Later / optional"
+      ],
+      "refactor_rationale": "Role-root skill/metric bindings require policy-clean validation and, where needed, metadata correction."
+    },
+    {
+      "path": "apps_rg/fact_inventory/ey_role_episode_bundles.json",
+      "source_size_bytes": 44550,
+      "packaged_size_bytes": 44550,
+      "source_sha256": "449a5406c2252ee2fdac8c29fd97c88d0b8c22a8962a93c11d6756c93ff64fd6",
+      "packaged_sha256": "449a5406c2252ee2fdac8c29fd97c88d0b8c22a8962a93c11d6756c93ff64fd6",
+      "byte_identical": true,
+      "finding_ids": [
+        "F2",
+        "F14"
+      ],
+      "roadmap_slices": [
+        "Slice 1",
+        "Later / optional"
+      ],
+      "refactor_rationale": "Role-root skill/metric bindings require policy-clean validation and, where needed, metadata correction."
+    },
+    {
+      "path": "apps_rg/integrations/apps_research_bridge.py",
+      "source_size_bytes": 13379,
+      "packaged_size_bytes": 13379,
+      "source_sha256": "2d323ca14f65fc690c2a35dd0b739d319e5fbb87a7770ea331be5f9f8751f146",
+      "packaged_sha256": "2d323ca14f65fc690c2a35dd0b739d319e5fbb87a7770ea331be5f9f8751f146",
+      "byte_identical": true,
+      "finding_ids": [
+        "F4",
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Verify the canonical handoff envelope/digests and keep product upload-only policy explicit."
+    },
+    {
+      "path": "apps_rg/integrations/managed_research_delegation.py",
+      "source_size_bytes": 6907,
+      "packaged_size_bytes": 6907,
+      "source_sha256": "dc3e25933233dd28b30f42631a09c04ba9724b87883e44f240e23647ce22f6d1",
+      "packaged_sha256": "dc3e25933233dd28b30f42631a09c04ba9724b87883e44f240e23647ce22f6d1",
+      "byte_identical": true,
+      "finding_ids": [
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Quarantine non-product delegation and enforce freshness/envelope identity where retained."
+    },
+    {
+      "path": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py",
+      "source_size_bytes": 24725,
+      "packaged_size_bytes": 24725,
+      "source_sha256": "7955357f5454980135833885b140eda900b701974f06b9cee137af3f8177b994",
+      "packaged_sha256": "7955357f5454980135833885b140eda900b701974f06b9cee137af3f8177b994",
+      "byte_identical": true,
+      "finding_ids": [
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Remove route-policy ambiguity and aggregate verified handoff/graph receipts."
+    },
+    {
+      "path": "apps_rg/runtime/bindings/briefing_u0_signals.py",
+      "source_size_bytes": 3755,
+      "packaged_size_bytes": 3755,
+      "source_sha256": "92779cd1bd5d7cb906c02ff23cebd8acf269b1e946e34537e9f07b1ca7110979",
+      "packaged_sha256": "92779cd1bd5d7cb906c02ff23cebd8acf269b1e946e34537e9f07b1ca7110979",
+      "byte_identical": true,
+      "finding_ids": [
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Emit the canonical upload-only route policy and bind envelope identity."
+    },
+    {
+      "path": "apps_rg/runtime/bindings/l1_binding.py",
+      "source_size_bytes": 14330,
+      "packaged_size_bytes": 14330,
+      "source_sha256": "c90287f795bfed992a07e1cb72f5c38ea4702e4889b9c1d89ba22ad2816c509e",
+      "packaged_sha256": "c90287f795bfed992a07e1cb72f5c38ea4702e4889b9c1d89ba22ad2816c509e",
+      "byte_identical": true,
+      "finding_ids": [
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Validate the authoritative handoff envelope before section work."
+    },
+    {
+      "path": "apps_rg/runtime/briefing_resolution.py",
+      "source_size_bytes": 5983,
+      "packaged_size_bytes": 5983,
+      "source_sha256": "eabb161c245d1067757afa6b9d23026912fdce9c7a66908b19781fae205777b9",
+      "packaged_sha256": "eabb161c245d1067757afa6b9d23026912fdce9c7a66908b19781fae205777b9",
+      "byte_identical": true,
+      "finding_ids": [
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Resolve typed envelopes rather than treating JSON/YAML as arbitrary text."
+    },
+    {
+      "path": "apps_rg/runtime/pre_dispatch_preflight.py",
+      "source_size_bytes": 15512,
+      "packaged_size_bytes": 15512,
+      "source_sha256": "7abd2e49865ad92383791f2eb0013feda8abb10cb9eb9b329979ef29bdc1cbd9",
+      "packaged_sha256": "7abd2e49865ad92383791f2eb0013feda8abb10cb9eb9b329979ef29bdc1cbd9",
+      "byte_identical": true,
+      "finding_ids": [
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Validate envelope schema, digest chain, semantic eligibility, and freshness."
+    },
+    {
+      "path": "apps_rg/prerequisites/briefing_validator.py",
+      "source_size_bytes": 5871,
+      "packaged_size_bytes": 5871,
+      "source_sha256": "26ee00d1574f3f3c8fa2496f36c7c501338a404c0f53281df70c2766649c220b",
+      "packaged_sha256": "26ee00d1574f3f3c8fa2496f36c7c501338a404c0f53281df70c2766649c220b",
+      "byte_identical": true,
+      "finding_ids": [
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Align producer timestamp/schema fields and enforce freshness/company/role/JD identity."
+    },
+    {
+      "path": "apps_rg/enforcement/cli_prerequisite_gate.py",
+      "source_size_bytes": 2761,
+      "packaged_size_bytes": 2761,
+      "source_sha256": "28c5b28f27b43fb863945df3f7eb85979effe233dba5482a8b37987c927dfb05",
+      "packaged_sha256": "28c5b28f27b43fb863945df3f7eb85979effe233dba5482a8b37987c927dfb05",
+      "byte_identical": true,
+      "finding_ids": [
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Fail closed on invalid or legacy-unverified briefing artifacts."
+    },
+    {
+      "path": "apps_rg/runtime/targeting_input_freshness.py",
+      "source_size_bytes": 4501,
+      "packaged_size_bytes": 4501,
+      "source_sha256": "f8d8725db77d08f469a8dcb8983da3e5059c6aa592ae821ddf63164e149fd0fb",
+      "packaged_sha256": "f8d8725db77d08f469a8dcb8983da3e5059c6aa592ae821ddf63164e149fd0fb",
+      "byte_identical": true,
+      "finding_ids": [
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Use canonical envelope timestamps and policy to compute freshness."
+    },
+    {
+      "path": "apps_rg/runtime/orchestration/canonical_dispatch.py",
+      "source_size_bytes": 19261,
+      "packaged_size_bytes": 19261,
+      "source_sha256": "4e61c0cbf35c1470ddc8f1f788062fdf2b9232cf2a81b9f03917686f359fc429",
+      "packaged_sha256": "4e61c0cbf35c1470ddc8f1f788062fdf2b9232cf2a81b9f03917686f359fc429",
+      "byte_identical": true,
+      "finding_ids": [
+        "F12",
+        "F13"
+      ],
+      "roadmap_slices": [
+        "Slice 4"
+      ],
+      "refactor_rationale": "Consume the verified envelope consistently and preserve route policy."
+    }
+  ],
+  "added_review_files": [
+    {
+      "path": "apps_rg/HARDENING_REVIEW.md",
+      "purpose": "Integrated findings, rubric, roadmap, tests, artifacts, and non-goals requested by the user.",
+      "sha256": "ded946f70e5d031207906d15c13fbfb03bf63e21a9148ee13de6dae553af3397"
+    },
+    {
+      "path": "apps_rg/REFACTOR_MANIFEST.json",
+      "purpose": "Refactor-surface inventory and zero-loss source-copy integrity evidence."
+    }
+  ]
+}

@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import importlib
+import hashlib
 import json
 import logging
 import sys
 from dataclasses import asdict, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -227,6 +228,93 @@ def _looks_like_stub_company_brief(text: str) -> bool:
     return any(marker in blob for marker in stub_markers)
 
 
+def _sha256_text(text: str) -> str:
+    return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _apps_rg_targeting_sidecar(record) -> dict:
+    fec_ctx = getattr(record, "fec_run_context", {}) or {}
+    if not isinstance(fec_ctx, dict):
+        return {}
+    company_brief = fec_ctx.get("company_brief")
+    if not isinstance(company_brief, dict):
+        return {}
+    sidecar = company_brief.get("apps_rg_targeting_brief_sidecar")
+    return dict(sidecar) if isinstance(sidecar, dict) else {}
+
+
+def _write_apps_rg_handoff_envelope(
+    *,
+    run_dir: Path,
+    record,
+    request,
+    briefing_text: str,
+    company_brief_path: Path,
+    briefing_path: Path,
+    generated_at_utc: str,
+) -> dict:
+    """Emit authoritative apps_research -> apps_rg handoff metadata."""
+    sidecar = _apps_rg_targeting_sidecar(record)
+    if not sidecar:
+        raise RuntimeError("apps_research targeting run missing apps_rg handoff sidecar")
+
+    expected_brief_sha = _sha256_text(briefing_text)
+    sidecar_sha = str(sidecar.get("brief_text_sha256") or "").strip()
+    if sidecar_sha and sidecar_sha != expected_brief_sha:
+        raise RuntimeError("apps_research targeting sidecar digest mismatch")
+    if _looks_like_stub_company_brief(briefing_text):
+        raise RuntimeError("apps_research targeting run produced stub-like handoff brief")
+    if not bool(sidecar.get("handoff_eligible")):
+        raise RuntimeError(
+            "apps_research targeting handoff not eligible: "
+            + str(sidecar.get("reason") or sidecar.get("missing_sections") or "semantic_gate_failed")
+        )
+
+    jd_ctx = getattr(request, "jd_context", {}) or {}
+    if not isinstance(jd_ctx, dict):
+        jd_ctx = {}
+    jd_text = str(jd_ctx.get("content") or jd_ctx.get("jd_text") or "")
+    emitted_at = datetime.fromisoformat(generated_at_utc.replace("Z", "+00:00"))
+    expires_at = emitted_at + timedelta(days=7)
+    envelope = {
+        "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
+        "producer_app": "apps_research",
+        "consumer_app": "apps_rg",
+        "run_id": str(getattr(record, "run_id", "") or getattr(request, "trace_id", "")),
+        "target_company": str(jd_ctx.get("company_name") or getattr(request, "topic", "") or ""),
+        "target_role": str(jd_ctx.get("job_title") or ""),
+        "generated_at_utc": generated_at_utc,
+        "expires_at_utc": expires_at.isoformat(),
+        "dry_run": False,
+        "stub_detected": False,
+        "is_stale": False,
+        "handoff_eligible": True,
+        "brief_sha256": expected_brief_sha,
+        "jd_sha256": _sha256_text(jd_text) if jd_text else "",
+        "briefing_path": str(briefing_path.resolve()),
+        "company_brief_path": str(company_brief_path.resolve()),
+        "semantic_assessment": {
+            "score": sidecar.get("briefing_semantic_score"),
+            "judge_name": sidecar.get("judge_name"),
+            "judge_model": sidecar.get("judge_model"),
+            "role_archetype": sidecar.get("role_archetype"),
+            "required_sections_present": sidecar.get("required_sections_present", []),
+            "missing_sections": sidecar.get("missing_sections", []),
+            "source_families_present": sidecar.get("source_families_present", []),
+            "source_families_missing": sidecar.get("source_families_missing", []),
+            "signal_terms_present": sidecar.get("signal_terms_present", []),
+            "signal_terms_missing": sidecar.get("signal_terms_missing", []),
+        },
+        "source_register": sidecar.get("source_register", []),
+        "upstream_sidecar": sidecar,
+    }
+    (run_dir / "apps_research_briefing_envelope.json").write_text(
+        json.dumps(envelope, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return envelope
+
+
 def _write_research_artifacts(record, request) -> Path:
     """Persist a fresh apps_research run artifact bundle."""
     run_id = str(getattr(record, "run_id", "") or getattr(request, "trace_id", "") or uuid4().hex)
@@ -245,11 +333,12 @@ def _write_research_artifacts(record, request) -> Path:
             f"terminal_error={getattr(record, 'hop_terminal_error', '')!r}"
         )
 
+    generated_at_utc = datetime.now(timezone.utc).isoformat()
     payload = {
         "schema_version": "apps_research.company_brief_artifact.v2",
         "company": str(getattr(record, "topic", "") or getattr(request, "topic", "")),
         "run_id": run_id,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": generated_at_utc,
         "targeting_format": (
             (getattr(request, "jd_context", {}) or {}).get("output_format") or ""
         ),
@@ -259,12 +348,25 @@ def _write_research_artifacts(record, request) -> Path:
         "hop_terminal_error": str(getattr(record, "hop_terminal_error", "") or ""),
         "fec_run_context": _jsonable(getattr(record, "fec_run_context", {}) or {}),
     }
-    (run_dir / "company_brief.json").write_text(
+    company_brief_path = run_dir / "company_brief.json"
+    company_brief_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    briefing_path = run_dir / "briefing.md"
     if briefing_text:
-        (run_dir / "briefing.md").write_text(briefing_text + "\n", encoding="utf-8")
+        briefing_path.write_text(briefing_text + "\n", encoding="utf-8")
+    handoff_envelope = {}
+    if is_targeting and briefing_text:
+        handoff_envelope = _write_apps_rg_handoff_envelope(
+            run_dir=run_dir,
+            record=record,
+            request=request,
+            briefing_text=briefing_text,
+            company_brief_path=company_brief_path,
+            briefing_path=briefing_path,
+            generated_at_utc=generated_at_utc,
+        )
     (run_dir / "run_metadata.json").write_text(
         json.dumps(
             {
@@ -275,6 +377,11 @@ def _write_research_artifacts(record, request) -> Path:
                 "targeting_format": payload["targeting_format"],
                 "company_brief_path": str(run_dir / "company_brief.json"),
                 "briefing_path": str(run_dir / "briefing.md") if briefing_text else "",
+                "apps_research_briefing_envelope_path": (
+                    str(run_dir / "apps_research_briefing_envelope.json")
+                    if handoff_envelope
+                    else ""
+                ),
             },
             ensure_ascii=False,
             indent=2,

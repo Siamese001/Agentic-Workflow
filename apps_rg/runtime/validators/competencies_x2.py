@@ -1238,7 +1238,7 @@ def run_competencies_x2_gates(
             check_required_capability_families_covered(comps_list, min_families=7),
             check_source_fact_concentration_limit(comps_list),
             check_per_category_confidence_nonconstant(comps_list),
-            check_competencies_rejected_neighbor_audit_present(parsed_output),
+            check_competencies_rejected_neighbor_audit_present(parsed_output, proof_pool_metadata),
             check_competencies_graph_traversal_sufficiency(
                 comps_list,
                 proof_pool_metadata,

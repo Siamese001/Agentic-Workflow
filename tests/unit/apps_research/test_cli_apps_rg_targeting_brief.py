@@ -5,6 +5,8 @@ apps_research CLI handoff tests for apps_rg targeting briefs.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +20,60 @@ class _FakeRecord:
     support_coverage: float = 0.88
     hop_terminal_error: str = ""
     fec_run_context: dict | None = None
+
+
+_VALID_APPS_RG_BRIEF = (
+    "Anthropic - Manager Applied AI Architecture Partnerships targeting brief\n"
+    "| Manager Applied AI Architecture Partnerships | band | Reports to Partnerships |\n\n"
+    "## JD Complement\n"
+    "- Company DNA centers on safe frontier AI deployment with partner-led enterprise adoption.\n"
+    "- Operating model favors technical architecture depth paired with commercial ecosystem motion.\n\n"
+    "## Company DNA & Operating Model\n"
+    "- Company DNA emphasizes research-to-product translation for enterprise-grade AI systems.\n"
+    "- Operating model blends platform, architecture, and leadership decision rights.\n\n"
+    "## Company Strategy & Operating Pressure\n"
+    "- Strategy pressure focuses on scaling trusted AI adoption through partner ecosystems.\n"
+    "- Recent urgency centers on durable enterprise deployment patterns and platform governance.\n\n"
+    "## Leadership & Stakeholder Map\n"
+    "- Leadership stakeholders need partner architects who can translate roadmap into technical close.\n"
+    "- Stakeholder map spans partnerships, platform, data, and customer architecture teams.\n\n"
+    "## AI, Data, Platform, Architecture Signals\n"
+    "- AI platform signal favors secure integration, evaluation loops, and data governance.\n"
+    "- Architecture signal points to reusable patterns for enterprise deployment readiness.\n\n"
+    "## Partnership / Ecosystem Motion\n"
+    "- Co-sell motion depends on joint solution design, enablement, and technical close discipline.\n"
+    "- Partner ecosystem signal includes GSI and ISV channels supporting adoption motion.\n\n"
+    "## Recent Events & Urgency\n"
+    "- Recent events create urgency for forward-looking enterprise AI operating models.\n"
+    "- Urgency signal supports positioning around safe deployment and measurable partner adoption.\n\n"
+    "## apps_rg Positioning Themes\n"
+    "- Positioning should connect platform architecture, partner-led delivery, and leadership trust.\n"
+    "- Themes should remain targeting context only and not become proof for resume claims.\n\n"
+    "## apps_lic Outreach Angles\n"
+    "- Outreach angle can emphasize ecosystem revenue, partner enablement, and adoption motion.\n"
+    "- Outreach should mirror company strategy without copying job description responsibilities.\n\n"
+    "## Do Not Use As Proof\n"
+    "- This briefing is targeting context only and must not support candidate achievement claims.\n"
+)
+
+
+def _sidecar_for(brief: str) -> dict:
+    normalized = brief.strip()
+    return {
+        "brief_text_sha256": hashlib.sha256(normalized.encode("utf-8")).hexdigest(),
+        "handoff_eligible": True,
+        "briefing_semantic_score": 0.91,
+        "judge_name": "gemini-pro-3.1-preview",
+        "judge_model": "gemini-3.1-pro-preview",
+        "role_archetype": "partnerships",
+        "required_sections_present": ["jd complement"],
+        "missing_sections": [],
+        "source_families_present": ["overview", "partner_ecosystem"],
+        "source_families_missing": [],
+        "signal_terms_present": ["company dna", "co-sell"],
+        "signal_terms_missing": [],
+        "source_register": [{"family": "partner_ecosystem", "has_content": True}],
+    }
 
 
 def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) -> None:
@@ -34,13 +90,13 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
         return _FakeRecord(
             run_id="research-run-test",
             topic="Anthropic",
-            company_brief_text=(
-                "Anthropic - Manager targeting brief\n"
-                "| Manager | band | Reports to Partnerships |\n\n"
-                "=== STRATEGIC MANDATE ===\n"
-                "- Partner-led enterprise AI deployment at scale\n"
-            ),
-            fec_run_context={"company_brief": {"company": "Anthropic"}},
+            company_brief_text=_VALID_APPS_RG_BRIEF,
+            fec_run_context={
+                "company_brief": {
+                    "company": "Anthropic",
+                    "apps_rg_targeting_brief_sidecar": _sidecar_for(_VALID_APPS_RG_BRIEF),
+                }
+            },
         )
 
     monkeypatch.setattr(main_mod, "_run_research_record", _fake_run)
@@ -65,6 +121,18 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
     company_json = runs_root / "research-run-test" / "company_brief.json"
     assert briefing.read_text(encoding="utf-8").startswith("Anthropic - Manager")
     assert '"company": "Anthropic"' in company_json.read_text(encoding="utf-8")
+    envelope = json.loads(
+        (runs_root / "research-run-test" / "apps_research_briefing_envelope.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert envelope["schema_version"] == "apps_research.apps_rg_briefing_envelope.v1"
+    assert envelope["consumer_app"] == "apps_rg"
+    assert envelope["handoff_eligible"] is True
+    assert envelope["brief_sha256"] == hashlib.sha256(
+        _VALID_APPS_RG_BRIEF.strip().encode("utf-8")
+    ).hexdigest()
+    assert envelope["jd_sha256"]
 
 
 def test_cli_jd_path_fails_closed_without_targeting_markdown(

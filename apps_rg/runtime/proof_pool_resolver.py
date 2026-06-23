@@ -720,11 +720,6 @@ def _resolve_competencies_graph_skills_proof_pool(
         target_role=target_role,
         briefing_text=briefing_text,
     )
-    plan = dict(payload["selected_fact_plan"])
-    facts = list(plan.get("facts") or [])
-    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
-    bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
-
     from apps_rg.runtime.sections.graph_role_episode_selector import (
         build_selected_graph_evidence_plan_for_section,
     )
@@ -737,6 +732,12 @@ def _resolve_competencies_graph_skills_proof_pool(
         briefing_text=briefing_text,
     )
     selected_graph_plan = _sanitize_plan(selected_graph_plan)
+    plan = dict(selected_graph_plan)
+    facts = list(plan.get("facts") or [])
+    if not facts:
+        raise ValueError("competencies graph-skills proof pool BLOCKED: canonical graph plan has no facts")
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
 
     graph_ref = str(payload.get("graph_source") or graph_auth.get("graph_ref") or "")
     graph_digest = str(graph_auth.get("graph_digest") or "")
@@ -758,8 +759,13 @@ def _resolve_competencies_graph_skills_proof_pool(
     )
     meta = {**meta, **graph_auth}
     meta["selected_graph_evidence_plan"] = selected_graph_plan
+    meta["canonical_section_graph_plan_id"] = selected_graph_plan.get("plan_id")
+    meta["canonical_section_graph_plan_digest"] = selected_graph_plan.get("plan_digest")
     meta["graph_evidence_selection_method"] = selected_graph_plan.get("selection_method")
     meta["selected_graph_skill_rows"] = selected_graph_plan.get("selected_skills") or []
+    meta["graph_candidate_decision_ledger"] = selected_graph_plan.get("graph_candidate_decision_ledger") or []
+    meta["graph_candidate_receipt"] = selected_graph_plan.get("graph_candidate_receipt") or {}
+    meta["graph_traversal_receipt"] = selected_graph_plan.get("graph_traversal_receipt") or {}
     meta["selected_graph_skill_count_by_employer"] = (
         (selected_graph_plan.get("skew_diagnostics") or {}).get("selected_skill_counts_by_employer")
         or {}
@@ -836,7 +842,25 @@ def _resolve_competencies_graph_skills_proof_pool(
         section_id="competencies",
         packet_key="competency_capability_section_packet",
     )
-    digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    digest = str(selected_graph_plan.get("plan_digest") or "").strip()
+    if not digest:
+        digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
+    meta["graph_selection_binding_receipt"] = {
+        "schema_version": "graph_selection_binding_receipt_v1",
+        "producer": "apps_rg.runtime.proof_pool_resolver._resolve_competencies_graph_skills_proof_pool",
+        "section_id": "competencies",
+        "canonical_plan_id": selected_graph_plan.get("plan_id"),
+        "canonical_plan_digest": selected_graph_plan.get("plan_digest"),
+        "selected_fact_plan_digest": digest,
+        "proof_pool_digest": digest,
+        "selected_graph_plan_is_selected_fact_plan": True,
+        "selection_method": selected_graph_plan.get("selection_method"),
+        "pass": bool(selected_graph_plan.get("plan_digest")) and bool(facts),
+        "human_explanation": (
+            "Competencies proof pool uses the selected graph evidence plan itself as the "
+            "canonical selected_fact_plan; no second plan is used for X2/X3 graph proof."
+        ),
+    }
     return SectionProofPool(
         section="competencies",
         proof_source=PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,

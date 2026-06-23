@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from agentic_core.config.model_catalog import QWEN_VLLM_LABEL
+from apps_rg.prerequisites.briefing_validator import (
+    AppsResearchHandoffValidation,
+    validate_apps_research_handoff,
+)
 from apps_rg.runtime.briefing_resolution import _looks_like_filesystem_ref as _briefing_looks_like_path
 from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH
 from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH, _looks_like_filesystem_ref as _jd_looks_like_path
@@ -164,6 +168,8 @@ class PreDispatchPreflightResult:
     upstream_bullets_detail: str
     dispatch_started: bool
     decisive_reason: str
+    apps_research_handoff_validation: dict[str, Any] | None = None
+    apps_research_briefing_envelope: dict[str, Any] | None = None
 
     @property
     def allowed(self) -> bool:
@@ -187,6 +193,8 @@ class PreDispatchPreflightResult:
             "upstream_bullets_detail": self.upstream_bullets_detail,
             "dispatch_started": self.dispatch_started,
             "decisive_reason": self.decisive_reason,
+            "apps_research_handoff_validation": self.apps_research_handoff_validation,
+            "apps_research_briefing_envelope": self.apps_research_briefing_envelope,
         }
 
 
@@ -240,6 +248,17 @@ def _targeting_failure_message(
         f"{_ENV_ALLOW_DEFAULT_TARGETING_PATHS}=1."
     )
     return "Pre-dispatch targeting gate blocked: " + " ".join(parts) + " " + waiver
+
+
+def _apps_research_handoff_failure_message(
+    validation: AppsResearchHandoffValidation,
+) -> str | None:
+    if not validation.observed or validation.valid:
+        return None
+    return (
+        "Pre-dispatch apps_research handoff gate blocked: "
+        f"{validation.reason}. Refresh apps_research or pass a valid non-stale briefing."
+    )
 
 
 def _qwen_failure_message(
@@ -301,6 +320,10 @@ def run_pre_dispatch_preflight(
 
     jd_status, jd_path = evaluate_jd_cli_input(jd)
     brief_status, brief_path = evaluate_manual_brief_cli_input(manual_brief)
+    handoff_validation = validate_apps_research_handoff(
+        brief_ref=manual_brief,
+        jd_ref=jd,
+    )
     q_health, q_model, q_detail = evaluate_qwen_readiness(
         lane_provider=lane_provider,
         docker_restart_audit=docker_restart_audit,
@@ -322,25 +345,30 @@ def run_pre_dispatch_preflight(
         decisive = targeting_err
         dispatch_started = False
     else:
-        upstream_err = _upstream_bullets_failure_message(
-            status=upstream_status,
-            upstream_lane=upstream_lane,
-            detail=upstream_detail,
-        )
-        if upstream_err:
-            decisive = upstream_err
+        handoff_err = _apps_research_handoff_failure_message(handoff_validation)
+        if handoff_err:
+            decisive = handoff_err
             dispatch_started = False
         else:
-            qwen_err = _qwen_failure_message(
-                health=q_health,
-                model_ready=q_model,
-                detail=q_detail,
+            upstream_err = _upstream_bullets_failure_message(
+                status=upstream_status,
+                upstream_lane=upstream_lane,
+                detail=upstream_detail,
             )
-            if qwen_err:
-                decisive = qwen_err
+            if upstream_err:
+                decisive = upstream_err
                 dispatch_started = False
             else:
-                decisive = "all_pre_dispatch_gates_passed"
+                qwen_err = _qwen_failure_message(
+                    health=q_health,
+                    model_ready=q_model,
+                    detail=q_detail,
+                )
+                if qwen_err:
+                    decisive = qwen_err
+                    dispatch_started = False
+                else:
+                    decisive = "all_pre_dispatch_gates_passed"
 
     return PreDispatchPreflightResult(
         section=str(section).strip(),
@@ -357,6 +385,10 @@ def run_pre_dispatch_preflight(
         upstream_bullets_detail=upstream_detail,
         dispatch_started=dispatch_started,
         decisive_reason=decisive,
+        apps_research_handoff_validation=(
+            handoff_validation.to_receipt() if handoff_validation.observed else None
+        ),
+        apps_research_briefing_envelope=handoff_validation.envelope,
     )
 
 
@@ -381,6 +413,16 @@ def write_pre_dispatch_preflight_receipt(
 ) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if result.apps_research_handoff_validation:
+        (path.parent / "apps_research_handoff_validation_receipt.json").write_text(
+            json.dumps(result.apps_research_handoff_validation, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    if result.apps_research_briefing_envelope:
+        (path.parent / "apps_research_briefing_envelope.json").write_text(
+            json.dumps(result.apps_research_briefing_envelope, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
     return path
 
 

@@ -253,7 +253,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
 def salvage_truncated_competencies_json(text: str) -> tuple[dict[str, Any] | None, str]:
     """Recover competencies[] when vLLM hits max_tokens mid claim_ledger (finish_reason=length)."""
     marker = '"claim_ledger"'
-    if marker not in text or '"competencies"' not in text:
+    if marker not in text or ('"competencies"' not in text and '"categories"' not in text):
         return None, "no salvage anchor"
     head = text[: text.index(marker)].rstrip().rstrip(",")
     tail_stub = (
@@ -267,8 +267,11 @@ def salvage_truncated_competencies_json(text: str) -> tuple[dict[str, Any] | Non
         parsed = json.loads(head + tail_stub)
     except json.JSONDecodeError as exc:
         return None, str(exc)
-    if not isinstance(parsed, dict) or not isinstance(parsed.get("competencies"), list):
-        return None, "salvaged object missing competencies"
+    if not isinstance(parsed, dict) or not (
+        isinstance(parsed.get("competencies"), list)
+        or isinstance(parsed.get("categories"), list)
+    ):
+        return None, "salvaged object missing competencies/categories"
     return parsed, ""
 
 

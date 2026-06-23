@@ -18,6 +18,7 @@ from apps_rg.runtime.sections.competency_capability_evidence import (
     append_competencies_path_diversity_to_messages,
     build_competency_capability_section_packet,
     format_competency_capability_evidence_pack,
+    hydrate_competency_bundle_graph_evidence,
     is_flat_taxonomy_only_packet,
     stamp_competency_bundle_bindings,
 )
@@ -427,6 +428,89 @@ def test_source_fact_concentration_limit_fails_anthropic_shape():
     result = q.check_source_fact_concentration_limit(comps)
     assert result.passed is False
     assert "fact_engineering_platform_001" in str(result.observed_value)
+
+
+def test_bundle_graph_hydration_repairs_anthropic_default_fact_collapse():
+    """apps-test-model: APP CONTRACT
+
+    Regression: taxonomy projection assigned one default fact to most Anthropic
+    partnership categories after self-consistency paths had distinct graph facts.
+    """
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": plan,
+        },
+        section_id="competencies",
+    )
+    packet = meta["competency_capability_section_packet"]
+    fallback_fact = "metric_ey_core_workflow_maps_count"
+    allowed = {
+        str(fid)
+        for fid in (plan.get("allowed_graph_evidence_ids") or [])
+        if str(fid).strip()
+    } | {fallback_fact}
+    categories: list[dict] = []
+    for idx, rec in enumerate(packet["competency_bundles"][:8]):
+        label = str(rec.get("display_label_candidate") or f"Category {idx}")
+        categories.append(
+            {
+                "category_id": str((rec.get("target_taxonomy_category_ids") or [f"cat_{idx}"])[0]),
+                "category_label": label,
+                "competency_bundle_id": rec["competency_bundle_id"],
+                "capability_family": rec["capability_family"],
+                "graph_skill_node_ids": list(rec.get("graph_skill_node_ids") or [])[:2],
+                "source_fact_ids": [fallback_fact],
+                "terms": [
+                    {
+                        "term": f"{label} graph execution",
+                        "text": f"{label} graph execution",
+                        "source_fact_id": fallback_fact,
+                        "source_fact_ids": [fallback_fact],
+                        "proof_source": "default_fid_backfill",
+                    }
+                ],
+            }
+        )
+
+    hydrate_competency_bundle_graph_evidence(
+        categories,
+        packet=packet,
+        allowed_fact_ids=allowed,
+        selected_graph_evidence_plan=plan,
+    )
+    parsed = {
+        "competencies_rejected_neighbor_audit": {
+            "schema_version": "competencies_rejected_neighbor_audit_v1",
+            "audit_status": "present",
+            "candidate_label_count": 12,
+            "candidate_variant_count": 48,
+            "selected_count": len(categories),
+            "rejected_neighbor_count": 40,
+        }
+    }
+
+    assert all(cat.get("selection_score") is not None for cat in categories)
+    assert len({cat["selection_score"] for cat in categories}) > 1
+    assert q.check_source_fact_concentration_limit(categories).passed is True
+    assert q.check_per_category_confidence_nonconstant(categories).passed is True
+    granularity = q.check_competencies_graph_granularity_gates(
+        categories,
+        meta,
+        parsed,
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    assert granularity.passed is True
 
 
 def test_per_category_confidence_nonconstant_requires_real_category_scores():
