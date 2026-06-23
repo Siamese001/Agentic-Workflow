@@ -1,7 +1,7 @@
 # Graph Skills and apps_research → apps_rg Hardening Review
 
-**Review mode:** review and implementation plan only; no production code was changed.  
-**Source of truth:** the uploaded `apps_rg.zip` and `apps_research.zip` archives.  
+**Review mode:** review and implementation plan only; no production code was changed.
+**Source of truth:** the uploaded `apps_rg.zip` and `apps_research.zip` archives.
 **Target scenario:** the shipped Anthropic partnerships fixtures in `apps_rg/config/targeting/jd_anthropic_partnerships_2026.json` and `apps_rg/config/targeting/brief_anthropic_partnerships_2026.json`.
 
 ## Review basis and limitations
@@ -35,7 +35,7 @@ The current selector can call the Anthropic partnerships profile `judge_grade` f
 
 ## F1. Competencies generation and graph audit bind to two independently selected plans
 
-**Severity:** Critical  
+**Severity:** Critical
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -97,7 +97,7 @@ Create exactly one immutable `section_graph_evidence_plan` per section. The comp
 
 ## F2. The role-episode selector does not enforce skill or metric proof policy before targeting
 
-**Severity:** Critical  
+**Severity:** Critical
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -181,7 +181,7 @@ Build a normalized authority index once from the skills ledger and metric nodes.
 
 ## F3. The competencies traversal receipt is reconstructed from outputs, not emitted by traversal
 
-**Severity:** Critical  
+**Severity:** Critical
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -243,7 +243,7 @@ Require zero unexplained candidates. Emit explicit hop frontiers and edge IDs. X
 
 ## F4. apps_research computes semantic handoff fitness but does not make it authoritative
 
-**Severity:** Critical  
+**Severity:** Critical
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -302,7 +302,7 @@ Define `SEALED_FOR_APPS_RG` as structural validity **and** semantic handoff elig
 
 ## F5. Partnership semantic requirements and default retrieval family IDs are structurally misaligned
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -351,7 +351,7 @@ Introduce one canonical coverage-family registry with aliases. For the `ai_partn
 
 ## F6. The C0 research gate equates nonempty family output with sourced, authoritative support
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -412,7 +412,7 @@ Replace the family-count fallback with a source/claim ledger. A family is “cov
 
 ## F7. Graph depth and granularity gates measure structural counts, not semantic proof quality
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -472,7 +472,7 @@ Rename the current metric to `structural_saturation` if retained. Add a separate
 
 ## F8. Competency term support is broad ID membership plus whole-resume token overlap
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -524,7 +524,7 @@ Require a claim-binding row for every emitted competency term. Allowed-ID member
 
 ## F9. JD and briefing targeting influence proof selection and proof confidence without a pre-target authority boundary
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -576,7 +576,7 @@ Split selection into `authority_filter` and `targeting_rank`. Freeze the authori
 
 ## F10. Selector, judge, deterministic gates, and X3 can disagree without a single arbitration receipt
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -633,7 +633,7 @@ Add one arbitration function after all selector, deterministic, and judge result
 ---
 ## F11. Competencies is the only section with a human-readable graph sourcing assessment, and other lanes lack equivalent proof depth
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate for machine receipts; telemetry for the human summary
 
 **Impacted files/functions**
@@ -689,14 +689,14 @@ Create one shared `section_graph_sourcing_assessment` schema and producer. Use s
 
 **Artifact/receipt/runtime output to emit**
 
-Per section: `section_graph_sourcing_assessment.json`.  
+Per section: `section_graph_sourcing_assessment.json`.
 Whole run: `resume_graph_sourcing_summary.json`.
 
 ---
 
 ## F12. The product upload-only briefing contract coexists with a legacy automatic-delegation branch
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -755,7 +755,7 @@ Keep upload-only as the product SSOT. Quarantine or remove the legacy auto-deleg
 
 ## F13. The briefing writer and consumer do not preserve semantic provenance, freshness, or a digest chain
 
-**Severity:** High  
+**Severity:** High
 **Control classification:** Correctness gate
 
 **Impacted files/functions**
@@ -818,14 +818,14 @@ Write the Markdown and a canonical envelope atomically. Resolve JSON/YAML as str
 
 **Artifact/receipt/runtime output to emit**
 
-Producer: `apps_rg_handoff_receipt.json`.  
+Producer: `apps_rg_handoff_receipt.json`.
 Consumer: `briefing_consumption_receipt.json`.
 
 ---
 
 ## F14. Graph inventory policy, leafness, duplicates, and freshness are not normalized at selection time
 
-**Severity:** Medium-High  
+**Severity:** Medium-High
 **Control classification:** Correctness gate for policy/leafness; warning and audit for duplicate cleanup
 
 **Impacted files/functions**
@@ -885,7 +885,7 @@ Build a read-time normalized index; do not mass-edit the graph first. Apply auth
 
 ## F15. No supplied regression tests would catch silent generic/easy-node collapse
 
-**Severity:** Medium  
+**Severity:** Medium
 **Control classification:** Test infrastructure requirement
 
 **Impacted files/functions**
@@ -934,7 +934,7 @@ CI should publish the exact fixture digests and the machine receipts from the An
 
 ## F16. The uploaded apps_rg archive is not self-contained for full proof-pool execution
 
-**Severity:** Medium  
+**Severity:** Medium
 **Control classification:** Correctness gate at preflight; audit-only for developer diagnostics
 
 **Impacted files/functions**
