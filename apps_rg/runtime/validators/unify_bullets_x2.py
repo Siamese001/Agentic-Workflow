@@ -34,6 +34,11 @@ UNIFY_BULLET_IDS = (
 )
 PROTECTED_BULLET_DEFAULT = "bul_unify_006"
 METRIC_ANCHOR_BULLET_004 = "bul_unify_004"
+UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID = "x2_unify_each_bullet_approved_metric_outcome_lineage"
+UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID = "x2_unify_each_bullet_metric_outcome_surface_visible"
+UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID = "x2_unify_metric_outcomes_distributed_by_slot"
+UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID = "x2_unify_graph_traversal_sufficiency"
+UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID = "x2_unify_graph_granularity_gates"
 FORBIDDEN_FACT_PREFIXES = ("bul_ibm_", "bul_insurtech_", "bul_ey_", "exp_ibm_", "exp_insurtech_", "exp_ey_")
 
 # Mechanism stack vocabulary (narrative anti-pattern; at most one bullet may be mechanism-dense).
@@ -982,12 +987,56 @@ def run_unify_bullets_x2_gates(
     )
 
     if unify_role_episode_consumption_active(proof_pool_metadata):
-        for er in run_unify_bullets_role_episode_x2_gates(
-            bullets=bullets,
-            parsed_output=parsed_output,
-            proof_pool_metadata=proof_pool_metadata,
-            jd_text=jd_text,
-        ):
-            add(er.gate_id, er.passed, er.observed_value, er.threshold, er.failure_reason)
+        # Surface the delegated role-episode metric contract explicitly so AST-based gate
+        # extraction sees the same gate ids that the nested validator enforces.
+        role_episode_rows = {
+            er.gate_id: er
+            for er in run_unify_bullets_role_episode_x2_gates(
+                bullets=bullets,
+                parsed_output=parsed_output,
+                proof_pool_metadata=proof_pool_metadata,
+                jd_text=jd_text,
+            )
+        }
+        lineage = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID,
+            bool(lineage and lineage.passed),
+            lineage.observed_value if lineage else "delegated_to_role_episode_metric_outcome_contract",
+            lineage.threshold if lineage else "role_episode_metric_outcome_contract",
+            lineage.failure_reason if lineage else "delegated metric lineage gate missing",
+        )
+        visible = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID,
+            bool(visible and visible.passed),
+            visible.observed_value if visible else "delegated_to_role_episode_metric_outcome_contract",
+            visible.threshold if visible else "role_episode_metric_outcome_contract",
+            visible.failure_reason if visible else "delegated metric visibility gate missing",
+        )
+        distribution = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID,
+            bool(distribution and distribution.passed),
+            distribution.observed_value if distribution else "delegated_to_role_episode_metric_outcome_contract",
+            distribution.threshold if distribution else "role_episode_metric_outcome_contract",
+            distribution.failure_reason if distribution else "delegated metric distribution gate missing",
+        )
+        traversal = role_episode_rows.get(UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID,
+            bool(traversal and traversal.passed),
+            traversal.observed_value if traversal else "delegated_to_role_episode_metric_outcome_contract",
+            traversal.threshold if traversal else "role_episode_metric_outcome_contract",
+            traversal.failure_reason if traversal else "delegated graph traversal gate missing",
+        )
+        granularity = role_episode_rows.get(UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID,
+            bool(granularity and granularity.passed),
+            granularity.observed_value if granularity else "delegated_to_role_episode_metric_outcome_contract",
+            granularity.threshold if granularity else "role_episode_metric_outcome_contract",
+            granularity.failure_reason if granularity else "delegated graph granularity gate missing",
+        )
 
     return gates
