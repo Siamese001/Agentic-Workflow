@@ -222,7 +222,7 @@ def pa_assemble_apps_research(
     The concrete binding remains in prompt governance; app runtime profiles
     consume this runtime entry surface to avoid app-layer L_PG imports.
     """
-    from agentic_core.prompt_governance import (
+    from agentic_core.prompt_governance.apps_research_pa_binding import (
         pa_assemble_apps_research as _pa_assemble_apps_research,
     )
 
