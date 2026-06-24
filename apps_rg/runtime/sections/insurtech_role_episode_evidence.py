@@ -23,6 +23,9 @@ from apps_rg.runtime.sections.role_episode_metric_registry import (
     approved_metric_outcome_ids_from_path,
     metric_outcome_nodes_from_path,
 )
+from apps_rg.runtime.sections.role_episode_bullet_sufficiency import (
+    build_role_episode_bullet_traversal_sufficiency_receipt,
+)
 
 GRAPH_BULLET_EVIDENCE_PACK_MARKER = "INSURTECH_ROLE_EPISODE_EVIDENCE_PACK"
 INSURTECH_ROLE_EPISODE_EVIDENCE_MARKER = GRAPH_BULLET_EVIDENCE_PACK_MARKER
@@ -81,6 +84,23 @@ def _bundle_allowed_metric_outcome_ids(bundle: dict[str, Any]) -> list[str]:
         for mid, node in nodes.items()
         if bundle.get("role_episode_bundle_id") in (node.get("bundle_bindings") or [])
     ]
+
+
+def build_insurtech_graph_traversal_sufficiency_receipt(
+    *,
+    section_id: str = "insurtech_bullets",
+    slot_bundle_map: dict[str, str] | None = None,
+    packet: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Receipt proving InsurTech final slots select from the larger role frontier."""
+    pkt = packet or build_insurtech_role_episode_section_packet(section_id)
+    return build_role_episode_bullet_traversal_sufficiency_receipt(
+        section_id=section_id,
+        slot_ids=INSURTECH_BULLET_SLOT_IDS,
+        slot_bundle_map=slot_bundle_map or dict(INSURTECH_BULLET_SLOT_BUNDLE_MAP),
+        packet=pkt,
+        employer_label="InsurTech",
+    )
 
 
 def build_insurtech_role_episode_section_packet(
@@ -181,5 +201,6 @@ __all__ = [
     "INSURTECH_ROLE_EPISODE_EVIDENCE_MARKER",
     "PROMOTABLE_METRIC_OUTCOME_IDS",
     "attach_role_episode_bundles_to_proof_pool_metadata",
+    "build_insurtech_graph_traversal_sufficiency_receipt",
     "build_insurtech_role_episode_section_packet",
 ]

@@ -17,7 +17,7 @@ from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 
 from apps_rg.runtime.c0.constants import REPO_ROOT
 from apps_rg.runtime.chroma_precomputed_collection import EXPECTED_BGE_DIMENSION
-from apps_rg.runtime.fact_vectors_bootstrap import MANIFEST_REL
+from apps_rg.runtime.fact_vectors_bootstrap import GENERATED_LANES, MANIFEST_REL
 
 FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT = "c02_fact_vector_index_preflight.json"
 FACT_VECTOR_INDEX_PREFLIGHT_SCHEMA = "c02_fact_vector_index_preflight_v1"
@@ -27,6 +27,19 @@ STATUS_STALE = "STALE"
 STATUS_ERROR = "ERROR"
 
 _MAX_METADATA_AUDIT_ROWS = 5000
+_ROLE_EPISODE_BULLET_SECTIONS = frozenset(
+    {"unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets"}
+)
+_SECTION_SOURCE_SLOT_MIN_COUNTS: dict[str, tuple[str, int]] = {
+    "unify_bullets": ("bul_unify_", 6),
+    "unify_narrative": ("bul_unify_", 6),
+    "ibm_bullets": ("bul_ibm_", 5),
+    "ibm_narrative": ("bul_ibm_", 5),
+    "insurtech_bullets": ("bul_insurtech_", 3),
+    "insurtech_narrative": ("bul_insurtech_", 3),
+    "ey_bullets": ("bul_ey_", 3),
+    "ey_narrative": ("bul_ey_", 3),
+}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -82,10 +95,17 @@ def _inspect_collection(*, chroma_path: str, section_id: str) -> dict[str, Any]:
         }
     )
     source_id_counts: Counter[str] = Counter()
+    section_source_class_counts: Counter[str] = Counter()
+    section_tier_counts: Counter[str] = Counter()
     for meta in metas:
         sid = str(meta.get("source_document_id") or meta.get("candidate_fact_id") or "").strip()
         if sid:
             source_id_counts[sid] += 1
+        if section_id in _section_targets(meta):
+            section_source_class_counts[
+                str(meta.get("source_class") or "<missing>")
+            ] += 1
+            section_tier_counts[str(meta.get("tier") or "<missing>")] += 1
     model_counts = _metadata_counter(metas, "embedding_model_id", fallback_key="embedding_model")
     dim_counts = _metadata_counter(metas, "embedding_dim", fallback_key="embedding_dimension")
     source_class_counts = _metadata_counter(metas, "source_class")
@@ -107,6 +127,8 @@ def _inspect_collection(*, chroma_path: str, section_id: str) -> dict[str, Any]:
         "section_target_count": section_count,
         "section_source_document_ids": section_source_ids,
         "source_document_id_counts": dict(sorted(source_id_counts.items())),
+        "section_source_class_counts": dict(sorted(section_source_class_counts.items())),
+        "section_tier_counts": dict(sorted(section_tier_counts.items())),
         "embedding_model_counts": model_counts,
         "embedding_dim_counts": dim_counts,
         "source_class_counts": source_class_counts,
@@ -129,6 +151,81 @@ def _product_hybrid_required(section_id: str, explicit: bool | None) -> bool:
         return bool(product_hybrid_retrieval_required(section_id))
     except Exception:  # guardian: allow-broad-exception -- preflight must record uncertainty, not crash section setup
         return False
+
+
+def _build_section_sufficiency(
+    *,
+    section_id: str,
+    collection: dict[str, Any],
+    manifest_section_target_count: int,
+    product_hybrid_required: bool,
+) -> dict[str, Any]:
+    """Common sufficiency gate for every generated section before C0 retrieval."""
+    live_section_count = int(collection.get("section_target_count") or 0)
+    collection_count = int(collection.get("collection_count") or 0)
+    bad_model_count = int(collection.get("bad_model_count") or 0)
+    missing_model_count = int(collection.get("missing_model_count") or 0)
+    bad_dim_count = int(collection.get("bad_dim_count") or 0)
+    missing_dim_count = int(collection.get("missing_dim_count") or 0)
+    section_source_ids = [
+        str(x).strip()
+        for x in (collection.get("section_source_document_ids") or [])
+        if str(x).strip()
+    ]
+    reasons: list[str] = []
+    known_generated_lane = section_id in GENERATED_LANES
+    manifest_coverage_present = manifest_section_target_count > 0
+    hydration_present = live_section_count > 0
+    if product_hybrid_required and not hydration_present:
+        reasons.append("section_pre_run_fact_vector_hydration_missing")
+    if known_generated_lane and not hydration_present:
+        reasons.append("generated_section_fact_vector_coverage_missing")
+    if product_hybrid_required and not manifest_coverage_present:
+        reasons.append("section_bootstrap_manifest_coverage_missing")
+    model_dim_pass = (
+        collection_count > 0
+        and bad_model_count == 0
+        and missing_model_count == 0
+        and bad_dim_count == 0
+        and missing_dim_count == 0
+    )
+    if not model_dim_pass:
+        reasons.append("section_fact_vector_model_dim_not_sufficient")
+
+    prefix = ""
+    min_slots = 0
+    slot_count = 0
+    slot_ids: list[str] = []
+    if section_id in _SECTION_SOURCE_SLOT_MIN_COUNTS:
+        prefix, min_slots = _SECTION_SOURCE_SLOT_MIN_COUNTS[section_id]
+        slot_ids = sorted({sid for sid in section_source_ids if sid.startswith(prefix)})
+        slot_count = len(slot_ids)
+        if slot_count < min_slots:
+            reasons.append("section_expected_source_slot_coverage_missing")
+
+    delayed_loop_policy_pass = True
+    status = STATUS_PASS if not reasons else STATUS_MISSING
+    return {
+        "schema_version": "section_fact_vector_sufficiency_v1",
+        "section_id": section_id,
+        "status": status,
+        "reasons": reasons,
+        "known_generated_lane": known_generated_lane,
+        "product_hybrid_required": product_hybrid_required,
+        "manifest_section_target_count": manifest_section_target_count,
+        "manifest_coverage_present": manifest_coverage_present,
+        "live_section_target_count": live_section_count,
+        "pre_run_hydration_present": hydration_present,
+        "collection_count": collection_count,
+        "model_dim_pass": model_dim_pass,
+        "section_source_class_counts": collection.get("section_source_class_counts") or {},
+        "section_tier_counts": collection.get("section_tier_counts") or {},
+        "expected_source_slot_prefix": prefix,
+        "expected_source_slot_min_count": min_slots,
+        "source_slot_count": slot_count,
+        "source_slot_ids": slot_ids,
+        "delayed_loop_policy_pass": delayed_loop_policy_pass,
+    }
 
 
 def _build_unify_bullets_sufficiency(
@@ -319,6 +416,268 @@ def _build_unify_bullets_sufficiency(
     }
 
 
+def _role_episode_bullets_config(section_id: str) -> dict[str, Any]:
+    """Return section-specific role-episode bullet config without importing all lanes."""
+    sid = str(section_id or "").strip()
+    if sid == "ibm_bullets":
+        from apps_rg.runtime.sections.ibm_graph_role_episode_registry import (
+            BUNDLES_PATH,
+            validate_bundle,
+        )
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            IBM_BULLET_SLOT_BUNDLE_MAP,
+            IBM_BULLET_SLOT_IDS,
+            build_ibm_role_episode_section_packet,
+        )
+        from apps_rg.runtime.sections.role_episode_bullet_sufficiency import (
+            build_role_episode_bullet_traversal_sufficiency_receipt,
+        )
+
+        def _build_ibm_traversal(
+            *,
+            section_id: str,
+            slot_bundle_map: dict[str, str],
+            packet: dict[str, Any],
+        ) -> dict[str, Any]:
+            return build_role_episode_bullet_traversal_sufficiency_receipt(
+                section_id=section_id,
+                slot_ids=IBM_BULLET_SLOT_IDS,
+                slot_bundle_map=slot_bundle_map,
+                packet=packet,
+                employer_label="IBM",
+            )
+
+        return {
+            "section_id": sid,
+            "employer_label": "IBM",
+            "source_slot_prefix": "bul_ibm_",
+            "slot_ids": IBM_BULLET_SLOT_IDS,
+            "slot_bundle_map": dict(IBM_BULLET_SLOT_BUNDLE_MAP),
+            "build_packet": build_ibm_role_episode_section_packet,
+            "build_traversal": _build_ibm_traversal,
+            "bundles_path": BUNDLES_PATH,
+            "validate_bundle": validate_bundle,
+        }
+    if sid == "insurtech_bullets":
+        from apps_rg.runtime.sections.insurtech_graph_role_episode_registry import (
+            BUNDLES_PATH,
+            validate_bundle,
+        )
+        from apps_rg.runtime.sections.insurtech_role_episode_evidence import (
+            INSURTECH_BULLET_SLOT_BUNDLE_MAP,
+            INSURTECH_BULLET_SLOT_IDS,
+            build_insurtech_graph_traversal_sufficiency_receipt,
+            build_insurtech_role_episode_section_packet,
+        )
+
+        return {
+            "section_id": sid,
+            "employer_label": "InsurTech",
+            "source_slot_prefix": "bul_insurtech_",
+            "slot_ids": INSURTECH_BULLET_SLOT_IDS,
+            "slot_bundle_map": dict(INSURTECH_BULLET_SLOT_BUNDLE_MAP),
+            "build_packet": build_insurtech_role_episode_section_packet,
+            "build_traversal": build_insurtech_graph_traversal_sufficiency_receipt,
+            "bundles_path": BUNDLES_PATH,
+            "validate_bundle": validate_bundle,
+        }
+    if sid == "ey_bullets":
+        from apps_rg.runtime.sections.ey_graph_role_episode_registry import (
+            BUNDLES_PATH,
+            validate_bundle,
+        )
+        from apps_rg.runtime.sections.ey_role_episode_evidence import (
+            EY_BULLET_SLOT_BUNDLE_MAP,
+            EY_BULLET_SLOT_IDS,
+            build_ey_graph_traversal_sufficiency_receipt,
+            build_ey_role_episode_section_packet,
+        )
+
+        return {
+            "section_id": sid,
+            "employer_label": "EY",
+            "source_slot_prefix": "bul_ey_",
+            "slot_ids": EY_BULLET_SLOT_IDS,
+            "slot_bundle_map": dict(EY_BULLET_SLOT_BUNDLE_MAP),
+            "build_packet": build_ey_role_episode_section_packet,
+            "build_traversal": build_ey_graph_traversal_sufficiency_receipt,
+            "bundles_path": BUNDLES_PATH,
+            "validate_bundle": validate_bundle,
+        }
+    return {}
+
+
+def _build_role_episode_bullets_sufficiency(
+    *,
+    section_id: str,
+    collection: dict[str, Any],
+    repo_root: Path,
+) -> dict[str, Any]:
+    """Prove fixed-count role-episode bullet lanes have source slots and metrics."""
+    try:
+        cfg = _role_episode_bullets_config(section_id)
+        from apps_rg.runtime.sections.role_episode_metric_registry import (
+            metric_outcome_nodes_from_path,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- preflight classifies lane registry import failures
+        return {
+            "schema_version": "role_episode_bullets_fact_vector_sufficiency_v1",
+            "section_id": section_id,
+            "status": STATUS_ERROR,
+            "reasons": [f"{section_id}_registry_unavailable:{type(exc).__name__}"],
+        }
+    if not cfg:
+        return {}
+
+    section_source_ids = {
+        str(x).strip()
+        for x in (collection.get("section_source_document_ids") or [])
+        if str(x).strip()
+    }
+    expected_slots = [str(x) for x in cfg["slot_ids"]]
+    source_slot_presence = {slot: slot in section_source_ids for slot in expected_slots}
+    missing_source_slots = [slot for slot, present in source_slot_presence.items() if not present]
+    extra_source_slots = sorted(
+        sid
+        for sid in section_source_ids
+        if sid.startswith(str(cfg["source_slot_prefix"])) and sid not in set(expected_slots)
+    )
+    reasons: list[str] = []
+    if missing_source_slots:
+        reasons.append(f"{section_id}_source_slots_missing")
+
+    slot_map = dict(cfg["slot_bundle_map"])
+    try:
+        packet = cfg["build_packet"](section_id, repo_root=repo_root)
+        bundle_by_id = {
+            str(bundle.get("role_episode_bundle_id") or ""): bundle
+            for bundle in (packet.get("role_episode_bundles") or [])
+            if isinstance(bundle, dict) and str(bundle.get("role_episode_bundle_id") or "").strip()
+        }
+        metric_nodes = metric_outcome_nodes_from_path(cfg["bundles_path"])
+    except Exception as exc:  # guardian: allow-broad-exception -- malformed role graph must fail closed through receipt status
+        return {
+            "schema_version": "role_episode_bullets_fact_vector_sufficiency_v1",
+            "section_id": section_id,
+            "status": STATUS_ERROR,
+            "reasons": reasons + [f"{section_id}_role_episode_packet_unavailable:{type(exc).__name__}"],
+            "expected_slot_ids": expected_slots,
+            "source_slot_presence": source_slot_presence,
+            "missing_source_fact_slots": missing_source_slots,
+            "extra_source_fact_slots": extra_source_slots,
+            "slot_bundle_map": slot_map,
+        }
+
+    missing_bundle_slots: list[str] = []
+    invalid_bundle_slots: dict[str, list[str]] = {}
+    missing_metric_slots: list[str] = []
+    unapproved_metric_slots: dict[str, list[str]] = {}
+    slot_metric_outcome_ids: dict[str, list[str]] = {}
+    slot_bundle_ids: dict[str, str] = {}
+    slot_skill_counts: dict[str, int] = {}
+    unique_metric_ids: set[str] = set()
+    metric_node_ids = set(str(x) for x in metric_nodes.keys())
+    for slot in expected_slots:
+        bundle_id = str(slot_map.get(slot) or "").strip()
+        slot_bundle_ids[slot] = bundle_id
+        bundle = bundle_by_id.get(bundle_id)
+        if not bundle:
+            missing_bundle_slots.append(slot)
+            continue
+        # The section packet builder validates raw registry bundles before projecting
+        # them into C0 packet rows. Re-validating projected rows would require raw-only
+        # fields that are intentionally not carried into the prompt packet.
+        metric_ids = [
+            str(mid).strip()
+            for mid in (
+                bundle.get("linked_metric_outcome_ids")
+                or bundle.get("allowed_metric_outcome_ids")
+                or []
+            )
+            if str(mid).strip()
+        ]
+        approved_for_slot = [mid for mid in metric_ids if mid in metric_node_ids]
+        rejected_for_slot = [mid for mid in metric_ids if mid not in metric_node_ids]
+        if rejected_for_slot:
+            unapproved_metric_slots[slot] = rejected_for_slot
+        if not approved_for_slot:
+            missing_metric_slots.append(slot)
+        slot_metric_outcome_ids[slot] = approved_for_slot
+        unique_metric_ids.update(approved_for_slot)
+        slot_skill_counts[slot] = len(bundle.get("graph_skill_node_ids") or [])
+
+    if missing_bundle_slots:
+        reasons.append(f"{section_id}_slot_bundles_missing")
+    if invalid_bundle_slots:
+        reasons.append(f"{section_id}_slot_bundles_invalid")
+    if missing_metric_slots:
+        reasons.append(f"{section_id}_metric_outcome_slots_missing")
+    if unapproved_metric_slots:
+        reasons.append(f"{section_id}_metric_outcome_ids_unapproved")
+    metric_distribution_pass = len(unique_metric_ids) >= len(expected_slots)
+    if not metric_distribution_pass:
+        reasons.append(f"{section_id}_metric_outcomes_not_distributed_by_slot")
+
+    traversal = cfg["build_traversal"](
+        section_id=section_id,
+        slot_bundle_map=slot_map,
+        packet=packet,
+    )
+    conservation = (
+        traversal.get("candidate_conservation")
+        if isinstance(traversal.get("candidate_conservation"), dict)
+        else {}
+    )
+    frontier = (
+        traversal.get("frontier_size_by_hop_depth")
+        if isinstance(traversal.get("frontier_size_by_hop_depth"), dict)
+        else {}
+    )
+    root_count = int(traversal.get("selected_role_episode_root_count") or 0)
+    traversal_pass = (
+        bool(conservation.get("pass"))
+        and root_count >= len(expected_slots)
+        and int(traversal.get("selected_unique_leaf_skill_count") or 0) >= root_count * 2
+        and int(traversal.get("selected_unique_metric_count") or 0) >= root_count
+        and int(traversal.get("rejected_sibling_skill_count") or 0) > 0
+        and int(traversal.get("rejected_sibling_metric_count") or 0) > 0
+    )
+    granularity_pass = (
+        int(frontier.get("hop_1_graph_skill_nodes") or 0) >= root_count * 2
+        and int(frontier.get("hop_2_metric_outcome_nodes") or 0) >= root_count
+    )
+    if not traversal_pass:
+        reasons.append(f"{section_id}_graph_traversal_insufficient")
+    if not granularity_pass:
+        reasons.append(f"{section_id}_graph_granularity_insufficient")
+
+    status = STATUS_PASS if not reasons else STATUS_MISSING
+    return {
+        "schema_version": "role_episode_bullets_fact_vector_sufficiency_v1",
+        "status": status,
+        "section_id": section_id,
+        "employer_label": cfg["employer_label"],
+        "reasons": reasons,
+        "expected_slot_ids": expected_slots,
+        "source_slot_presence": source_slot_presence,
+        "missing_source_fact_slots": missing_source_slots,
+        "extra_source_fact_slots": extra_source_slots,
+        "slot_bundle_map": slot_map,
+        "slot_bundle_ids": slot_bundle_ids,
+        "missing_bundle_slots": missing_bundle_slots,
+        "invalid_bundle_slots": invalid_bundle_slots,
+        "slot_metric_outcome_ids": slot_metric_outcome_ids,
+        "missing_metric_outcome_slots": missing_metric_slots,
+        "unapproved_metric_outcome_slots": unapproved_metric_slots,
+        "unique_metric_outcome_ids": sorted(unique_metric_ids),
+        "metric_distribution_pass": metric_distribution_pass,
+        "slot_graph_skill_counts": slot_skill_counts,
+        "graph_traversal_pass": traversal_pass,
+        "graph_granularity_pass": granularity_pass,
+        "graph_traversal_receipt": traversal,
+    }
+
+
 def build_fact_vector_index_preflight(
     *,
     section_id: str,
@@ -424,6 +783,7 @@ def build_fact_vector_index_preflight(
             repo_root=root,
         )
         receipt["unify_bullets_sufficiency"] = unify_sufficiency
+        receipt["role_episode_bullets_sufficiency"] = unify_sufficiency
         if unify_sufficiency.get("status") != STATUS_PASS:
             nested_reasons = [
                 str(reason)
@@ -434,6 +794,43 @@ def build_fact_vector_index_preflight(
                 reasons.append("unify_bullets_fact_vector_sufficiency_missing")
             else:
                 reasons.append("unify_bullets_fact_vector_sufficiency_not_pass")
+    if section_id in _ROLE_EPISODE_BULLET_SECTIONS and section_id != "unify_bullets":
+        employer_sufficiency = _build_role_episode_bullets_sufficiency(
+            section_id=section_id,
+            collection=collection,
+            repo_root=root,
+        )
+        receipt["role_episode_bullets_sufficiency"] = employer_sufficiency
+        receipt[f"{section_id}_sufficiency"] = employer_sufficiency
+        if employer_sufficiency.get("status") != STATUS_PASS:
+            nested_reasons = [
+                str(reason)
+                for reason in (employer_sufficiency.get("reasons") or [])
+                if str(reason).strip()
+            ]
+            if any("missing" in reason for reason in nested_reasons):
+                reasons.append(f"{section_id}_fact_vector_sufficiency_missing")
+            else:
+                reasons.append(f"{section_id}_fact_vector_sufficiency_not_pass")
+
+    section_sufficiency = _build_section_sufficiency(
+        section_id=section_id,
+        collection=collection,
+        manifest_section_target_count=section_manifest_count,
+        product_hybrid_required=required,
+    )
+    receipt["section_sufficiency"] = section_sufficiency
+    receipt[f"{section_id}_section_sufficiency"] = section_sufficiency
+    if section_sufficiency.get("status") != STATUS_PASS:
+        nested_reasons = [
+            str(reason)
+            for reason in (section_sufficiency.get("reasons") or [])
+            if str(reason).strip()
+        ]
+        if any("missing" in reason for reason in nested_reasons):
+            reasons.append(f"{section_id}_section_sufficiency_missing")
+        else:
+            reasons.append(f"{section_id}_section_sufficiency_not_pass")
 
     if reasons:
         if any("unavailable" in r or "missing" in r or "empty" in r for r in reasons):

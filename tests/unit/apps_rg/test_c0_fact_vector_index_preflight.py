@@ -9,7 +9,7 @@ import pytest
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from apps_rg.runtime.c0 import fact_vector_index_preflight as fvip
 from apps_rg.runtime.chroma_precomputed_collection import EXPECTED_BGE_DIMENSION
-from apps_rg.runtime.fact_vectors_bootstrap import MANIFEST_REL
+from apps_rg.runtime.fact_vectors_bootstrap import GENERATED_LANES, MANIFEST_REL
 
 
 class _FakeFactVectorCollection:
@@ -34,13 +34,20 @@ def _write_manifest(root: Path, *, section_count: int = 2) -> None:
                 "schema_version": "apps_rg.fact_vectors_bootstrap_manifest.v1",
                 "generated_at_utc": "2026-06-23T00:00:00Z",
                 "manifest_checksum": "a" * 64,
-                "source": "candidate_fact_ledger (tracked); base resume is NOT a source (G14)",
+                "source": (
+                    "candidate_fact_ledger + base_resume_employment_bullets "
+                    "(tracked first-principles sources); generated output is never a live fact source"
+                ),
                 "dry_run": False,
                 "upserted_count": section_count,
                 "collection_count_after": section_count,
                 "sparse_sidecar_built": True,
-                "per_section_target_counts": {"competencies": section_count},
+                "per_section_target_counts": {
+                    lane: section_count for lane in GENERATED_LANES
+                },
                 "locked_deterministic_lanes": [],
+                "required_lanes": list(GENERATED_LANES),
+                "missing_required_lane_targets": [],
             },
             indent=2,
         )
@@ -90,6 +97,8 @@ def test_fact_vector_index_preflight_passes_with_bootstrap_and_bge_metadata(
     assert receipt["write_authority"] is False
     assert receipt["same_run_write_policy"] == "forbidden_for_product_retrieval"
     assert receipt["collection"]["collection_count"] == 2
+    assert receipt["section_sufficiency"]["status"] == fvip.STATUS_PASS
+    assert receipt["section_sufficiency"]["pre_run_hydration_present"] is True
     assert (artifact_dir / fvip.FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT).is_file()
 
 
@@ -139,6 +148,53 @@ def test_fact_vector_index_preflight_stale_on_non_bge_or_wrong_dim(
     assert receipt["status"] == fvip.STATUS_STALE
     assert "fact_vectors_embedding_model_not_fully_bge_m3" in receipt["reasons"]
     assert "fact_vectors_embedding_dim_not_fully_1024" in receipt["reasons"]
+    assert receipt["section_sufficiency"]["model_dim_pass"] is False
+
+
+@pytest.mark.parametrize("section_id", GENERATED_LANES)
+def test_each_generated_lane_has_common_section_sufficiency_gate(
+    section_id: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _write_manifest(tmp_path)
+    slot_requirements = {
+        "unify_bullets": ("bul_unify", 6),
+        "unify_narrative": ("bul_unify", 6),
+        "ibm_bullets": ("bul_ibm", 5),
+        "ibm_narrative": ("bul_ibm", 5),
+        "insurtech_bullets": ("bul_insurtech", 3),
+        "insurtech_narrative": ("bul_insurtech", 3),
+        "ey_bullets": ("bul_ey", 3),
+        "ey_narrative": ("bul_ey", 3),
+    }
+    prefix, count = slot_requirements.get(section_id, (f"fact_{section_id}", 1))
+    metas = [
+        _bge_meta(
+            section_targets=section_id,
+            source_document_id=f"{prefix}_{i:03d}",
+        )
+        for i in range(1, count + 1)
+    ]
+    monkeypatch.setattr(
+        fvip,
+        "_open_fact_vectors_collection",
+        lambda _path: _FakeFactVectorCollection(metas),
+    )
+
+    receipt = fvip.build_fact_vector_index_preflight(
+        section_id=section_id,
+        repo_root=tmp_path,
+        chroma_path=str(tmp_path / "chromadb"),
+        product_hybrid_required=True,
+    )
+
+    sufficiency = receipt["section_sufficiency"]
+    assert sufficiency["section_id"] == section_id
+    assert sufficiency["known_generated_lane"] is True
+    assert sufficiency["status"] == fvip.STATUS_PASS
+    assert sufficiency["pre_run_hydration_present"] is True
+    assert sufficiency["model_dim_pass"] is True
 
 
 def test_unify_bullets_preflight_requires_all_six_source_slots_and_metric_graph(
@@ -208,3 +264,94 @@ def test_unify_bullets_preflight_fails_when_any_slot_fact_vector_is_missing(
     assert "unify_bullets_fact_vector_sufficiency_missing" in receipt["reasons"]
     assert unify["status"] == fvip.STATUS_MISSING
     assert unify["missing_source_fact_slots"] == ["bul_unify_006"]
+
+
+@pytest.mark.parametrize(
+    ("section_id", "prefix", "expected_count"),
+    [
+        ("ibm_bullets", "bul_ibm", 5),
+        ("insurtech_bullets", "bul_insurtech", 3),
+        ("ey_bullets", "bul_ey", 5),
+    ],
+)
+def test_role_episode_bullet_preflight_proves_selected_slots_and_rejected_frontier(
+    section_id: str,
+    prefix: str,
+    expected_count: int,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    metas = [
+        _bge_meta(
+            section_targets=section_id,
+            source_document_id=f"{prefix}_{i:03d}",
+        )
+        for i in range(1, expected_count + 1)
+    ]
+    monkeypatch.setattr(
+        fvip,
+        "_open_fact_vectors_collection",
+        lambda _path: _FakeFactVectorCollection(metas),
+    )
+
+    receipt = fvip.build_fact_vector_index_preflight(
+        section_id=section_id,
+        repo_root=fvip.REPO_ROOT,
+        chroma_path=str(tmp_path / "chromadb"),
+        product_hybrid_required=True,
+    )
+
+    sufficiency = receipt["role_episode_bullets_sufficiency"]
+    traversal = sufficiency["graph_traversal_receipt"]
+    assert receipt["status"] == fvip.STATUS_PASS
+    assert sufficiency["status"] == fvip.STATUS_PASS
+    assert sufficiency["missing_source_fact_slots"] == []
+    expected_slots = 5 if section_id == "ibm_bullets" else 3
+    assert sufficiency["expected_slot_ids"] == [
+        f"{prefix}_{i:03d}" for i in range(1, expected_slots + 1)
+    ]
+    assert len(sufficiency["slot_metric_outcome_ids"]) == expected_slots
+    assert sufficiency["metric_distribution_pass"] is True
+    assert sufficiency["graph_traversal_pass"] is True
+    assert sufficiency["graph_granularity_pass"] is True
+    assert traversal["selected_role_episode_root_count"] == expected_slots
+    assert traversal["rejected_sibling_skill_count"] > 0
+    assert traversal["rejected_sibling_metric_count"] > 0
+    if section_id == "ey_bullets":
+        assert sufficiency["extra_source_fact_slots"] == ["bul_ey_004", "bul_ey_005"]
+        assert len(traversal["rejected_sibling_role_episode_bundle_ids"]) == 2
+    else:
+        assert sufficiency["extra_source_fact_slots"] == []
+        expected_rejected = 5 if section_id == "ibm_bullets" else 9
+        assert len(traversal["rejected_sibling_role_episode_bundle_ids"]) == expected_rejected
+
+
+def test_role_episode_bullet_preflight_fails_when_expected_slot_vector_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    metas = [
+        _bge_meta(section_targets="ey_bullets", source_document_id="bul_ey_001"),
+        _bge_meta(section_targets="ey_bullets", source_document_id="bul_ey_002"),
+        _bge_meta(section_targets="ey_bullets", source_document_id="bul_ey_004"),
+        _bge_meta(section_targets="ey_bullets", source_document_id="bul_ey_005"),
+    ]
+    monkeypatch.setattr(
+        fvip,
+        "_open_fact_vectors_collection",
+        lambda _path: _FakeFactVectorCollection(metas),
+    )
+
+    receipt = fvip.build_fact_vector_index_preflight(
+        section_id="ey_bullets",
+        repo_root=fvip.REPO_ROOT,
+        chroma_path=str(tmp_path / "chromadb"),
+        product_hybrid_required=True,
+    )
+
+    sufficiency = receipt["role_episode_bullets_sufficiency"]
+    assert receipt["status"] == fvip.STATUS_MISSING
+    assert "ey_bullets_fact_vector_sufficiency_missing" in receipt["reasons"]
+    assert sufficiency["status"] == fvip.STATUS_MISSING
+    assert sufficiency["missing_source_fact_slots"] == ["bul_ey_003"]
+    assert sufficiency["extra_source_fact_slots"] == ["bul_ey_004", "bul_ey_005"]

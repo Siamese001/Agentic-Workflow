@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from apps_rg.runtime.sections.executive_summary_lane import (
     coerce_resume_display_sentence_count_band,
+    check_executive_summary_narrative_shape,
+    check_l2_resume_voice,
     normalize_executive_summary_llm_output,
+    parse_model_json,
     reconcile_claim_ledger_to_sentence_count,
 )
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
@@ -108,4 +111,51 @@ def test_reconcile_claim_ledger_to_sentence_count_appends_split_sentence_row() -
         "support_class": "FACT_ONLY",
         "deterministic_split_continuation": True,
     }
+
+
+def test_check_l2_resume_voice_rejects_first_person_and_bridge_phrases() -> None:
+    first_person_ok, first_person_reason = check_l2_resume_voice("I led the launch.")
+    bridge_ok, bridge_reason = check_l2_resume_voice(
+        "The program delivered policy controls. This was achieved through careful sequencing."
+    )
+
+    assert first_person_ok is False
+    assert first_person_reason is not None
+    assert "First-person pronoun" in first_person_reason
+    assert bridge_ok is False
+    assert bridge_reason is not None
+    assert "Bridge phrase" in bridge_reason
+
+
+def test_check_executive_summary_narrative_shape_rejects_empty_and_stacked_forms() -> None:
+    empty_ok, empty_reason = check_executive_summary_narrative_shape("")
+    stacked_ok, stacked_reason = check_executive_summary_narrative_shape(
+        "Generated release plan. Generated rollout plan. Generated launch plan.",
+        [
+            {"claim_text": "Generated release plan."},
+            {"claim_text": "Generated rollout plan."},
+            {"claim_text": "Generated launch plan."},
+        ],
+    )
+    enumerated_ok, enumerated_reason = check_executive_summary_narrative_shape(
+        "One, two, three, four, five, six, seven."
+    )
+
+    assert empty_ok is False
+    assert empty_reason == "Empty executive summary"
+    assert stacked_ok is False
+    assert stacked_reason is not None
+    assert "sentence-stacked proof" in stacked_reason
+    assert enumerated_ok is False
+    assert enumerated_reason is not None
+    assert "Long capability enumeration" in enumerated_reason
+
+
+def test_parse_model_json_salvages_truncated_payload() -> None:
+    parsed, err = parse_model_json('{"resume_display_text": "Hello", "self_check": {')
+
+    assert err == ""
+    assert parsed is not None
+    assert parsed["resume_display_text"] == "Hello"
+    assert parsed["self_check"]["salvaged_truncated_json"] is True
 
