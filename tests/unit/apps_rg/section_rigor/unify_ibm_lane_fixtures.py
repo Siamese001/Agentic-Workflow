@@ -21,6 +21,90 @@ def _fake_judges(*, pass_all: bool = True) -> list[dict[str, Any]]:
     ]
 
 
+def _unify_role_episode_meta() -> dict[str, Any]:
+    from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+    from apps_rg.runtime.sections.unify_role_episode_evidence import (
+        attach_role_episode_bundles_to_proof_pool_metadata,
+    )
+
+    graph_ref = "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
+    ledger_ref = "apps_rg/fact_inventory/candidate_fact_ledger.json"
+    return attach_role_episode_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_ref": graph_ref,
+            "skills_authority_status": "PASS",
+            "evidence_authority": build_evidence_authority(
+                graph_ref=graph_ref,
+                ledger_ref=ledger_ref,
+                skills_authority_status="PASS",
+            ),
+            "selected_graph_evidence_plan": {
+                "role_family_key": "SVP_AGENTIC_ENGINEERING",
+                "target_role_profile": "SVP_AGENTIC_ENGINEERING",
+            },
+        },
+        section_id="unify_bullets",
+        repo_root=REPO,
+    )
+
+
+def _enrich_unify_mock_with_role_episode_contract(parsed: dict[str, Any]) -> dict[str, Any]:
+    from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
+    from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
+        BUNDLES_PATH as UNIFY_BUNDLES_PATH,
+    )
+
+    out = dict(parsed)
+    meta = _unify_role_episode_meta()
+    slot_map = meta["unify_bullet_slot_bundle_map_resolved"]
+    bundle_by_id = {b["role_episode_bundle_id"]: b for b in meta["role_episode_bundles"]}
+    metric_nodes = metric_outcome_nodes_from_path(UNIFY_BUNDLES_PATH)
+    bullets: list[dict[str, Any]] = []
+    ledger: list[dict[str, Any]] = []
+    change_log: list[dict[str, Any]] = []
+    for bid in (
+        "bul_unify_001",
+        "bul_unify_002",
+        "bul_unify_003",
+        "bul_unify_004",
+        "bul_unify_005",
+        "bul_unify_006",
+    ):
+        bundle = bundle_by_id[slot_map[bid]]
+        mid = str(bundle["linked_metric_outcome_ids"][0])
+        node = metric_nodes[mid]
+        token = str((node.get("surface_tokens") or [node.get("metric")])[0])
+        text = (
+            f"Owned {token} across governed enterprise AI platform delivery, tying architecture "
+            "mechanisms to measurable operating outcomes."
+        )
+        bullets.append(
+            {
+                "bullet_id": bid,
+                "bullet_text": text,
+                "has_metric": True,
+                "metric_raw": mid,
+                "source_fact_ids": [bid],
+            }
+        )
+        ledger.append({"claim_text": text, "source_fact_ids": [bid]})
+        change_log.append(
+            {
+                "bullet_id": bid,
+                "role_episode_bundle_id": bundle["role_episode_bundle_id"],
+                "graph_skill_node_ids": list(bundle["graph_skill_node_ids"])[:3],
+                "fact_ids_used": [bid, *list(bundle["linked_source_fact_ids"])[:1]],
+                "metric_outcome_ids": [mid],
+            }
+        )
+    out["bullets"] = bullets
+    out["claim_ledger"] = ledger
+    out["change_log"] = change_log
+    out["proof_pool_metadata"] = meta
+    return out
+
+
 def unify_bullets_parsed_from_mock() -> tuple[dict[str, Any], set[str]]:
     from apps_rg.runtime.sections.unify_bullets_lane import (
         build_mock_output,
@@ -54,6 +138,8 @@ def unify_bullets_parsed_from_mock() -> tuple[dict[str, Any], set[str]]:
             continue
         fid = str(row.get("fact_id") or "")
         row["claim_text"] = f"Graph-bound evidence anchor for {fid} (compose target; not bullet prose)."
+    parsed["selected_fact_plan"] = plan
+    parsed = _enrich_unify_mock_with_role_episode_contract(parsed)
     parsed["selected_fact_plan"] = plan
     return parsed, allowed
 
@@ -140,6 +226,7 @@ def run_unify_bullets_x2(parsed: dict[str, Any], allowed: set[str]) -> list:
         provider_attempted="mock",
         raw_output=json.dumps(parsed),
         x1d_judges=_fake_judges(),
+        proof_pool_metadata=parsed.get("proof_pool_metadata") if isinstance(parsed, dict) else None,
     )
 
 

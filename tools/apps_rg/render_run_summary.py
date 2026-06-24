@@ -155,6 +155,10 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     x2 = _load_json(run_dir / "x2_gate_outputs.json") or {}
     x1d = _load_json(run_dir / "x1d_llm_judge_outputs.json") or {}
     visible = _load_json(run_dir / "competencies_visible_graph_surface_enrichment_receipt.json") or {}
+    c0_room = _load_json(run_dir / "c0_evidence_room_receipt.json") or {}
+    c02_vector = _load_json(run_dir / "c02_vector_query.json") or {}
+    preflight_artifact = _load_json(run_dir / "c02_fact_vector_index_preflight.json") or {}
+    semantic_payload = _load_json(run_dir / "c02_semantic_cache_payload.json") or {}
     display = _load_text(run_dir / "competencies_display.txt")
 
     traversal = runtime.get("traversal")
@@ -175,6 +179,30 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
         row for row in (visible.get("rows") or [])
         if isinstance(row, dict) and row.get("surface") == "competencies"
     ]
+    bridge_room = ((c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {})
+    c02_room = c0_room.get("c02") if isinstance(c0_room.get("c02"), dict) else {}
+    if not c02_room:
+        c02_room = bridge_room.get("c02") if isinstance(bridge_room.get("c02"), dict) else {}
+    c05_room = c0_room.get("c05") if isinstance(c0_room.get("c05"), dict) else {}
+    if not c05_room:
+        c05_room = bridge_room.get("c05") if isinstance(bridge_room.get("c05"), dict) else {}
+    preflight = c05_room.get("fact_vector_index_preflight")
+    if not isinstance(preflight, dict):
+        preflight = c02_room.get("fact_vector_index_preflight")
+    preflight = preflight if isinstance(preflight, dict) else {}
+    if not preflight:
+        preflight = preflight_artifact
+    preflight_collection = preflight.get("collection") if isinstance(preflight.get("collection"), dict) else {}
+    write_receipt = c02_room.get("c02_chroma_write")
+    write_receipt = write_receipt if isinstance(write_receipt, dict) else {}
+    ingest_receipt = c02_room.get("fact_vectors_ingest")
+    ingest_receipt = ingest_receipt if isinstance(ingest_receipt, dict) else {}
+    vector_query = c02_vector if c02_vector else c05_room.get("c02_vector_query")
+    vector_query = vector_query if isinstance(vector_query, dict) else {}
+    intent_vector = semantic_payload.get("intent_vector")
+    intent_vector = intent_vector if isinstance(intent_vector, dict) else {}
+    lanes = vector_query.get("lanes") if isinstance(vector_query.get("lanes"), dict) else {}
+    lane_summary = ", ".join(f"{k}:{v}" for k, v in lanes.items()) or "missing"
     display_order: dict[str, int] = {}
     for idx, line in enumerate(display.splitlines(), 1):
         label = line.split(":", 1)[0].strip()
@@ -209,6 +237,45 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     lines.append(f"| Proof eligible | `{x3.get('proof_eligible')}` |")
     lines.append(f"| Role profile | `{traversal.get('target_role_profile') or 'unknown'}` |")
     lines.append(f"| Selection method | `{traversal.get('selection_method') or 'unknown'}` |")
+    lines.append(
+        "| C0 fact-vector index | "
+        f"status `{preflight.get('status') or 'missing'}`, "
+        f"collection `{preflight_collection.get('collection_name') or 'fact_vectors'}`, "
+        f"count `{preflight_collection.get('collection_count') or 0}`, "
+        f"section hits `{preflight_collection.get('section_target_count') or 0}`, "
+        f"model `{preflight.get('expected_embedding_model') or '—'}`, "
+        f"dim `{preflight.get('expected_embedding_dim') or '—'}` |"
+    )
+    lines.append(
+        "| C0.2 retrieval compare | "
+        f"required `{vector_query.get('product_hybrid_required', '—')}`, "
+        f"attempted `{vector_query.get('product_hybrid_attempted', '—')}`, "
+        f"lanes `{lane_summary}`, "
+        f"mode `{vector_query.get('c0_retrieval_mode') or '—'}`, "
+        f"enrichment `{vector_query.get('hybrid_enrichment_item_count') or 0}` |"
+    )
+    lines.append(
+        "| C0.2 same-run write | "
+        f"attempted `{write_receipt.get('attempted', ingest_receipt.get('attempted', '—'))}`, "
+        f"status `{write_receipt.get('status') or ingest_receipt.get('status') or 'missing'}`, "
+        f"upserted `{write_receipt.get('upserted_count', ingest_receipt.get('upserted_count', 0))}`, "
+        f"reason `{write_receipt.get('reason') or ingest_receipt.get('reason') or '—'}`, "
+        f"policy `{preflight.get('same_run_write_policy') or '—'}` |"
+    )
+    lines.append(
+        "| Intent vector | "
+        f"model `{intent_vector.get('embedding_model') or '—'}`, "
+        f"dim `{intent_vector.get('dimensions') or '—'}`, "
+        f"digest `{_truncate_sha(str(semantic_payload.get('intent_digest') or ''))}`, "
+        f"query output `{semantic_payload.get('query_output_count', '—')}` |"
+    )
+    lines.append(
+        "| Fact vector store | "
+        f"path `{preflight.get('chroma_path') or '—'}`, "
+        f"manifest upserts `{preflight.get('manifest_upserted_count', '—')}`, "
+        f"manifest count `{preflight.get('manifest_collection_count_after', '—')}`, "
+        f"sparse sidecar `{preflight.get('manifest_sparse_sidecar_built', '—')}` |"
+    )
     lines.append(f"| Depth status | `{traversal.get('graph_evidence_depth_status') or 'unknown'}` |")
     lines.append(
         "| Frontier | "
@@ -287,6 +354,153 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
         lines.append("")
         lines.append("```text")
         lines.append(display)
+        lines.append("```")
+        lines.append("")
+    return lines
+
+
+def _render_bcg_unify_bullets_report(run_dir: Path) -> List[str]:
+    output_text = _load_text(run_dir / "unify_bullets_output.txt")
+    c0_room = _load_json(run_dir / "c0_evidence_room_receipt.json") or {}
+    c02_vector = _load_json(run_dir / "c02_vector_query.json") or {}
+    preflight_artifact = _load_json(run_dir / "c02_fact_vector_index_preflight.json") or {}
+    semantic_payload = _load_json(run_dir / "c02_semantic_cache_payload.json") or {}
+    c07 = _load_json(run_dir / "c07_handoff_audit.json") or {}
+    x2 = _load_json(run_dir / "x2_gate_outputs.json") or {}
+    x3 = _load_json(run_dir / "x3_disposition.json") or {}
+
+    bridge_room = ((c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {})
+    c02_room = c0_room.get("c02") if isinstance(c0_room.get("c02"), dict) else {}
+    if not c02_room:
+        c02_room = bridge_room.get("c02") if isinstance(bridge_room.get("c02"), dict) else {}
+    c05_room = c0_room.get("c05") if isinstance(c0_room.get("c05"), dict) else {}
+    if not c05_room:
+        c05_room = bridge_room.get("c05") if isinstance(bridge_room.get("c05"), dict) else {}
+    if not c07:
+        c07 = c0_room.get("c07") if isinstance(c0_room.get("c07"), dict) else {}
+    preflight = c05_room.get("fact_vector_index_preflight")
+    if not isinstance(preflight, dict):
+        preflight = c02_room.get("fact_vector_index_preflight")
+    preflight = preflight if isinstance(preflight, dict) else preflight_artifact
+    preflight = preflight if isinstance(preflight, dict) else {}
+    if (
+        not output_text
+        and str(c02_vector.get("section_id") or preflight.get("section_id") or "") != "unify_bullets"
+    ):
+        return []
+
+    collection = preflight.get("collection") if isinstance(preflight.get("collection"), dict) else {}
+    unify = preflight.get("unify_bullets_sufficiency")
+    unify = unify if isinstance(unify, dict) else {}
+    traversal = unify.get("graph_traversal_receipt")
+    traversal = traversal if isinstance(traversal, dict) else {}
+    write_receipt = c02_room.get("c02_chroma_write")
+    write_receipt = write_receipt if isinstance(write_receipt, dict) else {}
+    ingest_receipt = c02_room.get("fact_vectors_ingest")
+    ingest_receipt = ingest_receipt if isinstance(ingest_receipt, dict) else {}
+    vector_query = c02_vector if c02_vector else c05_room.get("c02_vector_query")
+    vector_query = vector_query if isinstance(vector_query, dict) else {}
+    lanes = vector_query.get("lanes") if isinstance(vector_query.get("lanes"), dict) else {}
+    lane_summary = ", ".join(f"{k}:{v}" for k, v in lanes.items()) or "missing"
+    intent_vector = semantic_payload.get("intent_vector")
+    intent_vector = intent_vector if isinstance(intent_vector, dict) else {}
+    checks = c07.get("checks") if isinstance(c07.get("checks"), dict) else {}
+    gates = [g for g in (x2.get("gates") or []) if isinstance(g, dict)]
+
+    def _gate_status(gate_id: str) -> str:
+        for gate in gates:
+            if gate.get("gate_id") == gate_id:
+                return "PASS" if gate.get("pass") or gate.get("passed") else "FAIL"
+        return "missing"
+
+    expected_slots = list(unify.get("expected_slot_ids") or [])
+    missing_slots = list(unify.get("missing_source_fact_slots") or [])
+    missing_metric_slots = list(unify.get("missing_metric_outcome_slots") or [])
+    lines: List[str] = ["## BCG Unify Bullets C0-C7 Report", ""]
+    lines.append(
+        "**Executive readout:** Unify bullets require pre-existing six-slot fact vectors plus "
+        "approved metric-outcome lineage before generation; C0.2 remains read/compare only."
+    )
+    lines.append("")
+    lines.append("| Signal | Value |")
+    lines.append("|---|---|")
+    lines.append(f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |")
+    lines.append(
+        "| C0 fact-vector index | "
+        f"status `{preflight.get('status') or 'missing'}`, "
+        f"collection `{collection.get('collection_name') or 'fact_vectors'}`, "
+        f"count `{collection.get('collection_count') or 0}`, "
+        f"section hits `{collection.get('section_target_count') or 0}`, "
+        f"model `{preflight.get('expected_embedding_model') or '—'}`, "
+        f"dim `{preflight.get('expected_embedding_dim') or '—'}` |"
+    )
+    lines.append(
+        "| Unify six-slot sufficiency | "
+        f"status `{unify.get('status') or 'missing'}`, "
+        f"slots `{len(expected_slots) - len(missing_slots)}/{len(expected_slots)}`, "
+        f"missing source slots `{missing_slots or 'none'}`, "
+        f"missing metric slots `{missing_metric_slots or 'none'}` |"
+    )
+    lines.append(
+        "| Unify metric/graph depth | "
+        f"unique metrics `{len(unify.get('unique_metric_outcome_ids') or [])}`, "
+        f"metric distribution `{unify.get('metric_distribution_pass')}`, "
+        f"roots `{traversal.get('selected_role_episode_root_count') or 0}`, "
+        f"skills `{traversal.get('selected_unique_leaf_skill_count') or 0}`, "
+        f"metrics `{traversal.get('selected_unique_metric_count') or 0}`, "
+        f"graph traversal `{unify.get('graph_traversal_pass')}`, "
+        f"granularity `{unify.get('graph_granularity_pass')}` |"
+    )
+    lines.append(
+        "| C0.2 retrieval compare | "
+        f"required `{vector_query.get('product_hybrid_required', '—')}`, "
+        f"attempted `{vector_query.get('product_hybrid_attempted', '—')}`, "
+        f"lanes `{lane_summary}`, "
+        f"mode `{vector_query.get('c0_retrieval_mode') or '—'}`, "
+        f"enrichment `{vector_query.get('hybrid_enrichment_item_count') or 0}` |"
+    )
+    lines.append(
+        "| C0.2 same-run write | "
+        f"attempted `{write_receipt.get('attempted', ingest_receipt.get('attempted', '—'))}`, "
+        f"status `{write_receipt.get('status') or ingest_receipt.get('status') or 'missing'}`, "
+        f"upserted `{write_receipt.get('upserted_count', ingest_receipt.get('upserted_count', 0))}`, "
+        f"reason `{write_receipt.get('reason') or ingest_receipt.get('reason') or '—'}`, "
+        f"policy `{preflight.get('same_run_write_policy') or '—'}` |"
+    )
+    policy = preflight.get("delayed_loop_policy")
+    policy = policy if isinstance(policy, dict) else {}
+    lines.append(
+        "| Delayed loop policy | "
+        f"pre-run index `{policy.get('pre_run_fact_vector_index_required', '—')}`, "
+        f"live C0 write `{policy.get('live_write_during_c0', '—')}`, "
+        f"generated route `{policy.get('generated_output_route') or '—'}`, "
+        f"promotion `{policy.get('promotion_gate') or '—'}` |"
+    )
+    lines.append(
+        "| Intent vector | "
+        f"model `{intent_vector.get('embedding_model') or '—'}`, "
+        f"dim `{intent_vector.get('dimensions') or '—'}`, "
+        f"digest `{_truncate_sha(str(semantic_payload.get('intent_digest') or ''))}`, "
+        f"query output `{semantic_payload.get('query_output_count', '—')}` |"
+    )
+    lines.append(
+        "| C0.7 handoff | "
+        f"safe `{c07.get('handoff_safe', '—')}`, "
+        f"unify sufficiency `{checks.get('unify_bullets_fact_vector_sufficiency_status', '—')}`, "
+        f"metric distribution `{checks.get('unify_bullets_metric_distribution_pass', '—')}` |"
+    )
+    lines.append(
+        "| X2 metric lineage gates | "
+        f"lineage `{_gate_status('x2_unify_each_bullet_approved_metric_outcome_lineage')}`, "
+        f"visible surface `{_gate_status('x2_unify_each_bullet_metric_outcome_surface_visible')}`, "
+        f"distribution `{_gate_status('x2_unify_metric_outcomes_distributed_by_slot')}` |"
+    )
+    lines.append("")
+    if output_text:
+        lines.append("**Unify Bullets Display**")
+        lines.append("")
+        lines.append("```text")
+        lines.append(output_text)
         lines.append("```")
         lines.append("")
     return lines
@@ -506,6 +720,7 @@ def render(run_dir: Path) -> str:
     parts: List[str] = [title, "", f"_Rendered at {rendered_at}_", ""]
     parts += _render_identity(run_dir, identity, manifest)
     parts += _render_bcg_competencies_report(run_dir)
+    parts += _render_bcg_unify_bullets_report(run_dir)
     parts += _render_l2_substages(terminal)
     parts += _render_hop_checkpoints(run_report)
     parts += _render_section_verdicts(run_report)

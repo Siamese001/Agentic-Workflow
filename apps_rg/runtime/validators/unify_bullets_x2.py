@@ -282,6 +282,14 @@ def _unify_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> 
     return (not failures, failures)
 
 
+def _role_episode_metric_contract_active(meta: dict[str, Any] | None) -> bool:
+    return bool(
+        isinstance(meta, dict)
+        and meta.get("role_episode_bundle_consumption")
+        and meta.get("unify_role_episode_section_packet")
+    )
+
+
 def _all_source_fact_ids(parsed: dict[str, Any] | None, claim_ledger: list[dict[str, Any]]) -> set[str]:
     ids: set[str] = set()
     for bullet in (parsed or {}).get("bullets") or []:
@@ -510,40 +518,63 @@ def run_unify_bullets_x2_gates(
         section_id="unify_bullets",
     )
 
-    protected = next((b for b in bullets if b.get("bullet_id") == PROTECTED_BULLET_DEFAULT), None)
-    protected_text = (protected or {}).get("bullet_text", "")
-    metrics_ok = all(
-        token in protected_text
-        for token in ("$22M", "20%", "8", "28")
-    )
-    add(
-        "x2_unify_protected_bullet_metrics_preserved",
-        bool(protected) and metrics_ok,
-        {"bullet_id": PROTECTED_BULLET_DEFAULT, "metrics_present": metrics_ok},
-        "$22M, 20%, 8-to-28 scale on bul_unify_006",
-        "Protected bul_unify_006 must preserve $22M, 20%, and 8-to-28 scale.",
-    )
+    if _role_episode_metric_contract_active(proof_pool_metadata):
+        add(
+            "x2_unify_protected_bullet_metrics_preserved",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "x2_unify_each_bullet_approved_metric_outcome_lineage + x2_unify_each_bullet_metric_outcome_surface_visible",
+            None,
+        )
+        add(
+            "x2_unify_metrics_preserved",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "slot-specific approved metric_outcome_ids visible across all bullets",
+            None,
+        )
+        add(
+            "x2_unify_metric_anchor_bullet_ownership",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "metric_outcome_ids anchored by resolved slot->role_episode_bundle map",
+            None,
+        )
+    else:
+        protected = next((b for b in bullets if b.get("bullet_id") == PROTECTED_BULLET_DEFAULT), None)
+        protected_text = (protected or {}).get("bullet_text", "")
+        metrics_ok = all(
+            token in protected_text
+            for token in ("$22M", "20%", "8", "28")
+        )
+        add(
+            "x2_unify_protected_bullet_metrics_preserved",
+            bool(protected) and metrics_ok,
+            {"bullet_id": PROTECTED_BULLET_DEFAULT, "metrics_present": metrics_ok},
+            "$22M, 20%, 8-to-28 scale on bul_unify_006 (legacy non-graph fallback)",
+            "Protected bul_unify_006 must preserve $22M, 20%, and 8-to-28 scale.",
+        )
 
-    metrics_preserved = all(
-        phrase in combined
-        for phrase in ("$22M", "20%", "six months to three weeks")
-    ) and ("8" in combined and "28" in combined)
-    add(
-        "x2_unify_metrics_preserved",
-        metrics_preserved,
-        combined[:200],
-        "core metrics present",
-        "Core metrics ($22M, 20%, 8 to 28, six months to three weeks) must appear in bullets.",
-    )
+        metrics_preserved = all(
+            phrase in combined
+            for phrase in ("$22M", "20%", "six months to three weeks")
+        ) and ("8" in combined and "28" in combined)
+        add(
+            "x2_unify_metrics_preserved",
+            metrics_preserved,
+            combined[:200],
+            "core metrics present (legacy non-graph fallback)",
+            "Core metrics ($22M, 20%, 8 to 28, six months to three weeks) must appear in bullets.",
+        )
 
-    anchor_ok, anchor_fail = _unify_metric_anchors_on_assigned_bullets(bullets)
-    add(
-        "x2_unify_metric_anchor_bullet_ownership",
-        anchor_ok,
-        anchor_fail or "ok",
-        "REQUIRED_ANCHOR per bul_unify_004/006",
-        None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
-    )
+        anchor_ok, anchor_fail = _unify_metric_anchors_on_assigned_bullets(bullets)
+        add(
+            "x2_unify_metric_anchor_bullet_ownership",
+            anchor_ok,
+            anchor_fail or "ok",
+            "REQUIRED_ANCHOR per bul_unify_004/006 (legacy non-graph fallback)",
+            None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
+        )
 
     dense_ids = _mechanism_dense_bullet_ids(bullets)
     mechanism_ok = len(dense_ids) <= 1
@@ -805,9 +836,6 @@ def run_unify_bullets_x2_gates(
         metric_supported = bool(plan_fact_metric_u) and (
             plan_fact_metric_u in mr_u_lower or mr_u_lower in plan_fact_metric_u
         )
-        # Also accept known Unify canonical metrics ($22M, 20%, 8, 28) as self-attesting
-        unify_canonical_tokens = ("$22m", "20%", "8 to 28", "six months to three weeks")
-        metric_supported = metric_supported or any(tok in mr_u_lower for tok in unify_canonical_tokens)
         # Accept an approved metric_outcome_id (the canonical source identifier the role-episode
         # bundle binds) used directly as metric_raw — traceable to an approved outcome, not weakened.
         approved_metric_ids = {
@@ -830,7 +858,7 @@ def run_unify_bullets_x2_gates(
         "x2_unify_metric_source_required",
         not bullets_metric_unsupported_u,
         bullets_metric_unsupported_u or "all_traceable",
-        "metric_raw traces to plan_fact.metric_raw or canonical Unify metrics",
+        "metric_raw traces to plan_fact.metric_raw or approved metric_outcome_ids",
         (
             f"Unsupported metric claims: {bullets_metric_unsupported_u}"
             if bullets_metric_unsupported_u

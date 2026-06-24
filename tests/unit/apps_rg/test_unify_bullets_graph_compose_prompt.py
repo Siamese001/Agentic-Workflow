@@ -1,4 +1,7 @@
-"""Unify bullets: graph-compose C0 pack and compile guards."""
+"""apps-test-model: APP CONTRACT.
+
+Unify bullets: graph-compose C0 pack and compile guards.
+"""
 from __future__ import annotations
 
 import os
@@ -174,6 +177,9 @@ def test_legacy_i0_compose_not_rewrite() -> None:
     assert "Rewrite ONLY" not in body
     assert GRAPH_BULLET_EVIDENCE_PACK_MARKER in body
     assert "bullets_composed_from_graph_evidence" in body
+    assert "metric_outcome_usage_contract" in body
+    assert "preserve $22M" not in body
+    assert "8 to 28" not in body
 
 
 def test_runtime_proof_pool_preserves_role_family_key_for_unify_bullets() -> None:
@@ -209,6 +215,16 @@ def test_runtime_proof_pool_preserves_role_family_key_for_unify_bullets() -> Non
     }
     body = format_unify_role_episode_evidence_pack(payload, section_id="unify_bullets")
     assert "compose_one_bullet_from" in body
+    assert "metric_outcome_usage_contract" in body
+    receipt = pool.proof_pool_metadata["unify_graph_traversal_sufficiency_receipt"]
+    assert receipt["target_role_profile"] == "PARTNER_APPLIED_AI_ARCHITECTURE"
+    assert receipt["candidate_conservation"]["pass"] is True
+    assert receipt["selected_role_episode_root_count"] == 6
+    assert receipt["selected_unique_leaf_skill_count"] >= 20
+    assert receipt["selected_unique_metric_count"] >= 10
+    assert receipt["rejected_sibling_skill_count"] > 0
+    assert receipt["rejected_sibling_metric_count"] > 0
+    assert receipt["role_specific_axis_coverage"]["missing_axes"] == []
 
 
 def test_partner_profile_preserves_unify_metric_anchor_slots() -> None:

@@ -17,6 +17,7 @@ from apps_rg.runtime.sections.graph_evidence_contract import (
 )
 from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
     APPROVED_METRIC_OUTCOME_IDS,
+    BUNDLES_PATH as UNIFY_BUNDLES_PATH,
     UNIFY_EMPLOYER_ID,
     UNIFY_EMPLOYER_NODE_ID,
     UNIFY_TIME_WINDOW,
@@ -24,6 +25,9 @@ from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
     get_bundle_by_id,
     get_bundles_for_section,
     validate_bundle,
+)
+from apps_rg.runtime.sections.role_episode_metric_registry import (
+    metric_outcome_nodes_from_path,
 )
 
 UNIFY_ROLE_EPISODE_EVIDENCE_MARKER = "UNIFY_ROLE_EPISODE_EVIDENCE_PACK"
@@ -109,6 +113,33 @@ def _skill_rows_by_id(repo_root: Path | None = None) -> dict[str, dict[str, Any]
     return out
 
 
+def _unify_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
+    return metric_outcome_nodes_from_path(UNIFY_BUNDLES_PATH)
+
+
+def _bundle_allowed_metric_outcome_ids(bundle: dict[str, Any]) -> list[str]:
+    return [str(x) for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
+
+
+def _metric_surface_tokens(metric_id: str) -> list[str]:
+    node = _unify_metric_outcome_nodes().get(metric_id) or {}
+    tokens: list[str] = []
+    for raw in [node.get("metric"), *(node.get("surface_tokens") or []), node.get("claim_text")]:
+        text = str(raw or "").strip()
+        if text and text not in tokens:
+            tokens.append(text)
+    return tokens[:5]
+
+
+def _metric_option_label(metric_id: str) -> str:
+    node = _unify_metric_outcome_nodes().get(metric_id) or {}
+    metric = str(node.get("metric") or "").strip()
+    tokens = _metric_surface_tokens(metric_id)
+    if metric:
+        return f"{metric_id} | metric: {metric} | surface_tokens: {tokens}"
+    return metric_id
+
+
 def _mechanism_vocab_from_bundle(bundle: dict[str, Any]) -> list[str]:
     tokens: list[str] = []
     for sig in (bundle.get("architecture_scope_signals") or []):
@@ -126,6 +157,111 @@ def _mechanism_vocab_from_bundle(bundle: dict[str, Any]) -> list[str]:
             if kw.lower() in s.lower() and kw not in tokens:
                 tokens.append(kw)
     return tokens[:8]
+
+
+def _role_family_required_axes(target_role_profile: str) -> tuple[str, ...]:
+    profile = str(target_role_profile or "").strip().upper()
+    if profile == "PARTNER_APPLIED_AI_ARCHITECTURE":
+        return (
+            "agentic_platform_architecture",
+            "partner_channel_cosell",
+            "enterprise_adoption_revenue",
+            "production_adoption_lifecycle",
+            "distributed_ecosystem_engineering",
+            "platform_commercialization_leadership",
+        )
+    return (
+        "agentic_platform_architecture",
+        "dependency_graph_accelerator",
+        "runtime_reliability_governance",
+        "production_adoption_lifecycle",
+        "distributed_ecosystem_engineering",
+        "platform_commercialization_leadership",
+    )
+
+
+def build_unify_graph_traversal_sufficiency_receipt(
+    *,
+    section_id: str,
+    target_role_profile: str,
+    slot_bundle_map: dict[str, str],
+    packet: dict[str, Any],
+) -> dict[str, Any]:
+    """Receipt proving Unify bullets traverse role roots -> skills -> metric outcomes."""
+    bundles = [
+        b for b in (packet.get("role_episode_bundles") or [])
+        if isinstance(b, dict) and b.get("role_episode_bundle_id")
+    ]
+    bundle_by_id = {str(b["role_episode_bundle_id"]): b for b in bundles}
+    eligible_ids = [str(b["role_episode_bundle_id"]) for b in bundles]
+    selected_ids: list[str] = []
+    for slot_id in UNIFY_BULLET_SLOT_IDS:
+        bid = str(slot_bundle_map.get(slot_id) or "").strip()
+        if bid and bid not in selected_ids:
+            selected_ids.append(bid)
+    rejected_ids = [bid for bid in eligible_ids if bid not in selected_ids]
+    unexplained_ids = [bid for bid in selected_ids if bid not in bundle_by_id]
+
+    def _collect(ids: list[str], field: str) -> list[str]:
+        out: list[str] = []
+        seen: set[str] = set()
+        for bid in ids:
+            bundle = bundle_by_id.get(bid) or {}
+            for raw in bundle.get(field) or []:
+                item = str(raw).strip()
+                if item and item not in seen:
+                    seen.add(item)
+                    out.append(item)
+        return out
+
+    selected_skill_ids = _collect(selected_ids, "graph_skill_node_ids")
+    rejected_skill_ids = _collect(rejected_ids, "graph_skill_node_ids")
+    selected_metric_ids = _collect(selected_ids, "linked_metric_outcome_ids")
+    rejected_metric_ids = _collect(rejected_ids, "linked_metric_outcome_ids")
+    selected_axes = [
+        str((bundle_by_id.get(bid) or {}).get("root_capability_node_id") or bid.replace("reb_unify_", ""))
+        for bid in selected_ids
+    ]
+    required_axes = list(_role_family_required_axes(target_role_profile))
+    missing_axes = [axis for axis in required_axes if axis not in selected_axes]
+
+    return {
+        "receipt_schema": "unify_graph_traversal_sufficiency_v1",
+        "section_id": section_id,
+        "target_role_profile": target_role_profile,
+        "unify_bullet_slot_bundle_map_resolved": dict(slot_bundle_map),
+        "selected_role_episode_bundle_ids": selected_ids,
+        "rejected_sibling_role_episode_bundle_ids": rejected_ids,
+        "selected_role_episode_root_count": len(selected_ids),
+        "selected_unique_leaf_skill_count": len(selected_skill_ids),
+        "selected_unique_metric_count": len(selected_metric_ids),
+        "rejected_sibling_skill_count": len(rejected_skill_ids),
+        "rejected_sibling_metric_count": len(rejected_metric_ids),
+        "selected_leaf_skill_ids": selected_skill_ids,
+        "rejected_sibling_skill_ids": rejected_skill_ids,
+        "selected_metric_outcome_ids": selected_metric_ids,
+        "rejected_sibling_metric_ids": rejected_metric_ids,
+        "frontier_size_by_hop_depth": {
+            "hop_0_role_episode_roots": len(selected_ids),
+            "hop_1_graph_skill_nodes": len(selected_skill_ids),
+            "hop_2_metric_outcome_nodes": len(selected_metric_ids),
+            "rejected_hop_0_sibling_roots": len(rejected_ids),
+            "rejected_hop_1_sibling_skill_nodes": len(rejected_skill_ids),
+            "rejected_hop_2_sibling_metric_nodes": len(rejected_metric_ids),
+        },
+        "candidate_conservation": {
+            "eligible_role_episode_root_count": len(eligible_ids),
+            "selected_role_episode_root_count": len(selected_ids),
+            "rejected_role_episode_root_count": len(rejected_ids),
+            "unexplained_selected_role_episode_bundle_ids": unexplained_ids,
+            "pass": not unexplained_ids and (set(selected_ids) | set(rejected_ids)) == set(eligible_ids),
+        },
+        "role_specific_axis_coverage": {
+            "required_axes": required_axes,
+            "selected_axes": selected_axes,
+            "missing_axes": missing_axes,
+        },
+    }
 
 
 def build_unify_role_episode_section_packet(
@@ -161,9 +297,12 @@ def build_unify_role_episode_section_packet(
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
                 "time_window": UNIFY_TIME_WINDOW,
+                "root_capability_node_id": bundle.get("root_capability_node_id"),
+                "bundle_theme": bundle.get("bundle_theme"),
                 "graph_skill_node_ids": list(bundle.get("graph_skill_node_ids") or []),
                 "linked_source_fact_ids": list(bundle.get("linked_source_fact_ids") or []),
                 "linked_metric_outcome_ids": list(bundle.get("linked_metric_outcome_ids") or []),
+                "allowed_metric_outcome_ids": _bundle_allowed_metric_outcome_ids(bundle),
                 "executive_scope_signals": list(bundle.get("executive_scope_signals") or []),
                 "architecture_scope_signals": list(bundle.get("architecture_scope_signals") or []),
                 "operating_context": bundle.get("operating_context"),
@@ -206,6 +345,32 @@ def attach_role_episode_bundles_to_proof_pool_metadata(
     out["graph_expansion_consumes_role_episode_bundles"] = True
     out["flat_skill_only_graph_context_forbidden"] = True
     out["approved_metric_outcome_ids"] = packet["approved_metric_outcome_ids"]
+    if section_id == "unify_bullets":
+        plan = out.get("selected_graph_evidence_plan") if isinstance(out.get("selected_graph_evidence_plan"), dict) else {}
+        target_role_profile = str(
+            plan.get("role_family_key")
+            or plan.get("target_role_profile")
+            or out.get("role_family_key")
+            or out.get("target_role_profile")
+            or ""
+        ).strip()
+        if target_role_profile:
+            try:
+                slot_bundle_map = resolve_unify_bullet_slot_bundle_map(
+                    target_role_profile,
+                    repo_root=repo_root,
+                )
+            except ValueError:
+                slot_bundle_map = dict(UNIFY_BULLET_SLOT_BUNDLE_MAP)
+        else:
+            slot_bundle_map = dict(UNIFY_BULLET_SLOT_BUNDLE_MAP)
+        out["unify_bullet_slot_bundle_map_resolved"] = slot_bundle_map
+        out["unify_graph_traversal_sufficiency_receipt"] = build_unify_graph_traversal_sufficiency_receipt(
+            section_id=section_id,
+            target_role_profile=target_role_profile or "DEFAULT",
+            slot_bundle_map=slot_bundle_map,
+            packet=packet,
+        )
     return out
 
 
@@ -263,7 +428,12 @@ def format_unify_role_episode_evidence_pack(
         f"- selection_method: {selection_method}",
         "- Each bullet/narrative claim MUST cite role_episode_bundle_id in change_log.",
         "- skill_id alone is not proof; linked_source_fact_ids and approved metric_outcome_ids bind claims.",
-        "- Metric claims allowed only when bound to an approved metric_outcome_id.",
+        (
+            "- metric_outcome_usage_contract: every bul_unify_* bullet MUST choose >=1 "
+            "approved metric_outcome_id from its slot bundle, surface one of that node's metric/"
+            "surface_tokens in bullet_text, set metric_raw to the chosen metric_outcome_id(s), "
+            "and record it in change_log.metric_outcome_ids[]."
+        ),
         "- Internal-only signals (dependency graph accelerator, identity controls) are supporting context — not external metrics.",
     ]
     if allowed_fact_ids_raw:
@@ -276,7 +446,7 @@ def format_unify_role_episode_evidence_pack(
         "\nAPPROVED_METRIC_OUTCOME_IDS (metric claims allowed only when bound to these IDs):"
     )
     for mid in APPROVED_METRIC_OUTCOME_IDS:
-        header_lines.append(f"- {mid}")
+        header_lines.append(f"- {_metric_option_label(mid)}")
 
     header = "\n".join(header_lines)
 
@@ -312,8 +482,22 @@ def format_unify_role_episode_evidence_pack(
         )
         if inferred_role_family_key in graph_profile_keys:
             _role_family_key = inferred_role_family_key
-    slot_bundle_map = resolve_unify_bullet_slot_bundle_map(_role_family_key)
+    meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
+    slot_bundle_map = meta.get("unify_bullet_slot_bundle_map_resolved")
+    if not isinstance(slot_bundle_map, dict) or not slot_bundle_map:
+        slot_bundle_map = resolve_unify_bullet_slot_bundle_map(_role_family_key)
     runtime_payload["unify_bullet_slot_bundle_map_resolved"] = slot_bundle_map
+    if isinstance(meta, dict):
+        meta["unify_bullet_slot_bundle_map_resolved"] = slot_bundle_map
+        meta.setdefault(
+            "unify_graph_traversal_sufficiency_receipt",
+            build_unify_graph_traversal_sufficiency_receipt(
+                section_id=section_id,
+                target_role_profile=_role_family_key,
+                slot_bundle_map=slot_bundle_map,
+                packet=packet,
+            ),
+        )
     slot_blocks: list[str] = []
     for slot_id in UNIFY_BULLET_SLOT_IDS:
         bundle_id = slot_bundle_map.get(slot_id, "")
@@ -322,12 +506,20 @@ def format_unify_role_episode_evidence_pack(
             slot_blocks.append(f"{slot_id} | ERROR: missing bundle {bundle_id}")
             continue
         vocab = _mechanism_vocab_from_bundle(bundle)
+        allowed_metrics = _bundle_allowed_metric_outcome_ids(bundle)
         lines = [
             f"{slot_id} | compose_one_bullet_from:",
             f"  role_episode_bundle_id: {bundle_id}",
             f"  employer: {bundle.get('employer')} | time_window: {UNIFY_TIME_WINDOW}",
             f"  allowed_source_fact_ids: {list(bundle.get('linked_source_fact_ids') or []) + [slot_id]}",
-            f"  allowed_metric_outcome_ids: {list(bundle.get('linked_metric_outcome_ids') or []) or '(none — qualitative only)'}",
+            f"  allowed_metric_outcome_ids: {[_metric_option_label(mid) for mid in allowed_metrics]}",
+            (
+                "  metric_outcome_usage_contract: choose >=1 approved metric_outcome_id for this "
+                "bullet; surface its metric/surface_tokens in bullet_text; record it in "
+                "change_log.metric_outcome_ids; set metric_raw to the chosen metric_outcome_id(s)."
+            ),
+            "  metric_outcome_options:",
+            *[f"    - {_metric_option_label(mid)}" for mid in allowed_metrics],
             "  executive_scope_signals:",
         ]
         for sig in bundle.get("executive_scope_signals") or []:
@@ -394,6 +586,7 @@ __all__ = [
     "assert_unify_role_episode_evidence_pack_has_no_forbidden_leaks",
     "assert_unify_section_may_consume_graph_context",
     "attach_role_episode_bundles_to_proof_pool_metadata",
+    "build_unify_graph_traversal_sufficiency_receipt",
     "build_unify_role_episode_section_packet",
     "resolve_unify_bullet_slot_bundle_map",
     "format_unify_role_episode_evidence_pack",

@@ -426,10 +426,15 @@ def _unify_bullets_shape() -> SectionProductShape:
             "x2_unify_bullet_no_paragraph_block",
             "x2_unify_at_most_one_mechanism_dense_bullet",
             "x2_unify_protected_bullet_metrics_preserved",
+            "x2_unify_metric_outcomes_distributed_by_slot",
         ),
         proof_gate_ids=(
             "x2_text_claim_coverage_integrity",
             "x2_unify_metric_anchor_bullet_ownership",
+            "x2_unify_each_bullet_approved_metric_outcome_lineage",
+            "x2_unify_each_bullet_metric_outcome_surface_visible",
+            "x2_unify_graph_traversal_sufficiency",
+            "x2_unify_graph_granularity_gates",
             "x2_claim_ledger_claim_text_non_empty",
             "x2_unify_no_rewrite_intensity_model",
             "x2_unify_track_ranked_selection_method",
@@ -446,6 +451,7 @@ def _unify_bullets_shape() -> SectionProductShape:
         required_all_text_patterns=(
             "bul_unify_",
             "min_selection_score",
+            "metric_outcome_id",
         ),
         forbidden_text_patterns=(
             r"exactly\s+5\s+bullets",
@@ -458,6 +464,8 @@ def _unify_bullets_shape() -> SectionProductShape:
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
             f"sc_pool_paths={pool_n}; claude_top_n=6; min_score gate",
+            "each bullet binds role_episode_bundle_id + approved metric_outcome_ids[]",
+            "graph traversal receipt proves roots->skills->metric outcomes with rejected sibling frontier",
             "companion_context_allowed=false",
         ),
     )

@@ -1,4 +1,7 @@
-"""Hardening ratchet: unify_bullets graph-compose must not leak legacy six-bullet template."""
+"""apps-test-model: APP CONTRACT.
+
+Hardening ratchet: unify_bullets graph-compose must not leak legacy six-bullet template.
+"""
 from __future__ import annotations
 
 import re
@@ -33,6 +36,15 @@ from apps_rg.runtime.spine.front_contracts import (
     deactivate_fixture_dev_bypass,
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
+from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
+from apps_rg.runtime.sections.unify_graph_role_episode_registry import BUNDLES_PATH as UNIFY_BUNDLES_PATH
+from apps_rg.runtime.sections.unify_role_episode_evidence import (
+    attach_role_episode_bundles_to_proof_pool_metadata,
+)
+from apps_rg.runtime.validators.unify_role_episode_x2 import (
+    run_unify_bullets_role_episode_x2_gates,
+)
+from apps_rg.runtime.product_evidence_authority import build_evidence_authority
 
 REPO = Path(__file__).resolve().parents[3]
 JD = (REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt").read_text(encoding="utf-8")
@@ -63,6 +75,76 @@ def _brown_allocate() -> dict:
         taxonomy_path=default_taxonomy_path(repo_root=REPO),
     )
     return plan
+
+
+def _partner_role_episode_meta() -> dict:
+    graph_ref = "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
+    ledger_ref = "apps_rg/fact_inventory/candidate_fact_ledger.json"
+    return attach_role_episode_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "graph_ref": graph_ref,
+            "skills_authority_status": "PASS",
+            "evidence_authority": build_evidence_authority(
+                graph_ref=graph_ref,
+                ledger_ref=ledger_ref,
+                skills_authority_status="PASS",
+            ),
+            "selected_graph_evidence_plan": {
+                "role_family_key": "PARTNER_APPLIED_AI_ARCHITECTURE",
+                "target_role_profile": "PARTNER_APPLIED_AI_ARCHITECTURE",
+            }
+        },
+        section_id="unify_bullets",
+        repo_root=REPO,
+    )
+
+
+def _partner_metric_surface_payload() -> tuple[list[dict], dict, dict]:
+    meta = _partner_role_episode_meta()
+    slot_map = meta["unify_bullet_slot_bundle_map_resolved"]
+    bundle_by_id = {b["role_episode_bundle_id"]: b for b in meta["role_episode_bundles"]}
+    metric_nodes = metric_outcome_nodes_from_path(UNIFY_BUNDLES_PATH)
+    bullets: list[dict] = []
+    ledger: list[dict] = []
+    change_log: list[dict] = []
+    for bid in UNIFY_BULLET_IDS:
+        bundle = bundle_by_id[slot_map[bid]]
+        mid = str(bundle["linked_metric_outcome_ids"][0])
+        token = str((metric_nodes[mid].get("surface_tokens") or [metric_nodes[mid]["metric"]])[0])
+        text = (
+            f"Owned {token} across governed enterprise AI platform work, tying architecture "
+            f"execution to measurable adoption outcomes."
+        )
+        bullets.append(
+            {
+                "bullet_id": bid,
+                "bullet_text": text,
+                "has_metric": True,
+                "metric_raw": mid,
+                "source_fact_ids": [bid],
+            }
+        )
+        ledger.append({"claim_text": text, "source_fact_ids": [bid]})
+        change_log.append(
+            {
+                "bullet_id": bid,
+                "role_episode_bundle_id": bundle["role_episode_bundle_id"],
+                "graph_skill_node_ids": list(bundle["graph_skill_node_ids"])[:3],
+                "fact_ids_used": [bid, *list(bundle["linked_source_fact_ids"])[:1]],
+                "metric_outcome_ids": [mid],
+            }
+        )
+    parsed = {
+        "bullets": bullets,
+        "selected_fact_plan": {"selection_method": TRACK_RANKED_SELECTION_METHOD, "facts": []},
+        "claim_ledger": ledger,
+        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "gap_notes": [],
+        "change_log": change_log,
+        "self_check": {"bullets_composed_from_graph_evidence": True},
+    }
+    return bullets, parsed, meta
 
 
 def test_legacy_six_pack_detector() -> None:
@@ -138,6 +220,105 @@ def test_c0_pack_format_has_compose_slots_and_skills() -> None:
         assert forbidden not in body
     assert "compose_one_bullet_from" in body
     assert TRACK_RANKED_SELECTION_METHOD in body or "track_ranked" in body
+
+
+def test_role_episode_gates_pass_deep_metric_outcome_surfaces() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    gates = run_unify_bullets_role_episode_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        proof_pool_metadata=meta,
+        jd_text=JD,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_each_bullet_approved_metric_outcome_lineage"].passed is True
+    assert by_id["x2_unify_each_bullet_metric_outcome_surface_visible"].passed is True
+    assert by_id["x2_unify_metric_outcomes_distributed_by_slot"].passed is True
+    assert by_id["x2_unify_graph_traversal_sufficiency"].passed is True
+    assert by_id["x2_unify_graph_granularity_gates"].passed is True
+
+
+def test_role_episode_gates_fail_when_metric_outcome_not_visible() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    bullets[1]["bullet_text"] = (
+        "Owned alliance execution across governed enterprise AI platform work, tying architecture "
+        "execution to measurable adoption outcomes."
+    )
+    parsed["claim_ledger"][1]["claim_text"] = bullets[1]["bullet_text"]
+    gates = run_unify_bullets_role_episode_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        proof_pool_metadata=meta,
+        jd_text=JD,
+    )
+    gate = next(g for g in gates if g.gate_id == "x2_unify_each_bullet_metric_outcome_surface_visible")
+    assert gate.passed is False
+    assert "bul_unify_002" in str(gate.observed_value)
+
+
+def test_role_episode_gates_fail_shallow_traversal_receipt() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    meta = dict(meta)
+    meta["unify_graph_traversal_sufficiency_receipt"] = {
+        "candidate_conservation": {"pass": False},
+        "selected_role_episode_root_count": 1,
+        "selected_unique_leaf_skill_count": 1,
+        "selected_unique_metric_count": 1,
+        "rejected_sibling_skill_count": 0,
+        "rejected_sibling_metric_count": 0,
+        "role_specific_axis_coverage": {"missing_axes": ["partner_channel_cosell"]},
+        "frontier_size_by_hop_depth": {
+            "hop_0_role_episode_roots": 1,
+            "hop_1_graph_skill_nodes": 1,
+            "hop_2_metric_outcome_nodes": 1,
+        },
+    }
+    gates = run_unify_bullets_role_episode_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        proof_pool_metadata=meta,
+        jd_text=JD,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_graph_traversal_sufficiency"].passed is False
+    assert by_id["x2_unify_graph_granularity_gates"].passed is False
+
+
+def test_unify_x2_graph_mode_delegates_legacy_metric_cluster_to_positive_contract() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    gates = run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text=JD,
+        runtime_generation_status="MOCKED",
+        proof_pool_metadata=meta,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_protected_bullet_metrics_preserved"].pass_ is True
+    assert by_id["x2_unify_protected_bullet_metrics_preserved"].observed_value == (
+        "delegated_to_role_episode_metric_outcome_contract"
+    )
+    assert by_id["x2_unify_each_bullet_metric_outcome_surface_visible"].pass_ is True
+
+
+def test_unify_metric_source_gate_rejects_bare_canonical_metric_without_outcome_id() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    bullets[0]["metric_raw"] = "$22M"
+    gates = run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text=JD,
+        runtime_generation_status="MOCKED",
+        proof_pool_metadata=meta,
+    )
+
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_metric_source_required"].pass_ is False
+    assert "bul_unify_001" in str(by_id["x2_unify_metric_source_required"].observed_value)
 
 
 def test_path_framing_has_no_legacy_theme_angles() -> None:

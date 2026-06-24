@@ -27,6 +27,10 @@ from apps_rg.runtime.c0.c04_stratify import stratify_c04_evidence
 from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
 from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
 from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED, REPO_ROOT
+from apps_rg.runtime.c0.fact_vector_index_preflight import (
+    FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT,
+    build_fact_vector_index_preflight,
+)
 from apps_rg.runtime.c0.product_runtime_guards import ENV_APPS_RG_C0_EVIDENCE_ROOM
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 from apps_rg.runtime.spine.c0_fec_compose import (
@@ -145,6 +149,14 @@ def run_section_c0_evidence_room(
     }
     c02["fact_vectors_ingest_skipped_count"] = fv_ingest.get("skipped_count", 0)
     c02["fact_vectors_upserted_count"] = fv_ingest.get("upserted_count", 0)
+    fact_index_preflight = build_fact_vector_index_preflight(
+        section_id=section_id,
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        role_family_key=rf_key,
+    )
+    c02["fact_vector_index_preflight"] = fact_index_preflight
+    c02["fact_vector_index_preflight_ref"] = FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT
 
     c03 = expand_c03_graph_bindings(
         section_id=section_id,
@@ -234,6 +246,11 @@ def run_section_c0_evidence_room(
         section_id=section_id,
     )
     vector_query["chroma_write_in_c02"] = section_chroma_write_in_c02()
+    vector_query["fact_vector_index_preflight_status"] = fact_index_preflight.get("status")
+    vector_query["fact_vector_index_preflight_ref"] = FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT
+    c05["c02_vector_query"] = vector_query
+    c05["fact_vector_index_preflight"] = fact_index_preflight
+    c05["fact_vector_index_preflight_ref"] = FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT
     _write_json(artifact_dir / C02_VECTOR_QUERY_ARTIFACT, vector_query)
 
     # C0 PROPOSES (not commits): emit the per-section intent vector + query output as an inert
@@ -320,6 +337,8 @@ def run_section_c0_evidence_room(
     runtime_payload["graph_targeting_for_pa"] = graph_targeting_pa
     if c04.get("exec_summary_compression"):
         runtime_payload["c04_exec_summary_compression"] = c04.get("exec_summary_compression")
+    runtime_payload["fact_vector_index_preflight"] = fact_index_preflight
+    runtime_payload["fact_vector_index_preflight_ref"] = FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT
 
     pp_meta = dict(pool.proof_pool_metadata or {})
     support_status = _extract_support_status(pp_meta)
@@ -386,6 +405,8 @@ def run_section_c0_evidence_room(
         "canonical_c0_5_claimed": True,
         "fec_shape_only": False,
         **authority,
+        "fact_vector_index_preflight_ref": FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT,
+        "fact_vector_index_preflight_status": fact_index_preflight.get("status"),
         "final_evidence_contract_snapshot": {
             "request_id": fec.request_id,
             "run_id": fec.run_id,

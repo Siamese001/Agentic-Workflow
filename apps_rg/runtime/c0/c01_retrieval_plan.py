@@ -11,6 +11,46 @@ _JD_KEYWORD_PATTERN = re.compile(
     re.IGNORECASE,
 )
 _JD_EXCERPT_MAX = 300
+_JD_ROLE_AXIS_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    (
+        "partner_motions",
+        re.compile(r"\b(partner(ship(s)?|s)?|alliance|alliances|ecosystem)\b", re.IGNORECASE),
+    ),
+    (
+        "partner_gtm",
+        re.compile(r"\b(GTM|go[- ]?to[- ]?market|marketplace|channel)\b", re.IGNORECASE),
+    ),
+    (
+        "co_sell",
+        re.compile(r"\b(co[- ]?sell|cosell|joint selling|joint revenue)\b", re.IGNORECASE),
+    ),
+    (
+        "hyperscaler_alliance",
+        re.compile(r"\b(hyperscaler|AWS|Azure|GCP|Google Cloud|cloud partner)\b", re.IGNORECASE),
+    ),
+    (
+        "systems_integrator_enablement",
+        re.compile(
+            r"\b(system integrator|systems integrator|GSI|GSIs|global integrator|consulting partner)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "applied_ai_architecture",
+        re.compile(
+            r"\b(applied AI|generative AI|genAI|LLM|Claude|agentic|AI architecture|solution architecture)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "deployment_adoption",
+        re.compile(r"\b(deployment|deploy|adoption|enablement|production|rollout)\b", re.IGNORECASE),
+    ),
+    (
+        "joint_solution",
+        re.compile(r"\b(joint solution|reference architecture|integration|integrated solution)\b", re.IGNORECASE),
+    ),
+)
 
 
 def _smart_jd_excerpt(jd_text: str) -> str:
@@ -26,6 +66,14 @@ def _smart_jd_excerpt(jd_text: str) -> str:
     if match:
         return text[match.start() : match.start() + _JD_EXCERPT_MAX]
     return text[:240]
+
+
+def _extract_jd_role_axes(jd_text: str) -> list[str]:
+    """Return JD-derived routing axes only; the JD remains forbidden as proof."""
+    text = (jd_text or "").strip()
+    if not text:
+        return []
+    return [axis for axis, pattern in _JD_ROLE_AXIS_PATTERNS if pattern.search(text)]
 
 _ROLE_FAMILY_PLAN_EXTRAS: dict[str, dict[str, list[str]]] = {
     "INSURANCE_CARRIER_TRANSFORMATION": {
@@ -153,12 +201,17 @@ def build_c01_retrieval_plan(
                 merged.append(item)
         targets[key] = merged
     jd_excerpt = _smart_jd_excerpt(jd_text or "")
+    jd_role_axes = _extract_jd_role_axes(jd_text or "")
+    if jd_role_axes:
+        targets["jd_role_axis_targets"] = jd_role_axes
     return {
         "schema_version": "c01_retrieval_plan_v1",
         "section_id": section_id,
         "target_role": target_role,
         "role_family_key": role_family_key,
-        "jd_constraints_present": bool(jd_constraints),
+        "jd_constraints_present": bool(jd_constraints) or bool(jd_role_axes),
+        "jd_constraints": dict(jd_constraints or {}),
+        "jd_role_axes": jd_role_axes,
         "jd_text_excerpt": jd_excerpt,
         "route_ref": route_ref,
         "retrieval_targets": targets,
