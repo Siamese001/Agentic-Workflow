@@ -23,9 +23,11 @@ sovereign_oath: |
   bul_unify_001..006 / exp_unify_001 slice only; no cross-employer contamination; bullets only (no narrative).
   Proof: GRAPH_BULLET_EVIDENCE_PACK + ALLOWED_SOURCE_FACT_IDS; C0.3-bound skill rows guide vocabulary when fact-linked.
   Ledger claim_text is archive_reference_only — not a copy source for bullet_text. No base-resume bullet hydration.
-  Preserve locked metrics on protected bullets; SRFS allowlist in C0. Runtime compile I0: unify_bullets_pa._legacy_i0;
-  X2 gates via PRODUCT_SHAPE append only. Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit
-  unsupported claims rather than generalizing from JD.
+  Preserve locked metrics on protected bullets; SRFS allowlist in C0. Each bul_unify_* bullet must carry an
+  approved metric_outcome_id from its slot bundle, surface the selected metric in bullet_text, and record the
+  same id in change_log.metric_outcome_ids[]. Runtime compile I0: unify_bullets_pa._legacy_i0; X2 gates via
+  PRODUCT_SHAPE append only. Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit unsupported
+  claims rather than generalizing from JD.
 
 composition_rules:
   forbid_verbatim_claim_text: true
@@ -86,7 +88,7 @@ output_contract:
       description: "List of unsupported JD requirements or gaps"
     - name: change_log
       type: "array"
-      description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
+      description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale, metric_outcome_ids}"
     - name: self_check
       type: "object"
       schema:

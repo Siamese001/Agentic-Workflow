@@ -264,6 +264,158 @@ def test_c07_flags_adjacency_as_proof_violation() -> None:
     assert any("adjacency_as_proof" in v for v in c07["violations"])
 
 
+def test_c07_requires_fact_vector_index_preflight_for_product_hybrid() -> None:
+    fec, c05 = build_c05_final_evidence_contract(
+        section_id="competencies",
+        atoms=[
+            {
+                "fact_id": "f1",
+                "text_to_embed": "Partnership architecture with measurable adoption.",
+                "source_type": "proof_pool",
+                "source_span_ref": "s",
+                "proof_status": "proof_eligible",
+            }
+        ],
+        strata={},
+        graph_bindings=[],
+        front_spine=None,
+        allowed_fact_ids=["f1"],
+        product_hybrid={
+            "required": True,
+            "enrichment_items": [],
+            "c02_vector_query": {
+                "schema_version": "c02_vector_query_v1",
+                "section_id": "competencies",
+                "product_hybrid_required": True,
+                "product_hybrid_attempted": True,
+                "dense_attempted": True,
+                "sparse_attempted": True,
+                "bm25_available": True,
+                "lanes": {"dense": "completed", "sparse": "completed", "metadata": "completed"},
+                "status": "PASS",
+            },
+        },
+    )
+
+    c07 = audit_c07_handoff(
+        fec=fec,
+        c02_receipt={"graph_inference_performed": False},
+        c03_receipt={"new_atoms_created": 0, "pending_trace_promoted": False},
+        graph_bindings=[],
+        allowed_fact_ids=["f1"],
+        c05_receipt=c05,
+    )
+
+    assert c07["handoff_safe"] is False
+    assert "fact_vector_index_preflight_not_pass:missing" in c07["violations"]
+    assert c07["checks"]["fact_vector_index_preflight_required"] is True
+
+
+def test_c07_accepts_passed_fact_vector_index_preflight_for_product_hybrid() -> None:
+    fec, c05 = build_c05_final_evidence_contract(
+        section_id="competencies",
+        atoms=[
+            {
+                "fact_id": "f1",
+                "text_to_embed": "Partnership architecture with measurable adoption.",
+                "source_type": "proof_pool",
+                "source_span_ref": "s",
+                "proof_status": "proof_eligible",
+            }
+        ],
+        strata={},
+        graph_bindings=[],
+        front_spine=None,
+        allowed_fact_ids=["f1"],
+        product_hybrid={
+            "required": True,
+            "enrichment_items": [],
+            "c02_vector_query": {
+                "schema_version": "c02_vector_query_v1",
+                "section_id": "competencies",
+                "product_hybrid_required": True,
+                "product_hybrid_attempted": True,
+                "dense_attempted": True,
+                "sparse_attempted": True,
+                "bm25_available": True,
+                "lanes": {"dense": "completed", "sparse": "completed", "metadata": "completed"},
+                "status": "PASS",
+            },
+        },
+    )
+    c05["fact_vector_index_preflight"] = {
+        "status": "PASS",
+        "comparison_authority": True,
+        "write_authority": False,
+        "same_run_write_policy": "forbidden_for_product_retrieval",
+    }
+
+    c07 = audit_c07_handoff(
+        fec=fec,
+        c02_receipt={"graph_inference_performed": False},
+        c03_receipt={"new_atoms_created": 0, "pending_trace_promoted": False},
+        graph_bindings=[],
+        allowed_fact_ids=["f1"],
+        c05_receipt=c05,
+    )
+
+    assert c07["handoff_safe"] is True
+    assert c07["checks"]["fact_vector_index_preflight_pass"] is True
+
+
+def test_c07_requires_unify_bullets_fact_vector_sufficiency() -> None:
+    fec, c05 = build_c05_final_evidence_contract(
+        section_id="unify_bullets",
+        atoms=[
+            {
+                "fact_id": "bul_unify_001",
+                "text_to_embed": "Unify governed platform architecture with measurable outcomes.",
+                "source_type": "proof_pool",
+                "source_span_ref": "s",
+                "proof_status": "proof_eligible",
+            }
+        ],
+        strata={},
+        graph_bindings=[],
+        front_spine=None,
+        allowed_fact_ids=["bul_unify_001"],
+        product_hybrid={
+            "required": True,
+            "enrichment_items": [],
+            "c02_vector_query": {
+                "schema_version": "c02_vector_query_v1",
+                "section_id": "unify_bullets",
+                "product_hybrid_required": True,
+                "product_hybrid_attempted": True,
+                "dense_attempted": True,
+                "sparse_attempted": True,
+                "bm25_available": True,
+                "lanes": {"dense": "completed", "sparse": "completed", "metadata": "completed"},
+                "status": "PASS",
+            },
+        },
+    )
+    c05["fact_vector_index_preflight"] = {
+        "status": "PASS",
+        "comparison_authority": True,
+        "write_authority": False,
+        "same_run_write_policy": "forbidden_for_product_retrieval",
+    }
+
+    c07 = audit_c07_handoff(
+        fec=fec,
+        c02_receipt={"section_id": "unify_bullets", "graph_inference_performed": False},
+        c03_receipt={"new_atoms_created": 0, "pending_trace_promoted": False},
+        graph_bindings=[],
+        allowed_fact_ids=["bul_unify_001"],
+        c05_receipt=c05,
+    )
+
+    assert c07["handoff_safe"] is False
+    assert "unify_bullets_fact_vector_sufficiency_not_pass:missing" in c07["violations"]
+    assert c07["checks"]["unify_bullets_fact_vector_sufficiency_status"] == "missing"
+
+
 def test_c05_does_not_call_spine_c0_retrieve(monkeypatch: pytest.MonkeyPatch) -> None:
     src = (Path(__file__).resolve().parents[3] / "apps_rg/runtime/c0/c05_fec_packet.py").read_text(
         encoding="utf-8"
@@ -327,6 +479,32 @@ def test_c01_retrieval_plan_lane_aliases(section_id: str, primary_target: str) -
     assert plan["jd_as_proof"] is False
     assert plan["retrieval_profile_ref"].startswith("apps_rg.")
     assert plan["retrieval_profile_query_fields"]
+
+
+def test_c01_extracts_anthropic_partnership_jd_axes_without_making_jd_proof() -> None:
+    from apps_rg.runtime.c0.c01_retrieval_plan import build_c01_retrieval_plan
+
+    jd = (
+        "Anthropic Partnerships role owning co-sell GTM with AWS and Azure, "
+        "systems integrator enablement, Claude applied AI solution architecture, "
+        "reference architecture integration, deployment, and customer adoption."
+    )
+    plan = build_c01_retrieval_plan(
+        section_id="competencies",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        role_family_key="PARTNER_APPLIED_AI_ARCHITECTURE",
+        jd_text=jd,
+    )
+
+    assert plan["jd_constraints_present"] is True
+    assert plan["jd_as_proof"] is False
+    assert plan["generic_docs_as_truth"] is False
+    assert "partner_motions" in plan["jd_role_axes"]
+    assert "co_sell" in plan["jd_role_axes"]
+    assert "hyperscaler_alliance" in plan["jd_role_axes"]
+    assert "systems_integrator_enablement" in plan["jd_role_axes"]
+    assert "applied_ai_architecture" in plan["jd_role_axes"]
+    assert plan["retrieval_targets"]["jd_role_axis_targets"] == plan["jd_role_axes"]
 
 
 def test_c06_weak_refine_is_retired_compatibility_shim() -> None:

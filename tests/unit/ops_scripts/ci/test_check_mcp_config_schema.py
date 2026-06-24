@@ -21,10 +21,27 @@ from ops_scripts.ci.check_mcp_config_schema import (
     VALID_TOP_KEYS,
     check_required_servers,
     check_server_structure,
+    check_vector_db_runtime_env,
     check_top_level_keys,
     evaluate,
     load_config,
 )
+
+
+def _valid_vector_db_env() -> dict[str, str]:
+    return {
+        "VECTOR_DB_DEVICE": "cuda",
+        "EMBEDDING_DEVICE": "cuda",
+        "VECTOR_DB_ENABLE_MODEL_PREWARM": "1",
+        "VECTOR_DB_MODEL_LOAD_TIMEOUT": "75",
+    }
+
+
+def _required_server_configs() -> dict[str, dict[str, Any]]:
+    servers = {name: {"command": "test", "args": []} for name in REQUIRED_SERVERS}
+    if "vector_db" in servers:
+        servers["vector_db"]["env"] = _valid_vector_db_env()
+    return servers
 
 
 class TestLoadConfig:
@@ -203,6 +220,30 @@ class TestCheckServerStructure:
         violations = check_server_structure("remote", config)
         assert any(v.code == "INVALID_REMOTE_URL" for v in violations)
 
+    def test_vector_db_runtime_env_valid(self) -> None:
+        """vector_db must accept the CUDA/prewarm runtime envelope."""
+        violations = check_server_structure(
+            "vector_db",
+            {"command": "python", "args": ["tools/mcp/vector_db_server.py"], "env": _valid_vector_db_env()},
+        )
+        assert violations == []
+
+    def test_vector_db_runtime_env_requires_cuda_prewarm_and_bounded_timeout(self) -> None:
+        """vector_db must fail config validation without the incident-preventing env."""
+        violations = check_vector_db_runtime_env(
+            {
+                "VECTOR_DB_DEVICE": "cpu",
+                "EMBEDDING_DEVICE": "cpu",
+                "VECTOR_DB_ENABLE_MODEL_PREWARM": "0",
+                "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
+            },
+            ".mcpServers.vector_db",
+        )
+        codes = {v.code for v in violations}
+
+        assert "VECTOR_DB_RUNTIME_ENV_MISSING" in codes
+        assert "VECTOR_DB_MODEL_LOAD_TIMEOUT_UNBOUNDED" in codes
+
 
 class TestEvaluate:
     """Tests for evaluate function."""
@@ -211,10 +252,7 @@ class TestEvaluate:
         """Valid config produces valid report."""
         config: dict[str, Any] = {
             "_note": "test",
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
+            "mcpServers": _required_server_configs(),
         }
         config_file = tmp_path / "mcp_config.json"
         config_file.write_text(json.dumps(config))
@@ -275,13 +313,10 @@ class TestConstants:
 class TestIntegration:
     """Integration tests simulating real gate execution."""
 
-    def test_main_valid_config_exit_0(self, tmp_path: Path) -> None:
+    def test_main_valid_config_exit_0(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Main function exits 0 on valid config."""
         config: dict[str, Any] = {
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
+            "mcpServers": _required_server_configs(),
         }
         config_file = tmp_path / "mcp_config.json"
         config_file.write_text(json.dumps(config))
@@ -289,6 +324,7 @@ class TestIntegration:
         import ops_scripts.ci.check_mcp_config_schema as module
         original_path = module.CONFIG_PATH
         module.CONFIG_PATH = config_file
+        monkeypatch.setattr(module, "profile_config_path", lambda _profile, _mirror_path: config_file)
         
         try:
             result = module.main([])
@@ -331,12 +367,7 @@ class TestEdgeCases:
     def test_env_var_interpolation_in_args(self, tmp_path: Path) -> None:
         """Config with ${env:VAR} syntax should be accepted."""
         # Include all required servers plus test server with env interpolation
-        config: dict[str, Any] = {
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
-        }
+        config: dict[str, Any] = {"mcpServers": _required_server_configs()}
         # Add test server with env var syntax in args
         config["mcpServers"]["test_env"] = {
             "command": "${env:TEST_CMD}",
@@ -357,12 +388,7 @@ class TestEdgeCases:
 
     def test_empty_args_array(self, tmp_path: Path) -> None:
         """Empty args array should be valid."""
-        config: dict[str, Any] = {
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
-        }
+        config: dict[str, Any] = {"mcpServers": _required_server_configs()}
         config_file = tmp_path / "mcp_config.json"
         config_file.write_text(json.dumps(config))
         
@@ -380,10 +406,7 @@ class TestEdgeCases:
         """Unicode characters in _note should be handled."""
         config: dict[str, Any] = {
             "_note": "Test with unicode: 🚀 émojis 中文",
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
+            "mcpServers": _required_server_configs(),
         }
         config_file = tmp_path / "mcp_config.json"
         config_file.write_text(json.dumps(config, ensure_ascii=False))
@@ -419,13 +442,15 @@ class TestEdgeCases:
         finally:
             module.CONFIG_PATH = original_path
 
-    def test_json_output_mode(self, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_json_output_mode(
+        self,
+        tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         """--json flag outputs valid JSON."""
         config: dict[str, Any] = {
-            "mcpServers": {
-                name: {"command": "test", "args": []}
-                for name in REQUIRED_SERVERS
-            },
+            "mcpServers": _required_server_configs(),
         }
         config_file = tmp_path / "mcp_config.json"
         config_file.write_text(json.dumps(config))
@@ -433,6 +458,7 @@ class TestEdgeCases:
         import ops_scripts.ci.check_mcp_config_schema as module
         original_path = module.CONFIG_PATH
         module.CONFIG_PATH = config_file
+        monkeypatch.setattr(module, "profile_config_path", lambda _profile, _mirror_path: config_file)
         
         try:
             result = module.main(["--json"])

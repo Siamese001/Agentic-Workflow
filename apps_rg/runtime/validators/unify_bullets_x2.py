@@ -34,6 +34,11 @@ UNIFY_BULLET_IDS = (
 )
 PROTECTED_BULLET_DEFAULT = "bul_unify_006"
 METRIC_ANCHOR_BULLET_004 = "bul_unify_004"
+UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID = "x2_unify_each_bullet_approved_metric_outcome_lineage"
+UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID = "x2_unify_each_bullet_metric_outcome_surface_visible"
+UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID = "x2_unify_metric_outcomes_distributed_by_slot"
+UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID = "x2_unify_graph_traversal_sufficiency"
+UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID = "x2_unify_graph_granularity_gates"
 FORBIDDEN_FACT_PREFIXES = ("bul_ibm_", "bul_insurtech_", "bul_ey_", "exp_ibm_", "exp_insurtech_", "exp_ey_")
 
 # Mechanism stack vocabulary (narrative anti-pattern; at most one bullet may be mechanism-dense).
@@ -282,6 +287,14 @@ def _unify_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> 
     return (not failures, failures)
 
 
+def _role_episode_metric_contract_active(meta: dict[str, Any] | None) -> bool:
+    return bool(
+        isinstance(meta, dict)
+        and meta.get("role_episode_bundle_consumption")
+        and meta.get("unify_role_episode_section_packet")
+    )
+
+
 def _all_source_fact_ids(parsed: dict[str, Any] | None, claim_ledger: list[dict[str, Any]]) -> set[str]:
     ids: set[str] = set()
     for bullet in (parsed or {}).get("bullets") or []:
@@ -510,40 +523,63 @@ def run_unify_bullets_x2_gates(
         section_id="unify_bullets",
     )
 
-    protected = next((b for b in bullets if b.get("bullet_id") == PROTECTED_BULLET_DEFAULT), None)
-    protected_text = (protected or {}).get("bullet_text", "")
-    metrics_ok = all(
-        token in protected_text
-        for token in ("$22M", "20%", "8", "28")
-    )
-    add(
-        "x2_unify_protected_bullet_metrics_preserved",
-        bool(protected) and metrics_ok,
-        {"bullet_id": PROTECTED_BULLET_DEFAULT, "metrics_present": metrics_ok},
-        "$22M, 20%, 8-to-28 scale on bul_unify_006",
-        "Protected bul_unify_006 must preserve $22M, 20%, and 8-to-28 scale.",
-    )
+    if _role_episode_metric_contract_active(proof_pool_metadata):
+        add(
+            "x2_unify_protected_bullet_metrics_preserved",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "x2_unify_each_bullet_approved_metric_outcome_lineage + x2_unify_each_bullet_metric_outcome_surface_visible",
+            None,
+        )
+        add(
+            "x2_unify_metrics_preserved",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "slot-specific approved metric_outcome_ids visible across all bullets",
+            None,
+        )
+        add(
+            "x2_unify_metric_anchor_bullet_ownership",
+            True,
+            "delegated_to_role_episode_metric_outcome_contract",
+            "metric_outcome_ids anchored by resolved slot->role_episode_bundle map",
+            None,
+        )
+    else:
+        protected = next((b for b in bullets if b.get("bullet_id") == PROTECTED_BULLET_DEFAULT), None)
+        protected_text = (protected or {}).get("bullet_text", "")
+        metrics_ok = all(
+            token in protected_text
+            for token in ("$22M", "20%", "8", "28")
+        )
+        add(
+            "x2_unify_protected_bullet_metrics_preserved",
+            bool(protected) and metrics_ok,
+            {"bullet_id": PROTECTED_BULLET_DEFAULT, "metrics_present": metrics_ok},
+            "$22M, 20%, 8-to-28 scale on bul_unify_006 (legacy non-graph fallback)",
+            "Protected bul_unify_006 must preserve $22M, 20%, and 8-to-28 scale.",
+        )
 
-    metrics_preserved = all(
-        phrase in combined
-        for phrase in ("$22M", "20%", "six months to three weeks")
-    ) and ("8" in combined and "28" in combined)
-    add(
-        "x2_unify_metrics_preserved",
-        metrics_preserved,
-        combined[:200],
-        "core metrics present",
-        "Core metrics ($22M, 20%, 8 to 28, six months to three weeks) must appear in bullets.",
-    )
+        metrics_preserved = all(
+            phrase in combined
+            for phrase in ("$22M", "20%", "six months to three weeks")
+        ) and ("8" in combined and "28" in combined)
+        add(
+            "x2_unify_metrics_preserved",
+            metrics_preserved,
+            combined[:200],
+            "core metrics present (legacy non-graph fallback)",
+            "Core metrics ($22M, 20%, 8 to 28, six months to three weeks) must appear in bullets.",
+        )
 
-    anchor_ok, anchor_fail = _unify_metric_anchors_on_assigned_bullets(bullets)
-    add(
-        "x2_unify_metric_anchor_bullet_ownership",
-        anchor_ok,
-        anchor_fail or "ok",
-        "REQUIRED_ANCHOR per bul_unify_004/006",
-        None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
-    )
+        anchor_ok, anchor_fail = _unify_metric_anchors_on_assigned_bullets(bullets)
+        add(
+            "x2_unify_metric_anchor_bullet_ownership",
+            anchor_ok,
+            anchor_fail or "ok",
+            "REQUIRED_ANCHOR per bul_unify_004/006 (legacy non-graph fallback)",
+            None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
+        )
 
     dense_ids = _mechanism_dense_bullet_ids(bullets)
     mechanism_ok = len(dense_ids) <= 1
@@ -805,9 +841,6 @@ def run_unify_bullets_x2_gates(
         metric_supported = bool(plan_fact_metric_u) and (
             plan_fact_metric_u in mr_u_lower or mr_u_lower in plan_fact_metric_u
         )
-        # Also accept known Unify canonical metrics ($22M, 20%, 8, 28) as self-attesting
-        unify_canonical_tokens = ("$22m", "20%", "8 to 28", "six months to three weeks")
-        metric_supported = metric_supported or any(tok in mr_u_lower for tok in unify_canonical_tokens)
         # Accept an approved metric_outcome_id (the canonical source identifier the role-episode
         # bundle binds) used directly as metric_raw — traceable to an approved outcome, not weakened.
         approved_metric_ids = {
@@ -830,7 +863,7 @@ def run_unify_bullets_x2_gates(
         "x2_unify_metric_source_required",
         not bullets_metric_unsupported_u,
         bullets_metric_unsupported_u or "all_traceable",
-        "metric_raw traces to plan_fact.metric_raw or canonical Unify metrics",
+        "metric_raw traces to plan_fact.metric_raw or approved metric_outcome_ids",
         (
             f"Unsupported metric claims: {bullets_metric_unsupported_u}"
             if bullets_metric_unsupported_u
@@ -954,12 +987,56 @@ def run_unify_bullets_x2_gates(
     )
 
     if unify_role_episode_consumption_active(proof_pool_metadata):
-        for er in run_unify_bullets_role_episode_x2_gates(
-            bullets=bullets,
-            parsed_output=parsed_output,
-            proof_pool_metadata=proof_pool_metadata,
-            jd_text=jd_text,
-        ):
-            add(er.gate_id, er.passed, er.observed_value, er.threshold, er.failure_reason)
+        # Surface the delegated role-episode metric contract explicitly so AST-based gate
+        # extraction sees the same gate ids that the nested validator enforces.
+        role_episode_rows = {
+            er.gate_id: er
+            for er in run_unify_bullets_role_episode_x2_gates(
+                bullets=bullets,
+                parsed_output=parsed_output,
+                proof_pool_metadata=proof_pool_metadata,
+                jd_text=jd_text,
+            )
+        }
+        lineage = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_LINEAGE_GATE_ID,
+            bool(lineage and lineage.passed),
+            lineage.observed_value if lineage else "delegated_to_role_episode_metric_outcome_contract",
+            lineage.threshold if lineage else "role_episode_metric_outcome_contract",
+            lineage.failure_reason if lineage else "delegated metric lineage gate missing",
+        )
+        visible = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_VISIBLE_GATE_ID,
+            bool(visible and visible.passed),
+            visible.observed_value if visible else "delegated_to_role_episode_metric_outcome_contract",
+            visible.threshold if visible else "role_episode_metric_outcome_contract",
+            visible.failure_reason if visible else "delegated metric visibility gate missing",
+        )
+        distribution = role_episode_rows.get(UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_METRIC_DISTRIBUTION_GATE_ID,
+            bool(distribution and distribution.passed),
+            distribution.observed_value if distribution else "delegated_to_role_episode_metric_outcome_contract",
+            distribution.threshold if distribution else "role_episode_metric_outcome_contract",
+            distribution.failure_reason if distribution else "delegated metric distribution gate missing",
+        )
+        traversal = role_episode_rows.get(UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_GRAPH_TRAVERSAL_GATE_ID,
+            bool(traversal and traversal.passed),
+            traversal.observed_value if traversal else "delegated_to_role_episode_metric_outcome_contract",
+            traversal.threshold if traversal else "role_episode_metric_outcome_contract",
+            traversal.failure_reason if traversal else "delegated graph traversal gate missing",
+        )
+        granularity = role_episode_rows.get(UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID)
+        add(
+            UNIFY_ROLE_EPISODE_GRAPH_GRANULARITY_GATE_ID,
+            bool(granularity and granularity.passed),
+            granularity.observed_value if granularity else "delegated_to_role_episode_metric_outcome_contract",
+            granularity.threshold if granularity else "role_episode_metric_outcome_contract",
+            granularity.failure_reason if granularity else "delegated graph granularity gate missing",
+        )
 
     return gates

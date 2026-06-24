@@ -74,7 +74,7 @@ UNIFY_BULLET_ONLY_DIMENSIONS: Final[tuple[BulletJudgeDimension, ...]] = (
     ),
     BulletJudgeDimension(
         "protected_metric_anchor",
-        "bul_unify_006 preserves locked commercial metrics ($22M / margin / team scale) without splitting or diluting.",
+        "bul_unify_006 preserves locked commercial metrics ($22M / margin / team scale) and approved metric_outcome_id anchors without splitting or diluting.",
     ),
     BulletJudgeDimension(
         "mechanism_inventory_cap",

@@ -51,6 +51,12 @@ ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "mcp_config_schema.json"
 ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
 REQUIRED_SERVERS = REPO_REQUIRED_SERVERS
+VECTOR_DB_REQUIRED_ENV = {
+    "VECTOR_DB_DEVICE": "cuda",
+    "EMBEDDING_DEVICE": "cuda",
+    "VECTOR_DB_ENABLE_MODEL_PREWARM": "1",
+}
+VECTOR_DB_MODEL_LOAD_TIMEOUT_MAX_SECONDS = 119.0
 
 
 @dataclass(frozen=True)
@@ -218,6 +224,8 @@ def check_server_structure(
             message=f"Server '{name}' 'env' must be an object",
             path=f"{path_prefix}.env",
         ))
+    elif name == "vector_db":
+        violations.extend(check_vector_db_runtime_env(env or {}, path_prefix))
     
     # Warn if required server is disabled
     if name in required_servers and disabled is True:
@@ -228,6 +236,58 @@ def check_server_structure(
             path=f"{path_prefix}.disabled",
         ))
     
+    return violations
+
+
+def check_vector_db_runtime_env(env: dict[str, Any], path_prefix: str) -> list[Violation]:
+    """Validate vector_db runtime env required to avoid cold CPU MCP timeouts."""
+    violations: list[Violation] = []
+
+    for key, expected in VECTOR_DB_REQUIRED_ENV.items():
+        actual = env.get(key)
+        if actual != expected:
+            violations.append(Violation(
+                severity="ERROR",
+                code="VECTOR_DB_RUNTIME_ENV_MISSING",
+                message=f"vector_db must set {key}={expected!r} for CUDA-backed warm semantic search",
+                path=f"{path_prefix}.env.{key}",
+            ))
+
+    raw_timeout = env.get("VECTOR_DB_MODEL_LOAD_TIMEOUT")
+    if raw_timeout is None:
+        violations.append(Violation(
+            severity="ERROR",
+            code="VECTOR_DB_MODEL_LOAD_TIMEOUT_MISSING",
+            message=(
+                "vector_db must set VECTOR_DB_MODEL_LOAD_TIMEOUT below the Codex tool-call timeout "
+                "so cold model load fails before wedging stdio"
+            ),
+            path=f"{path_prefix}.env.VECTOR_DB_MODEL_LOAD_TIMEOUT",
+        ))
+        return violations
+
+    try:
+        timeout = float(raw_timeout)
+    except (TypeError, ValueError):
+        violations.append(Violation(
+            severity="ERROR",
+            code="VECTOR_DB_MODEL_LOAD_TIMEOUT_INVALID",
+            message="vector_db VECTOR_DB_MODEL_LOAD_TIMEOUT must be numeric seconds",
+            path=f"{path_prefix}.env.VECTOR_DB_MODEL_LOAD_TIMEOUT",
+        ))
+        return violations
+
+    if timeout <= 0 or timeout >= VECTOR_DB_MODEL_LOAD_TIMEOUT_MAX_SECONDS:
+        violations.append(Violation(
+            severity="ERROR",
+            code="VECTOR_DB_MODEL_LOAD_TIMEOUT_UNBOUNDED",
+            message=(
+                "vector_db VECTOR_DB_MODEL_LOAD_TIMEOUT must be >0 and <119s "
+                "to stay below the 120s Codex tool-call timeout"
+            ),
+            path=f"{path_prefix}.env.VECTOR_DB_MODEL_LOAD_TIMEOUT",
+        ))
+
     return violations
 
 

@@ -291,16 +291,22 @@ def guard_single_instance(
     # `MCP_GUARD_FORCE_KILL=1` bypasses and restores the pre-hardening
     # "kill every sibling" behavior for debugging or emergency use.
     force_kill = os.environ.get("MCP_GUARD_FORCE_KILL") == "1"
-    heartbeat_fresh = False
+    heartbeat_owner_pids: set[int] = set()
     if not force_kill:
         try:
-            from tools.mcp.mcp_heartbeat import is_heartbeat_authoritative  # noqa: PLC0415
+            from tools.mcp.mcp_heartbeat import is_heartbeat_authoritative, read_heartbeat  # noqa: PLC0415
 
             # Authoritative: heartbeat file fresh AND owning PID alive + non-zombie.
             # A wedged or terminating sibling no longer earns a deferral.
-            heartbeat_fresh = any(is_heartbeat_authoritative(m) for m in markers)
+            for marker in markers:
+                if not is_heartbeat_authoritative(marker):
+                    continue
+                heartbeat = read_heartbeat(marker)
+                if heartbeat is not None:
+                    _ts, owner_pid = heartbeat
+                    heartbeat_owner_pids.add(owner_pid)
         except ImportError:
-            heartbeat_fresh = False
+            heartbeat_owner_pids = set()
 
     for proc in psutil.process_iter(attrs=("pid", "name", "cmdline")):
         try:
@@ -315,9 +321,9 @@ def guard_single_instance(
             # the kill: the sibling is active and likely serving a live
             # legacy editor client. Clobbering it would produce the split-brain
             # failure mode documented in the RCA.
-            if heartbeat_fresh and not force_kill:
+            if proc.info["pid"] in heartbeat_owner_pids and not force_kill:
                 logger.warning(
-                    "GUARD_DEFERRED: pid=%d has fresh heartbeat; skipping "
+                    "GUARD_DEFERRED: pid=%d owns fresh heartbeat; skipping "
                     "termination to avoid split-brain "
                     "(matched=%s marker=%s). Set MCP_GUARD_FORCE_KILL=1 to override.",
                     proc.info["pid"],
@@ -334,7 +340,7 @@ def guard_single_instance(
                 " ".join(str(c) for c in cmdline)[:200],
                 matched_marker,
                 marker_display,
-                heartbeat_fresh,
+                bool(heartbeat_owner_pids),
                 force_kill,
             )
             proc.terminate()

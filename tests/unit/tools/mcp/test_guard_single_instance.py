@@ -222,6 +222,26 @@ def test_own_pid_never_killed(
     assert sibling.terminated
 
 
+def test_fresh_heartbeat_only_defers_owner_pid(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A fresh heartbeat must not shield every sibling with the same marker."""
+    monkeypatch.delenv("MCP_GUARD_FORCE_KILL", raising=False)
+
+    owner = _FakeProc(42, ["python", "-u", "C:/x/tools/mcp/vector_db_server.py"])
+    duplicate = _FakeProc(43, ["python", "-u", "C:/x/tools/mcp/vector_db_server.py"])
+    _install_fake_psutil(monkeypatch, [owner, duplicate])
+    monkeypatch.setattr(os, "getpid", lambda: 1)
+
+    from tools.mcp import mcp_heartbeat
+
+    monkeypatch.setattr(mcp_heartbeat, "is_heartbeat_authoritative", lambda _marker: True)
+    monkeypatch.setattr(mcp_heartbeat, "read_heartbeat", lambda _marker: (123.0, 42))
+
+    mod.guard_single_instance("vector_db_server.py")
+
+    assert not owner.terminated
+    assert duplicate.terminated
+
+
 def test_psutil_missing_returns_silently(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,

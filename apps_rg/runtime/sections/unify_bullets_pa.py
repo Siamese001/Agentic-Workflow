@@ -20,7 +20,6 @@ from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     load_w7_shell_slot_bodies,
 )
 from apps_rg.runtime.sections.unify_bullets_graph_evidence import GRAPH_BULLET_EVIDENCE_PACK_MARKER
-from apps_rg.runtime.validators.unify_bullets_x2 import PROTECTED_BULLET_DEFAULT
 
 
 def _unify_id_hygiene_block() -> str:
@@ -101,9 +100,12 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "claim_ledger: one row per bullet; claim_text non-empty after trim; source_fact_ids must match "
         "ALLOWED_SOURCE_FACT_IDS exactly (see C0 hygiene — bul_un_ify_* typos fail fact-scope).\n"
         "POOL: each Qwen path emits a full 6-bullet set with semantically distinct framing; "
-        "Claude selector picks best variant per slot "
-        f"(protected {PROTECTED_BULLET_DEFAULT}: preserve $22M, 20%, 8 to 28). "
-        "Preserve bul_unify_004 cycle-time: six months to three weeks.\n"
+        "Claude selector picks best variant per slot. "
+        "Each slot must use the slot-specific metric_outcome_usage_contract from C0: select at least "
+        "one approved metric_outcome_id from that role_episode_bundle, surface its metric/surface_tokens "
+        "in bullet_text, set metric_raw to the selected metric_outcome_id(s), and record the same IDs in "
+        "change_log.metric_outcome_ids[]. Numeric claims are allowed only when the selected metric_outcome_id "
+        "explicitly supplies that number; otherwise use graph-native qualitative outcome surfaces.\n"
         "No first person; no em dash; no inline source tags; no narrative paragraph; max 4 consecutive JD words. "
         "Cite ONLY bul_unify_* source ids — never reference other employers' ids (bul_ibm_*, bul_insurtech_*, "
         "bul_ey_*) anywhere in the output (bullets, claim_ledger, selected_fact_plan, or change_log).\n\n"
@@ -112,7 +114,8 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "not to invent employers, tools, platforms, or metrics. "
         "jd_alignment must include selected_jd_themes[], selected_briefing_themes[], targeting_rationale, "
         "targeting_only=true, jd_used_as_proof=false, briefing_used_as_proof=false.\n"
-        "change_log: per bullet_id include skill_ids_used[] and fact_ids_used[] (composition trace, not rewrite notes).\n"
+        "change_log: per bullet_id include role_episode_bundle_id, skill_ids_used[] or graph_skill_node_ids[], "
+        "fact_ids_used[] or source_fact_ids[], and metric_outcome_ids[] (composition trace, not rewrite notes).\n"
         "self_check: bullets_composed_from_graph_evidence=true, no_verbatim_archive_copy=true.\n\n"
         "# Quality\n"
         "Distinct executive outcomes per bullet; dense mechanism inventory in at most one bullet "
@@ -155,8 +158,11 @@ def compile_unify_bullets_prompt(
             "Synthesize exactly six Unify bullets (bul_unify_001..006) by composing proof from "
             f"{GRAPH_BULLET_EVIDENCE_PACK_MARKER} and bound_skills. "
             "Use TARGET_TITLE, JD_TEXT, and BRIEFING only for emphasis and ordering — not as proof. "
+            "Every bullet must carry one approved slot metric_outcome_id, visibly surface that outcome "
+            "in bullet_text, and record it in change_log.metric_outcome_ids. "
             "Return one JSON object with bullets[6], complete claim_ledger, jd_alignment (themes + "
-            "targeting_only flags), change_log with skill_ids_used/fact_ids_used per slot, and self_check."
+            "targeting_only flags), change_log with role_episode_bundle_id/skill_ids_used/"
+            "fact_ids_used/metric_outcome_ids per slot, and self_check."
         ),
         r0_response_schema=BULLETS_R0,
         render_context={"section_id": "unify_bullets"},

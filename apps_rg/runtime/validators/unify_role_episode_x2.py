@@ -9,6 +9,7 @@ unsupported new metric claims, or base/archive hydration.
 """
 from __future__ import annotations
 
+from functools import lru_cache
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -20,6 +21,10 @@ from apps_rg.runtime.sections.cross_section_signal_guards import (
     is_flat_skill_only_graph_packet,
     seniority_floor_score,
     technical_specificity_score,
+)
+from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
+from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
+    BUNDLES_PATH as UNIFY_BUNDLES_PATH,
 )
 
 # Numeric/$/% tokens permitted in Unify output (canonical, approved & linked metrics only).
@@ -39,6 +44,7 @@ _COMMERCIAL_SCOPE_TOKENS: frozenset[str] = frozenset({
 
 _BASE_NGRAM_THRESHOLD = 0.25
 _NUM_CLAIM_RE = re.compile(r"\$\s?\d[\d,\.]*\s?[mMbBkK]?|\b\d+(?:\.\d+)?\s?%")
+_SURFACE_NORM_RE = re.compile(r"[^a-z0-9%$]+")
 
 
 @dataclass
@@ -67,6 +73,81 @@ def _bundle_index_by_fact(meta: dict[str, Any] | None) -> list[dict[str, Any]]:
         for rec in bundles:
             if isinstance(rec, dict) and rec.get("role_episode_bundle_id"):
                 out.append(rec)
+    return out
+
+
+@lru_cache(maxsize=1)
+def _unify_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
+    return metric_outcome_nodes_from_path(UNIFY_BUNDLES_PATH)
+
+
+def _surface_norm(text: str) -> str:
+    return _SURFACE_NORM_RE.sub(" ", str(text or "").lower()).strip()
+
+
+def _metric_surface_tokens(metric_id: str) -> list[str]:
+    node = _unify_metric_outcome_nodes().get(str(metric_id)) or {}
+    tokens: list[str] = []
+    for raw in [node.get("metric"), *(node.get("surface_tokens") or []), node.get("claim_text")]:
+        token = str(raw or "").strip()
+        if token and token not in tokens:
+            tokens.append(token)
+    return tokens
+
+
+def _metric_token_visible_in_text(metric_id: str, text: str) -> str | None:
+    low = str(text or "").lower()
+    norm = _surface_norm(text)
+    for token in _metric_surface_tokens(metric_id):
+        t_low = token.lower()
+        if t_low and t_low in low:
+            return token
+        t_norm = _surface_norm(token)
+        if t_norm and t_norm in norm:
+            return token
+    return None
+
+
+def _resolved_slot_bundle_map(
+    parsed_output: dict[str, Any] | None,
+    meta: dict[str, Any] | None,
+) -> dict[str, str]:
+    from apps_rg.runtime.sections.unify_role_episode_evidence import (
+        UNIFY_BULLET_SLOT_BUNDLE_MAP,
+    )
+
+    candidates: list[Any] = []
+    if isinstance(meta, dict):
+        candidates.append(meta.get("unify_bullet_slot_bundle_map_resolved"))
+    if isinstance(parsed_output, dict):
+        candidates.append(parsed_output.get("unify_bullet_slot_bundle_map_resolved"))
+    for candidate in candidates:
+        if isinstance(candidate, dict) and candidate:
+            return {str(k): str(v) for k, v in candidate.items() if str(k).strip() and str(v).strip()}
+    return dict(UNIFY_BULLET_SLOT_BUNDLE_MAP)
+
+
+def _slot_metric_allowlist(
+    parsed_output: dict[str, Any] | None,
+    meta: dict[str, Any] | None,
+) -> dict[str, set[str]]:
+    slot_map = _resolved_slot_bundle_map(parsed_output, meta)
+    bundles = _bundle_index_by_fact(meta)
+    by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
+    approved = {
+        str(x).strip()
+        for x in ((meta or {}).get("approved_metric_outcome_ids") or _unify_metric_outcome_nodes().keys())
+        if str(x).strip()
+    }
+    out: dict[str, set[str]] = {}
+    for slot_id, bundle_id in slot_map.items():
+        rec = by_id.get(bundle_id) or {}
+        mids = {
+            str(x).strip()
+            for x in (rec.get("linked_metric_outcome_ids") or rec.get("allowed_metric_outcome_ids") or [])
+            if str(x).strip()
+        }
+        out[slot_id] = mids & approved if approved else mids
     return out
 
 
@@ -119,6 +200,7 @@ def _collect_change_log_bindings(
                 "graph_skill_node_ids": list(sk),
                 "source_fact_ids": list(srcs),
                 "metric_outcome_ids": list(mids),
+                "explicit_metric_outcome_ids": list(mids),
             }
 
     # Per-bullet source facts also live on the bullets list (bullet_text payload).
@@ -130,7 +212,13 @@ def _collect_change_log_bindings(
             continue
         slot = per_bullet.setdefault(
             bid,
-            {"role_episode_bundle_id": "", "graph_skill_node_ids": [], "source_fact_ids": [], "metric_outcome_ids": []},
+            {
+                "role_episode_bundle_id": "",
+                "graph_skill_node_ids": [],
+                "source_fact_ids": [],
+                "metric_outcome_ids": [],
+                "explicit_metric_outcome_ids": [],
+            },
         )
         slot["source_fact_ids"].extend(str(x) for x in (bullet.get("source_fact_ids") or []))
 
@@ -169,13 +257,10 @@ def _collect_change_log_bindings(
     # Narrative path: cited finalized bullet-slot ids (bul_unify_*) carry graph lineage to bundles
     # via the slot->bundle map; resolve bundle_id + skills + lineage from them.
     if claim_ledger_facts:
-        from apps_rg.runtime.sections.unify_role_episode_evidence import (
-            UNIFY_BULLET_SLOT_BUNDLE_MAP,
-        )
-
+        slot_bundle_map = _resolved_slot_bundle_map(parsed_output, meta)
         bundle_by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
         for fid in claim_ledger_facts:
-            rid = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(fid)
+            rid = slot_bundle_map.get(fid)
             rec = bundle_by_id.get(rid) if rid else None
             if rec:
                 bundle_ids.append(str(rid))
@@ -196,10 +281,7 @@ def _collect_change_log_bindings(
         # ``fact_engineering_platform_*`` linked facts, so the cited∩linked intersection alone
         # left metric_outcome_ids unbound for metric-protected slots. The narrative path already
         # resolves through this map; the per-bullet path now does too.
-        from apps_rg.runtime.sections.unify_role_episode_evidence import (
-            UNIFY_BULLET_SLOT_BUNDLE_MAP,
-        )
-
+        slot_bundle_map = _resolved_slot_bundle_map(parsed_output, meta)
         bundle_by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
         for bid, slot in per_bullet.items():
             cited = {f for f in slot.get("source_fact_ids") or [] if f}
@@ -208,7 +290,7 @@ def _collect_change_log_bindings(
             # (``bul_unify_004`` / ``bul_unify_004_metric_*``); a bullet citing no slot atom
             # derives nothing here, so adversarial unbound-metric packets still fail the gate.
             cites_own_slot = any(c == bid or c.startswith(f"{bid}_") for c in cited)
-            mapped_rid = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(bid) if cites_own_slot else None
+            mapped_rid = slot_bundle_map.get(bid) if cites_own_slot else None
             if mapped_rid and mapped_rid in bundle_by_id:
                 slot_recs.append(bundle_by_id[mapped_rid])
             for rec in bundles:
@@ -344,6 +426,126 @@ def run_unify_bullets_role_episode_x2_gates(
         metric_violations or "all_traceable",
         "approved metric_outcome_ids when has_metric=true",
         f"Metric binding violations: {metric_violations}" if metric_violations else None,
+    )
+
+    slot_metric_allowlist = _slot_metric_allowlist(parsed_output, meta)
+    bullet_text_by_id = {
+        str(bullet.get("bullet_id") or ""): str(bullet.get("bullet_text") or "")
+        for bullet in (bullets or [])
+        if isinstance(bullet, dict)
+    }
+    lineage_missing: list[str] = []
+    lineage_unapproved: list[str] = []
+    visible_missing: list[str] = []
+    visible_matches: dict[str, list[dict[str, str]]] = {}
+    unique_visible_metric_ids: set[str] = set()
+    for bid, text in bullet_text_by_id.items():
+        if not bid.startswith("bul_unify_"):
+            continue
+        row = b["per_bullet"].get(bid) or {}
+        explicit_mids = [
+            str(x).strip()
+            for x in (row.get("explicit_metric_outcome_ids") or [])
+            if str(x).strip()
+        ]
+        allowed_for_slot = slot_metric_allowlist.get(bid) or set()
+        if not explicit_mids:
+            lineage_missing.append(bid)
+            visible_missing.append(bid)
+            continue
+        bad = [mid for mid in explicit_mids if allowed_for_slot and mid not in allowed_for_slot]
+        if bad:
+            lineage_unapproved.append(f"{bid}:{bad}")
+        for mid in explicit_mids:
+            token = _metric_token_visible_in_text(mid, text)
+            if token:
+                visible_matches.setdefault(bid, []).append({"metric_outcome_id": mid, "token": token})
+                unique_visible_metric_ids.add(mid)
+        if not visible_matches.get(bid):
+            visible_missing.append(bid)
+    add(
+        "x2_unify_each_bullet_approved_metric_outcome_lineage",
+        not lineage_missing and not lineage_unapproved and bool(bullet_text_by_id),
+        {
+            "missing_metric_outcome_ids": lineage_missing,
+            "unapproved_metric_outcome_ids": lineage_unapproved,
+            "slot_metric_allowlist": {k: sorted(v) for k, v in slot_metric_allowlist.items()},
+        },
+        "every bul_unify_* change_log row records >=1 approved slot metric_outcome_id",
+        (
+            f"Metric outcome lineage failures: missing={lineage_missing}, unapproved={lineage_unapproved}"
+            if (lineage_missing or lineage_unapproved)
+            else None
+        ),
+    )
+    add(
+        "x2_unify_each_bullet_metric_outcome_surface_visible",
+        not visible_missing and bool(visible_matches),
+        {
+            "visible_matches": visible_matches,
+            "missing_visible_metric_surface": visible_missing,
+        },
+        "every bul_unify_* bullet_text surfaces a metric/surface_token from its approved metric_outcome_id",
+        (
+            f"Bullet text missing visible approved metric outcome surface: {visible_missing}"
+            if visible_missing
+            else None
+        ),
+    )
+    expected_metric_slots = len([bid for bid in bullet_text_by_id if bid.startswith("bul_unify_")])
+    distribution_ok = expected_metric_slots > 0 and len(unique_visible_metric_ids) >= expected_metric_slots
+    add(
+        "x2_unify_metric_outcomes_distributed_by_slot",
+        distribution_ok,
+        {
+            "unique_visible_metric_outcome_ids": sorted(unique_visible_metric_ids),
+            "expected_metric_slots": expected_metric_slots,
+        },
+        ">=1 distinct visible metric_outcome_id per bul_unify_* slot",
+        None
+        if distribution_ok
+        else "Metric outcome evidence is not distributed across all Unify bullet slots.",
+    )
+
+    receipt = meta.get("unify_graph_traversal_sufficiency_receipt") if isinstance(meta, dict) else {}
+    receipt = receipt if isinstance(receipt, dict) else {}
+    conservation = receipt.get("candidate_conservation") if isinstance(receipt.get("candidate_conservation"), dict) else {}
+    traversal_ok = (
+        bool(conservation.get("pass"))
+        and int(receipt.get("selected_role_episode_root_count") or 0) >= 6
+        and int(receipt.get("selected_unique_leaf_skill_count") or 0) >= 20
+        and int(receipt.get("selected_unique_metric_count") or 0) >= 10
+        and int(receipt.get("rejected_sibling_skill_count") or 0) > 0
+        and int(receipt.get("rejected_sibling_metric_count") or 0) > 0
+    )
+    add(
+        "x2_unify_graph_traversal_sufficiency",
+        traversal_ok,
+        {
+            "candidate_conservation": conservation,
+            "selected_role_episode_root_count": receipt.get("selected_role_episode_root_count"),
+            "selected_unique_leaf_skill_count": receipt.get("selected_unique_leaf_skill_count"),
+            "selected_unique_metric_count": receipt.get("selected_unique_metric_count"),
+            "rejected_sibling_skill_count": receipt.get("rejected_sibling_skill_count"),
+            "rejected_sibling_metric_count": receipt.get("rejected_sibling_metric_count"),
+        },
+        "candidate conservation + >=6 roots + >=20 skills + >=10 metrics + rejected sibling frontier",
+        None if traversal_ok else "Unify graph traversal receipt is too shallow or missing candidate conservation.",
+    )
+    axis = receipt.get("role_specific_axis_coverage") if isinstance(receipt.get("role_specific_axis_coverage"), dict) else {}
+    frontier = receipt.get("frontier_size_by_hop_depth") if isinstance(receipt.get("frontier_size_by_hop_depth"), dict) else {}
+    root_count = int(receipt.get("selected_role_episode_root_count") or 0)
+    granularity_ok = (
+        not (axis.get("missing_axes") or [])
+        and int(frontier.get("hop_1_graph_skill_nodes") or 0) >= root_count * 2
+        and int(frontier.get("hop_2_metric_outcome_nodes") or 0) >= root_count
+    )
+    add(
+        "x2_unify_graph_granularity_gates",
+        granularity_ok,
+        {"role_specific_axis_coverage": axis, "frontier_size_by_hop_depth": frontier},
+        "no missing role axes; skill frontier >=2x roots; metric frontier >= roots",
+        None if granularity_ok else "Unify graph evidence lacks role-axis coverage or leaf/metric granularity.",
     )
 
     add(
