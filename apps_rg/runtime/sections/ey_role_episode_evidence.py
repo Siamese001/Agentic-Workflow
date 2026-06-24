@@ -13,6 +13,8 @@ from typing import Any
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
 from apps_rg.runtime.sections.ey_graph_role_episode_registry import (
     BUNDLES_PATH as EY_BUNDLES_PATH,
+)
+from apps_rg.runtime.sections.ey_graph_role_episode_registry import (
     EY_EMPLOYER_ID,
     EY_EMPLOYER_NODE_ID,
     EY_TIME_WINDOW,
@@ -21,10 +23,8 @@ from apps_rg.runtime.sections.ey_graph_role_episode_registry import (
 )
 from apps_rg.runtime.sections.role_episode_metric_registry import (
     approved_metric_outcome_ids_from_path,
-    metric_outcome_nodes_from_path,
-)
-from apps_rg.runtime.sections.role_episode_bullet_sufficiency import (
     build_role_episode_bullet_traversal_sufficiency_receipt,
+    metric_outcome_nodes_from_path,
 )
 
 GRAPH_BULLET_EVIDENCE_PACK_MARKER = "EY_ROLE_EPISODE_EVIDENCE_PACK"

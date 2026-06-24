@@ -652,6 +652,14 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--dry-run", action="store_true", help="Validate inputs without calling LLM")
     p.add_argument(
+        "--disable-existing-index-fallback",
+        action="store_true",
+        help=(
+            "Require canonical non-dry fact-vector hydration proof and refuse fallback to an "
+            "already-sufficient dense+sparse Chroma index."
+        ),
+    )
+    p.add_argument(
         "--cursor-prompts",
         action="store_true",
         help="Wizard mode — write sentinel and exit 7 when inputs are missing",
@@ -895,8 +903,18 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     _emb_settings = apply_apps_rg_embedding_env_guards(route_section=section_eff)
     _emb_ad = str(getattr(args, "artifact_dir", "") or "").strip()
     _emb_receipt = write_embedding_settings_receipt(_emb_ad, _emb_settings)
-    from apps_rg.runtime.c02_chroma_lifecycle import resolve_proof_class
-    from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+    try:
+        from apps_rg.runtime.c02_chroma_lifecycle import resolve_proof_class
+
+        proof_class = resolve_proof_class()
+    except Exception as exc:  # guardian: allow-broad-exception -- diagnostic print must not block pre-U0 readiness fallback
+        proof_class = f"unavailable:{type(exc).__name__}"
+    try:
+        from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
+
+        product_fail_closed = product_fail_closed_runtime()
+    except Exception as exc:  # guardian: allow-broad-exception -- diagnostic print must not block pre-U0 readiness fallback
+        product_fail_closed = f"unavailable:{type(exc).__name__}"
 
     print(
         f"embedding_settings: enabled={_emb_settings.embeddings_enabled} "
@@ -904,12 +922,59 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         f"route_result={_emb_settings.route_result} "
         f"semantic_cache_ineligible={_emb_settings.semantic_cache_ineligible} "
         f"chroma_default_ef_used={_emb_settings.chroma_default_ef_used} "
-        f"product_fail_closed={product_fail_closed_runtime()} "
-        f"proof_class={resolve_proof_class()}",
+        f"product_fail_closed={product_fail_closed} "
+        f"proof_class={proof_class}",
         flush=True,
     )
     if _emb_receipt is not None:
         print(f"embedding_settings_receipt={_emb_receipt.as_posix()}", flush=True)
+
+    if section_eff in section_lane_ids or not section_eff:
+        from apps_rg.runtime.fact_vector_readiness import (
+            BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
+            FactVectorReadinessError,
+            PRE_U0_GATE_ID,
+            enforce_fact_vector_readiness,
+        )
+
+        try:
+            pre_u0_receipt = enforce_fact_vector_readiness(
+                artifact_dir=_emb_ad,
+                gate_id=PRE_U0_GATE_ID,
+                block_code=BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
+                section=section_eff or "all",
+                target_context={
+                    "phase": "pre_u0",
+                    "section": section_eff or "all",
+                    "target_company": str(getattr(args, "target_company", "") or ""),
+                    "target_role": str(getattr(args, "target_role", "") or ""),
+                },
+                allow_existing_index_fallback=not bool(
+                    getattr(args, "disable_existing_index_fallback", False)
+                ),
+            )
+            print(
+                "pre_u0_fact_vector_readiness: "
+                f"status={pre_u0_receipt.get('status')} "
+                f"sections={pre_u0_receipt.get('section_count')} "
+                f"failed_sections={len(pre_u0_receipt.get('failed_sections') or [])} "
+                f"fallback={((pre_u0_receipt.get('fallback') or {}).get('decision') or '—')}",
+                flush=True,
+            )
+            if pre_u0_receipt.get("receipt_path"):
+                print(
+                    f"pre_u0_fact_vector_readiness_receipt={pre_u0_receipt.get('receipt_path')}",
+                    flush=True,
+                )
+        except FactVectorReadinessError as exc:
+            receipt = exc.receipt
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            if receipt.get("receipt_path"):
+                print(
+                    f"pre_u0_fact_vector_readiness_receipt={receipt.get('receipt_path')}",
+                    flush=True,
+                )
+            return 2
 
     if args.interactive:
         _gather_interactive_fields(args)
@@ -1032,6 +1097,58 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
         except SectionCliConfigError as exc:
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            return 2
+
+    if section_eff in section_lane_ids or not section_eff:
+        from apps_rg.runtime.fact_vector_readiness import (
+            BLOCKED_POST_U0_SECTION_SUFFICIENCY,
+            FactVectorReadinessError,
+            POST_U0_GATE_ID,
+            enforce_fact_vector_readiness,
+        )
+
+        try:
+            post_u0_receipt = enforce_fact_vector_readiness(
+                artifact_dir=_ad,
+                gate_id=POST_U0_GATE_ID,
+                block_code=BLOCKED_POST_U0_SECTION_SUFFICIENCY,
+                section=section_eff or "all",
+                target_context={
+                    "phase": "post_u0_pre_c0",
+                    "section": section_eff or "all",
+                    "target_company": str(getattr(args, "target_company", "") or ""),
+                    "target_role": str(getattr(args, "target_role", "") or ""),
+                    "target_level": str(getattr(args, "target_level", "") or ""),
+                    "jd_ref": str(getattr(args, "jd", "") or ""),
+                    "manual_brief_ref": str(getattr(args, "manual_brief", "") or ""),
+                    "lane_provider": str(lane_provider_eff or ""),
+                    "provider_resolution_source": str(lane_provider_resolution_source or ""),
+                },
+                allow_existing_index_fallback=not bool(
+                    getattr(args, "disable_existing_index_fallback", False)
+                ),
+            )
+            print(
+                "post_u0_section_sufficiency_preview: "
+                f"status={post_u0_receipt.get('status')} "
+                f"sections={post_u0_receipt.get('section_count')} "
+                f"failed_sections={len(post_u0_receipt.get('failed_sections') or [])} "
+                f"fallback={((post_u0_receipt.get('fallback') or {}).get('decision') or '—')}",
+                flush=True,
+            )
+            if post_u0_receipt.get("receipt_path"):
+                print(
+                    f"post_u0_section_sufficiency_preview_receipt={post_u0_receipt.get('receipt_path')}",
+                    flush=True,
+                )
+        except FactVectorReadinessError as exc:
+            receipt = exc.receipt
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            if receipt.get("receipt_path"):
+                print(
+                    f"post_u0_section_sufficiency_preview_receipt={receipt.get('receipt_path')}",
+                    flush=True,
+                )
             return 2
 
     if args.dry_run:

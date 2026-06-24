@@ -46,6 +46,7 @@ class TestSingleActionSpineRunResult:
         assert r.route_id == "R4_SINGLE_ACTION"
         assert r.fault == ""
         assert r.producer_component  # default non-empty
+        assert r.observability_status == {}
 
     def test_frozen(self) -> None:
         r = SingleActionSpineRunResult(

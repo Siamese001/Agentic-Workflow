@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-
 from apps_rg.runtime.c0.constants import REPO_ROOT
 from apps_rg.runtime.chroma_precomputed_collection import EXPECTED_BGE_DIMENSION
 from apps_rg.runtime.fact_vectors_bootstrap import GENERATED_LANES, MANIFEST_REL
@@ -236,19 +235,21 @@ def _build_unify_bullets_sufficiency(
 ) -> dict[str, Any]:
     """Prove Unify has six source slots plus approved metric outcomes before generation."""
     try:
+        from apps_rg.runtime.sections.role_episode_metric_registry import (
+            metric_outcome_nodes_from_path,
+        )
+        from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
+            BUNDLES_PATH as UNIFY_BUNDLES_PATH,
+        )
+        from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
+            validate_bundle,
+        )
         from apps_rg.runtime.sections.unify_role_episode_evidence import (
             UNIFY_BULLET_SLOT_BUNDLE_MAP,
             UNIFY_BULLET_SLOT_IDS,
             build_unify_graph_traversal_sufficiency_receipt,
             build_unify_role_episode_section_packet,
             resolve_unify_bullet_slot_bundle_map,
-        )
-        from apps_rg.runtime.sections.unify_graph_role_episode_registry import (
-            BUNDLES_PATH as UNIFY_BUNDLES_PATH,
-            validate_bundle,
-        )
-        from apps_rg.runtime.sections.role_episode_metric_registry import (
-            metric_outcome_nodes_from_path,
         )
     except Exception as exc:  # guardian: allow-broad-exception -- receipt classifies optional Unify registry import failures
         return {
@@ -429,7 +430,7 @@ def _role_episode_bullets_config(section_id: str) -> dict[str, Any]:
             IBM_BULLET_SLOT_IDS,
             build_ibm_role_episode_section_packet,
         )
-        from apps_rg.runtime.sections.role_episode_bullet_sufficiency import (
+        from apps_rg.runtime.sections.role_episode_metric_registry import (
             build_role_episode_bullet_traversal_sufficiency_receipt,
         )
 

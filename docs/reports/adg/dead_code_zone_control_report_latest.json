@@ -131,8 +131,8 @@
     "executive_metrics": {
       "dead_code_count": 965,
       "dead_import_count": 965,
-      "first_party_low_confidence_ratio": 1.5760107025157437,
-      "inferred_symbol_ratio": 10.143983584257487,
+      "first_party_low_confidence_ratio": 1.5742642026009581,
+      "inferred_symbol_ratio": 10.13494081240581,
       "l4_unresolved_import_count": 0,
       "low_confidence_count": 483,
       "unresolved_import_count": 483
@@ -149,31 +149,31 @@
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17599
+      "MEDIUM": 17620
     },
     "inferred_by_layer": {
       "L0": 1349,
       "L1": 574,
-      "L2": 896,
-      "L3": 862,
-      "L4": 606,
+      "L2": 892,
+      "L3": 861,
+      "L4": 604,
       "L5": 1291,
       "L6": 1304,
-      "L_APP": 5223,
-      "L_OPS": 491,
+      "L_APP": 5247,
+      "L_OPS": 494,
       "L_PG": 497,
-      "L_RUNTIME": 1077,
-      "L_SHARED": 596,
+      "L_RUNTIME": 1076,
+      "L_SHARED": 595,
       "L_TEST": 289,
-      "L_TOOLS": 2328,
+      "L_TOOLS": 2331,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.143983584257487,
-    "total_inferred_symbols": 17599,
-    "total_symbols": 173492
+    "inferred_symbol_ratio": 10.13494081240581,
+    "total_inferred_symbols": 17620,
+    "total_symbols": 173854
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.5760107025157437,
+    "first_party_low_confidence_ratio": 1.5742642026009581,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
       "symbol": 483
@@ -193,8 +193,8 @@
     "total_low_confidence": 483
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
-    "adg_snapshot_ts": "06222026_0539",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06242026_0706.sqlite",
+    "adg_snapshot_ts": "06242026_0706",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -204,11 +204,11 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_06222026_0539.sqlite",
-    "adg_snapshot_ts": "06222026_0539",
+    "adg_snapshot": "artifacts/adg/adg_indexed_06242026_0706.sqlite",
+    "adg_snapshot_ts": "06242026_0706",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.5760107025157437,
-    "inferred_symbol_ratio": 10.143983584257487,
+    "first_party_low_confidence_ratio": 1.5742642026009581,
+    "inferred_symbol_ratio": 10.13494081240581,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 965,
     "total_dead_imports": 965,

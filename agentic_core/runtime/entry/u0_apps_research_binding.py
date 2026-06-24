@@ -26,10 +26,10 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
     ValidatedRequest,
 )
-from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
+from agentic_core.runtime.contracts.apps_rg_runtime_authority_policy import (
+    AuthorityValidationReceipt,
+)
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
-from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -182,10 +182,6 @@ def u0_validate_apps_research(envelope: RequestEnvelope) -> ValidatedRequest:
         payload_digest[:16],
     )
 
-    from agentic_core.runtime.contracts.apps_rg_runtime_authority_policy import (
-        AuthorityValidationReceipt,
-    )
-
     authority_receipt = AuthorityValidationReceipt(
         allowed=True,
         passed=True,
@@ -211,33 +207,9 @@ def u0_validate_apps_research(envelope: RequestEnvelope) -> ValidatedRequest:
     )
 
 
-def pa_assemble_apps_research(
-    route_contract: RouteContract,
-    l1_plan: L1PlanContract,
-    final_evidence: FinalEvidenceContract,
-    validated_request: Any,
-) -> Any:
-    """Runtime-facing PA seam for apps_research.
-
-    The concrete binding remains in prompt governance; app runtime profiles
-    consume this runtime entry surface to avoid app-layer L_PG imports.
-    """
-    from agentic_core.prompt_governance.apps_research_pa_binding import (
-        pa_assemble_apps_research as _pa_assemble_apps_research,
-    )
-
-    return _pa_assemble_apps_research(
-        route_contract,
-        l1_plan,
-        final_evidence,
-        validated_request,
-    )
-
-
 __all__ = [
     "APPS_RESEARCH_TASK_CLASS",
     "AppsResearchAuthorityViolation",
     "AppsResearchU0ReflectionReceipt",
-    "pa_assemble_apps_research",
     "u0_validate_apps_research",
 ]

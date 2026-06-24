@@ -20,10 +20,16 @@ from apps_rg.runtime.cli_exit_codes import EXIT_GENERIC_FAILURE, EXIT_SUCCESS
 
 @pytest.fixture
 def _no_side_effects(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(fvb, "_write_manifest", lambda root, manifest: Path("dummy_manifest.json"))
     monkeypatch.setattr(
-        "apps_rg.runtime.embedding_settings.bootstrap_apps_rg_embedding_env",
-        lambda **kwargs: {},
+        fvb,
+        "_write_manifest",
+        lambda root, manifest, *, dry_run=False, blocked=False: Path(
+            "fact_vectors_bootstrap_dry_run_manifest.json"
+            if dry_run
+            else "fact_vectors_bootstrap_blocked_manifest.json"
+            if blocked
+            else "fact_vectors_bootstrap_manifest.json"
+        ),
     )
 
 
@@ -86,6 +92,74 @@ def test_dry_run_manifest_shape_and_strict_pass(_no_side_effects) -> None:
     assert "generated output is never" in manifest["source"]
     assert manifest["base_resume_employment_atoms"] > 0
     assert manifest["ledger_version_hash"]
+    assert manifest["manifest_path"].endswith("fact_vectors_bootstrap_dry_run_manifest.json")
+
+
+def test_non_dry_runtime_block_falls_back_to_existing_index(
+    _no_side_effects,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        fvb,
+        "validate_fact_vector_hydration_runtime",
+        lambda **kwargs: {
+            "status": "BLOCKED",
+            "block_code": "BLOCKED_FACT_VECTOR_HYDRATION_RUNTIME",
+            "reasons": ["missing_or_blocked_dependency:torch"],
+        },
+    )
+    monkeypatch.setattr(
+        fvb,
+        "_existing_index_fallback_receipt",
+        lambda **kwargs: {
+            "decision": "USED_EXISTING_FACT_VECTOR_INDEX",
+            "readiness": {
+                "status": "PASS",
+                "summary": {
+                    "collection_doc_count": 60,
+                    "sparse_sidecar_doc_count": 41,
+                },
+            },
+        },
+    )
+
+    manifest, code = fvb.run_bootstrap_fact_vectors(
+        strict=True,
+        dry_run=False,
+        timestamp="2026-06-08T00:00:00Z",
+    )
+
+    assert code == EXIT_SUCCESS
+    assert manifest["status"] == "FALLBACK_ALLOWED"
+    assert manifest["fallback_mode"] == "existing_dense_sparse_fact_vectors_index"
+    assert manifest["collection_count_after"] == 60
+    assert manifest["sparse_sidecar_built"] is True
+
+
+def test_non_dry_runtime_block_can_disable_fallback(
+    _no_side_effects,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        fvb,
+        "validate_fact_vector_hydration_runtime",
+        lambda **kwargs: {
+            "status": "BLOCKED",
+            "block_code": "BLOCKED_FACT_VECTOR_HYDRATION_RUNTIME",
+            "reasons": ["missing_or_blocked_dependency:torch"],
+        },
+    )
+
+    manifest, code = fvb.run_bootstrap_fact_vectors(
+        strict=True,
+        dry_run=False,
+        timestamp="2026-06-08T00:00:00Z",
+        allow_existing_index_fallback=False,
+    )
+
+    assert code == EXIT_GENERIC_FAILURE
+    assert manifest["status"] == "BLOCKED"
+    assert manifest["block_code"] == "BLOCKED_FACT_VECTOR_HYDRATION_RUNTIME"
 
 
 def test_strict_fails_loud_on_zero_eligible_atoms(_no_side_effects, monkeypatch) -> None:

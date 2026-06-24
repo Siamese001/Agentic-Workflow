@@ -25,16 +25,18 @@ REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification"
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "HEAD == origin/main",
+    "git status --short --branch shows only ## main...origin/main",
     "git diff --stat has no output",
     "git diff --cached --stat has no output",
     "exactly one git worktree remains",
-    "3-row proof table with columns requirement, runtime evidence, and result",
+    "proof table with columns requirement, runtime evidence, and result",
     "codex_main_closeout.py --apply --fetch --json",
     "codex_main_closeout.py --check --fetch --json",
     "The merge command must chain local closeout proof in the same shell command",
     "codex_readiness.py --git-publication --require-single-main-worktree",
     "codex_publication_audit.py --json --branch-limit 100 --require-ancestor-cleanup --require-single-main-worktree",
     "strict single-main and strict publication readiness gates PASS",
+    "keep working the remediation loop until every required gate passes",
 )
 PUBLICATION_FORBIDDEN_PROMPT_SNIPPETS = (
     "dirty protected worktrees reported and preserved",

@@ -1,9 +1,18 @@
 {
   "gate_id": "S4_unused_imports_ratchet",
-  "count": 10749,
-  "seeded_at": "2026-06-23T06:14:57.053586+00:00",
-  "snapshot": "adg_indexed_06232026_0201.sqlite",
+  "count": 10730,
+  "seeded_at": "2026-06-24T10:59:04.682033+00:00",
+  "snapshot": "adg_indexed_06242026_0706.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-23T06:15:23.820445+00:00",
-  "last_run_snapshot": "adg_indexed_06232026_0201.sqlite"
+  "last_run_at": "2026-06-24T11:20:00.756255+00:00",
+  "last_run_snapshot": "adg_indexed_06242026_0706.sqlite",
+  "tightened_at": "2026-06-24T11:20:00.756255+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-24T11:20:00.756255+00:00",
+      "snapshot": "adg_indexed_06242026_0706.sqlite",
+      "from": 10731,
+      "to": 10730
+    }
+  ]
 }

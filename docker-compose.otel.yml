@@ -32,7 +32,10 @@ services:
     restart: unless-stopped
     mem_limit: 512m
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:13133/"]
-      interval: 3s
-      timeout: 3s
-      retries: 10
+      # The collector image is distroless and has no shell/curl/wget.
+      # Validate the mounted config here; host-side probes still verify :13133.
+      test: ["CMD", "/otelcol-contrib", "validate", "--config=/etc/otel/config.yaml"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

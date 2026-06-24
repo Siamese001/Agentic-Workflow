@@ -193,6 +193,7 @@ class SingleActionSpineRunResult:
     artifact_dir: Path
     producer_component: str = _PRODUCER_COMPONENT
     fault: str = ""              # populated on unexpected internal error
+    observability_status: Mapping[str, Any] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -675,6 +676,7 @@ def _cache_preflight_fault(
     artifact_dir: Path,
     route_id: str,
     message: str,
+    observability_status: Mapping[str, Any] | None = None,
 ) -> SingleActionSpineRunResult:
     return SingleActionSpineRunResult(
         run_id="",
@@ -685,6 +687,7 @@ def _cache_preflight_fault(
         terminal_r5_reason="",
         artifact_dir=Path(artifact_dir),
         fault=message,
+        observability_status=dict(observability_status or {}),
     )
 
 
@@ -788,7 +791,8 @@ def run_integrated_single_action_spine(
     # is the single shared chokepoint every app crosses. Fail-soft: never raises.
     from agentic_core.tracing.runtime_tracing import bootstrap_runtime_tracing
 
-    bootstrap_runtime_tracing()
+    tracing_status = bootstrap_runtime_tracing()
+    observability_status = tracing_status.as_dict()
 
     eff_route_family = (route_family or ROUTE_FAMILY).strip() or ROUTE_FAMILY
     eff_chain_kind = (chain_kind or eff_route_family).strip() or CHAIN_KIND
@@ -801,6 +805,7 @@ def run_integrated_single_action_spine(
             artifact_dir=Path(artifact_dir),
             route_id=(route_id or eff_route_family).strip() or ROUTE_ID,
             message=cache_fault,
+            observability_status=observability_status,
         )
 
     # ------------------------------------------------------------------
@@ -820,6 +825,7 @@ def run_integrated_single_action_spine(
                 "use app_name for recipe resolution. Direct l2_callable "
                 "injection is only allowed with _test_mode=True."
             ),
+            observability_status=observability_status,
         )
 
     if l2_callable is None:
@@ -836,6 +842,7 @@ def run_integrated_single_action_spine(
                     "L2_RECIPE_RESOLUTION_FAILED: Either app_name or "
                     "l2_callable (with _test_mode=True) must be provided."
                 ),
+                observability_status=observability_status,
             )
         from agentic_core.runtime.l2_recipe_resolver import resolve_l2_recipe
         try:
@@ -857,6 +864,7 @@ def run_integrated_single_action_spine(
                 terminal_r5_reason="",
                 artifact_dir=Path(artifact_dir),
                 fault=f"L2_RECIPE_NOT_FOUND:{exc}",
+                observability_status=observability_status,
             )
 
     artifact_dir = Path(artifact_dir)
@@ -896,6 +904,7 @@ def run_integrated_single_action_spine(
             terminal_r5_reason="",
             artifact_dir=artifact_dir,
             fault=f"U0_SCHEMA_REJECTION:{reason}",
+            observability_status=observability_status,
         )
 
     validated: ValidatedRequest = intake_result.validated
@@ -954,6 +963,7 @@ def run_integrated_single_action_spine(
             terminal_r5=True,
             terminal_r5_reason=r5_reason,
             artifact_dir=artifact_dir,
+            observability_status=observability_status,
         )
 
     # ------------------------------------------------------------------
@@ -1262,6 +1272,7 @@ def run_integrated_single_action_spine(
             "terminal_r5": False,
             "l2_fault": l2_fault,
             "artifact_hash": compute_artifact_hash(receipts),
+            "observability_status": dict(observability_status),
             "emitted_at": _utc_now_iso(),
             **_manifest_cache_fields(cache_preflight_evidence),
         },
@@ -1315,6 +1326,7 @@ def run_integrated_single_action_spine(
             "request_id": request_id,
             "trace_root": trace_root,
             "raw_request_keys": sorted(raw_request.keys()),
+            "observability_status": dict(observability_status),
         },
     )
     _emit_chain("runtime_identity_envelope.json", identity.to_dict())
@@ -1457,6 +1469,7 @@ def run_integrated_single_action_spine(
             {"filename": fn, "upstream": (up or "")} for fn, up in W2_CHAIN_LINKAGE
         ],
         "x3_disposition": x3,
+        "observability_status": dict(observability_status),
         "cache_hit": False,
         "safe_reuse_allow": False,
         "veto_stage_actual": "",
@@ -1514,4 +1527,5 @@ def run_integrated_single_action_spine(
         terminal_r5_reason="",
         artifact_dir=artifact_dir,
         fault=l2_fault,
+        observability_status=observability_status,
     )

@@ -12,10 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-import yaml
-
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-
+BGE_M3_MODEL_ID = "BAAI/bge-m3"
 BGE_M3_DIM = 1024
 
 
@@ -100,18 +97,31 @@ class FactVectorSchema:
     def _load_schema(self) -> None:
         """Load schema from YAML file."""
         if self.SCHEMA_PATH.exists():
+            try:
+                import yaml
+            except ModuleNotFoundError:
+                self._schema = self._default_schema()
+                return
+
             with open(self.SCHEMA_PATH, encoding="utf-8") as f:
                 self._schema = yaml.safe_load(f)
         else:
-            # Default schema
-            self._schema = {
-                "collection_name": "fact_vectors",
-                "allowed_source_classes": ["candidate_profile", "project_evidence"],
-                "rejected_source_classes": [
-                    "rubrics", "governance_docs", "approved_examples",
-                    "receipts", "company_research", "process_docs"
-                ],
-            }
+            self._schema = self._default_schema()
+
+    @staticmethod
+    def _default_schema() -> dict[str, Any]:
+        return {
+            "collection_name": "fact_vectors",
+            "allowed_source_classes": ["candidate_profile", "project_evidence"],
+            "rejected_source_classes": [
+                "rubrics",
+                "governance_docs",
+                "approved_examples",
+                "receipts",
+                "company_research",
+                "process_docs",
+            ],
+        }
 
     @property
     def collection_name(self) -> str:

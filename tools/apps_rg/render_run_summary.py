@@ -147,6 +147,42 @@ def _render_identity(run_dir: Path, identity: Optional[Dict[str, Any]],
     return lines
 
 
+def _render_fact_vector_readiness_gates(run_dir: Path) -> List[str]:
+    receipts = [
+        ("Gate A pre-U0", _load_json(run_dir / "pre_u0_fact_vector_readiness.json") or {}),
+        ("Gate B post-U0", _load_json(run_dir / "post_u0_section_sufficiency_preview.json") or {}),
+    ]
+    receipts = [(label, doc) for label, doc in receipts if doc]
+    if not receipts:
+        return []
+
+    lines: List[str] = ["## Fact-Vector Readiness Gates", ""]
+    lines.append("| Gate | Status | Collection | Manifest | Failed sections | Reasons |")
+    lines.append("|---|---|---|---|---:|---|")
+    for label, doc in receipts:
+        collection = doc.get("collection") if isinstance(doc.get("collection"), dict) else {}
+        summary = doc.get("summary") if isinstance(doc.get("summary"), dict) else {}
+        manifest = doc.get("bootstrap_manifest") if isinstance(doc.get("bootstrap_manifest"), dict) else {}
+        failed = doc.get("failed_sections") if isinstance(doc.get("failed_sections"), list) else []
+        reasons = doc.get("reasons") if isinstance(doc.get("reasons"), list) else []
+        lines.append(
+            f"| {label} | `{doc.get('status') or 'missing'}` "
+            f"`{doc.get('block_code') or '—'}` | "
+            f"`{collection.get('collection_doc_count', summary.get('collection_doc_count', 0))}` docs, "
+            f"dim `{collection.get('collection_dimension', summary.get('collection_dimension', '—'))}` | "
+            f"present `{manifest.get('present', '—')}`, "
+            f"required lanes `{len(manifest.get('required_lanes') or [])}` | "
+            f"{len(failed)} | `{_sample_values(reasons, limit=5)}` |"
+        )
+    lines.append("")
+    lines.append(
+        "Policy: live `fact_vectors` must be hydrated before U0/C0; section generation "
+        "may compare against them but may not write live proof vectors in the same run."
+    )
+    lines.append("")
+    return lines
+
+
 def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     if not (run_dir / "competencies_display.txt").is_file():
         return []
@@ -719,6 +755,7 @@ def render(run_dir: Path) -> str:
     rendered_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     parts: List[str] = [title, "", f"_Rendered at {rendered_at}_", ""]
     parts += _render_identity(run_dir, identity, manifest)
+    parts += _render_fact_vector_readiness_gates(run_dir)
     parts += _render_bcg_competencies_report(run_dir)
     parts += _render_bcg_unify_bullets_report(run_dir)
     parts += _render_l2_substages(terminal)

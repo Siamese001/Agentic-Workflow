@@ -13,8 +13,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 REPO_APPS_REL = Path("artifacts") / "apps_rg" / "fact_inventory" / (
     "master_candidate_skills_fact_ledger_20260518T1100Z.json"
 )
@@ -94,6 +92,8 @@ def load_master_role_family_taxonomy(
     repo_root: Path | None = None,
     path: Path | None = None,
 ) -> dict[str, Any]:
+    import yaml
+
     tax_path = path or default_taxonomy_path(repo_root)
     loaded = yaml.safe_load(tax_path.read_text(encoding="utf-8"))
     if not isinstance(loaded, Mapping):

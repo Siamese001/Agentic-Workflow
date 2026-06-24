@@ -58,7 +58,7 @@ FORBIDDEN_PROOF_SOURCE_TYPES = frozenset(
     }
 )
 
-from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.fact_vector_readiness import GENERATED_LANES
 
 # All generated lanes: phases 1–3 (headline, bullets, narratives) + competencies/executive_summary.
 C0_SECTIONS_ENABLED: frozenset[str] = frozenset(GENERATED_LANES)
