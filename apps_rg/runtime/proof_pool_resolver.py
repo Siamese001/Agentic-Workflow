@@ -331,6 +331,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
     from apps_rg.fact_inventory.track_weighted_graph_expansion import (
         build_track_weighted_expansion,
         infer_projection_role_family_key,
+        TrackWeightedExpansionContractError,
     )
     from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
 
@@ -340,16 +341,37 @@ def _resolve_executive_summary_graph_only_proof_pool(
         briefing_text=briefing_text,
         taxonomy=taxonomy,
     )
-    track_expansion = build_track_weighted_expansion(
-        graph=graph,
-        role_family_key=role_family_key,
-        jd_text=jd_text,
-        briefing_text=briefing_text,
-        seed_fact_ids=root_fact_ids,
-        enforce_hybrid_contract=False,
-        bind_c03=True,
-        repo_root=root,
+    role_episode_seed_namespace = bool(root_fact_ids) and all(
+        fid.startswith("reb_") for fid in root_fact_ids
     )
+    try:
+        track_expansion = build_track_weighted_expansion(
+            graph=graph,
+            role_family_key=role_family_key,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+            seed_fact_ids=root_fact_ids,
+            enforce_hybrid_contract=False,
+            bind_c03=True,
+            repo_root=root,
+        )
+        track_weighted_seed_fallback_used = False
+        track_weighted_seed_fallback_reason = ""
+    except TrackWeightedExpansionContractError as exc:
+        if not role_episode_seed_namespace:
+            raise
+        track_expansion = build_track_weighted_expansion(
+            graph=graph,
+            role_family_key=role_family_key,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+            seed_fact_ids=[],
+            enforce_hybrid_contract=False,
+            bind_c03=True,
+            repo_root=root,
+        )
+        track_weighted_seed_fallback_used = True
+        track_weighted_seed_fallback_reason = str(exc)
 
     c03 = build_section_c03_graphrag_bound(
         section_id="executive_summary",
@@ -395,6 +417,9 @@ def _resolve_executive_summary_graph_only_proof_pool(
     )
     meta = {**meta, **graph_auth}
     meta["selected_graph_evidence_plan"] = plan
+    meta["track_weighted_seed_fallback_used"] = track_weighted_seed_fallback_used
+    meta["track_weighted_seed_fallback_reason"] = track_weighted_seed_fallback_reason
+    meta["track_weighted_seed_namespace"] = "role_episode_bundle" if role_episode_seed_namespace else "fact"
     meta["broad_skills_ledger_default"] = False
     meta["broad_skills_ledger_fallback"] = False
     meta["broad_skills_ledger_compatibility_authority"] = False
