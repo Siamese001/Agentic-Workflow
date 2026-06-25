@@ -24,6 +24,10 @@ Both consumer briefs treat the JD as data, preserve only verified company facts,
 
 ## Quick Start
 
+Product runs require the local `agentic_searxng` Docker container. The CLI
+starts/restarts it, sets `restart=unless-stopped`, probes JSON search, and then
+uses `SEARXNG_BASE_URL` or `http://localhost:8080`.
+
 ```bash
 # Generate a topic brief
 python -m apps_research --topic "enterprise agentic AI governance" --mode brief

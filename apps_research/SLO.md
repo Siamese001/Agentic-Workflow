@@ -56,7 +56,7 @@ apps_research is the only in-portfolio app with:
 
 ## Out of Scope (for THIS app's SLO)
 
-- Web crawling / source discovery (handled by `tavily` MCP / equivalents)
+- Web crawling / source discovery beyond local SearXNG search
 - Long-term knowledge persistence (handled by `vector_db` MCP)
 - Translation / localization
 

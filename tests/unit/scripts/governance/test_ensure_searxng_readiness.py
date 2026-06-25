@@ -1,15 +1,12 @@
-"""Tests for scripts/governance/ensure_searxng_readiness.py."""
+"""Tests for apps_research SearXNG readiness."""
 
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
+import pytest
 
-import ensure_searxng_readiness as mod  # noqa: E402
+from apps_research.integrations import searxng_readiness as mod
 
 
 class _Proc:
@@ -79,6 +76,27 @@ def test_build_report_restarts_after_failed_json_probe(monkeypatch) -> None:
     assert ["restart", "agentic_searxng"] in calls
 
 
+def test_build_report_force_restarts_before_json_probe(monkeypatch) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(argv, timeout=30):
+        calls.append(list(argv))
+        if argv[0] == "inspect":
+            return _Proc(_inspect_payload())
+        return _Proc("")
+
+    monkeypatch.setattr(mod, "_run_docker", fake_run)
+    monkeypatch.setattr(mod, "_probe_json_search", lambda base_url, timeout=20: (True, "results=2"))
+    monkeypatch.setattr(mod.time, "sleep", lambda seconds: None)
+
+    report = mod.build_report(force_restart=True)
+
+    assert report.status == "PASS"
+    assert report.restarted is True
+    assert ["restart", "agentic_searxng"] in calls
+    assert any(step.step == "force_restart" for step in report.steps)
+
+
 def test_build_report_fails_when_container_missing(monkeypatch) -> None:
     monkeypatch.setattr(mod, "_inspect_container", lambda container_name: None)
 
@@ -86,3 +104,13 @@ def test_build_report_fails_when_container_missing(monkeypatch) -> None:
 
     assert report.status == "FAIL"
     assert report.steps[0].step == "inspect"
+
+
+def test_build_report_surfaces_docker_permission_errors(monkeypatch) -> None:
+    def fake_run(argv, timeout=30):
+        raise mod.DockerCommandError("permission denied while trying to connect to docker")
+
+    monkeypatch.setattr(mod, "_run_docker", fake_run)
+
+    with pytest.raises(mod.DockerCommandError, match="permission denied"):
+        mod.build_report()

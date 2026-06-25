@@ -1,10 +1,8 @@
-"""Provider-neutral web retrieval adapter for apps_research.
+"""SearXNG web retrieval adapter for apps_research.
 
-SearXNG is the primary provider. It exposes a simple HTTP search API at
-``/search`` and returns JSON when the instance enables the ``json`` format.
-When SearXNG is not configured, this adapter may use the existing Tavily
-integration if ``TAVILY_API_KEY`` is available. The downstream retrieval
-contract remains stable either way.
+SearXNG is the only active provider for apps_research product retrieval. It
+exposes a simple HTTP search API at ``/search`` and returns JSON when the
+instance enables the ``json`` format.
 """
 
 from __future__ import annotations
@@ -21,7 +19,6 @@ from urllib.error import HTTPError
 _log = logging.getLogger("apps_research.search_retrieval")
 
 _BASE_URL_ENV = "SEARXNG_BASE_URL"
-_TAVILY_API_KEY_ENV = "TAVILY_API_KEY"
 _TIMEOUT_ENV = "SEARXNG_TIMEOUT_SECONDS"
 _CATEGORIES_ENV = "SEARXNG_CATEGORIES"
 _ENGINES_ENV = "SEARXNG_ENGINES"
@@ -57,33 +54,14 @@ def _require_base_url() -> str:
     if not base_url:
         raise RuntimeError(
             f"{_BASE_URL_ENV} is not set. "
-            "Set it to your SearXNG instance base URL before calling "
+            "Run apps_research through the product CLI so it can warm "
+            "the local agentic_searxng container, or set it to your "
+            "SearXNG instance base URL before calling "
             "apps_research.integrations.search_retrieval.retrieve(). "
-            "The instance must enable JSON search output."
+            "The instance must enable JSON search output. Tavily is not "
+            "an apps_research fallback provider."
         )
     return base_url.rstrip("/")
-
-
-def _retrieve_with_tavily(query: str, *, top_k: int) -> list[RetrievedDoc]:
-    if not os.environ.get(_TAVILY_API_KEY_ENV, "").strip():
-        raise RuntimeError(
-            f"{_BASE_URL_ENV} is not set and {_TAVILY_API_KEY_ENV} is not set. "
-            "Configure at least one grounded web retrieval provider."
-        )
-    from apps_research.integrations.tavily_retrieval import (  # noqa: PLC0415
-        retrieve as tavily_retrieve,
-    )
-
-    tavily_docs = tavily_retrieve(query, top_k=top_k)
-    return [
-        RetrievedDoc(
-            url=doc.url,
-            title=doc.title,
-            snippet=doc.snippet,
-            score=doc.score,
-        )
-        for doc in tavily_docs
-    ]
 
 
 def _timeout_seconds() -> float:
@@ -160,12 +138,7 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
     if top_k <= 0:
         raise ValueError("top_k must be positive")
 
-    try:
-        base_url = _require_base_url()
-    except RuntimeError:
-        docs = _retrieve_with_tavily(query, top_k=top_k)
-        _log.info("[search_retrieval] provider=tavily sub_query=%r returned %d docs", query, len(docs))
-        return docs
+    base_url = _require_base_url()
     params: dict[str, str | int] = {
         "q": query,
         "format": "json",

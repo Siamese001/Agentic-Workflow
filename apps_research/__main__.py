@@ -6,6 +6,7 @@ import importlib
 import hashlib
 import json
 import logging
+import os
 import sys
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timedelta, timezone
@@ -161,6 +162,30 @@ def _payload_from_args(args) -> dict:
 
 def _apps_research_runs_root() -> Path:
     return Path(__file__).resolve().parents[1] / "artifacts" / "apps_research" / "runs"
+
+
+def _truthy_env(name: str, *, default: bool) -> bool:
+    raw = os.environ.get(name, "").strip().lower()
+    if not raw:
+        return default
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _ensure_searxng_runtime_ready():
+    """Warm local SearXNG before apps_research fetches grounded evidence."""
+    from apps_research.integrations.searxng_readiness import ensure_runtime_ready
+
+    report = ensure_runtime_ready(
+        force_restart=_truthy_env("APPS_RESEARCH_SEARXNG_FORCE_RESTART", default=True),
+        restart_wait_seconds=float(os.environ.get("APPS_RESEARCH_SEARXNG_RESTART_WAIT_SECONDS", "8")),
+    )
+    _log.info(
+        "[apps_research] searxng_ready status=%s restarted=%s base_url=%s",
+        report.status,
+        report.restarted,
+        report.base_url,
+    )
+    return report
 
 
 def _research_request_from_args(args):
@@ -412,8 +437,9 @@ def _run_profile_spine(argv: list[str]) -> int:
         )
         return 1
 
-    request = _research_request_from_args(args)
     try:
+        _ensure_searxng_runtime_ready()
+        request = _research_request_from_args(args)
         record = _run_research_record(request)
         artifact_path = _write_research_artifacts(record, request)
     except Exception as exc:  # guardian: allow-broad-exception -- product CLI must fail closed with a clear operator message for heterogeneous research/runtime failures
