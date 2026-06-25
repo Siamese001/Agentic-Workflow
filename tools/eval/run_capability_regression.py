@@ -163,7 +163,14 @@ def _evaluate_dimension(
     )
 
 
-def run(rubrics_path: Path, suite: str, out_path: Path | None, golden_root: Path) -> int:
+def run(
+    rubrics_path: Path,
+    suite: str,
+    out_path: Path | None,
+    golden_root: Path,
+    *,
+    smoke: bool = False,
+) -> int:
     if not rubrics_path.exists():
         logger.error("rubrics file not found: %s", rubrics_path)
         return 2
@@ -182,6 +189,7 @@ def run(rubrics_path: Path, suite: str, out_path: Path | None, golden_root: Path
     any_breach = any(r.breached for r in results)
     report = {
         "suite": suite,
+        "smoke": smoke,
         "rubrics_file": str(rubrics_path),
         "results": [asdict(r) for r in results],
         "breached": any_breach,
@@ -203,6 +211,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--suite", choices=["capability", "regression"], default="capability")
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--golden-root", type=Path, default=Path("data/eval/golden"))
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="CI compatibility flag for smoke-scale capability runs.",
+    )
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args(argv)
 
@@ -211,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
         stream=sys.stderr,
     )
-    return run(args.rubrics, args.suite, args.out, args.golden_root)
+    return run(args.rubrics, args.suite, args.out, args.golden_root, smoke=args.smoke)
 
 
 if __name__ == "__main__":

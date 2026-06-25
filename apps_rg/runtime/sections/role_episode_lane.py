@@ -1052,6 +1052,11 @@ def run_role_episode_lane_execution(
         provider_lane=str(args.provider),
     )
 
+    generation_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else external_claude_generation_model()
+    )
     provider_request = {
         "provider_requested": str(args.provider),
         "provider_attempted": True,
