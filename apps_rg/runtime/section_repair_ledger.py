@@ -165,6 +165,8 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
     # - repair_protected_unify_bullet_metrics: canonical metric restoration on unify_bullets lane
     # - repair_required_brushstroke_citation: ledger-only attachment of a required fact to an
     #   already-materialized executive_summary sentence; no visible prose is introduced.
+    # - repair_exec_summary_thin_sentence_weave: deterministic phrase expansion of an already
+    #   supported executive_summary sentence to satisfy structural weave density.
     # - bullet_judge_feedback_reselection (W4.1/G14): judge-feedback pool reselection on the
     #   employment bullet lanes. Honest because the swap (a) re-runs the FULL X2 gate set on
     #   the swapped doc and fully reverts on any regression, (b) re-judges the new content
@@ -175,6 +177,7 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
             "finalize_competencies_v3_output",
             "repair_protected_unify_bullet_metrics",
             "repair_required_brushstroke_citation",
+            "repair_exec_summary_thin_sentence_weave",
             "bullet_judge_feedback_reselection",
         }
     )

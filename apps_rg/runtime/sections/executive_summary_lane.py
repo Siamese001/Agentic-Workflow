@@ -2746,6 +2746,7 @@ def run_executive_summary_execution(
             append_executive_summary_x1d_x2_gate_dicts(
                 x1d_judges=x1d,
                 artifacts_dir=artifact_dir,
+                required_providers=judge_keys,
             )
         )
         write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary")
