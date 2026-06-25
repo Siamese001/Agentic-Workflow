@@ -18,7 +18,9 @@ Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-audit-pipeline-integration-7
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -32,6 +34,16 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 RECEIPT_PATH = REPO_ROOT / "docs" / "reports" / "adg" / "AUDIT_PIPELINE_RECEIPT.json"
+RECEIPT_SCHEMA_VERSION = "adg-audit-pipeline-receipt/v1"
+REPAIR_ARTIFACT_KEYS: tuple[str, ...] = (
+    "snapshot",
+    "gate_results",
+    "action_queue",
+    "burndown_report",
+    "burndown_table",
+    "generation_manifest",
+    "gate_manifest",
+)
 
 
 def _utcnow_iso() -> str:
@@ -47,6 +59,12 @@ class WrapperResult:
     gate_manifest_path: Path | None
     runtime_proof_status: str
     reasons: list[str]
+    artifact_status: str = "incomplete"
+    artifact_status_source: str = "direct"
+    adg_run_id: str | None = None
+    started_at_utc: str | None = None
+    completed_at_utc: str | None = None
+    repair_handoff: dict[str, Any] | None = None
 
     @property
     def ok(self) -> bool:
@@ -79,12 +97,73 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _abs(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _path_matches(left: str | None, right: Path) -> bool:
+    if not left:
+        return False
+    try:
+        return _abs(Path(left)).resolve() == right.resolve()
+    except OSError:
+        return Path(left).name == right.name
+
+
 def _is_generator_run_stamp(value: str) -> bool:
     try:
         datetime.strptime(value, "%m%d%Y_%H%M")
     except ValueError:
         return False
     return True
+
+
+def _is_gate_results_stamp(value: str) -> bool:
+    try:
+        datetime.strptime(value, "%Y%m%d_%H%M%S")
+    except ValueError:
+        return False
+    return True
+
+
+def _is_timestamped_artifact(path: Path, key: str) -> bool:
+    stem = path.stem
+    if "latest" in stem.lower():
+        return False
+    expected = {
+        "snapshot": ("adg_indexed_", ".sqlite"),
+        "generation_manifest": ("adg_generation_manifest_", ".json"),
+        "gate_manifest": ("adg_gate_invocation_manifest_", ".json"),
+        "gate_results": ("adg_gate_results_", ".json"),
+        "action_queue": ("adg_action_queue_", ".json"),
+        "burndown_report": ("adg_burndown_report_", ".md"),
+        "burndown_table": ("adg_burndown_table_", ".json"),
+    }
+    prefix, suffix = expected[key]
+    name = path.name
+    if not name.startswith(prefix) or not name.endswith(suffix):
+        return False
+    stamp = name[len(prefix):-len(suffix)]
+    if key in {"gate_results", "action_queue"}:
+        return _is_gate_results_stamp(stamp) or _is_generator_run_stamp(stamp)
+    return _is_generator_run_stamp(stamp)
+
+
+def _artifact_ref(key: str, path: Path) -> dict[str, Any]:
+    resolved = path.resolve()
+    return {
+        "artifact_key": key,
+        "path": str(resolved),
+        "sha256": _sha256(resolved),
+    }
 
 
 def _stamp_from_artifact_name(path: Path | None, *, prefix: str, suffix: str) -> str | None:
@@ -130,6 +209,376 @@ def _derive_adg_run_stamp(
                 return snapshot_stamp
 
     return None
+
+
+def _gate_results_matches_snapshot(data: dict[str, Any], snapshot_path: Path) -> bool:
+    if _path_matches(data.get("snapshot_path"), snapshot_path):
+        return True
+    if isinstance(data.get("snapshot"), dict):
+        snapshot = data["snapshot"]
+        if _path_matches(snapshot.get("path") or snapshot.get("sqlite_path"), snapshot_path):
+            return True
+    snapshot_name = data.get("snapshot")
+    if isinstance(snapshot_name, str) and snapshot_name == snapshot_path.name:
+        return True
+    return False
+
+
+def _find_gate_results_for_snapshot(
+    snapshot_path: Path,
+    *,
+    since_wall_start: float,
+) -> tuple[Path | None, list[str]]:
+    reasons: list[str] = []
+    candidates = sorted(
+        ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
+        key=lambda p: p.stat().st_mtime,
+    )
+    matches: list[Path] = []
+    for candidate in candidates:
+        if not _is_timestamped_artifact(candidate, "gate_results"):
+            reasons.append(f"gate_results latest-only or untimestamped: {candidate}")
+            continue
+        if candidate.stat().st_mtime + 2 < since_wall_start:
+            continue
+        try:
+            data = _load_json(candidate)
+        except (OSError, json.JSONDecodeError) as exc:
+            reasons.append(f"gate_results malformed: {candidate}: {exc}")
+            continue
+        if _gate_results_matches_snapshot(data, snapshot_path):
+            matches.append(candidate)
+    if matches:
+        return matches[-1], []
+    return None, reasons or [f"no timestamped gate_results for snapshot: {snapshot_path}"]
+
+
+def _materialize_timestamped_copy(
+    *,
+    key: str,
+    source: Path,
+    adg_run_id: str,
+    since_wall_start: float,
+) -> tuple[Path | None, str | None]:
+    if not source.is_file():
+        return None, f"{key} source missing: {source}"
+    if source.stat().st_mtime + 2 < since_wall_start:
+        return None, f"{key} source stale before audit start: {source}"
+    suffix = source.suffix
+    out = ARTIFACTS_ADG / f"adg_{key}_{adg_run_id}{suffix}"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if source.resolve() != out.resolve():
+        shutil.copyfile(source, out)
+    return out, None
+
+
+def _ensure_action_queue_for_handoff(
+    *,
+    gate_results_path: Path,
+    burndown_table_path: Path,
+    snapshot_path: Path,
+    adg_run_id: str,
+) -> tuple[Path | None, list[str]]:
+    try:
+        from tools.reports.adg_action_queue import (  # noqa: PLC0415
+            emit_adg_action_queue,
+            validate_action_queue,
+        )
+    except ImportError as exc:
+        return None, [f"action_queue module unavailable: {exc}"]
+
+    output_path = ARTIFACTS_ADG / f"adg_action_queue_{adg_run_id}.json"
+    rc, path = emit_adg_action_queue(
+        gate_results=gate_results_path,
+        burndown=burndown_table_path,
+        sqlite_snapshot=snapshot_path,
+        output_path=output_path,
+        ts=adg_run_id,
+        fail_closed=True,
+        repo_root=REPO_ROOT,
+    )
+    if rc != 0 or path is None or not path.is_file():
+        return None, [f"action_queue emit failed exit_code={rc}"]
+    try:
+        doc = _load_json(path)
+    except (OSError, json.JSONDecodeError) as exc:
+        return path, [f"action_queue malformed: {exc}"]
+    errors = validate_action_queue(doc)
+    return path, [f"action_queue validation: {err}" for err in errors]
+
+
+def _p0_p1_fix_count(action_queue: dict[str, Any]) -> int:
+    count = 0
+    for action in action_queue.get("actions") or []:
+        if action.get("verdict_cluster") == "FIX" and action.get("sort_band") in {"P0", "P1"}:
+            count += 1
+    return count
+
+
+def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -> dict[str, int]:
+    from tools.reports.gate_signal_catalog import display_verdict_sub  # noqa: PLC0415
+
+    counts = {
+        "P0_FIX": 0,
+        "P1_FIX": 0,
+        "P1_RATCHET_REGRESSION": 0,
+        "P1_RATCHET_FLOOR_BACKLOG": 0,
+    }
+    for action in action_queue.get("actions") or []:
+        if action.get("verdict_cluster") != "FIX":
+            continue
+        if action.get("sort_band") == "P0":
+            counts["P0_FIX"] += 1
+        elif action.get("sort_band") == "P1":
+            counts["P1_FIX"] += 1
+    for gate in gate_results.get("gates") or []:
+        if gate.get("band") != "P1" or gate.get("enforcement") != "ratchet":
+            continue
+        sub = display_verdict_sub(gate)
+        if sub == "regr":
+            counts["P1_RATCHET_REGRESSION"] += 1
+        elif sub == "floor":
+            counts["P1_RATCHET_FLOOR_BACKLOG"] += 1
+    return counts
+
+
+def _build_repair_handoff(
+    *,
+    generation_manifest_path: Path | None,
+    gate_manifest_path: Path | None,
+    generation_manifest: dict[str, Any],
+    certification_status: str,
+    since_wall_start: float,
+) -> tuple[str, dict[str, Any], list[str]]:
+    errors: list[str] = []
+    artifacts: dict[str, dict[str, Any]] = {}
+
+    snapshot_raw = generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
+    snapshot_path = _abs(Path(snapshot_raw)) if snapshot_raw else None
+    adg_run_id = _derive_adg_run_stamp(generation_manifest, generation_manifest_path, snapshot_path)
+    if not adg_run_id:
+        errors.append("adg_run_id could not be derived from timestamped manifest or snapshot")
+
+    required_paths: dict[str, Path | None] = {
+        "generation_manifest": generation_manifest_path,
+        "gate_manifest": gate_manifest_path,
+        "snapshot": snapshot_path,
+    }
+    for key, path in list(required_paths.items()):
+        if path is None:
+            errors.append(f"{key} missing")
+            continue
+        if not path.is_file():
+            errors.append(f"{key} path missing: {path}")
+            continue
+        if not _is_timestamped_artifact(path, key):
+            errors.append(f"{key} is not a timestamped artifact: {path}")
+
+    if adg_run_id and generation_manifest_path and generation_manifest_path.is_file():
+        gen_stamp = _stamp_from_artifact_name(
+            generation_manifest_path,
+            prefix="adg_generation_manifest_",
+            suffix=".json",
+        )
+        if gen_stamp != adg_run_id:
+            errors.append("generation_manifest timestamp differs from adg_run_id")
+    if adg_run_id and gate_manifest_path and gate_manifest_path.is_file():
+        gate_stamp = _stamp_from_artifact_name(
+            gate_manifest_path,
+            prefix="adg_gate_invocation_manifest_",
+            suffix=".json",
+        )
+        if gate_stamp != adg_run_id:
+            errors.append("gate_manifest timestamp differs from adg_run_id")
+
+    gate_results_path: Path | None = None
+    if snapshot_path and snapshot_path.is_file():
+        gate_results_path, gate_result_errors = _find_gate_results_for_snapshot(
+            snapshot_path,
+            since_wall_start=since_wall_start,
+        )
+        errors.extend(gate_result_errors)
+    required_paths["gate_results"] = gate_results_path
+
+    burndown_table_path: Path | None = None
+    burndown_report_path: Path | None = None
+    if adg_run_id:
+        burndown_table_path, err = _materialize_timestamped_copy(
+            key="burndown_table",
+            source=ARTIFACTS_ADG / "adg_burndown_table.json",
+            adg_run_id=adg_run_id,
+            since_wall_start=since_wall_start,
+        )
+        if err:
+            errors.append(err)
+        burndown_report_path, err = _materialize_timestamped_copy(
+            key="burndown_report",
+            source=ARTIFACTS_ADG / "adg_burndown_report.md",
+            adg_run_id=adg_run_id,
+            since_wall_start=since_wall_start,
+        )
+        if err:
+            errors.append(err)
+    required_paths["burndown_table"] = burndown_table_path
+    required_paths["burndown_report"] = burndown_report_path
+
+    action_queue_path: Path | None = None
+    if gate_results_path and burndown_table_path and snapshot_path and adg_run_id:
+        action_queue_path, queue_errors = _ensure_action_queue_for_handoff(
+            gate_results_path=gate_results_path,
+            burndown_table_path=burndown_table_path,
+            snapshot_path=snapshot_path,
+            adg_run_id=adg_run_id,
+        )
+        errors.extend(queue_errors)
+    else:
+        errors.append("action_queue not emitted because prerequisite artifacts are incomplete")
+    required_paths["action_queue"] = action_queue_path
+
+    for key in REPAIR_ARTIFACT_KEYS:
+        path = required_paths.get(key)
+        if path is None or not path.is_file():
+            errors.append(f"{key} missing from repair_handoff")
+            continue
+        if not _is_timestamped_artifact(path, key):
+            errors.append(f"{key} latest-only or untimestamped path rejected: {path}")
+            continue
+        artifacts[key] = _artifact_ref(key, path)
+
+    counts = {
+        "P0_FIX": 0,
+        "P1_FIX": 0,
+        "P1_RATCHET_REGRESSION": 0,
+        "P1_RATCHET_FLOOR_BACKLOG": 0,
+    }
+    artifact_status = "incomplete"
+    if action_queue_path and gate_results_path:
+        try:
+            action_queue = _load_json(action_queue_path)
+            gate_results = _load_json(gate_results_path)
+            counts = _repair_counts(action_queue, gate_results)
+            if not errors and certification_status == "clean" and _p0_p1_fix_count(action_queue) == 0:
+                artifact_status = "certified"
+            elif not errors:
+                artifact_status = "repair_ready"
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"handoff artifact malformed during count: {exc}")
+
+    if errors:
+        artifact_status = "incomplete"
+
+    handoff = {
+        "status": artifact_status,
+        "artifacts": artifacts,
+        "counts": counts,
+        "validation_errors": sorted(set(errors)),
+    }
+    return artifact_status, handoff, errors
+
+
+def validate_repair_handoff_receipt(
+    receipt_path: Path = RECEIPT_PATH,
+) -> tuple[dict[str, Any] | None, dict[str, int], list[str]]:
+    errors: list[str] = []
+    counts = {
+        "P0_FIX": 0,
+        "P1_FIX": 0,
+        "P1_RATCHET_REGRESSION": 0,
+        "P1_RATCHET_FLOOR_BACKLOG": 0,
+    }
+    try:
+        receipt = _load_json(receipt_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        return None, counts, [f"receipt unreadable or malformed: {exc}"]
+
+    if receipt.get("schema_version") != RECEIPT_SCHEMA_VERSION:
+        errors.append("unsupported or missing schema_version")
+    if receipt.get("artifact_status") not in {"certified", "repair_ready"}:
+        errors.append(f"artifact_status not consumable: {receipt.get('artifact_status')!r}")
+    if receipt.get("artifact_status_source") != "direct":
+        errors.append("artifact_status_source must be direct")
+
+    handoff = receipt.get("repair_handoff")
+    if not isinstance(handoff, dict):
+        errors.append("repair_handoff missing or malformed")
+        return receipt, counts, errors
+    artifacts = handoff.get("artifacts")
+    if not isinstance(artifacts, dict):
+        errors.append("repair_handoff.artifacts missing or malformed")
+        return receipt, counts, errors
+
+    resolved: dict[str, Path] = {}
+    for key in REPAIR_ARTIFACT_KEYS:
+        item = artifacts.get(key)
+        if not isinstance(item, dict):
+            errors.append(f"{key} artifact ref missing")
+            continue
+        raw_path = item.get("path")
+        raw_digest = item.get("sha256")
+        if not isinstance(raw_path, str) or not raw_path:
+            errors.append(f"{key} path missing")
+            continue
+        path = _abs(Path(raw_path))
+        resolved[key] = path
+        if not path.is_file():
+            errors.append(f"{key} path does not exist: {path}")
+            continue
+        if not _is_timestamped_artifact(path, key):
+            errors.append(f"{key} latest-only or untimestamped path rejected: {path}")
+        if not isinstance(raw_digest, str) or len(raw_digest) != 64:
+            errors.append(f"{key} sha256 missing or malformed")
+            continue
+        if _sha256(path) != raw_digest:
+            errors.append(f"{key} sha256 mismatch")
+
+    if all(key in resolved and resolved[key].is_file() for key in ("gate_results", "action_queue")):
+        try:
+            gate_results = _load_json(resolved["gate_results"])
+            action_queue = _load_json(resolved["action_queue"])
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"handoff JSON artifact malformed: {exc}")
+        else:
+            try:
+                from tools.reports.adg_action_queue import validate_action_queue  # noqa: PLC0415
+
+                errors.extend(f"action_queue validation: {err}" for err in validate_action_queue(action_queue))
+            except ImportError as exc:
+                errors.append(f"action_queue validator unavailable: {exc}")
+            gate_digest = artifacts.get("gate_results", {}).get("sha256")
+            for item in action_queue.get("provenance", {}).get("inputs") or []:
+                if item.get("artifact_key") == "gate_results":
+                    if item.get("digest_sha256") != gate_digest:
+                        errors.append("action_queue provenance gate_results digest mismatch")
+                    break
+            else:
+                errors.append("action_queue missing gate_results provenance")
+            if "snapshot" in resolved and not _gate_results_matches_snapshot(gate_results, resolved["snapshot"]):
+                errors.append("gate_results snapshot does not match handoff snapshot")
+            counts = _repair_counts(action_queue, gate_results)
+
+    generation_path = resolved.get("generation_manifest")
+    gate_manifest_path = resolved.get("gate_manifest")
+    snapshot_path = resolved.get("snapshot")
+    if generation_path and generation_path.is_file():
+        try:
+            generation_manifest = _load_json(generation_path)
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"generation_manifest malformed: {exc}")
+        else:
+            if snapshot_path and not (
+                _path_matches(generation_manifest.get("sqlite_path"), snapshot_path)
+                or _path_matches(generation_manifest.get("snapshot_path"), snapshot_path)
+            ):
+                errors.append("generation_manifest snapshot path differs from repair_handoff")
+            if gate_manifest_path and not _path_matches(
+                generation_manifest.get("gate_manifest_path"),
+                gate_manifest_path,
+            ):
+                errors.append("generation_manifest gate_manifest_path differs from repair_handoff")
+
+    if handoff.get("validation_errors"):
+        errors.append("producer recorded repair_handoff validation_errors")
+    return receipt, counts, sorted(set(errors))
 
 
 def _append_manifest_gate_record(
@@ -280,18 +729,25 @@ def _run_report(
 def _write_receipt(result: WrapperResult) -> None:
     RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "timestamp": _utcnow_iso(),
-        "certification_status": result.certification_status,
-        "generator_exit_code": result.generator_exit_code,
-        "report_exit_code": result.report_exit_code,
-        "runtime_proof_status": result.runtime_proof_status,
-        "generation_manifest_path": (
-            str(result.generation_manifest_path) if result.generation_manifest_path else None
-        ),
-        "gate_manifest_path": (
-            str(result.gate_manifest_path) if result.gate_manifest_path else None
-        ),
-        "reasons": result.reasons,
+        "schema_version": RECEIPT_SCHEMA_VERSION,
+        "run_state": {
+            "certification_status": result.certification_status,
+            "generator_exit_code": result.generator_exit_code,
+            "report_exit_code": result.report_exit_code,
+            "runtime_proof_status": result.runtime_proof_status,
+            "reasons": result.reasons,
+        },
+        "artifact_status": result.artifact_status,
+        "artifact_status_source": result.artifact_status_source,
+        "adg_run_id": result.adg_run_id,
+        "started_at_utc": result.started_at_utc,
+        "completed_at_utc": result.completed_at_utc,
+        "repair_handoff": result.repair_handoff or {
+            "status": "incomplete",
+            "artifacts": {},
+            "counts": {},
+            "validation_errors": ["repair_handoff was not built"],
+        },
     }
     RECEIPT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     try:
@@ -316,6 +772,7 @@ def run_audit(
 
     reasons: list[str] = []
     wall_start = time.time()
+    started_at_utc = _utcnow_iso()
     ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
 
     extra = list(generator_extra_args or [])
@@ -472,6 +929,20 @@ def run_audit(
     else:
         status = "clean"
 
+    artifact_status, repair_handoff, _handoff_errors = _build_repair_handoff(
+        generation_manifest_path=gen_manifest_path,
+        gate_manifest_path=gate_manifest_path,
+        generation_manifest=generation_manifest,
+        certification_status=status,
+        since_wall_start=wall_start,
+    )
+    adg_run_id = _derive_adg_run_stamp(
+        generation_manifest,
+        gen_manifest_path,
+        Path(snapshot) if snapshot else None,
+    )
+    completed_at_utc = _utcnow_iso()
+
     result = WrapperResult(
         certification_status=status,
         generator_exit_code=gen_rc,
@@ -480,6 +951,12 @@ def run_audit(
         gate_manifest_path=gate_manifest_path,
         runtime_proof_status=runtime_proof_status,
         reasons=reasons,
+        artifact_status=artifact_status,
+        artifact_status_source="direct",
+        adg_run_id=adg_run_id,
+        started_at_utc=started_at_utc,
+        completed_at_utc=completed_at_utc,
+        repair_handoff=repair_handoff,
     )
     _write_receipt(result)
     if enforcement_path is not None:
@@ -487,6 +964,7 @@ def run_audit(
 
     # Render summary.
     print(f"[audit] certification_status={status}")
+    print(f"[audit] artifact_status={artifact_status}")
     print(f"[audit] generator_exit_code={gen_rc}  report_exit_code={report_rc}")
     print(f"[audit] runtime_proof_status={runtime_proof_status}")
     if reasons:
