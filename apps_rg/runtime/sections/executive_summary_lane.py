@@ -1939,6 +1939,16 @@ def run_executive_summary_execution(
     token_budget_receipt: dict[str, Any] | None = None
 
     max_out_tokens = resolve_scratch_max_output_tokens()
+    from apps_rg.runtime.section_model_limits import (
+        external_openai_generation_model,
+        resolve_section_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model()
+        if str(args.provider) == "external_openai"
+        else resolve_section_generation_model(LANE_KEY)
+    )
     if not evidence_capsule_block_reason:
         try:
             section_compiled, token_budget_receipt = apply_executive_summary_token_budget_policy(
@@ -2068,9 +2078,6 @@ def run_executive_summary_execution(
 
     provider_req: Any = None
     provider_payload: dict[str, Any] = {}
-    from apps_rg.runtime.section_model_limits import resolve_section_generation_model
-
-    section_model = resolve_section_generation_model(LANE_KEY)
     if evidence_capsule_block_reason:
         _block_ref = (
             "allowlist_coherence_receipt.json"

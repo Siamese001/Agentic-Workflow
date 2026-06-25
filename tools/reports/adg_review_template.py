@@ -19,6 +19,7 @@ from typing import Any
 
 from tools.generate.core.helpers import _write_text_artifact
 from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
+from tools.reports.adg_bcg_adapter import build_report_bcg_findings
 from tools.reports.adg_decision_synthesis import (
     after_green_plan,
     artifact_consistency_status,
@@ -1562,7 +1563,7 @@ def build_review_template(
         ),
     }
 
-    return {
+    doc = {
         "schema_version": "1.0",
         "artifact_kind": "adg_run_review_template",
         "run_id": run_id,
@@ -1648,6 +1649,36 @@ def build_review_template(
             "enforcement_report_status": (enforcement_report or {}).get("certified_rollup"),
         },
     }
+    doc["bcg_findings"] = build_report_bcg_findings(
+        report_kind="adg_run_review_template",
+        title="BCG Review Template Brief",
+        status=str(doc.get("run_id") or ""),
+        status_label="Run ID",
+        business_read=str((doc.get("executive_decision_brief") or {}).get("decision") or "Stabilize the run, close testing exposure, then reduce accepted debt."),
+        technical_read=[
+            str((doc.get("executive_decision_brief") or {}).get("situation") or ""),
+            str((doc.get("executive_decision_brief") or {}).get("risk") or ""),
+            str((doc.get("executive_decision_brief") or {}).get("testing_gap_readout") or ""),
+            str((doc.get("executive_decision_brief") or {}).get("graphdb_mv_readout") or ""),
+            f"Tracked records: {_fmt_int((doc.get('operator_summary') or {}).get('tracked_records', 0))}",
+        ],
+        priority_rule="Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
+        priority_rows=[
+            {
+                "priority": row.get("rank"),
+                "move": row.get("priority_work"),
+                "why_it_matters": row.get("why_now"),
+                "evidence": row.get("testing_mv_action"),
+                "next_step": row.get("done_when"),
+                "decision": row.get("done_when"),
+            }
+            for row in (doc.get("priority_execution_plan") or {}).get("rows", [])[:4]
+        ],
+        why_this_order=(doc.get("high_signal_review") or {}).get("what_this_means", [])[:4],
+        next_step=((doc.get("next_best_action") or {}).get("priority_bullets") or ["Follow the Priority Execution Plan."])[0],
+        table_limit=4,
+    )
+    return doc
 
 
 def validate_review_template(doc: dict[str, Any]) -> list[str]:
@@ -1669,6 +1700,7 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
         "next_best_action",
         "decision_synthesis",
         "artifacts",
+        "bcg_findings",
     ):
         if key not in doc:
             errors.append(f"missing top-level field: {key}")

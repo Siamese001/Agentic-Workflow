@@ -196,6 +196,12 @@ class TestNarrativeSeniorityPreserved:
         )
         assert result.passed
 
+    def test_ibm_aws_reference_architecture_passes_specificity(self):
+        result = check_narrative_technical_specificity(
+            "Drove governed AWS reference-architecture work for regulated financial-services clients at IBM."
+        )
+        assert result.passed
+
 
 # ---------------------------------------------------------------------------
 # 6. Bullet recap gate

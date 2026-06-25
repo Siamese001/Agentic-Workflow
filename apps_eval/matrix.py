@@ -125,6 +125,7 @@ def run_matrix(
                 mode=mode,  # type: ignore[arg-type]
                 deterministic_only=deterministic_only,
                 out_dir=str(records_dir),
+                emit_l6_handoff=True,
             )
         )
         rows.append(

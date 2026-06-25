@@ -34,6 +34,8 @@ _VALID_TARGETING_BRIEF = (
     "=== TECH & AI PLATFORM ===\n"
     "- Mainframe-to-cloud core underway across units\n"
     "- Peers investing in agentic underwriting assistance\n"
+    "\n=== BUSINESS CONTEXT ===\n"
+    "- Operating pressure favors measurable modernization outcomes\n"
 )
 
 
@@ -63,7 +65,7 @@ def test_targeting_normalizer_preserves_jd_dense_bullet_for_rejection() -> None:
     assert all(len(line) <= 240 for line in normalized.splitlines() if line.strip())
 
 
-def test_targeting_synthesis_rejects_jd_dense_bullet_without_repair(monkeypatch) -> None:
+def test_targeting_synthesis_repairs_jd_dense_bullet(monkeypatch) -> None:
     engine = CompanyBriefEngine()
     bad_markdown = (
         "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
@@ -79,21 +81,18 @@ def test_targeting_synthesis_rejects_jd_dense_bullet_without_repair(monkeypatch)
 
     monkeypatch.setattr(engine, "_call_llm_plain_markdown", _fake_llm)
 
-    with pytest.raises(
-        CompanyBriefUnavailableError,
-        match="jd_restatement_in_bullet",
-    ):
-        engine._synthesize_apps_rg_targeting_brief(
-            topic="Acme Co",
-            findings={"overview": "Acme is a mid-cap insurer with verified scale."},
-            jd_context={
-                **_TARGETING_JD_CONTEXT,
-                "jd_text": "Lead enterprise data platform strategy for the insurance division.",
-            },
-            jd_anchor=None,
-        )
+    synthesized = engine._synthesize_apps_rg_targeting_brief(
+        topic="Acme Co",
+        findings={"overview": "Acme is a mid-cap insurer with verified scale."},
+        jd_context={
+            **_TARGETING_JD_CONTEXT,
+            "jd_text": "Lead enterprise data platform strategy for the insurance division.",
+        },
+        jd_anchor=None,
+    )
 
-    assert len(calls) == 1
+    assert synthesized["targeting_brief_disposition"] == "SEALED"
+    assert len(calls) == 2
 
 
 def test_consumer_brief_path_normalizes_output(monkeypatch) -> None:

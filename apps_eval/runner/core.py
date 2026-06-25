@@ -74,6 +74,7 @@ def _git_commit(repo_root: Path) -> str:
             capture_output=True,
             text=True,
             check=True,
+            timeout=30,
         )
     except (OSError, subprocess.CalledProcessError):
         return ""
@@ -432,6 +433,15 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     suite = load_suite(request.suite_id)
     if suite.get("app_id") not in {"apps_rg", "apps_lic"}:
         raise ValueError(f"unsupported app: {suite.get('app_id')}")
+    l6_handoff_required = (
+        request.mode == "live_adapter"
+        or suite.get("split") == "holdout"
+        or os.environ.get("APPS_EVAL_RELEASE_GATE") == "1"
+    )
+    if l6_handoff_required and not request.emit_l6_handoff:
+        raise PermissionError(
+            "apps_eval L6 shadow handoff is required for live_adapter, holdout, and release-gate runs"
+        )
     if suite.get("split") == "holdout" and os.environ.get("APPS_EVAL_RELEASE_GATE") != "1":
         raise PermissionError("holdout suites require APPS_EVAL_RELEASE_GATE=1")
     fixtures = [_load_fixture(request.suite_id, suite, scenario_id) for scenario_id in suite.get("scenarios", [])]

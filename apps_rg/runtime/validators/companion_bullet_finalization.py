@@ -34,6 +34,16 @@ COMPANION_FINALIZED_X3_CODES: frozenset[str] = frozenset(
     }
 )
 
+_PROVIDER_UNAVAILABLE_ERROR_TOKENS: tuple[str, ...] = (
+    "api usage limits",
+    "provider_unavailable",
+    "provider unavailable",
+    "quota",
+    "rate limit",
+    "rate_limit",
+    "usage limit",
+)
+
 
 def companion_allow_legacy_stale_fallback() -> bool:
     """Legacy stale companion fallback is disabled for all paths."""
@@ -53,6 +63,8 @@ def evaluate_companion_bullet_lane_finalized(
     l2_data: dict[str, Any],
     x3_code: str,
     expected_bullet_ids: tuple[str, ...],
+    x3_data: Mapping[str, Any] | None = None,
+    x1d_data: Mapping[str, Any] | None = None,
 ) -> tuple[str, str]:
     """Return (ACCEPTED_FINALIZED|PENDING|NOT_FINALIZED, reason)."""
     reasons: list[str] = []
@@ -65,11 +77,57 @@ def evaluate_companion_bullet_lane_finalized(
         reasons.append(f"product_quality_not_PASS:{l2_data.get('product_quality_status')}")
     if str(l2_data.get("runtime_generation_status") or "") != "REAL_LLM":
         reasons.append(f"runtime_not_REAL_LLM:{l2_data.get('runtime_generation_status')}")
-    if x3_code not in COMPANION_FINALIZED_X3_CODES:
+    if x3_code not in COMPANION_FINALIZED_X3_CODES and not _is_provider_unavailable_x3_block(
+        x3_code=x3_code,
+        x3_data=x3_data,
+        x1d_data=x1d_data,
+    ):
         reasons.append(f"x3_not_companion_finalized:{x3_code}")
     if reasons:
         return "NOT_FINALIZED", ";".join(reasons)
     return ACCEPTED_FINALIZED_COMPANION_STATUS, "ok"
+
+
+def _is_provider_unavailable_x3_block(
+    *,
+    x3_code: str,
+    x3_data: Mapping[str, Any] | None,
+    x1d_data: Mapping[str, Any] | None,
+) -> bool:
+    """Treat quota/provider transport X3_BLOCK as finalized for narrative synthesis.
+
+    The companion narrative depends on deterministic bullet quality, not release
+    authorization. This exception is intentionally narrow: X2/product failures and
+    genuine judge verdict failures remain blocked.
+    """
+    if str(x3_code or "") != "X3_BLOCK":
+        return False
+    x3 = x3_data or {}
+    if str(x3.get("product_quality_status") or "") != "PASS":
+        return False
+    if x3.get("x2_failed_gates") or x3.get("mocked_judges"):
+        return False
+    decisive = x3.get("decisive_judge_failures") or []
+    if not isinstance(decisive, list) or not decisive:
+        return False
+    judges = (x1d_data or {}).get("judges") or []
+    if not isinstance(judges, list) or not judges:
+        return False
+    decisive_keys = {str(item) for item in decisive}
+    matching_errors: list[str] = []
+    for row in judges:
+        if not isinstance(row, Mapping):
+            continue
+        key = str(row.get("provider_key") or "")
+        if key not in decisive_keys:
+            continue
+        err = str(row.get("exact_provider_error") or row.get("error") or "").lower()
+        status = str(row.get("provider_status") or "").lower()
+        if err and any(token in err for token in _PROVIDER_UNAVAILABLE_ERROR_TOKENS):
+            matching_errors.append(err)
+        elif "blocked" in status or "unavailable" in status:
+            matching_errors.append(status)
+    return bool(matching_errors) and len(matching_errors) == len(decisive_keys)
 
 
 def companion_run_dir_accepted(run_dir: Any, *, upstream_section_id: str, expected_bullet_ids: tuple[str, ...]) -> bool:
@@ -84,10 +142,18 @@ def companion_run_dir_accepted(run_dir: Any, *, upstream_section_id: str, expect
     except (json.JSONDecodeError, OSError):
         return False
     x3_code = "UNKNOWN"
+    x3_data: dict[str, Any] | None = None
     if x3_path.is_file():
         try:
-            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
-            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
+            x3_data = json.loads(x3_path.read_text(encoding="utf-8"))
+            x3_code = str(x3_data.get("x3_code") or x3_data.get("x3_disposition") or "UNKNOWN")
+        except (json.JSONDecodeError, OSError):
+            return False
+    x1d_data: dict[str, Any] | None = None
+    x1d_path = rd / "x1d_llm_judge_outputs.json"
+    if x1d_path.is_file():
+        try:
+            x1d_data = json.loads(x1d_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return False
     status, _reason = evaluate_companion_bullet_lane_finalized(
@@ -95,6 +161,8 @@ def companion_run_dir_accepted(run_dir: Any, *, upstream_section_id: str, expect
         l2_data=l2,
         x3_code=x3_code,
         expected_bullet_ids=expected_bullet_ids,
+        x3_data=x3_data,
+        x1d_data=x1d_data,
     )
     return status == ACCEPTED_FINALIZED_COMPANION_STATUS
 
@@ -225,18 +293,28 @@ def build_companion_bullets_context(
     product_quality_status = str(data.get("product_quality_status") or "UNKNOWN")
     x3_path = path.parent / "x3_disposition.json"
     x3_code = "UNKNOWN"
+    x3_data: dict[str, Any] | None = None
     if x3_path.is_file():
         try:
-            x3 = json.loads(x3_path.read_text(encoding="utf-8"))
-            x3_code = str(x3.get("x3_code") or x3.get("x3_disposition") or "UNKNOWN")
+            x3_data = json.loads(x3_path.read_text(encoding="utf-8"))
+            x3_code = str(x3_data.get("x3_code") or x3_data.get("x3_disposition") or "UNKNOWN")
         except (json.JSONDecodeError, OSError):
             x3_code = "UNREADABLE"
+    x1d_path = path.parent / "x1d_llm_judge_outputs.json"
+    x1d_data: dict[str, Any] | None = None
+    if x1d_path.is_file():
+        try:
+            x1d_data = json.loads(x1d_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            x1d_data = None
 
     status, reason = evaluate_companion_bullet_lane_finalized(
         upstream_section_id=upstream_section_id,
         l2_data=data,
         x3_code=x3_code,
         expected_bullet_ids=expected_bullet_ids,
+        x3_data=x3_data,
+        x1d_data=x1d_data,
     )
     rel_l2 = str(path.relative_to(repo)) if path.is_relative_to(repo) else str(path)
     x3_ref_val: str | None = None

@@ -24,6 +24,7 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
 
 APPS_RG_L6_V40_SHADOW_EVAL_ENV = "APPS_RG_L6_V40_SHADOW_EVAL"
+APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV = "APPS_RG_L6_V40_SHADOW_EVAL_SKIP"
 APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV = "APPS_RG_L6_V40_L5_CERTIFICATION_REF"
 
 L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT = "l6_v40_shadow_eval_package.json"
@@ -52,7 +53,12 @@ def _truthy(value: str | None) -> bool:
 
 def l6_v40_shadow_eval_enabled(env: Mapping[str, str] | None = None) -> bool:
     source = env if env is not None else os.environ
-    return _truthy(source.get(APPS_RG_L6_V40_SHADOW_EVAL_ENV))
+    if _truthy(source.get(APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV)):
+        return False
+    configured = source.get(APPS_RG_L6_V40_SHADOW_EVAL_ENV)
+    if configured is None or not str(configured).strip():
+        return True
+    return _truthy(configured)
 
 
 def _repo_rel(repo_root: Path, path: Path) -> str:
@@ -176,6 +182,7 @@ def maybe_run_l6_v40_shadow_eval_for_section(
 __all__ = [
     "APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_ENV",
+    "APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV",
     "L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT",

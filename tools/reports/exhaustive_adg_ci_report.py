@@ -58,6 +58,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
+from tools.reports.adg_bcg_adapter import build_report_bcg_findings, render_report_bcg_findings_md
 
 REPO = Path(__file__).resolve().parents[2]
 ARTIFACTS = REPO / "artifacts" / "adg"
@@ -466,6 +467,84 @@ def _resolve_snapshot_dir(explicit: Path | None) -> tuple[Path, str]:
 # --------------------------------------------------------------------------
 
 
+
+def _exhaustive_bcg_findings(
+    *,
+    gate_doc: dict[str, Any],
+    mvs: list[str],
+    p_views: list[str],
+    other_views: list[str],
+    core_tables: list[str],
+    cur: sqlite3.Cursor,
+    sqlite_path: Path,
+    source: str,
+) -> dict[str, Any]:
+    overall = "PASS" if gate_doc.get("overall_exit_code") == 0 else "BLOCKED"
+    gates = list(gate_doc.get("gates") or [])
+    blockers = [g for g in gates if g.get("classification") in ("blocked", "regressed")]
+    mv_nonzero = [(name, _row_count(cur, name) or 0) for name in mvs]
+    mv_nonzero = [(name, count) for name, count in mv_nonzero if count]
+    pview_nonzero = [(name, _row_count(cur, name) or 0) for name in p_views]
+    pview_nonzero = [(name, count) for name, count in pview_nonzero if count]
+    priority_rows: list[dict[str, Any]] = []
+    for gate in sorted(blockers, key=lambda r: (-int(r.get("violation_count", 0) or 0), str(r.get("gate_id", ""))))[:3]:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": f"Inspect dispatcher blocker {gate.get('gate_id', '?')}",
+                "why_it_matters": "Dispatcher blockers determine whether exhaustive evidence changes the current work queue.",
+                "evidence": f"classification={gate.get('classification')}; band={gate.get('band')}; rows={gate.get('violation_count', 0)}.",
+                "next_step": "Use the dispatcher gate section first, then inspect matching MVs/P-views for scope.",
+                "decision": "inspect_dispatcher_blocker",
+            }
+        )
+    for name, count in sorted(pview_nonzero, key=lambda item: (-item[1], item[0]))[:2]:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": f"Interpret P-view {name}",
+                "why_it_matters": "Non-zero P-view rows are architecture-priority evidence, but they need dispatcher or action linkage before becoming work.",
+                "evidence": f"{count} row(s) in {name}.",
+                "next_step": "Map the P-view to a gate/action row before funding a fix slice.",
+                "decision": "map_pview_to_action",
+            }
+        )
+    if not priority_rows:
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Use exhaustive report as evidence inventory",
+                "why_it_matters": "The exhaustive report is too broad to be a work queue by itself.",
+                "evidence": f"{len(mvs)} MVs, {len(p_views)} P-views, {len(other_views)} other views, {len(core_tables)} core tables.",
+                "next_step": "Start from BCG executive summary or burndown, then drill into this report only for supporting evidence.",
+                "decision": "evidence_inventory",
+            }
+        )
+    return build_report_bcg_findings(
+        report_kind="adg_exhaustive_ci_report",
+        title="BCG Exhaustive CI Findings",
+        status=overall,
+        status_label="Dispatcher verdict",
+        business_read="This report is the evidence library, not the executive work queue; use it to explain why a promoted ADG action matters.",
+        technical_read=[
+            f"Snapshot SQLite: {sqlite_path.name}",
+            f"Snapshot source: {source}",
+            f"Dispatcher blockers/regressions: {len(blockers)}",
+            f"Materialized views: {len(mvs)} ({len(mv_nonzero)} non-zero)",
+            f"P-views: {len(p_views)} ({len(pview_nonzero)} non-zero)",
+            f"Other analytical views: {len(other_views)}; core tables: {len(core_tables)}",
+        ],
+        priority_rule="Dispatcher blockers first, then non-zero P0/P-view architecture evidence, then MV/detail tables as supporting proof.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "Dispatcher blockers determine current ADG health.",
+            "P-views encode architecture priority and need mapping to action.",
+            "MVs and core tables are evidence surfaces, not standalone funding decisions.",
+        ],
+        next_step=priority_rows[0].get("next_step", "Use this report as evidence inventory."),
+        table_limit=6,
+    )
+
 def render(snapshot_dir: Path, source: str) -> str:
     sqlites = sorted(snapshot_dir.glob("adg_indexed_*.sqlite"),
                      key=lambda p: p.stat().st_size, reverse=True)
@@ -507,6 +586,18 @@ def render(snapshot_dir: Path, source: str) -> str:
     summary = gate_doc.get("summary", {})
     overall = "PASS" if gate_doc.get("overall_exit_code") == 0 else "BLOCKED"
     a(f"- **Dispatcher overall verdict:** **{overall}**")
+    a("")
+    bcg_findings = _exhaustive_bcg_findings(
+        gate_doc=gate_doc,
+        mvs=mvs,
+        p_views=p_views,
+        other_views=other_views,
+        core_tables=core_tables,
+        cur=cur,
+        sqlite_path=sqlite_path,
+        source=source,
+    )
+    a(render_report_bcg_findings_md(bcg_findings))
     a("")
 
     # ============ §2 Executive summary

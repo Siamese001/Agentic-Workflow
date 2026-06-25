@@ -1,5 +1,8 @@
 """IBM narrative: PA compile via section_prompt_adapter (W7 mechanical).
 
+Prompt semantics: accepted companion IBM bullets are the primary synthesis input for the
+role capstone; C0 remains proof/provenance, and JD requirements remain targeting only.
+
 Section-specific instructions are sourced from ``ibm_position_narrative_v1.yaml`` (design SSOT).
 Generic shell slots remain ``strategic_tailor_v1`` via ``w7_strategic_tailor_shell_slots.yaml``.
 
@@ -97,13 +100,13 @@ def _theme_budget_block() -> str:
         "vocabulary into the opening clause makes that family impossible to ledger-cover. "
         "Each clause names AT MOST TWO families - move the third family's vocabulary into "
         "the ', establishing' clause or drop it entirely.",
-        "- SENTENCE SKELETON (follow this shape EXACTLY - two families per clause, no "
-        "third): 'Drove <family-A> and <family-B> programs for enterprise clients at IBM, "
-        "establishing <family-C> and <family-D> discipline that <plain outcome with no "
-        "additional family vocabulary>.' Choose A-D from four DIFFERENT families; before "
-        "returning, count the families each clause expresses and remove vocabulary until "
-        "each clause has at most two.",
-        "- OPENER LAW (deterministic opener constraint): the sentence "
+        "- THESIS SHAPE (follow this intent, not a fixed string): choose ONE executive "
+        "through-line and let the bullets carry the detailed proof. Do not enumerate four "
+        "program families in the opening clause. Strong pattern: 'Drove governed <mechanism> "
+        "work for enterprise clients at IBM, establishing <operating discipline> that made "
+        "<plain outcome> more repeatable.' Keep each clause to at most two theme families, "
+        "and prefer two or three material families total over the full four-family budget.",
+        "- OPENER LAW (deterministic gate x2_ibm_narrative_forbidden_opener): the sentence "
         "MUST begin with a past-tense action verb. NEVER open with a preposition or "
         "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
         "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"
@@ -231,6 +234,11 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
     layers = _yaml_instruction_layers(spec)
     mechanical = (
         "<!-- UNIFY_IBM_PROMPT_CORE_LAW_V3 — section I0; X2 gate IDs in PRODUCT_SHAPE only -->\n\n"
+        "ROLE:\n"
+        "Write exactly ONE IBM role capstone sentence above five finalized bullets. "
+        "This is a lightweight synthesis step: turn the accepted bullet themes into a higher-level role thesis. "
+        "Do not redo first-principles graph selection; the finalized bullets already carry the hard proof work. "
+        "The narrative states why the role mattered; the bullets prove what was delivered.\n\n"
         "OUTPUT MECHANICS:\n"
         "- Return RAW JSON only: first character {, last character }. No markdown fences.\n"
         "- Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, "
@@ -242,8 +250,8 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
         "(see claim_ledger_coverage_contract in spec).\n"
         "- Proof/targeting: pa_proof_binding_v1 + pa_targeting_only_v1 (pa_core_law_v1.yaml).\n"
         "- JD and briefing are targeting context only — never treated as résumé proof.\n"
-        "- When ACCEPTED_IBM_BULLETS companion context exists (U-tier): write narrative_sentence as the capstone "
-        "after that tailoring — align strategically, never contradict, never paste companion lines.\n"
+        "- When ACCEPTED_IBM_BULLETS companion context exists (U-tier): use it as primary synthesis context "
+        "for a role thesis — align strategically, never contradict, never paste companion lines.\n"
         "- gap_notes, change_log, self_check, claim_ledger text fields MUST avoid plumbing/test scaffolding "
         "phrases such as mocked_runtime_slice, 'provider not requested', mock_fallback, mocked_judge, "
         "\"plumbing only\", plumbing_only, or test-only (deterministic gates reject).\n\n"
@@ -259,6 +267,16 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
         f"{header['end_date']}.\n\n"
         f"{_format_allowed_fact_ids(runtime_payload)}\n"
         f"{_theme_budget_block()}\n\n"
+        "COMPANION SYNTHESIS:\n"
+        "- ACCEPTED_IBM_BULLETS are primary synthesis context after finalization; C0 remains proof/provenance.\n"
+        "- Pick one executive through-line: foundation, modernization, governed delivery, or alliance execution.\n"
+        "- Avoid verbatim/topic-rollup phrasing from accepted bullets such as \"AWS modernization\", "
+        "\"decision-support\", \"pre-sales\", \"alliance execution\", and \"BI and data models\" in one sentence; "
+        "recast into a higher-level thesis such as governed delivery, reference architecture, operating discipline, "
+        "or repeatable regulated transformation.\n"
+        "- Prefer one clean executive sentence over a comma-packed mechanism list; bullets carry detailed proof.\n"
+        "- Do not summarize all five bullets, repeat the KPI set, or spin a different role story not entailed by "
+        "bul_ibm_* facts and the accepted bullet themes.\n\n"
         f"{layers}"
     )
     return mechanical.strip()
@@ -266,8 +284,10 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
 
 def _u0(companion_nonempty: bool) -> str:
     closing = (
-        "Write exactly one narrative_sentence: polished SVP-level executive prose, third person or implied subject, "
+        "Write exactly one narrative_sentence: synthesize accepted IBM bullets into a north-star role thesis, "
+        "polished SVP-level executive prose, third person or implied subject, "
         f"IBM as employer anchor once, one period, preferred 34–48 words and hard max {NARRATIVE_MAX_WORDS} words. "
+        "Use one clean executive through-line; do not write a five-bullet summary. "
         "When ACCEPTED_IBM_BULLETS companion lines include the standard IBM KPI set ($15M, 99.9%, 30%, 25%, 50%), "
         "do not restate those digits or percentages in narrative_sentence — use conceptual language only."
     )
@@ -286,7 +306,7 @@ def compile_ibm_narrative_prompt(
     fact_lines = _fact_lines(runtime_payload)
     companion_nonempty = bool(companion_text.strip())
     tier = (
-        f"ACCEPTED_IBM_BULLETS (read-only; do not recap each line):\n{companion_text.strip()}"
+        f"ACCEPTED_IBM_BULLETS (read-only; synthesize these themes without copying line phrasing):\n{companion_text.strip()}"
         if companion_nonempty
         else None
     )

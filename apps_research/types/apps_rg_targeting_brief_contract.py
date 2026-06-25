@@ -140,6 +140,16 @@ _JD_PARTNERSHIP_HINTS = (
     "channel",
 )
 
+_SOURCE_FAMILY_ALIASES = {
+    "company_basics": ("overview",),
+    "competitive_landscape": ("strategic_priorities", "commercial_motion"),
+    "leadership_and_org": ("leadership",),
+    "recent_news_and_signals": ("recent_moves",),
+    "role_context": ("partner_ecosystem", "commercial_motion", "adoption_motion"),
+    "tech_stack_and_tools": ("tech_stack_signals",),
+    "tech_stack": ("tech_stack_signals",),
+}
+
 
 class BriefStatus(str, Enum):
     """Disposition of a targeting-brief validation/seal attempt."""
@@ -516,8 +526,9 @@ def _research_families(research_notes: str) -> tuple[str, ...]:
         if not line.startswith("### "):
             continue
         family = line[4:].strip().lower()
-        if family and family not in families:
-            families.append(family)
+        for normalized in _SOURCE_FAMILY_ALIASES.get(family, (family,)):
+            if normalized and normalized not in families:
+                families.append(normalized)
     return tuple(families)
 
 

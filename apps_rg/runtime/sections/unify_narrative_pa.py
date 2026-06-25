@@ -1,7 +1,7 @@
 """Unify narrative: PA compile via section_prompt_adapter (W7 mechanical).
 
-Legacy prompt semantics preserved: I0 matches prior inline system; C0 carries CANONICAL UNIFY FACTS;
-jd_requirements carries targeting only; accepted companion bullets are required U-tier read-only sequencing context for production.
+Prompt semantics: accepted companion bullets are the primary synthesis input for the role capstone;
+C0 remains proof/provenance, and JD requirements remain targeting only.
 Compile failures propagate (no inline fallback).
 
 W11-M4B SSOT: apps_rg.runtime.sections.unify_narrative_pa."""
@@ -77,14 +77,18 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
     header = runtime_payload["unify_header"]
     dep_status = str(runtime_payload.get("companion_unify_bullets_status") or "UNKNOWN")
     dep_reason = str(runtime_payload.get("companion_unify_bullets_reason") or "")
+    # Literal source anchor for prompt/gate consistency tests: "partner co-sell motions".
     return (
         "<!-- UNIFY_IBM_PROMPT_CORE_LAW_V3 — section I0; X2 gate IDs in PRODUCT_SHAPE only -->\n\n"
         "# Role\n"
-        "Write exactly ONE Unify Consulting role capstone sentence above six finalized bullets — strategic mandate, "
-        "not bullet recap. pa_proof_binding_v1 + pa_targeting_only_v1 (pa_core_law_v1.yaml).\n\n"
-        "# North star (paraphrase; stay inside C0 unify_narrative_base_* and bul_unify_*)\n"
+        "Write exactly ONE Unify Consulting role capstone sentence above six finalized bullets. "
+        "This is a lightweight synthesis step: turn the accepted bullet themes into a higher-level role thesis. "
+        "Do not redo first-principles graph selection; the finalized bullets already carry the hard proof work. "
+        "The narrative states why the role mattered; the bullets prove what was delivered. "
+        "pa_proof_binding_v1 + pa_targeting_only_v1 (pa_core_law_v1.yaml).\n\n"
+        "# North star (summarize accepted bullets; stay inside C0 unify_narrative_base_* and bul_unify_*)\n"
         "Platform roadmap, core systems architecture, commercialization of supported AI platform/Solution Accelerator, "
-        "bespoke delivery → reusable IP or scalable platform services in enterprise contexts.\n\n"
+        "bespoke delivery to reusable IP or scalable platform services in enterprise contexts.\n\n"
         "# Output\n"
         "RAW JSON only: first character {, last character }. No markdown code fences, no commentary before or "
         "after the JSON object (deterministic gate x2_json_parse_valid rejects fenced output). "
@@ -99,19 +103,23 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         f"employer={header['employer']}; title={header['title']}; location={header['location']}; "
         f"dates={header['start_date']} to {header['end_date']}. Unify Consulting once; never candidate name.\n"
         "No IBM, InsurTech, EY, education, certification, early-career facts.\n\n"
-        "# Anti-overlap (HARD GATE x2_no_companion_ngram_copy)\n"
-        "The narrative_sentence MUST NOT contain ANY run of four consecutive words (case-insensitive) that also "
-        "appears in the ACCEPTED_UNIFY_BULLETS. Synthesize the role arc at a higher level of abstraction and "
-        "re-express shared concepts with different word order and synonyms — do not lift bullet phrasing. "
+        "# Companion synthesis (HARD GATE x2_no_companion_ngram_copy)\n"
+        "Use ACCEPTED_UNIFY_BULLETS as the source of themes, but the narrative_sentence MUST NOT contain ANY run "
+        "of four consecutive words (case-insensitive) that also appears in those bullets. Summarize the role arc "
+        "at a higher level of abstraction and re-express shared concepts with different word order and synonyms. "
         "Known recurring overlaps to AVOID verbatim: \"platform roadmap and commercialization\", "
+        "\"partner co-sell motions\", "
         "\"bespoke client delivery into reusable\", \"converting bespoke delivery into\", \"reusable IP and scalable "
         "platform services\", \"for Fortune 500 financial institutions\", \"Fortune 500 financial\" (rename the "
-        "client base — e.g. 'global financial-services enterprises', 'regulated enterprise clients'). "
+        "client base — e.g. 'regulated enterprise clients'). "
         "Prefer capstone synonyms: industrialized / operating model / commercial engine / "
-        "productized practice / regulated-enterprise adoption / IP-led services, with distinct word order.\n\n"
+        "productized practice / regulated-enterprise adoption / IP-led services / partner-channel enablement / "
+        "alliance distribution, with distinct word order.\n\n"
         "# Shape\n"
         f"One sentence; 34–48 words preferred; max {NARRATIVE_MAX_WORDS} words / {NARRATIVE_MAX_CHARS} chars; no bullets; third person; no em dash; no inline tags.\n"
-        "Companion bullets: anti-repetition only, not proof. Default zero metrics; at most one cluster if C0-supported and non-redundant.\n"
+        "Prefer one clean executive through-line over a comma-packed list of mechanisms. "
+        "Companion bullets: primary synthesis context after finalization; C0 remains proof/provenance. "
+        "Default zero metrics; at most one cluster if C0-supported and non-redundant.\n"
         "Forbidden labels: Enterprise Agentic AI Platform Architecture; Dependency Graph Accelerator; Governed Runtime Reliability; "
         "Production Adoption; Distributed Ecosystem Engineering; Platform Commercialization and Engineering Leadership.\n"
         "Do not open with At Unify Consulting, the / At Unify, the; no mechanism comma-stacks (routing, GraphRAG, gating, traces).\n"
@@ -122,21 +130,23 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "STRICT METRIC POLICY — DEFAULT zero metrics in the narrative; bullets carry the metrics. "
         "NEVER repeat $22M, 20%, six-months-to-three-weeks, 8-to-28 (or any bullet-side number) — those are bullet content, not capstone content.\n\n"
         "# Examples (patterns only — note: none reuse a 4-word run from the bullets)\n"
-        "Good: Owned the end-to-end mandate that turned a governed agentic AI practice at Unify Consulting into a "
-        "commercial engine, standing up an IP-led operating model for regulated enterprise buyers.\n"
+        "Good: Owned the mandate to turn Unify Consulting's governed agentic AI platform into reusable commercial infrastructure, "
+        "connecting control-plane architecture and partner enablement to regulated-enterprise adoption.\n"
         "Good alt: Drove Unify Consulting's shift from one-off engagements to a productized agentic AI capability, "
-        "anchoring the architecture and revenue model behind regulated financial-services adoption.\n"
+        "anchoring the architecture and revenue model behind regulated-enterprise adoption.\n"
         "Bad (mechanical opener): \"Led platform roadmap and commercialization ...\" — fails the forbidden-opener gate.\n"
         "Bad (metric recap): \"... reducing cycle times from six months to three weeks while generating $22M ...\" — "
         "fails metric-cap and bullet-overlap gates.\n"
+        "Bad (companion copy): \"partner co-sell motions\" — fails x2_no_companion_ngram_copy; use partner-channel enablement or alliance distribution.\n"
         "Bad: JD-as-proof; bullet-label paste."
     )
 
 
 def _u0(companion_nonempty: bool, dependency_status: str) -> str:
     closing = (
-        "Write one narrative_sentence only: north-star role capstone for Unify Consulting (roadmap + architecture + "
-        "commercialization + reusable IP + enterprise deployment), third person, one period, "
+        "Write one narrative_sentence only: synthesize the finalized Unify bullets into a north-star role thesis "
+        "for Unify Consulting (roadmap + architecture + commercialization + reusable IP + enterprise deployment), "
+        "third person, one period, one clean executive through-line, "
         f"preferred 34–48 words, hard max {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters, no while also stack."
     )
     if dependency_status != "ACCEPTED_FINALIZED":
@@ -162,7 +172,7 @@ def compile_unify_narrative_prompt(
     slots = load_w7_shell_slot_bodies()
     companion_nonempty = bool(companion_text.strip())
     tier = (
-        f"ACCEPTED_UNIFY_BULLETS (read-only; do not recap each line):\n{companion_text.strip()}"
+        f"ACCEPTED_UNIFY_BULLETS (read-only; synthesize these themes without copying line phrasing):\n{companion_text.strip()}"
         if companion_nonempty
         else None
     )

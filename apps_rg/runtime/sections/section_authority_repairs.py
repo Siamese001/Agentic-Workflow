@@ -8,6 +8,19 @@ from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
+_TOKEN_RE = re.compile(r"[a-z0-9]+", re.IGNORECASE)
+_CITATION_REPAIR_STOPWORDS = {
+    "and",
+    "for",
+    "from",
+    "into",
+    "that",
+    "the",
+    "through",
+    "with",
+    "while",
+}
+
 
 def _sentence_fails_credential_dump(sentence: str) -> bool:
     from apps_rg.runtime.sections.competencies_certification_contract import (
@@ -195,6 +208,124 @@ def repair_exec_summary_orphan_rows_with_unused_required_facts(
     return repairs
 
 
+def _citation_repair_tokens(text: str) -> set[str]:
+    return {
+        tok.lower()
+        for tok in _TOKEN_RE.findall(str(text or ""))
+        if len(tok) > 2 and tok.lower() not in _CITATION_REPAIR_STOPWORDS
+    }
+
+
+def _fact_support_text(fact: dict[str, Any]) -> str:
+    parts = [
+        str(fact.get("claim_text") or ""),
+        str(fact.get("achievement_summary") or ""),
+        str(fact.get("domain") or ""),
+        str(fact.get("fact_id") or "").replace("_", " "),
+    ]
+    for value in fact.get("metric_values") or []:
+        parts.append(str(value or ""))
+    return " ".join(parts)
+
+
+def _brushstroke_required_groups(parsed: dict[str, Any]) -> list[list[str]]:
+    plan = parsed.get("executive_summary_composition_plan")
+    if not isinstance(plan, dict):
+        plan = parsed.get("composition_plan")
+    if not isinstance(plan, dict):
+        return []
+    groups: list[list[str]] = []
+    for row in plan.get("brushstrokes") or []:
+        if not isinstance(row, dict):
+            continue
+        ids = [str(fid).strip() for fid in row.get("required_fact_ids") or [] if str(fid).strip()]
+        if ids:
+            groups.append(ids)
+    return groups
+
+
+def repair_required_brushstroke_citations_from_materialized_sentences(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str],
+    plan_facts: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Append missing required brushstroke citations when display prose already supports them.
+
+    This is ledger-only: it never adds a new claim and never changes visible prose. It only attaches
+    a required fact ID to the best-overlapping existing sentence when the sentence already
+    materializes the fact's claim terms.
+    """
+    if not isinstance(parsed, dict):
+        return []
+    ledger = parsed.get("claim_ledger")
+    if not isinstance(ledger, list) or not ledger:
+        return []
+    text = str(parsed.get("resume_display_text") or "").strip()
+    sentences = [s for s in split_sentences(text) if str(s).strip()]
+    if len(sentences) != len(ledger):
+        return []
+
+    allowed = {str(fid).strip() for fid in allowed_fact_ids if str(fid).strip()}
+    fact_by_id = {
+        str(f.get("fact_id") or f.get("candidate_fact_id") or "").strip(): f
+        for f in plan_facts
+        if isinstance(f, dict) and str(f.get("fact_id") or f.get("candidate_fact_id") or "").strip()
+    }
+    cited = {
+        str(fid).strip()
+        for row in ledger
+        if isinstance(row, dict)
+        for fid in (row.get("source_fact_ids") or [])
+        if str(fid).strip()
+    }
+    repairs: list[dict[str, Any]] = []
+    sentence_tokens = [_citation_repair_tokens(s) for s in sentences]
+
+    for group in _brushstroke_required_groups(parsed):
+        candidates = [
+            fid for fid in group if fid in allowed and fid in fact_by_id and fid not in cited
+        ]
+        if not candidates:
+            continue
+        for fid in candidates:
+            fact_tokens = _citation_repair_tokens(_fact_support_text(fact_by_id[fid]))
+            best_idx = -1
+            best_overlap: set[str] = set()
+            for idx, toks in enumerate(sentence_tokens):
+                overlap = toks & fact_tokens
+                if len(overlap) > len(best_overlap):
+                    best_idx = idx
+                    best_overlap = overlap
+            if best_idx < 0 or len(best_overlap) < 3:
+                continue
+            row = ledger[best_idx]
+            if not isinstance(row, dict):
+                continue
+            source_ids = [str(x).strip() for x in row.get("source_fact_ids") or [] if str(x).strip()]
+            if fid in source_ids:
+                continue
+            source_ids.append(fid)
+            row["source_fact_ids"] = source_ids
+            cited.add(fid)
+            repairs.append(
+                {
+                    "operation": "repair_required_brushstroke_citation",
+                    "reason": f"materialized_sentence_{best_idx + 1}_cited_required_fact:{fid}",
+                    "source_fact_id": fid,
+                    "sentence_index": best_idx + 1,
+                    "overlap_terms": sorted(best_overlap),
+                }
+            )
+            break
+
+    if repairs:
+        clog = list(parsed.get("change_log") or [])
+        clog.extend(repairs)
+        parsed["change_log"] = clog
+    return repairs
+
+
 def apply_exec_summary_display_authority_repairs(
     parsed: dict[str, Any],
     *,
@@ -243,6 +374,24 @@ def apply_exec_summary_display_authority_repairs(
                 replaced_l2=True,
             )
         text = str(parsed.get("resume_display_text") or "").strip()
+        _brushstroke_repairs = repair_required_brushstroke_citations_from_materialized_sentences(
+            parsed,
+            allowed_fact_ids=set(_orphan_allowed),
+            plan_facts=_orphan_facts,
+        )
+        if _brushstroke_repairs and artifact_dir is not None:
+            from apps_rg.runtime.section_repair_ledger import (
+                KIND_DETERMINISTIC_REWRITE,
+                record_repair,
+            )
+
+            record_repair(
+                artifact_dir,
+                kind=KIND_DETERMINISTIC_REWRITE,
+                operation="repair_required_brushstroke_citation",
+                reason=str(_brushstroke_repairs[0].get("reason") or "")[:240],
+                replaced_l2=True,
+            )
     clog = list(parsed.get("change_log") or [])
     repaired, removed = strip_exec_summary_credential_dump_sentences(text)
     if removed and repaired != text:
@@ -480,6 +629,7 @@ def prune_competencies_rigor_failing_terms(parsed: dict[str, Any]) -> list[str]:
 __all__ = [
     "apply_exec_summary_display_authority_repairs",
     "prune_competencies_rigor_failing_terms",
+    "repair_required_brushstroke_citations_from_materialized_sentences",
     "sanitize_ibm_narrative_display_text",
     "strip_exec_summary_credential_dump_sentences",
 ]

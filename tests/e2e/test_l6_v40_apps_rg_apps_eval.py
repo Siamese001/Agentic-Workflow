@@ -19,6 +19,8 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
         apps_rg_dir,
         section_id="summary",
         repo_root=tmp_path,
+        session_id="sess-l6-v40-e2e",
+        tenant_id="tenant-l6-v40-e2e",
         l5_certification_ref="l5-cert-ref:e2e",
     )
     rg_package = json.loads(rg_outputs["l6_v40_shadow_eval_package"].read_text(encoding="utf-8"))
@@ -29,12 +31,21 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
             mode="snapshot",
             deterministic_only=True,
             out_dir=str(tmp_path / "apps_eval"),
-            emit_l6_handoff=True,
         )
     )
     eval_bridge = json.loads(Path(eval_record.artifact_paths["l6_shadow_bridge"]).read_text(encoding="utf-8"))
 
+    assert rg_package["valid_v40_shadow_exhaust"] is True
     assert rg_package["g28_audit_completeness"]["verdict"] == "PASS"
     assert rg_package["g29_learning_firewall"]["verdict"] == "PASS"
+    assert rg_package["current_run_mutation_assertion"] is False
+    assert rg_package["current_run_x3_mutation_assertion"] is False
+    assert rg_package["direct_l4_write_assertion"] is False
+    assert rg_package["future_run_only_assertion"] is True
+
     assert eval_bridge["g28_audit_completeness"]["verdict"] == "PASS"
     assert eval_bridge["g29_learning_firewall"]["verdict"] == "PASS"
+    assert eval_bridge["current_run_mutated"] is False
+    assert eval_bridge["direct_l4_write_attempted"] is False
+    assert eval_bridge["durable_write_attempted"] is False
+    assert eval_bridge["future_run_only"] is True

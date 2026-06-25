@@ -49,8 +49,8 @@ class GovernedAppEntry:
     app_name:         Importable package name (e.g. "apps_research").
     runner_module:    Dotted module path of the governed runner
                       (e.g. "apps_research.integrations.governed_research_run").
-    runner_class:     Class name of the GovernedAppRunner subclass
-                      (e.g. "GovernedResearchRun").
+    runner_class:     Class name of the GovernedAppRunner subclass or canonical callable
+                      (e.g. "GovernedResearchRun" or "dispatch_apps_rg_run").
     capability_token: Stable token unique to this app's governed capability
                       (e.g. "apps_research.governed_e2e.v1").
     routing_target:   L0 routing target registered by this app
@@ -154,9 +154,9 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEn
     "apps_rg": GovernedAppEntry(
         app_name="apps_rg",
         status=GovernanceStatus.GOVERNED,
-        runner_module="apps_rg.integrations.governed_rg_run",
-        runner_class="GovernedRgRun",
-        capability_token="apps_rg.governed_e2e.v1",
+        runner_module="agentic_core.runtime.entry.apps_rg_dispatch",
+        runner_class="dispatch_apps_rg_run",
+        capability_token="apps_rg.canonical_dispatch.e2e.v1",
         routing_target="resume_generation_assembly",
         proof_prefix="RG",
     ),

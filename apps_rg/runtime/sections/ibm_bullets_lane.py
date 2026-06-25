@@ -1040,14 +1040,15 @@ def run_ibm_bullets_execution(
     provider_result_data = result.to_dict() if result else {}
     runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    if str(args.provider) == "external_claude" and generation_status_allows_json_parse(runtime_generation_status):
+    if generation_status_allows_json_parse(runtime_generation_status):
         if parsed is None:
-            raw_output, parsed, parse_error = retry_provider_for_parse(
-                messages, tagged, raw_output, parse_error
-            )
-            if parsed is not None:
-                record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
-                parsed = normalize_parsed_output(parsed, runtime_payload)
+            if str(args.provider) == "external_claude":
+                raw_output, parsed, parse_error = retry_provider_for_parse(
+                    messages, tagged, raw_output, parse_error
+                )
+                if parsed is not None:
+                    record_parse_json_retry(artifact_dir, reason=parse_error or "parse_retry")
+                    parsed = normalize_parsed_output(parsed, runtime_payload)
         if parsed is not None:
             from apps_rg.runtime.c0.graph_story_authority import forbid_base_resume_bullet_hydration
 
