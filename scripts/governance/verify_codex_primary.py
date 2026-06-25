@@ -32,6 +32,7 @@ REQUIRED_FILES = [
     ".codex/config.toml",
     ".codex/automations/on-demand-pr-main-publisher/automation.toml",
     ".codex/automations/weekly-adg-audit-and-burndown/automation.toml",
+    ".codex/automations/adg-p0-p1-burndown/automation.toml",
     ".codex/hooks.json",
     ".codex/hooks/selected_avatar_guard.py",
     ".codex/skills/agentic-workflow-governance/SKILL.md",

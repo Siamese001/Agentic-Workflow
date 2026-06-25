@@ -46,6 +46,10 @@ def _adg_prompt() -> str:
     return "\n".join(mod.ADG_REQUIRED_PROMPT_SNIPPETS)
 
 
+def _adg_p0_p1_prompt() -> str:
+    return "\n".join(mod.ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS)
+
+
 def _valid_root(tmp_path: Path) -> Path:
     _write(
         tmp_path / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml",
@@ -54,6 +58,10 @@ def _valid_root(tmp_path: Path) -> Path:
     _write(
         tmp_path / ".codex" / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml",
         _automation_toml("weekly-adg-audit-and-burndown", _adg_prompt(), tmp_path),
+    )
+    _write(
+        tmp_path / ".codex" / "automations" / "adg-p0-p1-burndown" / "automation.toml",
+        _automation_toml("adg-p0-p1-burndown", _adg_p0_p1_prompt(), tmp_path),
     )
     for skill_id in mod.REPO_SKILL_IDS:
         _write(tmp_path / ".codex" / "skills" / skill_id / "SKILL.md")

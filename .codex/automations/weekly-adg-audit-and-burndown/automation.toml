@@ -2,12 +2,33 @@ version = 1
 id = "weekly-adg-audit-and-burndown"
 kind = "cron"
 name = "ADG Audit and Burndown"
-prompt = "Run the Agentic-Workflow full ADG audit and burndown from a clean main-branch state. Use the repo governance adapter, avoid changing source files, and execute `python tools/adg/run_full_adg_audit.py --mode certification --format both`. After it finishes, summarize the certification status, blocking gates, top prioritized burndown recommendations from `artifacts/adg/adg_burndown_report.md`, the top action queue items from the newest `artifacts/adg/adg_action_queue_*.json`, and the key artifact paths. If the command fails, include an RCA block with symptom, root cause if evident, evidence, fix or next step, and recurrence guard."
+prompt = """
+Run the Agentic-Workflow full ADG audit from a clean main-branch state. Use the repo governance adapter and do not edit source files.
+
+Run this exact command from the repo root:
+python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0
+
+Zero-loss artifact contract:
+- Treat timestamped artifacts as append-only evidence. Never rely on overwritten latest files for handoff when a timestamped path exists.
+- After the command exits, read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json plus the newest timestamped generation manifest, gate manifest, gate results, action queue, and burndown report.
+- Prefer receipt fields named artifact_status and repair_handoff when present.
+- If artifact_status is missing, infer repair_ready only when the same run has a timestamped SQLite snapshot, gate results, generation manifest, gate manifest, adg_action_queue_*.json, and adg_burndown_report.md produced after the scheduled audit start.
+- If any required artifact is missing, stale, or timestamp-inconsistent, set artifact_status=incomplete in the summary and stop without editing.
+
+Status semantics:
+- certified: certification_status is clean and no blocking P0/P1 gate work remains.
+- repair_ready: certification_status may be failed because P0/P1 gates are present, but the timestamped artifacts are complete enough for the P0/P1 burndown automation to consume.
+- incomplete: generator/report/manifests/artifacts are missing, stale, or internally inconsistent.
+
+If repair_ready, produce an explicit P0/P1 handoff block with exact timestamped paths for snapshot, gate results, action queue, burndown report, generation manifest, and gate manifest. State that the P0/P1 burndown automation should start immediately or continue polling if it is already scheduled. Do not attempt source edits in this automation.
+
+Closeout must include certification_status, artifact_status, whether artifact_status was direct or inferred, blocking gates, top P0/P1 queue items, exact artifact paths, command exit codes, and an RCA block when the audit is incomplete or failed.
+"""
 status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=2;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=23;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
 model = "gpt-5.4-mini"
 reasoning_effort = "xhigh"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-on-demand-pr-main-publisher", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-gpu-policy-invariant", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-competencies-evidence-closeout", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-preserve-worktrees-folder-closeout"]
 created_at = 1781555471411
-updated_at = 1781951576779
+updated_at = 1782378925172

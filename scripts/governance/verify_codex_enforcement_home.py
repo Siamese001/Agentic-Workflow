@@ -20,7 +20,17 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_USER_CODEX_HOME = Path(os.environ.get("CODEX_HOME", r"C:\Users\amita\.codex"))
 
 EXPECTED_REPO = Path(r"C:\Git\Agentic-Workflow-FRESH")
-AUTOMATION_IDS = ("on-demand-pr-main-publisher", "weekly-adg-audit-and-burndown")
+AUTOMATION_IDS = (
+    "on-demand-pr-main-publisher",
+    "weekly-adg-audit-and-burndown",
+    "adg-p0-p1-burndown",
+)
+# Codex app deployment records live under CODEX_HOME/automations. This guard
+# only rejects legacy repo-source copies that were historically misplaced there.
+FORBIDDEN_USER_PROFILE_AUTOMATION_IDS = (
+    "on-demand-pr-main-publisher",
+    "weekly-adg-audit-and-burndown",
+)
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
@@ -46,8 +56,19 @@ PUBLICATION_FORBIDDEN_PROMPT_SNIPPETS = (
 
 ADG_REQUIRED_PROMPT_SNIPPETS = (
     "clean main-branch state",
-    "python tools/adg/run_full_adg_audit.py --mode certification --format both",
+    "python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0",
+    "artifact_status",
+    "repair_ready",
     "RCA block",
+)
+
+ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS = (
+    "artifact_status=certified or artifact_status=repair_ready",
+    "Burn down all P0 FIX queue/report items first",
+    "Only after P0 FIX is zero",
+    "Never consume overwritten latest files as the source of truth",
+    "P1 reaches 0 before 4:00 AM",
+    "Mandatory burndown tale",
 )
 
 
@@ -158,6 +179,15 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
         issues.extend(_validate_publication_prompt(automation_id, prompt))
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
+    if automation_id == "adg-p0-p1-burndown":
+        for snippet in ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS:
+            if snippet not in prompt:
+                issues.append(
+                    EnforcementHomeIssue(
+                        "adg_p0_p1_prompt_missing",
+                        f"{automation_id}: prompt missing {snippet!r}",
+                    )
+                )
     return issues
 
 
@@ -165,7 +195,7 @@ def _forbidden_user_profile_paths(user_codex_home: Path) -> list[Path]:
     paths: list[Path] = []
     paths.extend(
         user_codex_home / "automations" / automation_id / "automation.toml"
-        for automation_id in AUTOMATION_IDS
+        for automation_id in FORBIDDEN_USER_PROFILE_AUTOMATION_IDS
     )
     paths.extend(user_codex_home / "skills" / skill_id / "SKILL.md" for skill_id in REPO_SKILL_IDS)
     return paths
