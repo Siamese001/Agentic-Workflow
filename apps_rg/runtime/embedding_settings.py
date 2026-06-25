@@ -8,10 +8,6 @@ Terminology:
 
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import (
-    BGE_M3_MODEL_ID,
-)
-
 import json
 import logging
 import os
@@ -19,11 +15,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-
 _logger = logging.getLogger(__name__)
 
 EMBEDDING_SETTINGS_RECEIPT_NAME = "apps_rg_embedding_settings.json"
+BGE_M3_MODEL_ID = "BAAI/bge-m3"
 CANONICAL_BGE_HF_ID = BGE_M3_MODEL_ID
 DEFAULT_EMBEDDING_MODEL_ID_SLUG = "bge-m3-v1"
 
@@ -403,6 +398,23 @@ def load_bge_sentence_transformer(settings: AppsRgEmbeddingSettings) -> Any:
         raise AppsRgEmbeddingFailClosedError(settings.decisive_reason or "BGE path unresolved")
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+    device = (
+        os.environ.get("APPS_RG_HYDRATION_DEVICE", "").strip()
+        or os.environ.get("EMBEDDING_DEVICE", "").strip()
+        or os.environ.get("VECTOR_DB_DEVICE", "").strip()
+        or "cuda"
+    ).lower()
+    if device == "cuda":
+        try:
+            import torch  # type: ignore[import]
+        except ImportError as exc:
+            raise AppsRgEmbeddingFailClosedError(
+                "torch is required for CUDA fact-vector hydration but is not installed"
+            ) from exc
+        if not bool(torch.cuda.is_available()):
+            raise AppsRgEmbeddingFailClosedError(
+                "EMBEDDING_DEVICE=cuda requested but torch.cuda.is_available() is false"
+            )
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore[import]
     except ImportError as exc:
@@ -417,8 +429,8 @@ def load_bge_sentence_transformer(settings: AppsRgEmbeddingSettings) -> Any:
             "sentence-transformers required for BGE but not installed"
         ) from exc
     path = settings.embedding_model_path
-    _logger.info("apps_rg BGE load: local path=%s (no HF hub)", path)
-    return SentenceTransformer(path, local_files_only=True)
+    _logger.info("apps_rg BGE load: local path=%s device=%s (no HF hub)", path, device)
+    return SentenceTransformer(path, device=device, local_files_only=True)
 
 
 def write_embedding_settings_receipt(

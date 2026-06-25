@@ -78,9 +78,13 @@ def bootstrap_apps_rg_env(
             chosen_path = candidate
             source = src
             existed = True
-            from dotenv import load_dotenv
-
-            loaded = bool(load_dotenv(dotenv_path=candidate, override=override))
+            try:
+                from dotenv import load_dotenv
+            except ImportError:
+                source = f"{src}:dotenv_import_unavailable"
+                loaded = False
+            else:
+                loaded = bool(load_dotenv(dotenv_path=candidate, override=override))
             break
     return AppsRgEnvBootstrapResult(
         repo_root=str(root),

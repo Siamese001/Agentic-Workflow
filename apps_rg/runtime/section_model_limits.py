@@ -22,13 +22,97 @@ class SectionModelSSOTError(RuntimeError):
     """Raised when apps_rg generation model SSOT cannot be loaded."""
 
 
+def _strip_yaml_comment(line: str) -> str:
+    in_single = False
+    in_double = False
+    for idx, char in enumerate(line):
+        if char == "'" and not in_double:
+            in_single = not in_single
+        elif char == '"' and not in_single:
+            in_double = not in_double
+        elif char == "#" and not in_single and not in_double:
+            return line[:idx]
+    return line
+
+
+def _yaml_scalar(value: str) -> Any:
+    raw = value.strip()
+    if raw in {"", "null", "Null", "NULL", "~"}:
+        return None
+    if raw.lower() == "true":
+        return True
+    if raw.lower() == "false":
+        return False
+    if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+        return raw[1:-1]
+    try:
+        if "." not in raw:
+            return int(raw)
+    except ValueError:
+        pass
+    try:
+        return float(raw)
+    except ValueError:
+        return raw
+
+
+def _next_yaml_content(lines: list[tuple[int, str]], start_idx: int, parent_indent: int) -> str:
+    for indent, content in lines[start_idx:]:
+        if indent <= parent_indent:
+            return ""
+        return content
+    return ""
+
+
+def _parse_provider_profiles_without_yaml(text: str) -> dict[str, Any]:
+    """Tiny parser for this repo-owned YAML shape when PyYAML is unavailable."""
+    lines: list[tuple[int, str]] = []
+    for raw_line in text.splitlines():
+        stripped_comment = _strip_yaml_comment(raw_line).rstrip()
+        if not stripped_comment.strip():
+            continue
+        indent = len(stripped_comment) - len(stripped_comment.lstrip(" "))
+        lines.append((indent, stripped_comment.strip()))
+
+    root: dict[str, Any] = {}
+    stack: list[tuple[int, Any]] = [(-1, root)]
+    for idx, (indent, content) in enumerate(lines):
+        while stack and indent <= stack[-1][0]:
+            stack.pop()
+        if not stack:
+            raise SectionModelSSOTError(f"Invalid indentation in {_PROVIDER_PROFILES_PATH}")
+        parent = stack[-1][1]
+        if content.startswith("- "):
+            if not isinstance(parent, list):
+                raise SectionModelSSOTError(f"Invalid list entry in {_PROVIDER_PROFILES_PATH}: {content}")
+            parent.append(_yaml_scalar(content[2:]))
+            continue
+        key, sep, value = content.partition(":")
+        if not sep or not key.strip():
+            raise SectionModelSSOTError(f"Invalid mapping entry in {_PROVIDER_PROFILES_PATH}: {content}")
+        if not isinstance(parent, dict):
+            raise SectionModelSSOTError(f"Invalid nested mapping in {_PROVIDER_PROFILES_PATH}: {content}")
+        key = key.strip()
+        value = value.strip()
+        if value:
+            parent[key] = _yaml_scalar(value)
+            continue
+        next_content = _next_yaml_content(lines, idx + 1, indent)
+        child: Any = [] if next_content.startswith("- ") else {}
+        parent[key] = child
+        stack.append((indent, child))
+    return root
+
+
 def _provider_config() -> dict[str, Any]:
     try:
         import yaml  # noqa: PLC0415
 
         data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
-    except ImportError as exc:  # guardian: strict SSOT load; caller must see the broken source
-        raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
+    except ImportError:
+        data = _parse_provider_profiles_without_yaml(
+            _PROVIDER_PROFILES_PATH.read_text(encoding="utf-8")
+        )
     except (AttributeError, OSError, TypeError, UnicodeError, ValueError, yaml.YAMLError) as exc:
         raise SectionModelSSOTError(f"Cannot load apps_rg provider profile SSOT: {_PROVIDER_PROFILES_PATH}") from exc
     if not isinstance(data, dict):

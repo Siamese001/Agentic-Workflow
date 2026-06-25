@@ -30,14 +30,20 @@ def test_bootstrap_disabled_when_otel_env_unset(monkeypatch):
     assert isinstance(status, RuntimeTracingStatus)
     assert status.external_otel_activation == "disabled"
     assert status.provider_bootstrap_status == "disabled_env_unset"
+    assert status.collector_export_mode == "none"
+    assert status.collector_endpoint == ""
     # Local deterministic span records are the L6 source regardless of export.
     assert status.local_capture_enabled is True
+    assert status.l6_observability_role == "consume_local_span_records"
+    assert status.as_dict()["collector_export_mode"] == "none"
 
 
 def test_bootstrap_attempted_when_console_exporter_set(monkeypatch):
     monkeypatch.setenv("OTEL_TRACES_EXPORTER", "console")
     status = bootstrap_runtime_tracing()
     assert status.external_otel_activation == "enabled:console"
+    assert status.collector_export_mode == "console"
+    assert status.collector_endpoint == ""
     # Bootstrap must NOT report itself disabled/ignored when env opts in. The
     # exact value depends on whether a real provider was already installed in
     # this process (set_tracer_provider is once-per-process).
@@ -55,3 +61,14 @@ def test_bootstrap_never_raises_on_unknown_exporter(monkeypatch):
     status = bootstrap_runtime_tracing()  # must not raise
     assert isinstance(status, RuntimeTracingStatus)
     assert status.external_otel_activation == "enabled:not-a-real-exporter"
+    assert status.collector_export_mode == "unknown:not-a-real-exporter"
+
+
+def test_bootstrap_reports_otlp_collector_endpoint(monkeypatch):
+    monkeypatch.setenv("OTEL_TRACES_EXPORTER", "otlp")
+    monkeypatch.setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
+    status = bootstrap_runtime_tracing()
+    assert status.external_otel_activation == "enabled:otlp"
+    assert status.collector_export_mode == "otlp"
+    assert status.collector_endpoint == "http://localhost:4318"
+    assert status.local_capture_enabled is True

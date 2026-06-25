@@ -817,10 +817,14 @@ def pytest_configure(config):
             continue
         pkg_path = getattr(mod, "__path__", None)
         pkg_file = getattr(mod, "__file__", "") or ""
-        if pkg_path and any(
-            _tests_root in str(p)
-            for p in (pkg_path if isinstance(pkg_path, (list, tuple, set)) else [pkg_path])
-        ):
+        pkg_path_entries: list[str] = []
+        if pkg_path is not None:
+            try:
+                path_iter = pkg_path if isinstance(pkg_path, (list, tuple, set)) else list(pkg_path)
+                pkg_path_entries = [str(p) for p in path_iter]
+            except (KeyError, RuntimeError):
+                pkg_path_entries = [str(p) for p in getattr(pkg_path, "_path", [])]
+        if pkg_path_entries and any(_tests_root in p for p in pkg_path_entries):
             to_delete.append(key)
         elif _tests_root in pkg_file:
             to_delete.append(key)

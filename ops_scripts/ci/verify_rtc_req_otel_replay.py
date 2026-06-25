@@ -28,7 +28,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 LATEST = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest"
 REPLAY_ROOT = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "replay"
 PAIR_RECEIPT = REPLAY_ROOT / "replay_pair_receipt.json"
@@ -116,7 +116,7 @@ def _check_023():
     if not PAIR_RECEIPT.exists():
         return ("FAIL",
                 "replay_pair_receipt.json missing; "
-                "run scripts/regen_integrated_runtime_replay_pair.py")
+                "run ops_scripts/ci/regen_integrated_runtime_replay_pair.py")
     d = _load(PAIR_RECEIPT) or {}
     if d.get("result") == "PASS":
         return ("PASS",
@@ -130,7 +130,7 @@ def _check_024():
     if not NEG_RECEIPT.exists():
         return ("FAIL",
                 "replay_mutation_negative_receipt.json missing; "
-                "run scripts/regen_integrated_runtime_replay_pair.py")
+                "run ops_scripts/ci/regen_integrated_runtime_replay_pair.py")
     d = _load(NEG_RECEIPT) or {}
     if d.get("result") == "PASS":
         return ("PASS",

@@ -19,23 +19,38 @@ from apps_rg.runtime.c0.constants import (
     SOURCE_PRIOR_VARIANT,
     TARGETING_ONLY,
 )
-from apps_rg.runtime.c0.fact_vector_write_back import (
-    ENRICH,
-    FUSE,
-    GENERATED,
-    PROMOTION_MODE_DEFERRED,
-    STAGE_FOR_FACT_VECTORS,
-    STAGING_COLLECTION_NAME,
-    decide_write_back,
-    promote_staged_fact_vectors,
-    promotion_mode,
-)
 from apps_rg.tools.fact_vector_ingest import FactVectorChunk, FactVectorSchema
 
 _logger = logging.getLogger(__name__)
 
 INGEST_RECEIPT_NAME = "c02_fact_vectors_ingest_receipt.json"
 CHUNK_ID_PREFIX = "apps_rg:fv:"
+
+EXTRACT = "extract"
+ENRICH = "enrich"
+FUSE = "fuse"
+GENERATED = "generated"
+PROMOTION_MODE_DEFERRED = "deferred"
+STAGE_FOR_FACT_VECTORS = "stage_for_fact_vectors"
+STAGING_COLLECTION_NAME = "fact_vectors_staging"
+
+
+def _decide_write_back(atom: C02Atom) -> Any:
+    from apps_rg.runtime.c0.fact_vector_write_back import decide_write_back
+
+    return decide_write_back(atom)
+
+
+def _promotion_mode(override: str | None = None) -> str:
+    from apps_rg.runtime.c0.fact_vector_write_back import promotion_mode
+
+    return promotion_mode(override)
+
+
+def _promote_staged_fact_vectors(**kwargs: Any) -> dict[str, Any]:
+    from apps_rg.runtime.c0.fact_vector_write_back import promote_staged_fact_vectors
+
+    return promote_staged_fact_vectors(**kwargs)
 
 
 def c02_atom_ingest_eligible(atom: C02Atom) -> tuple[bool, str]:
@@ -119,6 +134,7 @@ def atoms_to_fact_vector_chunks(
     ledger_version_hash: str = "",
     run_id: str = "",
     staged_at_utc: str = "",
+    enforce_writeback_decision: bool = True,
 ) -> tuple[list[FactVectorChunk], list[C02Atom], list[dict[str, str]]]:
     """Filter eligible atoms and build chunks (parallel atom list for metadata)."""
     schema = FactVectorSchema()
@@ -130,12 +146,16 @@ def atoms_to_fact_vector_chunks(
         # Write-back discipline FIRST: only a transform (extract/fuse/enrich) of grounded content
         # may be staged for fact_vectors. Generated/synthesized → semantic-cache domain; a claimed
         # transform without source provenance → rejected (fail closed).
-        decision = decide_write_back(atom)
-        if decision.route != STAGE_FOR_FACT_VECTORS:
-            skipped.append(
-                {"fact_id": fid, "reason": f"route_{decision.route}:{decision.operation}:{decision.reason}"}
-            )
-            continue
+        if enforce_writeback_decision:
+            decision = _decide_write_back(atom)
+            if decision.route != STAGE_FOR_FACT_VECTORS:
+                skipped.append(
+                    {"fact_id": fid, "reason": f"route_{decision.route}:{decision.operation}:{decision.reason}"}
+                )
+                continue
+            operation = decision.operation
+        else:
+            operation = EXTRACT
         ok, reason = c02_atom_ingest_eligible(atom)
         if not ok:
             skipped.append({"fact_id": fid, "reason": reason})
@@ -143,7 +163,7 @@ def atoms_to_fact_vector_chunks(
         # Stamp the resolved operation so the promotion gate can re-validate from metadata.
         atom_staged: C02Atom = {
             **atom,
-            "write_back_operation": decision.operation,
+            "write_back_operation": operation,
             "run_id": run_id,
             "staged_at_utc": staged_at_utc,
         }
@@ -243,7 +263,7 @@ def maybe_upsert_c02_fact_vectors(
     root = repo_root or REPO_ROOT
     chroma_path = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
     resolved_run_id = str(run_id or (artifact_dir.name if artifact_dir is not None else "")).strip()
-    resolved_promotion_mode = promotion_mode(promotion_mode_override)
+    resolved_promotion_mode = _promotion_mode(promotion_mode_override)
     staged_at_utc = datetime.now(timezone.utc).isoformat()
     receipt: dict[str, Any] = {
         "schema_version": "c02_fact_vectors_ingest_v1",
@@ -325,7 +345,7 @@ def maybe_upsert_c02_fact_vectors(
         # ...then the deterministic validation gate promotes them to live fact_vectors (or holds
         # for HITL when APPS_RG_FACT_VECTOR_PROMOTION_HITL=1). Live store stays populated for
         # grounded transforms — non-breaking vs the prior direct-upsert path.
-        promotion = promote_staged_fact_vectors(
+        promotion = _promote_staged_fact_vectors(
             chroma_path=chroma_path,
             artifact_dir=artifact_dir,
             run_id=resolved_run_id,
@@ -371,7 +391,7 @@ def promote_deferred_c02_fact_vectors_after_x3(
     section_id: str = "",
 ) -> dict[str, Any]:
     """Post-X3 seam: in deferred mode, promote only rows for a run that reached X3_ALLOW."""
-    resolved_mode = promotion_mode()
+    resolved_mode = _promotion_mode()
     receipt: dict[str, Any] = {
         "schema_version": "c02_fact_vectors_deferred_promotion_v1",
         "section_id": section_id,
@@ -402,7 +422,7 @@ def promote_deferred_c02_fact_vectors_after_x3(
     receipt["x3_code"] = resolved_x3_code
     receipt["artifact_dir"] = str(artifact_dir) if artifact_dir is not None else ""
     receipt["attempted"] = True
-    promotion = promote_staged_fact_vectors(
+    promotion = _promote_staged_fact_vectors(
         chroma_path=chroma_path,
         artifact_dir=artifact_dir,
         run_id=resolved_run_id,

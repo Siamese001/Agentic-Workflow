@@ -11,4 +11,4 @@
 - success now requires HEAD == origin/main == GitHub main, exactly one clean main worktree at `C:\Git\Agentic-Workflow-FRESH`, no unstaged diff, no staged diff, and strict `codex_readiness.py --git-publication --require-single-main-worktree` PASS.
 
 - run_time: 2026-06-21T07:10:35.8868257-04:00
-- proof-table update: added a required 3-row publication proof table with runtime evidence for GitHub main containment, origin/main sync, and single clean main worktree closeout.
+- proof-table update: added a required publication proof table for exact closeout evidence, including GitHub main containment, origin/main sync, single clean main worktree closeout, and explicit no-dirty/no-staged-diff proof rows.

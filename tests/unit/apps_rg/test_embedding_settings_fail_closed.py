@@ -138,6 +138,7 @@ def test_embeddings_enabled_local_bge_uses_explicit_path(
     (model_dir / "config.json").write_text("{}", encoding="utf-8")
     monkeypatch.setenv("EMBEDDING_ENABLED", "true")
     monkeypatch.setenv("APPS_RG_EMBEDDING_MODEL_PATH", str(model_dir))
+    monkeypatch.setenv("EMBEDDING_DEVICE", "cpu")
     s = resolve_apps_rg_embedding_settings()
     assert s.embedding_model_resolved is True
     assert s.embedding_model_source == "local"
@@ -151,6 +152,7 @@ def test_embeddings_enabled_local_bge_uses_explicit_path(
     _args, kwargs = st_mock.call_args
     assert str(_args[0]) == str(model_dir.resolve())
     assert kwargs.get("local_files_only") is True
+    assert kwargs.get("device") == "cpu"
 
 
 def test_c0_binding_get_embedding_model_blocked_when_disabled(

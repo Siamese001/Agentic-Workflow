@@ -9,21 +9,22 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Mapping
 from uuid import uuid4
 
+from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
+from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
+from agentic_core.L2_execution.apps_research_l2_binding import (
+    APPS_RESEARCH_L2_CERT_REF,
+    l2_execute_apps_research,
+)
+from agentic_core.prompt_governance import pa_assemble_prompt_package_driven
+from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     AppsRgIngressPayload,
     RequestEnvelope,
 )
-from agentic_core.runtime.entry.app_ingress_runner import AppRuntimeProfile
-from agentic_core.runtime.entry.u0_apps_research_binding import (
-    pa_assemble_apps_research,
-    u0_validate_apps_research,
-)
-from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
-from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
-from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
 )
@@ -31,12 +32,12 @@ from agentic_core.runtime.contracts.sealed_l2_artifact import (
     SealedL2Artifact as ContractSealedL2Artifact,
 )
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
+from agentic_core.runtime.entry.app_ingress_runner import AppRuntimeProfile
+from agentic_core.runtime.entry.u0_apps_research_binding import (
+    u0_validate_apps_research,
+)
 from agentic_core.runtime.exit.apps_research_exit_binding import (
     exit_finalize_apps_research,
-)
-from agentic_core.L2_execution.apps_research_l2_binding import (
-    APPS_RESEARCH_L2_CERT_REF,
-    l2_execute_apps_research,
 )
 
 APPS_RESEARCH_REQUIRED_FIELDS: tuple[str, ...] = (
@@ -149,6 +150,38 @@ def exit_finalize_apps_research_ingress(
     )
     disposition = exit_finalize_apps_research(contract_sealed, prompt)
     return _IngressExitResult(disposition=disposition)
+
+
+def pa_assemble_apps_research(
+    route_contract: Any,
+    l1_plan: Any,
+    final_evidence: Any,
+    validated_request: Any,
+) -> CompiledPromptArtifact:
+    """App-owned PA adapter using the public generic prompt-governance contract."""
+    app_payload = getattr(validated_request, "app_payload", None) or {}
+    if isinstance(app_payload, dict):
+        user_task = app_payload.get("target_company") or app_payload.get("topic") or ""
+    else:
+        user_task = (
+            getattr(app_payload, "target_company", None)
+            or getattr(app_payload, "topic", None)
+            or ""
+        )
+
+    repo_root = Path(__file__).resolve().parents[2]
+    prompt_profile_ref = str(
+        repo_root / "apps_research/config/domain_contract/prompt_profile.company_brief.v1.yaml"
+    )
+
+    artifact, _boundary_receipt, _security_receipt = pa_assemble_prompt_package_driven(
+        l1_plan=l1_plan,
+        route_contract=route_contract,
+        final_evidence=final_evidence,
+        user_task=user_task,
+        prompt_profile_ref=prompt_profile_ref,
+    )
+    return artifact
 
 
 def build_app_runtime_contract() -> AppRuntimeProfile:

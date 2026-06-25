@@ -7,7 +7,7 @@ Steps:
   4. Parse the exported spans file to confirm external receipt.
   5. Write artifacts/certification/otel_collector_receipt.json  (RTC-REQ-020 unlock)
   6. Write artifacts/certification/otel_metric_delta_report.json (RTC-REQ-022 unlock)
-  7. Re-run scripts/verify_rtc_req_otel_replay.py and print result.
+  7. Re-run ops_scripts/ci/verify_rtc_req_otel_replay.py and print result.
 
 Usage:
     # Start collector first:
@@ -323,7 +323,7 @@ def _write_metric_delta_report(request_id: str) -> None:
 
 
 def _run_replay_verifier() -> int:
-    verifier = REPO_ROOT / "scripts" / "verify_rtc_req_otel_replay.py"
+    verifier = REPO_ROOT / "ops_scripts" / "ci" / "verify_rtc_req_otel_replay.py"
     result = subprocess.run(
         [sys.executable, str(verifier)],
         cwd=str(REPO_ROOT),
