@@ -284,6 +284,24 @@ def _sparse_sidecar_summary(*, repo_root: Path) -> dict[str, Any]:
     }
 
 
+def _sections_in_scope(sections_in_scope: Any = None) -> tuple[str, ...]:
+    if sections_in_scope is None:
+        return GENERATED_LANES
+    if isinstance(sections_in_scope, str):
+        raw_sections = [sections_in_scope]
+    else:
+        try:
+            raw_sections = list(sections_in_scope)
+        except TypeError:
+            raw_sections = []
+    normalized = []
+    for section in raw_sections:
+        sid = str(section or "").strip().lower().replace("-", "_")
+        if sid and sid in GENERATED_LANES and sid not in normalized:
+            normalized.append(sid)
+    return tuple(normalized) or GENERATED_LANES
+
+
 def _row_for_section(
     *,
     section_id: str,
@@ -386,16 +404,43 @@ def build_fact_vector_readiness_receipt(
     block_code: str = BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
     target_context: dict[str, Any] | None = None,
     require_manifest_alignment: bool = True,
+    sections_in_scope: Any = None,
 ) -> dict[str, Any]:
     """Return a read-only readiness receipt for the pre-U0/post-U0 gates."""
     root = repo_root or _repo_root()
+    section_ids = _sections_in_scope(sections_in_scope)
+    direct_vector_sections = tuple(
+        section_id
+        for section_id in section_ids
+        if c0_section_authority_profile(section_id).direct_vector_proof
+    )
+    direct_vector_in_scope = bool(direct_vector_sections)
     sqlite_path = _sqlite_path(repo_root=root, chroma_path=chroma_path)
-    chroma = _inspect_chroma_sqlite(sqlite_path)
+    chroma = (
+        _inspect_chroma_sqlite(sqlite_path)
+        if direct_vector_in_scope
+        else {
+            "available": True,
+            "skipped": True,
+            "path": str(sqlite_path),
+            "reason": "no_direct_fact_vector_sections_in_scope",
+        }
+    )
     manifest = _manifest_summary(repo_root=root, manifest_path=manifest_path)
-    sparse = _sparse_sidecar_summary(repo_root=root)
+    sparse = (
+        _sparse_sidecar_summary(repo_root=root)
+        if direct_vector_in_scope
+        else {
+            "path": str(root / SPARSE_SIDE_CAR_REL),
+            "available": True,
+            "skipped": True,
+            "doc_count": 0,
+            "reason": "no_direct_fact_vector_sections_in_scope",
+        }
+    )
     reasons: list[str] = []
 
-    if not chroma.get("available"):
+    if direct_vector_in_scope and not chroma.get("available"):
         reasons.append(str(chroma.get("error") or "fact_vectors_unavailable"))
 
     collection_count = int(chroma.get("collection_doc_count") or 0)
@@ -403,25 +448,28 @@ def build_fact_vector_readiness_receipt(
     model_counts = chroma.get("model_counts") if isinstance(chroma.get("model_counts"), dict) else {}
     dim_counts = chroma.get("dim_counts") if isinstance(chroma.get("dim_counts"), dict) else {}
     model_dim_pass = (
-        collection_count > 0
-        and int(collection_dim or 0) == EXPECTED_BGE_DIMENSION
-        and model_counts == {BGE_M3_MODEL_ID: collection_count}
-        and dim_counts == {str(EXPECTED_BGE_DIMENSION): collection_count}
+        not direct_vector_in_scope
+        or (
+            collection_count > 0
+            and int(collection_dim or 0) == EXPECTED_BGE_DIMENSION
+            and model_counts == {BGE_M3_MODEL_ID: collection_count}
+            and dim_counts == {str(EXPECTED_BGE_DIMENSION): collection_count}
+        )
     )
-    if collection_count <= 0:
+    if direct_vector_in_scope and collection_count <= 0:
         reasons.append("fact_vectors_collection_empty")
-    if int(collection_dim or 0) != EXPECTED_BGE_DIMENSION:
+    if direct_vector_in_scope and int(collection_dim or 0) != EXPECTED_BGE_DIMENSION:
         reasons.append("fact_vectors_collection_dimension_not_1024")
-    if model_counts != {BGE_M3_MODEL_ID: collection_count}:
+    if direct_vector_in_scope and model_counts != {BGE_M3_MODEL_ID: collection_count}:
         reasons.append("fact_vectors_embedding_model_not_fully_bge_m3")
-    if dim_counts != {str(EXPECTED_BGE_DIMENSION): collection_count}:
+    if direct_vector_in_scope and dim_counts != {str(EXPECTED_BGE_DIMENSION): collection_count}:
         reasons.append("fact_vectors_embedding_dim_not_fully_1024")
-    if not sparse.get("available"):
+    if direct_vector_in_scope and not sparse.get("available"):
         reasons.append(str(sparse.get("error") or "sparse_sidecar_unavailable"))
 
-    if require_manifest_alignment:
+    if require_manifest_alignment and direct_vector_in_scope:
         required_lanes = set(str(x) for x in (manifest.get("required_lanes") or []))
-        expected_lanes = set(DIRECT_VECTOR_LANES)
+        expected_lanes = set(direct_vector_sections)
         if not manifest.get("present"):
             reasons.append("bootstrap_manifest_missing")
         if manifest.get("dry_run"):
@@ -442,7 +490,7 @@ def build_fact_vector_readiness_receipt(
             model_dim_pass=model_dim_pass,
             require_manifest_alignment=require_manifest_alignment,
         )
-        for section_id in GENERATED_LANES
+        for section_id in section_ids
     ]
     failed_sections = [
         row["section_id"] for row in rows if row.get("status") != STATUS_PASS
@@ -476,8 +524,11 @@ def build_fact_vector_readiness_receipt(
         "authority_manifest": c0_authority_manifest(),
         "generated_lanes": list(GENERATED_LANES),
         "direct_vector_lanes": list(DIRECT_VECTOR_LANES),
-        "section_count": len(GENERATED_LANES),
+        "sections_in_scope": list(section_ids),
+        "direct_vector_lanes_in_scope": list(direct_vector_sections),
+        "section_count": len(section_ids),
         "direct_vector_section_count": len(DIRECT_VECTOR_LANES),
+        "direct_vector_section_count_in_scope": len(direct_vector_sections),
         "rows": rows,
         "failed_sections": failed_sections,
         "summary": {
@@ -509,6 +560,7 @@ def build_fact_vector_readiness_with_fallback_receipt(
     block_code: str = BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
     target_context: dict[str, Any] | None = None,
     allow_existing_index_fallback: bool = True,
+    sections_in_scope: Any = None,
 ) -> dict[str, Any]:
     """Build a strict receipt, then fall back to live-index sufficiency if allowed.
 
@@ -525,6 +577,7 @@ def build_fact_vector_readiness_with_fallback_receipt(
         block_code=block_code,
         target_context=target_context,
         require_manifest_alignment=True,
+        sections_in_scope=sections_in_scope,
     )
     if strict.get("status") == STATUS_PASS:
         strict["fallback"] = {
@@ -551,6 +604,7 @@ def build_fact_vector_readiness_with_fallback_receipt(
             "fallback_probe": "existing_fact_vectors_index_without_manifest_alignment",
         },
         require_manifest_alignment=False,
+        sections_in_scope=sections_in_scope,
     )
     if fallback.get("status") == STATUS_PASS:
         fallback["fallback"] = {
@@ -630,26 +684,35 @@ def enforce_fact_vector_readiness(
     target_context: dict[str, Any] | None = None,
     repo_root: Path | None = None,
     chroma_path: str | None = None,
+    manifest_path: Path | None = None,
     require_manifest_alignment: bool = True,
     allow_existing_index_fallback: bool = False,
+    sections_in_scope: Any = None,
 ) -> dict[str, Any]:
+    scoped_sections = sections_in_scope
+    if scoped_sections is None and section:
+        scoped_sections = (section,)
     if require_manifest_alignment and allow_existing_index_fallback:
         receipt = build_fact_vector_readiness_with_fallback_receipt(
             repo_root=repo_root,
             chroma_path=chroma_path,
+            manifest_path=manifest_path,
             gate_id=gate_id,
             block_code=block_code,
             target_context=target_context,
             allow_existing_index_fallback=allow_existing_index_fallback,
+            sections_in_scope=scoped_sections,
         )
     else:
         receipt = build_fact_vector_readiness_receipt(
             repo_root=repo_root,
             chroma_path=chroma_path,
+            manifest_path=manifest_path,
             gate_id=gate_id,
             block_code=block_code,
             target_context=target_context,
             require_manifest_alignment=require_manifest_alignment,
+            sections_in_scope=scoped_sections,
         )
     receipt_path = resolve_fact_vector_readiness_receipt_path(
         artifact_dir=artifact_dir,

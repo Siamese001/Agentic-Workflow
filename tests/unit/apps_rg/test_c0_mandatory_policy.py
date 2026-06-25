@@ -12,6 +12,7 @@ from apps_rg.runtime.c0_mandatory_policy import (
     is_c03_mandatory_section,
 )
 from apps_rg.runtime.bindings.c0_binding import C0EvidenceGapError, c0_retrieve_apps_rg
+from apps_rg.runtime.c0.c02_product_hybrid_retrieval import product_hybrid_retrieval_required
 from apps_rg.runtime.embedding_settings import bootstrap_apps_rg_embedding_env
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import RouteContract
@@ -63,3 +64,13 @@ def test_dense_sparse_mandatory_requires_chroma(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setenv("EMBEDDING_ENABLED", "true")
     with pytest.raises(C0EvidenceGapError, match="CHROMA_PERSIST_DIR"):
         c0_retrieve_apps_rg(_route(), _validated(), chromadb_path=None)
+
+
+def test_dense_sparse_mandatory_does_not_make_narratives_direct_hybrid(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("APPS_RG_TEST_HARNESS", raising=False)
+    monkeypatch.delenv("APPS_RG_ALLOW_PRODUCT_SHORTCUTS", raising=False)
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "1")
+
+    assert product_hybrid_retrieval_required("unify_narrative") is False

@@ -188,11 +188,14 @@ def _build_section_sufficiency(
     if direct_vector_required and not manifest_coverage_present:
         reasons.append("section_bootstrap_manifest_coverage_missing")
     model_dim_pass = (
-        collection_count > 0
-        and bad_model_count == 0
-        and missing_model_count == 0
-        and bad_dim_count == 0
-        and missing_dim_count == 0
+        not direct_vector_required
+        or (
+            collection_count > 0
+            and bad_model_count == 0
+            and missing_model_count == 0
+            and bad_dim_count == 0
+            and missing_dim_count == 0
+        )
     )
     if direct_vector_required and not model_dim_pass:
         reasons.append("section_fact_vector_model_dim_not_sufficient")
@@ -880,7 +883,11 @@ def build_fact_vector_index_preflight(
     receipt["status"] = status
     receipt["reasons"] = reasons
     receipt["section_coverage_present"] = section_covered
-    receipt["same_run_write_policy"] = "forbidden_for_product_retrieval"
+    receipt["same_run_write_policy"] = (
+        "forbidden_for_product_retrieval"
+        if direct_vector_required
+        else "not_applicable_inherited_upstream_proof"
+    )
     receipt["write_authority"] = False
     receipt["comparison_authority"] = True
 
