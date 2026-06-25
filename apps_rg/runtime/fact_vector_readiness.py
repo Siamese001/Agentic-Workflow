@@ -16,6 +16,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.c0.section_authority_profile import (
+    c0_authority_manifest,
+    c0_section_authority_profile,
+    direct_vector_section_ids,
+)
+
 BGE_M3_MODEL_ID = "BAAI/bge-m3"
 EXPECTED_BGE_DIMENSION = 1024
 COLLECTION_NAME = "fact_vectors"
@@ -35,6 +41,7 @@ GENERATED_LANES: tuple[str, ...] = (
     "executive_summary",
     "headline",
 )
+DIRECT_VECTOR_LANES: tuple[str, ...] = direct_vector_section_ids()
 
 SECTION_SOURCE_SLOT_MIN_COUNTS: dict[str, tuple[str, int]] = {
     "unify_bullets": ("bul_unify_", 6),
@@ -285,6 +292,7 @@ def _row_for_section(
     model_dim_pass: bool,
     require_manifest_alignment: bool,
 ) -> dict[str, Any]:
+    authority = c0_section_authority_profile(section_id)
     section_counts = chroma.get("section_counts") if isinstance(chroma.get("section_counts"), dict) else {}
     source_ids_by_section = (
         chroma.get("section_source_ids") if isinstance(chroma.get("section_source_ids"), dict) else {}
@@ -311,27 +319,40 @@ def _row_for_section(
     reasons: list[str] = []
     live_count = int(section_counts.get(section_id) or 0)
     manifest_count = int(manifest_counts.get(section_id) or 0)
-    if live_count <= 0:
-        reasons.append("section_pre_run_fact_vector_hydration_missing")
-    if require_manifest_alignment and manifest_count <= 0:
-        reasons.append("section_bootstrap_manifest_coverage_missing")
-    if not model_dim_pass:
-        reasons.append("section_fact_vector_model_dim_not_sufficient")
     unexpected_sources = sorted(
         source for source in source_class_counts if source not in SOURCE_CLASS_ALLOWLIST
     )
-    if unexpected_sources:
-        reasons.append("section_source_class_not_authoritative")
+    direct_vector_required = bool(authority.direct_vector_proof)
+    if direct_vector_required:
+        if live_count <= 0:
+            reasons.append("section_pre_run_fact_vector_hydration_missing")
+        if require_manifest_alignment and manifest_count <= 0:
+            reasons.append("section_bootstrap_manifest_coverage_missing")
+        if not model_dim_pass:
+            reasons.append("section_fact_vector_model_dim_not_sufficient")
+        if unexpected_sources:
+            reasons.append("section_source_class_not_authoritative")
 
-    prefix, min_slots = SECTION_SOURCE_SLOT_MIN_COUNTS.get(section_id, ("", 0))
+    prefix, min_slots = (
+        SECTION_SOURCE_SLOT_MIN_COUNTS.get(section_id, ("", 0))
+        if direct_vector_required
+        else ("", 0)
+    )
     slot_ids = sorted({sid for sid in source_ids if prefix and sid.startswith(prefix)})
-    if min_slots and len(slot_ids) < min_slots:
+    if direct_vector_required and min_slots and len(slot_ids) < min_slots:
         reasons.append("section_expected_source_slot_coverage_missing")
 
     return {
         "section_id": section_id,
         "status": STATUS_PASS if not reasons else STATUS_BLOCKED,
         "reasons": reasons,
+        "authority_mode": authority.authority_mode,
+        "direct_vector_proof": authority.direct_vector_proof,
+        "inherited_bullet_proof": authority.inherited_bullet_proof,
+        "aggregate_section_proof": authority.aggregate_section_proof,
+        "positioning_only": authority.positioning_only,
+        "upstream_sections": list(authority.upstream_sections),
+        "direct_fact_vector_required": direct_vector_required,
         "live_section_target_count": live_count,
         "manifest_section_target_count": manifest_count,
         "unique_source_document_count": len(set(source_ids)),
@@ -348,7 +369,11 @@ def _row_for_section(
         "delayed_loop_policy_pass": True,
         "write_authority": False,
         "comparison_authority": True,
-        "same_run_write_policy": "forbidden_for_product_retrieval",
+        "same_run_write_policy": (
+            "forbidden_for_product_retrieval"
+            if direct_vector_required
+            else "not_applicable_inherited_upstream_proof"
+        ),
     }
 
 
@@ -396,16 +421,17 @@ def build_fact_vector_readiness_receipt(
 
     if require_manifest_alignment:
         required_lanes = set(str(x) for x in (manifest.get("required_lanes") or []))
-        expected_lanes = set(GENERATED_LANES)
+        expected_lanes = set(DIRECT_VECTOR_LANES)
         if not manifest.get("present"):
             reasons.append("bootstrap_manifest_missing")
         if manifest.get("dry_run"):
             reasons.append("bootstrap_manifest_is_dry_run")
-        if required_lanes != expected_lanes:
+        if not expected_lanes.issubset(required_lanes):
             reasons.append("bootstrap_manifest_required_lanes_not_current")
         if manifest.get("missing_required_lane_targets"):
             reasons.append("bootstrap_manifest_missing_required_lane_targets")
-        if manifest.get("locked_deterministic_lanes"):
+        locked_direct_lanes = set(str(x) for x in manifest.get("locked_deterministic_lanes") or [])
+        if locked_direct_lanes & expected_lanes:
             reasons.append("bootstrap_manifest_has_locked_deterministic_lanes")
 
     rows = [
@@ -447,8 +473,11 @@ def build_fact_vector_readiness_receipt(
         "collection": chroma,
         "sparse_sidecar": sparse,
         "bootstrap_manifest": manifest,
+        "authority_manifest": c0_authority_manifest(),
         "generated_lanes": list(GENERATED_LANES),
+        "direct_vector_lanes": list(DIRECT_VECTOR_LANES),
         "section_count": len(GENERATED_LANES),
+        "direct_vector_section_count": len(DIRECT_VECTOR_LANES),
         "rows": rows,
         "failed_sections": failed_sections,
         "summary": {
@@ -459,6 +488,14 @@ def build_fact_vector_readiness_receipt(
             "manifest_present": bool(manifest.get("present")),
             "sparse_sidecar_doc_count": int(sparse.get("doc_count") or 0),
             "failed_section_count": len(failed_sections),
+            "direct_vector_failed_section_count": len(
+                [
+                    row
+                    for row in rows
+                    if row.get("status") != STATUS_PASS
+                    and row.get("direct_fact_vector_required")
+                ]
+            ),
         },
     }
 
@@ -632,6 +669,7 @@ __all__ = [
     "BLOCKED_PRE_U0_FACT_VECTOR_READINESS",
     "EXPECTED_BGE_DIMENSION",
     "FactVectorReadinessError",
+    "DIRECT_VECTOR_LANES",
     "GENERATED_LANES",
     "POST_U0_GATE_ID",
     "POST_U0_RECEIPT",

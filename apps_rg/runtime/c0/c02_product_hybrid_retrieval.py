@@ -32,9 +32,13 @@ _C0_REMEDIATION_HINT = (
 def product_hybrid_retrieval_required(section_id: str) -> bool:
     """True when this section lane must run bounded hybrid read (fail-closed on product)."""
     from apps_rg.runtime.c0_mandatory_policy import apps_rg_c0_dense_sparse_mandatory
+    from apps_rg.runtime.c0.section_authority_profile import c0_section_authority_profile
     from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
 
     if not product_fail_closed_runtime() or not apps_rg_c0_dense_sparse_mandatory():
+        return False
+    authority = c0_section_authority_profile(section_id)
+    if not authority.product_hybrid_allowed or not authority.direct_vector_proof:
         return False
     from apps_rg.runtime.bindings.c0_binding import SectionRetrievalProfile
 
