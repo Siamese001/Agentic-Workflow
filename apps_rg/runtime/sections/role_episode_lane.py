@@ -501,16 +501,30 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         f"- {f.get('fact_id')}: {_compact_text(str(f.get('claim_text') or f.get('text') or ''), max_chars=280)}"
         for f in facts
     ]
+    role_methodology = (
+        "METHODOLOGY:\n"
+        "- Bullets do the hard proof work: each bullet must carry one evidence-bound achievement, "
+        "cite only allowed source_fact_ids, and avoid generic substitution.\n"
+        "- Narratives are the lightweight synthesis step above finalized bullets: turn accepted "
+        "bullet themes into one higher-level role thesis. The narrative states why the role mattered; "
+        "the bullets prove what was delivered.\n"
+        "- Do not redo first-principles graph traversal in the narrative. Use the accepted bullet "
+        "themes as primary synthesis context after finalization; the active proof pool and "
+        "claim_ledger remain the only proof authority.\n"
+        "- Prefer one clean executive through-line over a comma-packed list of bullet topics."
+    )
     shape = (
         "Return JSON with exactly 3 bullets: "
         "{bullets:[{bullet_id, bullet_text, source_fact_ids}], claim_ledger:[{claim_text, source_fact_ids}], "
-        "jd_alignment:{targeting_only:true,jd_used_as_proof:false}}"
+        "jd_alignment:{targeting_only:true,jd_used_as_proof:false}}. Each bullet is a single "
+        "proof-bearing achievement; do not write a role summary or narrative sentence in bullet form."
         if cfg.is_bullet_lane
         else "Return JSON with narrative_sentence, claim_ledger:[{claim_text, source_fact_ids}], "
         "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence "
         f"of at most {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters, "
         "in first-person-implied resume voice: start with a past-tense action verb and never use a "
-        "third-person subject such as 'the candidate' or the candidate's name."
+        "third-person subject such as 'the candidate' or the candidate's name. It must be a role thesis, "
+        "not a recap of all three bullets."
     )
 
     # JD-targeted tailoring path: when role-episode graph bundles are attached, steer prose by the
@@ -542,6 +556,7 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         return "\n".join(
             [
                 f"Section: {cfg.section_id}",
+                role_methodology,
                 instruction,
                 jd_block,
                 evidence_block,
@@ -554,6 +569,7 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
     return "\n".join(
         [
             f"Section: {cfg.section_id}",
+            role_methodology,
             "Use only source_fact_ids from the allowed facts below. Do not use JD or briefing as claim proof.",
             shape,
             "Allowed facts:",

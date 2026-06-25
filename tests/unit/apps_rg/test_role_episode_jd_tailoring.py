@@ -4,6 +4,8 @@ instead of the legacy fact-only / "do not use JD" prompt. Identity stays locked.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from apps_rg.runtime.sections.role_episode_lane import (
     _ROLE_LANES,
     _compiled_prompt,
@@ -62,6 +64,8 @@ def test_targeted_prompt_injects_jd_and_graph_skills() -> None:
     # proof contract intact: facts still the claim anchor
     assert "bul_ey_003" in prompt
     assert "jd_used_as_proof=false" in prompt
+    assert "Bullets do the hard proof work" in prompt
+    assert "each bullet must carry one evidence-bound achievement" in prompt
 
 
 def test_activation_tiering_primary_vs_optional() -> None:
@@ -80,7 +84,43 @@ def test_legacy_prompt_when_no_bundles() -> None:
     assert "Do not use JD or briefing as claim proof." in prompt
     assert "GRAPH_SKILL_EVIDENCE" not in prompt
     assert "TARGET_TITLE" not in prompt
+    assert "Bullets do the hard proof work" in prompt
 
 
 def test_evidence_block_empty_without_bundles() -> None:
     assert _role_episode_evidence_block(_payload(with_bundles=False)) == ""
+
+
+def test_insurtech_and_ey_narrative_prompts_are_role_thesis_not_recap() -> None:
+    for section_id in ("insurtech_narrative", "ey_narrative"):
+        prompt = _compiled_prompt(_ROLE_LANES[section_id], _payload(with_bundles=True))
+        assert "Narratives are the lightweight synthesis step above finalized bullets" in prompt
+        assert "accepted bullet themes into one higher-level role thesis" in prompt
+        assert "The narrative states why the role mattered; the bullets prove what was delivered." in prompt
+        assert "not a recap of all three bullets" in prompt
+        assert "claim_ledger remain the only proof authority" in prompt
+        assert "jd_used_as_proof=false" in prompt
+
+
+def test_insurtech_ey_templates_match_unify_ibm_methodology_contract() -> None:
+    template_paths = [
+        Path("apps_rg/prompt_assembly/templates/insurtech_bullets_tailor_v1.yaml"),
+        Path("apps_rg/prompt_assembly/templates/ey_bullets_tailor_v1.yaml"),
+        Path("apps_rg/prompt_assembly/templates/insurtech_narrative_v1.yaml"),
+        Path("apps_rg/prompt_assembly/templates/ey_narrative_v1.yaml"),
+    ]
+    texts = {path.name: path.read_text(encoding="utf-8") for path in template_paths}
+
+    for name in ("insurtech_bullets_tailor_v1.yaml", "ey_bullets_tailor_v1.yaml"):
+        text = texts[name]
+        assert "PROOF_HEAVY_BULLETS" in text
+        assert "bullets_prove_what_was_delivered: true" in text
+        assert "JD or briefing used as claim evidence" in text
+
+    for name in ("insurtech_narrative_v1.yaml", "ey_narrative_v1.yaml"):
+        text = texts[name]
+        assert "ROLE_THESIS_NARRATIVE" in text
+        assert "finalized_bullets_are_primary_synthesis_context: true" in text
+        assert "companion bullets prove what was delivered" in text
+        assert "three-bullet recap" in text
+        assert "active_proof_pool_and_claim_ledger_only" in text

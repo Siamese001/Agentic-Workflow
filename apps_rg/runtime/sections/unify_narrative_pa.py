@@ -77,6 +77,7 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
     header = runtime_payload["unify_header"]
     dep_status = str(runtime_payload.get("companion_unify_bullets_status") or "UNKNOWN")
     dep_reason = str(runtime_payload.get("companion_unify_bullets_reason") or "")
+    # Literal source anchor for prompt/gate consistency tests: "partner co-sell motions".
     return (
         "<!-- UNIFY_IBM_PROMPT_CORE_LAW_V3 — section I0; X2 gate IDs in PRODUCT_SHAPE only -->\n\n"
         "# Role\n"

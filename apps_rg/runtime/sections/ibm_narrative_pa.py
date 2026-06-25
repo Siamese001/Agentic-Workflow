@@ -106,7 +106,7 @@ def _theme_budget_block() -> str:
         "work for enterprise clients at IBM, establishing <operating discipline> that made "
         "<plain outcome> more repeatable.' Keep each clause to at most two theme families, "
         "and prefer two or three material families total over the full four-family budget.",
-        "- OPENER LAW (deterministic opener constraint): the sentence "
+        "- OPENER LAW (deterministic gate x2_ibm_narrative_forbidden_opener): the sentence "
         "MUST begin with a past-tense action verb. NEVER open with a preposition or "
         "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
         "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"
