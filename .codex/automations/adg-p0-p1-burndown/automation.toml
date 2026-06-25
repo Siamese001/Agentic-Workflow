@@ -1,0 +1,70 @@
+version = 1
+id = "adg-p0-p1-burndown"
+kind = "cron"
+name = "ADG P0/P1 Burndown"
+prompt = """
+Run the Agentic-Workflow P0/P1 ADG burndown after the full ADG audit, with the operational goal that P1 reaches 0 before 4:00 AM local time each morning.
+
+Startup gate:
+- Verify a clean main-branch state or create/use an isolated Codex branch/worktree before edits.
+- Treat the full-ADG audit as the prerequisite, but do not require clean certification when the audit produced repair-ready artifacts.
+- Read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json first, then resolve exact timestamped artifact paths from repair_handoff when present.
+- Accept artifact_status=certified or artifact_status=repair_ready.
+- If artifact_status is missing, infer repair_ready only when the newest timestamped SQLite snapshot, gate results, generation manifest, gate manifest, adg_action_queue_*.json, and adg_burndown_report.md were produced by the same full-ADG run after the audit start window.
+- If the full ADG audit is still running, wait and poll for completion until the local deadline policy says to stop.
+- If artifacts are stale, missing, timestamp-inconsistent, or only available through overwritten latest files without a timestamped source, stop without editing and report RCA.
+
+Zero-loss artifact contract:
+- Never consume overwritten latest files as the source of truth when timestamped artifacts exist.
+- Record exact artifact paths and snapshot timestamp before every edit wave.
+- Re-read or regenerate artifacts only after preserving the prior exact paths in the run receipt.
+- Do not claim P0=0 or P1=0 unless reproduced from the exact queue/report/gate artifacts consumed by this run.
+
+Deadline and timeout policy:
+- Treat 4:00 AM local time as the hard target for P1=0.
+- Begin work as soon as repair-ready or certified ADG artifacts are available.
+- At startup, state available runtime window, expected automation timeout risk, validation reserve, closeout reserve, and editable wave budget.
+- Stop starting new edit waves at 3:50 AM unless the next wave is already fully planned, low risk, and expected to validate before 4:00 AM.
+- By 3:58 AM, stop editing and produce final status/receipt.
+
+Required wave loop:
+1. Read the exact ADG action queue/report and compute current P0, ordinary P1, and P1-ratchet counts.
+2. Burn down all P0 FIX queue/report items first.
+3. Only after P0 FIX is zero, burn down ordinary P1 queue items.
+4. Create or refresh a concrete wave-based P1 ratchet burndown plan from the fresh ADG queue/report before ratchet work.
+5. The P1 ratchet plan must identify ratchet source artifact, current count/baseline, target count 0, priority ordering, dependency grouping, estimated per-wave scope, estimated validation cost, timeout/deadline assumption, number of waves, wave boundaries, validation commands, rollback/skip criteria, and stop conditions.
+6. Generate enough waves to plausibly reach P1=0 within the remaining runtime while keeping each wave small enough to validate and recover.
+7. After every wave, run targeted tests plus ADG validation appropriate to the touched surface, recompute remaining counts from exact artifacts, and immediately start the next safe wave if P1 remains above 0 and time remains.
+8. If P1 cannot plausibly reach 0 before 4:00 AM, still create the full zero plan, execute as many safe waves as possible, and report remaining waves.
+9. Do not stop after a single successful batch while P1 remains above 0 unless a stop condition applies.
+
+Standing approval and stop conditions:
+- Standing approval applies only to bounded, mechanical P0/P1 ADG fixes directly supported by the fresh queue/report and small focused patches.
+- Stop before editing any item requiring design choice, broad cross-layer refactor, public contract change, migration receipt, uncertain ownership decision, repeated test failure, dirty unrelated user changes, or merge conflict.
+- If one item blocks, skip it only when other independent P0/P1/P1-ratchet items can safely proceed; otherwise stop and report the blocker.
+
+Mandatory burndown tale:
+- Every closeout must include exact ADG artifact paths and snapshot timestamp.
+- Include Gross / Net Inventory with Band, Gross, Guardian, Net, Delta vs Prev, Meaning for P0 and P1.
+- Include Gate State with Class, Count, Meaning for FIX, TRACK, CLEAR.
+- Include P0 Details for every P0 FIX/TRACK item with Item, Gross / Gate Rows, Baseline / Floor, Net New, Status, Action.
+- Include P1 Details for every ordinary P1 queue item and P1 ratchet gate/item, including CLEAR ratchets proving zero, with Item, Gross / Rows, Baseline / Floor, Net New, Status, Action.
+- Explicitly distinguish gate regressions from raw severity inventory.
+- Mark inferred values as inferred and name the source artifact. If a value cannot be reproduced, say not reproducible from current artifacts and stop before claiming zero.
+
+Closeout:
+- Emit a JSON run receipt when substantial edits occur.
+- Summarize changed files, queue items burned down, wave count, full wave-based P1 ratchet plan, timeout/deadline assumptions, ratchet waves generated/attempted/completed/skipped, remaining P0/P1/P1-ratchet count, whether P1=0 was achieved by 4:00 AM, validation commands and results, artifact paths, branch/commit/PR status, and blockers.
+- Include the mandatory burndown tale tables even when no edits occur or the run stops early.
+"""
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "local"
+cwds = [
+  "C:\\Git\\Agentic-Workflow-FRESH",
+  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2",
+]
+created_at = 1782207251406
+updated_at = 1782293487839

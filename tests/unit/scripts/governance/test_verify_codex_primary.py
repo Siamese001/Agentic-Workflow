@@ -60,6 +60,14 @@ def _valid_root(tmp_path: Path) -> Path:
             tmp_path,
         ),
     )
+    _write(
+        tmp_path / ".codex" / "automations" / "adg-p0-p1-burndown" / "automation.toml",
+        _automation_toml(
+            "adg-p0-p1-burndown",
+            "\n".join(mod.verify_codex_enforcement_home.ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS),
+            tmp_path,
+        ),
+    )
     _write(tmp_path / ".codex" / "hooks.json", json.dumps({"hooks": {}}))
     _write(
         tmp_path / "AGENTS.md",
