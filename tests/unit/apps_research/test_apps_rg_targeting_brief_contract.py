@@ -6,6 +6,7 @@ from apps_research.types.apps_rg_targeting_brief_contract import (
     BRIEFING_PROFILES,
     MAX_BULLETS,
     BriefStatus,
+    assess_targeting_brief_semantics,
     blocked_targeting_brief,
     seal_targeting_brief,
     validate_targeting_brief_text,
@@ -198,3 +199,164 @@ def test_blocked_artifact_factory() -> None:
     assert art.status is BriefStatus.DEGRADED
     assert not art.is_sealed
     assert art.block_reason == "no_sources"
+
+
+_PARTNER_JD = (
+    "Lead AI architecture partnerships with cloud, GSI, and ISV partners. "
+    "Drive co-sell solution design, partner enablement, enterprise deployment, "
+    "governance, and technical close for applied AI adoption."
+)
+
+_SEARXNG_RESEARCH_NOTES = (
+    "### overview\n"
+    "Anthropic is scaling enterprise Claude adoption through product, safety, and platform motion.\n"
+    "### strategic_priorities\n"
+    "Strategic priorities emphasize trusted enterprise AI, deployment maturity, and partner routes.\n"
+    "### leadership\n"
+    "Leadership pressure spans partnerships, platform, safety, revenue, and customer architecture.\n"
+    "### recent_moves\n"
+    "Recent moves point to urgent enterprise distribution and deployment-readiness work.\n"
+    "### partner_ecosystem\n"
+    "Partner ecosystem signals include cloud providers, GSI partners, ISV routes, and joint solution work.\n"
+    "### commercial_motion\n"
+    "Commercial motion includes co-sell execution, technical close, and ecosystem revenue expansion.\n"
+    "### adoption_motion\n"
+    "Adoption motion depends on enablement, reference patterns, governance, and measurable rollout.\n"
+    "### tech_stack_signals\n"
+    "Tech stack signals include AI platform architecture, data controls, integration, and evaluation loops.\n"
+)
+
+_TAVILY_STYLE_TARGETING_BRIEF = (
+    "Anthropic - Manager of Applied AI Architecture, Partnerships targeting brief\n\n"
+    "## JD Complement\n"
+    "- Company DNA points to safe frontier AI deployment through partner-led enterprise adoption.\n"
+    "- The role complements platform architecture, partner enablement, and technical close pressure.\n\n"
+    "## Company DNA & Operating Model\n"
+    "- Company DNA blends frontier model research with enterprise product and safety operating discipline.\n"
+    "- Operating model signals tight coordination across partnerships, product, platform, and field teams.\n\n"
+    "## Company Strategy & Operating Pressure\n"
+    "- Strategy pressure centers on scaling trusted Claude deployments through commercial ecosystems.\n"
+    "- Enterprise urgency favors repeatable governance, implementation patterns, and adoption measurement.\n\n"
+    "## Leadership & Stakeholder Map\n"
+    "- Leadership stakeholders need partner architects who translate roadmap into credible customer motions.\n"
+    "- Stakeholder map spans partnerships, platform, revenue, safety, and customer architecture leaders.\n\n"
+    "## AI, Data, Platform, Architecture Signals\n"
+    "- AI platform signal favors integration patterns, data controls, evaluation loops, and secure rollout.\n"
+    "- Architecture signal points to reusable reference designs for enterprise deployment readiness.\n\n"
+    "## Partnership / Ecosystem Motion\n"
+    "- Co-sell motion depends on cloud, GSI, and ISV alignment around joint solution design.\n"
+    "- Partner ecosystem revenue needs enablement, technical close discipline, and partner-led proof paths.\n\n"
+    "## Recent Events & Urgency\n"
+    "- Recent events increase urgency for enterprise-grade operating models and deployment playbooks.\n"
+    "- Urgency supports positioning around safe adoption, partner activation, and scalable architecture.\n\n"
+    "## apps_rg Positioning Themes\n"
+    "- Positioning should connect platform architecture, partner-led delivery, and executive trust.\n"
+    "- Themes remain targeting context only and cannot become proof for candidate achievement claims.\n\n"
+    "## apps_lic Outreach Angles\n"
+    "- Outreach can emphasize ecosystem revenue, partner enablement, and AI adoption motion.\n"
+    "- Outreach should mirror strategy pressure without copying job description responsibilities.\n\n"
+    "## Do Not Use As Proof\n"
+    "- This briefing is targeting context only and must not support candidate achievement claims.\n"
+)
+
+_SEARXNG_STYLE_TARGETING_BRIEF = (
+    "Anthropic (private) - Manager of Applied AI Architecture, Partnerships briefing packet\n\n"
+    "## JD Complement\n"
+    "- Company DNA frames the role as a bridge between applied AI architecture and partner adoption.\n"
+    "- The packet should bias toward ecosystem motion, enterprise deployment, and governance readiness.\n\n"
+    "## Company DNA & Operating Model\n"
+    "- Company DNA combines frontier AI product execution with safety, reliability, and enterprise trust.\n"
+    "- Operating model pressure rewards leaders who can make partner delivery repeatable and measurable.\n\n"
+    "## Company Strategy & Operating Pressure\n"
+    "- Strategy pressure is to turn Claude demand into durable enterprise deployments through partners.\n"
+    "- Commercial scale depends on lowering deployment friction while preserving safety and data controls.\n\n"
+    "## Leadership & Stakeholder Map\n"
+    "- Leadership stakeholders likely span partnerships, product, revenue, platform, and solutions teams.\n"
+    "- Stakeholder map calls for translation across executive priorities and field architecture realities.\n\n"
+    "## AI, Data, Platform, Architecture Signals\n"
+    "- AI platform signal includes reference architecture, integration patterns, evaluations, and governance.\n"
+    "- Data and architecture signals should foreground secure deployment paths and customer-ready controls.\n\n"
+    "## Partnership / Ecosystem Motion\n"
+    "- Co-sell execution with cloud, GSI, and ISV partners is the critical route-to-market signal.\n"
+    "- Partner-led solution design and enablement create the technical close path for ecosystem revenue.\n\n"
+    "## Recent Events & Urgency\n"
+    "- Recent events point to intensified enterprise AI adoption and partner distribution urgency.\n"
+    "- Urgency favors candidates who can make deployment playbooks concrete across partner channels.\n\n"
+    "## apps_rg Positioning Themes\n"
+    "- Positioning themes should tie AI architecture, partner scale, adoption governance, and trust.\n"
+    "- Use this only to choose emphasis; it is not evidence for resume proof bullets.\n\n"
+    "## apps_lic Outreach Angles\n"
+    "- Outreach can lead with partner ecosystem revenue, architecture enablement, and co-sell maturity.\n"
+    "- The angle should sound like business context, not a restatement of the job description.\n\n"
+    "## Do Not Use As Proof\n"
+    "- This briefing is targeting context only and must not support candidate achievement claims.\n"
+)
+
+
+def test_searxng_targeting_brief_quality_matches_tavily_style_packet() -> None:
+    tavily_quality = assess_targeting_brief_semantics(
+        _TAVILY_STYLE_TARGETING_BRIEF,
+        jd_text=_PARTNER_JD,
+        research_notes=_SEARXNG_RESEARCH_NOTES,
+        profile="apps_rg",
+    )
+    searxng_quality = assess_targeting_brief_semantics(
+        _SEARXNG_STYLE_TARGETING_BRIEF,
+        jd_text=_PARTNER_JD,
+        research_notes=_SEARXNG_RESEARCH_NOTES,
+        profile="apps_rg",
+    )
+
+    assert tavily_quality.handoff_eligible, tavily_quality.as_dict()
+    assert searxng_quality.handoff_eligible, searxng_quality.as_dict()
+    assert searxng_quality.missing_sections == ()
+    assert "partner_ecosystem" in searxng_quality.source_families_present
+    assert "co-sell" in searxng_quality.signal_terms_present
+    assert searxng_quality.score >= tavily_quality.score - 0.05
+
+
+def test_generic_company_brief_is_not_quality_equivalent_to_targeting_packet() -> None:
+    generic = (
+        "# Anthropic Company Brief\n\n"
+        "## Overview\n"
+        "- Anthropic builds AI products for enterprises.\n\n"
+        "## Recent News\n"
+        "- The company announced several business updates.\n"
+    )
+    quality = assess_targeting_brief_semantics(
+        generic,
+        jd_text=_PARTNER_JD,
+        research_notes=_SEARXNG_RESEARCH_NOTES,
+        profile="apps_rg",
+    )
+    assert not quality.handoff_eligible
+    assert quality.missing_sections
+
+
+def test_searxng_source_family_aliases_satisfy_apps_rg_quality_gate() -> None:
+    searxng_family_notes = (
+        "### company_basics\n"
+        "Anthropic context establishes company DNA and operating model.\n"
+        "### competitive_landscape\n"
+        "Strategic priorities and commercial motion center on partner-led enterprise scale.\n"
+        "### leadership_and_org\n"
+        "Leadership and stakeholder map spans platform, product, and partnerships.\n"
+        "### recent_news_and_signals\n"
+        "Recent moves create urgency for deployment and ecosystem execution.\n"
+        "### role_context\n"
+        "Partner ecosystem, co-sell, commercial motion, and adoption motion are role-critical.\n"
+        "### tech_stack_and_tools\n"
+        "AI, data, platform, architecture signals include reference architecture and evaluations.\n"
+    )
+
+    quality = assess_targeting_brief_semantics(
+        _SEARXNG_STYLE_TARGETING_BRIEF,
+        jd_text=_PARTNER_JD,
+        research_notes=searxng_family_notes,
+        profile="apps_rg",
+    )
+
+    assert quality.handoff_eligible, quality.as_dict()
+    assert "overview" in quality.source_families_present
+    assert "partner_ecosystem" in quality.source_families_present
+    assert "tech_stack_signals" in quality.source_families_present

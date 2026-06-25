@@ -18,6 +18,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from tools.reports.adg_burndown_report import build_burndown_bcg_findings
 
 _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
@@ -26,6 +27,7 @@ if str(_REPO) not in sys.path:
 from tools.reports.adg_burndown_report import (
     BURNDOWN_TABLE_DEFAULT,
     REPO,
+    build_burndown_bcg_findings,
     _describe,
     _latest_gate_results,
     _load_burndown,
@@ -119,6 +121,7 @@ def build_canvas_payload(
         "bands": bands,
         "blockers": blockers,
         "markdown_rel": "artifacts/adg/adg_burndown_report.md",
+        "bcg_brief": build_burndown_bcg_findings(gates_doc, burndown)["brief"],
     }
 
 
@@ -160,6 +163,7 @@ export default function AdgCiBurndownCanvas() {{
         {{DATA.generated}} · {{DATA.snapshot}} · {{DATA.total_gates}} gates
       </Text>
       <Callout tone={{overallTone}} title={{DATA.overall_pass ? "PASS" : "BLOCKED"}}>
+        <Text>{{DATA.bcg_brief.business_read}}</Text>
         <Text>
           Full gate table (48 rows): {{DATA.markdown_rel}} — open in editor, then
           Markdown preview (Ctrl+Shift+V).

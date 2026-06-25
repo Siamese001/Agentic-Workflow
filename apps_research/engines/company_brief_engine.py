@@ -611,18 +611,6 @@ class CompanyBriefEngine(BaseResearchEngine):
             jd_text=jd_text,
             profile="apps_rg",
         )
-        if "jd_restatement_in_bullet" in sealed.violations:
-            violation_detail = next(
-                (
-                    str(v)
-                    for v in sealed.violations
-                    if str(v).startswith("jd_restatement_in_bullet_text:")
-                ),
-                "jd_restatement_in_bullet",
-            )
-            raise CompanyBriefUnavailableError(
-                f"{company_name}: apps_rg targeting brief rejected: {violation_detail}"
-            )
         if not sealed.is_sealed:
             repaired = self._repair_apps_rg_targeting_brief_markdown(
                 company_name=company_name,

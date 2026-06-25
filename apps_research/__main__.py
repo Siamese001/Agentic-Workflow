@@ -7,6 +7,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timedelta, timezone
@@ -250,7 +251,7 @@ def _looks_like_stub_company_brief(text: str) -> bool:
         "product a",
         "service b",
     )
-    return any(marker in blob for marker in stub_markers)
+    return any(re.search(rf"\b{re.escape(marker)}\b", blob) for marker in stub_markers)
 
 
 def _sha256_text(text: str) -> str:

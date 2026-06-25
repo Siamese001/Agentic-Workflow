@@ -34,11 +34,22 @@ def test_apps_rg_v40_runner_writes_package_and_spans(tmp_path: Path) -> None:
 def test_apps_rg_v40_runner_is_env_gated(tmp_path: Path) -> None:
     _seed_artifacts(tmp_path)
 
+    default_outputs = maybe_run_l6_v40_shadow_eval_for_section(
+        tmp_path,
+        section_id="summary",
+        repo_root=tmp_path,
+        session_id="sess-apps-rg",
+        tenant_id="tenant-apps-rg",
+        l5_certification_ref="l5-cert-ref:apps-rg",
+        env={},
+    )
+    assert default_outputs["l6_v40_shadow_eval_package"].is_file()
+
     assert maybe_run_l6_v40_shadow_eval_for_section(
         tmp_path,
         section_id="summary",
         repo_root=tmp_path,
-        env={},
+        env={"APPS_RG_L6_V40_SHADOW_EVAL_SKIP": "1"},
     ) == {}
 
     outputs = maybe_run_l6_v40_shadow_eval_for_section(

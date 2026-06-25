@@ -57,6 +57,7 @@ _L4_SURFACE = "l4.research_brief"
 _SCHEMA_REF = "schema://apps_research/research_brief_record/1.0"
 _POLICY_REF = "policy://apps_research/governed_e2e/v1"
 _BLUEPRINT_REF = "blueprint://apps_research/governed_e2e/v1"
+_L5_CERTIFICATION_REF = "l5-cert-ref:apps-research-research-brief-uwg-v1"
 
 # Constitutional §29 — closed-loop router enforcement
 _HELPER = None  # type: ignore[var-annotated]
@@ -217,6 +218,7 @@ def commit_brief_record(
                 gate_verdict_refs=(f"gate://research-brief::{replay_key}",),
                 affected_state_surfaces=(_L4_SURFACE,),
                 expected_read_surface_refreshes=(_L4_SURFACE,),
+                l5_certification_ref=_L5_CERTIFICATION_REF,
             )
         )
 

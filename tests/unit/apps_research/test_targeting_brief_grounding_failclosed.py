@@ -145,6 +145,25 @@ def test_hop_company_brief_adapter_populates_company_brief_key(monkeypatch) -> N
     assert captured["topic"] == "Acme Co"
 
 
+def test_company_brief_text_extraction_recovers_nested_targeting_markdown() -> None:
+    from apps_research.integrations.governed_research_run import (
+        _company_brief_text_from_fec,
+    )
+
+    fec_ctx = {
+        "research_artifact": {
+            "nested": {
+                "company_brief": {
+                    "apps_rg_targeting_brief_markdown": _VALID_MD,
+                    "apps_rg_targeting_brief_sidecar": {"handoff_eligible": True},
+                }
+            }
+        }
+    }
+
+    assert _company_brief_text_from_fec(fec_ctx) == _VALID_MD.strip()
+
+
 def test_synthesis_uses_company_name_not_jd_role() -> None:
     # company_name drives identification; jd_context.role must not become topic.
     engine = CompanyBriefEngine()

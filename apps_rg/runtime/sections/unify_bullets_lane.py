@@ -242,6 +242,203 @@ def _canonicalize_unify_gate_metric_text(text: str) -> str:
     return s
 
 
+_SURFACE_NORM_RE = re.compile(r"[^a-z0-9%$]+")
+
+
+def _surface_norm(text: str) -> str:
+    return _SURFACE_NORM_RE.sub(" ", str(text or "").lower()).strip()
+
+
+def _unify_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
+    from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
+    from apps_rg.runtime.sections.unify_graph_role_episode_registry import BUNDLES_PATH as UNIFY_BUNDLES_PATH
+
+    return metric_outcome_nodes_from_path(UNIFY_BUNDLES_PATH)
+
+
+def _metric_surface_tokens(metric_id: str) -> list[str]:
+    node = _unify_metric_outcome_nodes().get(str(metric_id)) or {}
+    tokens: list[str] = []
+    for raw in [*(node.get("surface_tokens") or []), node.get("metric"), node.get("claim_text")]:
+        token = str(raw or "").strip()
+        if token and token not in tokens:
+            tokens.append(token)
+    return tokens
+
+
+def _metric_token_visible_in_text(metric_id: str, text: str) -> str | None:
+    low = str(text or "").lower()
+    norm = _surface_norm(text)
+    for token in _metric_surface_tokens(metric_id):
+        t_low = token.lower()
+        if t_low and t_low in low:
+            return token
+        t_norm = _surface_norm(token)
+        if t_norm and t_norm in norm:
+            return token
+    return None
+
+
+def _slot_metric_allowlist(runtime_payload: dict[str, Any]) -> dict[str, set[str]]:
+    meta = runtime_payload.get("proof_pool_metadata")
+    meta = meta if isinstance(meta, dict) else {}
+    slot_map = meta.get("unify_bullet_slot_bundle_map_resolved")
+    slot_map = slot_map if isinstance(slot_map, dict) else {}
+    bundles = {
+        str(b.get("role_episode_bundle_id") or ""): b
+        for b in (meta.get("role_episode_bundles") or [])
+        if isinstance(b, dict)
+    }
+    out: dict[str, set[str]] = {}
+    for bid in UNIFY_BULLET_IDS:
+        bundle_id = str(slot_map.get(bid) or "")
+        bundle = bundles.get(bundle_id) or {}
+        mids = {
+            str(x).strip()
+            for x in (
+                bundle.get("linked_metric_outcome_ids")
+                or bundle.get("allowed_metric_outcome_ids")
+                or []
+            )
+            if str(x).strip()
+        }
+        if mids:
+            out[bid] = mids
+    return out
+
+
+def _selected_metric_ids_for_slot(out: dict[str, Any], bullet_id: str) -> list[str]:
+    selected: list[str] = []
+    plan = out.get("selected_fact_plan")
+    if isinstance(plan, dict):
+        slot_plan = plan.get(bullet_id)
+        if isinstance(slot_plan, dict):
+            selected.extend(str(x) for x in (slot_plan.get("selected_metric_outcome_ids") or []))
+    for entry in out.get("change_log") or []:
+        if not isinstance(entry, dict) or str(entry.get("bullet_id") or "") != bullet_id:
+            continue
+        selected.extend(str(x) for x in (entry.get("metric_outcome_ids") or []))
+    return [x for x in dict.fromkeys(s.strip() for s in selected) if x]
+
+
+def _ensure_change_log_entry(
+    out: dict[str, Any],
+    bullet_id: str,
+    *,
+    metric_ids: list[str],
+) -> None:
+    change_log = out.setdefault("change_log", [])
+    if not isinstance(change_log, list):
+        out["change_log"] = change_log = []
+    target = None
+    for entry in change_log:
+        if isinstance(entry, dict) and str(entry.get("bullet_id") or "") == bullet_id:
+            target = entry
+            break
+    if target is None:
+        target = {"bullet_id": bullet_id}
+        change_log.append(target)
+    existing = [str(x) for x in (target.get("metric_outcome_ids") or []) if str(x).strip()]
+    for mid in metric_ids:
+        if mid not in existing:
+            existing.append(mid)
+    target["metric_outcome_ids"] = existing
+
+
+def _append_metric_surface_clause(text: str, token: str) -> str:
+    clean = str(text or "").strip()
+    surface = str(token or "").strip()
+    if not clean or not surface:
+        return clean
+    stem = clean[:-1].rstrip() if clean.endswith(".") else clean
+    clause = f" using {surface}"
+    candidate = f"{stem}{clause}."
+    if len(candidate) <= 300:
+        return candidate
+    return clean
+
+
+def _ensure_selected_plan_metric_ids(out: dict[str, Any], bullet_id: str, metric_ids: list[str]) -> None:
+    plan = out.get("selected_fact_plan")
+    if not isinstance(plan, dict):
+        return
+    slot_plan = plan.get(bullet_id)
+    if not isinstance(slot_plan, dict):
+        return
+    existing = [
+        str(x)
+        for x in (slot_plan.get("selected_metric_outcome_ids") or [])
+        if str(x).strip()
+    ]
+    for mid in metric_ids:
+        if mid not in existing:
+            existing.append(mid)
+    slot_plan["selected_metric_outcome_ids"] = existing
+
+
+def _enforce_unify_metric_outcome_surfaces(
+    out: dict[str, Any],
+    runtime_payload: dict[str, Any],
+) -> None:
+    """Bind visible bullet prose to the role-episode metric registry without weakening X2."""
+    allow_by_slot = _slot_metric_allowlist(runtime_payload)
+    if not allow_by_slot:
+        return
+    bullets = [b for b in (out.get("bullets") or []) if isinstance(b, dict)]
+    repairs: list[dict[str, Any]] = []
+    for bullet in bullets:
+        bid = str(bullet.get("bullet_id") or "").strip()
+        if bid not in allow_by_slot:
+            continue
+        allowed = allow_by_slot[bid]
+        text = str(bullet.get("bullet_text") or "")
+        visible_allowed = [
+            mid for mid in allowed if _metric_token_visible_in_text(mid, text)
+        ]
+        selected = [
+            mid for mid in _selected_metric_ids_for_slot(out, bid)
+            if mid in allowed
+        ]
+        if visible_allowed:
+            _ensure_change_log_entry(out, bid, metric_ids=visible_allowed)
+            _ensure_selected_plan_metric_ids(out, bid, visible_allowed)
+            if not bullet.get("metric_raw"):
+                bullet["metric_raw"] = visible_allowed[0]
+            bullet["has_metric"] = True
+            continue
+
+        candidates = selected or sorted(allowed)
+        repaired_mid = ""
+        repaired_token = ""
+        repaired_text = text
+        for mid in candidates:
+            token = next(iter(_metric_surface_tokens(mid)), "")
+            candidate_text = _append_metric_surface_clause(text, token)
+            if candidate_text != text and _metric_token_visible_in_text(mid, candidate_text):
+                repaired_mid = mid
+                repaired_token = token
+                repaired_text = candidate_text
+                break
+        if repaired_mid:
+            bullet["bullet_text"] = repaired_text
+            bullet["has_metric"] = True
+            bullet["metric_raw"] = repaired_mid
+            _ensure_change_log_entry(out, bid, metric_ids=[repaired_mid])
+            _ensure_selected_plan_metric_ids(out, bid, [repaired_mid])
+            repairs.append(
+                {
+                    "operation": "repair_unify_metric_outcome_surface",
+                    "target_bullet_id": bid,
+                    "metric_outcome_id": repaired_mid,
+                    "surface_token": repaired_token,
+                }
+            )
+    if repairs:
+        change_log = out.setdefault("change_log", [])
+        if isinstance(change_log, list):
+            change_log.extend(repairs)
+
+
 def _canonicalize_bul_w7_unify_source_fact_id(fid: str) -> str:
     """Normalize model typos (whitespace, ``bul_unify_.003`` → ``bul_unify_003``)."""
     s = str(fid).strip()
@@ -381,6 +578,8 @@ def normalize_unify_parsed_without_ledger_synthesis(
         runtime_payload,
         protected_bullet_id=protected_default,
     )
+    _enforce_unify_metric_outcome_surfaces(out, runtime_payload)
+    _sync_unify_claim_ledger_to_bullets(out, remap=legacy_remap, allowed=allowed)
     from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
         strip_employment_bullet_intensity_model,
     )

@@ -296,7 +296,8 @@ def _upstream_bullets_failure_message(
     msg = (
         f"Pre-dispatch companion gate blocked ({PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER}): "
         f"--section {lane} must be ACCEPTED_FINALIZED (REAL_LLM, product_quality PASS, "
-        f"X3 allow-family) before narrative dispatch."
+        f"with no deterministic X2 failures; provider-quota judge blocks are non-release proof only) "
+        f"before narrative dispatch."
     )
     if extra:
         msg = f"{msg} ({extra})"

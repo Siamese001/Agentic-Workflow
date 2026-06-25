@@ -13,7 +13,7 @@ JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v3"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/unify_narrative_x1d.py#UNIFY_NARRATIVE_GRADE_ONLY_RUBRIC"
 
 NARRATIVE_RUBRIC = f"""
-You are evaluating one Unify Consulting role narrative sentence (complement to six bullets).
+You are evaluating one Unify Consulting role narrative sentence (executive thesis above six bullets).
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 Score contract:
@@ -26,17 +26,18 @@ Rubric dimensions (must score each):
    unify_narrative_base_* resume facts (no JD/briefing/target-company-as-experience).
 3. jd_briefing_targeting: JD and briefing themes shape emphasis without becoming proof (belongs in jd_alignment object,
    not the sentence as invented experience).
-4. complementarity_vs_bullets: synthesizes above the bullets without recap, checklist, or six-bullet walk.
+4. complementarity_vs_bullets: states the executive thesis the bullets prove without recap, checklist, or six-bullet walk.
 5. executive_signal: SVP Engineering platform leadership — governed runtime, commercialization, regulated enterprise scale.
 6. no_metric_rehash: avoids repeating bullet metrics unless narrowly justified; prefers conceptual commercialization language.
 7. no_cross_employer_leakage: no IBM, InsurTech, EY, education, or early-career contamination.
-8. resume_voice: third person or implied subject; credible executive tone; no hype.
+8. resume_voice: third person or implied subject; clean board-readable executive tone; no hype or comma-packed mechanism list.
 9. role_fit_targeting: JD/briefing influence emphasis only — never proof of experience.
 10. why_role_mattered: narrative answers why the Unify role mattered (mandate, commercialization, IP) — companion bullets answer what was delivered.
 11. executive_brevity: exactly one sentence; product shape max {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters; JD/briefing targeting only (never proof).
 
 Decisive failure triggers:
 - merely summarizes the six bullets or mirrors bullet labels/metrics as the thesis
+- spins a different role story not entailed by the finalized bullets or claim_ledger
 - uses JD, briefing, or target company as proof of candidate experience
 - omits commercialization / reusable platform / IP angle when base anchor facts support that arc
 - lacks role-level platform mandate (reads like a delivery task list)

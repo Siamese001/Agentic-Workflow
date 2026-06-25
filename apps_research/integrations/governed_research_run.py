@@ -39,6 +39,53 @@ from apps_shared.integrations.governed_app_runner import (
     build_app_record,
 )
 
+_COMPANY_BRIEF_TEXT_KEYS = (
+    "company_brief_text",
+    "apps_rg_targeting_brief_text",
+    "apps_rg_targeting_brief_markdown",
+)
+
+
+def _mapping_from(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    if dataclasses.is_dataclass(value):
+        return dataclasses.asdict(value)
+    model_dump = getattr(value, "model_dump", None)
+    if callable(model_dump):
+        dumped = model_dump()
+        if isinstance(dumped, dict):
+            return dumped
+    return {}
+
+
+def _find_company_brief_mapping(value: Any, *, _depth: int = 0) -> dict[str, Any]:
+    """Find the company brief payload even when a hop stage nests it."""
+    if _depth > 5:
+        return {}
+
+    mapping = _mapping_from(value)
+    if mapping:
+        nested = _mapping_from(mapping.get("company_brief"))
+        if nested:
+            return nested
+        if any(str(mapping.get(key) or "").strip() for key in _COMPANY_BRIEF_TEXT_KEYS):
+            return mapping
+        if isinstance(mapping.get("apps_rg_targeting_brief_sidecar"), dict):
+            return mapping
+        for child in mapping.values():
+            found = _find_company_brief_mapping(child, _depth=_depth + 1)
+            if found:
+                return found
+        return {}
+
+    if isinstance(value, (list, tuple)):
+        for child in value:
+            found = _find_company_brief_mapping(child, _depth=_depth + 1)
+            if found:
+                return found
+    return {}
+
 
 # ---------------------------------------------------------------------------
 # App-specific stage output types (kept for backward compatibility)
@@ -156,16 +203,11 @@ class GovernedE2ERunRecord:
 
 def _company_brief_text_from_fec(fec_ctx: dict[str, Any]) -> str:
     """Extract apps_rg targeting brief markdown from hop FEC context when present."""
-    brief = fec_ctx.get("company_brief")
-    if isinstance(brief, dict):
-        for key in (
-            "company_brief_text",
-            "apps_rg_targeting_brief_text",
-            "apps_rg_targeting_brief_markdown",
-        ):
-            text = str(brief.get(key) or "").strip()
-            if text:
-                return text
+    brief = _find_company_brief_mapping(fec_ctx)
+    for key in _COMPANY_BRIEF_TEXT_KEYS:
+        text = str(brief.get(key) or "").strip()
+        if text:
+            return text
     return ""
 
 
@@ -340,8 +382,12 @@ class GovernedResearchRun(GovernedAppRunner):
             fec_context: dict[str, Any] = {}
             try:
                 final_ctx = getattr(record, "final_context", None) or {}
-                brief = (final_ctx.get("company_brief") or {})
-                if isinstance(brief, dict):
+                brief = _find_company_brief_mapping(final_ctx)
+                if not brief:
+                    brief = _find_company_brief_mapping(
+                        tuple(cp.output for cp in record.checkpoints)
+                    )
+                if brief:
                     fec_context["company_brief"] = brief
                     depth_profile = brief.get("_depth_profile")
                     c0_bundle = brief.get("_c0_bundle")

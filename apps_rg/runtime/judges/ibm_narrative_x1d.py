@@ -13,7 +13,7 @@ JUDGE_RUBRIC_VERSION = "ibm_narrative_x1d_v3"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/ibm_narrative_x1d.py#IBM_NARRATIVE_GRADE_ONLY_RUBRIC"
 
 NARRATIVE_RUBRIC = f"""
-You are evaluating one IBM employment narrative sentence (complement to five IBM bullets).
+You are evaluating one IBM employment narrative sentence: the executive thesis above five IBM bullets.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 Score contract:
@@ -22,8 +22,8 @@ Score contract:
 Rubric dimensions:
 1. factual_support: claims align with claim_ledger and bul_ibm_* source facts only.
 2. enterprise_platform_signal: IBM reads as supporting enterprise/platform credibility, not current agentic runtime ownership.
-3. complementarity_vs_bullets: adds framing or synthesis; does not mechanically recap all five bullets.
-4. resume_voice: third person or implied subject; credible executive tone.
+3. complementarity_vs_bullets: states a role thesis the bullets prove; does not mechanically recap all five bullets.
+4. resume_voice: third person or implied subject; clean board-readable executive tone; no hype or comma-packed mechanism list.
 5. ats_alignment_without_stuffing: relevant without JD dumping.
 6. anti_overfit: no JD-as-proof, no briefing-as-proof, no cross-employer facts (Unify, InsurTech, EY).
 7. no_unify_inflation: no Unify-era agentic runtime vocabulary in the sentence.
@@ -36,6 +36,7 @@ Decisive failure triggers:
 - first person or wrong-company proof framing
 - unsupported metrics or bul_unify_* / non-IBM fact leakage
 - multiple sentences or obvious five-bullet recap
+- spins a different role story not entailed by the finalized bullets or claim_ledger
 - meta-disclaimer phrasing in narrative_sentence ("without claiming", "without asserting", etc.)
 - career-bridge phrasing ("supported later", "subsequent roles") without explicit allowed career-bridge fact
 """.strip()

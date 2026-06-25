@@ -42,6 +42,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
+from tools.reports.adg_bcg_adapter import build_report_bcg_findings, render_report_bcg_findings_md
 
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
@@ -303,6 +304,85 @@ def emit_mandatory_adg_burndown_report(
     return 0
 
 
+
+def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, Any]) -> dict[str, Any]:
+    """Build the mandatory BCG findings envelope for the burndown report."""
+    gates: list[dict[str, Any]] = list(gates_doc.get("gates") or [])
+    summary = gates_doc.get("summary", {}) if isinstance(gates_doc.get("summary"), dict) else {}
+    overall = "PASS" if gates_doc.get("overall_exit_code", 1) == 0 else "BLOCKED"
+    fix_gates = [g for g in gates if needs_fix(g)]
+    track_gates = [g for g in gates if has_backlog_findings(g)]
+    cluster_counts = _count_by_cluster(gates)
+    priority_rows: list[dict[str, Any]] = []
+    for gate in sorted(fix_gates, key=lambda r: (-int(r.get("violation_count", 0) or 0), str(r.get("gate_id", ""))))[:4]:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": f"Fix {gate.get('gate_id', '?')}",
+                "why_it_matters": "This gate is marked FIX, so the ADG run is not decision-grade green until it clears.",
+                "evidence": f"{gate.get('band', '?')} {gate.get('enforcement', '?')} gate; rows={gate.get('violation_count', 0)}; sub={_verdict_sub_display(gate)}.",
+                "next_step": recommended_next_step(gate),
+                "decision": "fix_gate",
+            }
+        )
+    if not priority_rows and track_gates:
+        for gate in sorted(track_gates, key=lambda r: (-int(r.get("violation_count", 0) or 0), str(r.get("gate_id", ""))))[:4]:
+            priority_rows.append(
+                {
+                    "priority": len(priority_rows) + 1,
+                    "move": f"Burn down {gate.get('gate_id', '?')}",
+                    "why_it_matters": "This is accepted or advisory debt; reduce it after FIX rows are clear.",
+                    "evidence": f"TRACK gate; rows={gate.get('violation_count', 0)}; allowed floor={_allowed_floor_display(gate)}.",
+                    "next_step": recommended_next_step(gate),
+                    "decision": "track_after_green",
+                }
+            )
+    if not priority_rows:
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Hold ADG green posture",
+                "why_it_matters": "No FIX or TRACK findings were promoted by the burndown report.",
+                "evidence": "All reported gate clusters are clear or empty.",
+                "next_step": "No burndown action required from this report.",
+                "decision": "hold",
+            }
+        )
+
+    business_read = (
+        "ADG is BLOCKED: fix the red gates before treating the run as green."
+        if fix_gates
+        else (
+            "ADG is PASS with tracked backlog: burn down accepted debt after green."
+            if track_gates
+            else "ADG is PASS and no burndown backlog was promoted."
+        )
+    )
+    return build_report_bcg_findings(
+        report_kind="adg_burndown_report",
+        title="BCG Burndown Brief",
+        status=overall,
+        status_label="ADG verdict",
+        business_read=business_read,
+        technical_read=[
+            f"Snapshot timestamp: {gates_doc.get('timestamp', 'n/a')}",
+            f"Total gates: {gates_doc.get('total_gates', len(gates))}",
+            f"FIX gates: {cluster_counts.get('FIX', 0)}",
+            f"TRACK gates: {cluster_counts.get('TRACK', 0)}",
+            f"CLEAR gates: {cluster_counts.get('CLEAR', 0)}",
+            f"block_fail={summary.get('block_fail', 0)}; ratchet_regressed={summary.get('ratchet_regressed', 0)}",
+        ],
+        priority_rule="FIX gates first, then TRACK ratchets/backlog, then no-action CLEAR gates.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "FIX gates block a decision-grade green run.",
+            "TRACK rows are accepted or advisory debt and should not distract from red gates.",
+            "CLEAR rows need no action and should stay out of the work queue.",
+        ],
+        next_step=priority_rows[0].get("next_step", "Follow the first priority row."),
+        table_limit=6,
+    )
+
 def render(
     gate_results_path: Path,
     burndown_path: Path,
@@ -328,6 +408,9 @@ def render(
     a(f"- **Total gates:** {gates_doc.get('total_gates', len(gates))}")
     a(f"- **Overall verdict:** **{overall}** (run halt — exit code)")
     cluster_counts = _count_by_cluster(gates)
+    bcg_findings = build_burndown_bcg_findings(gates_doc, burndown)
+    a("")
+    a(render_report_bcg_findings_md(bcg_findings))
     fix_n = cluster_counts.get("FIX", 0)
     track_n = cluster_counts.get("TRACK", 0)
     if fix_n or track_n:

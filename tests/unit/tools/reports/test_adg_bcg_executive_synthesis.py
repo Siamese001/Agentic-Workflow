@@ -440,6 +440,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         assert (docs / f"adg_bcg_executive_summary_latest.{suffix}").is_file()
     data = yaml.safe_load((artifacts / "adg_bcg_executive_summary_run.yaml").read_text(encoding="utf-8"))
     assert data["schema_version"] == "1.0"
+    assert data["bcg_findings"]["title"] == "BCG Executive Brief"
     assert data["artifact_kind"] == "adg_bcg_executive_summary"
     assert data["raw_inputs"]["artifacts"]["sqlite_snapshot"].endswith("adg_indexed_run.sqlite")
     assert data["run"]["emit_status"] == "PASS"

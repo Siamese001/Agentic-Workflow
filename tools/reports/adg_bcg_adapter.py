@@ -182,6 +182,86 @@ def build_bcg_brief(
     }
 
 
+
+def build_report_bcg_findings(
+    *,
+    report_kind: str,
+    title: str,
+    business_read: str,
+    technical_read: str | list[str] | None = None,
+    priority_rule: str | None = None,
+    priority_rows: list[dict[str, Any]] | None = None,
+    why_this_order: list[str] | None = None,
+    next_step: str | None = None,
+    status: str | None = None,
+    status_label: str | None = None,
+    secondary_statuses: dict[str, Any] | None = None,
+    table_limit: int = 6,
+) -> dict[str, Any]:
+    """Build the canonical BCG findings envelope used by ADG reports.
+
+    Reports may keep richer domain-specific fields, but this envelope is the
+    mandatory management-consulting story surface: what happened, why it matters,
+    evidence, priority rule, ranked next moves, and done/next step.
+    """
+    brief = build_bcg_brief(
+        title=title,
+        status=status,
+        status_label=status_label,
+        secondary_statuses=secondary_statuses,
+        business_read=business_read,
+        technical_read=technical_read,
+        priority_rule=priority_rule,
+        priority_rows=priority_rows,
+        why_this_order=why_this_order,
+        next_step=next_step,
+        table_limit=table_limit,
+    )
+    return {
+        "schema_version": "1.0",
+        "report_kind": report_kind,
+        "brief": brief,
+        "business_read": brief["business_read"],
+        "technical_read": brief["technical_read"],
+        "priority_rule": brief["priority_rule"],
+        "priority_rows": brief["priority_rows"],
+        "why_this_order": brief["why_this_order"],
+        "next_step": brief["next_step"],
+        "status": brief["status"],
+        "status_label": brief["status_label"],
+        "north_star": brief["north_star"],
+    }
+
+
+def render_report_bcg_findings_md(findings: dict[str, Any]) -> str:
+    """Render a BCG findings envelope built by ``build_report_bcg_findings``."""
+    brief = findings.get("brief") if isinstance(findings, dict) else None
+    if not isinstance(brief, dict):
+        brief = build_bcg_brief(
+            title=str((findings or {}).get("title") or "BCG Brief"),
+            business_read=str((findings or {}).get("business_read") or "No business read emitted."),
+            technical_read=(findings or {}).get("technical_read") or [],
+            priority_rule=str((findings or {}).get("priority_rule") or ""),
+            priority_rows=(findings or {}).get("priority_rows") or [],
+            why_this_order=(findings or {}).get("why_this_order") or [],
+            next_step=str((findings or {}).get("next_step") or ""),
+            status=str((findings or {}).get("status") or ""),
+            status_label=str((findings or {}).get("status_label") or "Status"),
+        )
+    return render_bcg_brief_md(brief)
+
+
+def has_bcg_findings(doc: dict[str, Any] | None) -> bool:
+    """Return True when a report payload carries a usable BCG findings envelope."""
+    if not isinstance(doc, dict):
+        return False
+    findings = doc.get("bcg_findings") or doc.get("brief")
+    if isinstance(findings, dict) and "brief" in findings:
+        findings = findings["brief"]
+    return isinstance(findings, dict) and bool(
+        findings.get("business_read") and findings.get("technical_read") and findings.get("priority_rule")
+    )
+
 def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     """Render a compact BCG-style brief as markdown."""
     lines: list[str] = []
