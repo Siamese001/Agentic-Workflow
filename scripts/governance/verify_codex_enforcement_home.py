@@ -24,7 +24,14 @@ AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
     "weekly-adg-audit-and-burndown",
     "adg-p0-p1-burndown",
+    "adg-bcg-p2-next-action",
+    "adg-p3-promotion-hygiene",
+    "weekly-svp-readme-documentation-refresh",
 )
+AUTOMATION_DIR_BY_ID = {
+    "weekly-adg-audit-and-burndown": "adg-audit-and-burndown",
+    "weekly-svp-readme-documentation-refresh": "svp-readme-documentation-refresh",
+}
 # Codex app deployment records live under CODEX_HOME/automations. This guard
 # only rejects legacy repo-source copies that were historically misplaced there.
 FORBIDDEN_USER_PROFILE_AUTOMATION_IDS = (
@@ -92,7 +99,8 @@ def _load_toml(path: Path) -> tuple[dict[str, Any] | None, str | None]:
 
 
 def _automation_path(root: Path, automation_id: str) -> Path:
-    return root / ".codex" / "automations" / automation_id / "automation.toml"
+    automation_dir = AUTOMATION_DIR_BY_ID.get(automation_id, automation_id)
+    return root / ".codex" / "automations" / automation_dir / "automation.toml"
 
 
 def _validate_common_automation(

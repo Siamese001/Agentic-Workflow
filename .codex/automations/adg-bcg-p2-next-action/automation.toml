@@ -1,0 +1,48 @@
+version = 1
+id = "adg-bcg-p2-next-action"
+kind = "cron"
+name = "ADG BCG P2 Next Action"
+prompt = '''
+Run the Agentic-Workflow downstream BCG/ADG P2 next-action automation.
+
+Mission:
+Consume the fresh BCG next-step evidence produced by the separate full ADG audit and burn down one bounded P2 hygiene item per run. Do not modify, reschedule, or depend on changing the full ADG audit automation.
+
+Authority:
+Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. Do not publish or merge; publication is handled by a separate automation.
+
+Startup gates:
+- Verify fresh ADG artifacts exist from the latest full ADG run: artifacts/adg/adg_bcg_executive_summary_latest.md or .json, artifacts/adg/adg_cleanup_queue_and_p2_blocker_trace_latest.md or .json, artifacts/adg/adg_burndown_report.md, and the newest artifacts/adg/adg_action_queue_*.json.
+- Verify the artifacts were produced after the most recent expected full-ADG audit window. If stale, missing, or internally inconsistent, stop without editing and report an RCA.
+- Verify P0/P1 have no FIX gates or ratchet regressions in the latest burndown/gate results. If P0/P1 are not clean, stop and defer to the P0/P1 automation.
+- Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
+
+Priority order:
+1. Use artifacts/adg/adg_cleanup_queue_and_p2_blocker_trace_latest.* as the primary source for P2 MEDIUM hygiene hotspots.
+2. Select the highest-ranked live runtime/core P2 hotspot that is directly supported by the BCG/P2 trace and can be fixed mechanically.
+3. Prefer reducing real P2 debt over rebaselining. Do not rebaseline P2 ceilings unless the run only reports an explicit blocker and the user later approves it.
+4. If the trace names a P2 star import or explicit dependency-hiding issue, it is eligible after higher-count runtime hotspots.
+5. If no safe P2 edit exists, report the top blocked P2 item, why it is unsafe to automate, and the exact next human decision needed.
+
+Edit limits:
+- Make at most one coherent P2 hotspot fix per run.
+- Standing authorization is limited to small, mechanical, evidence-backed hygiene edits: narrowing exception handling, replacing a star import with explicit imports, deleting an obviously unused import, or equivalent directly-supported cleanup.
+- Stop before editing if the item requires architecture judgment, product behavior choice, public contract changes, broad cross-layer refactor, migration receipt, generated artifact churn, unrelated dirty changes, merge conflict, or repeated test failure.
+- Do not chase P3 here except to mention if P3 promotion candidates exist; P3 has a separate promotion lane.
+
+Validation:
+- Run targeted tests or static checks appropriate to touched files.
+- Run a lightweight ADG/burndown validation when practical; otherwise clearly state why full ADG validation was deferred.
+- Re-read the latest P2 trace or burndown after validation when regenerated.
+
+Closeout:
+Summarize the selected BCG/P2 source artifact, changed files, P2 hotspot count before/after if measurable, validation commands and results, branch/worktree status, remaining P2 count or blocked next item, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
+'''
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=3;BYMINUTE=30;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "worktree"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
+created_at = 1782240890932
+updated_at = 1782241115737

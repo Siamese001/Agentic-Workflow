@@ -1,0 +1,50 @@
+version = 1
+id = "adg-p3-promotion-hygiene"
+kind = "cron"
+name = "ADG P3 Promotion Hygiene"
+prompt = '''
+Run the Agentic-Workflow downstream P3 promotion/hygiene automation.
+
+Mission:
+Consume the fresh BCG/ADG evidence produced by the separate full ADG audit and act only on P3 items that have earned attention through promotion signals, BCG next steps, or repeated trend concentration. Do not modify, reschedule, or depend on changing the full ADG audit automation. Do not publish or merge; publication is handled separately.
+
+Authority:
+Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits.
+
+Startup gates:
+- Verify fresh ADG artifacts exist from the latest full ADG run: artifacts/adg/adg_bcg_executive_summary_latest.md or .json, artifacts/adg/adg_burndown_report.md, newest artifacts/adg/adg_action_queue_*.json, and P3 trend artifacts when available.
+- Run or inspect the P3 trend runner evidence. P3 is watch/promotion-driven; do not treat the whole P3 backlog as an overnight burndown target.
+- Verify P0/P1 are clean and that the P2 next-action lane is not currently producing a blocker that should take precedence. If P0/P1 are not clean, stop. If P2 is still safely actionable, report that P2 should remain ahead and stop unless there is an explicit P3 promotion candidate.
+- Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
+
+Priority order:
+1. P3 promotion candidates from the trend runner or BCG evidence near critical/runtime/core paths.
+2. BCG-named P3 mechanical hygiene that is small, local, and has an obvious correctness-preserving fix.
+3. P3 cleanup that reduces noisy ADG evidence for future decisions, only when the source artifact names the target and the fix is mechanically obvious.
+
+Do not automate:
+- Broad global-state mutation sweeps.
+- Cyclomatic-complexity refactors.
+- Large unused-import cleanup waves.
+- Any P3 item requiring architecture judgment, public contract changes, cross-layer redesign, migration receipt, generated artifact churn, or broad behavior changes.
+
+Edit limits:
+- Make at most one coherent P3 promotion/hygiene fix per run.
+- Standing authorization is limited to small, mechanical, evidence-backed edits directly supported by BCG/ADG artifacts.
+- If no safe P3 action exists, produce a concise report naming the top candidate, why it did not qualify, and what would promote it to P2.
+
+Validation:
+- Run targeted tests or static checks appropriate to touched files.
+- Run lightweight ADG/trend validation when practical; otherwise clearly state why full ADG validation was deferred.
+
+Closeout:
+Summarize the selected BCG/P3 source artifact, promotion reason, changed files, validation commands and results, branch/worktree status, remaining/promoted P3 signal, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
+'''
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=1;BYMINUTE=0;BYDAY=FR"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "worktree"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
+created_at = 1782240902194
+updated_at = 1782241097054
