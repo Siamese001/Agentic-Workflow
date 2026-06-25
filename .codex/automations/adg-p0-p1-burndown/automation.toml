@@ -6,17 +6,18 @@ prompt = """
 Run the Agentic-Workflow P0/P1 ADG burndown after the full ADG audit, with the operational goal that P1 reaches 0 before 4:00 AM local time each morning.
 
 Startup gate:
-- Verify a clean main-branch state or create/use an isolated Codex branch/worktree before edits.
+- Before any edit, create/use the dedicated ADG burndown worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-p1-burndown on a codex/adg-p0-p1-burndown-* branch. Use the canonical repo root only to read the audit receipt and bootstrap the worktree.
 - Treat the full-ADG audit as the prerequisite, but do not require clean certification when the audit produced repair-ready artifacts.
-- Read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json first, then resolve exact timestamped artifact paths from repair_handoff when present.
-- Accept artifact_status=certified or artifact_status=repair_ready.
-- If artifact_status is missing, infer repair_ready only when the newest timestamped SQLite snapshot, gate results, generation manifest, gate manifest, adg_action_queue_*.json, and adg_burndown_report.md were produced by the same full-ADG run after the audit start window.
+- Read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json first and run this exact validator before editing:
+  python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json
+- Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- Do not infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
 - If the full ADG audit is still running, wait and poll for completion until the local deadline policy says to stop.
 - If artifacts are stale, missing, timestamp-inconsistent, or only available through overwritten latest files without a timestamped source, stop without editing and report RCA.
 
 Zero-loss artifact contract:
 - Never consume overwritten latest files as the source of truth when timestamped artifacts exist.
-- Record exact artifact paths and snapshot timestamp before every edit wave.
+- Record exact repair_handoff artifact paths, sha256 digests, validator counts, and snapshot timestamp before every edit wave.
 - Re-read or regenerate artifacts only after preserving the prior exact paths in the run receipt.
 - Do not claim P0=0 or P1=0 unless reproduced from the exact queue/report/gate artifacts consumed by this run.
 
@@ -64,7 +65,7 @@ reasoning_effort = "xhigh"
 execution_environment = "local"
 cwds = [
   "C:\\Git\\Agentic-Workflow-FRESH",
-  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2",
+  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-p1-burndown",
 ]
 created_at = 1782207251406
 updated_at = 1782293487839
