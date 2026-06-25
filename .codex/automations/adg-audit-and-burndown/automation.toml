@@ -8,6 +8,21 @@ Run the Agentic-Workflow full ADG audit from a clean main-branch state. Use the 
 Run this exact command from the repo root:
 python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0
 
+Downstream release contract:
+- This automation is the generate_full_adg lane and the only producer of the ADG handoff for downstream P0/P1, P2, P3, and any future P4 automation.
+- The downstream handoff is released only through docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json plus digest-bound timestamped repair_handoff artifacts.
+- Downstream lanes must not consume overwritten latest files as source of truth when timestamped paths exist.
+- Downstream lanes must not regenerate full ADG, rewrite the receipt, or infer repair_ready from prompt context, newest files, rewritten docs mirrors, or stale latest files.
+- If this run is incomplete, stale, timestamp-inconsistent, or digest-invalid, mark downstream_release_status=blocked and explicitly state that all downstream severity-lane automations must stop or keep polling.
+- If this run is certified or repair_ready with a valid direct receipt and complete repair_handoff, mark downstream_release_status=released and name the exact downstream lanes eligible to start next.
+
+Severity-lane order:
+1. generate_full_adg / full ADG audit produces the receipt and timestamped artifacts.
+2. P0/P1 burndown consumes the receipt first and owns blocking FIX gates plus P1 ratchets.
+3. P2 next-action consumes the same released audit artifacts only after P0/P1 is clean for that audit generation.
+4. P3 promotion/hygiene consumes the same released audit artifacts only after P0/P1 is clean and P2 has no actionable blocker that should take precedence.
+5. Any future P4 automation must follow the same receipt-first dependency and must never run ahead of P0/P1, P2, or P3 when their gates are blocking.
+
 Zero-loss artifact contract:
 - Treat timestamped artifacts as append-only evidence. Never rely on overwritten latest files for handoff when a timestamped path exists.
 - After the command exits, read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json and require schema_version="adg-audit-pipeline-receipt/v1".
@@ -22,7 +37,7 @@ Status semantics:
 
 If repair_ready, produce an explicit P0/P1 handoff block directly from repair_handoff with exact timestamped paths and sha256 digests for snapshot, gate results, action queue, burndown report, burndown table, generation manifest, and gate manifest. State that the P0/P1 burndown automation should start immediately or continue polling if it is already scheduled. Do not attempt source edits in this automation.
 
-Closeout must include certification_status, artifact_status, whether artifact_status was direct or inferred, blocking gates, top P0/P1 queue items, exact artifact paths, command exit codes, and an RCA block when the audit is incomplete or failed.
+Closeout must include certification_status, artifact_status, artifact_status_source, downstream_release_status, eligible downstream lanes, whether artifact_status was direct or inferred, blocking gates, top P0/P1 queue items, exact artifact paths, sha256 digests, command exit codes, and an RCA block when the audit is incomplete or failed.
 """
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=23;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"

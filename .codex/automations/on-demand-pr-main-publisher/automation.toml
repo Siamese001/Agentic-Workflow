@@ -12,7 +12,7 @@ Run the Agentic-Workflow on-demand publication automation for:
 C:\Git\Agentic-Workflow-FRESH
 
 Mission:
-Publish requested Codex work to GitHub main with zero data loss, verified remote main sync, explicit branch-tip ancestry tracking, safe C:\Git worktree handling, and a durable GitHub Pull Request review artifact. Support both single-branch PR publication and local-branch recovery requests, but every publication performed by this automation must go through an actual GitHub PR. Do not infer from PR state alone; use git topology and commit ancestry evidence.
+Publish requested Codex work to GitHub main with zero data loss, verified remote main sync, explicit branch-tip ancestry tracking, safe C:\Git worktree handling, and a durable GitHub Pull Request review artifact. Support dirty-worktree recovery, single-branch PR publication, local-branch recovery, prior PR/source recovery, CI debug, PR merge proof, local-main cleanup, and final topology closeout. Every publication performed by this automation must go through an actual GitHub PR. Do not infer from PR state alone; use git topology and commit ancestry evidence.
 
 Authority:
 Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Show concrete command output in the final report.
@@ -22,7 +22,10 @@ Definitions:
 - origin/main = local remote-tracking ref after git fetch.
 - GitHub main = live origin refs/heads/main from git ls-remote.
 - execution surface = the worktree where publication edits, verification, and PR branch updates are performed.
-- publication branch = explicit user branch, current checked-out non-main branch, or the branch created in a clean detached publication worktree.
+- protected main worktree = C:\Git\Agentic-Workflow-FRESH when it is checked out on main/master or otherwise carrying local dirty work that must be preserved.
+- dirty-worktree recovery mode = the required preservation and routing flow for modified, deleted, renamed, or untracked files before publication or final success.
+- publication scope = the coherent set of files selected for the current PR publication.
+- publication branch = explicit user branch, current checked-out non-main branch, or a non-main branch created during dirty-worktree recovery or clean detached origin/main publication.
 - publication PR = a GitHub Pull Request from the publication branch to main.
 - done branch = a branch whose exact tip is ancestor-contained in origin/main.
 
@@ -30,7 +33,8 @@ Hard stops:
 - Never reset local main.
 - Never force-push main.
 - Never squash.
-- Never publish from main/master, conflicted state, ambiguous branch, or a dirty execution surface.
+- Never publish directly from main/master, a conflicted state, an ambiguous branch, or a dirty execution surface.
+- Never treat dirty main as a reason to drop scope. Dirty main triggers dirty-worktree recovery mode; stop only if classification or preservation is unsafe.
 - Never push directly to refs/heads/main or run git push origin main in this automation, even with explicit local-main publication wording; use a different direct-main automation for that.
 - Never claim publication success unless a GitHub PR existed for the selected work and was merged through gh pr merge --merge or an equivalent GitHub PR merge API.
 - Never merge/rebase a prior PR/source branch wholesale during recovery unless the user explicitly asked for whole-branch integration.
@@ -39,24 +43,37 @@ Hard stops:
 - Never claim local main sync if a protected main/master/release worktree is dirty or cannot be fast-forwarded safely.
 - Never claim success unless GitHub main contains the selected publication work, every completed source branch is ancestor-contained in origin/main, HEAD equals origin/main, and the local repo has exactly one clean main worktree at C:\Git\Agentic-Workflow-FRESH.
 
-0. Git publication audit first
+Process model:
+Use five phases to reduce runtime without reducing scope:
+1. Intake once.
+2. Recover and route dirty work.
+3. Publish the selected non-main branch through PR.
+4. Debug CI and merge through PR.
+5. Prove closeout and cleanup once, then repeat only failed gates after specific remediation.
+
+0. Intake audit first
 Run before PR, branch, cherry-pick, merge, or cleanup work:
 - git fetch origin --prune
+- git status --short --branch
+- git worktree list --porcelain
+- git ls-remote origin refs/heads/main
 - python scripts/governance/codex_publication_audit.py --json --branch-limit 100 --require-pr-flow
 - python scripts/governance/codex_readiness.py --git-publication --require-pr-flow --json
 
 Rules:
-- If current_worktree_dirty, current_worktree_conflicted, fetch_failed, origin_main_missing, github_main_unavailable, origin_main_differs_from_github_main, or pr_flow_contract_violation appears as a blocker, do not publish from that surface.
-- If the audit recommends clean_detached_origin_main_worktree, create or reuse a clean worktree under C:\Git\Agentic-Workflow-FRESH-worktrees from current origin/main and continue there. Rerun the audit from that worktree.
-- Dirty protected worktrees are preservation warnings during intake only. They must be cleaned, committed, safely fast-forwarded, removed, or reported as a blocker before final success.
+- If current_worktree_conflicted, fetch_failed, origin_main_missing, github_main_unavailable, origin_main_differs_from_github_main, or pr_flow_contract_violation appears as a blocker, do not publish from that surface. Enter remediation only if the blocker is repo-local and safely recoverable; otherwise stop with RCA.
+- If current_worktree_dirty appears as a blocker, do not publish directly from that dirty surface. Enter dirty-worktree recovery mode instead of stopping immediately.
+- If the audit recommends clean_detached_origin_main_worktree, create or reuse a clean worktree under C:\Git\Agentic-Workflow-FRESH-worktrees from current origin/main and continue there after preserving any dirty protected worktree.
+- Dirty protected worktrees are preservation warnings during intake only. They must be cleaned, committed, safely fast-forwarded, removed, stashed with explicit proof, or reported as a blocker before final success.
 - The audit's unmerged_branches and git cherry -v evidence are the branch-recovery inventory, but not closeout proof.
-- If any required pass criterion or proof-table row is FAIL, the automation is not done; keep working the remediation loop until every required gate passes, or stop only with RCA for an external blocker that cannot be cleared in-run.
+- If any required pass criterion or proof-table row is FAIL at final closeout, the automation is not done; keep working the remediation loop until every required gate passes, or stop only with RCA for an external blocker that cannot be cleared in-run.
 
 State checkpoint:
-Print this table at start, after every fetch, before PR creation/update, after merge/rebase/cherry-pick recovery, after PR merge, and at closeout:
+Print this table at intake, before PR creation/update, after PR merge, and at closeout. Also print it after any dirty-worktree recovery action that changes branch/worktree topology.
 
 checkpoint:
   execution_surface: <path>
+  recovery_mode: <none|dirty_worktree|branch_recovery|ci_debug|cleanup>
   publication_branch: <name-or-detached> <sha>
   publication_pr: <url-number-state-or-missing>
   local_main: <sha-or-unavailable>
@@ -72,10 +89,7 @@ checkpoint:
 
 1. Main and worktree topology
 Run:
-- git status --short --branch
-- git worktree list --porcelain
 - git rev-parse --short origin/main
-- git ls-remote origin refs/heads/main
 - git branch --merged origin/main
 - git branch --no-merged origin/main
 
@@ -83,13 +97,36 @@ Rules:
 - origin/main must equal GitHub main after fetch.
 - If local main is clean and behind origin/main, fast-forward it safely only when it is not checked out dirty elsewhere.
 - If local main is ahead, diverged, dirty, or checked out in another dirty worktree, preserve it and use a clean detached origin/main worktree for publication.
+- If main is dirty, do not stop merely because it is dirty. Start dirty-worktree recovery mode.
 
-2. Publication branch intake
+2. Dirty-worktree recovery and publication branch intake
+Use when the protected main worktree or execution surface is dirty, or when no explicit non-main publication branch has been selected.
+
+Inventory:
+- git status --short --branch
+- git diff --name-status
+- git diff --cached --name-status
+- git ls-files --others --exclude-standard
+
+Classify every modified, deleted, renamed, staged, and untracked file into exactly one bucket:
+- selected_publication_scope
+- separate_recovery_scope
+- local_or_config_scope
+- generated_or_disposable_scope
+- unsafe_or_unknown_scope
+
+Rules:
+- Preserve every non-disposable dirty file before cleanup.
+- Preservation means one of: commit to a named non-main branch, stash with explicit stash name and file list, or retain with an RCA blocker.
+- Restore or delete only files proven generated/disposable, and record the proof before acting.
+- Do not overwrite, drop, restore, delete, or ignore dirty files without explicit preservation proof.
+- If the selected publication scope is coherent, create or select a non-main publication branch and commit only that scope.
+- If unrelated dirty files exist, route them to separate recovery branches, explicit stashes, or retained blockers before final success.
+- If classification is unsafe, stop with RCA and list all retained files.
+- After preservation/routing, return C:\Git\Agentic-Workflow-FRESH main to clean origin/main when safe. If not safe, report the exact blocker.
 - Use an explicit user branch when provided; otherwise use the current checked-out non-main branch only if clean and unambiguous.
-- For local-branch recovery or "merge all" requests, inspect every branch from git branch --no-merged origin/main.
-- Inspect dirty files and stage only coherent publication-scope changes.
-- Commit staged work before publication.
-- Report committed files and excluded files.
+- Commit staged publication-scope work before publication.
+- Report committed files, excluded files, preserved files, stashes, recovery branches, and retained blockers.
 
 3. Prior PR/source recovery
 Inventory:
@@ -99,6 +136,12 @@ Inventory:
 - git cherry -v origin/main <branch> for every candidate branch
 - git log --oneline origin/main..<branch>
 - git diff --stat origin/main..<branch>
+
+Runtime simplification:
+- Keep the prior PR/source recovery scope. Do not skip branch recovery solely to save time.
+- First run the shallow inventory for all no-merged candidate branches.
+- Deep inspect only branches that are current, non-duplicative, relevant to the requested publication or cleanup goal, or blocking final closeout.
+- For stale, generated-only, superseded, unclear, or explicitly retained branches, record the skip/retain reason and do not run deeper per-file replay unless the branch blocks closeout.
 
 Selection rules:
 - SELECT only current, narrow, non-duplicative, verifiable work.
@@ -131,31 +174,36 @@ Run:
 - focused checks based on changed files
 - python scripts/governance/verify_codex_primary.py if Codex docs/scripts changed
 
-Re-run publication audit and checkpoint.
+Re-run publication audit and checkpoint once before PR creation/update.
 
 Then:
 - push the publication branch to origin.
 - update an existing PR or create a draft PR to main with gh pr create.
-- PR body must list selected prior work, skipped work, ancestry-recording merges, checks, and zero-loss notes.
+- PR body must list selected prior work, skipped work, ancestry-recording merges, checks, zero-loss dirty-worktree recovery notes, preserved files, retained blockers, and cleanup status.
 - Stop with RCA if no GitHub PR URL/number can be proven for the current publication branch.
 
 5. CI debug loop for PR flow
 For every pushed head SHA:
 - gh pr checks
 - gh run list --branch <publication_branch>
+
+If checks are pending:
+- poll pending checks with bounded waits.
+
+If checks fail, are cancelled, skipped-unknown, or missing:
 - gh run view <run_id>
 - gh run view <run_id> --log-failed
 
 Rules:
 - Do not merge with pending, failing, cancelled, skipped-unknown, or missing checks.
-- Poll pending checks with bounded waits.
+- Do not inspect failed logs when all current-head checks are green.
 - For failures, get logs, identify exact failing command/assertion, reproduce locally when practical.
 - If repo-owned and in scope, fix narrowly, verify, commit, push, and repeat.
 - Rerun CI only once when logs prove transient infra.
 - If blocked by secrets, permission, external outage, branch protection, or broad redesign, stop with RCA.
 
 6. Publish through PR
-Re-run publication audit and checkpoint.
+Re-run publication audit and checkpoint once before merge.
 
 Rules:
 - Never squash.
@@ -166,7 +214,7 @@ Rules:
 - Do not use git push origin main as a substitute for PR merge in this automation.
 
 7. Post-publication proof
-Run:
+Run once after PR merge:
 - git fetch origin --prune
 - git ls-remote origin refs/heads/main
 - gh pr view <number> --json number,state,mergedAt,mergeCommit,headRefName,baseRefName,url
@@ -176,6 +224,10 @@ Run:
 - python scripts/governance/codex_main_closeout.py --check --fetch --json
 - python scripts/governance/codex_publication_audit.py --json --branch-limit 100 --require-ancestor-cleanup --require-single-main-worktree --require-pr-flow
 - python scripts/governance/codex_readiness.py --git-publication --require-single-main-worktree --require-pr-flow --json
+
+Runtime simplification:
+- Repeat the full closeout proof stack only after a specific remediation is applied for a failed closeout gate.
+- Do not repeat the full stack while no state has changed.
 
 Success requires:
 - a GitHub PR number/URL exists for the selected publication work and is MERGED
@@ -210,6 +262,7 @@ For each publication/source branch:
 Include:
 - execution surface and publication branch/SHA
 - GitHub publication PR number, URL, state, merge commit, and mergedAt
+- dirty-worktree recovery table with every dirty file, classification, preservation action, branch/stash/commit path, and result
 - prior PR/source branches reviewed
 - selected work and skipped work with git cherry -v evidence
 - ancestry-recording merge commits for every superseded/transplanted branch

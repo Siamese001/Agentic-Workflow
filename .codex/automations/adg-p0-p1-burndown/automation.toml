@@ -5,6 +5,23 @@ name = "ADG P0/P1 Burndown"
 prompt = """
 Run the Agentic-Workflow P0/P1 ADG burndown after the full ADG audit, with the operational goal that P1 reaches 0 before 4:00 AM local time each morning.
 
+Generate-full-ADG dependency gate:
+- This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
+- Do not begin source edits until the latest full ADG audit has completed and released docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json for this run window.
+- The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
+- Run this exact validator before editing:
+  python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json
+- Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and before this downstream lane starts editing.
+- If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, or not direct, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
+- Never consume overwritten latest files as source of truth when timestamped artifacts exist.
+- Never regenerate full ADG, rewrite the receipt, or infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
+
+Severity-lane order:
+- This is the first downstream severity lane after generate_full_adg.
+- It owns P0 FIX, ordinary P1, and P1-ratchet burndown for the released ADG receipt.
+- P2, P3, and any future P4 automation must not edit from the same audit generation until this lane proves P0/P1 clean or explicitly stops with a blocker.
+
 Startup gate:
 - Before any edit, create/use the dedicated ADG burndown worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-p1-burndown on a codex/adg-p0-p1-burndown-* branch. Use the canonical repo root only to read the audit receipt and bootstrap the worktree.
 - Treat the full-ADG audit as the prerequisite, but do not require clean certification when the audit produced repair-ready artifacts.
@@ -59,7 +76,7 @@ Closeout:
 - Include the mandatory burndown tale tables even when no edits occur or the run stops early.
 """
 status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=15;BYDAY=SU,MO,TU,WE,TH,FR,SA"
 model = "gpt-5.4-mini"
 reasoning_effort = "xhigh"
 execution_environment = "local"

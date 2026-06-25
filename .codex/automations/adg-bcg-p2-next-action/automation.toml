@@ -8,6 +8,24 @@ Run the Agentic-Workflow downstream BCG/ADG P2 next-action automation.
 Mission:
 Consume the fresh BCG next-step evidence produced by the separate full ADG audit and burn down one bounded P2 hygiene item per run. Do not modify, reschedule, or depend on changing the full ADG audit automation.
 
+Generate-full-ADG dependency gate:
+- This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
+- Do not begin source edits until the latest full ADG audit has completed and released docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json for this run window.
+- The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
+- Run this exact validator before editing:
+  python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json
+- Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and before this downstream lane starts editing.
+- If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, or not direct, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
+- Never consume overwritten latest files as source of truth when timestamped artifacts exist.
+- Never regenerate full ADG, rewrite the receipt, or infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
+
+Severity-lane order:
+- This is the second downstream severity lane after generate_full_adg.
+- It must run only after the P0/P1 lane has proven P0/P1 clean for the same released ADG receipt or has no remaining blocking FIX/ratchet regression.
+- It must run before P3 promotion/hygiene and any future P4 automation when P2 has a safe actionable blocker.
+- If P0/P1 is not clean for the same audit generation, stop and defer to the P0/P1 automation.
+
 Authority:
 Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. Do not publish or merge; publication is handled by a separate automation.
 
@@ -39,7 +57,7 @@ Closeout:
 Summarize the selected BCG/P2 source artifact, changed files, P2 hotspot count before/after if measurable, validation commands and results, branch/worktree status, remaining P2 count or blocked next item, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
 '''
 status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=3;BYMINUTE=30;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=4;BYMINUTE=20;BYDAY=SU,MO,TU,WE,TH,FR,SA"
 model = "gpt-5.4-mini"
 reasoning_effort = "xhigh"
 execution_environment = "worktree"

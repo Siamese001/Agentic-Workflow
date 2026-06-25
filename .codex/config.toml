@@ -42,6 +42,15 @@ PYTHONUNBUFFERED = "1"
 [mcp_servers.adg_sqlite.tools.adg_health]
 approval_mode = "approve"
 
+[mcp_servers.adg_sqlite.tools.adg_nodes_by_file]
+approval_mode = "approve"
+
+[mcp_servers.adg_sqlite.tools.adg_edge_fanin]
+approval_mode = "approve"
+
+[mcp_servers.adg_sqlite.tools.adg_edge_fanout]
+approval_mode = "approve"
+
 [mcp_servers.deepwiki]
 url = "https://mcp.deepwiki.com/mcp"
 required = true

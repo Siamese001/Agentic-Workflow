@@ -101,6 +101,7 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
 
     monkeypatch.setattr(main_mod, "_run_research_record", _fake_run)
     monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: runs_root)
+    monkeypatch.setattr(main_mod, "_ensure_searxng_runtime_ready", lambda: None)
 
     code = main_mod._run_profile_spine(
         [
@@ -143,6 +144,7 @@ def test_cli_jd_path_fails_closed_without_targeting_markdown(
     jd_path = tmp_path / "jd.txt"
     jd_path.write_text("Partner architecture JD", encoding="utf-8")
     monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+    monkeypatch.setattr(main_mod, "_ensure_searxng_runtime_ready", lambda: None)
     monkeypatch.setattr(
         main_mod,
         "_run_research_record",
@@ -170,6 +172,7 @@ def test_cli_jd_path_fails_closed_on_stub_targeting_markdown(
     jd_path = tmp_path / "jd.txt"
     jd_path.write_text("Partner architecture JD", encoding="utf-8")
     monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+    monkeypatch.setattr(main_mod, "_ensure_searxng_runtime_ready", lambda: None)
     monkeypatch.setattr(
         main_mod,
         "_run_research_record",
@@ -213,3 +216,73 @@ def test_cli_dry_run_no_longer_enables_stub(monkeypatch) -> None:
 
     assert code == 1
     assert called is False
+
+
+def test_cli_warms_searxng_before_research(monkeypatch, tmp_path: Path) -> None:
+    from apps_research import __main__ as main_mod
+
+    jd_path = tmp_path / "jd.txt"
+    jd_path.write_text("Lead partner solution architecture for Claude.", encoding="utf-8")
+    calls: list[str] = []
+
+    def _fake_preflight():
+        calls.append("preflight")
+
+    def _fake_run(_request):
+        calls.append("research")
+        return _FakeRecord(
+            run_id="research-run-test",
+            topic="Anthropic",
+            company_brief_text=_VALID_APPS_RG_BRIEF,
+            fec_run_context={
+                "company_brief": {
+                    "company": "Anthropic",
+                    "apps_rg_targeting_brief_sidecar": _sidecar_for(_VALID_APPS_RG_BRIEF),
+                }
+            },
+        )
+
+    monkeypatch.setattr(main_mod, "_ensure_searxng_runtime_ready", _fake_preflight)
+    monkeypatch.setattr(main_mod, "_run_research_record", _fake_run)
+    monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+
+    code = main_mod._run_profile_spine(
+        ["--target-company", "Anthropic", "--target-role", "Manager", "--jd", str(jd_path)]
+    )
+
+    assert code == 0
+    assert calls == ["preflight", "research"]
+
+
+def test_cli_blocks_before_research_when_searxng_preflight_fails(
+    monkeypatch, tmp_path: Path
+) -> None:
+    from apps_research import __main__ as main_mod
+
+    jd_path = tmp_path / "jd.txt"
+    jd_path.write_text("Lead partner solution architecture for Claude.", encoding="utf-8")
+    called = False
+
+    def _fake_preflight():
+        raise RuntimeError("SearXNG Docker readiness failed")
+
+    def _fake_run(_request):
+        nonlocal called
+        called = True
+        return _FakeRecord(
+            run_id="should-not-run",
+            topic="Anthropic",
+            company_brief_text=_VALID_APPS_RG_BRIEF,
+        )
+
+    monkeypatch.setattr(main_mod, "_ensure_searxng_runtime_ready", _fake_preflight)
+    monkeypatch.setattr(main_mod, "_run_research_record", _fake_run)
+    monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+
+    code = main_mod._run_profile_spine(
+        ["--target-company", "Anthropic", "--target-role", "Manager", "--jd", str(jd_path)]
+    )
+
+    assert code == 1
+    assert called is False
+    assert not (tmp_path / "runs").exists()
