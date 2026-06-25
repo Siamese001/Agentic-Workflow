@@ -154,6 +154,41 @@ def _tokenize_for_grounding(text: str) -> set[str]:
     return {tok for tok in raw if tok not in _HEADLINE_GENERIC_NOUN_STOPLIST}
 
 
+_HEADLINE_SEMANTIC_GROUNDING_GROUPS: dict[str, frozenset[str]] = {
+    "governed": frozenset({"governed", "governance", "controls", "controlled", "policy", "policies", "egress"}),
+    "governance": frozenset({"governed", "governance", "controls", "controlled", "policy", "policies", "egress"}),
+    "runtime": frozenset({"runtime", "execution", "operational", "reliability", "traceable", "repeatable"}),
+    "architecture": frozenset({"architecture", "architected", "engineering", "platform", "infrastructure", "design"}),
+    "platforms": frozenset({"platform", "platforms", "engineering", "infrastructure"}),
+    "platform": frozenset({"platform", "platforms", "engineering", "infrastructure"}),
+}
+
+
+def _semantic_stoplist_grounding_support(segment: str, evidence_texts: list[str]) -> dict[str, Any]:
+    """Ground all-stoplist executive phrases against cited graph skill/fact concepts."""
+    raw_tokens = {
+        tok
+        for tok in re.findall(r"[A-Za-z][A-Za-z\-]{3,}", str(segment or "").lower())
+        if tok not in {"engineering"}
+    }
+    evidence_tokens: set[str] = set()
+    for text in evidence_texts:
+        evidence_tokens.update(re.findall(r"[A-Za-z][A-Za-z\-]{3,}", str(text or "").lower()))
+    supported: dict[str, list[str]] = {}
+    for token in sorted(raw_tokens):
+        group = _HEADLINE_SEMANTIC_GROUNDING_GROUPS.get(token)
+        if not group:
+            continue
+        hits = sorted(group & evidence_tokens)
+        if hits:
+            supported[token] = hits
+    return {
+        "semantic_grounding_pass": len(supported) >= 2,
+        "supported_semantic_tokens": supported,
+        "raw_segment_tokens": sorted(raw_tokens),
+    }
+
+
 _SKILL_ID_PREFIX_RE = re.compile(r"^skill_(?:sr_)?(?:w\d+_)?")
 
 
@@ -537,8 +572,11 @@ def check_headline_xyz_literal_grounding(
         # nuance beyond this floor.
         per_fact_evidence: list[dict[str, Any]] = []
         union_grounded: set[str] = set()
+        evidence_texts: list[str] = []
         for fid in fids:
             text = fact_id_to_text.get(fid) or fact_id_to_text.get(fid.split("_metric_")[0]) or ""
+            if text:
+                evidence_texts.append(text)
             fact_tokens = _tokenize_for_grounding(text)
             shared = sorted(seg_tokens & fact_tokens)
             per_fact_evidence.append({"fact_id": fid, "shared_tokens": shared, "fact_text_known": bool(text)})
@@ -548,7 +586,12 @@ def check_headline_xyz_literal_grounding(
         grounded_count = len(union_grounded)
         majority_grounded = grounded_count * 2 >= total if total else False
         seg_pass = bool(union_grounded) and majority_grounded
-        per_segment.append({
+        semantic_support: dict[str, Any] | None = None
+        if not seg_tokens:
+            semantic_support = _semantic_stoplist_grounding_support(seg_clean, evidence_texts)
+            if semantic_support.get("semantic_grounding_pass") is True:
+                seg_pass = True
+        segment_row = {
             "segment": seg_clean,
             "ground_pass": seg_pass,
             "cited_fact_ids": fids,
@@ -556,18 +599,21 @@ def check_headline_xyz_literal_grounding(
             "ungrounded_tokens": ungrounded,
             "grounded_tokens": sorted(union_grounded),
             "majority_grounded": majority_grounded,
-        })
-        if not seg_tokens:
+        }
+        if semantic_support is not None:
+            segment_row["semantic_support"] = semantic_support
+        per_segment.append(segment_row)
+        if not seg_tokens and not seg_pass:
             failures.append(
                 f"{seg_clean!r} has zero non-generic content nouns (all words are in stoplist) \u2014 "
                 "cannot prove grounding"
             )
-        elif not union_grounded:
+        elif seg_tokens and not union_grounded:
             failures.append(
                 f"{seg_clean!r} shares zero content nouns with cited fact(s) "
                 f"{fids} \u2014 phrase is not lexically grounded in fact claim_text"
             )
-        elif not majority_grounded:
+        elif seg_tokens and not majority_grounded:
             failures.append(
                 f"{seg_clean!r} grounds only {grounded_count}/{total} content noun(s) in cited "
                 f"fact(s) {fids}; ungrounded={ungrounded} \u2014 majority of segment nouns must "

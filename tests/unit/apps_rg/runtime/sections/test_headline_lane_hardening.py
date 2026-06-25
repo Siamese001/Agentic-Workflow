@@ -24,7 +24,7 @@ from apps_rg.runtime.validators.headline_positioning_x2 import (
     run_headline_positioning_x2_gates,
 )
 from apps_rg.runtime.validators.headline_quality_x2 import POSITIONING_FAMILIES
-from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
+from apps_rg.runtime.validators.headline_x2 import headline_word_count, run_headline_x2_gates
 from apps_rg.runtime.w3_execution_path_labels import BUCKET_GOVERNED_PA_L2_EXIT
 
 HL = "SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Regulated Delivery"
@@ -129,6 +129,79 @@ def test_text_claim_coverage_requires_token_overlap_not_substring_false_positive
     assert by_seg["Governed Agentic Platforms"] is False
     assert by_seg["Runtime Infrastructure"] is True
     assert by_seg["Regulated Delivery"] is True
+
+
+def test_normalize_repairs_runtime_spine_and_short_cosell_headline() -> None:
+    hl = "SVP Engineering | Governed Runtime Spine | Databricks Lakehouse | Partner Co-Sell"
+    expected = (
+        "SVP Engineering | Runtime Governance Architecture | "
+        "Databricks Lakehouse | Partner Co-Sell Motions"
+    )
+    allowed = {
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_unify_partner_channel_cosell",
+        "skill_provider_and_egress_governance",
+        "skill_sr_w12_databricks_lakehouse_fundamentals",
+        "skill_partner_partner_motions",
+        "skill_partner_co_selling",
+    }
+    payload = {
+        "target_company": "",
+        "selected_fact_plan": {
+            "section_id": "headline",
+            "required_fact_ids": sorted(allowed),
+            "selected_skill_ids": [
+                "skill_provider_and_egress_governance",
+                "skill_sr_w12_databricks_lakehouse_fundamentals",
+                "skill_partner_partner_motions",
+                "skill_partner_co_selling",
+            ],
+            "facts": [
+                {
+                    "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                    "claim_text": "Distributed cloud and data execution infrastructure",
+                },
+                {
+                    "fact_id": "reb_unify_partner_channel_cosell",
+                    "claim_text": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+                },
+            ],
+        },
+        "proof_pool_metadata": {"proof_pool_type": "augmented_skills_graph"},
+    }
+    parsed = {
+        "headline_line": hl,
+        "claim_ledger": [
+            {"claim_text": "Governed Runtime Spine", "source_fact_ids": sorted(allowed)},
+            {"claim_text": "Databricks Lakehouse", "source_fact_ids": sorted(allowed)},
+            {"claim_text": "Partner Co-Sell", "source_fact_ids": sorted(allowed)},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+
+    out = normalize_parsed_output(parsed, payload, allowed, hl)
+
+    assert out is not None
+    assert out["headline_line"] == expected
+    assert headline_word_count(out["headline_line"]) == 10
+    assert "spine" not in out["headline_line"].lower()
+    assert "runtime_governance" in governance_signal_families_matched(out["headline_line"])
+    assert len(positioning_families_matched(out["headline_line"])) >= POSITIONING_FAMILY_FLOOR
+    assert narrowing_labels_found(out["headline_line"]) == []
+    assert {row["claim_text"] for row in out["claim_ledger"]} == {
+        "Runtime Governance Architecture",
+        "Databricks Lakehouse",
+        "Partner Co-Sell Motions",
+    }
+    assert any(e.get("operation") == "headline_machine_phrase_repair" for e in out["change_log"])
+    assert any(e.get("operation") == "headline_word_count_deterministic_expand" for e in out["change_log"])
 
 
 def test_build_headline_allowed_fact_packet_includes_facts_and_anchor() -> None:

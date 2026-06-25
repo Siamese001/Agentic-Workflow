@@ -656,6 +656,30 @@ def _rewrite_partner_enablement_segment(
     }
 
 
+_MACHINE_HEADLINE_SEGMENT_REWRITES: dict[str, str] = {
+    "governed runtime spine": "Runtime Governance Architecture",
+    "runtime spine": "Runtime Governance Architecture",
+    "governed runtime backbone": "Runtime Governance Architecture",
+    "runtime backbone": "Runtime Governance Architecture",
+}
+
+
+def _rewrite_machine_headline_segments(headline_line: str) -> tuple[str, list[dict[str, str]]]:
+    """Replace unnatural AI-ish headline fragments with evidence-native executive phrasing."""
+    hl = str(headline_line or "").strip()
+    parts = [p.strip() for p in hl.split(" | ")]
+    if len(parts) != 4 or parts[0] != "SVP Engineering":
+        return hl, []
+    changes: list[dict[str, str]] = []
+    for idx in range(1, 4):
+        key = parts[idx].strip().lower()
+        replacement = _MACHINE_HEADLINE_SEGMENT_REWRITES.get(key)
+        if replacement and replacement != parts[idx]:
+            changes.append({"from": parts[idx], "to": replacement})
+            parts[idx] = replacement
+    return " | ".join(parts), changes
+
+
 def snapshot_raw_jd_alignment(parsed: dict[str, Any]) -> None:
     """Freeze model-emitted ``jd_alignment`` before normalize for X2 proof gates (no proof-boolean injection)."""
     jd0 = parsed.get("jd_alignment")
@@ -664,7 +688,7 @@ def snapshot_raw_jd_alignment(parsed: dict[str, Any]) -> None:
 
 
 def deterministic_headline_word_count_expand(headline_line: str) -> str:
-    """Add one fact-safe token to segments 2–4 when the model under-shoots the 10-word floor."""
+    """Add one fact-safe token to segments 2-4 when the model under-shoots the 10-word floor."""
     hl = str(headline_line or "").strip()
     wc = headline_word_count(hl)
     if HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX:
@@ -674,15 +698,26 @@ def deterministic_headline_word_count_expand(headline_line: str) -> str:
     parts = [p.strip() for p in hl.split(" | ")]
     if len(parts) != 4:
         return hl
-    pad_tokens = ("Platform", "Systems", "Scale", "Delivery", "Controls", "Governance")
-    for seg_idx in (3, 2, 1):
-        for token in pad_tokens:
-            trial_parts = list(parts)
-            trial_parts[seg_idx] = f"{trial_parts[seg_idx]} {token}".strip()
-            trial = " | ".join(trial_parts)
-            trial_wc = headline_word_count(trial)
-            if HEADLINE_WORD_MIN <= trial_wc <= HEADLINE_WORD_MAX:
-                return trial
+
+    targeted_expansions: tuple[tuple[int, str, str], ...] = (
+        (3, r"\bpartner\s+co-?sell\b", "Motions"),
+        (1, r"\bruntime\s+governance\b", "Architecture"),
+        (2, r"\bdatabricks\s+lakehouse\b", "Platform"),
+        (1, r"\bgoverned\s+runtime\b", "Architecture"),
+    )
+    for seg_idx, pattern, token in targeted_expansions:
+        segment = parts[seg_idx]
+        if not re.search(pattern, segment, re.IGNORECASE):
+            continue
+        if re.search(rf"\b{re.escape(token)}\b", segment, re.IGNORECASE):
+            continue
+        trial_parts = list(parts)
+        trial_parts[seg_idx] = f"{segment} {token}".strip()
+        trial = " | ".join(trial_parts)
+        trial_wc = headline_word_count(trial)
+        if HEADLINE_WORD_MIN <= trial_wc <= HEADLINE_WORD_MAX:
+            return trial
+
     return hl
 
 
@@ -721,6 +756,32 @@ def normalize_parsed_output(
                     **repaired_meta,
                 }
             )
+    machine_repaired_hl, machine_repairs = _rewrite_machine_headline_segments(hl)
+    if machine_repairs and machine_repaired_hl != hl:
+        hl = machine_repaired_hl
+        out["headline_line"] = hl
+        change_log = out.setdefault("change_log", [])
+        if isinstance(change_log, list):
+            change_log.append(
+                {
+                    "operation": "headline_machine_phrase_repair",
+                    "reason": "replace_unnatural_aiish_segment_with_positioning_family_phrase",
+                    "repairs": machine_repairs,
+                }
+            )
+    expanded_hl = deterministic_headline_word_count_expand(hl)
+    if expanded_hl != hl:
+        change_log = out.setdefault("change_log", [])
+        if isinstance(change_log, list):
+            change_log.append(
+                {
+                    "operation": "headline_word_count_deterministic_expand",
+                    "reason": f"word_count={headline_word_count(hl)} below {HEADLINE_WORD_MIN}",
+                    "from": hl,
+                    "to": expanded_hl,
+                }
+            )
+        hl = expanded_hl
     out["headline_line"] = hl
     jd = dict(out.get("jd_alignment") or {})
     jd.setdefault("targeting_only", True)
@@ -820,6 +881,10 @@ def retry_headline_word_and_pipe(
                 "headline_line must start with the exact prefix 'SVP Engineering | ', "
                 "must contain exactly three ' | ' separators (four segments), "
                 "must be 10 to 13 total words, "
+                "must preserve at least two positioning families such as runtime governance, "
+                "enterprise AI architecture, distributed AI infrastructure, agentic AI platforms, "
+                "or regulated AI systems, "
+                "must avoid machine-sounding fragments such as Runtime Spine or Runtime Backbone, "
                 "and must contain no employer names, target company names, metrics, or first person."
             ),
         },
