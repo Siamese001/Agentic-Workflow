@@ -1,0 +1,109 @@
+version = 1
+id = "weekly-svp-readme-documentation-refresh"
+kind = "cron"
+name = "SVP README Documentation Refresh"
+prompt = '''
+Run a bounded, evidence-backed README and GitHub documentation refresh for Agentic-Workflow.
+
+Mission:
+Bring README-family and GitHub-facing documentation to senior/SVP-engineering quality. Optimize for a CTO or SVP Engineering reviewer, a senior maintainer checking architecture and verification paths, and a new contributor needing safe onboarding.
+
+Primary outcome:
+- Clear first-page positioning.
+- Accurate architecture and operating-model navigation.
+- Fast developer onboarding.
+- Explicit verification paths.
+- Governance, security, support, and license signposts when supported by repo evidence.
+- Reduced stale or duplicated guidance.
+
+Standing authorization:
+Bounded documentation-only edits are allowed when the change is evidence-backed by the current repo, stays within README-family files or GitHub documentation surfaces, does not alter runtime behavior, test behavior, package metadata, app configuration, CI behavior, generated outputs, or product logic, and improves clarity, accuracy, navigation, onboarding, verification, governance/security/support signposting, or removes stale/duplicated guidance.
+
+Stop before editing if the change requires product strategy decisions, architecture decisions not already documented, code behavior changes, policy choices, licensing/security/support commitments, broad generated artifact churn, resolving unrelated dirty work, or guessing about ownership, maturity, customers, compliance, benchmarks, support SLAs, or roadmap.
+
+Governance contract:
+- Follow AGENTS.md and docs/codex-primary-execution.md.
+- For non-trivial work, read memory/MEMORY.md and memory/codex/memory_summary.md before relying on global/user memory.
+- Keep .codex as the only repo governance tree.
+- Do not create, revive, or reference legacy governance directories as active policy.
+- Use bounded PowerShell-compatible commands.
+- Do not set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1.
+
+Planning gate:
+- T0/T1 narrow single-file documentation corrections may edit directly.
+- T2/T3 work touching 2+ files, crossing documentation layers, changing architecture/governance wording, updating root navigation, or creating a PR-ready documentation refresh must produce a plan first and wait for approval.
+- If this automation is running unattended and approval cannot be obtained, stop after producing the audit and proposed plan.
+
+Startup gates:
+- Run git status --short --branch.
+- If the worktree is dirty, conflicted, or ambiguous, stop without editing and report the blocker.
+- For long or PR-producing runs, run python scripts/governance/codex_readiness.py --json.
+- If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts are touched, validation must include python scripts/governance/verify_codex_primary.py.
+
+Evidence rules:
+Use current repository files, authoritative docs, ADG SQLite evidence when relevant, rg discovery, and existing validation scripts or workflows. Do not infer undocumented architecture from naming alone. When evidence is missing, label the gap instead of inventing maturity, customer usage, compliance status, security posture, benchmarks, support commitments, ownership, roadmap, or branch-protection guarantees.
+
+Best-practice baseline:
+Apply README and documentation standards from GitHub README guidance, GitHub community profile guidance, Open Source Guides, Google documentation best practices, Diataxis, and OpenSSF SCM guidance. Use these as review heuristics, not as a reason to make unsupported claims.
+
+Inventory:
+- Dynamically inventory README-like and GitHub-facing documentation with rg --files -g '*README*' -g '*readme*'.
+- Also inspect CONTRIBUTING*, SECURITY*, SUPPORT*, CODE_OF_CONDUCT*, LICENSE*, .github/ISSUE_TEMPLATE/**, .github/PULL_REQUEST_TEMPLATE*, .github/pull_request_template*, .github/workflows/**, docs/**/README*, and tests/**/README* when present.
+- Avoid broad scans of generated, cache, vendor, or archive-heavy folders unless a current active README points to them.
+
+Classification:
+Classify each README-like file as one of primary_github_landing, active_subsystem_or_app, active_governance_or_operations, architecture_or_adr, test_or_data, tooling_or_infrastructure, generated_or_template, archival_or_historical, or unknown_requires_review.
+
+Prioritization:
+Prioritize active GitHub-facing surfaces in this order: root README.md; docs/svp/README.md if present; docs/SVP_ENGINEERING_GOVERNANCE_README.md if present; README files directly linked from the root README; app READMEs; agentic_core and shared-type READMEs; tooling and infrastructure READMEs; architecture / ADR README surfaces; tests, eval, fixture, and golden-data README surfaces; GitHub community-health files.
+
+Required README audit:
+Before editing, build an audit table with columns file, classification, current purpose, stale/confusing gaps, proposed action, and risk. Use risk values low, medium, or high. Stop on high-risk architecture, policy, security, support, or ownership claims unless already explicit in authoritative repo docs.
+
+Edit standards:
+- Root README should concisely answer what the repo is, who it is for, why it matters, current operating status, quick start, primary workflows, verification commands, architecture map, governance model, contribution/security/support/license links, and where deeper docs live.
+- Component READMEs should state responsibility, public entrypoints, prerequisites, common commands, tests or verification path, status when evidence supports it, dependencies, upstream/downstream links, and related deeper docs.
+- Governance README surfaces should distinguish active Codex-owned policy from archive/historical material, link to authoritative files, avoid duplicating long rule text, and avoid implying enforcement not backed by code, CI, hooks, scripts, or documented process.
+- Test, eval, fixture, and golden-data README surfaces should explain purpose, how to run or refresh, expected outputs, safety constraints, generated vs source-of-truth status, and what not to hand-edit.
+
+Style:
+Prefer concise sections, accurate relative links, runnable command snippets, explicit status labels, and clear next-step navigation. Avoid unsupported executive-sounding claims, broad rewrites with weak evidence, formatting churn, duplicated governance language, and generated or archived material unless required for active navigation.
+
+Workflow:
+1. Run startup gates.
+2. Read authority files and repo-local memory.
+3. Inventory README/community-health surfaces.
+4. Build the README audit table.
+5. Classify the work as T0/T1 or T2/T3.
+6. If T2/T3, produce a plan and wait for approval before editing.
+7. Make only the smallest coherent documentation-only edit set.
+8. Stop expanding scope when broad rewrite pressure appears.
+9. Record remaining work as backlog instead of touching every file.
+10. Re-check git status.
+11. Validate.
+12. Commit, push, and create/update a PR only if edits were made and publication is authorized by the run context.
+
+Validation:
+- Always run git diff --check.
+- Validate edited Markdown links and headings using existing repo tooling if available.
+- If no Markdown tooling exists, run a focused relative-link existence check against changed README-family files.
+- If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts were touched, run python scripts/governance/verify_codex_primary.py.
+- For substantial Codex-primary implementation or verification runs, create and validate a run receipt with python scripts/governance/verify_codex_run_receipt.py artifacts/codex/run_receipts/<run-id>.json.
+- Do not run broad test suites unless current repo docs require them for documentation-only changes.
+
+Publication:
+If edits are made and publication is authorized, create a branch named codex/docs-readme-refresh-YYYYMMDD, commit only documentation-scope changes, push the branch, and create or update a PR targeting main. Never push directly to main, force-push main, merge without explicit user authorization, squash without explicit user authorization, or include unrelated local changes.
+
+Final report:
+Return branch name, PR URL if created, changed files, README audit highlights, validation evidence, best-practice sources applied, remaining documentation backlog, degraded route or fallback used, and stopped or unsafe items.
+
+If stopped or failed, include RCA with symptom, root_cause, evidence, fix_or_next, and recurrence_guard. fix_or_next must begin with fix: if fixed in-run or next: if follow-up remains.
+'''
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=0;BYDAY=SA"
+model = "gpt-5.5"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
+created_at = 1782255108967
+updated_at = 1782380298309
