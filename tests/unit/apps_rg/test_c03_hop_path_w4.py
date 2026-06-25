@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.track_weighted_graph_expansion import GRAPH_EXPANSION_MODE_TRACK_WEIGHTED
-from apps_rg.fact_inventory.track_weighted_graph_expansion import TrackWeightedExpansionContractError
 from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
 from apps_rg.runtime.c0.c03_hop_path_materialization import (
     GraphHopPathAllowlistError,
@@ -129,15 +128,44 @@ def test_c0_graph_lane_receipt_from_bridge_includes_hop_paths() -> None:
     assert receipt["graph_hop_paths_count"] == 1
 
 
-def test_brown_exec_summary_pool_fails_when_allowed_facts_have_no_hop_paths(brown_jd: str) -> None:
-    with pytest.raises(
-        TrackWeightedExpansionContractError,
-        match="seed_fact_ids have no matching track-weighted graph hop paths",
-    ):
-        resolve_section_proof_pool(
-            section="executive_summary",
-            target_company="Brown & Brown",
-            target_role="SVP IT Strategy & Innovation",
-            jd_text=brown_jd,
-            product_visible=False,
-        )
+def test_brown_exec_summary_pool_keeps_role_episode_bundle_fallback_non_proof(
+    brown_jd: str,
+) -> None:
+    pool = resolve_section_proof_pool(
+        section="executive_summary",
+        target_company="Brown & Brown",
+        target_role="SVP IT Strategy & Innovation",
+        jd_text=brown_jd,
+        product_visible=False,
+    )
+
+    meta = pool.proof_pool_metadata
+    assert meta["track_weighted_seed_fallback_used"] is True
+    assert meta["track_weighted_seed_namespace"] == "role_episode_bundle"
+    assert meta["track_weighted_hop_paths_attached_to_c03"] is False
+    assert (meta.get("graph_targeting_capsule") or {}).get("skill_ids")
+    assert (meta.get("c03_graphrag_bound") or {}).get("graph_hop_paths_count") == 0
+
+
+def test_anthropic_exec_summary_pool_falls_back_for_role_episode_bundle_seeds() -> None:
+    jd_path = REPO / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
+    briefing_path = REPO / "artifacts/apps_research/runs/research-run-266d27c0bed5/briefing.md"
+    if not jd_path.is_file() or not briefing_path.is_file():
+        pytest.skip("Anthropic JD or briefing fixture missing")
+
+    pool = resolve_section_proof_pool(
+        section="executive_summary",
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd_text=jd_path.read_text(encoding="utf-8"),
+        briefing_text=briefing_path.read_text(encoding="utf-8"),
+        repo_root=REPO,
+        product_visible=False,
+    )
+
+    meta = pool.proof_pool_metadata
+    assert meta["track_weighted_seed_fallback_used"] is True
+    assert meta["track_weighted_seed_namespace"] == "role_episode_bundle"
+    assert meta["track_weighted_hop_paths_attached_to_c03"] is False
+    assert (meta.get("graph_targeting_capsule") or {}).get("skill_ids")
+    assert (meta.get("c03_graphrag_bound") or {}).get("graph_hop_paths_count") == 0

@@ -74,6 +74,7 @@ def _git_commit(repo_root: Path) -> str:
             capture_output=True,
             text=True,
             check=True,
+            timeout=30,
         )
     except (OSError, subprocess.CalledProcessError):
         return ""

@@ -163,6 +163,8 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
     # - graph_only_generation_quality_repair: only with explicit repair-mode receipt
     # - finalize_competencies_v3_output: capability projection on competencies lane (always runs)
     # - repair_protected_unify_bullet_metrics: canonical metric restoration on unify_bullets lane
+    # - repair_required_brushstroke_citation: ledger-only attachment of a required fact to an
+    #   already-materialized executive_summary sentence; no visible prose is introduced.
     # - bullet_judge_feedback_reselection (W4.1/G14): judge-feedback pool reselection on the
     #   employment bullet lanes. Honest because the swap (a) re-runs the FULL X2 gate set on
     #   the swapped doc and fully reverts on any regression, (b) re-judges the new content
@@ -172,6 +174,7 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
         {
             "finalize_competencies_v3_output",
             "repair_protected_unify_bullet_metrics",
+            "repair_required_brushstroke_citation",
             "bullet_judge_feedback_reselection",
         }
     )

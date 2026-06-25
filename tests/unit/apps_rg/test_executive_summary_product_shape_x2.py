@@ -26,6 +26,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
     check_exec_summary_sentence_count_6,
+    check_north_star_style_example_echo_unsupported,
     check_prompt_template_authority,
     check_synthesis_quality,
     EXPECTED_PROMPT_ID,
@@ -207,6 +208,19 @@ def test_style_exemplars_pass_no_credential_dump_gate():
     ):
         ok, reason = check_exec_summary_no_credential_dump(text)
         assert ok, f"{label}: {reason}"
+
+
+def test_north_star_echo_gate_counts_role_episode_metric_values_as_support():
+    text = "Platform productization generated $22M in IP-led revenue with 20% gross margin expansion."
+    facts = [
+        {
+            "fact_id": "reb_unify_platform_commercialization_leadership",
+            "claim_text": "Platform productization, IP-led revenue, margin expansion, team scale",
+            "metric_values": ["$22M IP-led revenue", "20% gross margin expansion"],
+        }
+    ]
+    ok, reason = check_north_star_style_example_echo_unsupported(text, facts)
+    assert ok, reason
 
 
 def test_synthesis_quality_requires_six_sentences():

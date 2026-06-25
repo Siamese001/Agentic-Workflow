@@ -397,9 +397,10 @@ def _resolve_executive_summary_graph_only_proof_pool(
     )
     from apps_rg.runtime.c0.c03_hop_path_materialization import attach_track_weighted_hop_paths_to_c03_bound
 
+    track_expansion_for_hop_paths = None if track_weighted_seed_fallback_used else track_expansion
     c03 = attach_track_weighted_hop_paths_to_c03_bound(
         c03,
-        track_expansion,
+        track_expansion_for_hop_paths,
         allowed_fact_ids=allowed,
     )
     graph_targeting_capsule = build_graph_targeting_capsule(
@@ -420,6 +421,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
     meta["track_weighted_seed_fallback_used"] = track_weighted_seed_fallback_used
     meta["track_weighted_seed_fallback_reason"] = track_weighted_seed_fallback_reason
     meta["track_weighted_seed_namespace"] = "role_episode_bundle" if role_episode_seed_namespace else "fact"
+    meta["track_weighted_hop_paths_attached_to_c03"] = not track_weighted_seed_fallback_used
     meta["broad_skills_ledger_default"] = False
     meta["broad_skills_ledger_fallback"] = False
     meta["broad_skills_ledger_compatibility_authority"] = False

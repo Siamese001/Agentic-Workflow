@@ -1457,6 +1457,8 @@ def _selected_facts_support_blob(selected_facts: list[dict[str, Any]] | None) ->
         parts.append(str(fact.get("achievement_summary") or ""))
         parts.append(str(fact.get("metric_raw") or ""))
         parts.append(str(fact.get("text") or ""))
+        for value in fact.get("metric_values") or []:
+            parts.append(str(value or ""))
     return " ".join(parts).lower()
 
 
