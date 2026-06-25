@@ -126,6 +126,42 @@ def test_partial_grounding_fails_when_one_segment_is_pure_generic() -> None:
     assert "Governed Agentic Platforms" in (failure or "")
 
 
+def test_graph_skill_semantics_ground_all_stoplist_headline_segment() -> None:
+    """Graph skill text can ground a canonical all-stoplist headline phrase."""
+    headline = (
+        "SVP Engineering | Governed Runtime Architecture | "
+        "Partner Co-Sell Motions | Lakehouse Retrieval"
+    )
+    claim_ledger = [
+        {
+            "claim_text": "Governed Runtime Architecture",
+            "source_fact_ids": [
+                "skill_provider_and_egress_governance",
+                "skill_sr_cloud_data_platform_engineering",
+            ],
+        },
+        {"claim_text": "Partner Co-Sell Motions", "source_fact_ids": ["reb_ibm_aws_alliance_partner_cosell_gtm"]},
+        {"claim_text": "Lakehouse Retrieval", "source_fact_ids": ["skill_dense_sparse_exact_retrieval_design"]},
+    ]
+    fact_text = {
+        "skill_provider_and_egress_governance": "provider and egress governance",
+        "skill_sr_cloud_data_platform_engineering": "cloud data platform engineering",
+        "reb_ibm_aws_alliance_partner_cosell_gtm": "Led IBM-AWS alliance co-sell motions",
+        "skill_dense_sparse_exact_retrieval_design": "dense sparse exact retrieval design",
+    }
+
+    ok, observed, failure = check_headline_xyz_literal_grounding(
+        headline_line=headline,
+        claim_ledger=claim_ledger,
+        fact_id_to_text=fact_text,
+    )
+
+    assert ok is True, f"graph-skill semantic grounding should pass, got {failure!r}"
+    first = observed["segments"][0]
+    assert first["ground_pass"] is True
+    assert first["semantic_support"]["semantic_grounding_pass"] is True
+
+
 def test_stoplist_excludes_role_family_generics_from_grounding_credit() -> None:
     """Generic words like 'platforms', 'infrastructure', 'ai' must not earn grounding credit alone."""
     tokens = _tokenize_for_grounding("Governed Agentic Platforms Infrastructure AI")
