@@ -1107,6 +1107,7 @@ def append_executive_summary_x1d_x2_gate_dicts(
     *,
     x1d_judges: list[dict[str, Any]] | None,
     artifacts_dir: Path,
+    required_providers: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """X1D presence/schema gates — run only after post-X2 judge phase."""
     out: list[dict[str, Any]] = []
@@ -1124,8 +1125,13 @@ def append_executive_summary_x1d_x2_gate_dicts(
             }
         )
 
+    required = (
+        [str(p).strip() for p in required_providers if str(p).strip()]
+        if required_providers is not None
+        else required_judges_for_section("executive_summary")
+    )
     judges_present_ok, judges_present_reason = check_judge_rows_present(
-        x1d_judges, required_providers=required_judges_for_section("executive_summary")
+        x1d_judges, required_providers=required
     )
     _row(
         "x2_x1d_required_judges_present",

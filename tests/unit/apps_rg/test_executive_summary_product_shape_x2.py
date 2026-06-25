@@ -20,6 +20,7 @@ from apps_rg.runtime.dispatch.executive_summary_pa import (
     load_executive_summary_example_after,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    append_executive_summary_x1d_x2_gate_dicts,
     check_exec_summary_jd_alignment_proof_flags,
     check_exec_summary_meta_filler_patterns,
     check_exec_summary_no_credential_dump,
@@ -265,3 +266,22 @@ def test_run_x2_gates_does_not_emit_retired_srfs_product_gate_ids():
     )
     emitted = {g.gate_id for g in gates}
     assert not emitted & RETIRED_EXEC_SUMMARY_X2_GATE_IDS
+
+
+def test_post_x2_judge_presence_uses_runtime_required_providers(tmp_path: Path):
+    rows = append_executive_summary_x1d_x2_gate_dicts(
+        x1d_judges=[{"provider_key": "gemini_pro", "evaluator_mode": "MODEL_BACKED"}],
+        artifacts_dir=tmp_path,
+        required_providers=["gemini_pro"],
+    )
+    required_gate = next(r for r in rows if r["gate_id"] == "x2_x1d_required_judges_present")
+    assert required_gate["pass"] is True
+
+    rows = append_executive_summary_x1d_x2_gate_dicts(
+        x1d_judges=[{"provider_key": "gemini_pro", "evaluator_mode": "MODEL_BACKED"}],
+        artifacts_dir=tmp_path,
+        required_providers=["gemini_pro", "openai_chatgpt"],
+    )
+    required_gate = next(r for r in rows if r["gate_id"] == "x2_x1d_required_judges_present")
+    assert required_gate["pass"] is False
+    assert "openai_chatgpt" in str(required_gate["failure_reason"])
