@@ -629,6 +629,7 @@ def prune_competencies_rigor_failing_terms(parsed: dict[str, Any]) -> list[str]:
 __all__ = [
     "apply_exec_summary_display_authority_repairs",
     "prune_competencies_rigor_failing_terms",
+    "repair_required_brushstroke_citations_from_materialized_sentences",
     "sanitize_ibm_narrative_display_text",
     "strip_exec_summary_credential_dump_sentences",
 ]

@@ -10,6 +10,7 @@ from apps_rg.runtime.sections.section_authority_repairs import (
     apply_exec_summary_display_authority_repairs,
     prune_competencies_rigor_failing_terms,
     repair_exec_summary_orphan_rows_with_unused_required_facts,
+    repair_required_brushstroke_citations_from_materialized_sentences,
     sanitize_ibm_narrative_display_text,
     strip_exec_summary_credential_dump_sentences,
     strip_target_company_tailoring_sentences,
@@ -133,6 +134,56 @@ def test_apply_authority_repairs_runs_orphan_repair_before_shape_check() -> None
         c.get("operation") == "repair_orphan_row_with_unused_required_fact"
         for c in out.get("change_log") or []
     )
+
+
+def test_repair_required_brushstroke_citation_from_materialized_sentence() -> None:
+    text = (
+        "Executive leader who unifies governed AI platform architecture for enterprise adoption. "
+        "Led AWS modernization for regulated financial-services workloads through cloud-native delivery. "
+        "Reusable accelerators and decision-support models turned modernization into client pursuits. "
+        "In parallel, regulated cloud adoption standards grounded delivery patterns. "
+        "That operating foundation supported IP-led revenue of $22M. "
+        "Positioned partner ecosystems to scale safe enterprise AI."
+    )
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim_text": "s1", "source_fact_ids": ["reb_unify_agentic_platform_architecture"]},
+            {"claim_text": "s2", "source_fact_ids": ["reb_ibm_aws_modernization_architecture"]},
+            {"claim_text": "s3", "source_fact_ids": ["reb_ibm_offering_accelerator_management"]},
+            {"claim_text": "s4", "source_fact_ids": ["reb_insurtech_insurance_regulatory_cloud_adoption_standards"]},
+            {"claim_text": "s5", "source_fact_ids": ["reb_unify_platform_commercialization_leadership"]},
+            {"claim_text": "s6", "source_fact_ids": ["reb_unify_partner_channel_cosell"]},
+        ],
+        "executive_summary_composition_plan": {
+            "brushstrokes": [
+                {
+                    "brushstroke_id": "B1_executive_identity",
+                    "required_fact_ids": ["reb_insurtech_aws_migration_execution"],
+                }
+            ]
+        },
+        "change_log": [],
+    }
+    facts = [
+        {
+            "fact_id": "reb_insurtech_aws_migration_execution",
+            "claim_text": "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
+        }
+    ]
+
+    repairs = repair_required_brushstroke_citations_from_materialized_sentences(
+        parsed,
+        allowed_fact_ids={"reb_insurtech_aws_migration_execution"},
+        plan_facts=facts,
+    )
+
+    assert repairs
+    assert parsed["claim_ledger"][1]["source_fact_ids"] == [
+        "reb_ibm_aws_modernization_architecture",
+        "reb_insurtech_aws_migration_execution",
+    ]
+    assert parsed["resume_display_text"] == text
 
 
 def test_strip_credential_dump_removes_cert_sentence():
