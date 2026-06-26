@@ -1,44 +1,16 @@
 {
   "overwrite_version": "c03_actual_graph_full_zero_loss_overwrite_v1",
   "before": {
-    "skill_rows": 235,
-    "graph_nodes": 305,
-    "graph_edges": 1731
+    "skill_rows": 238,
+    "graph_nodes": 311,
+    "graph_edges": 1747
   },
   "after": {
     "skill_rows": 238,
     "graph_nodes": 311,
     "graph_edges": 1747
   },
-  "added_nodes": [
-    "capability_metric_heterogeneity_selection",
-    "capability_reverse_graph_traversal",
-    "capability_sibling_rejection_receipts",
-    "skill_c03_metric_heterogeneity_selection",
-    "skill_c03_reverse_traversal_receipts",
-    "skill_c03_sibling_skill_rejection_reasoning"
-  ],
-  "added_skills": [
-    "skill_c03_metric_heterogeneity_selection",
-    "skill_c03_reverse_traversal_receipts",
-    "skill_c03_sibling_skill_rejection_reasoning"
-  ],
-  "added_edges": [
-    "edge_capability_metric_heterogeneity_selection__contains__skill_c03_metric_heterogeneity_selection",
-    "edge_capability_reverse_graph_traversal__contains__skill_c03_metric_heterogeneity_selection",
-    "edge_capability_sibling_rejection_receipts__contains__skill_c03_metric_heterogeneity_selection",
-    "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_001",
-    "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_003",
-    "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_004",
-    "edge_capability_metric_heterogeneity_selection__contains__skill_c03_reverse_traversal_receipts",
-    "edge_capability_reverse_graph_traversal__contains__skill_c03_reverse_traversal_receipts",
-    "edge_capability_sibling_rejection_receipts__contains__skill_c03_reverse_traversal_receipts",
-    "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_001",
-    "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_006",
-    "edge_capability_metric_heterogeneity_selection__contains__skill_c03_sibling_skill_rejection_reasoning",
-    "edge_capability_reverse_graph_traversal__contains__skill_c03_sibling_skill_rejection_reasoning",
-    "edge_capability_sibling_rejection_receipts__contains__skill_c03_sibling_skill_rejection_reasoning",
-    "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_003",
-    "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_004"
-  ]
+  "added_nodes": [],
+  "added_skills": [],
+  "added_edges": []
 }

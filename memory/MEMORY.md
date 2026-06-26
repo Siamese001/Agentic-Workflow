@@ -85,6 +85,10 @@
   Validate with `python apps_rg/fact_inventory/validate_graph_sqlite_path_index.py` plus
   `python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q`. Detail:
   `memory/codex/apps_rg_graph_sqlite_path_index_runtime.md`.
+- **apps_rg C0.3 graphDB overwrite validation repairs (2026-06-26):** apply graphDB/graph-skill overwrite
+  packages through materializers, open SQLite writable for schema hardening, and validate the broader
+  master-ledger shape after granularity hardening. Detail:
+  `memory/codex/apps_rg_c03_graphdb_overwrite_validation_repairs.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

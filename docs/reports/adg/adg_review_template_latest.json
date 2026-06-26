@@ -9,53 +9,62 @@
     "rows": [
       {
         "band": "P0",
-        "next_step": "Use the P0 Action Plan below.",
+        "next_step": "Fix the blocking gate condition and rerun ADG before burn-down work.",
         "rank": 1,
-        "records": 4352,
-        "target": "`G_REACH` 2,786; `S2_UWG` 1,566",
+        "records": 3759,
+        "target": "P0 CI blockers",
+        "why_this_priority": "CI blocker; ADG is not green until this clears.",
+        "work_class": "Fix now"
+      },
+      {
+        "band": "P0",
+        "next_step": "Use the P0 Action Plan below.",
+        "rank": 2,
+        "records": 1570,
+        "target": "`S2_UWG` 1,570",
         "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
         "work_class": "Burn down ratchets"
       },
       {
         "band": "P1",
         "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-        "rank": 2,
-        "records": 5572,
-        "target": "`C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more = 5,572 total",
+        "rank": 3,
+        "records": 5556,
+        "target": "`C3_silent_writes` 2,033; `E1_trace_stub` 982; `B2_layer_skip` 874; +6 more = 5,556 total",
         "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
         "work_class": "Burn down ratchets"
       },
       {
         "band": "P2",
         "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-        "rank": 3,
-        "records": 2011,
-        "target": "`F1_untyped_seam` 1,026; `I2_replay_gaps` 985",
+        "rank": 4,
+        "records": 1979,
+        "target": "`F1_untyped_seam` 991; `I2_replay_gaps` 988",
         "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
         "work_class": "Burn down ratchets"
       },
       {
         "band": "P3",
         "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-        "rank": 4,
-        "records": 12316,
-        "target": "`S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456",
+        "rank": 5,
+        "records": 12339,
+        "target": "`S4_unused_imports` 10,742; `Q2_complexity` 1,139; `M1_module_loc` 458",
         "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
         "work_class": "Burn down ratchets"
       },
       {
         "band": "P0",
         "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-        "rank": 5,
-        "records": 952,
-        "target": "`write_sovereignty` 951; `pipeline_wiring` 1",
+        "rank": 6,
+        "records": 1,
+        "target": "`pipeline_wiring` 1",
         "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
         "work_class": "Open non-ratchet work"
       },
       {
         "band": "P2",
         "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-        "rank": 6,
+        "rank": 7,
         "records": 105,
         "target": "`D2_role_duplication` 105",
         "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
@@ -64,7 +73,7 @@
       {
         "band": "P3",
         "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-        "rank": 7,
+        "rank": 8,
         "records": 3,
         "target": "`D1_layer_doc` 3",
         "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
@@ -73,25 +82,25 @@
       {
         "band": "P0",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-        "rank": 8,
-        "records": 3,
-        "target": "3 non-exempt from 43 gross",
+        "rank": 9,
+        "records": 4,
+        "target": "4 non-exempt from 44 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
         "work_class": "Severity audit"
       },
       {
         "band": "P1",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-        "rank": 9,
-        "records": 6,
-        "target": "6 non-exempt from 1,152 gross",
+        "rank": 10,
+        "records": 5,
+        "target": "5 non-exempt from 1,151 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
         "work_class": "Severity audit"
       },
       {
         "band": "P2",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-        "rank": 10,
+        "rank": 11,
         "records": 19,
         "target": "19 non-exempt from 733 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
@@ -100,9 +109,9 @@
       {
         "band": "P3",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-        "rank": 11,
-        "records": 18919,
-        "target": "18,919 non-exempt from 19,006 gross",
+        "rank": 12,
+        "records": 18971,
+        "target": "18,971 non-exempt from 19,058 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
         "work_class": "Severity audit"
       }
@@ -111,28 +120,52 @@
   },
   "adg_ci_gates": [
     {
-      "action": "TRACK",
-      "allowed_floor": "warn inventory",
+      "action": "FIX",
+      "allowed_floor": "0",
+      "band": "P0",
+      "enforcement": "block",
+      "gate_id": "10_infra_wiring",
+      "next_best_action": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
+      "record_type": "Infra wiring defects (canonical pipeline / spine reachability).",
+      "records": 4,
+      "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+      "sub": "block"
+    },
+    {
+      "action": "FIX",
+      "allowed_floor": "0",
       "band": "P0",
       "enforcement": "block",
       "gate_id": "3_write_sovereignty",
-      "next_best_action": "Advisory inventory: monitor; reduce opportunistically. Does not block CI.",
+      "next_best_action": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
       "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-      "records": 951,
-      "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 951 warn inventory; not halt-tier.",
-      "sub": "inventory"
+      "records": 957,
+      "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+      "sub": "block"
     },
     {
-      "action": "TRACK",
+      "action": "FIX",
+      "allowed_floor": "0",
+      "band": "P0",
+      "enforcement": "block",
+      "gate_id": "C1_uwg_bypass_pview",
+      "next_best_action": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
+      "record_type": "Any row in UWG-bypass materialized view (zero tolerance block).",
+      "records": 4,
+      "signal": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+      "sub": "block"
+    },
+    {
+      "action": "FIX",
       "allowed_floor": "2786",
       "band": "P0",
       "enforcement": "ratchet",
       "gate_id": "G_REACH_l0_reachability",
-      "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+      "next_best_action": "Regression +8 over baseline 2786 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
       "record_type": "Production-layer modules with no import path from any L0 node (orphans).",
-      "records": 2786,
-      "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: 2786 at floor (baseline 2786); no new debt.",
-      "sub": "floor"
+      "records": 2794,
+      "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+      "sub": "regr"
     },
     {
       "action": "TRACK",
@@ -148,27 +181,15 @@
     },
     {
       "action": "TRACK",
-      "allowed_floor": "1566",
+      "allowed_floor": "1570",
       "band": "P0",
       "enforcement": "ratchet",
       "gate_id": "S2_uwg_bypass_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Write paths that bypass UWG (overlay on write_sovereignty edges).",
-      "records": 1566,
-      "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1566 at floor (baseline 1566); no new debt.",
+      "records": 1570,
+      "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1570 at floor (baseline 1570); no new debt.",
       "sub": "floor"
-    },
-    {
-      "action": "CLEAR",
-      "allowed_floor": "0",
-      "band": "P0",
-      "enforcement": "block",
-      "gate_id": "10_infra_wiring",
-      "next_best_action": "None \u2014 gate clean (zero rows).",
-      "record_type": "Infra wiring defects (canonical pipeline / spine reachability).",
-      "records": 0,
-      "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: No rows.",
-      "sub": "\u2014"
     },
     {
       "action": "CLEAR",
@@ -247,18 +268,6 @@
       "allowed_floor": "0",
       "band": "P0",
       "enforcement": "block",
-      "gate_id": "C1_uwg_bypass_pview",
-      "next_best_action": "None \u2014 gate clean (zero rows).",
-      "record_type": "Any row in UWG-bypass materialized view (zero tolerance block).",
-      "records": 0,
-      "signal": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: No rows.",
-      "sub": "\u2014"
-    },
-    {
-      "action": "CLEAR",
-      "allowed_floor": "0",
-      "band": "P0",
-      "enforcement": "block",
       "gate_id": "C2_l5_bypass_pview",
       "next_best_action": "None \u2014 gate clean (zero rows).",
       "record_type": "Provider/tool calls skipping L5 gateway (materialized view).",
@@ -292,26 +301,26 @@
     },
     {
       "action": "TRACK",
-      "allowed_floor": "895",
+      "allowed_floor": "874",
       "band": "P1",
       "enforcement": "ratchet",
       "gate_id": "B2_layer_skip_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Import edges that skip more than one layer ordinal (layer-hop).",
-      "records": 895,
-      "signal": "Counts: Import edges that skip more than one layer ordinal (layer-hop). Sub: 895 at floor (baseline 895); no new debt.",
+      "records": 874,
+      "signal": "Counts: Import edges that skip more than one layer ordinal (layer-hop). Sub: 874 at floor (baseline 874); no new debt.",
       "sub": "floor"
     },
     {
       "action": "TRACK",
-      "allowed_floor": "2030",
+      "allowed_floor": "2033",
       "band": "P1",
       "enforcement": "ratchet",
       "gate_id": "C3_silent_writes_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "writes_to edges without sibling emits_side_effect on same source.",
-      "records": 2030,
-      "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2030 at floor (baseline 2030); no new debt.",
+      "records": 2033,
+      "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2033 at floor (baseline 2033); no new debt.",
       "sub": "floor"
     },
     {
@@ -352,14 +361,14 @@
     },
     {
       "action": "TRACK",
-      "allowed_floor": "673",
+      "allowed_floor": "675",
       "band": "P1",
       "enforcement": "ratchet",
       "gate_id": "M_taint_actionable_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Actionable taint surfaces without output schema binding.",
-      "records": 673,
-      "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 673 at floor (baseline 673); no new debt.",
+      "records": 675,
+      "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 675 at floor (baseline 675); no new debt.",
       "sub": "floor"
     },
     {
@@ -520,26 +529,26 @@
     },
     {
       "action": "TRACK",
-      "allowed_floor": "1026",
+      "allowed_floor": "991",
       "band": "P2",
       "enforcement": "ratchet",
       "gate_id": "F1_untyped_seam_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Cross-layer imports where target has empty type_surface.",
-      "records": 1026,
-      "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 1026 at floor (baseline 1026); no new debt.",
+      "records": 991,
+      "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 991 at floor (baseline 991); no new debt.",
       "sub": "floor"
     },
     {
       "action": "TRACK",
-      "allowed_floor": "985",
+      "allowed_floor": "988",
       "band": "P2",
       "enforcement": "ratchet",
       "gate_id": "I2_replay_surface_gaps_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "State mutations not consumed by replay surface (gap_flag=1).",
-      "records": 985,
-      "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 985 at floor (baseline 985); no new debt.",
+      "records": 988,
+      "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 988 at floor (baseline 988); no new debt.",
       "sub": "floor"
     },
     {
@@ -604,38 +613,38 @@
     },
     {
       "action": "TRACK",
-      "allowed_floor": "456",
+      "allowed_floor": "458",
       "band": "P3",
       "enforcement": "ratchet",
       "gate_id": "M1_module_loc_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Production modules exceeding LOC ceiling (disk scan).",
-      "records": 456,
-      "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 456 at floor (baseline 456); no new debt.",
+      "records": 458,
+      "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 458 at floor (baseline 458); no new debt.",
       "sub": "floor"
     },
     {
       "action": "TRACK",
-      "allowed_floor": "1130",
+      "allowed_floor": "1139",
       "band": "P3",
       "enforcement": "ratchet",
       "gate_id": "Q2_cyclomatic_complexity_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Functions with McCabe cyclomatic complexity above ceiling.",
-      "records": 1130,
-      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1130 at floor (baseline 1130); no new debt.",
+      "records": 1139,
+      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1139 at floor (baseline 1139); no new debt.",
       "sub": "floor"
     },
     {
       "action": "TRACK",
-      "allowed_floor": "10730",
+      "allowed_floor": "10742",
       "band": "P3",
       "enforcement": "ratchet",
       "gate_id": "S4_unused_imports_ratchet",
       "next_best_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "record_type": "Unused import edges in production modules.",
-      "records": 10730,
-      "signal": "Counts: Unused import edges in production modules. Sub: 10730 at floor (baseline 10730); no new debt.",
+      "records": 10742,
+      "signal": "Counts: Unused import edges in production modules. Sub: 10742 at floor (baseline 10742); no new debt.",
       "sub": "floor"
     },
     {
@@ -692,52 +701,279 @@
     "action_queue": {
       "artifact_key": "action_queue",
       "exists": true,
-      "path": "artifacts\\adg\\adg_action_queue_06242026_0706.json",
+      "path": "artifacts\\adg\\adg_action_queue_06262026_0432.json",
       "required": false,
-      "sha256": "5284724f7974e29d9eff86341412ef9894d2511c67a9e2d2a59e62e350ea8976"
+      "sha256": "c5109175d86aabe5b8ac7774cd2aede70bef63b2273dfc23ab9717d8702b2057"
     },
     "burndown": {
       "artifact_key": "burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_table.json",
       "required": true,
-      "sha256": "5fa63b32e68750691894e96aac10b46e0a425f0e4d782964c8cc8c6c240c6693"
+      "sha256": "af67450459f41af825bd96df59f21e3e0b8defcd73e1e9551a26bc8dc173c91a"
     },
     "docs_markdown_burndown": {
       "artifact_key": "docs_markdown_burndown",
       "exists": true,
       "path": "docs\\reports\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "686486cd6ce8e932b76a7b544832904d2fda82d671c51f580c3557c45bcb3afb"
+      "sha256": "7b489e97118b346d483ed790878ec919175ddbd565e69d9d2e55135c11532ffa"
     },
     "enforcement_report": {
       "artifact_key": "enforcement_report",
       "exists": true,
       "path": "artifacts\\adg\\adg_enforcement_report_latest.json",
       "required": false,
-      "sha256": "399c0681cdef2395473838d5e770e04bf8851cafd7b8f033b427c9c280a23f28"
+      "sha256": "0f6bef3d05521e90c309726bb7104ec0e7868903f7addcf55d9655b6d5e628b7"
     },
     "gate_results": {
       "artifact_key": "gate_results",
       "exists": true,
-      "path": "artifacts\\adg\\adg_gate_results_20260624_112025.json",
+      "path": "artifacts\\adg\\adg_gate_results_20260626_083843.json",
       "required": true,
-      "sha256": "4f19405ad019450b5f8fac907b7244a4f7d5438699d6959374697ab0d64cba99"
+      "sha256": "be53c4743bc4c6306508819f5bb2089a49a79cd94b3ecb4ecea8c8a5141a74cb"
     },
     "generation_manifest": {
       "artifact_key": "generation_manifest",
-      "exists": false,
-      "path": "artifacts\\adg\\adg_generation_manifest_06242026_0706.json",
+      "exists": true,
+      "path": "artifacts\\adg\\adg_generation_manifest_06262026_0432.json",
       "required": false,
-      "sha256": null
+      "sha256": "89b808f02e99abe1200d63aaf05a31594bf0cffbab3876b496958244abf21f4d"
     },
     "markdown_burndown": {
       "artifact_key": "markdown_burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "686486cd6ce8e932b76a7b544832904d2fda82d671c51f580c3557c45bcb3afb"
+      "sha256": "7b489e97118b346d483ed790878ec919175ddbd565e69d9d2e55135c11532ffa"
     }
+  },
+  "bcg_findings": {
+    "brief": {
+      "business_read": "Fund a narrow unblock-and-test slice now.",
+      "next_step": "Fix `10_infra_wiring` (P0, 4 record(s)): Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+      "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
+      "priority_rows": [
+        {
+          "action": "Fix `10_infra_wiring` (P0, 4 record(s))",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+          "change_breakout": [],
+          "decision": "Gate no longer appears as FIX after rerun.",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "",
+          "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "move": "Fix `10_infra_wiring` (P0, 4 record(s))",
+          "next_step": "Gate no longer appears as FIX after rerun.",
+          "priority": 1,
+          "rank": 1,
+          "scope": "",
+          "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "why_it_matters": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+          "why_this_rank": "Gate no longer appears as FIX after rerun.",
+          "work": "Fix `10_infra_wiring` (P0, 4 record(s))"
+        },
+        {
+          "action": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+          "change_breakout": [],
+          "decision": "Gate no longer appears as FIX after rerun.",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "",
+          "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "move": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))",
+          "next_step": "Gate no longer appears as FIX after rerun.",
+          "priority": 2,
+          "rank": 2,
+          "scope": "",
+          "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "why_it_matters": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+          "why_this_rank": "Gate no longer appears as FIX after rerun.",
+          "work": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))"
+        },
+        {
+          "action": "Fix `3_write_sovereignty` (P0, 957 record(s))",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+          "change_breakout": [],
+          "decision": "Gate no longer appears as FIX after rerun.",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "",
+          "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "move": "Fix `3_write_sovereignty` (P0, 957 record(s))",
+          "next_step": "Gate no longer appears as FIX after rerun.",
+          "priority": 3,
+          "rank": 3,
+          "scope": "",
+          "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "why_it_matters": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+          "why_this_rank": "Gate no longer appears as FIX after rerun.",
+          "work": "Fix `3_write_sovereignty` (P0, 957 record(s))"
+        },
+        {
+          "action": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))",
+          "action_type": "",
+          "affected_layers": [],
+          "affected_system": "",
+          "business_reason": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+          "change_breakout": [],
+          "decision": "Gate no longer appears as FIX after rerun.",
+          "decision_options": [],
+          "diagram": null,
+          "done_condition": "",
+          "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "move": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))",
+          "next_step": "Gate no longer appears as FIX after rerun.",
+          "priority": 4,
+          "rank": 4,
+          "scope": "",
+          "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+          "why_it_matters": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+          "why_this_rank": "Gate no longer appears as FIX after rerun.",
+          "work": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))"
+        }
+      ],
+      "priority_rule": "Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
+      "secondary_statuses": {},
+      "status": "06262026_0432",
+      "status_label": "Run ID",
+      "table_limit": 4,
+      "technical_read": [
+        "ADG is BLOCKED: 4 red gate(s) covering 3,759 record(s). The run is not green.",
+        "High",
+        "Testing risk is High: 1,511 urgent GraphDB hotspots, 446 critical-risk hotspots, 4,090 with absent coverage.",
+        "GraphDB/MV is not unused: 1 MV(s) drive the action queue, 6 feed gates, and 22 are diagnostic/context only.",
+        "Tracked records: 21,553"
+      ],
+      "title": "BCG Review Template Brief",
+      "why_this_order": [
+        "The ADG run is BLOCKED: 4 gate(s) must be fixed before treating the run as green.",
+        "Green does not mean done: 21,444 ratchet-floor records still need burn-down.",
+        "Use the ADG Heuristic Attack Order to choose the next bucket across P0-P3.",
+        "Use the P0 Action Plan top to bottom; it prioritizes ratchets by tracked-record count."
+      ]
+    },
+    "business_read": "Fund a narrow unblock-and-test slice now.",
+    "next_step": "Fix `10_infra_wiring` (P0, 4 record(s)): Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+    "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
+    "priority_rows": [
+      {
+        "action": "Fix `10_infra_wiring` (P0, 4 record(s))",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+        "change_breakout": [],
+        "decision": "Gate no longer appears as FIX after rerun.",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "",
+        "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "move": "Fix `10_infra_wiring` (P0, 4 record(s))",
+        "next_step": "Gate no longer appears as FIX after rerun.",
+        "priority": 1,
+        "rank": 1,
+        "scope": "",
+        "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "why_it_matters": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+        "why_this_rank": "Gate no longer appears as FIX after rerun.",
+        "work": "Fix `10_infra_wiring` (P0, 4 record(s))"
+      },
+      {
+        "action": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+        "change_breakout": [],
+        "decision": "Gate no longer appears as FIX after rerun.",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "",
+        "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "move": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))",
+        "next_step": "Gate no longer appears as FIX after rerun.",
+        "priority": 2,
+        "rank": 2,
+        "scope": "",
+        "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "why_it_matters": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+        "why_this_rank": "Gate no longer appears as FIX after rerun.",
+        "work": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))"
+      },
+      {
+        "action": "Fix `3_write_sovereignty` (P0, 957 record(s))",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+        "change_breakout": [],
+        "decision": "Gate no longer appears as FIX after rerun.",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "",
+        "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "move": "Fix `3_write_sovereignty` (P0, 957 record(s))",
+        "next_step": "Gate no longer appears as FIX after rerun.",
+        "priority": 3,
+        "rank": 3,
+        "scope": "",
+        "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "why_it_matters": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+        "why_this_rank": "Gate no longer appears as FIX after rerun.",
+        "work": "Fix `3_write_sovereignty` (P0, 957 record(s))"
+      },
+      {
+        "action": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))",
+        "action_type": "",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+        "change_breakout": [],
+        "decision": "Gate no longer appears as FIX after rerun.",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "",
+        "evidence": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "move": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))",
+        "next_step": "Gate no longer appears as FIX after rerun.",
+        "priority": 4,
+        "rank": 4,
+        "scope": "",
+        "technical_reason": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
+        "why_it_matters": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+        "why_this_rank": "Gate no longer appears as FIX after rerun.",
+        "work": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))"
+      }
+    ],
+    "priority_rule": "Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
+    "report_kind": "adg_run_review_template",
+    "schema_version": "1.0",
+    "status": "06262026_0432",
+    "status_label": "Run ID",
+    "technical_read": [
+      "ADG is BLOCKED: 4 red gate(s) covering 3,759 record(s). The run is not green.",
+      "High",
+      "Testing risk is High: 1,511 urgent GraphDB hotspots, 446 critical-risk hotspots, 4,090 with absent coverage.",
+      "GraphDB/MV is not unused: 1 MV(s) drive the action queue, 6 feed gates, and 22 are diagnostic/context only.",
+      "Tracked records: 21,553"
+    ],
+    "why_this_order": [
+      "The ADG run is BLOCKED: 4 gate(s) must be fixed before treating the run as green.",
+      "Green does not mean done: 21,444 ratchet-floor records still need burn-down.",
+      "Use the ADG Heuristic Attack Order to choose the next bucket across P0-P3.",
+      "Use the P0 Action Plan top to bottom; it prioritizes ratchets by tracked-record count."
+    ]
   },
   "decision_synthesis": {
     "after_green_plan": {
@@ -748,25 +984,25 @@
       "rows": [
         {
           "band": "P0",
-          "records": 4352,
+          "records": 1570,
           "why": "Lowers accepted baseline debt after red gates are green.",
           "work": "burn_down_ratchet_floor"
         },
         {
           "band": "P0",
-          "records": 952,
+          "records": 1,
           "why": "Closes real open work that does not lower a ratchet floor.",
           "work": "close_open_non_ratchet_work"
         },
         {
           "band": "P1",
-          "records": 5572,
+          "records": 5556,
           "why": "Lowers accepted baseline debt after red gates are green.",
           "work": "burn_down_ratchet_floor"
         },
         {
           "band": "P2",
-          "records": 2011,
+          "records": 1979,
           "why": "Lowers accepted baseline debt after red gates are green.",
           "work": "burn_down_ratchet_floor"
         },
@@ -778,7 +1014,7 @@
         },
         {
           "band": "P3",
-          "records": 12316,
+          "records": 12339,
           "why": "Lowers accepted baseline debt after red gates are green.",
           "work": "burn_down_ratchet_floor"
         },
@@ -794,8 +1030,8 @@
     "artifact_consistency": {
       "fail_closed": true,
       "missing_required": [],
-      "optional_present_count": 4,
-      "present_count": 6,
+      "optional_present_count": 5,
+      "present_count": 7,
       "present_required_count": 2,
       "required_count": 2,
       "status": "ok"
@@ -807,20 +1043,20 @@
     "band_counts": {
       "P0": {
         "band": "P0",
-        "clear_gates": 11,
+        "clear_gates": 9,
         "clear_records": 0,
-        "fix_block_gates": 0,
-        "fix_gates": 0,
-        "fix_records": 0,
-        "fix_regressed_gates": 0,
+        "fix_block_gates": 3,
+        "fix_gates": 4,
+        "fix_records": 3759,
+        "fix_regressed_gates": 1,
         "fix_seed_missing_gates": 0,
-        "open_non_ratchet_gates": 2,
-        "open_non_ratchet_records": 952,
-        "ratchet_floor_gates": 2,
-        "ratchet_floor_records": 4352,
-        "status": "PASS",
+        "open_non_ratchet_gates": 1,
+        "open_non_ratchet_records": 1,
+        "ratchet_floor_gates": 1,
+        "ratchet_floor_records": 1570,
+        "status": "BLOCKED",
         "total_gates": 15,
-        "total_records": 5304
+        "total_records": 5330
       },
       "P1": {
         "band": "P1",
@@ -834,10 +1070,10 @@
         "open_non_ratchet_gates": 0,
         "open_non_ratchet_records": 0,
         "ratchet_floor_gates": 9,
-        "ratchet_floor_records": 5572,
+        "ratchet_floor_records": 5556,
         "status": "PASS",
         "total_gates": 18,
-        "total_records": 5572
+        "total_records": 5556
       },
       "P2": {
         "band": "P2",
@@ -851,10 +1087,10 @@
         "open_non_ratchet_gates": 1,
         "open_non_ratchet_records": 105,
         "ratchet_floor_gates": 2,
-        "ratchet_floor_records": 2011,
+        "ratchet_floor_records": 1979,
         "status": "PASS",
         "total_gates": 7,
-        "total_records": 2116
+        "total_records": 2084
       },
       "P3": {
         "band": "P3",
@@ -868,17 +1104,17 @@
         "open_non_ratchet_gates": 1,
         "open_non_ratchet_records": 3,
         "ratchet_floor_gates": 3,
-        "ratchet_floor_records": 12316,
+        "ratchet_floor_records": 12339,
         "status": "PASS",
         "total_gates": 8,
-        "total_records": 12319
+        "total_records": 12342
       }
     }
   },
   "executive_decision_brief": {
     "actions": [
       {
-        "action": "Burn down P0 ratchet `G_REACH` (2,786): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
+        "action": "Fix first red gate: `10_infra_wiring` (P0, 4 record(s)); then continue down Priority Execution Plan.",
         "graphdb_mv_signal": "Use gate-driver MVs and the hotspot table to scope the fix.",
         "move": "Stabilize the run",
         "rank": 1,
@@ -886,25 +1122,25 @@
       },
       {
         "action": "Use the Testing Gap Risk table below; start with ranks 1-3 when the current slice touches them.",
-        "graphdb_mv_signal": "1,511 urgent; 446 critical-risk; 4,082 absent coverage",
+        "graphdb_mv_signal": "1,511 urgent; 446 critical-risk; 4,090 absent coverage",
         "move": "Close the testing exposure",
         "rank": 2,
         "why": "These are high-blast-radius files with weak or absent test coverage."
       },
       {
-        "action": "Burn down the largest P0/P1 ratchet floors before broad cleanup.",
+        "action": "After red gates are clear, burn down ratchet floors before broad cleanup.",
         "graphdb_mv_signal": "Use centrality, blast-radius, and coverage MVs as tie-breakers.",
         "move": "Reduce accepted debt",
         "rank": 3,
         "why": "Ratchet burn-down lowers the accepted baseline; broad cleanup does not."
       }
     ],
-    "decision": "Do not declare the system done; fund a ratchet burn-down slice with targeted tests.",
+    "decision": "Fund a narrow unblock-and-test slice now.",
     "graphdb_mv_readout": "GraphDB/MV is not unused: 1 MV(s) drive the action queue, 6 feed gates, and 22 are diagnostic/context only.",
-    "priority": "Burn down ratchets first; attach tests where GraphDB shows hotspot coverage risk.",
+    "priority": "Clear red gates first; use GraphDB test gaps to decide where tests must be added in the same slice.",
     "risk": "High",
-    "situation": "ADG is PASS: no red gates, but 24,251 ratchet-floor records and 1,060 open non-ratchet records remain.",
-    "testing_gap_readout": "Testing risk is High: 1,511 urgent GraphDB hotspots, 446 critical-risk hotspots, 4,082 with absent coverage.",
+    "situation": "ADG is BLOCKED: 4 red gate(s) covering 3,759 record(s). The run is not green.",
+    "testing_gap_readout": "Testing risk is High: 1,511 urgent GraphDB hotspots, 446 critical-risk hotspots, 4,090 with absent coverage.",
     "title": "Executive Decision Brief",
     "what_not_to_do": [
       "Do not chase the largest raw MV table just because it is large.",
@@ -912,7 +1148,7 @@
       "Do not run broad cleanup before red gates and ratchet floors are controlled."
     ]
   },
-  "generated_at_utc": "2026-06-24T11:21:41+00:00",
+  "generated_at_utc": "2026-06-26T08:41:48+00:00",
   "graphdb_mv_analyst_summary": {
     "mv_inventory": [
       {
@@ -925,7 +1161,7 @@
         ],
         "role": "Supports TRACK/backlog gate(s): `M_taint_actionable_ratchet`.",
         "routing_status": "gate_driver",
-        "rows": 776
+        "rows": 778
       },
       {
         "description": "Agent classes whose specializations overlap (potential dedup target).",
@@ -999,7 +1235,7 @@
         "related_gates": [],
         "role": "Rank refactor slices after red gates clear.",
         "routing_status": "analyst_signal",
-        "rows": 4865
+        "rows": 4874
       },
       {
         "description": "Forward dependency cone (transitive imports) per node, weighted by criticality.",
@@ -1009,7 +1245,7 @@
         "related_gates": [],
         "role": "Prefer fixes that reduce downstream blast radius.",
         "routing_status": "analyst_signal",
-        "rows": 11768
+        "rows": 11784
       },
       {
         "description": "Trace_root emit sites missing determinism digest or replay key.",
@@ -1021,7 +1257,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6565
+        "rows": 6574
       },
       {
         "description": "Snapshot-to-snapshot digest reconciliation per pipeline phase.",
@@ -1085,7 +1321,7 @@
         "related_gates": [],
         "role": "Avoid risky edits at single-bridge chokepoints without tests.",
         "routing_status": "analyst_signal",
-        "rows": 2049
+        "rows": 2052
       },
       {
         "description": "Per-symbol blast radius if removed from the critical path.",
@@ -1159,7 +1395,7 @@
         "related_gates": [],
         "role": "Prioritize defects in high fan-in/fan-out symbols.",
         "routing_status": "analyst_signal",
-        "rows": 10845
+        "rows": 10861
       },
       {
         "description": "Author-Gate / runtime HITL flows missing the modify-then-reclear edge.",
@@ -1181,7 +1417,7 @@
         "related_gates": [],
         "role": "Use as structural leverage ranking for refactor waves.",
         "routing_status": "analyst_signal",
-        "rows": 11768
+        "rows": 11784
       },
       {
         "description": "Hotspots \u00d7 test-coverage cross-join with priority bands (P1..P5).",
@@ -1191,7 +1427,7 @@
         "related_gates": [],
         "role": "Directly promoted into the action queue.",
         "routing_status": "action_driver",
-        "rows": 4388
+        "rows": 4396
       },
       {
         "description": "L2 execution phase coverage (capability / call / seal / dispatch).",
@@ -1243,7 +1479,7 @@
         "related_gates": [],
         "role": "Check defects in files touched by this run.",
         "routing_status": "analyst_signal",
-        "rows": 4882
+        "rows": 4891
       },
       {
         "description": "Cross-layer imports introduced since the previous snapshot baseline.",
@@ -1268,15 +1504,15 @@
       {
         "description": "Write-bypass paths flagged as 'new' (severity \u2208 {critical, warning}).",
         "mv_name": "mv_new_write_bypass_paths",
-        "next_action": "Use after red gates clear to burn down the related floor or inventory.",
-        "priority": "later",
+        "next_action": "Inspect this MV's rows while clearing the red gate.",
+        "priority": "next",
         "related_gates": [
           "S2_uwg_bypass_ratchet",
           "3_write_sovereignty"
         ],
-        "role": "Supports TRACK/backlog gate(s): `S2_uwg_bypass_ratchet`, `3_write_sovereignty`.",
+        "role": "Supports current FIX gate(s): `3_write_sovereignty`.",
         "routing_status": "gate_driver",
-        "rows": 951
+        "rows": 957
       },
       {
         "description": "Critical-path edges introduced since previous snapshot baseline.",
@@ -1286,7 +1522,7 @@
         "related_gates": [],
         "role": "Inspect newly created critical-path edges for regressions.",
         "routing_status": "analyst_signal",
-        "rows": 8472
+        "rows": 8487
       },
       {
         "description": "Observability code that interferes with the production code path.",
@@ -1306,7 +1542,7 @@
         "related_gates": [],
         "role": "Use as impact weighting for any fix or refactor slice.",
         "routing_status": "analyst_signal",
-        "rows": 11768
+        "rows": 11784
       },
       {
         "description": "Wiring gaps in the prompt assembly path (S0/D0/I0/C0/U0 slots).",
@@ -1350,7 +1586,7 @@
         ],
         "role": "Supports TRACK/backlog gate(s): `I2_replay_surface_gaps_ratchet`.",
         "routing_status": "gate_driver",
-        "rows": 985
+        "rows": 988
       },
       {
         "description": "Runtime-spine emit sites missing from the live OTEL pipeline.",
@@ -1382,7 +1618,7 @@
         "related_gates": [],
         "role": "Treat as generator/ingest health signal, not product-code work by itself.",
         "routing_status": "analyst_signal",
-        "rows": 394894
+        "rows": 396092
       },
       {
         "description": "Aggregate delta vs previous baseline (one row).",
@@ -1414,7 +1650,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 1022
+        "rows": 1025
       },
       {
         "description": "Tool capabilities exposed by multiple adapters (overlap risk).",
@@ -1436,7 +1672,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 450
+        "rows": 453
       },
       {
         "description": "Symbols that did not classify into any taxonomy bucket.",
@@ -1446,7 +1682,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6565
+        "rows": 6574
       },
       {
         "description": "User text reaching action-class tools without prompt-governance gating.",
@@ -1463,15 +1699,15 @@
       {
         "description": "Every state-write path with severity classification.",
         "mv_name": "mv_write_sovereignty_paths",
-        "next_action": "Use after red gates clear to burn down the related floor or inventory.",
-        "priority": "later",
+        "next_action": "Inspect this MV's rows while clearing the red gate.",
+        "priority": "next",
         "related_gates": [
           "3_write_sovereignty",
           "S2_uwg_bypass_ratchet"
         ],
-        "role": "Supports TRACK/backlog gate(s): `3_write_sovereignty`, `S2_uwg_bypass_ratchet`.",
+        "role": "Supports current FIX gate(s): `3_write_sovereignty`.",
         "routing_status": "gate_driver",
-        "rows": 1108
+        "rows": 1114
       }
     ],
     "plain_english": [
@@ -1482,28 +1718,28 @@
     ],
     "priority_rows": [
       {
+        "graphdb_mv_signal": "Use any gate-driver MVs marked priority=next to inspect the failing surface.",
+        "next_action": "Fix the first FIX row in the ranked queue, rerun ADG, then continue.",
+        "plain_language": "The run is not green. Fix the red gates before burn-down work.",
+        "priority": "Unblock red ADG gates",
+        "rank": 1
+      },
+      {
         "graphdb_mv_signal": "`apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/reasoning/hierarchy_healer.py`",
         "next_action": "When the current fix or burn-down slice touches these paths, add or repair tests there.",
         "plain_language": "GraphDB is telling you where a change is most likely under-tested.",
         "priority": "Place tests where GraphDB says risk is highest",
-        "rank": 1
-      },
-      {
-        "graphdb_mv_signal": "`agentic_core/adg/extraction/static_scanner.py`; `agentic_core/base_agents/SovereignBaseAgent.py`; `agentic_core/L0_routing/enforcement/mutation_prohibition.py`",
-        "next_action": "Use after FIX gates are green or when a blocker overlaps the same file.",
-        "plain_language": "These are leverage points, not emergency blockers.",
-        "priority": "Use structural hotspots after blockers",
         "rank": 2
       },
       {
-        "graphdb_mv_signal": "`mv_write_sovereignty_paths` 1,108; `mv_replay_surface_gaps` 985; `mv_new_write_bypass_paths` 951",
-        "next_action": "Start with the matching P0/P1 ratchet or inventory gate, not the raw largest MV.",
-        "plain_language": "These MVs explain the tracked gate floors and inventories.",
-        "priority": "Burn down gate-driver MV backlog",
+        "graphdb_mv_signal": "`agentic_core/adg/extraction/static_scanner.py`; `agentic_core/base_agents/SovereignBaseAgent.py`; `apps_rg/runtime/validators/executive_summary_x2.py`",
+        "next_action": "Use after FIX gates are green or when a blocker overlaps the same file.",
+        "plain_language": "These are leverage points, not emergency blockers.",
+        "priority": "Use structural hotspots after blockers",
         "rank": 3
       }
     ],
-    "snapshot_sqlite": "artifacts\\adg\\adg_indexed_06242026_0706.sqlite",
+    "snapshot_sqlite": "artifacts\\adg\\adg_indexed_06262026_0432.sqlite",
     "summary": {
       "action_driver_mvs": 1,
       "diagnostic_only_mvs": 22,
@@ -1521,25 +1757,25 @@
     },
     "testing_gap_summary": {
       "counts": {
-        "coverage_absent": 4082,
+        "coverage_absent": 4090,
         "coverage_low": 0,
         "p1_urgent": 1511,
         "p2_gap": 57,
         "risk_critical": 446,
         "risk_high": 1177,
-        "total_hotspots": 4388
+        "total_hotspots": 4396
       },
       "plain_language": "GraphDB found important files with absent or weak test coverage. These are not abstract metrics: they are the files where a change is most likely to create an undetected regression.",
       "status": "present",
       "top_files": [
         {
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
-          "combined_risk_score": 427.0,
+          "combined_risk_score": 428.0,
           "coverage_band": "ABSENT",
           "coverage_pct": "absent",
-          "criticality_score": 316.0,
+          "criticality_score": 317.0,
           "fan_in": 0,
-          "fan_out": 229,
+          "fan_out": 230,
           "file": "apps_rg/runtime/sections/executive_summary_lane.py",
           "layer": "L_APP",
           "priority_band": "P1_URGENT",
@@ -1624,12 +1860,12 @@
         },
         {
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
-          "combined_risk_score": 279.0,
+          "combined_risk_score": 282.0,
           "coverage_band": "ABSENT",
           "coverage_pct": "absent",
-          "criticality_score": 180.0,
+          "criticality_score": 182.0,
           "fan_in": 0,
-          "fan_out": 87,
+          "fan_out": 89,
           "file": "apps_rg/runtime/sections/unify_bullets_lane.py",
           "layer": "L_APP",
           "priority_band": "P1_URGENT",
@@ -1639,10 +1875,10 @@
         },
         {
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
-          "combined_risk_score": 241.0,
+          "combined_risk_score": 246.0,
           "coverage_band": "ABSENT",
           "coverage_pct": "absent",
-          "criticality_score": 174.0,
+          "criticality_score": 177.0,
           "fan_in": 0,
           "fan_out": 99,
           "file": "apps_rg/runtime/sections/headline_lane.py",
@@ -1650,7 +1886,7 @@
           "priority_band": "P1_URGENT",
           "rank": 8,
           "risk_band": "CRITICAL",
-          "violation_count": 25
+          "violation_count": 26
         }
       ],
       "what_to_do": [
@@ -1670,20 +1906,33 @@
         "related_gates": [],
         "role": "Directly promoted into the action queue.",
         "routing_status": "action_driver",
-        "rows": 4388
+        "rows": 4396
       },
       {
         "description": "Every state-write path with severity classification.",
         "mv_name": "mv_write_sovereignty_paths",
-        "next_action": "Use after red gates clear to burn down the related floor or inventory.",
-        "priority": "later",
+        "next_action": "Inspect this MV's rows while clearing the red gate.",
+        "priority": "next",
         "related_gates": [
           "3_write_sovereignty",
           "S2_uwg_bypass_ratchet"
         ],
-        "role": "Supports TRACK/backlog gate(s): `3_write_sovereignty`, `S2_uwg_bypass_ratchet`.",
+        "role": "Supports current FIX gate(s): `3_write_sovereignty`.",
         "routing_status": "gate_driver",
-        "rows": 1108
+        "rows": 1114
+      },
+      {
+        "description": "Write-bypass paths flagged as 'new' (severity \u2208 {critical, warning}).",
+        "mv_name": "mv_new_write_bypass_paths",
+        "next_action": "Inspect this MV's rows while clearing the red gate.",
+        "priority": "next",
+        "related_gates": [
+          "S2_uwg_bypass_ratchet",
+          "3_write_sovereignty"
+        ],
+        "role": "Supports current FIX gate(s): `3_write_sovereignty`.",
+        "routing_status": "gate_driver",
+        "rows": 957
       },
       {
         "description": "Replay-surface coverage gaps (state reads/writes not observable).",
@@ -1695,20 +1944,7 @@
         ],
         "role": "Supports TRACK/backlog gate(s): `I2_replay_surface_gaps_ratchet`.",
         "routing_status": "gate_driver",
-        "rows": 985
-      },
-      {
-        "description": "Write-bypass paths flagged as 'new' (severity \u2208 {critical, warning}).",
-        "mv_name": "mv_new_write_bypass_paths",
-        "next_action": "Use after red gates clear to burn down the related floor or inventory.",
-        "priority": "later",
-        "related_gates": [
-          "S2_uwg_bypass_ratchet",
-          "3_write_sovereignty"
-        ],
-        "role": "Supports TRACK/backlog gate(s): `S2_uwg_bypass_ratchet`, `3_write_sovereignty`.",
-        "routing_status": "gate_driver",
-        "rows": 951
+        "rows": 988
       },
       {
         "description": "Action-class tools published without a JSON Schema contract.",
@@ -1720,7 +1956,7 @@
         ],
         "role": "Supports TRACK/backlog gate(s): `M_taint_actionable_ratchet`.",
         "routing_status": "gate_driver",
-        "rows": 776
+        "rows": 778
       },
       {
         "description": "Tier-1 Exit.disposition emit-site coverage per layer.",
@@ -1754,7 +1990,7 @@
         "related_gates": [],
         "role": "Treat as generator/ingest health signal, not product-code work by itself.",
         "routing_status": "analyst_signal",
-        "rows": 394894
+        "rows": 396092
       },
       {
         "description": "Forward dependency cone (transitive imports) per node, weighted by criticality.",
@@ -1764,7 +2000,7 @@
         "related_gates": [],
         "role": "Prefer fixes that reduce downstream blast radius.",
         "routing_status": "analyst_signal",
-        "rows": 11768
+        "rows": 11784
       },
       {
         "description": "Hotspot ranking by graph centrality (PageRank / betweenness blend).",
@@ -1774,7 +2010,7 @@
         "related_gates": [],
         "role": "Use as structural leverage ranking for refactor waves.",
         "routing_status": "analyst_signal",
-        "rows": 11768
+        "rows": 11784
       }
     ],
     "top_unrouted_mv_signals": [
@@ -1788,7 +2024,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6565
+        "rows": 6574
       },
       {
         "description": "Symbols that did not classify into any taxonomy bucket.",
@@ -1798,7 +2034,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6565
+        "rows": 6574
       },
       {
         "description": "Agent classes whose specializations overlap (potential dedup target).",
@@ -1830,7 +2066,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 1022
+        "rows": 1025
       },
       {
         "description": "Trace-replay eval coverage gaps (paths where replay would skip).",
@@ -1842,7 +2078,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 450
+        "rows": 453
       },
       {
         "description": "Edges that participate in any critical execution path (run \u2192 seal \u2192 disposition).",
@@ -1882,53 +2118,62 @@
       "rows": [
         {
           "band": "P0",
-          "next_step": "Use the P0 Action Plan below.",
+          "next_step": "Fix the blocking gate condition and rerun ADG before burn-down work.",
           "rank": 1,
-          "records": 4352,
-          "target": "`G_REACH` 2,786; `S2_UWG` 1,566",
+          "records": 3759,
+          "target": "P0 CI blockers",
+          "why_this_priority": "CI blocker; ADG is not green until this clears.",
+          "work_class": "Fix now"
+        },
+        {
+          "band": "P0",
+          "next_step": "Use the P0 Action Plan below.",
+          "rank": 2,
+          "records": 1570,
+          "target": "`S2_UWG` 1,570",
           "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
           "work_class": "Burn down ratchets"
         },
         {
           "band": "P1",
           "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-          "rank": 2,
-          "records": 5572,
-          "target": "`C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more = 5,572 total",
+          "rank": 3,
+          "records": 5556,
+          "target": "`C3_silent_writes` 2,033; `E1_trace_stub` 982; `B2_layer_skip` 874; +6 more = 5,556 total",
           "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
           "work_class": "Burn down ratchets"
         },
         {
           "band": "P2",
           "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-          "rank": 3,
-          "records": 2011,
-          "target": "`F1_untyped_seam` 1,026; `I2_replay_gaps` 985",
+          "rank": 4,
+          "records": 1979,
+          "target": "`F1_untyped_seam` 991; `I2_replay_gaps` 988",
           "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
           "work_class": "Burn down ratchets"
         },
         {
           "band": "P3",
           "next_step": "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline.",
-          "rank": 4,
-          "records": 12316,
-          "target": "`S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456",
+          "rank": 5,
+          "records": 12339,
+          "target": "`S4_unused_imports` 10,742; `Q2_complexity` 1,139; `M1_module_loc` 458",
           "why_this_priority": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
           "work_class": "Burn down ratchets"
         },
         {
           "band": "P0",
           "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-          "rank": 5,
-          "records": 952,
-          "target": "`write_sovereignty` 951; `pipeline_wiring` 1",
+          "rank": 6,
+          "records": 1,
+          "target": "`pipeline_wiring` 1",
           "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
           "work_class": "Open non-ratchet work"
         },
         {
           "band": "P2",
           "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-          "rank": 6,
+          "rank": 7,
           "records": 105,
           "target": "`D2_role_duplication` 105",
           "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
@@ -1937,7 +2182,7 @@
         {
           "band": "P3",
           "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-          "rank": 7,
+          "rank": 8,
           "records": 3,
           "target": "`D1_layer_doc` 3",
           "why_this_priority": "Real open work, but it does not lower a ratchet floor or block CI.",
@@ -1946,25 +2191,25 @@
         {
           "band": "P0",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-          "rank": 8,
-          "records": 3,
-          "target": "3 non-exempt from 43 gross",
+          "rank": 9,
+          "records": 4,
+          "target": "4 non-exempt from 44 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
           "work_class": "Severity audit"
         },
         {
           "band": "P1",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-          "rank": 9,
-          "records": 6,
-          "target": "6 non-exempt from 1,152 gross",
+          "rank": 10,
+          "records": 5,
+          "target": "5 non-exempt from 1,151 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
           "work_class": "Severity audit"
         },
         {
           "band": "P2",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-          "rank": 10,
+          "rank": 11,
           "records": 19,
           "target": "19 non-exempt from 733 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
@@ -1973,9 +2218,9 @@
         {
           "band": "P3",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-          "rank": 11,
-          "records": 18919,
-          "target": "18,919 non-exempt from 19,006 gross",
+          "rank": 12,
+          "records": 18971,
+          "target": "18,971 non-exempt from 19,058 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
           "work_class": "Severity audit"
         }
@@ -1983,16 +2228,12 @@
       "title": "ADG Heuristic Attack Order"
     },
     "do_this_next": [
-      "Burn down P0 ratchet `G_REACH` (2,786): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Burn down P0 ratchet `S2_UWG` (1,566): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/reasoning/hierarchy_healer.py`.",
-      "Close P0 open non-ratchet work `write_sovereignty` (951): Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
-      "Close P0 open non-ratchet work `pipeline_wiring` (1): Close when touching nearby code; it is open work but not ratchet burn-down.",
-      "Then burn down P1 ratchets by size: `C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more (5,572 total).",
-      "Then burn down P2 ratchets by size: `F1_untyped_seam` 1,026; `I2_replay_gaps` 985.",
-      "Close P2 open non-ratchet work: `D2_role_duplication` 105.",
-      "Then burn down P3 ratchets by size: `S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456.",
-      "Close P3 open non-ratchet work: `D1_layer_doc` 3.",
+      "Fix `10_infra_wiring` (P0, 4 record(s)): Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+      "Fix `C1_uwg_bypass_pview` (P0, 4 record(s)): Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+      "Fix `3_write_sovereignty` (P0, 957 record(s)): Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+      "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s)): Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+      "While fixing red gates, use GraphDB/MV testing hotspots as the test-placement map: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/reasoning/hierarchy_healer.py`.",
+      "Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue.",
       "Review guardian exceptions separately; they are severity audit math, not burn-down work."
     ],
     "first_testing_hotspot": {
@@ -2000,13 +2241,13 @@
       "kind": "test_hotspot_gap",
       "lane": "GRAPHDB",
       "ordering_reason": "mv_hotspot_coverage_risk_priority",
-      "rank": 1,
+      "rank": 5,
       "records": 29,
-      "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=316.00; fan_in=0",
+      "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=317.00; fan_in=0",
       "source_artifact": "sqlite:mv_hotspot_coverage_risk",
       "target": "apps_rg/runtime/sections/executive_summary_lane.py"
     },
-    "headline": "Green for enforcement; burn-down work remains.",
+    "headline": "Fix red ADG gates before burn-down work.",
     "p0_action_plan": {
       "comments": [
         "Read this table top to bottom. If Fix now rows exist, they override ratchets because ADG is not green.",
@@ -2019,38 +2260,58 @@
         {
           "gate_id": "G_REACH_l0_reachability",
           "label": "G_REACH",
-          "next_step": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
+          "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
           "rank": 1,
           "record_type": "Production-layer modules with no import path from any L0 node (orphans).",
-          "records": 2786,
-          "why_this_priority": "Largest P0 ratchet floor; reduces the biggest accepted baseline first.",
-          "work_type": "Burn down ratchet"
+          "records": 2794,
+          "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+          "work_type": "Fix now"
+        },
+        {
+          "gate_id": "3_write_sovereignty",
+          "label": "write_sovereignty",
+          "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+          "rank": 2,
+          "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
+          "records": 957,
+          "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+          "work_type": "Fix now"
+        },
+        {
+          "gate_id": "10_infra_wiring",
+          "label": "10_infra_wiring",
+          "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+          "rank": 3,
+          "record_type": "Infra wiring defects (canonical pipeline / spine reachability).",
+          "records": 4,
+          "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+          "work_type": "Fix now"
+        },
+        {
+          "gate_id": "C1_uwg_bypass_pview",
+          "label": "C1_uwg_bypass_pview",
+          "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+          "rank": 4,
+          "record_type": "Any row in UWG-bypass materialized view (zero tolerance block).",
+          "records": 4,
+          "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+          "work_type": "Fix now"
         },
         {
           "gate_id": "S2_uwg_bypass_ratchet",
           "label": "S2_UWG",
           "next_step": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-          "rank": 2,
+          "rank": 5,
           "record_type": "Write paths that bypass UWG (overlay on write_sovereignty edges).",
-          "records": 1566,
-          "why_this_priority": "Next-largest P0 ratchet floor; keep burning down accepted baseline debt.",
+          "records": 1570,
+          "why_this_priority": "Largest P0 ratchet floor; reduces the biggest accepted baseline first.",
           "work_type": "Burn down ratchet"
-        },
-        {
-          "gate_id": "3_write_sovereignty",
-          "label": "write_sovereignty",
-          "next_step": "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
-          "rank": 3,
-          "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-          "records": 951,
-          "why_this_priority": "Real open P0 work, but it does not reduce the ratchet floor.",
-          "work_type": "Open non-ratchet work"
         },
         {
           "gate_id": "J1_canonical_pipeline_wiring",
           "label": "pipeline_wiring",
           "next_step": "Close when touching nearby code; it is open work but not ratchet burn-down.",
-          "rank": 4,
+          "rank": 6,
           "record_type": "Declared canonical_pipelines.yaml steps missing required call wiring.",
           "records": 1,
           "why_this_priority": "Small open P0 work item; bundle if it is already in the same files.",
@@ -2064,13 +2325,6 @@
       "guardian_relation_to_burn_down": "Separate exception audit. Guardian changes severity net math, not the ratchet or open-work queue.",
       "non_ratchet_cleanup_items": [
         {
-          "gate_id": "3_write_sovereignty",
-          "label": "write_sovereignty",
-          "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-          "records": 951,
-          "sub": "inventory"
-        },
-        {
           "gate_id": "J1_canonical_pipeline_wiring",
           "label": "pipeline_wiring",
           "record_type": "Declared canonical_pipelines.yaml steps missing required call wiring.",
@@ -2078,16 +2332,9 @@
           "sub": "inventory"
         }
       ],
-      "non_ratchet_cleanup_records": 952,
+      "non_ratchet_cleanup_records": 1,
       "open_non_ratchet_work_items": [
         {
-          "gate_id": "3_write_sovereignty",
-          "label": "write_sovereignty",
-          "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-          "records": 951,
-          "sub": "inventory"
-        },
-        {
           "gate_id": "J1_canonical_pipeline_wiring",
           "label": "pipeline_wiring",
           "record_type": "Declared canonical_pipelines.yaml steps missing required call wiring.",
@@ -2095,46 +2342,83 @@
           "sub": "inventory"
         }
       ],
-      "open_non_ratchet_work_records": 952,
+      "open_non_ratchet_work_records": 1,
       "ratchet_burn_down_items": [
         {
           "gate_id": "S2_uwg_bypass_ratchet",
           "label": "S2_UWG",
           "record_type": "Write paths that bypass UWG (overlay on write_sovereignty edges).",
-          "records": 1566,
-          "sub": "floor"
-        },
-        {
-          "gate_id": "G_REACH_l0_reachability",
-          "label": "G_REACH",
-          "record_type": "Production-layer modules with no import path from any L0 node (orphans).",
-          "records": 2786,
+          "records": 1570,
           "sub": "floor"
         }
       ],
-      "ratchet_burn_down_records": 4352
+      "ratchet_burn_down_records": 1570
     },
     "what_this_means": [
-      "The ADG run is PASS: 0 fix-now gates. There is no current blocker or ratchet regression.",
-      "Green does not mean done: 24,251 ratchet-floor records still need burn-down.",
+      "The ADG run is BLOCKED: 4 gate(s) must be fixed before treating the run as green.",
+      "Green does not mean done: 21,444 ratchet-floor records still need burn-down.",
       "Use the ADG Heuristic Attack Order to choose the next bucket across P0-P3.",
       "Use the P0 Action Plan top to bottom; it prioritizes ratchets by tracked-record count.",
-      "P0 ratchets in order: `G_REACH` 2,786; `S2_UWG` 1,566.",
-      "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 951; `pipeline_wiring` 1. Do it after ratchets unless an item is tiny or high-leverage.",
-      "Guardian is exception audit only: P0 has 3 non-exempt severity items from 43 gross. Do not use guardian math as the burn-down queue.",
+      "P0 ratchets in order: `S2_UWG` 1,570.",
+      "P0 open non-ratchet work is separate from P0 ratchets: `pipeline_wiring` 1. Do it after ratchets unless an item is tiny or high-leverage.",
+      "Guardian is exception audit only: P0 has 4 non-exempt severity items from 44 gross. Do not use guardian math as the burn-down queue.",
       "GraphDB/MV says the first testing hotspot is `apps_rg/runtime/sections/executive_summary_lane.py`."
     ]
   },
   "next_best_action": {
     "actions": [
       {
+        "band": "P0",
+        "kind": "fix_gate",
+        "lane": "FIX",
+        "ordering_reason": "fix_block_p0_violations_asc",
+        "rank": 1,
+        "records": 4,
+        "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+        "source_artifact": "gate_results",
+        "target": "10_infra_wiring"
+      },
+      {
+        "band": "P0",
+        "kind": "fix_gate",
+        "lane": "FIX",
+        "ordering_reason": "fix_block_p0_violations_asc",
+        "rank": 2,
+        "records": 4,
+        "signal": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+        "source_artifact": "gate_results",
+        "target": "C1_uwg_bypass_pview"
+      },
+      {
+        "band": "P0",
+        "kind": "fix_gate",
+        "lane": "FIX",
+        "ordering_reason": "fix_block_p0_violations_asc",
+        "rank": 3,
+        "records": 957,
+        "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+        "source_artifact": "gate_results",
+        "target": "3_write_sovereignty"
+      },
+      {
+        "band": "P0",
+        "kind": "fix_gate",
+        "lane": "FIX",
+        "ordering_reason": "fix_regr_p0_delta_asc",
+        "rank": 4,
+        "records": 2794,
+        "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+        "source_artifact": "gate_results",
+        "target": "G_REACH_l0_reachability"
+      },
+      {
         "band": "P1_URGENT",
         "kind": "test_hotspot_gap",
         "lane": "GRAPHDB",
         "ordering_reason": "mv_hotspot_coverage_risk_priority",
-        "rank": 1,
+        "rank": 5,
         "records": 29,
-        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=316.00; fan_in=0",
+        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=317.00; fan_in=0",
         "source_artifact": "sqlite:mv_hotspot_coverage_risk",
         "target": "apps_rg/runtime/sections/executive_summary_lane.py"
       },
@@ -2143,7 +2427,7 @@
         "kind": "test_hotspot_gap",
         "lane": "GRAPHDB",
         "ordering_reason": "mv_hotspot_coverage_risk_priority",
-        "rank": 2,
+        "rank": 6,
         "records": 20,
         "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticality=217.00; fan_in=0",
         "source_artifact": "sqlite:mv_hotspot_coverage_risk",
@@ -2154,7 +2438,7 @@
         "kind": "test_hotspot_gap",
         "lane": "GRAPHDB",
         "ordering_reason": "mv_hotspot_coverage_risk_priority",
-        "rank": 3,
+        "rank": 7,
         "records": 24,
         "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticality=199.00; fan_in=0",
         "source_artifact": "sqlite:mv_hotspot_coverage_risk",
@@ -2165,9 +2449,9 @@
         "kind": "refactor_candidate",
         "lane": "REFACTOR",
         "ordering_reason": "refactor_accelerator_candidates_desc",
-        "rank": 4,
+        "rank": 8,
         "records": 0,
-        "signal": "Refactor candidate; score=0.1641",
+        "signal": "Refactor candidate; score=0.1553",
         "source_artifact": "refactor_accelerator",
         "target": "agentic_core/adg/extraction/static_scanner.py"
       },
@@ -2176,88 +2460,44 @@
         "kind": "refactor_candidate",
         "lane": "REFACTOR",
         "ordering_reason": "refactor_accelerator_candidates_desc",
-        "rank": 5,
+        "rank": 9,
         "records": 0,
-        "signal": "Refactor candidate; score=0.0872",
+        "signal": "Refactor candidate; score=0.0878",
         "source_artifact": "refactor_accelerator",
         "target": "agentic_core/base_agents/SovereignBaseAgent.py"
       },
       {
-        "band": "L0",
+        "band": "L_APP",
         "kind": "refactor_candidate",
         "lane": "REFACTOR",
         "ordering_reason": "refactor_accelerator_candidates_desc",
-        "rank": 6,
+        "rank": 10,
         "records": 0,
-        "signal": "Refactor candidate; score=0.0777",
+        "signal": "Refactor candidate; score=0.079",
         "source_artifact": "refactor_accelerator",
-        "target": "agentic_core/L0_routing/enforcement/mutation_prohibition.py"
-      },
-      {
-        "band": "L_RUNTIME",
-        "kind": "graphdb_hotspot",
-        "lane": "GRAPHDB",
-        "ordering_reason": "structural_outputs_hotspot_desc",
-        "rank": 7,
-        "records": 0,
-        "signal": "GraphDB/MV hotspot from centrality.nodes; fan_in=1625; centrality=0.0087",
-        "source_artifact": "structural_outputs",
-        "target": "agentic_core/runtime/contracts/lifecycle_trace_contract.py"
-      },
-      {
-        "band": "GRAPHDB",
-        "kind": "graphdb_structural_signal",
-        "lane": "GRAPHDB",
-        "ordering_reason": "graphdb_structural_signal_count_desc",
-        "rank": 8,
-        "records": 3131,
-        "signal": "GraphDB structural signal; rows=3131; UWG durable write conformance rows. Inspect adg_graphdb_queries for concrete rows.",
-        "source_artifact": "graphdb_queries",
-        "target": "structural.uwg_durable_write_conformance"
-      },
-      {
-        "band": "GRAPHDB",
-        "kind": "graphdb_structural_signal",
-        "lane": "GRAPHDB",
-        "ordering_reason": "graphdb_structural_signal_count_desc",
-        "rank": 9,
-        "records": 1124,
-        "signal": "GraphDB structural signal; rows=1124; L2 lifecycle non-conformant modules. Inspect adg_graphdb_queries for concrete rows.",
-        "source_artifact": "graphdb_queries",
-        "target": "structural.l2_lifecycle_conformance.non_conformant_modules"
+        "target": "apps_rg/runtime/validators/executive_summary_x2.py"
       }
     ],
     "degraded": false,
     "emit_status": "ok",
     "priority_bullets": [
-      "Burn down P0 ratchet `G_REACH` (2,786): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Burn down P0 ratchet `S2_UWG` (1,566): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/reasoning/hierarchy_healer.py`.",
-      "Close P0 open non-ratchet work `write_sovereignty` (951): Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
-      "Close P0 open non-ratchet work `pipeline_wiring` (1): Close when touching nearby code; it is open work but not ratchet burn-down.",
-      "Then burn down P1 ratchets by size: `C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more (5,572 total).",
-      "Then burn down P2 ratchets by size: `F1_untyped_seam` 1,026; `I2_replay_gaps` 985.",
-      "Close P2 open non-ratchet work: `D2_role_duplication` 105.",
-      "Then burn down P3 ratchets by size: `S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456.",
-      "Close P3 open non-ratchet work: `D1_layer_doc` 3.",
+      "Fix `10_infra_wiring` (P0, 4 record(s)): Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1).",
+      "Fix `C1_uwg_bypass_pview` (P0, 4 record(s)): Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1).",
+      "Fix `3_write_sovereignty` (P0, 957 record(s)): Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1).",
+      "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s)): Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786.",
+      "While fixing red gates, use GraphDB/MV testing hotspots as the test-placement map: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/reasoning/hierarchy_healer.py`.",
+      "Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue.",
       "Review guardian exceptions separately; they are severity audit math, not burn-down work."
     ],
-    "source": "artifacts\\adg\\adg_action_queue_06242026_0706.json"
+    "source": "artifacts\\adg\\adg_action_queue_06262026_0432.json"
   },
   "operator_summary": {
     "band_status": [
       {
         "band": "P0",
-        "cleanup_backlog": "`write_sovereignty` 951; `pipeline_wiring` 1",
-        "cleanup_gates": 2,
+        "cleanup_backlog": "`pipeline_wiring` 1",
+        "cleanup_gates": 1,
         "cleanup_items": [
-          {
-            "gate_id": "3_write_sovereignty",
-            "label": "write_sovereignty",
-            "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-            "records": 951,
-            "sub": "inventory"
-          },
           {
             "gate_id": "J1_canonical_pipeline_wiring",
             "label": "pipeline_wiring",
@@ -2266,36 +2506,29 @@
             "sub": "inventory"
           }
         ],
-        "cleanup_records": 952,
-        "clear_gates": 11,
-        "fix_gates": 0,
-        "fix_records": 0,
-        "next_move": "1) burn down ratchets; 2) close open non-ratchet work",
-        "open_non_ratchet_work": "`write_sovereignty` 951; `pipeline_wiring` 1",
-        "ratchet_burn_down": "`G_REACH` 2,786; `S2_UWG` 1,566",
-        "ratchet_floor_gates": 2,
+        "cleanup_records": 1,
+        "clear_gates": 9,
+        "fix_gates": 4,
+        "fix_records": 3759,
+        "next_move": "fix red gates first",
+        "open_non_ratchet_work": "`pipeline_wiring` 1",
+        "ratchet_burn_down": "`S2_UWG` 1,570",
+        "ratchet_floor_gates": 1,
         "ratchet_floor_items": [
           {
             "gate_id": "S2_uwg_bypass_ratchet",
             "label": "S2_UWG",
             "record_type": "Write paths that bypass UWG (overlay on write_sovereignty edges).",
-            "records": 1566,
-            "sub": "floor"
-          },
-          {
-            "gate_id": "G_REACH_l0_reachability",
-            "label": "G_REACH",
-            "record_type": "Production-layer modules with no import path from any L0 node (orphans).",
-            "records": 2786,
+            "records": 1570,
             "sub": "floor"
           }
         ],
-        "ratchet_floor_records": 4352,
-        "read_it_as": "green; ratchet burn-down/open work remains",
-        "status": "PASS",
-        "tracked_gates": 4,
-        "tracked_record_label": "4 gates / 5,304 tracked records",
-        "tracked_records": 5304
+        "ratchet_floor_records": 1570,
+        "read_it_as": "red gates present",
+        "status": "BLOCKED",
+        "tracked_gates": 2,
+        "tracked_record_label": "2 gates / 1,571 tracked records",
+        "tracked_records": 1571
       },
       {
         "band": "P1",
@@ -2308,7 +2541,7 @@
         "fix_records": 0,
         "next_move": "burn down listed ratchets",
         "open_non_ratchet_work": "None",
-        "ratchet_burn_down": "`C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more = 5,572 total",
+        "ratchet_burn_down": "`C3_silent_writes` 2,033; `E1_trace_stub` 982; `B2_layer_skip` 874; +6 more = 5,556 total",
         "ratchet_floor_gates": 9,
         "ratchet_floor_items": [
           {
@@ -2322,14 +2555,14 @@
             "gate_id": "B2_layer_skip_ratchet",
             "label": "B2_layer_skip",
             "record_type": "Import edges that skip more than one layer ordinal (layer-hop).",
-            "records": 895,
+            "records": 874,
             "sub": "floor"
           },
           {
             "gate_id": "C3_silent_writes_ratchet",
             "label": "C3_silent_writes",
             "record_type": "writes_to edges without sibling emits_side_effect on same source.",
-            "records": 2030,
+            "records": 2033,
             "sub": "floor"
           },
           {
@@ -2364,7 +2597,7 @@
             "gate_id": "M_taint_actionable_ratchet",
             "label": "M_taint_actionable",
             "record_type": "Actionable taint surfaces without output schema binding.",
-            "records": 673,
+            "records": 675,
             "sub": "floor"
           },
           {
@@ -2375,12 +2608,12 @@
             "sub": "floor"
           }
         ],
-        "ratchet_floor_records": 5572,
+        "ratchet_floor_records": 5556,
         "read_it_as": "green; ratchet burn-down/open work remains",
         "status": "PASS",
         "tracked_gates": 9,
-        "tracked_record_label": "9 gates / 5,572 tracked records",
-        "tracked_records": 5572
+        "tracked_record_label": "9 gates / 5,556 tracked records",
+        "tracked_records": 5556
       },
       {
         "band": "P2",
@@ -2401,30 +2634,30 @@
         "fix_records": 0,
         "next_move": "1) burn down ratchets; 2) close open non-ratchet work",
         "open_non_ratchet_work": "`D2_role_duplication` 105",
-        "ratchet_burn_down": "`F1_untyped_seam` 1,026; `I2_replay_gaps` 985",
+        "ratchet_burn_down": "`F1_untyped_seam` 991; `I2_replay_gaps` 988",
         "ratchet_floor_gates": 2,
         "ratchet_floor_items": [
           {
             "gate_id": "I2_replay_surface_gaps_ratchet",
             "label": "I2_replay_gaps",
             "record_type": "State mutations not consumed by replay surface (gap_flag=1).",
-            "records": 985,
+            "records": 988,
             "sub": "floor"
           },
           {
             "gate_id": "F1_untyped_seam_ratchet",
             "label": "F1_untyped_seam",
             "record_type": "Cross-layer imports where target has empty type_surface.",
-            "records": 1026,
+            "records": 991,
             "sub": "floor"
           }
         ],
-        "ratchet_floor_records": 2011,
+        "ratchet_floor_records": 1979,
         "read_it_as": "green; ratchet burn-down/open work remains",
         "status": "PASS",
         "tracked_gates": 3,
-        "tracked_record_label": "3 gates / 2,116 tracked records",
-        "tracked_records": 2116
+        "tracked_record_label": "3 gates / 2,084 tracked records",
+        "tracked_records": 2084
       },
       {
         "band": "P3",
@@ -2445,47 +2678,47 @@
         "fix_records": 0,
         "next_move": "1) burn down ratchets; 2) close open non-ratchet work",
         "open_non_ratchet_work": "`D1_layer_doc` 3",
-        "ratchet_burn_down": "`S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456",
+        "ratchet_burn_down": "`S4_unused_imports` 10,742; `Q2_complexity` 1,139; `M1_module_loc` 458",
         "ratchet_floor_gates": 3,
         "ratchet_floor_items": [
           {
             "gate_id": "M1_module_loc_ratchet",
             "label": "M1_module_loc",
             "record_type": "Production modules exceeding LOC ceiling (disk scan).",
-            "records": 456,
+            "records": 458,
             "sub": "floor"
           },
           {
             "gate_id": "S4_unused_imports_ratchet",
             "label": "S4_unused_imports",
             "record_type": "Unused import edges in production modules.",
-            "records": 10730,
+            "records": 10742,
             "sub": "floor"
           },
           {
             "gate_id": "Q2_cyclomatic_complexity_ratchet",
             "label": "Q2_complexity",
             "record_type": "Functions with McCabe cyclomatic complexity above ceiling.",
-            "records": 1130,
+            "records": 1139,
             "sub": "floor"
           }
         ],
-        "ratchet_floor_records": 12316,
+        "ratchet_floor_records": 12339,
         "read_it_as": "green; ratchet burn-down/open work remains",
         "status": "PASS",
         "tracked_gates": 4,
-        "tracked_record_label": "4 gates / 12,319 tracked records",
-        "tracked_records": 12319
+        "tracked_record_label": "4 gates / 12,342 tracked records",
+        "tracked_records": 12342
       }
     ],
-    "cleanup_records": 1060,
-    "clear_gates": 28,
-    "fix_gates": 0,
-    "fix_records": 0,
-    "overall_verdict": "PASS",
-    "ratchet_floor_records": 24251,
-    "track_gates": 20,
-    "tracked_records": 25311
+    "cleanup_records": 109,
+    "clear_gates": 26,
+    "fix_gates": 4,
+    "fix_records": 3759,
+    "overall_verdict": "BLOCKED",
+    "ratchet_floor_records": 21444,
+    "track_gates": 18,
+    "tracked_records": 21553
   },
   "p0_action_plan": {
     "comments": [
@@ -2499,38 +2732,58 @@
       {
         "gate_id": "G_REACH_l0_reachability",
         "label": "G_REACH",
-        "next_step": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
+        "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
         "rank": 1,
         "record_type": "Production-layer modules with no import path from any L0 node (orphans).",
-        "records": 2786,
-        "why_this_priority": "Largest P0 ratchet floor; reduces the biggest accepted baseline first.",
-        "work_type": "Burn down ratchet"
+        "records": 2794,
+        "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+        "work_type": "Fix now"
+      },
+      {
+        "gate_id": "3_write_sovereignty",
+        "label": "write_sovereignty",
+        "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+        "rank": 2,
+        "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
+        "records": 957,
+        "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+        "work_type": "Fix now"
+      },
+      {
+        "gate_id": "10_infra_wiring",
+        "label": "10_infra_wiring",
+        "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+        "rank": 3,
+        "record_type": "Infra wiring defects (canonical pipeline / spine reachability).",
+        "records": 4,
+        "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+        "work_type": "Fix now"
+      },
+      {
+        "gate_id": "C1_uwg_bypass_pview",
+        "label": "C1_uwg_bypass_pview",
+        "next_step": "Fix the gate condition and rerun ADG before treating the run as green.",
+        "rank": 4,
+        "record_type": "Any row in UWG-bypass materialized view (zero tolerance block).",
+        "records": 4,
+        "why_this_priority": "Blocks green ADG; fix before burn-down work.",
+        "work_type": "Fix now"
       },
       {
         "gate_id": "S2_uwg_bypass_ratchet",
         "label": "S2_UWG",
         "next_step": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-        "rank": 2,
+        "rank": 5,
         "record_type": "Write paths that bypass UWG (overlay on write_sovereignty edges).",
-        "records": 1566,
-        "why_this_priority": "Next-largest P0 ratchet floor; keep burning down accepted baseline debt.",
+        "records": 1570,
+        "why_this_priority": "Largest P0 ratchet floor; reduces the biggest accepted baseline first.",
         "work_type": "Burn down ratchet"
-      },
-      {
-        "gate_id": "3_write_sovereignty",
-        "label": "write_sovereignty",
-        "next_step": "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
-        "rank": 3,
-        "record_type": "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).",
-        "records": 951,
-        "why_this_priority": "Real open P0 work, but it does not reduce the ratchet floor.",
-        "work_type": "Open non-ratchet work"
       },
       {
         "gate_id": "J1_canonical_pipeline_wiring",
         "label": "pipeline_wiring",
         "next_step": "Close when touching nearby code; it is open work but not ratchet burn-down.",
-        "rank": 4,
+        "rank": 6,
         "record_type": "Declared canonical_pipelines.yaml steps missing required call wiring.",
         "records": 1,
         "why_this_priority": "Small open P0 work item; bundle if it is already in the same files.",
@@ -2548,72 +2801,44 @@
     "purpose": "One merged work queue. It combines red gates, ratchets, rerun steps, guardian audit context, and GraphDB/MV testing guidance so the next action is not split across repeated sections.",
     "rows": [
       {
-        "done_when": "Record count drops and the ratchet floor can be lowered.",
-        "priority_work": "Burn down P0 ratchet `G_REACH` (2,786)",
+        "done_when": "Gate no longer appears as FIX after rerun.",
+        "priority_work": "Fix `10_infra_wiring` (P0, 4 record(s))",
         "rank": "1",
         "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
+        "why_now": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: Run blocked (exit 1)."
       },
       {
-        "done_when": "Record count drops and the ratchet floor can be lowered.",
-        "priority_work": "Burn down P0 ratchet `S2_UWG` (1,566)",
+        "done_when": "Gate no longer appears as FIX after rerun.",
+        "priority_work": "Fix `C1_uwg_bypass_pview` (P0, 4 record(s))",
         "rank": "2",
         "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
+        "why_now": "Counts: Any row in UWG-bypass materialized view (zero tolerance block). Sub: Run blocked (exit 1)."
       },
       {
-        "done_when": "Open work count drops without creating a new red gate.",
-        "priority_work": "Close P0 open non-ratchet work `write_sovereignty` (951)",
+        "done_when": "Gate no longer appears as FIX after rerun.",
+        "priority_work": "Fix `3_write_sovereignty` (P0, 957 record(s))",
         "rank": "3",
         "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage."
+        "why_now": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: Run blocked (exit 1)."
       },
       {
-        "done_when": "Open work count drops without creating a new red gate.",
-        "priority_work": "Close P0 open non-ratchet work `pipeline_wiring` (1)",
+        "done_when": "Gate no longer appears as FIX after rerun.",
+        "priority_work": "Fix `G_REACH_l0_reachability` (P0, 2,794 record(s))",
         "rank": "4",
         "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "Close when touching nearby code; it is open work but not ratchet burn-down."
+        "why_now": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +8 vs baseline 2786."
       },
       {
-        "done_when": "Record count drops and the ratchet floor can be lowered.",
-        "priority_work": "Then burn down P1 ratchets by size",
+        "done_when": "Fresh ADG review is generated and read before the next slice.",
+        "priority_work": "Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue.",
         "rank": "5",
-        "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "`C3_silent_writes` 2,030; `E1_trace_stub` 982; `B2_layer_skip` 895; +6 more (5,572 total)."
-      },
-      {
-        "done_when": "Record count drops and the ratchet floor can be lowered.",
-        "priority_work": "Then burn down P2 ratchets by size",
-        "rank": "6",
-        "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "`F1_untyped_seam` 1,026; `I2_replay_gaps` 985."
-      },
-      {
-        "done_when": "Open work count drops without creating a new red gate.",
-        "priority_work": "Close P2 open non-ratchet work",
-        "rank": "7",
-        "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "`D2_role_duplication` 105."
-      },
-      {
-        "done_when": "Record count drops and the ratchet floor can be lowered.",
-        "priority_work": "Then burn down P3 ratchets by size",
-        "rank": "8",
-        "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "`S4_unused_imports` 10,730; `Q2_complexity` 1,130; `M1_module_loc` 456."
-      },
-      {
-        "done_when": "Open work count drops without creating a new red gate.",
-        "priority_work": "Close P3 open non-ratchet work",
-        "rank": "9",
-        "testing_mv_action": "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change.",
-        "why_now": "`D1_layer_doc` 3."
+        "testing_mv_action": "Run focused tests plus ADG; confirm the new review output reflects the lower risk.",
+        "why_now": "Locks in the corrected state before burn-down work starts."
       },
       {
         "done_when": "Only escalated if it maps to a failing gate or critical-path risk.",
         "priority_work": "Review guardian exceptions separately; they are severity audit math, not burn-down work.",
-        "rank": "10",
+        "rank": "6",
         "testing_mv_action": "No test work; this is audit context, not the execution queue.",
         "why_now": "Keeps exception math separate from the engineering queue."
       }
@@ -2628,14 +2853,28 @@
     },
     "enforcement_report_status": "NOT_CERTIFIED",
     "gate_results_summary": {
-      "block_fail": 0,
-      "block_pass": 14,
-      "ratchet_pass": 27,
-      "ratchet_regressed": 0,
+      "block_fail": 3,
+      "block_pass": 11,
+      "ratchet_pass": 26,
+      "ratchet_regressed": 1,
       "ratchet_seed_missing": 0,
       "warn": 6
     },
-    "generation_manifest": {}
+    "generation_manifest": {
+      "certification_status": "failed",
+      "commit_sha": null,
+      "created_at_utc": "2026-06-26T08:41:48Z",
+      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06262026_0432.json",
+      "generation_exit_code": 1,
+      "p0_status": "deferred_fail",
+      "registry_bucket_edge_count": 0,
+      "repo_state_hash": null,
+      "runtime_attested_edge_count": 0,
+      "runtime_proof_status": "view_present_zero_attested",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06262026_0432.sqlite",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06262026_0432.sqlite",
+      "timestamp": "2026-06-26T08:41:48Z"
+    }
   },
   "review_template": {
     "decision": "pending",
@@ -2643,26 +2882,26 @@
     "reviewed_at": "",
     "reviewer": ""
   },
-  "run_id": "06242026_0706",
+  "run_id": "06262026_0432",
   "schema_version": "1.0",
   "severity_inventory": [
     {
       "band": "P0",
       "diff_vs_prev": 40,
       "formula": "net = gross - guardian",
-      "gross": 43,
+      "gross": 44,
       "guardian": 40,
       "label": "layer_violations",
-      "net": 3
+      "net": 4
     },
     {
       "band": "P1",
       "diff_vs_prev": 1146,
       "formula": "net = gross - guardian",
-      "gross": 1152,
+      "gross": 1151,
       "guardian": 1146,
       "label": "anti_patterns_high",
-      "net": 6
+      "net": 5
     },
     {
       "band": "P2",
@@ -2677,13 +2916,13 @@
       "band": "P3",
       "diff_vs_prev": 87,
       "formula": "net = gross - guardian",
-      "gross": 19006,
+      "gross": 19058,
       "guardian": 87,
       "label": "style_warnings",
-      "net": 18919
+      "net": 18971
     }
   ],
-  "snapshot_ts": "2026-06-24T11:20:25.342505+00:00",
+  "snapshot_ts": "2026-06-26T08:38:43.994761+00:00",
   "terminology": {
     "cleanup_backlog": "Compatibility alias for open_non_ratchet_work.",
     "guardian_math_location": "severity_inventory; net = gross - guardian",

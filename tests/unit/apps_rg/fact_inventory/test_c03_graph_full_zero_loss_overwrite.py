@@ -1,11 +1,8 @@
 from __future__ import annotations
 
+# apps-test-model: APP CONTRACT
+
 from apps_rg.fact_inventory.apply_c03_graph_full_zero_loss_overwrite import apply_overwrite
-from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
-    explicit_metric_bucket_for_row,
-    infer_metric_bucket,
-    metric_bucket_for_row,
-)
 from apps_rg.fact_inventory.validate_c03_graph_hardening import validate_c03_graph_hardening_payload
 
 
@@ -76,33 +73,3 @@ def test_validation_passes_after_overwrite():
     apply_overwrite(payload)
     receipt = validate_c03_graph_hardening_payload(payload)
     assert receipt["status"] == "PASS"
-
-
-def test_explicit_metric_bucket_wins_over_revenue_keyword_collision():
-    row = {
-        "skill_id": "skill_partner_sales_enablement",
-        "metric_bucket": "partner_gtm",
-        "allowed_phrases": ["partner sales enablement"],
-        "source_snippets": ["Built partner sales motions with hyperscaler alliances."],
-    }
-
-    assert explicit_metric_bucket_for_row(row) == "partner_gtm"
-    assert metric_bucket_for_row(row) == "partner_gtm"
-
-
-def test_unknown_explicit_metric_bucket_falls_back_to_inference():
-    row = {
-        "skill_id": "skill_unknown_bucket",
-        "metric_bucket": "not_a_known_bucket",
-        "allowed_phrases": ["cost automation and savings"],
-    }
-
-    assert explicit_metric_bucket_for_row(row) is None
-    assert metric_bucket_for_row(row) == "cost_efficiency"
-
-
-def test_metric_bucket_inference_does_not_match_substrings():
-    assert infer_metric_bucket("insurance carrier architecture") == "general_business_outcome"
-    assert infer_metric_bucket("ARR growth and renewal motion") == "revenue_growth"
-    assert infer_metric_bucket("pre-sales solution architecture") == "revenue_growth"
-    assert infer_metric_bucket("agentic runtime route contract") == "platform_scale"

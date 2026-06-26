@@ -2265,6 +2265,16 @@ def main() -> None:
     # Generate timestamp and artifacts directory
     ts = _generate_timestamp()
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
+    p0_wave_plan: dict[str, str] | None = None
+
+    def _discover_p0_wave_plan() -> dict[str, str] | None:
+        issues_dir = adg_artifacts_dir / "issues"
+        candidates = {
+            "json_path": issues_dir / f"p0_remediation_wave_plan_{ts}.json",
+            "markdown_path": issues_dir / f"p0_remediation_wave_plan_{ts}.md",
+        }
+        discovered = {key: str(path) for key, path in candidates.items() if path.is_file()}
+        return discovered or None
 
     # W1.1 (plan adg-audit-pipeline-integration-7f2c93): set up the
     # gate-invocation manifest recorder BEFORE any gate runs. Every gate
@@ -2314,6 +2324,7 @@ def main() -> None:
             enable_analysis=True,
             repair_dry_run=args.repair_dry_run,
         )
+        p0_wave_plan = _discover_p0_wave_plan()
     except RuntimeError as e:
         if "Zip creation failed" in str(e) and not args.no_zip:
             print(f"\n[ERROR] ADG generation failed: {e}")

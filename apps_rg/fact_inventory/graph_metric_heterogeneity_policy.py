@@ -6,7 +6,6 @@ canonical graph overwrite materializer and C0.3 traversal hardening.
 """
 from __future__ import annotations
 
-import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from typing import Any, Iterable
@@ -17,7 +16,7 @@ METRIC_BUCKETS: dict[str, tuple[str, ...]] = {
     "revenue_growth": ("revenue", "arr", "renewal", "pipeline", "booking", "sales"),
     "cost_efficiency": ("cost", "savings", "efficiency", "latency", "cycle time", "automation"),
     "risk_governance": ("risk", "governance", "audit", "control", "compliance", "lineage"),
-    "platform_scale": ("platform", "runtime", "scale", "reuse", "throughput", "slo", "availability"),
+    "platform_scale": ("platform", "scale", "reuse", "throughput", "slo", "availability"),
     "adoption_enablement": ("adoption", "enablement", "training", "nps", "self-service"),
     "delivery_velocity": ("delivery", "release", "deployment", "ci/cd", "pipeline"),
     "model_quality": ("accuracy", "precision", "recall", "eval", "quality", "hallucination"),
@@ -30,7 +29,6 @@ MAX_SAME_METRIC_BUCKET_SHARE = 0.34
 MIN_DISTINCT_METRIC_BUCKETS = 5
 MIN_DISTINCT_FACT_IDS = 10
 MIN_DISTINCT_SKILL_IDS = 12
-EXPLICIT_BUCKET_FIELDS = ("metric_bucket", "business_outcome_bucket")
 
 
 def normalize_token(value: Any) -> str:
@@ -40,24 +38,12 @@ def normalize_token(value: Any) -> str:
 def infer_metric_bucket(text: str, fallback: str = "general_business_outcome") -> str:
     haystack = normalize_token(text)
     for bucket, needles in METRIC_BUCKETS.items():
-        if any(re.search(rf"(?<![a-z0-9]){re.escape(n)}(?![a-z0-9])", haystack) for n in needles):
+        if any(n in haystack for n in needles):
             return bucket
     return fallback
 
 
-def explicit_metric_bucket_for_row(row: dict[str, Any]) -> str | None:
-    for field in EXPLICIT_BUCKET_FIELDS:
-        bucket = normalize_token(row.get(field))
-        if bucket in METRIC_BUCKETS:
-            return bucket
-    return None
-
-
 def metric_bucket_for_row(row: dict[str, Any]) -> str:
-    explicit_bucket = explicit_metric_bucket_for_row(row)
-    if explicit_bucket:
-        return explicit_bucket
-
     parts: list[str] = []
     for key in (
         "metric_bucket",
@@ -127,7 +113,6 @@ __all__ = [
     "MIN_DISTINCT_FACT_IDS",
     "MIN_DISTINCT_SKILL_IDS",
     "diversity_summary",
-    "explicit_metric_bucket_for_row",
     "infer_metric_bucket",
     "metric_bucket_for_row",
     "validate_metric_heterogeneity",

@@ -7,20 +7,20 @@
 - **Emit status:** PASS
 - **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree. Repair report consistency before treating blocker order as authoritative.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06242026_0706.sqlite (snapshot 06242026_0706)
-  - FIX gates: 0; TRACK gates: 20
+  - ADG source: artifacts/adg/adg_indexed_06262026_0432.sqlite (snapshot 06262026_0432)
+  - FIX gates: 4; TRACK gates: 18
   - Runtime proof is present and FAILING — treat as a quality failure to fix.
   - Testing is a control gap where agentic_core/L5_safety/reasoning/hierarchy_healer.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
   - GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.
-  - Action rows emitted: 4
+  - Action rows emitted: 7
 - **Priority rule:** Repair report consistency first, then clear blockers, then close testing exposure.
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
 | 1 | Repair graph/report consistency | Repair report consistency first; the executive order of work is not trustworthy until graph and report agree. | 2 graph/report mismatch row(s) block decision-grade ordering. | repair_reporting |
-| 2 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
-| 3 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
-| 4 | Burn down ratchet S4_unused_imports_ratchet | Accepted baseline debt should fall after red gates are clear. | 10,730 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
+| 2 | Address G_REACH_l0_reachability | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `G_REACH_l0_reachability` found 2,794 G_REACH_l0_reachability, +8 above baseline 2786. Breakout unavailable. | Review the Production-layer modules with no import path from any L0 node (orphans). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
+| 3 | Address 3_write_sovereignty | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `3_write_sovereignty` found 957 3_write_sovereignty. Breakout unavailable. | Review the Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
+| 4 | Address 10_infra_wiring | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `10_infra_wiring` found 4 10_infra_wiring. Breakout unavailable. | Review the Infra wiring defects (canonical pipeline / spine reachability). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
 
 Next step: Repair graph/report consistency first.
 
@@ -30,7 +30,7 @@ ADG is the X-ray of the codebase. It maps code connections and lets the system a
 
 ### 2. Patient Size
 
-This patient has 12326 Python files: 7121 production files and 5205 test files. agentic_core contributes 2891 files; apps_* contributes 1429 files. Current snapshot/run ID: 06242026_0706.
+This patient has 28860 Python files: 23646 production files and 5214 test files. agentic_core contributes 2891 files; apps_* contributes 1442 files. Current snapshot/run ID: 06262026_0432.
 
 ### 3. Executive Decision
 
@@ -65,19 +65,25 @@ FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.
 
 | Bucket | Count | Executive meaning |
 |---|---:|---|
-| CLEAR | 28 | No action now. |
-| TRACK | 20 | Known debt or advisory inventory; burn down after red gates. |
-| FIX | 0 | Current blocker or regression requiring action before decision-grade green. |
+| CLEAR | 26 | No action now. |
+| TRACK | 18 | Known debt or advisory inventory; burn down after red gates. |
+| FIX | 4 | Current blocker or regression requiring action before decision-grade green. |
 
 | Red gate | Total records | Regression / new delta | Executive read | Next action |
 |---|---:|---:|---|---|
-| None | 0 | 0 | No red gates. | No blocker action. |
+| 3_write_sovereignty | 957 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| 10_infra_wiring | 4 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| C1_uwg_bypass_pview | 4 | 0 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| G_REACH_l0_reachability | 2794 | 8 | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +8 over baseline 2786 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| none | No immediate action impact. | No red-gate action required. |
+| 3_write_sovereignty | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| 10_infra_wiring | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| C1_uwg_bypass_pview | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
+| G_REACH_l0_reachability | Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure. | Regression +8 over baseline 2786 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 
 ### 6. Gap Analysis — Lens 2: Runtime Proof / Observability
 
@@ -181,20 +187,23 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 
 | Rank | Scope | Graph signal | Centrality | Blast radius | Reverse dep | Executive read |
 |---:|---|---|---|---|---|---|
-| 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.1479 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
-| 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8325 | 179.45 | 93.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5399 | 175.43 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 4 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.6141 | 125.25 | 64.0 | High structural risk — overlaps an under-tested coverage hotspot. |
-| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.3954 | 3243.65 | 1771.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
+| 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.145 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
+| 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8314 | 179.45 | 93.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 3 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5364 | 175.43 | 111.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 4 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.5965 | 123.07 | 63.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 88.2754 | 3243.65 | 1771.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
 
 ### 10. Next Best Actions
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---|---|---|---|---|
-| 1 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
-| 2 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
-| 3 | Burn down ratchet S4_unused_imports_ratchet | Accepted baseline debt should fall after red gates are clear. | 10,730 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
-| 4 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps | Suppress or retire signals that do not affect decisions. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Deprecate only after the higher-risk surfaces are handled. |
+| 1 | Address G_REACH_l0_reachability | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `G_REACH_l0_reachability` found 2,794 G_REACH_l0_reachability, +8 above baseline 2786. Breakout unavailable. | Review the Production-layer modules with no import path from any L0 node (orphans). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
+| 2 | Address 3_write_sovereignty | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `3_write_sovereignty` found 957 3_write_sovereignty. Breakout unavailable. | Review the Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
+| 3 | Address 10_infra_wiring | This gate still carries decision-grade risk and should be reviewed on its own terms. | ADG `06262026_0432`: `10_infra_wiring` found 4 10_infra_wiring. Breakout unavailable. | Review the Infra wiring defects (canonical pipeline / spine reachability). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption. |
+| 4 | Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
+| 5 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
+| 6 | Burn down ratchet S4_unused_imports_ratchet | Accepted baseline debt should fall after red gates are clear. | 10,742 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
+| 7 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps | Suppress or retire signals that do not affect decisions. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Deprecate only after the higher-risk surfaces are handled. |
 
 ### 11. Defer / Delete / Deprecate
 
@@ -205,12 +214,12 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06242026_0706.sqlite (snapshot 06242026_0706)
+  - ADG source: artifacts/adg/adg_indexed_06262026_0432.sqlite (snapshot 06262026_0432)
   - Dead code candidates: 965
   - Dead imports: 965
   - Unresolved imports: 483
   - First-party low-confidence ratio: 1.57%
-  - Inferred-symbol ratio: 10.13%
+  - Inferred-symbol ratio: 10.15%
   - Cleanup candidates surfaced: 18
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
@@ -220,7 +229,7 @@ Top structural risks (studied from the graph MVs — centrality / blast radius /
 | 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
-| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.13%. | Lower the noise floor, then rerun the scan. |
+| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%. | Lower the noise floor, then rerun the scan. |
 | 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 5 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
 
 Next step: Deprecate first, then delete after the evidence stays clean.
@@ -229,14 +238,14 @@ Current low-value cleanup candidates:
 
 | Item | Type | Current value | Recommendation | Rationale |
 |---|---|---|---|---|
-| mv_actionable_surface_without_schema | mv | 776 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_actionable_surface_without_schema | mv | 778 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_agent_specialization_overlap | mv | 3036 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_agent_tool_ratio | mv | 15 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_authority_boundary_breaches | mv | 7 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_capability_and_egress_gaps | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
 | mv_critical_path_segments | mv | 196 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_cross_cutting_witness_tiers | mv | 56 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
-| mv_determinism_provenance_drift | mv | 6565 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_determinism_provenance_drift | mv | 6574 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_digest_reconciliation | mv | 6 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_exemptions_near_critical_paths | mv | 3150 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
 | mv_gateway_bypass_paths | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
@@ -245,8 +254,8 @@ Current low-value cleanup candidates:
 ### 12. Honest Bottom Line
 
 - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.
-- Actually blocking now: 0 FIX gates; inspect regression delta before declaring a platform crisis.
+- Actually blocking now: 4 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
-- Fund mapped tests for agentic_core/L5_safety/reasoning/hierarchy_healer.py
+- Address G_REACH_l0_reachability
 - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role.
