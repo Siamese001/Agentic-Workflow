@@ -5,12 +5,17 @@ Graph context is routing support only; claim proof remains fact/SRFS-bound.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.fact_inventory.augmented_skills_graph import SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH
+from apps_rg.fact_inventory.augmented_skills_graph import (
+    SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
+    load_augmented_skills_graph,
+)
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     default_graph_sqlite_path,
     load_graph_metadata_row,
@@ -34,11 +39,64 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _ledger_hash(repo_root: Path) -> str:
+    payload = load_augmented_skills_graph(repo_root=repo_root)
+    material = json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+
+def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
+    try:
+        conn = open_graph_sqlite(repo_root=repo_root, db_path=path)
+        try:
+            required_objects = {
+                ("table", "c03_skill_selection_features"),
+                ("table", "graph_paths"),
+                ("table", "graph_neighborhoods"),
+                ("table", "graph_sibling_links"),
+                ("table", "resume_metric_usage"),
+                ("table", "section_evidence_budget"),
+                ("table", "graph_selection_rejections"),
+                ("view", "graph_edges_reverse"),
+            }
+            present = {
+                (str(row[0]), str(row[1]))
+                for row in conn.execute(
+                    """
+                    SELECT type, name FROM sqlite_master
+                    WHERE name IN (
+                      'c03_skill_selection_features',
+                      'graph_paths',
+                      'graph_neighborhoods',
+                      'graph_sibling_links',
+                      'resume_metric_usage',
+                      'section_evidence_budget',
+                      'graph_selection_rejections',
+                      'graph_edges_reverse'
+                    )
+                    """
+                ).fetchall()
+            }
+            if not required_objects.issubset(present):
+                return False
+            meta = load_graph_metadata_row(conn)
+            return str(meta.get("ledger_hash") or "") == _ledger_hash(repo_root)
+        finally:
+            conn.close()
+    except (OSError, ValueError, sqlite3.Error):
+        return False
+
+
 def _ensure_sqlite(repo_root: Path, db_path: Path | None) -> Path:
     path = db_path or default_graph_sqlite_path(repo_root)
-    if not path.is_file():
+    if not path.is_file() or not _sqlite_projection_current(repo_root, path):
         materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=path)
     return path
+
+
+def ensure_c03_graph_sqlite(repo_root: Path, db_path: Path | None = None) -> Path:
+    """Return a current generated SQLite projection for C0.3 runtime reads."""
+    return _ensure_sqlite(repo_root, db_path)
 
 
 def assemble_c03_graph_sqlite_context(
@@ -381,6 +439,7 @@ def enrich_c03_bound_with_sqlite_context(
 __all__ = [
     "PROOF_CLASSIFICATION",
     "assemble_c03_graph_sqlite_context",
+    "ensure_c03_graph_sqlite",
     "enrich_c03_bound_with_sqlite_context",
     "write_c03_graph_sqlite_context_receipt",
 ]

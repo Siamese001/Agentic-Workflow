@@ -16,6 +16,10 @@
   `runtime_customization_package`. No app literals/branches in core without a migration receipt.
 - **ADG SQLite** (`artifacts/adg/adg_indexed_*.sqlite`) is the structural-truth SSOT; Redis is a hot
   projection; MCP is the read-only gateway. ADG wins conflicts vs text-search/intuition.
+- **apps_rg C0.3 graph skills** use `master_skills_arsenal_ledger.json` as canonical source and generated
+  SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
+- **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling
+  runtime views/tables for C0.3; detail: `memory/codex/apps_rg_graph_sqlite_path_index_runtime.md`.
 - **Native features supersede ported emulation** (`claude-native-supersession-9d3f7a`): `AskUserQuestion`
   ← Author-Gate packet/marker/ledger; plan mode ← `SR_*` markers; `spawn_task` ← deferred/next-step
   capture; native file memory ← memory-MCP ritual; native parallel MCP ← serialization rule.

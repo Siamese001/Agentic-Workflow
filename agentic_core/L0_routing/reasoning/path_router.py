@@ -203,7 +203,7 @@ class PathRouter:
         emit_replay_key(_trace_id, f"rk:path:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:path:{_trace_id[:16]}")
 
-        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
+        from agentic_core.utils.runners.providers import get_clock as _get_clock  # noqa: PLC0415  # guardian: shared clock provider used at routing boundary
 
         _path_start_tick = _get_clock().now_epoch()
         if not payload.check_ids:

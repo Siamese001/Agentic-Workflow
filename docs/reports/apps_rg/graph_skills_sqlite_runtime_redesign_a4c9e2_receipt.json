@@ -1,0 +1,90 @@
+{
+  "receipt_id": "graph_skills_sqlite_runtime_redesign_a4c9e2",
+  "created_at": "2026-06-25",
+  "branch": "codex/publish-c0-authority-profile-20260625",
+  "status": "focused_pass_with_unrelated_e2e_baseline_failures",
+  "plan_file": "plans/graph-skills-sqlite-runtime-redesign-a4c9e2.md",
+  "objective": "Move apps_rg C0.3 graph-skills selection to a deterministic SQLite-backed runtime query and ranking layer while keeping master_skills_arsenal_ledger.json canonical.",
+  "source_of_truth": {
+    "canonical_graph": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "runtime_projection": "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite",
+    "runtime_projection_canonical": false
+  },
+  "implementation": {
+    "sqlite_projection": {
+      "table_added": "c03_skill_selection_features",
+      "indexes_added": [
+        "idx_c03_skill_selection_metric",
+        "idx_c03_skill_selection_pillar",
+        "idx_c03_skill_selection_family"
+      ],
+      "validation_added": [
+        "broken_c03_skill_selection_features",
+        "blank_c03_metric_buckets",
+        "c03_skill_selection_feature_count"
+      ]
+    },
+    "runtime_selection": {
+      "helper": "apps_rg/runtime/c0/c03_sqlite_graph_selection.py",
+      "entrypoint_preserved": "apps_rg.runtime.c0.c03_graph_expansion.expand_c03_graph_bindings",
+      "selection_policy": "sqlite_ranked_metric_novelty_v1",
+      "schema_version": "c03_sqlite_graph_selection_v1",
+      "receipts": [
+        "sqlite_selection_receipt",
+        "selected_metric_buckets",
+        "rejected_sibling_skill_refs",
+        "rejected_sibling_reasons",
+        "metric_bucket_counts"
+      ]
+    },
+    "staleness_guard": {
+      "function": "apps_rg.runtime.c03_graph_sqlite_context.ensure_c03_graph_sqlite",
+      "checks": [
+        "projection table exists",
+        "graph_metadata.ledger_hash matches current JSON ledger hash"
+      ]
+    }
+  },
+  "verification": [
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py -q",
+      "result": "20 passed, 1 warning"
+    },
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py tests/unit/apps_rg/fact_inventory/test_metric_outcome_materializer.py tests/unit/apps_rg/runtime/c0/test_exec_summary_graph_shaping.py tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py tests/unit/apps_rg/test_c03_graph_skills_mvp.py -q",
+      "result": "43 passed, 1 warning"
+    },
+    {
+      "command": "python apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+      "result": "PASS; distinct_metric_buckets=11; max_same_metric_bucket_share=0.3151"
+    },
+    {
+      "command": "git diff --check -- <graph-skill changed files>",
+      "result": "PASS; CRLF conversion notices only"
+    },
+    {
+      "command": "python scripts/governance/codex_readiness.py --json",
+      "result": "WARN; critical checks passed; dirty working tree, duplicate MCP cohort advisory, major exposure audit yellow"
+    }
+  ],
+  "broader_probe": {
+    "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_metric_outcome_materializer.py tests/unit/apps_rg/runtime/c0/test_exec_summary_graph_shaping.py tests/unit/apps_rg/test_c03_graph_skills_mvp.py tests/unit/apps_rg/test_c0_evidence_room.py tests/_apps_contract/test_c0_evidence_room_generated_lanes_e2e.py -q",
+    "result": "60 passed, 2 failed",
+    "failure_classification": "unrelated_generated_lane_proof_pool_depth",
+    "notes": [
+      "executive_summary failed before C0.3 graph expansion with insufficient rich proof-pool depth",
+      "headline failed before C0.3 graph expansion with proof-pool depth and semantic/axis coverage shortfalls"
+    ]
+  },
+  "scope_notes": {
+    "new_facts_minted": 0,
+    "original_c02_atoms_preserved": true,
+    "unrelated_working_tree_changes_observed": [
+      "apps_rg/runtime/sections/headline_lane.py",
+      "apps_rg/runtime/sections/headline_pa.py",
+      "apps_rg/runtime/validators/headline_x2.py",
+      "tests/_apps_contract/test_headline_pa_compiled_prompt.py",
+      "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py"
+    ]
+  }
+}

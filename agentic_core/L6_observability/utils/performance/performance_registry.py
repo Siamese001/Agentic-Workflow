@@ -13,7 +13,7 @@ from typing import Any
 get_clock: Any = None
 
 try:
-    from agentic_core.L2_execution.utils.providers import (
+    from agentic_core.utils.runners.providers import (
         get_clock,
     )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 except ImportError:

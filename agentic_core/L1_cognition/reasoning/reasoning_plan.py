@@ -176,7 +176,7 @@ _emit_validated_by_safety_plane("p1", "reasoning_plan", "safety_validation")
 _emit_invokes_eval("p1", "reasoning_plan", "eval_call")
 _emit_proposal_commits_routing("p1", "reasoning_plan", "routing_commit")
 
-from agentic_core.L2_execution.utils.providers import get_clock  # noqa: E402  # guardian: allow-layer-violation -- reasoning plan uses L2 clock shim at plan emission boundary; no direct provider calls from L1
+from agentic_core.utils.runners.providers import get_clock  # noqa: E402  # guardian: shared clock provider used at plan emission boundary
 
 logger = logging.getLogger(__name__)
 _PLAN_LOG = logging.getLogger("adg.reasoning_plan_emitted")

@@ -53,6 +53,39 @@ _EXTRA_HYPE_MARKERS_RE = re.compile(
     re.IGNORECASE,
 )
 
+_VENDOR_OR_PRODUCT_TERM_RE = re.compile(
+    r"(?:\bdatabricks\b|\blakehouse\b|\baws\b|\bamazon\s+web\s+services\b|\bazure\b|"
+    r"\bgcp\b|\bgoogle\s+cloud\b|\bsnowflake\b|\bsalesforce\b|\bservicenow\b|"
+    r"\bmulesoft\b|\bkafka\b|\bconfluent\b|\bkubernetes\b|\bk8s\b|\bterraform\b|"
+    r"\bopenai\b|\banthropic\b|\bwatson\b|\bibm\b)",
+    re.IGNORECASE,
+)
+
+_STANDALONE_VENDOR_ARCHITECTURE_RE = re.compile(
+    r"(?:\bdatabricks\s+lakehouse\b|\baws\s+migration\s+factory\b|"
+    r"\bazure\s+landing\s+zone\b|\bsnowflake\s+data\s+cloud\b|"
+    r"\bwatson\s+studio\b)",
+    re.IGNORECASE,
+)
+
+_EXECUTIVE_ABSTRACTION_RE = re.compile(
+    r"(?:\bplatforms?\b|\barchitecture\b|\barchitectures\b|\bgovernance\b|"
+    r"\becosystems?\b|\bcommercialization\b|\bregulated\b|\bsystems?\b|"
+    r"\badoption\b|\boperating\s+model\b|\bco-?sell\b|\bmotions?\b|"
+    r"\bpartner\b|\benterprise\b|\bruntime\b|\binfrastructure\b|"
+    r"\bproductization\b|\bcontrols?\b|\bcloud\s+data\b)",
+    re.IGNORECASE,
+)
+
+_PREFERRED_HEADLINE_ABSTRACTIONS: tuple[str, ...] = (
+    "Enterprise AI Platforms",
+    "Cloud Data Platforms",
+    "Runtime Governance Architecture",
+    "Partner AI Ecosystems",
+    "Platform Commercialization",
+    "Regulated AI Systems",
+)
+
 _HEADLINE_SCHEMA_KEYS = frozenset(
     {
         "headline_line",
@@ -161,6 +194,12 @@ _HEADLINE_SEMANTIC_GROUNDING_GROUPS: dict[str, frozenset[str]] = {
     "architecture": frozenset({"architecture", "architected", "engineering", "platform", "infrastructure", "design"}),
     "platforms": frozenset({"platform", "platforms", "engineering", "infrastructure"}),
     "platform": frozenset({"platform", "platforms", "engineering", "infrastructure"}),
+    "enterprise": frozenset({"enterprise", "commercial", "organization", "organizations", "business"}),
+    "partner": frozenset({"partner", "partners", "partnership", "partnerships", "co-sell", "cosell"}),
+    "co-sell": frozenset({"co-sell", "cosell", "partner", "partners", "sell", "selling"}),
+    "motions": frozenset({"motion", "motions", "co-sell", "cosell", "partner", "partners"}),
+    "ecosystems": frozenset({"ecosystem", "ecosystems", "partner", "partners", "partnerships"}),
+    "regulated": frozenset({"regulated", "regulatory", "controls", "governance", "compliance"}),
 }
 
 
@@ -693,6 +732,44 @@ def headline_runtime_self_check_truth(
     }
 
 
+def _headline_display_policy_report(segments: list[str]) -> dict[str, Any]:
+    """Classify X/Y/Z display labels against the executive-positioning headline policy."""
+    rows: list[dict[str, Any]] = []
+    standalone_vendor_architecture: list[str] = []
+    missing_abstraction: list[str] = []
+    vendor_without_abstraction: list[str] = []
+
+    for idx, seg in enumerate(segments, start=2):
+        vendor_terms = sorted({m.group(0) for m in _VENDOR_OR_PRODUCT_TERM_RE.finditer(seg)})
+        has_abstraction = _EXECUTIVE_ABSTRACTION_RE.search(seg) is not None
+        standalone_vendor = bool(_STANDALONE_VENDOR_ARCHITECTURE_RE.search(seg)) and not has_abstraction
+        if standalone_vendor:
+            standalone_vendor_architecture.append(seg)
+        if not has_abstraction:
+            missing_abstraction.append(seg)
+        if vendor_terms and not has_abstraction:
+            vendor_without_abstraction.append(seg)
+        rows.append(
+            {
+                "segment_index": idx,
+                "segment": seg,
+                "vendor_or_product_terms": vendor_terms,
+                "has_executive_abstraction": has_abstraction,
+                "standalone_vendor_architecture": standalone_vendor,
+            }
+        )
+
+    return {
+        "display_tier": "executive_positioning",
+        "raw_vendor_architecture_as_segment": "forbid_by_default",
+        "preferred_abstractions": list(_PREFERRED_HEADLINE_ABSTRACTIONS),
+        "segments": rows,
+        "standalone_vendor_architecture_segments": standalone_vendor_architecture,
+        "segments_missing_executive_abstraction": missing_abstraction,
+        "vendor_terms_without_executive_abstraction": vendor_without_abstraction,
+    }
+
+
 def polish_claim_text_when_headline_has_no_metrics(headline_line: str, claim_text: str) -> str:
     """Strip metric phrasing from ledger ``claim_text`` only when that row itself carries metric tokens.
 
@@ -820,6 +897,48 @@ def run_headline_x2_gates(
         seg_issues or "ok",
         "segments 2–4: 2–5 words, low comma load, no duplicate themes, no banned fillers",
         None if not seg_issues else "Segment quality gate failed.",
+    )
+
+    if pipe_ok:
+        display_policy = _headline_display_policy_report(parts[1:4])
+        standalone_vendor_segments = display_policy["standalone_vendor_architecture_segments"]
+        missing_abstraction_segments = display_policy["segments_missing_executive_abstraction"]
+        vendor_without_abstraction_segments = display_policy["vendor_terms_without_executive_abstraction"]
+    else:
+        display_policy = {
+            "skipped": True,
+            "reason": "skipped_not_four_segments",
+            "display_tier": "executive_positioning",
+        }
+        standalone_vendor_segments = []
+        missing_abstraction_segments = []
+        vendor_without_abstraction_segments = []
+    add(
+        "x2_headline_no_standalone_vendor_architecture",
+        not standalone_vendor_segments,
+        display_policy,
+        "raw vendor/tool architecture not used as X/Y/Z segment",
+        None
+        if not standalone_vendor_segments
+        else "Vendor/tool architecture belongs in proof, not as a standalone headline segment.",
+    )
+    add(
+        "x2_headline_executive_abstraction_floor",
+        not missing_abstraction_segments,
+        display_policy,
+        "each X/Y/Z segment names an executive operating pattern",
+        None
+        if not missing_abstraction_segments
+        else "Each headline segment must express executive scope such as platform, architecture, governance, ecosystem, commercialization, or regulated systems.",
+    )
+    add(
+        "x2_headline_vendor_terms_proof_only",
+        not vendor_without_abstraction_segments,
+        display_policy,
+        "vendor/product terms require executive abstraction in display",
+        None
+        if not vendor_without_abstraction_segments
+        else "Vendor/product terms may support proof, but display segments require an executive abstraction.",
     )
 
     digit_hit = re.search(r"\d", h)

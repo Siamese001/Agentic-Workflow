@@ -6,7 +6,14 @@ from dataclasses import dataclass
 from typing import Any
 
 from apps_rg.cache.r1b_compatibility import CompatibilityVerdict, assess_candidate_for_reuse, compatibility_report_row
-from apps_rg.cache.r1b_constants import CACHE_GRAIN_ROLE_TARGET_RUN, R1B_NOT_C0_FACT_VECTORS
+from apps_rg.cache.r1b_constants import (
+    CACHE_GRAIN_ROLE_TARGET_RUN,
+    R1B_CHUNK_REUSE_AUTHORITY,
+    R1B_NOT_C0_FACT_VECTORS,
+    R1B_REUSE_AUTHORITY_SCOPE,
+    R1B_SECTION_REUSE_AUTHORITY,
+    r1b_reuse_authority_policy,
+)
 from apps_rg.cache.r1b_intent_vector import (
     cosine_similarity,
     intent_text_from_request,
@@ -158,6 +165,11 @@ def hit_to_probe_dict(hit: R1BLookupHit) -> dict[str, Any]:
         "independent_chunk_identities": False,
         "not_c0_fact_vectors": True,
         "r1b_vs_c0": R1B_NOT_C0_FACT_VECTORS,
+        "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+        "reuse_authority_policy": r1b_reuse_authority_policy(),
+        "section_level_semantic_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+        "section_level_lane_skip_authorized": False,
+        "child_chunk_reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
         "source_run_id": hit.record.source_run_id,
         "x3_disposition": hit.record.x3_disposition,
         "compatibility_checks": hit.verdict.checks,

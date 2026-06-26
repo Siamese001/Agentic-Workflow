@@ -224,7 +224,7 @@ class AgenticRouter:
             RoutingDecision with chosen target, confidence, and handler result.
         """
         context = context or {}
-        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
+        from agentic_core.utils.runners.providers import get_clock as _get_clock  # noqa: PLC0415  # guardian: shared clock provider used at routing boundary
 
         _route_start_tick = _get_clock().now_epoch()
         intent, target_name, confidence = self._classify(user_input)

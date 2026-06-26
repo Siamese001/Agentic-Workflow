@@ -41,7 +41,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.utils.providers import (
+from agentic_core.utils.runners.providers import (
     get_clock,
 )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
