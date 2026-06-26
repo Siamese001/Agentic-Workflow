@@ -1,57 +1,47 @@
-# SQLite Graph Engine Incremental Refinement Receipt
+# SQLite graph-engine incremental refinement
 
-Date: 2026-06-26
+## Summary
 
-## Scope
+This package keeps `master_skills_arsenal_ledger.json` as the canonical graph
+authority and hardens the generated SQLite projection so it behaves more like
+a lightweight graph engine.
 
-This increment completes the C0.3 graph-skills traversal refinements as an SQLite runtime/query projection over the canonical JSON graph. It does not migrate apps_rg to a graph database and does not replace `apps_rg/fact_inventory/master_skills_arsenal_ledger.json` as the source of truth.
+It does **not** migrate apps_rg to Neo4j, Kùzu, RDF, NetworkX runtime, or any
+server-based graph database.
 
-## Implemented
+## Added capabilities
 
-- Added public path-index helper APIs for reverse traversal, graph neighborhoods, sibling alternatives, section evidence budgets, repeated metric usage, graph selection rejection receipts, and novelty-aware metric candidate queries.
-- Added `materialize_graph_path_index(conn)` so callers/tests can rebuild generated path, neighborhood, sibling, and budget tables from materialized `graph_nodes` and `graph_edges`.
-- Extended C0.3 SQLite graph context receipts with optional path-index diagnostics:
-  - `path_index_status`
-  - `reverse_path_receipts`
-  - `sibling_alternatives`
-  - `metric_novelty_candidates`
-  - `rejected_candidate_receipts`
-  - `section_evidence_budget`
-- Added `apps_rg/fact_inventory/validate_graph_sqlite_path_index.py` as a standalone validator. By default it materializes a temporary SQLite projection from canonical JSON and reports whether required graph-index objects and core counts are present.
-- Added focused APP CONTRACT tests for path-index materialization, reverse traversal, sibling alternatives, repeated metric penalty behavior, section budgets, rejection receipts, valid paths, and validator fail-closed behavior.
+- richer edge metadata preservation
+- reverse traversal through `graph_edges_reverse`
+- materialized path receipts through `graph_paths`
+- sibling expansion through `graph_sibling_links`
+- N-hop context through `graph_neighborhoods`
+- metric novelty memory through `resume_metric_usage`
+- section evidence budgets through `section_evidence_budget`
+- rejected candidate receipts through `graph_selection_rejections`
 
-## Authority And Invariants
+## Why this matters
 
-- Canonical graph authority remains JSON.
-- SQLite remains a generated runtime/query layer.
-- `graph_edges_reverse` is a view, not duplicated edge authority.
-- `graph_paths`, `graph_neighborhoods`, `graph_sibling_links`, `section_evidence_budget`, `resume_metric_usage`, and `graph_selection_rejections` are runtime/query aids.
-- Graph rows are routing and diagnostic support, not claim proof.
+The repeated-metric problem is primarily a traversal and ranking problem. The
+system needs to find alternative proof-bound paths rather than repeatedly
+selecting the same high-salience fact or metric. These SQLite refinements let
+C0.3 ask graph-like questions while keeping the current lightweight runtime.
 
-## Validation Evidence
+## Commands
 
-`python apps_rg/fact_inventory/validate_graph_sqlite_path_index.py`
+```bash
+python apps_rg/fact_inventory/apply_graphdb_capability_sqlite_hardening.py
+python apps_rg/fact_inventory/validate_graph_sqlite_path_index.py
+python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q
+```
 
-- Status: PASS
-- `sqlite_projection_canonical`: false
-- `graph_node_count`: 710
-- `graph_edge_count`: 2203
-- `graph_path_count`: 18515
-- `graph_neighborhood_count`: 12755
-- `graph_sibling_link_count`: 11166
-- `section_evidence_budget_count`: 378
-- `skill_fact_link_count`: 241
-- `metric_outcome_count`: 92
+## Zero-loss contract
 
-`python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q`
+Source tables are never truncated by the new path-index module:
 
-- Result: 8 passed
+- `graph_nodes`
+- `graph_edges`
+- `skill_fact_links`
 
-`python -m pytest tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py -q`
-
-- Result: 19 passed
-
-`python -m pytest tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py -q`
-
-- Result: 4 passed
-
+Generated graph-engine tables are rebuilt additively from the source graph
+projection.

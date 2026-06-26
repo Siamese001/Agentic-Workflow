@@ -1,0 +1,61 @@
+{
+  "schema": "apps_rg_c03_graphdb_capability_zero_loss_overwrite_manifest_v1",
+  "package_name": "apps_rg_c03_graphdb_capability_zero_loss_overwrite.zip",
+  "repo": "Siamese001/Agentic-Workflow",
+  "base_branch": "main",
+  "canonical_graph_authority": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "sqlite_projection": "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite",
+  "contract": {
+    "zero_loss": true,
+    "preserve_existing_graph_nodes": true,
+    "preserve_existing_graph_edges": true,
+    "preserve_existing_skill_rows": true,
+    "preserve_existing_role_family_profiles": true,
+    "no_graphdb_migration": true,
+    "no_server_dependency": true,
+    "facts_remain_proof_substrate": true,
+    "sqlite_rows_are_routing_context_not_claim_proof": true
+  },
+  "primary_new_capabilities": [
+    "graph_edges richer metadata columns",
+    "graph_edges_reverse view",
+    "graph_paths materialized path receipts",
+    "graph_sibling_links sibling alternatives",
+    "graph_neighborhoods N-hop context",
+    "resume_metric_usage novelty memory",
+    "section_evidence_budget section-specific evidence control",
+    "graph_selection_rejections rejection receipts"
+  ],
+  "validation_commands": [
+    "python apps_rg/fact_inventory/apply_graphdb_capability_sqlite_hardening.py",
+    "python apps_rg/fact_inventory/validate_graph_sqlite_path_index.py",
+    "python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q"
+  ],
+  "files": [
+    ".codex/automation/apps_rg_sqlite_graphdb_capability_hardening_pr.toml",
+    "OVERWRITE_MANIFEST.json",
+    "apps_rg/config/c03_graph_skill_hardening_policy.json",
+    "apps_rg/fact_inventory/apply_c03_graph_full_zero_loss_overwrite.py",
+    "apps_rg/fact_inventory/apply_c03_graph_skill_granularity_hardening.py",
+    "apps_rg/fact_inventory/apply_graphdb_capability_sqlite_hardening.py",
+    "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json",
+    "apps_rg/fact_inventory/c03_graph_skill_hardening.py",
+    "apps_rg/fact_inventory/graph_metric_heterogeneity_policy.py",
+    "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.py",
+    "apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+    "apps_rg/fact_inventory/validate_c03_graph_skill_granularity.py",
+    "apps_rg/fact_inventory/validate_graph_sqlite_path_index.py",
+    "apps_rg/runtime/graph/graph_metric_diversity_policy.py",
+    "docs/reports/apps_rg/c03_actual_graph_full_zero_loss_overwrite_README.md",
+    "docs/reports/apps_rg/c03_graph_skill_granularity_hardening_manifest.json",
+    "docs/reports/apps_rg/c03_graph_skill_granularity_hardening_manifest.md",
+    "docs/reports/apps_rg/c03_graph_skill_hardening_zero_loss_manifest.md",
+    "docs/reports/apps_rg/graphdb_capability_zero_loss_manifest.md",
+    "docs/reports/apps_rg/sqlite_graph_engine_incremental_refinement.md",
+    "tests/unit/apps_rg/fact_inventory/test_c03_graph_full_zero_loss_overwrite.py",
+    "tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_granularity_hardening.py",
+    "tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_hardening.py",
+    "tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py"
+  ]
+}

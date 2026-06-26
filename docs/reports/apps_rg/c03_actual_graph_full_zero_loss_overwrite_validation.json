@@ -3,24 +3,25 @@
   "overwrite_version": "c03_actual_graph_full_zero_loss_overwrite_v1",
   "diversity_summary": {
     "policy_version": "c03_graph_metric_heterogeneity_policy_v1",
-    "row_count": 238,
-    "distinct_metric_buckets": 11,
+    "row_count": 254,
+    "distinct_metric_buckets": 10,
     "metric_bucket_counts": {
-      "adoption_enablement": 11,
-      "cost_efficiency": 10,
-      "delivery_velocity": 3,
+      "adoption_enablement": 6,
+      "cost_efficiency": 3,
       "financial_services": 2,
-      "general_business_outcome": 75,
+      "general_business_outcome": 10,
       "insurance_risk": 9,
       "model_quality": 1,
       "partner_gtm": 8,
-      "platform_scale": 16,
-      "revenue_growth": 40,
-      "risk_governance": 63
+      "platform_scale": 32,
+      "revenue_growth": 111,
+      "risk_governance": 72
     },
-    "max_same_metric_bucket_share": 0.3151,
-    "distinct_skill_ids": 238,
+    "max_same_metric_bucket_share": 0.437,
+    "distinct_skill_ids": 254,
     "distinct_fact_ids": 54
   },
-  "heterogeneity_warnings": []
+  "heterogeneity_warnings": [
+    "single metric bucket dominates: 0.437 > 0.34"
+  ]
 }

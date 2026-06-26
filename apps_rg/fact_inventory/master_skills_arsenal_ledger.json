@@ -61,39 +61,11 @@
     },
     "c03_actual_graph_full_zero_loss_overwrite": {
       "version": "c03_actual_graph_full_zero_loss_overwrite_v1",
-      "applied_at": "2026-06-25T19:56:30Z",
+      "applied_at": "2026-06-26T08:39:58Z",
       "zero_loss_contract": "append_only_no_delete_no_mutate_existing_ids",
-      "added_graph_nodes": [
-        "capability_metric_heterogeneity_selection",
-        "capability_reverse_graph_traversal",
-        "capability_sibling_rejection_receipts",
-        "skill_c03_metric_heterogeneity_selection",
-        "skill_c03_reverse_traversal_receipts",
-        "skill_c03_sibling_skill_rejection_reasoning"
-      ],
-      "added_skill_rows": [
-        "skill_c03_metric_heterogeneity_selection",
-        "skill_c03_reverse_traversal_receipts",
-        "skill_c03_sibling_skill_rejection_reasoning"
-      ],
-      "added_graph_edges": [
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_001",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_003",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_004",
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_reverse_traversal_receipts",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_reverse_traversal_receipts",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_reverse_traversal_receipts",
-        "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_001",
-        "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_006",
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_003",
-        "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_004"
-      ],
+      "added_graph_nodes": [],
+      "added_skill_rows": [],
+      "added_graph_edges": [],
       "metric_heterogeneity_policy_version": "c03_graph_metric_heterogeneity_policy_v1",
       "diversity_summary": {
         "policy_version": "c03_graph_metric_heterogeneity_policy_v1",
@@ -412,39 +384,11 @@
     },
     "c03_actual_graph_full_zero_loss_overwrite": {
       "version": "c03_actual_graph_full_zero_loss_overwrite_v1",
-      "applied_at": "2026-06-25T19:56:30Z",
+      "applied_at": "2026-06-26T08:39:58Z",
       "zero_loss_contract": "append_only_no_delete_no_mutate_existing_ids",
-      "added_graph_nodes": [
-        "capability_metric_heterogeneity_selection",
-        "capability_reverse_graph_traversal",
-        "capability_sibling_rejection_receipts",
-        "skill_c03_metric_heterogeneity_selection",
-        "skill_c03_reverse_traversal_receipts",
-        "skill_c03_sibling_skill_rejection_reasoning"
-      ],
-      "added_skill_rows": [
-        "skill_c03_metric_heterogeneity_selection",
-        "skill_c03_reverse_traversal_receipts",
-        "skill_c03_sibling_skill_rejection_reasoning"
-      ],
-      "added_graph_edges": [
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_metric_heterogeneity_selection",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_001",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_003",
-        "edge_skill_c03_metric_heterogeneity_selection__supported_by__fact_engineering_platform_004",
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_reverse_traversal_receipts",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_reverse_traversal_receipts",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_reverse_traversal_receipts",
-        "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_001",
-        "edge_skill_c03_reverse_traversal_receipts__supported_by__fact_engineering_platform_006",
-        "edge_capability_metric_heterogeneity_selection__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_capability_reverse_graph_traversal__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_capability_sibling_rejection_receipts__contains__skill_c03_sibling_skill_rejection_reasoning",
-        "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_003",
-        "edge_skill_c03_sibling_skill_rejection_reasoning__supported_by__fact_engineering_platform_004"
-      ],
+      "added_graph_nodes": [],
+      "added_skill_rows": [],
+      "added_graph_edges": [],
       "metric_heterogeneity_policy_version": "c03_graph_metric_heterogeneity_policy_v1",
       "diversity_summary": {
         "policy_version": "c03_graph_metric_heterogeneity_policy_v1",
@@ -465,6 +409,25 @@
         "distinct_skill_ids": 238,
         "distinct_fact_ids": 54
       }
+    },
+    "edge_type_semantics": {
+      "career_track_contains_capability_domain": "Track scopes capability domain.",
+      "capability_domain_contains_skill": "Capability domain contains skill.",
+      "skill_has_metric_bucket": "Skill is associated with metric bucket.",
+      "metric_bucket_contains_metric": "Metric bucket contains reusable metric option.",
+      "skill_can_surface_metric": "Skill can surface a heterogeneous metric.",
+      "skill_reinforces_skill": "Skill reinforces adjacent skill without claiming causality.",
+      "metric_supports_business_outcome": "Metric supports business outcome category.",
+      "section_can_select_skill": "Resume section may select skill."
+    },
+    "c03_graph_skill_granularity_hardening": {
+      "enabled": true,
+      "wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "destructive_updates_allowed": false,
+      "metric_bucket_diversity_required": true,
+      "reverse_traversal_required": true,
+      "sibling_rejection_receipts_required": true,
+      "updated_at": "2026-06-26T08:48:41Z"
     }
   },
   "graph_layers": [
@@ -7277,6 +7240,1064 @@
       "external_claim_policy": "allowed_with_fact_link",
       "metric_bucket": "delivery_velocity",
       "business_outcome_bucket": "selection_quality"
+    },
+    {
+      "node_id": "metric_bucket:revenue_growth",
+      "node_type": "metric_bucket",
+      "label": "Revenue Growth",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "revenue_growth",
+      "description": "C0.3 graph-skill granularity node for Revenue Growth.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:cost_takeout",
+      "node_type": "metric_bucket",
+      "label": "Cost Takeout",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cost_takeout",
+      "description": "C0.3 graph-skill granularity node for Cost Takeout.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:cycle_time",
+      "node_type": "metric_bucket",
+      "label": "Cycle Time",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cycle_time",
+      "description": "C0.3 graph-skill granularity node for Cycle Time.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:latency",
+      "node_type": "metric_bucket",
+      "label": "Latency",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "latency",
+      "description": "C0.3 graph-skill granularity node for Latency.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:quality_accuracy",
+      "node_type": "metric_bucket",
+      "label": "Quality Accuracy",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "quality_accuracy",
+      "description": "C0.3 graph-skill granularity node for Quality Accuracy.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:risk_control",
+      "node_type": "metric_bucket",
+      "label": "Risk Control",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "risk_control",
+      "description": "C0.3 graph-skill granularity node for Risk Control.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:governance_maturity",
+      "node_type": "metric_bucket",
+      "label": "Governance Maturity",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "governance_maturity",
+      "description": "C0.3 graph-skill granularity node for Governance Maturity.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:adoption",
+      "node_type": "metric_bucket",
+      "label": "Adoption",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "adoption",
+      "description": "C0.3 graph-skill granularity node for Adoption.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:platform_reliability",
+      "node_type": "metric_bucket",
+      "label": "Platform Reliability",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "platform_reliability",
+      "description": "C0.3 graph-skill granularity node for Platform Reliability.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:delivery_throughput",
+      "node_type": "metric_bucket",
+      "label": "Delivery Throughput",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "delivery_throughput",
+      "description": "C0.3 graph-skill granularity node for Delivery Throughput.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:partner_gtm",
+      "node_type": "metric_bucket",
+      "label": "Partner Gtm",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "partner_gtm",
+      "description": "C0.3 graph-skill granularity node for Partner Gtm.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:model_performance",
+      "node_type": "metric_bucket",
+      "label": "Model Performance",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "model_performance",
+      "description": "C0.3 graph-skill granularity node for Model Performance.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:operational_resilience",
+      "node_type": "metric_bucket",
+      "label": "Operational Resilience",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "operational_resilience",
+      "description": "C0.3 graph-skill granularity node for Operational Resilience.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:compliance_audit",
+      "node_type": "metric_bucket",
+      "label": "Compliance Audit",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "compliance_audit",
+      "description": "C0.3 graph-skill granularity node for Compliance Audit.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:data_lineage",
+      "node_type": "metric_bucket",
+      "label": "Data Lineage",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "data_lineage",
+      "description": "C0.3 graph-skill granularity node for Data Lineage.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_bucket:customer_outcome",
+      "node_type": "metric_bucket",
+      "label": "Customer Outcome",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "customer_outcome",
+      "description": "C0.3 graph-skill granularity node for Customer Outcome.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_agentic_runtime_governance",
+      "node_type": "capability_domain",
+      "label": "Agentic runtime governance",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_genai_agentic",
+      "description": "C0.3 graph-skill granularity node for Agentic runtime governance.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_graph_retrieval_evidence",
+      "node_type": "capability_domain",
+      "label": "Graph retrieval and evidence binding",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_genai_agentic",
+      "description": "C0.3 graph-skill granularity node for Graph retrieval and evidence binding.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_ai_platform_engineering",
+      "node_type": "capability_domain",
+      "label": "AI platform engineering",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_data_tech_cloud_ml",
+      "description": "C0.3 graph-skill granularity node for AI platform engineering.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_regulated_ai_controls",
+      "node_type": "capability_domain",
+      "label": "Regulated AI controls",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_actuarial_risk_derivatives",
+      "description": "C0.3 graph-skill granularity node for Regulated AI controls.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_partner_gtm_commercialization",
+      "node_type": "capability_domain",
+      "label": "Partner GTM commercialization",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_data_tech_cloud_ml",
+      "description": "C0.3 graph-skill granularity node for Partner GTM commercialization.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "domain_enterprise_delivery_operating_model",
+      "node_type": "capability_domain",
+      "label": "Enterprise delivery operating model",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "career_track": "track_data_tech_cloud_ml",
+      "description": "C0.3 graph-skill granularity node for Enterprise delivery operating model.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_revenue_pipeline_uplift",
+      "node_type": "metric",
+      "label": "revenue pipeline uplift",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "revenue_growth",
+      "unit": "usd_or_percent",
+      "description": "C0.3 graph-skill granularity node for revenue pipeline uplift.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_renewal_expansion",
+      "node_type": "metric",
+      "label": "renewal or expansion value",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "revenue_growth",
+      "unit": "usd",
+      "description": "C0.3 graph-skill granularity node for renewal or expansion value.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_operating_cost_reduction",
+      "node_type": "metric",
+      "label": "operating cost reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cost_takeout",
+      "unit": "percent_or_usd",
+      "description": "C0.3 graph-skill granularity node for operating cost reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_manual_effort_reduction",
+      "node_type": "metric",
+      "label": "manual effort reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cost_takeout",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for manual effort reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_decision_cycle_time_reduction",
+      "node_type": "metric",
+      "label": "decision cycle-time reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cycle_time",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for decision cycle-time reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_delivery_lead_time_reduction",
+      "node_type": "metric",
+      "label": "delivery lead-time reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "cycle_time",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for delivery lead-time reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_inference_latency_reduction",
+      "node_type": "metric",
+      "label": "inference latency reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "latency",
+      "unit": "percent_or_ms",
+      "description": "C0.3 graph-skill granularity node for inference latency reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_runtime_response_time",
+      "node_type": "metric",
+      "label": "runtime response time",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "latency",
+      "unit": "ms",
+      "description": "C0.3 graph-skill granularity node for runtime response time.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_answer_accuracy_uplift",
+      "node_type": "metric",
+      "label": "answer accuracy uplift",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "quality_accuracy",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for answer accuracy uplift.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_retrieval_precision",
+      "node_type": "metric",
+      "label": "retrieval precision",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "quality_accuracy",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for retrieval precision.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_policy_exception_reduction",
+      "node_type": "metric",
+      "label": "policy exception reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "risk_control",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for policy exception reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_control_coverage",
+      "node_type": "metric",
+      "label": "control coverage",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "risk_control",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for control coverage.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_governance_maturity_uplift",
+      "node_type": "metric",
+      "label": "governance maturity uplift",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "governance_maturity",
+      "unit": "level_or_percent",
+      "description": "C0.3 graph-skill granularity node for governance maturity uplift.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_user_adoption_uplift",
+      "node_type": "metric",
+      "label": "user adoption uplift",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "adoption",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for user adoption uplift.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_platform_slo_attainment",
+      "node_type": "metric",
+      "label": "platform SLO attainment",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "platform_reliability",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for platform SLO attainment.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_release_frequency",
+      "node_type": "metric",
+      "label": "release frequency",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "delivery_throughput",
+      "unit": "count_per_period",
+      "description": "C0.3 graph-skill granularity node for release frequency.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_partner_sourced_pipeline",
+      "node_type": "metric",
+      "label": "partner-sourced pipeline",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "partner_gtm",
+      "unit": "usd",
+      "description": "C0.3 graph-skill granularity node for partner-sourced pipeline.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_model_eval_pass_rate",
+      "node_type": "metric",
+      "label": "model eval pass rate",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "model_performance",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for model eval pass rate.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_incident_reduction",
+      "node_type": "metric",
+      "label": "incident reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "operational_resilience",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for incident reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_audit_finding_reduction",
+      "node_type": "metric",
+      "label": "audit finding reduction",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "compliance_audit",
+      "unit": "count_or_percent",
+      "description": "C0.3 graph-skill granularity node for audit finding reduction.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_lineage_coverage",
+      "node_type": "metric",
+      "label": "lineage coverage",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "data_lineage",
+      "unit": "percent",
+      "description": "C0.3 graph-skill granularity node for lineage coverage.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "metric_nps_or_satisfaction_uplift",
+      "node_type": "metric",
+      "label": "NPS or satisfaction uplift",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "bucket": "customer_outcome",
+      "unit": "points_or_percent",
+      "description": "C0.3 graph-skill granularity node for NPS or satisfaction uplift.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:agentic_runtime_orchestration",
+      "node_type": "skill",
+      "label": "Agentic runtime orchestration",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "platform_reliability",
+      "capability_domain": "domain_agentic_runtime_governance",
+      "description": "C0.3 graph-skill granularity node for Agentic runtime orchestration.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:agentic_policy_gate_design",
+      "node_type": "skill",
+      "label": "Agentic policy gate design",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "risk_control",
+      "capability_domain": "domain_agentic_runtime_governance",
+      "description": "C0.3 graph-skill granularity node for Agentic policy gate design.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:agent_trace_observability",
+      "node_type": "skill",
+      "label": "Agent trace observability",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "operational_resilience",
+      "capability_domain": "domain_agentic_runtime_governance",
+      "description": "C0.3 graph-skill granularity node for Agent trace observability.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:graph_retrieval_traversal_design",
+      "node_type": "skill",
+      "label": "Graph retrieval traversal design",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "data_lineage",
+      "capability_domain": "domain_graph_retrieval_evidence",
+      "description": "C0.3 graph-skill granularity node for Graph retrieval traversal design.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:evidence_binding_provenance",
+      "node_type": "skill",
+      "label": "Evidence binding provenance",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "compliance_audit",
+      "capability_domain": "domain_graph_retrieval_evidence",
+      "description": "C0.3 graph-skill granularity node for Evidence binding provenance.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:retrieval_quality_guardrails",
+      "node_type": "skill",
+      "label": "Retrieval quality guardrails",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "quality_accuracy",
+      "capability_domain": "domain_graph_retrieval_evidence",
+      "description": "C0.3 graph-skill granularity node for Retrieval quality guardrails.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:llm_platform_latency_engineering",
+      "node_type": "skill",
+      "label": "LLM platform latency engineering",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "latency",
+      "capability_domain": "domain_ai_platform_engineering",
+      "description": "C0.3 graph-skill granularity node for LLM platform latency engineering.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:mlops_release_governance",
+      "node_type": "skill",
+      "label": "MLOps release governance",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "delivery_throughput",
+      "capability_domain": "domain_ai_platform_engineering",
+      "description": "C0.3 graph-skill granularity node for MLOps release governance.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:data_platform_lineage_architecture",
+      "node_type": "skill",
+      "label": "Data platform lineage architecture",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "data_lineage",
+      "capability_domain": "domain_ai_platform_engineering",
+      "description": "C0.3 graph-skill granularity node for Data platform lineage architecture.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:model_risk_control_design",
+      "node_type": "skill",
+      "label": "Model risk control design",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "risk_control",
+      "capability_domain": "domain_regulated_ai_controls",
+      "description": "C0.3 graph-skill granularity node for Model risk control design.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:actuarial_ai_risk_translation",
+      "node_type": "skill",
+      "label": "Actuarial AI risk translation",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "governance_maturity",
+      "capability_domain": "domain_regulated_ai_controls",
+      "description": "C0.3 graph-skill granularity node for Actuarial AI risk translation.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:compliance_audit_readiness",
+      "node_type": "skill",
+      "label": "Compliance audit readiness",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "compliance_audit",
+      "capability_domain": "domain_regulated_ai_controls",
+      "description": "C0.3 graph-skill granularity node for Compliance audit readiness.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:hyperscaler_partner_cosell",
+      "node_type": "skill",
+      "label": "Hyperscaler partner co-sell",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "partner_gtm",
+      "capability_domain": "domain_partner_gtm_commercialization",
+      "description": "C0.3 graph-skill granularity node for Hyperscaler partner co-sell.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:ai_solution_value_story",
+      "node_type": "skill",
+      "label": "AI solution value story",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "revenue_growth",
+      "capability_domain": "domain_partner_gtm_commercialization",
+      "description": "C0.3 graph-skill granularity node for AI solution value story.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:enterprise_adoption_enablement",
+      "node_type": "skill",
+      "label": "Enterprise adoption enablement",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "adoption",
+      "capability_domain": "domain_enterprise_delivery_operating_model",
+      "description": "C0.3 graph-skill granularity node for Enterprise adoption enablement.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
+    },
+    {
+      "node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "node_type": "skill",
+      "label": "Delivery governance operating rhythm",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "metric_bucket": "cycle_time",
+      "capability_domain": "domain_enterprise_delivery_operating_model",
+      "description": "C0.3 graph-skill granularity node for Delivery governance operating rhythm.",
+      "support_level": "INTERNAL_ONLY",
+      "visibility_rule": "never_external",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json"
+      ],
+      "projection_behavior": "graph_structure",
+      "external_claim_policy": "internal_only"
     }
   ],
   "graph_edges": [
@@ -24949,6 +25970,1938 @@
       "projection_behavior": "selection_guardrail",
       "external_claim_policy": "internal_only",
       "validation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_genai_agentic->domain_agentic_runtime_governance",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_genai_agentic",
+      "target_node_id": "domain_agentic_runtime_governance",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_genai_agentic->domain_graph_retrieval_evidence",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_genai_agentic",
+      "target_node_id": "domain_graph_retrieval_evidence",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_data_tech_cloud_ml->domain_ai_platform_engineering",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_data_tech_cloud_ml",
+      "target_node_id": "domain_ai_platform_engineering",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_actuarial_risk_derivatives->domain_regulated_ai_controls",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_actuarial_risk_derivatives",
+      "target_node_id": "domain_regulated_ai_controls",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_data_tech_cloud_ml->domain_partner_gtm_commercialization",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_data_tech_cloud_ml",
+      "target_node_id": "domain_partner_gtm_commercialization",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:career_track_contains_capability_domain:track_data_tech_cloud_ml->domain_enterprise_delivery_operating_model",
+      "edge_type": "career_track_contains_capability_domain",
+      "source_node_id": "track_data_tech_cloud_ml",
+      "target_node_id": "domain_enterprise_delivery_operating_model",
+      "weight": 1.0,
+      "rationale": "C0.3 granular domain scope",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:revenue_growth->metric_revenue_pipeline_uplift",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:revenue_growth",
+      "target_node_id": "metric_revenue_pipeline_uplift",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:revenue_growth->metric_renewal_expansion",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:revenue_growth",
+      "target_node_id": "metric_renewal_expansion",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:cost_takeout->metric_operating_cost_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:cost_takeout",
+      "target_node_id": "metric_operating_cost_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:cost_takeout->metric_manual_effort_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:cost_takeout",
+      "target_node_id": "metric_manual_effort_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:cycle_time->metric_decision_cycle_time_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:cycle_time",
+      "target_node_id": "metric_decision_cycle_time_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:cycle_time->metric_delivery_lead_time_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:cycle_time",
+      "target_node_id": "metric_delivery_lead_time_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:latency->metric_inference_latency_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:latency",
+      "target_node_id": "metric_inference_latency_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:latency->metric_runtime_response_time",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:latency",
+      "target_node_id": "metric_runtime_response_time",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:quality_accuracy->metric_answer_accuracy_uplift",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:quality_accuracy",
+      "target_node_id": "metric_answer_accuracy_uplift",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:quality_accuracy->metric_retrieval_precision",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:quality_accuracy",
+      "target_node_id": "metric_retrieval_precision",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:risk_control->metric_policy_exception_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:risk_control",
+      "target_node_id": "metric_policy_exception_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:risk_control->metric_control_coverage",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:risk_control",
+      "target_node_id": "metric_control_coverage",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:governance_maturity->metric_governance_maturity_uplift",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:governance_maturity",
+      "target_node_id": "metric_governance_maturity_uplift",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:adoption->metric_user_adoption_uplift",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:adoption",
+      "target_node_id": "metric_user_adoption_uplift",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:platform_reliability->metric_platform_slo_attainment",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:platform_reliability",
+      "target_node_id": "metric_platform_slo_attainment",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:delivery_throughput->metric_release_frequency",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:delivery_throughput",
+      "target_node_id": "metric_release_frequency",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:partner_gtm->metric_partner_sourced_pipeline",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:partner_gtm",
+      "target_node_id": "metric_partner_sourced_pipeline",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:model_performance->metric_model_eval_pass_rate",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:model_performance",
+      "target_node_id": "metric_model_eval_pass_rate",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:operational_resilience->metric_incident_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:operational_resilience",
+      "target_node_id": "metric_incident_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:compliance_audit->metric_audit_finding_reduction",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:compliance_audit",
+      "target_node_id": "metric_audit_finding_reduction",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:data_lineage->metric_lineage_coverage",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:data_lineage",
+      "target_node_id": "metric_lineage_coverage",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:metric_bucket_contains_metric:metric_bucket:customer_outcome->metric_nps_or_satisfaction_uplift",
+      "edge_type": "metric_bucket_contains_metric",
+      "source_node_id": "metric_bucket:customer_outcome",
+      "target_node_id": "metric_nps_or_satisfaction_uplift",
+      "weight": 1.0,
+      "rationale": "metric option belongs to diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_agentic_runtime_governance->skill:c03:agentic_runtime_orchestration",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_governance",
+      "target_node_id": "skill:c03:agentic_runtime_orchestration",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:agentic_runtime_orchestration->metric_bucket:platform_reliability",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:agentic_runtime_orchestration",
+      "target_node_id": "metric_bucket:platform_reliability",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:agentic_runtime_orchestration",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:agentic_runtime_orchestration",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:agentic_runtime_orchestration",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:agentic_runtime_orchestration",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:agentic_runtime_orchestration",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:agentic_runtime_orchestration",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:agentic_runtime_orchestration",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:agentic_runtime_orchestration",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:agentic_runtime_orchestration->metric_platform_slo_attainment",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:agentic_runtime_orchestration",
+      "target_node_id": "metric_platform_slo_attainment",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_agentic_runtime_governance->skill:c03:agentic_policy_gate_design",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_governance",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:agentic_policy_gate_design->metric_bucket:risk_control",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:agentic_policy_gate_design",
+      "target_node_id": "metric_bucket:risk_control",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:agentic_policy_gate_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:agentic_policy_gate_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:agentic_policy_gate_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:agentic_policy_gate_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:agentic_policy_gate_design->metric_policy_exception_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:agentic_policy_gate_design",
+      "target_node_id": "metric_policy_exception_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:agentic_policy_gate_design->metric_control_coverage",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:agentic_policy_gate_design",
+      "target_node_id": "metric_control_coverage",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_agentic_runtime_governance->skill:c03:agent_trace_observability",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_governance",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:agent_trace_observability->metric_bucket:operational_resilience",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:agent_trace_observability",
+      "target_node_id": "metric_bucket:operational_resilience",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:agent_trace_observability",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:agent_trace_observability",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:agent_trace_observability",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:agent_trace_observability",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:agent_trace_observability->metric_incident_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:agent_trace_observability",
+      "target_node_id": "metric_incident_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_graph_retrieval_evidence->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_graph_retrieval_evidence",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:graph_retrieval_traversal_design->metric_bucket:data_lineage",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "target_node_id": "metric_bucket:data_lineage",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:graph_retrieval_traversal_design->metric_lineage_coverage",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "target_node_id": "metric_lineage_coverage",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_graph_retrieval_evidence->skill:c03:evidence_binding_provenance",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_graph_retrieval_evidence",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:evidence_binding_provenance->metric_bucket:compliance_audit",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:evidence_binding_provenance",
+      "target_node_id": "metric_bucket:compliance_audit",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:evidence_binding_provenance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:evidence_binding_provenance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:evidence_binding_provenance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:evidence_binding_provenance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:evidence_binding_provenance->metric_audit_finding_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:evidence_binding_provenance",
+      "target_node_id": "metric_audit_finding_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_graph_retrieval_evidence->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_graph_retrieval_evidence",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:retrieval_quality_guardrails->metric_bucket:quality_accuracy",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:retrieval_quality_guardrails",
+      "target_node_id": "metric_bucket:quality_accuracy",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:retrieval_quality_guardrails->metric_answer_accuracy_uplift",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:retrieval_quality_guardrails",
+      "target_node_id": "metric_answer_accuracy_uplift",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:retrieval_quality_guardrails->metric_retrieval_precision",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:retrieval_quality_guardrails",
+      "target_node_id": "metric_retrieval_precision",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_ai_platform_engineering->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_ai_platform_engineering",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:llm_platform_latency_engineering->metric_bucket:latency",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:llm_platform_latency_engineering",
+      "target_node_id": "metric_bucket:latency",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:llm_platform_latency_engineering->metric_inference_latency_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:llm_platform_latency_engineering",
+      "target_node_id": "metric_inference_latency_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:llm_platform_latency_engineering->metric_runtime_response_time",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:llm_platform_latency_engineering",
+      "target_node_id": "metric_runtime_response_time",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_ai_platform_engineering->skill:c03:mlops_release_governance",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_ai_platform_engineering",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:mlops_release_governance->metric_bucket:delivery_throughput",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:mlops_release_governance",
+      "target_node_id": "metric_bucket:delivery_throughput",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:mlops_release_governance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:mlops_release_governance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:mlops_release_governance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:mlops_release_governance",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:mlops_release_governance->metric_release_frequency",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:mlops_release_governance",
+      "target_node_id": "metric_release_frequency",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_ai_platform_engineering->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_ai_platform_engineering",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:data_platform_lineage_architecture->metric_bucket:data_lineage",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:data_platform_lineage_architecture",
+      "target_node_id": "metric_bucket:data_lineage",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:data_platform_lineage_architecture->metric_lineage_coverage",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:data_platform_lineage_architecture",
+      "target_node_id": "metric_lineage_coverage",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_regulated_ai_controls->skill:c03:model_risk_control_design",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_regulated_ai_controls",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:model_risk_control_design->metric_bucket:risk_control",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:model_risk_control_design",
+      "target_node_id": "metric_bucket:risk_control",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:model_risk_control_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:model_risk_control_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:model_risk_control_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:model_risk_control_design",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:model_risk_control_design->metric_policy_exception_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:model_risk_control_design",
+      "target_node_id": "metric_policy_exception_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:model_risk_control_design->metric_control_coverage",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:model_risk_control_design",
+      "target_node_id": "metric_control_coverage",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_regulated_ai_controls->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_regulated_ai_controls",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:actuarial_ai_risk_translation->metric_bucket:governance_maturity",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "target_node_id": "metric_bucket:governance_maturity",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:actuarial_ai_risk_translation->metric_governance_maturity_uplift",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "target_node_id": "metric_governance_maturity_uplift",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_regulated_ai_controls->skill:c03:compliance_audit_readiness",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_regulated_ai_controls",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:compliance_audit_readiness->metric_bucket:compliance_audit",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:compliance_audit_readiness",
+      "target_node_id": "metric_bucket:compliance_audit",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:compliance_audit_readiness",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:compliance_audit_readiness",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:compliance_audit_readiness",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:compliance_audit_readiness",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:compliance_audit_readiness->metric_audit_finding_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:compliance_audit_readiness",
+      "target_node_id": "metric_audit_finding_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_partner_gtm_commercialization->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_partner_gtm_commercialization",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:hyperscaler_partner_cosell->metric_bucket:partner_gtm",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "target_node_id": "metric_bucket:partner_gtm",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:hyperscaler_partner_cosell->metric_partner_sourced_pipeline",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "target_node_id": "metric_partner_sourced_pipeline",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_partner_gtm_commercialization->skill:c03:ai_solution_value_story",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_partner_gtm_commercialization",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:ai_solution_value_story->metric_bucket:revenue_growth",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:ai_solution_value_story",
+      "target_node_id": "metric_bucket:revenue_growth",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:ai_solution_value_story",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:ai_solution_value_story",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:ai_solution_value_story",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:ai_solution_value_story",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:ai_solution_value_story->metric_revenue_pipeline_uplift",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:ai_solution_value_story",
+      "target_node_id": "metric_revenue_pipeline_uplift",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:ai_solution_value_story->metric_renewal_expansion",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:ai_solution_value_story",
+      "target_node_id": "metric_renewal_expansion",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_enterprise_delivery_operating_model->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_enterprise_delivery_operating_model",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:enterprise_adoption_enablement->metric_bucket:adoption",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:enterprise_adoption_enablement",
+      "target_node_id": "metric_bucket:adoption",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:enterprise_adoption_enablement->metric_user_adoption_uplift",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:enterprise_adoption_enablement",
+      "target_node_id": "metric_user_adoption_uplift",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:capability_domain_contains_skill:domain_enterprise_delivery_operating_model->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_enterprise_delivery_operating_model",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 1.0,
+      "rationale": "granular C0.3 skill membership",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_has_metric_bucket:skill:c03:delivery_governance_operating_rhythm->metric_bucket:cycle_time",
+      "edge_type": "skill_has_metric_bucket",
+      "source_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "target_node_id": "metric_bucket:cycle_time",
+      "weight": 1.0,
+      "rationale": "skill has explicit metric diversity bucket",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:executive_summary->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:executive_summary",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:competencies->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:competencies",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:experience->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:experience",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:section_can_select_skill:section:selected_achievements->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "section_can_select_skill",
+      "source_node_id": "section:selected_achievements",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 0.7,
+      "rationale": "section-scoped skill eligibility",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:delivery_governance_operating_rhythm->metric_decision_cycle_time_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "target_node_id": "metric_decision_cycle_time_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_can_surface_metric:skill:c03:delivery_governance_operating_rhythm->metric_delivery_lead_time_reduction",
+      "edge_type": "skill_can_surface_metric",
+      "source_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "target_node_id": "metric_delivery_lead_time_reduction",
+      "weight": 0.8,
+      "rationale": "heterogeneous metric option for skill",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:agentic_runtime_orchestration->skill:c03:agentic_policy_gate_design",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:agentic_runtime_orchestration",
+      "target_node_id": "skill:c03:agentic_policy_gate_design",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:agentic_policy_gate_design->skill:c03:agent_trace_observability",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:agentic_policy_gate_design",
+      "target_node_id": "skill:c03:agent_trace_observability",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:agent_trace_observability->skill:c03:graph_retrieval_traversal_design",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:agent_trace_observability",
+      "target_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:graph_retrieval_traversal_design->skill:c03:evidence_binding_provenance",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:graph_retrieval_traversal_design",
+      "target_node_id": "skill:c03:evidence_binding_provenance",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:evidence_binding_provenance->skill:c03:retrieval_quality_guardrails",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:evidence_binding_provenance",
+      "target_node_id": "skill:c03:retrieval_quality_guardrails",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:retrieval_quality_guardrails->skill:c03:llm_platform_latency_engineering",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:retrieval_quality_guardrails",
+      "target_node_id": "skill:c03:llm_platform_latency_engineering",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:llm_platform_latency_engineering->skill:c03:mlops_release_governance",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:llm_platform_latency_engineering",
+      "target_node_id": "skill:c03:mlops_release_governance",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:mlops_release_governance->skill:c03:data_platform_lineage_architecture",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:mlops_release_governance",
+      "target_node_id": "skill:c03:data_platform_lineage_architecture",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:data_platform_lineage_architecture->skill:c03:model_risk_control_design",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:data_platform_lineage_architecture",
+      "target_node_id": "skill:c03:model_risk_control_design",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:model_risk_control_design->skill:c03:actuarial_ai_risk_translation",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:model_risk_control_design",
+      "target_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:actuarial_ai_risk_translation->skill:c03:compliance_audit_readiness",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:actuarial_ai_risk_translation",
+      "target_node_id": "skill:c03:compliance_audit_readiness",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:compliance_audit_readiness->skill:c03:hyperscaler_partner_cosell",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:compliance_audit_readiness",
+      "target_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:hyperscaler_partner_cosell->skill:c03:ai_solution_value_story",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:hyperscaler_partner_cosell",
+      "target_node_id": "skill:c03:ai_solution_value_story",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:ai_solution_value_story->skill:c03:enterprise_adoption_enablement",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:ai_solution_value_story",
+      "target_node_id": "skill:c03:enterprise_adoption_enablement",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge:skill_reinforces_skill:skill:c03:enterprise_adoption_enablement->skill:c03:delivery_governance_operating_rhythm",
+      "edge_type": "skill_reinforces_skill",
+      "source_node_id": "skill:c03:enterprise_adoption_enablement",
+      "target_node_id": "skill:c03:delivery_governance_operating_rhythm",
+      "weight": 0.35,
+      "rationale": "adjacent skill for reverse/sibling traversal, non-causal",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "internal_only",
+      "validation_status": "validated"
     }
   ],
   "external_claim_policies": {
@@ -47960,6 +50913,919 @@
       "external_claim_policy": "allowed_with_fact_link",
       "metric_bucket": "delivery_velocity",
       "business_outcome_bucket": "selection_quality"
+    },
+    {
+      "skill_id": "skill:c03:agentic_runtime_orchestration",
+      "allowed_phrases": [
+        "Agentic runtime orchestration",
+        "multi-agent orchestration",
+        "routing policy gates",
+        "runtime observability"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_agentic_runtime_governance",
+      "subpillar": "platform_reliability",
+      "metric_bucket": "platform_reliability",
+      "metric_option_ids": [
+        "metric_platform_slo_attainment"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_006",
+        "fact_engineering_platform_001",
+        "fact_governance_003",
+        "fact_governance_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Agentic runtime orchestration selection with metric bucket platform_reliability."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:agentic_policy_gate_design",
+      "allowed_phrases": [
+        "Agentic policy gate design",
+        "policy gates",
+        "human-in-the-loop controls",
+        "agent authorization boundaries"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_agentic_runtime_governance",
+      "subpillar": "risk_control",
+      "metric_bucket": "risk_control",
+      "metric_option_ids": [
+        "metric_policy_exception_reduction",
+        "metric_control_coverage"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_003",
+        "fact_quant_hpc_001",
+        "fact_insurance_software_001",
+        "fact_governance_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Agentic policy gate design selection with metric bucket risk_control."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:agent_trace_observability",
+      "allowed_phrases": [
+        "Agent trace observability",
+        "trace observability",
+        "run receipts",
+        "shadow evaluation"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_agentic_runtime_governance",
+      "subpillar": "operational_resilience",
+      "metric_bucket": "operational_resilience",
+      "metric_option_ids": [
+        "metric_incident_reduction"
+      ],
+      "fact_id_links": [
+        "bul_insurtech_003",
+        "fact_consulting_001",
+        "fact_engineering_platform_003",
+        "fact_ey_guidewire_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Agent trace observability selection with metric bucket operational_resilience."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:graph_retrieval_traversal_design",
+      "allowed_phrases": [
+        "Graph retrieval traversal design",
+        "multi-hop traversal",
+        "reverse traversal",
+        "frontier expansion"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_graph_retrieval_evidence",
+      "subpillar": "data_lineage",
+      "metric_bucket": "data_lineage",
+      "metric_option_ids": [
+        "metric_lineage_coverage"
+      ],
+      "fact_id_links": [
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_001",
+        "fact_exec_001",
+        "fact_engineering_platform_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Graph retrieval traversal design selection with metric bucket data_lineage."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:evidence_binding_provenance",
+      "allowed_phrases": [
+        "Evidence binding provenance",
+        "evidence binding",
+        "provenance receipts",
+        "source authority"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_graph_retrieval_evidence",
+      "subpillar": "compliance_audit",
+      "metric_bucket": "compliance_audit",
+      "metric_option_ids": [
+        "metric_audit_finding_reduction"
+      ],
+      "fact_id_links": [
+        "bul_insurtech_002",
+        "fact_governance_004",
+        "fact_governance_001",
+        "fact_engineering_platform_003"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Evidence binding provenance selection with metric bucket compliance_audit."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:retrieval_quality_guardrails",
+      "allowed_phrases": [
+        "Retrieval quality guardrails",
+        "retrieval QA",
+        "grounding checks",
+        "citation contracts"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_graph_retrieval_evidence",
+      "subpillar": "quality_accuracy",
+      "metric_bucket": "quality_accuracy",
+      "metric_option_ids": [
+        "metric_answer_accuracy_uplift",
+        "metric_retrieval_precision"
+      ],
+      "fact_id_links": [
+        "fact_engineering_platform_003",
+        "fact_credit_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Retrieval quality guardrails selection with metric bucket quality_accuracy."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:llm_platform_latency_engineering",
+      "allowed_phrases": [
+        "LLM platform latency engineering",
+        "latency reduction",
+        "inference optimization",
+        "serving efficiency"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_ai_platform_engineering",
+      "subpillar": "latency",
+      "metric_bucket": "latency",
+      "metric_option_ids": [
+        "metric_inference_latency_reduction",
+        "metric_runtime_response_time"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_002"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports LLM platform latency engineering selection with metric bucket latency."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:mlops_release_governance",
+      "allowed_phrases": [
+        "MLOps release governance",
+        "model release governance",
+        "CI/CD guardrails",
+        "deployment acceleration"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_ai_platform_engineering",
+      "subpillar": "delivery_throughput",
+      "metric_bucket": "delivery_throughput",
+      "metric_option_ids": [
+        "metric_release_frequency"
+      ],
+      "fact_id_links": [
+        "fact_consulting_002",
+        "bul_insurtech_001",
+        "fact_sales_accounts_001",
+        "fact_partnerships_gtm_004"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports MLOps release governance selection with metric bucket delivery_throughput."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:data_platform_lineage_architecture",
+      "allowed_phrases": [
+        "Data platform lineage architecture",
+        "metadata lineage",
+        "feature lineage",
+        "audit-ready data flow"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_ai_platform_engineering",
+      "subpillar": "data_lineage",
+      "metric_bucket": "data_lineage",
+      "metric_option_ids": [
+        "metric_lineage_coverage"
+      ],
+      "fact_id_links": [
+        "fact_partnerships_gtm_002",
+        "fact_revenue_ops_001",
+        "fact_exec_001",
+        "fact_engineering_platform_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Data platform lineage architecture selection with metric bucket data_lineage."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:model_risk_control_design",
+      "allowed_phrases": [
+        "Model risk control design",
+        "model risk controls",
+        "audit controls",
+        "regulated AI"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_regulated_ai_controls",
+      "subpillar": "risk_control",
+      "metric_bucket": "risk_control",
+      "metric_option_ids": [
+        "metric_policy_exception_reduction",
+        "metric_control_coverage"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_003",
+        "fact_quant_hpc_001",
+        "fact_insurance_software_001",
+        "fact_governance_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Model risk control design selection with metric bucket risk_control."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:actuarial_ai_risk_translation",
+      "allowed_phrases": [
+        "Actuarial AI risk translation",
+        "actuarial rigor",
+        "risk translation",
+        "insurance AI governance"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_regulated_ai_controls",
+      "subpillar": "governance_maturity",
+      "metric_bucket": "governance_maturity",
+      "metric_option_ids": [
+        "metric_governance_maturity_uplift"
+      ],
+      "fact_id_links": [
+        "fact_partnerships_gtm_005",
+        "fact_governance_004",
+        "fact_governance_001",
+        "fact_engineering_platform_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Actuarial AI risk translation selection with metric bucket governance_maturity."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:compliance_audit_readiness",
+      "allowed_phrases": [
+        "Compliance audit readiness",
+        "audit readiness",
+        "control evidence",
+        "regulatory defensibility"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_regulated_ai_controls",
+      "subpillar": "compliance_audit",
+      "metric_bucket": "compliance_audit",
+      "metric_option_ids": [
+        "metric_audit_finding_reduction"
+      ],
+      "fact_id_links": [
+        "bul_insurtech_002",
+        "fact_governance_004",
+        "fact_governance_001",
+        "fact_engineering_platform_003"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Compliance audit readiness selection with metric bucket compliance_audit."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:hyperscaler_partner_cosell",
+      "allowed_phrases": [
+        "Hyperscaler partner co-sell",
+        "hyperscaler co-sell",
+        "marketplace GTM",
+        "partner pipeline"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_partner_gtm_commercialization",
+      "subpillar": "partner_gtm",
+      "metric_bucket": "partner_gtm",
+      "metric_option_ids": [
+        "metric_partner_sourced_pipeline"
+      ],
+      "fact_id_links": [
+        "fact_partnerships_gtm_002",
+        "fact_partnerships_gtm_001",
+        "fact_partnerships_gtm_003",
+        "fact_solutions_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Hyperscaler partner co-sell selection with metric bucket partner_gtm."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:ai_solution_value_story",
+      "allowed_phrases": [
+        "AI solution value story",
+        "business value story",
+        "executive narrative",
+        "commercial framing"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_partner_gtm_commercialization",
+      "subpillar": "revenue_growth",
+      "metric_bucket": "revenue_growth",
+      "metric_option_ids": [
+        "metric_revenue_pipeline_uplift",
+        "metric_renewal_expansion"
+      ],
+      "fact_id_links": [
+        "fact_sales_accounts_001",
+        "fact_partnerships_gtm_001",
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports AI solution value story selection with metric bucket revenue_growth."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:enterprise_adoption_enablement",
+      "allowed_phrases": [
+        "Enterprise adoption enablement",
+        "field enablement",
+        "adoption operating model",
+        "change leadership"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_enterprise_delivery_operating_model",
+      "subpillar": "adoption",
+      "metric_bucket": "adoption",
+      "metric_option_ids": [
+        "metric_user_adoption_uplift"
+      ],
+      "fact_id_links": [
+        "fact_sales_accounts_001",
+        "fact_partnerships_gtm_004",
+        "fact_solutions_001",
+        "fact_exec_002"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Enterprise adoption enablement selection with metric bucket adoption."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
+    },
+    {
+      "skill_id": "skill:c03:delivery_governance_operating_rhythm",
+      "allowed_phrases": [
+        "Delivery governance operating rhythm",
+        "delivery governance",
+        "operating rhythm",
+        "execution cadence"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "experience",
+        "selected_achievements"
+      ],
+      "activation_status": "ACTIVE_CONFIRMED",
+      "support_level": "INTERNAL_ONLY",
+      "pillar": "domain_enterprise_delivery_operating_model",
+      "subpillar": "cycle_time",
+      "metric_bucket": "cycle_time",
+      "metric_option_ids": [
+        "metric_decision_cycle_time_reduction",
+        "metric_delivery_lead_time_reduction"
+      ],
+      "fact_id_links": [
+        "fact_quant_hpc_003",
+        "fact_quant_hpc_001",
+        "fact_sales_accounts_002",
+        "fact_engineering_platform_001"
+      ],
+      "source_authority": "augmented_skills_graph",
+      "hardening_wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "selection_guidance": {
+        "max_metric_repeat_per_resume": 1,
+        "prefer_unseen_metric_bucket": true,
+        "requires_graph_hop_receipt": true,
+        "requires_sibling_rejection_reason": true
+      },
+      "career_stage": "executive_agentic_ai",
+      "source_resume_files": [
+        "apps_rg canonical graph hardening"
+      ],
+      "source_snippets": [
+        "C0.3 graph-skill granularity supports Delivery governance operating rhythm selection with metric bucket cycle_time."
+      ],
+      "user_confirmed": true,
+      "role_family_weights": {
+        "SVP_ENGINEERING_AI_PLATFORM": 0.85,
+        "CHIEF_AI_OFFICER": 0.8,
+        "FIELD_CTO": 0.75
+      },
+      "forbidden_phrases": [
+        "unverified causal proof",
+        "non-graph fallback"
+      ],
+      "visibility_rule": "never_external",
+      "evidence_risk": "low",
+      "human_confirmation_required": false
     }
   ],
   "actuarial_career_matrix": [
@@ -52094,5 +55960,187 @@
     "repo_portfolio_not_resume_default": true,
     "weak_snippet_internal_only": true,
     "ats_keywords_not_claims": true
-  }
+  },
+  "metric_buckets": [
+    {
+      "bucket_id": "revenue_growth",
+      "node_id": "metric_bucket:revenue_growth",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "cost_takeout",
+      "node_id": "metric_bucket:cost_takeout",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "cycle_time",
+      "node_id": "metric_bucket:cycle_time",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "latency",
+      "node_id": "metric_bucket:latency",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "quality_accuracy",
+      "node_id": "metric_bucket:quality_accuracy",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "risk_control",
+      "node_id": "metric_bucket:risk_control",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "governance_maturity",
+      "node_id": "metric_bucket:governance_maturity",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "adoption",
+      "node_id": "metric_bucket:adoption",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "platform_reliability",
+      "node_id": "metric_bucket:platform_reliability",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "delivery_throughput",
+      "node_id": "metric_bucket:delivery_throughput",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "partner_gtm",
+      "node_id": "metric_bucket:partner_gtm",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "model_performance",
+      "node_id": "metric_bucket:model_performance",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "operational_resilience",
+      "node_id": "metric_bucket:operational_resilience",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "compliance_audit",
+      "node_id": "metric_bucket:compliance_audit",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "data_lineage",
+      "node_id": "metric_bucket:data_lineage",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    },
+    {
+      "bucket_id": "customer_outcome",
+      "node_id": "metric_bucket:customer_outcome",
+      "selection_floor": 1,
+      "max_repeat_per_section": 1
+    }
+  ],
+  "c03_selection_policies": {
+    "metric_diversity": {
+      "schema": "c03_metric_diversity_policy_v1",
+      "enabled": true,
+      "min_distinct_metric_buckets_per_resume": 6,
+      "max_same_metric_bucket_per_section": 1,
+      "max_same_metric_id_per_resume": 1,
+      "prefer_reverse_traversal": true,
+      "require_rejected_sibling_skills": true,
+      "require_frontier_size_by_hop_depth": true,
+      "require_candidate_nodes_visited": true
+    }
+  },
+  "_hardening_receipts": [
+    {
+      "wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "applied_at": "2026-06-26T08:40:11Z",
+      "before_counts": {
+        "graph_nodes": 311,
+        "graph_edges": 1747,
+        "skill_rows": 238,
+        "metric_buckets": 0
+      },
+      "after_counts": {
+        "graph_nodes": 371,
+        "graph_edges": 1908,
+        "skill_rows": 254,
+        "metric_buckets": 16
+      },
+      "added_counts": {
+        "graph_nodes": 60,
+        "graph_edges": 161,
+        "skill_rows": 16,
+        "metric_buckets": 16
+      },
+      "zero_loss": true
+    },
+    {
+      "wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "applied_at": "2026-06-26T08:47:43Z",
+      "before_counts": {
+        "graph_nodes": 371,
+        "graph_edges": 1908,
+        "skill_rows": 254,
+        "metric_buckets": 16
+      },
+      "after_counts": {
+        "graph_nodes": 371,
+        "graph_edges": 1908,
+        "skill_rows": 254,
+        "metric_buckets": 16
+      },
+      "added_counts": {
+        "graph_nodes": 0,
+        "graph_edges": 0,
+        "skill_rows": 0,
+        "metric_buckets": 0
+      },
+      "zero_loss": true
+    },
+    {
+      "wave": "C03_GRAPH_SKILL_GRANULARITY_V1",
+      "applied_at": "2026-06-26T08:48:41Z",
+      "before_counts": {
+        "graph_nodes": 371,
+        "graph_edges": 1908,
+        "skill_rows": 254,
+        "metric_buckets": 16
+      },
+      "after_counts": {
+        "graph_nodes": 371,
+        "graph_edges": 1908,
+        "skill_rows": 254,
+        "metric_buckets": 16
+      },
+      "added_counts": {
+        "graph_nodes": 0,
+        "graph_edges": 0,
+        "skill_rows": 0,
+        "metric_buckets": 0
+      },
+      "zero_loss": true
+    }
+  ]
 }

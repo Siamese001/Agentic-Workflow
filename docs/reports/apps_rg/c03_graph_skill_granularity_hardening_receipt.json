@@ -1,0 +1,28 @@
+{
+  "schema": "c03_graph_skill_granularity_hardening_receipt_v1",
+  "generated_at": "2026-06-26T08:48:41Z",
+  "canonical_target": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+  "dry_run": false,
+  "digest_before": "82437557eefe5e3d85a1340bb7008bd8aad3278f57c142682d0243b401258706",
+  "digest_after": "423126810c767b4e9921a62390738905a02e2267b3f984bb011d3b4177d7e00d",
+  "before_counts": {
+    "graph_nodes": 371,
+    "graph_edges": 1908,
+    "skill_rows": 254,
+    "metric_buckets": 16
+  },
+  "after_counts": {
+    "graph_nodes": 371,
+    "graph_edges": 1908,
+    "skill_rows": 254,
+    "metric_buckets": 16
+  },
+  "added_counts": {
+    "graph_nodes": 0,
+    "graph_edges": 0,
+    "skill_rows": 0,
+    "metric_buckets": 0
+  },
+  "zero_loss_validation": "PASS",
+  "backup_path": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json.bak.20260626T084841Z"
+}

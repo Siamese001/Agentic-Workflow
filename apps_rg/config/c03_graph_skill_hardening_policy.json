@@ -1,0 +1,26 @@
+{
+  "schema": "c03_graph_skill_hardening_policy_v2",
+  "max_depth": 4,
+  "neighbor_limit": 24,
+  "min_metric_bucket_count": 5,
+  "max_same_metric_bucket_share": 0.34,
+  "require_reverse_paths": true,
+  "require_rejected_siblings": true,
+  "require_frontier_receipts": true,
+  "metric_buckets": [
+    "revenue_growth",
+    "cost_efficiency",
+    "latency_performance",
+    "quality_accuracy",
+    "adoption_enablement",
+    "risk_governance",
+    "scale_reliability",
+    "delivery_velocity",
+    "model_ai_outcome",
+    "portfolio_operating",
+    "quantified_other",
+    "non_metric_context"
+  ],
+  "failure_mode": "warn_in_expansion_fail_in_final_section_validation",
+  "source_authority": "augmented_skills_graph"
+}

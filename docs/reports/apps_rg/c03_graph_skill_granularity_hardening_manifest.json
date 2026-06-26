@@ -1,0 +1,32 @@
+{
+  "schema": "zero_loss_overwrite_manifest_v1",
+  "generated_for": "apps_rg C0.3 graph skills granularity hardening",
+  "source_of_truth": "GitHub main branch, repo Siamese001/Agentic-Workflow",
+  "canonical_graph_target": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "canonical_graph_sha_seen_via_github_connector": "b25b6cc50d6dd7e115157038ec4e3842f50537ed",
+  "note": "GitHub connector returned the canonical graph blob sha but not full JSON content, so this package uses an idempotent additive patcher instead of shipping a blind replacement JSON.",
+  "zero_loss_contract": [
+    "No existing graph_nodes removed",
+    "No existing graph_edges removed",
+    "No existing skill_rows removed",
+    "Existing fields win on scalar conflicts",
+    "List fields are merged without duplicates",
+    "Backup file is written before non-dry-run graph overwrite"
+  ],
+  "files": [
+    "apps_rg/fact_inventory/c03_graph_skill_granularity_catalog.json",
+    "apps_rg/fact_inventory/apply_c03_graph_skill_granularity_hardening.py",
+    "apps_rg/fact_inventory/validate_c03_graph_skill_granularity.py",
+    "apps_rg/runtime/graph/graph_metric_diversity_policy.py",
+    "tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_granularity_hardening.py",
+    "docs/reports/apps_rg/c03_graph_skill_granularity_hardening_manifest.json",
+    "docs/reports/apps_rg/c03_graph_skill_granularity_hardening_manifest.md"
+  ],
+  "apply_order": [
+    "Copy files into repo preserving paths",
+    "python apps_rg/fact_inventory/apply_c03_graph_skill_granularity_hardening.py --dry-run",
+    "python apps_rg/fact_inventory/apply_c03_graph_skill_granularity_hardening.py",
+    "python apps_rg/fact_inventory/validate_c03_graph_skill_granularity.py",
+    "pytest tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_granularity_hardening.py"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "c03_graph_skill_granularity_catalog_v1",
+  "intent": "Zero-loss additive hardening catalog for the canonical apps_rg augmented skills graph JSON.",
+  "canonical_target": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "policy": {
+    "destructive_updates_allowed": false,
+    "preserve_existing_nodes_edges_skill_rows": true,
+    "idempotent_upsert": true,
+    "additive_list_merge": true,
+    "goal": "increase graph granularity, metric heterogeneity, reverse traversal, and typed edge precision for C0.3 graph skills selection"
+  },
+  "metric_buckets": [
+    "revenue_growth", "cost_takeout", "cycle_time", "latency", "quality_accuracy", "risk_control",
+    "governance_maturity", "adoption", "platform_reliability", "delivery_throughput", "partner_gtm",
+    "model_performance", "operational_resilience", "compliance_audit", "data_lineage", "customer_outcome"
+  ],
+  "capability_domains": [
+    {"node_id": "domain_agentic_runtime_governance", "label": "Agentic runtime governance", "track": "track_genai_agentic"},
+    {"node_id": "domain_graph_retrieval_evidence", "label": "Graph retrieval and evidence binding", "track": "track_genai_agentic"},
+    {"node_id": "domain_ai_platform_engineering", "label": "AI platform engineering", "track": "track_data_tech_cloud_ml"},
+    {"node_id": "domain_regulated_ai_controls", "label": "Regulated AI controls", "track": "track_actuarial_risk_derivatives"},
+    {"node_id": "domain_partner_gtm_commercialization", "label": "Partner GTM commercialization", "track": "track_data_tech_cloud_ml"},
+    {"node_id": "domain_enterprise_delivery_operating_model", "label": "Enterprise delivery operating model", "track": "track_data_tech_cloud_ml"}
+  ],
+  "skill_templates": [
+    ["agentic_runtime_orchestration", "Agentic runtime orchestration", "domain_agentic_runtime_governance", "platform_reliability", ["multi-agent orchestration", "routing policy gates", "runtime observability"]],
+    ["agentic_policy_gate_design", "Agentic policy gate design", "domain_agentic_runtime_governance", "risk_control", ["policy gates", "human-in-the-loop controls", "agent authorization boundaries"]],
+    ["agent_trace_observability", "Agent trace observability", "domain_agentic_runtime_governance", "operational_resilience", ["trace observability", "run receipts", "shadow evaluation"]],
+    ["graph_retrieval_traversal_design", "Graph retrieval traversal design", "domain_graph_retrieval_evidence", "data_lineage", ["multi-hop traversal", "reverse traversal", "frontier expansion"]],
+    ["evidence_binding_provenance", "Evidence binding provenance", "domain_graph_retrieval_evidence", "compliance_audit", ["evidence binding", "provenance receipts", "source authority"]],
+    ["retrieval_quality_guardrails", "Retrieval quality guardrails", "domain_graph_retrieval_evidence", "quality_accuracy", ["retrieval QA", "grounding checks", "citation contracts"]],
+    ["llm_platform_latency_engineering", "LLM platform latency engineering", "domain_ai_platform_engineering", "latency", ["latency reduction", "inference optimization", "serving efficiency"]],
+    ["mlops_release_governance", "MLOps release governance", "domain_ai_platform_engineering", "delivery_throughput", ["model release governance", "CI/CD guardrails", "deployment acceleration"]],
+    ["data_platform_lineage_architecture", "Data platform lineage architecture", "domain_ai_platform_engineering", "data_lineage", ["metadata lineage", "feature lineage", "audit-ready data flow"]],
+    ["model_risk_control_design", "Model risk control design", "domain_regulated_ai_controls", "risk_control", ["model risk controls", "audit controls", "regulated AI"]],
+    ["actuarial_ai_risk_translation", "Actuarial AI risk translation", "domain_regulated_ai_controls", "governance_maturity", ["actuarial rigor", "risk translation", "insurance AI governance"]],
+    ["compliance_audit_readiness", "Compliance audit readiness", "domain_regulated_ai_controls", "compliance_audit", ["audit readiness", "control evidence", "regulatory defensibility"]],
+    ["hyperscaler_partner_cosell", "Hyperscaler partner co-sell", "domain_partner_gtm_commercialization", "partner_gtm", ["hyperscaler co-sell", "marketplace GTM", "partner pipeline"]],
+    ["ai_solution_value_story", "AI solution value story", "domain_partner_gtm_commercialization", "revenue_growth", ["business value story", "executive narrative", "commercial framing"]],
+    ["enterprise_adoption_enablement", "Enterprise adoption enablement", "domain_enterprise_delivery_operating_model", "adoption", ["field enablement", "adoption operating model", "change leadership"]],
+    ["delivery_governance_operating_rhythm", "Delivery governance operating rhythm", "domain_enterprise_delivery_operating_model", "cycle_time", ["delivery governance", "operating rhythm", "execution cadence"]]
+  ],
+  "metric_library": [
+    {"bucket": "revenue_growth", "metric_id": "metric_revenue_pipeline_uplift", "label": "revenue pipeline uplift", "unit": "usd_or_percent"},
+    {"bucket": "revenue_growth", "metric_id": "metric_renewal_expansion", "label": "renewal or expansion value", "unit": "usd"},
+    {"bucket": "cost_takeout", "metric_id": "metric_operating_cost_reduction", "label": "operating cost reduction", "unit": "percent_or_usd"},
+    {"bucket": "cost_takeout", "metric_id": "metric_manual_effort_reduction", "label": "manual effort reduction", "unit": "percent"},
+    {"bucket": "cycle_time", "metric_id": "metric_decision_cycle_time_reduction", "label": "decision cycle-time reduction", "unit": "percent"},
+    {"bucket": "cycle_time", "metric_id": "metric_delivery_lead_time_reduction", "label": "delivery lead-time reduction", "unit": "percent"},
+    {"bucket": "latency", "metric_id": "metric_inference_latency_reduction", "label": "inference latency reduction", "unit": "percent_or_ms"},
+    {"bucket": "latency", "metric_id": "metric_runtime_response_time", "label": "runtime response time", "unit": "ms"},
+    {"bucket": "quality_accuracy", "metric_id": "metric_answer_accuracy_uplift", "label": "answer accuracy uplift", "unit": "percent"},
+    {"bucket": "quality_accuracy", "metric_id": "metric_retrieval_precision", "label": "retrieval precision", "unit": "percent"},
+    {"bucket": "risk_control", "metric_id": "metric_policy_exception_reduction", "label": "policy exception reduction", "unit": "percent"},
+    {"bucket": "risk_control", "metric_id": "metric_control_coverage", "label": "control coverage", "unit": "percent"},
+    {"bucket": "governance_maturity", "metric_id": "metric_governance_maturity_uplift", "label": "governance maturity uplift", "unit": "level_or_percent"},
+    {"bucket": "adoption", "metric_id": "metric_user_adoption_uplift", "label": "user adoption uplift", "unit": "percent"},
+    {"bucket": "platform_reliability", "metric_id": "metric_platform_slo_attainment", "label": "platform SLO attainment", "unit": "percent"},
+    {"bucket": "delivery_throughput", "metric_id": "metric_release_frequency", "label": "release frequency", "unit": "count_per_period"},
+    {"bucket": "partner_gtm", "metric_id": "metric_partner_sourced_pipeline", "label": "partner-sourced pipeline", "unit": "usd"},
+    {"bucket": "model_performance", "metric_id": "metric_model_eval_pass_rate", "label": "model eval pass rate", "unit": "percent"},
+    {"bucket": "operational_resilience", "metric_id": "metric_incident_reduction", "label": "incident reduction", "unit": "percent"},
+    {"bucket": "compliance_audit", "metric_id": "metric_audit_finding_reduction", "label": "audit finding reduction", "unit": "count_or_percent"},
+    {"bucket": "data_lineage", "metric_id": "metric_lineage_coverage", "label": "lineage coverage", "unit": "percent"},
+    {"bucket": "customer_outcome", "metric_id": "metric_nps_or_satisfaction_uplift", "label": "NPS or satisfaction uplift", "unit": "points_or_percent"}
+  ]
+}

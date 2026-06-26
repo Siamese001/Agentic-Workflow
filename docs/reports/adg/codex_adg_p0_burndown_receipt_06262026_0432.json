@@ -1,0 +1,123 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg-p0-p1-burndown-06262026_0432",
+  "generated_at": "2026-06-26T04:42:28-04:00",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH",
+    "branch": "main",
+    "head": "af31cb047550b507a5734724f9ab4659b6276fcf",
+    "dirty_before": true,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Run full ADG, debug handoff name, then burn P0 items 10_infra_wiring, C1_uwg_bypass_pview, 3_write_sovereignty, and G_REACH_l0_reachability.",
+    "plan_id": "adg-p0-p1-burndown",
+    "files_changed": [
+      "C:\\Git\\Agentic-Workflow-FRESH\\tools\\generate\\generate_full_adg.py",
+      "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\codex_adg_p0_burndown_receipt_06262026_0432.json",
+      "C:\\Users\\amita\\.codex\\automations\\adg-p0-p1-burndown\\memory.md"
+    ]
+  },
+  "execution": {
+    "status": "BLOCKED",
+    "commands": [
+      {
+        "command": "python -m py_compile tools/generate/generate_full_adg.py tools/adg/run_full_adg_audit.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python tools/adg/run_full_adg_audit.py --mode diagnostic --format both --diagnostic-allow-failed-generator --continue-on-p0 --generator-timeout-seconds 7200 --report-timeout-seconds 1800",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m json.tool docs/reports/adg/codex_adg_p0_burndown_receipt_06262026_0432.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "local_sqlite_artifacts",
+        "reason": "ADG MCP transport previously returned Transport closed.",
+        "substitute": "Consumed exact timestamped repair_handoff artifacts from docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "full_adg_repair_handoff",
+        "status": "PASS",
+        "evidence": "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json reports artifact_status=repair_ready for run 06262026_0432."
+      },
+      {
+        "name": "p0_fix_reproduction",
+        "status": "PASS",
+        "evidence": "artifacts/adg/adg_action_queue_06262026_0432.json reproduces four P0 FIX items: 10_infra_wiring, C1_uwg_bypass_pview, 3_write_sovereignty, G_REACH_l0_reachability."
+      },
+      {
+        "name": "p0_edit_wave",
+        "status": "BLOCKED",
+        "evidence": "No P0 edit wave started because local time was 04:42, after the 03:58 edit stop and 04:00 hard target; worktree also had unrelated dirty changes."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "P0 burn did not start even though the full ADG audit produced repair-ready artifacts.",
+    "root_cause": "The repair-ready audit completed after the automation deadline, and the worktree contained unrelated dirty changes. The generator also still has a closeout reporter bug after artifact creation.",
+    "evidence": "Receipt reports artifact_status=repair_ready with P0_FIX=4, ordinary P1_FIX=0, P1_RATCHET_REGRESSION=0; Get-Date returned 2026-06-26T04:42:28-04:00.",
+    "fix_or_next": "next: start a fresh isolated branch/worktree before the deadline, consume the exact 06262026_0432 artifacts or a newer repair-ready run, and execute the P0 queue in order.",
+    "recurrence_guard": "Keep the startup deadline gate before edits; fix the Path/string BCG closeout bug before relying on generator_exit_code for green certification."
+  },
+  "adg": {
+    "run_id": "06262026_0432",
+    "artifact_status": "repair_ready",
+    "certification_status": "diagnostic_only",
+    "generator_exit_code": 1,
+    "report_exit_code": 0,
+    "snapshot_timestamp": "2026-06-26T08:38:43.994761+00:00",
+    "snapshot_sha256": "a1420517b0087cc955e9ee39984e09bb60e656f31e06c145177b74d1d916bdab",
+    "artifact_paths": {
+      "receipt": "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\AUDIT_PIPELINE_RECEIPT.json",
+      "snapshot": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06262026_0432.sqlite",
+      "gate_results": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260626_083843.json",
+      "action_queue": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_06262026_0432.json",
+      "burndown_report": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_06262026_0432.md",
+      "burndown_table": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_06262026_0432.json",
+      "generation_manifest": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06262026_0432.json",
+      "gate_manifest": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06262026_0432.json",
+      "p0_wave_plan": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\issues\\p0_remediation_wave_plan_06262026_0432.json"
+    },
+    "counts": {
+      "p0_fix": 4,
+      "ordinary_p1_fix": 0,
+      "p1_ratchet_regression": 0,
+      "p1_ratchet_floor_backlog": 9,
+      "gate_fix": 4,
+      "gate_track": 18,
+      "gate_clear": 26
+    },
+    "p0_fix_queue": [
+      {"rank": 1, "item": "10_infra_wiring", "rows": 4},
+      {"rank": 2, "item": "C1_uwg_bypass_pview", "rows": 4},
+      {"rank": 3, "item": "3_write_sovereignty", "rows": 957},
+      {"rank": 4, "item": "G_REACH_l0_reachability", "rows": 2794, "baseline": 2786, "net_new": 8}
+    ],
+    "waves": {
+      "generated": 0,
+      "attempted": 0,
+      "completed": 0,
+      "skipped": 4,
+      "skip_reason": "Deadline/edit stop policy and dirty unrelated worktree."
+    },
+    "p1_zero_achieved_by_4am": false,
+    "p1_zero_by_4am_reproducible": false,
+    "p0_zero_achieved": false
+  }
+}
