@@ -80,6 +80,11 @@
   as *unmerged* and SKIPS cleanup. `merge`/`rebase` keep the branch a true ancestor → its worktree +
   local branch are auto-deleted cleanly, which is the desired lifecycle (deleting the merged worktree +
   local branch IS the correct behavior).
+- **apps_rg graph SQLite path-index runtime (2026-06-26):** C0.3 graph traversal keeps JSON canonical and
+  uses generated SQLite objects for reverse paths, siblings, budgets, metric usage, and rejection receipts.
+  Validate with `python apps_rg/fact_inventory/validate_graph_sqlite_path_index.py` plus
+  `python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q`. Detail:
+  `memory/codex/apps_rg_graph_sqlite_path_index_runtime.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

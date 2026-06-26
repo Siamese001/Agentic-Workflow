@@ -22,6 +22,12 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
 )
+from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    query_best_metric_candidates,
+    query_reverse_metric_paths,
+    query_section_evidence_budget,
+    query_sibling_alternatives,
+)
 from apps_rg.runtime.c0.c03_graph_ref_policy import RoleFamilyProjectionError
 
 PROOF_CLASSIFICATION = "graph_context_routing_support_not_claim_proof"
@@ -257,6 +263,55 @@ def assemble_c03_graph_sqlite_context(
             LIMIT 60
             """
         ).fetchall()
+        path_index_status = "AVAILABLE"
+        reverse_path_receipts: list[dict[str, Any]] = []
+        sibling_alternatives: list[dict[str, Any]] = []
+        metric_novelty_candidates: list[dict[str, Any]] = []
+        rejected_candidate_receipts: list[dict[str, Any]] = []
+        section_evidence_budget: dict[str, Any] | None = None
+        try:
+            selected_skill_ids = [str(row[0] or "") for row in fact_links if str(row[0] or "")]
+            reverse_targets = facts_in[:5] or selected_skill_ids[:5]
+            for target in reverse_targets:
+                for row in query_reverse_metric_paths(conn, metric_id=target, limit=12):
+                    reverse_path_receipts.append({"target_node_id": target, **row})
+            for skill_id in list(dict.fromkeys(selected_skill_ids))[:8]:
+                for row in query_sibling_alternatives(conn, node_id=skill_id, limit=5):
+                    sibling_alternatives.append({"node_id": skill_id, **row})
+            metric_novelty_candidates = query_best_metric_candidates(
+                conn,
+                section_id=sec,
+                role_family_key=rf,
+                limit=20,
+            )
+            section_evidence_budget = query_section_evidence_budget(
+                conn,
+                section_id=sec,
+                role_family_key=rf,
+            )
+            conn.row_factory = sqlite3.Row
+            rejected_candidate_receipts = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    SELECT section_id, candidate_node_id, candidate_node_type,
+                           rejected_reason, rejected_at_stage,
+                           competing_selected_node_id, path_signature, created_at
+                    FROM graph_selection_rejections
+                    WHERE section_id = ?
+                    ORDER BY created_at DESC, candidate_node_id
+                    LIMIT 40
+                    """,
+                    (sec,),
+                ).fetchall()
+            ]
+        except sqlite3.Error as exc:
+            path_index_status = f"UNAVAILABLE:{type(exc).__name__}"
+            reverse_path_receipts = []
+            sibling_alternatives = []
+            metric_novelty_candidates = []
+            rejected_candidate_receipts = []
+            section_evidence_budget = None
     finally:
         conn.close()
 
@@ -342,6 +397,12 @@ def assemble_c03_graph_sqlite_context(
             }
             for r in section_elig
         ],
+        "path_index_status": path_index_status,
+        "reverse_path_receipts": reverse_path_receipts,
+        "sibling_alternatives": sibling_alternatives,
+        "metric_novelty_candidates": metric_novelty_candidates,
+        "rejected_candidate_receipts": rejected_candidate_receipts,
+        "section_evidence_budget": section_evidence_budget,
         "proof_classification": PROOF_CLASSIFICATION,
         "explicit_non_claims": [
             "sqlite_graph_rows_are_not_claim_proof",
@@ -362,6 +423,12 @@ def assemble_c03_graph_sqlite_context(
             "fact_links": receipt["selected_fact_links"],
             "section_eligibility": receipt["section_eligibility"],
             "excluded_nodes": receipt["excluded_nodes"],
+            "path_index_status": receipt["path_index_status"],
+            "reverse_path_receipts": receipt["reverse_path_receipts"],
+            "sibling_alternatives": receipt["sibling_alternatives"],
+            "metric_novelty_candidates": receipt["metric_novelty_candidates"],
+            "rejected_candidate_receipts": receipt["rejected_candidate_receipts"],
+            "section_evidence_budget": receipt["section_evidence_budget"],
         },
         "receipt": receipt,
         "sqlite_db_path": str(path),
