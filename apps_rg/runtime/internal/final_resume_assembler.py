@@ -16,6 +16,8 @@ from pathlib import Path
 
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 
 
 from apps_rg.runtime.aggregation.cross_section_x2 import (
@@ -143,18 +145,16 @@ def _sweep_undeclared_assembly_artifacts(output_dir: Path) -> None:
     for — the current one. Stale run-15 provider raws failing patch_run_17's
     scans (2026-06-11) are the precedent.
     """
-    import shutil
-
     from apps_rg.runtime.assembly.final_resume_x2 import ASSEMBLY_ALLOWED_ARTIFACT_FILES
 
     if not output_dir.is_dir():
         return
     for f in output_dir.iterdir():
         if f.is_file() and f.name.lower() not in ASSEMBLY_ALLOWED_ARTIFACT_FILES:
-            f.unlink()
+            _wg.remove_file(f)
     providers_dir = output_dir / "coherence_judge_providers"
     if providers_dir.is_dir():
-        shutil.rmtree(providers_dir)
+        _wg.remove_tree(providers_dir)
 
 
 def assemble_final_resume(
@@ -646,7 +646,7 @@ def assemble_final_resume(
     coherence_required = full_resume_coherence_review_enabled()
     coherence_review: dict[str, Any] | None = None
 
-    paths.output_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(paths.output_dir)
     _sweep_undeclared_assembly_artifacts(paths.output_dir)
 
     if coherence_required:
@@ -730,13 +730,13 @@ def assemble_final_resume(
 
 
 
-    paths.output_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(paths.output_dir)
 
 
 
     fp_path = paths.output_dir / "orchestration_fingerprint.json"
 
-    fp_path.write_text(json.dumps(fingerprint, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(fp_path, json.dumps(fingerprint, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 
@@ -785,18 +785,20 @@ def assemble_final_resume(
 
     }
 
-    cross_x2_path.write_text(json.dumps(cross_x2_blob, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(cross_x2_path, json.dumps(cross_x2_blob, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     coherent_policy_path = paths.output_dir / "coherent_rollup_policy.json"
 
-    coherent_policy_path.write_text(
+    _wg.write_text(
+        coherent_policy_path,
         json.dumps(coherent_policy, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
     review_policy_path = paths.output_dir / "review_lane_policy.json"
 
-    review_policy_path.write_text(
+    _wg.write_text(
+        review_policy_path,
         json.dumps(review_policy, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
@@ -817,13 +819,14 @@ def assemble_final_resume(
 
     }
 
-    kept_path.write_text(json.dumps(kept_blob, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(kept_path, json.dumps(kept_blob, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 
     overlap_path = paths.output_dir / "overlap_decisions.json"
 
-    overlap_path.write_text(
+    _wg.write_text(
+        overlap_path,
 
         json.dumps(
 
@@ -851,7 +854,8 @@ def assemble_final_resume(
         overlap_decisions=overlap_decisions,
     )
 
-    (paths.output_dir / "cross_section_warn_resolution.json").write_text(
+    _wg.write_text(
+        paths.output_dir / "cross_section_warn_resolution.json",
         json.dumps(warn_resolution, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
@@ -860,7 +864,8 @@ def assemble_final_resume(
 
     final_fp = paths.output_dir / "final_resume.json"
 
-    final_fp.write_text(
+    _wg.write_text(
+        final_fp,
 
         json.dumps(final_resume, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
 
@@ -900,7 +905,8 @@ def assemble_final_resume(
 
     manifest_body["cross_section_x2_gate_outputs"] = paths.rel(cross_x2_path)
 
-    manifest_fp.write_text(
+    _wg.write_text(
+        manifest_fp,
 
         json.dumps(manifest_body, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
 
@@ -926,7 +932,8 @@ def assemble_final_resume(
 
     }
 
-    x2_fp.write_text(
+    _wg.write_text(
+        x2_fp,
 
         json.dumps(x2_blob, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
 
@@ -938,7 +945,8 @@ def assemble_final_resume(
 
     preflight_fp = paths.output_dir / "aggregation_preflight.json"
 
-    preflight_fp.write_text(
+    _wg.write_text(
+        preflight_fp,
 
         json.dumps(
 
@@ -1058,7 +1066,8 @@ def assemble_final_resume(
 
     }
 
-    receipt_fp.write_text(
+    _wg.write_text(
+        receipt_fp,
 
         json.dumps(receipt_blob, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
 
