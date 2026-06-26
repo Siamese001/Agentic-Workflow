@@ -33,6 +33,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 try:
     from dotenv import load_dotenv
 
@@ -144,8 +146,8 @@ def sha16(value: str | bytes) -> str:
 
 
 def write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.ensure_dir(path.parent)
+    _wg.write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def load_base_resume() -> tuple[dict[str, Any], Path, str]:
@@ -912,7 +914,7 @@ def run_ibm_bullets_execution(
     )
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
-        artifact_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(artifact_dir)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(
             REPO_ROOT,
@@ -963,7 +965,8 @@ def run_ibm_bullets_execution(
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(
+    _wg.write_text(
+        artifact_dir / "compiled_prompt.txt",
         json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1112,7 +1115,7 @@ def run_ibm_bullets_execution(
         invalid_reason=invalid_reason if parse_status != "OK" else None,
         claim_id_prefix="ibm_bullets_claim",
     )
-    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+    _wg.write_text(artifact_dir / "raw_model_output.txt", raw_output or "", encoding="utf-8")
     write_json(
         artifact_dir / "parsed_output.json",
         {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
@@ -1174,7 +1177,7 @@ def run_ibm_bullets_execution(
         "compiler_template_id": section_compiled.artifact.template_id,
         "input_payload_hash": input_payload_hash,
     }
-    (artifact_dir / "ibm_bullets_output.txt").write_text(bullets_display_text(bullets) + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "ibm_bullets_output.txt", bullets_display_text(bullets) + "\n", encoding="utf-8")
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
     write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
     write_json(artifact_dir / "text_claim_coverage.json", coverage)
@@ -1503,9 +1506,7 @@ def run_ibm_bullets_execution(
             artifact_dir / "parsed_output.json",
             {"parsed": state.parsed, "parse_error": parse_error, "parse_status": state.parse_status},
         )
-        (artifact_dir / "ibm_bullets_output.txt").write_text(
-            state.display_text + "\n", encoding="utf-8"
-        )
+        _wg.write_text(artifact_dir / "ibm_bullets_output.txt", state.display_text + "\n", encoding="utf-8")
         write_json(artifact_dir / "claim_ledger.json", state.claim_ledger)
         write_json(artifact_dir / "text_claim_coverage.json", state.coverage)
         write_json(artifact_dir / "canonical_claim_ledger_v2.json", state.canon_doc)
@@ -1702,7 +1703,7 @@ def run_ibm_bullets_execution(
         lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
     lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:", str(artifact_dir / "l6_shadow_eval_package.json"), "offline_only=true"])
     output_text = "\n".join(lines)
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "command_output.txt", output_text + "\n", encoding="utf-8")
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
     from apps_rg.runtime.section_one_spine_certification_lane_integration import (
