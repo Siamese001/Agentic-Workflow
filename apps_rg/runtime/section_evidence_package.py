@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.runtime.section_binding_taxonomy import (
     APPS_RG_DOMAIN_ARTIFACTS,
     APPS_RG_SECTION_SHIM_PREFERRED_NAMES,
@@ -117,7 +119,7 @@ def mirror_preferred_section_shim_names(artifact_dir: Path) -> list[dict[str, st
         if not legacy_path.is_file():
             continue
         if not preferred_path.exists():
-            preferred_path.write_bytes(legacy_path.read_bytes())
+            _wg.write_bytes(preferred_path, legacy_path.read_bytes())
         mirrored.append({"legacy": legacy, "preferred": preferred})
     return mirrored
 
@@ -1126,7 +1128,7 @@ def _patch_lane_run_bundle_index(
     doc["correlation_missing_reason"] = correlation_missing_reason
     if integrated_dir is not None:
         doc["correlated_integrated_run_id"] = integrated_dir.name
-    idx_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(idx_path, json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def sync_binding_manifest_with_correlation(
@@ -1235,7 +1237,8 @@ def finalize_section_evidence_package(
         verified_external_refs=verified,
         repo_root=repo_root,
     )
-    (artifact_dir / "section_l7_binding_manifest.json").write_text(
+    _wg.write_text(
+        artifact_dir / "section_l7_binding_manifest.json",
         json.dumps(binding_synced, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1250,7 +1253,8 @@ def finalize_section_evidence_package(
         correlation_method=corr.correlation_method,
         correlation_missing_reason=corr.correlation_missing_reason,
     )
-    (artifact_dir / RUN_LINKS_LANE_FILENAME).write_text(
+    _wg.write_text(
+        artifact_dir / RUN_LINKS_LANE_FILENAME,
         json.dumps(links_doc, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1263,7 +1267,8 @@ def finalize_section_evidence_package(
         verified_external_refs=verified,
         integrated_dir=integrated,
     )
-    (artifact_dir / SUBPHASE_COVERAGE_INDEX_ARTIFACT).write_text(
+    _wg.write_text(
+        artifact_dir / SUBPHASE_COVERAGE_INDEX_ARTIFACT,
         json.dumps(subphase_doc, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1300,7 +1305,8 @@ def finalize_section_evidence_package(
         semantic_cache_quarantine=sc_quarantine,
         r1b_governed_receipt_chain=r1b_chain.to_dict(),
     )
-    (artifact_dir / EVIDENCE_PACKAGE_INDEX_ARTIFACT).write_text(
+    _wg.write_text(
+        artifact_dir / EVIDENCE_PACKAGE_INDEX_ARTIFACT,
         json.dumps(pkg, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )

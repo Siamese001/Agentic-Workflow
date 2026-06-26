@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.runtime.spine.front_contracts import fixture_dev_bypass_active
 from apps_rg.runtime.section_l2_spine_receipt import (
     L2_EXECUTION_PACKET_ARTIFACT,
@@ -327,7 +329,7 @@ def emit_section_exit_spine_artifacts(
     runtime_payload: dict[str, Any],
 ) -> dict[str, Path]:
     """Write all Wave 6 Exit artifacts after SealedL2Artifact exists."""
-    artifact_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(artifact_dir)
     assert_section_exit_spine_preconditions(runtime_payload, artifact_dir)
 
     erp = build_exit_review_packet_for_section(
@@ -336,15 +338,15 @@ def emit_section_exit_spine_artifacts(
         artifact_dir=artifact_dir,
     )
     p_erp = artifact_dir / EXIT_REVIEW_PACKET_ARTIFACT
-    p_erp.write_text(json.dumps(erp, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(p_erp, json.dumps(erp, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     x1 = build_section_exit_x1_result(section_id=section_id, artifact_dir=artifact_dir)
     p_x1 = artifact_dir / SECTION_EXIT_X1_RESULT_ARTIFACT
-    p_x1.write_text(json.dumps(x1, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(p_x1, json.dumps(x1, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     x2 = build_section_exit_x2_result(section_id=section_id, artifact_dir=artifact_dir)
     p_x2 = artifact_dir / SECTION_EXIT_X2_RESULT_ARTIFACT
-    p_x2.write_text(json.dumps(x2, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(p_x2, json.dumps(x2, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     edr = build_exit_disposition_receipt_for_section(
         section_id=section_id,
@@ -352,7 +354,7 @@ def emit_section_exit_spine_artifacts(
         artifact_dir=artifact_dir,
     )
     p_edr = artifact_dir / EXIT_DISPOSITION_RECEIPT_ARTIFACT
-    p_edr.write_text(json.dumps(edr, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(p_edr, json.dumps(edr, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     receipt = build_exit_spine_receipt(
         section_id=section_id,
@@ -360,7 +362,7 @@ def emit_section_exit_spine_artifacts(
         artifact_dir=artifact_dir,
     )
     p_receipt = artifact_dir / EXIT_SPINE_RECEIPT_ARTIFACT
-    p_receipt.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(p_receipt, json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     runtime_payload["exit_review_packet_ref"] = EXIT_REVIEW_PACKET_ARTIFACT
     runtime_payload["exit_disposition_receipt_ref"] = EXIT_DISPOSITION_RECEIPT_ARTIFACT

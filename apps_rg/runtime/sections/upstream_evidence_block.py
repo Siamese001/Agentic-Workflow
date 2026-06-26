@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     build_canonical_claim_ledger_v2_payload,
 )
@@ -16,8 +18,8 @@ BLOCKED_STATUS = "REQUIRED_PROOF_ABSENT"
 
 
 def _write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.ensure_dir(path.parent)
+    _wg.write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def _blocked_exceptions() -> tuple[type[BaseException], ...]:
@@ -47,7 +49,7 @@ def write_required_proof_absent_artifacts(
     """Write a non-certifying lane bundle when upstream C0/FEC proof is absent."""
     sid = str(section_id)
     provider_name = str(provider or "")
-    artifact_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(artifact_dir)
     runtime_payload["runtime_generation_status"] = BLOCKED_STATUS
     runtime_payload["blocked_before_provider"] = True
     runtime_payload["upstream_evidence_gap_reason"] = reason
@@ -143,8 +145,8 @@ def write_required_proof_absent_artifacts(
         },
     )
     if output_filename:
-        (artifact_dir / output_filename).write_text("", encoding="utf-8")
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+        _wg.write_text(artifact_dir / output_filename, "", encoding="utf-8")
+    _wg.write_text(artifact_dir / "command_output.txt", output_text + "\n", encoding="utf-8")
 
     finalize_runtime_proof_run(
         repo_root,
@@ -200,7 +202,7 @@ def write_empty_selection_short_circuit_artifacts(
     provider_name = str(provider or "")
     run_id = str(runtime_payload.get("run_id") or "")
     meta = gen_meta or {}
-    artifact_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(artifact_dir)
     runtime_payload["empty_selection_pre_x2"] = True
     runtime_payload["empty_selection_pre_x2_reason"] = reason
 
@@ -296,8 +298,8 @@ def write_empty_selection_short_circuit_artifacts(
         },
     )
     if output_filename:
-        (artifact_dir / output_filename).write_text("", encoding="utf-8")
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+        _wg.write_text(artifact_dir / output_filename, "", encoding="utf-8")
+    _wg.write_text(artifact_dir / "command_output.txt", output_text + "\n", encoding="utf-8")
 
     finalize_runtime_proof_run(
         repo_root,
