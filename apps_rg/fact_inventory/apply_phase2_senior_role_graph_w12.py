@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.fact_inventory.augmented_skills_graph import assert_skills_not_broad_ledger_authority
 from apps_rg.fact_inventory.materialize_arsenal_from_design import build_ledger_payload
 from apps_rg.fact_inventory.materialize_career_tracks_p1 import run_materialize as rematerialize_career_tracks
@@ -440,7 +442,7 @@ def _patch_career_taxonomy(pillar_ids: list[str]) -> None:
         if pid in (P_HYPERSCALER, P_APPLIED_AI) and pid not in inc:
             inc.append(pid)
     track2["pillars_include_confirmed"] = inc
-    TAXONOMY_PATH.write_text(json.dumps(tax, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(TAXONOMY_PATH, json.dumps(tax, indent=2) + "\n", encoding="utf-8")
 
 
 def _counts(ledger: dict[str, Any]) -> dict[str, int]:
@@ -506,11 +508,11 @@ def main() -> int:
         design.get("senior_role_w12_partner_matrix") or []
     )
     design["stats"]["w12_partner_activation_criteria_rows"] = len(W12_ACTIVATION_CRITERIA)
-    DESIGN_PATH.write_text(json.dumps(design, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(DESIGN_PATH, json.dumps(design, indent=2) + "\n", encoding="utf-8")
     _patch_career_taxonomy(pillars_added)
 
     payload = build_ledger_payload(design)
-    OUT_LEDGER.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(OUT_LEDGER, json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     rematerialize_career_tracks(write=True)
 
     ledger = load_master_skills_arsenal_ledger(path=OUT_LEDGER)
@@ -577,8 +579,9 @@ def main() -> int:
         "explicit_non_claims": EXPLICIT_NON_CLAIMS,
         "w8_w11_integrity_check": "PASS",
     }
-    RECEIPT_JSON.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
-    RECEIPT_MD.write_text(
+    _wg.write_text(RECEIPT_JSON, json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(
+        RECEIPT_MD,
         "\n".join(
             [
                 "# W12 partner / hyperscaler graph receipt",
