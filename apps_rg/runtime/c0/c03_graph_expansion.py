@@ -93,6 +93,8 @@ def _bind_atom(
     binding_mode: str,
     skill_pillar_by_id: dict[str, str] | None = None,
     pillar_hints: tuple[str, ...] = (),
+    sqlite_selection_by_fact: dict[str, list[dict[str, Any]]] | None = None,
+    sqlite_rejected_by_fact: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     fid = str(atom.get("fact_id") or "")
     tags = [str(t).lower() for t in (atom.get("skill_tags") or [])]
@@ -102,8 +104,25 @@ def _bind_atom(
     strength = GRAPH_STRENGTH_NONE
     claim_support = False
     binding_source = "none"
+    selected_sqlite_candidates = list((sqlite_selection_by_fact or {}).get(fid) or [])
+    rejected_sqlite_candidates = list((sqlite_rejected_by_fact or {}).get(fid) or [])
 
-    if binding_mode != BINDING_MODE_TAG_LABEL_ONLY:
+    if binding_mode != BINDING_MODE_TAG_LABEL_ONLY and selected_sqlite_candidates:
+        for candidate in selected_sqlite_candidates:
+            sid = str(candidate.get("skill_id") or "").strip()
+            if not sid or sid in graph_nodes:
+                continue
+            graph_nodes.append(sid)
+        if graph_nodes:
+            labels.append(REL_DIRECT_SUPPORT)
+            strength = GRAPH_STRENGTH_DIRECT
+            binding_source = "skill_fact_links"
+            if atom.get("proof_status") == "proof_eligible" and any(
+                bool(c.get("claim_eligibility")) for c in selected_sqlite_candidates
+            ):
+                claim_support = True
+
+    if binding_mode != BINDING_MODE_TAG_LABEL_ONLY and not graph_nodes:
         eligible_links = sorted(
             links_by_fact.get(fid) or [],
             key=lambda lk: _link_sort_key(
@@ -165,6 +184,47 @@ def _bind_atom(
         "graph_support_strength": strength,
         "claim_support_allowed": claim_support,
         "binding_source": binding_source,
+        "binding_query_source": (
+            "sqlite_ranked_skill_fact_links"
+            if selected_sqlite_candidates and binding_source == "skill_fact_links"
+            else binding_source
+        ),
+        "selected_metric_buckets": sorted(
+            {
+                str(c.get("metric_bucket") or "general_business_outcome")
+                for c in selected_sqlite_candidates
+            }
+        ),
+        "rejected_sibling_skill_refs": [
+            str(c.get("skill_id") or "")
+            for c in rejected_sqlite_candidates
+            if str(c.get("skill_id") or "")
+        ],
+        "rejected_sibling_reasons": [
+            {
+                "skill_id": str(c.get("skill_id") or ""),
+                "reason": str(c.get("rejection_reason") or ""),
+                "failed_gate": str(c.get("failed_gate") or ""),
+                "metric_bucket": str(c.get("metric_bucket") or "general_business_outcome"),
+            }
+            for c in rejected_sqlite_candidates
+            if str(c.get("skill_id") or "")
+        ],
+        "sqlite_ranked_candidates": [
+            {
+                "skill_id": str(c.get("skill_id") or ""),
+                "score": c.get("score"),
+                "base_score": c.get("base_score"),
+                "metric_bucket": str(c.get("metric_bucket") or "general_business_outcome"),
+                "skill_family": str(c.get("skill_family") or "unclassified"),
+                "path_signature": str(c.get("path_signature") or ""),
+                "prior_metric_usage": int(c.get("prior_metric_usage") or 0),
+                "sibling_alternatives": list(c.get("sibling_alternatives") or [])[:5],
+                "penalties": dict(c.get("penalties") or {}),
+            }
+            for c in selected_sqlite_candidates
+            if str(c.get("skill_id") or "")
+        ],
         "reason": "graph expansion over C0.2 atoms; no new facts minted",
     }
 
@@ -201,6 +261,26 @@ def expand_c03_graph_bindings(
         role_family_key, repo_root=repo_root
     )
     skill_pillar_by_id = _load_skill_pillar_index(repo_root)
+    from apps_rg.runtime.c0.c03_sqlite_graph_selection import (
+        select_c03_sqlite_graph_candidates,
+    )
+
+    sqlite_selection = select_c03_sqlite_graph_candidates(
+        section_id=section_id,
+        selected_fact_ids=fact_ids,
+        role_family_key=role_family_key,
+        pillar_hints=pillar_hints,
+        repo_root=repo_root,
+        db_path=ctx.get("sqlite_db_path"),
+    )
+    sqlite_selection_by_fact = {
+        str(fid): list(rows)
+        for fid, rows in (sqlite_selection.get("selected_by_fact") or {}).items()
+    }
+    sqlite_rejected_by_fact = {
+        str(fid): list(rows)
+        for fid, rows in (sqlite_selection.get("rejected_by_fact") or {}).items()
+    }
     bindings = [
         _bind_atom(
             atom=atom,
@@ -212,6 +292,8 @@ def expand_c03_graph_bindings(
             binding_mode=binding_mode,
             skill_pillar_by_id=skill_pillar_by_id,
             pillar_hints=pillar_hints,
+            sqlite_selection_by_fact=sqlite_selection_by_fact,
+            sqlite_rejected_by_fact=sqlite_rejected_by_fact,
         )
         for atom in atoms
     ]
@@ -263,6 +345,37 @@ def expand_c03_graph_bindings(
             "fact_links_available": sum(len(v) for v in links_by_fact.values()),
             "pillar_hint_count": len(pillar_hints),
             "pillar_aligned_direct_count": pillar_aligned,
+            "sqlite_ranked_candidate_count": int(sqlite_selection.get("candidate_count") or 0),
+            "sqlite_selected_skill_count": int(sqlite_selection.get("selected_skill_count") or 0),
+            "rejected_sibling_skill_count": int(
+                sqlite_selection.get("rejected_sibling_skill_count") or 0
+            ),
+            "sqlite_selection_penalty_count": int(sqlite_selection.get("penalty_count") or 0),
+            "prior_metric_usage_penalty_count": int(
+                sqlite_selection.get("prior_metric_usage_penalty_count") or 0
+            ),
+            "sibling_alternative_count": int(
+                sqlite_selection.get("sibling_alternative_count") or 0
+            ),
+            "metric_bucket_counts": dict(sqlite_selection.get("metric_bucket_counts") or {}),
+        },
+        "sqlite_selection_receipt": {
+            "schema_version": sqlite_selection.get("schema_version"),
+            "selection_policy": sqlite_selection.get("selection_policy"),
+            "graph_source": sqlite_selection.get("graph_source"),
+            "graph_version": sqlite_selection.get("graph_version"),
+            "graph_hash": sqlite_selection.get("graph_hash"),
+            "metric_policy_version": sqlite_selection.get("metric_policy_version"),
+            "candidate_count": sqlite_selection.get("candidate_count"),
+            "selected_skill_count": sqlite_selection.get("selected_skill_count"),
+            "rejected_sibling_skill_count": sqlite_selection.get("rejected_sibling_skill_count"),
+            "sibling_alternative_count": sqlite_selection.get("sibling_alternative_count"),
+            "prior_metric_usage_penalty_count": sqlite_selection.get(
+                "prior_metric_usage_penalty_count"
+            ),
+            "metric_bucket_counts": dict(sqlite_selection.get("metric_bucket_counts") or {}),
+            "skill_family_counts": dict(sqlite_selection.get("skill_family_counts") or {}),
+            "rejection_receipts": list(sqlite_selection.get("rejection_receipts") or [])[:20],
         },
         "graph_context_ref": ctx.get("sqlite_db_path") or ctx.get("graph_sqlite_path") or "",
         "new_atoms_created": 0,

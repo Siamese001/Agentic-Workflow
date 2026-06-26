@@ -1,4 +1,7 @@
-"""W9 — whole-run R1B preflight lookup, compatibility, fallthrough."""
+"""apps-test-model: APP CONTRACT.
+
+W9 — whole-run R1B preflight lookup, compatibility, fallthrough.
+"""
 
 from __future__ import annotations
 
@@ -7,7 +10,12 @@ from unittest.mock import patch
 
 import pytest
 
-from apps_rg.cache.r1b_constants import CACHE_GRAIN_ROLE_TARGET_RUN, C0_FACT_VECTORS_COLLECTION
+from apps_rg.cache.r1b_constants import (
+    CACHE_GRAIN_ROLE_TARGET_RUN,
+    C0_FACT_VECTORS_COLLECTION,
+    R1B_REUSE_AUTHORITY_SCOPE,
+    R1B_SECTION_REUSE_AUTHORITY,
+)
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_whole_run_preflight import (
     PREFLIGHT_ORDER,
@@ -52,6 +60,30 @@ def test_accepted_hit_on_matching_intent(tmp_path: Path) -> None:
     assert result.c0_fact_vectors_consulted is False
 
 
+def test_r1b_hit_receipts_are_whole_run_only_authority(tmp_path: Path) -> None:
+    store = R1BSemanticCacheStore(tmp_path)
+    _seed_admissible(store)
+    result = execute_whole_run_r1b_preflight(
+        raw_request=_match_request(),
+        runs_dir=tmp_path,
+        similarity_threshold=0.5,
+        prompt_profile_hash="prompt_profile_w7_v1",
+        gate_profile_hash="gate_profile_w7_v1",
+    )
+
+    receipt = result.to_dict()
+    assert result.probe is not None
+    assert result.terminal_packet is not None
+    for surface in (receipt, result.probe, result.terminal_packet):
+        policy = surface["reuse_authority_policy"]
+        assert policy["reuse_scope"] == R1B_REUSE_AUTHORITY_SCOPE
+        assert policy["whole_run_hit_can_skip_generation_pipeline"] is True
+        assert policy["section_level_semantic_hit_can_skip_lane"] is False
+        assert policy["proof_lock_required_for_section_reuse"] is True
+        assert surface["section_level_lane_skip_authorized"] is False
+        assert surface["section_level_semantic_reuse_authority"] == R1B_SECTION_REUSE_AUTHORITY
+
+
 def test_semantic_miss_fallthrough(tmp_path: Path) -> None:
     store = R1BSemanticCacheStore(tmp_path)
     _seed_admissible(store)
@@ -92,9 +124,18 @@ def test_child_chunks_inspected_not_independent_lookup(tmp_path: Path) -> None:
     )
     assert result.child_chunk_inspection is not None
     assert result.child_chunk_inspection["independent_chunk_lookup_performed"] is False
+    assert result.child_chunk_inspection["section_level_lane_skip_authorized"] is False
+    assert (
+        result.child_chunk_inspection["reuse_authority_policy"][
+            "section_level_semantic_hit_can_skip_lane"
+        ]
+        is False
+    )
     for row in result.child_chunk_inspection["chunks_inspected"]:
         assert row["used_as_lookup_key"] is False
         assert row["independent_cache_identity"] is False
+        assert row["section_level_lane_skip_authorized"] is False
+        assert row["reuse_authority"] == "parent_bound_compatibility_inspection_only"
 
 
 def test_r1b_not_c0_fact_vectors(tmp_path: Path) -> None:
@@ -111,6 +152,7 @@ def test_r1b_not_c0_fact_vectors(tmp_path: Path) -> None:
     assert C0_FACT_VECTORS_COLLECTION == "fact_vectors"
     assert result.probe is not None
     assert result.probe.get("not_c0_fact_vectors") is True
+    assert result.probe["reuse_authority_policy"]["not_c0_fact_vectors"] is True
 
 
 def test_main_r1a_before_r1b_order(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

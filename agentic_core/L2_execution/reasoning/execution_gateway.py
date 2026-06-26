@@ -17,7 +17,7 @@ from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace
 from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContractViolation, ToolResult
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

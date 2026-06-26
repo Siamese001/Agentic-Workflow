@@ -20,12 +20,14 @@ from apps_rg.runtime.dispatch.executive_summary_pa import (
     load_executive_summary_example_after,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    append_executive_summary_x1d_x2_gate_dicts,
     check_exec_summary_jd_alignment_proof_flags,
     check_exec_summary_meta_filler_patterns,
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
     check_exec_summary_sentence_count_6,
+    check_north_star_style_example_echo_unsupported,
     check_prompt_template_authority,
     check_synthesis_quality,
     EXPECTED_PROMPT_ID,
@@ -209,6 +211,19 @@ def test_style_exemplars_pass_no_credential_dump_gate():
         assert ok, f"{label}: {reason}"
 
 
+def test_north_star_echo_gate_counts_role_episode_metric_values_as_support():
+    text = "Platform productization generated $22M in IP-led revenue with 20% gross margin expansion."
+    facts = [
+        {
+            "fact_id": "reb_unify_platform_commercialization_leadership",
+            "claim_text": "Platform productization, IP-led revenue, margin expansion, team scale",
+            "metric_values": ["$22M IP-led revenue", "20% gross margin expansion"],
+        }
+    ]
+    ok, reason = check_north_star_style_example_echo_unsupported(text, facts)
+    assert ok, reason
+
+
 def test_synthesis_quality_requires_six_sentences():
     short = (
         "An experienced engineering executive with a strong background in platforms. "
@@ -251,3 +266,22 @@ def test_run_x2_gates_does_not_emit_retired_srfs_product_gate_ids():
     )
     emitted = {g.gate_id for g in gates}
     assert not emitted & RETIRED_EXEC_SUMMARY_X2_GATE_IDS
+
+
+def test_post_x2_judge_presence_uses_runtime_required_providers(tmp_path: Path):
+    rows = append_executive_summary_x1d_x2_gate_dicts(
+        x1d_judges=[{"provider_key": "gemini_pro", "evaluator_mode": "MODEL_BACKED"}],
+        artifacts_dir=tmp_path,
+        required_providers=["gemini_pro"],
+    )
+    required_gate = next(r for r in rows if r["gate_id"] == "x2_x1d_required_judges_present")
+    assert required_gate["pass"] is True
+
+    rows = append_executive_summary_x1d_x2_gate_dicts(
+        x1d_judges=[{"provider_key": "gemini_pro", "evaluator_mode": "MODEL_BACKED"}],
+        artifacts_dir=tmp_path,
+        required_providers=["gemini_pro", "openai_chatgpt"],
+    )
+    required_gate = next(r for r in rows if r["gate_id"] == "x2_x1d_required_judges_present")
+    assert required_gate["pass"] is False
+    assert "openai_chatgpt" in str(required_gate["failure_reason"])

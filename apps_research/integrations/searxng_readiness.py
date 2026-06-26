@@ -133,7 +133,21 @@ def build_report(
     restart_wait_seconds: float = 8.0,
 ) -> SearxngReadinessReport:
     report = SearxngReadinessReport(container_name=container_name, base_url=base_url)
-    inspected = _inspect_container(container_name)
+    try:
+        inspected = _inspect_container(container_name)
+    except DockerCommandError as exc:
+        ready, detail = _probe_json_search(base_url, timeout=probe_timeout)
+        if not ready:
+            raise
+        report.steps.append(StepResult("inspect", "WARN", f"docker unavailable: {exc}"))
+        report.steps.append(StepResult("restart_policy", "WARN", "unverified_docker_unavailable"))
+        report.steps.append(StepResult("running", "PASS", "json endpoint reachable"))
+        report.steps.append(StepResult("json_search", "PASS", detail))
+        report.running = True
+        report.restart_policy = "unverified_docker_unavailable"
+        report.json_search_ready = True
+        report.status = "PASS"
+        return report
     if inspected is None:
         report.steps.append(StepResult("inspect", "FAIL", f"container {container_name!r} not found"))
         report.status = "FAIL"

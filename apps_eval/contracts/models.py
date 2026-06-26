@@ -27,7 +27,7 @@ class EvalRequest:
     compare_baseline: bool = False
     baseline_path: str = ""
     out_dir: str = "artifacts/apps_eval/runs"
-    emit_l6_handoff: bool = False
+    emit_l6_handoff: bool = True
 
     def __post_init__(self) -> None:
         if self.mode not in {"snapshot", "live_adapter"}:

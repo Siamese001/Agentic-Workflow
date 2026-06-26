@@ -12,6 +12,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from tools.reports.adg_bcg_adapter import build_report_bcg_findings
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
@@ -86,6 +87,111 @@ def compute_certified_rollup(
     return "CERTIFIED"
 
 
+
+def _build_enforcement_bcg_findings(
+    *,
+    certified: str,
+    p0_failed: list[str],
+    plane1_failed: list[str],
+    plane2_failed: list[str],
+    plane3: dict[str, Any],
+    runtime_proof_status: str,
+    require_runtime_proof: bool,
+) -> dict[str, Any]:
+    block_fail = int(plane3.get("block_fail") or 0)
+    ratchet_regressed = int(plane3.get("ratchet_regressed") or 0)
+    if certified == "CERTIFIED":
+        business_read = "ADG enforcement is certified: no P0 bug-gate failure is blocking the current decision."
+        next_step = "Keep the certification path green and monitor diagnostic satellites separately."
+    elif p0_failed:
+        business_read = "ADG enforcement is not certified because at least one generator, manifest, or dispatcher plane failed."
+        next_step = "Repair the first failed enforcement plane, then rerun the ADG dispatcher and certification rollup."
+    else:
+        business_read = "ADG enforcement is not certified because required runtime proof is missing or not attested."
+        next_step = "Produce or attest runtime proof before treating the report as certified."
+
+    priority_rows: list[dict[str, Any]] = []
+    if plane1_failed:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": "Repair generator enforcement failures",
+                "why_it_matters": "Generator-plane failure means the enforcement source may be incomplete before dispatcher results are trusted.",
+                "evidence": f"{len(plane1_failed)} generator failure(s): {', '.join(plane1_failed[:3])}",
+                "next_step": "Fix the failing generator gate or manifest script and regenerate ADG.",
+                "decision": "repair_generator_plane",
+            }
+        )
+    if plane2_failed:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": "Repair snapshot-manifest failures",
+                "why_it_matters": "Snapshot-manifest failures undermine the bridge between graph truth and report truth.",
+                "evidence": f"{len(plane2_failed)} manifest failure(s): {', '.join(plane2_failed[:3])}",
+                "next_step": "Repair the failed snapshot manifest checks and rerun the rollup.",
+                "decision": "repair_snapshot_manifest",
+            }
+        )
+    if block_fail:
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": "Clear dispatcher block failures",
+                "why_it_matters": "Dispatcher block failures are the current stop-the-line evidence for ADG certification.",
+                "evidence": f"Dispatcher block_fail={block_fail}; ratchet_regressed={ratchet_regressed}.",
+                "next_step": "Open the dispatcher results and clear the blocking gate conditions first.",
+                "decision": "clear_dispatcher_blocks",
+            }
+        )
+    if require_runtime_proof and runtime_proof_status != "attested":
+        priority_rows.append(
+            {
+                "priority": len(priority_rows) + 1,
+                "move": "Attest runtime proof",
+                "why_it_matters": "Runtime proof is required for certification and cannot be inferred from static graph health.",
+                "evidence": f"runtime_proof_status={runtime_proof_status}; require_runtime_proof={require_runtime_proof}.",
+                "next_step": "Wire or attest runtime proof, then recompute the certified rollup.",
+                "decision": "attest_runtime_proof",
+            }
+        )
+    if not priority_rows:
+        priority_rows.append(
+            {
+                "priority": 1,
+                "move": "Hold certification posture",
+                "why_it_matters": "No failed enforcement plane was reported in this rollup.",
+                "evidence": "No generator, snapshot-manifest, or dispatcher P0 failures were recorded.",
+                "next_step": "Keep this as the certification baseline and monitor satellites separately.",
+                "decision": "hold",
+            }
+        )
+
+    return build_report_bcg_findings(
+        report_kind="adg_enforcement_report",
+        title="BCG Enforcement Brief",
+        status=certified,
+        status_label="Certification status",
+        business_read=business_read,
+        technical_read=[
+            f"Generator failures: {len(plane1_failed)}",
+            f"Snapshot-manifest failures: {len(plane2_failed)}",
+            f"Dispatcher block failures: {block_fail}",
+            f"Dispatcher ratchet regressions: {ratchet_regressed}",
+            f"Runtime proof status: {runtime_proof_status}",
+        ],
+        priority_rule="Repair generator and manifest proof first, then dispatcher block failures, then runtime-proof attestation.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "Generator failures can make downstream evidence incomplete.",
+            "Snapshot-manifest failures break graph/report trust before dispatcher interpretation.",
+            "Dispatcher block failures are the current stop-the-line certification signal.",
+            "Runtime proof is required only when the certification mode asks for it.",
+        ],
+        next_step=next_step,
+        table_limit=6,
+    )
+
 def build_enforcement_report(
     *,
     snapshot_path: Path | None,
@@ -124,6 +230,15 @@ def build_enforcement_report(
         runtime_proof_status=runtime_proof_status,
         require_runtime_proof=require_runtime_proof,
     )
+    bcg_findings = _build_enforcement_bcg_findings(
+        certified=certified,
+        p0_failed=p0,
+        plane1_failed=plane1_failed,
+        plane2_failed=plane2_failed,
+        plane3=plane3,
+        runtime_proof_status=runtime_proof_status,
+        require_runtime_proof=require_runtime_proof,
+    )
 
     stamp = ts or datetime.now(timezone.utc).strftime("%m%d%Y_%H%M")
     return {
@@ -149,6 +264,7 @@ def build_enforcement_report(
         "certified_rollup": certified,
         "p0_bug_gates_failed": p0,
         "runtime_proof_status": runtime_proof_status,
+        "bcg_findings": bcg_findings,
     }
 
 

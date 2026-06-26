@@ -74,6 +74,24 @@ JD_BRIEFING_FORBIDDEN_FACT_ID_PREFIXES = frozenset(
     {"jd", "briefing", "job_description", "targeting_jd", "targeting_briefing"}
 )
 
+C03_REQUIRED_GRAPH_HARDENING_NODES = frozenset(
+    {
+        "capability_metric_heterogeneity_selection",
+        "capability_reverse_graph_traversal",
+        "capability_sibling_rejection_receipts",
+        "skill_c03_metric_heterogeneity_selection",
+        "skill_c03_reverse_traversal_receipts",
+        "skill_c03_sibling_skill_rejection_reasoning",
+    }
+)
+
+C03_REQUIRED_GRAPH_HARDENING_EDGE_TYPES = frozenset(
+    {
+        "capability_domain_contains_skill",
+        "skill_supported_by_fact",
+    }
+)
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -252,11 +270,42 @@ def validate_w4a_graph_shape(ledger: dict[str, Any]) -> None:
                 raise ValueError(f"graph edge {edge.get('edge_id')} missing {field}")
 
 
+def validate_c03_graph_hardening_shape(ledger: dict[str, Any]) -> None:
+    """Validate the additive C0.3 graph hardening layer when present.
+
+    This is intentionally not required for older ledgers. Once the overwrite is
+    applied, all required nodes and edge types must exist and must remain graph
+    authority, not broad ledger fallback.
+    """
+    marker = (ledger.get("metadata") or {}).get("c03_actual_graph_full_zero_loss_overwrite")
+    if not marker:
+        return
+    node_ids = {str(n.get("node_id")) for n in ledger.get("graph_nodes") or [] if isinstance(n, dict)}
+    missing = sorted(C03_REQUIRED_GRAPH_HARDENING_NODES - node_ids)
+    if missing:
+        raise ValueError(f"C0.3 graph hardening missing nodes: {missing}")
+    edge_types = {str(e.get("edge_type")) for e in ledger.get("graph_edges") or [] if isinstance(e, dict)}
+    missing_edge_types = sorted(C03_REQUIRED_GRAPH_HARDENING_EDGE_TYPES - edge_types)
+    if missing_edge_types:
+        raise ValueError(f"C0.3 graph hardening missing edge types: {missing_edge_types}")
+    for sid in (n for n in C03_REQUIRED_GRAPH_HARDENING_NODES if n.startswith("skill_")):
+        linked = [
+            e
+            for e in ledger.get("graph_edges") or []
+            if isinstance(e, dict)
+            and str(e.get("source_node_id")) == sid
+            and str(e.get("edge_type")) == "skill_supported_by_fact"
+        ]
+        if not linked:
+            raise ValueError(f"C0.3 hardening skill has no skill_supported_by_fact edge: {sid}")
+
+
 def validate_arsenal_ledger_shape(ledger: dict[str, Any]) -> None:
     for key in REQUIRED_TOP_LEVEL:
         if key not in ledger:
             raise ValueError(f"arsenal ledger missing top-level key: {key}")
     validate_w4a_graph_shape(ledger)
+    validate_c03_graph_hardening_shape(ledger)
     rows = ledger.get("skill_rows")
     if not isinstance(rows, list):
         raise TypeError("skill_rows must be list")
@@ -281,4 +330,3 @@ def assert_no_jd_briefing_as_proof_fact_ids(fact_ids: Iterable[str]) -> None:
     for fid in fact_ids:
         if _is_jd_briefing_fact_id(str(fid)):
             raise ValueError(f"JD/briefing cannot be proof fact id: {fid}")
-

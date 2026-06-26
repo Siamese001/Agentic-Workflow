@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import (
     OrchestrationHandoffContract,
 )

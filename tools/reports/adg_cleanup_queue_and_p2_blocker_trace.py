@@ -451,6 +451,39 @@ def build_adg_cleanup_queue_and_p2_blocker_trace(
     if dead_code_report is None and sqlite_path is None and ratchet_doc is None:
         overall_status = "missing"
 
+    cleanup_brief = (cleanup.get("brief") or {}) if isinstance(cleanup, dict) else {}
+    p2_brief = (p2.get("brief") or {}) if isinstance(p2, dict) else {}
+    priority_rows = list((cleanup.get("priority_rows") or [])[:3]) + list((p2.get("priority_rows") or [])[:3])
+    bcg_findings = build_bcg_brief(
+        title="BCG Cleanup + P2 Blocker Brief",
+        status=overall_status.upper(),
+        status_label="Trace status",
+        secondary_statuses={
+            "Cleanup status": str(cleanup.get("status") or "missing"),
+            "P2 status": str(p2.get("status") or "missing"),
+        },
+        business_read=(
+            "Use this report to choose between cleanup triage and P2 blocker burn-down; do not delete code unless the dead-code brief explicitly approves it."
+        ),
+        technical_read=[
+            str(cleanup_brief.get("business_read") or "Cleanup brief unavailable."),
+            str(p2_brief.get("business_read") or p2.get("business_read") or "P2 brief unavailable."),
+            f"Live cleanup queue rows: {len(cleanup.get('live_queue') or [])}",
+            f"Archived cleanup queue rows: {len(cleanup.get('archived_queue') or [])}",
+            f"P2 delta: {(p2.get('summary') or {}).get('delta', 'unknown')}",
+        ],
+        priority_rule="Deletions require dead-code proof; live unresolved-import cleanup outranks archived noise; P2 ceiling work outranks broad cleanup when over ceiling.",
+        priority_rows=priority_rows,
+        why_this_order=[
+            "Deletion is irreversible, so it requires the strongest proof.",
+            "Live unresolved-import noise reduces trust in the next ADG scan.",
+            "P2 over-ceiling hygiene debt blocks the ratchet until paid down or intentionally rebaselined.",
+            "Archived or obsolete surfaces stay deferred unless they affect live paths.",
+        ],
+        next_step="Follow the first live cleanup or P2 blocker row, then rerun ADG.",
+        table_limit=6,
+    )
+
     return {
         "artifact_kind": "adg_cleanup_queue_and_p2_blocker_trace",
         "status": overall_status,
@@ -464,6 +497,11 @@ def build_adg_cleanup_queue_and_p2_blocker_trace(
         },
         "cleanup": cleanup,
         "p2": p2,
+        "bcg_findings": {
+            "schema_version": "1.0",
+            "report_kind": "adg_cleanup_queue_and_p2_blocker_trace",
+            "brief": bcg_findings,
+        },
         "source_snapshots": {
             "sqlite_manifest": sqlite_manifest or {},
             "p2_ratchet": ratchet_doc or {},

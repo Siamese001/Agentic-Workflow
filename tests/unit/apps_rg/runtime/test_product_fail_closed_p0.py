@@ -126,10 +126,41 @@ def test_lane_run_dir_meets_product_bar_pass(
         json.dumps({"x3_code": "X3_ALLOW"}),
         encoding="utf-8",
     )
-    # external_claude is the sole accepted product provider after Qwen removal (PR #256);
-    # ACCEPTED_REAL_LLM_PROVIDER_PROFILES == {"external_claude"}.
     (run_dir / "provider_request.json").write_text(
         json.dumps({"provider_requested": "external_claude"}),
+        encoding="utf-8",
+    )
+    ok, reason = lane_run_dir_meets_product_bar(run_dir)
+    assert ok is True
+    assert reason == "ok"
+
+
+def test_lane_run_dir_accepts_external_openai_product_bar(
+    product_fail_closed_env: None,
+) -> None:
+    parsed, _ = unify_bullets_parsed_from_mock()
+    run_dir = (
+        REPO
+        / "artifacts/apps_rg/runtime_proofs/contract_harness/_p0_lane_bar_pass/unify_bullets/real/run_openai"
+    )
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "l2_output.json").write_text(
+        json.dumps(
+            {
+                "section_id": "unify_bullets",
+                "runtime_generation_status": "REAL_LLM",
+                "product_quality_status": "PASS",
+                "bullets": parsed["bullets"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (run_dir / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW"}),
+        encoding="utf-8",
+    )
+    (run_dir / "provider_request.json").write_text(
+        json.dumps({"provider_requested": "external_openai"}),
         encoding="utf-8",
     )
     ok, reason = lane_run_dir_meets_product_bar(run_dir)

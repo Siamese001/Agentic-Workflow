@@ -17,7 +17,7 @@ import os
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

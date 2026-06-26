@@ -177,6 +177,7 @@ def test_generate_singleton_when_sc_disabled(monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    ibm_ids = tuple(f"bul_ibm_{idx:03d}" for idx in range(1, 6))
     paths = [
         SelfConsistencyPath(
             0,
@@ -185,8 +186,8 @@ def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> 
             "",
             {
                 "bullets": [
-                    {"bullet_id": "bul_ibm_001", "bullet_text": "alpha"},
-                    {"bullet_id": "bul_ibm_002", "bullet_text": "beta"},
+                    {"bullet_id": bid, "bullet_text": f"IBM bullet {bid}"}
+                    for bid in ibm_ids
                 ],
                 "claim_ledger": [],
             },
@@ -198,11 +199,21 @@ def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> 
         section_id="ibm_bullets",
         slot_kind="bullets",
         paths=paths,
-        required_bullet_ids=("bul_ibm_001", "bul_ibm_002"),
+        required_bullet_ids=ibm_ids,
         mode="mocked",
     )
     assert pool.selection_mode == "fallback_first_complete_path"
-    assert len(pool.merged_parsed.get("bullets") or []) == 2
+    assert len(pool.merged_parsed.get("bullets") or []) == 5
+    assert [s["bullet_id"] for s in pool.selections] == list(ibm_ids)
+    assert all(float(s["score"]) >= 0.72 and s["passes"] is True for s in pool.selections)
+    gate = evaluate_employment_selection_quality(
+        section_lane="ibm_bullets",
+        required_bullet_ids=ibm_ids,
+        selections=pool.selections,
+        merged_parsed=pool.merged_parsed,
+        min_score=0.72,
+    )
+    assert gate.ok is True
 
 
 def test_self_consistency_path_count_for_competencies() -> None:

@@ -1,0 +1,32 @@
+{
+  "artifact": "apps_rg_c03_full_override_all_files.zip",
+  "source_repo": "Siamese001/Agentic-Workflow",
+  "source_branch": "main",
+  "intent": "Full overwrite package for C0.3 canonical graph hardening. Existing touched code files are complete replacement files. New files are included. The huge canonical JSON is rewritten by the included materializer from the local checked-out repo to preserve all existing 51k-line content.",
+  "critical_note": "The canonical graph JSON is too large for this runtime's GitHub file fetch API and raw clone/network access is blocked. To avoid data loss, this package does not fabricate a partial JSON. It includes a full local overwrite materializer that reads the real local master_skills_arsenal_ledger.json and writes back the complete enriched JSON.",
+  "existing_files_full_overwrite": [
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.py"
+  ],
+  "new_files": [
+    "apps_rg/fact_inventory/graph_metric_heterogeneity_policy.py",
+    "apps_rg/fact_inventory/apply_c03_graph_full_zero_loss_overwrite.py",
+    "apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+    "tests/unit/apps_rg/fact_inventory/test_c03_graph_full_zero_loss_overwrite.py",
+    "docs/reports/apps_rg/c03_actual_graph_full_zero_loss_overwrite_README.md"
+  ],
+  "canonical_graph_target_rewritten_by_script": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+  "zero_loss_contract": [
+    "No deletion of existing top-level keys",
+    "No deletion of existing skill_rows",
+    "No deletion of existing graph_nodes",
+    "No deletion of existing graph_edges",
+    "No overwrite of existing IDs",
+    "Only append missing hardening skill rows, nodes, edges, and additive metadata"
+  ],
+  "apply_order": [
+    "Copy zip contents over repo root",
+    "Run python apps_rg/fact_inventory/apply_c03_graph_full_zero_loss_overwrite.py",
+    "Run python apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+    "Run pytest tests/unit/apps_rg/fact_inventory/test_c03_graph_full_zero_loss_overwrite.py"
+  ]
+}

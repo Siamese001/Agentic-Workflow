@@ -1209,6 +1209,18 @@ def _fallback_first_complete_path(
     required_bullet_ids: tuple[str, ...] | None,
     targeting_context: dict[str, Any] | None = None,
 ) -> PoolSelectionResult:
+    def _deterministic_bullet_selections(path_index: int) -> list[dict[str, Any]]:
+        return [
+            {
+                "bullet_id": bid,
+                "path_index": path_index,
+                "score": 1.0,
+                "passes": True,
+                "selection_reason": "deterministic_first_complete_path_fallback",
+            }
+            for bid in (required_bullet_ids or ())
+        ]
+
     for path in paths:
         if path.parsed is None:
             continue
@@ -1216,7 +1228,7 @@ def _fallback_first_complete_path(
             if all(_bullet_by_id(path.parsed, bid) is not None for bid in required_bullet_ids):
                 return PoolSelectionResult(
                     merged_parsed=dict(path.parsed),
-                    selections=[],
+                    selections=_deterministic_bullet_selections(path.path_index),
                     judge_output=None,
                     selection_mode="fallback_first_complete_path",
                     source_path_by_slot={bid: path.path_index for bid in required_bullet_ids},

@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from apps_rg.cache.r1b_constants import (
+    R1B_REUSE_AUTHORITY_SCOPE,
+    R1B_SECTION_REUSE_AUTHORITY,
+    r1b_reuse_authority_policy,
+)
 from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
 
 CACHE_MISS_RECEIPT_NAME = "whole_run_cache_preflight_miss.json"
@@ -68,6 +73,10 @@ def build_cache_preflight_evidence(
         "generation_spine_invocation_allowed": generation_allowed,
         "generation_spine_invocation_blocked_reason": blocked_reason,
         "route_family": "R4_SINGLE_ACTION",
+        "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+        "reuse_authority_policy": r1b_reuse_authority_policy(),
+        "section_level_semantic_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+        "section_level_lane_skip_authorized": False,
         "whole_run_cache_preflight": preflight.to_dict(),
     }
 

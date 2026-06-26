@@ -7,7 +7,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum, auto
 from typing import Any, Optional
 
@@ -226,7 +226,7 @@ class CompiledPromptArtifact:
     replay_manifest: dict[str, Any] = field(default_factory=dict)
     
     # Metadata
-    compiled_at: datetime = field(default_factory=datetime.utcnow)
+    compiled_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     slot_count: int = 0
     token_estimate: int = 0
     

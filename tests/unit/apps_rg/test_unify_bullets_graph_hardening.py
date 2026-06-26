@@ -31,10 +31,12 @@ from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
     is_legacy_six_pack_ledger_order,
     max_consecutive_word_overlap,
 )
+from apps_rg.runtime.sections.unify_bullets_lane import normalize_unify_parsed_without_ledger_synthesis
 from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
 )
+from apps_rg.runtime.validators.bullet_quality_floor_x2 import check_bullet_technical_specificity_floor
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
 from apps_rg.runtime.sections.unify_graph_role_episode_registry import BUNDLES_PATH as UNIFY_BUNDLES_PATH
@@ -254,6 +256,52 @@ def test_role_episode_gates_fail_when_metric_outcome_not_visible() -> None:
     gate = next(g for g in gates if g.gate_id == "x2_unify_each_bullet_metric_outcome_surface_visible")
     assert gate.passed is False
     assert "bul_unify_002" in str(gate.observed_value)
+
+
+def test_unify_normalization_repairs_metric_surface_visibility_from_registry() -> None:
+    _bullets, parsed, meta = _partner_metric_surface_payload()
+    parsed["bullets"][1]["bullet_text"] = (
+        "Built partner co-sell motions around reusable AI platform services, packaging enablement "
+        "material for strategic channels."
+    )
+    parsed["claim_ledger"][1]["claim_text"] = parsed["bullets"][1]["bullet_text"]
+    parsed["change_log"][1]["metric_outcome_ids"] = ["metric_unify_partner_enablement_asset_set"]
+
+    parsed["bullets"][2]["bullet_text"] = (
+        "Drove CFO-aligned enterprise adoption motions and renewal instrumentation to strengthen "
+        "platform commercialization."
+    )
+    parsed["claim_ledger"][2]["claim_text"] = parsed["bullets"][2]["bullet_text"]
+    parsed["change_log"][2]["metric_outcome_ids"] = [
+        "metric_unify_consumption_renewal_signal_instrumentation"
+    ]
+
+    runtime_payload = {
+        "allowed_fact_ids": list(UNIFY_BULLET_IDS),
+        "selected_fact_plan": {"facts": []},
+        "proof_pool_metadata": meta,
+    }
+    normalized = normalize_unify_parsed_without_ledger_synthesis(parsed, runtime_payload)
+    assert normalized is not None
+
+    gates = run_unify_bullets_role_episode_x2_gates(
+        bullets=normalized["bullets"],
+        parsed_output=normalized,
+        proof_pool_metadata=meta,
+        jd_text=JD,
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_each_bullet_metric_outcome_surface_visible"].passed is True
+    assert by_id["x2_unify_metric_outcomes_distributed_by_slot"].passed is True
+
+
+def test_agentic_runtime_terms_count_for_bullet_technical_specificity() -> None:
+    result = check_bullet_technical_specificity_floor(
+        "bul_unify_001",
+        "Set the control plane for governed agentic enterprise workflows with L0 route-policy "
+        "dispatch, GraphRAG grounding, and replayable runtime traceability.",
+    )
+    assert result.passed is True
 
 
 def test_role_episode_gates_fail_shallow_traversal_receipt() -> None:

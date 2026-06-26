@@ -13,9 +13,10 @@ forbidden_slot_body_source: strategic_tailor_v1
 execution_order: "AFTER_IBM_BULLET_FACT_CHECK"
 
 purpose: |
-  Write exactly one role-level CAPSTONE sentence for IBM employment after finalized IBM bullets (read-only companion).
+  Write exactly one role-level CAPSTONE sentence for IBM employment after finalized IBM bullets.
   The sentence must synthesize how IBM anchored enterprise-scale cloud, data, lineage, observability, and platform
-  modernization in regulated contexts — complementary to each bullet theme, NOT a recap of bullet metrics or labels.
+  modernization in regulated contexts — the executive thesis the bullets prove, NOT a recap of bullet metrics or labels.
+  Uses accepted IBM bullets as the primary synthesis context for role-thesis construction while C0 remains proof/provenance.
   JD, briefing, title, and company are targeting inputs only (never cited as résumé proof).
   Facts in claim_ledger source_fact_ids may ONLY bul_ibm_* tokens from ALLOWED_SOURCE_FACT_IDS.
   Do NOT claim IBM performed Unify-era agentic systems work; conceptual “later AI / production platform leadership”
@@ -23,15 +24,16 @@ purpose: |
 
 sovereign_oath: |
   ibm_narrative — capstone sentence only (not bullet recap). pa_truth_oath_v1, pa_proof_binding_v1,
-  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: SelectedRoleFactSet slice + bul_ibm_* from ALLOWED_SOURCE_FACT_IDS; companion bullets read-only.
+  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: SelectedRoleFactSet slice + bul_ibm_* from ALLOWED_SOURCE_FACT_IDS.
+  Companion finalized bullets: primary synthesis context after acceptance, not proof.
   No Unify-era agentic stack as IBM proof; no candidate name; one sentence. Forbidden terms: see forbidden_terms_in_narrative.
   Runtime compile I0: ibm_narrative_pa from this spec; X2 gates via PRODUCT_SHAPE append only.
 
 north_star_semantic_contract: |
   Preferred QUALITY silhouette (PARAPHRASE allowed; MUST stay bul_ibm_*-grounded via claim_ledger; not a required verbatim string):
 
-  At IBM, led enterprise-scale cloud, data, lineage, observability, and platform modernization work for regulated
-  financial services, establishing reliability, governance, and partnership discipline for enterprise-scale delivery.
+  Drove governed AWS reference-architecture work for regulated financial-services clients at IBM, establishing cloud and
+  data delivery discipline that made modernization programs more repeatable across enterprise operating environments.
 
   PROMPT-ONLY BOUNDARY (never appear in narrative_sentence display text):
   - Do not write meta-disclaimers such as "without claiming", "without asserting", "not claiming", or "did not assert".
@@ -47,7 +49,7 @@ north_star_semantic_contract: |
 source_authority_hierarchy:
   proof_sources:
     - "canonical IBM bullets / bul_ibm_* facts listed in ALLOWED_SOURCE_FACT_IDS"
-    - "finalized IBM bullets, read-only (companion fence) AFTER acceptance — never pasted as proof"
+    - "finalized IBM bullets, read-only synthesis context AFTER acceptance — never pasted as proof"
   targeting_context_only:
     - "target_title"
     - "target_company"
@@ -57,7 +59,7 @@ source_authority_hierarchy:
     - "Facts + allowed IDs decide WHAT can be claimed."
     - "JD / title / company / briefing decide emphasis and vocabulary, not proof."
     - "Do not invent target-company experience as IBM experience."
-    - "Finalized IBM bullets are companion context only; do not mechanically repeat bullet metrics; companion bullet source_fact_ids are not proof unless duplicated in ibm_narrative SRFS allowlist."
+    - "Finalized IBM bullets are synthesis context, not proof; synthesize principles and operating-model themes without mechanically repeating bullet metrics; companion bullet source_fact_ids are not proof unless duplicated in ibm_narrative SRFS allowlist."
 
 claim_ledger_coverage_contract: |
   Every MATERIAL theme visible in narrative_sentence MUST be backed by at least one claim_ledger row whose
@@ -103,7 +105,7 @@ input_contract:
   required_fields:
     - finalized_ibm_bullets:
         schema: "{bullets: [{bullet_id, bullet_text, source_fact_id}]}"
-        access_level: "READ_ONLY_ANTI_REPETITION"
+        access_level: "READ_ONLY_PRIMARY_SYNTHESIS_CONTEXT"
         constraints:
           - "May not copy bullet_text"
           - "May not mirror bullet sentence structure"
@@ -117,8 +119,19 @@ input_contract:
     - claim_ledger_from_bullets:
         schema: "{claims: [{claim_text, source_fact_id, supported: bool, used_in_narrative: bool}]}"
     - narrative_intent:
-        allowed_values: ["COMPLEMENT_BULLETS", "FOUNDATION_POSITIONING", "ENTERPRISE_CONTEXT"]
+        allowed_values: ["COMPLEMENT_BULLETS", "FOUNDATION_POSITIONING", "ENTERPRISE_CONTEXT", "ROLE_THESIS"]
         default: "FOUNDATION_POSITIONING"
+
+required_runtime_dependency:
+  dependency_lane: "ibm_bullets"
+  required_status: "ACCEPTED_FINALIZED"
+  required_evidence:
+    - "ibm_bullets l2_output.json"
+    - "five bullets with IDs bul_ibm_001..005"
+    - "ibm_bullets product_quality_status PASS"
+    - "ibm_bullets deterministic X2 gates passed with no failed gates"
+    - "ibm_bullets x3_disposition is release-proof metadata; provider-quota judge blocks do not invalidate narrative dependency when product quality passed"
+  fail_closed_rule: "If finalized bullets are missing, mocked, failed deterministic X2, or lack REAL_LLM product-quality evidence, do not produce a production narrative."
 
 output_contract:
   format: "JSON"
@@ -184,8 +197,9 @@ anti_repetition_check:
 narrative_complement_guidance:
   purpose: |
     POSITION IBM as the enterprise-scale foundation chapter: cloud, data, lineage, observability, reusable platform
-    discipline, and partnership execution in regulated financial services — setting up later production AI platform
-    leadership WITHOUT claiming IBM shipped modern agentic platform products and WITHOUT naming Unify as proof.
+    discipline, and partnership execution in regulated financial services. The narrative states why the IBM role
+    mattered; the bullets prove what was delivered. Do this WITHOUT claiming IBM shipped modern agentic platform
+    products and WITHOUT naming Unify as proof.
   angle_options:
     - "Enterprise mandate: governed delivery and reliability culture in regulated financial institutions"
     - "Platform + data foundations: modernization, lineage, observability, and operational discipline"
@@ -193,6 +207,9 @@ narrative_complement_guidance:
   avoid:
     - "Any exact phrase 'agentic AI' or other forbidden stack tokens from sovereign_oath"
     - "Re-listing bullet KPIs ($15M, 30%, 50%, 25%, 99.9%) — prefer conceptual language (see metric_handling_rules)"
+    - "Five-bullet summary structure; choose one role-thesis angle and let the bullets carry detailed proof"
+    - "Comma-packed mechanism lists; prefer a clean executive sentence over an inventory of themes"
+    - "Single-sentence topic inventory such as AWS modernization, decision-support, pre-sales, and alliance execution"
     - "Weak abstract stacks: concentrated enterprise…, tightening reliability posture, migration cadence (as jargon),
       client-facing instrumentation (as filler), so delivery stayed predictable"
     - "Echoing bullet sentence structure (Subject-Verb-Object stacked achievements)"
@@ -209,12 +226,14 @@ narrative_complement_guidance:
       reason: "Bullet list format forbidden — must be one sentence"
     - bad: "Built the governed AI runtime foundation later productized at Unify."
       reason: "Imports Unify as proof and uses runtime stack vocabulary"
+    - bad: "Drove AWS modernization, decision-support, pre-sales, and alliance execution programs for enterprise clients at IBM."
+      reason: "Mechanical recap of companion bullet topics; fails executive thesis and comma-packed list quality"
     - bad: "Concentrated enterprise cloud outcomes by tightening reliability posture and migration cadence with client-facing instrumentation."
       reason: "Consulting-fluff stack; weak executive résumé voice; likely under-maps claim_ledger to facts"
     - bad: "establishing the reliability and governance discipline that supported later production AI platform leadership"
       reason: "Career-bridge phrasing forbidden in display text; X2 fails clause decomposition"
-    - good: "At IBM, led enterprise-scale cloud, data, lineage, and observability foundations for regulated financial services, establishing governed delivery and platform discipline that scaled analytics and modernization across enterprise lines of business."
-      reason: "Capstone synthesis stays IBM-scoped; no later-role bridge; multi-theme without bullet metric replay"
+    - good: "Drove governed AWS reference-architecture work for regulated financial-services clients at IBM, establishing cloud and data delivery discipline that made modernization programs more repeatable across enterprise operating environments."
+      reason: "Capstone synthesis stays IBM-scoped; one executive thesis; no bullet-topic inventory or metric replay"
 
 metric_handling_rules:
   default_policy: "Do NOT restate bullet metrics in narrative_sentence when companion bullets already carry the canonical KPI set (99.9%, 30%, 25%, 50%, $15M). Prefer conceptual wording. Deterministic X2 enforces zero metric-token replay in that companion mode."
@@ -292,10 +311,12 @@ forbidden_patterns:
 prompt_engineering_hardening:
   private_process:
     - "Read companion bullets → list what KPIs/themes they already own."
-    - "Pick ONE capstone spine (foundation / modernization / alliances) that COMPLEMENTS, not summarizes."
+    - "Pick ONE role-thesis angle that explains why the IBM role mattered: foundation, modernization, governed delivery, or alliance execution."
+    - "Reject drafts that enumerate accepted bullet topics such as AWS modernization + decision-support + pre-sales + alliance execution."
     - "Draft narrative_sentence WITHOUT digit metrics unless truly unavoidable and evidenced."
     - "Build claim_ledger rows so each sentence clause maps to the right bul_ibm_* IDs."
-    - "Self-check: no forbidden phrase, no metric replay, no weak abstract stack from avoid list."
+    - "Prefer a clean executive sentence over a comma-packed mechanism list; the bullets carry detailed proof."
+    - "Self-check: no forbidden phrase, no metric replay, no weak abstract stack from avoid list, no unsupported sideways story."
 
 validation_rules:
   pre_output:
@@ -336,13 +357,13 @@ payload_scope:
 execution_context:
   runs_after: "ibm_bullet_tailor_v1 fact check completion"
   input_dependency: "Finalized bullets from bullet pass (read-only)"
-  anti_repetition_source: "Finalized bullets used solely to avoid repetition, not to copy"
+  synthesis_source: "Finalized bullets used as primary synthesis context, not proof and not copy source"
   drift_prevention: "Explicit drift_check to catch Unify runtime claim import"
 
 # W5 — SSOT excerpt for contract tests (IBM bullets companion context-only).
 w5_proof_targeting_harmonization: |
   Proof: SelectedRoleFactSet facts for ibm_narrative only; claim_ledger source_fact_ids must match this section's allowlist.
-  Finalized IBM bullets: companion context only, not proof unless the same fact id is in the narrative slice. Targeting only:
+  Finalized IBM bullets: primary synthesis context only, not proof unless the same fact id is in the narrative slice. Targeting only:
   JD, briefing, target title, target company. Out-of-slice source_fact_ids fail X2. No invention beyond selected IBM narrative facts; omit unsupported claims.
 
 metadata:

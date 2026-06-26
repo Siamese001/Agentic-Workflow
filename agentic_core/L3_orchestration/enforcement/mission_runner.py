@@ -27,7 +27,7 @@ import uuid
 from pathlib import Path
 
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.L3_orchestration.types.coordination_ledger import (
     MissingCoordinationLedger,
     WorkflowStatus,

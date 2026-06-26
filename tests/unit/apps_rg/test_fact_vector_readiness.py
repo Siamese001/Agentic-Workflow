@@ -59,6 +59,15 @@ def _all_lane_metas() -> list[dict[str, Any]]:
     return metas
 
 
+def _direct_vector_metas() -> list[dict[str, Any]]:
+    metas: list[dict[str, Any]] = []
+    for lane in fvr.DIRECT_VECTOR_LANES:
+        prefix, min_count = fvr.SECTION_SOURCE_SLOT_MIN_COUNTS.get(lane, (f"fact_{lane}_", 1))
+        for idx in range(1, max(min_count, 1) + 1):
+            metas.append(_meta(lane, f"{prefix}{idx:03d}"))
+    return metas
+
+
 def _write_chroma_sqlite(path: Path, metas: list[dict[str, Any]], *, dimension: int = 1024) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(str(path))
@@ -161,6 +170,47 @@ def test_fact_vector_readiness_passes_when_manifest_and_all_sections_are_hydrate
     assert len(receipt["rows"]) == 11
     assert receipt["policy"]["c0_write_authority"] is False
     assert receipt["sparse_sidecar"]["doc_count"] == 11
+
+
+def test_fact_vector_readiness_does_not_require_narrative_direct_hydration(
+    tmp_path: Path,
+) -> None:
+    _write_manifest(tmp_path)
+    sqlite_path = tmp_path / "chroma" / "chroma.sqlite3"
+    _write_chroma_sqlite(sqlite_path, _direct_vector_metas())
+    _write_sparse_sidecar(tmp_path, docs=7)
+
+    receipt = fvr.build_fact_vector_readiness_receipt(
+        repo_root=tmp_path,
+        chroma_path=str(sqlite_path),
+    )
+
+    narrative_rows = [
+        row for row in receipt["rows"] if row["section_id"].endswith("_narrative")
+    ]
+    assert receipt["status"] == fvr.STATUS_PASS
+    assert receipt["failed_sections"] == []
+    assert len(narrative_rows) == 4
+    assert all(row["direct_fact_vector_required"] is False for row in narrative_rows)
+    assert all(row["pre_run_hydration_present"] is False for row in narrative_rows)
+    assert all(row["authority_mode"] == "inherited_bullet_proof" for row in narrative_rows)
+
+
+def test_fact_vector_readiness_narrative_scope_skips_fact_vector_environment(
+    tmp_path: Path,
+) -> None:
+    receipt = fvr.build_fact_vector_readiness_receipt(
+        repo_root=tmp_path,
+        chroma_path=str(tmp_path / "missing" / "chroma.sqlite3"),
+        sections_in_scope=("unify_narrative",),
+    )
+
+    assert receipt["status"] == fvr.STATUS_PASS
+    assert receipt["sections_in_scope"] == ["unify_narrative"]
+    assert receipt["direct_vector_lanes_in_scope"] == []
+    assert receipt["collection"]["skipped"] is True
+    assert receipt["sparse_sidecar"]["skipped"] is True
+    assert receipt["rows"][0]["authority_mode"] == "inherited_bullet_proof"
 
 
 def test_fact_vector_readiness_blocks_stale_manifest_before_u0(tmp_path: Path) -> None:

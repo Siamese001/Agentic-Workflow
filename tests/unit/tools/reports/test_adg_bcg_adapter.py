@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from tools.reports.adg_bcg_adapter import (
     build_bcg_brief,
+    build_report_bcg_findings,
+    has_bcg_findings,
     build_deprecation_deletion_plan,
     render_bcg_brief_md,
 )
@@ -108,3 +110,35 @@ def test_deprecation_deletion_plan_labels_no_delete_status_not_source_pass() -> 
     assert "- **Deletion status:** NO_DELETIONS_APPROVED" in md
     assert "- **Source report status:** PASS" in md
     assert "- **Status:** PASS" not in md
+
+
+def test_build_report_bcg_findings_emits_required_management_story() -> None:
+    findings = build_report_bcg_findings(
+        report_kind="adg_test_report",
+        title="BCG Test Brief",
+        status="BLOCKED",
+        status_label="Decision status",
+        business_read="Fix the blocker before funding cleanup.",
+        technical_read=["FIX gates: 1", "TRACK gates: 2"],
+        priority_rule="Blockers before backlog.",
+        priority_rows=[
+            {
+                "priority": 1,
+                "move": "Fix blocker",
+                "why_it_matters": "The run is not decision-grade while blocked.",
+                "evidence": "1 red gate.",
+                "next_step": "Fix and rerun ADG.",
+            }
+        ],
+        why_this_order=["Blockers stop the line."],
+        next_step="Fix and rerun ADG.",
+    )
+
+    assert findings["schema_version"] == "1.0"
+    assert findings["report_kind"] == "adg_test_report"
+    assert findings["brief"]["title"] == "BCG Test Brief"
+    assert findings["business_read"] == "Fix the blocker before funding cleanup."
+    assert findings["priority_rows"][0]["move"] == "Fix blocker"
+    assert has_bcg_findings({"bcg_findings": findings}) is True
+    assert has_bcg_findings({"brief": findings["brief"]}) is True
+    assert has_bcg_findings({"not_bcg": {}}) is False

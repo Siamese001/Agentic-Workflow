@@ -111,6 +111,23 @@ def test_build_report_surfaces_docker_permission_errors(monkeypatch) -> None:
         raise mod.DockerCommandError("permission denied while trying to connect to docker")
 
     monkeypatch.setattr(mod, "_run_docker", fake_run)
+    monkeypatch.setattr(mod, "_probe_json_search", lambda base_url, timeout=20: (False, "refused"))
 
     with pytest.raises(mod.DockerCommandError, match="permission denied"):
         mod.build_report()
+
+
+def test_build_report_allows_http_ready_when_docker_permission_denied(monkeypatch) -> None:
+    def fake_run(argv, timeout=30):
+        raise mod.DockerCommandError("permission denied while trying to connect to docker")
+
+    monkeypatch.setattr(mod, "_run_docker", fake_run)
+    monkeypatch.setattr(mod, "_probe_json_search", lambda base_url, timeout=20: (True, "results=4"))
+
+    report = mod.build_report()
+
+    assert report.status == "PASS"
+    assert report.running is True
+    assert report.json_search_ready is True
+    assert report.restart_policy == "unverified_docker_unavailable"
+    assert report.steps[0].status == "WARN"

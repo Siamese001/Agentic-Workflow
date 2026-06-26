@@ -15,6 +15,10 @@ from typing import Any
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from apps_rg.runtime.c0.constants import REPO_ROOT
+from apps_rg.runtime.c0.section_authority_profile import (
+    c0_authority_manifest,
+    c0_section_authority_profile,
+)
 from apps_rg.runtime.chroma_precomputed_collection import EXPECTED_BGE_DIMENSION
 from apps_rg.runtime.fact_vectors_bootstrap import GENERATED_LANES, MANIFEST_REL
 
@@ -160,6 +164,8 @@ def _build_section_sufficiency(
     product_hybrid_required: bool,
 ) -> dict[str, Any]:
     """Common sufficiency gate for every generated section before C0 retrieval."""
+    authority = c0_section_authority_profile(section_id)
+    direct_vector_required = bool(product_hybrid_required or authority.direct_vector_proof)
     live_section_count = int(collection.get("section_target_count") or 0)
     collection_count = int(collection.get("collection_count") or 0)
     bad_model_count = int(collection.get("bad_model_count") or 0)
@@ -175,27 +181,30 @@ def _build_section_sufficiency(
     known_generated_lane = section_id in GENERATED_LANES
     manifest_coverage_present = manifest_section_target_count > 0
     hydration_present = live_section_count > 0
-    if product_hybrid_required and not hydration_present:
+    if direct_vector_required and not hydration_present:
         reasons.append("section_pre_run_fact_vector_hydration_missing")
-    if known_generated_lane and not hydration_present:
+    if direct_vector_required and known_generated_lane and not hydration_present:
         reasons.append("generated_section_fact_vector_coverage_missing")
-    if product_hybrid_required and not manifest_coverage_present:
+    if direct_vector_required and not manifest_coverage_present:
         reasons.append("section_bootstrap_manifest_coverage_missing")
     model_dim_pass = (
-        collection_count > 0
-        and bad_model_count == 0
-        and missing_model_count == 0
-        and bad_dim_count == 0
-        and missing_dim_count == 0
+        not direct_vector_required
+        or (
+            collection_count > 0
+            and bad_model_count == 0
+            and missing_model_count == 0
+            and bad_dim_count == 0
+            and missing_dim_count == 0
+        )
     )
-    if not model_dim_pass:
+    if direct_vector_required and not model_dim_pass:
         reasons.append("section_fact_vector_model_dim_not_sufficient")
 
     prefix = ""
     min_slots = 0
     slot_count = 0
     slot_ids: list[str] = []
-    if section_id in _SECTION_SOURCE_SLOT_MIN_COUNTS:
+    if direct_vector_required and section_id in _SECTION_SOURCE_SLOT_MIN_COUNTS:
         prefix, min_slots = _SECTION_SOURCE_SLOT_MIN_COUNTS[section_id]
         slot_ids = sorted({sid for sid in section_source_ids if sid.startswith(prefix)})
         slot_count = len(slot_ids)
@@ -210,6 +219,13 @@ def _build_section_sufficiency(
         "status": status,
         "reasons": reasons,
         "known_generated_lane": known_generated_lane,
+        "authority_mode": authority.authority_mode,
+        "direct_vector_proof": authority.direct_vector_proof,
+        "inherited_bullet_proof": authority.inherited_bullet_proof,
+        "aggregate_section_proof": authority.aggregate_section_proof,
+        "positioning_only": authority.positioning_only,
+        "upstream_sections": list(authority.upstream_sections),
+        "direct_fact_vector_required": direct_vector_required,
         "product_hybrid_required": product_hybrid_required,
         "manifest_section_target_count": manifest_section_target_count,
         "manifest_coverage_present": manifest_coverage_present,
@@ -698,6 +714,8 @@ def build_fact_vector_index_preflight(
     locked_lanes = list(manifest.get("locked_deterministic_lanes") or []) if manifest else []
     section_manifest_count = int(per_section.get(section_id) or 0)
     required = _product_hybrid_required(section_id, product_hybrid_required)
+    authority = c0_section_authority_profile(section_id)
+    direct_vector_required = bool(required or authority.direct_vector_proof)
 
     from apps_rg.runtime.embedding_settings import resolve_apps_rg_embedding_settings
 
@@ -712,6 +730,14 @@ def build_fact_vector_index_preflight(
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "section_id": section_id,
         "product_hybrid_required": required,
+        "authority_mode": authority.authority_mode,
+        "direct_vector_proof": authority.direct_vector_proof,
+        "inherited_bullet_proof": authority.inherited_bullet_proof,
+        "aggregate_section_proof": authority.aggregate_section_proof,
+        "positioning_only": authority.positioning_only,
+        "upstream_sections": list(authority.upstream_sections),
+        "direct_fact_vector_required": direct_vector_required,
+        "authority_manifest": c0_authority_manifest(),
         "status": STATUS_PASS,
         "reasons": [],
         "manifest_ref": MANIFEST_REL,
@@ -735,31 +761,37 @@ def build_fact_vector_index_preflight(
         "expected_embedding_dim": EXPECTED_BGE_DIMENSION,
         "collection": {},
         "delayed_loop_policy": {
-            "pre_run_fact_vector_index_required": True,
+            "pre_run_fact_vector_index_required": direct_vector_required,
             "live_write_during_c0": False,
             "generated_output_route": "stage_or_semantic_cache_after_generation",
             "promotion_gate": "fact_vectors_staging_to_live_after_validation_or_hitl",
         },
     }
     reasons: list[str] = []
-    if not manifest_present:
-        reasons.append("bootstrap_manifest_missing")
-    elif receipt["manifest_dry_run"]:
-        reasons.append("bootstrap_manifest_is_dry_run")
-    elif receipt["manifest_upserted_count"] <= 0 and receipt["manifest_collection_count_after"] <= 0:
-        reasons.append("bootstrap_manifest_empty")
+    if direct_vector_required:
+        if not manifest_present:
+            reasons.append("bootstrap_manifest_missing")
+        elif receipt["manifest_dry_run"]:
+            reasons.append("bootstrap_manifest_is_dry_run")
+        elif receipt["manifest_upserted_count"] <= 0 and receipt["manifest_collection_count_after"] <= 0:
+            reasons.append("bootstrap_manifest_empty")
 
-    if not resolved_chroma_path:
-        reasons.append("chroma_path_missing")
+        if not resolved_chroma_path:
+            reasons.append("chroma_path_missing")
+        else:
+            try:
+                receipt["collection"] = _inspect_collection(
+                    chroma_path=resolved_chroma_path,
+                    section_id=section_id,
+                )
+            except Exception as exc:  # guardian: allow-broad-exception -- Chroma client versions vary; receipt classifies the failure
+                reasons.append(f"fact_vectors_collection_unavailable:{type(exc).__name__}")
+                receipt["collection"] = {"error": f"{type(exc).__name__}:{exc}"}
     else:
-        try:
-            receipt["collection"] = _inspect_collection(
-                chroma_path=resolved_chroma_path,
-                section_id=section_id,
-            )
-        except Exception as exc:  # guardian: allow-broad-exception -- Chroma client versions vary; receipt classifies the failure
-            reasons.append(f"fact_vectors_collection_unavailable:{type(exc).__name__}")
-            receipt["collection"] = {"error": f"{type(exc).__name__}:{exc}"}
+        receipt["collection"] = {
+            "skipped": True,
+            "reason": "direct_fact_vector_not_required_for_section_authority",
+        }
 
     collection = receipt.get("collection") if isinstance(receipt.get("collection"), dict) else {}
     collection_count = int(collection.get("collection_count") or 0)
@@ -768,16 +800,20 @@ def build_fact_vector_index_preflight(
     missing_model_count = int(collection.get("missing_model_count") or 0)
     bad_dim_count = int(collection.get("bad_dim_count") or 0)
     missing_dim_count = int(collection.get("missing_dim_count") or 0)
-    if collection_count <= 0:
+    if direct_vector_required and collection_count <= 0:
         reasons.append("fact_vectors_collection_empty")
-    if bad_model_count or missing_model_count:
+    if direct_vector_required and (bad_model_count or missing_model_count):
         reasons.append("fact_vectors_embedding_model_not_fully_bge_m3")
-    if bad_dim_count or missing_dim_count:
+    if direct_vector_required and (bad_dim_count or missing_dim_count):
         reasons.append("fact_vectors_embedding_dim_not_fully_1024")
-    section_covered = section_manifest_count > 0 or live_section_count > 0
-    if required and not section_covered:
+    section_covered = (
+        not direct_vector_required
+        or section_manifest_count > 0
+        or live_section_count > 0
+    )
+    if direct_vector_required and required and not section_covered:
         reasons.append("section_fact_vector_coverage_missing")
-    if section_id == "unify_bullets":
+    if direct_vector_required and section_id == "unify_bullets":
         unify_sufficiency = _build_unify_bullets_sufficiency(
             collection=collection,
             role_family_key=str(role_family_key or ""),
@@ -795,7 +831,11 @@ def build_fact_vector_index_preflight(
                 reasons.append("unify_bullets_fact_vector_sufficiency_missing")
             else:
                 reasons.append("unify_bullets_fact_vector_sufficiency_not_pass")
-    if section_id in _ROLE_EPISODE_BULLET_SECTIONS and section_id != "unify_bullets":
+    if (
+        direct_vector_required
+        and section_id in _ROLE_EPISODE_BULLET_SECTIONS
+        and section_id != "unify_bullets"
+    ):
         employer_sufficiency = _build_role_episode_bullets_sufficiency(
             section_id=section_id,
             collection=collection,
@@ -843,7 +883,11 @@ def build_fact_vector_index_preflight(
     receipt["status"] = status
     receipt["reasons"] = reasons
     receipt["section_coverage_present"] = section_covered
-    receipt["same_run_write_policy"] = "forbidden_for_product_retrieval"
+    receipt["same_run_write_policy"] = (
+        "forbidden_for_product_retrieval"
+        if direct_vector_required
+        else "not_applicable_inherited_upstream_proof"
+    )
     receipt["write_authority"] = False
     receipt["comparison_authority"] = True
 

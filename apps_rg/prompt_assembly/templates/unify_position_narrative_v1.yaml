@@ -17,14 +17,14 @@ purpose: |
   The sentence must align with the north-star arc: platform roadmap, core systems architecture, commercialization,
   reusable IP or platform services, consulting-firm delivery, and enterprise deployment — grounded strictly in C0 facts
   (unify_narrative_base_* anchor when present, plus bul_unify_*). It must NOT summarize or recap the six bullets.
-  Uses accepted Unify bullets only as read-only anti-repetition context (U-tier).
+  Uses accepted Unify bullets as the primary synthesis context for role-thesis construction while C0 remains proof/provenance.
   JD, target title/company, and briefing are targeting inputs only; they never appear in source_fact_ids.
   Complements bullets by concept overlap, never by copying labels, metrics, machinery stacks, or sentence structure.
 
 sovereign_oath: |
   unify_narrative — role capstone only (not bullet recap). Governed by pa_truth_oath_v1, pa_proof_binding_v1,
   pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: SelectedRoleFactSet slice + C0 unify_narrative_base_* and bul_unify_* only.
-  Companion finalized bullets: read-only anti-repetition, not proof. One sentence; no cross-employer facts; no JD-as-proof in source_fact_ids.
+  Companion finalized bullets: primary synthesis context after acceptance, not proof. One sentence; no cross-employer facts; no JD-as-proof in source_fact_ids.
   X2 enforcement: PRODUCT_SHAPE append at compile (not restated in runtime I0).
 
 north_star_semantic_contract: |
@@ -32,7 +32,7 @@ north_star_semantic_contract: |
   Owned the platform roadmap, core systems architecture, and commercialization of [supported AI platform / Solution Accelerator]
   within [supported consulting firm / enterprise delivery context], converting bespoke delivery into reusable IP or scalable
   platform services deployed across supported enterprise contexts.
-  Use Fortune 500 financial institutions, Solution Accelerator, or enterprise lines of business only when that substance
+  Use Fortune 500 financial institutions, Solution Accelerator, or enterprise lines of business only when that exact substance
   exists in the base anchor or bullet facts in C0.
   FORBIDDEN MECHANICAL OPENERS (X2 fail-closed) — narrative MUST NOT begin with any of:
   led, successfully, also, built, delivered, designed, implemented, architected (case-insensitive).
@@ -86,8 +86,9 @@ required_runtime_dependency:
     - "unify_bullets l2_output.json"
     - "six bullets with IDs bul_unify_001..006"
     - "unify_bullets product_quality_status PASS"
-    - "unify_bullets x3_disposition X3_ALLOW evidence"
-  fail_closed_rule: "If finalized bullets are missing, mocked, blocked, failed X2, or not X3-cleared, do not produce a production narrative."
+    - "unify_bullets deterministic X2 gates passed with no failed gates"
+    - "unify_bullets x3_disposition is release-proof metadata; provider-quota judge blocks do not invalidate narrative dependency when product quality passed"
+  fail_closed_rule: "If finalized bullets are missing, mocked, failed deterministic X2, or lack REAL_LLM product-quality evidence, do not produce a production narrative."
 
 source_authority_hierarchy:
   proof_sources:
@@ -102,7 +103,7 @@ source_authority_hierarchy:
     - "Candidate facts and finalized bullets decide what can be claimed."
     - "JD, title, company, and briefing decide the narrative angle, vocabulary, and priority, not proof."
     - "Do not introduce target-company facts as candidate experience."
-    - "Finalized Unify bullets are companion context only; synthesize principles and operating-model themes without mechanically repeating bullets; companion bullet source_fact_ids are not proof unless duplicated in unify_narrative SRFS allowlist."
+    - "Finalized Unify bullets are synthesis context, not proof; synthesize principles and operating-model themes without mechanically repeating bullets; companion bullet source_fact_ids are not proof unless duplicated in unify_narrative SRFS allowlist."
 
 prompt_engineering_hardening:
   role_and_objective: |
@@ -110,15 +111,17 @@ prompt_engineering_hardening:
     The narrative should make the Unify role feel like the candidate's strongest SVP Engineering proof point.
   private_process:
     - "Read the finalized bullets first and identify what they already prove."
-    - "Choose one complementary positioning angle, such as platform mandate, operating model, commercialization, or governed delivery."
+    - "Choose one role-thesis angle that explains why the role mattered: platform mandate, operating model, commercialization, or governed delivery."
     - "Use JD/company/briefing themes only to choose emphasis."
     - "Draft one sentence, then self-repair for repetition, unsupported claims, JD mirroring, and executive readability."
+    - "Prefer a clean executive sentence over a comma-packed mechanism list; the bullets carry detailed proof."
     - "Keep reasoning private. Output only the required JSON."
   sentence_shape_targets:
     - "One strategic through-line, not a six-bullet summary."
     - "Concrete enough to feel real, broad enough not to duplicate bullet detail."
     - "Strong current-role signal for SVP Engineering hiring screens."
     - "No first person, no candidate name, no em dash, no source tags."
+    - "Do not reuse companion four-grams such as 'partner co-sell motions'; prefer partner-channel enablement or alliance distribution."
 
 few_shot_patterns:
   positive:
@@ -126,13 +129,13 @@ few_shot_patterns:
       context: "C0 includes base role anchor and commercialization bullets; bullets carry metrics elsewhere."
       output_pattern: >
         Owned the platform roadmap, core systems architecture, and commercialization of a production-grade agentic AI platform
-        at Unify Consulting, converting bespoke enterprise delivery into reusable platform services for regulated financial-services adoption.
+        at Unify Consulting, converting bespoke enterprise delivery into reusable platform services for regulated-enterprise adoption.
       why_it_works: "North-star capstone with a non-mechanical opener; no bullet labels, mechanism stacks, or default metrics."
     - id: unify_narrative_positive_alt_opener
       context: "Alternative non-mechanical opener form."
       output_pattern: >
         Drove the platform roadmap and commercialization of a governed agentic AI platform at Unify Consulting,
-        turning bespoke enterprise delivery into reusable IP and scalable platform services for regulated financial-services adoption.
+        turning bespoke enterprise delivery into reusable IP and scalable platform services for regulated-enterprise adoption.
       why_it_works: "Substantive opener (\"Drove\") not on the forbidden mechanical-opener list."
   negative:
     - id: unify_narrative_negative_mechanism_recap
@@ -154,6 +157,9 @@ few_shot_patterns:
     - id: unify_narrative_negative_bullet_summary
       bad_output: "Built GraphRAG, deterministic routing, policy gates, Databricks integrations, API gateways, and $22M revenue while scaling from 8 to 28 specialists."
       violation: "Lists bullet topics and repeats protected metrics."
+    - id: unify_narrative_negative_companion_fourgram_copy
+      bad_output: "Owned Unify Consulting's governed agentic AI platform as a commercial engine, pairing partner co-sell motions with reusable IP."
+      violation: "Copies the companion four-gram 'partner co-sell motions'; use partner-channel enablement or alliance distribution instead."
     - id: unify_narrative_negative_target_company_invention
       bad_output: "At the target company, led the global AI strategy required by the JD."
       violation: "Turns target context into candidate proof and names the wrong employer."
@@ -214,8 +220,8 @@ output_contract:
 
 narrative_complement_guidance:
   purpose: |
-    The narrative should POSITION the role and PROVIDE CONTEXT, not LIST ACHIEVEMENTS.
-    Think of it as the "why this role matters" not the "what was accomplished".
+    The narrative should state the role thesis and why the role mattered, not list achievements.
+    Think of it as the executive arc the bullets prove, while the bullets carry what was delivered.
   angle_options:
     - "Strategic mandate: why the company invested in this function"
     - "Organizational scope: what this role touched and influenced"
@@ -320,7 +326,7 @@ execution_context:
 # W5 — SSOT excerpt for contract tests (companion bullets context-only; SRFS slice is proof).
 w5_proof_targeting_harmonization: |
   Proof: SelectedRoleFactSet facts for unify_narrative only; claim_ledger source_fact_ids must match this section's
-  allowlist. Finalized Unify bullets: companion context only, not proof unless the same fact id is in the narrative slice.
+  allowlist. Finalized Unify bullets: primary synthesis context only, not proof unless the same fact id is in the narrative slice.
   Targeting only: JD, briefing, target title, target company. Out-of-slice source_fact_ids fail X2. Omit unsupported claims;
   no invention of employers, metrics, partners, domains, or regulated claims beyond selected narrative facts.
 

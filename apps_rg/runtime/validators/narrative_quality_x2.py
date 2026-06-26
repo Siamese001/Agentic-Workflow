@@ -70,11 +70,14 @@ MECHANISM_VOCAB: frozenset[str] = frozenset({
     "orchestration", "evaluation", "eval", "fine-tuning", "inference",
     # Platform / infra
     "lakehouse", "databricks", "microservices", "kubernetes", "spark",
-    "streaming", "pipeline", "runtime", "gateway", "api",
+    "streaming", "pipeline", "runtime", "gateway", "api", "aws",
+    "bi", "dashboard", "dashboards",
     # Engineering practices
     "telemetry", "tracing", "observability", "monitoring", "cicd", "devops",
+    "lineage",
     # Domain-specific
     "ccar", "basel", "insuretech", "underwriting", "actuarial", "hpc",
+    "hyperscaler", "hyperscalers",
 })
 
 BASE_NGRAM_THRESHOLD = 0.25

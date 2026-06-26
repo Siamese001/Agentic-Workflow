@@ -83,6 +83,10 @@ slot_bodies:
     sentence in plain prose (not a metric list), weighted to S3-S5; never park metrics only in claim_ledger.
     **Allowed-fact utilization (X2):** surface the metric VALUES present in THIS run's ALLOWED_SOURCE_FACT_IDS —
     do not skip a required allowed metric for an abstract phrase.
+    **Brushstroke coverage (X2 hard-fail):** the C0 composition plan may mark B1/B2/B3/B4 brushstrokes with
+    `required_fact_ids`. Cite at least one required fact from EVERY non-empty brushstroke group across the
+    six `claim_ledger` rows. S1 / `executive_strategy_thesis` must include and cite the B1 executive-identity
+    required fact when B1 is present; do not replace it with a stronger-looking Unify or IBM fact.
     **Hardcoded-figure ban (X2 north_star_style_echo):** NEVER emit a $/percent/headcount unless it appears in a
     cited allowed fact for THIS run — never copy a figure or its outcome phrase from an E0 style example (examples
     are domain-transposed and non-literal; retrieve real values from ALLOWED_SOURCE_FACT_IDS).

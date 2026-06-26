@@ -28,16 +28,21 @@ def finalize_section_runtime_exhaust_before_l6(
         maybe_run_l6_v40_shadow_eval_for_section,
     )
 
-    paths.update(
-        maybe_run_l6_v40_shadow_eval_for_section(
-            artifact_dir,
-            section_id=section_id,
-            repo_root=repo_root,
-            session_id=str(runtime_payload.get("session_id") or ""),
-            tenant_id=str(runtime_payload.get("tenant_id") or ""),
-            l5_certification_ref=str(runtime_payload.get("l5_certification_ref") or ""),
-        )
+    l6_paths = maybe_run_l6_v40_shadow_eval_for_section(
+        artifact_dir,
+        section_id=section_id,
+        repo_root=repo_root,
+        session_id=str(runtime_payload.get("session_id") or ""),
+        tenant_id=str(runtime_payload.get("tenant_id") or ""),
+        l5_certification_ref=str(runtime_payload.get("l5_certification_ref") or ""),
     )
+    product_visible = bool(runtime_payload.get("product_visible", True))
+    if product_visible and not l6_paths:
+        raise RuntimeError(
+            "product-visible apps_rg section runtime requires L6 v40 shadow eval output; "
+            "set APPS_RG_L6_V40_SHADOW_EVAL_SKIP only for explicit local-dev waivers"
+        )
+    paths.update(l6_paths)
     return paths
 
 

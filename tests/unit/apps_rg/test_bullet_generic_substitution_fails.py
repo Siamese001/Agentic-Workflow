@@ -91,6 +91,10 @@ class TestTechnicalSpecificityFloor:
             ("bul_ibm_003", "Built LLM-based document intelligence with RAG retrieval"),
             ("bul_ibm_004", "Engineered data lineage and observability for Basel/CCAR compliance"),
             ("bul_ibm_005", "Structured hyperscaler alliances on Azure and AWS co-sell channels"),
+            (
+                "bul_ibm_004",
+                "Owned cross-functional BI and data models for modernization portfolios, building governed BI views.",
+            ),
         ]
         for bid, text in tech_bullets:
             r = check_bullet_technical_specificity_floor(bid, text)

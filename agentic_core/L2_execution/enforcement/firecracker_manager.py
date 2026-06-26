@@ -91,7 +91,7 @@ import subprocess
 import uuid
 from typing import Any
 
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 
 try:
     from agentic_core.L2_execution.types.firecracker_manager_types import (

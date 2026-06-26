@@ -657,7 +657,7 @@ def _build_dead_code_zone_control_report(adg_artifacts_dir: Path) -> dict[str, A
             "edges.relation_type=dead_code_candidate",
         ],
     }
-    return {
+    report = {
         "status": "FAIL" if critical_issues else "PASS",
         "source": source,
         "dead_imports": dead_imports,
@@ -681,6 +681,8 @@ def _build_dead_code_zone_control_report(adg_artifacts_dir: Path) -> dict[str, A
             "adg_snapshot_ts": source["adg_snapshot_ts"],
         },
     }
+    report["bcg_findings"] = build_deprecation_deletion_plan(report, None, None)
+    return report
 
 
 def _render_inline_summary(report: dict[str, Any]) -> str:
