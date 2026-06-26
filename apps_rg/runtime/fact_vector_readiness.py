@@ -9,12 +9,14 @@ It never embeds text and never writes Chroma rows.
 from __future__ import annotations
 
 import json
-import sqlite3
 import time
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 from apps_rg.runtime.c0.section_authority_profile import (
     c0_authority_manifest,
@@ -671,7 +673,7 @@ def resolve_fact_vector_readiness_receipt_path(
 
 def write_fact_vector_readiness_receipt(path: Path, receipt: dict[str, Any]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _wg.write_text(path, json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return path
 
 
