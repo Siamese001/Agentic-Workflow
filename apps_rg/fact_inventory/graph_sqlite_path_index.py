@@ -27,6 +27,8 @@ from typing import Any, Iterable
 
 from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
+GRAPH_INDEX_SCHEMA_VERSION = "apps_rg.graph_sqlite_path_index.v1"
+
 EDGE_METADATA_COLUMNS: tuple[tuple[str, str], ...] = (
     ("rationale", "TEXT NOT NULL DEFAULT ''"),
     ("projection_behavior", "TEXT NOT NULL DEFAULT ''"),
@@ -363,6 +365,160 @@ def _edge_tuples(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     return out
 
 
+def build_graph_index_rows(
+    *,
+    node_rows: Iterable[dict[str, Any]],
+    edge_rows: Iterable[dict[str, Any]],
+    section_rows: Iterable[dict[str, Any]],
+    role_family_projection_rows: Iterable[dict[str, Any]],
+    created_at: str,
+) -> dict[str, list[dict[str, Any]]]:
+    """Build generated graph-index rows before the SQLite file exists."""
+    nodes = {str(row.get("node_id") or ""): dict(row) for row in node_rows if row.get("node_id")}
+    edges = [dict(row) for row in edge_rows]
+    node_types = {node_id: str(row.get("node_type") or "") for node_id, row in nodes.items()}
+
+    graph_paths: list[dict[str, Any]] = []
+    for edge in edges:
+        src = str(edge.get("source_node_id") or "")
+        tgt = str(edge.get("target_node_id") or "")
+        if not src or not tgt:
+            continue
+        edge_id = str(edge.get("edge_id") or _digest(f"{src}->{tgt}")[:16])
+        edge_type = str(edge.get("edge_type") or "")
+        facts = [node_id for node_id in (src, tgt) if node_types.get(node_id) == "fact" or node_id.startswith("fact_")]
+        metrics = [
+            node_id
+            for node_id in (src, tgt)
+            if node_types.get(node_id) == "metric_outcome" or node_id.startswith("metric_")
+        ]
+        sections = [
+            node_id
+            for node_id in (src, tgt)
+            if node_types.get(node_id) == "section" or node_id.startswith("section_")
+        ]
+        proof_score = min(1.0, 0.25 * len(facts) + 0.20 * len(metrics) + 0.15 * len(sections))
+        novelty_score = 1.0 / max(1, len(metrics) + len(facts))
+        path_score = round(proof_score + novelty_score + 0.5, 6)
+        signature = f"{src}->{tgt}"
+        path_identity = f"{signature}|{edge_id}"
+        graph_paths.append(
+            {
+                "path_id": f"path:{_digest(path_identity)[:24]}",
+                "start_node_id": src,
+                "end_node_id": tgt,
+                "path_depth": 1,
+                "path_signature": signature,
+                "node_path_json": _json([src, tgt]),
+                "edge_path_json": _json([edge_id]),
+                "edge_types_json": _json([edge_type]),
+                "proof_fact_ids_json": _json(facts),
+                "metric_ids_json": _json(metrics),
+                "section_ids_json": _json(sections),
+                "path_score": path_score,
+                "novelty_score": round(novelty_score, 6),
+                "proof_strength_score": round(proof_score, 6),
+                "created_at": created_at,
+            }
+        )
+
+    children_by_parent: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for edge in edges:
+        src = str(edge.get("source_node_id") or "")
+        tgt = str(edge.get("target_node_id") or "")
+        edge_type = str(edge.get("edge_type") or "")
+        if src and tgt and tgt in nodes and node_types.get(tgt) == "skill":
+            children_by_parent[(src, edge_type)].append(tgt)
+
+    graph_sibling_links: list[dict[str, Any]] = []
+    sibling_keys: set[tuple[str, str]] = set()
+    for (parent, edge_type), children in sorted(children_by_parent.items()):
+        unique = sorted(set(children))
+        if len(unique) < 2:
+            continue
+        for node_id in unique:
+            for sibling_node_id in unique:
+                if node_id == sibling_node_id:
+                    continue
+                key = (node_id, sibling_node_id)
+                if key in sibling_keys:
+                    continue
+                sibling_keys.add(key)
+                score = 1.0 + (0.5 if node_types.get(node_id) == node_types.get(sibling_node_id) else 0.0)
+                graph_sibling_links.append(
+                    {
+                        "node_id": node_id,
+                        "sibling_node_id": sibling_node_id,
+                        "sibling_reason": f"shared_parent:{edge_type}",
+                        "shared_parent_node_id": parent,
+                        "shared_edge_type": edge_type,
+                        "sibling_score": round(score, 4),
+                    }
+                )
+
+    adjacency: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    for edge in edges:
+        src = str(edge.get("source_node_id") or "")
+        tgt = str(edge.get("target_node_id") or "")
+        edge_type = str(edge.get("edge_type") or "")
+        if src and tgt:
+            adjacency[src].append((tgt, edge_type))
+            adjacency[tgt].append((src, f"{edge_type}_reverse"))
+
+    graph_neighborhoods: list[dict[str, Any]] = []
+    neighborhood_keys: set[tuple[str, str, int]] = set()
+    for center, neighbors in sorted(adjacency.items()):
+        for neighbor, edge_type in sorted(set(neighbors)):
+            key = (center, neighbor, 1)
+            if key in neighborhood_keys:
+                continue
+            neighborhood_keys.add(key)
+            graph_neighborhoods.append(
+                {
+                    "center_node_id": center,
+                    "neighbor_node_id": neighbor,
+                    "distance": 1,
+                    "connecting_path_json": _json([center, neighbor]),
+                    "edge_types_json": _json([edge_type]),
+                    "relationship_summary": f"1_hop:{edge_type}",
+                    "neighbor_score": round(1.0 + (0.5 if node_types.get(neighbor) in HIGH_VALUE_NODE_TYPES else 0.0), 6),
+                }
+            )
+
+    role_family_keys = {"*"}
+    for row in role_family_projection_rows:
+        key = str(row.get("role_family_id") or row.get("projection_role_family_key") or "")
+        if key:
+            role_family_keys.add(key)
+    for row in section_rows:
+        key = str(row.get("role_family_key") or "")
+        if key:
+            role_family_keys.add(key)
+
+    section_evidence_budget: list[dict[str, Any]] = []
+    for role_family_key in sorted(role_family_keys):
+        for budget in DEFAULT_SECTION_BUDGETS:
+            section_evidence_budget.append(
+                {
+                    "section_id": budget["section_id"],
+                    "role_family_key": role_family_key,
+                    "max_metric_reuse": int(budget["max_metric_reuse"]),
+                    "max_fact_family_reuse": int(budget["max_fact_family_reuse"]),
+                    "required_node_types_json": _json(budget["required_node_types"]),
+                    "preferred_edge_types_json": _json(budget["preferred_edge_types"]),
+                    "forbidden_metric_ids_json": _json(budget["forbidden_metric_ids"]),
+                    "preferred_metric_families_json": _json(budget["preferred_metric_families"]),
+                }
+            )
+
+    return {
+        "graph_paths": graph_paths,
+        "graph_neighborhoods": graph_neighborhoods,
+        "graph_sibling_links": graph_sibling_links,
+        "section_evidence_budget": section_evidence_budget,
+    }
+
+
 def materialize_graph_path_index(
     conn: sqlite3.Connection,
     *,
@@ -654,7 +810,13 @@ def query_repeated_metrics(conn: sqlite3.Connection, *, min_count: int = 2) -> l
     ]
 
 
-def query_reverse_metric_paths(conn: sqlite3.Connection, *, metric_id: str, max_depth: int = 4) -> list[dict[str, Any]]:
+def query_reverse_metric_paths(
+    conn: sqlite3.Connection,
+    *,
+    metric_id: str,
+    max_depth: int = 4,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
     ensure_graphdb_capability_schema(conn)
     return [
         {
@@ -674,9 +836,9 @@ def query_reverse_metric_paths(conn: sqlite3.Connection, *, metric_id: str, max_
             FROM graph_paths
             WHERE end_node_id = ? AND path_depth <= ?
             ORDER BY path_score DESC, path_depth ASC
-            LIMIT 100
+            LIMIT ?
             """,
-            (metric_id, max_depth),
+            (metric_id, max_depth, limit),
         )
     ]
 
@@ -790,7 +952,9 @@ def query_best_metric_candidates(
 
 
 __all__ = [
+    "GRAPH_INDEX_SCHEMA_VERSION",
     "EDGE_METADATA_COLUMNS",
+    "build_graph_index_rows",
     "ensure_graphdb_capability_schema",
     "build_reverse_edge_view",
     "materialize_graph_path_index",
