@@ -54,12 +54,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import shutil
 import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+
+from agentic_core.L2_execution.utils import write_gateway as _wg
 
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.runtime.cli_section_execution_report import (
@@ -206,7 +207,7 @@ def _new_interactive_inputs_session_dir() -> Path:
     """Create ``artifacts/apps_rg/cli_inputs/cli_<id>/`` for this interactive run."""
     rid = uuid.uuid4().hex[:12]
     out = _repo_root_for_cli_inputs() / "artifacts" / "apps_rg" / "cli_inputs" / f"cli_{rid}"
-    out.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(out)
     return out
 
 
@@ -222,12 +223,12 @@ def _materialize_jd_file(
     candidate = Path(jd_guess)
     if candidate.is_file():
         if candidate.suffix.lower() == ".json":
-            shutil.copy2(candidate, out)
+            _wg.copy_file(candidate, out)
             try:
                 data = json.loads(out.read_text(encoding="utf-8"))
                 if isinstance(data, dict) and company:
                     data.setdefault("company", company)
-                    out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                    _wg.write_text(out, json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
             except (OSError, json.JSONDecodeError, TypeError):
                 pass
         else:
@@ -237,7 +238,7 @@ def _materialize_jd_file(
                 "description": desc.strip(),
                 "company": company,
             }
-            out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            _wg.write_text(out, json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         return out
 
     if jd_guess.lstrip().startswith("{"):
@@ -249,7 +250,7 @@ def _materialize_jd_file(
             obj.setdefault("company", company or obj.get("company", ""))
             if not str(obj.get("title", "")).strip():
                 obj["title"] = posting_title
-            out.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+            _wg.write_text(out, json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
             return out
 
     payload = {
@@ -257,7 +258,7 @@ def _materialize_jd_file(
         "description": jd_guess.strip(),
         "company": company,
     }
-    out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    _wg.write_text(out, json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
 
 
@@ -271,18 +272,18 @@ def _materialize_brief_file(
     if s.startswith(("http://", "https://")):
         body = fetch_url(s)
         out = session / "research_brief.txt"
-        out.write_text(body, encoding="utf-8")
+        _wg.write_text(out, body, encoding="utf-8")
         return out
 
     bp = Path(s)
     if bp.is_file():
         ext = bp.suffix if bp.suffix else ".txt"
         out = session / f"research_brief{ext}"
-        shutil.copy2(bp, out)
+        _wg.copy_file(bp, out)
         return out
 
     out = session / "research_brief.txt"
-    out.write_text(s, encoding="utf-8")
+    _wg.write_text(out, s, encoding="utf-8")
     return out
 
 
@@ -494,8 +495,9 @@ def _write_section_pin_manifest(
         "same_e2e_run_required": True,
         "pinned_at_utc": datetime.now(timezone.utc).isoformat(),
     }
-    pin_dir.mkdir(parents=True, exist_ok=True)
-    (pin_dir / _SECTION_PIN_MANIFEST_FILENAME).write_text(
+    _wg.ensure_dir(pin_dir)
+    _wg.write_text(
+        pin_dir / _SECTION_PIN_MANIFEST_FILENAME,
         json.dumps(doc, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -533,7 +535,7 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
         if str(artifact_dir or "").strip()
         else (repo_root / "artifacts" / "apps_rg" / "_pinned" / "_assembled")
     )
-    out_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(out_dir)
     expected_run_id = _integrated_run_id_for_path(out_dir)
     md_lines: list[str] = []
     status: dict[str, Any] = {
@@ -548,7 +550,7 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
         status["status"] = "blocked"
         status["reason"] = "missing_e2e_run_context"
         status_path = out_dir / "assemble_status.json"
-        status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+        _wg.write_text(status_path, json.dumps(status, indent=2), encoding="utf-8")
         print(
             "PIN_ASSEMBLY_REFUSED reason=missing_e2e_run_context "
             "artifact_dir_must_be_inside_full_resume_run",
@@ -599,7 +601,7 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
         md_lines.append(f"## {label}\n\n{body}\n")
     md = "# Resume (assembled from pinned sections)\n\n" + "\n".join(md_lines)
     md_path = out_dir / "resume_assembled.md"
-    md_path.write_text(md, encoding="utf-8")
+    _wg.write_text(md_path, md, encoding="utf-8")
     status_path = out_dir / "assemble_status.json"
     complete = not status["missing"] and not status["invalid_pins"]
     status["complete"] = complete
@@ -612,7 +614,7 @@ def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
             if status["invalid_pins"]
             else "incomplete_section_pin_set"
         )
-    status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+    _wg.write_text(status_path, json.dumps(status, indent=2), encoding="utf-8")
     print(f"ASSEMBLED resume_md={md_path.as_posix()}", flush=True)
     print(f"ASSEMBLE_STATUS missing={','.join(status['missing']) or 'none'}", flush=True)
     if status["invalid_pins"]:
@@ -1313,14 +1315,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 _accepting = bool(attempt_history and attempt_history[-1].get("accepted"))
                 _pin_src = str(result.get("artifact_dir") or "")
                 if _accepting and _pin_src:
-                    from shutil import copytree, rmtree
+                    from shutil import copytree
 
                     _pin_dst = (
                         find_repo_root() / "artifacts" / "apps_rg" / "_pinned" / section_eff
                     )
-                    _pin_dst.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(_pin_dst.parent)
                     if _pin_dst.exists():
-                        rmtree(_pin_dst, ignore_errors=True)
+                        _wg.remove_tree(_pin_dst)
                     try:
                         copytree(_pin_src, _pin_dst)
                         _write_section_pin_manifest(
