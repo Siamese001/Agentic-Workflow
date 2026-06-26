@@ -26,6 +26,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 try:
     from dotenv import load_dotenv
 
@@ -166,8 +168,8 @@ def sha16(value: str | bytes) -> str:
 
 
 def write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.ensure_dir(path.parent)
+    _wg.write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def _x2_gate_pass(x2_gates: list[dict[str, Any]], gate_id: str) -> bool:
@@ -282,7 +284,7 @@ def _emit_headline_final_evidence_reports(
         "",
     ]
     md_path = artifact_dir / "headline_final_evidence_report.md"
-    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+    _wg.write_text(md_path, "\n".join(md_lines), encoding="utf-8")
     return md_path, json_path
 
 
@@ -1481,7 +1483,7 @@ def run_headline_execution(
     runtime_payload["proof_pool_metadata"] = proof_pool_metadata
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override).resolve()
-        artifact_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(artifact_dir)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     from apps_rg.runtime.section_repair_ledger import init_ledger
@@ -1491,7 +1493,7 @@ def run_headline_execution(
         section_id="headline",
         run_id=str(runtime_payload["run_id"]),
     )
-    (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "companion_generated_sections.txt", companion_context or "(none)\n", encoding="utf-8")
 
     from apps_rg.runtime.sections.section_generation import merge_transport_context
 
@@ -1536,7 +1538,8 @@ def run_headline_execution(
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
     prompt_hash = sha16(compiled_prompt)
     write_json(artifact_dir / "runtime_payload.json", runtime_payload)
-    (artifact_dir / "compiled_prompt.txt").write_text(
+    _wg.write_text(
+        artifact_dir / "compiled_prompt.txt",
         json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1906,7 +1909,7 @@ def run_headline_execution(
     elif provider_request_data:
         model_name = provider_request_data.get("model")
 
-    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+    _wg.write_text(artifact_dir / "raw_model_output.txt", raw_output or "", encoding="utf-8")
     parse_status, invalid_reason = classify_ledger_parse_state(
         parsed,
         parse_error=parse_error,
@@ -2077,7 +2080,7 @@ def run_headline_execution(
     if isinstance(_raw_jd, dict):
         l2_output["raw_jd_alignment"] = dict(_raw_jd)
 
-    (artifact_dir / "headline_output.txt").write_text(headline_line + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "headline_output.txt", headline_line + "\n", encoding="utf-8")
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
 
     write_json(
@@ -2336,7 +2339,7 @@ def run_headline_execution(
         lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
     lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:", str(artifact_dir / "l6_shadow_eval_package.json"), "offline_only=true"])
     output_text = "\n".join(lines)
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "command_output.txt", output_text + "\n", encoding="utf-8")
     if print_output:
         print(output_text)
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
