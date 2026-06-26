@@ -99,7 +99,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation

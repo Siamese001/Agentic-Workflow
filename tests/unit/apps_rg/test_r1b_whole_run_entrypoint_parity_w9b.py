@@ -1,4 +1,7 @@
-"""W9b — whole-run cache preflight parity across canonical entrypoints."""
+"""apps-test-model: APP CONTRACT.
+
+W9b — whole-run cache preflight parity across canonical entrypoints.
+"""
 
 from __future__ import annotations
 
@@ -9,6 +12,7 @@ import pytest
 
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.cache_preflight_evidence import build_cache_preflight_evidence
+from apps_rg.cache.r1b_constants import R1B_REUSE_AUTHORITY_SCOPE, R1B_SECTION_REUSE_AUTHORITY
 from apps_rg.cache.whole_run_entrypoint_preflight import (
     ENTRYPOINT_CANONICAL_DISPATCH,
     ENTRYPOINT_TEST_WHOLE_RUN_HARNESS,
@@ -72,6 +76,9 @@ def test_production_preflight_accepted_hit(tmp_path: Path, monkeypatch: pytest.M
     assert dr["generation_skipped"] is True
     assert dr["exit_bypassed"] is False
     assert dr["c0_fact_vectors_consulted"] is False
+    assert dr["reuse_authority_policy"]["reuse_scope"] == R1B_REUSE_AUTHORITY_SCOPE
+    assert dr["reuse_authority_policy"]["section_level_semantic_hit_can_skip_lane"] is False
+    assert dr["section_level_lane_skip_authorized"] is False
 
 
 def test_production_preflight_miss_fallthrough(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -109,6 +116,20 @@ def test_section_lane_skips_whole_run_preflight(tmp_path: Path) -> None:
     assert evidence["cache_miss_receipt_ref"] == ""
     assert evidence["generation_spine_invocation_allowed"] is False
     assert evidence["generation_spine_invocation_blocked_reason"] == "section_lane_bypass"
+    assert evidence["reuse_scope"] == R1B_REUSE_AUTHORITY_SCOPE
+    assert evidence["section_level_semantic_reuse_authority"] == R1B_SECTION_REUSE_AUTHORITY
+    assert evidence["section_level_lane_skip_authorized"] is False
+    assert evidence["reuse_authority_policy"]["section_level_semantic_hit_can_skip_lane"] is False
+    assert (
+        evidence["whole_run_cache_preflight"]["section_level_lane_skip_authorized"]
+        is False
+    )
+    assert (
+        evidence["whole_run_cache_preflight"]["reuse_authority_policy"][
+            "section_level_semantic_hit_can_skip_lane"
+        ]
+        is False
+    )
 
 
 def test_canonical_dispatch_invokes_preflight_before_pipeline(

@@ -16,7 +16,7 @@ import logging
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 from agentic_core.config.model_catalog import OPENAI_GPT4_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

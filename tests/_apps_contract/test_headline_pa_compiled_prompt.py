@@ -1,4 +1,7 @@
-"""W6: headline prompt is PA-compiled via section_prompt_adapter (+ optional U-tier companion)."""
+"""apps-test-model: APP CONTRACT.
+
+W6: headline prompt is PA-compiled via section_prompt_adapter (+ optional U-tier companion).
+"""
 
 from __future__ import annotations
 
@@ -18,18 +21,30 @@ def _sha16(value: str) -> str:
 
 def _minimal_proof_metadata() -> dict:
     from apps_rg.runtime.product_evidence_authority import build_evidence_authority
+    from apps_rg.runtime.sections.headline_positioning_evidence import (
+        attach_headline_positioning_bundles_to_proof_pool_metadata,
+    )
 
     meta = {
         "proof_pool_type": "augmented_skills_graph",
         "graph_ref": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
         "skills_authority_status": "PASS",
+        "selected_graph_evidence_plan": {
+            "section_id": "headline",
+            "selected_headline_positioning_families": [
+                "agentic_ai_platforms",
+                "runtime_governance",
+                "enterprise_ai_architecture",
+            ],
+            "selected_skill_ids": [],
+        },
     }
     meta["evidence_authority"] = build_evidence_authority(
         graph_ref=str(meta["graph_ref"]),
         ledger_ref="apps_rg/fact_inventory/candidate_fact_ledger.json",
         skills_authority_status="PASS",
     )
-    return meta
+    return attach_headline_positioning_bundles_to_proof_pool_metadata(meta, section_id="headline")
 
 
 def _payload(*, run_id: str = "head_pa_test") -> dict:
@@ -143,7 +158,9 @@ def test_compiled_headline_production_prompt_markers():
     assert "fact ledger" in low or "canonical_employment_bullets" in low or "c0" in low
     assert "targeting" in low
     assert "fresh" in low or "newly composed" in low
-    assert "not the default answer" in low or "identity reference" in low
+    assert "not the default answer" in low or "identity reference" in low or "identity-reference" in low
+    assert "headline display policy" in low
+    assert "not raw vendor/tool architecture" in low
     assert "internal headline candidates" in low or "internal candidates" in low
     assert "pa_truth_oath_v1" in content or "pa_core_law" in content
     assert "PRODUCT_SHAPE" in content

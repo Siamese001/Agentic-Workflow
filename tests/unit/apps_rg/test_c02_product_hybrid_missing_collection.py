@@ -22,7 +22,7 @@ def test_product_hybrid_missing_fact_vectors_collection_is_evidence_gap(
     monkeypatch.setitem(
         sys.modules,
         "chromadb",
-        SimpleNamespace(PersistentClient=lambda path: object()),
+        SimpleNamespace(PersistentClient=lambda *args, **kwargs: object()),
     )
 
     from apps_rg.runtime import chroma_precomputed_collection

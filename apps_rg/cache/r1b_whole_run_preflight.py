@@ -10,7 +10,11 @@ from typing import Any
 from apps_rg.cache.r1b_constants import (
     CACHE_GRAIN_ROLE_TARGET_RUN,
     C0_FACT_VECTORS_COLLECTION,
+    R1B_CHUNK_REUSE_AUTHORITY,
     R1B_NOT_C0_FACT_VECTORS,
+    R1B_REUSE_AUTHORITY_SCOPE,
+    R1B_SECTION_REUSE_AUTHORITY,
+    r1b_reuse_authority_policy,
 )
 from apps_rg.cache.r1b_retrieval import R1BLookupHit, hit_to_probe_dict, lookup_r1b_role_target_run
 from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
@@ -56,7 +60,12 @@ class WholeRunR1BPreflightResult:
             "not_c0_fact_vectors": True,
             "r1b_vs_c0": R1B_NOT_C0_FACT_VECTORS,
             "c0_collection_excluded": C0_FACT_VECTORS_COLLECTION,
+            "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+            "reuse_authority_policy": r1b_reuse_authority_policy(),
             "section_level_loose_reuse": False,
+            "section_level_semantic_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+            "section_level_lane_skip_authorized": False,
+            "child_chunk_reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
             "exit_bypassed": False,
         }
 
@@ -73,6 +82,8 @@ def _child_chunk_inspection_receipt(hit: R1BLookupHit) -> dict[str, Any]:
                 "parent_intent_record_id": ch.parent_intent_record_id,
                 "independent_cache_identity": ch.to_dict().get("independent_cache_identity", False),
                 "used_as_lookup_key": False,
+                "reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
+                "section_level_lane_skip_authorized": False,
             }
         )
     return {
@@ -81,6 +92,9 @@ def _child_chunk_inspection_receipt(hit: R1BLookupHit) -> dict[str, Any]:
         "chunks_inspected": inspected,
         "independent_chunk_lookup_performed": False,
         "lookup_anchor": "HistoricalIntentRecord.request_intent_vector",
+        "reuse_authority_policy": r1b_reuse_authority_policy(),
+        "section_level_lane_skip_authorized": False,
+        "child_chunk_reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
     }
 
 
@@ -118,6 +132,11 @@ def build_r1b_cache_return_packet(
         "exit_bypassed": False,
         "not_c0_fact_vectors": True,
         "c0_collection_excluded": C0_FACT_VECTORS_COLLECTION,
+        "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+        "reuse_authority_policy": r1b_reuse_authority_policy(),
+        "section_level_semantic_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+        "section_level_lane_skip_authorized": False,
+        "child_chunk_reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
         "child_chunk_count": len(hit.chunks),
         "compatibility_checks": hit.verdict.checks,
     }

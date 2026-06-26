@@ -8,6 +8,7 @@ import pytest
 
 from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 from apps_rg.runtime.c0 import fact_vector_index_preflight as fvip
+from apps_rg.runtime.c0.section_authority_profile import direct_vector_section_ids
 from apps_rg.runtime.chroma_precomputed_collection import EXPECTED_BGE_DIMENSION
 from apps_rg.runtime.fact_vectors_bootstrap import GENERATED_LANES, MANIFEST_REL
 
@@ -151,8 +152,8 @@ def test_fact_vector_index_preflight_stale_on_non_bge_or_wrong_dim(
     assert receipt["section_sufficiency"]["model_dim_pass"] is False
 
 
-@pytest.mark.parametrize("section_id", GENERATED_LANES)
-def test_each_generated_lane_has_common_section_sufficiency_gate(
+@pytest.mark.parametrize("section_id", direct_vector_section_ids())
+def test_each_direct_vector_lane_has_common_section_sufficiency_gate(
     section_id: str,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -160,13 +161,9 @@ def test_each_generated_lane_has_common_section_sufficiency_gate(
     _write_manifest(tmp_path)
     slot_requirements = {
         "unify_bullets": ("bul_unify", 6),
-        "unify_narrative": ("bul_unify", 6),
         "ibm_bullets": ("bul_ibm", 5),
-        "ibm_narrative": ("bul_ibm", 5),
         "insurtech_bullets": ("bul_insurtech", 3),
-        "insurtech_narrative": ("bul_insurtech", 3),
         "ey_bullets": ("bul_ey", 3),
-        "ey_narrative": ("bul_ey", 3),
     }
     prefix, count = slot_requirements.get(section_id, (f"fact_{section_id}", 1))
     metas = [
@@ -195,6 +192,35 @@ def test_each_generated_lane_has_common_section_sufficiency_gate(
     assert sufficiency["status"] == fvip.STATUS_PASS
     assert sufficiency["pre_run_hydration_present"] is True
     assert sufficiency["model_dim_pass"] is True
+
+
+def test_narrative_preflight_uses_inherited_bullet_authority_without_chroma(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def _unexpected_chroma_open(_path: str) -> Any:
+        raise AssertionError("narrative preflight must not open fact_vectors")
+
+    monkeypatch.setattr(fvip, "_open_fact_vectors_collection", _unexpected_chroma_open)
+
+    receipt = fvip.build_fact_vector_index_preflight(
+        section_id="unify_narrative",
+        repo_root=tmp_path,
+        chroma_path=str(tmp_path / "chromadb"),
+        product_hybrid_required=False,
+    )
+
+    sufficiency = receipt["section_sufficiency"]
+    assert receipt["status"] == fvip.STATUS_PASS
+    assert receipt["reasons"] == []
+    assert receipt["product_hybrid_required"] is False
+    assert receipt["direct_fact_vector_required"] is False
+    assert receipt["authority_mode"] == "inherited_bullet_proof"
+    assert receipt["collection"]["skipped"] is True
+    assert receipt["delayed_loop_policy"]["pre_run_fact_vector_index_required"] is False
+    assert sufficiency["status"] == fvip.STATUS_PASS
+    assert sufficiency["direct_fact_vector_required"] is False
+    assert sufficiency["upstream_sections"] == ["unify_bullets"]
 
 
 def test_unify_bullets_preflight_requires_all_six_source_slots_and_metric_graph(

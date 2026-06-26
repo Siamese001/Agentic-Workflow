@@ -218,9 +218,9 @@ class AgentIdentity:
         """
         import uuid as _uuid  # noqa: PLC0415
 
-        from agentic_core.L2_execution.utils.providers import (
+        from agentic_core.utils.runners.providers import (
             get_clock,
-        )  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
+        )  # guardian: shared clock provider used at identity-expiry boundary
 
         _emit_snapshots_state(str(_uuid.uuid4()), "AgentIdentity.is_expired", "state_snapshot")
         import hashlib as _hashlib  # noqa: PLC0415

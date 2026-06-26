@@ -83,6 +83,9 @@ R1B_NOT_C0_FACT_VECTORS = (
     f"under {R1B_STORAGE_SUBSYSTEM}. C0 dense retrieval uses Chroma collection "
     f"'{C0_FACT_VECTORS_COLLECTION}' only on cache miss — never as R1B identity."
 )
+R1B_REUSE_AUTHORITY_SCOPE = "whole_run_terminal_only"
+R1B_SECTION_REUSE_AUTHORITY = "advisory_only_no_lane_skip"
+R1B_CHUNK_REUSE_AUTHORITY = "parent_bound_compatibility_inspection_only"
 
 DURABLE_WRITE_VIA_UWG = "UWG_GATE_REQUIRED"
 R1B_UWG_TARGET_SURFACE = "l4.apps_rg.r1b_semantic_cache"
@@ -95,6 +98,26 @@ FILE_BACKED_SSOT_NOTE = (
 )
 STORAGE_TIER_FIXTURE_MIRROR = "fixture_proof_mirror"
 STORAGE_TIER_UWG_ADMITTED = "uwg_admitted_durable_projection"
+
+
+def r1b_reuse_authority_policy() -> dict[str, object]:
+    """Immutable-by-convention receipt policy for R1B reuse authority."""
+    return {
+        "schema_version": "apps_rg.r1b_reuse_authority_policy.v1",
+        "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+        "lookup_anchor": "HistoricalIntentRecord.request_intent_vector",
+        "cache_grain": CACHE_GRAIN_ROLE_TARGET_RUN,
+        "whole_run_hit_can_skip_generation_pipeline": True,
+        "section_level_semantic_hit_can_skip_lane": False,
+        "section_level_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+        "child_chunk_reuse_authority": R1B_CHUNK_REUSE_AUTHORITY,
+        "proof_lock_required_for_section_reuse": True,
+        "exit_review_required": True,
+        "exit_bypassed": False,
+        "c0_fact_vectors_consulted": False,
+        "not_c0_fact_vectors": True,
+        "r1b_vs_c0": R1B_NOT_C0_FACT_VECTORS,
+    }
 
 __all__ = [
     "DEFAULT_CACHE_TTL_SECONDS",
@@ -127,7 +150,11 @@ __all__ = [
     "STORAGE_TIER_UWG_ADMITTED",
     "NON_ADMISSIBLE_RUNTIME_STATUSES",
     "R1B_NOT_C0_FACT_VECTORS",
+    "R1B_CHUNK_REUSE_AUTHORITY",
+    "R1B_REUSE_AUTHORITY_SCOPE",
+    "R1B_SECTION_REUSE_AUTHORITY",
     "R1B_STORAGE_SUBSYSTEM",
     "SECTION_CHUNK_TYPES",
     "X3_FINISH_ALLOWED",
+    "r1b_reuse_authority_policy",
 ]

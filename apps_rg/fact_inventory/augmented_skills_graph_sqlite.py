@@ -224,7 +224,15 @@ DDL_STATEMENTS: tuple[str, ...] = (
         directional INTEGER NOT NULL DEFAULT 1,
         evidence_status TEXT NOT NULL DEFAULT '',
         section_fit TEXT NOT NULL DEFAULT '',
-        source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph'
+        source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
+        rationale TEXT NOT NULL DEFAULT '',
+        projection_behavior TEXT NOT NULL DEFAULT '',
+        external_claim_policy TEXT NOT NULL DEFAULT '',
+        validation_status TEXT NOT NULL DEFAULT '',
+        edge_note TEXT NOT NULL DEFAULT '',
+        operator_note TEXT NOT NULL DEFAULT '',
+        business_story TEXT NOT NULL DEFAULT '',
+        technical_story TEXT NOT NULL DEFAULT ''
     )
     """,
     """
@@ -262,6 +270,110 @@ DDL_STATEMENTS: tuple[str, ...] = (
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS c03_skill_selection_features (
+        skill_id TEXT PRIMARY KEY,
+        pillar TEXT NOT NULL DEFAULT '',
+        subpillar TEXT NOT NULL DEFAULT '',
+        domain_id TEXT NOT NULL DEFAULT '',
+        career_track_id TEXT NOT NULL DEFAULT '',
+        skill_family TEXT NOT NULL DEFAULT '',
+        metric_bucket TEXT NOT NULL DEFAULT 'general_business_outcome',
+        role_family_weights TEXT NOT NULL DEFAULT '{}',
+        allowed_sections TEXT NOT NULL DEFAULT '[]',
+        source_fact_count INTEGER NOT NULL DEFAULT 0,
+        confidence TEXT NOT NULL DEFAULT '',
+        activation_status TEXT NOT NULL DEFAULT '',
+        support_level TEXT NOT NULL DEFAULT '',
+        external_eligible INTEGER NOT NULL DEFAULT 0,
+        source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
+        source_trace TEXT NOT NULL DEFAULT '[]',
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS graph_paths (
+        path_id TEXT PRIMARY KEY,
+        start_node_id TEXT NOT NULL,
+        end_node_id TEXT NOT NULL,
+        path_depth INTEGER NOT NULL,
+        path_signature TEXT NOT NULL,
+        node_path_json TEXT NOT NULL,
+        edge_path_json TEXT NOT NULL,
+        edge_types_json TEXT NOT NULL,
+        proof_fact_ids_json TEXT NOT NULL DEFAULT '[]',
+        metric_ids_json TEXT NOT NULL DEFAULT '[]',
+        section_ids_json TEXT NOT NULL DEFAULT '[]',
+        path_score REAL NOT NULL DEFAULT 0.0,
+        novelty_score REAL NOT NULL DEFAULT 0.0,
+        proof_strength_score REAL NOT NULL DEFAULT 0.0,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS graph_neighborhoods (
+        center_node_id TEXT NOT NULL,
+        neighbor_node_id TEXT NOT NULL,
+        distance INTEGER NOT NULL,
+        connecting_path_json TEXT NOT NULL,
+        edge_types_json TEXT NOT NULL,
+        relationship_summary TEXT NOT NULL DEFAULT '',
+        neighbor_score REAL NOT NULL DEFAULT 0.0,
+        PRIMARY KEY (center_node_id, neighbor_node_id, distance)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS graph_sibling_links (
+        node_id TEXT NOT NULL,
+        sibling_node_id TEXT NOT NULL,
+        sibling_reason TEXT NOT NULL DEFAULT '',
+        shared_parent_node_id TEXT NOT NULL DEFAULT '',
+        shared_edge_type TEXT NOT NULL DEFAULT '',
+        sibling_score REAL NOT NULL DEFAULT 0.0,
+        PRIMARY KEY (node_id, sibling_node_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS resume_metric_usage (
+        run_id TEXT NOT NULL,
+        resume_section TEXT NOT NULL,
+        metric_id TEXT NOT NULL,
+        metric_value TEXT NOT NULL DEFAULT '',
+        fact_id TEXT NOT NULL DEFAULT '',
+        skill_id TEXT NOT NULL DEFAULT '',
+        role_family_key TEXT NOT NULL DEFAULT '',
+        usage_count INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        PRIMARY KEY (run_id, resume_section, metric_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS section_evidence_budget (
+        section_id TEXT NOT NULL,
+        role_family_key TEXT NOT NULL,
+        max_metric_reuse INTEGER NOT NULL DEFAULT 1,
+        max_fact_family_reuse INTEGER NOT NULL DEFAULT 2,
+        required_node_types_json TEXT NOT NULL DEFAULT '[]',
+        preferred_edge_types_json TEXT NOT NULL DEFAULT '[]',
+        forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]',
+        preferred_metric_families_json TEXT NOT NULL DEFAULT '[]',
+        PRIMARY KEY (section_id, role_family_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS graph_selection_rejections (
+        run_id TEXT NOT NULL,
+        section_id TEXT NOT NULL,
+        candidate_node_id TEXT NOT NULL,
+        candidate_node_type TEXT NOT NULL,
+        rejected_reason TEXT NOT NULL,
+        rejected_at_stage TEXT NOT NULL,
+        competing_selected_node_id TEXT NOT NULL DEFAULT '',
+        path_signature TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL,
+        PRIMARY KEY (run_id, section_id, candidate_node_id, rejected_at_stage)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS graph_metadata (
         graph_version TEXT PRIMARY KEY,
         materialized_from TEXT NOT NULL,
@@ -277,6 +389,43 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_tgt ON graph_edges(target_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_section_eligibility_section ON section_eligibility(section_id)",
     "CREATE INDEX IF NOT EXISTS idx_skill_fact_links_fact ON skill_fact_links(fact_id)",
+    "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_metric ON c03_skill_selection_features(metric_bucket)",
+    "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_pillar ON c03_skill_selection_features(pillar)",
+    "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_family ON c03_skill_selection_features(skill_family)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_paths_start ON graph_paths(start_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_paths_end ON graph_paths(end_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_paths_depth ON graph_paths(path_depth)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_center ON graph_neighborhoods(center_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_neighbor ON graph_neighborhoods(neighbor_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_node ON graph_sibling_links(node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_peer ON graph_sibling_links(sibling_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_metric ON resume_metric_usage(metric_id)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_section ON resume_metric_usage(resume_section)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_fact ON resume_metric_usage(fact_id)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_skill ON resume_metric_usage(skill_id)",
+    """
+    CREATE VIEW IF NOT EXISTS graph_edges_reverse AS
+    SELECT
+        edge_id,
+        target_node_id AS source_node_id,
+        source_node_id AS target_node_id,
+        edge_type || '_reverse' AS edge_type,
+        edge_family,
+        weight,
+        confidence,
+        evidence_status,
+        section_fit,
+        source_authority,
+        rationale,
+        projection_behavior,
+        external_claim_policy,
+        validation_status,
+        edge_note,
+        operator_note,
+        business_story,
+        technical_story
+    FROM graph_edges
+    """,
 )
 
 
@@ -1324,6 +1473,14 @@ def materialize_augmented_skills_graph_sqlite(
             "evidence_status": str(raw.get("validation_status") or ""),
             "section_fit": _parse_section_id(tgt) if tgt.startswith("section_") else "",
             "source_authority": "augmented_skills_graph",
+            "rationale": str(raw.get("rationale") or ""),
+            "projection_behavior": str(raw.get("projection_behavior") or ""),
+            "external_claim_policy": str(raw.get("external_claim_policy") or ""),
+            "validation_status": str(raw.get("validation_status") or ""),
+            "edge_note": str(raw.get("edge_note") or raw.get("note") or ""),
+            "operator_note": str(raw.get("operator_note") or ""),
+            "business_story": str(raw.get("business_story") or ""),
+            "technical_story": str(raw.get("technical_story") or ""),
         }
         edge_row = edge_by_id[eid]
         et = edge_row["edge_type"]
@@ -1497,8 +1654,71 @@ def materialize_augmented_skills_graph_sqlite(
         _ensure_endpoint(str(_edge.get("source_node_id") or ""))
         _ensure_endpoint(str(_edge.get("target_node_id") or ""))
     edge_rows.extend(_mo_edge_rows)
+    for row in edge_rows:
+        edge_type = str(row.get("edge_type") or "")
+        row.setdefault("rationale", edge_type)
+        row.setdefault("projection_behavior", "graph_traversal")
+        row.setdefault("external_claim_policy", "graph_routing_not_claim_proof")
+        row.setdefault("validation_status", str(row.get("evidence_status") or ""))
+        row.setdefault("edge_note", "")
+        row.setdefault("operator_note", "")
+        row.setdefault("business_story", "")
+        row.setdefault("technical_story", "")
 
     section_rows = list(section_by_key.values())
+    from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
+        POLICY_VERSION as C03_METRIC_POLICY_VERSION,
+        metric_bucket_for_row,
+    )
+
+    allowed_sections_by_skill: dict[str, list[str]] = {}
+    for row in section_rows:
+        if int(row.get("allowed") or 0) != 1:
+            continue
+        sid = str(row.get("node_id") or "").strip()
+        sec = str(row.get("section_id") or "").strip()
+        if sid and sec:
+            allowed_sections_by_skill.setdefault(sid, []).append(sec)
+
+    selection_feature_rows: list[dict[str, Any]] = []
+    for sid, row in skill_rows_by_id.items():
+        if sid in FORBIDDEN_SKILL_NODE_IDS or sid not in node_rows:
+            continue
+        fact_ids = [
+            str(fid).strip()
+            for fid in row.get("fact_id_links") or []
+            if str(fid).strip() and not _is_skill_id(str(fid))
+        ]
+        pillar = str(row.get("pillar") or "").strip()
+        domain_id = str(row.get("domain_id") or row.get("domain") or "").strip()
+        subpillar = str(row.get("subpillar") or "").strip()
+        family = pillar or domain_id or subpillar or "unclassified"
+        selection_feature_rows.append(
+            {
+                "skill_id": sid,
+                "pillar": pillar,
+                "subpillar": subpillar,
+                "domain_id": domain_id,
+                "career_track_id": str(row.get("career_track_id") or "").strip(),
+                "skill_family": family,
+                "metric_bucket": metric_bucket_for_row(row),
+                "role_family_weights": json.dumps(
+                    row.get("role_family_weights") or {}, sort_keys=True
+                ),
+                "allowed_sections": json.dumps(
+                    sorted(set(allowed_sections_by_skill.get(sid) or row.get("allowed_sections") or []))
+                ),
+                "source_fact_count": len(fact_ids),
+                "confidence": str(node_rows[sid].get("confidence") or ""),
+                "activation_status": str(node_rows[sid].get("activation_status") or ""),
+                "support_level": str(node_rows[sid].get("support_level") or ""),
+                "external_eligible": int(node_rows[sid].get("external_eligible") or 0),
+                "source_authority": "augmented_skills_graph",
+                "source_trace": json.dumps(list(row.get("source_resume_files") or [])[:5]),
+                "updated_at": ts,
+            }
+        )
+
     projection_rows: list[dict[str, Any]] = []
     profiles = payload.get("role_family_projection_profiles") or {}
     from apps_rg.fact_inventory.candidate_fact_ledger import load_master_role_family_taxonomy
@@ -1543,6 +1763,19 @@ def materialize_augmented_skills_graph_sqlite(
             }
         )
 
+    from apps_rg.fact_inventory.graph_sqlite_path_index import (
+        GRAPH_INDEX_SCHEMA_VERSION,
+        build_graph_index_rows,
+    )
+
+    graph_index_rows = build_graph_index_rows(
+        node_rows=list(node_rows.values()),
+        edge_rows=edge_rows,
+        section_rows=section_rows,
+        role_family_projection_rows=projection_rows,
+        created_at=ts,
+    )
+
     gm = payload.get("graph_metadata") if isinstance(payload.get("graph_metadata"), dict) else {}
     summary = {
         "node_count_json": gm.get("node_count"),
@@ -1552,6 +1785,13 @@ def materialize_augmented_skills_graph_sqlite(
         "skill_fact_link_count": len(skill_fact_rows),
         "section_eligibility_count": len(section_rows),
         "role_family_projection_count": len(projection_rows),
+        "c03_skill_selection_feature_count": len(selection_feature_rows),
+        "c03_metric_policy_version": C03_METRIC_POLICY_VERSION,
+        "graph_index_schema_version": GRAPH_INDEX_SCHEMA_VERSION,
+        "graph_path_count": len(graph_index_rows["graph_paths"]),
+        "graph_neighborhood_count": len(graph_index_rows["graph_neighborhoods"]),
+        "graph_sibling_link_count": len(graph_index_rows["graph_sibling_links"]),
+        "section_evidence_budget_count": len(graph_index_rows["section_evidence_budget"]),
     }
 
     if out_path.exists():
@@ -1576,10 +1816,14 @@ def materialize_augmented_skills_graph_sqlite(
             """
             INSERT INTO graph_edges (
                 edge_id, source_node_id, target_node_id, edge_family, edge_type, weight,
-                confidence, directional, evidence_status, section_fit, source_authority
+                confidence, directional, evidence_status, section_fit, source_authority,
+                rationale, projection_behavior, external_claim_policy, validation_status,
+                edge_note, operator_note, business_story, technical_story
             ) VALUES (
                 :edge_id, :source_node_id, :target_node_id, :edge_family, :edge_type, :weight,
-                :confidence, :directional, :evidence_status, :section_fit, :source_authority
+                :confidence, :directional, :evidence_status, :section_fit, :source_authority,
+                :rationale, :projection_behavior, :external_claim_policy, :validation_status,
+                :edge_note, :operator_note, :business_story, :technical_story
             )
             """,
             edge_rows,
@@ -1618,6 +1862,76 @@ def materialize_augmented_skills_graph_sqlite(
             """,
             projection_rows,
         )
+        conn.executemany(
+            """
+            INSERT INTO c03_skill_selection_features (
+                skill_id, pillar, subpillar, domain_id, career_track_id, skill_family,
+                metric_bucket, role_family_weights, allowed_sections, source_fact_count,
+                confidence, activation_status, support_level, external_eligible,
+                source_authority, source_trace, updated_at
+            ) VALUES (
+                :skill_id, :pillar, :subpillar, :domain_id, :career_track_id, :skill_family,
+                :metric_bucket, :role_family_weights, :allowed_sections, :source_fact_count,
+                :confidence, :activation_status, :support_level, :external_eligible,
+                :source_authority, :source_trace, :updated_at
+            )
+            """,
+            selection_feature_rows,
+        )
+        conn.executemany(
+            """
+            INSERT INTO graph_paths (
+                path_id, start_node_id, end_node_id, path_depth, path_signature,
+                node_path_json, edge_path_json, edge_types_json, proof_fact_ids_json,
+                metric_ids_json, section_ids_json, path_score, novelty_score,
+                proof_strength_score, created_at
+            ) VALUES (
+                :path_id, :start_node_id, :end_node_id, :path_depth, :path_signature,
+                :node_path_json, :edge_path_json, :edge_types_json, :proof_fact_ids_json,
+                :metric_ids_json, :section_ids_json, :path_score, :novelty_score,
+                :proof_strength_score, :created_at
+            )
+            """,
+            graph_index_rows["graph_paths"],
+        )
+        conn.executemany(
+            """
+            INSERT INTO graph_neighborhoods (
+                center_node_id, neighbor_node_id, distance, connecting_path_json,
+                edge_types_json, relationship_summary, neighbor_score
+            ) VALUES (
+                :center_node_id, :neighbor_node_id, :distance, :connecting_path_json,
+                :edge_types_json, :relationship_summary, :neighbor_score
+            )
+            """,
+            graph_index_rows["graph_neighborhoods"],
+        )
+        conn.executemany(
+            """
+            INSERT INTO graph_sibling_links (
+                node_id, sibling_node_id, sibling_reason, shared_parent_node_id,
+                shared_edge_type, sibling_score
+            ) VALUES (
+                :node_id, :sibling_node_id, :sibling_reason, :shared_parent_node_id,
+                :shared_edge_type, :sibling_score
+            )
+            """,
+            graph_index_rows["graph_sibling_links"],
+        )
+        conn.executemany(
+            """
+            INSERT INTO section_evidence_budget (
+                section_id, role_family_key, max_metric_reuse, max_fact_family_reuse,
+                required_node_types_json, preferred_edge_types_json,
+                forbidden_metric_ids_json, preferred_metric_families_json
+            ) VALUES (
+                :section_id, :role_family_key, :max_metric_reuse, :max_fact_family_reuse,
+                :required_node_types_json, :preferred_edge_types_json,
+                :forbidden_metric_ids_json, :preferred_metric_families_json
+            )
+            """,
+            graph_index_rows["section_evidence_budget"],
+        )
         conn.execute(
             """
             INSERT INTO graph_metadata (
@@ -1651,6 +1965,14 @@ def materialize_augmented_skills_graph_sqlite(
             "skill_fact_links",
             "section_eligibility",
             "role_family_projection",
+            "c03_skill_selection_features",
+            "graph_paths",
+            "graph_neighborhoods",
+            "graph_sibling_links",
+            "resume_metric_usage",
+            "section_evidence_budget",
+            "graph_selection_rejections",
+            "graph_edges_reverse",
             "graph_metadata",
         ],
     }
@@ -1838,9 +2160,58 @@ def validate_materialized_sqlite(
             WHERE sk.node_id IS NULL OR fa.node_id IS NULL
             """
         ).fetchall()
+        broken_selection_features = conn.execute(
+            """
+            SELECT f.skill_id FROM c03_skill_selection_features f
+            LEFT JOIN graph_nodes n ON n.node_id = f.skill_id AND n.node_type = 'skill'
+            WHERE n.node_id IS NULL
+            """
+        ).fetchall()
+        blank_metric_buckets = conn.execute(
+            """
+            SELECT skill_id FROM c03_skill_selection_features
+            WHERE metric_bucket IS NULL OR metric_bucket = ''
+            """
+        ).fetchall()
+        validated_edges_missing_rationale = conn.execute(
+            """
+            SELECT edge_id FROM graph_edges
+            WHERE LOWER(validation_status) = 'validated'
+              AND COALESCE(rationale, '') = ''
+            """
+        ).fetchall()
+        broken_paths = conn.execute(
+            """
+            SELECT p.path_id FROM graph_paths p
+            LEFT JOIN graph_nodes s ON s.node_id = p.start_node_id
+            LEFT JOIN graph_nodes e ON e.node_id = p.end_node_id
+            WHERE s.node_id IS NULL OR e.node_id IS NULL
+            """
+        ).fetchall()
+        broken_siblings = conn.execute(
+            """
+            SELECT s.node_id, s.sibling_node_id FROM graph_sibling_links s
+            LEFT JOIN graph_nodes n ON n.node_id = s.node_id AND n.node_type = 'skill'
+            LEFT JOIN graph_nodes p ON p.node_id = s.sibling_node_id AND p.node_type = 'skill'
+            WHERE n.node_id IS NULL OR p.node_id IS NULL
+            """
+        ).fetchall()
         skill_fact_count = conn.execute("SELECT COUNT(*) FROM skill_fact_links").fetchone()[0]
         section_elig_count = conn.execute("SELECT COUNT(*) FROM section_eligibility").fetchone()[0]
         rf_count = conn.execute("SELECT COUNT(*) FROM role_family_projection").fetchone()[0]
+        c03_feature_count = conn.execute(
+            "SELECT COUNT(*) FROM c03_skill_selection_features"
+        ).fetchone()[0]
+        graph_path_count = conn.execute("SELECT COUNT(*) FROM graph_paths").fetchone()[0]
+        graph_neighborhood_count = conn.execute(
+            "SELECT COUNT(*) FROM graph_neighborhoods"
+        ).fetchone()[0]
+        graph_sibling_link_count = conn.execute(
+            "SELECT COUNT(*) FROM graph_sibling_links"
+        ).fetchone()[0]
+        section_budget_count = conn.execute(
+            "SELECT COUNT(*) FROM section_evidence_budget"
+        ).fetchone()[0]
     finally:
         conn.close()
 
@@ -1855,6 +2226,18 @@ def validate_materialized_sqlite(
         issues.append(f"broken_edge_refs:{len(broken_edges)}")
     if broken_links:
         issues.append(f"broken_skill_fact_links:{len(broken_links)}")
+    if broken_selection_features:
+        issues.append(f"broken_c03_skill_selection_features:{len(broken_selection_features)}")
+    if blank_metric_buckets:
+        issues.append(f"blank_c03_metric_buckets:{len(blank_metric_buckets)}")
+    if validated_edges_missing_rationale:
+        issues.append(
+            f"validated_edges_missing_rationale:{len(validated_edges_missing_rationale)}"
+        )
+    if broken_paths:
+        issues.append(f"broken_graph_paths:{len(broken_paths)}")
+    if broken_siblings:
+        issues.append(f"broken_graph_sibling_links:{len(broken_siblings)}")
     if node_type_eq_id:
         issues.append(f"node_type_equals_node_id:{len(node_type_eq_id)}")
     if bogus_skill_nodes:
@@ -1889,6 +2272,12 @@ def validate_materialized_sqlite(
         "skill_fact_link_count": skill_fact_count,
         "section_eligibility_count": section_elig_count,
         "role_family_projection_count": rf_count,
+        "c03_skill_selection_feature_count": c03_feature_count,
+        "graph_path_count": graph_path_count,
+        "graph_neighborhood_count": graph_neighborhood_count,
+        "graph_sibling_link_count": graph_sibling_link_count,
+        "section_evidence_budget_count": section_budget_count,
+        "validated_edges_missing_rationale_count": len(validated_edges_missing_rationale),
         "broad_skills_ledger_status": "non_authority",
         "dup_triple_count": len(dup_triple),
         "orphan_edge_count": len(broken_edges),

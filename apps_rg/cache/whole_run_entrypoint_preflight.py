@@ -15,6 +15,11 @@ from typing import Any
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.cache.r1b_post_exit_ingest import ingest_post_exit_after_run
 from apps_rg.cache.r1b_store import default_store_root
+from apps_rg.cache.r1b_constants import (
+    R1B_REUSE_AUTHORITY_SCOPE,
+    R1B_SECTION_REUSE_AUTHORITY,
+    r1b_reuse_authority_policy,
+)
 from apps_rg.cache.r1b_whole_run_preflight import (
     PREFLIGHT_ORDER,
     WholeRunR1BPreflightResult,
@@ -94,6 +99,10 @@ class WholeRunCachePreflightOutcome:
             "generation_required": self.generation_required,
             "c0_fact_vectors_consulted": self.c0_fact_vectors_consulted,
             "section_lane_skipped_preflight": self.section_lane,
+            "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+            "reuse_authority_policy": r1b_reuse_authority_policy(),
+            "section_level_semantic_reuse_authority": R1B_SECTION_REUSE_AUTHORITY,
+            "section_level_lane_skip_authorized": False,
         }
 
 
@@ -180,6 +189,9 @@ def build_cache_hit_dispatch_result(
         "cache_preflight": preflight.outcome,
         "c0_fact_vectors_consulted": False,
         "exit_bypassed": False,
+        "reuse_scope": R1B_REUSE_AUTHORITY_SCOPE,
+        "reuse_authority_policy": r1b_reuse_authority_policy(),
+        "section_level_lane_skip_authorized": False,
         "l7_how_trace_emitted": False,
         "whole_run_cache_preflight": preflight.to_dict(),
     }

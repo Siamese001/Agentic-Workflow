@@ -1,0 +1,106 @@
+{
+  "receipt_id": "graph_sqlite_path_index_runtime_b7e2c4",
+  "created_at": "2026-06-25",
+  "branch": "codex/publish-c0-authority-profile-20260625",
+  "status": "focused_pass_readiness_warn_dirty_worktree",
+  "plan_file": "plans/graph-sqlite-path-index-runtime-b7e2c4.md",
+  "objective": "Upgrade the generated apps_rg SQLite graph projection into a lightweight graph index while keeping master_skills_arsenal_ledger.json canonical.",
+  "source_of_truth": {
+    "canonical_graph": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "runtime_projection": "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite",
+    "runtime_projection_canonical": false
+  },
+  "implementation": {
+    "edge_preservation": [
+      "rationale",
+      "projection_behavior",
+      "external_claim_policy",
+      "validation_status",
+      "edge_note",
+      "operator_note",
+      "business_story",
+      "technical_story"
+    ],
+    "graph_index_objects": [
+      "graph_edges_reverse",
+      "graph_paths",
+      "graph_neighborhoods",
+      "graph_sibling_links",
+      "resume_metric_usage",
+      "section_evidence_budget",
+      "graph_selection_rejections"
+    ],
+    "path_index_builder": "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+    "c03_selector": {
+      "file": "apps_rg/runtime/c0/c03_sqlite_graph_selection.py",
+      "added_receipts": [
+        "path_signature",
+        "sibling_alternatives",
+        "rejection_receipts",
+        "prior_metric_usage_penalty_count",
+        "sibling_alternative_count"
+      ]
+    },
+    "freshness_guard": {
+      "file": "apps_rg/runtime/c03_graph_sqlite_context.py",
+      "required_objects": [
+        "c03_skill_selection_features",
+        "graph_paths",
+        "graph_neighborhoods",
+        "graph_sibling_links",
+        "resume_metric_usage",
+        "section_evidence_budget",
+        "graph_selection_rejections",
+        "graph_edges_reverse"
+      ]
+    }
+  },
+  "materialization_smoke": {
+    "status": "PASS",
+    "graph_path_count": 8705,
+    "graph_neighborhood_count": 6390,
+    "graph_sibling_link_count": 11166,
+    "section_evidence_budget_count": 378,
+    "validated_edges_missing_rationale_count": 0
+  },
+  "verification": [
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py -q",
+      "result": "23 passed"
+    },
+    {
+      "command": "python -m pytest tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py tests/unit/apps_rg/fact_inventory/test_metric_outcome_materializer.py tests/unit/apps_rg/runtime/c0/test_exec_summary_graph_shaping.py tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py tests/unit/apps_rg/test_c03_graph_skills_mvp.py -q",
+      "result": "46 passed"
+    },
+    {
+      "command": "python apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+      "result": "PASS; distinct_metric_buckets=11; max_same_metric_bucket_share=0.3151"
+    },
+    {
+      "command": "python -m py_compile apps_rg/fact_inventory/graph_sqlite_path_index.py apps_rg/fact_inventory/augmented_skills_graph_sqlite.py apps_rg/runtime/c03_graph_sqlite_context.py apps_rg/runtime/c0/c03_sqlite_graph_selection.py apps_rg/runtime/c0/c03_graph_expansion.py",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check -- <graph-index changed files>",
+      "result": "PASS; CRLF conversion notices only"
+    },
+    {
+      "command": "python scripts/governance/codex_readiness.py --json",
+      "result": "WARN; critical checks passed; dirty worktree and duplicate MCP process advisories remain"
+    }
+  ],
+  "scope_notes": {
+    "adg_backend_used": "sqlite",
+    "adg_snapshot": "06242026_2303",
+    "new_database_engine": false,
+    "new_facts_minted": 0,
+    "unrelated_dirty_worktree_present": true,
+    "unrelated_dirty_scope_examples": [
+      "agentic_core/**",
+      "apps_rg/cache/**",
+      "apps_rg/runtime/sections/headline_*",
+      "apps_rg/runtime/validators/headline_x2.py",
+      "tests/_apps_contract/test_headline_pa_compiled_prompt.py"
+    ]
+  }
+}

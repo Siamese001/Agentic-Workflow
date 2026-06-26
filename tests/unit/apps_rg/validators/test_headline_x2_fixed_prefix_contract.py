@@ -1,4 +1,7 @@
-"""Deterministic headline X2 gates for fixed-prefix SVP Engineering | X | Y | Z contract."""
+"""apps-test-model: APP CONTRACT.
+
+Deterministic headline X2 gates for fixed-prefix SVP Engineering | X | Y | Z contract.
+"""
 from __future__ import annotations
 
 import json
@@ -45,7 +48,9 @@ def _base_kwargs(headline: str, **over) -> dict[str, Any]:
                         "Architected Lakehouse Microservices on Databricks; standardized "
                         "AI Lifecycle automation; engineered HPC Trading Workflows; "
                         "shipped Distributed Computing Architectures and Agentic Runtime "
-                        "Catalogs with Enterprise Telemetry."
+                        "Catalogs with Enterprise Telemetry; led Runtime Governance "
+                        "Architecture, Enterprise AI Platforms, Partner Co-Sell Motions, "
+                        "Regulated AI Systems, Cloud Data Platforms, and Partner Cloud Ecosystems."
                     ),
                 }
             ],
@@ -98,9 +103,26 @@ def _failed_ids(gates: list[Any]) -> list[str]:
 
 
 def test_valid_canonical_derived_passes() -> None:
-    hl = "SVP Engineering | Agentic Runtime Catalogs | Distributed Computing Architectures | HPC Trading Workflows"
+    hl = "SVP Engineering | Runtime Governance Architecture | Enterprise AI Platforms | Partner Co-Sell Motions"
     gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
     assert _failed_ids(gates) == []
+
+
+def test_standalone_vendor_architecture_segment_fails() -> None:
+    hl = "SVP Engineering | Databricks Lakehouse | Enterprise AI Platforms | Partner Co-Sell Motions"
+    gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
+    failed = _failed_ids(gates)
+    assert "x2_headline_no_standalone_vendor_architecture" in failed
+    assert "x2_headline_executive_abstraction_floor" in failed
+
+
+def test_vendor_terms_allowed_in_proof_not_display() -> None:
+    hl = "SVP Engineering | Cloud Data Platforms | Enterprise AI Platforms | Partner Cloud Ecosystems"
+    gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
+    failed = _failed_ids(gates)
+    assert "x2_headline_no_standalone_vendor_architecture" not in failed
+    assert "x2_headline_vendor_terms_proof_only" not in failed
+    assert failed == []
 
 
 def test_three_segment_line_fails_pipe_gate() -> None:
@@ -302,7 +324,7 @@ def test_snapshot_raw_jd_alignment_unaffected_by_normalize_structural_defaults()
 
 
 def test_mocked_runtime_with_passing_x2_still_not_x3_allow() -> None:
-    hl = "SVP Engineering | Agentic Runtime Catalogs | Distributed Computing Architectures | HPC Trading Workflows"
+    hl = "SVP Engineering | Runtime Governance Architecture | Enterprise AI Platforms | Partner Co-Sell Motions"
     kwargs = _base_kwargs(
         hl,
         runtime_generation_status="MOCKED",

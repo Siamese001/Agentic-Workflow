@@ -1,4 +1,7 @@
-"""SQLite materialization + C0.3 context assembly for augmented skills graph."""
+"""apps-test-model: APP CONTRACT.
+
+SQLite materialization + C0.3 context assembly for augmented skills graph.
+"""
 from __future__ import annotations
 
 import json
@@ -268,6 +271,13 @@ def test_materialize_creates_six_tables(sqlite_db: Path) -> None:
     assert "skill_fact_links" in tables
     assert "section_eligibility" in tables
     assert "role_family_projection" in tables
+    assert "c03_skill_selection_features" in tables
+    assert "graph_paths" in tables
+    assert "graph_neighborhoods" in tables
+    assert "graph_sibling_links" in tables
+    assert "resume_metric_usage" in tables
+    assert "section_evidence_budget" in tables
+    assert "graph_selection_rejections" in tables
     assert "graph_metadata" in tables
 
 
@@ -281,7 +291,125 @@ def test_validate_materialized_passes(sqlite_db: Path) -> None:
     )
     assert out["edge_count"] >= unique_edges
     assert out["skill_fact_link_count"] > 0
+    assert out["c03_skill_selection_feature_count"] > 0
+    assert out["graph_path_count"] > 0
+    assert out["graph_neighborhood_count"] > 0
+    assert out["graph_sibling_link_count"] > 0
+    assert out["section_evidence_budget_count"] > 0
+    assert out["validated_edges_missing_rationale_count"] == 0
     assert out["broad_skills_ledger_status"] == "non_authority"
+
+
+def test_graph_edges_preserve_notes_and_reverse_view(sqlite_db: Path) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        row = conn.execute(
+            """
+            SELECT rationale, projection_behavior, external_claim_policy, validation_status
+            FROM graph_edges
+            WHERE edge_id = 'edge_identity_epoch_epoch_actuarial_financial_engineering'
+            """
+        ).fetchone()
+        reverse = conn.execute(
+            """
+            SELECT source_node_id, target_node_id, edge_type, rationale
+            FROM graph_edges_reverse
+            WHERE edge_id = 'edge_identity_epoch_epoch_actuarial_financial_engineering'
+            """
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row == (
+        "Identity grounded in career epoch",
+        "graph_traversal",
+        "skill_projection_not_proof",
+        "validated",
+    )
+    assert reverse == (
+        "epoch_actuarial_financial_engineering",
+        "identity_amit_ayer_governed_ai_platform_leader",
+        "identity_supported_by_epoch_reverse",
+        "Identity grounded in career epoch",
+    )
+
+
+def test_graph_path_index_tables_are_materialized(sqlite_db: Path) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        skill_fact_path = conn.execute(
+            """
+            SELECT path_signature, proof_fact_ids_json, path_score
+            FROM graph_paths
+            WHERE start_node_id = 'skill_runtime_gate_mesh_design'
+              AND end_node_id = 'fact_engineering_platform_001'
+            ORDER BY path_depth ASC, path_score DESC
+            LIMIT 1
+            """
+        ).fetchone()
+        sibling = conn.execute(
+            """
+            SELECT sibling_node_id, sibling_reason, shared_parent_node_id
+            FROM graph_sibling_links
+            WHERE node_id = 'skill_runtime_gate_mesh_design'
+            ORDER BY sibling_score DESC, sibling_node_id
+            LIMIT 1
+            """
+        ).fetchone()
+        neighborhood_count = conn.execute(
+            """
+            SELECT COUNT(*) FROM graph_neighborhoods
+            WHERE center_node_id = 'skill_runtime_gate_mesh_design'
+            """
+        ).fetchone()[0]
+        budget = conn.execute(
+            """
+            SELECT max_metric_reuse, required_node_types_json, preferred_edge_types_json
+            FROM section_evidence_budget
+            WHERE section_id = 'executive_summary'
+              AND role_family_key = 'SVP_ENGINEERING_AI_PLATFORM'
+            """
+        ).fetchone()
+    finally:
+        conn.close()
+    assert skill_fact_path is not None
+    assert skill_fact_path[0] == "skill_runtime_gate_mesh_design->fact_engineering_platform_001"
+    assert "fact_engineering_platform_001" in json.loads(skill_fact_path[1])
+    assert float(skill_fact_path[2]) > 0
+    assert sibling is not None
+    assert sibling[0].startswith("skill_")
+    assert sibling[1] in ("shared_fact", "shared_parent:capability_domain_contains_skill", "shared_parent:epoch_contains_skill")
+    assert sibling[2]
+    assert neighborhood_count > 0
+    assert budget is not None
+    assert int(budget[0]) == 1
+    assert "skill" in json.loads(budget[1])
+    assert "skill_supported_by_fact" in json.loads(budget[2])
+
+
+def test_c03_skill_selection_features_are_generated_from_json(sqlite_db: Path) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        row = conn.execute(
+            """
+            SELECT skill_id, metric_bucket, skill_family, source_fact_count, source_authority
+            FROM c03_skill_selection_features
+            WHERE skill_id = 'skill_c03_metric_heterogeneity_selection'
+            """
+        ).fetchone()
+        blank_buckets = conn.execute(
+            """
+            SELECT COUNT(*) FROM c03_skill_selection_features
+            WHERE metric_bucket IS NULL OR metric_bucket = ''
+            """
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert row is not None
+    assert row[1] == "risk_governance"
+    assert row[2]
+    assert int(row[3]) >= 1
+    assert row[4] == "augmented_skills_graph"
+    assert blank_buckets == 0
 
 
 def test_sqlite_confidence_grade_not_support_level(sqlite_db: Path) -> None:

@@ -704,6 +704,7 @@ def deterministic_headline_word_count_expand(headline_line: str) -> str:
         (1, r"\bruntime\s+governance\b", "Architecture"),
         (2, r"\bdatabricks\s+lakehouse\b", "Platform"),
         (1, r"\bgoverned\s+runtime\b", "Architecture"),
+        (2, r"\bproduction\s+reliability\b", "Systems"),
     )
     for seg_idx, pattern, token in targeted_expansions:
         segment = parts[seg_idx]

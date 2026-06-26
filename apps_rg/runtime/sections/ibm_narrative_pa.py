@@ -84,6 +84,10 @@ def _theme_budget_block() -> str:
     (max 2 ledger rows) and each row may cite at most 2 bul_ibm_* roots, so a sentence that
     materially trips 5 theme families can NEVER satisfy both theme-coverage and
     clause-decomposition gates (live flap postW4fix_20260610_2200).
+
+    PRODUCT_SHAPE exposes x2_ibm_narrative_forbidden_opener and
+    x2_narrative_technical_specificity_floor; runtime I0 names the laws without
+    enumerating X2 gate IDs.
     """
     from apps_rg.runtime.validators.ibm_narrative_x2 import IBM_NARRATIVE_THEME_TRIGGERS
 
@@ -106,14 +110,14 @@ def _theme_budget_block() -> str:
         "work for enterprise clients at IBM, establishing <operating discipline> that made "
         "<plain outcome> more repeatable.' Keep each clause to at most two theme families, "
         "and prefer two or three material families total over the full four-family budget.",
-        "- OPENER LAW (deterministic gate x2_ibm_narrative_forbidden_opener): the sentence "
+        "- OPENER LAW (deterministic opener gate; PRODUCT_SHAPE carries the gate ID): the sentence "
         "MUST begin with a past-tense action verb. NEVER open with a preposition or "
         "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
         "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"
         "successfully/also/built/delivered/designed/implemented/architected/scaled/productized; "
         "prefer Drove, Owned, Championed, Operationalized, Established, Anchored, Stewarded. "
         "Keep the employer anchor 'IBM' mid-sentence, never as the opener.",
-        "- MECHANISM LAW (deterministic gate x2_narrative_technical_specificity_floor): the "
+        "- MECHANISM LAW (deterministic mechanism-specificity gate; PRODUCT_SHAPE carries the gate ID): the "
         "sentence MUST name at least one concrete mechanism/technology token. For IBM's "
         "enterprise-modernization scope use one of: observability, telemetry, microservices, "
         "pipeline, runtime, HPC, lakehouse, API (all IBM-truthful). Generic words alone — cloud, "

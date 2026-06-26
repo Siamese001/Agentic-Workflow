@@ -25,7 +25,7 @@ from agentic_core.L2_execution.types.l2_execution_contract import (
 # canonical definition lives in agentic_core/utils/runners/providers.py; the
 # `providers` submodule here is the stable public import path used across the
 # apps_* and ops_scripts layers.
-from agentic_core.L2_execution.utils.providers import get_clock  # noqa: E402, F401
+from agentic_core.utils.runners.providers import get_clock  # noqa: E402, F401
 
 
 @dataclass

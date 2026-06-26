@@ -245,7 +245,7 @@ class V15ExecutionGateway:
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
-        from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
+        from agentic_core.utils.runners.providers import get_clock  # noqa: PLC0415  # guardian: shared clock provider used at routing execution boundary
 
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, state_hash_fn=state_hash_fn, **kwargs)
