@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.fact_inventory.augmented_skills_graph import assert_skills_not_broad_ledger_authority
 from apps_rg.fact_inventory.materialize_arsenal_from_design import build_ledger_payload
 from apps_rg.fact_inventory.materialize_career_tracks_p1 import run_materialize as rematerialize_career_tracks
@@ -599,7 +601,7 @@ def _patch_career_taxonomy(pillar_ids: list[str]) -> None:
         ) and pid not in inc:
             inc.append(pid)
     track2["pillars_include_confirmed"] = inc
-    TAXONOMY_PATH.write_text(json.dumps(tax, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(TAXONOMY_PATH, json.dumps(tax, indent=2) + "\n", encoding="utf-8")
 
 
 def _counts(ledger: dict[str, Any]) -> dict[str, int]:
@@ -643,11 +645,11 @@ def main() -> int:
         design.get("senior_role_w8_w11_matrix") or []
     )
     design["stats"]["senior_role_bridge_edges"] = len(design.get("senior_role_bridge_edges") or [])
-    DESIGN_PATH.write_text(json.dumps(design, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(DESIGN_PATH, json.dumps(design, indent=2) + "\n", encoding="utf-8")
     _patch_career_taxonomy(pillars_added)
 
     payload = build_ledger_payload(design)
-    OUT_LEDGER.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(OUT_LEDGER, json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     rematerialize_career_tracks(write=True)
 
     ledger = load_master_skills_arsenal_ledger(path=OUT_LEDGER)
@@ -686,8 +688,9 @@ def main() -> int:
             "broad_skills_ledger_authority": False,
         },
     }
-    CLOSEOUT_JSON.write_text(json.dumps(closeout, indent=2) + "\n", encoding="utf-8")
-    CLOSEOUT_MD.write_text(
+    _wg.write_text(CLOSEOUT_JSON, json.dumps(closeout, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(
+        CLOSEOUT_MD,
         "\n".join(
             [
                 "# W8–W11 senior-role graph closeout",

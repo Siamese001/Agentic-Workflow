@@ -10,6 +10,8 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.runtime.judges.bullet_pool_claude_selector import (
     PoolSelectionResult,
     run_claude_bullet_pool_selection,
@@ -231,7 +233,8 @@ def _write_employment_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) ->
                 prior = loaded["rounds"]
         except (json.JSONDecodeError, OSError):
             prior = []
-    path.write_text(
+    _wg.write_text(
+        path,
         json.dumps({"rounds": prior + [doc]}, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -355,7 +358,8 @@ def _generate_employment_bullet_lane(
     }
     meta.update(summarize_selector_emptiness(pool=pool, gate=gate))
     if artifact_dir is not None:
-        (artifact_dir / "bullet_pool_selection.json").write_text(
+        _wg.write_text(
+            artifact_dir / "bullet_pool_selection.json",
             json.dumps(
                 {
                     "selection_mode": pool.selection_mode,
@@ -528,12 +532,14 @@ def _generate_competencies_graph_pool_lane(
     if artifact_dir is not None:
         if pool.rejected_neighbor_audit:
             audit_path = artifact_dir / "competencies_rejected_neighbor_audit.json"
-            audit_path.write_text(
+            _wg.write_text(
+                audit_path,
                 json.dumps(pool.rejected_neighbor_audit, indent=2, ensure_ascii=False) + "\n",
                 encoding="utf-8",
             )
             meta["competencies_rejected_neighbor_audit_ref"] = str(audit_path)
-        (artifact_dir / "bullet_pool_selection.json").write_text(
+        _wg.write_text(
+            artifact_dir / "bullet_pool_selection.json",
             json.dumps(
                 {
                     "selection_mode": pool.selection_mode,
@@ -676,7 +682,8 @@ def generate_bullet_lane_with_sc_and_claude(
         }
     )
     if artifact_dir is not None:
-        (artifact_dir / "bullet_pool_selection.json").write_text(
+        _wg.write_text(
+            artifact_dir / "bullet_pool_selection.json",
             json.dumps(
                 {
                     "selection_mode": pool.selection_mode,

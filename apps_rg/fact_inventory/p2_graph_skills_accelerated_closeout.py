@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 from apps_rg.fact_inventory.track_weighted_graph_expansion import ROOT, REPORTS_DIR
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
@@ -47,8 +49,8 @@ def _utc_now() -> str:
 
 
 def _write_json(path: Path, doc: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.ensure_dir(path.parent)
+    _wg.write_text(path, json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def _resolve_all_section_pools(*, repo_root: Path) -> dict[str, Any]:
@@ -98,7 +100,8 @@ def write_p2_rebaseline(*, repo_root: Path | None = None) -> dict[str, Any]:
         ),
     }
     _write_json(REBASELINE_JSON, doc)
-    REBASELINE_MD.write_text(
+    _wg.write_text(
+        REBASELINE_MD,
         "\n".join(
             [
                 "# P2 rebaseline — all-section graph-skills authority",
@@ -139,7 +142,8 @@ def write_p2_w1a_all_sections(*, repo_root: Path | None = None) -> dict[str, Any
         "sections": sections,
     }
     _write_json(W1A_JSON, doc)
-    W1A_MD.write_text(
+    _wg.write_text(
+        W1A_MD,
         f"# P2-W1A all-section graph authority\n\nGenerated: {doc['generated_at']}\n\n"
         f"- all_sections_default_to_augmented_skills_graph: **{doc['all_sections_default_to_augmented_skills_graph']}**\n"
         f"- broad_skills_ledger_used_as_authority_anywhere: **{ledger_any}**\n",
@@ -782,7 +786,7 @@ def write_p2_w9_live_matrix_closeout(
     md_lines.append(f"- live_x3_allow_claimed_sections: {live_allow}")
     md_lines.append(f"- proof_eligible_sections: {proof_eligible}")
     md_lines.append(f"- blocked_or_partial_sections: {blocked}")
-    CLOSEOUT_MD.write_text("\n".join(md_lines), encoding="utf-8")
+    _wg.write_text(CLOSEOUT_MD, "\n".join(md_lines), encoding="utf-8")
     write_p2_w9_ibm_unify_runtime_rca(repo_root=root, w9_sections=sections)
     write_p2_w9_unify_bullets_final_rca(repo_root=root, w9_sections=sections)
     return {"status": overall, "w9": w9, "w10": w10, "closeout": closeout}
@@ -901,7 +905,8 @@ def run_full_closeout(
         "global_c03_bound_claimed": False,
     }
     _write_json(CLOSEOUT_JSON, closeout)
-    CLOSEOUT_MD.write_text(
+    _wg.write_text(
+        CLOSEOUT_MD,
         f"# P2 accelerated closeout\n\nStatus: **{overall}**\n\nGenerated: {closeout['generated_at']}\n",
         encoding="utf-8",
     )

@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.fact_inventory.materialize_arsenal_from_design import build_ledger_payload
 from apps_rg.fact_inventory.materialize_career_tracks_p1 import run_materialize as rematerialize_career_tracks
 
@@ -546,7 +548,7 @@ def _patch_taxonomy_ssot() -> None:
         if pid not in inc:
             inc.append(pid)
     track2["pillars_include_confirmed"] = inc
-    TAXONOMY_PATH.write_text(json.dumps(tax, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(TAXONOMY_PATH, json.dumps(tax, indent=2) + "\n", encoding="utf-8")
 
 
 def _counts(ledger: dict[str, Any]) -> dict[str, int]:
@@ -619,11 +621,11 @@ def main() -> int:
         design.get("phase2_technical_presales_matrix") or []
     )
     stats["pillar_count"] = len(taxonomy)
-    DESIGN_PATH.write_text(json.dumps(design, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(DESIGN_PATH, json.dumps(design, indent=2) + "\n", encoding="utf-8")
     _patch_taxonomy_ssot()
 
     payload = build_ledger_payload(design)
-    OUT_LEDGER.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(OUT_LEDGER, json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     rematerialize_career_tracks(write=True)
 
     after_ledger = json.loads(OUT_LEDGER.read_text(encoding="utf-8"))
@@ -687,8 +689,8 @@ def main() -> int:
             "agentic_core_touched": False,
         },
     }
-    CLOSEOUT_JSON.write_text(json.dumps(closeout, indent=2) + "\n", encoding="utf-8")
-    CLOSEOUT_MD.write_text(_render_closeout_md(closeout), encoding="utf-8")
+    _wg.write_text(CLOSEOUT_JSON, json.dumps(closeout, indent=2) + "\n", encoding="utf-8")
+    _wg.write_text(CLOSEOUT_MD, _render_closeout_md(closeout), encoding="utf-8")
 
     print(
         f"PHASE2_GTM_PRE_SALES pillars_added={len(pillars_added)} "

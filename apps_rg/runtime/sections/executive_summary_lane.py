@@ -33,6 +33,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
@@ -233,8 +235,8 @@ def sha16(value: str | bytes) -> str:
 
 
 def write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.ensure_dir(path.parent)
+    _wg.write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def load_base_resume() -> tuple[dict[str, Any], Path, str]:
@@ -1750,7 +1752,7 @@ def run_executive_summary_execution(
         runtime_payload["base_resume_claim_authority"] = False
     if artifact_dir_override is not None:
         artifact_dir = Path(artifact_dir_override)
-        artifact_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(artifact_dir)
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     from apps_rg.runtime.section_repair_ledger import init_ledger
@@ -2009,7 +2011,8 @@ def run_executive_summary_execution(
     fec_snap = pp_c03.get("final_evidence_contract_snapshot")
     if isinstance(fec_snap, dict):
         write_json(artifact_dir / "final_evidence_contract_snapshot.json", fec_snap)
-    (artifact_dir / "compiled_prompt.txt").write_text(
+    _wg.write_text(
+        artifact_dir / "compiled_prompt.txt",
         json.dumps(messages, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -2362,7 +2365,7 @@ def run_executive_summary_execution(
         parse_status=parse_status,
         invalid_reason=invalid_reason if parse_status != "OK" else None,
     )
-    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
+    _wg.write_text(artifact_dir / "raw_model_output.txt", raw_output or "", encoding="utf-8")
     write_json(
         artifact_dir / "parsed_output.json",
         {"parsed": parsed, "parse_error": parse_error, "parse_status": parse_status},
@@ -2492,7 +2495,7 @@ def run_executive_summary_execution(
         "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
     }
     write_json(artifact_dir / "l2_output.json", l2_output)
-    (artifact_dir / "resume_display_text.txt").write_text(resume_display_text + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "resume_display_text.txt", resume_display_text + "\n", encoding="utf-8")
     write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
     write_json(artifact_dir / "text_claim_coverage.json", coverage)
@@ -3142,8 +3145,9 @@ def run_executive_summary_execution(
                         allowed_fact_ids=allowed_fact_ids,
                         runtime_payload=runtime_payload,
                     )
-                    (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
-                    (artifact_dir / "resume_display_text.txt").write_text(
+                    _wg.write_text(artifact_dir / "raw_model_output.txt", raw_output or "", encoding="utf-8")
+                    _wg.write_text(
+                        artifact_dir / "resume_display_text.txt",
                         resume_display_text + "\n", encoding="utf-8"
                     )
                     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
@@ -3859,7 +3863,7 @@ def run_executive_summary_execution(
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
     post_rt = artifact_dir / "post_runtime"
-    post_rt.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(post_rt)
     write_json(post_rt / "l6_shadow_eval_package.json", l6)
     l6_learn = build_l6_shadow_learning_record(
         artifact_dir=artifact_dir,
@@ -4004,7 +4008,7 @@ def run_executive_summary_execution(
     output_lines.append(str(artifact_dir / "l6_shadow_eval_package.json"))
     output_lines.append("offline_only=true")
     output_text = "\n".join(output_lines)
-    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+    _wg.write_text(artifact_dir / "command_output.txt", output_text + "\n", encoding="utf-8")
     prq = str((provider_request_data or {}).get("provider_requested", args.provider))
     pratt = (provider_request_data or {}).get("provider_attempted", args.provider)
     from apps_rg.runtime.section_one_spine_certification_lane_integration import (

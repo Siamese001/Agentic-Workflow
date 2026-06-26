@@ -706,7 +706,7 @@ def emit_trend_dashboard(
     window_size: int = 5,
     history_limit: int = 20,
     out_dir: str | Path = "artifacts/apps_eval/trends",
-    emit_l6_shadow: bool = True,
+    emit_l6_shadow: bool = False,
 ) -> TrendDashboardSummary:
     dashboard = build_trend_dashboard(
         records_root=records_root,
@@ -785,7 +785,7 @@ def emit_release_gate(
     min_window_pass_rate: float = 1.0,
     max_latest_score_drop: float = 0.05,
     out_dir: str | Path = "artifacts/apps_eval/trends",
-    emit_l6_shadow: bool = True,
+    emit_l6_shadow: bool = False,
 ) -> ReleaseGateDecision:
     dashboard = emit_trend_dashboard(
         records_root=records_root,

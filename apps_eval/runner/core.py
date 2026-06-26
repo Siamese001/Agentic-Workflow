@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import json
 import os
 import platform
@@ -15,6 +16,8 @@ from datetime import datetime, timezone
 from importlib.metadata import PackageNotFoundError, version as package_version
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L2_execution.utils import write_gateway as _wg
 
 from apps_eval.adapters import run_apps_lic_live, run_apps_rg_live
 from apps_eval.contracts import (
@@ -309,8 +312,9 @@ def _run_live(fixture: EvalFixture, run_dir: Path) -> AppOutputSnapshot:
     else:
         raise ValueError(f"unsupported app: {fixture.scenario.app_id}")
     snapshot_dir = run_dir / "live_snapshots"
-    snapshot_dir.mkdir(parents=True, exist_ok=True)
-    (snapshot_dir / f"{scenario_key}.json").write_text(
+    _wg.ensure_dir(snapshot_dir)
+    _wg.write_text(
+        snapshot_dir / f"{scenario_key}.json",
         json.dumps(snapshot.to_dict(), indent=2, sort_keys=True),
         encoding="utf-8",
     )
@@ -369,7 +373,7 @@ def compare_record_to_baseline(record: dict[str, Any], baseline: dict[str, Any])
 
 
 def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: Path, emit_l6_handoff: bool) -> dict[str, str]:
-    run_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(run_dir)
     paths = {
         "eval_record": run_dir / "eval_record.json",
         "scorecard": run_dir / "scorecard.csv",
@@ -379,14 +383,15 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
         "regression": run_dir / "regression.json",
         "regression_flywheel": run_dir / "regression_flywheel.json",
     }
-    paths["eval_record"].write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
-    with paths["scorecard"].open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["dimension", "score"])
-        writer.writeheader()
-        for key, value in sorted(record.scorecard.dimension_scores.items()):
-            writer.writerow({"dimension": key, "score": f"{value:.6f}"})
-        writer.writerow({"dimension": "overall", "score": f"{record.scorecard.score:.6f}"})
-    paths["report"].write_text(render_report(record, findings), encoding="utf-8")
+    _wg.write_text(paths["eval_record"], json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    scorecard_buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(scorecard_buffer, fieldnames=["dimension", "score"])
+    writer.writeheader()
+    for key, value in sorted(record.scorecard.dimension_scores.items()):
+        writer.writerow({"dimension": key, "score": f"{value:.6f}"})
+    writer.writerow({"dimension": "overall", "score": f"{record.scorecard.score:.6f}"})
+    _wg.write_text(paths["scorecard"], scorecard_buffer.getvalue(), encoding="utf-8")
+    _wg.write_text(paths["report"], render_report(record, findings), encoding="utf-8")
     manifest = {
         "schema_version": CURRENT_EVAL_MANIFEST_SCHEMA_VERSION,
         "record_id": record.record_id,
@@ -399,12 +404,15 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
         "regression_flywheel": record.regression_flywheel.to_dict(),
         "artifacts": {k: str(v).replace("\\", "/") for k, v in paths.items()},
     }
-    paths["manifest"].write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
-    with paths["grader_findings"].open("w", encoding="utf-8") as handle:
-        for finding in findings:
-            handle.write(json.dumps(finding.to_dict(), sort_keys=True) + "\n")
-    paths["regression"].write_text(json.dumps(record.regression.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
-    paths["regression_flywheel"].write_text(json.dumps(record.regression_flywheel.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    _wg.write_text(paths["manifest"], json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    grader_findings_jsonl = "".join(json.dumps(finding.to_dict(), sort_keys=True) + "\n" for finding in findings)
+    _wg.write_text(paths["grader_findings"], grader_findings_jsonl, encoding="utf-8")
+    _wg.write_text(paths["regression"], json.dumps(record.regression.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    _wg.write_text(
+        paths["regression_flywheel"],
+        json.dumps(record.regression_flywheel.to_dict(), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
     live_snapshots = run_dir / "live_snapshots"
     if live_snapshots.is_dir():
         paths["live_snapshots"] = live_snapshots
@@ -420,7 +428,7 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
             block_failures=record.scorecard.block_failures,
         )
         handoff_path = run_dir / "l6_handoff.json"
-        handoff_path.write_text(json.dumps(handoff.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+        _wg.write_text(handoff_path, json.dumps(handoff.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
         paths["l6_handoff"] = handoff_path
     return {k: str(v).replace("\\", "/") for k, v in paths.items()}
 
@@ -558,8 +566,8 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     record = replace(provisional, regression_flywheel=flywheel)
     paths = _emit_artifacts(record, findings, run_dir, request.emit_l6_handoff)
     record = replace(record, artifact_paths=paths)
-    Path(paths["eval_record"]).write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
-    Path(paths["report"]).write_text(render_report(record, findings), encoding="utf-8")
+    _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
     if request.emit_l6_handoff:
         from apps_eval.l6_shadow_bridge import emit_completed_eval_l6_shadow_bridge
 
@@ -571,8 +579,8 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         )
         paths.update(bridge_paths)
         record = replace(record, artifact_paths=paths)
-        Path(paths["eval_record"]).write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
-        Path(paths["report"]).write_text(render_report(record, findings), encoding="utf-8")
+        _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+        _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
     return record
 
 

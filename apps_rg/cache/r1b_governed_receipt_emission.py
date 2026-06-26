@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+
 from apps_rg.cache.r1b_constants import R1B_UWG_TARGET_SURFACE, X3_FINISH_ALLOWED
 from apps_rg.cache.r1b_post_exit_ingest import evaluate_post_exit_ingestion
 from apps_rg.cache.r1b_uwg_promotion import (
@@ -83,7 +85,7 @@ def _write_envelope(
         "run_id": run_id,
         "payload": dict(payload),
     }
-    path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(path, json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def _load_x3_code(artifact_dir: Path) -> str:
@@ -581,7 +583,8 @@ def emit_section_r1b_governed_receipt_chain(
             whole_run_id=str(manifest.get("run_id") or run_id),
             trace_root=trace_root,
         )
-        (artifact_dir / GOVERNED_CHAIN_MANIFEST).write_text(
+        _wg.write_text(
+            artifact_dir / GOVERNED_CHAIN_MANIFEST,
             json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
@@ -608,7 +611,8 @@ def emit_section_r1b_governed_receipt_chain(
             whole_run_id=str(manifest.get("run_id") or run_id),
             trace_root=trace_root,
         )
-        (artifact_dir / GOVERNED_CHAIN_MANIFEST).write_text(
+        _wg.write_text(
+            artifact_dir / GOVERNED_CHAIN_MANIFEST,
             json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
@@ -628,7 +632,8 @@ def emit_section_r1b_governed_receipt_chain(
             section_id=section_id,
             run_id=run_id,
         )
-        (artifact_dir / GOVERNED_CHAIN_MANIFEST).write_text(
+        _wg.write_text(
+            artifact_dir / GOVERNED_CHAIN_MANIFEST,
             json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
@@ -652,7 +657,8 @@ def emit_section_r1b_governed_receipt_chain(
         manifest=manifest,
         gateway=gateway,
     )
-    (artifact_dir / GOVERNED_CHAIN_MANIFEST).write_text(
+    _wg.write_text(
+        artifact_dir / GOVERNED_CHAIN_MANIFEST,
         json.dumps(chain.to_dict(), indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
