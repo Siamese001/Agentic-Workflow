@@ -2249,15 +2249,15 @@
       "node_type": "skill_row",
       "label": "partner_revenue_3m",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_revops_salesforce_pipeline_analytics",
@@ -2476,30 +2476,30 @@
       "node_type": "skill_row",
       "label": "ibm_aws_alliance_joint_revenue",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_partner_cloud_vendor_joint_gtm",
       "node_type": "skill_row",
       "label": "cloud_vendor_joint_gtm",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_partner_gsi_enablement",
@@ -2862,15 +2862,15 @@
       "node_type": "skill_row",
       "label": "stakeholder_alignment_governance",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_p2_gtm_executive_buyer_alignment",
@@ -3044,15 +3044,15 @@
       "node_type": "skill_row",
       "label": "joint_gtm_cloud_vendor_roadmaps",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_p2_tech_reference_architecture",
@@ -3558,15 +3558,15 @@
       "node_type": "skill_row",
       "label": "joint_ai_solution_development",
       "description": "[",
-      "support_level": "DERIVED_SUPPORTED",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "ACTIVE",
-      "evidence_risk": "medium",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
     },
     {
       "node_id": "skill_sr_w12_industry_reference_architecture",
@@ -36129,8 +36129,8 @@
       "source_snippets": [
         "3 million dollars in partner-derived revenue"
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0
       },
@@ -36143,8 +36143,8 @@
         "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -36164,8 +36164,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim partner_revenue_3m beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_001"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_partner_gtm_alliances",
@@ -36210,8 +36221,8 @@
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -36676,8 +36687,8 @@
       "source_snippets": [
         "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "SALES_STRATEGIC_ACCOUNTS": 1.0,
@@ -36694,8 +36705,8 @@
         "executive_summary"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -36715,8 +36726,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim ibm_aws_alliance_joint_revenue beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_002"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_002",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_partner_gtm_alliances",
@@ -36742,8 +36764,8 @@
       "source_snippets": [
         "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps"
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "PRODUCT_TECHNICAL_STRATEGY": 1.0,
@@ -36761,8 +36783,8 @@
         "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -36782,8 +36804,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim cloud_vendor_joint_gtm beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_004"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_004",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_partner_gtm_alliances",
@@ -37953,8 +37986,8 @@
       "source_snippets": [
         "Facilitated an executive governance council with partner stakeholders to align solution architecture, data security protocols, and regulatory mandates."
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "AI_GOVERNANCE_RISK": 1.0,
@@ -37970,8 +38003,8 @@
         "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -37991,8 +38024,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim stakeholder_alignment_governance beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_005"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_005",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_gtm_presales_motion",
@@ -38295,8 +38339,8 @@
       "source_snippets": [
         "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps"
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "SALES_STRATEGIC_ACCOUNTS": 1.0
@@ -38312,8 +38356,8 @@
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -38333,8 +38377,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim joint_gtm_cloud_vendor_roadmaps beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_004"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_004",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_gtm_presales_motion",
@@ -39638,8 +39693,8 @@
       "source_snippets": [
         "Co-developing advanced analytics frameworks with strategic partners."
       ],
-      "user_confirmed": false,
-      "support_level": "DERIVED_SUPPORTED",
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
         "PARTNERSHIPS_GTM": 1.0
@@ -39655,8 +39710,8 @@
         "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
-      "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -39676,8 +39731,19 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim joint_ai_solution_development beyond repo evidence and linked facts; fail closed if proof missing.",
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "human_confirmed_archive_promotion": {
+        "human_confirmed_by": "Amit Ayer",
+        "human_confirmed_at": "2026-06-27T13:55:00Z",
+        "source_fact_ids": [
+          "fact_partnerships_gtm_001"
+        ],
+        "override_reason": "partner_architecture_graph_kpi_improvement_20260627",
+        "author_gate_scope": "partner_architecture_source_backed_only"
+      },
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "partner_architecture_promotion_applied_at": "2026-06-27T13:55:00Z",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
         "pillar_applied_ai_partner_architecture",

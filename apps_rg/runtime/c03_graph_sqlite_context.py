@@ -7,18 +7,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
-from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 from apps_rg.fact_inventory.augmented_skills_graph import (
     SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
     load_augmented_skills_graph,
 )
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+    C03_SQLITE_MATERIALIZER_CODE_VERSION,
     default_graph_sqlite_path,
     load_graph_metadata_row,
     materialize_augmented_skills_graph_sqlite,
@@ -30,7 +29,7 @@ from apps_rg.fact_inventory.graph_sqlite_path_index import (
     query_section_evidence_budget,
     query_sibling_alternatives,
 )
-from apps_rg.runtime.c0.c03_graph_ref_policy import RoleFamilyProjectionError
+from apps_rg.runtime.c0.c03_errors import RoleFamilyProjectionError
 
 PROOF_CLASSIFICATION = "graph_context_routing_support_not_claim_proof"
 
@@ -92,6 +91,16 @@ def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
             if not required_objects.issubset(present):
                 return False
             meta = load_graph_metadata_row(conn)
+            summary = (
+                meta.get("graph_count_summary")
+                if isinstance(meta.get("graph_count_summary"), dict)
+                else {}
+            )
+            if (
+                summary.get("c03_sqlite_materializer_code_version")
+                != C03_SQLITE_MATERIALIZER_CODE_VERSION
+            ):
+                return False
             return str(meta.get("ledger_hash") or "") == _ledger_hash(repo_root)
         finally:
             conn.close()
@@ -536,6 +545,8 @@ def write_c03_graph_sqlite_context_receipt(
     out_dir = root / "artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"c03_graph_sqlite_context_{rid}.json"
+    from agentic_core.L2_execution.utils import write_gateway as _wg
+
     _wg.write_text(
         out_path,
         json.dumps(bundle.get("receipt") or bundle, indent=2, ensure_ascii=False) + "\n",

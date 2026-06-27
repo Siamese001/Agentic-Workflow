@@ -51,6 +51,13 @@ OPTIONAL_CAPABILITY_FAMILIES: tuple[str, ...] = (
     "devsecops_delivery_governance",
 )
 
+VALID_ACTIVATION_STATUSES: frozenset[str] = frozenset({
+    "ACTIVE",
+    "ACTIVE_CONFIRMED",
+    "DRAFT",
+    "BLOCKED",
+})
+
 REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "competency_bundle_id",
     "capability_family",
@@ -160,6 +167,10 @@ def validate_competency_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]
     fam = str(bundle.get("capability_family") or "")
     if fam not in REQUIRED_CAPABILITY_FAMILIES and fam not in OPTIONAL_CAPABILITY_FAMILIES:
         violations.append(f"Unknown capability_family: {fam!r}")
+
+    status = str(bundle.get("activation_status") or "")
+    if status not in VALID_ACTIVATION_STATUSES:
+        violations.append(f"Invalid activation_status: {status!r}")
 
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty (flat taxonomy-only bundle forbidden)")
@@ -306,6 +317,7 @@ __all__ = [
     "SUPPORT_GENERIC_TAXONOMY",
     "SUPPORT_GRAPH_BACKED",
     "SUPPORT_JD_ONLY",
+    "VALID_ACTIVATION_STATUSES",
     "assert_competency_bundle_id_present",
     "classify_support",
     "get_all_bundles",
