@@ -23,7 +23,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 )
 from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 
-JUDGE_RUBRIC_VERSION = "competencies_x1d_v3"
+JUDGE_RUBRIC_VERSION = "competencies_x1d_v4"
 
 COMPETENCIES_RUBRIC_DIMENSION_IDS: tuple[str, ...] = (
     "factual_support",
@@ -34,6 +34,8 @@ COMPETENCIES_RUBRIC_DIMENSION_IDS: tuple[str, ...] = (
     "anti_overfit",
     "category_clarity",
     "svp_agentic_specificity",
+    "partner_architecture_specificity",
+    "root_chronology_discipline",
 )
 
 COMPETENCIES_JUDGE_OUTPUT_CONTRACT = (
@@ -66,6 +68,8 @@ Rubric dimensions:
 6. anti_overfit: no JD-only or briefing-only skills framed as proof; company-specific targeting may influence label choice, not evidence; do not collapse multiple categories onto one metric family; no AI-authenticity dead giveaways such as template phrasing or buzzword soup.
 7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims) and each category should be semantically distinct, graph-backed, and tied to a different skill family.
 8. svp_agentic_specificity: no generic or mundane competency terms; phrases should sound like believable work by an SVP-level engineering leader and deep agentic AI practitioner, with concrete mechanisms plus operating/commercial context. Penalize table-stakes phrases such as "hyperscaler co-sell", "platform commercialization", "stakeholder alignment", "cloud architecture", or "runtime policy controls" when they appear without richer mechanism/context.
+9. partner_architecture_specificity: for Anthropic/applied-AI partnership roles, competencies must include a partner-applied AI architecture category with mechanism plus partner-facing outcome: reference architecture, joint AI solution pattern, solution accelerator, partner deployment enablement, or reusable partner assurance pattern. Generic ecosystem/GTM wording alone is insufficient.
+10. root_chronology_discipline: partner architecture wording must bind only to valid Unify/IBM roots. Do not credit partner-scaling language sourced from InsurTech or EY; do not launder later partner expectations into 2014-2017 InsurTech cloud modernization.
 
 Adversarial review lens:
 - Head of Talent Acquisition pass: would the taxonomy feel recruiter-clean and senior enough for the target company?
@@ -87,6 +91,7 @@ Required judge notes:
 - companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).
 - Terms require source_fact_ids / claim_ledger binding — no JD-only skills as proof.
 - When the categories collapse onto the same few metrics, fact surfaces, or employer lane, lower the score even if the shape is technically valid.
+- For partner-applied roles, fail or lower sharply if ccb_partner_applied_ai_architecture is missing, if partner architecture wording appears outside the partner architecture bundle, or if partner terms bind to InsurTech/EY roots.
 - If the labels feel machine-generated or too generic to survive a TA skim, treat that as a quality flag.
 - If the terms could belong unchanged to any cloud/AI executive rather than this candidate's graph-backed SVP agentic work, fail or lower svp_agentic_specificity.
 

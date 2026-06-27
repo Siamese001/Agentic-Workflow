@@ -492,7 +492,7 @@
       "description": "Governed AI platform and agentic runtime engineering leader with actuarial, derivatives, risk, governance, AWS/cloud, partner GTM, revenue, and commercialization depth.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE",
       "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "identity_anchor",
@@ -35522,7 +35522,8 @@
       "user_confirmed": false,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
-        "AI_SOLUTIONS_ARCHITECTURE": 1.0
+        "AI_SOLUTIONS_ARCHITECTURE": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 0.85
       },
       "allowed_phrases": [
         "solution architecture",

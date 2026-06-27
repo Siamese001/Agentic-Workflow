@@ -659,6 +659,7 @@ def _rewrite_partner_enablement_segment(
 
 
 _MACHINE_HEADLINE_SEGMENT_REWRITES: dict[str, str] = {
+    "governed runtime architecture": "Runtime Governance Architecture",
     "governed runtime spine": "Runtime Governance Architecture",
     "runtime spine": "Runtime Governance Architecture",
     "governed runtime backbone": "Runtime Governance Architecture",

@@ -39,11 +39,12 @@ REQUIRED_CAPABILITY_FAMILIES: tuple[str, ...] = (
     "llmops_reliability",
     "distributed_systems_engineering",
     "platform_productization",
-    "partnerships_ecosystem_execution",
+    "partner_applied_ai_architecture",
     "engineering_leadership",
 )
 
 OPTIONAL_CAPABILITY_FAMILIES: tuple[str, ...] = (
+    "partnerships_ecosystem_execution",
     "insurance_domain_modernization",
     "data_governance_security",
     "cloud_hpc_modernization",

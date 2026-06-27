@@ -199,6 +199,7 @@ class CachedStateLedger(SovereignBaseAgent):
             import urllib.parse
 
             import redis
+            from agentic_core.cache.redis_cache_client import redis_connection_protocol_kwargs
 
             parsed = urllib.parse.urlparse(redis_url)
             connection_kwargs = {
@@ -210,6 +211,7 @@ class CachedStateLedger(SovereignBaseAgent):
                 "socket_timeout": 5,
                 "socket_connect_timeout": 5,
                 "retry_on_timeout": True,
+                **redis_connection_protocol_kwargs(),
             }
             if parsed.scheme == "rediss":
                 connection_kwargs["ssl"] = True

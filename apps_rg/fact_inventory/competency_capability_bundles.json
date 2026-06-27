@@ -21,10 +21,11 @@
   "llmops_reliability",
   "distributed_systems_engineering",
   "platform_productization",
-  "partnerships_ecosystem_execution",
+  "partner_applied_ai_architecture",
   "engineering_leadership"
  ],
  "optional_supporting_families": [
+  "partnerships_ecosystem_execution",
   "insurance_domain_modernization",
   "data_governance_security",
   "cloud_hpc_modernization",
@@ -248,6 +249,70 @@
       "demoable AI accelerators for executive buyers",
       "reusable platform IP commercialization motions",
       "evaluation-ready delivery from prototype to adoption"
+  ]
+  },
+  {
+   "competency_bundle_id": "ccb_partner_applied_ai_architecture",
+   "capability_family": "partner_applied_ai_architecture",
+   "display_label_candidate": "Partner Applied AI Architecture",
+   "target_taxonomy_category_ids": [
+    "cloud_partner_ecosystems",
+    "tech_strategy_innovation"
+   ],
+   "graph_skill_node_ids": [
+    "skill_partner_joint_solution_development",
+    "skill_sr_w12_joint_ai_solution_development",
+    "skill_sr_w12_industry_reference_architecture",
+    "skill_partner_solution_architecture",
+    "skill_partner_ai_architecture_advisory"
+   ],
+   "linked_source_fact_ids": [
+    "fact_partnerships_gtm_001",
+    "fact_solutions_001",
+    "fact_solutions_002"
+   ],
+   "employer_bindings": [
+    "employment_exp_unify_001",
+    "employment_exp_ibm_001"
+   ],
+   "role_episode_bindings": [
+    "reb_unify_partner_channel_cosell",
+    "reb_ibm_aws_alliance_partner_cosell_gtm"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Partner Applied AI Architecture",
+   "seniority_signal": "partner_solution_architecture",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "partner_reusable_solution_enablement",
+   "target_relevance_rationale": "Applied AI partnership roles need partner-ready reference architectures, joint solution patterns, and reusable deployment enablement grounded in Unify and IBM evidence rather than generic partner GTM phrasing.",
+   "capability_facets": [
+    "partner_technical_architecture",
+    "co_sell_solution_architecture",
+    "partner_solution_enablement",
+    "reusable_reference_architecture",
+    "solution_accelerator_packaging",
+    "safe_partner_deployment_patterns"
+   ],
+   "allowed_partner_roots": [
+    "reb_unify_partner_channel_cosell",
+    "reb_ibm_aws_alliance_partner_cosell_gtm"
+   ],
+   "forbidden_partner_roots": [
+    "employment_exp_insurtech_001",
+    "employment_exp_ey_001",
+    "reb_insurtech_cloud_modernization",
+    "reb_ey_data_governance"
+   ],
+   "root_binding_policy": "Partner architecture wording may bind only to Unify and IBM source facts or role episodes. InsurTech and EY roots are forbidden for partner-scaling claims.",
+   "vocabulary_anchors": [
+    "partner-ready applied AI reference architectures",
+    "co-developed AI solution patterns for partners",
+    "safe AI partner deployment assurance patterns"
    ]
   },
   {
@@ -270,7 +335,7 @@
     "employment_exp_ibm_001"
    ],
    "role_episode_bindings": [
-    "reb_ibm_hyperscaler_alliance_partner"
+    "reb_ibm_aws_alliance_partner_cosell_gtm"
    ],
    "allowed_sections": [
     "competencies"
@@ -282,11 +347,24 @@
    "seniority_signal": "alliance_pnl_execution",
    "technical_density_signal": "medium",
    "commercial_or_operating_scope_signal": "hyperscaler_alliance_co_sell",
-   "target_relevance_rationale": "Hyperscaler co-sell alliances and ecosystem GTM execution are differentiating when target relevance supports partnerships posture.",
-    "vocabulary_anchors": [
-      "AI alliance commercialization with hyperscaler partners",
-      "co-sellable agentic solution factory motions",
-      "partner enablement for applied AI adoption"
+   "target_relevance_rationale": "Hyperscaler co-sell alliances and ecosystem GTM execution are supporting evidence when target relevance needs IBM-AWS partnership commercialization, separate from applied AI partner architecture.",
+   "capability_facets": [
+    "alliance_cosell_gtm",
+    "hyperscaler_partner_operating_cadence",
+    "partner_commercialization"
+   ],
+   "allowed_partner_roots": [
+    "reb_ibm_aws_alliance_partner_cosell_gtm"
+   ],
+   "forbidden_partner_roots": [
+    "employment_exp_insurtech_001",
+    "employment_exp_ey_001"
+   ],
+   "root_binding_policy": "Partnership ecosystem execution is IBM alliance GTM evidence. Do not bind it to InsurTech or EY roots.",
+   "vocabulary_anchors": [
+    "IBM-AWS alliance commercialization with partners",
+    "hyperscaler co-sell operating cadences for modernization",
+    "joint GTM enablement for partner pursuits"
    ]
   },
   {

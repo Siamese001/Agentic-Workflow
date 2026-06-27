@@ -24,6 +24,7 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
         l5_certification_ref="l5-cert-ref:e2e",
     )
     rg_package = json.loads(rg_outputs["l6_v40_shadow_eval_package"].read_text(encoding="utf-8"))
+    rg_alignment = json.loads(rg_outputs["l6_apps_eval_alignment"].read_text(encoding="utf-8"))
 
     eval_record = run_eval(
         EvalRequest(
@@ -31,9 +32,11 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
             mode="snapshot",
             deterministic_only=True,
             out_dir=str(tmp_path / "apps_eval"),
+            emit_l6_handoff=True,
         )
     )
     eval_bridge = json.loads(Path(eval_record.artifact_paths["l6_shadow_bridge"]).read_text(encoding="utf-8"))
+    eval_alignment = json.loads(Path(eval_record.artifact_paths["l6_apps_eval_alignment"]).read_text(encoding="utf-8"))
 
     assert rg_package["valid_v40_shadow_exhaust"] is True
     assert rg_package["g28_audit_completeness"]["verdict"] == "PASS"
@@ -42,6 +45,10 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert rg_package["current_run_x3_mutation_assertion"] is False
     assert rg_package["direct_l4_write_assertion"] is False
     assert rg_package["future_run_only_assertion"] is True
+    assert rg_package["l6_microstep_observations_ref"]
+    assert rg_package["l6_apps_eval_alignment_ref"]
+    assert rg_alignment["missing_in_l6"] == []
+    assert rg_alignment["authority_mismatch"] is False
 
     assert eval_bridge["g28_audit_completeness"]["verdict"] == "PASS"
     assert eval_bridge["g29_learning_firewall"]["verdict"] == "PASS"
@@ -49,3 +56,8 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["direct_l4_write_attempted"] is False
     assert eval_bridge["durable_write_attempted"] is False
     assert eval_bridge["future_run_only"] is True
+    assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
+    assert eval_alignment["rows_expected"] == len(eval_record.scorecard.scorecard_rows)
+    assert eval_alignment["missing_in_l6"] == []
+    assert eval_alignment["missing_in_apps_eval"] == []
+    assert eval_alignment["authority_mismatch"] is False

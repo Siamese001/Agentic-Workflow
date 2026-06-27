@@ -17,7 +17,7 @@ import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Final, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
 from apps_research.integrations.llm_client import create_openai_sync_client
@@ -39,6 +39,7 @@ from apps_research.engines.query_decomposer import (  # noqa: F401
 
 # Plan §P1.4 — V2 retrieval pipeline behind feature flag.
 _RETRIEVAL_V2_FLAG = "APPS_RESEARCH_RETRIEVAL_V2"
+APPS_RESEARCH_BRIEF_MODEL: Final[str] = "gpt-5.4-mini"
 
 
 def _v2_enabled() -> bool:
@@ -312,8 +313,9 @@ class CompanyBriefEngine(BaseResearchEngine):
         self,
         *,
         topic: str,
-        depth_profile: str,
-        jd_context: Dict[str, Any],
+        depth_profile: str | None = None,
+        jd_context: Dict[str, Any] | None = None,
+        depth: str | None = None,
     ) -> Dict[str, str]:
         """V2 retrieval pipeline: plan coverage families -> retrieve -> rerank.
 
@@ -324,19 +326,23 @@ class CompanyBriefEngine(BaseResearchEngine):
         """
         import concurrent.futures
 
+        from apps_research.engines.query_decomposer import QueryPlan, decompose_coverage_families
         from apps_research.integrations.reranker_adapter import rerank
         from apps_research.integrations.search_retrieval import (
             apply_contextual_prefix,
             retrieve,
         )
 
+        resolved_depth_profile = depth_profile or _resolve_depth_profile(depth or "standard")
         try:
-            plans = decompose_coverage_families(topic, depth_profile, jd_context or None)
+            plans = decompose_coverage_families(topic, resolved_depth_profile, jd_context or None)
         except ValueError as exc:
             raise CompanyBriefUnavailableError(
                 f"{topic}: v2 research decomposition failed: {exc}"
             ) from exc
-        profile_cfg = _DEPTH_PROFILES.get(depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"])
+        profile_cfg = _DEPTH_PROFILES.get(
+            resolved_depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"]
+        )
         plans = plans[: profile_cfg["max_queries"]]
 
         def _fetch(plan: QueryPlan) -> tuple[str, str]:
@@ -353,15 +359,21 @@ class CompanyBriefEngine(BaseResearchEngine):
             # Plan §P4.5 — wrap each chunk with Anthropic contextual prefix
             # so the downstream synthesizer sees the same template audit
             # grep uses (<document>/<chunk_context>).
-            blob = "\n\n".join(
-                apply_contextual_prefix(
-                    f"- {d.title}: {d.snippet} ({d.url})",
-                    doc_title=d.title,
-                    surrounding_text=plan.query,
+            chunks: list[str] = []
+            for d in top:
+                if not d.snippet:
+                    continue
+                chunk = f"- {d.title}: {d.snippet} ({d.url})"
+                if d.url:
+                    chunk = f"{chunk}\n{d.url}"
+                chunks.append(
+                    apply_contextual_prefix(
+                        chunk,
+                        doc_title=d.title,
+                        surrounding_text=plan.query,
+                    )
                 )
-                for d in top
-                if d.snippet
-            )
+            blob = "\n\n".join(chunks)
             return plan.family, blob
 
         findings: Dict[str, str] = {plan.family: "" for plan in plans}
@@ -492,13 +504,10 @@ class CompanyBriefEngine(BaseResearchEngine):
     ) -> Dict[str, Any]:
         """Synthesize via the pinned OpenAI model route.
 
-        Uses ``gpt-5.5`` by default, with ``APPS_RESEARCH_BRIEF_MODEL``
-        as an explicit override for local experimentation. Returns the parsed
+        Uses the pinned apps_research briefing model. Returns the parsed
         synthesis dict on success and fails closed on transport, empty-response,
         or parse failure.
         """
-        import os  # noqa: PLC0415 — local import keeps module cold-load cheap
-
         try:
             client = create_openai_sync_client()
         except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
@@ -506,7 +515,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 f"{topic}: OpenAI client unavailable: {exc}"
             ) from exc
 
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
+        model_name = APPS_RESEARCH_BRIEF_MODEL
         started = time.time()
         try:
             resp = client.chat.completions.create(
@@ -594,7 +603,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
+        model_name = APPS_RESEARCH_BRIEF_MODEL
 
         has_research = bool(research_notes.strip())
         gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
@@ -651,8 +660,10 @@ class CompanyBriefEngine(BaseResearchEngine):
                     profile="apps_rg",
                 )
         if not sealed.is_sealed:
+            violations = ",".join(sealed.violations) if sealed.violations else "none"
             raise CompanyBriefUnavailableError(
-                f"{company_name}: apps_rg targeting brief rejected: {sealed.block_reason or 'contract_validation_failed'}"
+                f"{company_name}: apps_rg targeting brief rejected: "
+                f"{sealed.block_reason or 'contract_validation_failed'}; violations={violations}"
             )
         return {
             "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
@@ -845,8 +856,6 @@ class CompanyBriefEngine(BaseResearchEngine):
         return text
 
     def _gemini_synthesize_plain(self, *, prompt: str) -> str:
-        import os  # noqa: PLC0415
-
         try:
             client = create_openai_sync_client()
         except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client setup can fail for missing credentials or SDK issues
@@ -854,7 +863,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 f"targeting brief OpenAI client unavailable: {exc}"
             ) from exc
 
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
+        model_name = APPS_RESEARCH_BRIEF_MODEL
         try:
             resp = client.chat.completions.create(
                 model=model_name,
@@ -1283,4 +1292,4 @@ class CompanyBriefEngine(BaseResearchEngine):
         }
 
 
-__all__ = ["CompanyBriefEngine"]
+__all__ = ["APPS_RESEARCH_BRIEF_MODEL", "CompanyBriefEngine"]

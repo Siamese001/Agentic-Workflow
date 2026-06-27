@@ -1140,8 +1140,12 @@ def get_hybrid_search_engine(
         return cached
     try:
         import chromadb
+        from chromadb.config import Settings
 
-        client = chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
+        client = chromadb.PersistentClient(
+            path=_CANONICAL_CHROMA_PATH,
+            settings=Settings(anonymized_telemetry=False),
+        )
     except (ImportError, RuntimeError, ValueError, TypeError, OSError):
         client = None
     engine = HybridSearchEngine(chroma_client=client, top_k=key[1])
@@ -1154,8 +1158,12 @@ def get_global_hybrid_engine() -> HybridSearchEngine:
     if _global_hybrid_engine is None:
         try:
             import chromadb
+            from chromadb.config import Settings
 
-            client = chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
+            client = chromadb.PersistentClient(
+                path=_CANONICAL_CHROMA_PATH,
+                settings=Settings(anonymized_telemetry=False),
+            )
         except (ImportError, RuntimeError, ValueError, TypeError, OSError):
             client = None
         _global_hybrid_engine = HybridSearchEngine(chroma_client=client)

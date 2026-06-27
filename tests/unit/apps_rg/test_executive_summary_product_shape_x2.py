@@ -236,6 +236,19 @@ def test_synthesis_quality_requires_six_sentences():
     assert check_exec_summary_paragraph_max_words(short, {})[0] is True
 
 
+def test_meta_filler_blocks_leadership_profile_capstone() -> None:
+    bad = (
+        "This leadership profile can translate into partner-led applied AI architecture "
+        "that scales safely across enterprise ecosystems."
+    )
+
+    ok, reason = check_exec_summary_meta_filler_patterns(bad)
+
+    assert ok is False
+    assert reason is not None
+    assert "leadership profile" in reason
+
+
 def test_lane_retry_checks_word_bounds_and_meta():
     import apps_rg.runtime.sections.executive_summary_lane as lane
 

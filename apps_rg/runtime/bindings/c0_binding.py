@@ -80,8 +80,12 @@ def _chroma_source_label(source_class: str, object_id: str) -> str:
 
 def _persistent_chroma_client(path: str) -> Any:
     from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chroma_module
+    from chromadb.config import Settings
 
-    return chroma_module.PersistentClient(path=path)
+    return chroma_module.PersistentClient(
+        path=path,
+        settings=Settings(anonymized_telemetry=False),
+    )
 
 
 def _resolve_spine_graph_expansion_refs(

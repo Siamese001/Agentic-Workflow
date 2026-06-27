@@ -302,7 +302,8 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
         f"enable in the {role} context (e.g. federate governed platforms, accelerate M&A integration, build "
         "enterprise innovation programs at scale); may use composition_plan s6_targeting_forward_anchor "
         "(briefing/JD emphasis only); forbidden: 'Looking ahead,' opener, 'extend that arc toward' recap, "
-        "and closing on a backward-looking technical tool description with no forward projection.\n"
+        "'this leadership profile', 'can translate into', and closing on a backward-looking technical "
+        "tool description with no forward projection.\n"
         "- S3–S4: honest connectors only; parallel governance and HPC threads need not be falsely causal.\n"
         f"{format_svp_jd_emphasis_line()}"
         "- S1 should still read as leadership-first synthesis, not a role-family mirror or bullet chain.\n"
@@ -409,6 +410,7 @@ def format_judge_remediation_synthesis_default() -> str:
         "S3–S4 weave platform scale, operating model, and innovation delivery; "
         "S5 single woven metric clause inside strategy context (no credential/employer dump); "
         "S6 integrative enterprise IT direction capstone from allowed facts only (no vendor cert laundry list; "
+        "no cover-letter meta phrasing such as 'this leadership profile' or 'can translate into'; "
         "optional single FSA rigor clause only when fact_quant_hpc supports it); "
         "tilt emphasis toward enterprise architecture, federated integration, innovation incubation, "
         "multi-year IT strategy from JD (targeting only; jd_used_as_proof=false)"
@@ -430,7 +432,8 @@ def format_l6_judge_soft_fail_recommendation(*, soft_judges: list[str]) -> str:
     return (
         f"Executive summary judge soft-fail ({judges}): regenerate with SVP synthesis contract — "
         "connective S3–S4 (platform + innovation + operating model), ≤1 metric in S5, "
-        "integrative S6 capstone; JD themes for emphasis only (enterprise architecture, innovation, IT strategy); "
+        "integrative S6 capstone with no cover-letter meta phrasing; JD themes for emphasis only "
+        "(enterprise architecture, innovation, IT strategy); "
         "enable APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 when X2 is green and one judge fails on synthesis."
     )
 

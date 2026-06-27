@@ -386,7 +386,15 @@
       "architecture_scope_signals": [
         "Partner co-sell motions and alliance go-to-market",
         "Cloud/streaming vendor bundling (joint AI + data-ingestion offerings)",
-        "Channel program design and partner enablement"
+        "Channel program design and partner enablement",
+        "Reusable partner-delivered AI solution patterns",
+        "Partner-ready analytics framework packaging"
+      ],
+      "capability_facets": [
+        "partner_applied_ai_architecture",
+        "co_sell_solution_architecture",
+        "partner_solution_enablement",
+        "solution_accelerator_commercialization"
       ],
       "graph_skill_node_ids": [
         "skill_partner_partner_motions",
@@ -415,7 +423,10 @@
       "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from graph-selected Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
       "section_eligibility": [
         "unify_bullets",
-        "unify_narrative"
+        "unify_narrative",
+        "competencies",
+        "headline",
+        "executive_summary"
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",

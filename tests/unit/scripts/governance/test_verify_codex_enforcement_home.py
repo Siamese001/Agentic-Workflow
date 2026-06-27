@@ -77,6 +77,10 @@ def _adg_p3_prompt() -> str:
     return "\n".join(mod.ADG_P3_REQUIRED_PROMPT_SNIPPETS)
 
 
+def _svp_docs_prompt() -> str:
+    return "\n".join(mod.SVP_DOCS_REQUIRED_PROMPT_SNIPPETS)
+
+
 def _valid_root(tmp_path: Path) -> Path:
     prompt_by_id = {
         "on-demand-pr-main-publisher": _publication_prompt(),
@@ -84,6 +88,7 @@ def _valid_root(tmp_path: Path) -> Path:
         "adg-p0-p1-burndown": _adg_p0_p1_prompt(),
         "adg-bcg-p2-next-action": _adg_p2_prompt(),
         "adg-p3-promotion-hygiene": _adg_p3_prompt(),
+        "weekly-svp-readme-documentation-refresh": _svp_docs_prompt(),
     }
     for automation_id in mod.AUTOMATION_IDS:
         _write(
@@ -302,3 +307,16 @@ def test_p3_prompt_requires_p2_precedence_gate(tmp_path: Path) -> None:
     issues = mod.validate(root, tmp_path / "user-codex")
 
     assert any(issue.code == "adg_p3_prompt_missing" for issue in issues)
+
+
+def test_svp_docs_prompt_requires_x1d_x2_x3_contract(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "weekly-svp-readme-documentation-refresh")
+    automation.write_text(
+        _automation_toml("weekly-svp-readme-documentation-refresh", "svp_docs_x1d/v1", root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "svp_docs_prompt_missing" for issue in issues)

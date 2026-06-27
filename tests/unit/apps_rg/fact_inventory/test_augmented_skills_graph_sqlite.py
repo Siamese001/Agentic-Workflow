@@ -31,6 +31,7 @@ from apps_rg.runtime.c03_graph_sqlite_context import (
     PROOF_CLASSIFICATION,
     assemble_c03_graph_sqlite_context,
     enrich_c03_bound_with_sqlite_context,
+    query_partner_architecture_competency_candidates,
 )
 
 REPO = Path(__file__).resolve().parents[4]
@@ -272,6 +273,7 @@ def test_materialize_creates_six_tables(sqlite_db: Path) -> None:
     assert "section_eligibility" in tables
     assert "role_family_projection" in tables
     assert "c03_skill_selection_features" in tables
+    assert "c03_role_family_skill_weights" in tables
     assert "graph_paths" in tables
     assert "graph_neighborhoods" in tables
     assert "graph_sibling_links" in tables
@@ -292,6 +294,7 @@ def test_validate_materialized_passes(sqlite_db: Path) -> None:
     assert out["edge_count"] >= unique_edges
     assert out["skill_fact_link_count"] > 0
     assert out["c03_skill_selection_feature_count"] > 0
+    assert out["c03_role_family_skill_weight_count"] > 0
     assert out["graph_path_count"] > 0
     assert out["graph_neighborhood_count"] > 0
     assert out["graph_sibling_link_count"] > 0
@@ -412,6 +415,31 @@ def test_c03_skill_selection_features_are_generated_from_json(sqlite_db: Path) -
     assert blank_buckets == 0
 
 
+def test_partner_architecture_competency_candidates_view(sqlite_db: Path) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        rows = query_partner_architecture_competency_candidates(
+            conn,
+            role_family_key="ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+            limit=20,
+        )
+        skill_ids = {str(row["skill_id"]) for row in rows}
+        forbidden_count = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM v_partner_architecture_competency_candidates
+            WHERE LOWER(COALESCE(fact_id, '')) LIKE '%insurtech%'
+               OR LOWER(COALESCE(fact_id, '')) LIKE '%ey%'
+            """
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert rows
+    assert "skill_partner_joint_solution_development" in skill_ids
+    assert "skill_sr_w12_industry_reference_architecture" in skill_ids
+    assert forbidden_count == 0
+
+
 def test_sqlite_confidence_grade_not_support_level(sqlite_db: Path) -> None:
     conn = sqlite3.connect(str(sqlite_db))
     try:
@@ -455,6 +483,8 @@ def test_c03_context_receipt_fields(sqlite_db: Path) -> None:
     assert rec["c03_integration_status"] == "SQLITE_CONTEXT_AVAILABLE"
     assert isinstance(rec["selected_nodes"], list)
     assert isinstance(rec["section_eligibility"], list)
+    assert rec["partner_architecture_sqlite_query_status"] == "AVAILABLE"
+    assert isinstance(rec["partner_architecture_candidate_rows"], list)
 
 
 def test_c03_sqlite_context_keeps_resume_skill_source_trace(sqlite_db: Path) -> None:

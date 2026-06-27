@@ -100,6 +100,7 @@ from typing import Any
 import redis
 from redis.connection import ConnectionPool
 
+from agentic_core.cache.redis_cache_client import redis_connection_protocol_kwargs
 from agentic_core.config.env_loader import get_env
 from agentic_core.utils.runners.providers import get_clock
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -256,6 +257,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
             "socket_keepalive": True,
             "retry_on_timeout": True,
             "health_check_interval": 30,
+            **redis_connection_protocol_kwargs(),
         }
         if env.REDIS_SSL:
             connection_kwargs.update({"ssl": True, "ssl_cert_reqs": None, "ssl_check_hostname": False})

@@ -59,6 +59,7 @@ def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
         try:
             required_objects = {
                 ("table", "c03_skill_selection_features"),
+                ("table", "c03_role_family_skill_weights"),
                 ("table", "graph_paths"),
                 ("table", "graph_neighborhoods"),
                 ("table", "graph_sibling_links"),
@@ -66,6 +67,7 @@ def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
                 ("table", "section_evidence_budget"),
                 ("table", "graph_selection_rejections"),
                 ("view", "graph_edges_reverse"),
+                ("view", "v_partner_architecture_competency_candidates"),
             }
             present = {
                 (str(row[0]), str(row[1]))
@@ -74,13 +76,15 @@ def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
                     SELECT type, name FROM sqlite_master
                     WHERE name IN (
                       'c03_skill_selection_features',
+                      'c03_role_family_skill_weights',
                       'graph_paths',
                       'graph_neighborhoods',
                       'graph_sibling_links',
                       'resume_metric_usage',
                       'section_evidence_budget',
                       'graph_selection_rejections',
-                      'graph_edges_reverse'
+                      'graph_edges_reverse',
+                      'v_partner_architecture_competency_candidates'
                     )
                     """
                 ).fetchall()
@@ -105,6 +109,58 @@ def _ensure_sqlite(repo_root: Path, db_path: Path | None) -> Path:
 def ensure_c03_graph_sqlite(repo_root: Path, db_path: Path | None = None) -> Path:
     """Return a current generated SQLite projection for C0.3 runtime reads."""
     return _ensure_sqlite(repo_root, db_path)
+
+
+PARTNER_ARCHITECTURE_ROLE_KEYS: tuple[str, ...] = (
+    "PARTNER_APPLIED_AI_ARCHITECTURE",
+    "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+)
+
+
+def query_partner_architecture_competency_candidates(
+    conn: sqlite3.Connection,
+    *,
+    role_family_key: str,
+    limit: int = 25,
+) -> list[dict[str, Any]]:
+    """Return C0.3 partner-architecture skill candidates for competency generation."""
+    keys: list[str] = []
+    rf = str(role_family_key or "").strip()
+    if rf:
+        keys.append(rf)
+    for key in PARTNER_ARCHITECTURE_ROLE_KEYS:
+        if key not in keys:
+            keys.append(key)
+    placeholders = ",".join("?" * len(keys))
+    cur = conn.execute(
+        f"""
+        SELECT
+            skill_id,
+            role_family_key,
+            weight,
+            pillar,
+            subpillar,
+            domain_id,
+            skill_family,
+            metric_bucket,
+            label,
+            confidence,
+            activation_status,
+            support_level,
+            external_eligible,
+            fact_id,
+            claim_eligibility,
+            fact_external_eligible,
+            competencies_allowed
+        FROM v_partner_architecture_competency_candidates
+        WHERE role_family_key IN ({placeholders})
+        ORDER BY weight DESC, fact_external_eligible DESC, confidence DESC, skill_id
+        LIMIT ?
+        """,
+        (*keys, int(limit)),
+    )
+    columns = [str(col[0]) for col in cur.description]
+    return [dict(zip(columns, row)) for row in cur.fetchall()]
 
 
 def assemble_c03_graph_sqlite_context(
@@ -271,6 +327,18 @@ def assemble_c03_graph_sqlite_context(
         metric_novelty_candidates: list[dict[str, Any]] = []
         rejected_candidate_receipts: list[dict[str, Any]] = []
         section_evidence_budget: dict[str, Any] | None = None
+        partner_architecture_candidate_rows: list[dict[str, Any]] = []
+        partner_architecture_sqlite_query_status = "NOT_QUERIED"
+        try:
+            partner_architecture_candidate_rows = query_partner_architecture_competency_candidates(
+                conn,
+                role_family_key=rf,
+                limit=25,
+            )
+            partner_architecture_sqlite_query_status = "AVAILABLE"
+        except sqlite3.Error as exc:
+            partner_architecture_candidate_rows = []
+            partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
         try:
             selected_skill_ids = [str(row[0] or "") for row in fact_links if str(row[0] or "")]
             reverse_targets = facts_in[:5] or selected_skill_ids[:5]
@@ -291,6 +359,16 @@ def assemble_c03_graph_sqlite_context(
                 section_id=sec,
                 role_family_key=rf,
             )
+            try:
+                partner_architecture_candidate_rows = query_partner_architecture_competency_candidates(
+                    conn,
+                    role_family_key=rf,
+                    limit=25,
+                )
+                partner_architecture_sqlite_query_status = "AVAILABLE"
+            except sqlite3.Error as exc:
+                partner_architecture_candidate_rows = []
+                partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
             conn.row_factory = sqlite3.Row
             rejected_candidate_receipts = [
                 dict(row)
@@ -314,6 +392,9 @@ def assemble_c03_graph_sqlite_context(
             metric_novelty_candidates = []
             rejected_candidate_receipts = []
             section_evidence_budget = None
+            if partner_architecture_sqlite_query_status != "AVAILABLE":
+                partner_architecture_candidate_rows = []
+                partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
     finally:
         conn.close()
 
@@ -405,6 +486,9 @@ def assemble_c03_graph_sqlite_context(
         "metric_novelty_candidates": metric_novelty_candidates,
         "rejected_candidate_receipts": rejected_candidate_receipts,
         "section_evidence_budget": section_evidence_budget,
+        "partner_architecture_sqlite_query_status": partner_architecture_sqlite_query_status,
+        "partner_architecture_candidate_count": len(partner_architecture_candidate_rows),
+        "partner_architecture_candidate_rows": partner_architecture_candidate_rows,
         "proof_classification": PROOF_CLASSIFICATION,
         "explicit_non_claims": [
             "sqlite_graph_rows_are_not_claim_proof",
@@ -431,6 +515,9 @@ def assemble_c03_graph_sqlite_context(
             "metric_novelty_candidates": receipt["metric_novelty_candidates"],
             "rejected_candidate_receipts": receipt["rejected_candidate_receipts"],
             "section_evidence_budget": receipt["section_evidence_budget"],
+            "partner_architecture_sqlite_query_status": receipt["partner_architecture_sqlite_query_status"],
+            "partner_architecture_candidate_count": receipt["partner_architecture_candidate_count"],
+            "partner_architecture_candidate_rows": receipt["partner_architecture_candidate_rows"],
         },
         "receipt": receipt,
         "sqlite_db_path": str(path),
@@ -494,6 +581,9 @@ def enrich_c03_bound_with_sqlite_context(
             "bridge_edge_count": len(bundle["context"]["bridge_edges"]),
             "fact_link_count": len(bundle["context"]["fact_links"]),
             "excluded_node_count": len(bundle["context"]["excluded_nodes"]),
+            "partner_architecture_candidate_count": int(
+                bundle["context"].get("partner_architecture_candidate_count") or 0
+            ),
         }
         return out
     except (OSError, ValueError, FileNotFoundError) as exc:
@@ -511,5 +601,6 @@ __all__ = [
     "assemble_c03_graph_sqlite_context",
     "ensure_c03_graph_sqlite",
     "enrich_c03_bound_with_sqlite_context",
+    "query_partner_architecture_competency_candidates",
     "write_c03_graph_sqlite_context_receipt",
 ]

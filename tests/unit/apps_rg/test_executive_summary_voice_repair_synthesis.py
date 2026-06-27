@@ -13,6 +13,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     _resume_word_count,
     build_sentence_claim_coverage,
     check_claim_ledger_orphan_source_ids,
+    check_exec_summary_no_mechanism_inventory,
     has_jd_phrase_copy,
 )
 
@@ -580,6 +581,94 @@ def test_graph_era_anthropic_exec_summary_repair_keeps_source_ids_and_budget() -
         "metric_unify_20pct_gross_margin_expansion",
         "metric_unify_team_scaled_8_to_28",
     ]
+
+
+def test_ai_partnership_judge_findings_are_repaired_before_x1d() -> None:
+    """Regression for live Anthropic Partnership run full_resume_b5d3aafa9567."""
+    display = (
+        "Executive leader who unifies governed AI platform architecture, partner-led GTM, "
+        "and measurable platform outcomes for regulated enterprise adoption. "
+        "Through that operating scope, led AWS modernization architecture for regulated "
+        "financial-services workloads and built decision-support models that tied "
+        "modernization programs to executive decisions. "
+        "Building on that platform base, shaped reusable solution accelerators and alliance "
+        "co-sell motions for repeatable client pursuits. "
+        "In parallel, regulated cloud modernization architecture for financial-services "
+        "workloads established reference architecture reuse across migration waves, grounding "
+        "partner-led AI solutions in validated delivery patterns while addressing insurance "
+        "regulatory cloud adoption standards. "
+        "That foundation also supported platform productization, IP-led revenue, 20% gross "
+        "margin expansion, and team growth from 8 to 28. "
+        "This leadership profile can translate into partner-led applied AI architecture that "
+        "scales safely across enterprise ecosystems."
+    )
+    ledger = [
+        {
+            "claim_text": "Executive leader unifies governed AI platform architecture and partner-led GTM.",
+            "source_fact_ids": ["reb_unify_platform_commercialization_leadership"],
+        },
+        {
+            "claim_text": "AWS modernization architecture and BI models tied programs to decisions.",
+            "source_fact_ids": [
+                "reb_ibm_aws_modernization_architecture",
+                "reb_ibm_data_modeling_bi_decision_support",
+                "reb_insurtech_aws_migration_execution",
+            ],
+        },
+        {
+            "claim_text": "Reusable solution accelerators and alliance co-sell motions enabled client pursuits.",
+            "source_fact_ids": [
+                "reb_ibm_offering_accelerator_management",
+                "reb_ibm_aws_alliance_partner_cosell_gtm",
+            ],
+        },
+        {
+            "claim_text": "Agentic platform architecture and distributed ecosystem engineering supported delivery patterns.",
+            "source_fact_ids": [
+                "reb_unify_agentic_platform_architecture",
+                "reb_unify_distributed_ecosystem_engineering",
+                "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+            ],
+        },
+        {
+            "claim_text": "Platform productization drove revenue, margin, and team growth.",
+            "source_fact_ids": [
+                "reb_unify_platform_commercialization_leadership",
+                "metric_unify_22m_ip_led_revenue",
+                "metric_unify_20pct_gross_margin_expansion",
+                "metric_unify_team_scaled_8_to_28",
+            ],
+        },
+        {
+            "claim_text": "Partner channel co-sell supports applied AI architecture adoption.",
+            "source_fact_ids": ["reb_unify_partner_channel_cosell"],
+        },
+    ]
+    allowed = {sid for row in ledger for sid in row["source_fact_ids"]}
+
+    out, receipt = finalize_executive_summary_coherence(
+        {"resume_display_text": display, "claim_ledger": ledger, "gap_notes": []},
+        selected_facts=[{"fact_id": fid} for fid in sorted(allowed)],
+        allowed_fact_ids=allowed,
+        target_role="Manager of Applied AI Architecture, Partnerships",
+    )
+
+    text = str(out.get("resume_display_text") or "")
+    repaired_ledger = list(out.get("claim_ledger") or [])
+    coverage = build_sentence_claim_coverage(text, repaired_ledger, allowed)
+    orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(repaired_ledger, allowed)
+    mechanism_ok, mechanism_reason = check_exec_summary_no_mechanism_inventory(text)
+
+    assert receipt["judge_polish"]["applied"] is True
+    assert "repair_ai_partnership_judge_findings" in receipt["judge_polish"]["actions"]
+    assert "this leadership profile" not in text.lower()
+    assert "can translate into" not in text.lower()
+    assert "regulated cloud modernization architecture for financial-services workloads" not in text.lower()
+    assert "regulated ai delivery patterns" in text.lower()
+    assert "partner channel foundation" in text.lower()
+    assert coverage["overall_pass"] is True
+    assert orphan_ok is True, orphan_reason
+    assert mechanism_ok is True, mechanism_reason
 
 
 def test_graph_era_trim_repair_restores_metric_nouns_after_word_budget() -> None:

@@ -17,12 +17,26 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_6a,
     run_observer,
 )
+from agentic_core.L6_observability.shadow_eval.microsteps import (
+    build_apps_eval_alignment,
+    build_future_run_proposals,
+    build_microstep_coverage,
+    build_microstep_patterns,
+    build_microstep_rca,
+    build_observations_from_eval_rows,
+)
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
 from apps_eval.contracts import CURRENT_EVAL_RECORD_SCHEMA_VERSION, CompletedEvalRecord
 
 L6_SHADOW_BRIDGE_ARTIFACT = "l6_shadow_bridge.json"
 L6_SHADOW_BRIDGE_SPANS_ARTIFACT = "l6_shadow_bridge_spans.json"
 L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT = "l6_shadow_bridge_spans.jsonl"
+L6_MICROSTEP_OBSERVATIONS_ARTIFACT = "l6_microstep_observations.jsonl"
+L6_MICROSTEP_COVERAGE_ARTIFACT = "l6_microstep_coverage.json"
+L6_MICROSTEP_RCA_ARTIFACT = "l6_microstep_rca.json"
+L6_MICROSTEP_PATTERNS_ARTIFACT = "l6_microstep_patterns.json"
+L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT = "l6_microstep_future_run_proposals.json"
+L6_APPS_EVAL_ALIGNMENT_ARTIFACT = "l6_apps_eval_alignment.json"
 
 
 def _jsonable(value: object) -> object:
@@ -51,6 +65,62 @@ def _write_json_artifact(path: Path, payload: Any) -> Path:
         newline="\n",
     )
     return path
+
+
+def _write_jsonl_artifact(path: Path, rows: list[Mapping[str, Any]]) -> Path:
+    path.write_text(
+        "".join(json.dumps(row, sort_keys=True, default=str) + "\n" for row in rows),
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
+
+
+def _emit_record_microstep_artifacts(
+    record: CompletedEvalRecord,
+    run_dir: Path,
+    *,
+    runtime_exhaust_bundle_id: str,
+) -> dict[str, str]:
+    if record.app_id != "apps_rg":
+        return {}
+    scorecard_rows = list(record.scorecard.scorecard_rows or [])
+    if not scorecard_rows:
+        return {}
+    observations = build_observations_from_eval_rows(
+        scorecard_rows,
+        runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+    )
+    observation_dicts = [observation.to_dict() for observation in observations]
+    observation_path = _write_jsonl_artifact(run_dir / L6_MICROSTEP_OBSERVATIONS_ARTIFACT, observation_dicts)
+    coverage_path = _write_json_artifact(run_dir / L6_MICROSTEP_COVERAGE_ARTIFACT, build_microstep_coverage(observation_dicts))
+    rca_path = _write_json_artifact(run_dir / L6_MICROSTEP_RCA_ARTIFACT, build_microstep_rca(observation_dicts))
+    patterns_path = _write_json_artifact(run_dir / L6_MICROSTEP_PATTERNS_ARTIFACT, build_microstep_patterns(observation_dicts))
+    proposals_path = _write_json_artifact(
+        run_dir / L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT,
+        build_future_run_proposals(observation_dicts),
+    )
+    scorecard_ref = str(record.artifact_paths.get("scorecard_rows") or (run_dir / "scorecard_rows.jsonl")).replace("\\", "/")
+    alignment_path = _write_json_artifact(
+        run_dir / L6_APPS_EVAL_ALIGNMENT_ARTIFACT,
+        build_apps_eval_alignment(
+            run_id=record.record_id,
+            runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+            microstep_contract_digest=str(record.record_seed.get("apps_rg_microstep_contract_digest") or ""),
+            apps_eval_scorecard_ref=scorecard_ref,
+            l6_observation_ref=observation_path.as_posix(),
+            apps_eval_rows=scorecard_rows,
+            l6_observations=observation_dicts,
+        ),
+    )
+    return {
+        "l6_microstep_observations": observation_path.as_posix(),
+        "l6_microstep_coverage": coverage_path.as_posix(),
+        "l6_microstep_rca": rca_path.as_posix(),
+        "l6_microstep_patterns": patterns_path.as_posix(),
+        "l6_microstep_future_run_proposals": proposals_path.as_posix(),
+        "l6_apps_eval_alignment": alignment_path.as_posix(),
+    }
 
 
 def build_completed_eval_shadow_exhaust(
@@ -155,6 +225,11 @@ def emit_completed_eval_l6_shadow_bridge(
         jsonl_name=L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT,
         source="apps_eval_l6_shadow_bridge",
     )
+    microstep_paths = _emit_record_microstep_artifacts(
+        record,
+        run_dir,
+        runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
+    )
     bridge = {
         "schema_version": "apps_eval.l6_shadow_bridge.v1",
         "record_id": record.record_id,
@@ -167,6 +242,7 @@ def emit_completed_eval_l6_shadow_bridge(
         "g29_learning_firewall": _jsonable(state.g29),
         "span_export_ref": span_paths["span_export_json"].as_posix(),
         "span_export_jsonl_ref": span_paths["span_export_jsonl"].as_posix(),
+        "l6_microstep_artifact_refs": dict(microstep_paths),
         "requested_action": "consume_completed_eval_record_only",
         "current_run_mutated": False,
         "direct_l4_write_attempted": False,
@@ -178,6 +254,7 @@ def emit_completed_eval_l6_shadow_bridge(
         "l6_shadow_bridge": bridge_path.as_posix(),
         "l6_shadow_bridge_spans": span_paths["span_export_json"].as_posix(),
         "l6_shadow_bridge_spans_jsonl": span_paths["span_export_jsonl"].as_posix(),
+        **microstep_paths,
     }
 
 
