@@ -38,7 +38,7 @@ CANONICAL_QWEN_JUDGES_FLAGS: str = (
     "--allow-non-allow-exit-zero"
 )
 COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS: str = (
-    "--provider external_claude --x1d-judges gemini_pro --allow-non-allow-exit-zero"
+    "--provider external_claude --x1d-judges openai_chatgpt --allow-non-allow-exit-zero"
 )
 
 

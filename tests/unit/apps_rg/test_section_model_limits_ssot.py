@@ -36,6 +36,13 @@ def _yaml_openai_section_model(section_id: str) -> str:
     return data["profiles"]["external_openai_generator"]["model_by_section"][section_id]
 
 
+def _yaml_claude_section_model(section_id: str) -> str:
+    import yaml
+
+    data = yaml.safe_load(sml._PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
+    return data["profiles"]["external_claude_generator"]["model_by_section"][section_id]
+
+
 def test_exported_default_matches_yaml_ssot() -> None:
     """The exported default is resolved from YAML, not duplicated in code."""
     assert sml.DEFAULT_EXTERNAL_CLAUDE_MODEL == _yaml_default_model()
@@ -66,11 +73,16 @@ def test_openai_env_override_is_ignored() -> None:
     )
 
 
-def test_openai_competencies_uses_section_override() -> None:
+def test_competencies_primary_and_backup_models_use_section_overrides() -> None:
+    assert (
+        sml.resolve_section_generation_model("competencies")
+        == _yaml_claude_section_model("competencies")
+        == "claude-sonnet-4-6"
+    )
     assert (
         sml.external_openai_generation_model(section_id="competencies")
         == _yaml_openai_section_model("competencies")
-        == "gpt-5.5"
+        == "gpt-5.4-mini"
     )
     assert sml.external_openai_generation_model(section_id="headline") == _yaml_openai_default_model()
 

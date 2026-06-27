@@ -131,7 +131,7 @@ def test_ibm_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
 
 def test_competencies_defaults_to_single_required_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
-    assert resolve_cli_x1d_judges(None, section_id="competencies") == "gemini_pro"
+    assert resolve_cli_x1d_judges(None, section_id="competencies") == "openai_chatgpt"
 
 
 def test_unify_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
@@ -212,7 +212,7 @@ def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
     )
     # Claude-base recalibration: bullets -> single cross-provider judge; headline -> dual.
     assert ctx.x1d_judges_for_lane("ibm_bullets") == "gemini_pro"
-    assert ctx.x1d_judges_for_lane("competencies") == "gemini_pro"
+    assert ctx.x1d_judges_for_lane("competencies") == "openai_chatgpt"
     assert ctx.x1d_judges_for_lane("unify_bullets") == "gemini_pro"
     assert ctx.x1d_judges_for_lane("headline") == "gemini_pro,openai_chatgpt"
 
@@ -241,10 +241,10 @@ def test_lane_execution_context_resolves_per_lane_provider_callable(monkeypatch)
         lane_mock_judges=False,
     )
 
-    assert ctx.provider_for_lane("competencies") == "external_openai"
+    assert ctx.provider_for_lane("competencies") == "external_claude"
     assert ctx.provider_resolution_source_for_lane(
         "competencies"
-    ) == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI
+    ) == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
     assert ctx.provider_for_lane("ibm_bullets") == "external_claude"
     assert ctx.provider_resolution_source_for_lane(
         "ibm_bullets"

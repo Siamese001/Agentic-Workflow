@@ -196,7 +196,7 @@ def resolve_cli_x1d_judges(
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
     Per-section composite-judge defaults (one judge, not the full proof panel):
-      * ``competencies``  -> single required ``gemini_pro`` taxonomy judge.
+      * ``competencies``  -> single required ``openai_chatgpt`` taxonomy judge.
       * bullets/narratives -> single ``gemini_pro`` cross-provider judge.
 
     An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the

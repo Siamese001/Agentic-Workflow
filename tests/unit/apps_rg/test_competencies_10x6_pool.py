@@ -486,10 +486,18 @@ def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:
     assert len(out.get("categories") or []) == MAX_CATEGORY_COUNT
 
 
-def test_canonical_competencies_cli_uses_gemini_pro_only() -> None:
+def test_canonical_competencies_cli_uses_openai_chatgpt_only() -> None:
     from apps_rg.runtime.internal.generated_lane_rollup import canonical_lane_command
 
     cmd = canonical_lane_command("competencies")
-    assert "--x1d-judges gemini_pro" in cmd
-    assert "openai_chatgpt" not in cmd
+    assert "--x1d-judges openai_chatgpt" in cmd
+    assert "gemini_pro" not in cmd
     assert "anthropic_claude" not in cmd
+
+
+def test_competencies_standalone_parser_defaults_to_claude_and_openai_judge() -> None:
+    from apps_rg.runtime.sections.competencies_lane_runtime import build_parser
+
+    args = build_parser().parse_args([])
+    assert args.provider == "external_claude"
+    assert args.x1d_judges == "openai_chatgpt"

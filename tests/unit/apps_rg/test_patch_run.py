@@ -696,7 +696,7 @@ def test_aggregate_refreshes_evidence_status_and_fails_on_missing_lane(
     assert calls_doc["patch_run"] is True
     assert calls_doc["decisive_status"] == "FAIL"
     assert calls_doc["lane_provider_global_override"] == ""
-    assert calls_doc["lane_provider_by_lane"]["competencies"] == "external_openai"
+    assert calls_doc["lane_provider_by_lane"]["competencies"] == "external_claude"
     assert calls_doc["lane_provider_by_lane"]["ibm_bullets"] == "external_claude"
     assert calls_doc["lane_provider_by_lane"]["ibm_narrative"] == "external_openai"
-    assert agg["lane_provider_by_lane"]["competencies"] == "external_openai"
+    assert agg["lane_provider_by_lane"]["competencies"] == "external_claude"

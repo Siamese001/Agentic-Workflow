@@ -173,7 +173,7 @@ def _enhanced_providers() -> tuple[str, ...]:
 
 
 def _standard_providers() -> tuple[str, ...]:
-    # competencies + bullets + narratives: single cross-provider backstop — the deterministic C0.3 graph + X2
+    # bullets + narratives: single cross-provider backstop — the deterministic C0.3 graph + X2
     # lineage gates carry the proof; the judge is a light independent check, not the proof itself.
     return _SINGLE_JUDGE_PANEL
 

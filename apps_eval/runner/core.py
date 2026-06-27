@@ -35,7 +35,9 @@ from apps_eval.contracts import (
     RegressionSummary,
     RegressionFlywheelSummary,
     Scorecard,
+    ScorecardRow,
 )
+from apps_eval.coverage import apps_rg_contract_digest, build_apps_rg_microstep_evaluation
 from apps_eval.graders.deterministic import build_default_graders
 from apps_eval.outputs.render import render_report, render_record_markdown
 from apps_eval.registry import OLD_SUITE_NAMES, load_suite, load_thresholds_registry
@@ -112,6 +114,22 @@ def _failure_family(failure_mode: str) -> str:
     return failure_mode.split(".", 1)[0]
 
 
+def _is_block_severity(severity: str) -> bool:
+    return str(severity or "").lower() == "block"
+
+
+def _passed(item: Any) -> bool:
+    value = getattr(item, "passed", None)
+    if isinstance(value, bool):
+        return value
+    verdict = str(getattr(item, "verdict", "") or "").upper()
+    return verdict in {"PASS", "NOT_APPLICABLE"}
+
+
+def _item_failure_mode(item: Any) -> str:
+    return str(getattr(item, "failure_mode", "") or getattr(item, "grader_id", "") or getattr(item, "microstep_id", ""))
+
+
 def _failure_mode_catalog(graders: list[Any]) -> list[dict[str, str]]:
     return [
         {
@@ -132,18 +150,18 @@ def _sorted_counter(counter: Counter[str]) -> dict[str, int]:
 
 
 def _failure_mode_rollup(findings: list[Any]) -> dict[str, Any]:
-    failed = [finding for finding in findings if not finding.passed]
+    failed = [finding for finding in findings if not _passed(finding)]
     failure_mode_counts: Counter[str] = Counter()
     block_failure_mode_counts: Counter[str] = Counter()
     warn_failure_mode_counts: Counter[str] = Counter()
     family_counts: Counter[str] = Counter()
     for finding in failed:
-        failure_mode = finding.failure_mode or finding.grader_id
+        failure_mode = _item_failure_mode(finding)
         failure_mode_counts[failure_mode] += 1
         family = _failure_family(failure_mode)
         if family:
             family_counts[family] += 1
-        if finding.severity == "block":
+        if _is_block_severity(getattr(finding, "severity", "")):
             block_failure_mode_counts[failure_mode] += 1
         else:
             warn_failure_mode_counts[failure_mode] += 1
@@ -328,15 +346,25 @@ def _score(
     findings: list[Any],
     *,
     thresholds: dict[str, Any],
+    scorecard_rows: list[ScorecardRow] | None = None,
+    component_scorecards: list[dict[str, Any]] | None = None,
+    coverage_summary: dict[str, Any] | None = None,
 ) -> Scorecard:
+    rows = scorecard_rows or []
+    required_rows = [row for row in rows if row.required]
     finding_count = len(findings)
     passed = sum(1 for finding in findings if finding.passed)
     failed = finding_count - passed
-    block_failures = sum(1 for finding in findings if not finding.passed and finding.severity == "block")
-    score = 1.0 if finding_count == 0 else passed / finding_count
+    row_passed = sum(1 for row in required_rows if row.verdict in {"PASS", "NOT_APPLICABLE"})
+    row_failed = len(required_rows) - row_passed
+    block_failures = sum(1 for finding in findings if not finding.passed and _is_block_severity(finding.severity))
+    block_failures += sum(1 for row in required_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"} and _is_block_severity(str(row.severity)))
+    total_scored = finding_count + len(required_rows)
+    score = 1.0 if total_scored == 0 else (passed + row_passed) / total_scored
     pass_score = float(thresholds.get("pass_score", 1.0))
-    verdict = "pass" if score >= pass_score and block_failures == 0 else "fail"
-    rollup = _failure_mode_rollup(findings)
+    coverage_blocks = bool((coverage_summary or {}).get("release_blocked"))
+    verdict = "pass" if score >= pass_score and block_failures == 0 and not coverage_blocks else "fail"
+    rollup = _failure_mode_rollup([*findings, *required_rows])
     dim: dict[str, list[float]] = {}
     for finding in findings:
         dim.setdefault(finding.grader_id, []).append(finding.score)
@@ -347,14 +375,74 @@ def _score(
         scenario_count=scenario_count,
         finding_count=finding_count,
         passed_findings=passed,
-        failed_findings=failed,
+        failed_findings=failed + row_failed,
         block_failures=block_failures,
         score=round(score, 6),
         verdict=verdict,
         dimension_scores=dim_scores,
         failure_mode_counts=rollup["failure_mode_counts"],
         failure_family_counts=rollup["failure_family_counts"],
+        scorecard_rows=[row.to_dict() for row in rows],
+        component_scorecards=component_scorecards or [],
+        coverage_summary=coverage_summary or {},
     )
+
+
+def _planned_eval_artifacts(run_dir: Path) -> dict[str, Any]:
+    return {
+        "eval_record": (run_dir / "eval_record.json").as_posix(),
+        "scorecard_rows": (run_dir / "scorecard_rows.jsonl").as_posix(),
+        "component_scorecards": [
+            (run_dir / "component_scorecards.csv").as_posix(),
+            (run_dir / "apps_rg_component_scorecard.json").as_posix(),
+        ],
+        "coverage_matrix": (run_dir / "coverage_matrix.csv").as_posix(),
+        "regression_summary": [
+            (run_dir / "regression.json").as_posix(),
+            (run_dir / "regression_flywheel.json").as_posix(),
+        ],
+    }
+
+
+def _apps_rg_suite_coverage(
+    *,
+    suite_id: str,
+    app_id: str,
+    rows: list[ScorecardRow],
+    scenario_summaries: list[dict[str, Any]],
+) -> dict[str, Any]:
+    required = [row for row in rows if row.required]
+    missing = sum(1 for row in required if row.failure_mode == "coverage.missing_required_artifact")
+    unknown = sum(1 for row in required if row.verdict == "UNKNOWN")
+    not_run = sum(1 for row in required if row.verdict == "NOT_RUN")
+    failed = sum(1 for row in required if row.verdict == "FAIL")
+    passed = sum(1 for row in required if row.verdict == "PASS")
+    release_blocked = any(row.verdict in {"FAIL", "UNKNOWN", "NOT_RUN"} for row in required)
+    coverage_complete = missing == 0 and unknown == 0 and not_run == 0
+    return {
+        "schema_version": "apps_eval.apps_rg_coverage_summary.v1",
+        "suite_id": suite_id,
+        "app_id": app_id,
+        "required_microsteps": len(required),
+        "emitted_rows": len(rows),
+        "passed_required": passed,
+        "failed_required": failed,
+        "missing_required_artifacts": missing,
+        "unknown_required": unknown,
+        "not_run_required": not_run,
+        "coverage_complete": coverage_complete,
+        "release_blocked": release_blocked,
+        "verdict": "fail" if release_blocked or not coverage_complete else "pass",
+        "scenario_summaries": scenario_summaries,
+    }
+
+
+def _csv_cell(value: Any) -> str:
+    if isinstance(value, (dict, list, tuple)):
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
+    if value is None:
+        return ""
+    return str(value)
 
 
 def compare_record_to_baseline(record: dict[str, Any], baseline: dict[str, Any]) -> RegressionSummary:
@@ -383,6 +471,18 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
         "regression": run_dir / "regression.json",
         "regression_flywheel": run_dir / "regression_flywheel.json",
     }
+    if record.app_id == "apps_rg":
+        paths.update(
+            {
+                "scorecard_rows": run_dir / "scorecard_rows.jsonl",
+                "component_scorecards": run_dir / "component_scorecards.csv",
+                "apps_rg_component_scorecard": run_dir / "apps_rg_component_scorecard.json",
+                "coverage_matrix": run_dir / "coverage_matrix.csv",
+                "missing_required_components": run_dir / "missing_required_components.csv",
+                "evidence_index": run_dir / "evidence_index.csv",
+                "apps_rg_l6_eval_handoff": run_dir / "apps_rg_l6_eval_handoff.json",
+            }
+        )
     _wg.write_text(paths["eval_record"], json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
     scorecard_buffer = io.StringIO(newline="")
     writer = csv.DictWriter(scorecard_buffer, fieldnames=["dimension", "score"])
@@ -391,6 +491,124 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
         writer.writerow({"dimension": key, "score": f"{value:.6f}"})
     writer.writerow({"dimension": "overall", "score": f"{record.scorecard.score:.6f}"})
     _wg.write_text(paths["scorecard"], scorecard_buffer.getvalue(), encoding="utf-8")
+    if record.app_id == "apps_rg":
+        row_dicts = list(record.scorecard.scorecard_rows)
+        component_dicts = list(record.scorecard.component_scorecards)
+        coverage_summary = dict(record.scorecard.coverage_summary)
+        _wg.write_text(
+            paths["scorecard_rows"],
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in row_dicts),
+            encoding="utf-8",
+        )
+        component_fields = [
+            "suite_id",
+            "app_id",
+            "scenario_id",
+            "component_id",
+            "subcomponent_id",
+            "stage_id",
+            "lane_id",
+            "row_count",
+            "required_count",
+            "pass_count",
+            "fail_count",
+            "warn_count",
+            "unknown_count",
+            "not_run_count",
+            "blocking_failure_count",
+            "score",
+            "verdict",
+        ]
+        component_buffer = io.StringIO(newline="")
+        component_writer = csv.DictWriter(component_buffer, fieldnames=component_fields)
+        component_writer.writeheader()
+        for row in component_dicts:
+            component_writer.writerow({field: _csv_cell(row.get(field)) for field in component_fields})
+        _wg.write_text(paths["component_scorecards"], component_buffer.getvalue(), encoding="utf-8")
+        component_payload = {
+            "schema_version": "apps_eval.apps_rg_component_scorecard.v1",
+            "suite_id": record.suite_id,
+            "app_id": record.app_id,
+            "record_id": record.record_id,
+            "coverage_summary": coverage_summary,
+            "component_scorecards": component_dicts,
+            "row_count": len(row_dicts),
+        }
+        _wg.write_text(
+            paths["apps_rg_component_scorecard"],
+            json.dumps(component_payload, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        coverage_fields = [
+            "row_id",
+            "suite_id",
+            "scenario_id",
+            "component_id",
+            "subcomponent_id",
+            "stage_id",
+            "lane_id",
+            "microstep_id",
+            "gate_id",
+            "artifact_role",
+            "artifact_ref",
+            "verdict",
+            "score",
+            "severity",
+            "failure_mode",
+            "decisive_reason",
+            "evidence_digest",
+        ]
+        coverage_buffer = io.StringIO(newline="")
+        coverage_writer = csv.DictWriter(coverage_buffer, fieldnames=coverage_fields)
+        coverage_writer.writeheader()
+        for row in row_dicts:
+            coverage_writer.writerow({field: _csv_cell(row.get(field)) for field in coverage_fields})
+        _wg.write_text(paths["coverage_matrix"], coverage_buffer.getvalue(), encoding="utf-8")
+        missing_buffer = io.StringIO(newline="")
+        missing_writer = csv.DictWriter(missing_buffer, fieldnames=coverage_fields)
+        missing_writer.writeheader()
+        for row in row_dicts:
+            if row.get("required") and row.get("verdict") in {"FAIL", "UNKNOWN", "NOT_RUN"}:
+                missing_writer.writerow({field: _csv_cell(row.get(field)) for field in coverage_fields})
+        _wg.write_text(paths["missing_required_components"], missing_buffer.getvalue(), encoding="utf-8")
+        evidence_fields = [
+            "row_id",
+            "microstep_id",
+            "lane_id",
+            "artifact_role",
+            "artifact_ref",
+            "evidence_ref",
+            "evidence_digest",
+            "verdict",
+        ]
+        evidence_buffer = io.StringIO(newline="")
+        evidence_writer = csv.DictWriter(evidence_buffer, fieldnames=evidence_fields)
+        evidence_writer.writeheader()
+        for row in row_dicts:
+            evidence_writer.writerow({field: _csv_cell(row.get(field)) for field in evidence_fields})
+        _wg.write_text(paths["evidence_index"], evidence_buffer.getvalue(), encoding="utf-8")
+        rg_handoff = {
+            "schema_version": "apps_eval.apps_rg_l6_eval_handoff.v1",
+            "record_id": record.record_id,
+            "suite_id": record.suite_id,
+            "app_id": record.app_id,
+            "requested_action": "consume_completed_eval_artifacts_only",
+            "current_run_mutated": False,
+            "future_run_only": True,
+            "coverage_summary": coverage_summary,
+            "artifact_paths": {
+                "eval_record": str(paths["eval_record"]).replace("\\", "/"),
+                "scorecard_rows": str(paths["scorecard_rows"]).replace("\\", "/"),
+                "component_scorecard": str(paths["apps_rg_component_scorecard"]).replace("\\", "/"),
+                "coverage_matrix": str(paths["coverage_matrix"]).replace("\\", "/"),
+                "missing_required_components": str(paths["missing_required_components"]).replace("\\", "/"),
+            },
+        }
+        _wg.write_text(
+            paths["apps_rg_l6_eval_handoff"],
+            json.dumps(rg_handoff, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
     _wg.write_text(paths["report"], render_report(record, findings), encoding="utf-8")
     manifest = {
         "schema_version": CURRENT_EVAL_MANIFEST_SCHEMA_VERSION,
@@ -462,6 +680,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     suite_digest = _suite_digest(suite)
     threshold_digest = _threshold_digest(thresholds)
     failure_mode_catalog_digest = _failure_mode_catalog_digest(graders)
+    app_microstep_contract_digest = apps_rg_contract_digest() if suite.get("app_id") == "apps_rg" else ""
     fixture_provenance = [fixture.provenance for fixture in fixtures]
     baseline_digest = ""
     baseline_payload: dict[str, Any] | None = None
@@ -491,6 +710,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         "suite_digest": suite_digest,
         "threshold_digest": threshold_digest,
         "failure_mode_catalog_digest": failure_mode_catalog_digest,
+        "apps_rg_microstep_contract_digest": app_microstep_contract_digest,
         "grader_ids": [grader.grader_id for grader in graders],
         "scorer_version": CURRENT_SCORER_VERSION,
         "fixture_provenance": [provenance.to_dict() for provenance in fixture_provenance],
@@ -500,23 +720,61 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     record_id = _stable_record_id(record_seed)
     run_dir = Path(request.out_dir) / request.suite_id.replace(".", "_") / record_id
     findings = []
+    apps_rg_scorecard_rows: list[ScorecardRow] = []
+    apps_rg_component_scorecards: list[dict[str, Any]] = []
+    apps_rg_scenario_coverages: list[dict[str, Any]] = []
     scenario_results = []
     rubric_ids = sorted({fixture.scenario.rubric_id for fixture in fixtures})
+    planned_eval_artifacts = _planned_eval_artifacts(run_dir) if suite.get("app_id") == "apps_rg" else {}
     for fixture in fixtures:
         snapshot = _load_snapshot(fixture) if request.mode == "snapshot" else _run_live(fixture, run_dir)
         snapshot_payload = snapshot.to_dict()
         scenario_findings = [grader.grade(fixture, snapshot) for grader in graders]
         findings.extend(scenario_findings)
-        scenario_results.append(
-            _scenario_rollup(
-                fixture.scenario.scenario_id,
-                scenario_findings,
-                fixture.snapshot_path if request.mode == "snapshot" else str((run_dir / "live_snapshots" / f"{hashlib.sha256(fixture.scenario.scenario_id.encode('utf-8')).hexdigest()[:8]}.json").as_posix()),
-                _canonical_digest(snapshot_payload),
-                _canonical_digest(fixture.provenance.to_dict()),
-            )
+        scenario_result = _scenario_rollup(
+            fixture.scenario.scenario_id,
+            scenario_findings,
+            fixture.snapshot_path if request.mode == "snapshot" else str((run_dir / "live_snapshots" / f"{hashlib.sha256(fixture.scenario.scenario_id.encode('utf-8')).hexdigest()[:8]}.json").as_posix()),
+            _canonical_digest(snapshot_payload),
+            _canonical_digest(fixture.provenance.to_dict()),
         )
-    scorecard = _score(request.suite_id, str(suite["app_id"]), len(fixtures), findings, thresholds=thresholds)
+        if suite.get("app_id") == "apps_rg":
+            microstep_eval = build_apps_rg_microstep_evaluation(
+                suite_id=request.suite_id,
+                scenario_id=fixture.scenario.scenario_id,
+                snapshot=snapshot,
+                run_id=record_id,
+                created_at=created_at,
+                planned_eval_artifacts=planned_eval_artifacts,
+            )
+            rows = list(microstep_eval["rows"])
+            components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
+            coverage = microstep_eval["coverage_summary"].to_dict()
+            apps_rg_scorecard_rows.extend(rows)
+            apps_rg_component_scorecards.extend(components)
+            apps_rg_scenario_coverages.append(coverage)
+            scenario_result["apps_rg_coverage_summary"] = coverage
+        scenario_results.append(scenario_result)
+    apps_rg_coverage_summary = (
+        _apps_rg_suite_coverage(
+            suite_id=request.suite_id,
+            app_id=str(suite["app_id"]),
+            rows=apps_rg_scorecard_rows,
+            scenario_summaries=apps_rg_scenario_coverages,
+        )
+        if suite.get("app_id") == "apps_rg"
+        else {}
+    )
+    scorecard = _score(
+        request.suite_id,
+        str(suite["app_id"]),
+        len(fixtures),
+        findings,
+        thresholds=thresholds,
+        scorecard_rows=apps_rg_scorecard_rows,
+        component_scorecards=apps_rg_component_scorecards,
+        coverage_summary=apps_rg_coverage_summary,
+    )
     regression = RegressionSummary(compared=False)
     if request.compare_baseline:
         current = {"scorecard": scorecard.to_dict()}

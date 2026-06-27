@@ -34,7 +34,8 @@ class LaneExecutionContext:
     lane_provider: Any
     # str (same provider for every lane) OR Callable[[lane_id], str] for per-lane defaults.
     # str (same judges for every lane) OR Callable[[lane_id], str] for per-lane composite-judge
-    # defaults (competencies/bullets/narratives -> gemini_pro, summaries/headline -> panel).
+    # defaults (competencies -> openai_chatgpt, bullets/narratives -> gemini_pro,
+    # summaries/headline -> panel).
     lane_x1d_judges: Any
     lane_mock_judges: bool
     lane_provider_resolution_source: Any = CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE

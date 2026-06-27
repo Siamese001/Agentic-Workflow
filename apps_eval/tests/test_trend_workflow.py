@@ -14,7 +14,7 @@ def _seed_history(root: Path, count: int = 3) -> list[dict[str, object]]:
     for _ in range(count):
         record = run_eval(
             EvalRequest(
-                suite_id="apps_rg.dev.resume_generation",
+                suite_id="apps_lic.dev.outreach_message",
                 mode="snapshot",
                 deterministic_only=False,
                 out_dir=str(root),
@@ -25,6 +25,12 @@ def _seed_history(root: Path, count: int = 3) -> list[dict[str, object]]:
                 "record_id": record.record_id,
                 "path": Path(record.artifact_paths["eval_record"]),
             }
+        )
+        _mutate_record(
+            Path(record.artifact_paths["eval_record"]),
+            scorecard_verdict="pass",
+            regression_verdict="not_compared",
+            score=1.0,
         )
         time.sleep(0.01)
     return records
@@ -57,7 +63,7 @@ def test_cli_trend_dashboard_and_release_gate_pass(tmp_path: Path) -> None:
             "--records-root",
             str(records_root),
             "--app",
-            "apps_rg",
+            "apps_lic",
             "--split",
             "dev",
             "--out-dir",
@@ -85,7 +91,7 @@ def test_cli_trend_dashboard_can_emit_l6_shadow_bridge(tmp_path: Path) -> None:
             "--records-root",
             str(records_root),
             "--app",
-            "apps_rg",
+            "apps_lic",
             "--split",
             "dev",
             "--out-dir",
@@ -115,7 +121,7 @@ def test_cli_trend_dashboard_can_emit_l6_shadow_bridge(tmp_path: Path) -> None:
             "--records-root",
             str(records_root),
             "--app",
-            "apps_rg",
+            "apps_lic",
             "--split",
             "dev",
             "--out-dir",
@@ -156,7 +162,7 @@ def test_cli_release_gate_distinguishes_blocked_and_regression(tmp_path: Path) -
             "--records-root",
             str(blocked_records_root),
             "--app",
-            "apps_rg",
+            "apps_lic",
             "--split",
             "dev",
             "--out-dir",
@@ -184,7 +190,7 @@ def test_cli_release_gate_distinguishes_blocked_and_regression(tmp_path: Path) -
             "--records-root",
             str(regression_records_root),
             "--app",
-            "apps_rg",
+            "apps_lic",
             "--split",
             "dev",
             "--out-dir",

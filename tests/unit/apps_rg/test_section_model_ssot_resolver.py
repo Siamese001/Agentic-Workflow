@@ -15,7 +15,7 @@ _OPUS = "claude-opus-4-8"
 
 
 def test_sonnet_bullet_lanes() -> None:
-    for section in ("unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets"):
+    for section in ("competencies", "unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets"):
         assert resolve(section, environ={}) == _SONNET, section
 
 

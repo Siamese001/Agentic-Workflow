@@ -52,14 +52,54 @@ def render_report(record: Any, findings: list[Any]) -> str:
         f"Findings: `{scorecard.passed_findings}` passed / `{scorecard.failed_findings}` failed",
         f"Block failures: `{scorecard.block_failures}`",
         "",
-        "## Failure Modes",
-        "",
-        f"Dominant family: `{(flywheel.dominant_failure_family or 'n/a') if flywheel else 'n/a'}`",
-        f"Dominant mode: `{(flywheel.dominant_failure_mode or 'n/a') if flywheel else 'n/a'}`",
-        "",
-        "| Failure Family | Count |",
-        "|---|---:|",
     ]
+    coverage_summary = getattr(scorecard, "coverage_summary", {}) or {}
+    component_scorecards = getattr(scorecard, "component_scorecards", []) or []
+    scorecard_rows = getattr(scorecard, "scorecard_rows", []) or []
+    if coverage_summary or component_scorecards or scorecard_rows:
+        lines.extend(
+            [
+                "## apps_rg Microstep Coverage",
+                "",
+                f"Coverage verdict: `{coverage_summary.get('verdict', 'n/a')}`",
+                f"Coverage complete: `{coverage_summary.get('coverage_complete', False)}`",
+                f"Release blocked: `{coverage_summary.get('release_blocked', False)}`",
+                f"Required microsteps: `{coverage_summary.get('required_microsteps', len(scorecard_rows))}`",
+                f"Emitted rows: `{coverage_summary.get('emitted_rows', len(scorecard_rows))}`",
+                f"Missing required artifacts: `{coverage_summary.get('missing_required_artifacts', 0)}`",
+                f"Unknown required: `{coverage_summary.get('unknown_required', 0)}`",
+                f"Not run required: `{coverage_summary.get('not_run_required', 0)}`",
+                "",
+                "| Component | Subcomponent | Stage | Lane | Score | Verdict | Blocks |",
+                "|---|---|---|---|---:|---|---:|",
+            ]
+        )
+        for row in component_scorecards[:40]:
+            lines.append(
+                "| {component} | {subcomponent} | {stage} | {lane} | {score:.6f} | {verdict} | {blocks} |".format(
+                    component=_cell(row.get("component_id", "")),
+                    subcomponent=_cell(row.get("subcomponent_id", "")),
+                    stage=_cell(row.get("stage_id", "")),
+                    lane=_cell(row.get("lane_id", "")),
+                    score=float(row.get("score", 0.0)),
+                    verdict=_cell(row.get("verdict", "")),
+                    blocks=int(row.get("blocking_failure_count", 0)),
+                )
+            )
+        if len(component_scorecards) > 40:
+            lines.append(f"| _truncated_ | | | | | | {len(component_scorecards) - 40} more |")
+        lines.append("")
+    lines.extend(
+        [
+            "## Failure Modes",
+            "",
+            f"Dominant family: `{(flywheel.dominant_failure_family or 'n/a') if flywheel else 'n/a'}`",
+            f"Dominant mode: `{(flywheel.dominant_failure_mode or 'n/a') if flywheel else 'n/a'}`",
+            "",
+            "| Failure Family | Count |",
+            "|---|---:|",
+        ]
+    )
     family_counts = scorecard.failure_family_counts
     if family_counts:
         for key, value in _sorted_counts(family_counts):

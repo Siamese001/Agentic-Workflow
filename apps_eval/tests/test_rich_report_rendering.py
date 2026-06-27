@@ -18,6 +18,7 @@ def test_report_contains_review_ready_sections(tmp_path: Path) -> None:
     report = Path(record.artifact_paths["report"]).read_text(encoding="utf-8")
 
     assert "## Run Context" in report
+    assert "## apps_rg Microstep Coverage" in report
     assert "## Failure Modes" in report
     assert "## Fixture Provenance" in report
     assert "## Scenario Results" in report

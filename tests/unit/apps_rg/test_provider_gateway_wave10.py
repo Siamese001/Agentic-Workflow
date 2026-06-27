@@ -14,6 +14,7 @@ from apps_rg.runtime.section_model_limits import (
     DEFAULT_EXTERNAL_OPENAI_MODEL,
     external_claude_generation_model,
     external_openai_generation_model,
+    resolve_section_generation_model,
 )
 from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.providers import (
@@ -45,12 +46,13 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     profiles = data["profiles"]
     assert profiles["external_openai_generator"]["default_model"] == DEFAULT_EXTERNAL_OPENAI_MODEL
     assert profiles["external_openai_generator"]["model_by_section"] == {
-        "competencies": "gpt-5.5",
+        "competencies": "gpt-5.4-mini",
     }
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
     assert profiles["external_claude_generator"]["default_model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
     assert profiles["external_claude_generator"]["model_by_section"] == {
+        "competencies": "claude-sonnet-4-6",
         "headline": "claude-opus-4-8",
         "executive_summary": "claude-opus-4-8",
     }
@@ -70,8 +72,9 @@ def test_external_openai_default_model_is_gpt_5_4_mini() -> None:
     assert DEFAULT_EXTERNAL_OPENAI_MODEL == "gpt-5.4-mini"
 
 
-def test_external_openai_competencies_model_is_gpt_5_5() -> None:
-    assert external_openai_generation_model(section_id="competencies") == "gpt-5.5"
+def test_competencies_primary_and_backup_models() -> None:
+    assert resolve_section_generation_model("competencies") == "claude-sonnet-4-6"
+    assert external_openai_generation_model(section_id="competencies") == "gpt-5.4-mini"
 
 
 def test_section_request_uses_external_claude_default_model() -> None:

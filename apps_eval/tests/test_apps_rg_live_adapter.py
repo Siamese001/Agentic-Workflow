@@ -146,6 +146,7 @@ def test_apps_rg_live_runner_uses_compact_artifact_paths(monkeypatch, tmp_path: 
             mode="live_adapter",
             deterministic_only=False,
             out_dir=str(tmp_path),
+            emit_l6_handoff=True,
         )
     )
 

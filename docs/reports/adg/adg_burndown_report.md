@@ -1,6 +1,6 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-27T09:15:12+00:00
+- **Generated:** 2026-06-27T09:17:32+00:00
 - **Gate-results source:** `artifacts\adg\adg_gate_results_20260627_091354.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
 - **Snapshot timestamp:** 2026-06-27T09:13:54.310304+00:00
@@ -147,7 +147,7 @@ Use this section for guardian math, not the status table above.
 | P0 | layer_violations | 43 | 40 | 3 | +40 |
 | P1 | anti_patterns_high | 1151 | 1146 | 5 | +1146 |
 | P2 | anti_patterns_medium | 733 | 714 | 19 | +714 |
-| P3 | style_warnings | 19061 | 87 | 18974 | +87 |
+| P3 | style_warnings | 19065 | 87 | 18978 | +87 |
 
 _p0_clean = False • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 

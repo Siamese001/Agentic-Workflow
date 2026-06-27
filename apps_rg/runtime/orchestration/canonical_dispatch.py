@@ -41,7 +41,7 @@ _IBM_NARRATIVE_SECTION_ID = "ibm_narrative"
 _COMPETENCIES_SECTION_ID = "competencies"
 _DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
 # Single pool-selector judge (graph_8x8); not the executive-summary triple panel.
-COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = "gemini_pro"
+COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = "openai_chatgpt"
 
 
 def _effective_lane_provider(raw: str | None) -> str:

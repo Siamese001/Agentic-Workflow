@@ -13,7 +13,7 @@ def test_wave9_minimized_defaults_match_lane_x2_requirements(monkeypatch) -> Non
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
 
     # Cross-provider only (no anthropic_claude self-judge) after the Claude-base recalibration.
-    assert resolve_section_default_x1d_judges("competencies") == "gemini_pro"
+    assert resolve_section_default_x1d_judges("competencies") == "openai_chatgpt"
     assert resolve_section_default_x1d_judges("unify_bullets") == "gemini_pro"
     assert resolve_section_default_x1d_judges("ibm_bullets") == "gemini_pro"
 
@@ -49,7 +49,7 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
     summary = summarize_section_x1d_minimization_policy()
 
     assert summary["competencies"]["judge_required_for_proof"] is True
-    assert summary["competencies"]["default_x1d_judges"] == ["gemini_pro"]
+    assert summary["competencies"]["default_x1d_judges"] == ["openai_chatgpt"]
     # Recalibrated: cross-provider single judge for bullets (no anthropic_claude self-judge).
     assert summary["unify_bullets"]["default_x1d_judges"] == ["gemini_pro"]
     assert summary["ibm_bullets"]["default_x1d_judges"] == ["gemini_pro"]

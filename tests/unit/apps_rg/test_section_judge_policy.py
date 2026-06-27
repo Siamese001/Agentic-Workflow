@@ -87,6 +87,8 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["competencies"]["judge_runtime_profile"] == matrix["unify_bullets"]["judge_runtime_profile"]
     assert matrix["competencies"]["judge_required_for_proof"] is True
     assert matrix["competencies"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
+    assert matrix["competencies"]["generator_model_class"] == "EXTERNAL_CLAUDE"
+    assert matrix["competencies"]["required_judge_providers"] == ["openai_chatgpt"]
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
     assert matrix["final_aggregate_resume"]["judge_runtime_profile"] == matrix["executive_summary"]["judge_runtime_profile"]
 
@@ -126,7 +128,7 @@ def test_allow_non_allow_exit_zero_does_not_force_plumbing_when_product_passes()
 
 
 def test_competencies_proof_bundle_blocks_when_required_judges_missing() -> None:
-    args = type("Args", (), {"mock_judges": False, "provider": "external_openai"})()
+    args = type("Args", (), {"mock_judges": False, "provider": "external_claude"})()
     bundle = compute_lane_proof_bundle(
         args,
         section_id="competencies",
@@ -142,7 +144,7 @@ def test_competencies_proof_bundle_blocks_when_required_judges_missing() -> None
 
 
 def test_competencies_proof_bundle_requires_proof_eligible_judge() -> None:
-    args = type("Args", (), {"mock_judges": False, "provider": "external_openai"})()
+    args = type("Args", (), {"mock_judges": False, "provider": "external_claude"})()
     judge = {
         "evaluator_mode": "MODEL_BACKED",
         "provider_status": "MODEL_BACKED_PASS",
@@ -150,7 +152,7 @@ def test_competencies_proof_bundle_requires_proof_eligible_judge() -> None:
         "decisive_failure": False,
         "normalized_score": 0.9,
         "normalized_threshold": 0.8,
-        "provider_key": "gemini_pro",
+        "provider_key": "openai_chatgpt",
         "proof_eligible_judge": True,
         "advisory_only": False,
     }
@@ -275,6 +277,10 @@ def test_competencies_x3_blocks_without_required_judges() -> None:
 def test_competencies_policy_requires_llm_judge_for_proof() -> None:
     p = get_section_judge_policy("competencies")
     assert p.judge_required_for_proof is True
+    assert p.required_judge_providers == ("openai_chatgpt",)
+    res = resolve_section_proof_judge_model("competencies", "openai_chatgpt", {})
+    assert res.model_actual == "gpt-5.5"
+    assert res.proof_eligible_judge is True
     rubric = ""
     from apps_rg.runtime.judges import competencies_x1d
 

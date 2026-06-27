@@ -48,6 +48,16 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _raw_artifact_refs(artifact_dir: Path) -> list[str]:
+    if not artifact_dir.is_dir():
+        return []
+    refs: list[str] = []
+    for path in sorted(artifact_dir.rglob("*")):
+        if path.is_file():
+            refs.append(str(path.relative_to(artifact_dir)).replace("\\", "/"))
+    return refs
+
+
 def _path_budget_errors(artifact_dir: Path) -> list[str]:
     worst = (artifact_dir / _LONGEST_EXPECTED_LANE_REL).resolve()
     n_chars = len(str(worst))
@@ -118,6 +128,8 @@ def _preflight_failure_snapshot(
             "preflight": "failed",
         },
         side_effects={"product_state_mutated": False, "writes": []},
+        run_root=str(artifact_dir),
+        raw_artifact_refs=_raw_artifact_refs(artifact_dir),
     )
 
 
@@ -278,6 +290,8 @@ def _normalize_live_snapshot(
             "resolved_inputs": preflight.get("resolved_inputs", {}),
         },
         side_effects={"product_state_mutated": False, "writes": []},
+        run_root=str(artifact_dir),
+        raw_artifact_refs=_raw_artifact_refs(artifact_dir),
     )
 
 

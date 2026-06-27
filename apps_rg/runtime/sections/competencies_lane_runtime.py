@@ -1547,14 +1547,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--provider",
         choices=["external_openai", "external_claude"],
-        default="external_openai",
-        help="Generation provider for competencies (external_openai default; external_claude allowed for explicit override).",
+        default="external_claude",
+        help="Generation provider for competencies (external_claude default; external_openai allowed for explicit override).",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
     parser.add_argument(
         "--x1d-judges",
-        default="gemini_pro",
-        help="Single required X1D proof judge for competencies (Gemini-backed by default; not a triple panel).",
+        default="openai_chatgpt",
+        help="Single required X1D proof judge for competencies (OpenAI-backed by default; not a triple panel).",
     )
     parser.add_argument(
         "--mock-judges",

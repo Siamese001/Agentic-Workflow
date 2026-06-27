@@ -314,7 +314,7 @@ def test_openai_retry_attempt_token_budget_escalates_bounded() -> None:
 
 
 def test_section_retry_profile_is_proportional() -> None:
-    assert _section_x1d_judge_max_attempts("competencies") == 1
+    assert _section_x1d_judge_max_attempts("competencies") == 2
     assert _section_x1d_judge_max_attempts("unify_bullets") == 2
     assert _section_x1d_judge_max_attempts("executive_summary") == 3
 
@@ -334,6 +334,7 @@ def test_section_retry_profile_is_proportional() -> None:
         # self-judge (Claude is the generator, so it cannot also be a proof judge).
         ("executive_summary", ("gemini_pro", "openai_chatgpt")),
         ("headline", ("gemini_pro", "openai_chatgpt")),
+        ("competencies", ("openai_chatgpt",)),
         ("unify_bullets", ("gemini_pro",)),
         ("ibm_bullets", ("gemini_pro",)),
         ("unify_narrative", ("gemini_pro",)),
