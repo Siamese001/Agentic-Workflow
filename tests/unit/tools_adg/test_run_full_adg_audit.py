@@ -142,6 +142,7 @@ def _write_handoff_inputs(
     *,
     run_id: str = "06252026_0101",
     gates: list[dict] | None = None,
+    include_snapshot_paths: bool = True,
 ) -> tuple[Path, Path, Path]:
     artifacts = wrapper.ARTIFACTS_ADG
     snap = _make_snapshot(
@@ -151,16 +152,23 @@ def _write_handoff_inputs(
     )
     gate_manifest = artifacts / f"adg_gate_invocation_manifest_{run_id}.json"
     gate_manifest.write_text(
-        json.dumps({"timestamp": "2026-06-25T01:01:00Z", "sqlite_path": str(snap), "gates": []}),
+        json.dumps(
+            {
+                "timestamp": "2026-06-25T01:01:00Z",
+                "sqlite_path": str(snap) if include_snapshot_paths else None,
+                "gates": [],
+            }
+        ),
         encoding="utf-8",
     )
+    snapshot_value = str(snap) if include_snapshot_paths else None
     gen_manifest = artifacts / f"adg_generation_manifest_{run_id}.json"
     gen_manifest.write_text(
         json.dumps(
             {
                 "timestamp": "2026-06-25T01:01:00Z",
-                "sqlite_path": str(snap),
-                "snapshot_path": str(snap),
+                "sqlite_path": snapshot_value,
+                "snapshot_path": snapshot_value,
                 "gate_manifest_path": str(gate_manifest),
                 "runtime_proof_status": "attested",
             }
@@ -710,6 +718,65 @@ def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypat
     _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
     assert errors == []
     assert counts == handoff["counts"]
+
+
+def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
+    temp_artifacts,
+    monkeypatch,
+    capsys,
+):
+    gates = [
+        _gate_result(
+            "G_REACH_l0_reachability",
+            band="P0",
+            enforcement="ratchet",
+            classification="regressed",
+            violation_count=2799,
+            baseline_count=2786,
+        )
+    ]
+    gen_manifest, gate_manifest, snap = _write_handoff_inputs(
+        temp_artifacts,
+        run_id="06262026_2302",
+        gates=gates,
+        include_snapshot_paths=False,
+    )
+
+    status, handoff, errors = wrapper._build_repair_handoff(
+        generation_manifest_path=gen_manifest,
+        gate_manifest_path=gate_manifest,
+        generation_manifest=json.loads(gen_manifest.read_text(encoding="utf-8")),
+        certification_status="failed",
+        since_wall_start=time.time() - 1,
+    )
+
+    assert errors == []
+    assert status == "repair_ready"
+    assert Path(handoff["artifacts"]["snapshot"]["path"]).resolve() == snap.resolve()
+    assert Path(handoff["artifacts"]["gate_results"]["path"]).is_file()
+    assert Path(handoff["artifacts"]["action_queue"]["path"]).is_file()
+    assert handoff["counts"] == {
+        "P0_FIX": 1,
+        "P1_FIX": 0,
+        "P1_RATCHET_REGRESSION": 0,
+        "P1_RATCHET_FLOOR_BACKLOG": 0,
+    }
+
+    receipt = _write_receipt(
+        temp_artifacts / "receipt.json",
+        artifact_status=status,
+        handoff=handoff,
+        run_id="06262026_2302",
+    )
+    _payload, counts, consumer_errors = wrapper.validate_repair_handoff_receipt(receipt)
+    assert consumer_errors == []
+    assert counts == handoff["counts"]
+
+    rc = consume_adg_repair_handoff.main(["--receipt", str(receipt), "--json"])
+    captured = capsys.readouterr()
+    assert rc == 0
+    assert '"ok": true' in captured.out
+    assert '"artifact_status": "repair_ready"' in captured.out
 
 
 def test_repair_handoff_incomplete_when_required_artifact_stale(temp_artifacts, monkeypatch):
