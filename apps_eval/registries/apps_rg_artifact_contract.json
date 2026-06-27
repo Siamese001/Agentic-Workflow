@@ -1,0 +1,203 @@
+{
+  "schema_version": "apps_eval.apps_rg_artifact_contract.v1",
+  "contract_version": "2026-06-27",
+  "app_id": "apps_rg",
+  "artifact_roles": {
+    "run_bundle_index": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.run_bundle_index.v1",
+      "relative_paths": [
+        "RUN_BUNDLE_INDEX.json",
+        "run_bundle_index.json"
+      ]
+    },
+    "u0_runtime_package": {
+      "required": true,
+      "source_artifact_schema": "agentic_core.runtime_customization_package.v1",
+      "relative_paths": [
+        "runtime_customization_package.yaml",
+        "runtime_customization_package.json",
+        "u0/runtime_customization_package.yaml"
+      ]
+    },
+    "l1_static_plan_profile": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.l1_static_plan_profile.v1",
+      "relative_paths": [
+        "l1_static_plan_profile.yaml",
+        "u0/l1_static_plan_profile.yaml",
+        "profiles/l1_static_plan_profile.yaml"
+      ]
+    },
+    "l0_route_profile": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.l0_managed_route_profile.v1",
+      "relative_paths": [
+        "l0_managed_route_profile.yaml",
+        "u0/l0_managed_route_profile.yaml",
+        "profiles/l0_managed_route_profile.yaml"
+      ]
+    },
+    "c0_evidence_manifest": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.c0_evidence_manifest.v1",
+      "relative_paths": [
+        "c0_evidence_manifest.json",
+        "fec_receipt.json",
+        "c0/fec_receipt.json",
+        "FEC/fec_receipt.json"
+      ]
+    },
+    "pa_compiled_prompt": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.prompt_assembly_receipt.v1",
+      "relative_paths": [
+        "compiled_prompt.json",
+        "prompt_assembly_receipt.json",
+        "pa/compiled_prompt.json"
+      ]
+    },
+    "full_run_section_status": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.full_run_section_status.v1",
+      "relative_paths": [
+        "full_run_section_status.json",
+        "FULL_RUN_SECTION_STATUS.json"
+      ]
+    },
+    "lane_l2_output": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.l2_output.v1",
+      "relative_paths": [
+        "lanes/{lane}/l2_output.json",
+        "modular_r4/sections/{lane}/l2_output.json"
+      ]
+    },
+    "lane_runtime_payload": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.runtime_payload.v1",
+      "relative_paths": [
+        "lanes/{lane}/runtime_payload.json",
+        "modular_r4/sections/{lane}/runtime_payload.json"
+      ]
+    },
+    "lane_x2_gate_outputs": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.x2_gate_outputs.v1",
+      "relative_paths": [
+        "lanes/{lane}/x2_gate_outputs.json",
+        "modular_r4/sections/{lane}/x2_gate_outputs.json"
+      ]
+    },
+    "lane_x1d_llm_judge_outputs": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.x1d_llm_judge_outputs.v1",
+      "relative_paths": [
+        "lanes/{lane}/x1d_llm_judge_outputs.json",
+        "modular_r4/sections/{lane}/x1d_llm_judge_outputs.json"
+      ]
+    },
+    "lane_x3_disposition": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.x3_disposition.v1",
+      "relative_paths": [
+        "lanes/{lane}/x3_disposition.json",
+        "modular_r4/sections/{lane}/x3_disposition.json"
+      ]
+    },
+    "lane_l6_shadow_eval_package": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.l6_shadow_eval_package.v1",
+      "relative_paths": [
+        "lanes/{lane}/l6_shadow_eval_package.json",
+        "modular_r4/sections/{lane}/l6_shadow_eval_package.json"
+      ]
+    },
+    "cross_section_x2_gate_outputs": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.cross_section_x2_gate_outputs.v1",
+      "relative_paths": [
+        "cross_section_x2_gate_outputs.json",
+        "final_resume_assembly/cross_section_x2_gate_outputs.json",
+        "assembly/cross_section_x2_gate_outputs.json"
+      ]
+    },
+    "final_resume_json": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.final_resume.v1",
+      "relative_paths": [
+        "final_resume.json",
+        "outputs/final_resume.json",
+        "final_resume_assembly/final_resume.json"
+      ]
+    },
+    "final_resume_x2_gate_outputs": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.final_resume_x2_gate_outputs.v1",
+      "relative_paths": [
+        "final_resume_x2_gate_outputs.json",
+        "final_resume_assembly/final_resume_x2_gate_outputs.json",
+        "assembly/final_resume_x2_gate_outputs.json"
+      ]
+    },
+    "whole_run_exit_review_packet": {
+      "required": true,
+      "source_artifact_schema": "apps_rg.whole_run_exit_review_packet.v1",
+      "relative_paths": [
+        "apps_rg_whole_run_exit_review_packet.json",
+        "whole_run_exit_review_packet.json",
+        "exit/apps_rg_whole_run_exit_review_packet.json"
+      ]
+    },
+    "eval_record": {
+      "required": true,
+      "source_artifact_schema": "apps_eval.completed_eval.v3",
+      "relative_paths": [
+        "eval_record.json"
+      ]
+    },
+    "scorecard_rows": {
+      "required": true,
+      "source_artifact_schema": "apps_eval.scorecard_row.v1",
+      "relative_paths": [
+        "scorecard_rows.jsonl"
+      ]
+    },
+    "component_scorecards": {
+      "required": true,
+      "source_artifact_schema": "apps_eval.apps_rg_component_scorecard.v1",
+      "relative_paths": [
+        "apps_rg_component_scorecard.json",
+        "component_scorecards.csv"
+      ]
+    },
+    "coverage_matrix": {
+      "required": true,
+      "source_artifact_schema": "apps_eval.apps_rg_coverage_matrix.v1",
+      "relative_paths": [
+        "coverage_matrix.csv"
+      ]
+    },
+    "regression_summary": {
+      "required": true,
+      "source_artifact_schema": "apps_eval.regression_summary.v1",
+      "relative_paths": [
+        "regression.json",
+        "regression_flywheel.json"
+      ]
+    }
+  },
+  "extractor_priority": [
+    "RUN_BUNDLE_INDEX.json",
+    "full_run_section_status.json",
+    "lanes/{lane}/",
+    "final_resume_assembly/",
+    "whole_run_exit_review_packet.json",
+    "fallback scans are diagnostic only"
+  ],
+  "fail_closed_rules": [
+    "A required artifact role that cannot be resolved emits a FAIL row.",
+    "Fallback scans may populate artifact_ref diagnostics but may not turn UNKNOWN into PASS.",
+    "Artifact refs are evidence pointers only; apps_eval does not mutate product artifacts."
+  ]
+}

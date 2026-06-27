@@ -27,7 +27,7 @@ profiles:
     # model_by_section = section-specific OpenAI generation overrides.
     default_model: gpt-5.4-mini
     model_by_section:
-      competencies: gpt-5.5
+      competencies: gpt-5.4-mini
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
     capabilities:
@@ -46,6 +46,7 @@ profiles:
     # Resolver: section_model_limits.resolve_section_generation_model(section_id).
     default_model: claude-sonnet-4-6
     model_by_section:
+      competencies: claude-sonnet-4-6
       headline: claude-opus-4-8
       executive_summary: claude-opus-4-8
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL

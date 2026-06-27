@@ -16,6 +16,26 @@ CURRENT_REGRESSION_FLYWHEEL_SCHEMA_VERSION = "apps_eval.regression_flywheel.v1"
 CURRENT_TREND_DASHBOARD_SCHEMA_VERSION = "apps_eval.trend_dashboard.v1"
 CURRENT_RELEASE_GATE_SCHEMA_VERSION = "apps_eval.release_gate.v1"
 CURRENT_SCORER_VERSION = "apps_eval.graders.deterministic.v2"
+CURRENT_SCORECARD_ROW_SCHEMA_VERSION = "apps_eval.scorecard_row.v1"
+CURRENT_APPS_RG_MICROSTEP_CONTRACT_SCHEMA_VERSION = "apps_eval.apps_rg_stage_microstep_contract.v1"
+
+ScorecardRowVerdict = Literal["PASS", "FAIL", "WARN", "UNKNOWN", "NOT_RUN", "NOT_APPLICABLE"]
+ScorecardRowSeverity = Literal["BLOCK", "MAJOR", "MINOR", "WARN", "INFO"]
+AppsRgStageId = Literal[
+    "U0",
+    "L1",
+    "L0",
+    "C0",
+    "PA",
+    "L2",
+    "X2",
+    "X1D",
+    "X3",
+    "EXIT",
+    "L6",
+    "PACKAGE",
+    "REGRESSION",
+]
 
 
 @dataclass(frozen=True)
@@ -110,6 +130,14 @@ class AppOutputSnapshot:
     provenance: dict[str, Any] = field(default_factory=dict)
     side_effects: dict[str, Any] = field(default_factory=dict)
     deterministic_hash: str = ""
+    run_root: str = ""
+    artifact_index: dict[str, Any] = field(default_factory=dict)
+    bundle_indexes: list[dict[str, Any]] = field(default_factory=list)
+    receipts: list[dict[str, Any]] = field(default_factory=list)
+    lane_rows: list[dict[str, Any]] = field(default_factory=list)
+    component_rows: list[dict[str, Any]] = field(default_factory=list)
+    coverage_summary: dict[str, Any] = field(default_factory=dict)
+    raw_artifact_refs: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "AppOutputSnapshot":
@@ -123,6 +151,14 @@ class AppOutputSnapshot:
             provenance=dict(data.get("provenance") or {}),
             side_effects=dict(data.get("side_effects") or {}),
             deterministic_hash=str(data.get("deterministic_hash", "")),
+            run_root=str(data.get("run_root", "")),
+            artifact_index=dict(data.get("artifact_index") or {}),
+            bundle_indexes=list(data.get("bundle_indexes") or []),
+            receipts=list(data.get("receipts") or []),
+            lane_rows=list(data.get("lane_rows") or []),
+            component_rows=list(data.get("component_rows") or []),
+            coverage_summary=dict(data.get("coverage_summary") or {}),
+            raw_artifact_refs=list(data.get("raw_artifact_refs") or []),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -145,6 +181,89 @@ class GraderFinding:
 
 
 @dataclass(frozen=True)
+class ScorecardRow:
+    suite_id: str
+    scenario_id: str
+    app_id: str
+    row_id: str
+    microstep_id: str
+    stage_id: AppsRgStageId | str
+    component_id: str
+    subcomponent_id: str
+    verdict: ScorecardRowVerdict | str
+    score: float
+    severity: ScorecardRowSeverity | str
+    required: bool = True
+    run_id: str = ""
+    lane_id: str = ""
+    gate_id: str = ""
+    artifact_role: str = ""
+    artifact_ref: str = ""
+    evidence_ref: str = ""
+    evidence_digest: str = ""
+    failure_mode: str = ""
+    failure_family: str = ""
+    observed_value: Any = None
+    threshold: Any = None
+    decisive_reason: str = ""
+    source_system: str = "apps_eval"
+    source_artifact_schema: str = ""
+    created_at: str = ""
+    schema_version: str = CURRENT_SCORECARD_ROW_SCHEMA_VERSION
+
+    @property
+    def passed(self) -> bool:
+        return self.verdict == "PASS"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class ComponentScorecard:
+    suite_id: str
+    app_id: str
+    component_id: str
+    row_count: int
+    required_count: int
+    pass_count: int
+    fail_count: int
+    warn_count: int
+    unknown_count: int
+    not_run_count: int
+    score: float
+    verdict: str
+    scenario_id: str = ""
+    subcomponent_id: str = ""
+    stage_id: str = ""
+    lane_id: str = ""
+    blocking_failure_count: int = 0
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class CoverageSummary:
+    suite_id: str
+    app_id: str
+    required_microsteps: int
+    emitted_rows: int
+    passed_required: int
+    failed_required: int
+    missing_required_artifacts: int
+    unknown_required: int
+    not_run_required: int
+    coverage_complete: bool
+    release_blocked: bool
+    verdict: str
+    scenario_id: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class Scorecard:
     suite_id: str
     app_id: str
@@ -158,6 +277,9 @@ class Scorecard:
     dimension_scores: dict[str, float] = field(default_factory=dict)
     failure_mode_counts: dict[str, int] = field(default_factory=dict)
     failure_family_counts: dict[str, int] = field(default_factory=dict)
+    scorecard_rows: list[dict[str, Any]] = field(default_factory=list)
+    component_scorecards: list[dict[str, Any]] = field(default_factory=list)
+    coverage_summary: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

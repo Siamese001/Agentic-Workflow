@@ -76,11 +76,12 @@ class SectionJudgePolicy:
 
 
 # Default judges are calibrated against the per-section generator matrix, not a single global
-# generator. Claude-backed lanes never use anthropic_claude as their default judge; OpenAI-backed
-# competencies/narrative lanes default to gemini_pro. Recalibrated 2026-06-08 from the older
-# 3-provider Qwen-era panel. See .codex/rules/judge-calibration-cadence.md.
+# generator. Claude-backed lanes never use anthropic_claude as their default judge; competencies
+# uses OpenAI as its required proof judge. Recalibrated 2026-06-08 from the older 3-provider
+# Qwen-era panel. See .codex/rules/judge-calibration-cadence.md.
 _DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
+_COMPETENCIES_JUDGE_PANEL: tuple[str, ...] = ("openai_chatgpt",)
 
 REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = _DUAL_JUDGE_PANEL
 
@@ -300,10 +301,10 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "competencies": SectionJudgePolicy(
         section_name="competencies",
-        generator_model_class=GeneratorModelClass.EXTERNAL_OPENAI,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
-        required_judge_providers=_standard_providers(),
+        required_judge_providers=_COMPETENCIES_JUDGE_PANEL,
         proof_eligible_model_classes=frozenset({"standard_frontier", "standard_reasoning"}),
         advisory_model_classes=frozenset({"flash", "mini", "haiku", "advisory", "mock", "stub"}),
         judge_packet_required=True,

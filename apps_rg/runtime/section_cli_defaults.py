@@ -91,7 +91,6 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
 
 _OPENAI_DEFAULT_SECTION_IDS: Final[frozenset[str]] = frozenset(
     {
-        "competencies",
         "unify_narrative",
         "ibm_narrative",
         "insurtech_narrative",
@@ -109,12 +108,12 @@ def default_lane_provider_for_section(section_id: str | None = None) -> str:
 
 
 # Judges are calibrated against the per-section generator matrix. Claude-backed lanes never default
-# to anthropic_claude as judge; OpenAI-backed competencies/narratives default to gemini_pro.
+# to anthropic_claude as judge; competencies uses OpenAI as its required proof judge.
 # Recalibrated 2026-06-08 from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
 # Explicit CLI/env overrides still win.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
 _SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"
-COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
+COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "openai_chatgpt"
 BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
 UNIFY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
@@ -123,7 +122,8 @@ EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
 # Recalibrated judge panels (Claude Sonnet 4.6 base; cross-provider only):
 #   executive_summary / headline / final_aggregate_resume -> 2 (gemini_pro + openai_chatgpt)
-#   competencies + all bullets + all narratives -> 1 required proof judge (gemini_pro)
+#   competencies -> 1 required proof judge (openai_chatgpt)
+#   all bullets + all narratives -> 1 required proof judge (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
@@ -140,7 +140,7 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
 }
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
-    "competencies": "single_required_taxonomy_judge_for_proof",
+    "competencies": "single_required_openai_competencies_judge_for_proof",
     "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",

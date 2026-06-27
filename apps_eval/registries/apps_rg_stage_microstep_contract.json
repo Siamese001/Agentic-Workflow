@@ -1,0 +1,363 @@
+{
+  "schema_version": "apps_eval.apps_rg_stage_microstep_contract.v1",
+  "contract_version": "2026-06-27",
+  "app_id": "apps_rg",
+  "verdict_enum": [
+    "PASS",
+    "FAIL",
+    "WARN",
+    "UNKNOWN",
+    "NOT_RUN",
+    "NOT_APPLICABLE"
+  ],
+  "severity_enum": [
+    "BLOCK",
+    "MAJOR",
+    "MINOR",
+    "WARN",
+    "INFO"
+  ],
+  "stage_enum": [
+    "U0",
+    "L1",
+    "L0",
+    "C0",
+    "PA",
+    "L2",
+    "X2",
+    "X1D",
+    "X3",
+    "EXIT",
+    "L6",
+    "PACKAGE",
+    "REGRESSION"
+  ],
+  "global_microsteps": [
+    {
+      "microstep_id": "U0.runtime_package.present",
+      "stage_id": "U0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "u0_runtime_package",
+      "required": true,
+      "artifact_role": "u0_runtime_package",
+      "gate_id": "u0_runtime_package_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "U0.run_bundle_index.present",
+      "stage_id": "U0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "u0_runtime_package",
+      "required": true,
+      "artifact_role": "run_bundle_index",
+      "gate_id": "u0_run_bundle_index_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "L1.static_plan_profile.present",
+      "stage_id": "L1",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "l1_static_plan",
+      "required": true,
+      "artifact_role": "l1_static_plan_profile",
+      "gate_id": "l1_static_plan_profile_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "L1.static_plan_profile.schema_bound",
+      "stage_id": "L1",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "l1_static_plan",
+      "required": true,
+      "artifact_role": "l1_static_plan_profile",
+      "gate_id": "l1_static_plan_profile_schema_bound",
+      "severity": "MAJOR"
+    },
+    {
+      "microstep_id": "L0.managed_route_profile.present",
+      "stage_id": "L0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "l0_managed_route",
+      "required": true,
+      "artifact_role": "l0_route_profile",
+      "gate_id": "l0_managed_route_profile_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "L0.dispatch_profile.canonical",
+      "stage_id": "L0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "l0_managed_route",
+      "required": true,
+      "artifact_role": "l0_route_profile",
+      "gate_id": "l0_dispatch_profile_canonical",
+      "severity": "MAJOR"
+    },
+    {
+      "microstep_id": "C0.evidence_manifest.present",
+      "stage_id": "C0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "c0_evidence",
+      "required": true,
+      "artifact_role": "c0_evidence_manifest",
+      "gate_id": "c0_evidence_manifest_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "C0.evidence_manifest.materiality",
+      "stage_id": "C0",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "c0_evidence",
+      "required": true,
+      "artifact_role": "c0_evidence_manifest",
+      "gate_id": "c0_evidence_materiality_present",
+      "severity": "MAJOR"
+    },
+    {
+      "microstep_id": "PA.compiled_prompt.present",
+      "stage_id": "PA",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "pa_prompt_boundary",
+      "required": true,
+      "artifact_role": "pa_compiled_prompt",
+      "gate_id": "pa_compiled_prompt_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "PA.prompt_boundary.evidence_as_data",
+      "stage_id": "PA",
+      "component_id": "apps_rg.run_contract",
+      "subcomponent_id": "pa_prompt_boundary",
+      "required": true,
+      "artifact_role": "pa_compiled_prompt",
+      "gate_id": "pa_prompt_boundary_evidence_as_data",
+      "severity": "MAJOR"
+    }
+  ],
+  "lane_microstep_templates": [
+    {
+      "microstep_id_template": "{lane}.L2.output.present",
+      "stage_id": "L2",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_l2_generation",
+      "required": true,
+      "artifact_role": "lane_l2_output",
+      "gate_id": "l2_output_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.L2.runtime_payload.present",
+      "stage_id": "L2",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_l2_generation",
+      "required": true,
+      "artifact_role": "lane_runtime_payload",
+      "gate_id": "l2_runtime_payload_present",
+      "severity": "MAJOR"
+    },
+    {
+      "microstep_id_template": "{lane}.X2.gate_artifact.present",
+      "stage_id": "X2",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x2_deterministic_gates",
+      "required": true,
+      "artifact_role": "lane_x2_gate_outputs",
+      "gate_id": "x2_gate_artifact_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.X2.gates.pass",
+      "stage_id": "X2",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x2_deterministic_gates",
+      "required": true,
+      "artifact_role": "lane_x2_gate_outputs",
+      "gate_id": "x2_gates_pass",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.X1D.judge_artifact.present",
+      "stage_id": "X1D",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x1d_judge_panel",
+      "required": true,
+      "artifact_role": "lane_x1d_llm_judge_outputs",
+      "gate_id": "x1d_judge_artifact_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.X1D.judge_result.pass",
+      "stage_id": "X1D",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x1d_judge_panel",
+      "required": true,
+      "artifact_role": "lane_x1d_llm_judge_outputs",
+      "gate_id": "x1d_judge_result_pass",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.X3.disposition.present",
+      "stage_id": "X3",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x3_disposition",
+      "required": true,
+      "artifact_role": "lane_x3_disposition",
+      "gate_id": "x3_disposition_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.X3.disposition.earned",
+      "stage_id": "X3",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_x3_disposition",
+      "required": true,
+      "artifact_role": "lane_x3_disposition",
+      "gate_id": "x3_disposition_earned",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.L6.shadow_package.present",
+      "stage_id": "L6",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_l6_shadow_package",
+      "required": true,
+      "artifact_role": "lane_l6_shadow_eval_package",
+      "gate_id": "l6_shadow_package_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id_template": "{lane}.L6.shadow_package.non_mutating",
+      "stage_id": "L6",
+      "component_id": "apps_rg.generated_lane",
+      "subcomponent_id": "lane_l6_shadow_package",
+      "required": true,
+      "artifact_role": "lane_l6_shadow_eval_package",
+      "gate_id": "l6_shadow_package_non_mutating",
+      "severity": "BLOCK"
+    }
+  ],
+  "cross_run_microsteps": [
+    {
+      "microstep_id": "X2.cross_section.gate_artifact.present",
+      "stage_id": "X2",
+      "component_id": "apps_rg.cross_section",
+      "subcomponent_id": "cross_section_overlap",
+      "required": true,
+      "artifact_role": "cross_section_x2_gate_outputs",
+      "gate_id": "x2_cross_section_gate_artifact_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "X2.cross_section.graph_coherence.materiality",
+      "stage_id": "X2",
+      "component_id": "apps_rg.cross_section",
+      "subcomponent_id": "cross_section_graph_coherence",
+      "required": true,
+      "artifact_role": "cross_section_x2_gate_outputs",
+      "gate_id": "x2_cross_section_graph_coherence_materiality",
+      "severity": "MAJOR"
+    },
+    {
+      "microstep_id": "X2.final_assembly.final_resume.present",
+      "stage_id": "X2",
+      "component_id": "apps_rg.final_assembly",
+      "subcomponent_id": "final_resume_structure",
+      "required": true,
+      "artifact_role": "final_resume_json",
+      "gate_id": "x2_final_resume_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "X2.final_assembly.gate_artifact.present",
+      "stage_id": "X2",
+      "component_id": "apps_rg.final_assembly",
+      "subcomponent_id": "final_resume_structure",
+      "required": true,
+      "artifact_role": "final_resume_x2_gate_outputs",
+      "gate_id": "x2_final_assembly_gate_artifact_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "X2.final_assembly.gates.pass",
+      "stage_id": "X2",
+      "component_id": "apps_rg.final_assembly",
+      "subcomponent_id": "final_resume_structure",
+      "required": true,
+      "artifact_role": "final_resume_x2_gate_outputs",
+      "gate_id": "x2_final_assembly_gates_pass",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "EXIT.whole_run.packet.present",
+      "stage_id": "EXIT",
+      "component_id": "apps_rg.whole_run_exit",
+      "subcomponent_id": "single_exit_disposition",
+      "required": true,
+      "artifact_role": "whole_run_exit_review_packet",
+      "gate_id": "exit_whole_run_packet_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "EXIT.whole_run.exactly_one_x3",
+      "stage_id": "EXIT",
+      "component_id": "apps_rg.whole_run_exit",
+      "subcomponent_id": "single_exit_disposition",
+      "required": true,
+      "artifact_role": "whole_run_exit_review_packet",
+      "gate_id": "exit_exactly_one_x3",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "PACKAGE.scorecard_rows.present",
+      "stage_id": "PACKAGE",
+      "component_id": "apps_rg.eval_package",
+      "subcomponent_id": "scorecard_rows",
+      "required": true,
+      "artifact_role": "scorecard_rows",
+      "gate_id": "package_scorecard_rows_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "PACKAGE.component_scorecards.present",
+      "stage_id": "PACKAGE",
+      "component_id": "apps_rg.eval_package",
+      "subcomponent_id": "component_scorecards",
+      "required": true,
+      "artifact_role": "component_scorecards",
+      "gate_id": "package_component_scorecards_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "PACKAGE.coverage_matrix.present",
+      "stage_id": "PACKAGE",
+      "component_id": "apps_rg.eval_package",
+      "subcomponent_id": "coverage_matrix",
+      "required": true,
+      "artifact_role": "coverage_matrix",
+      "gate_id": "package_coverage_matrix_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "REGRESSION.outputs.present",
+      "stage_id": "REGRESSION",
+      "component_id": "apps_rg.eval_package",
+      "subcomponent_id": "regression_outputs",
+      "required": true,
+      "artifact_role": "regression_summary",
+      "gate_id": "regression_outputs_present",
+      "severity": "MAJOR"
+    }
+  ],
+  "hard_rules": [
+    "Every required microstep emits one ScorecardRow.",
+    "Missing required artifact emits FAIL, never omission.",
+    "NOT_RUN is allowed only when a prior required dependency failed.",
+    "UNKNOWN on a required microstep is release-blocking.",
+    "Overall apps_rg score is blocked until required microstep coverage is complete.",
+    "Suite and dimension scorecards are never sufficient for apps_rg.",
+    "Lane rows are mandatory for all generated lanes.",
+    "X2, X1D, X3, and L6 rows are mandatory per generated lane.",
+    "apps_eval audits apps_rg X3 proof and does not replace it.",
+    "Microstep coverage failure blocks promotion even when aggregate score is high."
+  ]
+}

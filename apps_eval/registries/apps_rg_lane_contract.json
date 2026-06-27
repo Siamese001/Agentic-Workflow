@@ -1,0 +1,50 @@
+{
+  "schema_version": "apps_eval.apps_rg_lane_contract.v1",
+  "contract_version": "2026-06-27",
+  "app_id": "apps_rg",
+  "source_system": "apps_rg",
+  "generated_lanes": [
+    "competencies",
+    "unify_bullets",
+    "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
+    "unify_narrative",
+    "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
+    "executive_summary",
+    "headline"
+  ],
+  "required_lane_stages": [
+    "L2",
+    "X2",
+    "X1D",
+    "X3",
+    "L6"
+  ],
+  "required_lane_artifact_roles": {
+    "L2": [
+      "lane_l2_output",
+      "lane_runtime_payload"
+    ],
+    "X2": [
+      "lane_x2_gate_outputs"
+    ],
+    "X1D": [
+      "lane_x1d_llm_judge_outputs"
+    ],
+    "X3": [
+      "lane_x3_disposition"
+    ],
+    "L6": [
+      "lane_l6_shadow_eval_package"
+    ]
+  },
+  "fail_closed_rules": [
+    "Every generated lane must emit rows for L2, X2, X1D, X3, and L6.",
+    "Missing lane artifacts are required ScorecardRow failures, not omissions.",
+    "Per-lane X3 is audited as product evidence; apps_eval never overwrites apps_rg X3.",
+    "UNKNOWN and NOT_RUN are never passing verdicts for required lane microsteps."
+  ]
+}

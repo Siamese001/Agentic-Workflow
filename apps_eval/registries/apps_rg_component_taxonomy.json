@@ -1,0 +1,100 @@
+{
+  "schema_version": "apps_eval.apps_rg_component_taxonomy.v1",
+  "contract_version": "2026-06-27",
+  "app_id": "apps_rg",
+  "components": [
+    {
+      "component_id": "apps_rg.run_contract",
+      "label": "Run Contract",
+      "stages": [
+        "U0",
+        "L1",
+        "L0",
+        "C0",
+        "PA"
+      ],
+      "subcomponents": [
+        "u0_runtime_package",
+        "l1_static_plan",
+        "l0_managed_route",
+        "c0_evidence",
+        "pa_prompt_boundary"
+      ]
+    },
+    {
+      "component_id": "apps_rg.generated_lane",
+      "label": "Generated Lane",
+      "stages": [
+        "L2",
+        "X2",
+        "X1D",
+        "X3",
+        "L6"
+      ],
+      "subcomponents": [
+        "lane_l2_generation",
+        "lane_x2_deterministic_gates",
+        "lane_x1d_judge_panel",
+        "lane_x3_disposition",
+        "lane_l6_shadow_package"
+      ]
+    },
+    {
+      "component_id": "apps_rg.cross_section",
+      "label": "Cross Section",
+      "stages": [
+        "X2"
+      ],
+      "subcomponents": [
+        "cross_section_overlap",
+        "cross_section_materiality",
+        "cross_section_graph_coherence"
+      ]
+    },
+    {
+      "component_id": "apps_rg.final_assembly",
+      "label": "Final Assembly",
+      "stages": [
+        "X2"
+      ],
+      "subcomponents": [
+        "final_resume_structure",
+        "locked_copy_integrity",
+        "assembly_call_boundary",
+        "aggregate_judge_evidence"
+      ]
+    },
+    {
+      "component_id": "apps_rg.whole_run_exit",
+      "label": "Whole Run Exit",
+      "stages": [
+        "EXIT"
+      ],
+      "subcomponents": [
+        "single_exit_disposition",
+        "lane_x3_preservation",
+        "exit_decisive_reason"
+      ]
+    },
+    {
+      "component_id": "apps_rg.eval_package",
+      "label": "Eval Package",
+      "stages": [
+        "PACKAGE",
+        "REGRESSION"
+      ],
+      "subcomponents": [
+        "scorecard_rows",
+        "component_scorecards",
+        "coverage_matrix",
+        "l6_handoff",
+        "regression_outputs"
+      ]
+    }
+  ],
+  "rollup_rules": [
+    "Roll up from ScorecardRow only; do not infer component pass from suite-level score.",
+    "Required UNKNOWN, FAIL, and NOT_RUN rows are release-blocking for apps_rg.",
+    "Component scorecards must preserve component, subcomponent, stage, and lane identifiers."
+  ]
+}
