@@ -10,7 +10,10 @@ from typing import Any, Mapping
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.provider_gateway import ProviderProfile
-from apps_rg.runtime.section_model_limits import external_openai_generation_model
+from apps_rg.runtime.section_model_limits import (
+    external_openai_generation_model,
+    external_openai_generation_model_source,
+)
 
 _HTTP_STATUS_RE = re.compile(r"\bHTTP\s+(\d{3})\b", re.IGNORECASE)
 _TRANSPORT_AVAILABILITY_MARKERS = (
@@ -120,8 +123,10 @@ def _fallback_receipt(
     initial_result: ProviderResult,
     fallback_result: ProviderResult | None,
     fallback_model: str,
+    fallback_model_source: str,
     attempted: bool,
     reason_category: str,
+    section_id: str | None,
     fallback_attempt_started_at_utc: str | None,
     fallback_attempt_completed_at_utc: str | None,
     receipt_created_at_utc: str | None = None,
@@ -151,7 +156,8 @@ def _fallback_receipt(
         "initial_exact_provider_error": initial_result.exact_provider_error,
         "fallback_provider_actual": fallback_provider,
         "fallback_model": fallback_model,
-        "fallback_model_source": "apps_rg/config/provider_profiles.yaml:profiles.external_openai_generator.default_model",
+        "fallback_model_source": fallback_model_source,
+        "fallback_section_id": section_id,
         "fallback_attempted": attempted,
         "fallback_attempt_started_at_utc": fallback_attempt_started_at_utc,
         "fallback_attempt_completed_at_utc": fallback_attempt_completed_at_utc,
@@ -213,6 +219,7 @@ def maybe_fallback_to_openai_for_claude_availability(
     temperature: float,
     timeout_seconds: int | float | None = None,
     environ: Mapping[str, str] | None = None,
+    section_id: str | None = None,
 ) -> ProviderResult:
     """Fallback apps_rg generation from Claude to OpenAI only for availability failures.
 
@@ -226,7 +233,9 @@ def maybe_fallback_to_openai_for_claude_availability(
     if reason_category not in _FALLBACK_ALLOWED_REASON_CATEGORIES:
         return initial_result
 
-    fallback_model = external_openai_generation_model()
+    sid = str(section_id or "").strip().lower() or None
+    fallback_model = external_openai_generation_model(section_id=sid)
+    fallback_model_source = external_openai_generation_model_source(sid)
     fallback_provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
         model=fallback_model,
@@ -244,8 +253,10 @@ def maybe_fallback_to_openai_for_claude_availability(
         initial_result=initial_result,
         fallback_result=fallback_result,
         fallback_model=fallback_model,
+        fallback_model_source=fallback_model_source,
         attempted=fallback_result.provider_attempted,
         reason_category=reason_category,
+        section_id=sid,
         fallback_attempt_started_at_utc=fallback_attempt_started_at_utc,
         fallback_attempt_completed_at_utc=fallback_attempt_completed_at_utc,
     )

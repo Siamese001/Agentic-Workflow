@@ -2,5 +2,8 @@
   "gate_id": "Q2_cyclomatic_complexity_ratchet",
   "count": 1148,
   "seeded_at": "2026-06-27T08:14:53.584766+00:00",
-  "snapshot": "adg_indexed_06272026_0359.sqlite"
+  "snapshot": "adg_indexed_06272026_0359.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-06-27T08:15:27.205964+00:00",
+  "last_run_snapshot": "adg_indexed_06272026_0359.sqlite"
 }

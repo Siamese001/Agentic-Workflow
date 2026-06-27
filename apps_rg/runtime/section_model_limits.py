@@ -187,11 +187,10 @@ def _ssot_default_model(profile_key: str = "external_claude_generator") -> str:
     return model.strip()
 
 
-def _ssot_model_by_section() -> dict[str, str]:
-    """Per-section model overrides from the provider-profiles SSOT
-    (``external_claude_generator.model_by_section`` for Claude-backed sections)."""
+def _ssot_model_by_section(profile_key: str = "external_claude_generator") -> dict[str, str]:
+    """Per-section model overrides from the provider-profiles SSOT."""
     profiles = _provider_profiles()
-    raw = (profiles.get("external_claude_generator") or {}).get("model_by_section") or {}
+    raw = (profiles.get(profile_key) or {}).get("model_by_section") or {}
     if not isinstance(raw, dict):
         return {}
     return {
@@ -217,7 +216,7 @@ def resolve_section_generation_model(
     _ = environ
     sid = str(section_id or "").strip().lower()
     if sid:
-        by_section = _ssot_model_by_section()
+        by_section = _ssot_model_by_section("external_claude_generator")
         if sid in by_section:
             return by_section[sid]
     return _ssot_default_model("external_claude_generator")
@@ -232,10 +231,35 @@ def external_claude_generation_model(environ: Mapping[str, str] | None = None) -
     return resolve_section_generation_model(None, environ)
 
 
-def external_openai_generation_model(environ: Mapping[str, str] | None = None) -> str:
-    """Section-agnostic OpenAI generator model from apps_rg provider_profiles.yaml."""
+def external_openai_generation_model(
+    environ: Mapping[str, str] | None = None,
+    *,
+    section_id: str | None = None,
+) -> str:
+    """OpenAI generator model from apps_rg provider_profiles.yaml.
+
+    Section-aware callers may pass ``section_id`` to pick an explicit
+    ``external_openai_generator.model_by_section`` override. Untagged callers get the
+    shared OpenAI default.
+    """
     _ = environ
+    sid = str(section_id or "").strip().lower()
+    if sid:
+        by_section = _ssot_model_by_section("external_openai_generator")
+        if sid in by_section:
+            return by_section[sid]
     return _ssot_default_model("external_openai_generator")
+
+
+def external_openai_generation_model_source(section_id: str | None = None) -> str:
+    """YAML path that resolved the OpenAI generation model for runtime receipts."""
+    sid = str(section_id or "").strip().lower()
+    if sid and sid in _ssot_model_by_section("external_openai_generator"):
+        return (
+            "apps_rg/config/provider_profiles.yaml:"
+            f"profiles.external_openai_generator.model_by_section.{sid}"
+        )
+    return "apps_rg/config/provider_profiles.yaml:profiles.external_openai_generator.default_model"
 
 
 # Canonical generation model identity for Claude-backed apps_rg sections — resolved from the
@@ -254,6 +278,7 @@ __all__ = [
     "SectionModelSSOTError",
     "external_claude_generation_model",
     "external_openai_generation_model",
+    "external_openai_generation_model_source",
     "resolve_section_generation_model",
     "runtime_limit_float",
     "runtime_limit_mapping",

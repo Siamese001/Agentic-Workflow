@@ -33,7 +33,7 @@ approved_model_lanes:
   fallback_1:
     lane_id: research_synthesis_fallback
     provider: external_openai
-    model: gpt-5.4-mini
+    model: gpt-5.5
     
     modifications:
       max_tokens: 2048

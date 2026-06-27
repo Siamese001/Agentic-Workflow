@@ -50,6 +50,31 @@ def test_writer_emits_contract_consumed_by_audit(tmp_path: Path, monkeypatch) ->
     evidence = audit.build_route_evidence(written, {}, trust_contract_callable_proof=True)
 
     assert contract["routes"][0]["selected_codex_route"] == "raw_mcp_callable"
+    assert contract["status"] == "degraded"
+    assert set(contract["blocker"]["missing_servers"]) == {"adg_sqlite", "GitKraken"}
     assert written["routes"][0]["proof"]["tool"] == "mcp__memory.mem_get_stats"
     assert evidence["servers"]["memory"]["classification"] == "CALLABLE"
     assert evidence["servers"]["memory"]["callable_status"] == "healthy"
+
+
+def test_contract_status_requires_all_always_on_core_routes(tmp_path: Path) -> None:
+    output = tmp_path / "codex_mcp_live_route_contract.json"
+    for server, tool in [
+        ("adg_sqlite", "mcp__adg_sqlite.adg_health"),
+        ("memory", "mcp__memory.mem_get_stats"),
+        ("GitKraken", "mcp__GitKraken.git_status"),
+    ]:
+        contract = mod.write_contract(
+            output=output,
+            server=server,
+            callable_status="healthy",
+            tool=tool,
+            evidence="ok",
+            proved_at="2026-06-27T08:00:00+00:00",
+        )
+
+    assert contract["status"] == "callable"
+    assert contract["blocker"] == {
+        "id": "NONE",
+        "summary": "Required Codex MCP callable-route proofs are recorded.",
+    }

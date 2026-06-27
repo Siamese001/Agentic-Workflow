@@ -23,8 +23,11 @@ profiles:
     profile_id: apps_rg::provider::external_openai_generator::v1
     provider_profile: external_openai
     provider_class: external_api
-    # default_model = OpenAI generation tier for competencies + all narratives.
+    # default_model = shared OpenAI generation tier for non-overridden lanes/backups.
+    # model_by_section = section-specific OpenAI generation overrides.
     default_model: gpt-5.4-mini
+    model_by_section:
+      competencies: gpt-5.5
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
     capabilities:

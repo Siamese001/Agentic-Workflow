@@ -16,7 +16,10 @@ from apps_rg.runtime.providers.availability_fallback import maybe_fallback_to_op
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
-from apps_rg.runtime.section_model_limits import resolve_section_generation_model
+from apps_rg.runtime.section_model_limits import (
+    external_openai_generation_model,
+    resolve_section_generation_model,
+)
 
 
 @dataclass(frozen=True)
@@ -33,12 +36,16 @@ class _CompiledMessagesPrompt:
     run_id: str
 
 
-def build_section_provider_gateway(claude_model: str | None = None) -> ProviderGateway:
+def build_section_provider_gateway(
+    claude_model: str | None = None,
+    openai_model: str | None = None,
+) -> ProviderGateway:
     """Section provider gateway.
 
     ``claude_model`` (when set) pins the EXTERNAL_CLAUDE provider's generation model for this
     call — the per-section tier resolved via ``resolve_section_generation_model``. Empty/None
     falls back to ``ExternalProvider``'s SSOT ``default_model`` for each provider profile.
+    ``openai_model`` mirrors that for section-specific OpenAI generation overrides.
     """
     return ProviderGateway(
         {
@@ -48,6 +55,7 @@ def build_section_provider_gateway(claude_model: str | None = None) -> ProviderG
             ),
             ProviderProfile.EXTERNAL_OPENAI: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+                model=str(openai_model or ""),
             ),
         }
     )
@@ -103,15 +111,21 @@ def call_section_model_provider(
     # model X" lever. The SSOT resolver itself stays YAML-only (per-section -> default); the env
     # override lives here at the call site so it never leaks into ``resolve_section_generation_model``
     # and can only take effect when an operator sets it (it is not autoloaded into the environment).
+    sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()
     claude_model: str | None = None
+    openai_model: str | None = None
     if profile == ProviderProfile.EXTERNAL_CLAUDE:
         operator_pin = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_MODEL", "").strip()
         if operator_pin:
             claude_model = operator_pin
         else:
-            sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()
             claude_model = resolve_section_generation_model(sid or None)
-    result = build_section_provider_gateway(claude_model=claude_model).generate(
+    elif profile == ProviderProfile.EXTERNAL_OPENAI:
+        openai_model = external_openai_generation_model(section_id=sid or None)
+    result = build_section_provider_gateway(
+        claude_model=claude_model,
+        openai_model=openai_model,
+    ).generate(
         profile,
         compiled,
         token_budget=budget,
@@ -124,6 +138,7 @@ def call_section_model_provider(
         token_budget=budget,
         temperature=temperature,
         timeout_seconds=timeout_seconds,
+        section_id=sid or None,
     )
 
 

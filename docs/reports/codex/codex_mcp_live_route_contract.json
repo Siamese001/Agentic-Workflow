@@ -1,12 +1,15 @@
 {
-  "generated_at": "2026-06-21",
+  "generated_at": "2026-06-27",
   "plan_id": "codex-mcp-transport-parity-4b9c7e",
   "wave": "W2",
-  "status": "callable",
-  "blocked_phase": "W2.4",
+  "status": "degraded",
+  "blocked_phase": "ADG-CALLABILITY-PROOF",
   "blocker": {
-    "id": "NONE",
-    "summary": "Required Memory and GitKraken callable-route proofs are recorded."
+    "id": "HOST-MCP-ROUTE-PROOF-MISSING",
+    "summary": "Required Codex MCP callable-route proof is missing.",
+    "missing_servers": [
+      "adg_sqlite"
+    ]
   },
   "always_on_core": [
     "adg_sqlite",
@@ -18,19 +21,20 @@
       "server_id": "adg_sqlite",
       "codex_route": "raw_mcp",
       "selected_codex_route": "raw_mcp_callable",
-      "status": "callable",
-      "contract": "Use adg_health or adg_runtime_info first; live Codex ADG MCP is callable when process hygiene reports a single adg_sqlite process.",
-      "proof": {
-        "proved_at": "2026-06-21T13:30:00-04:00",
-        "tool_calls": [
-          "mcp__adg_sqlite.adg_runtime_info",
-          "mcp__adg_sqlite.adg_status"
-        ],
-        "pid": 35788,
-        "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06192026_0917.sqlite",
-        "snapshot_id": "06192026_0917",
-        "node_count": 184837,
-        "edge_count": 1066263
+      "status": "blocked",
+      "callable_status": "closed_transport",
+      "fallback_message_key": "closed_transport",
+      "contract": "Callable only when backed by explicit active Codex MCP tool-call proof. Process presence, process hygiene, launcher state, and heartbeat files are not callability proof.",
+      "last_failure": {
+        "observed_at": "2026-06-27T04:09:00-04:00",
+        "tool": "mcp__adg_sqlite.adg_health",
+        "error": "Transport closed",
+        "sqlite_fallback": {
+          "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06272026_0359.sqlite",
+          "snapshot_id": "06272026_0359",
+          "node_count": 186171,
+          "edge_count": 1077016
+        }
       }
     },
     {

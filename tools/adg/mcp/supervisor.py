@@ -30,6 +30,8 @@ ADG_SERVER_MARKERS: tuple[str, str, str] = (
 )
 DEFAULT_STATE_RELATIVE_PATH = Path("artifacts/mcp_heartbeat/adg_sqlite_launcher.json")
 REDIS_PROBE_TIMEOUT_SECONDS = 0.25
+CALLABLE_PROOF_ENV = "CODEX_MCP_CALLABLE_ADG_SQLITE"
+CALLABLE_PROOF_HEALTHY = "healthy"
 
 
 def _utc_now() -> str:
@@ -306,25 +308,55 @@ def heartbeat_status(markers: Sequence[str] = ADG_SERVER_MARKERS) -> list[dict[s
     return rows
 
 
+def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[str, Any]:
+    """Return whether the active Codex host proved ADG MCP callability.
+
+    A fresh heartbeat only proves that a Python MCP process is alive. It does
+    not prove that the current Codex stdio route can call tools on that process.
+    The proof bit is deliberately supplied out-of-band after a live
+    mcp__adg_sqlite tool call succeeds in the active session.
+    """
+    resolved_env = env if env is not None else os.environ
+    raw = (resolved_env.get(CALLABLE_PROOF_ENV) or "").strip().lower()
+    return {
+        "env_key": CALLABLE_PROOF_ENV,
+        "status": raw or "absent",
+        "callable": raw == CALLABLE_PROOF_HEALTHY,
+        "required_value": CALLABLE_PROOF_HEALTHY,
+        "proof_required": (
+            "Set CODEX_MCP_CALLABLE_ADG_SQLITE=healthy only after a live "
+            "mcp__adg_sqlite.adg_health or adg_runtime_info call succeeds "
+            "in the active Codex session."
+        ),
+    }
+
+
 def transport_status(
     *,
     state_path: str | Path | None = None,
     require_redis: bool = False,
     env: MutableMapping[str, str] | None = None,
 ) -> dict[str, Any]:
-    preflight = preflight_status(require_redis=require_redis, env=env)
+    resolved_env = env if env is not None else os.environ
+    preflight = preflight_status(require_redis=require_redis, env=resolved_env)
     repo_root = Path(str(preflight["repo_root"]))
     state = read_launcher_state(state_path=state_path, repo_root=repo_root)
     heartbeats = heartbeat_status()
-    open_transport = any(row.get("authoritative") for row in heartbeats)
+    callable_proof = callable_proof_status(resolved_env)
+    heartbeat_authoritative = any(row.get("authoritative") for row in heartbeats)
     fresh_transport = any(row.get("fresh") for row in heartbeats)
+    open_transport = heartbeat_authoritative and bool(callable_proof["callable"])
 
     if open_transport:
         status = "open"
     elif preflight["status"] == "critical":
         status = "blocked"
-    elif fresh_transport:
-        status = "degraded"
+    elif heartbeat_authoritative or fresh_transport:
+        status = (
+            "closed_transport"
+            if callable_proof["status"] == "closed_transport"
+            else "callability_unproven"
+        )
     else:
         status = "closed"
 
@@ -335,6 +367,8 @@ def transport_status(
         "state": state,
         "heartbeats": heartbeats,
         "open": open_transport,
+        "heartbeat_authoritative": heartbeat_authoritative,
+        "callable_proof": callable_proof,
     }
 
 
@@ -424,7 +458,10 @@ def main_check(argv: Sequence[str] | None = None) -> int:
 
 __all__ = [
     "ADG_SERVER_MARKERS",
+    "CALLABLE_PROOF_ENV",
+    "CALLABLE_PROOF_HEALTHY",
     "LAUNCHER_MARKER",
+    "callable_proof_status",
     "configure_process_environment",
     "heartbeat_status",
     "latest_snapshot_status",

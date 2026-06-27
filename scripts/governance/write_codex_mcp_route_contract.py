@@ -92,7 +92,11 @@ def upsert_route(contract: dict[str, Any], route: dict[str, Any]) -> dict[str, A
 
 
 def _refresh_contract_status(contract: dict[str, Any]) -> None:
-    required = {"memory", "GitKraken"}
+    required = [
+        str(server)
+        for server in (contract.get("always_on_core") or DEFAULT_ALWAYS_ON_CORE)
+        if str(server).strip()
+    ]
     proven = {
         str(route.get("server_id"))
         for route in contract.get("routes", [])
@@ -102,7 +106,7 @@ def _refresh_contract_status(contract: dict[str, Any]) -> None:
         and str(route["proof"].get("tool") or "").strip()
         and str(route["proof"].get("evidence") or "").strip()
     }
-    missing = sorted(required - proven)
+    missing = [server for server in required if server not in proven]
     if missing:
         contract["status"] = "degraded"
         contract["blocker"] = {
@@ -114,7 +118,7 @@ def _refresh_contract_status(contract: dict[str, Any]) -> None:
         contract["status"] = "callable"
         contract["blocker"] = {
             "id": "NONE",
-            "summary": "Required Memory and GitKraken callable-route proofs are recorded.",
+            "summary": "Required Codex MCP callable-route proofs are recorded.",
         }
 
 

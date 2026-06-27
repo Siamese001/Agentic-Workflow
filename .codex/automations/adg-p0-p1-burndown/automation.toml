@@ -7,6 +7,7 @@ Run the Agentic-Workflow P0/P1 ADG burndown after the full ADG audit, with the o
 
 Generate-full-ADG dependency gate:
 - This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
+- Treat the [handoff] metadata in this TOML as the machine-checkable dependency contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
 - Do not begin source edits until the latest full ADG audit has completed and released docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json for this run window.
 - The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
 - Run this exact validator before editing:
@@ -86,3 +87,18 @@ cwds = [
 ]
 created_at = 1782207251406
 updated_at = 1782293487839
+
+[handoff]
+chain = "adg-severity-lanes/v1"
+lane = "p0_p1_burndown"
+role = "consumer"
+order = 1
+producer_id = "weekly-adg-audit-and-burndown"
+receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
+validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+consumable_artifact_statuses = ["certified", "repair_ready"]
+requires_direct_artifact_status_source = true
+depends_on = ["weekly-adg-audit-and-burndown"]
+unblocks = ["adg-bcg-p2-next-action"]
+requires_prior_lane_clean = []
+requires_prior_lane_not_actionable = []

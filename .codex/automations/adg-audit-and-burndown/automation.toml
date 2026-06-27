@@ -10,6 +10,7 @@ python tools/adg/run_full_adg_audit.py --mode certification --format both --cont
 
 Downstream release contract:
 - This automation is the generate_full_adg lane and the only producer of the ADG handoff for downstream P0/P1, P2, P3, and any future P4 automation.
+- Treat the [handoff] metadata in this TOML as the machine-checkable release contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
 - The downstream handoff is released only through docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json plus digest-bound timestamped repair_handoff artifacts.
 - Downstream lanes must not consume overwritten latest files as source of truth when timestamped paths exist.
 - Downstream lanes must not regenerate full ADG, rewrite the receipt, or infer repair_ready from prompt context, newest files, rewritten docs mirrors, or stale latest files.
@@ -47,3 +48,18 @@ execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
 created_at = 1781555471411
 updated_at = 1782378925172
+
+[handoff]
+chain = "adg-severity-lanes/v1"
+lane = "generate_full_adg"
+role = "producer"
+order = 0
+producer_id = "weekly-adg-audit-and-burndown"
+receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
+validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+consumable_artifact_statuses = ["certified", "repair_ready"]
+requires_direct_artifact_status_source = true
+depends_on = []
+unblocks = ["adg-p0-p1-burndown"]
+requires_prior_lane_clean = []
+requires_prior_lane_not_actionable = []

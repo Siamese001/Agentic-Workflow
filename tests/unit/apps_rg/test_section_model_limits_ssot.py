@@ -29,6 +29,13 @@ def _yaml_openai_default_model() -> str:
     return data["profiles"]["external_openai_generator"]["default_model"]
 
 
+def _yaml_openai_section_model(section_id: str) -> str:
+    import yaml
+
+    data = yaml.safe_load(sml._PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
+    return data["profiles"]["external_openai_generator"]["model_by_section"][section_id]
+
+
 def test_exported_default_matches_yaml_ssot() -> None:
     """The exported default is resolved from YAML, not duplicated in code."""
     assert sml.DEFAULT_EXTERNAL_CLAUDE_MODEL == _yaml_default_model()
@@ -56,6 +63,26 @@ def test_openai_env_override_is_ignored() -> None:
     assert (
         sml.external_openai_generation_model({"APPS_RG_EXTERNAL_OPENAI_MODEL": "gpt-custom"})
         == _yaml_openai_default_model()
+    )
+
+
+def test_openai_competencies_uses_section_override() -> None:
+    assert (
+        sml.external_openai_generation_model(section_id="competencies")
+        == _yaml_openai_section_model("competencies")
+        == "gpt-5.5"
+    )
+    assert sml.external_openai_generation_model(section_id="headline") == _yaml_openai_default_model()
+
+
+def test_openai_model_source_reports_override_only_when_configured() -> None:
+    assert (
+        sml.external_openai_generation_model_source("competencies")
+        == "apps_rg/config/provider_profiles.yaml:profiles.external_openai_generator.model_by_section.competencies"
+    )
+    assert (
+        sml.external_openai_generation_model_source("headline")
+        == "apps_rg/config/provider_profiles.yaml:profiles.external_openai_generator.default_model"
     )
 
 

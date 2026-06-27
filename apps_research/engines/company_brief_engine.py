@@ -475,7 +475,7 @@ class CompanyBriefEngine(BaseResearchEngine):
     ) -> Dict[str, Any]:
         """Synthesize via the pinned OpenAI model route.
 
-        Uses ``gpt-5.4-mini`` by default, with ``APPS_RESEARCH_BRIEF_MODEL``
+        Uses ``gpt-5.5`` by default, with ``APPS_RESEARCH_BRIEF_MODEL``
         as an explicit override for local experimentation. Returns the parsed
         synthesis dict on success and fails closed on transport, empty-response,
         or parse failure.
@@ -489,7 +489,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 f"{topic}: OpenAI client unavailable: {exc}"
             ) from exc
 
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
         started = time.time()
         try:
             resp = client.chat.completions.create(
@@ -577,7 +577,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
 
         has_research = bool(research_notes.strip())
         gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
@@ -833,7 +833,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 f"targeting brief OpenAI client unavailable: {exc}"
             ) from exc
 
-        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+        model_name = os.environ.get("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5").strip() or "gpt-5.5"
         try:
             resp = client.chat.completions.create(
                 model=model_name,

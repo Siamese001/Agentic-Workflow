@@ -108,7 +108,12 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
             )
 
     monkeypatch.setattr(subject, "ExternalProvider", _FallbackProvider)
-    monkeypatch.setattr(subject, "external_openai_generation_model", lambda: "gpt-ssot")
+    monkeypatch.setattr(subject, "external_openai_generation_model", lambda section_id=None: "gpt-ssot")
+    monkeypatch.setattr(
+        subject,
+        "external_openai_generation_model_source",
+        lambda section_id=None: f"source:{section_id or 'default'}",
+    )
 
     initial = _result(error="External provider HTTP 429: rate_limit_error")
     result = subject.maybe_fallback_to_openai_for_claude_availability(
@@ -117,6 +122,7 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
         token_budget=321,
         temperature=0.11,
         timeout_seconds=9,
+        section_id="competencies",
     )
 
     assert created["provider_profile"] == ProviderProfile.EXTERNAL_OPENAI
@@ -139,6 +145,8 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
     assert receipt["initial_attempt_completed_at_utc"] == "2026-06-20T16:00:01+00:00"
     assert receipt["fallback_provider_actual"] == ProviderProfile.EXTERNAL_OPENAI.value
     assert receipt["fallback_model"] == "gpt-ssot"
+    assert receipt["fallback_model_source"] == "source:competencies"
+    assert receipt["fallback_section_id"] == "competencies"
     assert receipt["fallback_attempt_started_at_utc"]
     assert receipt["fallback_attempt_completed_at_utc"]
     assert receipt["fallback_output_accepted"] is True
@@ -171,7 +179,7 @@ def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(mon
             )
 
     monkeypatch.setattr(subject, "ExternalProvider", _BlockedFallbackProvider)
-    monkeypatch.setattr(subject, "external_openai_generation_model", lambda: "gpt-ssot")
+    monkeypatch.setattr(subject, "external_openai_generation_model", lambda section_id=None: "gpt-ssot")
 
     initial = _result(error="External provider HTTP 503: unavailable")
     result = subject.maybe_fallback_to_openai_for_claude_availability(

@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: '06262026_2302'
-  generated_at_utc: '2026-06-27T03:19:32+00:00'
-  snapshot_ts: '2026-06-27T03:16:59.598049+00:00'
-  commit_sha: 0e18a84c1aefc60c5ab95ef27260c92b646545c9
-  repo_state_hash: fe6970422d92a294
+  run_id: 06272026_0359
+  generated_at_utc: '2026-06-27T08:18:55+00:00'
+  snapshot_ts: '2026-06-27T08:15:41.740677+00:00'
+  commit_sha: c03e3b59723a673a542650fc732493672dbaa2e4
+  repo_state_hash: ca4e14cd3c558ae8
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
   degradation_reasons: []
@@ -102,7 +102,7 @@ patient_size:
       file_count: 2030
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: '2026-06-27T03:16:59.598049+00:00'
+  snapshot_ts: '2026-06-27T08:15:41.740677+00:00'
 executive_decision:
   verdict: REPORT_INCONSISTENT
   recommendation: Repair report consistency first; the executive order of work is
@@ -186,18 +186,18 @@ lens_1_health_gates:
     carrying accepted debt; they should not hide report inconsistency or runtime failures.
   summary:
     total_gates: 48
-    clear_gates: 25
-    track_gates: 22
+    clear_gates: 28
+    track_gates: 19
     fix_gates: 1
     overall_verdict: BLOCKED
     executive_read: FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR
       needs no action.
   buckets:
   - bucket: CLEAR
-    count: 25
+    count: 28
     plain_meaning: No action now.
   - bucket: TRACK
-    count: 22
+    count: 19
     plain_meaning: Known debt or advisory inventory; burn down after red gates.
   - bucket: FIX
     count: 1
@@ -217,11 +217,11 @@ lens_1_health_gates:
       fix the regression — re-baseline only with explicit sign-off.'
     done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
   managed_debt:
-    ratchet_floor_records: 21459
+    ratchet_floor_records: 21464
     open_non_ratchet_records: 841
     top_ratchets:
     - gate_id: S4_unused_imports_ratchet
-      records: 10747
+      records: 10749
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: C3_silent_writes_ratchet
@@ -3390,8 +3390,7 @@ lens_5_graphdb_mv_decision_impact:
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
       work now.
     action: Use in current fix slice.
-    related_gates:
-    - H2_fanin_collapse_ratchet
+    related_gates: []
     related_scopes: []
   - signal: mv_hotspot_coverage_risk
     signal_type: materialized_view
@@ -3576,7 +3575,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_snapshot_integrity_anomalies
     signal_type: materialized_view
-    row_count: 396597
+    row_count: 396599
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -3706,7 +3705,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: graphdb_projection
     signal_type: graphdb_report
-    row_count: 621573
+    row_count: 621591
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Parsed P7 structural context; promoted only when it overlaps a
@@ -3898,9 +3897,9 @@ canonical_next_best_actions:
       on its own terms.
     business_reason: This gate still carries decision-grade risk and should be reviewed
       on its own terms.
-    evidence: 'ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability,
+    evidence: 'ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability,
       +13 above baseline 2786. Breakout unavailable.'
-    technical_reason: 'ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799
+    technical_reason: 'ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799
       G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.'
     next_step: Review the Production-layer modules with no import path from any L0
       node (orphans). evidence. Investigate evidence before changing code; the current
@@ -4034,8 +4033,8 @@ canonical_next_best_actions:
     why_now: Accepted baseline debt should fall after red gates are clear.
     why_it_matters: Accepted baseline debt should fall after red gates are clear.
     business_reason: Accepted baseline debt should fall after red gates are clear.
-    evidence: 10,747 floor-row(s) remain on the ratchet gate.
-    technical_reason: 10,747 floor-row(s) remain on the ratchet gate.
+    evidence: 10,749 floor-row(s) remain on the ratchet gate.
+    technical_reason: 10,749 floor-row(s) remain on the ratchet gate.
     next_step: Burn down the ratchet after the current red gates clear.
     why_this_rank: Burn down the ratchet after the current red gates clear.
     decision: burn_down_ratchet
@@ -4093,7 +4092,7 @@ after_green_plan:
   - order: 1
     work_class: ratchet_burndown
     scope: S4_unused_imports_ratchet
-    records: 10747
+    records: 10749
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -4139,7 +4138,7 @@ artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: artifacts/adg/adg_gate_results_20260627_031659.json
+    path: artifacts/adg/adg_gate_results_20260627_081541.json
     exists: true
     loaded: true
     stale: false
@@ -4149,7 +4148,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: action_queue
-    path: artifacts/adg/adg_action_queue_06262026_2302.json
+    path: artifacts/adg/adg_action_queue_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4159,7 +4158,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: artifacts/adg/adg_review_template_06262026_2302.json
+    path: artifacts/adg/adg_review_template_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4191,7 +4190,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: artifacts/adg/adg_indexed_06262026_2302.sqlite
+    path: artifacts/adg/adg_indexed_06272026_0359.sqlite
     exists: true
     loaded: false
     stale: false
@@ -4202,7 +4201,7 @@ artifact_usage_matrix:
     rationale: Existing non-JSON artifact or SQLite snapshot mapped to a decision
       lens.
   - artifact_key: generation_manifest
-    path: artifacts/adg/adg_generation_manifest_06262026_2302.json
+    path: artifacts/adg/adg_generation_manifest_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4212,7 +4211,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: structural_outputs
-    path: artifacts/adg/adg_structural_outputs_06262026_2302.json
+    path: artifacts/adg/adg_structural_outputs_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4222,7 +4221,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: refactor_accelerator
-    path: artifacts/adg/adg_refactor_accelerator_06262026_2302.json
+    path: artifacts/adg/adg_refactor_accelerator_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4232,7 +4231,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_queries
-    path: artifacts/adg/adg_graphdb_queries_06262026_2302.json
+    path: artifacts/adg/adg_graphdb_queries_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4242,7 +4241,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: runtime_spine
-    path: artifacts/adg/adg_runtime_spine_06262026_2302.json
+    path: artifacts/adg/adg_runtime_spine_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4252,7 +4251,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_projection
-    path: artifacts/adg/adg_graphdb_projection_06262026_2302.json
+    path: artifacts/adg/adg_graphdb_projection_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4264,7 +4263,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_metadata
-    path: artifacts/adg/adg_graphdb_metadata_06262026_2302.json
+    path: artifacts/adg/adg_graphdb_metadata_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4276,7 +4275,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_index
-    path: artifacts/adg/adg_graphdb_index_06262026_2302.json
+    path: artifacts/adg/adg_graphdb_index_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4300,7 +4299,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: p0_wave_plan
-    path: artifacts/adg/issues/p0_remediation_wave_plan_06262026_2302.json
+    path: artifacts/adg/issues/p0_remediation_wave_plan_06272026_0359.json
     exists: true
     loaded: true
     stale: false
@@ -4711,7 +4710,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_snapshot_integrity_anomalies
-    row_count: 396597
+    row_count: 396599
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -4950,7 +4949,7 @@ dead_code_report:
       status_label: Deletion status
       table_limit: 6
       technical_read:
-      - 'ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)'
+      - 'ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)'
       - 'Dead code candidates: 965'
       - 'Dead imports: 965'
       - 'Unresolved imports: 483'
@@ -5116,8 +5115,8 @@ dead_code_report:
       dead_imports: 965
       executive_read: ADG found confirmed dead-code targets; remove the most certain
         ones first, then clean up uncertainty and noisy diagnostics.
-      first_party_low_confidence_ratio: 1.5692007797270955
-      inferred_symbol_ratio: 10.152444446994428
+      first_party_low_confidence_ratio: 1.568843992594277
+      inferred_symbol_ratio: 10.1519202304047
       unresolved_imports: 483
       why_this_order:
       - Confirmed dead code is the highest-confidence waste and should be removed
@@ -5209,8 +5208,8 @@ dead_code_report:
     executive_metrics:
       dead_code_count: 965
       dead_import_count: 965
-      first_party_low_confidence_ratio: 1.5692007797270955
-      inferred_symbol_ratio: 10.152444446994428
+      first_party_low_confidence_ratio: 1.568843992594277
+      inferred_symbol_ratio: 10.1519202304047
       l4_unresolved_import_count: 0
       low_confidence_count: 483
       unresolved_import_count: 483
@@ -5241,11 +5240,11 @@ dead_code_report:
       L_TEST: 289
       L_TOOLS: 2338
       L_UNKNOWN: 216
-    inferred_symbol_ratio: 10.152444446994428
+    inferred_symbol_ratio: 10.1519202304047
     total_inferred_symbols: 17695
-    total_symbols: 174293
+    total_symbols: 174302
   low_confidence_zones:
-    first_party_low_confidence_ratio: 1.5692007797270955
+    first_party_low_confidence_ratio: 1.568843992594277
     governance_low_confidence_ratio: 0.0
     low_conf_by_entity_type:
       symbol: 483
@@ -5259,8 +5258,8 @@ dead_code_report:
       - 483
     total_low_confidence: 483
   source:
-    adg_snapshot: artifacts/adg/adg_indexed_06262026_2302.sqlite
-    adg_snapshot_ts: '06262026_2302'
+    adg_snapshot: artifacts/adg/adg_indexed_06272026_0359.sqlite
+    adg_snapshot_ts: 06272026_0359
     dead_code_signal_sources:
     - overlay_violations.category=dead_import_resolved
     - mv_dead_import_hotspots_overlay
@@ -5268,11 +5267,11 @@ dead_code_report:
     - edges.relation_type=dead_code_candidate
   status: PASS
   summary:
-    adg_snapshot: artifacts/adg/adg_indexed_06262026_2302.sqlite
-    adg_snapshot_ts: '06262026_2302'
+    adg_snapshot: artifacts/adg/adg_indexed_06272026_0359.sqlite
+    adg_snapshot_ts: 06272026_0359
     executive_ready: true
-    first_party_low_confidence_ratio: 1.5692007797270955
-    inferred_symbol_ratio: 10.152444446994428
+    first_party_low_confidence_ratio: 1.568843992594277
+    inferred_symbol_ratio: 10.1519202304047
     l4_unresolved_imports: 0
     total_dead_code_candidates: 965
     total_dead_imports: 965
@@ -5325,8 +5324,8 @@ deprecation_deletion_plan:
     dead_code_candidates: 965
     dead_imports: 965
     unresolved_imports: 483
-    first_party_low_confidence_ratio: 1.5692007797270955
-    inferred_symbol_ratio: 10.152444446994428
+    first_party_low_confidence_ratio: 1.568843992594277
+    inferred_symbol_ratio: 10.1519202304047
     cleanup_candidate_count: 18
   brief:
     title: BCG Deletion Brief
@@ -5335,7 +5334,7 @@ deprecation_deletion_plan:
     business_read: ADG found confirmed dead-code targets; remove the most certain
       ones first, then clean up uncertainty and noisy diagnostics.
     technical_read:
-    - 'ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)'
+    - 'ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)'
     - 'Dead code candidates: 965'
     - 'Dead imports: 965'
     - 'Unresolved imports: 483'
@@ -5767,12 +5766,12 @@ audit_notes:
     - mismatch_type: meta_count_mismatch
       ref_id: total_edges
       file: ''
-      detail: meta=1076915 actual=1077005
+      detail: meta=1076926 actual=1077016
       delta: 90
     - mismatch_type: meta_count_mismatch
       ref_id: total_nodes
       file: ''
-      detail: meta=186161 actual=186162
+      detail: meta=186170 actual=186171
       delta: 1
   notes:
   - Guardian exceptions are audit math only; they do not automatically explain away
@@ -5796,22 +5795,22 @@ honest_bottom_line:
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: artifacts/adg/adg_gate_results_20260627_031659.json
-    action_queue: artifacts/adg/adg_action_queue_06262026_2302.json
-    review_template: artifacts/adg/adg_review_template_06262026_2302.json
+    gate_results: artifacts/adg/adg_gate_results_20260627_081541.json
+    action_queue: artifacts/adg/adg_action_queue_06272026_0359.json
+    review_template: artifacts/adg/adg_review_template_06272026_0359.json
     burndown_table: artifacts/adg/adg_burndown_table.json
     burndown_report: artifacts/adg/adg_burndown_report.md
-    sqlite_snapshot: artifacts/adg/adg_indexed_06262026_2302.sqlite
-    generation_manifest: artifacts/adg/adg_generation_manifest_06262026_2302.json
-    structural_outputs: artifacts/adg/adg_structural_outputs_06262026_2302.json
-    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_06262026_2302.json
-    graphdb_queries: artifacts/adg/adg_graphdb_queries_06262026_2302.json
-    runtime_spine: artifacts/adg/adg_runtime_spine_06262026_2302.json
-    graphdb_projection: artifacts/adg/adg_graphdb_projection_06262026_2302.json
-    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_06262026_2302.json
-    graphdb_index: artifacts/adg/adg_graphdb_index_06262026_2302.json
+    sqlite_snapshot: artifacts/adg/adg_indexed_06272026_0359.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_06272026_0359.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_06272026_0359.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_06272026_0359.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_06272026_0359.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_06272026_0359.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_06272026_0359.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_06272026_0359.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_06272026_0359.json
     graph_watchlist: ''
-    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_06262026_2302.json
+    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_06272026_0359.json
     dead_code_report: artifacts/adg/dead_code_zone_control_report_latest.json
   loaded_status:
     missing:
@@ -6162,8 +6161,8 @@ bcg_findings:
     executive order of work is not trustworthy until graph and report agree. Repair
     report consistency before treating blocker order as authoritative.'
   technical_read:
-  - 'ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)'
-  - 'FIX gates: 1; TRACK gates: 22'
+  - 'ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)'
+  - 'FIX gates: 1; TRACK gates: 19'
   - Runtime proof is present and FAILING — treat as a quality failure to fix.
   - Testing is a control gap where agentic_core/L5_safety/reasoning/hierarchy_healer.py
     lacks regression coverage; fund tests with the relevant fix slice, not as a generic
@@ -6208,9 +6207,9 @@ bcg_findings:
       on its own terms.
     business_reason: This gate still carries decision-grade risk and should be reviewed
       on its own terms.
-    evidence: 'ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability,
+    evidence: 'ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability,
       +13 above baseline 2786. Breakout unavailable.'
-    technical_reason: 'ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799
+    technical_reason: 'ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799
       G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.'
     next_step: Review the Production-layer modules with no import path from any L0
       node (orphans). evidence. Investigate evidence before changing code; the current
@@ -6292,8 +6291,8 @@ bcg_findings:
     work: Burn down ratchet S4_unused_imports_ratchet
     why_it_matters: Accepted baseline debt should fall after red gates are clear.
     business_reason: Accepted baseline debt should fall after red gates are clear.
-    evidence: 10,747 floor-row(s) remain on the ratchet gate.
-    technical_reason: 10,747 floor-row(s) remain on the ratchet gate.
+    evidence: 10,749 floor-row(s) remain on the ratchet gate.
+    technical_reason: 10,749 floor-row(s) remain on the ratchet gate.
     next_step: Burn down the ratchet after the current red gates clear.
     why_this_rank: Burn down the ratchet after the current red gates clear.
     decision: burn_down_ratchet

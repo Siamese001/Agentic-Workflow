@@ -31,7 +31,7 @@ def _automation_toml(automation_id: str, prompt: str, root: Path) -> str:
             f'prompt = "{escaped_prompt}"',
             'status = "ACTIVE"',
             'rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
-            'model = "gpt-5.4-mini"',
+            'model = "gpt-5.5"',
             'reasoning_effort = "xhigh"',
             'execution_environment = "local"',
             f'cwds = ["{escaped_root}"]',

@@ -50,7 +50,11 @@ def test_build_section_provider_gateway_registers_external_profiles() -> None:
 
 def test_call_section_model_provider_threads_messages_and_overrides(monkeypatch) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
+    monkeypatch.setattr(
+        subject,
+        "build_section_provider_gateway",
+        lambda claude_model=None, openai_model=None: gateway,
+    )
 
     result = subject.call_section_model_provider(
         "claude",
@@ -92,7 +96,11 @@ def test_call_section_model_provider_falls_back_to_prompt_and_max_output_tokens(
     monkeypatch,
 ) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
+    monkeypatch.setattr(
+        subject,
+        "build_section_provider_gateway",
+        lambda claude_model=None, openai_model=None: gateway,
+    )
 
     subject.call_section_model_provider(
         ProviderProfile.EXTERNAL_OPENAI,
@@ -118,7 +126,11 @@ def test_call_section_model_provider_falls_back_to_prompt_and_max_output_tokens(
 
 def test_call_section_model_provider_explicit_token_budget_wins(monkeypatch) -> None:
     gateway = _CapturingGateway()
-    monkeypatch.setattr(subject, "build_section_provider_gateway", lambda claude_model=None: gateway)
+    monkeypatch.setattr(
+        subject,
+        "build_section_provider_gateway",
+        lambda claude_model=None, openai_model=None: gateway,
+    )
 
     subject.call_section_model_provider(
         None,
@@ -133,4 +145,29 @@ def test_call_section_model_provider_explicit_token_budget_wins(monkeypatch) -> 
     call = gateway.calls[0]
     assert call["profile"] == ProviderProfile.EXTERNAL_CLAUDE
     assert call["token_budget"] == 77
+
+
+def test_call_section_model_provider_pins_openai_competencies_model(monkeypatch) -> None:
+    gateway = _CapturingGateway()
+    captured: dict[str, object] = {}
+
+    def fake_build(claude_model=None, openai_model=None):
+        captured["claude_model"] = claude_model
+        captured["openai_model"] = openai_model
+        return gateway
+
+    monkeypatch.setattr(subject, "build_section_provider_gateway", fake_build)
+
+    subject.call_section_model_provider(
+        ProviderProfile.EXTERNAL_OPENAI,
+        {
+            "_reasoning_section_lane": "competencies",
+            "prompt": "Use competencies override.",
+            "max_tokens": 10,
+        },
+    )
+
+    assert captured["claude_model"] is None
+    assert captured["openai_model"] == "gpt-5.5"
+    assert gateway.calls[0]["profile"] == ProviderProfile.EXTERNAL_OPENAI
 

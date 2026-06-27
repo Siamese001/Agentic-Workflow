@@ -1,16 +1,17 @@
 # Codex MCP Live Route Contract
 
-Generated: 2026-06-10  
+Generated: 2026-06-27  
 Plan: `codex-mcp-transport-parity-4b9c7e` W2  
 Scope: live `.mcp.json` server parity routes for Codex.
 
 ## W2 Result
 
-W2 is **partially complete and blocked on W2.3**.
+W2 is **partially complete and blocked on ADG callability proof**.
 
 - **W2.1 complete**: Memory, Vector DB, GitKraken, and DeepWiki have documented Codex route status and fallback semantics.
 - **W2.2 complete**: Notion, Context7, and Playwright have documented raw-vs-plugin/substitute route contracts.
-- **W2.3 blocked**: ADG transport is open and healthy, but Redis hit payloads are corrupt in the live Codex MCP because the server is running from `C:\Git\Agentic-Workflow-FRESH`, while the Redis decode/Redis-3 compatibility fix exists in the `C:\Git\eval-harness` worktree.
+- **W2.3 historical blocker**: ADG was previously blocked by Redis hit payload parity; that is superseded for this snapshot by the active closed-transport blocker below.
+- **2026-06-27 RCA update**: ADG backend preflight is healthy, but the active Codex `mcp__adg_sqlite.adg_health` route returns `Transport closed`. Process presence, launcher state, and heartbeat files are no longer accepted as callability proof.
 
 ## Evidence Snapshot
 
@@ -26,27 +27,32 @@ W2 is **partially complete and blocked on W2.3**.
 | Vector local script | `python -m py_compile tools/mcp/vector_db_server.py` exits 0 |
 | Context7 local command | `npx -y @upstash/context7-mcp --help` exits 0 |
 | Playwright local command | `npx -y @playwright/mcp --help` exits 0 |
+| 2026-06-27 live ADG tool call | `mcp__adg_sqlite.adg_health` returns `Transport closed` |
+| 2026-06-27 ADG backend preflight | snapshot `06272026_0359`, `186171` nodes, `1077016` edges, Redis healthy |
 
 ## Route Contracts
 
 ### `adg_sqlite`
 
 **Claude route**: raw MCP from root `.mcp.json`, with SQLite canonical and Redis optional cache.  
-**Codex route**: raw `mcp__adg_sqlite` tools are exposed and callable.  
-**Current status**: transport green, Redis payload parity red.
+**Codex route**: raw `mcp__adg_sqlite` tools are exposed, but the active route is blocked until a live tool call succeeds.  
+**Current status**: `Transport closed`; backend SQLite/Redis preflight green.
 
 Contract:
 - Use `adg_health` first.
+- Treat ADG as callable only after explicit active-session tool-call proof, normally `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` set after `mcp__adg_sqlite.adg_health` or `adg_runtime_info` succeeds.
+- Do not treat process presence, duplicate-process hygiene, launcher state, or heartbeat files as Codex tool callability proof.
 - Treat `backend_used=redis` payloads as valid only after the live MCP code includes the Redis hash decode fix.
 - If Redis returns encoded `__json__:` values, classify ADG cache as `DEGRADED_FALLBACK` and force SQLite-backed query or clear/re-warm affected Redis keys after code parity is restored.
 
 Blocker:
-- `ADG-LIVE-CODE-MISMATCH`: `.mcp.json` launches ADG from `${AGENTIC_REPO_ROOT}`, currently `C:\Git\Agentic-Workflow-FRESH`, not the `eval-harness` worktree where the patch lives.
+- `ADG-CLOSED-TRANSPORT`: the active Codex MCP tool route returns `Transport closed` even though out-of-band ADG preflight is healthy.
 
 Valid unblock paths:
-1. Merge/apply the ADG Redis fixes from `eval-harness` into `C:\Git\Agentic-Workflow-FRESH`, then restart Codex MCP.
-2. Relaunch Codex with `AGENTIC_REPO_ROOT=C:\Git\eval-harness`, then restart Codex MCP.
-3. Temporarily delete and re-warm affected Redis keys only after the live server is running patched decode/write code.
+1. Restart or reattach the Codex MCP host/session so the `adg_sqlite` stdio route is fresh.
+2. Verify `mcp__adg_sqlite.adg_health` or `mcp__adg_sqlite.adg_runtime_info` succeeds in the active Codex session.
+3. Set `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` only in that same verification context.
+4. If Redis payload corruption reappears after callability is restored, apply the Redis decode/write remediation separately.
 
 ### `memory`
 

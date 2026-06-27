@@ -9,7 +9,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 1,
-        "records": 10747,
+        "records": 10749,
         "scope": "S4_unused_imports_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -73,7 +73,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_gate_results_20260627_031659.json",
+        "path": "artifacts/adg/adg_gate_results_20260627_081541.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -86,7 +86,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_action_queue_06262026_2302.json",
+        "path": "artifacts/adg/adg_action_queue_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -99,7 +99,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_review_template_06262026_2302.json",
+        "path": "artifacts/adg/adg_review_template_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -138,7 +138,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": false,
-        "path": "artifacts/adg/adg_indexed_06262026_2302.sqlite",
+        "path": "artifacts/adg/adg_indexed_06272026_0359.sqlite",
         "rationale": "Existing non-JSON artifact or SQLite snapshot mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -151,7 +151,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_generation_manifest_06262026_2302.json",
+        "path": "artifacts/adg/adg_generation_manifest_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -164,7 +164,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_structural_outputs_06262026_2302.json",
+        "path": "artifacts/adg/adg_structural_outputs_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -177,7 +177,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_refactor_accelerator_06262026_2302.json",
+        "path": "artifacts/adg/adg_refactor_accelerator_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -190,7 +190,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_queries_06262026_2302.json",
+        "path": "artifacts/adg/adg_graphdb_queries_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -203,7 +203,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_runtime_spine_06262026_2302.json",
+        "path": "artifacts/adg/adg_runtime_spine_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -216,7 +216,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_projection_06262026_2302.json",
+        "path": "artifacts/adg/adg_graphdb_projection_06272026_0359.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -229,7 +229,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_metadata_06262026_2302.json",
+        "path": "artifacts/adg/adg_graphdb_metadata_06272026_0359.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -242,7 +242,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_index_06262026_2302.json",
+        "path": "artifacts/adg/adg_graphdb_index_06272026_0359.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -268,7 +268,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/issues/p0_remediation_wave_plan_06262026_2302.json",
+        "path": "artifacts/adg/issues/p0_remediation_wave_plan_06272026_0359.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -297,14 +297,14 @@
       "errors": [
         {
           "delta": 90,
-          "detail": "meta=1076915 actual=1077005",
+          "detail": "meta=1076926 actual=1077016",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_edges"
         },
         {
           "delta": 1,
-          "detail": "meta=186161 actual=186162",
+          "detail": "meta=186170 actual=186171",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_nodes"
@@ -417,13 +417,13 @@
         ],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "evidence": "ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
+        "evidence": "ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
         "move": "Address G_REACH_l0_reachability",
         "next_step": "Review the Production-layer modules with no import path from any L0 node (orphans). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption.",
         "priority": 2,
         "rank": 2,
         "scope": "G_REACH_l0_reachability",
-        "technical_reason": "ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
+        "technical_reason": "ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
         "why_it_matters": "This gate still carries decision-grade risk and should be reviewed on its own terms.",
         "why_this_rank": "Review the Production-layer modules with no import path from any L0 node (orphans). evidence. Investigate evidence before changing code; the current choices are Investigate evidence, Fix, Adapter/interface, Guardian exemption.",
         "work": "Address G_REACH_l0_reachability"
@@ -483,13 +483,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "10,747 floor-row(s) remain on the ratchet gate.",
+        "evidence": "10,749 floor-row(s) remain on the ratchet gate.",
         "move": "Burn down ratchet S4_unused_imports_ratchet",
         "next_step": "Burn down the ratchet after the current red gates clear.",
         "priority": 5,
         "rank": 5,
         "scope": "S4_unused_imports_ratchet",
-        "technical_reason": "10,747 floor-row(s) remain on the ratchet gate.",
+        "technical_reason": "10,749 floor-row(s) remain on the ratchet gate.",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
         "why_this_rank": "Burn down the ratchet after the current red gates clear.",
         "work": "Burn down ratchet S4_unused_imports_ratchet"
@@ -503,8 +503,8 @@
     "status_label": "Decision status",
     "table_limit": 4,
     "technical_read": [
-      "ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)",
-      "FIX gates: 1; TRACK gates: 22",
+      "ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)",
+      "FIX gates: 1; TRACK gates: 19",
       "Runtime proof is present and FAILING \u2014 treat as a quality failure to fix.",
       "Testing is a control gap where agentic_core/L5_safety/reasoning/hierarchy_healer.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.",
       "GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.",
@@ -557,7 +557,7 @@
         ],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "evidence": "ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
+        "evidence": "ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
         "evidence_used": [
           {
             "decision_effect": "This gate still carries decision-grade risk and should be reviewed on its own terms.",
@@ -570,7 +570,7 @@
         "priority": 1,
         "rank": 1,
         "scope": "G_REACH_l0_reachability",
-        "technical_reason": "ADG `06262026_2302`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
+        "technical_reason": "ADG `06272026_0359`: `G_REACH_l0_reachability` found 2,799 G_REACH_l0_reachability, +13 above baseline 2786. Breakout unavailable.",
         "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
         "timing": "now",
         "why_it_matters": "This gate still carries decision-grade risk and should be reviewed on its own terms.",
@@ -656,7 +656,7 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "10,747 floor-row(s) remain on the ratchet gate.",
+        "evidence": "10,749 floor-row(s) remain on the ratchet gate.",
         "evidence_used": [
           {
             "decision_effect": "Accepted baseline debt should fall after red gates are clear.",
@@ -669,7 +669,7 @@
         "priority": 4,
         "rank": 4,
         "scope": "S4_unused_imports_ratchet",
-        "technical_reason": "10,747 floor-row(s) remain on the ratchet gate.",
+        "technical_reason": "10,749 floor-row(s) remain on the ratchet gate.",
         "testing_requirement": "Add tests only when touched scope overlaps hotspot.",
         "timing": "after_green",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
@@ -861,7 +861,7 @@
         "status_label": "Deletion status",
         "table_limit": 6,
         "technical_read": [
-          "ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)",
+          "ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)",
           "Dead code candidates: 965",
           "Dead imports: 965",
           "Unresolved imports: 483",
@@ -1018,8 +1018,8 @@
         "dead_code_candidates": 965,
         "dead_imports": 965,
         "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-        "first_party_low_confidence_ratio": 1.5692007797270955,
-        "inferred_symbol_ratio": 10.152444446994428,
+        "first_party_low_confidence_ratio": 1.568843992594277,
+        "inferred_symbol_ratio": 10.1519202304047,
         "unresolved_imports": 483,
         "why_this_order": [
           "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -1161,8 +1161,8 @@
       "executive_metrics": {
         "dead_code_count": 965,
         "dead_import_count": 965,
-        "first_party_low_confidence_ratio": 1.5692007797270955,
-        "inferred_symbol_ratio": 10.152444446994428,
+        "first_party_low_confidence_ratio": 1.568843992594277,
+        "inferred_symbol_ratio": 10.1519202304047,
         "l4_unresolved_import_count": 0,
         "low_confidence_count": 483,
         "unresolved_import_count": 483
@@ -1198,12 +1198,12 @@
         "L_TOOLS": 2338,
         "L_UNKNOWN": 216
       },
-      "inferred_symbol_ratio": 10.152444446994428,
+      "inferred_symbol_ratio": 10.1519202304047,
       "total_inferred_symbols": 17695,
-      "total_symbols": 174293
+      "total_symbols": 174302
     },
     "low_confidence_zones": {
-      "first_party_low_confidence_ratio": 1.5692007797270955,
+      "first_party_low_confidence_ratio": 1.568843992594277,
       "governance_low_confidence_ratio": 0.0,
       "low_conf_by_entity_type": {
         "symbol": 483
@@ -1223,8 +1223,8 @@
       "total_low_confidence": 483
     },
     "source": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_06262026_2302.sqlite",
-      "adg_snapshot_ts": "06262026_2302",
+      "adg_snapshot": "artifacts/adg/adg_indexed_06272026_0359.sqlite",
+      "adg_snapshot_ts": "06272026_0359",
       "dead_code_signal_sources": [
         "overlay_violations.category=dead_import_resolved",
         "mv_dead_import_hotspots_overlay",
@@ -1234,11 +1234,11 @@
     },
     "status": "PASS",
     "summary": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_06262026_2302.sqlite",
-      "adg_snapshot_ts": "06262026_2302",
+      "adg_snapshot": "artifacts/adg/adg_indexed_06272026_0359.sqlite",
+      "adg_snapshot_ts": "06272026_0359",
       "executive_ready": true,
-      "first_party_low_confidence_ratio": 1.5692007797270955,
-      "inferred_symbol_ratio": 10.152444446994428,
+      "first_party_low_confidence_ratio": 1.568843992594277,
+      "inferred_symbol_ratio": 10.1519202304047,
       "l4_unresolved_imports": 0,
       "total_dead_code_candidates": 965,
       "total_dead_imports": 965,
@@ -1551,7 +1551,7 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)",
+        "ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)",
         "Dead code candidates: 965",
         "Dead imports: 965",
         "Unresolved imports: 483",
@@ -1805,8 +1805,8 @@
       "dead_code_candidates": 965,
       "dead_imports": 965,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5692007797270955,
-      "inferred_symbol_ratio": 10.152444446994428,
+      "first_party_low_confidence_ratio": 1.568843992594277,
+      "inferred_symbol_ratio": 10.1519202304047,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -2256,12 +2256,12 @@
     "buckets": [
       {
         "bucket": "CLEAR",
-        "count": 25,
+        "count": 28,
         "plain_meaning": "No action now."
       },
       {
         "bucket": "TRACK",
-        "count": 22,
+        "count": 19,
         "plain_meaning": "Known debt or advisory inventory; burn down after red gates."
       },
       {
@@ -2273,13 +2273,13 @@
     "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
     "managed_debt": {
       "open_non_ratchet_records": 841,
-      "ratchet_floor_records": 21459,
+      "ratchet_floor_records": 21464,
       "top_ratchets": [
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "S4_unused_imports_ratchet",
-          "records": 10747
+          "records": 10749
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
@@ -2323,12 +2323,12 @@
     ],
     "status": "present",
     "summary": {
-      "clear_gates": 25,
+      "clear_gates": 28,
       "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.",
       "fix_gates": 1,
       "overall_verdict": "BLOCKED",
       "total_gates": 48,
-      "track_gates": 22
+      "track_gates": 19
     },
     "why_it_matters": "Health gates tell leaders whether the run is green, blocked, or carrying accepted debt; they should not hide report inconsistency or runtime failures."
   },
@@ -5703,9 +5703,7 @@
       {
         "action": "Use in current fix slice.",
         "decision_role": "used_now",
-        "related_gates": [
-          "H2_fanin_collapse_ratchet"
-        ],
+        "related_gates": [],
         "related_scopes": [],
         "row_count": 11791,
         "signal": "mv_hotspot_centrality",
@@ -5918,7 +5916,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 396597,
+        "row_count": 396599,
         "signal": "mv_snapshot_integrity_anomalies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -6061,7 +6059,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 621573,
+        "row_count": 621591,
         "signal": "graphdb_projection",
         "signal_type": "graphdb_report",
         "used_inline": false,
@@ -6651,7 +6649,7 @@
         "mv_name": "mv_snapshot_integrity_anomalies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 396597,
+        "row_count": 396599,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -6819,7 +6817,7 @@
     },
     "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.",
     "production_python_files": 23646,
-    "snapshot_ts": "2026-06-27T03:16:59.598049+00:00",
+    "snapshot_ts": "2026-06-27T08:15:41.740677+00:00",
     "status": "present",
     "test_python_files": 5214,
     "tests": {
@@ -6933,23 +6931,23 @@
   },
   "raw_inputs": {
     "artifacts": {
-      "action_queue": "artifacts/adg/adg_action_queue_06262026_2302.json",
+      "action_queue": "artifacts/adg/adg_action_queue_06272026_0359.json",
       "burndown_report": "artifacts/adg/adg_burndown_report.md",
       "burndown_table": "artifacts/adg/adg_burndown_table.json",
       "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-      "gate_results": "artifacts/adg/adg_gate_results_20260627_031659.json",
-      "generation_manifest": "artifacts/adg/adg_generation_manifest_06262026_2302.json",
+      "gate_results": "artifacts/adg/adg_gate_results_20260627_081541.json",
+      "generation_manifest": "artifacts/adg/adg_generation_manifest_06272026_0359.json",
       "graph_watchlist": "",
-      "graphdb_index": "artifacts/adg/adg_graphdb_index_06262026_2302.json",
-      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_06262026_2302.json",
-      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_06262026_2302.json",
-      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_06262026_2302.json",
-      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_06262026_2302.json",
-      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_06262026_2302.json",
-      "review_template": "artifacts/adg/adg_review_template_06262026_2302.json",
-      "runtime_spine": "artifacts/adg/adg_runtime_spine_06262026_2302.json",
-      "sqlite_snapshot": "artifacts/adg/adg_indexed_06262026_2302.sqlite",
-      "structural_outputs": "artifacts/adg/adg_structural_outputs_06262026_2302.json"
+      "graphdb_index": "artifacts/adg/adg_graphdb_index_06272026_0359.json",
+      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_06272026_0359.json",
+      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_06272026_0359.json",
+      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_06272026_0359.json",
+      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_06272026_0359.json",
+      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_06272026_0359.json",
+      "review_template": "artifacts/adg/adg_review_template_06272026_0359.json",
+      "runtime_spine": "artifacts/adg/adg_runtime_spine_06272026_0359.json",
+      "sqlite_snapshot": "artifacts/adg/adg_indexed_06272026_0359.sqlite",
+      "structural_outputs": "artifacts/adg/adg_structural_outputs_06272026_0359.json"
     },
     "loaded_status": {
       "degraded": [],
@@ -6976,14 +6974,14 @@
     }
   },
   "run": {
-    "commit_sha": "0e18a84c1aefc60c5ab95ef27260c92b646545c9",
+    "commit_sha": "c03e3b59723a673a542650fc732493672dbaa2e4",
     "decision_grade_status": "REPORT_INCONSISTENT",
     "degradation_reasons": [],
     "emit_status": "PASS",
-    "generated_at_utc": "2026-06-27T03:19:32+00:00",
-    "repo_state_hash": "fe6970422d92a294",
-    "run_id": "06262026_2302",
-    "snapshot_ts": "2026-06-27T03:16:59.598049+00:00"
+    "generated_at_utc": "2026-06-27T08:18:55+00:00",
+    "repo_state_hash": "ca4e14cd3c558ae8",
+    "run_id": "06272026_0359",
+    "snapshot_ts": "2026-06-27T08:15:41.740677+00:00"
   },
   "schema_version": "1.0"
 }

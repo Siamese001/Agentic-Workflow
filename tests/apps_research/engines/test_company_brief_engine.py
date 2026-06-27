@@ -50,6 +50,7 @@ def offline_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "OPENAI_API_KEY",
         "GEMINI_API_KEY",
         "GOOGLE_API_KEY",
+        "APPS_RESEARCH_RETRIEVAL_V2",
     ):
         monkeypatch.delenv(k, raising=False)
 
@@ -78,7 +79,7 @@ def test_engine_uses_jd_facets_into_mirror_seed(tmp_path, offline_env: None) -> 
 
 
 def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.4-mini")
+    monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5")
     monkeypatch.setenv("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "777")
 
     captured: list[dict[str, object]] = []
@@ -142,7 +143,7 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
     assert json_out["tagline"] == "TestCo"
     assert plain_out == "TestCo targeting brief"
     assert [row["model"] for row in captured] == [
-        "gpt-5.4-mini",
-        "gpt-5.4-mini",
+        "gpt-5.5",
+        "gpt-5.5",
     ]
     assert all(row["max_completion_tokens"] == 777 for row in captured)

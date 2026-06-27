@@ -338,7 +338,7 @@ def run_competencies_lane_execution(
     )
 
     section_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id="competencies")
         if str(args.provider) == "external_openai"
         else resolve_section_generation_model("competencies")
     )

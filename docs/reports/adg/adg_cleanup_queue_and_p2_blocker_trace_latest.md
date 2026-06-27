@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-27T03:18:08+00:00
+- **Generated:** 2026-06-27T08:17:01+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06262026_0552.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06272026_0359.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06262026_0552.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06262026_2302.json`
 
 ### BCG Cleanup Brief
 
@@ -14,7 +14,7 @@
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)
+  - ADG source: artifacts/adg/adg_indexed_06272026_0359.sqlite (snapshot 06272026_0359)
   - Dead code candidates: 965
   - Dead imports: 965
   - Unresolved imports: 483
@@ -68,12 +68,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **P2 ratchet status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06262026_0552.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06272026_0359.sqlite
   - P2 ceiling: 19
   - Current MEDIUM hygiene count: 19
   - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_06262026_2302.sqlite
-  - Latest failed run: 2026-06-26T10:01:18Z (failed)
+  - Baseline snapshot: adg_indexed_06272026_0359.sqlite
+  - Latest failed run: 2026-06-27T03:19:31Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 | Priority | Move | Why it matters | Evidence | Next step |
@@ -91,9 +91,9 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Current MEDIUM hygiene count:** 19
 - **Ceiling:** 19
 - **Delta:** +0
-- **Baseline snapshot:** adg_indexed_06262026_2302.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_06262026_0552.sqlite
-- **Latest failed run:** 2026-06-26T10:01:18Z (failed)
+- **Baseline snapshot:** adg_indexed_06272026_0359.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_06272026_0359.sqlite
+- **Latest failed run:** 2026-06-27T03:19:31Z (failed)
 
 ### Evidence Buckets
 

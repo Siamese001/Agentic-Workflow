@@ -33,8 +33,9 @@ class _FakeGateway:
 def _capture_gateway_model(monkeypatch):
     captured: dict = {}
 
-    def fake_build(claude_model=None):
+    def fake_build(claude_model=None, openai_model=None):
         captured["claude_model"] = claude_model
+        captured["openai_model"] = openai_model
         return _FakeGateway()
 
     monkeypatch.setattr(spc, "build_section_provider_gateway", fake_build)

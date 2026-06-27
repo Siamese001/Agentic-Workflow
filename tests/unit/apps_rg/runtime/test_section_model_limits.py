@@ -33,8 +33,10 @@ class TestConstants:
             "SectionModelSSOTError",
             "external_claude_generation_model",
             "external_openai_generation_model",
+            "external_openai_generation_model_source",
             "resolve_section_generation_model",
             "runtime_limit_float",
+            "runtime_limit_mapping",
             "runtime_limit_int",
             "runtime_limit_str",
         }

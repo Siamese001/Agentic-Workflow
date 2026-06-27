@@ -44,6 +44,9 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     assert data["wave10a_policy"]["external_default_status"] == "claude_default_for_apps_rg_e2e"
     profiles = data["profiles"]
     assert profiles["external_openai_generator"]["default_model"] == DEFAULT_EXTERNAL_OPENAI_MODEL
+    assert profiles["external_openai_generator"]["model_by_section"] == {
+        "competencies": "gpt-5.5",
+    }
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
     assert profiles["external_claude_generator"]["default_model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
@@ -56,7 +59,8 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
 
 def test_external_claude_default_model_is_sonnet() -> None:
     # Default tier is sonnet for Claude-backed bullets. Headline and executive_summary override to
-    # Opus in provider_profiles.yaml; the OpenAI-backed lanes use the separate gpt-5.4-mini tier.
+    # Opus in provider_profiles.yaml; the OpenAI-backed lanes use the separate gpt-5.4-mini tier
+    # unless they have an explicit OpenAI section override.
     assert external_claude_generation_model({}) == DEFAULT_EXTERNAL_CLAUDE_MODEL
     assert "haiku" not in DEFAULT_EXTERNAL_CLAUDE_MODEL
 
@@ -64,6 +68,10 @@ def test_external_claude_default_model_is_sonnet() -> None:
 def test_external_openai_default_model_is_gpt_5_4_mini() -> None:
     assert external_openai_generation_model({}) == DEFAULT_EXTERNAL_OPENAI_MODEL
     assert DEFAULT_EXTERNAL_OPENAI_MODEL == "gpt-5.4-mini"
+
+
+def test_external_openai_competencies_model_is_gpt_5_5() -> None:
+    assert external_openai_generation_model(section_id="competencies") == "gpt-5.5"
 
 
 def test_section_request_uses_external_claude_default_model() -> None:
@@ -264,7 +272,7 @@ def test_section_provider_call_threads_payload_timeout_to_gateway(monkeypatch) -
     monkeypatch.setattr(
         section_provider_call_module,
         "build_section_provider_gateway",
-        lambda claude_model=None: _Gateway(),
+        lambda claude_model=None, openai_model=None: _Gateway(),
     )
 
     result = section_provider_call_module.call_section_model_provider(
