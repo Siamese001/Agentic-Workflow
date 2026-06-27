@@ -11,8 +11,10 @@ layer). CompanyBriefEngine delegates fan-out decisions to
 assembly-oriented.
 
 The decomposer produces distinct sub-queries covering canonical research
-facets (overview, capabilities, leadership, market, risks) rotated by
-depth. No external calls; pure in-process transform.
+facets. Partnership JDs get explicit partner, commercial, adoption, and
+funding/valuation query families instead of relying on generic role-context
+retrieval. That keeps retrieval-mode/provider migrations from silently
+changing the quality contract.
 """
 
 from __future__ import annotations
@@ -25,11 +27,39 @@ Depth = Literal["shallow", "standard", "deep"]
 _FAN_OUT: dict[Depth, int] = {"shallow": 3, "standard": 4, "deep": 5}
 
 _FACET_TEMPLATES: tuple[tuple[str, str], ...] = (
-    ("overview", "{topic} company overview services and positioning"),
-    ("capabilities", "{topic} technical capabilities and delivery methodology"),
-    ("leadership", "{topic} executive leadership team and strategic direction"),
-    ("market", "{topic} target market segments and client case studies"),
-    ("risks", "{topic} key risks competitive threats and operational constraints"),
+    (
+        "overview",
+        "{topic} company overview services positioning latest funding valuation announcements",
+    ),
+    (
+        "capabilities",
+        "{topic} technical capabilities platform enterprise product partnerships alliances",
+    ),
+    (
+        "leadership",
+        "{topic} executive leadership team strategic direction partnerships revenue",
+    ),
+    (
+        "market",
+        "{topic} enterprise customers partner ecosystem co-sell GSI ISV channel adoption",
+    ),
+    (
+        "risks",
+        "{topic} key risks competitive threats operational constraints latest valuation funding",
+    ),
+)
+
+_PARTNERSHIP_JD_HINTS: tuple[str, ...] = (
+    "partnership",
+    "partner",
+    "alliance",
+    "alliances",
+    "co-sell",
+    "cosell",
+    "ecosystem",
+    "gsi",
+    "isv",
+    "channel",
 )
 
 
@@ -87,7 +117,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "recent_news_and_signals": {
-        "query_template": "{topic} news 2024 2025 announcements funding acquisition",
+        "query_template": "{topic} news 2025 2026 announcements funding valuation partnership launch",
         "min_sources": 2,
     },
     "competitive_landscape": {
@@ -95,7 +125,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "financials_and_growth": {
-        "query_template": "{topic} revenue funding valuation growth metrics",
+        "query_template": "{topic} latest funding valuation revenue growth Series H Series G",
         "min_sources": 1,
     },
     "tech_stack_and_tools": {
@@ -104,6 +134,18 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
     },
     "culture_and_values": {
         "query_template": "{topic} culture values diversity employee experience",
+        "min_sources": 1,
+    },
+    "partner_ecosystem": {
+        "query_template": "{topic} partners alliances cloud partnerships co-sell GSI ISV ecosystem",
+        "min_sources": 1,
+    },
+    "commercial_motion": {
+        "query_template": "{topic} enterprise sales commercial motion revenue partner-led co-sell channel",
+        "min_sources": 1,
+    },
+    "adoption_motion": {
+        "query_template": "{topic} enterprise adoption deployment implementation enablement production rollout",
         "min_sources": 1,
     },
     # DS-5 W5 (apps-research-deferred-scope-b7e3d2) — post-DOSSIER families.
@@ -205,11 +247,12 @@ _PROFILE_REQUIRED_FAMILIES: Dict[str, List[str]] = {
         "recent_news_and_signals", "competitive_landscape",
         "financials_and_growth", "tech_stack_and_tools", "culture_and_values",
     ],
-    # DOSSIER = all 8 original catalog families (pre-DS-5).
+    # DOSSIER = all original catalog families plus explicit partner-motion families.
     "COMPANY_BRIEF_DOSSIER": [
         "company_basics", "role_context", "leadership_and_org",
         "recent_news_and_signals", "competitive_landscape",
         "financials_and_growth", "tech_stack_and_tools", "culture_and_values",
+        "partner_ecosystem", "commercial_motion", "adoption_motion",
     ],
     # DS-5 W5 — post-DOSSIER profiles.
     # COMPETITIVE_SCAN: market + competitive intel focus; drops culture/role.
@@ -241,6 +284,33 @@ class QueryPlan:
     jd_boosted: bool = False
 
 
+def _jd_blob(jd_context: Dict[str, Any] | None) -> str:
+    if not jd_context:
+        return ""
+    parts: list[str] = []
+    for value in jd_context.values():
+        if isinstance(value, (list, tuple, set)):
+            parts.extend(str(item) for item in value)
+        elif isinstance(value, dict):
+            parts.extend(str(item) for item in value.values())
+        else:
+            parts.append(str(value))
+    return " ".join(parts).lower()
+
+
+def _is_partnership_jd(jd_context: Dict[str, Any] | None) -> bool:
+    blob = _jd_blob(jd_context)
+    return any(token in blob for token in _PARTNERSHIP_JD_HINTS)
+
+
+def _ordered_unique(values: list[str]) -> list[str]:
+    ordered: list[str] = []
+    for value in values:
+        if value and value not in ordered:
+            ordered.append(value)
+    return ordered
+
+
 def decompose_coverage_families(
     topic: str,
     depth_profile: str,
@@ -251,13 +321,17 @@ def decompose_coverage_families(
     Fan-out is determined by ``_PROFILE_REQUIRED_FAMILIES[depth_profile]``.
     When ``jd_context`` is provided, ``role_context`` and
     ``tech_stack_and_tools`` are included with the ``jd_boosted=True`` flag
-    even if they would not be selected by the base profile.
+    even if they would not be selected by the base profile. Partnership JDs
+    promote explicit partner, commercial, adoption, recent-news, and
+    financial/growth families into the executable prefix; ``role_context``
+    alone is never treated as partner evidence.
 
     Args:
         topic: Company or subject name.
         depth_profile: Canonical profile key (e.g. "COMPANY_BRIEF_STANDARD").
             Aliases (``"standard"``, ``"deep"``, etc.) are resolved.
-        jd_context: Optional JD dict; activates role_context + tech_stack_and_tools.
+        jd_context: Optional JD dict; activates role_context + tech_stack_and_tools
+            or explicit partnership retrieval families.
 
     Returns:
         Ordered list of :class:`QueryPlan` instances, one per family.
@@ -271,14 +345,37 @@ def decompose_coverage_families(
         raise ValueError("topic must be non-empty")
 
     resolved = _resolve_depth_profile(depth_profile)
-    base_families = list(_PROFILE_REQUIRED_FAMILIES.get(resolved, _PROFILE_REQUIRED_FAMILIES["COMPANY_BRIEF_STANDARD"]))
+    base_families = list(
+        _PROFILE_REQUIRED_FAMILIES.get(
+            resolved,
+            _PROFILE_REQUIRED_FAMILIES["COMPANY_BRIEF_STANDARD"],
+        )
+    )
 
-    # JD presence activates role_context + tech_stack_and_tools if not already present
-    jd_boosted_families: list[str] = []
-    if jd_context:
-        for fam in ("role_context", "tech_stack_and_tools"):
-            if fam not in base_families:
-                jd_boosted_families.append(fam)
+    partnership_mode = _is_partnership_jd(jd_context)
+    if partnership_mode:
+        partner_prefix = [
+            "company_basics",
+            "financials_and_growth",
+            "partner_ecosystem",
+            "commercial_motion",
+            "adoption_motion",
+            "recent_news_and_signals",
+            "leadership_and_org",
+            "tech_stack_and_tools",
+            "competitive_landscape",
+        ]
+        base_families = _ordered_unique(
+            partner_prefix + [fam for fam in base_families if fam != "role_context"]
+        )
+    else:
+        # JD presence activates role_context + tech_stack_and_tools if not already present.
+        jd_boosted_families: list[str] = []
+        if jd_context:
+            for fam in ("role_context", "tech_stack_and_tools"):
+                if fam not in base_families:
+                    jd_boosted_families.append(fam)
+        base_families = _ordered_unique(base_families + jd_boosted_families)
 
     plans: List[QueryPlan] = []
     for fam in base_families:
@@ -288,15 +385,15 @@ def decompose_coverage_families(
             family=fam,
             query=query,
             min_sources=cfg.get("min_sources", 1),
-            jd_boosted=False,
-        ))
-    for fam in jd_boosted_families:
-        cfg = _COVERAGE_FAMILY_CATALOG.get(fam, {})
-        query = cfg.get("query_template", "{topic} " + fam.replace("_", " ")).format(topic=stripped)
-        plans.append(QueryPlan(
-            family=fam,
-            query=query,
-            min_sources=cfg.get("min_sources", 1),
-            jd_boosted=True,
+            jd_boosted=bool(jd_context) and (
+                fam in {"role_context", "tech_stack_and_tools"}
+                or (partnership_mode and fam in {
+                    "financials_and_growth",
+                    "partner_ecosystem",
+                    "commercial_motion",
+                    "adoption_motion",
+                    "recent_news_and_signals",
+                })
+            ),
         ))
     return plans
