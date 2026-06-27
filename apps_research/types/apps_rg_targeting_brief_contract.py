@@ -1,15 +1,14 @@
 """Frontier-era targeting briefing contract + validator.
 
 This module intentionally keeps the old import path because legacy
-apps_research/apps_rg bridge code still imports it. The contract itself is no
-longer the legacy 2.4k / 17-bullet micro-brief. It validates a reviewed
-briefing artifact whose job is to add company/contact signal that complements
-the JD while remaining targeting-only context for apps_rg and apps_lic.
+apps_research/apps_rg bridge code still imports it. The contract validates a
+reviewed briefing artifact whose job is to add company/contact signal that
+complements the JD while remaining targeting-only context for apps_rg and
+apps_lic.
 
-The validator rejects artifact shapes that are dangerous downstream:
-JSON/code blobs, placeholders, inline citations/links, source notes in the
-brief body, and verbatim JD restatement. Size limits are profile-specific so a
-rich apps_rg briefing can coexist with a compact apps_lic packet.
+The semantic gate is stricter whenever the JD implies role-relevant evidence:
+required source families and signal terms must come from sourced research or
+final brief text, and JD text alone cannot satisfy sourced evidence.
 """
 
 from __future__ import annotations
@@ -20,6 +19,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from apps_research.types.jd_intent_coverage import (
+    infer_evidence_intents_from_text,
+    intent_ids,
+    required_families_for_intents,
+    signal_terms_for_intents,
+)
 
 @dataclass(frozen=True)
 class BriefingProfile:
@@ -115,37 +120,20 @@ _APPS_RG_REQUIRED_SECTIONS = (
     "do not use as proof",
 )
 
-_PARTNERSHIP_SIGNAL_TERMS = (
-    "co-sell",
-    "cosell",
-    "gsi",
-    "isv",
-    "channel",
-    "enablement",
-    "joint solution",
-    "technical close",
-    "ecosystem revenue",
-    "partner-led",
-)
-
-_JD_PARTNERSHIP_HINTS = (
-    "partnership",
-    "partner",
-    "alliance",
-    "co-sell",
-    "cosell",
-    "ecosystem",
-    "gsi",
-    "isv",
-    "channel",
-)
-
+# Source-family aliases are intentionally conservative. Generic role_context no
+# longer satisfies role-specific evidence families; those must be retrieved as
+# explicit source families.
 _SOURCE_FAMILY_ALIASES = {
     "company_basics": ("overview",),
-    "competitive_landscape": ("strategic_priorities", "commercial_motion"),
+    "competitive_landscape": ("strategic_priorities",),
     "leadership_and_org": ("leadership",),
     "recent_news_and_signals": ("recent_moves",),
-    "role_context": ("partner_ecosystem", "commercial_motion", "adoption_motion"),
+    "financials_and_growth": ("financials_and_growth",),
+    "role_context": ("role_context",),
+    "partner_ecosystem": ("partner_ecosystem",),
+    "commercial_motion": ("commercial_motion",),
+    "adoption_motion": ("adoption_motion",),
+    "regulatory_and_legal": ("regulatory_and_legal",),
     "tech_stack_and_tools": ("tech_stack_signals",),
     "tech_stack": ("tech_stack_signals",),
 }
@@ -195,6 +183,7 @@ class BriefingSemanticsAssessment:
     source_families_missing: tuple[str, ...] = ()
     signal_terms_present: tuple[str, ...] = ()
     signal_terms_missing: tuple[str, ...] = ()
+    evidence_intents: tuple[str, ...] = ()
     handoff_eligible: bool = False
     judge_name: str = "gemini-pro-3.1-preview"
     judge_model: str = "gemini-3.1-pro-preview"
@@ -211,6 +200,7 @@ class BriefingSemanticsAssessment:
             "source_families_missing": list(self.source_families_missing),
             "signal_terms_present": list(self.signal_terms_present),
             "signal_terms_missing": list(self.signal_terms_missing),
+            "evidence_intents": list(self.evidence_intents),
             "handoff_eligible": self.handoff_eligible,
             "judge_name": self.judge_name,
             "judge_model": self.judge_model,
@@ -307,11 +297,7 @@ def _squash_blank_lines(lines: list[str]) -> list[str]:
     return squashed
 
 
-def _normalize_brief_lines(
-    body: str,
-    *,
-    cfg: BriefingProfile,
-) -> str:
+def _normalize_brief_lines(body: str, *, cfg: BriefingProfile) -> str:
     lines = (body or "").strip().splitlines()
     normalized: list[str] = []
     previous_was_bullet = False
@@ -362,11 +348,7 @@ def _normalize_brief_lines(
     return "\n".join(_squash_blank_lines(normalized))
 
 
-def normalize_markdown_brief_text(
-    text: str,
-    *,
-    profile: str = DEFAULT_BRIEFING_PROFILE,
-) -> str:
+def normalize_markdown_brief_text(text: str, *, profile: str = DEFAULT_BRIEFING_PROFILE) -> str:
     """Return a contract-friendly markdown draft with wrapped lines."""
 
     cfg = _resolve_profile(profile)
@@ -435,8 +417,6 @@ def validate_targeting_brief_text(
         if _HEADER_RE.match(stripped_line):
             section_headers.append(stripped_line)
             continue
-        # Count the conventional title line as a structural section when it is
-        # present without a Markdown heading marker.
         if (
             not counted_title_line
             and idx == 0
@@ -532,15 +512,14 @@ def _research_families(research_notes: str) -> tuple[str, ...]:
     return tuple(families)
 
 
+def _semantic_family_name(family: str) -> str:
+    aliases = _SOURCE_FAMILY_ALIASES.get(family, (family,))
+    return aliases[0] if aliases else family
+
+
 def _role_archetype_from_jd(jd_text: str) -> str:
-    low = (jd_text or "").lower()
-    if any(token in low for token in _JD_PARTNERSHIP_HINTS):
-        return "partnerships"
-    if any(token in low for token in ("engineer", "engineering", "architect", "architecture", "platform")):
-        return "engineering"
-    if any(token in low for token in ("bank", "insurance", "regulated", "risk", "compliance")):
-        return "regulated_enterprise"
-    return "general"
+    intents = intent_ids(infer_evidence_intents_from_text(jd_text))
+    return intents[0] if intents else "general"
 
 
 def assess_targeting_brief_semantics(
@@ -550,15 +529,24 @@ def assess_targeting_brief_semantics(
     research_notes: str = "",
     profile: str = DEFAULT_BRIEFING_PROFILE,
 ) -> BriefingSemanticsAssessment:
-    """Assess whether the brief is dense enough to hand off to apps_rg."""
+    """Assess whether the brief is dense enough to hand off to apps_rg.
+
+    Important: JD text may identify role archetype and required evidence, but
+    JD text does not satisfy sourced signal terms. Signal terms are detected
+    only in the final brief and research notes.
+    """
 
     cfg = _resolve_profile(profile)
     body = (text or "").strip()
+    intents = infer_evidence_intents_from_text(jd_text)
+    evidence_intents = intent_ids(intents)
+    role_archetype = evidence_intents[0] if evidence_intents else "general"
     if not body:
         return BriefingSemanticsAssessment(
             score=0.0,
             profile=cfg.profile_id,
-            role_archetype=_role_archetype_from_jd(jd_text),
+            role_archetype=role_archetype,
+            evidence_intents=evidence_intents,
             reason="empty_brief",
         )
 
@@ -570,46 +558,60 @@ def assess_targeting_brief_semantics(
 
     source_families = _research_families(research_notes)
     base_required_families = ("overview", "strategic_priorities", "leadership", "recent_moves")
-    required_families = list(base_required_families)
-    role_archetype = _role_archetype_from_jd(jd_text)
-    if role_archetype == "partnerships":
-        required_families.extend(["partner_ecosystem", "commercial_motion", "adoption_motion"])
-    if role_archetype in {"partnerships", "engineering"}:
-        required_families.append("tech_stack_signals")
+    intent_required_families = tuple(
+        dict.fromkeys(_semantic_family_name(fam) for fam in required_families_for_intents(intents))
+    )
+    required_families = list(dict.fromkeys((*base_required_families, *intent_required_families)))
     source_families_present = tuple(fam for fam in required_families if fam in source_families)
     source_families_missing = tuple(fam for fam in required_families if fam not in source_families)
 
-    blob = f"{body}\n{research_notes}\n{jd_text}".lower()
-    signal_terms = list(("company dna", "operating model", "leadership", "strategy", "urgency"))
-    if role_archetype == "partnerships":
-        signal_terms.extend(_PARTNERSHIP_SIGNAL_TERMS)
-    signal_terms_present = tuple(term for term in dict.fromkeys(signal_terms) if term in blob)
-    signal_terms_missing = tuple(term for term in dict.fromkeys(signal_terms) if term not in blob)
+    body_and_research_blob = f"{body}\n{research_notes}".lower()
+    research_blob = (research_notes or "").lower()
+    base_signal_terms = ("company dna", "operating model", "leadership", "strategy", "urgency")
+    signal_terms = list(base_signal_terms)
+    intent_signal_terms = signal_terms_for_intents(intents)
+    signal_terms.extend(intent_signal_terms)
+    unique_signal_terms = tuple(dict.fromkeys(signal_terms))
+    signal_terms_present = tuple(term for term in unique_signal_terms if term in body_and_research_blob)
+    signal_terms_missing = tuple(term for term in unique_signal_terms if term not in body_and_research_blob)
+    base_signal_terms_missing = tuple(term for term in base_signal_terms if term not in body_and_research_blob)
+
+    intent_families_missing = tuple(fam for fam in intent_required_families if fam not in source_families)
+    missing_intent_signals = tuple(
+        intent.intent_id
+        for intent in intents
+        if intent.signal_terms and not any(term in research_blob for term in intent.signal_terms)
+    )
 
     score = 1.0
     score -= 0.10 * len(missing_sections)
     score -= 0.08 * len(source_families_missing)
-    score -= 0.04 * len(signal_terms_missing)
+    score -= 0.04 * len(base_signal_terms_missing)
     if len(required_present) < max(6, len(required_sections) - 2):
         score -= 0.08
     if len(source_families_present) < len(base_required_families):
         score -= 0.08
+    if intent_families_missing:
+        score -= 0.12 * len(intent_families_missing)
+    if missing_intent_signals:
+        score -= 0.12 * len(missing_intent_signals)
     score = max(0.0, min(1.0, round(score, 3)))
+
     handoff_eligible = (
         score >= 0.72
         and len(missing_sections) == 0
         and len(source_families_missing) <= 1
-        and "company dna" in blob
+        and "company dna" in body_and_research_blob
     )
-    if role_archetype == "partnerships":
+    if intents:
         handoff_eligible = (
             score >= 0.75
             and len(missing_sections) == 0
-            and "partner_ecosystem" in source_families
-            and "co-sell" in blob
-            and "company dna" in blob
-            and "partnership / ecosystem motion" in header_blob
+            and not intent_families_missing
+            and not missing_intent_signals
+            and "company dna" in body_and_research_blob
         )
+
     reason = ""
     if not handoff_eligible:
         reason = ",".join(
@@ -617,10 +619,13 @@ def assess_targeting_brief_semantics(
             for x in (
                 "missing_sections" if missing_sections else "",
                 "missing_source_families" if source_families_missing else "",
-                "missing_signal_terms" if signal_terms_missing else "",
+                "missing_signal_terms" if base_signal_terms_missing else "",
+                "missing_intent_evidence" if intent_families_missing else "",
+                "missing_sourced_intent_signal" if missing_intent_signals else "",
             )
             if x
         ) or "semantic_score_below_threshold"
+
     return BriefingSemanticsAssessment(
         score=score,
         profile=cfg.profile_id,
@@ -631,6 +636,7 @@ def assess_targeting_brief_semantics(
         source_families_missing=source_families_missing,
         signal_terms_present=signal_terms_present,
         signal_terms_missing=signal_terms_missing,
+        evidence_intents=evidence_intents,
         handoff_eligible=handoff_eligible,
         reason=reason,
     )

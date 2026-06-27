@@ -33,6 +33,7 @@ from apps_research.engines.query_decomposer import (  # noqa: F401
     _DEPTH_PROFILES,
     _PROFILE_REQUIRED_FAMILIES,
     _resolve_depth_profile,
+    describe_jd_retrieval_contract,
     decompose_coverage_families,
 )
 
@@ -147,17 +148,26 @@ class CompanyBriefEngine(BaseResearchEngine):
         # --- Sub-stage: research ---
         _t_research = time.perf_counter()
         if _v2_enabled():
-            research_findings = self._run_research_v2(topic=topic, depth=raw_depth)
+            research_findings = self._run_research_v2(
+                topic=topic,
+                depth_profile=depth_profile,
+                jd_context=jd_context,
+            )
         else:
             research_findings = self._run_research_adaptive(
                 topic=topic, depth_profile=depth_profile, jd_context=jd_context
             )
+        retrieval_contract = describe_jd_retrieval_contract(jd_context or None)
         _sub_stages.append({
             "sub_stage_id": "research.fetch",
             "sub_stage_name": "Evidence Retrieval",
             "status": "PASS",
             "duration_ms": round((time.perf_counter() - _t_research) * 1000, 3),
-            "meta": {"v2": _v2_enabled()},
+            "meta": {
+                "v2": _v2_enabled(),
+                "query_families": list(research_findings.keys()),
+                "jd_intents": retrieval_contract.get("intent_ids", []),
+            },
         })
 
         # --- Sub-stage: JD facets ---
@@ -203,6 +213,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             findings=research_findings,
             synthesis=synthesized,
             jd_context=jd_context,
+            retrieval_contract=retrieval_contract,
         )
         gate_verdict, gate_caveat, degraded_reason = self._evaluate_c0_pa_gate(
             c0_bundle=c0_bundle, depth_profile=depth_profile
@@ -297,8 +308,14 @@ class CompanyBriefEngine(BaseResearchEngine):
                 facets.extend(str(x) for x in v if x)
         return facets
 
-    def _run_research_v2(self, *, topic: str, depth: str) -> Dict[str, str]:
-        """V2 retrieval pipeline: decompose → retrieve (parallel) → rerank → assemble.
+    def _run_research_v2(
+        self,
+        *,
+        topic: str,
+        depth_profile: str,
+        jd_context: Dict[str, Any],
+    ) -> Dict[str, str]:
+        """V2 retrieval pipeline: plan coverage families -> retrieve -> rerank.
 
         Plan §P1.4 + §P2.4 (parallel dispatch). Uses a thread pool for
         per-sub-query retrieval (I/O-bound HTTP calls to SearXNG) so
@@ -307,32 +324,32 @@ class CompanyBriefEngine(BaseResearchEngine):
         """
         import concurrent.futures
 
-        from apps_research.engines.query_decomposer import SubQuery, decompose
         from apps_research.integrations.reranker_adapter import rerank
         from apps_research.integrations.search_retrieval import (
             apply_contextual_prefix,
             retrieve,
         )
 
-        depth_norm = depth if depth in {"shallow", "standard", "deep"} else "standard"
         try:
-            sub_queries = decompose(topic, depth=depth_norm)  # type: ignore[arg-type]
+            plans = decompose_coverage_families(topic, depth_profile, jd_context or None)
         except ValueError as exc:
             raise CompanyBriefUnavailableError(
                 f"{topic}: v2 research decomposition failed: {exc}"
             ) from exc
+        profile_cfg = _DEPTH_PROFILES.get(depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"])
+        plans = plans[: profile_cfg["max_queries"]]
 
-        def _fetch(sq: SubQuery) -> tuple[str, str]:
+        def _fetch(plan: QueryPlan) -> tuple[str, str]:
             try:
-                docs = retrieve(sq.text, top_k=10)
+                docs = retrieve(plan.query, top_k=10)
             except (RuntimeError, ValueError) as exc:
                 self.logger.info(
-                    "[CompanyBriefEngine v2] retrieve skipped for facet=%s: %s",
-                    sq.facet,
+                    "[CompanyBriefEngine v2] retrieve skipped for family=%s: %s",
+                    plan.family,
                     exc,
                 )
-                return sq.facet, ""
-            top = rerank(sq.text, docs, cutoff=5)
+                return plan.family, ""
+            top = rerank(plan.query, docs, cutoff=5)
             # Plan §P4.5 — wrap each chunk with Anthropic contextual prefix
             # so the downstream synthesizer sees the same template audit
             # grep uses (<document>/<chunk_context>).
@@ -340,18 +357,18 @@ class CompanyBriefEngine(BaseResearchEngine):
                 apply_contextual_prefix(
                     f"- {d.title}: {d.snippet} ({d.url})",
                     doc_title=d.title,
-                    surrounding_text=sq.text,
+                    surrounding_text=plan.query,
                 )
                 for d in top
                 if d.snippet
             )
-            return sq.facet, blob
+            return plan.family, blob
 
-        findings: Dict[str, str] = {}
-        max_workers = max(1, min(5, len(sub_queries)))
+        findings: Dict[str, str] = {plan.family: "" for plan in plans}
+        max_workers = max(1, min(5, len(plans)))
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
-            for facet, blob in pool.map(_fetch, sub_queries):
-                findings[facet] = blob
+            for family, blob in pool.map(_fetch, plans):
+                findings[family] = blob
         if not any((blob or "").strip() for blob in findings.values()):
             raise CompanyBriefUnavailableError(
                 f"{topic}: v2 research returned no grounded findings"
@@ -772,6 +789,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             assess_targeting_brief_semantics,
             validate_targeting_brief_text,
         )
+        from apps_research.integrations.search_retrieval import retrieval_config_snapshot  # noqa: PLC0415
 
         semantics = semantic_override or assess_targeting_brief_semantics(
             brief_text,
@@ -793,6 +811,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             for family, blob in sorted(findings.items(), key=lambda item: item[0])
         ]
         digest = hashlib.sha256(brief_text.encode("utf-8")).hexdigest() if brief_text else ""
+        retrieval_snapshot = retrieval_config_snapshot(query_families=list(findings.keys()))
         return {
             "schema_version": "apps_research.apps_rg_targeting_brief_sidecar/v1",
             "company_name": company_name,
@@ -803,12 +822,14 @@ class CompanyBriefEngine(BaseResearchEngine):
             "briefing_semantic_score": semantics.score,
             "handoff_eligible": semantics.handoff_eligible,
             "role_archetype": semantics.role_archetype,
+            "evidence_intents": list(semantics.evidence_intents),
             "required_sections_present": list(semantics.required_sections_present),
             "missing_sections": list(semantics.missing_sections),
             "source_families_present": list(semantics.source_families_present),
             "source_families_missing": list(semantics.source_families_missing),
             "signal_terms_present": list(semantics.signal_terms_present),
             "signal_terms_missing": list(semantics.signal_terms_missing),
+            "retrieval_config": retrieval_snapshot,
             "source_register": source_register,
             "gate_verdict": gate_verdict,
             "gate_reason": gate_reason,
@@ -1032,10 +1053,18 @@ class CompanyBriefEngine(BaseResearchEngine):
         findings: Dict[str, str],
         synthesis: Dict[str, Any],
         jd_context: Dict[str, Any],
+        retrieval_contract: Dict[str, Any] | None = None,
     ) -> Dict[str, Any]:
         """Build the 7-object C0 output bundle from research findings + synthesis."""
-        required_families = list(
-            _PROFILE_REQUIRED_FAMILIES.get(depth_profile, [])
+        from apps_research.integrations.search_retrieval import retrieval_config_snapshot  # noqa: PLC0415
+
+        contract = retrieval_contract or describe_jd_retrieval_contract(jd_context or None)
+        required_families = list(dict.fromkeys(
+            list(_PROFILE_REQUIRED_FAMILIES.get(depth_profile, []))
+            + list(contract.get("required_evidence_families", []))
+        ))
+        retrieval_snapshot = retrieval_config_snapshot(
+            query_families=list(findings.keys())
         )
         jd_present = bool(jd_context)
 
@@ -1128,6 +1157,8 @@ class CompanyBriefEngine(BaseResearchEngine):
             "gate_caveat": "",
             "degraded_packet_reason": "",
             "ordered_sections": required_families,
+            "jd_evidence_intents": list(contract.get("intent_ids", [])),
+            "jd_required_evidence_families": list(contract.get("required_evidence_families", [])),
         }
         if jd_present:
             synthesis_guidance["jd_focal_angle"] = jd_context.get("jd_ref", "")
@@ -1145,6 +1176,8 @@ class CompanyBriefEngine(BaseResearchEngine):
             "contradiction_matrix": contradiction_matrix,
             "freshness_report": freshness_report,
             "section_gap_report": section_gap_report,
+            "retrieval_config": retrieval_snapshot,
+            "jd_retrieval_contract": contract,
             "synthesis_guidance": synthesis_guidance,
         }
         if jd_present:

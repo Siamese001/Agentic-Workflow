@@ -11,14 +11,20 @@ layer). CompanyBriefEngine delegates fan-out decisions to
 assembly-oriented.
 
 The decomposer produces distinct sub-queries covering canonical research
-facets (overview, capabilities, leadership, market, risks) rotated by
-depth. No external calls; pure in-process transform.
+facets. JD context promotes role-relevant evidence families through the shared
+intent contract instead of relying on generic role_context retrieval.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal
+
+from apps_research.types.jd_intent_coverage import (
+    infer_evidence_intents,
+    intent_ids,
+    required_families_for_intents,
+)
 
 Depth = Literal["shallow", "standard", "deep"]
 
@@ -87,7 +93,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "recent_news_and_signals": {
-        "query_template": "{topic} news 2024 2025 announcements funding acquisition",
+        "query_template": "{topic} news 2025 2026 latest announcements funding valuation acquisition launch",
         "min_sources": 2,
     },
     "competitive_landscape": {
@@ -95,7 +101,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "financials_and_growth": {
-        "query_template": "{topic} revenue funding valuation growth metrics",
+        "query_template": "{topic} latest funding valuation revenue growth metrics",
         "min_sources": 1,
     },
     "tech_stack_and_tools": {
@@ -104,6 +110,18 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
     },
     "culture_and_values": {
         "query_template": "{topic} culture values diversity employee experience",
+        "min_sources": 1,
+    },
+    "partner_ecosystem": {
+        "query_template": "{topic} partners alliances cloud partnerships co-sell GSI ISV ecosystem",
+        "min_sources": 1,
+    },
+    "commercial_motion": {
+        "query_template": "{topic} enterprise sales commercial motion revenue partner-led co-sell channel",
+        "min_sources": 1,
+    },
+    "adoption_motion": {
+        "query_template": "{topic} enterprise adoption deployment implementation enablement production rollout",
         "min_sources": 1,
     },
     # DS-5 W5 (apps-research-deferred-scope-b7e3d2) — post-DOSSIER families.
@@ -205,11 +223,12 @@ _PROFILE_REQUIRED_FAMILIES: Dict[str, List[str]] = {
         "recent_news_and_signals", "competitive_landscape",
         "financials_and_growth", "tech_stack_and_tools", "culture_and_values",
     ],
-    # DOSSIER = all 8 original catalog families (pre-DS-5).
+    # DOSSIER = all original catalog families plus explicit partner-motion families.
     "COMPANY_BRIEF_DOSSIER": [
         "company_basics", "role_context", "leadership_and_org",
         "recent_news_and_signals", "competitive_landscape",
         "financials_and_growth", "tech_stack_and_tools", "culture_and_values",
+        "partner_ecosystem", "commercial_motion", "adoption_motion",
     ],
     # DS-5 W5 — post-DOSSIER profiles.
     # COMPETITIVE_SCAN: market + competitive intel focus; drops culture/role.
@@ -241,6 +260,28 @@ class QueryPlan:
     jd_boosted: bool = False
 
 
+def _jd_blob(jd_context: Dict[str, Any] | None) -> str:
+    if not jd_context:
+        return ""
+    parts: list[str] = []
+    for value in jd_context.values():
+        if isinstance(value, (list, tuple, set)):
+            parts.extend(str(item) for item in value)
+        elif isinstance(value, dict):
+            parts.extend(str(item) for item in value.values())
+        else:
+            parts.append(str(value))
+    return " ".join(parts).lower()
+
+
+def _ordered_unique(values: list[str]) -> list[str]:
+    ordered: list[str] = []
+    for value in values:
+        if value and value not in ordered:
+            ordered.append(value)
+    return ordered
+
+
 def decompose_coverage_families(
     topic: str,
     depth_profile: str,
@@ -251,13 +292,17 @@ def decompose_coverage_families(
     Fan-out is determined by ``_PROFILE_REQUIRED_FAMILIES[depth_profile]``.
     When ``jd_context`` is provided, ``role_context`` and
     ``tech_stack_and_tools`` are included with the ``jd_boosted=True`` flag
-    even if they would not be selected by the base profile.
+    even if they would not be selected by the base profile. JD-derived evidence
+    intents promote explicit source families into the executable prefix;
+    ``role_context`` alone is never treated as source evidence for a specific
+    role intent.
 
     Args:
         topic: Company or subject name.
         depth_profile: Canonical profile key (e.g. "COMPANY_BRIEF_STANDARD").
             Aliases (``"standard"``, ``"deep"``, etc.) are resolved.
-        jd_context: Optional JD dict; activates role_context + tech_stack_and_tools.
+        jd_context: Optional JD dict; activates role_context + tech_stack_and_tools
+            plus source families required by inferred role intents.
 
     Returns:
         Ordered list of :class:`QueryPlan` instances, one per family.
@@ -271,14 +316,37 @@ def decompose_coverage_families(
         raise ValueError("topic must be non-empty")
 
     resolved = _resolve_depth_profile(depth_profile)
-    base_families = list(_PROFILE_REQUIRED_FAMILIES.get(resolved, _PROFILE_REQUIRED_FAMILIES["COMPANY_BRIEF_STANDARD"]))
+    base_families = list(
+        _PROFILE_REQUIRED_FAMILIES.get(
+            resolved,
+            _PROFILE_REQUIRED_FAMILIES["COMPANY_BRIEF_STANDARD"],
+        )
+    )
 
-    # JD presence activates role_context + tech_stack_and_tools if not already present
-    jd_boosted_families: list[str] = []
-    if jd_context:
-        for fam in ("role_context", "tech_stack_and_tools"):
-            if fam not in base_families:
-                jd_boosted_families.append(fam)
+    intents = infer_evidence_intents(jd_context)
+    intent_required_families = list(required_families_for_intents(intents))
+
+    if intents:
+        intent_prefix = [
+            "company_basics",
+            *intent_required_families,
+            "leadership_and_org",
+            "recent_news_and_signals",
+            "competitive_landscape",
+            "role_context",
+            "tech_stack_and_tools",
+        ]
+        base_families = _ordered_unique(
+            intent_prefix + [fam for fam in base_families if fam not in intent_prefix]
+        )
+    else:
+        # JD presence activates role_context + tech_stack_and_tools if not already present.
+        jd_boosted_families: list[str] = []
+        if jd_context:
+            for fam in ("role_context", "tech_stack_and_tools"):
+                if fam not in base_families:
+                    jd_boosted_families.append(fam)
+        base_families = _ordered_unique(base_families + jd_boosted_families)
 
     plans: List[QueryPlan] = []
     for fam in base_families:
@@ -288,15 +356,20 @@ def decompose_coverage_families(
             family=fam,
             query=query,
             min_sources=cfg.get("min_sources", 1),
-            jd_boosted=False,
-        ))
-    for fam in jd_boosted_families:
-        cfg = _COVERAGE_FAMILY_CATALOG.get(fam, {})
-        query = cfg.get("query_template", "{topic} " + fam.replace("_", " ")).format(topic=stripped)
-        plans.append(QueryPlan(
-            family=fam,
-            query=query,
-            min_sources=cfg.get("min_sources", 1),
-            jd_boosted=True,
+            jd_boosted=bool(jd_context) and (
+                fam in {"role_context", "tech_stack_and_tools"}
+                or fam in intent_required_families
+            ),
         ))
     return plans
+
+
+def describe_jd_retrieval_contract(jd_context: Dict[str, Any] | None) -> dict[str, Any]:
+    """Return the JD-derived retrieval contract safe to persist in artifacts."""
+
+    intents = infer_evidence_intents(jd_context)
+    return {
+        "schema_version": "apps_research.jd_intent_retrieval_contract/v1",
+        "intent_ids": list(intent_ids(intents)),
+        "required_evidence_families": list(required_families_for_intents(intents)),
+    }
