@@ -97,6 +97,8 @@ _DIRECT_PARTNER_RESEARCH_NOTES = (
     "Adoption motion depends on enablement, reference patterns, governance, and measurable rollout.\n"
     "### tech_stack_and_tools\n"
     "AI, data, platform, architecture signals include reference architecture and evaluations.\n"
+    "### regulatory_and_legal\n"
+    "Governance, compliance, privacy, trust, security, and risk controls shape enterprise adoption.\n"
 )
 
 _ROLE_CONTEXT_ONLY_RESEARCH_NOTES = (
@@ -112,6 +114,8 @@ _ROLE_CONTEXT_ONLY_RESEARCH_NOTES = (
     "Partner ecosystem, co-sell, commercial motion, and adoption motion are role-critical.\n"
     "### tech_stack_and_tools\n"
     "AI, data, platform, architecture signals include reference architecture and evaluations.\n"
+    "### regulatory_and_legal\n"
+    "Governance, compliance, privacy, trust, security, and risk controls shape enterprise adoption.\n"
 )
 
 _DIRECT_FAMILIES_BUT_NO_SOURCED_PARTNER_TERMS = (
@@ -169,6 +173,44 @@ def test_rejects_dangerous_shapes() -> None:
     assert not link.valid
     assert "link_present" in link.violations
 
+    cite = validate_targeting_brief_text("=== STRATEGIC MANDATE ===\n- revenue grew (source: filing)\n")
+    assert not cite.valid
+    assert "citation_present" in cite.violations
+
+    placeholder = validate_targeting_brief_text("=== STRATEGIC MANDATE ===\n- [ROLE_TITLE] anchors the platform play\n")
+    assert not placeholder.valid
+    assert "bracket_placeholder_present" in placeholder.violations
+
+    html = validate_targeting_brief_text("=== STRATEGIC MANDATE ===\n- ratio improved by 5&#58; over peers\n")
+    assert not html.valid
+    assert "html_entity_present" in html.violations
+
+
+def test_rejects_shape_limits_and_nested_content() -> None:
+    extra = "\n".join(f"- net new verified fact number {i}" for i in range(55))
+    too_many = validate_targeting_brief_text(
+        "Co (C) - role brief\n| role | band | Reports to X (2026) |\n\n=== STRATEGIC MANDATE ===\n"
+        + extra
+    )
+    assert not too_many.valid
+    assert any("too_many_bullets" in x for x in too_many.violations)
+
+    long_bullet = "- " + ("a" * 250)
+    long_line = validate_targeting_brief_text(
+        "Co (C) - role brief\n| role | band | Reports to X (2026) |\n\n=== STRATEGIC MANDATE ===\n"
+        + long_bullet
+    )
+    assert not long_line.valid
+    assert any("line_too_long" in x for x in long_line.violations)
+
+    sub = validate_targeting_brief_text("=== STRATEGIC MANDATE ===\n- top fact verified\n  - nested fact\n")
+    assert not sub.valid
+    assert "sub_bullet_present" in sub.violations
+
+    table = validate_targeting_brief_text("=== STRATEGIC MANDATE ===\n- A | B | C table row here\n")
+    assert not table.valid
+    assert "table_pipe_present" in table.violations
+
 
 def test_rejects_jd_restatement_in_bullet() -> None:
     jd = "Lead enterprise data platform strategy for the insurance division."
@@ -189,6 +231,17 @@ def test_blocked_artifact_factory() -> None:
     assert art.block_reason == "no_sources"
 
 
+def test_empty_and_invalid_briefs_do_not_seal() -> None:
+    empty = seal_targeting_brief("", company_name="Acme")
+    assert empty.status is BriefStatus.BLOCKED
+    assert not empty.is_sealed
+
+    invalid = seal_targeting_brief('{"json": true}', company_name="Acme")
+    assert invalid.status is BriefStatus.REJECTED
+    assert not invalid.is_sealed
+    assert invalid.violations
+
+
 def test_direct_partner_research_families_are_handoff_eligible() -> None:
     quality = assess_targeting_brief_semantics(
         _PARTNERSHIP_TARGETING_BRIEF,
@@ -199,9 +252,12 @@ def test_direct_partner_research_families_are_handoff_eligible() -> None:
 
     assert quality.handoff_eligible, quality.as_dict()
     assert quality.missing_sections == ()
+    assert "partnerships" in quality.evidence_intents
     assert "partner_ecosystem" in quality.source_families_present
     assert "commercial_motion" in quality.source_families_present
     assert "adoption_motion" in quality.source_families_present
+    assert "regulatory_and_legal" in quality.source_families_present
+    assert "tech_stack_signals" in quality.source_families_present
     assert "co-sell" in quality.signal_terms_present
 
 
@@ -218,7 +274,7 @@ def test_role_context_no_longer_satisfies_partner_source_families() -> None:
     assert "partner_ecosystem" in quality.source_families_missing
     assert "commercial_motion" in quality.source_families_missing
     assert "adoption_motion" in quality.source_families_missing
-    assert "missing_direct_partner_evidence" in quality.reason
+    assert "missing_intent_evidence" in quality.reason
 
 
 def test_jd_text_does_not_satisfy_partner_signal_terms() -> None:
@@ -238,7 +294,34 @@ def test_jd_text_does_not_satisfy_partner_signal_terms() -> None:
 
     assert not quality.handoff_eligible
     assert "co-sell" not in quality.signal_terms_present
-    assert "missing_sourced_partner_signal" in quality.reason
+    assert "missing_sourced_intent_signal" in quality.reason
+
+
+def test_generic_intent_gate_blocks_missing_security_evidence() -> None:
+    jd = "Security Architect responsible for privacy, compliance, risk, platform architecture, and governance."
+    research_notes = (
+        "### company_basics\n"
+        "Acme context establishes company DNA and operating model.\n"
+        "### strategic_priorities\n"
+        "Strategy emphasizes enterprise growth and customer trust.\n"
+        "### leadership_and_org\n"
+        "Leadership stakeholders span product and engineering.\n"
+        "### recent_news_and_signals\n"
+        "Recent events create urgency for deployment.\n"
+        "### role_context\n"
+        "Security and compliance are role-critical but unsourced here.\n"
+    )
+    quality = assess_targeting_brief_semantics(
+        _PARTNERSHIP_TARGETING_BRIEF,
+        jd_text=jd,
+        research_notes=research_notes,
+        profile="apps_rg",
+    )
+
+    assert not quality.handoff_eligible
+    assert "security_trust" in quality.evidence_intents
+    assert "regulatory_and_legal" in quality.source_families_missing
+    assert "missing_intent_evidence" in quality.reason
 
 
 def test_generic_company_brief_is_not_quality_equivalent_to_targeting_packet() -> None:

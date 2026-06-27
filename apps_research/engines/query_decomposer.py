@@ -11,10 +11,8 @@ layer). CompanyBriefEngine delegates fan-out decisions to
 assembly-oriented.
 
 The decomposer produces distinct sub-queries covering canonical research
-facets. Partnership JDs get explicit partner, commercial, adoption, and
-funding/valuation query families instead of relying on generic role-context
-retrieval. That keeps retrieval-mode/provider migrations from silently
-changing the quality contract.
+facets. JD context promotes role-relevant evidence families through the shared
+intent contract instead of relying on generic role_context retrieval.
 """
 
 from __future__ import annotations
@@ -22,44 +20,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal
 
+from apps_research.types.jd_intent_coverage import (
+    infer_evidence_intents,
+    intent_ids,
+    required_families_for_intents,
+)
+
 Depth = Literal["shallow", "standard", "deep"]
 
 _FAN_OUT: dict[Depth, int] = {"shallow": 3, "standard": 4, "deep": 5}
 
 _FACET_TEMPLATES: tuple[tuple[str, str], ...] = (
-    (
-        "overview",
-        "{topic} company overview services positioning latest funding valuation announcements",
-    ),
-    (
-        "capabilities",
-        "{topic} technical capabilities platform enterprise product partnerships alliances",
-    ),
-    (
-        "leadership",
-        "{topic} executive leadership team strategic direction partnerships revenue",
-    ),
-    (
-        "market",
-        "{topic} enterprise customers partner ecosystem co-sell GSI ISV channel adoption",
-    ),
-    (
-        "risks",
-        "{topic} key risks competitive threats operational constraints latest valuation funding",
-    ),
-)
-
-_PARTNERSHIP_JD_HINTS: tuple[str, ...] = (
-    "partnership",
-    "partner",
-    "alliance",
-    "alliances",
-    "co-sell",
-    "cosell",
-    "ecosystem",
-    "gsi",
-    "isv",
-    "channel",
+    ("overview", "{topic} company overview services and positioning"),
+    ("capabilities", "{topic} technical capabilities and delivery methodology"),
+    ("leadership", "{topic} executive leadership team and strategic direction"),
+    ("market", "{topic} target market segments and client case studies"),
+    ("risks", "{topic} key risks competitive threats and operational constraints"),
 )
 
 
@@ -117,7 +93,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "recent_news_and_signals": {
-        "query_template": "{topic} news 2025 2026 announcements funding valuation partnership launch",
+        "query_template": "{topic} news 2025 2026 latest announcements funding valuation acquisition launch",
         "min_sources": 2,
     },
     "competitive_landscape": {
@@ -125,7 +101,7 @@ _COVERAGE_FAMILY_CATALOG: Dict[str, Dict[str, Any]] = {
         "min_sources": 1,
     },
     "financials_and_growth": {
-        "query_template": "{topic} latest funding valuation revenue growth Series H Series G",
+        "query_template": "{topic} latest funding valuation revenue growth metrics",
         "min_sources": 1,
     },
     "tech_stack_and_tools": {
@@ -298,11 +274,6 @@ def _jd_blob(jd_context: Dict[str, Any] | None) -> str:
     return " ".join(parts).lower()
 
 
-def _is_partnership_jd(jd_context: Dict[str, Any] | None) -> bool:
-    blob = _jd_blob(jd_context)
-    return any(token in blob for token in _PARTNERSHIP_JD_HINTS)
-
-
 def _ordered_unique(values: list[str]) -> list[str]:
     ordered: list[str] = []
     for value in values:
@@ -321,17 +292,17 @@ def decompose_coverage_families(
     Fan-out is determined by ``_PROFILE_REQUIRED_FAMILIES[depth_profile]``.
     When ``jd_context`` is provided, ``role_context`` and
     ``tech_stack_and_tools`` are included with the ``jd_boosted=True`` flag
-    even if they would not be selected by the base profile. Partnership JDs
-    promote explicit partner, commercial, adoption, recent-news, and
-    financial/growth families into the executable prefix; ``role_context``
-    alone is never treated as partner evidence.
+    even if they would not be selected by the base profile. JD-derived evidence
+    intents promote explicit source families into the executable prefix;
+    ``role_context`` alone is never treated as source evidence for a specific
+    role intent.
 
     Args:
         topic: Company or subject name.
         depth_profile: Canonical profile key (e.g. "COMPANY_BRIEF_STANDARD").
             Aliases (``"standard"``, ``"deep"``, etc.) are resolved.
         jd_context: Optional JD dict; activates role_context + tech_stack_and_tools
-            or explicit partnership retrieval families.
+            plus source families required by inferred role intents.
 
     Returns:
         Ordered list of :class:`QueryPlan` instances, one per family.
@@ -352,21 +323,21 @@ def decompose_coverage_families(
         )
     )
 
-    partnership_mode = _is_partnership_jd(jd_context)
-    if partnership_mode:
-        partner_prefix = [
+    intents = infer_evidence_intents(jd_context)
+    intent_required_families = list(required_families_for_intents(intents))
+
+    if intents:
+        intent_prefix = [
             "company_basics",
-            "financials_and_growth",
-            "partner_ecosystem",
-            "commercial_motion",
-            "adoption_motion",
-            "recent_news_and_signals",
+            *intent_required_families,
             "leadership_and_org",
-            "tech_stack_and_tools",
+            "recent_news_and_signals",
             "competitive_landscape",
+            "role_context",
+            "tech_stack_and_tools",
         ]
         base_families = _ordered_unique(
-            partner_prefix + [fam for fam in base_families if fam != "role_context"]
+            intent_prefix + [fam for fam in base_families if fam not in intent_prefix]
         )
     else:
         # JD presence activates role_context + tech_stack_and_tools if not already present.
@@ -387,13 +358,18 @@ def decompose_coverage_families(
             min_sources=cfg.get("min_sources", 1),
             jd_boosted=bool(jd_context) and (
                 fam in {"role_context", "tech_stack_and_tools"}
-                or (partnership_mode and fam in {
-                    "financials_and_growth",
-                    "partner_ecosystem",
-                    "commercial_motion",
-                    "adoption_motion",
-                    "recent_news_and_signals",
-                })
+                or fam in intent_required_families
             ),
         ))
     return plans
+
+
+def describe_jd_retrieval_contract(jd_context: Dict[str, Any] | None) -> dict[str, Any]:
+    """Return the JD-derived retrieval contract safe to persist in artifacts."""
+
+    intents = infer_evidence_intents(jd_context)
+    return {
+        "schema_version": "apps_research.jd_intent_retrieval_contract/v1",
+        "intent_ids": list(intent_ids(intents)),
+        "required_evidence_families": list(required_families_for_intents(intents)),
+    }

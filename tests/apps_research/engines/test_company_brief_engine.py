@@ -78,6 +78,39 @@ def test_engine_uses_jd_facets_into_mirror_seed(tmp_path, offline_env: None) -> 
         engine.execute({"topic": "TestCo", "jd_anchor": jd_path, "depth": "shallow"})
 
 
+def test_c0_bundle_records_retrieval_provenance_and_jd_intent(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
+    engine = CompanyBriefEngine()
+    jd_context = {
+        "job_title": "Security Architect",
+        "responsibilities": ["Own platform security, compliance, privacy, and deployment governance"],
+    }
+    findings = {
+        "company_basics": "https://example.com/company\nCompany DNA and operating model",
+        "role_context": "https://example.com/role\nRole context",
+        "leadership_and_org": "https://example.com/leadership\nLeadership",
+        "recent_news_and_signals": "https://example.com/news\nRecent news",
+        "competitive_landscape": "https://example.com/market\nMarket",
+        "regulatory_and_legal": "https://example.com/trust\nSecurity compliance privacy risk governance",
+        "tech_stack_and_tools": "https://example.com/platform\nPlatform architecture",
+    }
+
+    bundle = engine._build_c0_bundle(
+        topic="Acme",
+        depth_profile="COMPANY_BRIEF_STANDARD",
+        profile_cfg={},
+        findings=findings,
+        synthesis={},
+        jd_context=jd_context,
+    )
+
+    assert bundle["retrieval_config"]["retrieval_v2_enabled"] is True
+    assert "regulatory_and_legal" in bundle["retrieval_config"]["query_families"]
+    assert "security_trust" in bundle["jd_retrieval_contract"]["intent_ids"]
+    assert "regulatory_and_legal" in bundle["jd_retrieval_contract"]["required_evidence_families"]
+    assert "regulatory_and_legal" in bundle["synthesis_guidance"]["ordered_sections"]
+
+
 def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5")
     monkeypatch.setenv("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "777")
