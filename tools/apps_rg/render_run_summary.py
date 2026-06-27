@@ -119,6 +119,48 @@ def _gate_status(gates: Any, gate_id: str) -> str:
     return "missing"
 
 
+def _repo_rel(path: Path) -> str:
+    try:
+        rel = path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path
+    except ValueError:
+        rel = path
+    return str(rel)
+
+
+def _safe_manifest_rel(value: Any, default: str) -> Path:
+    raw = str(value or "").strip().replace("\\", "/") or default
+    if raw.startswith(("/", "\\")) or (len(raw) > 1 and raw[1] == ":"):
+        raw = default
+    if ".." in raw.split("/"):
+        raw = default
+    return Path(raw)
+
+
+def _first_existing_path(run_dir: Path, candidates: List[Path]) -> Path:
+    for candidate in candidates:
+        path = run_dir / candidate
+        if path.is_file():
+            return path
+    return run_dir / candidates[0]
+
+
+def _artifact_status(path: Path, *, required: bool, optional_reason: str = "") -> str:
+    if path.is_file():
+        return f"✅ {path.stat().st_size:,} bytes"
+    if required:
+        return "❌ missing"
+    reason = optional_reason.strip() or "not required by this run contract"
+    return f"➖ optional ({reason})"
+
+
+def _bundle_role_required(run_dir: Path, role: str, default: bool = False) -> bool:
+    bundle = _load_json(run_dir / "RUN_BUNDLE_INDEX.json") or {}
+    for entry in bundle.get("entries") or []:
+        if isinstance(entry, dict) and entry.get("role") == role:
+            return bool(entry.get("required"))
+    return default
+
+
 # ------------------------------------------------------------------- renderers
 
 
@@ -566,10 +608,15 @@ def _render_l2_substages(terminal_packet: Optional[Dict[str, Any]]) -> List[str]
     return lines
 
 
-def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]]) -> List[str]:
+def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]], run_dir: Path | None = None) -> List[str]:
     lines: List[str] = ["## Narrative HOP Checkpoints (Sub-steps)", ""]
     if not run_report:
-        lines.append("_run_report.json not found — narrative HOPs unavailable._")
+        if run_dir is not None and (run_dir / "full_run_section_status.json").is_file():
+            lines.append(
+                "_Legacy run_report.json not emitted; modular R4 section status is rendered below._"
+            )
+        else:
+            lines.append("_run_report.json not found — narrative HOPs unavailable._")
         lines.append("")
         return lines
     checkpoints = run_report.get("checkpoints", []) or []
@@ -587,10 +634,15 @@ def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]]) -> List[str]:
     return lines
 
 
-def _render_section_verdicts(run_report: Optional[Dict[str, Any]]) -> List[str]:
+def _render_section_verdicts(run_report: Optional[Dict[str, Any]], run_dir: Path | None = None) -> List[str]:
     lines: List[str] = ["## Per-Section Narrative Verdicts", ""]
     if not run_report:
-        lines.append("_run_report.json not found — verdicts unavailable._")
+        if run_dir is not None and (run_dir / "full_run_section_status.json").is_file():
+            lines.append(
+                "_Legacy run_report.json not emitted; modular R4 section verdicts are rendered below._"
+            )
+        else:
+            lines.append("_run_report.json not found — verdicts unavailable._")
         lines.append("")
         return lines
     narrative = run_report.get("narrative", {}) or {}
@@ -611,6 +663,31 @@ def _render_section_verdicts(run_report: Optional[Dict[str, Any]]) -> List[str]:
         icon = "✅" if accepted else "❌"
         lines.append(
             f"| `{section}` | {tier} | {source} | {comp:.4f} | {icon} | `{gate}` |"
+        )
+    lines.append("")
+    return lines
+
+
+def _render_modular_section_status(run_dir: Path) -> List[str]:
+    status_doc = _load_json(run_dir / "full_run_section_status.json") or {}
+    lanes = [row for row in (status_doc.get("lanes") or []) if isinstance(row, dict)]
+    if not lanes:
+        return []
+    lines: List[str] = ["## Modular Section Status", ""]
+    lines.append(
+        "Source: `full_run_section_status.json` — modular R4 section evidence "
+        "when legacy `run_report.json` is not emitted."
+    )
+    lines.append("")
+    lines.append("| Section | X3 | X2 | Product quality | Runtime | Display |")
+    lines.append("|---|---|---|---|---|---|")
+    for row in lanes:
+        display = str(row.get("display_txt_relpath") or "").strip()
+        display_status = f"`{display}`" if display else "—"
+        lines.append(
+            f"| `{row.get('lane') or '—'}` | `{row.get('x3_code') or '—'}` | "
+            f"`{row.get('x2_pass') or '—'}` | `{row.get('product_quality_status') or '—'}` | "
+            f"`{row.get('runtime_generation_status') or '—'}` | {display_status} |"
         )
     lines.append("")
     return lines
@@ -684,14 +761,15 @@ def _render_l7_certification(l7: Optional[Dict[str, Any]]) -> List[str]:
         lines.append("_agentic_core_l7_route_family_coverage.json not found._")
         lines.append("")
         return lines
-    summary = l7.get("summary") or {}
+    payload = l7.get("payload") if isinstance(l7.get("payload"), dict) else l7
+    summary = payload.get("summary") or {}
     lines.append(
         f"Certified: **{summary.get('certified', 0)} / {summary.get('total_families', 0)}** · "
         f"fixture-only: {summary.get('fixture_only', 0)} · "
         f"not certified: {summary.get('not_certified', 0)}"
     )
     lines.append("")
-    families = l7.get("route_families") or []
+    families = payload.get("route_families") or []
     if families:
         lines.append("| Family | Status | Proof class | Exercised |")
         lines.append("|---|---|---|---|")
@@ -708,23 +786,68 @@ def _render_l7_certification(l7: Optional[Dict[str, Any]]) -> List[str]:
 
 def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> List[str]:
     lines: List[str] = ["## Output Artifacts", ""]
-    docx = run_dir / "Amit_Ayer_Resume.docx"
-    json_resume = run_dir / "generated_resume.json"
+    output_manifest = _load_json(run_dir / "apps_rg_output_manifest.json") or {}
+    json_rel = _safe_manifest_rel(
+        output_manifest.get("generated_resume_json_relpath"),
+        "outputs/generated_resume.json",
+    )
+    json_resume = _first_existing_path(
+        run_dir,
+        [
+            json_rel,
+            Path("outputs/generated_resume.json"),
+            Path("generated_resume.json"),
+            Path("modular_r4/outputs/final_resume.json"),
+        ],
+    )
+    json_required = True
+
+    docx = _first_existing_path(
+        run_dir,
+        [
+            Path("outputs/resume.docx"),
+            Path("Amit_Ayer_Resume.docx"),
+        ],
+    )
+    if "docx_output_required" in output_manifest:
+        docx_required = bool(output_manifest.get("docx_output_required"))
+    else:
+        docx_required = _bundle_role_required(run_dir, "product_resume_docx_outputs") or _bundle_role_required(
+            run_dir,
+            "product_resume_docx_branded",
+        )
+    run_report_path = run_dir / "run_report.json"
+    run_report_required = _bundle_role_required(run_dir, "narrative_run_report", default=False)
+    section_status = run_dir / "full_run_section_status.json"
+    final_assembly = run_dir / "modular_r4" / "final_resume_assembly" / "final_resume_manifest.json"
+    final_assembly_required = (run_dir / "modular_r4").is_dir() or bool(output_manifest)
+    review_bundle = run_dir / "review_bundle.zip"
     rows: List[Tuple[str, str, str]] = []
-    for label, path in [
-        ("Resume DOCX", docx),
-        ("Resume JSON", json_resume),
-        ("Run manifest", run_dir / "r4_run_manifest.json"),
-        ("Run report", run_dir / "run_report.json"),
-        ("How-trace", run_dir / "agentic_core_how_trace.json"),
-        ("L7 coverage", run_dir / "agentic_core_l7_route_family_coverage.json"),
-        ("Spine proof", run_dir / "agentic_core_spine_proof.json"),
-    ]:
-        exists = path.is_file()
-        size = f"{path.stat().st_size:,} bytes" if exists else "missing"
-        icon = "✅" if exists else "❌"
-        rel = path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path
-        rows.append((label, str(rel), f"{icon} {size}"))
+    artifact_rows: List[Tuple[str, Path, bool, str]] = [
+        ("Resume JSON", json_resume, json_required, ""),
+        ("Resume DOCX", docx, docx_required, "docx_output_required=false"),
+        ("Run manifest", run_dir / "r4_run_manifest.json", True, ""),
+        (
+            "Run report",
+            run_report_path,
+            run_report_required,
+            "modular R4 uses full_run_section_status.json",
+        ),
+        ("Section status", section_status, False, "legacy narrative report replacement"),
+        ("Final assembly manifest", final_assembly, final_assembly_required, ""),
+        ("Review bundle", review_bundle, False, "operator review package"),
+        ("How-trace", run_dir / "agentic_core_how_trace.json", True, ""),
+        ("L7 coverage", run_dir / "agentic_core_l7_route_family_coverage.json", True, ""),
+        ("Spine proof", run_dir / "agentic_core_spine_proof.json", False, "supplemental spine proof"),
+    ]
+    for label, path, required, optional_reason in artifact_rows:
+        rows.append(
+            (
+                label,
+                _repo_rel(path),
+                _artifact_status(path, required=required, optional_reason=optional_reason),
+            )
+        )
     lines.append("| Artifact | Path | Status |")
     lines.append("|---|---|---|")
     for label, path, stat in rows:
@@ -759,8 +882,9 @@ def render(run_dir: Path) -> str:
     parts += _render_bcg_competencies_report(run_dir)
     parts += _render_bcg_unify_bullets_report(run_dir)
     parts += _render_l2_substages(terminal)
-    parts += _render_hop_checkpoints(run_report)
-    parts += _render_section_verdicts(run_report)
+    parts += _render_hop_checkpoints(run_report, run_dir)
+    parts += _render_section_verdicts(run_report, run_dir)
+    parts += _render_modular_section_status(run_dir)
     parts += _render_gate_failures(run_report)
     parts += _render_quality_reports(run_report)
     parts += _render_l7_certification(l7)

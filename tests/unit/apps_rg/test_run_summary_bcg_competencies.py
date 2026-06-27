@@ -282,3 +282,80 @@ def test_render_run_summary_surfaces_bcg_unify_bullets_c0_report(tmp_path: Path)
     assert "stage_or_semantic_cache_after_generation" in out
     assert "X2 metric lineage gates" in out
     assert "forbidden_for_product_retrieval" in out
+
+
+def test_render_run_summary_uses_modular_r4_outputs_and_nested_l7(tmp_path: Path) -> None:
+    run_dir = tmp_path / "full_resume_current_contract"
+    run_dir.mkdir()
+    outputs = run_dir / "outputs"
+    outputs.mkdir()
+    modular = run_dir / "modular_r4" / "final_resume_assembly"
+    modular.mkdir(parents=True)
+    (outputs / "generated_resume.json").write_text('{"resume": "ok"}\n', encoding="utf-8")
+    _write_json(
+        run_dir / "apps_rg_output_manifest.json",
+        {
+            "schema_version": "apps_rg_output_manifest.v1",
+            "generated_resume_json_relpath": "outputs/generated_resume.json",
+            "full_resume_generated": True,
+            "docx_output_required": False,
+        },
+    )
+    _write_json(run_dir / "r4_run_manifest.json", {"run_id": "r4"})
+    _write_json(run_dir / "runtime_identity_envelope.json", {"payload": {"run_id": "r4"}})
+    _write_json(run_dir / "terminal_ret_packet.json", {"payload": {}})
+    _write_json(run_dir / "agentic_core_how_trace.json", {"ok": True})
+    _write_json(run_dir / "agentic_core_spine_proof.json", {"ok": True})
+    _write_json(
+        run_dir / "agentic_core_l7_route_family_coverage.json",
+        {
+            "payload": {
+                "summary": {
+                    "certified": 1,
+                    "total_families": 9,
+                    "fixture_only": 1,
+                    "not_certified": 8,
+                },
+                "route_families": [
+                    {
+                        "route_family": "R4_SINGLE_ACTION",
+                        "certification_status": "CERTIFIED",
+                        "proof_class": "REAL_RUNTIME",
+                        "exercised_in_current_run": True,
+                    }
+                ],
+            }
+        },
+    )
+    _write_json(
+        run_dir / "full_run_section_status.json",
+        {
+            "lanes": [
+                {
+                    "lane": "competencies",
+                    "x3_code": "X3_ALLOW",
+                    "x2_pass": "PASS",
+                    "product_quality_status": "PASS",
+                    "runtime_generation_status": "REAL_LLM",
+                    "display_txt_relpath": "lanes/competencies/competencies_display.txt",
+                }
+            ]
+        },
+    )
+    _write_json(modular / "final_resume_manifest.json", {"gates": {"passed": 23, "total": 23}})
+    (run_dir / "review_bundle.zip").write_text("zip", encoding="utf-8")
+
+    out = render(run_dir)
+
+    assert "Certified: **1 / 9**" in out
+    assert "`R4_SINGLE_ACTION` | ✅ CERTIFIED | `REAL_RUNTIME` | ✅" in out
+    assert "| **Resume JSON** |" in out
+    assert "outputs" in out and "generated_resume.json" in out
+    assert "| **Resume DOCX** |" in out
+    assert "optional (docx_output_required=false)" in out
+    assert "| **Run report** |" in out
+    assert "optional (modular R4 uses full_run_section_status.json)" in out
+    assert "## Modular Section Status" in out
+    assert "`competencies` | `X3_ALLOW` | `PASS` | `PASS` | `REAL_LLM`" in out
+    assert "Final assembly manifest" in out
+    assert "review_bundle.zip" in out
