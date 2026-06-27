@@ -224,6 +224,45 @@ def _gate_results_matches_snapshot(data: dict[str, Any], snapshot_path: Path) ->
     return False
 
 
+def _fresh_same_run_artifact(
+    *,
+    key: str,
+    adg_run_id: str,
+    since_wall_start: float,
+) -> tuple[Path | None, str | None]:
+    names = {
+        "snapshot": f"adg_indexed_{adg_run_id}.sqlite",
+        "burndown_report": f"adg_burndown_report_{adg_run_id}.md",
+        "burndown_table": f"adg_burndown_table_{adg_run_id}.json",
+    }
+    path = ARTIFACTS_ADG / names[key]
+    if not path.is_file():
+        return None, f"{key} same-run artifact missing: {path}"
+    if path.stat().st_mtime + 2 < since_wall_start:
+        return None, f"{key} same-run artifact stale before audit start: {path}"
+    if not _is_timestamped_artifact(path, key):
+        return None, f"{key} same-run artifact is not timestamped: {path}"
+    return path, None
+
+
+def _recover_snapshot_from_run_stamp(
+    *,
+    snapshot_path: Path | None,
+    adg_run_id: str | None,
+    since_wall_start: float,
+) -> tuple[Path | None, list[str]]:
+    if snapshot_path is not None:
+        return snapshot_path, []
+    if not adg_run_id:
+        return None, ["snapshot missing and adg_run_id unavailable for recovery"]
+    recovered, error = _fresh_same_run_artifact(
+        key="snapshot",
+        adg_run_id=adg_run_id,
+        since_wall_start=since_wall_start,
+    )
+    return recovered, ([] if error is None else [error])
+
+
 def _find_gate_results_for_snapshot(
     snapshot_path: Path,
     *,
@@ -270,6 +309,31 @@ def _materialize_timestamped_copy(
     if source.resolve() != out.resolve():
         shutil.copyfile(source, out)
     return out, None
+
+
+def _resolve_burndown_for_handoff(
+    *,
+    key: str,
+    source: Path,
+    adg_run_id: str,
+    since_wall_start: float,
+) -> tuple[Path | None, str | None]:
+    same_run, same_run_error = _fresh_same_run_artifact(
+        key=key,
+        adg_run_id=adg_run_id,
+        since_wall_start=since_wall_start,
+    )
+    if same_run is not None:
+        return same_run, None
+    materialized, materialize_error = _materialize_timestamped_copy(
+        key=key,
+        source=source,
+        adg_run_id=adg_run_id,
+        since_wall_start=since_wall_start,
+    )
+    if materialized is not None:
+        return materialized, None
+    return None, materialize_error or same_run_error
 
 
 def _ensure_action_queue_for_handoff(
@@ -358,6 +422,12 @@ def _build_repair_handoff(
     adg_run_id = _derive_adg_run_stamp(generation_manifest, generation_manifest_path, snapshot_path)
     if not adg_run_id:
         errors.append("adg_run_id could not be derived from timestamped manifest or snapshot")
+    snapshot_path, snapshot_recovery_errors = _recover_snapshot_from_run_stamp(
+        snapshot_path=snapshot_path,
+        adg_run_id=adg_run_id,
+        since_wall_start=since_wall_start,
+    )
+    errors.extend(snapshot_recovery_errors)
 
     required_paths: dict[str, Path | None] = {
         "generation_manifest": generation_manifest_path,
@@ -403,7 +473,7 @@ def _build_repair_handoff(
     burndown_table_path: Path | None = None
     burndown_report_path: Path | None = None
     if adg_run_id:
-        burndown_table_path, err = _materialize_timestamped_copy(
+        burndown_table_path, err = _resolve_burndown_for_handoff(
             key="burndown_table",
             source=ARTIFACTS_ADG / "adg_burndown_table.json",
             adg_run_id=adg_run_id,
@@ -411,7 +481,7 @@ def _build_repair_handoff(
         )
         if err:
             errors.append(err)
-        burndown_report_path, err = _materialize_timestamped_copy(
+        burndown_report_path, err = _resolve_burndown_for_handoff(
             key="burndown_report",
             source=ARTIFACTS_ADG / "adg_burndown_report.md",
             adg_run_id=adg_run_id,
@@ -565,11 +635,28 @@ def validate_repair_handoff_receipt(
         except (OSError, json.JSONDecodeError) as exc:
             errors.append(f"generation_manifest malformed: {exc}")
         else:
-            if snapshot_path and not (
-                _path_matches(generation_manifest.get("sqlite_path"), snapshot_path)
-                or _path_matches(generation_manifest.get("snapshot_path"), snapshot_path)
-            ):
-                errors.append("generation_manifest snapshot path differs from repair_handoff")
+            manifest_snapshot_declared = bool(
+                generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
+            )
+            if snapshot_path and manifest_snapshot_declared:
+                if not (
+                    _path_matches(generation_manifest.get("sqlite_path"), snapshot_path)
+                    or _path_matches(generation_manifest.get("snapshot_path"), snapshot_path)
+                ):
+                    errors.append("generation_manifest snapshot path differs from repair_handoff")
+            elif snapshot_path and not manifest_snapshot_declared:
+                manifest_stamp = _stamp_from_artifact_name(
+                    generation_path,
+                    prefix="adg_generation_manifest_",
+                    suffix=".json",
+                )
+                snapshot_stamp = _stamp_from_artifact_name(
+                    snapshot_path,
+                    prefix="adg_indexed_",
+                    suffix=".sqlite",
+                )
+                if manifest_stamp != snapshot_stamp:
+                    errors.append("generation_manifest missing snapshot path and run stamp differs from repair_handoff")
             if gate_manifest_path and not _path_matches(
                 generation_manifest.get("gate_manifest_path"),
                 gate_manifest_path,

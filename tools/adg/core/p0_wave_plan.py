@@ -33,6 +33,7 @@ _PROTECTED_PATH_PREFIXES = (
     "agentic_core/L3_",
     "agentic_core/L5_",
 )
+_PRODUCTION_LAYERS = frozenset({"L1", "L2", "L3", "L4", "L5", "L_APP", "L_PG"})
 
 
 def _readonly_uri(path: Path) -> str:
@@ -60,6 +61,8 @@ def _is_protected_surface(source_file: str, from_layer: str, to_layer: str) -> b
 
 
 def _priority_weight(issue_type: str, protected_surface: bool) -> int:
+    if issue_type == "l0_reachability_orphan":
+        return 900
     if issue_type == "dynamic_exec":
         return 1000
     if issue_type == "circular_import":
@@ -88,6 +91,91 @@ def _row_to_issue(row: sqlite3.Row, issue_type: str) -> dict[str, Any]:
     }
     issue["priority_score"] = _priority_weight(issue_type, protected_surface) + direct_fan_in
     return issue
+
+
+def _source_file_exists(source_file: str) -> bool:
+    return bool(source_file) and (_REPO_ROOT / source_file).is_file()
+
+
+def _build_l0_reachability_orphans(conn: sqlite3.Connection, limit: int) -> list[dict[str, Any]]:
+    node_rows = conn.execute(
+        """
+        SELECT
+            id,
+            COALESCE(layer, '') AS layer,
+            COALESCE(entity_type, '') AS entity_type,
+            COALESCE(resolved_path, '') AS resolved_path,
+            COALESCE(file_path, '') AS file_path,
+            COALESCE(adg_name, '') AS adg_name
+        FROM nodes
+        """
+    ).fetchall()
+    nodes: dict[int, dict[str, Any]] = {int(row["id"]): dict(row) for row in node_rows}
+    l0_seeds = {
+        node_id
+        for node_id, data in nodes.items()
+        if data.get("layer") == "L0" and data.get("entity_type") == "module"
+    }
+    if not l0_seeds:
+        return []
+
+    adjacency: dict[int, set[int]] = {}
+    fan_in: dict[int, int] = {}
+    for src_id, dst_id in conn.execute("SELECT src_id, dst_id FROM edges WHERE relation_type='imports'"):
+        src = int(src_id)
+        dst = int(dst_id)
+        if src not in nodes or dst not in nodes:
+            continue
+        adjacency.setdefault(src, set()).add(dst)
+        fan_in[dst] = fan_in.get(dst, 0) + 1
+
+    reachable = set(l0_seeds)
+    frontier = list(l0_seeds)
+    while frontier:
+        current = frontier.pop()
+        for dst in adjacency.get(current, set()):
+            if dst in reachable:
+                continue
+            reachable.add(dst)
+            frontier.append(dst)
+
+    issues: list[dict[str, Any]] = []
+    for node_id, data in nodes.items():
+        if data.get("entity_type") != "module":
+            continue
+        layer = str(data.get("layer") or "")
+        if layer not in _PRODUCTION_LAYERS:
+            continue
+        source_file = str(data.get("resolved_path") or data.get("file_path") or "")
+        if source_file and not _source_file_exists(source_file):
+            continue
+        if node_id in reachable:
+            continue
+        protected_surface = _is_protected_surface(source_file, "L0", layer)
+        direct_fan_in = int(fan_in.get(node_id, 0))
+        issue = {
+            "issue_type": "l0_reachability_orphan",
+            "source_file": source_file or str(data.get("adg_name") or f"node#{node_id}"),
+            "line_no": 0,
+            "from_name": "L0 entrypoint set",
+            "to_name": str(data.get("adg_name") or f"node#{node_id}"),
+            "from_layer": "L0",
+            "to_layer": layer,
+            "direct_fan_in": direct_fan_in,
+            "protected_surface": protected_surface,
+            "gate_id": "G_REACH_l0_reachability",
+            "ratchet": True,
+        }
+        issue["priority_score"] = _priority_weight("l0_reachability_orphan", protected_surface) + direct_fan_in
+        issues.append(issue)
+
+    issues.sort(
+        key=lambda item: (
+            -int(item["priority_score"]),
+            item["source_file"],
+        )
+    )
+    return issues[:limit]
 
 
 def _aggregate_top_files(issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -207,6 +295,7 @@ def build_p0_remediation_wave_plan(sqlite_path: Path, limit: int = 100) -> dict[
         dynamic_exec = [
             _row_to_issue(row, "dynamic_exec") for row in conn.execute(query, ("dynamic_exec", safe_limit))
         ]
+        l0_reachability_orphans = _build_l0_reachability_orphans(conn, safe_limit)
     finally:
         conn.close()
 
@@ -222,14 +311,21 @@ def build_p0_remediation_wave_plan(sqlite_path: Path, limit: int = 100) -> dict[
             circular_imports + dynamic_exec,
         ),
         _wave(
-            "wave_1_protected_planes",
+            "wave_1_l0_reachability_ratchet",
+            "L0 reachability ratchet repair",
+            "Restore live import reachability from L0 entry modules to production modules flagged by G_REACH.",
+            "G_REACH_l0_reachability has zero rows or is back at its approved floor with no net-new regression.",
+            l0_reachability_orphans,
+        ),
+        _wave(
+            "wave_2_protected_planes",
             "Protected-plane boundary fixes",
             "Resolve layer violations touching protected planes first so routing, execution, orchestration, and safety are stabilized before broader cleanup.",
             "Zero layer-violation edges remain for L0, L2, L3, and L5 surfaces.",
             protected_violations,
         ),
         _wave(
-            "wave_2_remaining_boundary_cleanup",
+            "wave_3_remaining_boundary_cleanup",
             "Remaining boundary cleanup",
             "Burn down the rest of the P0 layer-violation inventory after the protected surfaces are clean.",
             "Zero remaining layer-violation edges remain in the canonical snapshot.",
@@ -237,12 +333,13 @@ def build_p0_remediation_wave_plan(sqlite_path: Path, limit: int = 100) -> dict[
         ),
     ]
 
-    all_issues = circular_imports + dynamic_exec + layer_violations
+    all_issues = circular_imports + dynamic_exec + l0_reachability_orphans + layer_violations
     summary = {
         "total_p0_issues": len(all_issues),
         "layer_violations": len(layer_violations),
         "circular_imports": len(circular_imports),
         "dynamic_exec": len(dynamic_exec),
+        "l0_reachability_orphans": len(l0_reachability_orphans),
         "protected_layer_violations": len(protected_violations),
         "remaining_layer_violations": len(remaining_violations),
     }
@@ -274,6 +371,7 @@ def render_p0_remediation_wave_plan(plan: dict[str, Any], ts: str) -> str:
         f"- Layer violations: **{summary.get('layer_violations', 0)}**",
         f"- Circular imports: **{summary.get('circular_imports', 0)}**",
         f"- Dynamic execution: **{summary.get('dynamic_exec', 0)}**",
+        f"- L0 reachability orphans: **{summary.get('l0_reachability_orphans', 0)}**",
         f"- Protected-layer violations: **{summary.get('protected_layer_violations', 0)}**",
         "",
     ]
