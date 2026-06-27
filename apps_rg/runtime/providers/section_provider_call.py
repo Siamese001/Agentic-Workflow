@@ -7,7 +7,6 @@ same requests route through ``ProviderGateway`` for external profiles.
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -106,20 +105,14 @@ def call_section_model_provider(
     # so Claude-backed lanes can use section-specific model overrides (headline/executive_summary
     # -> Opus) instead of every Claude lane silently using the section-agnostic default. Only
     # applied for the external Claude profile; an unknown/missing section resolves to the default.
-    # An explicit operator pin (``APPS_RG_EXTERNAL_CLAUDE_MODEL``) is the highest-precedence
-    # override and wins over the per-section SSOT tier — it is the deliberate "run everything on
-    # model X" lever. The SSOT resolver itself stays YAML-only (per-section -> default); the env
-    # override lives here at the call site so it never leaks into ``resolve_section_generation_model``
-    # and can only take effect when an operator sets it (it is not autoloaded into the environment).
+    # The SSOT resolver is authoritative here: section-specific table entries must win over
+    # ambient environment pins so an end-to-end run cannot accidentally force every lane onto one
+    # model.
     sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()
     claude_model: str | None = None
     openai_model: str | None = None
     if profile == ProviderProfile.EXTERNAL_CLAUDE:
-        operator_pin = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_MODEL", "").strip()
-        if operator_pin:
-            claude_model = operator_pin
-        else:
-            claude_model = resolve_section_generation_model(sid or None)
+        claude_model = resolve_section_generation_model(sid or None)
     elif profile == ProviderProfile.EXTERNAL_OPENAI:
         openai_model = external_openai_generation_model(section_id=sid or None)
     result = build_section_provider_gateway(

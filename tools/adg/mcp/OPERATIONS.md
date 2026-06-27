@@ -45,9 +45,11 @@ python tools/mcp/check_adg_sqlite_transport.py --json
 
 This check is fail-closed for Codex callability: heartbeat/process evidence is
 not enough for `status=open`. It reports open only when a fresh authoritative
-heartbeat is paired with `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy`, which must be
-set only after a live `mcp__adg_sqlite.adg_health` or `adg_runtime_info` call
-succeeds in the active Codex session.
+heartbeat is paired with `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` and
+`CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid>`, where the PID is alive and matches
+the heartbeat owner. Set those only after a live `mcp__adg_sqlite.adg_health`,
+`adg_runtime_info`, or `adg_process_identity` call succeeds in the active Codex
+session.
 
 Call `adg_runtime_info` before and after. A genuine process restart shows:
 

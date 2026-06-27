@@ -121,6 +121,15 @@ def test_repo_local_singular_automation_tree_fails(tmp_path: Path) -> None:
     assert any(issue.code == "repo_duplicate_enforcement_home" for issue in issues)
 
 
+def test_repo_local_agent_instruction_tree_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "agent-instructions" / "boundary-auditor.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" for issue in issues)
+
+
 def test_user_profile_skill_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"

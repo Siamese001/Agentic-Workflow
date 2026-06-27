@@ -32,6 +32,7 @@ DEFAULT_STATE_RELATIVE_PATH = Path("artifacts/mcp_heartbeat/adg_sqlite_launcher.
 REDIS_PROBE_TIMEOUT_SECONDS = 0.25
 CALLABLE_PROOF_ENV = "CODEX_MCP_CALLABLE_ADG_SQLITE"
 CALLABLE_PROOF_HEALTHY = "healthy"
+ATTACHED_PID_ENV = "CODEX_MCP_ATTACHED_ADG_SQLITE_PID"
 
 
 def _utc_now() -> str:
@@ -308,6 +309,16 @@ def heartbeat_status(markers: Sequence[str] = ADG_SERVER_MARKERS) -> list[dict[s
     return rows
 
 
+def _parse_pid(raw: str | None) -> int | None:
+    if raw is None or not raw.strip():
+        return None
+    try:
+        pid = int(raw.strip())
+    except ValueError:
+        return None
+    return pid if pid > 0 else None
+
+
 def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[str, Any]:
     """Return whether the active Codex host proved ADG MCP callability.
 
@@ -318,15 +329,28 @@ def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[s
     """
     resolved_env = env if env is not None else os.environ
     raw = (resolved_env.get(CALLABLE_PROOF_ENV) or "").strip().lower()
+    attached_pid_raw = resolved_env.get(ATTACHED_PID_ENV)
+    attached_pid = _parse_pid(attached_pid_raw)
+    attached_pid_alive = _process_alive(attached_pid)
+    callable_ok = (
+        raw == CALLABLE_PROOF_HEALTHY
+        and attached_pid is not None
+        and attached_pid_alive is True
+    )
     return {
         "env_key": CALLABLE_PROOF_ENV,
         "status": raw or "absent",
-        "callable": raw == CALLABLE_PROOF_HEALTHY,
+        "callable": callable_ok,
         "required_value": CALLABLE_PROOF_HEALTHY,
+        "attached_pid_env_key": ATTACHED_PID_ENV,
+        "attached_pid": attached_pid,
+        "attached_pid_alive": attached_pid_alive,
         "proof_required": (
-            "Set CODEX_MCP_CALLABLE_ADG_SQLITE=healthy only after a live "
+            "Set CODEX_MCP_CALLABLE_ADG_SQLITE=healthy and "
+            "CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid> only after a live "
             "mcp__adg_sqlite.adg_health or adg_runtime_info call succeeds "
-            "in the active Codex session."
+            "in the active Codex session; use adg_process_identity or "
+            "adg_runtime_info for the attached PID."
         ),
     }
 
@@ -344,19 +368,33 @@ def transport_status(
     heartbeats = heartbeat_status()
     callable_proof = callable_proof_status(resolved_env)
     heartbeat_authoritative = any(row.get("authoritative") for row in heartbeats)
+    heartbeat_authoritative_pids = {
+        int(row["pid"])
+        for row in heartbeats
+        if row.get("authoritative") and isinstance(row.get("pid"), int)
+    }
     fresh_transport = any(row.get("fresh") for row in heartbeats)
-    open_transport = heartbeat_authoritative and bool(callable_proof["callable"])
+    proof_pid = callable_proof.get("attached_pid")
+    proof_pid_matches_heartbeat = (
+        isinstance(proof_pid, int) and proof_pid in heartbeat_authoritative_pids
+    )
+    open_transport = (
+        heartbeat_authoritative
+        and bool(callable_proof["callable"])
+        and proof_pid_matches_heartbeat
+    )
 
     if open_transport:
         status = "open"
     elif preflight["status"] == "critical":
         status = "blocked"
     elif heartbeat_authoritative or fresh_transport:
-        status = (
-            "closed_transport"
-            if callable_proof["status"] == "closed_transport"
-            else "callability_unproven"
-        )
+        if callable_proof["status"] == "closed_transport":
+            status = "closed_transport"
+        elif callable_proof["status"] == CALLABLE_PROOF_HEALTHY:
+            status = "stale_callable_proof"
+        else:
+            status = "callability_unproven"
     else:
         status = "closed"
 
@@ -368,6 +406,8 @@ def transport_status(
         "heartbeats": heartbeats,
         "open": open_transport,
         "heartbeat_authoritative": heartbeat_authoritative,
+        "heartbeat_authoritative_pids": sorted(heartbeat_authoritative_pids),
+        "proof_pid_matches_heartbeat": proof_pid_matches_heartbeat,
         "callable_proof": callable_proof,
     }
 
@@ -458,6 +498,7 @@ def main_check(argv: Sequence[str] | None = None) -> int:
 
 __all__ = [
     "ADG_SERVER_MARKERS",
+    "ATTACHED_PID_ENV",
     "CALLABLE_PROOF_ENV",
     "CALLABLE_PROOF_HEALTHY",
     "LAUNCHER_MARKER",

@@ -155,6 +155,7 @@ def test_transport_status_open_requires_authoritative_heartbeat_and_callable_pro
     monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
     monkeypatch.delenv("ADG_REDIS_URL", raising=False)
     monkeypatch.setenv(supervisor.CALLABLE_PROOF_ENV, "healthy")
+    monkeypatch.setenv(supervisor.ATTACHED_PID_ENV, str(os.getpid()))
     monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
     marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
     marker_path.write_text(f"{time.time():.3f}:{os.getpid()}\n", encoding="utf-8")
@@ -163,7 +164,60 @@ def test_transport_status_open_requires_authoritative_heartbeat_and_callable_pro
 
     assert result["status"] == "open"
     assert result["callable_proof"]["callable"] is True
+    assert result["proof_pid_matches_heartbeat"] is True
     assert result["open"] is True
+
+
+def test_transport_status_healthy_proof_with_dead_pid_is_not_open(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    adg_dir = tmp_path / "artifacts" / "adg"
+    _write_snapshot(adg_dir)
+    heartbeat_dir = tmp_path / "hb"
+    heartbeat_dir.mkdir()
+    monkeypatch.setenv("ADG_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+    monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+    monkeypatch.setenv(supervisor.CALLABLE_PROOF_ENV, "healthy")
+    monkeypatch.setenv(supervisor.ATTACHED_PID_ENV, "999999")
+    monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
+    marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
+    marker_path.write_text(f"{time.time():.3f}:{os.getpid()}\n", encoding="utf-8")
+
+    result = supervisor.transport_status(state_path=tmp_path / "missing.json")
+
+    assert result["status"] == "stale_callable_proof"
+    assert result["callable_proof"]["callable"] is False
+    assert result["callable_proof"]["attached_pid_alive"] is False
+    assert result["open"] is False
+
+
+def test_transport_status_healthy_proof_with_mismatched_heartbeat_pid_is_not_open(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    adg_dir = tmp_path / "artifacts" / "adg"
+    _write_snapshot(adg_dir)
+    heartbeat_dir = tmp_path / "hb"
+    heartbeat_dir.mkdir()
+    monkeypatch.setenv("ADG_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+    monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+    monkeypatch.setenv(supervisor.CALLABLE_PROOF_ENV, "healthy")
+    monkeypatch.setenv(supervisor.ATTACHED_PID_ENV, str(os.getpid()))
+    monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
+    marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
+    marker_path.write_text(f"{time.time():.3f}:999999\n", encoding="utf-8")
+
+    result = supervisor.transport_status(state_path=tmp_path / "missing.json")
+
+    assert result["status"] == "stale_callable_proof"
+    assert result["callable_proof"]["callable"] is True
+    assert result["proof_pid_matches_heartbeat"] is False
+    assert result["open"] is False
 
 
 def test_guard_markers_include_supervised_launcher() -> None:

@@ -33,6 +33,7 @@ AUTOMATION_DIR_BY_ID = {
     "weekly-svp-readme-documentation-refresh": "svp-readme-documentation-refresh",
 }
 FORBIDDEN_REPO_CODEX_TREES = (
+    ".codex/agent-instructions",
     ".codex/automation",
 )
 # Codex app deployment records live under CODEX_HOME/automations. This guard

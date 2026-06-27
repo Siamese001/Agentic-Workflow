@@ -19,8 +19,6 @@ from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 from agentic_core.runtime.contracts.route_contract import RouteContract
-from apps_research import integrations as _integrations
-
 _LOGGER = logging.getLogger(__name__)
 
 APPS_RESEARCH_L0_CERT_REF: str = "l0-apps-research-company-brief-ag9"
