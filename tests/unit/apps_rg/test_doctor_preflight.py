@@ -38,6 +38,7 @@ def test_strict_missing_generation_key_blocks(_clean_env) -> None:
     key_check = _by_name(checks, "generation_provider_key")
     assert key_check.is_blocking
     assert "ANTHROPIC_API_KEY" in key_check.detail
+    assert "OPENAI_API_KEY" in key_check.detail
 
 
 def test_missing_fact_vectors_suggests_bootstrap(_clean_env) -> None:

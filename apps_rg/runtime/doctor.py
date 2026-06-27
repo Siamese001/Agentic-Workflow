@@ -55,17 +55,28 @@ def _resolve_chroma_path() -> str:
 
 
 def _check_generation_provider_key() -> DoctorCheck:
-    """external_claude is the sole apps_rg generator; it reads ANTHROPIC_API_KEY."""
-    if os.environ.get("ANTHROPIC_API_KEY", "").strip():
+    """Default apps_rg E2E generation needs Anthropic and OpenAI keys."""
+    required_keys = {
+        "ANTHROPIC_API_KEY": "Claude-backed bullets, headline, and executive_summary lanes",
+        "OPENAI_API_KEY": "OpenAI-backed competencies and narrative lanes",
+    }
+    missing = [var for var in required_keys if not os.environ.get(var, "").strip()]
+    if not missing:
         return DoctorCheck(
-            "generation_provider_key", True, REQUIRED, "ANTHROPIC_API_KEY present"
+            "generation_provider_key",
+            True,
+            REQUIRED,
+            "ANTHROPIC_API_KEY and OPENAI_API_KEY present for default lane matrix",
         )
+    detail = "missing required generation key(s): " + ", ".join(
+        f"{var} ({required_keys[var]})" for var in missing
+    )
     return DoctorCheck(
         "generation_provider_key",
         False,
         REQUIRED,
-        "ANTHROPIC_API_KEY missing (external_claude is the sole apps_rg generation provider)",
-        "Set ANTHROPIC_API_KEY in .env (copy .env.example and fill it in).",
+        detail,
+        "Set ANTHROPIC_API_KEY and OPENAI_API_KEY in .env for the default per-section lane matrix.",
     )
 
 

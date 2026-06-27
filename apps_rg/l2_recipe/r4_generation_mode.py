@@ -67,12 +67,32 @@ def resolve_apps_rg_modular_lane_provider() -> str:
     return raw
 
 
+def resolve_apps_rg_modular_lane_provider_override() -> str:
+    """Return the explicit global Phase-1 lane provider override, if any.
+
+    An empty value means callers must use the per-section defaults from
+    ``apps_rg.runtime.section_cli_defaults`` instead of forcing one provider
+    across all lanes.
+    """
+    raw = os.environ.get(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "").strip().lower()
+    if not raw:
+        return ""
+    if raw not in _MODULAR_LANE_PROVIDER_ALLOWED:
+        msg = (
+            f"INVALID_APPS_RG_MODULAR_LANE_PROVIDER: {raw!r} "
+            f"(expected {sorted(_MODULAR_LANE_PROVIDER_ALLOWED)!r})"
+        )
+        raise RuntimeError(msg)
+    return raw
+
+
 __all__ = [
     "AppsRgR4GenerationMode",
     "ENV_APPS_RG_MODULAR_LANE_PROVIDER",
     "ENV_APPS_RG_R4_GENERATION_MODE",
     "MODE_MODULAR_SECTION_LANES",
     "RETIRED_MODE_LEGACY_FULL_RESUME",
+    "resolve_apps_rg_modular_lane_provider_override",
     "resolve_apps_rg_modular_lane_provider",
     "resolve_apps_rg_r4_generation_mode",
 ]

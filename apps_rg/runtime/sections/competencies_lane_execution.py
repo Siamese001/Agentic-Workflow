@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.section_judge_policy import get_section_judge_policy
 
 
 def _hydrate_dispatch_helpers() -> None:
@@ -976,7 +977,9 @@ def run_competencies_lane_execution(
         product_quality_status=product_quality_status,
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
-        judge_required_for_allow=False,
+        judge_required_for_allow=(
+            get_section_judge_policy("competencies").x1d_required_for_x3_allow
+        ),
     )
     x3 = clarify_x3_for_competencies_live_provider_preflight(
         x3,

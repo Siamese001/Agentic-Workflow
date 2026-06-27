@@ -34,7 +34,7 @@ from apps_rg.l2_recipe.resume_artifact_gate import (
 )
 from apps_rg.l2_recipe.r4_generation_mode import (
     MODE_MODULAR_SECTION_LANES,
-    resolve_apps_rg_modular_lane_provider,
+    resolve_apps_rg_modular_lane_provider_override,
     resolve_apps_rg_r4_generation_mode,
 )
 from apps_rg.l2_recipe.sealed_resume_extract import generated_resume_from_sealed_l2
@@ -196,7 +196,7 @@ class GenerateResumeStep(BaseRecipeStep):
         )
         prof = ModularResumeProfile(
             phase1_invoke_real_lanes=True,
-            phase1_lane_provider=resolve_apps_rg_modular_lane_provider(),
+            phase1_lane_provider=resolve_apps_rg_modular_lane_provider_override(),
             run_phase0_synthetic_assembly=False,
             validate_rg_output_fixture=False,
             phase1_allow_non_allow_exit_zero=_phase1_allow_flag_from_recipe_context(context),

@@ -95,8 +95,8 @@ def call_section_model_provider(
     )
     # Per-section model pin (SSOT): resolve the section from an explicit arg or the
     # ``_reasoning_section_lane`` tag the lane stamped on the payload (``tag_reasoning_lane``),
-    # so competencies + the four narratives use their pinned Haiku tier while the rest use the
-    # Sonnet default — instead of every lane silently using the section-agnostic default. Only
+    # so Claude-backed lanes can use section-specific model overrides (headline/executive_summary
+    # -> Opus) instead of every Claude lane silently using the section-agnostic default. Only
     # applied for the external Claude profile; an unknown/missing section resolves to the default.
     # An explicit operator pin (``APPS_RG_EXTERNAL_CLAUDE_MODEL``) is the highest-precedence
     # override and wins over the per-section SSOT tier — it is the deliberate "run everything on

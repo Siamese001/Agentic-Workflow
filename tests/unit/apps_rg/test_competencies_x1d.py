@@ -43,7 +43,12 @@ def test_run_competencies_judges_uses_pinned_gemini_preview_model(monkeypatch) -
         del api_key, prompt, input_hash, kwargs
         captured["provider_key"] = provider_key
         captured["model"] = model
-        return competencies_x1d._mocked(provider_key, "input-hash")
+        out = competencies_x1d._mocked(provider_key, "input-hash")
+        out.evaluator_mode = "MODEL_BACKED"
+        out.provider_status = "MODEL_BACKED_PASS"
+        out.provider_available = True
+        out.pass_ = True
+        return out
 
     monkeypatch.setattr(competencies_x1d, "resolve_x1d_provider_credentials", fake_credentials)
     monkeypatch.setattr(competencies_x1d, "_call_gemini", fake_call_gemini)
@@ -61,8 +66,9 @@ def test_run_competencies_judges_uses_pinned_gemini_preview_model(monkeypatch) -
     assert len(outputs) == 1
     out = outputs[0]
     assert out.provider_key == "gemini_pro"
-    assert out.advisory_only is True
-    assert out.proof_eligible_judge is False
+    assert out.advisory_only is False
+    assert out.proof_eligible_judge is True
+    assert out.model_tier == "standard_reasoning"
 
 
 def test_run_competencies_judges_mocked_provider_contract() -> None:

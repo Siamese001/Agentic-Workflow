@@ -579,6 +579,12 @@ def test_default_dispatch_threads_derived_jd_brief_into_canonical_primitives(
         assert kwargs["artifact_dir"] == ""
         assert kwargs["resume_path"] == ""
         assert str(kwargs["lane_provider"]).strip() != ""
+        if lane == "ibm_narrative":
+            assert kwargs["lane_provider"] == "external_openai"
+            assert kwargs["lane_provider_resolution_source"] == "DEV_DEFAULT_EXTERNAL_OPENAI"
+        else:
+            assert kwargs["lane_provider"] == "external_claude"
+            assert kwargs["lane_provider_resolution_source"] == "DEV_DEFAULT_EXTERNAL_CLAUDE"
         assert kwargs["lane_mock_judges"] is False
         assert kwargs["lane_allow_non_allow_exit_zero"] is False
 
@@ -671,7 +677,7 @@ def test_aggregate_refreshes_evidence_status_and_fails_on_missing_lane(
     agg = pr.aggregate_patched_run(
         plan,
         lane_dispatch_results={},
-        lane_provider="external_claude",
+        lane_provider="",
         run_token="patch_test",
     )
     assert agg["decisive_status"] == "FAIL"
@@ -689,3 +695,8 @@ def test_aggregate_refreshes_evidence_status_and_fails_on_missing_lane(
     )
     assert calls_doc["patch_run"] is True
     assert calls_doc["decisive_status"] == "FAIL"
+    assert calls_doc["lane_provider_global_override"] == ""
+    assert calls_doc["lane_provider_by_lane"]["competencies"] == "external_openai"
+    assert calls_doc["lane_provider_by_lane"]["ibm_bullets"] == "external_claude"
+    assert calls_doc["lane_provider_by_lane"]["ibm_narrative"] == "external_openai"
+    assert agg["lane_provider_by_lane"]["competencies"] == "external_openai"

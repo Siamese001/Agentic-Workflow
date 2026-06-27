@@ -31,11 +31,13 @@ class LaneExecutionContext:
     job_description_ref: str
     job_description_text: str
     manual_brief: str
-    lane_provider: str
+    lane_provider: Any
+    # str (same provider for every lane) OR Callable[[lane_id], str] for per-lane defaults.
     # str (same judges for every lane) OR Callable[[lane_id], str] for per-lane composite-judge
-    # defaults (competencies -> gemini_pro, ibm_bullets -> anthropic_claude, else panel).
+    # defaults (competencies/bullets/narratives -> gemini_pro, summaries/headline -> panel).
     lane_x1d_judges: Any
     lane_mock_judges: bool
+    lane_provider_resolution_source: Any = CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
     lane_allow_non_allow_exit_zero: bool = False
     generation_mode: str = "strategic_tailor"
 
@@ -48,6 +50,20 @@ class LaneExecutionContext:
         if callable(judges):
             return judges(lane)
         return judges
+
+    def provider_for_lane(self, lane: str) -> str:
+        """Resolve the generator provider for ``lane`` (honors a per-lane callable)."""
+        provider = self.lane_provider
+        if callable(provider):
+            return str(provider(lane))
+        return str(provider)
+
+    def provider_resolution_source_for_lane(self, lane: str) -> str:
+        """Resolve the provider-resolution evidence label for ``lane``."""
+        source = self.lane_provider_resolution_source
+        if callable(source):
+            return str(source(lane))
+        return str(source or CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE)
 
 
 @dataclass
@@ -130,8 +146,8 @@ def run_lane_in_context(
             generation_mode=ctx.generation_mode,
             artifact_dir="",
             section=lane,
-            lane_provider=ctx.lane_provider,
-            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+            lane_provider=ctx.provider_for_lane(lane),
+            lane_provider_resolution_source=ctx.provider_resolution_source_for_lane(lane),
             lane_temperature=default_temperature_for_section(lane),
             lane_x1d_judges=ctx.x1d_judges_for_lane(lane),
             lane_mock_judges=ctx.lane_mock_judges,

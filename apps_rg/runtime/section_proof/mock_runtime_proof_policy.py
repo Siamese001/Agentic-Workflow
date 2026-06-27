@@ -81,13 +81,14 @@ def _judge_counts_for_proof(
     x1d_judges: list[dict[str, Any]] | None,
     *,
     judge_required_for_proof: bool,
-) -> tuple[bool, bool, bool]:
-    """Return (has_mock, has_blocked, has_non_proof_eligible_required)."""
+) -> tuple[bool, bool, bool, bool]:
+    """Return (has_mock, has_blocked, has_non_proof_eligible_required, missing_required)."""
     rows = x1d_judges or []
     has_mock = any(str(j.get("evaluator_mode")) == "MOCKED" for j in rows)
     has_blocked = any(str(j.get("evaluator_mode", "")).startswith("BLOCKED_") for j in rows)
     if not judge_required_for_proof:
-        return has_mock, has_blocked, False
+        return has_mock, has_blocked, False, False
+    missing_required = not rows
     non_proof = False
     for j in rows:
         if j.get("mocked") is True:
@@ -96,9 +97,9 @@ def _judge_counts_for_proof(
         if j.get("advisory_only") is True and j.get("proof_eligible_judge") is False:
             non_proof = True
             continue
-        if j.get("proof_eligible_judge") is False and str(j.get("evaluator_mode")) == "MODEL_BACKED":
+        if j.get("proof_eligible_judge") is not True and str(j.get("evaluator_mode")) == "MODEL_BACKED":
             non_proof = True
-    return has_mock, has_blocked, non_proof
+    return has_mock, has_blocked, non_proof, missing_required
 
 
 def compute_lane_proof_bundle(
@@ -132,7 +133,7 @@ def compute_lane_proof_bundle(
         plumbing_waiver and mock_provider
     )
 
-    judge_rows_mock, judge_blocked, judge_non_proof = _judge_counts_for_proof(
+    judge_rows_mock, judge_blocked, judge_non_proof, judge_missing_required = _judge_counts_for_proof(
         x1d_judges,
         judge_required_for_proof=judge_required_for_proof,
     )
@@ -148,6 +149,7 @@ def compute_lane_proof_bundle(
         or (judge_required_for_proof and judge_rows_mock)
         or (judge_required_for_proof and judge_blocked)
         or (judge_required_for_proof and judge_non_proof)
+        or (judge_required_for_proof and judge_missing_required)
         or mock_provider
         or mock_judge_hatch
         or offline_contract_stub_used
@@ -162,6 +164,7 @@ def compute_lane_proof_bundle(
             and not cli_mock_judge
             and not judge_blocked
             and not judge_non_proof
+            and not judge_missing_required
         )
     else:
         judge_pe = False
@@ -206,6 +209,7 @@ def compute_lane_proof_bundle(
         "runtime_certification": proof_eligible,
         "x1d_runtime_status": x1d_runtime,
         "judge_proof_eligible": judge_pe,
+        "required_judge_rows_missing": judge_missing_required,
         "provider_proof_eligible": provider_pe,
         "test_only_mock_judges": cli_mock_judge and mock_judge_hatch,
         "offline_contract_stub_used": bool(offline_contract_stub_used),

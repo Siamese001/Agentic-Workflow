@@ -14,6 +14,7 @@ from apps_rg.l2_recipe.r4_generation_mode import (
     ENV_APPS_RG_R4_GENERATION_MODE,
     MODE_MODULAR_SECTION_LANES,
     resolve_apps_rg_modular_lane_provider,
+    resolve_apps_rg_modular_lane_provider_override,
 )
 from apps_rg.l2_recipe.steps import GenerateResumeStep
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
@@ -24,9 +25,14 @@ def test_resolve_modular_lane_provider_default_external_claude(monkeypatch: pyte
     assert resolve_apps_rg_modular_lane_provider() == "external_claude"
 
 
+def test_resolve_modular_lane_provider_override_default_empty(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, raising=False)
+    assert resolve_apps_rg_modular_lane_provider_override() == ""
+
+
 def test_resolve_modular_lane_provider_qwen_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     # Post-Qwen-removal: qwen_vllm is a deprecated provider and is now rejected — the only
-    # accepted modular lane provider is external_claude (see _MODULAR_LANE_PROVIDER_ALLOWED).
+    # accepted modular lane providers are external_claude / external_openai.
     monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "qwen_vllm")
     with pytest.raises(RuntimeError, match="INVALID_APPS_RG_MODULAR_LANE_PROVIDER"):
         resolve_apps_rg_modular_lane_provider()
@@ -38,19 +44,31 @@ def test_resolve_modular_lane_provider_invalid(monkeypatch: pytest.MonkeyPatch) 
         resolve_apps_rg_modular_lane_provider()
 
 
+@pytest.mark.parametrize(
+    ("env_provider", "expected_profile_provider"),
+    [
+        ("external_claude", "external_claude"),
+        (None, ""),
+    ],
+)
 @mock.patch("apps_rg.runtime.bindings.l2_envelope_adapter.run_apps_rg_l2_envelope", autospec=True)
 @mock.patch("apps_rg.l2_recipe.modular_resume_generation.run_modular_resume_generation", autospec=True)
-def test_generate_resume_step_passes_lane_provider_from_env(
+def test_generate_resume_step_passes_explicit_lane_provider_override_only(
     mock_modular: mock.MagicMock,
     mock_env: mock.MagicMock,
     monkeypatch: pytest.MonkeyPatch,
+    env_provider: str | None,
+    expected_profile_provider: str,
 ) -> None:
     from types import SimpleNamespace
 
     from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 
     monkeypatch.setenv(ENV_APPS_RG_R4_GENERATION_MODE, MODE_MODULAR_SECTION_LANES)
-    monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "external_claude")
+    if env_provider is None:
+        monkeypatch.delenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, raising=False)
+    else:
+        monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, env_provider)
     repo = find_repo_root()
     gr = json.loads(
         (repo / "tests" / "_fixtures" / "rg_output_phase0_min_valid.json").read_text(encoding="utf-8"),
@@ -103,7 +121,7 @@ def test_generate_resume_step_passes_lane_provider_from_env(
     GenerateResumeStep()(ctx)
     assert mock_modular.call_count == 1
     _inp, _art, _tok, prof = mock_modular.call_args[0]
-    assert prof.phase1_lane_provider == "external_claude"
+    assert prof.phase1_lane_provider == expected_profile_provider
 
 
 def test_collect_lane_mocked_not_latest_successful_real(tmp_path: Path) -> None:

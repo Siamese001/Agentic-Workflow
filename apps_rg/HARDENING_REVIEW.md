@@ -590,11 +590,11 @@ Split selection into `authority_filter` and `targeting_rank`. Freeze the authori
 
 **Current behavior**
 
-Competencies computes selector confidence, decomposed category confidence, X2 gates, and X1D judge outputs. Its X3 call can set `judge_required_for_allow=False`, following the generic executive-summary exit implementation. There is no central artifact that ties selector score, proof-authority status, graph traversal/granularity results, judge score/verdict, disagreement reason, and final precedence into one decision.
+Competencies computes selector confidence, decomposed category confidence, X2 gates, and X1D judge outputs. The former hard-coded allow-without-judge bypass is closed; competencies now resolves X3 judge-required status from the section judge policy. The remaining hardening gap is a central artifact that ties selector score, proof-authority status, graph traversal/granularity results, judge score/verdict, disagreement reason, and final precedence into one decision.
 
 **Why this is a real risk**
 
-A high selector score and positive judge can coexist with a deterministic graph-authority failure; or X2 can pass while a judge identifies generic evidence; or a judge can fail while X3 allows because the judge is advisory. Without an arbitration receipt, the operator cannot tell which authority won or whether disagreement was ignored.
+A high selector score and positive judge can coexist with a deterministic graph-authority failure; or X2 can pass while a judge identifies generic evidence. Without an arbitration receipt, the operator cannot tell which authority won or whether disagreement was ignored.
 
 **Concrete proof gap**
 
