@@ -1,62 +1,63 @@
 {
   "schema_version": "adg-audit-pipeline-receipt/v1",
   "run_state": {
-    "certification_status": "diagnostic_only",
+    "certification_status": "failed",
     "generator_exit_code": 1,
-    "report_exit_code": 0,
-    "runtime_proof_status": "view_present_zero_attested",
-    "reasons": []
+    "report_exit_code": null,
+    "runtime_proof_status": "view_absent",
+    "reasons": [
+      "generator exit_code=1",
+      "required gate 'adg_gate_dispatcher' status=fail",
+      "required gate 'config-ref' status=fail",
+      "required gate 'lifecycle' status=fail",
+      "required gate 'test-coverage' status=fail",
+      "required gate 'three_bucket_manifest_quick' absent from manifest",
+      "adg_gate_dispatcher overall_exit_code=1",
+      "snapshot path absent from generation manifest",
+      "enforcement_report certified_rollup=NOT_CERTIFIED"
+    ]
   },
-  "artifact_status": "repair_ready",
+  "artifact_status": "incomplete",
   "artifact_status_source": "direct",
-  "adg_run_id": "06262026_0432",
-  "started_at_utc": "2026-06-26T08:32:39Z",
-  "completed_at_utc": "2026-06-26T08:42:10Z",
+  "adg_run_id": "06262026_2302",
+  "started_at_utc": "2026-06-27T03:02:33Z",
+  "completed_at_utc": "2026-06-27T03:19:44Z",
   "repair_handoff": {
-    "status": "repair_ready",
+    "status": "incomplete",
     "artifacts": {
-      "snapshot": {
-        "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06262026_0432.sqlite",
-        "sha256": "a1420517b0087cc955e9ee39984e09bb60e656f31e06c145177b74d1d916bdab"
-      },
-      "gate_results": {
-        "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260626_083843.json",
-        "sha256": "be53c4743bc4c6306508819f5bb2089a49a79cd94b3ecb4ecea8c8a5141a74cb"
-      },
-      "action_queue": {
-        "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_06262026_0432.json",
-        "sha256": "0259e1974e795ae4b610db082e9af49cfe8def42afe5ed8100e905ee76eaef93"
-      },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_06262026_0432.md",
-        "sha256": "52c2b46a1226a01fd71e0ca7cfab07603e51abaaffe5184e5431d1113531acbd"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_06262026_2302.md",
+        "sha256": "717f29d59d0c6b4b32fe5306d103ef7663dac0098c39230a62f5e719890a38b6"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_06262026_0432.json",
-        "sha256": "af67450459f41af825bd96df59f21e3e0b8defcd73e1e9551a26bc8dc173c91a"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_06262026_2302.json",
+        "sha256": "cdb52c23dbd556004440f942f85a653f6d370ab2ec1d8f7f95a4c945af30bb26"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06262026_0432.json",
-        "sha256": "89b808f02e99abe1200d63aaf05a31594bf0cffbab3876b496958244abf21f4d"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06262026_2302.json",
+        "sha256": "9f2ca917717b60a959167c1b90ff0b057cce214a70631a261fa7f4572edce151"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06262026_0432.json",
-        "sha256": "de5c79dd4eed52a20a4fa845294500017bb8fe8584b3db1b850525d507d6ff96"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06262026_2302.json",
+        "sha256": "82afc5e8ffd7d58fcb13c74b7e6e7580427fc5c70229d4b1a0d1cf59b576c8ab"
       }
     },
     "counts": {
-      "P0_FIX": 4,
+      "P0_FIX": 0,
       "P1_FIX": 0,
       "P1_RATCHET_REGRESSION": 0,
-      "P1_RATCHET_FLOOR_BACKLOG": 9
+      "P1_RATCHET_FLOOR_BACKLOG": 0
     },
-    "validation_errors": []
+    "validation_errors": [
+      "action_queue missing from repair_handoff",
+      "action_queue not emitted because prerequisite artifacts are incomplete",
+      "gate_results missing from repair_handoff",
+      "snapshot missing",
+      "snapshot missing from repair_handoff"
+    ]
   }
 }

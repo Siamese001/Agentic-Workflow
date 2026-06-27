@@ -19,6 +19,9 @@ from apps_rg.prerequisites.briefing_validator import (
     BriefingValidationResult,
     check_briefing_prerequisite,
 )
+from apps_rg.runtime.c0.evidence_room import (
+    section_c0_evidence_room_enabled as _section_c0_evidence_room_enabled,
+)
 
 _logger = logging.getLogger(__name__)
 

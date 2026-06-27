@@ -1,9 +1,6 @@
 {
   "gate_id": "I2_replay_surface_gaps_ratchet",
-  "count": 988,
-  "seeded_at": "2026-06-26T03:15:19.108304+00:00",
-  "snapshot": "adg_indexed_06252026_2301.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-06-26T08:38:28.989295+00:00",
-  "last_run_snapshot": "adg_indexed_06262026_0432.sqlite"
+  "count": 989,
+  "seeded_at": "2026-06-27T08:14:53.993746+00:00",
+  "snapshot": "adg_indexed_06272026_0359.sqlite"
 }

@@ -1,9 +1,9 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-26T10:01:18+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260626_095853.json`
+- **Generated:** 2026-06-27T08:14:35+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260627_081435.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
-- **Snapshot timestamp:** 2026-06-26T09:58:53.363111+00:00
+- **Snapshot timestamp:** 2026-06-27T08:14:35.729658+00:00
 - **Total gates:** 48
 - **Overall verdict:** **BLOCKED** (run halt — exit code)
 
@@ -13,23 +13,21 @@
 - **ADG verdict:** BLOCKED
 - **Business read:** ADG is BLOCKED: fix the red gates before treating the run as green.
 - **Technical evidence:**
-  - Snapshot timestamp: 2026-06-26T09:58:53.363111+00:00
+  - Snapshot timestamp: 2026-06-27T08:14:35.729658+00:00
   - Total gates: 48
-  - FIX gates: 9
-  - TRACK gates: 13
-  - CLEAR gates: 26
-  - block_fail=0; ratchet_regressed=9
+  - FIX gates: 2
+  - TRACK gates: 18
+  - CLEAR gates: 28
+  - block_fail=0; ratchet_regressed=2
 - **Priority rule:** FIX gates first, then TRACK ratchets/backlog, then no-action CLEAR gates.
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
-| 1 | Fix S4_unused_imports_ratchet | This gate is marked FIX, so the ADG run is not decision-grade green until it clears. | P3 ratchet gate; rows=10747; sub=regr. | Regression +5 over baseline 10742: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| 1 | Fix S4_unused_imports_ratchet | This gate is marked FIX, so the ADG run is not decision-grade green until it clears. | P3 ratchet gate; rows=10749; sub=regr. | Regression +2 over baseline 10747: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | 2 | Fix G_REACH_l0_reachability | This gate is marked FIX, so the ADG run is not decision-grade green until it clears. | P0 ratchet gate; rows=2799; sub=regr. | Regression +13 over baseline 2786 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
-| 3 | Fix C3_silent_writes_ratchet | This gate is marked FIX, so the ADG run is not decision-grade green until it clears. | P1 ratchet gate; rows=2034; sub=regr. | Regression +1 over baseline 2033: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| 4 | Fix S2_uwg_bypass_ratchet | This gate is marked FIX, so the ADG run is not decision-grade green until it clears. | P0 ratchet gate; rows=1571; sub=regr. | Regression +1 over baseline 1570 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 
-Next step: Regression +5 over baseline 10742: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.
-- **Action:** **FIX**=9 (address for green ADG) · **TRACK**=13 (CI OK, backlog) · **CLEAR**=26
+Next step: Regression +2 over baseline 10747: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.
+- **Action:** **FIX**=2 (address for green ADG) · **TRACK**=18 (CI OK, backlog) · **CLEAR**=28
 
 ## 1. ADG Status By Band
 
@@ -38,10 +36,10 @@ Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/n
 
 | Band | Status | Fix now | Tracked backlog | Read it as | Next move |
 |------|:------:|--------:|-----------------|------------|-----------|
-| P0 | BLOCKED | 2 | 2 gates / 733 rows | red gates present | fix red gates first |
-| P1 | BLOCKED | 4 | 7 gates / 2,848 rows | red gates present | fix red gates first |
-| P2 | BLOCKED | 1 | 2 gates / 1,096 rows | red gates present | fix red gates first |
-| P3 | BLOCKED | 2 | 2 gates / 461 rows | red gates present | fix red gates first |
+| P0 | BLOCKED | 1 | 3 gates / 2,304 rows | red gates present | fix red gates first |
+| P1 | PASS | 0 | 9 gates / 5,558 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
+| P2 | PASS | 0 | 3 gates / 2,085 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
+| P3 | BLOCKED | 1 | 3 gates / 1,609 rows | red gates present | fix red gates first |
 
 `Fix now` counts red gates. `Tracked backlog` is old or advisory inventory that does not block this run.
 
@@ -59,7 +57,7 @@ One row per registered gate.
 | Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |
 |---------|:-------:|-------------|:------:|:---:|---------:|---------------|--------|------------------|
 | `G_REACH_l0_reachability` | P0 | ratchet | FIX | regr | 2799 | 2786 | Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +13 vs baseline 2786. | Regression +13 over baseline 2786 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
-| `S2_uwg_bypass_ratchet` | P0 | ratchet | FIX | regr | 1571 | 1570 | Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: +1 vs baseline 1570. | Regression +1 over baseline 1570 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
+| `S2_uwg_bypass_ratchet` | P0 | ratchet | TRACK | floor | 1571 | 1571 | Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1571 at floor (baseline 1571); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `3_write_sovereignty` | P0 | block | TRACK | inventory | 732 | warn inventory | Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 732 warn inventory; not halt-tier. | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
 | `J1_canonical_pipeline_wiring` | P0 | block | TRACK | inventory | 1 | warn inventory | Counts: Declared canonical_pipelines.yaml steps missing required call wiring. Sub: 1 subprocess warn. | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
 | `10_infra_wiring` | P0 | block | CLEAR | — | 0 | 0 | Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: No rows. | None — gate clean (zero rows). |
@@ -73,34 +71,34 @@ One row per registered gate.
 | `C2_l5_bypass_pview` | P0 | block | CLEAR | — | 0 | 0 | Counts: Provider/tool calls skipping L5 gateway (materialized view). Sub: No rows. | None — gate clean (zero rows). |
 | `L2_lpg_drift_ratchet` | P0 | ratchet | CLEAR | — | 0 | 0 | Counts: Illegal or drifted imports touching L_PG boundary. Sub: No rows. | None — gate clean (zero rows). |
 | `W5_waiver_expiry` | P0 | block | CLEAR | — | 0 | 0 | Counts: Expired wiring-CI waiver entries in config. Sub: No rows. | None — gate clean (zero rows). |
-| `8_trace_replay_eval` | P1 | ratchet | FIX | regr | 1 | unseeded | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. | Regression +N over baseline None: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| `C3_silent_writes_ratchet` | P1 | ratchet | FIX | regr | 2034 | 2033 | Counts: writes_to edges without sibling emits_side_effect on same source. Sub: +1 vs baseline 2033. | Regression +1 over baseline 2033: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| `H1_new_orphans_delta_ratchet` | P1 | ratchet | FIX | regr | 5 | 0 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +5 vs baseline 0. | Regression +5 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| `M_taint_actionable_ratchet` | P1 | ratchet | FIX | regr | 676 | 675 | Counts: Actionable taint surfaces without output schema binding. Sub: +1 vs baseline 675. | Regression +1 over baseline 675: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | `B2_layer_skip_ratchet` | P1 | ratchet | TRACK | floor | 874 | 874 | Counts: Import edges that skip more than one layer ordinal (layer-hop). Sub: 874 at floor (baseline 874); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `C3_silent_writes_ratchet` | P1 | ratchet | TRACK | floor | 2034 | 2034 | Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2034 at floor (baseline 2034); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `C4_policy_without_audit_ratchet` | P1 | ratchet | TRACK | floor | 1 | 1 | Counts: controls_flow edges without paired audit/telemetry emission. Sub: 1 at floor (baseline 1); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `E1_trace_stub_module` | P1 | ratchet | TRACK | floor | 982 | 982 | Counts: Modules with high test:production import ratio (trace-theater stub pattern). Sub: 982 at floor (baseline 982); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `I1_exit_disposition_ratchet` | P1 | ratchet | TRACK | floor | 695 | 695 | Counts: Terminal exit paths not covered in mv_exit_disposition_coverage. Sub: 695 at floor (baseline 695); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `M_taint_actionable_ratchet` | P1 | ratchet | TRACK | floor | 676 | 676 | Counts: Actionable taint surfaces without output schema binding. Sub: 676 at floor (baseline 676); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `N_guardrail_separation_ratchet` | P1 | ratchet | TRACK | floor | 90 | 90 | Counts: L5 guardrail and L3 core-response sharing same write target. Sub: 90 at floor (baseline 90); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `O_tool_call_parity_ratchet` | P1 | ratchet | TRACK | floor | 205 | 205 | Counts: Tool invocations missing observability receipt (Anthropic parity pattern). Sub: 205 at floor (baseline 205); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `P_structured_output_ratchet` | P1 | ratchet | TRACK | floor | 1 | 1 | Counts: generates_prompt at scale without structured output schema. Sub: 1 at floor (baseline 1); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `11_architecture_witness` | P1 | block | CLEAR | — | 0 | 0 | Counts: Architecture witness Class A/B absence or live-plane write violations. Sub: No rows. | None — gate clean (zero rows). |
 | `12_prompt_assembly_wiring` | P1 | block | CLEAR | — | 0 | 0 | Counts: Prompt-assembly subgraph disconnected from runtime spine. Sub: No rows. | None — gate clean (zero rows). |
 | `7_lifecycle_coverage` | P1 | ratchet | CLEAR | — | 0 | unseeded | Counts: Lifecycle gaps: resources opened without matching close/cleanup. Sub: No rows. | None — gate clean (zero rows). |
+| `8_trace_replay_eval` | P1 | ratchet | CLEAR | — | 0 | unseeded | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: No rows. | None — gate clean (zero rows). |
 | `G2_seam_test_export_coherence` | P1 | block | CLEAR | — | 0 | 0 | Counts: Production seam symbols exported in tests but not in package __all__/exports. Sub: No rows. | None — gate clean (zero rows). |
 | `G_ISLAND_connected_components` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Non-giant connected components on undirected import graph. Sub: No rows. | None — gate clean (zero rows). |
 | `G_WATCHLIST_DELTA_hotspot_regressions` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub: No rows. | None — gate clean (zero rows). |
+| `H1_new_orphans_delta_ratchet` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: No rows. | None — gate clean (zero rows). |
 | `H2_fanin_collapse_ratchet` | P1 | ratchet | CLEAR | — | 0 | 0 | Counts: Hotspot modules with >30% fan_in drop vs prior snapshot. Sub: No rows. | None — gate clean (zero rows). |
-| `I2_replay_surface_gaps_ratchet` | P2 | ratchet | FIX | regr | 989 | 988 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: +1 vs baseline 988. | Regression +1 over baseline 988: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | `F1_untyped_seam_ratchet` | P2 | ratchet | TRACK | floor | 991 | 991 | Counts: Cross-layer imports where target has empty type_surface. Sub: 991 at floor (baseline 991); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `I2_replay_surface_gaps_ratchet` | P2 | ratchet | TRACK | floor | 989 | 989 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 989 at floor (baseline 989); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D2_role_duplication_warn` | P2 | warn | TRACK | advis | 105 | advisory | Counts: Role-suffix clusters (_reranker, _planner, …) with fan_in=0 members (advisory). Sub: 105 advisory; never blocks. | Advisory KPI: watch the trend; no action required to pass CI. |
 | `A3_dead_public_symbol_ratchet` | P2 | ratchet | CLEAR | — | 0 | 0 | Counts: Public symbols with zero importers (dead surface). Sub: No rows. | None — gate clean (zero rows). |
 | `C5_unresolved_callsites_ratchet` | P2 | ratchet | CLEAR | — | 0 | 0 | Counts: resolves_callsite edges with NULL destination (unresolved callee). Sub: No rows. | None — gate clean (zero rows). |
 | `F2_broken_contract_ratchet` | P2 | ratchet | CLEAR | — | 0 | 0 | Counts: Import targets publishing zero exports edges (contract drift). Sub: No rows. | None — gate clean (zero rows). |
 | `H4_mv_staleness_ratchet` | P2 | ratchet | CLEAR | — | 0 | 0 | Counts: Total edge count delta >5% vs prior snapshot (graph drift). Sub: No rows. | None — gate clean (zero rows). |
-| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | FIX | regr | 1146 | 1139 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +7 vs baseline 1139. | Regression +7 over baseline 1139: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
-| `S4_unused_imports_ratchet` | P3 | ratchet | FIX | regr | 10747 | 10742 | Counts: Unused import edges in production modules. Sub: +5 vs baseline 10742. | Regression +5 over baseline 10742: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| `S4_unused_imports_ratchet` | P3 | ratchet | FIX | regr | 10749 | 10747 | Counts: Unused import edges in production modules. Sub: +2 vs baseline 10747. | Regression +2 over baseline 10747: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
 | `M1_module_loc_ratchet` | P3 | ratchet | TRACK | floor | 458 | 458 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 458 at floor (baseline 458); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | TRACK | floor | 1148 | 1148 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1148 at floor (baseline 1148); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D1_layer_doc_binding` | P3 | warn | TRACK | advis | 3 | advisory | Counts: Layer folders missing or mismatched LAYER.md binding (advisory). Sub: 3 advisory; never blocks. | Advisory KPI: watch the trend; no action required to pass CI. |
 | `E3_trace_theater_kpi` | P3 | warn | CLEAR | — | 0 | advisory | Counts: Emit-symbol density per layer vs imports (KPI advisory). Sub: No rows. | None — gate clean (zero rows). |
 | `F3_missing_adapter_warn` | P3 | warn | CLEAR | — | 0 | advisory | Counts: Protocol/ABC/Interface with zero implements edges (advisory). Sub: No rows. | None — gate clean (zero rows). |
@@ -111,25 +109,23 @@ One row per registered gate.
 
 | Gate ID | Sub | Rows |
 |---------|:---:|---------:|
-| `S4_unused_imports_ratchet` | regr | 10747 |
+| `S4_unused_imports_ratchet` | regr | 10749 |
 | `G_REACH_l0_reachability` | regr | 2799 |
-| `C3_silent_writes_ratchet` | regr | 2034 |
-| `S2_uwg_bypass_ratchet` | regr | 1571 |
-| `Q2_cyclomatic_complexity_ratchet` | regr | 1146 |
-| `I2_replay_surface_gaps_ratchet` | regr | 989 |
-| `M_taint_actionable_ratchet` | regr | 676 |
-| `H1_new_orphans_delta_ratchet` | regr | 5 |
-| `8_trace_replay_eval` | regr | 1 |
 
 ### Track later (Verdict TRACK — CI OK, backlog remains)
 
 | Gate ID | Sub | Rows |
 |---------|:---:|---------:|
+| `C3_silent_writes_ratchet` | floor | 2034 |
+| `S2_uwg_bypass_ratchet` | floor | 1571 |
+| `Q2_cyclomatic_complexity_ratchet` | floor | 1148 |
 | `F1_untyped_seam_ratchet` | floor | 991 |
+| `I2_replay_surface_gaps_ratchet` | floor | 989 |
 | `E1_trace_stub_module` | floor | 982 |
 | `B2_layer_skip_ratchet` | floor | 874 |
 | `3_write_sovereignty` | inventory | 732 |
 | `I1_exit_disposition_ratchet` | floor | 695 |
+| `M_taint_actionable_ratchet` | floor | 676 |
 | `M1_module_loc_ratchet` | floor | 458 |
 | `O_tool_call_parity_ratchet` | floor | 205 |
 | `D2_role_duplication_warn` | advis | 105 |
@@ -152,7 +148,7 @@ Use this section for guardian math, not the status table above.
 | P0 | layer_violations | 43 | 40 | 3 | +40 |
 | P1 | anti_patterns_high | 1151 | 1146 | 5 | +1146 |
 | P2 | anti_patterns_medium | 733 | 714 | 19 | +714 |
-| P3 | style_warnings | 19062 | 87 | 18975 | +87 |
+| P3 | style_warnings | 19061 | 87 | 18974 | +87 |
 
 _p0_clean = False • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 
@@ -183,8 +179,8 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 |---------|------:|---------|
 | block_pass | 14 | Block-class gates that did not halt the run (exit 0). Rows may be non-zero. |
 | block_fail | 0 | Block-class gates that halted the run — clear the gate blocking condition. |
-| ratchet_pass | 18 | Ratchet-class gates within their baseline ceiling. |
-| ratchet_regressed | 9 | Ratchet-class gates with NEW rows beyond baseline. |
+| ratchet_pass | 25 | Ratchet-class gates within their baseline ceiling. |
+| ratchet_regressed | 2 | Ratchet-class gates with NEW rows beyond baseline. |
 | ratchet_seed_missing | 0 | Ratchet-class gates without a baseline seed (first run). |
 | warn | 6 | Advisory-class gates (do not gate the run). |
 
@@ -192,41 +188,24 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 
 | Verdict | Gates | Meaning |
 |---------|------:|---------|
-| FIX | 9 | Address before treating ADG as green (gate blocked or ratchet regressed). |
-| TRACK | 13 | CI passed this gate; rows are backlog — plan hygiene, not a halt. |
-| CLEAR | 26 | Zero rows; nothing to do on this gate. |
+| FIX | 2 | Address before treating ADG as green (gate blocked or ratchet regressed). |
+| TRACK | 18 | CI passed this gate; rows are backlog — plan hygiene, not a halt. |
+| CLEAR | 28 | Zero rows; nothing to do on this gate. |
 
 ## 5. Fix now (detail)
 
 | Gate | Band | Enf | Sub | Rows | Signal |
 |------|:----:|:---:|:---:|---------:|--------|
-| `S4_unused_imports_ratchet` | P3 | ratchet | regr | 10747 | Counts: Unused import edges in production modules. Sub: +5 vs baseline 10742. |
+| `S4_unused_imports_ratchet` | P3 | ratchet | regr | 10749 | Counts: Unused import edges in production modules. Sub: +2 vs baseline 10747. |
 | `G_REACH_l0_reachability` | P0 | ratchet | regr | 2799 | Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +13 vs baseline 2786. |
-| `C3_silent_writes_ratchet` | P1 | ratchet | regr | 2034 | Counts: writes_to edges without sibling emits_side_effect on same source. Sub: +1 vs baseline 2033. |
-| `S2_uwg_bypass_ratchet` | P0 | ratchet | regr | 1571 | Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: +1 vs baseline 1570. |
-| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | regr | 1146 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +7 vs baseline 1139. |
-| `I2_replay_surface_gaps_ratchet` | P2 | ratchet | regr | 989 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: +1 vs baseline 988. |
-| `M_taint_actionable_ratchet` | P1 | ratchet | regr | 676 | Counts: Actionable taint surfaces without output schema binding. Sub: +1 vs baseline 675. |
-| `H1_new_orphans_delta_ratchet` | P1 | ratchet | regr | 5 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +5 vs baseline 0. |
-| `8_trace_replay_eval` | P1 | ratchet | regr | 1 | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. |
 
 ---
 ## Next action
 
-- **Queue:** `artifacts\adg\adg_action_queue_06262026_0552.json`
-- **emit_status:** `ok`
-- **degraded:** `False`
-- **summary:** FIX=9 · TRACK=13 · actions_emitted=10
+No current-run `adg_action_queue_*.json` found for snapshot `2026-06-27T08:14:35.729658+00:00`.
+Emit with: `python tools/reports/adg_action_queue.py --latest`
 
-| Rank | Lane | Kind | Target | ordering_reason | Signal |
-|-----:|------|------|--------|-----------------|--------|
-| 1 | FIX | fix_gate | `S2_uwg_bypass_ratchet` | fix_regr_p0_delta_asc | Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: +1 vs baseline 1570. |
-| 2 | FIX | fix_gate | `G_REACH_l0_reachability` | fix_regr_p0_delta_asc | Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +13 vs baseline 2786. |
-| 3 | FIX | fix_gate | `8_trace_replay_eval` | fix_regr_p1_delta_asc | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. |
-| 4 | FIX | fix_gate | `M_taint_actionable_ratchet` | fix_regr_p1_delta_asc | Counts: Actionable taint surfaces without output schema binding. Sub: +1 vs baseline 675. |
-| 5 | FIX | fix_gate | `C3_silent_writes_ratchet` | fix_regr_p1_delta_asc | Counts: writes_to edges without sibling emits_side_effect on same source. Sub: +1 vs baseline 2033. |
-
-CLI: `python tools/reports/adg_action_queue.py --latest --top 10 --format markdown`
+Playbook: [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md)
 
 ---
 Report renderer: `tools/reports/adg_burndown_report.py`. Re-run with `python tools/reports/adg_burndown_report.py --out artifacts/adg/adg_burndown_report.md`.

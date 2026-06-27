@@ -119,7 +119,7 @@ This PR intentionally treats `master_skills_arsenal_ledger.json` as the actual g
 
 [codex_prompt]
 text = '''
-Run the PR automation defined in .codex/automation/apps_rg_c03_graph_full_override_pr.toml.
+Run the PR automation defined in .codex/automations/apps-rg-c03-graph-full-override/automation.toml.
 
 Use main as the source of truth.
 

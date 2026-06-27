@@ -46,7 +46,7 @@ def _brown_regen_unblock_panel() -> list[dict[str, Any]]:
     return [
         {
             "provider_key": "gemini_pro",
-            "provider_name": "Gemini Pro",
+            "provider_name": "Google Gemini 3.1 Pro Preview",
             "evaluator_mode": "MODEL_BACKED",
             "provider_status": "MODEL_BACKED_FAIL",
             "pass": False,

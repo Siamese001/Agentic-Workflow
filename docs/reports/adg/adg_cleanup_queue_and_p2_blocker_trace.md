@@ -1,6 +1,6 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-26T10:01:18+00:00
+- **Generated:** 2026-06-27T03:18:08+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
 - **Published sqlite:** `artifacts/adg/adg_indexed_06262026_0552.sqlite`
@@ -14,7 +14,7 @@
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06262026_0552.sqlite (snapshot 06262026_0552)
+  - ADG source: artifacts/adg/adg_indexed_06262026_2302.sqlite (snapshot 06262026_2302)
   - Dead code candidates: 965
   - Dead imports: 965
   - Unresolved imports: 483
@@ -72,7 +72,7 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
   - P2 ceiling: 19
   - Current MEDIUM hygiene count: 19
   - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_06252026_2301.sqlite
+  - Baseline snapshot: adg_indexed_06262026_2302.sqlite
   - Latest failed run: 2026-06-26T10:01:18Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
@@ -91,7 +91,7 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Current MEDIUM hygiene count:** 19
 - **Ceiling:** 19
 - **Delta:** +0
-- **Baseline snapshot:** adg_indexed_06252026_2301.sqlite
+- **Baseline snapshot:** adg_indexed_06262026_2302.sqlite
 - **Published snapshot:** artifacts/adg/adg_indexed_06262026_0552.sqlite
 - **Latest failed run:** 2026-06-26T10:01:18Z (failed)
 

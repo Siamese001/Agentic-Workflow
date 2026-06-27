@@ -290,7 +290,7 @@ class JudgeOutput:
 # Provider configuration
 PROVIDERS = {
     "gemini_pro": {
-        "provider_name": "Gemini Pro",
+        "provider_name": "Google Gemini 3.1 Pro Preview",
         "env": "GOOGLE_API_KEY",
         # GEMINI_API_KEY is a deprecated legacy alias (same credential as Google AI Gemini).
         "env_fallbacks": ("GEMINI_API_KEY",),

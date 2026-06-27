@@ -1,9 +1,6 @@
 {
   "gate_id": "I1_exit_disposition_ratchet",
   "count": 695,
-  "seeded_at": "2026-06-26T03:15:19.016997+00:00",
-  "snapshot": "adg_indexed_06252026_2301.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-06-26T09:58:39.032563+00:00",
-  "last_run_snapshot": "adg_indexed_06262026_0552.sqlite"
+  "seeded_at": "2026-06-27T08:14:53.838540+00:00",
+  "snapshot": "adg_indexed_06272026_0359.sqlite"
 }

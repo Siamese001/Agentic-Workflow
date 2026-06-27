@@ -32,7 +32,7 @@
     "python -m pytest tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py -q"
   ],
   "files": [
-    ".codex/automation/apps_rg_sqlite_graphdb_capability_hardening_pr.toml",
+    ".codex/automations/apps-rg-sqlite-graphdb-capability-hardening/automation.toml",
     "OVERWRITE_MANIFEST.json",
     "apps_rg/config/c03_graph_skill_hardening_policy.json",
     "apps_rg/fact_inventory/apply_c03_graph_full_zero_loss_overwrite.py",

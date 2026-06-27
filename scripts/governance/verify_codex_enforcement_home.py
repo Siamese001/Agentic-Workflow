@@ -32,6 +32,9 @@ AUTOMATION_DIR_BY_ID = {
     "weekly-adg-audit-and-burndown": "adg-audit-and-burndown",
     "weekly-svp-readme-documentation-refresh": "svp-readme-documentation-refresh",
 }
+FORBIDDEN_REPO_CODEX_TREES = (
+    ".codex/automation",
+)
 # Codex app deployment records live under CODEX_HOME/automations. This guard
 # only rejects legacy repo-source copies that were historically misplaced there.
 FORBIDDEN_USER_PROFILE_AUTOMATION_IDS = (
@@ -209,10 +212,23 @@ def _forbidden_user_profile_paths(user_codex_home: Path) -> list[Path]:
     return paths
 
 
+def _forbidden_repo_paths(root: Path) -> list[Path]:
+    return [root / relative_path for relative_path in FORBIDDEN_REPO_CODEX_TREES]
+
+
 def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_HOME) -> list[EnforcementHomeIssue]:
     root = root.resolve()
     user_codex_home = user_codex_home.resolve()
     issues: list[EnforcementHomeIssue] = []
+
+    for path in _forbidden_repo_paths(root):
+        if path.exists():
+            issues.append(
+                EnforcementHomeIssue(
+                    "repo_duplicate_enforcement_home",
+                    f"{path}: automation contracts must live under {root / '.codex' / 'automations'}",
+                )
+            )
 
     for automation_id in AUTOMATION_IDS:
         issues.extend(_validate_automation(root, automation_id))

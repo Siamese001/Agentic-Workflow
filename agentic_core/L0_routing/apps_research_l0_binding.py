@@ -19,6 +19,9 @@ from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_research.integrations.searxng_readiness import (
+    ensure_runtime_ready as _ensure_searxng_runtime_ready,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

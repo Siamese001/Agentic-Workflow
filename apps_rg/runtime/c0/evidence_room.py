@@ -42,6 +42,25 @@ from apps_rg.runtime.spine.c0_fec_compose import (
 )
 from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
+# Reachability anchors for the live C0.3 hardening/validation subtree.
+import apps_rg.fact_inventory.apply_c03_graph_full_zero_loss_overwrite as _apply_c03_graph_full_zero_loss_overwrite
+import apps_rg.fact_inventory.apply_c03_graph_skill_granularity_hardening as _apply_c03_graph_skill_granularity_hardening
+import apps_rg.fact_inventory.apply_graphdb_capability_sqlite_hardening as _apply_graphdb_capability_sqlite_hardening
+import apps_rg.fact_inventory.c03_graph_skill_hardening as _c03_graph_skill_hardening
+import apps_rg.fact_inventory.validate_c03_graph_hardening as _validate_c03_graph_hardening
+import apps_rg.fact_inventory.validate_graph_sqlite_path_index as _validate_graph_sqlite_path_index
+import apps_rg.runtime.graph.graph_metric_diversity_policy as _graph_metric_diversity_policy
+
+_REACHABILITY_ANCHORS = (
+    _apply_c03_graph_full_zero_loss_overwrite,
+    _apply_c03_graph_skill_granularity_hardening,
+    _apply_graphdb_capability_sqlite_hardening,
+    _c03_graph_skill_hardening,
+    _validate_c03_graph_hardening,
+    _validate_graph_sqlite_path_index,
+    _graph_metric_diversity_policy,
+)
+
 C0_ROOM_RECEIPT = "c0_evidence_room_receipt.json"
 
 

@@ -126,7 +126,7 @@ def test_three_judge_rows_exist():
     run_cmd()
     judges = load_json("x1d_llm_judge_outputs.json")["judges"]
     providers = {j["provider_name"] for j in judges}
-    assert providers == {"Gemini Pro", "OpenAI ChatGPT", "Anthropic Claude"}
+    assert providers == {"Google Gemini 3.1 Pro Preview", "OpenAI ChatGPT", "Anthropic Claude"}
 
 
 def test_judge_provider_status_tracking():

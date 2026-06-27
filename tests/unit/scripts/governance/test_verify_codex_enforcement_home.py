@@ -51,18 +51,16 @@ def _adg_p0_p1_prompt() -> str:
 
 
 def _valid_root(tmp_path: Path) -> Path:
-    _write(
-        tmp_path / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml",
-        _automation_toml("on-demand-pr-main-publisher", _publication_prompt(), tmp_path),
-    )
-    _write(
-        tmp_path / ".codex" / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml",
-        _automation_toml("weekly-adg-audit-and-burndown", _adg_prompt(), tmp_path),
-    )
-    _write(
-        tmp_path / ".codex" / "automations" / "adg-p0-p1-burndown" / "automation.toml",
-        _automation_toml("adg-p0-p1-burndown", _adg_p0_p1_prompt(), tmp_path),
-    )
+    prompt_by_id = {
+        "on-demand-pr-main-publisher": _publication_prompt(),
+        "weekly-adg-audit-and-burndown": _adg_prompt(),
+        "adg-p0-p1-burndown": _adg_p0_p1_prompt(),
+    }
+    for automation_id in mod.AUTOMATION_IDS:
+        _write(
+            mod._automation_path(tmp_path, automation_id),
+            _automation_toml(automation_id, prompt_by_id.get(automation_id, "placeholder prompt"), tmp_path),
+        )
     for skill_id in mod.REPO_SKILL_IDS:
         _write(tmp_path / ".codex" / "skills" / skill_id / "SKILL.md")
     return tmp_path
@@ -83,6 +81,15 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
     issues = mod.validate(root, user_codex_home)
 
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_repo_local_singular_automation_tree_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "automation" / "misplaced.toml")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" for issue in issues)
 
 
 def test_user_profile_skill_fails(tmp_path: Path) -> None:
@@ -127,7 +134,7 @@ def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Pat
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
-    automation = root / ".codex" / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml"
+    automation = mod._automation_path(root, "weekly-adg-audit-and-burndown")
     automation.write_text(
         _automation_toml("weekly-adg-audit-and-burndown", _adg_prompt(), tmp_path / "other"),
         encoding="utf-8",
