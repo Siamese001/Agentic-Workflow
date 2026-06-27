@@ -96,6 +96,26 @@ ADG_P3_REQUIRED_PROMPT_SNIPPETS = (
     "P2 should remain ahead",
 )
 
+SVP_DOCS_REQUIRED_PROMPT_SNIPPETS = (
+    "svp_docs_x1d/v1",
+    "svp_docs_x2/v1",
+    "svp_docs_x3/v1",
+    "Every blocking X1D finding must include file, line, claim, finding_type, severity, evidence, and required_fix",
+    "x2_architecture_status_consistency",
+    "x2_claim_evidence_map",
+    "x2_proof_command_resolves",
+    "x2_receipt_schema_validate",
+    "x2_approval_mode",
+    "x2_no_absolute_unproven_language",
+    "PLAN_ONLY",
+    "ALLOW_TO_PR",
+    "ESCALATE_HUMAN",
+    "X1D decides whether the docs read like serious SVP/CTO engineering material",
+    "X2 decides whether the docs are mechanically true, scoped, current, and safe",
+    "X3 decides whether this weekly Codex run may publish, must stop at plan, or must block",
+    "Eval never waives a runtime or publication gate",
+)
+
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
 ADG_HANDOFF_RECEIPT_PATH = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
 ADG_HANDOFF_VALIDATOR = (
@@ -363,6 +383,15 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
                 prompt=prompt,
                 snippets=ADG_P3_REQUIRED_PROMPT_SNIPPETS,
                 code="adg_p3_prompt_missing",
+            )
+        )
+    if automation_id == "weekly-svp-readme-documentation-refresh":
+        issues.extend(
+            _validate_prompt_snippets(
+                automation_id=automation_id,
+                prompt=prompt,
+                snippets=SVP_DOCS_REQUIRED_PROMPT_SNIPPETS,
+                code="svp_docs_prompt_missing",
             )
         )
     issues.extend(_validate_adg_handoff_metadata(automation_id, data))
