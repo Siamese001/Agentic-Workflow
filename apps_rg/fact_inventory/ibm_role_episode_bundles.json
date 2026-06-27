@@ -965,6 +965,12 @@
         "Partner solution architecture mapped to regulated financial-services workloads",
         "Alliance operating cadence across enablement, executive sponsorship, and opportunity progression"
       ],
+      "capability_facets": [
+        "partner_applied_ai_architecture",
+        "hyperscaler_alliance_solution_architecture",
+        "regulated_partner_solution_enablement",
+        "alliance_cosell_gtm"
+      ],
       "graph_skill_node_ids": [
         "skill_partner_ibm_aws_alliance_joint_revenue",
         "skill_sr_w12_hyperscaler_alliance_co_sell",

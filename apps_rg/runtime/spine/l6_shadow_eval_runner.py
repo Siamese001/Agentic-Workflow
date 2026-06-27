@@ -22,6 +22,9 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
+from apps_rg.runtime.shadow.l6_microstep_observability import (
+    emit_apps_rg_l6_microstep_artifacts,
+)
 
 APPS_RG_L6_V40_SHADOW_EVAL_ENV = "APPS_RG_L6_V40_SHADOW_EVAL"
 APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV = "APPS_RG_L6_V40_SHADOW_EVAL_SKIP"
@@ -118,6 +121,14 @@ def run_l6_v40_shadow_eval_for_section(
         jsonl_name=L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT,
         source="apps_rg_l6_v40_shadow_eval",
     )
+    microstep_paths = emit_apps_rg_l6_microstep_artifacts(
+        output_dir=artifact_dir,
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        run_id=ingest.bundle.run_id,
+        runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
+        section_id=section_id,
+    )
 
     package: dict[str, Any] = {
         "schema_version": "apps_rg.l6_v40_shadow_eval.v1",
@@ -133,6 +144,15 @@ def run_l6_v40_shadow_eval_for_section(
         "ingest_gap_report": _jsonable(ingest.gap_report),
         "span_export_ref": _repo_rel(repo_root, span_paths["span_export_json"]),
         "span_export_jsonl_ref": _repo_rel(repo_root, span_paths["span_export_jsonl"]),
+        "l6_microstep_observations_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_observations"]),
+        "l6_microstep_coverage_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_coverage"]),
+        "l6_microstep_rca_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_rca"]),
+        "l6_microstep_patterns_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_patterns"]),
+        "l6_microstep_future_run_proposals_ref": _repo_rel(
+            repo_root,
+            microstep_paths["l6_microstep_future_run_proposals"],
+        ),
+        "l6_apps_eval_alignment_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_alignment"]),
         "input_refs": {
             "artifact_dir": _repo_rel(repo_root, artifact_dir),
             "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
@@ -154,6 +174,7 @@ def run_l6_v40_shadow_eval_for_section(
         "l6_v40_shadow_eval_package": package_path,
         "l6_v40_shadow_eval_spans": span_paths["span_export_json"],
         "l6_v40_shadow_eval_spans_jsonl": span_paths["span_export_jsonl"],
+        **microstep_paths,
     }
 
 

@@ -145,7 +145,12 @@ class NativePersistentCacheClient:
             # Initialize ChromaDB vector store (persistent) with BGE-M3 embedding function
             chroma_path = self._resolve_chroma_path()
             chroma_path.mkdir(parents=True, exist_ok=True)
-            self._chroma_client = chromadb.PersistentClient(path=str(chroma_path))
+            from chromadb.config import Settings
+
+            self._chroma_client = chromadb.PersistentClient(
+                path=str(chroma_path),
+                settings=Settings(anonymized_telemetry=False),
+            )
             self._chroma_collection = self._get_or_create_bgem3_collection()
 
             self._cache = "real"
@@ -220,7 +225,17 @@ class NativePersistentCacheClient:
             if "not found" not in str(exc).lower():
                 raise
 
-        return self._chroma_client.get_or_create_collection(**self._l2_collection_kwargs(_ef))
+        try:
+            return self._chroma_client.get_or_create_collection(**self._l2_collection_kwargs(_ef))
+        except ValueError as exc:
+            if "embedding function" not in str(exc).lower() or "conflict" not in str(exc).lower():
+                raise
+            Logger.warning(
+                "L2_CACHE_MIGRATION: dropping 'l2_semantic_cache' — persisted embedding "
+                "function conflicts with explicit BGE-M3 cache EF; existing cache data is invalidated"
+            )
+            self._chroma_client.delete_collection(col_name)
+            return self._chroma_client.get_or_create_collection(**self._l2_collection_kwargs(_ef))
 
     def _init_sqlite(self, sqlite_path: Path) -> None:
         """Initialize SQLite schema (Phase B: schema-complete) and apply safe migrations."""

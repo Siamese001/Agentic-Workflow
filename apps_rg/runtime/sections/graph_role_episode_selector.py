@@ -123,8 +123,8 @@ _HEADLINE_FAMILIES_BY_PROFILE: dict[str, tuple[str, ...]] = {
     ),
     "ai_partnerships_gtm": (
         "svp_engineering_leadership",
+        "partner_applied_ai_architecture",
         "platform_productization",
-        "distributed_ai_infrastructure",
         "enterprise_ai_architecture",
     ),
     "insurance_it_strategy": (
@@ -153,8 +153,8 @@ _COMPETENCY_FAMILIES_BY_PROFILE: dict[str, tuple[str, ...]] = {
         "engineering_leadership",
     ),
     "ai_partnerships_gtm": (
+        "partner_applied_ai_architecture",
         "platform_productization",
-        "partnerships_ecosystem_execution",
         "distributed_systems_engineering",
         "engineering_leadership",
         "cloud_hpc_modernization",

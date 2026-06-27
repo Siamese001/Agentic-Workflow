@@ -192,7 +192,9 @@ def test_native_cache_initializes_layout_directories(monkeypatch, tmp_path: Path
 
     assert layout.base_dir.is_dir()
     assert layout.chroma_path.is_dir()
-    persistent_client.assert_called_once_with(path=str(layout.chroma_path))
+    persistent_client.assert_called_once()
+    assert persistent_client.call_args.kwargs["path"] == str(layout.chroma_path)
+    assert persistent_client.call_args.kwargs["settings"].anonymized_telemetry is False
     client.close()
 
 
@@ -212,7 +214,9 @@ def test_native_cache_honors_chroma_persist_dir_override(monkeypatch, tmp_path: 
 
     assert layout.sqlite_path.exists()
     assert override.is_dir()
-    persistent_client.assert_called_once_with(path=str(override.resolve()))
+    persistent_client.assert_called_once()
+    assert persistent_client.call_args.kwargs["path"] == str(override.resolve())
+    assert persistent_client.call_args.kwargs["settings"].anonymized_telemetry is False
     client.close()
 
 

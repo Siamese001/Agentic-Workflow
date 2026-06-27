@@ -193,3 +193,40 @@ def test_collect_lane_real_llm_with_pointer_matches_gate(tmp_path: Path) -> None
 
     row = collect_lane_from_run_dir(lane, base, repo=repo)
     assert row["accepted_real_evidence_resolution"] == "latest_successful_real_run.json"
+
+
+def test_collect_lane_real_llm_with_integrated_lane_root_pointer(tmp_path: Path) -> None:
+    repo = tmp_path
+    (repo / "apps_rg" / "resume" / "base").mkdir(parents=True)
+    lane = "headline"
+    base = repo / "artifacts" / "apps_rg" / "runtime_proofs" / "full_resume_test" / "lanes" / lane
+    base.mkdir(parents=True, exist_ok=True)
+    l2 = {
+        "run_id": "run1",
+        "section_id": lane,
+        "runtime_generation_status": "REAL_LLM",
+        "headline_line": "A | B | C",
+    }
+    for name, blob in [
+        ("l2_output.json", l2),
+        ("x2_gate_outputs.json", {"gates": [], "x2_passed": 1, "x2_failed": 0}),
+        ("x1d_llm_judge_outputs.json", {"judges": []}),
+        ("x3_disposition.json", {"x3_code": "X3_ALLOW"}),
+        ("l6_shadow_eval_package.json", {"offline_only": True}),
+        (
+            "provider_request.json",
+            {"provider_requested": "external_claude", "provider_attempted": True},
+        ),
+    ]:
+        (base / name).write_text(json.dumps(blob), encoding="utf-8")
+    rel = str(base.relative_to(repo)).replace("\\", "/")
+    ptr = {"run_dir": rel, "run_id": "run1", "runtime_generation_status": "REAL_LLM"}
+    (base / "latest_successful_real_run.json").write_text(
+        json.dumps(ptr),
+        encoding="utf-8",
+    )
+
+    from apps_rg.runtime.internal.generated_lane_rollup import collect_lane_from_run_dir
+
+    row = collect_lane_from_run_dir(lane, base, repo=repo)
+    assert row["accepted_real_evidence_resolution"] == "latest_successful_real_run.json"

@@ -1138,20 +1138,7 @@ def run_unify_narrative_execution(
     )
     write_json(artifact_dir / "prompt_selection_trace.json", trace)
     write_json(artifact_dir / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})
-    write_json(
-        artifact_dir / "real_l2_generation_result.json",
-        {
-            "provider_attempted": args.provider,
-            "runtime_generation_status": runtime_generation_status,
-            "prompt_hash": prompt_hash,
-            "model": model_name,
-            "input_payload_hash": input_payload_hash,
-            "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-            "status": "pending",
-        },
-    )
     write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
-    write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="unify_narrative")
 
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags

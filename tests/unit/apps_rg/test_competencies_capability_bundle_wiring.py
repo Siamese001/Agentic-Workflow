@@ -526,13 +526,13 @@ def test_visible_graph_surface_uses_partnership_first_bundle_labels_and_terms():
     packet = build_competency_capability_section_packet("competencies")
     by_id = {row["competency_bundle_id"]: row for row in packet["competency_bundles"]}
     bundle_ids = [
+        "ccb_partner_applied_ai_architecture",
         "ccb_agentic_platforms",
         "ccb_runtime_governance",
         "ccb_retrieval_context_engineering",
         "ccb_llmops_reliability",
         "ccb_distributed_systems_engineering",
         "ccb_platform_productization",
-        "ccb_partnerships_ecosystem_execution",
         "ccb_engineering_leadership",
     ]
     parsed = {"competencies": []}
@@ -562,9 +562,9 @@ def test_visible_graph_surface_uses_partnership_first_bundle_labels_and_terms():
     )
 
     competencies = parsed["competencies"]
-    assert competencies[0]["competency_bundle_id"] == "ccb_partnerships_ecosystem_execution"
-    assert competencies[0]["resume_display_label"] == "Strategic Partnerships & Ecosystem Execution"
-    assert "AI alliance commercialization with hyperscaler partners" in [
+    assert competencies[0]["competency_bundle_id"] == "ccb_partner_applied_ai_architecture"
+    assert competencies[0]["resume_display_label"] == "Partner Applied AI Architecture"
+    assert "partner-ready applied AI reference architectures" in [
         term["text"] for term in competencies[0]["terms"]
     ]
     assert competencies[1]["resume_display_label"] == "Governed Agentic AI Platform Architecture"
@@ -587,6 +587,99 @@ def test_visible_graph_surface_uses_partnership_first_bundle_labels_and_terms():
     )
     richness_ok, richness_reason = check_competencies_visible_terms_svp_agentic_richness(competencies)
     assert richness_ok, richness_reason
+
+
+def test_partner_applied_ai_architecture_bundle_is_root_bound_for_anthropic():
+    jd_text = ANTHROPIC_JD.read_text(encoding="utf-8")
+    brief_text = ANTHROPIC_BRIEF.read_text(encoding="utf-8")
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": plan,
+        },
+        section_id="competencies",
+    )
+    bundle = next(
+        b for b in meta["competency_capability_bundles"]
+        if b["competency_bundle_id"] == "ccb_partner_applied_ai_architecture"
+    )
+    assert bundle["allowed_partner_roots"] == [
+        "reb_unify_partner_channel_cosell",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+    ]
+    assert "employment_exp_insurtech_001" in bundle["forbidden_partner_roots"]
+    assert "employment_exp_ey_001" in bundle["forbidden_partner_roots"]
+
+    comps = [
+        {
+            "category_label": "Partner Applied AI Architecture",
+            "competency_bundle_id": "ccb_partner_applied_ai_architecture",
+            "capability_family": "partner_applied_ai_architecture",
+            "graph_skill_node_ids": list(bundle["graph_skill_node_ids"]),
+            "source_fact_ids": ["reb_unify_partner_channel_cosell"],
+            "terms": [
+                {
+                    "text": "partner-ready applied AI reference architectures",
+                    "source_fact_ids": ["reb_unify_partner_channel_cosell"],
+                    "source_skill_ids": ["skill_partner_joint_solution_development"],
+                }
+            ],
+        }
+    ]
+    assert q.check_partner_architecture_bundle_present(comps, meta).passed
+    assert q.check_partner_architecture_terms_require_bundle(comps, meta).passed
+    assert q.check_partner_terms_source_roots(comps, meta).passed
+
+
+def test_partner_architecture_terms_fail_when_bound_to_insurtech_root():
+    meta = {
+        "competency_capability_bundle_consumption": True,
+        "selected_graph_evidence_plan": {
+            "target_role_profile": "ai_partnerships_gtm",
+            "facts": [
+                {
+                    "fact_id": "reb_insurtech_cloud_modernization",
+                    "role_episode_bundle_id": "reb_insurtech_cloud_modernization",
+                    "employer_lane": "insurtech",
+                    "source_fact_ids": ["reb_insurtech_cloud_modernization"],
+                    "graph_skill_node_ids": ["skill_cloud_migration"],
+                }
+            ],
+        },
+        "competency_capability_bundles": [
+            {
+                "competency_bundle_id": "ccb_insurance_domain_erm",
+                "capability_family": "insurance_domain_modernization",
+                "employer_bindings": ["employment_exp_insurtech_001"],
+                "role_episode_bindings": ["reb_insurtech_cloud_modernization"],
+            }
+        ],
+    }
+    comps = [
+        {
+            "category_label": "Partner Applied AI Architecture",
+            "competency_bundle_id": "ccb_insurance_domain_erm",
+            "capability_family": "insurance_domain_modernization",
+            "graph_skill_node_ids": ["skill_cloud_migration"],
+            "source_fact_ids": ["reb_insurtech_cloud_modernization"],
+            "terms": [
+                {
+                    "text": "partner-ready applied AI reference architectures",
+                    "source_fact_ids": ["reb_insurtech_cloud_modernization"],
+                    "source_skill_ids": ["skill_cloud_migration"],
+                }
+            ],
+        }
+    ]
+    assert not q.check_partner_architecture_terms_require_bundle(comps, meta).passed
+    assert not q.check_partner_terms_source_roots(comps, meta).passed
 
 
 def test_per_category_confidence_nonconstant_requires_real_category_scores():

@@ -89,6 +89,9 @@
   packages through materializers, open SQLite writable for schema hardening, and validate the broader
   master-ledger shape after granularity hardening. Detail:
   `memory/codex/apps_rg_c03_graphdb_overwrite_validation_repairs.md`.
+- **L6 / apps_eval microstep alignment (2026-06-27):** L6 shadow observability uses the same
+  `microstep_id` join key as `apps_eval` for apps_rg, but remains post-run, read-only, and
+  future-run-only. Detail: `memory/codex/l6_apps_eval_microstep_alignment_invariant.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

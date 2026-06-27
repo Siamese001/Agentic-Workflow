@@ -236,7 +236,12 @@ class L3SemanticRAG:
 
         persist_dir = Path(persist_directory)
         persist_dir.mkdir(parents=True, exist_ok=True)
-        self.client = chromadb.PersistentClient(path=str(persist_dir))
+        from chromadb.config import Settings
+
+        self.client = chromadb.PersistentClient(
+            path=str(persist_dir),
+            settings=Settings(anonymized_telemetry=False),
+        )
 
         # Get canonical collections — graceful degrade until Phase 2 collections exist
         try:

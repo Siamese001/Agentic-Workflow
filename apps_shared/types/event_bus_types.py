@@ -577,6 +577,7 @@ class RedisEventBus(EventBus):
                 retry_on_timeout=True,
                 socket_keepalive=True,
                 socket_keepalive_options={},
+                protocol=2,
             )
             await self.redis.ping()
             self._running = True

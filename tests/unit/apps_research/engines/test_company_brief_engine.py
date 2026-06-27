@@ -155,6 +155,53 @@ class TestResolveJdContext:
 
 
 class TestCuratedTargetingFallback:
+    def test_v2_research_returns_coverage_family_keys(self, monkeypatch, engine):
+        from apps_research.integrations.search_retrieval import RetrievedDoc
+
+        calls: list[str] = []
+
+        def _retrieve(query: str, *, top_k: int = 10):
+            calls.append(query)
+            return [
+                RetrievedDoc(
+                    url=f"https://example.com/{len(calls)}",
+                    title=f"doc-{len(calls)}",
+                    snippet=f"snippet for {query}",
+                    score=1.0,
+                )
+            ]
+
+        def _rerank(query: str, docs, *, cutoff: int = 5):
+            return list(docs)[:cutoff]
+
+        monkeypatch.setattr(
+            "apps_research.integrations.search_retrieval.retrieve",
+            _retrieve,
+        )
+        monkeypatch.setattr(
+            "apps_research.integrations.reranker_adapter.rerank",
+            _rerank,
+        )
+
+        findings = engine._run_research_v2(
+            topic="Anthropic",
+            depth="standard",
+            jd_context={
+                "company_name": "Anthropic",
+                "job_title": "Manager of Applied AI Architecture, Partnerships",
+            },
+        )
+
+        assert "overview" not in findings
+        assert "company_basics" in findings
+        assert "partner_ecosystem" in findings
+        assert "commercial_motion" in findings
+        assert "adoption_motion" in findings
+        assert "tech_stack_and_tools" in findings
+        assert "recent_news_and_signals" in findings
+        assert all(value.strip() for value in findings.values())
+        assert all("\nhttps://example.com/" in value for value in findings.values())
+
     def test_adaptive_research_blocks_when_search_is_empty_instead_of_curated_pack(
         self, monkeypatch, engine
     ):

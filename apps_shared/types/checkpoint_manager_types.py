@@ -554,7 +554,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             Redis client
         """
         if self._redis is None:
-            self._redis = await aioredis.from_url(self.redis_url)
+            self._redis = await aioredis.from_url(self.redis_url, protocol=2)
         return self._redis
 
     def _get_key(self, trace_id: str) -> str:

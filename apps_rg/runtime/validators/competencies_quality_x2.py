@@ -1,7 +1,7 @@
 """Competencies authority X2 gate helpers (Headline/Competencies/Narrative Rigor plan).
 
 Implements deterministic proxy gates enforcing graph-backed competencies proof:
-- x2_competencies_capability_family_coverage: ≥5 of 7 capability families present
+- x2_competencies_capability_family_coverage: >=5 of required capability families present
 - x2_competencies_no_default_fid_proof: default_fid backfill cannot be the sole support
 - x2_competencies_generic_category_blocked_without_graph: generic categories need graph terms
 - x2_competencies_e0_ngram_overlap: anti-leakage gate for E0 example text
@@ -49,6 +49,10 @@ REQUIRED_CAPABILITY_FAMILIES: dict[str, frozenset[str]] = {
         "productization", "commercialization", "saas", "roadmap",
         "alliance", "go-to-market", "gtm", "pricing",
     }),
+    "partner_architecture": frozenset({
+        "partner", "partnership", "co-sell", "cosell", "alliance",
+        "reference", "accelerator", "enablement", "partner-ready",
+    }),
     "engineering_leadership": frozenset({
         "engineering", "leadership", "organization", "operating", "model",
         "talent", "hiring", "recruiting", "team", "staff",
@@ -93,6 +97,14 @@ ROLE_PROFILE_REQUIRED_SKILL_AXES: dict[str, dict[str, tuple[str, ...]]] = {
         "hyperscaler_alliance": ("hyperscaler", "aws", "cloud_vendor", "cloud-vendor"),
         "joint_solution": ("joint_solution", "joint solution", "partner_led_ai_solutions"),
         "gtm_enablement": ("enablement", "gtm", "technical_close", "go-to-market"),
+        "partner_architecture": (
+            "partner_applied_ai_architecture",
+            "applied_ai_partner_architecture",
+            "reference_architecture",
+            "reference architecture",
+            "solution_architecture",
+            "solution architecture",
+        ),
     }
 }
 
@@ -176,7 +188,7 @@ def check_competencies_capability_family_coverage(
     competencies: list[Any],
     min_families: int = 5,
 ) -> CompQualityResult:
-    """Require ≥min_families of 7 capability families across all terms."""
+    """Require at least min_families required capability families across all terms."""
     all_tokens: set[str] = set()
     for cat in (competencies or []):
         for term in _category_terms(cat):
@@ -201,7 +213,8 @@ def check_competencies_capability_family_coverage(
                 f"Only {len(matched_families)}/{len(REQUIRED_CAPABILITY_FAMILIES)} capability families "
                 f"detected (need {min_families}): {matched_families}. "
                 "SVP Engineering competencies must cover Agentic Platform, Runtime Governance, "
-                "Retrieval Context, LLMOps, Distributed Infra, Productization, Engineering Leadership."
+                "Retrieval Context, LLMOps, Distributed Infra, Productization, Partner Architecture, "
+                "and Engineering Leadership."
             )
         ),
         signals=matched_families,
@@ -389,7 +402,8 @@ _TECHNICAL_DENSITY_TOKENS: frozenset[str] = frozenset({
     "distributed", "cloud", "lakehouse", "streaming", "kubernetes", "pipeline",
     "platform", "architecture", "commercialization", "productization",
     "alliance", "co-sell", "lineage", "rbac", "devsecops", "policy",
-    "deterministic", "calibration", "judge", "accelerator",
+    "deterministic", "calibration", "judge", "accelerator", "reference",
+    "solution", "enablement", "partner-ready",
 })
 
 
@@ -545,6 +559,239 @@ def _selected_graph_plan(proof_pool_metadata: dict[str, Any] | None) -> dict[str
         return {}
     plan = proof_pool_metadata.get("selected_graph_evidence_plan")
     return plan if isinstance(plan, dict) else {}
+
+
+PARTNER_ARCHITECTURE_BUNDLE_ID = "ccb_partner_applied_ai_architecture"
+PARTNER_ARCHITECTURE_FAMILY = "partner_applied_ai_architecture"
+PARTNER_TARGET_PROFILES = frozenset({
+    "ai_partnerships_gtm",
+    "PARTNER_APPLIED_AI_ARCHITECTURE",
+    "ANTHROPIC_PARTNERSHIPS_APPLIED_AI",
+})
+FORBIDDEN_PARTNER_EMPLOYER_LANES = frozenset({"insurtech", "ey"})
+PARTNER_TEXT_RE = re.compile(
+    r"\b(partner|partnership|alliance|co-?sell|cosell|ecosystem|hyperscaler)\b",
+    re.IGNORECASE,
+)
+PARTNER_ARCHITECTURE_TEXT_RE = re.compile(
+    r"\b(partner|partnership|alliance|co-?sell|cosell|ecosystem|hyperscaler)\b"
+    r".*\b(architecture|architectures|solution|solutions|reference|accelerator|enablement|deployment)\b"
+    r"|"
+    r"\b(architecture|architectures|solution|solutions|reference|accelerator|enablement|deployment)\b"
+    r".*\b(partner|partnership|alliance|co-?sell|cosell|ecosystem|hyperscaler)\b",
+    re.IGNORECASE,
+)
+
+
+def _proof_bundles_by_id(proof_pool_metadata: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    bundles = []
+    if isinstance(proof_pool_metadata, dict):
+        bundles = proof_pool_metadata.get("competency_capability_bundles") or []
+    out: dict[str, dict[str, Any]] = {}
+    for bundle in bundles:
+        if not isinstance(bundle, dict):
+            continue
+        bid = str(bundle.get("competency_bundle_id") or "").strip()
+        if bid:
+            out[bid] = bundle
+    return out
+
+
+def _cat_capability_family(cat: Any, bundles_by_id: dict[str, dict[str, Any]]) -> str:
+    if isinstance(cat, dict):
+        fam = str(cat.get("capability_family") or "").strip()
+        if fam:
+            return fam
+        bundle = bundles_by_id.get(_cat_bundle_id(cat))
+        if bundle:
+            return str(bundle.get("capability_family") or "").strip()
+    return ""
+
+
+def _cat_text_for_partner_checks(cat: Any) -> str:
+    parts = [_category_label(cat)]
+    if isinstance(cat, dict):
+        parts.extend(
+            str(x)
+            for x in (
+                cat.get("competency_bundle_id"),
+                cat.get("capability_family"),
+            )
+            if x
+        )
+        for term in _category_terms(cat):
+            if isinstance(term, dict):
+                parts.append(str(term.get("term") or term.get("text") or ""))
+            else:
+                parts.append(str(term or ""))
+    return " ".join(p for p in parts if p)
+
+
+def _selected_fact_employer_map(proof_pool_metadata: dict[str, Any] | None) -> dict[str, str]:
+    plan = _selected_graph_plan(proof_pool_metadata)
+    out: dict[str, str] = {}
+    for row in plan.get("facts") or []:
+        if not isinstance(row, dict):
+            continue
+        lane = str(row.get("employer_lane") or row.get("employer") or "").strip().lower()
+        if not lane:
+            continue
+        for key in (
+            row.get("fact_id"),
+            row.get("role_episode_bundle_id"),
+            row.get("employer_node_id"),
+        ):
+            ident = str(key or "").strip()
+            if ident:
+                out[ident] = lane
+        for fid in row.get("source_fact_ids") or []:
+            ident = str(fid or "").strip()
+            if ident:
+                out[ident] = lane
+        for mid in row.get("metric_outcome_ids") or []:
+            ident = str(mid or "").split("_metric_", 1)[0].strip()
+            if ident:
+                out[ident] = lane
+    return out
+
+
+def _partner_profile_active(proof_pool_metadata: dict[str, Any] | None) -> bool:
+    plan = _selected_graph_plan(proof_pool_metadata)
+    profile = str(plan.get("target_role_profile") or "").strip()
+    if profile in PARTNER_TARGET_PROFILES:
+        return True
+    for key in (
+        proof_pool_metadata.get("role_family_key") if isinstance(proof_pool_metadata, dict) else "",
+        plan.get("role_family_key"),
+        plan.get("projection_role_family_key"),
+    ):
+        if str(key or "").strip() in PARTNER_TARGET_PROFILES:
+            return True
+    selected_families = {
+        str(x).strip()
+        for x in (plan.get("selected_competency_families") or [])
+        if str(x).strip()
+    }
+    return PARTNER_ARCHITECTURE_FAMILY in selected_families
+
+
+def check_partner_architecture_bundle_present(
+    competencies: list[Any],
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult:
+    """Anthropic/partnership profiles must select and render the partner architecture bundle."""
+    if not _partner_profile_active(proof_pool_metadata):
+        return CompQualityResult(
+            gate_id="x2_partner_architecture_bundle_present",
+            passed=True,
+            observed_value="not_applicable",
+            threshold="required only for partner/applied-ai architecture profiles",
+            failure_reason=None,
+            signals=[],
+        )
+    bundles_by_id = _proof_bundles_by_id(proof_pool_metadata)
+    proof_pool_has_bundle = PARTNER_ARCHITECTURE_BUNDLE_ID in bundles_by_id
+    rendered = [
+        _category_label(cat) or f"idx{i}"
+        for i, cat in enumerate(competencies or [])
+        if _cat_bundle_id(cat) == PARTNER_ARCHITECTURE_BUNDLE_ID
+        or _cat_capability_family(cat, bundles_by_id) == PARTNER_ARCHITECTURE_FAMILY
+    ]
+    passed = proof_pool_has_bundle and bool(rendered)
+    return CompQualityResult(
+        gate_id="x2_partner_architecture_bundle_present",
+        passed=passed,
+        observed_value={
+            "proof_pool_has_bundle": proof_pool_has_bundle,
+            "rendered_categories": rendered,
+        },
+        threshold=f"{PARTNER_ARCHITECTURE_BUNDLE_ID} present in proof pool and rendered",
+        failure_reason=(
+            None
+            if passed
+            else "Partner/applied-AI profile requires a rendered category bound to ccb_partner_applied_ai_architecture."
+        ),
+        signals=rendered,
+    )
+
+
+def check_partner_architecture_terms_require_bundle(
+    competencies: list[Any],
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult:
+    """Partner architecture terms must be bound to the partner architecture bundle."""
+    bundles_by_id = _proof_bundles_by_id(proof_pool_metadata)
+    violations: list[str] = []
+    for i, cat in enumerate(competencies or []):
+        text = _cat_text_for_partner_checks(cat)
+        if not PARTNER_ARCHITECTURE_TEXT_RE.search(text):
+            continue
+        bundle_id = _cat_bundle_id(cat)
+        family = _cat_capability_family(cat, bundles_by_id)
+        if bundle_id != PARTNER_ARCHITECTURE_BUNDLE_ID and family != PARTNER_ARCHITECTURE_FAMILY:
+            violations.append(_category_label(cat) or f"idx{i}:{bundle_id or 'missing_bundle'}")
+    passed = not violations
+    return CompQualityResult(
+        gate_id="x2_partner_architecture_terms_require_partner_bundle",
+        passed=passed,
+        observed_value=violations if violations else "none",
+        threshold=f"partner architecture terms require {PARTNER_ARCHITECTURE_BUNDLE_ID}",
+        failure_reason=(
+            None
+            if passed
+            else f"Partner architecture wording appeared outside the partner architecture bundle: {violations[:6]}"
+        ),
+        signals=violations[:6],
+    )
+
+
+def check_partner_terms_source_roots(
+    competencies: list[Any],
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult:
+    """Partner terms cannot be backed by InsurTech/EY roots."""
+    bundles_by_id = _proof_bundles_by_id(proof_pool_metadata)
+    fact_to_lane = _selected_fact_employer_map(proof_pool_metadata)
+    violations: list[str] = []
+    for i, cat in enumerate(competencies or []):
+        text = _cat_text_for_partner_checks(cat)
+        if not PARTNER_TEXT_RE.search(text):
+            continue
+        label = _category_label(cat) or f"idx{i}"
+        bundle = bundles_by_id.get(_cat_bundle_id(cat)) or {}
+        root_ids = set(_cat_source_fact_ids(cat))
+        root_ids.update(str(x) for x in (bundle.get("employer_bindings") or []) if str(x).strip())
+        root_ids.update(str(x) for x in (bundle.get("role_episode_bindings") or []) if str(x).strip())
+        forbidden_roots = {
+            str(x).strip()
+            for x in (bundle.get("forbidden_partner_roots") or [])
+            if str(x).strip()
+        }
+
+        for root_id in sorted(root_ids):
+            low = root_id.lower()
+            lane = fact_to_lane.get(root_id, "")
+            if (
+                root_id in forbidden_roots
+                or lane in FORBIDDEN_PARTNER_EMPLOYER_LANES
+                or "insurtech" in low
+                or low in {"employment_exp_ey_001", "reb_ey_data_governance"}
+            ):
+                violations.append(f"{label}:{root_id}:{lane or 'root_hint'}")
+                break
+    passed = not violations
+    return CompQualityResult(
+        gate_id="x2_partner_terms_source_roots_forbid_insurtech_ey",
+        passed=passed,
+        observed_value=violations if violations else "none",
+        threshold="partner terms may not bind to InsurTech/EY roots",
+        failure_reason=(
+            None
+            if passed
+            else f"Partner wording bound to forbidden InsurTech/EY roots: {violations[:6]}"
+        ),
+        signals=violations[:6],
+    )
 
 
 def _average_judge_score(x1d_judges: list[dict[str, Any]] | None) -> tuple[float | None, str]:
@@ -1454,14 +1701,14 @@ def check_technical_density_floor(
 
 
 def check_required_capability_families_covered(
-    competencies: list[Any], *, min_families: int = 7
+    competencies: list[Any], *, min_families: int = 8
 ) -> CompQualityResult:
-    """Required-coverage gate: at least min_families of the 7 capability families present."""
+    """Required-coverage gate: at least min_families required capability families present."""
     return CompQualityResult(
         gate_id="x2_required_capability_families_covered",
         passed=check_competencies_capability_family_coverage(competencies, min_families=min_families).passed,
         observed_value=check_competencies_capability_family_coverage(competencies, min_families=min_families).observed_value,
-        threshold=f">={min_families} of 7 required capability families",
+        threshold=f">={min_families} of {len(REQUIRED_CAPABILITY_FAMILIES)} required capability families",
         failure_reason=check_competencies_capability_family_coverage(competencies, min_families=min_families).failure_reason,
         signals=[],
     )
@@ -1509,6 +1756,9 @@ __all__ = [
     "check_generic_taxonomy_only_category_forbidden",
     "check_graph_skill_node_ids_per_category",
     "check_jd_only_skill_forbidden",
+    "check_partner_architecture_bundle_present",
+    "check_partner_architecture_terms_require_bundle",
+    "check_partner_terms_source_roots",
     "check_per_category_confidence_nonconstant",
     "check_required_capability_families_covered",
     "check_source_fact_ids_or_graph_lineage_per_category",

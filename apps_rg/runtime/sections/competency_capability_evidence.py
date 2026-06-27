@@ -34,12 +34,13 @@ COMPETENCIES_PATH_DIVERSITY_LENSES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("llmops evaluation and reliability", ("llmops", "evaluation", "observability")),
     ("distributed cloud data systems", ("distributed_infra", "cloud_data_platform", "microservices")),
     ("platform productization", ("productization", "commercialization", "reusable_platforms")),
+    ("partner applied AI architecture", ("partner_architecture", "reference_architecture", "partner_enablement")),
     ("engineering operating model", ("engineering_leadership", "org_scale", "executive_alignment")),
     ("partner ecosystem execution", ("ecosystem_gtm", "hyperscaler_alliances", "joint_value_creation")),
 )
 
 PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER: tuple[str, ...] = (
-    "ccb_partnerships_ecosystem_execution",
+    "ccb_partner_applied_ai_architecture",
     "ccb_agentic_platforms",
     "ccb_runtime_governance",
     "ccb_retrieval_context_engineering",
@@ -47,6 +48,7 @@ PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER: tuple[str, ...] = (
     "ccb_llmops_reliability",
     "ccb_distributed_systems_engineering",
     "ccb_engineering_leadership",
+    "ccb_partnerships_ecosystem_execution",
     "ccb_data_governance_security",
     "ccb_devsecops_delivery_governance",
     "ccb_insurance_domain_erm",
@@ -56,10 +58,15 @@ VISIBLE_GRAPH_TERMS_MIN = 3
 VISIBLE_GRAPH_TERMS_MAX = 3
 
 VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES: dict[str, tuple[str, ...]] = {
+    "ccb_partner_applied_ai_architecture": (
+        "partner-ready applied AI reference architectures",
+        "co-developed AI solution patterns for partners",
+        "safe AI partner deployment assurance patterns",
+    ),
     "ccb_partnerships_ecosystem_execution": (
-        "AI alliance commercialization with hyperscaler partners",
-        "co-sellable agentic solution factory motions",
-        "partner enablement for applied AI adoption",
+        "IBM-AWS alliance commercialization with partners",
+        "hyperscaler co-sell operating cadences for modernization",
+        "joint GTM enablement for partner pursuits",
     ),
     "ccb_agentic_platforms": (
         "governed multi-agent orchestration control planes",
@@ -99,6 +106,7 @@ VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES: dict[str, tuple[str, ...]] = {
 }
 
 VISIBLE_GRAPH_SURFACE_TAXONOMY_BY_BUNDLE: dict[str, tuple[str, str]] = {
+    "ccb_partner_applied_ai_architecture": ("cloud_partner_ecosystems", "Cloud & Partner Ecosystems"),
     "ccb_partnerships_ecosystem_execution": ("cloud_partner_ecosystems", "Cloud & Partner Ecosystems"),
     "ccb_agentic_platforms": ("ai_platform_leadership", "AI Platform Leadership"),
     "ccb_runtime_governance": ("governance_risk_compliance", "Governance, Risk & Compliance"),
@@ -201,6 +209,10 @@ def build_competency_capability_section_packet(
                 "technical_density_signal": bundle.get("technical_density_signal"),
                 "commercial_or_operating_scope_signal": bundle.get("commercial_or_operating_scope_signal"),
                 "target_relevance_rationale": bundle.get("target_relevance_rationale"),
+                "capability_facets": list(bundle.get("capability_facets") or []),
+                "allowed_partner_roots": list(bundle.get("allowed_partner_roots") or []),
+                "forbidden_partner_roots": list(bundle.get("forbidden_partner_roots") or []),
+                "root_binding_policy": bundle.get("root_binding_policy"),
                 "vocabulary_anchors": list(bundle.get("vocabulary_anchors") or []),
                 "bound_skills": skill_nodes,
             }
@@ -392,10 +404,11 @@ def format_competency_capability_evidence_pack(
         *_AUTHORITY_HEADER_LINES,
         "- Each emitted category MUST cite a competency_bundle_id and its graph_skill_node_ids.",
         "- Each major term MUST bind to graph_skill_node_ids and linked source_fact_ids or approved graph lineage.",
+        "- Partner architecture wording MUST bind to allowed_partner_roots and must not bind to forbidden_partner_roots.",
         "- Generic taxonomy labels may be display wrappers only — never proof on their own.",
         "- A term attached only to default_fid is NOT proof.",
-        "- Required capability families to cover (>=7): "
-        + ", ".join(REQUIRED_CAPABILITY_FAMILIES[:7]) + ".",
+        "- Required capability families to cover (>=8): "
+        + ", ".join(REQUIRED_CAPABILITY_FAMILIES[:8]) + ".",
     ]
     header = "\n".join(header_lines)
 
@@ -411,6 +424,10 @@ def format_competency_capability_evidence_pack(
             f"  base_rigor_family_match: {rec['base_rigor_family_match']}",
             f"  seniority_signal: {rec['seniority_signal']} | technical_density_signal: {rec['technical_density_signal']}",
             f"  target_relevance_rationale: {rec['target_relevance_rationale']}",
+            f"  capability_facets: {rec.get('capability_facets')}",
+            f"  root_binding_policy: {rec.get('root_binding_policy') or 'standard_bundle_binding'}",
+            f"  allowed_partner_roots: {rec.get('allowed_partner_roots') or []}",
+            f"  forbidden_partner_roots: {rec.get('forbidden_partner_roots') or []}",
             "  bound_skills (graph authority — vocabulary anchors only, not proof on their own):",
         ]
         for sk in rec.get("bound_skills") or []:
@@ -539,8 +556,11 @@ def hydrate_competency_bundle_graph_evidence(
             "reb_unify_agentic_platform_architecture",
             "reb_unify_partner_channel_cosell",
         ),
-        "partnerships_ecosystem_execution": (
+        "partner_applied_ai_architecture": (
             "reb_unify_partner_channel_cosell",
+            "reb_ibm_aws_alliance_partner_cosell_gtm",
+        ),
+        "partnerships_ecosystem_execution": (
             "reb_ibm_aws_alliance_partner_cosell_gtm",
         ),
         "engineering_leadership": (
@@ -1003,6 +1023,7 @@ _BUNDLE_TO_GATE_FAMILY: dict[str, str] = {
     "llmops_reliability": "llmops",
     "distributed_systems_engineering": "distributed_infra",
     "platform_productization": "productization",
+    "partner_applied_ai_architecture": "partner_architecture",
     "engineering_leadership": "engineering_leadership",
 }
 

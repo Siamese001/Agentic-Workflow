@@ -11,6 +11,7 @@ import types
 import pytest
 
 from apps_research.engines.company_brief_engine import (
+    APPS_RESEARCH_BRIEF_MODEL,
     CompanyBriefEngine,
     CompanyBriefUnavailableError,
     _v2_enabled,
@@ -176,7 +177,8 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
     assert json_out["tagline"] == "TestCo"
     assert plain_out == "TestCo targeting brief"
     assert [row["model"] for row in captured] == [
-        "gpt-5.5",
-        "gpt-5.5",
+        APPS_RESEARCH_BRIEF_MODEL,
+        APPS_RESEARCH_BRIEF_MODEL,
     ]
     assert all(row["max_completion_tokens"] == 777 for row in captured)
+    assert APPS_RESEARCH_BRIEF_MODEL == "gpt-5.4-mini"

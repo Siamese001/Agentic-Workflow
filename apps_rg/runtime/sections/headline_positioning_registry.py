@@ -31,6 +31,7 @@ REQUIRED_POSITIONING_FAMILIES: tuple[str, ...] = (
     "distributed_ai_infrastructure",
     "runtime_governance",
     "enterprise_ai_architecture",
+    "partner_applied_ai_architecture",
     "platform_productization",
     "regulated_ai_systems",
 )

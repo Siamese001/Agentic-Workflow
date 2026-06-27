@@ -20,6 +20,7 @@
     "distributed_ai_infrastructure",
     "runtime_governance",
     "enterprise_ai_architecture",
+    "partner_applied_ai_architecture",
     "platform_productization",
     "regulated_ai_systems"
   ],
@@ -124,6 +125,36 @@
       "platform_signal": "enterprise_ai_platform_architecture",
       "governance_signal": "layered_runtime_spine",
       "target_relevance_rationale": "Enterprise architecture modernization positioning for large-scale AI platform ownership.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_partner_applied_ai_architecture",
+      "positioning_family": "partner_applied_ai_architecture",
+      "display_phrase_candidate": "Partner AI Architecture",
+      "source_competency_bundle_ids": ["ccb_partner_applied_ai_architecture"],
+      "graph_skill_node_ids": [
+        "skill_partner_joint_solution_development",
+        "skill_sr_w12_joint_ai_solution_development",
+        "skill_sr_w12_industry_reference_architecture",
+        "skill_partner_solution_architecture"
+      ],
+      "linked_source_fact_ids": [
+        "fact_partnerships_gtm_001",
+        "fact_solutions_001",
+        "fact_solutions_002"
+      ],
+      "graph_lineage_refs": [
+        "ccb_partner_applied_ai_architecture",
+        "reb_unify_partner_channel_cosell",
+        "reb_ibm_aws_alliance_partner_cosell_gtm"
+      ],
+      "seniority_signal": "partner_solution_architecture",
+      "technical_specificity_signal": "high",
+      "platform_signal": "partner_ready_applied_ai_reference_architecture",
+      "governance_signal": "safe_partner_deployment_patterns",
+      "target_relevance_rationale": "Partner-facing applied AI architecture positioning for roles that value reusable partner-delivered solution patterns, not generic partner GTM wording.",
       "allowed_sections": ["headline"],
       "activation_status": "ACTIVE",
       "external_claim_policy": "skill_projection_not_proof"

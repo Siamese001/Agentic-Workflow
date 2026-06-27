@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
+from chromadb.config import Settings
 
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
 from agentic_core.embeddings.exceptions import (
@@ -70,7 +71,10 @@ class SovereignChromaClient:
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize persistent ChromaDB client
-        self.client = chromadb.PersistentClient(path=str(self.persist_dir))
+        self.client = chromadb.PersistentClient(
+            path=str(self.persist_dir),
+            settings=Settings(anonymized_telemetry=False),
+        )
 
         # Cache for collections
         self._collections = {}

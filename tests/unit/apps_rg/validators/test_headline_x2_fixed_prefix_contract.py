@@ -11,6 +11,7 @@ from apps_rg.runtime.sections.headline_lane import (
     build_mock_output,
     normalize_parsed_output,
     snapshot_raw_jd_alignment,
+    _rewrite_machine_headline_segments,
 )
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
@@ -363,3 +364,12 @@ def test_passing_negative_style_gates_have_clean_evidence_fields() -> None:
         assert g.pass_ is True
         assert g.failure_reason is None
         assert g.observed_value == "absent"
+
+
+def test_machine_phrase_repair_rewrites_governed_runtime_architecture() -> None:
+    hl = "SVP Engineering | Governed Runtime Architecture | Partner Co-Sell Motions | Distributed Cloud Data"
+
+    repaired, changes = _rewrite_machine_headline_segments(hl)
+
+    assert repaired == "SVP Engineering | Runtime Governance Architecture | Partner Co-Sell Motions | Distributed Cloud Data"
+    assert changes == [{"from": "Governed Runtime Architecture", "to": "Runtime Governance Architecture"}]

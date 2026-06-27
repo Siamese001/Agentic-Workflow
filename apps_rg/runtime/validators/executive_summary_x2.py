@@ -10,7 +10,10 @@ from dataclasses import dataclass, asdict
 from typing import Any
 
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
-from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
+from apps_rg.runtime.section_model_limits import (
+    external_openai_generation_model,
+    resolve_section_generation_model,
+)
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
 EXEC_SUMMARY_MIN_SENTENCES = 6
@@ -52,6 +55,9 @@ EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE = [
     "the candidate",
     "this individual",
     "this executive",
+    "this leadership profile",
+    "leadership profile",
+    "can translate into",
     "additionally, their",
     "furthermore, their",
     "additionally,",
@@ -363,7 +369,12 @@ ALLOWED_TOP_LEVEL_FIELDS = {
     "allowed_fact_utilization_receipt",
 }
 
-# Required runtime artifacts
+# Required runtime artifacts.
+#
+# The X2 gate runs before the lane writes the final L2/result receipts below.  Keep those
+# post-X2 receipts in the full inventory for runtime-exhaust checks, but do not require
+# placeholder versions during the pre-X2 deterministic gate.  Placeholder writes caused the
+# parent run's write gateway to flag the final receipts as write amplification.
 REQUIRED_ARTIFACTS = [
     "provider_request.json",
     "real_l2_generation_result.json",
@@ -377,9 +388,22 @@ REQUIRED_ARTIFACTS = [
     "x3_disposition.json",
     "section_metric_receipt.json",
 ]
+POST_X2_REQUIRED_ARTIFACTS = {
+    "fact_check_result.json",
+    "real_l2_generation_result.json",
+    "section_metric_receipt.json",
+    "x3_disposition.json",
+}
+PRE_X2_REQUIRED_ARTIFACTS = [
+    artifact for artifact in REQUIRED_ARTIFACTS if artifact not in POST_X2_REQUIRED_ARTIFACTS
+]
 
-# Allowed generation model names (apps_rg external Claude generation model SSOT).
-ALLOWED_MODELS = [SECTION_MODEL_ID]
+# Allowed generation model names for executive summary proof.
+EXECUTIVE_SUMMARY_SECTION_ID = "executive_summary"
+ALLOWED_MODELS = [
+    resolve_section_generation_model(EXECUTIVE_SUMMARY_SECTION_ID),
+    external_openai_generation_model(section_id=EXECUTIVE_SUMMARY_SECTION_ID),
+]
 
 # Required X1D judge providers
 REQUIRED_JUDGE_PROVIDERS = list(REQUIRED_JUDGE_PROVIDER_KEYS)
@@ -858,10 +882,15 @@ def check_required_fields(parsed_output: dict[str, Any] | None) -> tuple[bool, s
     return True, None
 
 
-def check_required_artifacts(artifacts_dir: Path) -> tuple[bool, str | None]:
+def check_required_artifacts(
+    artifacts_dir: Path,
+    *,
+    include_post_x2_receipts: bool = True,
+) -> tuple[bool, str | None]:
     """Check if required runtime artifacts exist."""
     missing = []
-    for artifact in REQUIRED_ARTIFACTS:
+    required = REQUIRED_ARTIFACTS if include_post_x2_receipts else PRE_X2_REQUIRED_ARTIFACTS
+    for artifact in required:
         artifact_path = artifacts_dir / artifact
         if not artifact_path.exists():
             missing.append(artifact)
@@ -869,6 +898,22 @@ def check_required_artifacts(artifacts_dir: Path) -> tuple[bool, str | None]:
     if missing:
         return False, f"Missing required artifacts: {', '.join(missing)}"
     return True, None
+
+
+def model_name_matches_allowed(observed_model: str | None, allowed_models: list[str]) -> bool:
+    """Accept exact model pins plus provider-returned dated OpenAI aliases."""
+    observed = str(observed_model or "").strip()
+    if not observed:
+        return False
+    for allowed in allowed_models:
+        model = str(allowed or "").strip()
+        if not model:
+            continue
+        if observed == model:
+            return True
+        if model.startswith("gpt-") and observed.startswith(f"{model}-"):
+            return True
+    return False
 
 
 def check_json_parse_valid(parsed_output: dict[str, Any] | None, raw_output: str | None) -> tuple[bool, str | None]:
@@ -2758,7 +2803,10 @@ def run_x2_gates(
     add("x2_required_fields_complete", required_fields_ok, required_fields_reason, None, required_fields_reason)
 
     # Gate 2: x2_required_artifacts_written
-    artifacts_ok, artifacts_reason = check_required_artifacts(artifacts_dir)
+    artifacts_ok, artifacts_reason = check_required_artifacts(
+        artifacts_dir,
+        include_post_x2_receipts=False,
+    )
     add("x2_required_artifacts_written", artifacts_ok, artifacts_reason, None, artifacts_reason)
 
     # Gate 3: x2_json_parse_valid
@@ -2855,25 +2903,25 @@ def run_x2_gates(
         stub_env_reason,
     )
 
-    # Gate 14: x2_model_name_allowed — exercised only for qwen_vllm (REAL_LLM provider proof lane).
-    qwen_proof_lane = str(provider_requested or "").strip().lower() == "external_claude"
+    # Gate 14: x2_model_name_allowed — exercised for external Claude proof lanes, including
+    # the configured OpenAI backup when Anthropic throttling/limits trigger fallback.
+    external_claude_proof_lane = str(provider_requested or "").strip().lower() == "external_claude"
     model_allowed_ok = (
-        not qwen_proof_lane
+        not external_claude_proof_lane
         or (
             runtime_generation_status == "REAL_LLM"
-            and bool(model_name)
-            and model_name in ALLOWED_MODELS
+            and model_name_matches_allowed(model_name, ALLOWED_MODELS)
         )
     )
     model_observed = (
-        "skipped_provider_not_qwen_vllm" if not qwen_proof_lane else (model_name or "unknown")
+        "skipped_provider_not_external_claude" if not external_claude_proof_lane else (model_name or "unknown")
     )
     add(
         "x2_model_name_allowed",
         model_allowed_ok,
         model_observed,
         ALLOWED_MODELS,
-        "Model name must match allowlist when qwen_vllm asserts REAL_LLM provider proof.",
+        "Model name must match executive_summary primary/backup allowlist when external_claude asserts REAL_LLM provider proof.",
     )
 
     # Gate 15: x2_prompt_hash_known

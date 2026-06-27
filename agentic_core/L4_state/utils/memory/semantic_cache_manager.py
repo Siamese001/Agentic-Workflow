@@ -746,10 +746,14 @@ class SemanticCacheManager:
             Exception if connection failed, None if successful
         """
         try:
-            from agentic_core.cache.redis_cache_client import redis_module as redis
+            from agentic_core.cache.redis_cache_client import redis_connection_protocol_kwargs, redis_module as redis
 
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
-            self.redis_client = redis.from_url(redis_url, decode_responses=True)
+            self.redis_client = redis.from_url(
+                redis_url,
+                decode_responses=True,
+                **redis_connection_protocol_kwargs(),
+            )
             self.redis_client.ping()
             self.redis_enabled = True
             return None

@@ -291,6 +291,15 @@ DDL_STATEMENTS: tuple[str, ...] = (
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS c03_role_family_skill_weights (
+        skill_id TEXT NOT NULL,
+        role_family_key TEXT NOT NULL,
+        weight REAL NOT NULL DEFAULT 0.0,
+        source TEXT NOT NULL DEFAULT 'skill_row.role_family_weights',
+        PRIMARY KEY (skill_id, role_family_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS graph_paths (
         path_id TEXT PRIMARY KEY,
         start_node_id TEXT NOT NULL,
@@ -392,6 +401,8 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_metric ON c03_skill_selection_features(metric_bucket)",
     "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_pillar ON c03_skill_selection_features(pillar)",
     "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_family ON c03_skill_selection_features(skill_family)",
+    "CREATE INDEX IF NOT EXISTS idx_c03_role_family_skill_weights_role ON c03_role_family_skill_weights(role_family_key)",
+    "CREATE INDEX IF NOT EXISTS idx_c03_role_family_skill_weights_skill ON c03_role_family_skill_weights(skill_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_start ON graph_paths(start_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_end ON graph_paths(end_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_depth ON graph_paths(path_depth)",
@@ -425,6 +436,50 @@ DDL_STATEMENTS: tuple[str, ...] = (
         business_story,
         technical_story
     FROM graph_edges
+    """,
+    """
+    CREATE VIEW IF NOT EXISTS v_partner_architecture_competency_candidates AS
+    SELECT
+        w.skill_id,
+        w.role_family_key,
+        w.weight,
+        f.pillar,
+        f.subpillar,
+        f.domain_id,
+        f.skill_family,
+        f.metric_bucket,
+        n.label,
+        n.confidence,
+        n.activation_status,
+        n.support_level,
+        n.external_eligible,
+        l.fact_id,
+        l.claim_eligibility,
+        l.external_eligible AS fact_external_eligible,
+        se.allowed AS competencies_allowed
+    FROM c03_role_family_skill_weights w
+    JOIN c03_skill_selection_features f
+      ON f.skill_id = w.skill_id
+    JOIN graph_nodes n
+      ON n.node_id = w.skill_id
+     AND n.node_type = 'skill'
+    JOIN section_eligibility se
+      ON se.node_id = w.skill_id
+     AND se.section_id = 'competencies'
+     AND se.allowed = 1
+    LEFT JOIN skill_fact_links l
+      ON l.skill_id = w.skill_id
+    WHERE w.role_family_key IN ('PARTNER_APPLIED_AI_ARCHITECTURE', 'ANTHROPIC_PARTNERSHIPS_APPLIED_AI')
+      AND w.weight >= 0.80
+      AND n.activation_status NOT IN ('DRAFT', 'INTERNAL_ONLY', 'DO_NOT_PROMOTE', 'BLOCKED')
+      AND n.external_eligible = 1
+      AND (
+        f.pillar = 'pillar_applied_ai_partner_architecture'
+        OR f.skill_family = 'pillar_applied_ai_partner_architecture'
+        OR f.subpillar LIKE '%partner%'
+        OR f.subpillar LIKE '%reference_architecture%'
+        OR f.subpillar LIKE '%solution%'
+      )
     """,
 )
 
@@ -1624,6 +1679,24 @@ def materialize_augmented_skills_graph_sqlite(
             has_fact_link=has_link,
             candidate_registry=candidate_registry,
         )
+        for sec_raw in row.get("allowed_sections") or []:
+            sec_s = str(sec_raw or "").strip()
+            if not sec_s or sec_s == "executive_summary":
+                continue
+            key = (sid, sec_s)
+            prior = section_by_key.get(key)
+            if prior is not None and int(prior.get("allowed") or 0) == 0:
+                continue
+            blocked = str(row.get("activation_status") or "") in NON_PROMOTE_ACTIVATION
+            if prior is None:
+                section_by_key[key] = {
+                    "node_id": sid,
+                    "section_id": sec_s,
+                    "allowed": 0 if blocked else 1,
+                    "claim_policy": str(row.get("external_claim_policy") or "skill_projection_not_proof"),
+                    "reason": "skill_row.allowed_sections",
+                    "blocked_reason": "activation_blocked" if blocked else "",
+                }
 
     edge_rows = _dedupe_edge_rows(edge_by_id)
 
@@ -1681,6 +1754,7 @@ def materialize_augmented_skills_graph_sqlite(
             allowed_sections_by_skill.setdefault(sid, []).append(sec)
 
     selection_feature_rows: list[dict[str, Any]] = []
+    role_family_skill_weight_rows: list[dict[str, Any]] = []
     for sid, row in skill_rows_by_id.items():
         if sid in FORBIDDEN_SKILL_NODE_IDS or sid not in node_rows:
             continue
@@ -1718,6 +1792,24 @@ def materialize_augmented_skills_graph_sqlite(
                 "updated_at": ts,
             }
         )
+        weights = row.get("role_family_weights") or {}
+        if isinstance(weights, dict):
+            for role_family_key, weight in weights.items():
+                rf_key = str(role_family_key or "").strip()
+                if not rf_key:
+                    continue
+                try:
+                    weight_f = float(weight)
+                except (TypeError, ValueError):
+                    continue
+                role_family_skill_weight_rows.append(
+                    {
+                        "skill_id": sid,
+                        "role_family_key": rf_key,
+                        "weight": weight_f,
+                        "source": "skill_row.role_family_weights",
+                    }
+                )
 
     projection_rows: list[dict[str, Any]] = []
     profiles = payload.get("role_family_projection_profiles") or {}
@@ -1786,6 +1878,7 @@ def materialize_augmented_skills_graph_sqlite(
         "section_eligibility_count": len(section_rows),
         "role_family_projection_count": len(projection_rows),
         "c03_skill_selection_feature_count": len(selection_feature_rows),
+        "c03_role_family_skill_weight_count": len(role_family_skill_weight_rows),
         "c03_metric_policy_version": C03_METRIC_POLICY_VERSION,
         "graph_index_schema_version": GRAPH_INDEX_SCHEMA_VERSION,
         "graph_path_count": len(graph_index_rows["graph_paths"]),
@@ -1880,6 +1973,16 @@ def materialize_augmented_skills_graph_sqlite(
         )
         conn.executemany(
             """
+            INSERT INTO c03_role_family_skill_weights (
+                skill_id, role_family_key, weight, source
+            ) VALUES (
+                :skill_id, :role_family_key, :weight, :source
+            )
+            """,
+            role_family_skill_weight_rows,
+        )
+        conn.executemany(
+            """
             INSERT INTO graph_paths (
                 path_id, start_node_id, end_node_id, path_depth, path_signature,
                 node_path_json, edge_path_json, edge_types_json, proof_fact_ids_json,
@@ -1966,6 +2069,7 @@ def materialize_augmented_skills_graph_sqlite(
             "section_eligibility",
             "role_family_projection",
             "c03_skill_selection_features",
+            "c03_role_family_skill_weights",
             "graph_paths",
             "graph_neighborhoods",
             "graph_sibling_links",
@@ -1973,6 +2077,7 @@ def materialize_augmented_skills_graph_sqlite(
             "section_evidence_budget",
             "graph_selection_rejections",
             "graph_edges_reverse",
+            "v_partner_architecture_competency_candidates",
             "graph_metadata",
         ],
     }
@@ -2202,6 +2307,9 @@ def validate_materialized_sqlite(
         c03_feature_count = conn.execute(
             "SELECT COUNT(*) FROM c03_skill_selection_features"
         ).fetchone()[0]
+        c03_role_weight_count = conn.execute(
+            "SELECT COUNT(*) FROM c03_role_family_skill_weights"
+        ).fetchone()[0]
         graph_path_count = conn.execute("SELECT COUNT(*) FROM graph_paths").fetchone()[0]
         graph_neighborhood_count = conn.execute(
             "SELECT COUNT(*) FROM graph_neighborhoods"
@@ -2273,6 +2381,7 @@ def validate_materialized_sqlite(
         "section_eligibility_count": section_elig_count,
         "role_family_projection_count": rf_count,
         "c03_skill_selection_feature_count": c03_feature_count,
+        "c03_role_family_skill_weight_count": c03_role_weight_count,
         "graph_path_count": graph_path_count,
         "graph_neighborhood_count": graph_neighborhood_count,
         "graph_sibling_link_count": graph_sibling_link_count,

@@ -75,8 +75,12 @@ def assert_chroma_default_ef_forbidden() -> None:
 def persistent_chroma_client(path: str) -> Any:
     """Create an apps_rg Chroma client through the sanctioned Chroma boundary."""
     import chromadb
+    from chromadb.config import Settings
 
-    return chromadb.PersistentClient(path=path)
+    return chromadb.PersistentClient(
+        path=path,
+        settings=Settings(anonymized_telemetry=False),
+    )
 
 
 def _collection_embedding_function() -> ForbidChromaDefaultEmbeddingFunction | None:

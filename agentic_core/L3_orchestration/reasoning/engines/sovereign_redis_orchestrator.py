@@ -94,7 +94,7 @@ import os
 import urllib.parse
 from typing import Any
 
-from agentic_core.cache.redis_cache_client import redis_module as redis
+from agentic_core.cache.redis_cache_client import redis_connection_protocol_kwargs, redis_module as redis
 
 from agentic_core.config.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
@@ -248,6 +248,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
             "password": parsed.password,
             "decode_responses": True,
             "socket_timeout": 2.0,
+            **redis_connection_protocol_kwargs(),
         }
         if parsed.scheme == "rediss":
             params["ssl"] = True

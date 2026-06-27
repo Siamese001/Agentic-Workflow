@@ -98,6 +98,20 @@ def _require_cache_key(key: str) -> str:
     return key
 
 
+def redis_connection_protocol_kwargs() -> dict[str, int]:
+    """Return Redis protocol kwargs compatible with local legacy Redis servers."""
+    raw = os.environ.get("REDIS_PROTOCOL", "2").strip()
+    try:
+        protocol = int(raw)
+    except ValueError:
+        logger.warning("Invalid REDIS_PROTOCOL value %r; falling back to RESP2", raw)
+        protocol = 2
+    if protocol not in (2, 3):
+        logger.warning("Unsupported REDIS_PROTOCOL value %r; falling back to RESP2", raw)
+        protocol = 2
+    return {"protocol": protocol}
+
+
 def canonical_json_bytes(obj: Any) -> bytes:
     """Return canonical JSON bytes for cache value serialization.
 
@@ -168,6 +182,7 @@ class DeterministicRedisCache:
                     socket_connect_timeout=self.socket_connect_timeout,
                     health_check_interval=self.health_check_interval,
                     decode_responses=True,
+                    **redis_connection_protocol_kwargs(),
                 )
                 client.ping()
                 self._clients[target_db] = client

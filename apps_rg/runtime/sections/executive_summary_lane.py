@@ -985,11 +985,18 @@ def _build_synthesis_repair_user(
             "Do not repeat the same platform sentence twice. "
         )
     meta_note = ""
-    if "meta or filler" in blob or "this individual" in blob or "additionally" in blob:
+    if (
+        "meta or filler" in blob
+        or "this individual" in blob
+        or "leadership profile" in blob
+        or "can translate into" in blob
+        or "additionally" in blob
+    ):
         meta_note = (
         "VOICE: third-person executive (Technology strategy executive who… / Enterprise technology leader who… / Led…); "
         "avoid narrow 'engineering executive' opener when TARGET_TITLE is SVP IT strategy; "
-        "no Additionally/Furthermore openers; no \"with extensive experience\" opener. "
+        "no Additionally/Furthermore openers; no \"with extensive experience\" opener; "
+        "no cover-letter meta phrasing such as \"this leadership profile\" or \"can translate into\". "
         )
     jd_copy_note = ""
     if "jd_phrase_copied" in blob:
@@ -1046,6 +1053,7 @@ def _build_synthesis_repair_user(
         "Sentence 1 must be grammatically complete; vary openers (avoid six Led/Built/Delivered chains). "
         "No certification labels in display text. "
         "FORBIDDEN: \"this individual\", \"this executive\", \"the candidate\", "
+        "\"this leadership profile\", \"can translate into\", "
         "Additionally/Furthermore as sentence openers, "
         "\"An experienced engineering executive with a strong background\", "
         "\"An experienced technology strategy executive with a demonstrated ability\", recruiter filler. "
@@ -2587,21 +2595,6 @@ def run_executive_summary_execution(
         provider_result_data=provider_result_data if isinstance(provider_result_data, dict) else None,
     )
     write_json(artifact_dir / "prompt_selection_trace.json", trace)
-    write_json(artifact_dir / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})
-    write_json(
-        artifact_dir / "real_l2_generation_result.json",
-        {
-            "provider_attempted": args.provider,
-            "runtime_generation_status": runtime_generation_status,
-            "prompt_hash": prompt_hash,
-            "model": model_name,
-            "input_payload_hash": input_payload_hash,
-            "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
-            "status": "pending",
-        },
-    )
-    write_json(artifact_dir / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
-    write_json(artifact_dir / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", [], section_id="executive_summary")
 
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
@@ -2658,21 +2651,21 @@ def run_executive_summary_execution(
         after_l2_source=str(_ledger.get("authoritative_l2_source") or "initial_llm"),
         x2_gates=x2,
     )
-    write_json(
-        artifact_dir / "fact_check_result.json",
-        {
-            "passed": not [g for g in x2 if not g["pass"]],
-            "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
-        },
-    )
-
     x2_failed_initial = [g for g in x2 if not g["pass"]]
+    if x2_failed_initial or runtime_generation_status != "REAL_LLM":
+        write_json(
+            artifact_dir / "fact_check_result.json",
+            {
+                "passed": not x2_failed_initial,
+                "failed_gates": [g["gate_id"] for g in x2_failed_initial],
+            },
+        )
     set_word_budget_repair_authoritative_after_x2(
         artifact_dir,
         accepted=_word_budget_repair_accepted,
         x2_gates=x2,
     )
-    if not (artifact_dir / "x1d_llm_judge_outputs.json").is_file():
+    if x2_failed_initial and not (artifact_dir / "x1d_llm_judge_outputs.json").is_file():
         _write_x1d_judge_artifacts(artifact_dir, x1d)
     if x2_failed_initial:
         _emit_dimension_upstream_triangulation(
@@ -2753,13 +2746,6 @@ def run_executive_summary_execution(
             )
         )
         write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary")
-        write_json(
-            artifact_dir / "fact_check_result.json",
-            {
-                "passed": not [g for g in x2 if not g["pass"]],
-                "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
-            },
-        )
         judge_packet = resolve_judge_packet_for_parity(artifact_dir, fallback={})
         judge_packet_ref = str(
             artifact_dir / "executive_summary_judge_packet_post_x2.json"
@@ -3425,14 +3411,6 @@ def run_executive_summary_execution(
                         write_x2_gate_outputs(
                             artifact_dir / "x2_gate_outputs.json", x2, section_id="executive_summary"
                         )
-                        write_json(
-                            artifact_dir / "fact_check_result.json",
-                            {
-                                "passed": True,
-                                "failed_gates": [],
-                                "judge_remediation_applied": True,
-                            },
-                        )
                         l2_output["resume_display_text"] = resume_display_text
                         l2_output["claim_ledger"] = claim_ledger
                         l2_output["text_claim_coverage"] = coverage
@@ -3818,6 +3796,15 @@ def run_executive_summary_execution(
     )
     persist_section_x3_mirror(artifact_dir, x3_doc)
     x3 = x3_doc
+    write_json(
+        artifact_dir / "fact_check_result.json",
+        {
+            "passed": not [g for g in x2 if not g["pass"]],
+            "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
+            "x3_code": x3.get("x3_code") if isinstance(x3, dict) else None,
+            "product_quality_status": product_quality_status,
+        },
+    )
     from apps_rg.runtime.section_l2_lane_integration import finalize_section_l2_after_output
     from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
         finalize_section_runtime_exhaust_before_l6,

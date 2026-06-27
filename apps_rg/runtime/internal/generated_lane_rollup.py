@@ -423,10 +423,12 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
     )
     rollup_x3_code = str(x3_auth.get("x3_code") or x3.get("x3_code", ""))
 
-    lane_section_root = base.parent.parent
     accepted_real_evidence_resolution = "modular_r4_explicit_run_dir"
-    ptr_path = lane_section_root / "latest_successful_real_run.json"
-    if ptr_path.is_file():
+    pointer_roots = (base.parent.parent, base)
+    for pointer_root in pointer_roots:
+        ptr_path = pointer_root / "latest_successful_real_run.json"
+        if not ptr_path.is_file():
+            continue
         try:
             raw_ptr = _load_json(ptr_path)
             rel = raw_ptr.get("run_dir") if isinstance(raw_ptr, dict) else None
@@ -434,6 +436,7 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
                 ptr_base = (repo / rel).resolve()
                 if ptr_base.resolve() == base.resolve() and is_accepted_real_llm_provider_bundle(base):
                     accepted_real_evidence_resolution = "latest_successful_real_run.json"
+                    break
         except (json.JSONDecodeError, OSError, ValueError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
 
