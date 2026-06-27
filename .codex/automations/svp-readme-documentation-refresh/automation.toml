@@ -69,6 +69,40 @@ Prioritize active GitHub-facing surfaces in this order: root README.md; docs/svp
 Required README audit:
 Before editing, build an audit table with columns file, classification, current purpose, stale/confusing gaps, proposed action, and risk. Use risk values low, medium, or high. Stop on high-risk architecture, policy, security, support, or ownership claims unless already explicit in authoritative repo docs.
 
+SVP gates:
+Run the SVP documentation review as X1D + X2 + X3.
+
+X1D LLM judge:
+- Emit a JSON receipt with schema_version svp_docs_x1d/v1.
+- Judge whether the docs read like serious CTO/SVP Engineering material, but do not waive deterministic gates.
+- Score first_page_thesis_clarity >= 4.3, svp_cto_hiring_signal >= 4.2, differentiation >= 4.3, evidence_credibility >= 4.2, governance_maturity >= 4.2, onboarding_clarity >= 4.0, reader_path_integrity >= 4.2, executive_signal_without_hype >= 4.3, claim_to_proof_traceability >= 4.2, maintenance_freshness >= 4.0.
+- stale_reference_risk and unsupported_claim_risk should be <= 1.0, but X2 owns deterministic stale and unsupported-claim detection.
+- Every blocking X1D finding must include file, line, claim, finding_type, severity, evidence, and required_fix. Findings without file/line/claim/evidence are advisory only.
+- X1D availability, abstain, or transport failure must not fail open. Treat unavailable X1D as WARN for prose quality and let X2/X3 decide publication safety.
+
+X2 deterministic gates:
+- Emit a JSON receipt with schema_version svp_docs_x2/v1.
+- Required gates: x2_toml_parse, x2_app_launcher_ssot, x2_stale_active_terms, x2_relative_links, x2_unsupported_claims_regex, x2_docs_only_scope, x2_high_signal_packet_present, x2_required_sections, x2_codex_primary, x2_enforcement_home, x2_diff_check, x2_publication_isolation, x2_architecture_status_consistency, x2_claim_evidence_map, x2_proof_command_resolves, x2_receipt_schema_validate, x2_approval_mode, x2_no_absolute_unproven_language.
+- x2_architecture_status_consistency compares active reviewer docs against apps_shared/integrations/app_registry.py, the root README app portfolio, and current architecture proof-pack status. It blocks when active reviewer docs disagree on whether an app is governed, archived, or a formal exception.
+- x2_claim_evidence_map requires each major architecture, governance, security, support, benchmark, maturity, or roadmap claim to map to a file, command, receipt, or explicit caveat.
+- x2_proof_command_resolves verifies commands referenced in active reviewer docs exist and are runnable or intentionally caveated.
+- x2_receipt_schema_validate validates X1D, X2, and X3 JSON receipts against checked-in schemas when present; if schemas are not yet present, record that as a gap and keep the receipt shape explicit in the final report.
+- x2_approval_mode blocks publication when unattended T2/T3 work lacks approval; in that case X3 must choose PLAN_ONLY unless no material gap exists.
+- x2_no_absolute_unproven_language blocks uncaveated absolute claims such as every, exactly, structurally impossible, no bypass, no hidden, or any past run unless backed by a direct proof anchor or softened.
+
+X3 final disposition:
+- Emit one JSON receipt with schema_version svp_docs_x3/v1.
+- Allowed decisions: ALLOW_TO_PR, PLAN_ONLY, BLOCK, NOOP, ESCALATE_HUMAN.
+- ALLOW_TO_PR requires X2 pre PASS, X1D ALLOW or WARN with no high-severity finding, X2 post PASS, docs-only isolation, and publication approval.
+- PLAN_ONLY means audit and proposed plan only; use it when unattended T2/T3 work lacks approval or isolation is unavailable.
+- BLOCK means X2 failure or X1D high-severity stale/unsupported finding.
+- NOOP means no material GitHub-facing documentation gap was found.
+- ESCALATE_HUMAN means strategy, claim, ownership, support, compliance, roadmap, or licensing judgment is required.
+- X3 must include decision, reason, x2_pre, x1d, x2_post, publication_authorized, changed_files, and required_next_action.
+
+Final SVP-grade operating rule:
+X1D decides whether the docs read like serious SVP/CTO engineering material. X2 decides whether the docs are mechanically true, scoped, current, and safe. X3 decides whether this weekly Codex run may publish, must stop at plan, or must block. Eval never waives a runtime or publication gate.
+
 Edit standards:
 - Root README should concisely answer what the repo is, who it is for, why it matters, current operating status, quick start, primary workflows, verification commands, architecture map, governance model, contribution/security/support/license links, and where deeper docs live.
 - Component READMEs should state responsibility, public entrypoints, prerequisites, common commands, tests or verification path, status when evidence supports it, dependencies, upstream/downstream links, and related deeper docs.
@@ -117,4 +151,4 @@ reasoning_effort = "high"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782255108967
-updated_at = 1782546018415
+updated_at = 1782551404099
