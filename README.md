@@ -37,6 +37,14 @@ The argument the repository makes — and the argument my career makes — is th
 
 ---
 
+## Why This Matters for SVP Engineering Hiring
+
+This repository is meant to be reviewed as a public proof asset for senior engineering leadership. It demonstrates the judgment required to move AI from prototype to governed platform: clear authority boundaries, deterministic execution, audit-ready evidence, controlled write paths, operational proof commands, and a documented model for letting AI-assisted development move quickly without losing architectural control.
+
+For a hiring manager or CTO, the signal is not just "can build AI software." The signal is **can design the operating system around AI teams and AI runtimes so they can scale safely.**
+
+---
+
 ## Best-in-Class Design Patterns Implemented
 
 This is the centerpiece. Each pattern below is a load-bearing structural decision in this codebase — named, isolated, and verifiable in source.
@@ -90,12 +98,12 @@ Ten routers across L0–L6 (bandit / r5 / c0 / cascade / shape / reroute / uwg /
 
 Ambiguous decisions are surfaced as **scored options on [0.00–1.00]** with explicit confidence, gap-to-next, and a dominance rule (top ≥ 0.85 *and* gap ≥ 0.12 → surface alone, ⭐ recommended). Decisions are captured to a SQLite ledger and mirrored to Notion. Every Author-Gate surface carries a clickable description with `· trade-off:` text — enforced at emit time, audit time, and CI time.
 
-### 8. Constitutional Rules + Hooks + CI Gates — Three-Tier Enforcement
+### 8. Codex Rules + Hooks + CI Gates — Three-Tier Enforcement
 
 Discipline is encoded at three layers:
 
-- **Tier 1 — always-on rules** (`.windsurf/rules/*.md`) — prose invariants the agent reads every turn.
-- **Tier 2 — pre/post hooks** (`.windsurf/scripts/*.py`) — deterministic Python that blocks at write / tool-use / response time.
+- **Tier 1 — always-on rules** (`.codex/rules/*.md`) — prose invariants the agent reads every turn.
+- **Tier 2 — pre/post hooks** (`.codex/hooks.json`, `.codex/hooks/**`, `.codex/governance/scripts/**`) — deterministic checks around write, tool-use, and response time.
 - **Tier 3 — pre-commit + CI gates** (`ops_scripts/ci/check_*.py`) — fail-closed at commit and pipeline.
 
 Each invariant lives in **one** SSOT and is enforced by **all three** layers, so drift is structurally hard.
@@ -192,7 +200,7 @@ This repository is itself an example of the discipline it argues for. It is gove
 
 | Control plane | What it catches | SSOT |
 |---|---|---|
-| **AI-time discipline** — Windsurf rules, hooks, skills, workflows | Scope drift, unauthorized edits, missing plan registration, MCP misuse, deferred scope going unrecorded | `.windsurf/` |
+| **AI-time discipline** — Codex rules, hooks, skills, and automation contracts | Scope drift, unauthorized edits, missing plan registration, MCP misuse, deferred scope going unrecorded | `.codex/` |
 | **Commit-time hygiene** — pre-commit + focused gates | Lint, syntax, plan/report SSOT routing, schema validity | `.pre-commit-config.yaml`, `ops_scripts/ci/check_*.py` |
 | **Repo-wide governance** — ADG CI graph + ratchets | Layer violations, write-sovereignty bypasses, dead imports, anti-pattern regressions, exception-handling drift, registry/policy drift | `tools/generate/generate_full_adg.py`, `artifacts/adg/` |
 | **Runtime evidence** — tests, coverage, OTel-derived witness | Behavioral correctness, replay determinism, runtime trace attestation | `tests/`, `tools/cert/`, `certification/` |
@@ -205,15 +213,15 @@ For a deeper walk-through of the governance model and the SQL queries a reviewer
 
 ## Application Portfolio
 
-Eight apps built on the governed control plane. Every app ships the same governance quartet — a **README**, a **Runbook** (operations), an **SLO** (performance budget), and an **SVP Engineering Review** (architecture certification). Three apps also ship a formal **Threat Model**.
+Seven active apps are built on the governed control plane. The app surfaces use a common governance documentation pattern — **README**, **Runbook** (operations), **SLO** (performance budget), and **SVP Engineering Review** (architecture certification) where present. Three active apps also ship a formal **Threat Model**.
 
 | App | What it does | README | Runbook | SLO | SVP Review | Threat Model |
 |---|---|:-:|:-:|:-:|:-:|:-:|
-| [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | [→](apps_eval/RUNBOOK.md) | [→](apps_eval/SLO.md) | [→](apps_eval/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | — | — | — | — |
 | [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
 | [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode, plus compact downstream briefs for `apps_rg` and `apps_lic` | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
-| [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | [→](apps_rg/README.md) | [→](apps_rg/RUNBOOK.md) | [→](apps_rg/SLO.md) | [→](apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | — | — | — | [→](docs/reports/apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
 | [`apps_shared`](apps_shared/) | Shared adapters, validators, HOP executor, proof harness — library-only | [→](apps_shared/README.md) | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/validators/proof/THREAT_MODEL.md) |
 
@@ -329,7 +337,7 @@ python ops_scripts/ci/run_architecture_proof.py
 - **OpenTelemetry refactor notes:** [`tools/otel/README_REFACTOR.md`](tools/otel/README_REFACTOR.md)
 - **MCP servers & SDK wrappers:** [`infrastructure/sdks_mcps/README.md`](infrastructure/sdks_mcps/README.md)
 - **Reference docs root:** [`docs/reference/README.md`](docs/reference/README.md)
-- **SVP Engineering hub:** [`docs/svp/README.md`](docs/svp/README.md)
+- **SVP Engineering reviewer hub:** [`docs/svp/README.md`](docs/svp/README.md)
 - **Author-Gate reports:** [`docs/reports/author-gate/README.md`](docs/reports/author-gate/README.md)
 - **Calibration reports:** [`docs/reports/calibration/README.md`](docs/reports/calibration/README.md)
 
@@ -368,4 +376,4 @@ This is not another agent framework. It is a **deterministic AI control plane** 
 
 ---
 
-*Last updated: May 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*
+*Last updated: June 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*

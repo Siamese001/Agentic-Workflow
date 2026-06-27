@@ -9,6 +9,7 @@ Mission:
 Bring README-family and GitHub-facing documentation to senior/SVP-engineering quality. Optimize for a CTO or SVP Engineering reviewer, a senior maintainer checking architecture and verification paths, and a new contributor needing safe onboarding.
 
 Primary outcome:
+- Make the repository's strongest differentiators easy to notice for hiring, reputation, and senior engineering review.
 - Clear first-page positioning.
 - Accurate architecture and operating-model navigation.
 - Fast developer onboarding.
@@ -20,6 +21,9 @@ Standing authorization:
 Bounded documentation-only edits are allowed when the change is evidence-backed by the current repo, stays within README-family files or GitHub documentation surfaces, does not alter runtime behavior, test behavior, package metadata, app configuration, CI behavior, generated outputs, or product logic, and improves clarity, accuracy, navigation, onboarding, verification, governance/security/support signposting, or removes stale/duplicated guidance.
 
 Stop before editing if the change requires product strategy decisions, architecture decisions not already documented, code behavior changes, policy choices, licensing/security/support commitments, broad generated artifact churn, resolving unrelated dirty work, or guessing about ownership, maturity, customers, compliance, benchmarks, support SLAs, or roadmap.
+
+End-goal priority:
+The automation must not let unrelated generated ADG report churn, cleanup queues, ratchet baselines, or other automation-output noise prevent the documentation mission. The goal is to surface the repository's key differentiators and make the GitHub-facing narrative stronger. Dirty generated artifacts may change what can be published from the current worktree, but they must not block read-only audit, differentiator extraction, README gap analysis, or a proposed edit plan.
 
 Governance contract:
 - Follow AGENTS.md and docs/codex-primary-execution.md.
@@ -36,8 +40,13 @@ Planning gate:
 
 Startup gates:
 - Run git status --short --branch.
-- If the worktree is dirty, conflicted, or ambiguous, stop without editing and report the blocker.
+- Classify dirty worktree entries before deciding whether to stop:
+  - If dirty entries are limited to generated ADG reports, cleanup outputs, ratchet baselines, run receipts, or other unrelated automation artifacts, continue with read-only inventory, differentiator audit, README gap analysis, and a proposed edit plan.
+  - Treat dirty generated/automation artifacts as non-authoritative unless they are committed, timestamp-consistent, and certified by the repo workflow. Do not base SVP claims on local generated churn alone.
+  - If documentation edits are warranted while unrelated generated/automation artifacts are dirty, create or use an isolated clean docs branch/worktree from origin/main before editing, or stop after the audit if isolation is unavailable.
+  - Stop before editing when dirty entries include active README-family files, GitHub community-health files, Codex automation contracts, governance docs relevant to the edit, source/config files that would affect the claims being made, conflicts, staged mixed-scope changes, or ambiguous user work.
 - For long or PR-producing runs, run python scripts/governance/codex_readiness.py --json.
+- A codex_readiness.py failure caused only by unrelated dirty generated/automation artifacts is a publication blocker for the current dirty surface, not a blocker for read-only audit or isolated-branch documentation work. Record the failure and continue within the allowed scope above.
 - If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts are touched, validation must include python scripts/governance/verify_codex_primary.py.
 
 Evidence rules:
@@ -72,16 +81,18 @@ Prefer concise sections, accurate relative links, runnable command snippets, exp
 Workflow:
 1. Run startup gates.
 2. Read authority files and repo-local memory.
-3. Inventory README/community-health surfaces.
-4. Build the README audit table.
-5. Classify the work as T0/T1 or T2/T3.
-6. If T2/T3, produce a plan and wait for approval before editing.
-7. Make only the smallest coherent documentation-only edit set.
-8. Stop expanding scope when broad rewrite pressure appears.
-9. Record remaining work as backlog instead of touching every file.
-10. Re-check git status.
-11. Validate.
-12. Commit, push, and create/update a PR only if edits were made and publication is authorized by the run context.
+3. Classify any dirty worktree entries as blocking, non-blocking generated/automation churn, or requiring isolation.
+4. Inventory README/community-health surfaces.
+5. Extract the repository differentiators that matter for CTO/SVP/hiring review, backed by committed source/docs and authoritative repo evidence.
+6. Build the README audit table.
+7. Classify the work as T0/T1 or T2/T3.
+8. If T2/T3, produce a plan and wait for approval before editing unless the run is explicitly operating in an approved isolated docs branch/worktree.
+9. Make only the smallest coherent documentation-only edit set, and only on a clean or isolated docs surface.
+10. Stop expanding scope when broad rewrite pressure appears.
+11. Record remaining work as backlog instead of touching every file.
+12. Re-check git status and confirm changed files are documentation-only and isolated from unrelated generated/automation churn.
+13. Validate.
+14. Commit, push, and create/update a PR only if edits were made and publication is authorized by the run context.
 
 Validation:
 - Always run git diff --check.
@@ -92,7 +103,7 @@ Validation:
 - Do not run broad test suites unless current repo docs require them for documentation-only changes.
 
 Publication:
-If edits are made and publication is authorized, create a branch named codex/docs-readme-refresh-YYYYMMDD, commit only documentation-scope changes, push the branch, and create or update a PR targeting main. Never push directly to main, force-push main, merge without explicit user authorization, squash without explicit user authorization, or include unrelated local changes.
+If edits are made and publication is authorized, create or use an isolated clean branch/worktree from origin/main named codex/docs-readme-refresh-YYYYMMDD, commit only documentation-scope changes, push the branch, and create or update a PR targeting main. Never push directly to main, force-push main, merge without explicit user authorization, squash without explicit user authorization, or include unrelated local changes. Dirty generated/automation artifacts in another worktree may be reported as background noise, but they must not be included in the docs PR.
 
 Final report:
 Return branch name, PR URL if created, changed files, README audit highlights, validation evidence, best-practice sources applied, remaining documentation backlog, degraded route or fallback used, and stopped or unsafe items.
@@ -106,4 +117,4 @@ reasoning_effort = "high"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782255108967
-updated_at = 1782380298309
+updated_at = 1782546018415
