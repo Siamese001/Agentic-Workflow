@@ -4,12 +4,13 @@
 - **PLAN_ID**: graph-skills-sqlite-c03-w1
 - **SQLITE_DB_PATH**: [augmented_skills_graph.sqlite](C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite)
 - **GRAPH_VERSION**: master_skills_arsenal_graph_v1
-- **GRAPH_HASH**: `57237b432afebaea…`
-- **NODE_COUNT**: 498 | **EDGE_COUNT**: 1291
+- **MATERIALIZER_CODE_VERSION**: `c03_sqlite_materializer.v20260627.partner_section_eligibility_freshness`
+- **GRAPH_HASH**: `ddd160a608e73232…`
+- **NODE_COUNT**: 774 | **EDGE_COUNT**: 2364
 - **C0.3 integration**: SQLITE_CONTEXT_AVAILABLE
-- **C0.3 receipt**: [c03_graph_sqlite_context_20260612_113322.json](artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context/c03_graph_sqlite_context_20260612_113322.json)
-- **Section projection parity**: PASS
-- **W14b traversal parity**: PASS
+- **C0.3 receipt**: [c03_graph_sqlite_context_20260627_181428.json](artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context/c03_graph_sqlite_context_20260627_181428.json)
+- **Section projection parity**: SKIPPED
+- **W14b traversal parity**: SKIPPED
 - **broad_skills_ledger**: non_authority
 
 ## Proof classification

@@ -507,7 +507,7 @@
    ],
    "evidence_strength": "STRONG",
    "external_claim_policy": "skill_projection_not_proof",
-   "activation_status": "active",
+   "activation_status": "ACTIVE",
    "base_rigor_family_match": "governance_risk_compliance",
    "seniority_signal": "FSA-chartered actuarial foundation; enterprise risk and regulatory capital leadership across insurer engagements",
    "technical_density_signal": "capital modeling, Solvency II/AG43 reserving, derivatives pricing, regulated-insurer platform controls",

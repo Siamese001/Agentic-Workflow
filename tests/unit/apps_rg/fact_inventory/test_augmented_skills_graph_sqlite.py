@@ -5,13 +5,17 @@ SQLite materialization + C0.3 context assembly for augmented skills graph.
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+    C03_SQLITE_MATERIALIZER_CODE_VERSION,
     apply_operator_archive_promotions,
     build_skill_rows_by_id,
     canonical_node_type,
@@ -20,9 +24,11 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     derive_confidence_grade,
     has_valid_human_confirmed_archive_promotion,
     infer_node_type_from_id,
+    load_graph_metadata_row,
     load_augmented_skills_graph,
     load_candidate_fact_promotion_registry,
     materialize_augmented_skills_graph_sqlite,
+    open_graph_sqlite,
     resolve_confidence_grade,
     validate_hardened_materialized_sqlite,
     validate_materialized_sqlite,
@@ -31,6 +37,7 @@ from apps_rg.runtime.c03_graph_sqlite_context import (
     PROOF_CLASSIFICATION,
     assemble_c03_graph_sqlite_context,
     enrich_c03_bound_with_sqlite_context,
+    ensure_c03_graph_sqlite,
     query_partner_architecture_competency_candidates,
 )
 
@@ -283,6 +290,79 @@ def test_materialize_creates_six_tables(sqlite_db: Path) -> None:
     assert "graph_metadata" in tables
 
 
+def test_materializer_code_version_written_to_metadata(sqlite_db: Path) -> None:
+    conn = open_graph_sqlite(repo_root=REPO, db_path=sqlite_db)
+    try:
+        meta = load_graph_metadata_row(conn)
+    finally:
+        conn.close()
+    summary = meta["graph_count_summary"]
+    assert (
+        summary["c03_sqlite_materializer_code_version"]
+        == C03_SQLITE_MATERIALIZER_CODE_VERSION
+    )
+
+    val = validate_materialized_sqlite(repo_root=REPO, db_path=sqlite_db)
+    assert val["c03_sqlite_materializer_code_version"] == C03_SQLITE_MATERIALIZER_CODE_VERSION
+
+
+def test_ensure_c03_graph_sqlite_rebuilds_stale_materializer_version(sqlite_db: Path) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        raw = conn.execute(
+            "SELECT graph_count_summary FROM graph_metadata ORDER BY materialized_at DESC LIMIT 1"
+        ).fetchone()[0]
+        summary = json.loads(raw)
+        summary["c03_sqlite_materializer_code_version"] = "stale-test-version"
+        conn.execute(
+            """
+            UPDATE graph_metadata
+            SET graph_count_summary = ?
+            """,
+            (json.dumps(summary, sort_keys=True),),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    ensured = ensure_c03_graph_sqlite(REPO, sqlite_db)
+    assert ensured == sqlite_db
+    conn = open_graph_sqlite(repo_root=REPO, db_path=sqlite_db)
+    try:
+        meta = load_graph_metadata_row(conn)
+    finally:
+        conn.close()
+    assert (
+        meta["graph_count_summary"]["c03_sqlite_materializer_code_version"]
+        == C03_SQLITE_MATERIALIZER_CODE_VERSION
+    )
+
+
+def test_run_materialize_cli_smoke_skip_parity(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["APPS_RG_AUGMENTED_SKILLS_GRAPH_SQLITE_PATH"] = str(tmp_path / "cli_graph.sqlite")
+    env["APPS_RG_AUGMENTED_SKILLS_GRAPH_SQLITE_RECEIPT_DIR"] = str(tmp_path / "receipts")
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "apps_rg/fact_inventory/run_materialize_augmented_skills_graph_sqlite.py",
+            "--skip-parity",
+        ],
+        cwd=str(REPO),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert (tmp_path / "cli_graph.sqlite").is_file()
+    receipt = tmp_path / "receipts/augmented_skills_graph_sqlite_closeout_receipt.json"
+    assert receipt.is_file()
+    data = json.loads(receipt.read_text(encoding="utf-8"))
+    assert data["STATUS"] == "PASS"
+    assert data["C03_SQLITE_MATERIALIZER_CODE_VERSION"] == C03_SQLITE_MATERIALIZER_CODE_VERSION
+
+
 def test_validate_materialized_passes(sqlite_db: Path) -> None:
     graph = load_augmented_skills_graph(repo_root=REPO)
     out = validate_materialized_sqlite(graph=graph, repo_root=REPO, db_path=sqlite_db)
@@ -437,6 +517,9 @@ def test_partner_architecture_competency_candidates_view(sqlite_db: Path) -> Non
     assert rows
     assert "skill_partner_joint_solution_development" in skill_ids
     assert "skill_sr_w12_industry_reference_architecture" in skill_ids
+    assert "skill_partner_ai_architecture_advisory" in skill_ids
+    assert "skill_sr_w12_joint_ai_solution_development" in skill_ids
+    assert len(skill_ids) >= 5
     assert forbidden_count == 0
 
 

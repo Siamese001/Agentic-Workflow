@@ -189,6 +189,15 @@ def test_all_bundles_valid_and_required_families_present():
         assert required in families, f"missing required family {required}"
 
 
+def test_competency_bundle_activation_statuses_are_normalized():
+    bad = [
+        (b.get("competency_bundle_id"), b.get("activation_status"))
+        for b in reg.get_all_bundles()
+        if b.get("activation_status") not in reg.VALID_ACTIVATION_STATUSES
+    ]
+    assert bad == []
+
+
 def test_required_family_bundles_one_per_family():
     fam_bundles = reg.required_family_bundles()
     for fam in reg.REQUIRED_CAPABILITY_FAMILIES:

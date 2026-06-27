@@ -24,9 +24,13 @@ from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
 from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     ROLE_FAMILY_TRACK_WEIGHTS,
     SENIOR_ROLE_TAXONOMY_IDS,
+    TAXONOMY_TO_PROJECTION_ROLE,
 )
 
 REPO_REL_DB = Path("artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite")
+C03_SQLITE_MATERIALIZER_CODE_VERSION = (
+    "c03_sqlite_materializer.v20260627.partner_section_eligibility_freshness"
+)
 
 CANONICAL_NODE_TYPES = frozenset(
     {
@@ -1403,6 +1407,21 @@ def _ensure_fact_node(
     }
 
 
+def _resolve_projection_pillar_hints(
+    role_family_key: str,
+    *,
+    taxonomy: dict[str, Any],
+) -> tuple[str, ...]:
+    """Lightweight C0.3 pillar hint resolver for offline SQLite materialization."""
+    projection_to_taxonomy = {v: k for k, v in TAXONOMY_TO_PROJECTION_ROLE.items()}
+    tax_id = projection_to_taxonomy.get(role_family_key, role_family_key)
+    for row in taxonomy.get("role_families") or []:
+        if isinstance(row, dict) and str(row.get("id") or "") == tax_id:
+            raw = row.get("proposed_pillar_ids") or []
+            return tuple(str(p).strip() for p in raw if str(p).strip())
+    return ()
+
+
 def materialize_augmented_skills_graph_sqlite(
     *,
     graph: dict[str, Any] | None = None,
@@ -1814,7 +1833,6 @@ def materialize_augmented_skills_graph_sqlite(
     projection_rows: list[dict[str, Any]] = []
     profiles = payload.get("role_family_projection_profiles") or {}
     from apps_rg.fact_inventory.candidate_fact_ledger import load_master_role_family_taxonomy
-    from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
 
     tax = load_master_role_family_taxonomy(repo_root=repo_root)
     for rf_key in ROLE_FAMILY_TRACK_WEIGHTS:
@@ -1822,7 +1840,7 @@ def materialize_augmented_skills_graph_sqlite(
             continue
         if rf_key not in SENIOR_ROLE_TAXONOMY_IDS:
             continue
-        pillar_ids = list(resolve_c0_pillar_hints(rf_key, taxonomy=tax, repo_root=repo_root))
+        pillar_ids = list(_resolve_projection_pillar_hints(rf_key, taxonomy=tax))
         weights = ROLE_FAMILY_TRACK_WEIGHTS.get(rf_key, {})
         profiles[rf_key] = {
             "label": rf_key.replace("_", " ").title(),
@@ -1870,6 +1888,7 @@ def materialize_augmented_skills_graph_sqlite(
 
     gm = payload.get("graph_metadata") if isinstance(payload.get("graph_metadata"), dict) else {}
     summary = {
+        "c03_sqlite_materializer_code_version": C03_SQLITE_MATERIALIZER_CODE_VERSION,
         "node_count_json": gm.get("node_count"),
         "edge_count_json": gm.get("edge_count"),
         "node_count_sqlite": len(node_rows),
@@ -2372,6 +2391,9 @@ def validate_materialized_sqlite(
         "sqlite_db_path": str(path),
         "graph_version": meta["graph_version"],
         "graph_hash": meta["ledger_hash"],
+        "c03_sqlite_materializer_code_version": meta_summary.get(
+            "c03_sqlite_materializer_code_version"
+        ),
         "node_count": node_count,
         "edge_count": edge_count,
         "expected_node_count_json": expected_nodes,
@@ -2617,6 +2639,7 @@ def validate_hardened_materialized_sqlite(
 
 __all__ = [
     "CANONICAL_NODE_TYPES",
+    "C03_SQLITE_MATERIALIZER_CODE_VERSION",
     "DDL_STATEMENTS",
     "CONFIDENCE_GRADES",
     "ENGINEERING_PLATFORM_CANDIDATE_FACT_IDS",

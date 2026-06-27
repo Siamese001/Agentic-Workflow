@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -18,14 +19,22 @@ from apps_rg.runtime.c03_graph_sqlite_context import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT_JSON = ROOT / "docs/reports/apps_rg/augmented_skills_graph_sqlite_closeout_receipt.json"
-OUT_MD = ROOT / "docs/reports/apps_rg/augmented_skills_graph_sqlite_closeout_receipt.md"
+DEFAULT_OUT_DIR = ROOT / "docs/reports/apps_rg"
 PLAN_ID = "graph-skills-sqlite-c03-w1"
+
+
+def _receipt_paths() -> tuple[Path, Path]:
+    out_dir_raw = os.environ.get("APPS_RG_AUGMENTED_SKILLS_GRAPH_SQLITE_RECEIPT_DIR")
+    out_dir = Path(out_dir_raw) if out_dir_raw else DEFAULT_OUT_DIR
+    return (
+        out_dir / "augmented_skills_graph_sqlite_closeout_receipt.json",
+        out_dir / "augmented_skills_graph_sqlite_closeout_receipt.md",
+    )
 
 
 def _run_cmd(argv: list[str]) -> dict[str, Any]:
     proc = subprocess.run(  # guardian: allow-chokepoint-bypass -- offline materialization receipt runs bounded repo scripts only
-        argv, cwd=str(ROOT), capture_output=True, text=True
+        argv, cwd=str(ROOT), capture_output=True, text=True, timeout=180
     )
     return {
         "command": " ".join(argv),
@@ -93,6 +102,9 @@ def run_closeout(*, skip_parity: bool = False) -> dict[str, Any]:
         "TABLES_CREATED": mat["tables_created"],
         "GRAPH_VERSION": mat["graph_version"],
         "GRAPH_HASH": mat["graph_hash"],
+        "C03_SQLITE_MATERIALIZER_CODE_VERSION": mat.get(
+            "c03_sqlite_materializer_code_version"
+        ),
         "NODE_COUNT": val.get("node_count"),
         "EDGE_COUNT": val.get("edge_count"),
         "SKILL_FACT_LINK_COUNT": val.get("skill_fact_link_count"),
@@ -122,8 +134,10 @@ def run_closeout(*, skip_parity: bool = False) -> dict[str, Any]:
         receipt["COMMANDS_RUN"].append(parity["section_projection"].get("command_run"))
         receipt["COMMANDS_RUN"].append(parity["w14b_traversal"].get("command_run"))
 
-    OUT_JSON.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    OUT_MD.write_text(_render_md(receipt), encoding="utf-8")
+    out_json, out_md = _receipt_paths()
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    out_md.write_text(_render_md(receipt), encoding="utf-8")
     return receipt
 
 
@@ -135,6 +149,7 @@ def _render_md(receipt: dict[str, Any]) -> str:
         f"- **PLAN_ID**: {receipt.get('PLAN_ID')}",
         f"- **SQLITE_DB_PATH**: [{Path(str(receipt.get('SQLITE_DB_PATH'))).name}]({str(receipt.get('SQLITE_DB_PATH')).replace(chr(92), '/')})",
         f"- **GRAPH_VERSION**: {receipt.get('GRAPH_VERSION')}",
+        f"- **MATERIALIZER_CODE_VERSION**: `{receipt.get('C03_SQLITE_MATERIALIZER_CODE_VERSION')}`",
         f"- **GRAPH_HASH**: `{str(receipt.get('GRAPH_HASH', ''))[:16]}…`",
         f"- **NODE_COUNT**: {receipt.get('NODE_COUNT')} | **EDGE_COUNT**: {receipt.get('EDGE_COUNT')}",
         f"- **C0.3 integration**: {receipt.get('C0_3_INTEGRATION_STATUS')}",

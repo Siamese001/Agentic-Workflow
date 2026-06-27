@@ -6,6 +6,7 @@ import json
 import logging
 from typing import Any
 
+from apps_rg.runtime.c0.c03_errors import RoleFamilyProjectionError
 from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
 
 logger = logging.getLogger(__name__)
@@ -62,10 +63,6 @@ EXECUTIVE_CAPABILITY_FRAMES: tuple[tuple[str, str], ...] = (
     ("ccar_stress", "regulatory stress testing and model risk governance"),
     ("derivatives_risk", "derivatives risk analytics and structured product pricing"),
 )
-
-
-class RoleFamilyProjectionError(RuntimeError):
-    """Raised when role-family targeting cannot be resolved from the graph SSOT."""
 
 
 def _is_mechanism_skill(skill_id: str) -> bool:
