@@ -22,6 +22,7 @@ _BASE_URL_ENV = "SEARXNG_BASE_URL"
 _TIMEOUT_ENV = "SEARXNG_TIMEOUT_SECONDS"
 _CATEGORIES_ENV = "SEARXNG_CATEGORIES"
 _ENGINES_ENV = "SEARXNG_ENGINES"
+_RETRIEVAL_V2_ENV = "APPS_RESEARCH_RETRIEVAL_V2"
 _DEFAULT_TIMEOUT_SECONDS = 20.0
 
 
@@ -77,6 +78,42 @@ def _timeout_seconds() -> float:
 def _optional_csv_env(name: str) -> str | None:
     value = os.environ.get(name, "").strip()
     return value or None
+
+
+def _flag_enabled(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _safe_base_url_origin(raw: str) -> str:
+    parsed = urllib.parse.urlparse(raw.strip())
+    if not parsed.scheme or not parsed.netloc:
+        return ""
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def retrieval_config_snapshot(*, query_families: list[str] | tuple[str, ...] = ()) -> dict[str, Any]:
+    """Return the effective retrieval config safe to persist in run artifacts.
+
+    This intentionally records material routing/provenance inputs without leaking
+    query text, credentials, or a full local URL path. Gates can compare provider,
+    V2 mode, SearXNG engine/category settings, and executed query families across
+    runs without treating the output packet as self-certifying.
+    """
+    base_url = os.environ.get(_BASE_URL_ENV, "").strip()
+    return {
+        "schema_version": "apps_research.retrieval_config_snapshot/v1",
+        "provider": "searxng",
+        "provider_profile": "searxng_json_search",
+        "base_url_configured": bool(base_url),
+        "base_url_origin": _safe_base_url_origin(base_url) if base_url else "",
+        "timeout_seconds": _timeout_seconds(),
+        "categories": _optional_csv_env(_CATEGORIES_ENV) or "",
+        "engines": _optional_csv_env(_ENGINES_ENV) or "",
+        "retrieval_v2_env_value": os.environ.get(_RETRIEVAL_V2_ENV, "").strip(),
+        "retrieval_v2_enabled": _flag_enabled(_RETRIEVAL_V2_ENV),
+        "experimental_retrieval_v2": _flag_enabled(_RETRIEVAL_V2_ENV),
+        "query_families": list(dict.fromkeys(str(f) for f in query_families if str(f).strip())),
+    }
 
 
 def _coerce_score(hit: dict[str, Any], fallback: float) -> float:
@@ -171,4 +208,9 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
     return docs
 
 
-__all__ = ["RetrievedDoc", "apply_contextual_prefix", "retrieve"]
+__all__ = [
+    "RetrievedDoc",
+    "apply_contextual_prefix",
+    "retrieve",
+    "retrieval_config_snapshot",
+]
