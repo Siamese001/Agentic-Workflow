@@ -25,6 +25,13 @@ Do not point MCP config at it directly. `tools/adg/mcp/server_launcher.py` and
 `tools/adg/adg_mcp_entry.py` are **deprecated** legacy wrappers retained for
 emergency use only. Do not add them to `.mcp.json`.
 
+On startup, the supervised launcher performs an ADG-only pre-guard cleanup for
+older launcher siblings under the same Codex parent process. This is narrower
+than the shared heartbeat guard: cross-window siblings are preserved, but stale
+same-parent launchers from a Codex restart cannot keep owning heartbeat files
+or split the stdio route. A currently running broken transport must be restarted
+to load this launcher code.
+
 ## Restart decision table
 
 Two distinct restart types exist. Choosing the wrong one wastes time.
@@ -50,6 +57,17 @@ heartbeat is paired with `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` and
 the heartbeat owner. Set those only after a live `mcp__adg_sqlite.adg_health`,
 `adg_runtime_info`, or `adg_process_identity` call succeeds in the active Codex
 session.
+
+For duplicate-cohort cleanup, use:
+
+```
+python scripts/governance/cleanup_duplicate_mcp_cohorts.py --json
+```
+
+Codex-owned cleanup remains blocked unless explicit attached-PID proof is
+provided. The cleanup script matches ADG, memory, and vector Python MCPs only by
+direct module/script argv entries, so diagnostic commands that merely contain a
+marker string are not treated as MCP launchers.
 
 Call `adg_runtime_info` before and after. A genuine process restart shows:
 

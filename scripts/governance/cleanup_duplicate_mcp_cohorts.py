@@ -36,6 +36,7 @@ TARGET_SERVER_MARKERS = {
     "context7": ["@upstash/context7-mcp", "context7-mcp"],
     "playwright": ["@playwright/mcp", "playwright-mcp"],
 }
+DIRECT_ARG_SERVER_IDS = frozenset({"adg_sqlite", "memory", "vector_db"})
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,30 @@ class ProcessRecord:
         return " ".join(self.cmdline).lower().replace("\\", "/")
 
 
+def _normalize_marker_text(value: str) -> str:
+    return value.strip().strip("\"'").lower().replace("\\", "/")
+
+
+def _cmdline_matches_direct_marker(cmdline: tuple[str, ...], markers: list[str]) -> bool:
+    normalized_markers = tuple(_normalize_marker_text(marker) for marker in markers)
+    for raw_part in cmdline:
+        part = _normalize_marker_text(str(raw_part))
+        for marker in normalized_markers:
+            if not marker:
+                continue
+            if "/" in marker:
+                part_without_suffix = part[:-3] if part.endswith(".py") else part
+                marker_without_suffix = marker[:-3] if marker.endswith(".py") else marker
+                if part_without_suffix == marker_without_suffix or part_without_suffix.endswith(
+                    f"/{marker_without_suffix}"
+                ):
+                    return True
+                continue
+            if part == marker or part.endswith(f"/{marker}"):
+                return True
+    return False
+
+
 def _matches_marker(record: ProcessRecord) -> bool:
     return _server_id(record) is not None
 
@@ -58,6 +83,10 @@ def _matches_marker(record: ProcessRecord) -> bool:
 def _server_id(record: ProcessRecord) -> str | None:
     text = f"{record.name} {record.normalized_cmdline}".lower()
     for server_id, markers in TARGET_SERVER_MARKERS.items():
+        if server_id in DIRECT_ARG_SERVER_IDS:
+            if _cmdline_matches_direct_marker(record.cmdline, markers):
+                return server_id
+            continue
         if any(marker in text for marker in markers):
             return server_id
     return None
@@ -314,7 +343,15 @@ def _snapshot_processes() -> list[ProcessRecord]:
                     create_time=float(info.get("create_time") or 0.0),
                 )
             )
-        except Exception:
+        except (
+            KeyError,
+            TypeError,
+            ValueError,
+            psutil.NoSuchProcess,
+            psutil.AccessDenied,
+            psutil.ZombieProcess,
+            OSError,
+        ):
             continue
     return records
 

@@ -309,6 +309,113 @@ def heartbeat_status(markers: Sequence[str] = ADG_SERVER_MARKERS) -> list[dict[s
     return rows
 
 
+def _normalize_marker_text(value: str) -> str:
+    return value.strip().strip("\"'").lower().replace("\\", "/")
+
+
+def _cmdline_matches_marker(cmdline: Sequence[Any], markers: Sequence[str]) -> bool:
+    """Return True when cmdline has a direct module/script marker argument."""
+    normalized_markers = tuple(_normalize_marker_text(marker) for marker in markers)
+    for raw_part in cmdline:
+        part = _normalize_marker_text(str(raw_part))
+        for marker in normalized_markers:
+            if not marker:
+                continue
+            if "/" in marker:
+                part_without_suffix = part[:-3] if part.endswith(".py") else part
+                marker_without_suffix = marker[:-3] if marker.endswith(".py") else marker
+                if part_without_suffix == marker_without_suffix or part_without_suffix.endswith(
+                    f"/{marker_without_suffix}"
+                ):
+                    return True
+                continue
+            if part == marker or part.endswith(f"/{marker}"):
+                return True
+    return False
+
+
+def _same_parent_older_sibling_pids(
+    process_rows: Sequence[dict[str, Any]],
+    *,
+    current_pid: int,
+    current_ppid: int,
+    current_create_time: float,
+    markers: Sequence[str] = ADG_SERVER_MARKERS,
+) -> list[int]:
+    """Select older ADG launch siblings owned by the same Codex parent."""
+    selected: list[tuple[float, int]] = []
+    for row in process_rows:
+        pid = row.get("pid")
+        if not isinstance(pid, int) or pid == current_pid:
+            continue
+        if row.get("ppid") != current_ppid:
+            continue
+        create_time = row.get("create_time")
+        if not isinstance(create_time, (int, float)):
+            continue
+        if create_time >= current_create_time:
+            continue
+        if not _cmdline_matches_marker(row.get("cmdline") or [], markers):
+            continue
+        selected.append((float(create_time), pid))
+    return [pid for _create_time, pid in sorted(selected)]
+
+
+def terminate_same_parent_older_siblings(
+    markers: Sequence[str] = ADG_SERVER_MARKERS,
+) -> list[int]:
+    """Terminate older ADG launchers under the same parent process.
+
+    The shared heartbeat guard intentionally preserves any fresh sibling to
+    avoid cross-window split-brain. Codex restarts, however, can leave multiple
+    launchers under the same parent. In that same-parent case the newest
+    launcher is the one the host just spawned and should be the serving
+    transport; older same-parent launchers are stale competitors.
+    """
+    try:
+        import psutil  # type: ignore[import-not-found]
+    except ImportError:
+        return []
+
+    current = psutil.Process(os.getpid())
+    current_pid = current.pid
+    current_ppid = current.ppid()
+    current_create_time = current.create_time()
+    rows: list[dict[str, Any]] = []
+    for proc in psutil.process_iter(["pid", "ppid", "cmdline", "create_time"]):
+        info = proc.info
+        rows.append(
+            {
+                "pid": info.get("pid"),
+                "ppid": info.get("ppid"),
+                "cmdline": info.get("cmdline") or [],
+                "create_time": info.get("create_time"),
+            }
+        )
+
+    target_pids = _same_parent_older_sibling_pids(
+        rows,
+        current_pid=current_pid,
+        current_ppid=current_ppid,
+        current_create_time=current_create_time,
+        markers=markers,
+    )
+    terminated: list[int] = []
+    for pid in target_pids:
+        try:
+            proc = psutil.Process(pid)
+            proc.terminate()
+            try:
+                proc.wait(timeout=3)
+            except psutil.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=2)
+            terminated.append(pid)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, OSError):
+            continue
+    return terminated
+
+
 def _parse_pid(raw: str | None) -> int | None:
     if raw is None or not raw.strip():
         return None
@@ -448,12 +555,14 @@ def main_launcher(argv: Sequence[str] | None = None) -> int:
         _emit(preflight, as_json=True, stream=sys.stderr)
         return 2
 
+    same_parent_terminated_pids = [] if args.skip_guard else terminate_same_parent_older_siblings()
     state_base = {
         "pid": os.getpid(),
         "started_at": _utc_now(),
         "repo_root": str(repo_root),
         "preflight": preflight,
         "launcher_marker": LAUNCHER_MARKER,
+        "same_parent_terminated_pids": same_parent_terminated_pids,
     }
     write_launcher_state(
         {**state_base, "status": "starting"},

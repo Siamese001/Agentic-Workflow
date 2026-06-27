@@ -224,6 +224,88 @@ def test_guard_markers_include_supervised_launcher() -> None:
     assert supervisor.LAUNCHER_MARKER in supervisor.ADG_SERVER_MARKERS
 
 
+def test_same_parent_older_sibling_pids_selects_only_stale_same_parent_adg_launchers() -> None:
+    rows = [
+        {
+            "pid": 100,
+            "ppid": 50,
+            "create_time": 1.0,
+            "cmdline": ["python", "-m", supervisor.LAUNCHER_MARKER],
+        },
+        {
+            "pid": 101,
+            "ppid": 50,
+            "create_time": 2.0,
+            "cmdline": ["python", "tools/adg/mcp/server.py"],
+        },
+        {
+            "pid": 102,
+            "ppid": 50,
+            "create_time": 4.0,
+            "cmdline": ["python", "-m", supervisor.LAUNCHER_MARKER],
+        },
+        {
+            "pid": 103,
+            "ppid": 51,
+            "create_time": 1.0,
+            "cmdline": ["python", "-m", supervisor.LAUNCHER_MARKER],
+        },
+        {
+            "pid": 104,
+            "ppid": 50,
+            "create_time": 1.0,
+            "cmdline": ["python", "-m", "tools.other.server"],
+        },
+        {
+            "pid": 105,
+            "ppid": 50,
+            "create_time": 1.0,
+            "cmdline": ["python", "-m", "tools.adg.mcp.server"],
+        },
+    ]
+
+    result = supervisor._same_parent_older_sibling_pids(
+        rows,
+        current_pid=105,
+        current_ppid=50,
+        current_create_time=3.0,
+    )
+
+    assert result == [100, 101]
+
+
+def test_same_parent_older_sibling_pids_ignores_invalid_or_incomplete_rows() -> None:
+    rows = [
+        {
+            "pid": "100",
+            "ppid": 50,
+            "create_time": 1.0,
+            "cmdline": ["python", "-m", supervisor.LAUNCHER_MARKER],
+        },
+        {
+            "pid": 101,
+            "ppid": 50,
+            "create_time": "old",
+            "cmdline": ["python", "-m", supervisor.LAUNCHER_MARKER],
+        },
+        {
+            "pid": 102,
+            "ppid": 50,
+            "create_time": 1.0,
+            "cmdline": None,
+        },
+    ]
+
+    result = supervisor._same_parent_older_sibling_pids(
+        rows,
+        current_pid=200,
+        current_ppid=50,
+        current_create_time=3.0,
+    )
+
+    assert result == []
+
+
 def test_root_mcp_config_uses_supervised_launcher() -> None:
     config = json.loads((REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
     adg_sqlite = config["mcpServers"]["adg_sqlite"]

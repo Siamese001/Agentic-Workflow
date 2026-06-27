@@ -242,6 +242,30 @@ def test_cleanup_does_not_select_through_nested_claude_parent() -> None:
     assert selection["target_pids"] == []
 
 
+def test_cleanup_python_mcp_marker_requires_direct_argv_match() -> None:
+    diagnostic = cleanup.ProcessRecord(
+        11,
+        1,
+        "pwsh.exe",
+        (
+            "pwsh.exe",
+            "-Command",
+            "python -c \"print('tools.mcp.launch_adg_sqlite_mcp')\"",
+        ),
+        101.0,
+    )
+    real_launcher = cleanup.ProcessRecord(
+        12,
+        1,
+        "python.exe",
+        ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"),
+        102.0,
+    )
+
+    assert cleanup._server_id(diagnostic) is None
+    assert cleanup._server_id(real_launcher) == "adg_sqlite"
+
+
 def test_codex_duplicate_cleanup_blocks_without_attached_pid() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
