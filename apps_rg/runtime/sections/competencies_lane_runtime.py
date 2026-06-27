@@ -1554,7 +1554,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--x1d-judges",
         default="gemini_pro",
-        help="Single X1D judge for competencies (Gemini-backed advisory judge; not a triple panel).",
+        help="Single required X1D proof judge for competencies (Gemini-backed by default; not a triple panel).",
     )
     parser.add_argument(
         "--mock-judges",

@@ -48,7 +48,7 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
     summary = summarize_section_x1d_minimization_policy()
 
-    assert summary["competencies"]["judge_required_for_proof"] is False
+    assert summary["competencies"]["judge_required_for_proof"] is True
     assert summary["competencies"]["default_x1d_judges"] == ["gemini_pro"]
     # Recalibrated: cross-provider single judge for bullets (no anthropic_claude self-judge).
     assert summary["unify_bullets"]["default_x1d_judges"] == ["gemini_pro"]
@@ -63,7 +63,7 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
         for sid, row in summary.items()
         if row["default_judge_count"] == 1
     ]
-    # Single-judge lanes: competencies (advisory) + all 4 bullets + all 4 narratives.
+    # Single-judge lanes: competencies + all 4 bullets + all 4 narratives.
     assert set(minimized) == {
         "competencies",
         "unify_bullets",

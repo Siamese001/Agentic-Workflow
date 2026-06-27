@@ -57,6 +57,11 @@ def _availability_failure_category(result: ProviderResult) -> str | None:
     if status_code is not None:
         if status_code == 429:
             return "provider_throttling_failure"
+        if status_code == 400 and any(
+            marker in error.lower()
+            for marker in ("usage limit", "rate limit", "rate_limit", "quota", "credit")
+        ):
+            return "provider_throttling_failure"
         if status_code == 408 or 500 <= status_code <= 599:
             return "provider_availability_failure"
         return None

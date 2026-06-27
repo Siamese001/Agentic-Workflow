@@ -48,6 +48,7 @@ from apps_rg.runtime.runtime_proof_layout import (
 )
 from apps_rg.runtime.section_cli_defaults import (
     CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+    resolve_cli_lane_provider_with_source,
     resolve_cli_x1d_judges,
 )
 from apps_rg.runtime.section_execution_plan import BULLET_LANES, NARRATIVE_LANES
@@ -448,7 +449,9 @@ class ModularResumeProfile:
     run_phase0_synthetic_assembly: bool = True
     validate_rg_output_fixture: bool = True
     phase1_invoke_real_lanes: bool = False
-    phase1_lane_provider: str = "external_claude"
+    # Empty means resolve each lane through section defaults; non-empty is an explicit
+    # global override used by APPS_RG_MODULAR_LANE_PROVIDER.
+    phase1_lane_provider: str = ""
     self_consistency_requested: int = 0
     parallel_phase1_lanes: bool = False
     phase1_max_parallel: int = 2
@@ -456,6 +459,22 @@ class ModularResumeProfile:
 
 
 _PLUMBING_ASSEMBLY_PROVIDERS = frozenset({"mock", "mocked", "stub"})
+
+
+def _resolve_phase1_lane_provider_for_section(
+    configured_provider: str | None,
+    lane: str,
+) -> tuple[str, str]:
+    """Resolve the effective Phase-1 provider for one lane.
+
+    Whole-run Phase 1 must honor section defaults unless the operator supplied
+    an explicit global override through ``APPS_RG_MODULAR_LANE_PROVIDER``.
+    """
+    configured = str(configured_provider or "").strip()
+    return resolve_cli_lane_provider_with_source(
+        configured or None,
+        section_id=lane,
+    )
 
 
 def _assembly_plumbing_mode(profile: ModularResumeProfile, *, use_phase0_synthetic: bool) -> bool:
@@ -576,6 +595,26 @@ def run_modular_resume_generation(
 
         def _lane_x1d_judges(lane_id: str) -> str:
             return resolve_cli_x1d_judges(None, section_id=lane_id)
+
+        phase1_lane_provider_by_lane: dict[str, str] = {}
+        phase1_lane_provider_source_by_lane: dict[str, str] = {}
+
+        def _lane_provider_for_lane(lane_id: str) -> str:
+            lane_key = str(lane_id or "").strip()
+            if lane_key not in phase1_lane_provider_by_lane:
+                provider, source = _resolve_phase1_lane_provider_for_section(
+                    profile.phase1_lane_provider,
+                    lane_key,
+                )
+                phase1_lane_provider_by_lane[lane_key] = provider
+                phase1_lane_provider_source_by_lane[lane_key] = source
+            return phase1_lane_provider_by_lane[lane_key]
+
+        def _lane_provider_source_for_lane(lane_id: str) -> str:
+            lane_key = str(lane_id or "").strip()
+            _lane_provider_for_lane(lane_key)
+            return phase1_lane_provider_source_by_lane[lane_key]
+
         prev_whole_run_env = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE")
         prev_corr_env = os.environ.get("APPS_RG_CORRELATED_CLI_RUN")
         os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
@@ -681,7 +720,8 @@ def run_modular_resume_generation(
                 job_description_ref=jd_ref,
                 job_description_text=jd_txt,
                 manual_brief=br_dispatch,
-                lane_provider=profile.phase1_lane_provider,
+                lane_provider=_lane_provider_for_lane,
+                lane_provider_resolution_source=_lane_provider_source_for_lane,
                 lane_x1d_judges=_lane_x1d_judges,
                 lane_mock_judges=lane_mock_j_for_phase1,
                 lane_allow_non_allow_exit_zero=_phase1_allow_exit,
@@ -776,8 +816,8 @@ def run_modular_resume_generation(
                             generation_mode="strategic_tailor",
                             artifact_dir="",
                             section=lane,
-                            lane_provider=profile.phase1_lane_provider,
-                            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+                            lane_provider=_lane_provider_for_lane(lane),
+                            lane_provider_resolution_source=_lane_provider_source_for_lane(lane),
                         lane_temperature=default_temperature_for_section(lane),
                         lane_x1d_judges=_lane_x1d_judges(lane),
                         lane_mock_judges=lane_mock_j_for_phase1,
@@ -803,7 +843,7 @@ def run_modular_resume_generation(
                     sections_root=sections_root,
                     integrated_dir=art,
                     lane=lane,
-                    lane_provider=profile.phase1_lane_provider,
+                    lane_provider=_lane_provider_for_lane(lane),
                     lane_dispatch_results=lane_dispatch_results,
                     lane_exec_status=lane_exec_status,
                     emit_integrated_lane_pre_run_failure=emit_integrated_lane_pre_run_failure,
@@ -819,6 +859,13 @@ def run_modular_resume_generation(
                 "phase1_parallel_enabled": _parallel_phase1,
                 "phase1_max_parallel": _max_par if _parallel_phase1 else 1,
                 "phase1_allow_non_allow_exit_zero_effective": _phase1_allow_exit,
+                "phase1_lane_provider_global_override": str(profile.phase1_lane_provider or ""),
+                "phase1_lane_provider_by_lane": {
+                    lane: _lane_provider_for_lane(lane) for lane in GENERATED_LANES
+                },
+                "phase1_lane_provider_resolution_source_by_lane": {
+                    lane: _lane_provider_source_for_lane(lane) for lane in GENERATED_LANES
+                },
             }
             if lane_targeting is not None:
                 inv_extra["lane_argv_targeting"] = asdict(lane_targeting)
@@ -868,8 +915,8 @@ def run_modular_resume_generation(
 
             sc_req = profile.self_consistency_requested
             sc_exe = 0
-            prof = profile.phase1_lane_provider
             for i, lane in enumerate(GENERATED_LANES):
+                prof = _lane_provider_for_lane(lane)
                 rd = lane_run_dirs.get(lane)
                 if rd is None or not rd.is_dir():
                     pre_run = None

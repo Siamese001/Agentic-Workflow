@@ -7,7 +7,7 @@ Covers the 2026-06-06 redesign:
      -> executive_summary -> headline)
   * Phase-1 wave DAG mirrors the dependency order (bullets before narratives before
     exec_summary before headline) and passes the wave-order validator.
-  * ibm_bullets default X1D = ONE composite judge (anthropic_claude); unify already uses one.
+  * generated lanes use per-section provider and X1D defaults.
   * Upstream-block runtime statuses are non-retryable (early-exit failure-class set).
   * Per-lane judge resolution callable threads through LaneExecutionContext.
 """
@@ -21,6 +21,9 @@ from apps_rg.runtime.orchestration.section_lane_concurrency import (
 )
 from apps_rg.runtime.orchestration.section_lane_executor import LaneExecutionContext
 from apps_rg.runtime.section_cli_defaults import (
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
+    resolve_cli_lane_provider_with_source,
     resolve_cli_x1d_judges,
     summarize_section_x1d_minimization_policy,
 )
@@ -126,7 +129,7 @@ def test_ibm_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
     assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "gemini_pro"
 
 
-def test_competencies_defaults_to_single_advisory_judge(monkeypatch) -> None:
+def test_competencies_defaults_to_single_required_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
     assert resolve_cli_x1d_judges(None, section_id="competencies") == "gemini_pro"
 
@@ -212,6 +215,40 @@ def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
     assert ctx.x1d_judges_for_lane("competencies") == "gemini_pro"
     assert ctx.x1d_judges_for_lane("unify_bullets") == "gemini_pro"
     assert ctx.x1d_judges_for_lane("headline") == "gemini_pro,openai_chatgpt"
+
+
+def test_lane_execution_context_resolves_per_lane_provider_callable(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_MODULAR_LANE_PROVIDER", raising=False)
+
+    def _provider(lane: str) -> str:
+        provider, _source = resolve_cli_lane_provider_with_source(None, section_id=lane)
+        return provider
+
+    def _source(lane: str) -> str:
+        _provider, source = resolve_cli_lane_provider_with_source(None, section_id=lane)
+        return source
+
+    ctx = LaneExecutionContext(
+        sections_root="x",
+        target_company="",
+        target_role="",
+        job_description_ref="",
+        job_description_text="",
+        manual_brief="",
+        lane_provider=_provider,
+        lane_provider_resolution_source=_source,
+        lane_x1d_judges=lambda lane: resolve_cli_x1d_judges(None, section_id=lane),
+        lane_mock_judges=False,
+    )
+
+    assert ctx.provider_for_lane("competencies") == "external_openai"
+    assert ctx.provider_resolution_source_for_lane(
+        "competencies"
+    ) == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI
+    assert ctx.provider_for_lane("ibm_bullets") == "external_claude"
+    assert ctx.provider_resolution_source_for_lane(
+        "ibm_bullets"
+    ) == CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
 
 
 def test_lane_execution_context_passthrough_string() -> None:

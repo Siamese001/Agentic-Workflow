@@ -55,6 +55,21 @@ _COMMAND_FLAGS_OF_INTEREST = (
 DispatchFn = Callable[..., dict[str, Any]]
 
 
+def _resolve_patch_lane_provider_for_section(
+    configured_provider: str | None,
+    lane: str,
+) -> tuple[str, str]:
+    """Resolve patch-run provider for one lane.
+
+    Empty ``configured_provider`` means use the section CLI default matrix; a non-empty
+    value is an explicit whole-run override.
+    """
+    from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
+
+    configured = str(configured_provider or "").strip()
+    return resolve_cli_lane_provider_with_source(configured or None, section_id=lane)
+
+
 class PatchRunInputError(Exception):
     """Input/argument error — maps to process exit 2 (same family as CLI config errors)."""
 
@@ -485,13 +500,16 @@ def _default_dispatch_lane(
         run_canonical_apps_rg_from_cli_primitives,
     )
     from apps_rg.runtime.section_cli_defaults import (
-        CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
         resolve_cli_x1d_judges,
         resolve_phase1_lane_allow_non_allow_exit_zero,
     )
     from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 
     t = plan.targeting
+    effective_provider, provider_source = _resolve_patch_lane_provider_for_section(
+        lane_provider,
+        lane,
+    )
     result = run_canonical_apps_rg_from_cli_primitives(
         target_company=t.target_company,
         target_role=t.target_role,
@@ -505,8 +523,8 @@ def _default_dispatch_lane(
         generation_mode=t.generation_mode or "strategic_tailor",
         artifact_dir="",
         section=lane,
-        lane_provider=lane_provider,
-        lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+        lane_provider=effective_provider,
+        lane_provider_resolution_source=provider_source,
         lane_temperature=default_temperature_for_section(lane),
         lane_x1d_judges=resolve_cli_x1d_judges(None, section_id=lane),
         lane_mock_judges=False,
@@ -647,6 +665,19 @@ def aggregate_patched_run(
         k: dict(v) for k, v in lane_dispatch_results.items()
     }
     lane_exec_status: dict[str, str] = {}
+    lane_provider_by_lane: dict[str, str] = {}
+    lane_provider_source_by_lane: dict[str, str] = {}
+
+    def _lane_provider_for_lane(lane: str) -> str:
+        if lane not in lane_provider_by_lane:
+            provider, source = _resolve_patch_lane_provider_for_section(lane_provider, lane)
+            lane_provider_by_lane[lane] = provider
+            lane_provider_source_by_lane[lane] = source
+        return lane_provider_by_lane[lane]
+
+    def _lane_provider_source_for_lane(lane: str) -> str:
+        _lane_provider_for_lane(lane)
+        return lane_provider_source_by_lane[lane]
 
     lane_run_dirs: dict[str, Path] = {}
     for lane in GENERATED_LANES:
@@ -655,7 +686,7 @@ def aggregate_patched_run(
             sections_root=sections_root,
             integrated_dir=art,
             lane=lane,
-            lane_provider=lane_provider,
+            lane_provider=_lane_provider_for_lane(lane),
             lane_dispatch_results=dispatch_results,
             lane_exec_status=lane_exec_status,
             emit_integrated_lane_pre_run_failure=emit_integrated_lane_pre_run_failure,
@@ -765,7 +796,7 @@ def aggregate_patched_run(
                     i,
                     0,
                     0,
-                    lane_provider,
+                    _lane_provider_for_lane(lane),
                     decisive_reason_code=decisive,
                 ),
             )
@@ -778,7 +809,7 @@ def aggregate_patched_run(
                 artifact_dir=art,
                 self_consistency_requested=0,
                 self_consistency_executed=0,
-                provider_profile=lane_provider,
+                provider_profile=_lane_provider_for_lane(lane),
             ),
         )
 
@@ -847,6 +878,13 @@ def aggregate_patched_run(
             "real_lane_invocation_attempted": True,
             "records": section_call_records,
             "lane_dispatch_modules": list(LANE_DISPATCH_MODULES),
+            "lane_provider_global_override": str(lane_provider or ""),
+            "lane_provider_by_lane": {
+                lane: _lane_provider_for_lane(lane) for lane in GENERATED_LANES
+            },
+            "lane_provider_resolution_source_by_lane": {
+                lane: _lane_provider_source_for_lane(lane) for lane in GENERATED_LANES
+            },
             "decisive_status": decisive,
             "pass_source": "merged_rg_output_direct_lanes" if decisive == "PASS" else "",
             "recipe_lane_policy": recipe_lane_policy,
@@ -885,6 +923,13 @@ def aggregate_patched_run(
         "artifact_gate_status": artifact_gate_status,
         "recipe_lane_policy": recipe_lane_policy,
         "full_success_eligibility": eligibility,
+        "lane_provider_global_override": str(lane_provider or ""),
+        "lane_provider_by_lane": {
+            lane: _lane_provider_for_lane(lane) for lane in GENERATED_LANES
+        },
+        "lane_provider_resolution_source_by_lane": {
+            lane: _lane_provider_source_for_lane(lane) for lane in GENERATED_LANES
+        },
     }
 
 
@@ -909,7 +954,7 @@ def execute_patch_run(
         print("DRY RUN: patch-run plan only — no lanes dispatched, nothing executed.", flush=True)
         return {"exit_code": 0, "dry_run": True, "target_lanes": list(plan.target_lanes)}
 
-    from apps_rg.l2_recipe.r4_generation_mode import resolve_apps_rg_modular_lane_provider
+    from apps_rg.l2_recipe.r4_generation_mode import resolve_apps_rg_modular_lane_provider_override
     from apps_rg.runtime.run_bundle_index import repo_relative_posix
     from apps_rg.runtime.runtime_proof_layout import (
         require_manifest_for_modular_sections_root,
@@ -944,7 +989,7 @@ def execute_patch_run(
     )
     write_embedding_settings_receipt(plan.run_dir, emb)
 
-    lane_provider = resolve_apps_rg_modular_lane_provider()
+    lane_provider = resolve_apps_rg_modular_lane_provider_override()
     sections_root = plan.run_dir / "modular_r4" / "sections"
     if not (sections_root / "sections_root_manifest.json").is_file():
         emit_sections_root_manifest(
@@ -1019,7 +1064,12 @@ def execute_patch_run(
             for lane, res in dispatch_results.items()
         },
         "targeting_sources": dict(plan.targeting.sources),
-        "lane_provider": lane_provider,
+        "lane_provider": lane_provider or "per_section_default",
+        "lane_provider_global_override": lane_provider,
+        "lane_provider_by_lane": agg.get("lane_provider_by_lane"),
+        "lane_provider_resolution_source_by_lane": agg.get(
+            "lane_provider_resolution_source_by_lane"
+        ),
         "decisive_status": decisive,
         "failure_reason": str(agg.get("failure_reason") or ""),
         "all_lanes_authorized": all_authorized,

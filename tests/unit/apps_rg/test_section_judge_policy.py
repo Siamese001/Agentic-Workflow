@@ -84,16 +84,9 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["insurtech_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["ey_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["unify_narrative"]["judge_runtime_profile"] == matrix["unify_bullets"]["judge_runtime_profile"]
-    assert matrix["competencies"]["judge_runtime_profile"] == {
-        "judge_weight": 1,
-        "max_output_tokens": 4096,
-        "max_output_tokens_hard_cap": 8192,
-        "max_attempts": 1,
-        "retry_backoff_base_seconds": 0.25,
-        "retry_backoff_max_seconds": 0.25,
-    }
-    assert matrix["competencies"]["judge_required_for_proof"] is False
-    assert matrix["competencies"]["judge_tier"] == JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY.value
+    assert matrix["competencies"]["judge_runtime_profile"] == matrix["unify_bullets"]["judge_runtime_profile"]
+    assert matrix["competencies"]["judge_required_for_proof"] is True
+    assert matrix["competencies"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
     assert matrix["final_aggregate_resume"]["judge_runtime_profile"] == matrix["executive_summary"]["judge_runtime_profile"]
 
@@ -132,8 +125,8 @@ def test_allow_non_allow_exit_zero_does_not_force_plumbing_when_product_passes()
     assert bundle["allow_non_allow_exit_zero_cli"] is True
 
 
-def test_competencies_proof_bundle_does_not_require_judges() -> None:
-    args = type("Args", (), {"mock_judges": False, "provider": "qwen_vllm"})()
+def test_competencies_proof_bundle_blocks_when_required_judges_missing() -> None:
+    args = type("Args", (), {"mock_judges": False, "provider": "external_openai"})()
     bundle = compute_lane_proof_bundle(
         args,
         section_id="competencies",
@@ -142,8 +135,36 @@ def test_competencies_proof_bundle_does_not_require_judges() -> None:
         x2_gates=[{"gate_id": "x2_ok", "pass": True}],
         x3=_FakeX3(),
     )
-    assert bundle["judge_required_for_proof"] is False
+    assert bundle["judge_required_for_proof"] is True
+    assert bundle["required_judge_rows_missing"] is True
     assert bundle["judge_proof_eligible"] is False
+    assert bundle["proof_eligible"] is False
+
+
+def test_competencies_proof_bundle_requires_proof_eligible_judge() -> None:
+    args = type("Args", (), {"mock_judges": False, "provider": "external_openai"})()
+    judge = {
+        "evaluator_mode": "MODEL_BACKED",
+        "provider_status": "MODEL_BACKED_PASS",
+        "pass": True,
+        "decisive_failure": False,
+        "normalized_score": 0.9,
+        "normalized_threshold": 0.8,
+        "provider_key": "gemini_pro",
+        "proof_eligible_judge": True,
+        "advisory_only": False,
+    }
+    bundle = compute_lane_proof_bundle(
+        args,
+        section_id="competencies",
+        runtime_generation_status="REAL_LLM",
+        x1d_judges=[judge],
+        x2_gates=[{"gate_id": "x2_ok", "pass": True}],
+        x3=_FakeX3(),
+    )
+    assert bundle["judge_required_for_proof"] is True
+    assert bundle["required_judge_rows_missing"] is False
+    assert bundle["judge_proof_eligible"] is True
     assert bundle["proof_eligible"] is True
 
 
@@ -223,7 +244,7 @@ def test_grade_only_judge_packet_shape() -> None:
     assert "Do NOT write replacement" in packet["grading_only_instructions"]
 
 
-def test_competencies_x3_allow_without_required_judges() -> None:
+def test_competencies_x3_blocks_without_required_judges() -> None:
     from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
 
     usage_ledger = {
@@ -245,20 +266,20 @@ def test_competencies_x3_allow_without_required_judges() -> None:
         runtime_generation_status="REAL_LLM",
         product_quality_status="PASS",
         section_input_usage_ledger=usage_ledger,
-        judge_required_for_allow=False,
+        judge_required_for_allow=True,
     )
-    assert x3.x3_code == "X3_ALLOW"
-    assert x3.proof_eligible_allow_requires == "x2_pass_only_x1d_advisory_optional"
+    assert x3.x3_code == "X3_REVIEW_JUDGE_SOFT_FAIL"
+    assert x3.proof_eligible_allow_requires == "every_configured_x1d_judge_model_backed_pass"
 
 
-def test_competencies_policy_does_not_require_llm_for_proof() -> None:
+def test_competencies_policy_requires_llm_judge_for_proof() -> None:
     p = get_section_judge_policy("competencies")
-    assert p.judge_required_for_proof is False
+    assert p.judge_required_for_proof is True
     rubric = ""
     from apps_rg.runtime.judges import competencies_x1d
 
     rubric = competencies_x1d.COMPETENCIES_RUBRIC
-    assert "OPTIONAL ADVISORY" in rubric
-    assert "does not gate product proof" in rubric.lower()
+    assert "REQUIRED proof taxonomy grading" in rubric
+    assert "gates product proof eligibility" in rubric.lower()
     assert "distinct ATS query clusters" in rubric
     assert "graph-backed differentiation" in rubric.lower()

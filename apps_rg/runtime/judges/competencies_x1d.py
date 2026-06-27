@@ -21,6 +21,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _resolve_gemini_model,
     resolve_x1d_provider_credentials,
 )
+from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 
 JUDGE_RUBRIC_VERSION = "competencies_x1d_v3"
 
@@ -49,7 +50,8 @@ COMPETENCIES_JUDGE_OUTPUT_CONTRACT = (
 
 COMPETENCIES_RUBRIC = """
 You are evaluating exactly 8 executive resume competency categories (short labels plus compact capability phrases).
-This is OPTIONAL ADVISORY taxonomy grading — deterministic X2 gates are authoritative for proof eligibility.
+This is REQUIRED proof taxonomy grading. Deterministic X2 gates remain authoritative for source lineage,
+and this X1D judge must pass before competencies can be product proof eligible.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
 Score contract:
@@ -78,10 +80,10 @@ Anti-AI filters:
 - no sentence-style category labels or bullet-shaped terms
 - no "transformational", "innovative", or "cutting-edge" filler without concrete grounding
 
-Advisory notes:
+Required judge notes:
 - The deterministic product shape expects exactly 8 categories; flag missing, extra, or duplicate category groups as quality_flags.
 - Sentence-style competency claims are out of scope for this section format; flag them as quality_flags only.
-- Judge pass/fail does not gate product proof eligibility for competencies.
+- Judge pass/fail gates product proof eligibility for competencies.
 - companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).
 - Terms require source_fact_ids / claim_ledger binding — no JD-only skills as proof.
 - When the categories collapse onto the same few metrics, fact surfaces, or employer lane, lower the score even if the shape is technically valid.
@@ -239,14 +241,31 @@ def run_competencies_judges(
             outputs.append(out)
             continue
 
+        resolution = resolve_section_proof_judge_model("competencies", key)
+        if resolution.blocked:
+            out = _make_blocked_output(
+                key,
+                input_hash,
+                "BLOCKED_MODEL_CONFIG",
+                "BLOCKED_MODEL_CONFIG",
+                resolution.block_reason or "proof judge model unavailable",
+                model_name=resolution.model_requested or "unconfigured",
+            )
+            out.judge_id = f"x1d_{key}_competencies"
+            out.section_id = "competencies"
+            out.model_tier = resolution.model_tier
+            outputs.append(out)
+            continue
+
         if key == "gemini_pro":
             model, model_source = _resolve_gemini_model(meta, section_id="competencies")
         elif key == "anthropic_claude":
-            model, model_source = _resolve_anthropic_model(meta)
+            model, model_source = _resolve_anthropic_model(meta, section_id="competencies")
         else:
-            model_env = meta.get("model_env", meta["env"].replace("_API_KEY", "_MODEL"))
-            model = os.environ.get(model_env, "").strip() or meta.get("default_model", "unknown")
-            model_source = model_env if model else "default"
+            model = resolution.model_actual
+            model_source = resolution.model_source
+        model_requested = resolution.model_requested or model
+        reasoning_effort = resolution.reasoning_effort
 
         try:
             def _dispatch(attempt_no: int) -> JudgeOutput:
@@ -258,6 +277,9 @@ def run_competencies_judges(
                         input_hash,
                         key,
                         artifact_base=artifact_base,
+                        reasoning_effort=reasoning_effort,
+                        model_requested=model_requested,
+                        model_env_source=model_source,
                         attempt=attempt_no,
                         section_id="competencies",
                     )
@@ -270,6 +292,7 @@ def run_competencies_judges(
                         key,
                         model_source=model_source,
                         artifact_base=artifact_base,
+                        model_requested=model_requested,
                         attempt=attempt_no,
                         section_id="competencies",
                     )
@@ -281,6 +304,7 @@ def run_competencies_judges(
                     key,
                     model_source=model_source,
                     artifact_base=artifact_base,
+                    model_requested=model_requested,
                     attempt=attempt_no,
                     section_id="competencies",
                 )
@@ -292,8 +316,14 @@ def run_competencies_judges(
             )
             output.judge_id = f"x1d_{key}_competencies"
             output.rubric_version = JUDGE_RUBRIC_VERSION
-            output.advisory_only = True
-            output.proof_eligible_judge = False
+            output.section_id = "competencies"
+            output.model_tier = resolution.model_tier
+            output.advisory_only = False
+            output.proof_eligible_judge = bool(
+                resolution.proof_eligible_judge
+                and output.evaluator_mode == "MODEL_BACKED"
+                and not output.provider_blocked
+            )
             outputs.append(_normalize_competencies_dimension_verdicts(output))
         except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             blocked = _make_blocked_output(

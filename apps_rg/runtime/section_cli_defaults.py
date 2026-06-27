@@ -108,9 +108,9 @@ def default_lane_provider_for_section(section_id: str | None = None) -> str:
     return "external_claude"
 
 
-# Judges are CROSS-PROVIDER ONLY (never anthropic_claude). Claude Sonnet 4.6 is the GENERATOR for
-# every lane, so a Claude judge is a self-judge with correlated blind spots. Recalibrated 2026-06-08
-# from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
+# Judges are calibrated against the per-section generator matrix. Claude-backed lanes never default
+# to anthropic_claude as judge; OpenAI-backed competencies/narratives default to gemini_pro.
+# Recalibrated 2026-06-08 from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
 # Explicit CLI/env overrides still win.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
 _SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"
@@ -123,7 +123,7 @@ EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
 # Recalibrated judge panels (Claude Sonnet 4.6 base; cross-provider only):
 #   executive_summary / headline / final_aggregate_resume -> 2 (gemini_pro + openai_chatgpt)
-#   all bullets + all narratives -> 1 (gemini_pro); competencies -> 1 advisory (gemini_pro)
+#   competencies + all bullets + all narratives -> 1 required proof judge (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
@@ -140,7 +140,7 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
 }
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
-    "competencies": "single_advisory_taxonomy_judge_optional_for_proof",
+    "competencies": "single_required_taxonomy_judge_for_proof",
     "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
@@ -196,7 +196,7 @@ def resolve_cli_x1d_judges(
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
     Per-section composite-judge defaults (one judge, not the full proof panel):
-      * ``competencies``  -> single ``gemini_pro`` advisory judge.
+      * ``competencies``  -> single required ``gemini_pro`` taxonomy judge.
       * bullets/narratives -> single ``gemini_pro`` cross-provider judge.
 
     An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the
