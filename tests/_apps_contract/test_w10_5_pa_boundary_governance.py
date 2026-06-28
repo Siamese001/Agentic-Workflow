@@ -38,7 +38,7 @@ ALL_NEW_YAMLS = list(_SECTION_CONTRACTS_ROOT.glob("*.yaml")) + [
 
 _PYTHON_IMPORT_PATTERN = re.compile(r"^\s*(import |from .+ import )", re.MULTILINE)
 _SUBPROCESS_PATTERN = re.compile(r"subprocess|os\.system|exec\(|eval\(")
-_PROVIDER_PATTERN = re.compile(r"openai\.|anthropic\.|requests\.post|httpx\.|vllm\.", re.IGNORECASE)
+_PROVIDER_PATTERN = re.compile(r"openai\.|anthropic\.|requests\.post|httpx\.|local_model_server\.", re.IGNORECASE)
 
 
 @pytest.mark.parametrize("path", ALL_NEW_YAMLS, ids=[p.name for p in ALL_NEW_YAMLS])
@@ -120,9 +120,9 @@ class TestPaCompilerBoundary:
         content = self._compiler_path.read_text(encoding="utf-8")
         assert "anthropic" not in content.lower(), "compiler.py must not call anthropic"
 
-    def test_compiler_has_no_vllm_calls(self):
+    def test_compiler_has_no_local_model_server_calls(self):
         content = self._compiler_path.read_text(encoding="utf-8")
-        assert "vllm" not in content.lower(), "compiler.py must not call vllm"
+        assert "local_model_server" not in content.lower(), "compiler.py must not call local_model_server"
 
 
 # ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 """Tests for x2_headline_xyz_literal_grounding (closes Bug:HeadlineXYZPhrasesNotGroundedInFactText).
 
 Mirrors the Brown SVP failing case (full_resume_183cf9252e02 headline X3_BLOCK):
-- Qwen emitted ``SVP Engineering | Governed Agentic Platforms | Distributed AI Infrastructure | Enterprise Data Lineage``
+- RetiredProvider emitted ``SVP Engineering | Governed Agentic Platforms | Distributed AI Infrastructure | Enterprise Data Lineage``
 - claim_ledger correctly cited fact_engineering_platform_005, fact_quant_hpc_002, fact_engineering_platform_004
 - But the X/Y/Z phrases share ZERO content nouns with the cited facts' literal claim_text
 - OpenAI judge: ``Unsupported: Governed Agentic Platforms`` (2.0 decisive)

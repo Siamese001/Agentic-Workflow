@@ -275,7 +275,7 @@ class TestProviderProfilesStructure:
     def test_all_required_profiles_present(self):
         data = self._load()
         profiles = data["profiles"]
-        for key in ("local_generator_stub", "local_qwen_generator", "deterministic_grader",
+        for key in ("local_generator_stub", "local_retired_provider_generator", "deterministic_grader",
                     "llm_judge_stub", "executive_positioning_judge_stub"):
             assert key in profiles, f"Missing provider profile: {key}"
 
@@ -293,11 +293,11 @@ class TestProviderProfilesStructure:
         for pattern in forbidden_patterns:
             assert pattern not in content, f"Possible secret pattern '{pattern}' found in provider_profiles.yaml"
 
-    def test_local_qwen_uses_env_var_for_endpoint(self):
+    def test_local_retired_provider_uses_env_var_for_endpoint(self):
         data = self._load()
-        qwen = data["profiles"]["local_qwen_generator"]
-        assert qwen.get("endpoint_env_var") == "VLLM_BASE_URL"
-        assert qwen.get("api_key_env_var") is None
+        retired_provider = data["profiles"]["local_retired_provider_generator"]
+        assert retired_provider.get("endpoint_env_var") == "LOCAL_MODEL_SERVER_BASE_URL"
+        assert retired_provider.get("api_key_env_var") is None
 
 
 class TestCandidateGatesStructure:

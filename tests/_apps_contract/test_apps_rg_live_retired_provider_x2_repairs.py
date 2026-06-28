@@ -1,4 +1,4 @@
-"""Contract tests for live-Qwen X2 repair helpers (no gate weakening)."""
+"""Contract tests for live-RetiredProvider X2 repair helpers (no gate weakening)."""
 from __future__ import annotations
 
 from apps_rg.runtime.sections.competencies_lane_runtime import _fix_fact_id_typos

@@ -1,4 +1,4 @@
-"""Dimension → upstream Qwen/L2 debug triangulation (no extra judge spend)."""
+"""Dimension → upstream PROVIDER_MODEL/L2 debug triangulation (no extra judge spend)."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from apps_rg.runtime.sections.executive_summary_generation_grade_contract import
 
 TRIANGULATION_SCHEMA = "executive_summary_dimension_upstream_triangulation_v1"
 
-# Rubric dimensions that are primarily fixed by L2/Qwen + composition (not a full re-panel).
+# Rubric dimensions that are primarily fixed by L2/PROVIDER_MODEL + composition (not a full re-panel).
 L2_UPSTREAM_DIMENSIONS: frozenset[str] = frozenset(
     {
         "executive_signal",
@@ -29,7 +29,7 @@ L2_UPSTREAM_DIMENSIONS: frozenset[str] = frozenset(
     }
 )
 
-DIMENSION_QWEN_SURFACES: dict[str, tuple[str, ...]] = {
+DIMENSION_PROVIDER_MODEL_SURFACES: dict[str, tuple[str, ...]] = {
     "factual_support": (
         "claim_ledger.json",
         "canonical_claim_ledger_v2.json",
@@ -142,7 +142,7 @@ def build_dimension_upstream_triangulation(
     judge_regen_cycles: dict[str, Any] | None = None,
     post_regen_judge_mode: str = "soft_failed_only",
 ) -> dict[str, Any]:
-    """Operator/debug artifact: map dimension failures → Qwen files and actions."""
+    """Operator/debug artifact: map dimension failures → PROVIDER_MODEL files and actions."""
     matrix = build_x1d_dimension_matrix(x1d_judges)
     dim_lines = collect_dimension_remediation_lines(x1d_judges, min_fail_count=1)
     gate_map = dimension_gate_map()
@@ -162,10 +162,10 @@ def build_dimension_upstream_triangulation(
                 "dimension_id": dim,
                 "fail_count": fc,
                 "consensus_fail": bool(agg.get("consensus_fail")),
-                "primary_surface": "l2_qwen" if dim in L2_UPSTREAM_DIMENSIONS else "x2_or_judge_packet",
+                "primary_surface": "l2_PROVIDER_MODEL" if dim in L2_UPSTREAM_DIMENSIONS else "x2_or_judge_packet",
                 "related_x2_gate": related_x2,
                 "x2_gate_failed_in_run": related_x2 in x2_failed if related_x2 else False,
-                "qwen_prompt_surfaces": list(DIMENSION_QWEN_SURFACES.get(dim, ())),
+                "PROVIDER_MODEL_prompt_surfaces": list(DIMENSION_PROVIDER_MODEL_SURFACES.get(dim, ())),
                 "upstream_actions": list(DIMENSION_UPSTREAM_ACTIONS.get(dim, ())),
             }
         )
@@ -180,8 +180,8 @@ def build_dimension_upstream_triangulation(
         )
     elif l2_upstream:
         recommended = (
-            f"L2/Qwen upstream fix recommended for: {', '.join(l2_upstream)}. "
-            "Review qwen_prompt_surfaces; use DIMENSION_VERDICTS in judge_remediation_cycles "
+            f"L2/PROVIDER_MODEL upstream fix recommended for: {', '.join(l2_upstream)}. "
+            "Review PROVIDER_MODEL_prompt_surfaces; use DIMENSION_VERDICTS in judge_remediation_cycles "
             f"before paying for more judge panels (post_regen mode={post_regen_judge_mode})."
         )
     elif consensus:
@@ -195,7 +195,7 @@ def build_dimension_upstream_triangulation(
         "l2_upstream_failed_dimensions": l2_upstream,
         "dimension_remediation_lines": dim_lines,
         "per_dimension": per_dimension,
-        "qwen_prompt_refs": {
+        "PROVIDER_MODEL_prompt_refs": {
             "compiled_prompt": "compiled_prompt.txt",
             "compiled_prompt_artifact": "compiled_prompt_artifact.json",
             "provider_request": "provider_request.json",
@@ -226,7 +226,7 @@ def write_dimension_upstream_triangulation(
 
 
 __all__ = [
-    "DIMENSION_QWEN_SURFACES",
+    "DIMENSION_PROVIDER_MODEL_SURFACES",
     "L2_UPSTREAM_DIMENSIONS",
     "TRIANGULATION_SCHEMA",
     "build_dimension_upstream_triangulation",

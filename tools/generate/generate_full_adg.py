@@ -1673,12 +1673,16 @@ def generate_full_adg(
             file=sys.stderr,
         )
 
-    # --- Mandatory CI burndown markdown (gate results + burndown table SSOTs) ---
-    from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+    # --- Mandatory CI burndown markdown artifacts (inline replay happens after BCG) ---
+    from tools.reports.adg_burndown_report import (  # noqa: PLC0415
+        emit_existing_burndown_markdown,
+        emit_mandatory_adg_burndown_report,
+    )
 
     _burndown_emit_rc = emit_mandatory_adg_burndown_report(
         burndown=adg_artifacts_dir / "adg_burndown_table.json",
         fail_closed=False,
+        print_inline=False,
     )
     if _burndown_emit_rc != 0:
         print(
@@ -1850,6 +1854,14 @@ def generate_full_adg(
             print(f"[ADG] WARNING: BCG executive synthesis returned {_bcg_rc}", file=sys.stderr)
     except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _bcg_exc:
         print(f"[adg_bcg_executive_synthesis] SUMMARY_ERROR={_bcg_exc}", file=sys.stderr)
+
+    if _burndown_emit_rc == 0:
+        _burndown_inline_rc = emit_existing_burndown_markdown()
+        if _burndown_inline_rc != 0:
+            print(
+                f"[ADG] WARNING: burndown inline replay returned {_burndown_inline_rc}",
+                file=sys.stderr,
+            )
 
     _rec_bcg = _current_recorder()
     if _rec_bcg is not None:
@@ -2499,10 +2511,17 @@ def main() -> None:
             )
         except Exception as _e:  # noqa: BLE001
             print(f"[ADG] WARN manifest finalize failed: {_e}")
+        _burndown_emit_rc = 2
         try:
-            from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+            from tools.reports.adg_burndown_report import (  # noqa: PLC0415
+                emit_existing_burndown_markdown,
+                emit_mandatory_adg_burndown_report,
+            )
 
-            emit_mandatory_adg_burndown_report(fail_closed=False)
+            _burndown_emit_rc = emit_mandatory_adg_burndown_report(
+                fail_closed=False,
+                print_inline=False,
+            )
         except ImportError:
             pass
         try:
@@ -2566,11 +2585,16 @@ def main() -> None:
                     "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
                     "dead_code_report": adg_artifacts_dir / f"dead_code_zone_control_report_{ts}.json",
                 },
-                print_inline=False,
+                print_inline=True,
                 fail_closed=False,
             )
         except ImportError:
             pass
+        if _burndown_emit_rc == 0:
+            try:
+                emit_existing_burndown_markdown()
+            except OSError:
+                pass
 
     if p0_deferred or shared_deferred:
         # Codex Wave B summary line + W3.1 markdown table for full visibility.

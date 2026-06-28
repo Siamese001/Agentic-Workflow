@@ -137,8 +137,8 @@ class TestBoundaryGuard(unittest.TestCase):
     def test_no_anthropic(self) -> None:
         self.assertFalse(any(m.startswith("anthropic") for m in self._get_imports()))
 
-    def test_no_vllm(self) -> None:
-        self.assertFalse(any(m.startswith("vllm") for m in self._get_imports()))
+    def test_no_local_model_server(self) -> None:
+        self.assertFalse(any(m.startswith("local_model_server") for m in self._get_imports()))
 
     def test_no_httpx(self) -> None:
         self.assertFalse(any(m.startswith("httpx") for m in self._get_imports()))

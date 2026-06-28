@@ -36,6 +36,10 @@ from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resum
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths
 from apps_rg.runtime.internal.locked_copy_builder import build_locked_copy
 from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
+from apps_rg.runtime.providers.anthropic_limit_preflight import (
+    resolve_anthropic_limit_preflight_route,
+    route_whole_run_provider_for_known_anthropic_limit,
+)
 from apps_rg.runtime.internal.generated_lane_rollup import (
     GENERATED_LANES,
     build_modular_lane_rollup,
@@ -470,9 +474,26 @@ def _resolve_phase1_lane_provider_for_section(
     Whole-run Phase 1 must honor section defaults unless the operator supplied
     an explicit global override through ``APPS_RG_MODULAR_LANE_PROVIDER``.
     """
+    provider, source, _route = _resolve_phase1_lane_provider_route_for_section(
+        configured_provider,
+        lane,
+    )
+    return provider, source
+
+
+def _resolve_phase1_lane_provider_route_for_section(
+    configured_provider: str | None,
+    lane: str,
+) -> tuple[str, str, Any]:
+    """Resolve provider plus the Anthropic-limit preflight route used for audit."""
     configured = str(configured_provider or "").strip()
-    return resolve_cli_lane_provider_with_source(
+    provider, source = resolve_cli_lane_provider_with_source(
         configured or None,
+        section_id=lane,
+    )
+    return route_whole_run_provider_for_known_anthropic_limit(
+        provider,
+        source,
         section_id=lane,
     )
 
@@ -587,7 +608,7 @@ def run_modular_resume_generation(
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
         jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
         br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
-        # Per-lane composite-judge default: competencies -> gemini_pro, ibm_bullets ->
+        # Per-lane composite-judge default: competencies -> openai_chatgpt, ibm_bullets ->
         # anthropic_claude, everything else -> standard panel. Resolving WITHOUT a section_id
         # would force the 3-provider panel onto every lane in whole-run mode, defeating the
         # one-composite-judge default for the bullet/competency lanes. Resolve per-lane below.
@@ -598,16 +619,18 @@ def run_modular_resume_generation(
 
         phase1_lane_provider_by_lane: dict[str, str] = {}
         phase1_lane_provider_source_by_lane: dict[str, str] = {}
+        phase1_anthropic_limit_preflight_by_lane: dict[str, dict[str, Any]] = {}
 
         def _lane_provider_for_lane(lane_id: str) -> str:
             lane_key = str(lane_id or "").strip()
             if lane_key not in phase1_lane_provider_by_lane:
-                provider, source = _resolve_phase1_lane_provider_for_section(
+                provider, source, route = _resolve_phase1_lane_provider_route_for_section(
                     profile.phase1_lane_provider,
                     lane_key,
                 )
                 phase1_lane_provider_by_lane[lane_key] = provider
                 phase1_lane_provider_source_by_lane[lane_key] = source
+                phase1_anthropic_limit_preflight_by_lane[lane_key] = route.to_dict()
             return phase1_lane_provider_by_lane[lane_key]
 
         def _lane_provider_source_for_lane(lane_id: str) -> str:
@@ -865,6 +888,11 @@ def run_modular_resume_generation(
                 },
                 "phase1_lane_provider_resolution_source_by_lane": {
                     lane: _lane_provider_source_for_lane(lane) for lane in GENERATED_LANES
+                },
+                "phase1_anthropic_limit_preflight": resolve_anthropic_limit_preflight_route().to_dict(),
+                "phase1_anthropic_limit_preflight_by_lane": {
+                    lane: phase1_anthropic_limit_preflight_by_lane.get(lane, {})
+                    for lane in GENERATED_LANES
                 },
             }
             if lane_targeting is not None:

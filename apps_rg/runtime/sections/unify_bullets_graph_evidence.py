@@ -1,4 +1,4 @@
-"""Graph-bound evidence pack for unify_bullets Qwen compose prompts (apps_rg only)."""
+"""Graph-bound evidence pack for unify_bullets PROVIDER_MODEL compose prompts (apps_rg only)."""
 from __future__ import annotations
 
 from typing import Any, Sequence

@@ -33,7 +33,7 @@ def strip_bullet_row(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def strip_employment_bullet_intensity_model(parsed: dict[str, Any] | None) -> dict[str, Any] | None:
-    """Remove rewrite-intensity taxonomy fields from a Qwen or merged employment-bullet payload."""
+    """Remove rewrite-intensity taxonomy fields from a PROVIDER_MODEL or merged employment-bullet payload."""
     if parsed is None or not isinstance(parsed, dict):
         return parsed
     out = dict(parsed)

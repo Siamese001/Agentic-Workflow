@@ -49,7 +49,7 @@ examples:
     annotation: >
       STYLE VARIANT — outcomes-led narrative order (commercial arc first). Metric placeholders [X]/[Y]
       are intentionally domain-transposed; do NOT copy them — retrieve real values from C0 ALLOWED_SOURCE_FACT_IDS.
-      Teaches reordering and emphasis without anchoring Qwen to candidate-specific numbers.
+      Teaches reordering and emphasis without anchoring PROVIDER_MODEL to candidate-specific numbers.
 
   - id: exec_summary_pos_integrated_cred_001
     category: positive_variant
@@ -296,4 +296,4 @@ examples:
 # shallow “years of experience” résumé filler.
 # exec_summary_gold_base_resume_001 converted from positive_gold to negative 2026-05-27:
 # contains SRFS_FORBIDDEN_PHRASES (engineering scale-out, reusable platform services adopted...,
-# converting bespoke delivery) and carries real candidate metrics ($22M/20%) that anchor Qwen.
+# converting bespoke delivery) and carries real candidate metrics ($22M/20%) that anchor PROVIDER_MODEL.

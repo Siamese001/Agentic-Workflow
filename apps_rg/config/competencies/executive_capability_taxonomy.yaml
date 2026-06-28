@@ -1,12 +1,14 @@
 schema_version: competencies_executive_taxonomy_v1
 purpose: |
   Approved executive capability category architecture for competencies v3.
-  JD and briefing may reorder or emphasize categories only — never proof.
+  JD and briefing may reorder or emphasize categories only - never proof.
+  The ontology keeps 8 candidate families available, but final resume display emits
+  only the highest-signal 6-8 categories supported by graph and fact evidence.
 
-min_categories: 8
+min_categories: 6
 max_categories: 8
-default_category_count: 8
-candidate_category_count: 8  # graph-ranked final category set (graph_8x8)
+default_category_count: 6
+candidate_category_count: 8  # graph-ranked candidate family set (graph_8x8)
 
 categories:
   - category_id: tech_strategy_innovation

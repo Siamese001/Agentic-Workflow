@@ -51,7 +51,7 @@ COMPETENCIES_JUDGE_OUTPUT_CONTRACT = (
 )
 
 COMPETENCIES_RUBRIC = """
-You are evaluating exactly 8 executive resume competency categories (short labels plus compact capability phrases).
+You are evaluating 6-8 executive resume competency categories (short labels plus compact capability phrases).
 This is REQUIRED proof taxonomy grading. Deterministic X2 gates remain authoritative for source lineage,
 and this X1D judge must pass before competencies can be product proof eligible.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
@@ -84,8 +84,7 @@ Anti-AI filters:
 - no sentence-style category labels or bullet-shaped terms
 - no "transformational", "innovative", or "cutting-edge" filler without concrete grounding
 
-Required judge notes:
-- The deterministic product shape expects exactly 8 categories; flag missing, extra, or duplicate category groups as quality_flags.
+- The deterministic product shape expects 6-8 categories; flag fewer than 6, more than 8, unjustified padding, or duplicate category groups as quality_flags.
 - Sentence-style competency claims are out of scope for this section format; flag them as quality_flags only.
 - Judge pass/fail gates product proof eligibility for competencies.
 - companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).

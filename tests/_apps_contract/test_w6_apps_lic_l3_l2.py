@@ -551,7 +551,7 @@ class TestTC09_L2InvokesOnlyHopPipeline:
         """L2 must delegate all LLM calls to HopPipelineExecutor only."""
         mod = importlib.import_module("apps_lic.runtime.bindings.l2_binding")
         src = inspect.getsource(mod)
-        # Must not call vllm/openai/anthropic directly
+        # Must not call local_model_server/openai/anthropic directly
         forbidden = ["chat_completions", "_post_chat_completion", "openai.ChatCompletion"]
         for pattern in forbidden:
             assert pattern not in src, f"Forbidden direct LLM call found: {pattern!r}"

@@ -57,8 +57,8 @@ def test_token_budget_policy_on_compiled_prompt_produces_receipt(tmp_path: Path)
     _, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
-        provider="qwen_vllm",
-        model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+        provider="retired_provider_profile",
+        model="Retired/Provider-Model",
         requested_max_output_tokens=1024,
         provider_context_window=ctx_window,
     )
@@ -86,8 +86,8 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
     _, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
-        provider="qwen_vllm",
-        model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+        provider="retired_provider_profile",
+        model="Retired/Provider-Model",
         requested_max_output_tokens=1024,
         provider_context_window=ctx_window,
     )

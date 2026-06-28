@@ -22,6 +22,10 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
+from apps_rg.runtime.observability.trace_reconciliation import (
+    TRACE_RECONCILIATION_ARTIFACT,
+    emit_trace_reconciliation_artifacts,
+)
 from apps_rg.runtime.shadow.l6_microstep_observability import (
     emit_apps_rg_l6_microstep_artifacts,
 )
@@ -47,6 +51,7 @@ APPS_RG_V40_STAGE_BY_FILE: dict[str, str] = {
     "compiled_prompt_artifact.json": "PA",
     "final_evidence_contract_bridge.json": "C0",
     "l6_shadow_eval_package.json": "EXIT",
+    TRACE_RECONCILIATION_ARTIFACT: "L6",
 }
 
 
@@ -129,6 +134,12 @@ def run_l6_v40_shadow_eval_for_section(
         runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
         section_id=section_id,
     )
+    trace_reconciliation_paths = emit_trace_reconciliation_artifacts(
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        section_id=section_id,
+        run_id=ingest.bundle.run_id,
+    )
 
     package: dict[str, Any] = {
         "schema_version": "apps_rg.l6_v40_shadow_eval.v1",
@@ -153,10 +164,22 @@ def run_l6_v40_shadow_eval_for_section(
             microstep_paths["l6_microstep_future_run_proposals"],
         ),
         "l6_apps_eval_alignment_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_alignment"]),
+        "trace_reconciliation_ref": _repo_rel(
+            repo_root,
+            trace_reconciliation_paths["trace_reconciliation"],
+        ),
+        "trace_reconciliation_rows_ref": _repo_rel(
+            repo_root,
+            trace_reconciliation_paths["trace_reconciliation_rows"],
+        ),
         "input_refs": {
             "artifact_dir": _repo_rel(repo_root, artifact_dir),
             "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
             "exit_disposition_receipt": _repo_rel(repo_root, artifact_dir / "exit_disposition_receipt.json"),
+            "trace_reconciliation": _repo_rel(
+                repo_root,
+                trace_reconciliation_paths["trace_reconciliation"],
+            ),
         },
         "current_run_mutation_assertion": False,
         "current_run_x3_mutation_assertion": False,
@@ -174,6 +197,7 @@ def run_l6_v40_shadow_eval_for_section(
         "l6_v40_shadow_eval_package": package_path,
         "l6_v40_shadow_eval_spans": span_paths["span_export_json"],
         "l6_v40_shadow_eval_spans_jsonl": span_paths["span_export_jsonl"],
+        **trace_reconciliation_paths,
         **microstep_paths,
     }
 

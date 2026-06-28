@@ -14,8 +14,8 @@ forbidden_slot_body_source: strategic_tailor_v1
 purpose: |
   Compose six Unify Consulting employment bullets for the target role using augmented_skills_graph proof
   (C0.3-bound skills + ledger fact atoms) as the authenticity layer. JD, briefing, title, and company shape
-  emphasis and ordering only — never proof. Each Qwen path outputs a full six-bullet variant; Claude pool selector
-  picks the best per bul_unify_* slot. No narrative text. No unsupported claims. No JD or briefing copying.
+  emphasis and ordering only — never proof. Each PROVIDER_MODEL path outputs a full six-bullet variant; Claude pool selector
+  starts with two paths and expands to four only if slot coverage or min score fails. No narrative text. No unsupported claims. No JD or briefing copying.
   No ATS keyword stuffing. This lane must run before unify_position_narrative_v1.
 
 sovereign_oath: |
@@ -102,7 +102,9 @@ output_contract:
 
 rewrite_rules:
   pool_selection:
-    sc_paths: 4
+    sc_paths: 2
+    max_sc_paths: 4
+    adaptive_expansion: "expand_to_4_only_if_slot_coverage_or_min_score_fails"
     final_bullet_count: 6
     selector: "claude_pool_top_n_pass"
     min_selection_score: 0.72

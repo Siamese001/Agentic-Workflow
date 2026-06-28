@@ -320,7 +320,7 @@ def _classify_provider(run_dir: Path) -> str:
     low = name.lower()
     if "mock" in low or "stub" in low or "offline" in low:
         return "DEV_DEFAULT_MOCK"
-    if "qwen" in low or "vllm" in low or "openai" in low or "gemini" in low:
+    if "PROVIDER_MODEL" in low or "external model" in low or "openai" in low or "gemini" in low:
         return "REAL_LLM"
     return "UNKNOWN"
 

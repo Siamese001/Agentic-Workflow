@@ -285,8 +285,8 @@ class TestQuarantineInertness:
             "import anthropic",
             "from anthropic",
             "import google.generativeai",
-            "from vllm",
-            "import vllm",
+            "from local_model_server",
+            "import local_model_server",
         ]
         
         py_files = list(apps_rg_path.rglob("*.py"))

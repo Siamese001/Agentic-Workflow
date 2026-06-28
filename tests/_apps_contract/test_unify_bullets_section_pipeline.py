@@ -166,7 +166,7 @@ def test_l6_learning_shadow_written_after_x3_par_key_fields(unify_bullets_lane_r
     assert pkg.get("text_claim_coverage_integrity_gate_id") == TEXT_COVERAGE_INTEGRITY_GATE_ID
     cov_gate = next(g for g in x2_blob["gates"] if g["gate_id"] == TEXT_COVERAGE_INTEGRITY_GATE_ID)
     assert pkg.get("text_claim_coverage_integrity_gate_pass") is bool(cov_gate.get("pass"))
-    assert pkg.get("provider") == "qwen_vllm"
+    assert pkg.get("provider") == "retired_provider_profile"
     assert pkg.get("x3_code") in ("X3_ALLOW", "X3_REVIEW_JUDGE_PROVIDER_BLOCKED")
     rid = pkg.get("run_id")
     assert isinstance(rid, str) and len(rid) > 4

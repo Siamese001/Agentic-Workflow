@@ -103,7 +103,7 @@ def _merge_non_generation_guarantees(
     fm_calls = final_resume_manifest.get("calls") or {}
     dm_g = docx_manifest.get("guarantees") or {}
     dr_v = docx_render_manifest.get("verification") or {}
-    keys = ("provider_calls_made", "qwen_calls_made", "judge_calls_made")
+    keys = ("provider_calls_made", "PROVIDER_MODEL_calls_made", "judge_calls_made")
     fused: dict[str, bool | None] = {k: None for k in keys}
     contradiction = False
 
@@ -130,7 +130,7 @@ def _merge_non_generation_guarantees(
     missing = contradiction or any(fused[k] is None for k in keys)
     all_report_no_calls = (
         fused["provider_calls_made"] is False
-        and fused["qwen_calls_made"] is False  # noqa: E721
+        and fused["PROVIDER_MODEL_calls_made"] is False  # noqa: E721
         and fused["judge_calls_made"] is False
     )
     ok = (not contradiction) and (not missing) and all_report_no_calls
@@ -697,7 +697,7 @@ def evaluate_resume_package(
         "docx_manifest_x2_all_pass": ok_dm,
         "docx_render_x2_all_pass": ok_dr,
         "docx_file_exists_observed_disk": docx_ok,
-        "non_generation_no_provider_no_qwen_no_judge_aggregate": guarantees_ok,
+        "non_generation_no_provider_no_PROVIDER_MODEL_no_judge_aggregate": guarantees_ok,
         "every_lane_l6_handoff_audited": len(per_lane_l6_audit) == len(GENERATED_LANES),
         "l6_handoff_agg_checks_all_true": len(agg_l6_checks) > 0 and all(agg_l6_checks.values()),
         "l6_handoff_hard_pass_aggregate": bool(not l6_handoff_blocked),

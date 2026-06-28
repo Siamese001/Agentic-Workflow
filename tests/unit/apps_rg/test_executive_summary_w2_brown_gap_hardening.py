@@ -53,8 +53,8 @@ def test_y0_positive_s5_quant_weave_guidance() -> None:
 def test_e0_positive_s5_pairs_fsa_with_hpc_metric() -> None:
     """SVP positive S5 must have a quantitative-foundation + operational-metric pairing.
 
-    Since W1 (qwen-prompt-regen-reduction-7481e3), real metrics ($22M/40%) are replaced
-    with domain-transposed placeholders so Qwen cannot anchor to candidate-specific values.
+    Since W1 (retired_provider-prompt-regen-reduction-7481e3), real metrics ($22M/40%) are replaced
+    with domain-transposed placeholders so RetiredProvider cannot anchor to candidate-specific values.
     The test now verifies structural intent: quantitative credential + measurable outcome
     language is present, and the forbidden 'derivatives pricing' phrase is absent.
     """

@@ -62,7 +62,7 @@ def _minimal_snapshot(
         x1d_judges=x1d,
         allowed_fact_ids={"f1"},
         prompt_hash="abc123",
-        model_name="qwen-test",
+        model_name="retired_provider-test",
         publish_eligible=publish_eligible,
         scores_freshness="soft_failed_only",
     )

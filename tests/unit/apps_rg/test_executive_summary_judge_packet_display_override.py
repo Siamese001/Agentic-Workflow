@@ -3,7 +3,7 @@
 Plan: exec-summary-judge-display-override-parity-7c3e8a (W3.2).
 
 These tests would have caught the Brown & Brown SVP run full_resume_3976479ef871 Claude
-soft-fail loop (3.6 -> 3.8 -> 3.8 stuck) which was caused by the L2/Qwen prompt receiving
+soft-fail loop (3.6 -> 3.8 -> 3.8 stuck) which was caused by the L2/RetiredProvider prompt receiving
 FACT_C0_DISPLAY_OVERRIDES while the X1D judge packet only carried raw claim_text.
 """
 

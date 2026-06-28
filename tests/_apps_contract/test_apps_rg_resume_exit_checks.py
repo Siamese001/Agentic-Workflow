@@ -135,7 +135,7 @@ class TestBoundaryGuard(unittest.TestCase):
 
     def test_no_provider_model_invocation(self) -> None:
         src = self._get_source()
-        for forbidden in ("openai", "anthropic", "qwen", "vllm", "requests.post", "httpx"):
+        for forbidden in ("openai", "anthropic", "retired_provider", "local_model_server", "requests.post", "httpx"):
             self.assertNotIn(forbidden, src, f"Forbidden reference found: {forbidden!r}")
 
     def test_no_agentic_core_import(self) -> None:

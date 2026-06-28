@@ -2,7 +2,7 @@
 
 The product entry never accepts ``--mock-judges`` (X1D judges are always model-backed); mock
 judges are test-harness env-only. external_claude is the sole accepted generation provider
-after Qwen removal (PR #256). Guard SSOT: ``apps_rg.runtime.live_judge_only_guard``.
+after RetiredProvider removal (PR #256). Guard SSOT: ``apps_rg.runtime.live_judge_only_guard``.
 """
 
 from __future__ import annotations

@@ -22,5 +22,5 @@ _LANES = (
 @pytest.mark.parametrize("rel_path", _LANES)
 def test_lane_files_do_not_import_dead_offline_stub_callables(rel_path: str) -> None:
     text = (_REPO / rel_path).read_text(encoding="utf-8")
-    assert "synthetic_qwen_provider_result" not in text
+    assert "synthetic_retired_provider_provider_result" not in text
     assert "effective_offline_contract_stub_enabled" not in text

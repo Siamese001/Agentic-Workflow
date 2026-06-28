@@ -216,15 +216,15 @@ class TestEnsembleLaneGeneration:
                 profiles_seen.append(profile)
                 return (_make_candidate("c0", step.node_id, provider_profile=profile),)
 
-        sc = _make_step_contract(provider_profile_ref="provider::local_qwen_32b")
+        sc = _make_step_contract(provider_profile_ref="provider::local_retired_provider_32b")
         lane = EnsembleModelLane(generator_gateway=ProfileCapture())
         lane.execute(sc, gate_profile=[], judge_profile=[])
-        assert profiles_seen == ["provider::local_qwen_32b"]
+        assert profiles_seen == ["provider::local_retired_provider_32b"]
 
     def test_l2_ensemble_no_provider_hardcoding(self) -> None:
         module_path = _REPO_ROOT / "agentic_core" / "L2_execution" / "ensemble_lane.py"
         text = module_path.read_text(encoding="utf-8")
-        hardcoded = ("anthropic", "openai", "claude", "gpt-4", "qwen", "gemini", "azure_openai")
+        hardcoded = ("anthropic", "openai", "claude", "gpt-4", "retired_provider", "gemini", "azure_openai")
         lines = [
             line for line in text.splitlines()
             if not line.strip().startswith("#")

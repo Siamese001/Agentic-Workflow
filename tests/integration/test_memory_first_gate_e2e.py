@@ -1,13 +1,13 @@
 """
-End-to-end integration test for the memory-first enforcement gate.
+End-to-end integration test for the retired memory-first enforcement gate.
 
 Drives the REAL pre_mcp_gate.py and post_mcp_audit.py processes via subprocess
 (no mocks) to verify the full operational sequence across two fresh sessions:
 
-  Step 1: First non-memory MCP call → BLOCKED (exit 2)
-  Step 2: memory.mem_recall_session_start → ALLOWED (exit 0)
-  Step 3: post_mcp_audit.py runs → session_state.memory_recalled flips True
-  Step 4: Subsequent non-memory calls → ALLOWED (exit 0)
+  Step 1: First non-memory MCP call -> ALLOWED (exit 0)
+  Step 2: memory.mem_recall_session_start -> ALLOWED (exit 0)
+  Step 3: post_mcp_audit.py remains backward-compatible and can mark memory_recalled
+  Step 4: Subsequent non-memory calls -> ALLOWED (exit 0)
   Step 5: Reset and repeat for second session
 
 Isolation boundary (matches pre_mcp_gate.py SESSION_STATE comment):
@@ -147,23 +147,23 @@ def _run_session(session_num: int) -> None:
         + str(state["max_memory_block_attempts"])
     )
 
-    # ── Step 1: First non-memory call must be BLOCKED ────────────────────────
-    rc, stderr = _invoke_gate("task_manager", "create_task")
-    print("\n[Step 1] task_manager.create_task")
-    print("  exit=" + str(rc) + "  (expected 2 — BLOCKED)")
+    # Step 1: first non-memory call is allowed; ADR-095 retired the memory-first gate.
+    rc, stderr = _invoke_gate("GitKraken", "git_status")
+    print("\n[Step 1] GitKraken.git_status")
+    print("  exit=" + str(rc) + "  (expected 0 - ALLOWED)")
     print("  stderr: " + stderr)
-    assert rc == 2, "Session " + str(session_num) + " Step 1: expected exit 2, got " + str(rc)
+    assert rc == 0, "Session " + str(session_num) + " Step 1: expected exit 0, got " + str(rc)
     attempt = _read_state().get("max_memory_block_attempts", 0)
     print("  max_memory_block_attempts now: " + str(attempt))
-    assert attempt == 1, "Session " + str(session_num) + " Step 1: expected attempt=1, got " + str(attempt)
+    assert attempt == 0, "Session " + str(session_num) + " Step 1: expected attempt=0, got " + str(attempt)
 
-    # ── Step 2: memory server must ALWAYS pass ───────────────────────────────
+    # Step 2: memory server remains allowed when explicitly called.
     rc, stderr = _invoke_gate("memory", "mem_recall_session_start")
     print("\n[Step 2] memory.mem_recall_session_start")
-    print("  exit=" + str(rc) + "  (expected 0 — ALLOWED)")
+    print("  exit=" + str(rc) + "  (expected 0 - ALLOWED)")
     assert rc == 0, "Session " + str(session_num) + " Step 2: expected exit 0, got " + str(rc)
 
-    # ── Step 3: post_mcp_audit flips memory_recalled=True ───────────────────
+    # Step 3: post_mcp_audit keeps legacy state compatibility.
     _invoke_post_audit("memory", "mem_recall_session_start")
     state = _read_state()
     print("\n[Step 3] post_mcp_audit ran")
@@ -172,18 +172,17 @@ def _run_session(session_num: int) -> None:
         "Session " + str(session_num) + " Step 3: expected memory_recalled=True"
     )
 
-    # ── Step 4: Subsequent non-memory calls must be ALLOWED ──────────────────
+    # Step 4: subsequent non-memory calls are allowed.
     for server, tool in [
-        ("task_manager", "create_task"),
-        ("adg_sqlite", "adg_health"),
         ("GitKraken", "git_status"),
+        ("filesystem", "read_text_file"),
     ]:
         rc, stderr = _invoke_gate(server, tool)
         print(f"\n[Step 4] {server}.{tool}")
-        print(f"  exit={rc}  (expected 0 — ALLOWED)")
+        print(f"  exit={rc}  (expected 0 - ALLOWED)")
         assert rc == 0, f"Session {session_num} Step 4: {server}.{tool} expected exit 0, got {rc}"
 
-    print(f"\n[PASS] Session {session_num} — all assertions passed ✓")
+    print(f"\n[PASS] Session {session_num} - all assertions passed")
 
 
 # ---------------------------------------------------------------------------
@@ -203,21 +202,14 @@ class TestMemoryFirstGateE2E:
         """Fresh session 2: identical sequence — proves per-window repeatability."""
         _run_session(2)
 
-    def test_degrade_open_on_max_attempts(self):
-        """After MAX_MEMORY_BLOCK_ATTEMPTS consecutive blocks, gate degrades to open."""
+    def test_retired_gate_does_not_increment_attempt_counter(self):
+        """The retired memory gate never burns retry attempts on non-memory MCP calls."""
         _reset_session()
 
-        # Exhaust the attempt counter
         for i in range(1, 4):
-            rc, stderr = _invoke_gate("task_manager", "create_task")
-            print(f"\n  Block attempt {i}: exit={rc}  stderr={stderr}")
-            assert rc == 2, f"Expected block on attempt {i}, got {rc}"
-            assert _read_state()["max_memory_block_attempts"] == i
+            rc, stderr = _invoke_gate("GitKraken", "git_status")
+            print(f"\n  Retired-gate probe {i}: exit={rc}  stderr={stderr}")
+            assert rc == 0, f"Expected retired gate to allow attempt {i}, got {rc}"
+            assert _read_state()["max_memory_block_attempts"] == 0
 
-        # Next call must degrade to open (counter == 3 >= MAX_MEMORY_BLOCK_ATTEMPTS)
-        rc, stderr = _invoke_gate("task_manager", "create_task")
-        print(f"\n  Attempt 4 (degrade-open): exit={rc}  (expected 0)")
-        assert rc == 0, f"Expected degrade-open (exit 0) after max attempts, got {rc}"
-        assert "degrading to open" in stderr, f"Expected degrade message in stderr: {stderr}"
-
-        print("\n[PASS] degrade-open after max attempts ✓")
+        print("\n[PASS] retired memory gate leaves attempt counter at 0")

@@ -259,8 +259,8 @@ def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyP
             dispatch_started=True,
             jd_status="PASS",
             manual_brief_status="PASS",
-            qwen_health_status="PASS",
-            qwen_model_ready_status="PASS",
+            retired_provider_health_status="PASS",
+            retired_provider_model_ready_status="PASS",
         ),
     )
     monkeypatch.setattr(

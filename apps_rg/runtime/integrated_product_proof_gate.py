@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -92,6 +91,8 @@ class ProductProofValidationResult:
     package_x3_only: bool = False
     no_bypass_assertions_present: bool = False
     cache_preflight_evidence_present: bool = False
+    fact_vector_writeback_evidence_present: bool = False
+    fact_vector_writeback_status: str = ""
     explicit_non_claims: list[str] = field(default_factory=list)
     decisive_reason: str = ""
 
@@ -261,6 +262,59 @@ def _detect_cache_preflight_evidence(run_dir: Path, blobs: list[dict[str, Any]])
     return False
 
 
+def _fact_vector_writeback_blockers(run_dir: Path) -> tuple[list[str], bool, str]:
+    """Require UWG + live Chroma retrieval proof when grounded rows were staged."""
+    blockers: list[str] = []
+    grounded_receipt_present = False
+    completion_status = ""
+
+    for path in run_dir.rglob("c02_fact_vectors_ingest_receipt.json"):
+        doc = _load_json(path) or {}
+        staged = int(doc.get("staged_count") or 0)
+        promoted = int((doc.get("promotion") or {}).get("promoted_count") or 0)
+        if staged > 0 or promoted > 0:
+            grounded_receipt_present = True
+        status = str(doc.get("status") or "")
+        if staged > 0 and status == "FAIL":
+            blockers.append(f"fact_vector_ingest_failed:{path.relative_to(run_dir).as_posix()}")
+
+    completion = _load_json(run_dir / "apps_rg_post_x3_completion_receipt.json") or {}
+    fv_completion = (
+        completion.get("fact_vector_writeback")
+        if isinstance(completion.get("fact_vector_writeback"), dict)
+        else {}
+    )
+    if isinstance(fv_completion, dict) and fv_completion:
+        completion_status = str(fv_completion.get("status") or "")
+        if completion_status == "FAIL":
+            blockers.append("fact_vector_writeback_completion_failed")
+
+    if not grounded_receipt_present:
+        return blockers, False, completion_status or "NOT_APPLICABLE"
+
+    passing_promotions = 0
+    for path in run_dir.rglob("fact_vector_promotion_receipt.json"):
+        doc = _load_json(path) or {}
+        if int(doc.get("promoted_count") or 0) <= 0 and str(doc.get("status") or "") != "PASS":
+            continue
+        status = str(doc.get("status") or "")
+        uwg_status = str((doc.get("uwg") or {}).get("status") or "")
+        retrieval_status = str((doc.get("retrieval_proof") or {}).get("status") or "")
+        projection_status = str((doc.get("live_projection") or {}).get("status") or "")
+        if status == "PASS" and uwg_status == "ADMITTED" and retrieval_status == "PASS":
+            passing_promotions += 1
+        else:
+            rel = path.relative_to(run_dir).as_posix()
+            blockers.append(
+                "fact_vector_promotion_chain_incomplete:"
+                f"{rel}:status={status}:uwg={uwg_status}:projection={projection_status}:retrieval={retrieval_status}"
+            )
+
+    if passing_promotions <= 0:
+        blockers.append("fact_vector_writeback_promotion_proof_missing")
+    return blockers, True, completion_status or ("PASS" if not blockers else "FAIL")
+
+
 def _detect_integrated_r4(blobs: list[dict[str, Any]], paths: dict[str, Path | None]) -> bool:
     if paths.get("integrated_run_manifest") is not None:
         inv = _load_json(paths["integrated_run_manifest"]) if paths["integrated_run_manifest"] else None
@@ -417,6 +471,7 @@ def validate_integrated_product_proof(
     exit_x3, package_only = _exit_x3_and_package_flags(paths, run_dir)
     no_bypass = _has_no_bypass_assertions(paths)
     cache_preflight_ok = _detect_cache_preflight_evidence(run_dir, blobs)
+    fact_vector_blockers, fact_vector_present, fact_vector_status = _fact_vector_writeback_blockers(run_dir)
 
     if section_mode:
         explicit_non_claims.append("section_mode=true: --section cannot satisfy product proof")
@@ -446,6 +501,8 @@ def validate_integrated_product_proof(
         hard_fail_reasons.append("no_bypass_assertions_missing")
     if not section_mode and not cache_preflight_ok:
         hard_fail_reasons.append("cache_preflight_evidence_missing")
+    if not section_mode and fact_vector_blockers:
+        hard_fail_reasons.append(f"fact_vector_writeback:{';'.join(fact_vector_blockers)}")
 
     live_blockers = _live_product_outcome_blockers(run_dir, paths)
     if live_blockers:
@@ -465,6 +522,8 @@ def validate_integrated_product_proof(
             package_x3_only=package_only,
             no_bypass_assertions_present=no_bypass,
             cache_preflight_evidence_present=cache_preflight_ok,
+            fact_vector_writeback_evidence_present=fact_vector_present,
+            fact_vector_writeback_status=fact_vector_status,
             explicit_non_claims=explicit_non_claims,
             decisive_reason="; ".join(hard_fail_reasons),
         )
@@ -483,6 +542,8 @@ def validate_integrated_product_proof(
             package_x3_only=package_only,
             no_bypass_assertions_present=no_bypass,
             cache_preflight_evidence_present=cache_preflight_ok,
+            fact_vector_writeback_evidence_present=fact_vector_present,
+            fact_vector_writeback_status=fact_vector_status,
             explicit_non_claims=explicit_non_claims,
             decisive_reason="; ".join(live_blockers),
         )
@@ -502,6 +563,8 @@ def validate_integrated_product_proof(
                 package_x3_only=package_only,
                 no_bypass_assertions_present=no_bypass,
                 cache_preflight_evidence_present=cache_preflight_ok,
+                fact_vector_writeback_evidence_present=fact_vector_present,
+                fact_vector_writeback_status=fact_vector_status,
                 explicit_non_claims=explicit_non_claims
                 + [
                     "contract_test_only: missing canonical python -m apps_rg command evidence"
@@ -521,6 +584,8 @@ def validate_integrated_product_proof(
             package_x3_only=package_only,
             no_bypass_assertions_present=no_bypass,
             cache_preflight_evidence_present=cache_preflight_ok,
+            fact_vector_writeback_evidence_present=fact_vector_present,
+            fact_vector_writeback_status=fact_vector_status,
             explicit_non_claims=explicit_non_claims,
             decisive_reason="canonical_entrypoint_evidence_missing",
         )
@@ -538,6 +603,8 @@ def validate_integrated_product_proof(
         package_x3_only=False,
         no_bypass_assertions_present=no_bypass,
         cache_preflight_evidence_present=cache_preflight_ok,
+        fact_vector_writeback_evidence_present=fact_vector_present,
+        fact_vector_writeback_status=fact_vector_status,
         explicit_non_claims=explicit_non_claims,
         decisive_reason="integrated_r4_product_proof_preconditions_satisfied",
     )
@@ -583,7 +650,6 @@ def reject_non_integrated_product_claim(
 
 def main(argv: list[str] | None = None) -> int:
     import argparse
-    import sys
 
     parser = argparse.ArgumentParser(
         description="Validate integrated-R4 product proof preconditions for a run directory."
@@ -612,6 +678,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    import sys
-
     raise SystemExit(main())

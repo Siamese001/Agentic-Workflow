@@ -706,7 +706,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
             ),
         },
         "gap_notes": [],
-        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB"}],
         "self_check": {"one_sentence": True, "third_person": True},
     }
 

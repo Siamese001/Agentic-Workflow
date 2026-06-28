@@ -4,7 +4,7 @@ Closes Bug:IbmNarrativeFecBulletAliasMissing — the ibm_narrative prompt SSOT a
 bul_ibm_001..005 as claim_ledger source_fact_ids, but the FEC contains only fact_* IDs.
 append_canonical_evidence_invariant_x2_gates must auto-alias the IBM bullet surface to a
 fact_* anchor in the FEC so the x2_claim_ledger_source_fact_ids_subset_of_fec gate passes
-when Qwen complies with the prompt directive.
+when RetiredProvider complies with the prompt directive.
 """
 
 from __future__ import annotations

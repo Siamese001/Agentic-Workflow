@@ -1,4 +1,4 @@
-"""Competencies graph_8x8 pool — 8 paths → 8 graph-grounded categories."""
+"""Competencies graph_8x8 pool — adaptive paths → 6-8 graph-grounded categories."""
 
 from __future__ import annotations
 
@@ -14,12 +14,17 @@ from apps_rg.runtime.sections.competencies_rigor import (
     MIN_CATEGORY_COUNT,
 )
 
-COMPETENCIES_SC_PATH_COUNT: Final[int] = CANDIDATE_CATEGORY_COUNT
+DEFAULT_COMPETENCIES_INITIAL_SC_PATH_COUNT: Final[int] = 4
+COMPETENCIES_MAX_SC_PATH_COUNT: Final[int] = CANDIDATE_CATEGORY_COUNT
+COMPETENCIES_SC_PATH_COUNT: Final[int] = DEFAULT_COMPETENCIES_INITIAL_SC_PATH_COUNT
+COMPETENCIES_MIN_CATEGORY_COUNT: Final[int] = MIN_CATEGORY_COUNT
+COMPETENCIES_MAX_CATEGORY_COUNT: Final[int] = MAX_CATEGORY_COUNT
 COMPETENCIES_FINAL_CATEGORY_COUNT: Final[int] = MAX_CATEGORY_COUNT
 COMPETENCIES_CANDIDATE_CATEGORY_COUNT: Final[int] = CANDIDATE_CATEGORY_COUNT
 COMPETENCIES_REGEN_EXTRA_PATHS: Final[int] = 4
 
 DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE: Final[float] = 0.72
+DEFAULT_COMPETENCIES_HIGH_SIGNAL_SELECTION_SCORE: Final[float] = 0.84
 # W6: closeout-mode regen cap when APPS_RG_E2E_CLOSEOUT_MODE=1 and no explicit regen-round env.
 DEFAULT_COMPETENCIES_CLOSEOUT_MAX_REGEN_ROUNDS: Final[int] = 1
 
@@ -41,6 +46,8 @@ class CompetenciesSelectionGate:
     ok: bool
     section_lane: str
     final_category_count: int
+    min_category_count: int
+    max_category_count: int
     min_score_threshold: float
     categories_passing: tuple[str, ...]
     categories_below_threshold: tuple[str, ...]
@@ -52,12 +59,52 @@ class CompetenciesSelectionGate:
             "ok": self.ok,
             "section_lane": self.section_lane,
             "final_category_count": self.final_category_count,
+            "min_category_count": self.min_category_count,
+            "max_category_count": self.max_category_count,
             "min_score_threshold": self.min_score_threshold,
             "categories_passing": list(self.categories_passing),
             "categories_below_threshold": list(self.categories_below_threshold),
             "categories_missing": list(self.categories_missing),
             "categories_in_merged": self.categories_in_merged,
         }
+
+
+def _int_env_bounded(name: str, *, default: int, low: int, high: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if raw:
+        try:
+            return max(low, min(high, int(raw)))
+        except ValueError:  # guardian: allow-silent-swallow -- optional operator override
+            pass
+    return max(low, min(high, default))
+
+
+def _float_env_bounded(name: str, *, default: float, low: float, high: float) -> float:
+    raw = os.environ.get(name, "").strip()
+    if raw:
+        try:
+            return max(low, min(high, float(raw)))
+        except ValueError:  # guardian: allow-silent-swallow -- optional operator override
+            pass
+    return max(low, min(high, default))
+
+
+def competencies_initial_sc_path_count() -> int:
+    return _int_env_bounded(
+        "APPS_RG_COMPETENCIES_INITIAL_SC_PATHS",
+        default=DEFAULT_COMPETENCIES_INITIAL_SC_PATH_COUNT,
+        low=1,
+        high=COMPETENCIES_MAX_SC_PATH_COUNT,
+    )
+
+
+def competencies_max_sc_path_count() -> int:
+    return _int_env_bounded(
+        "APPS_RG_COMPETENCIES_MAX_SC_PATHS",
+        default=COMPETENCIES_MAX_SC_PATH_COUNT,
+        low=competencies_initial_sc_path_count(),
+        high=CANDIDATE_CATEGORY_COUNT,
+    )
 
 
 def min_competencies_selection_score() -> float:
@@ -70,6 +117,15 @@ def min_competencies_selection_score() -> float:
         except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE
+
+
+def high_signal_competencies_selection_score() -> float:
+    return _float_env_bounded(
+        "APPS_RG_COMPETENCIES_HIGH_SIGNAL_SCORE",
+        default=DEFAULT_COMPETENCIES_HIGH_SIGNAL_SELECTION_SCORE,
+        low=min_competencies_selection_score(),
+        high=1.0,
+    )
 
 
 def competencies_regen_extra_path_count() -> int:
@@ -107,7 +163,7 @@ def max_competencies_regen_rounds() -> int:
 
 def is_competencies_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
     mode = str((gen_meta or {}).get("generation_mode") or "")
-    return mode.startswith("qwen_competencies_graph_pool")
+    return mode.startswith("model_competencies_graph_pool")
 
 
 def build_competencies_targeting_context(
@@ -138,10 +194,15 @@ def build_competencies_targeting_context(
         "skills_graph_ref": pp.get("graph_ref") or pp.get("augmented_skills_graph_ref"),
         "proof_pool_type": pp.get("proof_pool_type"),
         "selection_method": (runtime_payload.get("selected_fact_plan") or {}).get("selection_method"),
-        "pool_path_count": COMPETENCIES_SC_PATH_COUNT,
+        "pool_path_count": competencies_initial_sc_path_count(),
+        "initial_sc_path_count": competencies_initial_sc_path_count(),
+        "max_sc_path_count": competencies_max_sc_path_count(),
         "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
+        "min_category_count": COMPETENCIES_MIN_CATEGORY_COUNT,
+        "max_category_count": COMPETENCIES_MAX_CATEGORY_COUNT,
         "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
         "min_selection_score": min_competencies_selection_score(),
+        "high_signal_selection_score": high_signal_competencies_selection_score(),
         "selection_model": "graph_8x8_v1",
         "allowed_fact_ids_count": len(allowed),
         "allowed_skill_ids": sorted(skill_ids),
@@ -389,7 +450,7 @@ def build_competencies_rejected_neighbor_audit(
         elif score_by_label and label_key not in score_by_label:
             reason = "not_selected_by_model"
         else:
-            reason = "overflow_after_top_8"
+            reason = "overflow_after_adaptive_emit"
         rejected_neighbors.append(
             {
                 **row,
@@ -420,6 +481,25 @@ def build_competencies_rejected_neighbor_audit(
     }
 
 
+def _adaptive_emit_count(
+    ranked: list[tuple[float, str, int, dict[str, Any]]],
+    *,
+    min_count: int = COMPETENCIES_MIN_CATEGORY_COUNT,
+    max_count: int = COMPETENCIES_MAX_CATEGORY_COUNT,
+    high_signal_threshold: float | None = None,
+) -> int:
+    if not ranked:
+        return 0
+    threshold = (
+        high_signal_threshold
+        if high_signal_threshold is not None
+        else high_signal_competencies_selection_score()
+    )
+    high_signal = sum(1 for score, *_ in ranked if float(score) >= threshold)
+    target = max(min_count, high_signal)
+    return min(max_count, min(len(ranked), target))
+
+
 def merge_competencies_graph_pool_top_eight(
     paths: list[Any],
     selections: list[dict[str, Any]],
@@ -430,7 +510,7 @@ def merge_competencies_graph_pool_top_eight(
     allowed_skill_ids: set[str] | None = None,
     resume_support_blob_lower: str = "",
 ) -> tuple[dict[str, Any], dict[str, int]]:
-    """Merge pool into exactly eight categories (top scores, graph-reality filtered)."""
+    """Merge pool into adaptive 6-8 categories (top scores, graph-reality filtered)."""
     threshold = (
         min_score_threshold
         if min_score_threshold is not None
@@ -479,10 +559,11 @@ def merge_competencies_graph_pool_top_eight(
             ranked.append((max(best[0], h_score), key, best[1], best[2]))
         ranked.sort(key=lambda t: (-t[0], t[1]))
 
+    target_count = _adaptive_emit_count(ranked)
     comps_out: list[dict[str, Any]] = []
     source_map: dict[str, int] = {}
     for score, key, path_idx, cat in ranked:
-        if len(comps_out) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
+        if len(comps_out) >= target_count:
             break
         if score < threshold and passing_sel:
             continue
@@ -500,9 +581,9 @@ def merge_competencies_graph_pool_top_eight(
         comps_out.append(cat_out)
         source_map[label.lower()] = path_idx
 
-    if len(comps_out) < COMPETENCIES_FINAL_CATEGORY_COUNT:
+    if len(comps_out) < min(target_count, COMPETENCIES_MIN_CATEGORY_COUNT):
         for _score, key, path_idx, cat in ranked:
-            if len(comps_out) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
+            if len(comps_out) >= min(target_count, COMPETENCIES_MIN_CATEGORY_COUNT):
                 break
             label = str(cat.get("category_label") or "").strip()
             if not label or label.lower() in source_map:
@@ -513,7 +594,14 @@ def merge_competencies_graph_pool_top_eight(
             source_map[label.lower()] = path_idx
 
     merged = dict(anchor)
-    merged["competencies"] = comps_out[:COMPETENCIES_FINAL_CATEGORY_COUNT]
+    merged["competencies"] = comps_out[:target_count]
+    merged["adaptive_category_policy"] = {
+        "min_category_count": COMPETENCIES_MIN_CATEGORY_COUNT,
+        "max_category_count": COMPETENCIES_MAX_CATEGORY_COUNT,
+        "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
+        "selected_category_count": len(comps_out[:target_count]),
+        "high_signal_selection_score": high_signal_competencies_selection_score(),
+    }
     if paths and paths[0].parsed and paths[0].parsed.get("claim_ledger"):
         merged["claim_ledger"] = list(paths[0].parsed.get("claim_ledger") or [])
     return merged, source_map
@@ -526,7 +614,8 @@ def evaluate_competencies_selection_quality(
     min_score: float | None = None,
 ) -> CompetenciesSelectionGate:
     threshold = min_score if min_score is not None else min_competencies_selection_score()
-    n_final = COMPETENCIES_FINAL_CATEGORY_COUNT
+    min_final = COMPETENCIES_MIN_CATEGORY_COUNT
+    max_final = COMPETENCIES_MAX_CATEGORY_COUNT
     comps = merged_parsed.get("competencies") or merged_parsed.get("categories") or []
     comps_n = len(comps) if isinstance(comps, list) else 0
 
@@ -558,11 +647,13 @@ def evaluate_competencies_selection_quality(
         else:
             passing.append(lab)
 
-    ok = comps_n == n_final and len(passing) == n_final and not below and not missing
+    ok = min_final <= comps_n <= max_final and len(passing) == comps_n and not below and not missing
     return CompetenciesSelectionGate(
         ok=ok,
         section_lane="competencies",
-        final_category_count=n_final,
+        final_category_count=comps_n,
+        min_category_count=min_final,
+        max_category_count=max_final,
         min_score_threshold=threshold,
         categories_passing=tuple(passing),
         categories_below_threshold=tuple(below),
@@ -590,14 +681,22 @@ def write_competencies_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) -
 __all__ = [
     "COMPETENCIES_CANDIDATE_CATEGORY_COUNT",
     "COMPETENCIES_FINAL_CATEGORY_COUNT",
+    "COMPETENCIES_MAX_CATEGORY_COUNT",
+    "COMPETENCIES_MAX_SC_PATH_COUNT",
+    "COMPETENCIES_MIN_CATEGORY_COUNT",
     "COMPETENCIES_REGEN_EXTRA_PATHS",
     "COMPETENCIES_SC_PATH_COUNT",
+    "DEFAULT_COMPETENCIES_HIGH_SIGNAL_SELECTION_SCORE",
+    "DEFAULT_COMPETENCIES_INITIAL_SC_PATH_COUNT",
     "CompetenciesSelectionGate",
     "build_competencies_rejected_neighbor_audit",
     "build_competencies_targeting_context",
+    "competencies_initial_sc_path_count",
+    "competencies_max_sc_path_count",
     "competencies_regen_extra_path_count",
     "e2e_closeout_mode_active",
     "evaluate_competencies_selection_quality",
+    "high_signal_competencies_selection_score",
     "is_competencies_pool_generation",
     "max_competencies_regen_rounds",
     "merge_competencies_graph_pool_top_eight",

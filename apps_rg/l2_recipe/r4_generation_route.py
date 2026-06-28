@@ -44,7 +44,7 @@ CANONICAL_INTEGRATED_PRODUCT_ENTRY_IMPORT = (
 )
 CANONICAL_CLI_MODULE = "apps_rg.__main__:main"
 
-# Offline / lane-based orchestration (no agentic_core R4); modular Qwen by lane.
+# Offline / lane-based orchestration (no agentic_core R4); modular PROVIDER_MODEL by lane.
 MODULAR_SECTION_ORCHESTRATOR_MODULE = "tests.helpers.offline_lane_orchestration"
 
 __all__ = [

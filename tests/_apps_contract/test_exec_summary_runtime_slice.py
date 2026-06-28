@@ -166,18 +166,18 @@ def test_provider_request_artifact_written():
 
 
 def test_temperature_out_of_profile_fails_fast():
-    result = run_cmd("--provider", "qwen_vllm", "--temperature", "0.7")
+    result = run_cmd("--provider", "retired_provider_profile", "--temperature", "0.7")
     assert result.returncode != 0
     assert "outside executive_summary profile" in (result.stderr + result.stdout)
 
 
-def test_qwen_unavailable_blocks_not_mocks():
+def test_retired_provider_unavailable_blocks_not_mocks():
     from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
 
-    env = {**_slice_subprocess_env(), "VLLM_BASE_URL": "http://127.0.0.1:9/v1"}
-    env.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
+    env = {**_slice_subprocess_env(), "LOCAL_MODEL_SERVER_BASE_URL": "http://127.0.0.1:9/v1"}
+    env.pop("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", None)
     result = subprocess.run(
-        CMD + ["--provider", "qwen_vllm"],
+        CMD + ["--provider", "retired_provider_profile"],
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
@@ -186,7 +186,7 @@ def test_qwen_unavailable_blocks_not_mocks():
     )
     assert result.returncode == 0
     rd = resolve_run_dir_from_pointer(REPO_ROOT, LANE_KEY, "real")
-    assert rd is not None, "expected a real-bucket run after qwen_vllm dispatch"
+    assert rd is not None, "expected a real-bucket run after retired_provider_profile dispatch"
     real = json.loads((rd / "real_l2_generation_result.json").read_text(encoding="utf-8"))
     assert real["runtime_generation_status"] == "BLOCKED"
     assert real["exact_provider_error"]
@@ -1529,7 +1529,7 @@ def test_no_agentic_core_in_overlay_files():
     overlay_files = [
         "apps_rg/runtime/sections/executive_summary_lane.py",
         "apps_rg/runtime/sections/executive_summary_lane.py",
-        "apps_rg/runtime/providers/qwen_vllm_provider.py",
+        "apps_rg/runtime/providers/retired_provider_profile_provider.py",
         "apps_rg/runtime/validators/executive_summary_x2.py",
         "apps_rg/runtime/judges/executive_summary_x1d.py",
         "apps_rg/runtime/exit/executive_summary_x3.py",

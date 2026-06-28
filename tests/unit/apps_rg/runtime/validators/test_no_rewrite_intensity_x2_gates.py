@@ -1,4 +1,4 @@
-"""X2 gates must fail when Qwen accidentally emits retired rewrite-intensity fields."""
+"""X2 gates must fail when RetiredProvider accidentally emits retired rewrite-intensity fields."""
 
 from __future__ import annotations
 

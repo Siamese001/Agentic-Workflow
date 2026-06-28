@@ -65,7 +65,7 @@ def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
 
 
 def test_claude_era_token_defaults() -> None:
-    """Post-Qwen-removal Claude-era defaults (2026-06-13)."""
+    """Post-RetiredProvider-removal Claude-era defaults (2026-06-13)."""
     assert DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS == 4096
     assert DEFAULT_REGEN_MAX_OUTPUT_TOKENS == 4096
     assert HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS == 8192
@@ -86,7 +86,7 @@ def test_available_input_tokens_formula() -> None:
 
 def test_resolve_provider_context_window_uses_yaml_ssot(monkeypatch: pytest.MonkeyPatch) -> None:
     """Env context variables must not override the YAML runtime limit."""
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "24576")
+    monkeypatch.setenv("LOCAL_MODEL_SERVER_MAX_MODEL_LEN", "24576")
     monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "32768")
     assert limits.resolve_provider_context_window() == _DEFAULT_CONTEXT_WINDOW
 
@@ -98,10 +98,10 @@ def test_regen_output_capped_by_scratch(monkeypatch: pytest.MonkeyPatch) -> None
     assert limits.resolve_regen_max_output_tokens() == DEFAULT_REGEN_MAX_OUTPUT_TOKENS
 
 
-def test_legacy_qwen_output_envs_are_ignored(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_legacy_retired_provider_output_envs_are_ignored(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", "1536")
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", "1024")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_RETIRED_PROVIDER_MAX_OUTPUT_TOKENS", "1536")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_RETIRED_PROVIDER_REGEN_MAX_OUTPUT_TOKENS", "1024")
     assert limits.resolve_scratch_max_output_tokens() == DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
     assert limits.resolve_regen_max_output_tokens() == DEFAULT_REGEN_MAX_OUTPUT_TOKENS

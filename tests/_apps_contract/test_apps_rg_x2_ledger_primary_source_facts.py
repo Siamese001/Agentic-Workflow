@@ -169,7 +169,7 @@ def test_mock_headline_lane_x2_receipt_matches_usage_ledger(monkeypatch: pytest.
     from apps_rg.runtime.sections import headline_lane as lane
 
     args = lane.build_headline_lane_args(
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
         temperature=lane.HEADLINE_TEMP_DEFAULT,
         x1d_judges="gemini_pro",
         mock_judges=True,
@@ -199,7 +199,7 @@ def test_mock_competencies_lane_x2_and_usage_ledger_agree(monkeypatch: pytest.Mo
     from apps_rg.runtime.sections import competencies_lane as lane
 
     args = lane.build_competencies_lane_args(
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
         temperature=lane.COMPETENCIES_TEMP_DEFAULT,
         x1d_judges="gemini_pro",
         mock_judges=True,

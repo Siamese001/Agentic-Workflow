@@ -1,4 +1,4 @@
-"""Shared in-process fixtures for Unify/IBM bullets+narrative E2E rigor (no live vLLM)."""
+"""Shared in-process fixtures for Unify/IBM bullets+narrative E2E rigor (no live local model server)."""
 
 from __future__ import annotations
 

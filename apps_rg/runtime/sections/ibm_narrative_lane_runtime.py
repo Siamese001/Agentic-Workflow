@@ -116,7 +116,7 @@ def _generation_status_allows_structure_parse(runtime_generation_status: str) ->
 
 
 def _preflight_blocked_synthetic_judges(judge_keys: list[str], message: str) -> list[dict[str, Any]]:
-    """Blocked rows emitted when credential preflight fails before Qwen narrative generation."""
+    """Blocked rows emitted when credential preflight fails before PROVIDER_MODEL narrative generation."""
     rows: list[dict[str, Any]] = []
     for key in judge_keys:
         jo = _make_blocked_output(

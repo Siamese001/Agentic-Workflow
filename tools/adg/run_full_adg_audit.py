@@ -878,11 +878,35 @@ def run_audit(
         if certification_mode and not diagnostic_allow_failed_generator:
             reasons.append(f"generator exit_code={gen_rc}")
 
-    # Mandatory burndown markdown (best-effort after Stage-1; full emit is in generate_full_adg).
+    # Mandatory BCG + burndown inline ordering (best-effort after Stage-1; full emit is in generate_full_adg).
     try:
-        from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary_from_latest  # noqa: PLC0415
 
-        _burndown_rc = emit_mandatory_adg_burndown_report(fail_closed=False)
+        _bcg_rc, _bcg_path = emit_bcg_executive_summary_from_latest(
+            print_inline=True,
+            fail_closed=False,
+            adg_artifacts_dir=ARTIFACTS_ADG,
+        )
+        if _bcg_rc != 0 and certification_mode:
+            reasons.append(f"BCG executive summary emit exit_code={_bcg_rc}")
+    except ImportError as _bcg_import_err:
+        if certification_mode:
+            reasons.append(f"BCG executive summary module unavailable: {_bcg_import_err}")
+
+    try:
+        from tools.reports.adg_burndown_report import (  # noqa: PLC0415
+            emit_existing_burndown_markdown,
+            emit_mandatory_adg_burndown_report,
+        )
+
+        _burndown_rc = emit_mandatory_adg_burndown_report(
+            fail_closed=False,
+            print_inline=False,
+        )
+        if _burndown_rc == 0:
+            _burndown_inline_rc = emit_existing_burndown_markdown()
+            if _burndown_inline_rc != 0 and certification_mode:
+                reasons.append(f"burndown inline replay exit_code={_burndown_inline_rc}")
         if _burndown_rc != 0 and certification_mode:
             reasons.append(f"burndown report emit exit_code={_burndown_rc}")
     except ImportError as _burndown_import_err:

@@ -27,16 +27,22 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
+    COMPETENCIES_MAX_CATEGORY_COUNT,
+    COMPETENCIES_MIN_CATEGORY_COUNT,
     e2e_closeout_mode_active,
     evaluate_competencies_selection_quality,
+    competencies_max_sc_path_count,
+    high_signal_competencies_selection_score,
     max_competencies_regen_rounds,
     min_competencies_selection_score,
     write_competencies_regen_artifact,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     REQUIRED_BULLET_IDS,
+    adaptive_sc_enabled_for_lane,
     evaluate_employment_selection_quality,
     is_employment_bullet_lane,
+    max_sc_path_count_for_lane,
     max_employment_regen_rounds,
     min_selection_score_for_lane,
     regen_extra_path_count_for_lane,
@@ -235,7 +241,16 @@ def _write_employment_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) ->
             prior = []
     _wg.write_text(
         path,
-        json.dumps({"rounds": prior + [doc]}, indent=2, ensure_ascii=False) + "\n",
+        json.dumps(
+            {
+                "schema_version": "employment_bullet_regen.v2",
+                "artifact_contract": "bounded_round_receipt",
+                "rounds": prior + [doc],
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
         encoding="utf-8",
     )
 
@@ -256,6 +271,9 @@ def _generate_employment_bullet_lane(
     provider_profile: str | None,
 ) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
     min_score = min_selection_score_for_lane(section_lane)
+    initial_path_count = sc_path_count_for_lane(section_lane)
+    max_path_count = max_sc_path_count_for_lane(section_lane)
+    adaptive_sc = adaptive_sc_enabled_for_lane(section_lane)
     all_paths: list[SelfConsistencyPath] = []
     last_result: ProviderResult | None = None
     pool: PoolSelectionResult | None = None
@@ -267,14 +285,30 @@ def _generate_employment_bullet_lane(
         min_score=min_score,
     )
     regen_round = 0
-    max_regen = 0 if judge_mode == "mocked" else max_employment_regen_rounds()
+    configured_max_regen = 0 if judge_mode == "mocked" else max_employment_regen_rounds()
+    max_regen = max(configured_max_regen, 1) if adaptive_sc else configured_max_regen
+    stop_reason = ""
+    expansion_events: list[dict[str, Any]] = []
 
     while True:
-        batch = (
-            sc_path_count_for_lane(section_lane)
-            if regen_round == 0
-            else regen_extra_path_count_for_lane(section_lane)
-        )
+        if regen_round == 0:
+            requested_batch = initial_path_count
+            batch = requested_batch
+            batch_reason = "initial"
+        elif adaptive_sc:
+            requested_batch = regen_extra_path_count_for_lane(section_lane)
+            remaining_budget = max(0, max_path_count - len(all_paths))
+            batch = min(requested_batch, remaining_budget)
+            batch_reason = "slot_coverage_or_min_score_failed"
+        else:
+            requested_batch = regen_extra_path_count_for_lane(section_lane)
+            batch = requested_batch
+            batch_reason = "regen"
+
+        if batch <= 0:
+            stop_reason = "path_budget_exhausted"
+            break
+
         new_paths, last_result = run_provider_self_consistency_paths(
             section_lane=section_lane,
             provider_payload=provider_payload,
@@ -290,6 +324,18 @@ def _generate_employment_bullet_lane(
         )
         new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
+        if regen_round > 0:
+            expansion_events.append(
+                {
+                    "regen_round": regen_round,
+                    "reason": batch_reason,
+                    "requested_batch_paths": requested_batch,
+                    "batch_paths": batch,
+                    "total_paths_after_batch": len(all_paths),
+                    "slots_below_threshold_before_batch": list(gate.slots_below_threshold),
+                    "slots_missing_before_batch": list(gate.slots_missing),
+                }
+            )
 
         regen_note = ""
         if regen_round > 0 and not gate.ok:
@@ -325,13 +371,25 @@ def _generate_employment_bullet_lane(
                 {
                     "regen_round": regen_round,
                     "batch_paths": batch,
+                    "requested_batch_paths": requested_batch,
                     "total_paths": len(all_paths),
+                    "initial_path_count": initial_path_count,
+                    "max_path_count": max_path_count,
+                    "adaptive_sc_enabled": adaptive_sc,
+                    "batch_reason": batch_reason,
                     "gate": gate.to_dict(),
                     "selection_mode": pool.selection_mode,
                 },
             )
 
-        if gate.ok or regen_round >= max_regen:
+        if gate.ok:
+            stop_reason = "selection_gate_passed"
+            break
+        if regen_round >= max_regen:
+            stop_reason = "regen_round_cap_reached"
+            break
+        if adaptive_sc and len(all_paths) >= max_path_count:
+            stop_reason = "path_budget_exhausted"
             break
         regen_round += 1
 
@@ -345,11 +403,17 @@ def _generate_employment_bullet_lane(
     assert pool is not None
     merged = normalize_parsed(dict(pool.merged_parsed))
     meta: dict[str, Any] = {
-        "generation_mode": "qwen_employment_pool_claude_top_n_regen",
+        "generation_mode": "model_employment_pool_claude_top_n_regen",
         "section_lane": section_lane,
-        "initial_path_count": sc_path_count_for_lane(section_lane),
+        "initial_path_count": initial_path_count,
         "total_paths_executed": len(all_paths),
         "regen_rounds_executed": regen_round,
+        "adaptive_sc_enabled": adaptive_sc,
+        "max_path_count": max_path_count,
+        "stop_reason": stop_reason or ("selection_gate_passed" if gate.ok else "unknown"),
+        "configured_max_regen_rounds": configured_max_regen,
+        "max_regen_rounds_allowed": max_regen,
+        "expansion_events": expansion_events,
         "min_selection_score": min_score,
         "selection_gate": gate.to_dict(),
         "selection_mode": pool.selection_mode,
@@ -406,13 +470,20 @@ def _generate_competencies_graph_pool_lane(
     # W5: per-round generation/selector phase timings, surfaced via meta so the lane execution can
     # answer "did it die on a generation path or on the selector?" without console guessing.
     phase_timings: list[dict[str, Any]] = []
+    stop_reason = ""
+    max_paths = competencies_max_sc_path_count()
 
     while True:
-        batch = (
+        requested_batch = (
             sc_path_count_for_lane(section_lane)
             if regen_round == 0
             else regen_extra_path_count_for_lane(section_lane)
         )
+        remaining_budget = max(0, max_paths - len(all_paths))
+        batch = min(requested_batch, remaining_budget)
+        if batch <= 0:
+            stop_reason = "path_budget_exhausted"
+            break
         _gen_started = datetime.now(timezone.utc).isoformat()
         _gen_t0 = time.monotonic()
         new_paths, last_result = run_provider_self_consistency_paths(
@@ -434,6 +505,8 @@ def _generate_competencies_graph_pool_lane(
                 "started_at": _gen_started,
                 "duration_s": round(time.monotonic() - _gen_t0, 4),
                 "batch_paths": batch,
+                "requested_batch_paths": requested_batch,
+                "remaining_path_budget_before_batch": remaining_budget,
             }
         )
         new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
@@ -445,7 +518,8 @@ def _generate_competencies_graph_pool_lane(
             regen_note = (
                 "REGEN ROUND: prior selection did not meet minimum score or category coverage. "
                 f"Re-score pool including new paths. Categories needing stronger winners: {', '.join(failed)}. "
-                f"Select exactly {gate.final_category_count} categories with score >= {min_score:.2f} and passes=true."
+                f"Select {COMPETENCIES_MIN_CATEGORY_COUNT}-{COMPETENCIES_MAX_CATEGORY_COUNT} categories "
+                f"with score >= {min_score:.2f} and passes=true."
             )
 
         _sel_started = datetime.now(timezone.utc).isoformat()
@@ -481,13 +555,22 @@ def _generate_competencies_graph_pool_lane(
                 {
                     "regen_round": regen_round,
                     "batch_paths": batch,
+                    "requested_batch_paths": requested_batch,
                     "total_paths": len(all_paths),
+                    "max_paths": max_paths,
                     "gate": gate.to_dict(),
                     "selection_mode": pool.selection_mode,
                 },
             )
 
-        if gate.ok or regen_round >= max_regen:
+        if gate.ok:
+            stop_reason = "selection_gate_passed"
+            break
+        if regen_round >= max_regen:
+            stop_reason = "regen_round_cap_reached"
+            break
+        if len(all_paths) >= max_paths:
+            stop_reason = "path_budget_exhausted"
             break
         regen_round += 1
 
@@ -503,18 +586,24 @@ def _generate_competencies_graph_pool_lane(
     if pool.rejected_neighbor_audit:
         merged["competencies_rejected_neighbor_audit"] = pool.rejected_neighbor_audit
     meta: dict[str, Any] = {
-        "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
+        "generation_mode": "model_competencies_graph_pool_adaptive_6_8_regen",
         "section_lane": section_lane,
         "initial_path_count": sc_path_count_for_lane(section_lane),
         "total_paths_executed": len(all_paths),
         "regen_rounds_executed": regen_round,
+        "adaptive_sc_enabled": True,
+        "max_path_count": max_paths,
+        "stop_reason": stop_reason or ("selection_gate_passed" if gate.ok else "unknown"),
         "min_selection_score": min_score,
+        "high_signal_selection_score": high_signal_competencies_selection_score(),
         "selection_gate": gate.to_dict(),
         "selection_mode": pool.selection_mode,
         "source_path_by_slot": pool.source_path_by_slot,
         "claude_selection_count": len(pool.selections),
         "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
-        "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
+        "min_category_count": COMPETENCIES_MIN_CATEGORY_COUNT,
+        "max_category_count": COMPETENCIES_MAX_CATEGORY_COUNT,
+        "final_category_count": int(gate.categories_in_merged or COMPETENCIES_FINAL_CATEGORY_COUNT),
         "phase_timings": phase_timings,
         "e2e_closeout_mode": e2e_closeout_mode_active(),
         "max_regen_rounds_allowed": max_regen,
@@ -641,7 +730,7 @@ def generate_bullet_lane_with_sc_and_claude(
         )
 
     meta = {
-        "generation_mode": "qwen_sc_claude_pool",
+        "generation_mode": "model_sc_claude_pool",
         "section_lane": section_lane,
     }
     paths, last_result = run_provider_self_consistency_paths(

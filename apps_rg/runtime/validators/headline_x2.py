@@ -159,7 +159,7 @@ _HEADLINE_GENERIC_NOUN_STOPLIST: frozenset[str] = frozenset(
         "long", "short", "term", "terms",
         # Generic framing nouns that are legitimate filler in executive headlines but don't
         # carry specific claims on their own. Allowing them as filler prevents the strict
-        # grounding rule from forcing Qwen into awkward compositions.
+        # grounding rule from forcing PROVIDER_MODEL into awkward compositions.
         "workflows", "pipelines", "harness", "orchestration", "instrumentation",
         "observability", "reliability", "performance", "optimization", "programs",
         "services", "capabilities", "organizations", "functions", "foundations",
@@ -295,8 +295,8 @@ def repair_headline_segment_citations_for_grounding(
     claim_ledger: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Re-cite each X/Y/Z segment to the facts in selected_fact_plan whose claim_text shares
-    the most content nouns with the segment. Closes Bug:HeadlineSegmentMiscitationByQwen
-    (Brown SVP full_resume_01b4989c296a — Qwen cited fact_quant_hpc_002 for "Microservices
+    the most content nouns with the segment. Closes Bug:HeadlineSegmentMiscitationByPROVIDER_MODEL
+    (Brown SVP full_resume_01b4989c296a — PROVIDER_MODEL cited fact_quant_hpc_002 for "Microservices
     Telemetry" which shares zero content nouns, while fact_engineering_platform_005
     contained "microservices" and fact_engineering_platform_003 contained "telemetry").
 
@@ -423,7 +423,7 @@ def recite_canonical_segments_to_bundle_facts(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Re-cite each canonical positioning segment to its bound bundle's linked_source_fact_ids.
 
-    Qwen frequently emits the right positioning display phrases ("Agentic AI Platforms",
+    PROVIDER_MODEL frequently emits the right positioning display phrases ("Agentic AI Platforms",
     "Distributed AI Infrastructure", "Runtime Governance") but cites the WRONG fact for each
     one — in the full_resume_7ec23069bce2 run every citation was shifted by one slot vs the
     registry, which both x2_headline_xyz_literal_grounding and the X1D judges flagged as

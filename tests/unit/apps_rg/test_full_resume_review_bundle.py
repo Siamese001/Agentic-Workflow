@@ -37,7 +37,7 @@ def test_whole_run_flat_lane_dir(tmp_path: Path, monkeypatch) -> None:
         source_env_literal=MODULAR_R4_SECTIONS_ROOT_ENV,
         correlation_id=ad.name,
     )
-    rd = prepare_runtime_proof_run_dir(repo, "headline", "qwen_vllm", "headline_20260520_120000")
+    rd = prepare_runtime_proof_run_dir(repo, "headline", "retired_provider_profile", "headline_20260520_120000")
     assert rd == ad / "lanes" / "headline"
     assert not (ad / "lanes" / "headline" / "real").exists()
 

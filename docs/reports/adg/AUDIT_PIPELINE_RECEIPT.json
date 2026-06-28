@@ -7,43 +7,50 @@
     "runtime_proof_status": "view_absent",
     "reasons": [
       "generator exit_code=1",
-      "required gate 'adg_gate_dispatcher' status=fail",
-      "required gate 'config-ref' status=fail",
-      "required gate 'lifecycle' status=fail",
-      "required gate 'test-coverage' status=fail",
+      "required gate 'adg_gate_dispatcher' absent from manifest",
+      "required gate 'agentic_antipatterns' absent from manifest",
+      "required gate 'config-ref' absent from manifest",
+      "required gate 'dead_production_imports' absent from manifest",
+      "required gate 'except-contract' absent from manifest",
+      "required gate 'lifecycle' absent from manifest",
+      "required gate 'p0_violations' absent from manifest",
+      "required gate 'p1_ratchet' absent from manifest",
+      "required gate 'structural_conformance' absent from manifest",
+      "required gate 'test-coverage' absent from manifest",
       "required gate 'three_bucket_manifest_quick' absent from manifest",
+      "required gate 'wiring' absent from manifest",
+      "required gate 'witness_tier_gates' absent from manifest",
       "adg_gate_dispatcher overall_exit_code=1",
-      "snapshot path absent from generation manifest",
-      "enforcement_report certified_rollup=NOT_CERTIFIED"
+      "snapshot path absent from generation manifest"
     ]
   },
   "artifact_status": "incomplete",
   "artifact_status_source": "direct",
-  "adg_run_id": "06272026_0458",
-  "started_at_utc": "2026-06-27T08:57:59Z",
-  "completed_at_utc": "2026-06-27T09:17:32Z",
+  "adg_run_id": "06272026_2302",
+  "started_at_utc": "2026-06-28T03:02:42Z",
+  "completed_at_utc": "2026-06-28T03:16:09Z",
   "repair_handoff": {
     "status": "incomplete",
     "artifacts": {
+      "snapshot": {
+        "artifact_key": "snapshot",
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06272026_2302.sqlite",
+        "sha256": "d747baa0972e245731409bf83409d41f54e03b2b2ba21b37003b5ec910b26f68"
+      },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_06272026_0458.md",
-        "sha256": "ff7eabf3c90ed4553392d11d31266b9e46824125493f5beee47465927adb2744"
-      },
-      "burndown_table": {
-        "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_06272026_0458.json",
-        "sha256": "a2830fef79e96190974041a8cf1e3bdbb7f68e37ab405d3dea157466f64b5977"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_06272026_2302.md",
+        "sha256": "0e775c3a535c94b404a5c2f939b7ad644480ceef166792d818df61bb6716e88b"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06272026_0458.json",
-        "sha256": "ec4938d20f2f3a3cb4b17ad3b88e56bdc0cbd474348d17f56e4065b3b3f64375"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_06272026_2302.json",
+        "sha256": "b653f4124d1d7e2b219ad58534d0a54f22aae10e4e0fbaa719b366614656ae69"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06272026_0458.json",
-        "sha256": "5600c9f9d781ec36b52b6c6135fc0d8a231a26d61c2584d986332ee98fa18dd1"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06272026_2302.json",
+        "sha256": "ba152248bcb6a301da401fd9a0a7cd486b1d525005afa7ddcc4eab86e07ee4a3"
       }
     },
     "counts": {
@@ -55,9 +62,10 @@
     "validation_errors": [
       "action_queue missing from repair_handoff",
       "action_queue not emitted because prerequisite artifacts are incomplete",
+      "burndown_table missing from repair_handoff",
+      "burndown_table source stale before audit start: C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table.json",
       "gate_results missing from repair_handoff",
-      "snapshot missing",
-      "snapshot missing from repair_handoff"
+      "no timestamped gate_results for snapshot: C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06272026_2302.sqlite"
     ]
   }
 }

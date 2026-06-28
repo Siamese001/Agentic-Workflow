@@ -93,7 +93,7 @@ def test_role_episode_gate_registry_matches_product_shape_ssot(run_fn, lane: str
     }
 
 
-def test_role_episode_empty_llm_bullets_declares_deterministic_graph_render() -> None:
+def test_role_episode_empty_llm_bullets_fail_closed_without_graph_render() -> None:
     cfg = role_episode_lane._ROLE_LANES["insurtech_bullets"]
     parsed, parse_error = role_episode_lane._parse_json_object("")
     facts = [
@@ -114,14 +114,14 @@ def test_role_episode_empty_llm_bullets_declares_deterministic_graph_render() ->
         graph_packet_digest="digest://graph-packet",
     )
 
-    assert len(bullets) == 3
-    assert receipt["generation_method"] == "deterministic_graph_render"
+    assert bullets == []
+    assert receipt["generation_method"] == "model_output_invalid"
     assert receipt["llm_generation_status"] == "empty_output"
     assert receipt["llm_output_used"] is False
     assert receipt["evidence_authority"] == "augmented_skills_graph"
-    assert receipt["source_fact_ids"] == [f["fact_id"] for f in facts]
+    assert receipt["source_fact_ids"] == []
     assert receipt["graph_packet_digest"] == "digest://graph-packet"
-    assert receipt["renderer_version"] == role_episode_lane.ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION
+    assert receipt["renderer_version"] == ""
     assert receipt["rendered_source_fact_ids_within_allowed_packet"] is True
 
 

@@ -134,7 +134,7 @@ def test_full_exit_then_exhaust_chain(tmp_path: Path, section_id: str):
     payload["section_fec_bridge"] = bridge.bridge_doc
     payload["fec_bridge_ref"] = FEC_BRIDGE_ARTIFACT
     _write_json(tmp_path / "compiled_prompt_artifact.json", {"evidence_contract_consumed": True})
-    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="qwen_vllm")
+    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="retired_provider_profile")
     _write_json(tmp_path / "l2_output.json", {})
     _write_json(tmp_path / "x3_disposition.json", {"x3_code": "X3_ALLOW", "pass": True})
     finalize_section_l2_after_output(tmp_path, section_id, payload)

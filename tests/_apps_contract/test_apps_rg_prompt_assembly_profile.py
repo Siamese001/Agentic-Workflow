@@ -537,7 +537,7 @@ class TestPAQuarantineImports:
 
     def test_no_provider_sdk_import_in_resolver(self):
         imports = self._get_resolver_imports()
-        forbidden = ["anthropic", "openai", "vllm", "transformers", "torch"]
+        forbidden = ["anthropic", "openai", "local_model_server", "transformers", "torch"]
         for line in imports:
             for f in forbidden:
                 assert f not in line, (
@@ -572,7 +572,7 @@ class TestL3StepContractCarriesPromptRefs:
             workflow_ref=_WORKFLOW_REF,
             run_id="run-w7-contract",
             allowed_execution_lane="ENSEMBLE_MODEL",
-            provider_profile_ref="provider::local_qwen_32b",
+            provider_profile_ref="provider::local_retired_provider_32b",
             candidate_count=3,
             replay_key="replay::w7::contract-test",
             trace_root="trace::w7::contract-test",
@@ -645,7 +645,7 @@ class TestL2EnsembleConsumesPromptRefs:
             workflow_ref=_WORKFLOW_REF,
             run_id="run-w7-l2",
             allowed_execution_lane="ENSEMBLE_MODEL",
-            provider_profile_ref="provider::local_qwen_32b",
+            provider_profile_ref="provider::local_retired_provider_32b",
             candidate_count=2,
             replay_key="replay::w7::l2-test",
             trace_root="trace::w7::l2-test",
@@ -714,7 +714,7 @@ class TestL2EnsembleConsumesPromptRefs:
         # Verify no real provider is imported by checking the lane module
         source_path = Path(lane_module.__file__)
         source = source_path.read_text(encoding="utf-8")
-        for provider in ["anthropic", "openai", "vllm", "requests.post"]:
+        for provider in ["anthropic", "openai", "local_model_server", "requests.post"]:
             assert provider not in source, f"Provider reference found in ensemble_lane: {provider}"
 
         sealed = lane.execute(step, gate_profile=[], judge_profile=[])

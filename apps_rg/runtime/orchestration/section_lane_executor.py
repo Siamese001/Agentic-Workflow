@@ -13,7 +13,7 @@ from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_CLI_OVE
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 
 # 2026-06-13: removed `_ENV_OVERLAY_LOCK` (a process-global lock formerly held across
-# the ENTIRE lane dispatch as a "vLLM-safe throttle"). It serialized all wave lanes
+# the ENTIRE lane dispatch as a "external model-safe throttle"). It serialized all wave lanes
 # despite parallel=True/cap=N (measured: 23-min fully-serial baseline). Since
 # MODULAR_R4_SECTIONS_ROOT is a run-level CONSTANT, run_lane_in_context now sets it
 # idempotently and lock-free — true wave parallelism, validated at 704s vs 1383s

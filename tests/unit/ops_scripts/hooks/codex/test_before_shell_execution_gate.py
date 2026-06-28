@@ -172,6 +172,17 @@ def test_hook_allows_canonical_worktree_branch_creation():
     assert proc.returncode == 0
 
 
+def test_hook_blocks_worktree_creation_outside_ssot_root():
+    proc = _run_hook(
+        "git worktree add C:/Users/amita/.codex/worktrees/claude-worktree-creation-guard "
+        "-b claude-worktree-creation-guard origin/main"
+    )
+
+    assert proc.returncode == 2
+    assert "Agentic-Workflow worktree SSOT root" in proc.stdout
+    assert "Agentic-Workflow-FRESH-worktrees" in proc.stdout
+
+
 def test_hook_allows_detached_publish_worktree():
     proc = _run_hook(
         "git worktree add --detach "

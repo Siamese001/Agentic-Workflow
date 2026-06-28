@@ -1,4 +1,4 @@
-"""W8 — Canonical apps_rg product path hygiene (static/contract; no live Qwen/judges)."""
+"""W8 — Canonical apps_rg product path hygiene (static/contract; no live RetiredProvider/judges)."""
 
 from __future__ import annotations
 
@@ -21,14 +21,14 @@ CANONICAL_CHAIN: tuple[tuple[str, str], ...] = (
         "run_canonical_apps_rg_from_cli_primitives",
     ),
     ("apps_rg.l2_recipe.modular_resume_generation", "run_modular_resume_generation"),
-    ("apps_rg.runtime.providers.qwen_vllm_provider", "build_qwen_request"),
+    ("apps_rg.runtime.providers.retired_provider_profile_provider", "build_retired_provider_request"),
     ("apps_rg.runtime.judges.section_judge_profile", "resolve_section_proof_judge_model"),
     ("apps_rg.runtime.runtime_proof_layout", "prepare_runtime_proof_run_dir"),
 )
 
 NON_PRODUCT_PROOF_MARKERS: frozenset[str] = frozenset(
     {
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+        "APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB",
         "APPS_RG_L2_PROVIDER_MODE=stub_only",
         "APPS_RG_L2_FORCE_STUB",
         "RETIRED_APPS_RG_R4_GENERATION_MODE",

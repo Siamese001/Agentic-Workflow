@@ -7,7 +7,6 @@ from apps_rg.runtime.spine.l6_shadow_eval_runner import (
     maybe_run_l6_v40_shadow_eval_for_section,
     run_l6_v40_shadow_eval_for_section,
 )
-
 from tests.l6_observability.test_runtime_exhaust_v40_adapter import _seed_artifacts
 
 
@@ -29,6 +28,10 @@ def test_apps_rg_v40_runner_writes_package_and_spans(tmp_path: Path) -> None:
     assert package["g29_learning_firewall"]["verdict"] == "PASS"
     assert package["current_run_x3_mutation_assertion"] is False
     assert outputs["l6_v40_shadow_eval_spans"].is_file()
+    assert outputs["trace_reconciliation"].is_file()
+    assert outputs["trace_reconciliation_rows"].is_file()
+    assert package["trace_reconciliation_ref"] == "trace_reconciliation.json"
+    assert package["trace_reconciliation_rows_ref"] == "trace_reconciliation_rows.jsonl"
 
 
 def test_apps_rg_v40_runner_is_env_gated(tmp_path: Path) -> None:

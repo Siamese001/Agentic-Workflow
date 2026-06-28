@@ -39,8 +39,8 @@ def _regen_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
                 "policy_hash": "pol-1",
                 "blueprint_hash": "bp-1",
                 "registry_digest_set": ["r1"],
-                "target_model": "qwen-test",
-                "target_provider": "vllm",
+                "target_model": "retired_provider-test",
+                "target_provider": "local_model_server",
                 "trace_id": "trace-1",
                 "run_id": "run-1",
             },
@@ -96,7 +96,7 @@ def test_retry_provider_cycle2_uses_incremental_anchor_parsed(
 
     _new_raw, _new_parsed, receipt = retry_provider_for_judge_remediation(
         [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
-        {"model": "qwen-test", "temperature": 0.1, "max_tokens": 1024},
+        {"model": "retired_provider-test", "temperature": 0.1, "max_tokens": 1024},
         json.dumps(scratch),
         scratch,
         x1d_judges=[_soft_judge()],

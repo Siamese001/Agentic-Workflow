@@ -78,7 +78,7 @@ waves:
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
     default_max_parallel: 5
   - id: 1
-    # 2026-06-13: unpinned from max_parallel:1 (stale vLLM-era serialization). The 4
+    # 2026-06-13: unpinned from max_parallel:1 (stale external model-era serialization). The 4
     # narratives are mutually independent (each depends only on its own bullets lane in
     # wave 0), so they parallelize safely now that run_lane_in_context is lock-free
     # (section_lane_executor.py). See memory apps-rg-parallel-orchestration-nonfunctional.

@@ -40,7 +40,7 @@ _PRODUCT_RELEASE_ARTIFACT_FILENAMES = frozenset(
 
 _FORBIDDEN_ASSEMBLY_INLINE_PATTERNS = (
     "provider_",
-    "qwen",
+    "retired_provider",
     "real_l2_generation_result",
 )
 

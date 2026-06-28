@@ -233,7 +233,7 @@ def _ibm_metric_anchors_on_assigned_bullets(
 ) -> tuple[bool, list[str]]:
     """Each bul_ibm_* must have ANY recognizable metric token in its bullet_text.
 
-    Accepts EITHER the canonical IBM_METRIC_ANCHOR_RULES token (when Qwen + canonical
+    Accepts EITHER the canonical IBM_METRIC_ANCHOR_RULES token (when PROVIDER_MODEL + canonical
     bullet alignment holds) OR the active plan_fact's metric_raw (when the
     augmented_skills_graph selector has reassigned the bullet slot to a different fact
     with its own metric). Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets
@@ -974,7 +974,7 @@ def run_ibm_bullets_x2_gates(
         "x2_no_silent_mock_fallback",
         no_silent_mock,
         runtime_generation_status,
-        "REAL_LLM when qwen requested",
+        "REAL_LLM when PROVIDER_MODEL requested",
         "Silent mock fallback detected.",
     )
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import pytest
 
-from apps_rg.runtime.providers import provider_contract as qwen_vllm_provider
+from apps_rg.runtime.providers import provider_contract as retired_provider_profile_provider
 from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
     budgeted_regen_call,
     clear_regen_budget_ledger,
@@ -21,11 +21,11 @@ from apps_rg.runtime.sections.executive_summary_token_budget import (
 
 
 def test_regen_max_output_defaults_and_cap(monkeypatch) -> None:
-    """Claude-era defaults (post-Qwen-removal 2026-06-13): scratch/regen 4096."""
+    """Claude-era defaults (post-RetiredProvider-removal 2026-06-13): scratch/regen 4096."""
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
-    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", raising=False)
-    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_RETIRED_PROVIDER_REGEN_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_RETIRED_PROVIDER_MAX_OUTPUT_TOKENS", raising=False)
     assert resolve_scratch_max_output_tokens() == 4096
     assert resolve_regen_max_output_tokens() == 4096
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", "3000")
@@ -34,7 +34,7 @@ def test_regen_max_output_defaults_and_cap(monkeypatch) -> None:
 
 def test_regen_dispatch_blocks_when_thread_exceeds_window(monkeypatch) -> None:
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
-    # Force a small window via the explicit override. (Post-2026-06-15 VLLM_MAX_MODEL_LEN can no
+    # Force a small window via the explicit override. (Post-2026-06-15 LOCAL_MODEL_SERVER_MAX_MODEL_LEN can no
     # longer LOWER the section ctx, so the test passes the small window directly — the SSOT way.)
     huge = "word " * 20000
     messages = [{"role": "system", "content": huge}, {"role": "user", "content": huge}]
@@ -68,11 +68,11 @@ def test_budgeted_regen_fail_closed_before_transport(monkeypatch, tmp_path: Path
 def test_budgeted_regen_requires_provider_response_for_accepted_parse(
     monkeypatch, tmp_path: Path
 ) -> None:
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
+    monkeypatch.setenv("LOCAL_MODEL_SERVER_MAX_MODEL_LEN", "16384")
 
     def _fake_call(*_a, **_k):
-        return qwen_vllm_provider.ProviderResult(
-            provider_requested="qwen_vllm",
+        return retired_provider_profile_provider.ProviderResult(
+            provider_requested="retired_provider_profile",
             provider_attempted=True,
             provider_available=True,
             exact_provider_error=None,
@@ -112,11 +112,11 @@ def test_budgeted_regen_requires_provider_response_for_accepted_parse(
 
 
 def test_budgeted_regen_timeout_never_accepted(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
+    monkeypatch.setenv("LOCAL_MODEL_SERVER_MAX_MODEL_LEN", "16384")
 
     def _timeout_call(*_a, **_k):
-        return qwen_vllm_provider.ProviderResult(
-            provider_requested="qwen_vllm",
+        return retired_provider_profile_provider.ProviderResult(
+            provider_requested="retired_provider_profile",
             provider_attempted=True,
             provider_available=False,
             exact_provider_error="chat_completion_timeout",

@@ -68,8 +68,9 @@ def test_graph_proof_pool_supports_graph_8x8_product_shape() -> None:
         target_role="SVP Engineering Agentic AI",
         jd_text=HYBRID_JD,
     )
-    assert MIN_CATEGORY_COUNT == MAX_CATEGORY_COUNT == 8
-    # Variance-class alignment (2026-06): candidate pool is the final exact 8.
+    assert MIN_CATEGORY_COUNT == 6
+    assert MAX_CATEGORY_COUNT == 8
+    # HBS/SVP alignment (2026-06): candidate pool is 8; final display emits adaptive 6-8.
     assert CANDIDATE_CATEGORY_COUNT == 8
     assert pool.proof_pool_metadata.get("proof_pool_type") == "augmented_skills_graph"
     assert isinstance(pool.proof_pool_metadata.get("selected_skill_rows"), list)

@@ -164,7 +164,7 @@ def check_judge_packet_display_override_parity(
     """Verify every cited fact with a C0 display override carries display_override_text in the judge packet.
 
     Closes Bug:ExecSummaryJudgeDisplayOverrideInvisible by failing the lane closed when the X1D
-    judge packet rows lose the FACT_C0_DISPLAY_OVERRIDES substrate that Qwen receives. Symmetry
+    judge packet rows lose the FACT_C0_DISPLAY_OVERRIDES substrate that PROVIDER_MODEL receives. Symmetry
     requirement: gen-prompt DISPLAY_OVERRIDE present <=> judge-packet display_override_text present.
     """
     from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
@@ -261,7 +261,7 @@ def check_transport_envelope_stub_false(
     artifacts_dir: Path | None,
     provider_requested: str | None,
 ) -> tuple[bool, str | None]:
-    """Reject synthetic harness responses that set stub:true on the vLLM JSON envelope."""
+    """Reject synthetic harness responses that set stub:true on the external model JSON envelope."""
     if str(provider_requested or "").strip().lower() != "external_claude":
         return True, None
     if artifacts_dir is None:
@@ -2896,7 +2896,7 @@ def run_x2_gates(
 
     stub_env_ok, stub_env_reason = check_transport_envelope_stub_false(artifacts_dir, provider_requested)
     add(
-        "x2_qwen_provider_stub_transport_zero",
+        "x2_PROVIDER_MODEL_provider_stub_transport_zero",
         stub_env_ok,
         stub_env_reason or "ok",
         "stub_transport_absent",

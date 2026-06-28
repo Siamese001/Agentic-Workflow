@@ -6,20 +6,19 @@ modular execution surface and should not be confused with cache miss behavior.
 
 from __future__ import annotations
 
-import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
-from apps_rg.cache.r1b_post_exit_ingest import ingest_post_exit_after_run
-from apps_rg.cache.r1b_store import default_store_root
+from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key
 from apps_rg.cache.r1b_constants import (
     R1B_REUSE_AUTHORITY_SCOPE,
     R1B_SECTION_REUSE_AUTHORITY,
     r1b_reuse_authority_policy,
 )
+from apps_rg.cache.r1b_post_exit_ingest import ingest_post_exit_after_run
+from apps_rg.cache.r1b_store import default_store_root
 from apps_rg.cache.r1b_whole_run_preflight import (
     PREFLIGHT_ORDER,
     WholeRunR1BPreflightResult,
@@ -27,16 +26,29 @@ from apps_rg.cache.r1b_whole_run_preflight import (
     write_r1b_preflight_receipt,
 )
 
-ENTRYPOINT_TEST_WHOLE_RUN_HARNESS = "tests.helpers.whole_run_spine_harness.run_whole_run_spine_harness"
-ENTRYPOINT_CANONICAL_DISPATCH = "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives"
+ENTRYPOINT_TEST_WHOLE_RUN_HARNESS = (
+    "tests.helpers.whole_run_spine_harness.run_whole_run_spine_harness"
+)
+ENTRYPOINT_CANONICAL_DISPATCH = (
+    "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives"
+)
 ENTRYPOINT_DISPATCH_APPS_RG_RUN = "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run"
 ENTRYPOINT_ENVELOPE_DISPATCH = "apps_rg.runtime.dispatch.apps_rg_dispatch.apps_rg_dispatch"
 
 
-def _semantic_cache_r1b_enabled() -> bool:
-    from apps_rg.runtime.embedding_settings import semantic_cache_r1b_eligible
+def _semantic_cache_r1b_eligibility() -> dict[str, Any]:
+    from apps_rg.runtime.embedding_settings import semantic_cache_r1b_eligibility
 
-    return semantic_cache_r1b_eligible()
+    return semantic_cache_r1b_eligibility()
+
+
+def _semantic_cache_r1b_enabled() -> bool:
+    return bool(_semantic_cache_r1b_eligibility().get("eligible"))
+
+
+def _r1b_preflight_probe_only_enabled() -> bool:
+    raw = os.environ.get("APPS_RG_R1B_PREFLIGHT_PROBE_ONLY", "").strip().lower()
+    return raw in ("1", "true", "yes", "on")
 
 
 def resolve_r1b_store_root(*, artifact_dir: Path | str | None = None) -> Path:
@@ -70,6 +82,9 @@ class WholeRunCachePreflightOutcome:
     generation_required: bool = True
     c0_fact_vectors_consulted: bool = False
     section_lane: bool = False
+    r1b_eligibility: dict[str, Any] = field(default_factory=dict)
+    r1b_preflight_reason: str = ""
+    r1b_probe_only: bool = False
 
     @property
     def r1b_hit(self) -> bool:
@@ -82,6 +97,8 @@ class WholeRunCachePreflightOutcome:
         if self.r1a_hit:
             return "r1a_hit"
         if self.r1b_hit:
+            if self.r1b_probe_only:
+                return "r1b_hit_probe_only"
             return "r1b_hit"
         if self.r1b_result and self.r1b_result.outcome == "r1b_inadmissible_only":
             return "r1b_inadmissible_only"
@@ -96,6 +113,9 @@ class WholeRunCachePreflightOutcome:
             "r1a_artifact_dir": self.r1a_artifact_dir,
             "r1b_hit": self.r1b_hit,
             "r1b_preflight": self.r1b_result.to_dict() if self.r1b_result else None,
+            "r1b_eligibility": dict(self.r1b_eligibility),
+            "r1b_preflight_reason": self.r1b_preflight_reason,
+            "r1b_probe_only": self.r1b_probe_only,
             "generation_required": self.generation_required,
             "c0_fact_vectors_consulted": self.c0_fact_vectors_consulted,
             "section_lane_skipped_preflight": self.section_lane,
@@ -124,6 +144,14 @@ def run_whole_run_cache_preflight(
             entrypoint=entrypoint,
             generation_required=True,
             section_lane=True,
+            r1b_preflight_reason="section_lane_bypass",
+            r1b_eligibility={
+                "schema_version": "apps_rg.r1b_semantic_cache_eligibility.v1",
+                "eligible": False,
+                "probeable": False,
+                "status": "skipped",
+                "reason": "section_lane_bypass",
+            },
         )
 
     resume_hash = str(raw_request.get("resume_hash") or "")
@@ -147,7 +175,14 @@ def run_whole_run_cache_preflight(
         )
 
     r1b_result: WholeRunR1BPreflightResult | None = None
-    if _semantic_cache_r1b_enabled():
+    r1b_eligibility = _semantic_cache_r1b_eligibility()
+    r1b_preflight_reason = str(r1b_eligibility.get("reason") or "")
+    r1b_probe_only = bool(
+        _r1b_preflight_probe_only_enabled()
+        and r1b_eligibility.get("probeable")
+        and not r1b_eligibility.get("eligible")
+    )
+    if r1b_eligibility.get("eligible") or r1b_probe_only:
         store_root = resolve_r1b_store_root(artifact_dir=artifact_dir)
         r1b_result = execute_whole_run_r1b_preflight(
             raw_request=raw_request,
@@ -161,16 +196,33 @@ def run_whole_run_cache_preflight(
                 receipt_dir / "r1b_whole_run_preflight_hit.json",
                 r1b_result,
             )
+            if r1b_probe_only:
+                return WholeRunCachePreflightOutcome(
+                    entrypoint=entrypoint,
+                    r1b_result=r1b_result,
+                    generation_required=True,
+                    r1b_eligibility=r1b_eligibility,
+                    r1b_preflight_reason="r1b_hit_probe_only_reuse_disabled",
+                    r1b_probe_only=True,
+                )
             return WholeRunCachePreflightOutcome(
                 entrypoint=entrypoint,
                 r1b_result=r1b_result,
                 generation_required=False,
+                r1b_eligibility=r1b_eligibility,
+                r1b_preflight_reason="r1b_hit",
             )
+        r1b_preflight_reason = str(r1b_result.outcome or "r1b_miss")
+        if r1b_probe_only:
+            r1b_preflight_reason = f"{r1b_preflight_reason}_probe_only_reuse_disabled"
 
     return WholeRunCachePreflightOutcome(
         entrypoint=entrypoint,
         r1b_result=r1b_result,
         generation_required=True,
+        r1b_eligibility=r1b_eligibility,
+        r1b_preflight_reason=r1b_preflight_reason,
+        r1b_probe_only=r1b_probe_only,
     )
 
 
@@ -223,11 +275,26 @@ def maybe_ingest_r1b_post_exit(
     if not _semantic_cache_r1b_enabled():
         return None
     store_root = resolve_r1b_store_root(artifact_dir=artifact_dir)
-    return ingest_post_exit_after_run(
+    ingest_ref = ingest_post_exit_after_run(
         artifact_dir=artifact_dir,
         raw_request=raw_request,
         runs_dir=store_root,
     )
+    try:
+        probe = execute_whole_run_r1b_preflight(
+            raw_request=raw_request,
+            runs_dir=str(store_root),
+            prompt_profile_hash=str(raw_request.get("policy_hash") or ""),
+            gate_profile_hash=str(raw_request.get("blueprint_hash") or ""),
+        )
+        write_r1b_preflight_receipt(
+            Path(artifact_dir) / "r1b_post_exit_replay_probe.json",
+            probe,
+        )
+    except (OSError, ValueError, RuntimeError, TypeError):
+        # guardian: post-exit probe is audit evidence; ingest ref remains authoritative.
+        pass
+    return ingest_ref
 
 
 def build_entrypoint_audit_matrix() -> list[dict[str, Any]]:

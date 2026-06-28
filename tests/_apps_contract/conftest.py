@@ -15,7 +15,7 @@ collect_ignore = [
     "test_ae2_pii_redactor.py",
 ]
 
-# Subprocess ``python -m apps_rg`` lanes — each run is minutes when vLLM is up.
+# Subprocess ``python -m apps_rg`` lanes — each run is minutes when local model server is up.
 _LIVE_CLI_PATH_FRAGMENTS = (
     "section_pipeline",
     "runtime_slice",
@@ -27,7 +27,7 @@ _LIVE_CLI_PATH_FRAGMENTS = (
     "augmented_skills_graph_all_sections",
     "section_input_usage_ledgers",
     "resume_lanes_live",
-    "qwen_vllm_reliability",
+    "retired_provider_profile_reliability",
     "l6_shadow_learning",
     "section_lane_c0_metrics",
 )
@@ -36,7 +36,7 @@ _LIVE_CLI_PATH_FRAGMENTS = (
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
         "markers",
-        "contract_harness_live: full python -m apps_rg subprocess with live qwen_vllm",
+        "contract_harness_live: full python -m apps_rg subprocess with live retired_provider_profile",
     )
 
 
@@ -59,11 +59,11 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 @pytest.fixture(autouse=True)
 def _contract_harness_runtime_env(monkeypatch: pytest.MonkeyPatch, tmp_path_factory) -> None:
-    """Align contract tests with live qwen_vllm + optional C0 Chroma (root conftest sets stub_only)."""
+    """Align contract tests with live retired_provider_profile + optional C0 Chroma (root conftest sets stub_only)."""
     monkeypatch.setenv("APPS_RG_L2_PROVIDER_MODE", "live_allowed")
     monkeypatch.setenv("PYTEST_APPS_RG_LIVE_L2", "1")
     monkeypatch.delenv("APPS_RG_L2_FORCE_STUB", raising=False)
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
+    monkeypatch.delenv("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", raising=False)
 
     # Fast harness: do not point at Chroma unless embeddings are enabled (fail-closed C0.2).
     if not contract_harness_fast():

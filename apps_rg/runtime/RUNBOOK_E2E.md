@@ -18,7 +18,7 @@ Outputs from non-canonical historical runs must not be claimed as product, L7, o
 
 | Dependency | Purpose |
 |------------|---------|
-| **vLLM Qwen** | Section lanes with `qwen_vllm` (or contract stub in CI) |
+| **external model PROVIDER_MODEL** | Section lanes with `external_model` (or contract stub in CI) |
 | **X1D judge backends** | Per-lane judge configuration when not using test mocks |
 
 Run from repository root.
@@ -55,7 +55,7 @@ python -m apps_rg --section executive_summary \
   --target-role "Principal Engineer" \
   --jd artifacts/apps_rg/runtime_inputs/example_jd.txt \
   --manual-brief artifacts/apps_rg/runtime_inputs/example_briefing.txt \
-  --provider qwen_vllm \
+  --provider external_model \
   --allow-non-allow-exit-zero
 ```
 

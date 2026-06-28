@@ -13,7 +13,7 @@ BOUNDARY (enforced by test suite):
 - No auto-approval of sections.
 - Missing/UNKNOWN support or exit checks are NOT treated as PASS.
 - Does not import: section_agentic_pipeline, write_section_to_semantic_cache,
-  l6_shadow_learning, fact_vectors, openai, anthropic, vllm, httpx,
+  l6_shadow_learning, fact_vectors, openai, anthropic, external model, httpx,
   pa_binding, c0_binding, l2_binding, agentic_core.
 
 FORBIDDEN IMPORTS (enforced by boundary guard tests):
@@ -21,7 +21,7 @@ FORBIDDEN IMPORTS (enforced by boundary guard tests):
 - write_section_to_semantic_cache
 - l6_shadow_learning
 - fact_vectors
-- openai / anthropic / qwen / vllm
+- openai / anthropic / PROVIDER_MODEL / external model
 - requests.post / httpx
 - pa_binding / l2_binding / c0_binding
 - agentic_core

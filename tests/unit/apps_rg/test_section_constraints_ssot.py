@@ -11,6 +11,8 @@ from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     FINAL_BULLET_COUNT,
     SC_PATH_COUNT_BY_LANE,
+    adaptive_sc_enabled_for_lane,
+    max_sc_path_count_for_lane,
 )
 from apps_rg.runtime.sections import section_product_shape_ssot as ssot
 from apps_rg.runtime.sections.competencies_rigor import (
@@ -64,8 +66,9 @@ def test_competencies_values_track_owner_constants() -> None:
     assert c["items_min"] == MIN_ITEMS_PER_CATEGORY
     assert c["items_max"] == MAX_ITEMS_PER_CATEGORY
     assert c["generic_min_graph_terms"] == GENERIC_CATEGORY_MIN_GRAPH_TERMS
-    # The 6->8 migration (W0-B) is complete: fixed band, not a range.
-    assert c["category_min"] == c["category_max"] == 8
+    # HBS/SVP adaptive design: candidate pool 8, final display band 6-8.
+    assert c["category_min"] == 6
+    assert c["category_max"] == 8
 
 
 def test_bullet_lane_values_track_owner_constants() -> None:
@@ -73,8 +76,11 @@ def test_bullet_lane_values_track_owner_constants() -> None:
         c = ssot.SECTION_CONSTRAINTS[lane]
         assert c["final_count"] == FINAL_BULLET_COUNT[lane], lane
         assert c["sc_pool_paths"] == SC_PATH_COUNT_BY_LANE[lane], lane
+        assert c["sc_max_paths"] == max_sc_path_count_for_lane(lane), lane
+        assert c["adaptive_sc_enabled"] == adaptive_sc_enabled_for_lane(lane), lane
         # sourced, not the .get() default
         assert c["final_count"] > 0 and c["sc_pool_paths"] > 0, lane
+        assert c["sc_max_paths"] >= c["sc_pool_paths"], lane
 
 
 def test_narrative_lane_values_track_owner_constants() -> None:

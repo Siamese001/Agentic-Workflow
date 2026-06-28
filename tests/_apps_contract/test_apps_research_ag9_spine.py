@@ -131,7 +131,7 @@ def test_l0_emits_route_r3():
     assert route.grounding_required is True
     assert route.write_authority_present is False
     assert route.l3_required is False
-    assert "Qwen/Qwen2.5-32B-Instruct-AWQ" in route.allowed_models
+    assert "Retired/Provider-Model" in route.allowed_models
 
 
 # ---------------------------------------------------------------------------

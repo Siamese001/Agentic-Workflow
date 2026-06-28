@@ -429,7 +429,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
             "claim_ledger": claim_ledger,
             "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
             "gap_notes": [],
-            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB"}],
             "self_check": {
                 "bullet_count_valid": True,
                 "no_cross_contamination": True,
@@ -865,7 +865,7 @@ def run_ibm_bullets_execution(
     *,
     artifact_dir_override: Path | None = None,
 ) -> dict[str, Any]:
-    """Single end-to-end ibm_bullets run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
+    """Single end-to-end ibm_bullets run (external_model): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
 

@@ -99,7 +99,7 @@ def test_allow_non_allow_exit_zero_does_not_force_plumbing_when_product_passes()
         (),
         {
             "mock_judges": False,
-            "provider": "qwen_vllm",
+            "provider": "retired_provider_profile",
             "allow_non_allow_exit_zero": True,
             "allow_test_mock_judges": False,
             "allow_test_mock_provider": False,

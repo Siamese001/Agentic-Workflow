@@ -78,8 +78,8 @@ def _make_prompt(
         trace_id="trace-test-001",
         compilation_hash=compilation_hash,
         evidence_digest=evidence_digest,
-        target_model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-        target_provider="vllm",
+        target_model="Retired/Provider-Model",
+        target_provider="local_model_server",
         l5_certification_ref=_L5_CERT_REF,
         component_hash_map=component_hash_map or {},
     )

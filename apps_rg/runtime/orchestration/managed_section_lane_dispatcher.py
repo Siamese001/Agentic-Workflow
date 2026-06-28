@@ -1,4 +1,4 @@
-"""Managed wave-based Phase-1 lane dispatcher (vLLM-safe parallelism)."""
+"""Managed wave-based Phase-1 lane dispatcher (external model-safe parallelism)."""
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed

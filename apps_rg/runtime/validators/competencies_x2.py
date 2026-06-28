@@ -300,7 +300,7 @@ def term_supports_resume_or_graph(
 
 
 def _one_token_technical_cap_ok(term: str) -> bool:
-    """Heuristic: acronym / product token shapes (GraphRAG, AWS, vLLM, ChromaDB)."""
+    """Heuristic: acronym / product token shapes (GraphRAG, AWS, external model, ChromaDB)."""
     p = term.strip()
     if len(p) < 2:
         return False

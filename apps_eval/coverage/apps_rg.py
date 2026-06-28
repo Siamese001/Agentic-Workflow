@@ -310,6 +310,30 @@ def _uwg_commit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "UNKNOWN", "uwg commit artifact is not an object", payload, "object"
 
 
+def _trace_reconciliation_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    if payload is None:
+        return "UNKNOWN", "trace reconciliation artifact exists but could not be parsed", None, "readable JSON"
+    if not isinstance(payload, dict):
+        return "UNKNOWN", "trace reconciliation artifact is not an object", payload, "object"
+    verdict = str(payload.get("trace_verdict") or "").strip()
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    observed = {
+        "trace_verdict": verdict,
+        "otel_snapshot_available": payload.get("otel_snapshot_available"),
+        "local_provider_attempt_span_count": payload.get("local_provider_attempt_span_count"),
+        "otel_provider_attempt_span_count": payload.get("otel_provider_attempt_span_count"),
+        "fail_count": summary.get("fail_count"),
+        "warn_count": summary.get("warn_count"),
+    }
+    if verdict == "TRACE_RECONCILED":
+        return "PASS", "trace reconciliation completed without mismatch", observed, "TRACE_RECONCILED"
+    if verdict in {"TRACE_PARTIAL", "TRACE_UNAVAILABLE"}:
+        return "WARN", f"trace reconciliation is {verdict}", observed, "TRACE_RECONCILED"
+    if verdict == "TRACE_MISMATCH":
+        return "FAIL", "trace reconciliation found an OTel/local receipt mismatch", observed, "TRACE_RECONCILED"
+    return "UNKNOWN", "trace reconciliation verdict missing or unknown", observed, "TRACE_RECONCILED"
+
+
 def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if payload is None:
         return "UNKNOWN", "exit artifact exists but could not be parsed", None, "readable JSON with whole-run exit"
@@ -359,6 +383,8 @@ def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[
         verdict, reason, observed, threshold = _uwg_validation_verdict(payload)
     elif gate_id == "uwg_commit_receipt_bound":
         verdict, reason, observed, threshold = _uwg_commit_verdict(payload)
+    elif gate_id == "trace_reconciliation_consumed":
+        verdict, reason, observed, threshold = _trace_reconciliation_verdict(payload)
     else:
         verdict, reason, observed, threshold = "PASS", "artifact-level proof resolved", artifact_ref, "artifact_ref"
     failure_mode = "" if verdict in {"PASS", "WARN"} else f"microstep.{gate_id}"

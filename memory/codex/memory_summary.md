@@ -16,7 +16,7 @@ The user is operating a local Codex memory system on Windows + PowerShell and is
 
 ## General Tips
 
-- Environment baseline: Windows + PowerShell; Agentic Workflow project memory lives under `C:\Git\Agentic-Workflow-FRESH\memory\`; the global Codex memory path `C:\Users\amita\.codex\memories` is for cross-project/user-level state only.
+- Environment baseline: Windows + PowerShell; Agentic Workflow project memory lives under `C:\Git\Agentic-Workflow-FRESH\memory\`; the global Codex memory path `C:\Users\amita\.codex\memories` and Codex product memories are for cross-project/user-level recall only, never project SSOT.
 - For repo-wide merge/publish work in `C:\Git\Agentic-Workflow-FRESH`, start with `git worktree list --porcelain` plus `git branch --merged/--no-merged origin/main` after fetch; search `MEMORY.md` for `branch containment`, `detached merge worktree`, or `git merge -s ours --no-ff`.
 - Use `skills/repo-main-merge-publish/SKILL.md` first for branch-to-main publication requests in this repo.
 - If `main` is dirty, prefer a detached merge worktree for publish steps; if `origin/main` advances mid-workflow, fetch again and merge the new remote tip before pushing.

@@ -577,7 +577,7 @@ class TestTC21_NoToolModelExecution:
             r"HopPipelineExecutor",
             r"anthropic\.",
             r"openai\.",
-            r"vllm\.",
+            r"local_model_server\.",
             r"requests\.post",
         ]
         for pat in forbidden:

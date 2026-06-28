@@ -65,6 +65,11 @@
   `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,
   `raw_memories.md`, rollout summaries, and repo-specific Codex skills. Keep global/user preferences
   outside the repo; keep project-governance and project-run memory in this repo-owned `memory/` tree.
+- **Codex native/global memory boundary (2026-06-28):** Codex product memories and
+  `C:\Users\amita\.codex\memories` are ambient user/cross-workflow recall only. Agentic Workflow
+  project facts, governance decisions, and run history resolve to repo-local `memory/`; if Codex native
+  memories are ever enabled, use `memories.disable_on_external_context = true` and do not let generated
+  memories override checked-in project guidance.
 - New `plans/*.md` files are **mint-gated** (`pre_write_plan_mint_gate.py`) — create only with explicit
   user authorization in-turn. Editing existing plan files is unrestricted.
 - Bash commands containing legacy execution tokens (`Windsurf`/`Cursor`) are **blocked** by
@@ -92,6 +97,13 @@
 - **L6 / apps_eval microstep alignment (2026-06-27):** L6 shadow observability uses the same
   `microstep_id` join key as `apps_eval` for apps_rg, but remains post-run, read-only, and
   future-run-only. Detail: `memory/codex/l6_apps_eval_microstep_alignment_invariant.md`.
+- **apps_rg L7 provider attempt spans (2026-06-28):** provider RCA timing now has a normalized
+  `provider_attempt_spans` surface on provider responses, fallback receipts, and section L7 binding
+  manifests. Detail: `memory/codex/apps_rg_l7_provider_attempt_spans.md`.
+- **apps_rg OTel trace reconciliation consumer (2026-06-28):** OTel is consumed post-run through
+  `trace_reconciliation.json`; apps_eval grades it as optional observability evidence and L6 turns gaps
+  into future-run-only recommendations. Detail:
+  `memory/codex/apps_rg_otel_trace_reconciliation_consumer.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

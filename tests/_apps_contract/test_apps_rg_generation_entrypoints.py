@@ -16,8 +16,8 @@ ENTRYPOINT_MATRIX (code-derived; keep in sync with ``apps_rg.l2_recipe.r4_genera
    - **Retired:** ``APPS_RG_R4_GENERATION_MODE=legacy_full_resume`` raises (modular only)
    - Provider call expectation (modular mode): **per-lane** structured generation (no
      full-résumé provider lane)
-   - Qwen full résumé in one call: **only in legacy envelope mode** (single CPA)
-   - Qwen sections-only: **yes** in modular mode
+   - RetiredProvider full résumé in one call: **only in legacy envelope mode** (single CPA)
+   - RetiredProvider sections-only: **yes** in modular mode
    - Deterministic merge: **yes** for modular path (``modular_rg_output_builder``)
    - Product outputs: JSON + manifest (``ResumeArtifactGateStep``); DOCX retired
    - Status: **supported** canonical product entry

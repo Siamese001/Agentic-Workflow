@@ -1,6 +1,6 @@
 """Unit tests for repair_headline_segment_citations_for_grounding.
 
-Closes Bug:HeadlineSegmentMiscitationByQwen — Qwen sometimes cites a fact_id with zero
+Closes Bug:HeadlineSegmentMiscitationByRetiredProvider — RetiredProvider sometimes cites a fact_id with zero
 shared content nouns for a segment. The repair function should re-bind such segments
 to the best-covering facts from selected_fact_plan.facts.
 """

@@ -452,11 +452,56 @@ def write_embedding_settings_receipt(
     return out
 
 
-def semantic_cache_r1b_eligible(settings: AppsRgEmbeddingSettings | None = None) -> bool:
-    if not _env_truthy("APPS_RG_ENABLE_R1B_SEMANTIC_CACHE"):
-        return False
+def semantic_cache_r1b_eligibility(
+    settings: AppsRgEmbeddingSettings | None = None,
+) -> dict[str, Any]:
+    """Return the auditable R1B eligibility decision.
+
+    ``APPS_RG_ENABLE_R1B_SEMANTIC_CACHE`` is the explicit reuse-authority switch.
+    BGE/Chroma readiness can make R1B technically probeable, but it must not be
+    collapsed with authorization to short-circuit a whole-run generation.
+    """
+    reuse_flag_enabled = _env_truthy("APPS_RG_ENABLE_R1B_SEMANTIC_CACHE")
     s = settings or resolve_apps_rg_embedding_settings()
-    return bool(s.embeddings_enabled and s.semantic_cache_enabled and not s.semantic_cache_ineligible)
+    probeable = bool(
+        s.embeddings_enabled
+        and s.semantic_cache_enabled
+        and not s.semantic_cache_ineligible
+    )
+    reason = "eligible"
+    status = "eligible"
+    if not reuse_flag_enabled:
+        reason = "APPS_RG_ENABLE_R1B_SEMANTIC_CACHE_FALSE"
+        status = "disabled_by_policy"
+    elif not s.embeddings_enabled:
+        reason = "embeddings_disabled"
+        status = "ineligible"
+    elif not s.semantic_cache_enabled:
+        reason = "semantic_cache_disabled"
+        status = "ineligible"
+    elif s.semantic_cache_ineligible:
+        reason = s.decisive_reason or "semantic_cache_ineligible"
+        status = "ineligible"
+    return {
+        "schema_version": "apps_rg.r1b_semantic_cache_eligibility.v1",
+        "eligible": bool(reuse_flag_enabled and probeable),
+        "probeable": probeable,
+        "status": status,
+        "reason": reason,
+        "reuse_authority_env": "APPS_RG_ENABLE_R1B_SEMANTIC_CACHE",
+        "reuse_authority_enabled": reuse_flag_enabled,
+        "embeddings_enabled": bool(s.embeddings_enabled),
+        "embedding_model_resolved": bool(s.embedding_model_resolved),
+        "semantic_cache_enabled": bool(s.semantic_cache_enabled),
+        "semantic_cache_ineligible": bool(s.semantic_cache_ineligible),
+        "dense_retrieval_enabled": bool(s.dense_retrieval_enabled),
+        "chroma_persist_dir": s.chroma_persist_dir,
+        "decisive_reason": s.decisive_reason,
+    }
+
+
+def semantic_cache_r1b_eligible(settings: AppsRgEmbeddingSettings | None = None) -> bool:
+    return bool(semantic_cache_r1b_eligibility(settings).get("eligible"))
 
 
 __all__ = [
@@ -468,6 +513,7 @@ __all__ = [
     "assert_dense_retrieval_allowed",
     "load_bge_sentence_transformer",
     "resolve_apps_rg_embedding_settings",
+    "semantic_cache_r1b_eligibility",
     "semantic_cache_r1b_eligible",
     "write_embedding_settings_receipt",
 ]

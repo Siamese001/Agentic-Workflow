@@ -266,5 +266,5 @@ class TestReactivationGuard:
 
     def test_no_model_provider_import(self):
         import apps_rg.runtime.schemas.section_treatment_profile as mod
-        assert not hasattr(mod, "qwen_vllm")
+        assert not hasattr(mod, "retired_provider_profile")
         assert not hasattr(mod, "get_completion")

@@ -1,6 +1,6 @@
 ---
 name: memory-mcp
-description: Persistent SQLite-backed knowledge graph. Invoke at session start, when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions, patterns, or architectural invariants need to persist across sessions.
+description: Optional SQLite-backed knowledge graph projection. Native file memory under memory/ is SSOT; use this MCP only when graph recall/writeback is useful and the transport is healthy.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -8,83 +8,12 @@ metadata:
   deprecated: true
   redirect_to: mcp-integration
 ---
-# ⚠️ DEPRECATED — Redirected to mcp-integration §12
+# DEPRECATED - Redirected to mcp-integration §12
 
 > **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §12 — Memory MCP (2026-05-12, W4.P2).
 > **Status**: Redirect stub — preserved for backwards compatibility.
 > **Action**: Consult `.codex/skills/mcp-integration/SKILL.md` §12 for current guidance.
+> **ADR-095 update**: Native file memory under `memory/` is SSOT. `mem_recall_session_start` is no
+> longer a mandatory first-call ritual; Memory MCP degrades to file memory when unavailable.
 
 ---
-
-# Memory MCP Skill (Legacy)
-
-In-house persistent knowledge graph. SQLite-backed at `artifacts/memory/knowledge_graph.sqlite`. Survives legacy editor restarts.
-
-**Sibling skills:** `writeback-discipline` (when/what to write), `ledger-consulter-memory-recall` (recall pattern)
-**Doctrine:** `.codex/rules/agents-memory-lifecycle.md`, `.codex/rules/memory-management.md`
-
-## When To Use This MCP
-
-| User intent | Use Memory MCP? |
-|---|---|
-| Session start (mandatory recall) | ✅ Yes — `mem_recall_session_start` is the FIRST tool call of every session |
-| User asks about past context | ✅ Yes |
-| Before HITL / Author-Gate decision | ✅ Yes — load relevant ProceduralPatterns |
-| After architecture decision / RCA / pattern discovery | ✅ Yes — write ProceduralPattern or ArchitecturalInvariant |
-| User says "remember this" | ✅ Yes |
-| Semantic similarity search | ❌ No | `vector_db` |
-| Project status / wave / phase | ❌ No | `notion` |
-
-## Tool Routing
-
-| Goal | Tool |
-|---|---|
-| Session-start recall (mandatory) | `mem_recall_session_start` |
-| Health probe | `memory_health` / `mem_health_check` |
-| Stats | `mem_get_stats` |
-| Read full graph (warning: large) | `read_graph` |
-| Search entities/observations | `search_nodes` |
-| Open specific entities | `open_nodes` |
-| Create new entities | `create_entities` |
-| Add observations to existing | `add_observations` |
-| Create relations between entities | `create_relations` |
-| Delete entities | `delete_entities` |
-| Delete observations | `delete_observations` |
-| Delete relations | `delete_relations` |
-| Cleanup stale (>N days) | `mem_cleanup_stale` |
-| Import ADG context | `mem_import_adg_context` |
-
-## Entity Type Conventions (CRITICAL)
-
-Only these types survive `mem_cleanup_stale`. Anything else (including `"general"`) is purged at 30 days:
-
-| Type | Use |
-|---|---|
-| `ProceduralPattern` | Fix recipes, debugging playbooks, tool-usage patterns |
-| `ProjectContext` | Active blockers, plan status, next-action |
-| `ArchitecturalInvariant` | Code-topology rules that must not be violated |
-| `EpisodicEvent` | Important one-time occurrences (rare — prefer ProceduralPattern) |
-
-❌ **Never use `entityType: "general"`.** It will be purged.
-
-## Hard Rules
-
-1. **Constitutional §17:** First tool call of every session is `mem_recall_session_start`.
-2. **15/3 Rule (writeback-discipline):** If solving took >15 min, spend up to 3 min writing back.
-4. **Observations must be recall-actionable** — generic strings like "fixed bug" are useless to next-session Claude Code.
-5. **Stale-source sniff test before writing `Project:*` entities.** Verify status against git log + filesystem before persisting.
-
-## Common Workflows
-
-**Session start:**
-1. `mem_recall_session_start` → load durable entities
-
-**After resolving recurring bug:**
-1. `create_entities([{name: 'ProceduralPattern:VectorDbZombieDeadlock', entityType: 'ProceduralPattern', observations: [...recipe steps...]}])`
-
-**Update plan status:**
-1. `add_observations([{entityName: 'Project:plan-slug-6hex', contents: ['Status: W2 complete; W3 pending OAuth fix.']}])`
-
-## Cross-Reference
-
-Notion holds the searchable row for human audit; Memory holds the recall-actionable observation for next-session Claude Code. For cross-cutting decisions, write to **both** with a Notion URL inside the Memory observation.

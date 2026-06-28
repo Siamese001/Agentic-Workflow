@@ -29,7 +29,7 @@ NON_PRODUCT_PROOF_PATHS: tuple[str, ...] = (
 
 NON_PRODUCT_ENV_MARKERS: frozenset[str] = frozenset(
     {
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+        "APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB",
         "APPS_RG_L2_PROVIDER_MODE=stub_only",
         "RETIRED_APPS_RG_R4_GENERATION_MODE",
     }

@@ -185,6 +185,14 @@
         "uwg_commit_receipt.json"
       ]
     },
+    "trace_reconciliation": {
+      "required": false,
+      "source_artifact_schema": "apps_rg.trace_reconciliation.v1",
+      "relative_paths": [
+        "trace_reconciliation.json",
+        "observability/trace_reconciliation.json"
+      ]
+    },
     "eval_record": {
       "required": true,
       "source_artifact_schema": "apps_eval.completed_eval.v3",

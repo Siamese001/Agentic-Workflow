@@ -89,9 +89,9 @@ def _minimal_graph_run_dir(tmp_path: Path) -> Path:
         json.dumps({"proof_source": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH}),
         encoding="utf-8",
     )
-    (run / "provider_request.json").write_text(json.dumps({"model": "qwen_vllm"}), encoding="utf-8")
+    (run / "provider_request.json").write_text(json.dumps({"model": "retired_provider_profile"}), encoding="utf-8")
     (run / "provider_response.json").write_text(
-        json.dumps({"model": "qwen_vllm", "runtime_generation_status": "REAL_LLM"}),
+        json.dumps({"model": "retired_provider_profile", "runtime_generation_status": "REAL_LLM"}),
         encoding="utf-8",
     )
     (run / "l2_output.json").write_text(
@@ -117,7 +117,7 @@ def _minimal_graph_run_dir(tmp_path: Path) -> Path:
 @pytest.mark.parametrize(
     "env_key,env_val",
     [
-        ("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1"),
+        ("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", "1"),
     ],
 )
 def test_contract_rejects_offline_stub_env(monkeypatch: pytest.MonkeyPatch, env_key: str, env_val: str) -> None:
@@ -173,10 +173,10 @@ def test_validator_fails_broad_ledger_authority(tmp_path: Path) -> None:
 
 def test_validator_fails_mock_provider_marker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     run = _minimal_graph_run_dir(tmp_path)
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
+    monkeypatch.setenv("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", "1")
     report = validate_run_dir(run, repo=REPO)
     assert report.status == "FAIL"
-    assert any("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB" in f for f in report.mock_provider_flags)
+    assert any("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB" in f for f in report.mock_provider_flags)
 
 
 def test_validator_fails_deprecated_dispatch_reference(tmp_path: Path) -> None:

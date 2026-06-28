@@ -18,13 +18,13 @@ BRIEF_PATH = "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_br
 
 
 def contract_env(*, live_l2: bool = False) -> dict[str, str]:
-    """Live ``qwen_vllm`` contract runs — no mock provider, no offline Qwen stub."""
+    """Live ``retired_provider_profile`` contract runs — no mock provider, no offline RetiredProvider stub."""
     env = {**os.environ, "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
     for key in (
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+        "APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB",
         "APPS_RG_TEST_HARNESS",
         "APPS_RG_MOCK_JUDGES",
-        "APPS_RG_SKIP_QWEN_VLLM_HEALTH",
+        "APPS_RG_SKIP_RETIRED_PROVIDER_PROFILE_HEALTH",
         "APPS_RG_L2_FORCE_STUB",
     ):
         env.pop(key, None)
@@ -62,7 +62,7 @@ def base_canonical_argv(
         "--manual-brief",
         manual_brief or BRIEF_PATH,
         "--provider",
-        "qwen_vllm",
+        "retired_provider_profile",
         "--allow-non-allow-exit-zero",
     ]
     if artifact_dir:
@@ -79,17 +79,17 @@ def contract_harness_fast() -> bool:
     )
 
 
-def qwen_live_available() -> bool:
+def retired_provider_live_available() -> bool:
     """True when the external generation provider (Claude) is credentialed for live CLI lanes.
 
-    The local Qwen/vLLM provider was removed; live CLI contract lanes now require a real
+    The local RetiredProvider/local model server provider was removed; live CLI contract lanes now require a real
     ``ANTHROPIC_API_KEY`` for the external generation model.
     """
     return bool(str(os.environ.get("ANTHROPIC_API_KEY") or "").strip())
 
 
 def should_skip_contract_live_lane() -> bool:
-    return contract_harness_fast() or not qwen_live_available()
+    return contract_harness_fast() or not retired_provider_live_available()
 
 
 def live_lane_skip_reason(section: str = "") -> str:
@@ -105,7 +105,7 @@ def live_lane_skip_reason(section: str = "") -> str:
 
 
 def contract_live_pytestmark(section: str = ""):
-    """Module-level mark: skip entire file when fast mode or vLLM unreachable."""
+    """Module-level mark: skip entire file when fast mode or local model server unreachable."""
     import pytest
 
     return pytest.mark.skipif(should_skip_contract_live_lane(), reason=live_lane_skip_reason(section))
@@ -238,7 +238,7 @@ __all__ = [
     "contract_live_pytestmark",
     "critical_gate_ids",
     "live_lane_skip_reason",
-    "qwen_live_available",
+    "retired_provider_live_available",
     "resolve_latest_real_run_dir",
     "run_lane_cli",
     "run_lane_cli_once",

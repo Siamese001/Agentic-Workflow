@@ -107,7 +107,7 @@ def _minimal_chain(tmp_path: Path, section_id: str) -> dict:
             "raw_proof_pool_direct_to_pa": False,
         },
     )
-    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="qwen_vllm")
+    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="retired_provider_profile")
     _write_json(tmp_path / "provider_request.json", {})
     _write_json(tmp_path / "provider_response.json", {})
     _write_json(tmp_path / "l2_output.json", {})

@@ -23,6 +23,10 @@ from agentic_core.L0_routing.config.model_catalog import OPENAI_OMIT_TEMPERATURE
 
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
+from apps_rg.runtime.providers.provider_attempt_spans import (
+    build_provider_attempt_span,
+    summarize_provider_attempt_spans,
+)
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.section_model_limits import (
     external_claude_generation_model,
@@ -418,10 +422,48 @@ class ExternalProvider:
     ) -> ProviderResult:
         attempt_started_at_utc = datetime.now(timezone.utc).isoformat()
 
-        def _provider_response_with_attempt(payload: dict[str, Any] | None) -> dict[str, Any]:
+        def _provider_response_with_attempt(
+            payload: dict[str, Any] | None,
+            *,
+            provider_attempted: bool,
+            provider_available: bool,
+            runtime_generation_status: str,
+            exact_provider_error: str | None,
+            model: str | None = None,
+        ) -> dict[str, Any]:
             response = dict(payload or {})
             response.setdefault("attempt_started_at_utc", attempt_started_at_utc)
             response["attempt_completed_at_utc"] = datetime.now(timezone.utc).isoformat()
+            transport_response = response.get("transport_response")
+            nested_timing = (
+                transport_response.get("transport_timing")
+                if isinstance(transport_response, Mapping)
+                else None
+            )
+            span = build_provider_attempt_span(
+                attempt_kind="requested",
+                attempt_index=0,
+                provider=self.provider_profile.value,
+                model=str(model or self.model),
+                provider_attempted=provider_attempted,
+                provider_available=provider_available,
+                runtime_generation_status=runtime_generation_status,
+                started_at_utc=str(response.get("attempt_started_at_utc") or ""),
+                completed_at_utc=str(response.get("attempt_completed_at_utc") or ""),
+                exact_provider_error=exact_provider_error,
+                timeout_seconds=provider_timeout_seconds,
+                token_budget=int(token_budget),
+                temperature=float(temperature),
+                request_digest=str(response.get("request_digest") or ""),
+                transport_progress=response.get("transport_progress")
+                if isinstance(response.get("transport_progress"), Mapping)
+                else None,
+                transport_timing=response.get("transport_timing")
+                if isinstance(response.get("transport_timing"), Mapping)
+                else nested_timing,
+            )
+            response["provider_attempt_spans"] = [span]
+            response["provider_attempt_timing_summary"] = summarize_provider_attempt_spans([span])
             return response
 
         prompt = _prompt_text(compiled_prompt)
@@ -443,15 +485,22 @@ class ExternalProvider:
         if self._uses_process_environ:
             bootstrap_process_env_if_needed(self.environ)
         if not str(self.environ.get(self.api_key_env_var) or "").strip():
+            error = f"External provider credential unavailable: {self.api_key_env_var}"
             return ProviderResult(
                 provider_requested=self.provider_profile.value,
                 provider_attempted=False,
                 provider_available=False,
-                exact_provider_error=f"External provider credential unavailable: {self.api_key_env_var}",
+                exact_provider_error=error,
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
-                provider_response=_provider_response_with_attempt({"provider_profile": self.provider_profile.value}),
+                provider_response=_provider_response_with_attempt(
+                    {"provider_profile": self.provider_profile.value},
+                    provider_attempted=False,
+                    provider_available=False,
+                    runtime_generation_status="BLOCKED",
+                    exact_provider_error=error,
+                ),
             )
         transport = self.transport or self._default_transport
         try:
@@ -462,16 +511,21 @@ class ExternalProvider:
             )
         except HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")[:1000]
+            error = f"External provider HTTP {exc.code}: {detail or exc.reason}"
             return ProviderResult(
                 provider_requested=self.provider_profile.value,
                 provider_attempted=True,
                 provider_available=False,
-                exact_provider_error=f"External provider HTTP {exc.code}: {detail or exc.reason}",
+                exact_provider_error=error,
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
                 provider_response=_provider_response_with_attempt(
-                    {"transport_progress": dict(progress_sink)} if progress_sink else {}
+                    {"transport_progress": dict(progress_sink)} if progress_sink else {},
+                    provider_attempted=True,
+                    provider_available=False,
+                    runtime_generation_status="BLOCKED",
+                    exact_provider_error=error,
                 ),
             )
         except (ProviderGatewayError, TimeoutError, OSError, json.JSONDecodeError) as exc:
@@ -485,18 +539,21 @@ class ExternalProvider:
                     f", chars_received={prog.get('raw_output_chars')}"
                     f", chunk_count={prog.get('chunk_count')}]"
                 )
+            error = f"External provider call failed: {type(exc).__name__}: {exc}{progress_note}"
             return ProviderResult(
                 provider_requested=self.provider_profile.value,
                 provider_attempted=True,
                 provider_available=False,
-                exact_provider_error=(
-                    f"External provider call failed: {type(exc).__name__}: {exc}{progress_note}"
-                ),
+                exact_provider_error=error,
                 runtime_generation_status="BLOCKED",
                 model=self.model,
                 raw_model_output="",
                 provider_response=_provider_response_with_attempt(
-                    {"transport_progress": prog} if prog else {}
+                    {"transport_progress": prog} if prog else {},
+                    provider_attempted=True,
+                    provider_available=False,
+                    runtime_generation_status="BLOCKED",
+                    exact_provider_error=error,
                 ),
             )
         text = str(response.get("text") or response.get("content") or "")
@@ -517,7 +574,12 @@ class ExternalProvider:
                     "effective_timeout_seconds": provider_timeout_seconds,
                     "transport_timing": response.get("transport_timing"),
                     "transport_response": response,
-                }
+                },
+                provider_attempted=True,
+                provider_available=True,
+                runtime_generation_status="REAL_LLM",
+                exact_provider_error=None,
+                model=resolved_model,
             ),
         )
 

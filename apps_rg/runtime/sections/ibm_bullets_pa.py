@@ -52,7 +52,7 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "only when supported by linked ledger facts. "
         "claim_ledger: one row per bullet; claim_text non-empty after trim; source_fact_ids must match "
         "ALLOWED_SOURCE_FACT_IDS exactly.\n"
-        "POOL: each Qwen path emits a full 5-bullet set with semantically distinct framing; "
+        "POOL: each PROVIDER_MODEL path emits a full 5-bullet set with semantically distinct framing; "
         "Claude selector picks best variant per bul_ibm_* slot. "
         "Metrics are expected when the graph supplies differentiated allowed_metric_outcome_ids; "
         "do not under-surface approved graph metrics. Metrics allowed only when bound to "

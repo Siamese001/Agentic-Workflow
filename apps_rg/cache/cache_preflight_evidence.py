@@ -29,6 +29,8 @@ def _r1b_status(preflight: WholeRunCachePreflightOutcome) -> str:
     if preflight.section_lane:
         return "skipped"
     if preflight.r1b_hit:
+        if preflight.r1b_probe_only:
+            return "hit_probe_only"
         return "hit"
     if preflight.r1b_result is None:
         return "skipped"
@@ -36,6 +38,17 @@ def _r1b_status(preflight: WholeRunCachePreflightOutcome) -> str:
     if outcome == "r1b_inadmissible_only":
         return "inadmissible_only"
     return "miss"
+
+
+def _r1b_reason(preflight: WholeRunCachePreflightOutcome) -> str:
+    if preflight.r1b_preflight_reason:
+        return preflight.r1b_preflight_reason
+    if preflight.section_lane:
+        return "section_lane_bypass"
+    if preflight.r1b_result is None:
+        eligibility = preflight.r1b_eligibility or {}
+        return str(eligibility.get("reason") or "r1b_not_executed")
+    return str(preflight.r1b_result.outcome or "r1b_preflight_executed")
 
 
 def build_cache_preflight_evidence(
@@ -68,6 +81,8 @@ def build_cache_preflight_evidence(
         "cache_preflight_completed": True,
         "r1a_preflight_status": _r1a_status(preflight),
         "r1b_preflight_status": _r1b_status(preflight),
+        "r1b_preflight_reason": _r1b_reason(preflight),
+        "r1b_eligibility": dict(preflight.r1b_eligibility),
         "cache_result": cache_result,
         "cache_miss_receipt_ref": miss_ref,
         "generation_spine_invocation_allowed": generation_allowed,

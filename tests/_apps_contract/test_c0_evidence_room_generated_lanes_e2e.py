@@ -59,7 +59,7 @@ def _lane_args() -> argparse.Namespace:
         jd_text=JD_TEXT_DEFAULT,
         briefing=BRIEFING_DEFAULT,
         base_resume_ref="",
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
     )
 
 

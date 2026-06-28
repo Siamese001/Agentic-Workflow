@@ -177,8 +177,8 @@ def test_live_http_error_no_stub_fallback(monkeypatch: pytest.MonkeyPatch) -> No
 
     cpa = MagicMock()
     cpa.trace_id = "t"
-    cpa.target_provider = "local_vllm"
-    cpa.target_model = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    cpa.target_provider = "local_local_model_server"
+    cpa.target_model = "Retired/Provider-Model"
     cpa.request_id = "r"
     cpa.run_id = "run"
     cpa.compilation_hash = "h"
@@ -188,7 +188,7 @@ def test_live_http_error_no_stub_fallback(monkeypatch: pytest.MonkeyPatch) -> No
     cpa.system_preamble = "s"
     cpa.user_instruction = "u"
     cpa.replay_key = "rk"
-    cpa.allowed_models = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
+    cpa.allowed_models = ("Retired/Provider-Model",)
 
     bad = ProviderResponse(
         success=False,
@@ -228,8 +228,8 @@ def test_live_timeout_failed_provider(monkeypatch: pytest.MonkeyPatch) -> None:
 
     cpa = MagicMock()
     cpa.trace_id = "t"
-    cpa.target_provider = "local_vllm"
-    cpa.target_model = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    cpa.target_provider = "local_local_model_server"
+    cpa.target_model = "Retired/Provider-Model"
     cpa.request_id = "r"
     cpa.run_id = "run"
     cpa.compilation_hash = "h"
@@ -239,13 +239,13 @@ def test_live_timeout_failed_provider(monkeypatch: pytest.MonkeyPatch) -> None:
     cpa.system_preamble = "s"
     cpa.user_instruction = "u"
     cpa.replay_key = "rk"
-    cpa.allowed_models = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
+    cpa.allowed_models = ("Retired/Provider-Model",)
 
     bad = ProviderResponse(
         success=False,
         text="",
         receipt=None,
-        error_message="timeout waiting for vLLM",
+        error_message="timeout waiting for local model server",
     )
     with patch(
         "apps_rg.runtime.bindings.l2_envelope_adapter.ProviderGateway.invoke",
@@ -273,8 +273,8 @@ def test_explicit_stub_marks_stub_receipt_on_success(monkeypatch: pytest.MonkeyP
 
     cpa = MagicMock()
     cpa.trace_id = "t"
-    cpa.target_provider = "local_vllm"
-    cpa.target_model = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    cpa.target_provider = "local_local_model_server"
+    cpa.target_model = "Retired/Provider-Model"
     cpa.request_id = "r"
     cpa.run_id = "run"
     cpa.compilation_hash = "h"
@@ -284,7 +284,7 @@ def test_explicit_stub_marks_stub_receipt_on_success(monkeypatch: pytest.MonkeyP
     cpa.system_preamble = "s"
     cpa.user_instruction = "u"
     cpa.replay_key = "rk"
-    cpa.allowed_models = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
+    cpa.allowed_models = ("Retired/Provider-Model",)
 
     stub_json = '{"stub_response": true, "hash": "x"}'
     ok = ProviderResponse(success=True, text=stub_json, receipt=None)

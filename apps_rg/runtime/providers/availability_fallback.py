@@ -8,6 +8,10 @@ from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from apps_rg.runtime.providers.external_provider import ExternalProvider
+from apps_rg.runtime.providers.provider_attempt_spans import (
+    provider_result_attempt_span,
+    summarize_provider_attempt_spans,
+)
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.provider_gateway import ProviderProfile
 from apps_rg.runtime.section_model_limits import (
@@ -150,6 +154,33 @@ def _fallback_receipt(
     fallback_output_accepted = fallback_runtime_status == "REAL_LLM"
     accepted_provider = fallback_provider if fallback_output_accepted else None
     accepted_model = fallback_result.model if fallback_output_accepted and fallback_result else None
+    spans = [
+        provider_result_attempt_span(
+            initial_result,
+            attempt_kind="requested",
+            attempt_index=0,
+            section_id=section_id,
+            fallback_reason=reason_category,
+            output_accepted=False,
+            accepted_output_source="initial_blocked_result",
+        )
+    ]
+    if fallback_result is not None:
+        spans.append(
+            provider_result_attempt_span(
+                fallback_result,
+                attempt_kind="fallback",
+                attempt_index=1,
+                section_id=section_id,
+                fallback_reason=reason_category,
+                output_accepted=fallback_output_accepted,
+                accepted_output_source=(
+                    "fallback_provider" if fallback_output_accepted else "fallback_blocked_result"
+                ),
+                fallback_started_at_utc=fallback_attempt_started_at_utc,
+                fallback_completed_at_utc=fallback_attempt_completed_at_utc,
+            )
+        )
     receipt: dict[str, Any] = {
         "policy": "apps_rg_generation_claude_availability_to_openai_ssot",
         "scope": "apps_rg_generation_only",
@@ -178,6 +209,8 @@ def _fallback_receipt(
         "accepted_output_provider": accepted_provider,
         "accepted_output_model": accepted_model,
         "accepted_output_source": "fallback_provider" if fallback_output_accepted else "initial_blocked_result",
+        "provider_attempt_spans": spans,
+        "provider_attempt_timing_summary": summarize_provider_attempt_spans(spans),
         "model_attempts": [
             {
                 "attempt": "requested",
@@ -216,6 +249,10 @@ def _with_availability_receipt(result: ProviderResult, receipt: dict[str, Any]) 
     merged_receipt["apps_rg_availability_fallback"] = receipt
     provider_response = dict(result.provider_response or {})
     provider_response["apps_rg_availability_fallback"] = receipt
+    provider_response["provider_attempt_spans"] = receipt.get("provider_attempt_spans") or []
+    provider_response["provider_attempt_timing_summary"] = (
+        receipt.get("provider_attempt_timing_summary") or {}
+    )
     return replace(
         result,
         provider_response=provider_response or result.provider_response,

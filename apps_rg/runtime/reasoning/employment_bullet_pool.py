@@ -1,4 +1,4 @@
-"""Employment bullet lanes (Unify / IBM): Qwen pool → Claude top-N with score floor + regen."""
+"""Employment bullet lanes (Unify / IBM): model pool -> Claude top-N with score floor + regen."""
 
 from __future__ import annotations
 
@@ -13,7 +13,10 @@ from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
     pool_selector_dimension_ids,
 )
 from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
-from apps_rg.runtime.reasoning.competencies_graph_pool import COMPETENCIES_SC_PATH_COUNT
+from apps_rg.runtime.reasoning.competencies_graph_pool import (
+    COMPETENCIES_SC_PATH_COUNT,
+    competencies_initial_sc_path_count,
+)
 from apps_rg.runtime.section_execution_plan import (
     BULLET_LANES,
     DEFAULT_ACTIVE_SC_PATHS,
@@ -30,22 +33,30 @@ EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",
 # Variance-class alignment (2026-06): bullet lanes generate over a FIXED slot count
 # (unify=6, ibm=5, insurtech=3, ey=3). Generation variance is handled by the Claude pool
 # selector + min_selection_score floor + employment X2 metric/anchor gates, NOT by
-# brute-force sampling. SC count is per-lane by slot breadth: the 3-slot graph lanes
-# (insurtech/ey) run 2 SC paths (operator decision, plan apps-rg-e2e-readiness-e7c4f9 G1);
-# the wider 5-6-slot lanes (unify/ibm) keep 4 so the per-slot selector has enough candidate
-# diversity to cover every slot above the score floor. EY/InsurTech join the SC-pool path
-# here on equal footing with Unify/IBM (same engine + Claude per-slot selector judge).
+# brute-force sampling. Unify/IBM are adaptive: start with 2 paths and expand to 4 only
+# when the selector gate reports missing slots or below-threshold winners. EY/InsurTech
+# run the 2-path SC pool directly.
 EMPLOYMENT_BULLET_SC_PATHS: Final[int] = 2
+EMPLOYMENT_BULLET_WIDE_MAX_SC_PATHS: Final[int] = DEFAULT_ACTIVE_SC_PATHS
+ADAPTIVE_EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset(
+    {"unify_bullets", "ibm_bullets"}
+)
 SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
-    "unify_bullets": DEFAULT_ACTIVE_SC_PATHS,
-    "ibm_bullets": DEFAULT_ACTIVE_SC_PATHS,
+    "unify_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+    "ibm_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+    "insurtech_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+    "ey_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+}
+MAX_SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
+    "unify_bullets": EMPLOYMENT_BULLET_WIDE_MAX_SC_PATHS,
+    "ibm_bullets": EMPLOYMENT_BULLET_WIDE_MAX_SC_PATHS,
     "insurtech_bullets": EMPLOYMENT_BULLET_SC_PATHS,
     "ey_bullets": EMPLOYMENT_BULLET_SC_PATHS,
 }
 
 REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
     lane: 3 for lane in BULLET_LANES
-} | {"competencies": 4}
+} | {"unify_bullets": 2, "ibm_bullets": 2, "competencies": 4}
 
 FINAL_BULLET_COUNT: Final[dict[str, int]] = {
     "unify_bullets": len(UNIFY_BULLET_IDS),
@@ -97,7 +108,7 @@ def sc_path_count_for_lane(section_lane: str) -> int:
     if lane in SC_PATH_COUNT_BY_LANE:
         return SC_PATH_COUNT_BY_LANE[lane]
     if lane == "competencies":
-        return COMPETENCIES_SC_PATH_COUNT
+        return competencies_initial_sc_path_count()
     from apps_rg.runtime.reasoning.section_reasoning_intensity import (
         profile_to_requested_kw,
         section_reasoning_profile,
@@ -108,6 +119,18 @@ def sc_path_count_for_lane(section_lane: str) -> int:
         return max(1, int(float(raw)))
     except (TypeError, ValueError):
         return 1
+
+
+def adaptive_sc_enabled_for_lane(section_lane: str) -> bool:
+    lane = str(section_lane or "").strip().lower()
+    return lane in ADAPTIVE_EMPLOYMENT_BULLET_LANES
+
+
+def max_sc_path_count_for_lane(section_lane: str) -> int:
+    lane = str(section_lane or "").strip().lower()
+    if lane in MAX_SC_PATH_COUNT_BY_LANE:
+        return MAX_SC_PATH_COUNT_BY_LANE[lane]
+    return sc_path_count_for_lane(lane)
 
 
 def regen_extra_path_count_for_lane(section_lane: str) -> int:
@@ -168,6 +191,8 @@ def build_employment_targeting_context(
         "proof_pool_type": pp.get("proof_pool_type"),
         "selection_method": (runtime_payload.get("selected_fact_plan") or {}).get("selection_method"),
         "pool_path_count": sc_path_count_for_lane(lane),
+        "max_pool_path_count": max_sc_path_count_for_lane(lane),
+        "adaptive_sc_enabled": adaptive_sc_enabled_for_lane(lane),
         "min_selection_score": min_selection_score_for_lane(lane),
         "final_bullet_count": FINAL_BULLET_COUNT.get(lane, 0),
         "allowed_fact_ids": allowed_fact_ids,
@@ -261,7 +286,7 @@ def evaluate_employment_selection_quality(
 
 def is_employment_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
     mode = str((gen_meta or {}).get("generation_mode") or "")
-    return mode.startswith("qwen_employment_pool")
+    return mode.startswith("model_employment_pool")
 
 
 def competencies_pool_x1d_judge_rows(
@@ -279,6 +304,7 @@ def competencies_pool_x1d_judge_rows(
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
     from apps_rg.runtime.reasoning.competencies_graph_pool import (
         COMPETENCIES_FINAL_CATEGORY_COUNT,
+        COMPETENCIES_MIN_CATEGORY_COUNT,
         min_competencies_selection_score,
     )
 
@@ -286,7 +312,8 @@ def competencies_pool_x1d_judge_rows(
     gate = dict((gen_meta or {}).get("selection_gate") or {})
     gate_ok = bool(gate.get("ok"))
     threshold = min_competencies_selection_score()
-    n_final = COMPETENCIES_FINAL_CATEGORY_COUNT
+    n_min = COMPETENCIES_MIN_CATEGORY_COUNT
+    n_max = COMPETENCIES_FINAL_CATEGORY_COUNT
 
     judge_path = artifact_dir / "bullet_pool_claude_selector_judge.json"
     sel_path = artifact_dir / "bullet_pool_selection.json"
@@ -305,7 +332,7 @@ def competencies_pool_x1d_judge_rows(
     scores = [float(s.get("score") or 0.0) for s in selections if s.get("passes", True) is not False]
     min_score = min(scores) if scores else 0.0
     categories_ok = bool(selections) and all(float(s.get("score") or 0.0) >= threshold for s in selections)
-    passed = gate_ok and categories_ok and len(selections) >= n_final
+    passed = gate_ok and categories_ok and n_min <= len(selections) <= n_max
 
     # E2E-08 guard: distinguish an EMPTY selection input (selector returned no candidates,
     # or bullet_pool_selection.json absent) from a genuine below-threshold model-quality
@@ -353,9 +380,15 @@ def competencies_pool_x1d_judge_rows(
     row["rubric_version"] = JUDGE_RUBRIC_VERSION
     row["selection_mode"] = str(
         (gen_meta or {}).get("selection_mode")
-        or ("openai_competencies_top_8_pass" if lane == "competencies" else "claude_competencies_top_8_pass")
+        or (
+            "openai_competencies_adaptive_6_8_pass"
+            if lane == "competencies"
+            else "claude_competencies_adaptive_6_8_pass"
+        )
     )
-    row["final_category_count"] = n_final
+    row["min_category_count"] = n_min
+    row["max_category_count"] = n_max
+    row["final_category_count"] = int(gate.get("categories_in_merged") or len(selections))
     if empty_selection:
         # Truthful diagnostic: this is an upstream selector/data condition, not a model
         # judge-quality failure. Stamp an explicit reason so it cannot be mistaken for one.
@@ -369,7 +402,7 @@ def competencies_pool_x1d_judge_rows(
             (
                 f"Competencies graph pool selector BLOCKED: {diagnostic_reason} "
                 f"(0 category selections, selection_file_present={selection_file_present}, "
-                f"gate_ok={gate_ok}, target_emit={n_final}). Upstream selector/data condition, "
+                f"gate_ok={gate_ok}, target_emit={n_min}-{n_max}). Upstream selector/data condition, "
                 f"not a model-quality judge failure."
             )
         ]
@@ -379,7 +412,7 @@ def competencies_pool_x1d_judge_rows(
             (
                 f"Competencies graph pool selector: {len(selections)} category selections, "
                 f"min_score={min_score:.2f}, threshold={threshold:.2f}, gate_ok={gate_ok}, "
-                f"target_emit={n_final}"
+                f"target_emit={n_min}-{n_max}"
             )
         ]
     return [row]
@@ -391,7 +424,7 @@ def employment_pool_x1d_judge_rows(
     section_id: str,
     gen_meta: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Single X1D row from Claude pool selection (15× Qwen paths → top-N pass)."""
+    """Single X1D row from Claude pool selection (multi-path model pool -> top-N pass)."""
     lane = str(section_id or "").strip().lower()
     gate = dict((gen_meta or {}).get("selection_gate") or {})
     gate_ok = bool(gate.get("ok"))
@@ -449,12 +482,15 @@ def employment_pool_x1d_judge_rows(
 
 
 __all__ = [
+    "ADAPTIVE_EMPLOYMENT_BULLET_LANES",
     "COMPETENCIES_SC_PATH_COUNT",
     "DEFAULT_MIN_SELECTION_SCORE",
     "EMPLOYMENT_BULLET_JUDGE_PROVIDERS",
     "EMPLOYMENT_BULLET_LANES",
     "EMPLOYMENT_BULLET_SC_PATHS",
+    "EMPLOYMENT_BULLET_WIDE_MAX_SC_PATHS",
     "EmploymentSelectionGate",
+    "MAX_SC_PATH_COUNT_BY_LANE",
     "competencies_pool_x1d_judge_rows",
     "employment_pool_x1d_judge_rows",
     "FINAL_BULLET_COUNT",
@@ -462,10 +498,12 @@ __all__ = [
     "REQUIRED_BULLET_IDS",
     "SC_PATH_COUNT_BY_LANE",
     "build_employment_targeting_context",
+    "adaptive_sc_enabled_for_lane",
     "evaluate_employment_selection_quality",
     "is_employment_bullet_lane",
     "is_employment_pool_generation",
     "max_employment_regen_rounds",
+    "max_sc_path_count_for_lane",
     "min_selection_score_for_lane",
     "regen_extra_path_count_for_lane",
     "sc_path_count_for_lane",

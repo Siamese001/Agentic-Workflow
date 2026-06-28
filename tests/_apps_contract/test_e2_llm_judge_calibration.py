@@ -161,7 +161,7 @@ def _run_judge_llm(
 
 
 def _check_llm_provider_available() -> tuple[bool, str]:
-    """Check if any LLM provider is available via env creds or vLLM endpoint.
+    """Check if any LLM provider is available via env creds or local model server endpoint.
 
     Returns:
         (available, description) — description names the provider found.
@@ -177,8 +177,8 @@ def _check_llm_provider_available() -> tuple[bool, str]:
         return True, f"openai ({os.getenv('OPENAI_MODEL', OPENAI_DEFAULT_MODEL_ID)})"
     if judge_override in ("gemini", "google") and google_key:
         return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
-    if judge_override in ("qwen", "vllm"):
-        return True, f"vllm ({os.getenv('QWEN_VLLM_MODEL') or os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
+    if judge_override in ("retired_provider", "local_model_server"):
+        return True, f"local_model_server ({os.getenv('RETIRED_PROVIDER_PROFILE_MODEL') or os.getenv('LOCAL_MODEL_SERVER_MODEL_NAME', 'Retired/Provider-Model')})"
 
     if not judge_override:
         if anthropic_key:
@@ -188,13 +188,13 @@ def _check_llm_provider_available() -> tuple[bool, str]:
         if google_key:
             return True, f"gemini ({(os.getenv('GOOGLE_AI_PRO_MODEL') or os.getenv('GEMINI_PRO_MODEL') or 'gemini-3.1-pro-preview')})"
 
-    # Fall back: check vLLM endpoint reachability
+    # Fall back: check local model server endpoint reachability
     try:
         import httpx as _httpx
-        base_url = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
+        base_url = os.getenv("LOCAL_MODEL_SERVER_BASE_URL", "http://localhost:8000")
         resp = _httpx.get(f"{base_url}/v1/models", timeout=5.0)
         if resp.status_code == 200:
-            return True, f"vllm ({os.getenv('QWEN_VLLM_MODEL') or os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
+            return True, f"local_model_server ({os.getenv('RETIRED_PROVIDER_PROFILE_MODEL') or os.getenv('LOCAL_MODEL_SERVER_MODEL_NAME', 'Retired/Provider-Model')})"
     except Exception:
         pass
 
@@ -548,7 +548,7 @@ class TestTier2SemanticSpearman:
         if not available:
             pytest.skip(
                 "LLM-backed context_recall judge requires provider creds in env. "
-                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=local_model_server."
             )
         from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env
         provider_ctx = build_judge_provider_context_from_env()
@@ -565,7 +565,7 @@ class TestTier2SemanticSpearman:
         if not available:
             pytest.skip(
                 "LLM-backed context_precision judge requires provider creds in env. "
-                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=local_model_server."
             )
         from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env
         provider_ctx = build_judge_provider_context_from_env()
@@ -580,14 +580,14 @@ class TestTier2SemanticSpearman:
         """LLM-backed answer_relevancy is the semantic promotion candidate.
 
         Requires any LLM provider creds in env (ANTHROPIC_API_KEY, OPENAI_API_KEY,
-        GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm with reachable endpoint).
+        GOOGLE_API_KEY, or JUDGE_PROVIDER=local_model_server with reachable endpoint).
         When no provider is available, skips explicitly — does NOT pass silently.
         """
         available, desc = _check_llm_provider_available()
         if not available:
             pytest.skip(
                 "LLM-backed answer_relevancy judge requires provider creds in env. "
-                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=local_model_server."
             )
 
         from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env

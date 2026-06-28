@@ -16,7 +16,7 @@ def attach_reasoning_to_prompt_trace(
     lane_key: str,
     provider_result_data: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """When using qwen_vllm, expose exec-trace-aligned keys for downstream X1 merges."""
+    """When using external_model, expose exec-trace-aligned keys for downstream X1 merges."""
     out = dict(trace)
     if provider != "external_claude":
         return out

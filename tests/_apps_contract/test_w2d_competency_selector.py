@@ -20,22 +20,22 @@ class TestStop10CompetencySelector:
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         assert template_path.exists()
     
-    def test_output_has_exactly_eight_emitted_categories(self):
-        """Output contract requires exactly 8 executive categories (graph_8x8)"""
+    def test_output_has_adaptive_six_to_eight_emitted_categories(self):
+        """Output contract requires 6-8 executive categories (graph_8x8)"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "min_items: 8" in content or "min_items:8" in content
+        assert "min_items: 6" in content or "min_items:6" in content
         assert "max_items: 8" in content or "max_items:8" in content
-        assert "category_count_exactly_eight" in content
+        assert "category_count_in_range_6_8" in content
         assert "min_three_terms_per_category" in content
         assert "graph_8x8" in content
         assert "candidate_category_count" in content
 
-    def test_fewer_than_eight_categories_fails(self):
-        """Pre-output validation rejects fewer than 8 categories"""
+    def test_fewer_than_six_categories_fails(self):
+        """Pre-output validation rejects fewer than 6 categories"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "competency_selector_v2.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "len(output.competencies) == 8" in content
+        assert "6 <= len(output.competencies) <= 8" in content
         assert "CATEGORY_COUNT_INVALID" in content
 
     def test_more_than_eight_categories_fails(self):

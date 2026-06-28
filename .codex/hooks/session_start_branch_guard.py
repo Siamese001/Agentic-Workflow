@@ -16,8 +16,8 @@ same-name branch/folder contract.
 
 Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
-Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default
-``<repo-parent>/<repo-name>-worktrees``).
+Worktree parent: ``<repo-parent>/<repo-name>-worktrees``. ``CHAT_WORKTREE_ROOT`` is
+ignored for new worktree guidance so Agentic-Workflow branches stay in the repo SSOT root.
 Execution owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
 The branch prefix is derived only from that owner; ``WORKTREE_BRANCH_PREFIX`` is ignored.
 """
@@ -86,9 +86,6 @@ def _branch_prefix() -> str:
 
 
 def _worktree_parent() -> Path:
-    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
-    if override:
-        return Path(override)
     return REPO_ROOT.parent / f"{_primary_checkout_name()}-worktrees"
 
 

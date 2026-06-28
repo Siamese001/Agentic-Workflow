@@ -71,7 +71,7 @@ def _integrated_canonical_argv() -> list[str]:
         "--manual-brief",
         BRIEF_PATH,
         "--provider",
-        "qwen_vllm",
+        "retired_provider_profile",
         "--allow-non-allow-exit-zero",
     ]
 

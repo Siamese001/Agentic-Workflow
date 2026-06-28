@@ -63,9 +63,9 @@ Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.codex/
 
 ## Memory
 
-First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Native file memory under `memory/` is canonical and the knowledge-graph MCP is optional. Detail: `memory/MEMORY.md` and `memory/codex/memory_summary.md`.
+At session start, load native file memory from `memory/MEMORY.md`. For non-trivial work, also read `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task.
 
-Codex project-memory loader convention: for non-trivial work in this repo, read `memory/MEMORY.md` first and then `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task. Treat `C:\Users\amita\.codex\memories` as global/user memory only; do not make it the SSOT for Agentic Workflow project memory.
+The knowledge-graph Memory MCP is optional for graph queries or writeback when its transport is healthy; if it fails, continue from file memory and do not retry-loop on the transport. Treat `C:\Users\amita\.codex\memories` and Codex product memories as global/user memory only; do not make them the SSOT for Agentic Workflow project memory.
 
 ## Constitutional floor
 

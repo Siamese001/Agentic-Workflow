@@ -27,15 +27,15 @@ def test_build_incremental_repair_contract_sets_max_delta_tokens(tmp_path: Path)
                 "policy_hash": "p",
                 "blueprint_hash": "b",
                 "registry_digest_set": [],
-                "target_model": "qwen-test",
-                "target_provider": "vllm",
+                "target_model": "retired_provider-test",
+                "target_provider": "local_model_server",
             }
         ),
         encoding="utf-8",
     )
     contract = build_incremental_repair_contract(
         messages=[{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
-        provider_payload={"model": "qwen-test"},
+        provider_payload={"model": "retired_provider-test"},
         x1d_judges=[
             {
                 "provider_key": "anthropic_claude",

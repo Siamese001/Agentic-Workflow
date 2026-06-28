@@ -1,4 +1,4 @@
-"""Unit tests — qwen-prompt-regen-reduction-7481e3 (W1–W5 hardening).
+"""Unit tests — retired_provider-prompt-regen-reduction-7481e3 (W1–W5 hardening).
 
 Covers:
   W1: E0 metric transposition + single current positive on SVP lane
@@ -71,7 +71,7 @@ class TestW1E0MetricTransposition:
             )
 
     def test_svp_positive_contains_placeholder_tokens(self):
-        """Confirm placeholders like [X], [Y] are present so Qwen knows to substitute from C0."""
+        """Confirm placeholders like [X], [Y] are present so RetiredProvider knows to substitute from C0."""
         by_id = _examples_by_id(_load_examples_yaml())
         after = by_id["exec_summary_pos_svp_it_strategy_001"]["after"]
         assert re.search(r"\[(?:X|Y|Z|A|B)\]", after), (

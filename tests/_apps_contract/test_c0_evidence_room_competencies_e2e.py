@@ -187,7 +187,7 @@ def test_competencies_cli_live_through_c0_room_artifacts(tmp_path: Path) -> None
         "--resume",
         str(resume),
         "--provider",
-        "qwen_vllm",
+        "retired_provider_profile",
         "--artifact-dir",
         str(art),
     ]

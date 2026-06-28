@@ -75,6 +75,7 @@ from apps_rg.runtime.sections.section_product_shape_ssot import (
     NARRATIVE_MAX_WORDS,
     product_shape_gate_ids_for_lane,
 )
+from apps_rg.runtime.sections.section_generation import build_section_request
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
@@ -375,18 +376,13 @@ def _materialize_bullet_generation(
         generation_method = "llm_generation"
         llm_output_used = True
         renderer_version = ""
-    elif provider_runtime_generation_status == "REAL_LLM" and cfg.allow_deterministic_graph_render:
-        bullets = _deterministic_graph_bullet_render(cfg=cfg, facts=facts, allowed=allowed)
-        generation_method = (
-            "deterministic_graph_render"
-            if bullets
-            else "deterministic_graph_render_blocked"
-        )
-        llm_output_used = False
-        renderer_version = ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION
     else:
         bullets = []
-        generation_method = "blocked"
+        generation_method = (
+            "model_output_invalid"
+            if provider_runtime_generation_status == "REAL_LLM"
+            else "blocked"
+        )
         llm_output_used = False
         renderer_version = ""
 
@@ -407,6 +403,21 @@ def _materialize_bullet_generation(
         "rendered_source_fact_ids_within_allowed_packet": set(source_fact_ids).issubset(allowed_set),
     }
     return bullets, receipt
+
+
+def _normalize_role_episode_bullet_pool_parsed(
+    parsed: dict[str, Any],
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    allowed: list[str],
+) -> dict[str, Any]:
+    """Normalize one SC path into the employment-pool shape for InsurTech/EY bullets."""
+    out = dict(parsed or {})
+    bullets = _normalize_bullets(out, cfg=cfg, allowed=allowed)
+    out["bullets"] = bullets
+    out["claim_ledger"] = _claim_ledger_from_bullets(bullets)
+    out.setdefault("jd_alignment", {"targeting_only": True, "jd_used_as_proof": False})
+    return out
 
 
 def _claim_ledger_from_bullets(bullets: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -801,6 +812,8 @@ def _judge_rows(
     provider_result: ProviderResult,
     x2_gates: list[dict[str, Any]],
     mock_judges: bool,
+    artifact_dir: Path | None = None,
+    generation_meta: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     if mock_judges:
         return [
@@ -812,6 +825,12 @@ def _judge_rows(
                 "section_id": cfg.section_id,
             }
         ]
+    if cfg.is_bullet_lane and artifact_dir is not None and is_employment_pool_generation(generation_meta):
+        return employment_pool_x1d_judge_rows(
+            artifact_dir=artifact_dir,
+            section_id=cfg.section_id,
+            gen_meta=generation_meta,
+        )
     if provider_result.runtime_generation_status != "REAL_LLM":
         return [
             {
@@ -1057,35 +1076,80 @@ def run_role_episode_lane_execution(
         if str(args.provider) == "external_openai"
         else external_claude_generation_model()
     )
-    provider_request = {
-        "provider_requested": str(args.provider),
-        "provider_attempted": True,
-        "model": generation_model,
-        "temperature": float(args.temperature),
-        "max_tokens": MAX_OUTPUT_TOKENS,
-        "prompt_hash": prompt_hash[:16],
-        "input_payload_hash": _json_hash(runtime_payload),
-        "mock_fallback_allowed": False,
-    }
-    write_json(artifact_dir / "provider_request.json", provider_request)
-    try:
-        provider_result = _provider_gateway().generate(
-            str(args.provider),
-            compiled_obj,
-            token_budget=MAX_OUTPUT_TOKENS,
-            temperature=float(args.temperature),
+    messages = [
+        {"role": "system", "content": compiled_obj.system_preamble},
+        {"role": "user", "content": prompt_text},
+    ]
+    provider_req, provider_payload = build_section_request(
+        messages=messages,
+        prompt_hash=prompt_hash[:16],
+        input_payload_hash=_json_hash(runtime_payload),
+        temperature=float(args.temperature),
+        max_tokens=MAX_OUTPUT_TOKENS,
+        model=generation_model,
+        provider_requested=str(args.provider),
+    )
+    write_json(artifact_dir / "provider_request.json", provider_req.to_dict())
+    generation_meta: dict[str, Any] = {}
+    if cfg.is_bullet_lane and is_employment_bullet_lane(sid):
+        provider_result, raw_output, parsed, parse_error, generation_meta = (
+            generate_bullet_lane_with_sc_and_claude(
+                section_lane=sid,
+                slot_kind="bullets",
+                provider_payload=provider_payload,
+                parse_model_json=_parse_json_object,
+                normalize_parsed=lambda p: _normalize_role_episode_bullet_pool_parsed(
+                    p,
+                    cfg=cfg,
+                    allowed=allowed_fact_ids,
+                ),
+                artifact_dir=artifact_dir,
+                run_id=run_id,
+                base_temperature=float(args.temperature),
+                required_bullet_ids=REQUIRED_BULLET_IDS.get(sid, ()),
+                targeting_context=build_employment_targeting_context(
+                    runtime_payload,
+                    section_lane=sid,
+                ),
+                judge_mode="mocked"
+                if bool(getattr(args, "mock_judges", False))
+                else "blocked_if_unavailable",
+                use_sc_path=True,
+                provider_profile=str(args.provider),
+            )
         )
-        provider_result = maybe_fallback_to_openai_for_claude_availability(
-            provider_result,
-            compiled_obj,
-            token_budget=MAX_OUTPUT_TOKENS,
-            temperature=float(args.temperature),
+        if provider_result is None:
+            provider_result = _blocked_provider_result(
+                str(args.provider),
+                parse_error or "SC pool generation returned no provider result",
+                model=generation_model,
+            )
+        write_json(
+            artifact_dir / "provider_response.json",
+            {
+                **provider_result.to_dict(),
+                "generation_meta": generation_meta,
+            },
         )
-    except ProviderGatewayError as exc:
-        provider_result = _blocked_provider_result(str(args.provider), str(exc), model=generation_model)
-    write_json(artifact_dir / "provider_response.json", provider_result.to_dict())
-    raw_output = provider_result.raw_model_output
-    parsed, parse_error = _parse_json_object(raw_output)
+    else:
+        try:
+            provider_result = _provider_gateway().generate(
+                str(args.provider),
+                compiled_obj,
+                token_budget=MAX_OUTPUT_TOKENS,
+                temperature=float(args.temperature),
+            )
+            provider_result = maybe_fallback_to_openai_for_claude_availability(
+                provider_result,
+                compiled_obj,
+                token_budget=MAX_OUTPUT_TOKENS,
+                temperature=float(args.temperature),
+            )
+        except ProviderGatewayError as exc:
+            provider_result = _blocked_provider_result(str(args.provider), str(exc), model=generation_model)
+        write_json(artifact_dir / "provider_response.json", provider_result.to_dict())
+        raw_output = provider_result.raw_model_output
+        parsed, parse_error = _parse_json_object(raw_output)
 
     header = _role_header(base, cfg, args)
     if cfg.is_bullet_lane:
@@ -1098,6 +1162,18 @@ def run_role_episode_lane_execution(
             allowed=allowed_fact_ids,
             graph_packet_digest=pool.proof_pool_digest,
         )
+        if generation_meta:
+            generation_receipt.update(
+                {
+                    "generation_mode": generation_meta.get("generation_mode"),
+                    "initial_path_count": generation_meta.get("initial_path_count"),
+                    "total_paths_executed": generation_meta.get("total_paths_executed"),
+                    "regen_rounds_executed": generation_meta.get("regen_rounds_executed"),
+                    "selection_gate": generation_meta.get("selection_gate"),
+                    "selection_mode": generation_meta.get("selection_mode"),
+                    "source_path_by_slot": generation_meta.get("source_path_by_slot"),
+                }
+            )
         claim_ledger = _claim_ledger_from_bullets(bullets)
         l2 = {
             "run_id": run_id,
@@ -1112,6 +1188,8 @@ def run_role_episode_lane_execution(
             "prompt_hash": prompt_hash[:16],
             **generation_receipt,
         }
+        if generation_meta:
+            l2["generation_meta"] = generation_meta
         l2["generation_receipt"] = dict(generation_receipt)
     else:
         narrative_from_model = _narrative_from_parsed(parsed or {})
@@ -1182,6 +1260,8 @@ def run_role_episode_lane_execution(
         provider_result=provider_result,
         x2_gates=x2,
         mock_judges=bool(getattr(args, "mock_judges", False)),
+        artifact_dir=artifact_dir,
+        generation_meta=generation_meta,
     )
     usage_doc = build_section_input_usage_ledger_v1(
         section_id=sid,

@@ -25,7 +25,9 @@ from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
+    COMPETENCIES_MIN_CATEGORY_COUNT,
     build_competencies_rejected_neighbor_audit,
+    high_signal_competencies_selection_score,
     merge_competencies_graph_pool_top_eight,
     min_competencies_selection_score,
 )
@@ -143,10 +145,10 @@ def inject_positional_bullet_ids_into_pool(
     """Assign bullet_id positionally to pool samples that omit it.
 
     Closes Bug:BulletPoolSelectorBulletIdMissing (Brown SVP full_resume_183cf9252e02 ibm_bullets
-    X3_BLOCK loop). Qwen self-consistency samples often emit bullets shaped
+    X3_BLOCK loop). PROVIDER_MODEL self-consistency samples often emit bullets shaped
     ``{bullet_theme, bullet_text}`` without ``bullet_id``. ``_bullet_by_id`` then returns ``None``
     for every required slot, ``_format_bullet_pool`` writes ``[bid] MISSING`` for all 20 paths, and
-    ``run_claude_bullet_pool_selection`` produces zero merged bullets — even though Qwen's text
+    ``run_claude_bullet_pool_selection`` produces zero merged bullets — even though PROVIDER_MODEL's text
     is fully populated. We replicate the canonical positional fallback already in
     ``ibm_bullets_lane.normalize_parsed_output`` lines 268-270 / equivalents in unify_bullets
     so the selector sees a non-empty pool.
@@ -473,23 +475,27 @@ def _competencies_graph_selection_prompt(
     selector_name: str,
     regen_note: str = "",
 ) -> str:
-    n_paths = COMPETENCIES_SC_PATH_COUNT
-    n_final = COMPETENCIES_FINAL_CATEGORY_COUNT
+    n_paths = len([p for p in pool_text.split("=== PATH ") if p.strip()]) or COMPETENCIES_SC_PATH_COUNT
+    n_min = COMPETENCIES_MIN_CATEGORY_COUNT
+    n_max = COMPETENCIES_FINAL_CATEGORY_COUNT
     n_candidate = COMPETENCIES_CANDIDATE_CATEGORY_COUNT
+    high_signal = high_signal_competencies_selection_score()
     jd = (targeting_context or {}).get("jd_text") or ""
     briefing = (targeting_context or {}).get("briefing") or ""
     skills_ref = (targeting_context or {}).get("skills_graph_ref") or ""
     return (
         "You are the sole selector for competencies (graph_8x8_v1).\n"
-        f"{n_paths} Qwen self-consistency paths produced candidate category sets (up to {n_candidate} labels). "
-        f"Select exactly {n_final} categories — the top {n_final} by score that PASS graph/fact reality.\n"
+        f"{n_paths} PROVIDER_MODEL self-consistency paths produced candidate category sets (up to {n_candidate} labels). "
+        f"Select {n_min}-{n_max} categories — only the highest-signal categories that PASS graph/fact reality.\n"
         "Constraints:\n"
         "- augmented_skills_graph / selected_fact_plan are the only proof authority (JD and briefing are "
         "targeting emphasis only — never cite facts.skills or base-resume skill rows as proof).\n"
         "- Score each unique category_label variant on phrase_quality, evidence_alignment, distinctness, "
         "and anti_keyword_stuffing.\n"
         f"- Minimum score floor: only select variants with score >= {min_score_threshold:.2f} AND passes=true.\n"
-        f"- Output exactly {n_final} selections when possible; each row must include category_label, "
+        f"- High-signal target: prefer categories with score >= {high_signal:.2f}; include lower-scoring passing "
+        f"categories only if needed to reach {n_min}.\n"
+        f"- Output {n_min}-{n_max} selections when possible; each row must include category_label, "
         "path_index, score, passes, and rationale.\n"
         f"{regen_note}\n\n"
         f"JD (targeting only):\n{jd[:resolve_bullet_selector_jd_max_chars()]}\n\n"
@@ -497,7 +503,8 @@ def _competencies_graph_selection_prompt(
         f"Skills graph ref: {skills_ref}\n\n"
         "Return JSON only:\n"
         f'{{"selections":[{{"category_label":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}}],'
-        f'"pool_summary":{{"paths_scored":{n_paths},"final_category_count":{n_final},'
+        f'"pool_summary":{{"paths_scored":{n_paths},"min_category_count":{n_min},'
+        f'"max_category_count":{n_max},'
         f'"candidate_category_count":{n_candidate},'
         f'"min_score_threshold":{min_score_threshold:.2f},"selector":"{selector_name}","mode":"graph_8x8"}}}}\n\n'
         "CANDIDATE POOL:\n"
@@ -562,7 +569,7 @@ def _employment_bullet_selection_prompt(
     skills_ref = (targeting_context or {}).get("skills_graph_ref") or ""
     return (
         f"You are the sole selector for {section_id} employment bullets.\n"
-        f"{n_paths} Qwen self-consistency paths produced candidate sets. Pick the top {n_final} bullets that PASS "
+        f"{n_paths} PROVIDER_MODEL self-consistency paths produced candidate sets. Pick the top {n_final} bullets that PASS "
         f"quality — exactly one winning variant per bullet_id: {ids_line}.\n"
         "Constraints:\n"
         "- Skills graph / selected_fact_plan facts are the only proof authority (JD and briefing are targeting "
@@ -1235,7 +1242,7 @@ def _fallback_first_complete_path(
                 )
         elif slot_kind == "competencies":
             comps = path.parsed.get("competencies") or path.parsed.get("categories")
-            if isinstance(comps, list) and len(comps) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
+            if isinstance(comps, list) and len(comps) >= COMPETENCIES_MIN_CATEGORY_COUNT:
                 merged, source_map, audit = _merge_competencies_graph_pool_with_audit(
                     paths,
                     [],
@@ -1246,7 +1253,7 @@ def _fallback_first_complete_path(
                     merged_parsed=merged,
                     selections=[],
                     judge_output=None,
-                    selection_mode="competencies_graph_top_8_heuristic",
+                    selection_mode="competencies_graph_adaptive_6_8_heuristic",
                     source_path_by_slot=source_map,
                     rejected_neighbor_audit=audit,
                 )
@@ -1261,7 +1268,7 @@ def _fallback_first_complete_path(
             merged_parsed=merged,
             selections=[],
             judge_output=None,
-            selection_mode="competencies_graph_top_8_heuristic",
+            selection_mode="competencies_graph_adaptive_6_8_heuristic",
             source_path_by_slot=source_map,
             rejected_neighbor_audit=audit,
         )
@@ -1652,7 +1659,7 @@ def run_claude_bullet_pool_selection(
             min_score_threshold=floor,
             targeting_context=tc,
         )
-        selection_mode = "openai_competencies_top_8_pass"
+        selection_mode = "openai_competencies_adaptive_6_8_pass"
     else:
         merged, source_map = merge_competency_selections(valid_paths, selections, base_parsed=base)
         selection_mode = "claude_per_slot_selection"

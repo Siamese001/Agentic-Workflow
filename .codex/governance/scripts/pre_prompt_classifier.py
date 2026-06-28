@@ -339,38 +339,25 @@ _sr_mandate = """
      or lacking archetype/surface classification.
      Rules: adg-canonical-invariants.md, adg-analysis-procedures.md
      CI gate: ops_scripts/ci/check_graph_layer_evidence.py
-  1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
+  1. Read native file memory (`memory/MEMORY.md`, plus `memory/codex/memory_summary.md` when needed)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
   4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
   5. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Codex reasoning.
+  Sequential Thinking MCP is RETIRED. Use: native plan mode, file memory, and task_manager only when explicitly tracked work is needed.
   Rule: .codex/rules/plan-first-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
 
 
-_memory_mandate = (
-    "[pre_prompt_classifier] memory: mem_recall_session_start not yet called this session"
-    " (human diagnostic — pre_mcp_gate enforces via exit 2)."
-)
-
-
 def _should_emit_memory_mandate() -> bool:
     """
-    Return True if mem_recall_session_start has not been called this session.
+    ADR-095 retired the Memory MCP first-call ritual.
 
-    Reads memory_recalled from session_state.json.  Returns True when the file
-    is absent (new session), the field is absent (pre-fix state), or the field
-    is False (not yet called this turn).  Fail-open on any I/O or parse error.
+    Keep this function for legacy tests/imports, but never emit a mandate.
+    Native file memory under memory/ is the active session-recall contract.
     """
-    try:
-        if not session_state.exists():
-            return True
-        state = json.loads(session_state.read_text(encoding="utf-8"))
-        return not state.get("memory_recalled", False)
-    except (OSError, json.JSONDecodeError):
-        return True  # fail-open: emit mandate if state unreadable
+    return False
 
 
 _adg_graph_sr_hint = (
@@ -888,22 +875,12 @@ def main() -> int:
     else:
         print("[pre_prompt_classifier] ADG_GRAPH_TRACE: adg_graph_intent=NOT_DETECTED", file=sys.stderr)
 
-    # Read BEFORE the state write: T0/T1 reset would otherwise shadow a True
-    # value and incorrectly re-emit the mandate on a turn where memory was
-    # already recalled.
-    emit_memory_mandate = _should_emit_memory_mandate()
-
     # Advisory: warn before state update so we read the prior turn's lifecycle state.
     if tier in ("T2", "T3"):
         _warn_open_task(tier)
 
     # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
-
-    # Human diagnostic (exit 0 stderr — not injected into Codex context).
-    # Gate enforces recall via exit 2 in pre_mcp_gate.py.
-    if emit_memory_mandate:
-        print(_memory_mandate, file=sys.stderr)
 
     if tier in ("T2", "T3"):
         if not check_plan_exists(tier):

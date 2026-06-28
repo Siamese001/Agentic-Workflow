@@ -8,7 +8,7 @@ description: >
 
   It ranks 8 graph-matched capability category candidates from augmented_skills_graph projection and
 
-  employment-bullet facts, then emits exactly 8 highest-scoring categories. JD, briefing, title, company, and
+  employment-bullet facts, then emits the highest-signal 6-8 categories. JD, briefing, title, company, and
 
   companion generated sections may influence emphasis, labels, ordering, and relevance — never proof.
 
@@ -34,7 +34,9 @@ selection:
 
   candidate_category_count: 8
 
-  emitted_category_count: 8
+  emitted_category_count: "6-8"
+  min_emitted_category_count: 6
+  max_emitted_category_count: 8
 
   skills_authority: augmented_skills_graph
 
@@ -92,7 +94,8 @@ forbidden:
 
   - base_resume_facts_skills_as_authority
 
-  - emitting_more_than_eight_categories
+  - emitting_fewer_than_six_or_more_than_eight_categories
+  - padding_low_signal_categories_to_reach_eight
 
 
 

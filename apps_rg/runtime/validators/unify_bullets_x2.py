@@ -762,7 +762,7 @@ def run_unify_bullets_x2_gates(
         "x2_no_silent_mock_fallback",
         no_silent_mock,
         runtime_generation_status,
-        "REAL_LLM when qwen requested",
+        "REAL_LLM when PROVIDER_MODEL requested",
         "Silent mock fallback detected.",
     )
 

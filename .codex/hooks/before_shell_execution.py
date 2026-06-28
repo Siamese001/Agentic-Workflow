@@ -1,5 +1,7 @@
 import re
 import sys
+import shlex
+import subprocess
 from pathlib import Path
 
 from lib.codex_hook_common import allow, block, contains_legacy_execution_token, read_payload, text_from_payload, write_receipt
@@ -30,6 +32,100 @@ def _command_text(p: dict) -> str:
 
 def _normal_command(command: str) -> str:
     return re.sub(r"\s+", " ", command.strip())
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _git_common_dir() -> Path | None:
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    common = (proc.stdout or "").strip()
+    if proc.returncode != 0 or not common:
+        return None
+    path = Path(common)
+    if not path.is_absolute():
+        path = (REPO_ROOT / path).resolve()
+    return path
+
+
+def _primary_checkout_root() -> Path:
+    common = _git_common_dir()
+    if common and common.name == ".git":
+        return common.parent
+    return REPO_ROOT
+
+
+def _worktree_ssot_root() -> Path:
+    primary = _primary_checkout_root()
+    return primary.parent / f"{primary.name}-worktrees"
+
+
+def _normalize_path(path: Path) -> str:
+    return str(path.resolve()).replace("/", "\\").casefold()
+
+
+def _is_inside_ssot(path_text: str) -> bool:
+    raw = path_text.strip().strip("'\"")
+    if not raw:
+        return False
+    path = Path(raw)
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    target = _normalize_path(path)
+    root = _normalize_path(_worktree_ssot_root())
+    return target == root or target.startswith(root.rstrip("\\") + "\\")
+
+
+def _split_args(args: str) -> list[str]:
+    try:
+        return [part.strip("'\"") for part in shlex.split(args, posix=False)]
+    except ValueError:
+        return []
+
+
+def _worktree_add_paths(command: str) -> list[str]:
+    paths: list[str] = []
+    for match in re.finditer(
+        r"(?i)(?:^|[;&|]\s*)git(?:\.exe)?\s+worktree\s+add\b(?P<args>[^;&|]*)",
+        command,
+    ):
+        args = _split_args(match.group("args"))
+        idx = 0
+        while idx < len(args):
+            token = args[idx]
+            if token in {"-b", "-B", "--orphan", "--reason"}:
+                idx += 2
+                continue
+            if token.startswith("--reason="):
+                idx += 1
+                continue
+            if token.startswith("-"):
+                idx += 1
+                continue
+            paths.append(token)
+            break
+    return paths
+
+
+def worktree_ssot_block_reason(command: str) -> str | None:
+    bad_paths = [path for path in _worktree_add_paths(command) if not _is_inside_ssot(path)]
+    if not bad_paths:
+        return None
+    root = _worktree_ssot_root()
+    return (
+        "git worktree add must target the Agentic-Workflow worktree SSOT root: "
+        f"{root}. Offending path(s): {', '.join(bad_paths)}"
+    )
 
 
 def _is_pr_completion_command(command: str) -> bool:
@@ -97,6 +193,11 @@ if completion_reason:
     write_receipt("beforeShellExecution", payload, "block", completion_reason)
     raise SystemExit(block(completion_reason))
 
+worktree_reason = worktree_ssot_block_reason(command)
+if worktree_reason:
+    write_receipt("beforeShellExecution", payload, "block", worktree_reason)
+    raise SystemExit(block(worktree_reason))
+
 # Turn-hanging command guard (quote-hazard / interactive / pager), enforced via pre_run_gate.
 if shell_command_block_reason is not None:
     if command:
@@ -105,8 +206,8 @@ if shell_command_block_reason is not None:
             write_receipt("beforeShellExecution", payload, "block", hang_reason)
             raise SystemExit(block(hang_reason))
 
-# Branch/worktree naming is advisory on Bash commands. The edit hook remains the
-# hard safety boundary by blocking protected-checkout mutations.
+# Branch/worktree naming is advisory on Bash commands. Worktree root placement is
+# enforced here because `git worktree add` creates filesystem state before edits happen.
 
 write_receipt("beforeShellExecution", payload, "allow", "command accepted")
 raise SystemExit(allow("command accepted"))
