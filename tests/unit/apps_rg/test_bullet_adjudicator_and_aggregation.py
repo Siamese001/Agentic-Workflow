@@ -127,6 +127,16 @@ def test_unify_and_ibm_bullet_lanes_wire_optional_adjudicator(lane_file: str) ->
     assert 'artifact_dir / "bullet_x2_aggregation.json"' in source
 
 
+@pytest.mark.parametrize("lane_file", ["unify_bullets_lane.py", "ibm_bullets_lane.py"])
+def test_unify_and_ibm_x1d_outputs_written_once_after_adjudication(lane_file: str) -> None:
+    source = (REPO_ROOT / "apps_rg" / "runtime" / "sections" / lane_file).read_text(encoding="utf-8")
+    write_call = 'write_json(artifact_dir / "x1d_llm_judge_outputs.json"'
+
+    assert source.count(write_call) == 1
+    assert source.find(write_call) > source.find("if _should_adjudicate and _panel_keys:")
+    assert source.find(write_call) < source.find("run_bullet_judge_reselection(")
+
+
 # --------------------------------------------------------------- X2 aggregation accept/reject
 def test_aggregation_accepts_confident_pass() -> None:
     a = aggregate_bullet_section(

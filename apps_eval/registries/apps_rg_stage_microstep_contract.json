@@ -28,6 +28,7 @@
     "X1D",
     "X3",
     "EXIT",
+    "UWG",
     "L6",
     "PACKAGE",
     "REGRESSION"
@@ -305,6 +306,36 @@
       "required": true,
       "artifact_role": "whole_run_exit_review_packet",
       "gate_id": "exit_exactly_one_x3",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "UWG.commit_request.present",
+      "stage_id": "UWG",
+      "component_id": "apps_rg.uwg_commit",
+      "subcomponent_id": "post_x3_durable_admission",
+      "required": true,
+      "artifact_role": "uwg_commit_request",
+      "gate_id": "uwg_commit_request_present",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "UWG.validation.pass",
+      "stage_id": "UWG",
+      "component_id": "apps_rg.uwg_commit",
+      "subcomponent_id": "post_x3_durable_admission",
+      "required": true,
+      "artifact_role": "uwg_validation_receipt",
+      "gate_id": "uwg_validation_receipt_pass",
+      "severity": "BLOCK"
+    },
+    {
+      "microstep_id": "UWG.commit_receipt.bound",
+      "stage_id": "UWG",
+      "component_id": "apps_rg.uwg_commit",
+      "subcomponent_id": "post_x3_durable_admission",
+      "required": true,
+      "artifact_role": "uwg_commit_receipt",
+      "gate_id": "uwg_commit_receipt_bound",
       "severity": "BLOCK"
     },
     {

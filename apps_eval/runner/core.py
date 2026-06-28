@@ -404,6 +404,235 @@ def _planned_eval_artifacts(run_dir: Path) -> dict[str, Any]:
     }
 
 
+def _snapshot_deterministic_hash(snapshot: AppOutputSnapshot) -> str:
+    data = snapshot.to_dict()
+    data.pop("deterministic_hash", None)
+    return _canonical_digest(data)
+
+
+def _default_current_run_expected(snapshot: AppOutputSnapshot) -> dict[str, Any]:
+    sections = snapshot.output.get("sections")
+    required_sections = ["executive_summary", "experience", "skills"]
+    if isinstance(sections, dict):
+        required_sections = [name for name in required_sections if name in sections]
+    return {
+        "required_output_keys": ["runtime", "sections"],
+        "required_artifacts": ["generated_resume.json", "resume.md"],
+        "expected_x3": snapshot.x3_disposition,
+        "forbidden_terms": [],
+        "grounded_claims_required": True,
+        "required_provenance": [],
+        "required_sections": required_sections,
+        "length_bounds": {"min_words": 50, "max_words": 5000},
+        "allow_side_effects": False,
+        "escalation_required": False,
+    }
+
+
+def run_current_snapshot_eval(
+    snapshot: AppOutputSnapshot,
+    *,
+    suite_id: str = "apps_rg.current.resume_generation",
+    out_dir: str = "artifacts/apps_eval/runs",
+    deterministic_only: bool = True,
+    emit_l6_handoff: bool = True,
+    expected: dict[str, Any] | None = None,
+    threshold_suite_id: str = "apps_rg.dev.resume_generation",
+) -> CompletedEvalRecord:
+    """Evaluate one already-produced app snapshot.
+
+    This is the current-run counterpart to fixture-suite evaluation: apps_rg can
+    hand apps_eval the exact generated artifact after UWG promotion and receive
+    the same deterministic grader, microstep coverage, and L6 bridge artifacts.
+    """
+    if snapshot.app_id != "apps_rg":
+        raise ValueError(f"current snapshot eval supports apps_rg only, got {snapshot.app_id!r}")
+    if not emit_l6_handoff:
+        raise PermissionError("apps_rg current-run eval requires L6 shadow handoff")
+
+    scenario_id = snapshot.scenario_id or "apps_rg_current_run"
+    stable_snapshot = replace(
+        snapshot,
+        deterministic_hash=_snapshot_deterministic_hash(snapshot),
+    )
+    expected_payload = dict(expected or _default_current_run_expected(stable_snapshot))
+    created_at = _run_started_at(deterministic_only)
+    repo_root = Path(__file__).resolve().parents[2]
+    git_commit = _git_commit(repo_root)
+    graders = build_default_graders()
+    thresholds = load_thresholds_registry().get(
+        threshold_suite_id,
+        load_thresholds_registry().get("apps_rg.dev.resume_generation", {}),
+    )
+    fixture_path = stable_snapshot.run_root or ""
+    fixture = EvalFixture(
+        scenario=EvalScenario(
+            scenario_id=scenario_id,
+            suite_id=suite_id,
+            app_id=stable_snapshot.app_id,
+            description="current apps_rg run artifact evaluation",
+            fixture_path=fixture_path,
+            graders=tuple(grader.grader_id for grader in graders),
+            rubric_id="apps_rg_resume_generation_v1",
+            holdout=False,
+        ),
+        input_dir=fixture_path,
+        expected_dir=fixture_path,
+        snapshot_path="",
+        artifacts_dir=fixture_path,
+        expected=expected_payload,
+        provenance=FixtureProvenance(
+            scenario_id=scenario_id,
+            fixture_path=fixture_path,
+            scenario_definition_digest=_canonical_digest(
+                {
+                    "scenario_id": scenario_id,
+                    "suite_id": suite_id,
+                    "app_id": stable_snapshot.app_id,
+                    "rubric_id": "apps_rg_resume_generation_v1",
+                    "current_run": True,
+                }
+            ),
+            input_request_digest=_canonical_digest(stable_snapshot.provenance.get("resolved_inputs", {})),
+            expected_digest=_canonical_digest(expected_payload),
+            snapshot_digest=_canonical_digest(stable_snapshot.to_dict()),
+        ),
+    )
+
+    suite_digest = _canonical_digest(
+        {
+            "app_id": stable_snapshot.app_id,
+            "split": "current",
+            "task": "resume_generation",
+            "rubric_id": "apps_rg_resume_generation_v1",
+            "fixture_root": fixture_path,
+            "scenarios": [scenario_id],
+        }
+    )
+    threshold_digest = _threshold_digest(thresholds)
+    failure_mode_catalog_digest = _failure_mode_catalog_digest(graders)
+    app_microstep_contract_digest = apps_rg_contract_digest()
+    record_seed = {
+        "schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
+        "suite_id": suite_id,
+        "app_id": stable_snapshot.app_id,
+        "mode": "current_snapshot",
+        "deterministic_only": deterministic_only,
+        "with_judge": False,
+        "compare_baseline": False,
+        "baseline_digest": "",
+        "emit_l6_handoff": emit_l6_handoff,
+        "git_commit": git_commit,
+        "suite_digest": suite_digest,
+        "threshold_digest": threshold_digest,
+        "failure_mode_catalog_digest": failure_mode_catalog_digest,
+        "apps_rg_microstep_contract_digest": app_microstep_contract_digest,
+        "grader_ids": [grader.grader_id for grader in graders],
+        "scorer_version": CURRENT_SCORER_VERSION,
+        "fixture_provenance": [fixture.provenance.to_dict()],
+        "current_run_snapshot_digest": fixture.provenance.snapshot_digest,
+        "source_run_root": stable_snapshot.run_root,
+    }
+    if not deterministic_only:
+        record_seed["created_at"] = created_at
+
+    record_id = _stable_record_id(record_seed)
+    run_dir = Path(out_dir) / suite_id.replace(".", "_") / record_id
+    planned_eval_artifacts = _planned_eval_artifacts(run_dir)
+
+    findings = [grader.grade(fixture, stable_snapshot) for grader in graders]
+    microstep_eval = build_apps_rg_microstep_evaluation(
+        suite_id=suite_id,
+        scenario_id=scenario_id,
+        snapshot=stable_snapshot,
+        run_id=record_id,
+        created_at=created_at,
+        planned_eval_artifacts=planned_eval_artifacts,
+    )
+    rows = list(microstep_eval["rows"])
+    components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
+    coverage = microstep_eval["coverage_summary"].to_dict()
+    scenario_result = _scenario_rollup(
+        scenario_id,
+        findings,
+        stable_snapshot.run_root,
+        fixture.provenance.snapshot_digest,
+        _canonical_digest(fixture.provenance.to_dict()),
+    )
+    scenario_result["apps_rg_coverage_summary"] = coverage
+    suite_coverage = _apps_rg_suite_coverage(
+        suite_id=suite_id,
+        app_id=stable_snapshot.app_id,
+        rows=rows,
+        scenario_summaries=[coverage],
+    )
+    scorecard = _score(
+        suite_id,
+        stable_snapshot.app_id,
+        1,
+        findings,
+        thresholds=thresholds,
+        scorecard_rows=rows,
+        component_scorecards=components,
+        coverage_summary=suite_coverage,
+    )
+    regression = RegressionSummary(compared=False)
+    provisional = CompletedEvalRecord(
+        record_id=record_id,
+        created_at=created_at,
+        suite_id=suite_id,
+        app_id=stable_snapshot.app_id,
+        mode="current_snapshot",
+        deterministic_only=deterministic_only,
+        scenario_results=[scenario_result],
+        scorecard=scorecard,
+        regression=regression,
+        artifact_paths={},
+        rubric_ids=["apps_rg_resume_generation_v1"],
+        record_seed=record_seed,
+        run_metadata=EvalRunMetadata(
+            project_version=_project_version(),
+            git_commit=git_commit,
+            python_version=sys.version.split()[0],
+            platform=platform.platform(),
+            cwd=Path.cwd().resolve().as_posix(),
+            scorer_version=CURRENT_SCORER_VERSION,
+            record_seed_digest=_canonical_digest(record_seed),
+            baseline_digest="",
+            mode="current_snapshot",
+            deterministic_only=deterministic_only,
+            with_judge=False,
+            compare_baseline=False,
+        ),
+        fixture_provenance=[fixture.provenance],
+    )
+    flywheel = _regression_flywheel_summary(
+        record=provisional,
+        findings=findings,
+        baseline_payload=None,
+        comparison=regression,
+    )
+    record = replace(provisional, regression_flywheel=flywheel)
+    paths = _emit_artifacts(record, findings, run_dir, emit_l6_handoff)
+    record = replace(record, artifact_paths=paths)
+    _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
+    if emit_l6_handoff:
+        from apps_eval.l6_shadow_bridge import emit_completed_eval_l6_shadow_bridge
+
+        bridge_paths = emit_completed_eval_l6_shadow_bridge(
+            record,
+            run_dir,
+            eval_record_path=paths["eval_record"],
+            l6_handoff_path=paths.get("l6_handoff", ""),
+        )
+        paths.update(bridge_paths)
+        record = replace(record, artifact_paths=paths)
+        _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+        _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
+    return record
+
+
 def _apps_rg_suite_coverage(
     *,
     suite_id: str,

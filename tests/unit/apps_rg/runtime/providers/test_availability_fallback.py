@@ -50,6 +50,17 @@ def test_http_400_content_or_request_issue_does_not_fallback() -> None:
     )
 
 
+def test_anthropic_http_400_deprecated_temperature_falls_back_as_capability_drift() -> None:
+    assert subject.is_claude_generation_availability_failure(
+        _result(
+            error=(
+                'External provider HTTP 400: {"type":"error","error":'
+                '{"type":"invalid_request_error","message":"`temperature` is deprecated for this model."}}'
+            )
+        )
+    )
+
+
 def test_anthropic_http_400_usage_limit_falls_back_as_throttling() -> None:
     assert subject.is_claude_generation_availability_failure(
         _result(error="External provider HTTP 400: usage limit exceeded")

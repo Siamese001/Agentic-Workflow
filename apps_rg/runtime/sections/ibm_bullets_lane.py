@@ -1254,8 +1254,6 @@ def run_ibm_bullets_execution(
                 },
             )
         ]
-    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-
     temperature = float(args.temperature) if args.provider == "external_claude" else IBM_TEMP_DEFAULT
 
     write_json(
@@ -1370,9 +1368,9 @@ def run_ibm_bullets_execution(
         for _r in _panel_rows:
             _r["adjudicator_panel_row"] = True
         x1d = list(x1d) + _panel_rows
-        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
         _adjudication_record["escalated"] = True
         _adjudication_record["panel_provider_keys"] = list(_panel_keys)
+    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
     write_json(artifact_dir / "bullet_adjudication.json", _adjudication_record)
     write_json(artifact_dir / "bullet_x2_aggregation.json", _agg.to_dict())
 

@@ -36,6 +36,10 @@ from apps_research.engines.query_decomposer import (  # noqa: F401
     describe_jd_retrieval_contract,
     decompose_coverage_families,
 )
+from apps_research.types.jd_intent_coverage import (
+    infer_evidence_intents,
+    required_families_for_intents,
+)
 
 # Plan §P1.4 — V2 retrieval pipeline behind feature flag.
 _RETRIEVAL_V2_FLAG = "APPS_RESEARCH_RETRIEVAL_V2"
@@ -343,7 +347,25 @@ class CompanyBriefEngine(BaseResearchEngine):
         profile_cfg = _DEPTH_PROFILES.get(
             resolved_depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"]
         )
-        plans = plans[: profile_cfg["max_queries"]]
+        max_queries = int(profile_cfg["max_queries"])
+        if jd_context:
+            required_targeting_families = [
+                "company_basics",
+                "competitive_landscape",
+                "leadership_and_org",
+                "recent_news_and_signals",
+                *required_families_for_intents(infer_evidence_intents(jd_context)),
+            ]
+            planned_families = {plan.family for plan in plans}
+            required_planned_count = len(
+                {
+                    family
+                    for family in required_targeting_families
+                    if family in planned_families
+                }
+            )
+            max_queries = max(max_queries, required_planned_count)
+        plans = plans[:max_queries]
 
         def _fetch(plan: QueryPlan) -> tuple[str, str]:
             try:
@@ -638,6 +660,15 @@ class CompanyBriefEngine(BaseResearchEngine):
             profile="apps_rg",
         )
         if not sealed.is_sealed:
+            scrubbed = self._drop_jd_restatement_bullets(normalized, sealed.violations)
+            if scrubbed != normalized:
+                sealed = seal_targeting_brief(
+                    scrubbed,
+                    company_name=company_name,
+                    jd_text=jd_text,
+                    profile="apps_rg",
+                )
+        if not sealed.is_sealed:
             repaired = self._repair_apps_rg_targeting_brief_markdown(
                 company_name=company_name,
                 draft_markdown=normalized,
@@ -659,6 +690,18 @@ class CompanyBriefEngine(BaseResearchEngine):
                     jd_text=jd_text,
                     profile="apps_rg",
                 )
+                if not sealed.is_sealed:
+                    scrubbed = self._drop_jd_restatement_bullets(
+                        repaired_normalized,
+                        sealed.violations,
+                    )
+                    if scrubbed != repaired_normalized:
+                        sealed = seal_targeting_brief(
+                            scrubbed,
+                            company_name=company_name,
+                            jd_text=jd_text,
+                            profile="apps_rg",
+                        )
         if not sealed.is_sealed:
             violations = ",".join(sealed.violations) if sealed.violations else "none"
             raise CompanyBriefUnavailableError(
@@ -681,6 +724,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                     sealed.company_brief_text,
                     jd_text=jd_text,
                     research_notes=research_notes,
+                    source_family_keys=tuple(findings.keys()),
                     profile="apps_rg",
                 ),
             ),
@@ -782,6 +826,28 @@ class CompanyBriefEngine(BaseResearchEngine):
             return ""
         return repaired
 
+    @staticmethod
+    def _drop_jd_restatement_bullets(markdown: str, violations: tuple[str, ...]) -> str:
+        """Remove bullet lines explicitly identified as JD restatements."""
+
+        snippets = [
+            value.split(":", 1)[1].strip().lower()
+            for value in violations
+            if value.startswith("jd_restatement_in_bullet_text:") and ":" in value
+        ]
+        if not snippets:
+            return markdown
+
+        kept_lines: list[str] = []
+        for raw_line in str(markdown or "").splitlines():
+            stripped = raw_line.strip()
+            if stripped.startswith("- "):
+                bullet = stripped[2:].strip().lower()
+                if any(snippet and snippet in bullet for snippet in snippets):
+                    continue
+            kept_lines.append(raw_line)
+        return "\n".join(kept_lines).strip()
+
     def _build_targeting_brief_sidecar(
         self,
         *,
@@ -806,6 +872,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             brief_text,
             jd_text=jd_text,
             research_notes=research_notes,
+            source_family_keys=tuple(findings.keys()),
             profile="apps_rg",
         )
         validation = validate_targeting_brief_text(

@@ -15,6 +15,7 @@
       "required": true,
       "source_artifact_schema": "agentic_core.runtime_customization_package.v1",
       "relative_paths": [
+        "u0_receipt.json",
         "runtime_customization_package.yaml",
         "runtime_customization_package.json",
         "u0/runtime_customization_package.yaml"
@@ -24,6 +25,7 @@
       "required": true,
       "source_artifact_schema": "apps_rg.l1_static_plan_profile.v1",
       "relative_paths": [
+        "l1_plan_contract.json",
         "l1_static_plan_profile.yaml",
         "u0/l1_static_plan_profile.yaml",
         "profiles/l1_static_plan_profile.yaml"
@@ -33,6 +35,7 @@
       "required": true,
       "source_artifact_schema": "apps_rg.l0_managed_route_profile.v1",
       "relative_paths": [
+        "route_contract.json",
         "l0_managed_route_profile.yaml",
         "u0/l0_managed_route_profile.yaml",
         "profiles/l0_managed_route_profile.yaml"
@@ -42,6 +45,8 @@
       "required": true,
       "source_artifact_schema": "apps_rg.c0_evidence_manifest.v1",
       "relative_paths": [
+        "c0_bypass_receipt.json",
+        "r4_c0_bypass_receipt.json",
         "c0_evidence_manifest.json",
         "fec_receipt.json",
         "c0/fec_receipt.json",
@@ -52,6 +57,7 @@
       "required": true,
       "source_artifact_schema": "apps_rg.prompt_assembly_receipt.v1",
       "relative_paths": [
+        "prompt_assembly_bypass_receipt.json",
         "compiled_prompt.json",
         "prompt_assembly_receipt.json",
         "pa/compiled_prompt.json"
@@ -118,6 +124,7 @@
       "source_artifact_schema": "apps_rg.cross_section_x2_gate_outputs.v1",
       "relative_paths": [
         "cross_section_x2_gate_outputs.json",
+        "modular_r4/final_resume_assembly/cross_section_x2_gate_outputs.json",
         "final_resume_assembly/cross_section_x2_gate_outputs.json",
         "assembly/cross_section_x2_gate_outputs.json"
       ]
@@ -126,8 +133,11 @@
       "required": true,
       "source_artifact_schema": "apps_rg.final_resume.v1",
       "relative_paths": [
+        "outputs/generated_resume.json",
         "final_resume.json",
         "outputs/final_resume.json",
+        "modular_r4/final_resume_assembly/final_resume.json",
+        "modular_r4/outputs/final_resume.json",
         "final_resume_assembly/final_resume.json"
       ]
     },
@@ -136,6 +146,7 @@
       "source_artifact_schema": "apps_rg.final_resume_x2_gate_outputs.v1",
       "relative_paths": [
         "final_resume_x2_gate_outputs.json",
+        "modular_r4/final_resume_assembly/final_resume_x2_gate_outputs.json",
         "final_resume_assembly/final_resume_x2_gate_outputs.json",
         "assembly/final_resume_x2_gate_outputs.json"
       ]
@@ -144,9 +155,34 @@
       "required": true,
       "source_artifact_schema": "apps_rg.whole_run_exit_review_packet.v1",
       "relative_paths": [
+        "exit_review_packet.json",
         "apps_rg_whole_run_exit_review_packet.json",
         "whole_run_exit_review_packet.json",
         "exit/apps_rg_whole_run_exit_review_packet.json"
+      ]
+    },
+    "uwg_commit_request": {
+      "required": true,
+      "source_artifact_schema": "agentic_core.l4.uwg.commit_request.v1",
+      "relative_paths": [
+        "uwg/commit_request.json",
+        "commit_request.json"
+      ]
+    },
+    "uwg_validation_receipt": {
+      "required": true,
+      "source_artifact_schema": "agentic_core.l4.uwg.validation_receipt.v1",
+      "relative_paths": [
+        "uwg/uwg_validation_receipt.json",
+        "uwg_validation_receipt.json"
+      ]
+    },
+    "uwg_commit_receipt": {
+      "required": true,
+      "source_artifact_schema": "agentic_core.l4.uwg.commit_receipt.v1",
+      "relative_paths": [
+        "uwg/uwg_commit_receipt.json",
+        "uwg_commit_receipt.json"
       ]
     },
     "eval_record": {

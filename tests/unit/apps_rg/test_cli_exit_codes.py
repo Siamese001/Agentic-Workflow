@@ -39,3 +39,21 @@ def test_exit_judge_soft_fail(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert exit_code_for_executive_summary_artifact(ad) == EXIT_JUDGE_REVIEW_REQUIRED
+
+
+def test_exit_judge_certification_required_even_with_publish_review_code(tmp_path: Path) -> None:
+    ad = tmp_path / "lane"
+    ad.mkdir()
+    (ad / "x3_disposition.json").write_text(
+        json.dumps(
+            {
+                "x3_code": "X3_REVIEW_PUBLISH_NOT_CERTIFIED",
+                "pass": False,
+                "publish_disposition": "judge_certification_required",
+                "x1d_certified": False,
+                "blocking_judge_ids": ["gemini_pro"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert exit_code_for_executive_summary_artifact(ad) == EXIT_JUDGE_REVIEW_REQUIRED

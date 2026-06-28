@@ -679,15 +679,30 @@ def _render_modular_section_status(run_dir: Path) -> List[str]:
         "when legacy `run_report.json` is not emitted."
     )
     lines.append("")
-    lines.append("| Section | X3 | X2 | Product quality | Runtime | Display |")
-    lines.append("|---|---|---|---|---|---|")
+    lines.append("| Section | X3 | X2 | Product quality | Runtime | Judges / score | Display |")
+    lines.append("|---|---|---|---|---|---|---|")
     for row in lanes:
         display = str(row.get("display_txt_relpath") or "").strip()
         display_status = f"`{display}`" if display else "—"
+        judges = str(row.get("judge_summary") or "").strip()
+        if not judges and row.get("judges"):
+            judge_cells = []
+            for judge in row.get("judges") or []:
+                if not isinstance(judge, dict):
+                    continue
+                provider = judge.get("provider_name") or judge.get("provider_key") or "judge"
+                model = judge.get("model_name") or ""
+                score = judge.get("score", "—")
+                threshold = judge.get("threshold", "—")
+                verdict = "PASS" if judge.get("pass") is True else "FAIL" if judge.get("pass") is False else "UNKNOWN"
+                model_text = f" `{model}`" if model else ""
+                judge_cells.append(f"{provider}{model_text}: {score}/5 vs {threshold} {verdict}")
+            judges = "; ".join(judge_cells)
+        judges_status = judges or "—"
         lines.append(
             f"| `{row.get('lane') or '—'}` | `{row.get('x3_code') or '—'}` | "
             f"`{row.get('x2_pass') or '—'}` | `{row.get('product_quality_status') or '—'}` | "
-            f"`{row.get('runtime_generation_status') or '—'}` | {display_status} |"
+            f"`{row.get('runtime_generation_status') or '—'}` | {judges_status} | {display_status} |"
         )
     lines.append("")
     return lines
@@ -781,6 +796,47 @@ def _render_l7_certification(l7: Optional[Dict[str, Any]]) -> List[str]:
             icon = {"CERTIFIED": "✅", "NOT_CERTIFIED": "❌"}.get(stat, "•")
             lines.append(f"| `{fam}` | {icon} {stat} | `{proof}` | {exer} |")
         lines.append("")
+    return lines
+
+
+def _render_post_x3_completion(run_dir: Path) -> List[str]:
+    receipt = _load_json(run_dir / "apps_rg_post_x3_completion_receipt.json")
+    if not receipt:
+        return [
+            "## Post-X3 Completion",
+            "",
+            "_apps_rg_post_x3_completion_receipt.json not found._",
+            "",
+        ]
+    apps_eval = receipt.get("apps_eval") if isinstance(receipt.get("apps_eval"), dict) else {}
+    uwg = receipt.get("uwg") if isinstance(receipt.get("uwg"), dict) else {}
+    l6 = receipt.get("l6_shadow") if isinstance(receipt.get("l6_shadow"), dict) else {}
+    coverage = apps_eval.get("coverage_summary") if isinstance(apps_eval.get("coverage_summary"), dict) else {}
+    rows: List[Tuple[str, str]] = [
+        ("Status", str(receipt.get("status") or "—")),
+        ("Completed", _yes_no(receipt.get("completed"))),
+        ("UWG validation", str(uwg.get("uwg_validation_status") or "—")),
+        ("UWG commit", str(uwg.get("commit_status") or "—")),
+        ("UWG receipt", str(uwg.get("uwg_commit_receipt_id") or "—")),
+        ("apps_eval verdict", str(apps_eval.get("verdict") or "—")),
+        (
+            "apps_eval coverage",
+            (
+                f"{coverage.get('passed_required', 0)} / "
+                f"{coverage.get('required_microsteps', 0)} passed; "
+                f"missing={coverage.get('missing_required_artifacts', 0)}, "
+                f"unknown={coverage.get('unknown_required', 0)}, "
+                f"blocked={_yes_no(coverage.get('release_blocked'))}"
+            ),
+        ),
+        ("L6 bridge", str(l6.get("l6_shadow_bridge_ref") or "—")),
+    ]
+    lines: List[str] = ["## Post-X3 Completion", ""]
+    lines.append("| Field | Value |")
+    lines.append("|---|---|")
+    for key, value in rows:
+        lines.append(f"| **{key}** | `{value}` |")
+    lines.append("")
     return lines
 
 
@@ -887,6 +943,7 @@ def render(run_dir: Path) -> str:
     parts += _render_modular_section_status(run_dir)
     parts += _render_gate_failures(run_report)
     parts += _render_quality_reports(run_report)
+    parts += _render_post_x3_completion(run_dir)
     parts += _render_l7_certification(l7)
     parts += _render_artifacts(run_dir, run_report)
     return "\n".join(parts).rstrip() + "\n"

@@ -61,7 +61,7 @@ def synthesis_regen_max_attempts() -> int:
 # transposition the template-following attractor is broken; 3 cycles is sufficient
 # for marginal quality fixes. Env var APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS
 # may lower the effective limit but cannot exceed JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP.
-JUDGE_REGEN_MAX_ATTEMPTS = 1
+JUDGE_REGEN_MAX_ATTEMPTS = 3
 JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 # Regen delta shape: sentinel ceilings (not product truncation). Opt-in caps via REGEN_CAPS=1.
 JUDGE_REGEN_CORE_DELTA_TOKEN_CEILING = 2_000_000
@@ -150,11 +150,13 @@ def judge_regen_max_attempts() -> int:
 
 
 def post_regen_judge_rescore_mode() -> str:
-    """After judge-regen Qwen rewrite: rescore only soft fails (cheap) vs full panel (expensive)."""
+    """After judge-regen rewrite, default to full-panel recertification."""
     raw = str(os.environ.get("APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE", "") or "").strip().lower()
     if raw in ("full_panel", "full", "all", "refresh_all"):
         return POST_REGEN_JUDGE_RESCORE_FULL_PANEL
-    return POST_REGEN_JUDGE_RESCORE_SOFT_ONLY
+    if raw in ("soft_failed_only", "soft_only", "soft", "failed_only"):
+        return POST_REGEN_JUDGE_RESCORE_SOFT_ONLY
+    return POST_REGEN_JUDGE_RESCORE_FULL_PANEL
 
 
 def judge_regeneration_enabled() -> bool:

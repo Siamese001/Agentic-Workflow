@@ -7,6 +7,7 @@ from apps_rg.runtime.sections.executive_summary_judge_remediation import (
 )
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
     JUDGE_REGEN_MAX_ATTEMPTS,
+    POST_REGEN_JUDGE_RESCORE_FULL_PANEL,
     POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
     post_regen_judge_rescore_mode,
 )
@@ -37,12 +38,17 @@ def _judge(
     }
 
 
-def test_default_judge_regen_cap_is_one() -> None:
-    assert JUDGE_REGEN_MAX_ATTEMPTS == 1
+def test_default_judge_regen_cap_is_three() -> None:
+    assert JUDGE_REGEN_MAX_ATTEMPTS == 3
 
 
-def test_post_regen_rescore_defaults_soft_only(monkeypatch) -> None:
+def test_post_regen_rescore_defaults_full_panel(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE", raising=False)
+    assert post_regen_judge_rescore_mode() == POST_REGEN_JUDGE_RESCORE_FULL_PANEL
+
+
+def test_post_regen_rescore_can_be_lowered_to_soft_only(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE", "soft_failed_only")
     assert post_regen_judge_rescore_mode() == POST_REGEN_JUDGE_RESCORE_SOFT_ONLY
 
 

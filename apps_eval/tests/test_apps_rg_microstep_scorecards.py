@@ -30,7 +30,7 @@ def test_apps_rg_microstep_contract_expands_all_lane_rows() -> None:
     )
 
     rows = [row.to_dict() for row in evaluation["rows"]]
-    assert len(rows) == 131
+    assert len(rows) == 134
     for lane in lanes:
         lane_rows = [row for row in rows if row["lane_id"] == lane]
         assert len(lane_rows) == 10

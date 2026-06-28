@@ -54,6 +54,20 @@ def minimal_lane_bundle() -> dict[str, dict]:
                 "and modernization outcomes across financial services clients."
             ),
         },
+        "insurtech_narrative": {
+            "runtime_generation_status": st,
+            "narrative_sentence": (
+                "At InsurTech, led insurer modernization through AWS migration planning, "
+                "executive discovery, and control-aware delivery for legacy platforms."
+            ),
+        },
+        "ey_narrative": {
+            "runtime_generation_status": st,
+            "narrative_sentence": (
+                "At EY, led regulated analytics and risk-data programs with audit-grade "
+                "governance, model-risk discipline, and traceable operating controls."
+            ),
+        },
         "unify_bullets": {
             "runtime_generation_status": st,
             "bullets": [
@@ -64,6 +78,18 @@ def minimal_lane_bundle() -> dict[str, dict]:
             "runtime_generation_status": st,
             "bullets": [
                 {"text": bullet, "source_fact_id": f"bul_i{i}", "has_metric": True} for i in range(1, 4)
+            ],
+        },
+        "insurtech_bullets": {
+            "runtime_generation_status": st,
+            "bullets": [
+                {"text": bullet, "source_fact_id": f"bul_t{i}", "has_metric": False} for i in range(1, 4)
+            ],
+        },
+        "ey_bullets": {
+            "runtime_generation_status": st,
+            "bullets": [
+                {"text": bullet, "source_fact_id": f"bul_e{i}", "has_metric": False} for i in range(1, 4)
             ],
         },
         "competencies": {

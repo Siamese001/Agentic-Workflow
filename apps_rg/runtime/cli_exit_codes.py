@@ -58,6 +58,12 @@ def exit_code_for_executive_summary_artifact(
                 doc = json.loads(x3p.read_text(encoding="utf-8"))
                 if isinstance(doc, dict):
                     code = str(doc.get("x3_code") or "").strip()
+                    pub = str(doc.get("publish_disposition") or "").strip()
+                    if pub in {"best_effort", "judge_certification_required"}:
+                        return EXIT_JUDGE_REVIEW_REQUIRED
+                    blocking = doc.get("blocking_judge_ids") or []
+                    if isinstance(blocking, list) and blocking:
+                        return EXIT_JUDGE_REVIEW_REQUIRED
             except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
     if code == "X3_REVIEW_JUDGE_SOFT_FAIL":

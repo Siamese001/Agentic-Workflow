@@ -110,7 +110,11 @@ def _maybe_truncate_bullet_text(text: str, export_warnings: list[str] | None) ->
     if len(text) > RG_BULLET_MAX_CHARS:
         if export_warnings is not None and "bullet_text_truncated" not in export_warnings:
             export_warnings.append("bullet_text_truncated")
-        return text[:RG_BULLET_MAX_CHARS]
+        head = text[: max(0, RG_BULLET_MAX_CHARS - 3)].rstrip()
+        boundary = head.rfind(" ")
+        if boundary >= int(RG_BULLET_MAX_CHARS * 0.65):
+            head = head[:boundary].rstrip()
+        return head.rstrip(" ,;:") + "..."
     return text
 
 

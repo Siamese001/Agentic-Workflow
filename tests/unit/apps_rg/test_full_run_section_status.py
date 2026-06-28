@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from apps_rg.runtime.full_run_section_status import (
+    FINAL_AGGREGATION_LANE,
     FULL_RUN_SECTION_STATUS_MD,
     collect_full_run_section_status,
     persist_full_run_section_status,
@@ -42,6 +43,72 @@ def _write_lane(
     )
 
 
+def _write_final_aggregation(root: Path) -> None:
+    asm = root / "modular_r4" / "final_resume_assembly"
+    asm.mkdir(parents=True, exist_ok=True)
+    (asm / "final_resume.json").write_text('{"sections": []}\n', encoding="utf-8")
+    (asm / "aggregation_preflight.json").write_text(
+        json.dumps({"all_pass": True}) + "\n",
+        encoding="utf-8",
+    )
+    (asm / "final_resume_x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_full_resume_llm_coherence_aggregation", "pass": True}]})
+        + "\n",
+        encoding="utf-8",
+    )
+    (asm / "full_resume_llm_coherence_review.json").write_text(
+        json.dumps(
+            {
+                "criteria_scores": {
+                    "mean_normalized_score": 0.94,
+                    "model_backed_pass_count": 2,
+                    "model_backed_total": 2,
+                },
+                "full_resume_coherence_pass": True,
+                "aggregation_method": "quorum_majority_model_backed",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (asm / "x1d_full_resume_judge_outputs.json").write_text(
+        json.dumps(
+            {
+                "aggregation": {
+                    "aggregation_method": "quorum_majority_model_backed",
+                    "full_resume_coherence_pass": True,
+                    "model_backed_pass_count": 2,
+                    "model_backed_total": 2,
+                },
+                "judges": [
+                    {
+                        "judge_id": "gemini",
+                        "provider_name": "Google Gemini 3.1 Pro Preview",
+                        "provider_key": "gemini_pro",
+                        "model_name": "gemini-3.1-pro-preview",
+                        "score": 5.0,
+                        "threshold": 4.0,
+                        "pass": True,
+                        "provider_status": "MODEL_BACKED_PASS",
+                    },
+                    {
+                        "judge_id": "openai",
+                        "provider_name": "OpenAI ChatGPT",
+                        "provider_key": "openai_chatgpt",
+                        "model_name": "gpt-5.5",
+                        "score": 4.4,
+                        "threshold": 4.0,
+                        "pass": True,
+                        "provider_status": "MODEL_BACKED_PASS",
+                    },
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def test_collect_rows_include_display_txt_links(tmp_path: Path):
     run_root = tmp_path / "full_resume_test123"
     _write_lane(run_root, "headline", txt_name="headline_output.txt", txt_body="SVP | AI | Cloud")
@@ -67,13 +134,45 @@ def test_collect_rows_include_display_txt_links(tmp_path: Path):
     assert "x2_competencies_keyword_repetition_limit" in md
 
 
+def test_collect_rows_append_final_aggregation_lane_with_judges(tmp_path: Path):
+    run_root = tmp_path / "full_resume_test123"
+    _write_lane(run_root, "headline", txt_name="headline_output.txt", txt_body="SVP | AI | Cloud")
+    _write_final_aggregation(run_root)
+
+    rows = collect_full_run_section_status(run_root, repo_root=tmp_path)
+    final = rows[-1]
+
+    assert final.lane == FINAL_AGGREGATION_LANE
+    assert final.executed is True
+    assert final.x3_code == "X3_ALLOW"
+    assert final.x2_pass == "PASS"
+    assert final.product_quality == "PASS"
+    assert final.runtime_generation_status == "ASSEMBLED"
+    assert final.aggregation_pass == "PASS"
+    assert final.mean_normalized_score == "0.94"
+    assert final.model_backed_pass_count == "2"
+    assert final.model_backed_total == "2"
+    assert "Google Gemini 3.1 Pro Preview" in final.judge_summary
+    assert "OpenAI ChatGPT" in final.judge_summary
+    assert final.display_txt_rel == "modular_r4/final_resume_assembly/final_resume.json"
+
+    md = render_full_run_section_status_markdown(rows, run_root=run_root, repo_root=tmp_path)
+    assert FINAL_AGGREGATION_LANE in md
+    assert "Google Gemini 3.1 Pro Preview" in md
+    assert "gpt-5.5" in md
+
+
 def test_persist_writes_md_and_json(tmp_path: Path):
     run_root = tmp_path / "full_resume_abc"
     _write_lane(run_root, "unify_bullets", txt_name="unify_bullets_output.txt", txt_body="- bullet one")
+    _write_final_aggregation(run_root)
     out = persist_full_run_section_status(run_root, repo_root=tmp_path)
     assert (run_root / FULL_RUN_SECTION_STATUS_MD).is_file()
     assert (run_root / "full_run_section_status.json").is_file()
     payload = json.loads((run_root / "full_run_section_status.json").read_text(encoding="utf-8"))
     assert payload["schema_version"] == "apps_rg.full_run_section_status.v1"
     assert any(l["lane"] == "unify_bullets" for l in payload["lanes"])
+    aggregate = next(l for l in payload["lanes"] if l["lane"] == FINAL_AGGREGATION_LANE)
+    assert aggregate["aggregation_method"] == "quorum_majority_model_backed"
+    assert len(aggregate["judges"]) == 2
     assert out["markdown_path"].name == FULL_RUN_SECTION_STATUS_MD

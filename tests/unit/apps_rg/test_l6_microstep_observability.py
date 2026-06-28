@@ -34,8 +34,8 @@ def test_apps_rg_l6_microsteps_expand_contract_and_observe_section_lane(tmp_path
     rows = [observation.to_dict() for observation in observations]
     headline_rows = [row for row in rows if row["lane_id"] == "headline"]
 
-    assert len(rows) == 131
-    assert len(eval_rows) == 131
+    assert len(rows) == 134
+    assert len(eval_rows) == 134
     assert contract_digest.startswith("sha256:")
     assert len(headline_rows) == 10
     assert all(row["observed_status"] == "OBSERVED" for row in headline_rows)
@@ -57,9 +57,9 @@ def test_apps_rg_l6_microstep_artifacts_include_alignment(tmp_path: Path) -> Non
     alignment = json.loads(paths["l6_apps_eval_alignment"].read_text(encoding="utf-8"))
     coverage = json.loads(paths["l6_microstep_coverage"].read_text(encoding="utf-8"))
 
-    assert alignment["rows_expected"] == 131
+    assert alignment["rows_expected"] == 134
     assert alignment["missing_in_l6"] == []
     assert alignment["authority_mismatch"] is False
-    assert coverage["required_rows_seen"] == 131
+    assert coverage["required_rows_seen"] == 134
     assert coverage["coverage_complete"] is False
-    assert coverage["missing_required"] == 131
+    assert coverage["missing_required"] == 134

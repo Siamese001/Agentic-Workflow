@@ -26,6 +26,10 @@ from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_pointer, proof_bucket_for_provider
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
+from apps_rg.runtime.executive_summary_certification import (
+    EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3,
+    executive_summary_certification_block,
+)
 
 # V6 terminal codes short values (integrated R4); legacy strings retained.
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
@@ -396,14 +400,55 @@ def run_canonical_full_resume_from_cli_primitives(
 
     l7_path = art / "agentic_core_how_trace.json"
     l7_ok = bool(result.fault == "" and l7_path.is_file())
+    exec_summary_block = executive_summary_certification_block(art)
+    exec_summary_blocked = bool(exec_summary_block.get("blocked"))
+    effective_x3 = (
+        str(exec_summary_block.get("x3_disposition") or EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3)
+        if exec_summary_blocked
+        else result.x3_disposition
+    )
     soft_fail_review = (
         result.fault == ""
-        and result.x3_disposition in _REVIEW_BUT_NOT_BLOCKING_X3
+        and not exec_summary_blocked
+        and effective_x3 in _REVIEW_BUT_NOT_BLOCKING_X3
     )
     outcome = (
         result.fault == ""
-        and (result.x3_disposition in _SUCCESS_X3 or soft_fail_review)
+        and not exec_summary_blocked
+        and (effective_x3 in _SUCCESS_X3 or soft_fail_review)
     )
+    post_x3_completion: dict[str, Any] = {}
+    result_fault = result.fault
+    if outcome:
+        from apps_rg.runtime.post_x3_completion import (
+            complete_apps_rg_post_x3,
+            is_full_resume_product_artifact_dir,
+        )
+
+        if is_full_resume_product_artifact_dir(art):
+            post_x3_completion = complete_apps_rg_post_x3(
+                artifact_dir=art,
+                result={
+                    "exit_status": "success",
+                    "execution_status": "completed",
+                    "outcome_authorized": True,
+                    "x3_disposition": effective_x3,
+                    "fault": result.fault,
+                    "artifact_dir": str(art),
+                    "run_id": result.run_id,
+                    "request_id": result.request_id,
+                },
+                raw_request=raw_request,
+            )
+            if not (
+                post_x3_completion.get("completed")
+                and post_x3_completion.get("x3_to_uwg_to_eval_to_l6_completed")
+            ):
+                outcome = False
+                result_fault = str(
+                    post_x3_completion.get("failure_stage")
+                    or "post_x3_completion"
+                )
     # success_with_review keeps exit_status == "success" so phase1_dispatch_hard_failed()
     # does NOT cascade-block downstream lanes; the review packet preserves the soft-fail
     # for human inspection.
@@ -413,13 +458,32 @@ def run_canonical_full_resume_from_cli_primitives(
         "exit_status": exit_status,
         "execution_status": "completed" if outcome else "failed",
         "outcome_authorized": outcome,
-        "x3_disposition": result.x3_disposition,
-        "fault": result.fault,
+        "x3_disposition": effective_x3,
+        "fault": result_fault,
         "artifact_dir": str(art),
         "run_id": result.run_id,
         "request_id": result.request_id,
         "l7_how_trace_emitted": l7_ok,
         "terminal_r5": result.terminal_r5,
+        "executive_summary_certification_block": exec_summary_block,
+        "post_x3_completion": post_x3_completion,
+        "uwg_commit_receipt_ref": (
+            (post_x3_completion.get("uwg") or {})
+            .get("artifacts", {})
+            .get("uwg_commit_receipt", "")
+            if isinstance(post_x3_completion.get("uwg"), dict)
+            else ""
+        ),
+        "apps_eval_record_ref": (
+            (post_x3_completion.get("apps_eval") or {}).get("eval_record_ref", "")
+            if isinstance(post_x3_completion.get("apps_eval"), dict)
+            else ""
+        ),
+        "l6_shadow_bridge_ref": (
+            (post_x3_completion.get("l6_shadow") or {}).get("l6_shadow_bridge_ref", "")
+            if isinstance(post_x3_completion.get("l6_shadow"), dict)
+            else ""
+        ),
     }
 
 

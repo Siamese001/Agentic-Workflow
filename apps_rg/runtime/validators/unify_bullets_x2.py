@@ -64,6 +64,22 @@ UNIFY_METRIC_ANCHOR_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
 _COVERAGE_WS_RE = re.compile(r"\s+")
 
 
+def _metric_raw_values(raw: Any) -> list[str]:
+    """Normalize metric_raw into comparable metric tokens."""
+    if isinstance(raw, (list, tuple, set)):
+        return [str(x).strip().lower() for x in raw if str(x).strip()]
+    if raw is None:
+        return []
+    text = str(raw).strip().lower()
+    if not text:
+        return []
+    return [
+        token.strip().strip("[]'\" ")
+        for token in re.split(r"[,;]", text)
+        if token.strip().strip("[]'\" ")
+    ]
+
+
 def _norm_claim_ws(text: str) -> str:
     return _COVERAGE_WS_RE.sub(" ", str(text or "").strip())
 
@@ -829,8 +845,10 @@ def run_unify_bullets_x2_gates(
             continue
         if not b.get("has_metric"):
             continue
-        mr_u = str(b.get("metric_raw") or "").strip()
-        if not mr_u:
+        mr_raw = b.get("metric_raw")
+        mr_tokens = _metric_raw_values(mr_raw)
+        mr_u = ", ".join(mr_tokens)
+        if not mr_tokens:
             bullets_metric_unsupported_u.append(f"{bid_mu}:metric_raw_empty")
             continue
         mr_u_lower = mr_u.lower()
@@ -850,14 +868,13 @@ def run_unify_bullets_x2_gates(
             )
             if str(x).strip()
         }
-        mr_tokens = [t.strip() for t in re.split(r"[,;]", mr_u_lower) if t.strip()]
         metric_supported = metric_supported or (
             bool(mr_tokens) and bool(approved_metric_ids)
             and all(t in approved_metric_ids for t in mr_tokens)
         )
         if not metric_supported:
             bullets_metric_unsupported_u.append(
-                f"{bid_mu}:metric_raw={mr_u!r}_not_in_proof_bundle"
+                f"{bid_mu}:metric_raw={mr_raw!r}_not_in_proof_bundle"
             )
     add(
         "x2_unify_metric_source_required",
