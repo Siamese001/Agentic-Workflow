@@ -261,6 +261,36 @@ def test_direct_partner_research_families_are_handoff_eligible() -> None:
     assert "co-sell" in quality.signal_terms_present
 
 
+def test_source_family_keys_survive_bounded_research_notes() -> None:
+    bounded_notes = (
+        "### company_basics\n"
+        "Company DNA and operating model show leadership strategy urgency. "
+        "Co-sell architecture product sales AI adoption and governance signals are sourced."
+    )
+
+    quality = assess_targeting_brief_semantics(
+        _PARTNERSHIP_TARGETING_BRIEF,
+        jd_text=_PARTNER_JD,
+        research_notes=bounded_notes,
+        source_family_keys=(
+            "company_basics",
+            "competitive_landscape",
+            "leadership_and_org",
+            "recent_news_and_signals",
+            "financials_and_growth",
+            "partner_ecosystem",
+            "commercial_motion",
+            "adoption_motion",
+            "tech_stack_and_tools",
+            "regulatory_and_legal",
+        ),
+        profile="apps_rg",
+    )
+
+    assert quality.handoff_eligible, quality.as_dict()
+    assert quality.source_families_missing == ()
+
+
 def test_role_context_no_longer_satisfies_partner_source_families() -> None:
     quality = assess_targeting_brief_semantics(
         _PARTNERSHIP_TARGETING_BRIEF,

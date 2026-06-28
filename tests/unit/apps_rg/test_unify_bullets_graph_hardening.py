@@ -149,6 +149,15 @@ def _partner_metric_surface_payload() -> tuple[list[dict], dict, dict]:
     return bullets, parsed, meta
 
 
+def test_unify_x1d_outputs_are_written_once_after_adjudication() -> None:
+    source = (REPO / "apps_rg/runtime/sections/unify_bullets_lane.py").read_text(encoding="utf-8")
+    write_call = 'write_json(artifact_dir / "x1d_llm_judge_outputs.json"'
+
+    assert source.count(write_call) == 1
+    assert source.find(write_call) > source.find("if _should_adjudicate and _panel_keys:")
+    assert source.find(write_call) < source.find("run_bullet_judge_reselection(")
+
+
 def test_legacy_six_pack_detector() -> None:
     assert is_legacy_six_pack_ledger_order(list(LEGACY_SIX_PACK_LEDGER_ORDER))
     assert not is_legacy_six_pack_ledger_order(
@@ -349,6 +358,25 @@ def test_unify_x2_graph_mode_delegates_legacy_metric_cluster_to_positive_contrac
         "delegated_to_role_episode_metric_outcome_contract"
     )
     assert by_id["x2_unify_each_bullet_metric_outcome_surface_visible"].pass_ is True
+
+
+def test_unify_metric_source_gate_accepts_approved_metric_outcome_id_lists() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    for bullet, change in zip(bullets, parsed["change_log"]):
+        bullet["metric_raw"] = list(change["metric_outcome_ids"])
+
+    gates = run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text=JD,
+        runtime_generation_status="MOCKED",
+        proof_pool_metadata=meta,
+    )
+
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_metric_source_required"].pass_ is True
 
 
 def test_unify_metric_source_gate_rejects_bare_canonical_metric_without_outcome_id() -> None:

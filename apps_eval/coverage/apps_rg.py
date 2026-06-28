@@ -26,10 +26,11 @@ _STAGE_ORDER = {
     "X2": 6,
     "X1D": 7,
     "X3": 8,
-    "L6": 9,
-    "EXIT": 10,
-    "PACKAGE": 11,
-    "REGRESSION": 12,
+    "EXIT": 9,
+    "UWG": 10,
+    "L6": 11,
+    "PACKAGE": 12,
+    "REGRESSION": 13,
 }
 _PASSISH = {"PASS", "NOT_APPLICABLE"}
 _BLOCKING = {"FAIL", "UNKNOWN", "NOT_RUN"}
@@ -260,17 +261,72 @@ def _l6_non_mutating_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "UNKNOWN", "l6 package lacks non-mutation proof fields", mutation_flags, "non-mutating fields"
 
 
+def _uwg_validation_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    if payload is None:
+        return "UNKNOWN", "uwg validation artifact exists but could not be parsed", None, "validation_status PASS"
+    if isinstance(payload, dict):
+        inner = payload.get("payload") if isinstance(payload.get("payload"), dict) else payload
+        status = str(inner.get("validation_status") or "").strip().upper()
+        if status == "PASS":
+            return "PASS", "uwg validation receipt passed", status, "PASS"
+        if status:
+            return "FAIL", f"uwg validation receipt status {status}", status, "PASS"
+    return "UNKNOWN", "uwg validation status missing", payload, "validation_status PASS"
+
+
+def _uwg_commit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    if payload is None:
+        return "UNKNOWN", "uwg commit artifact exists but could not be parsed", None, "committed receipt with output_hash"
+    if isinstance(payload, dict):
+        inner = payload.get("payload") if isinstance(payload.get("payload"), dict) else payload
+        status = str(inner.get("commit_status") or "").strip().upper()
+        output_hash = str(inner.get("output_hash") or inner.get("output_hash_sha256") or "").strip()
+        receipt_id = str(inner.get("commit_receipt_id") or "").strip()
+        validation_ref = str(inner.get("uwg_validation_receipt_ref") or "").strip()
+        committed = status in {"COMMITTED", "ADMITTED"} and bool(output_hash and receipt_id and validation_ref)
+        if committed:
+            return (
+                "PASS",
+                "uwg commit receipt is bound to the generated resume artifact",
+                {
+                    "commit_status": status,
+                    "commit_receipt_id": receipt_id,
+                    "output_hash_present": bool(output_hash),
+                    "uwg_validation_receipt_ref": validation_ref,
+                },
+                "COMMITTED with output_hash and validation ref",
+            )
+        return (
+            "FAIL" if status else "UNKNOWN",
+            "uwg commit receipt is missing required binding fields",
+            {
+                "commit_status": status,
+                "commit_receipt_id": receipt_id,
+                "output_hash_present": bool(output_hash),
+                "uwg_validation_receipt_ref": validation_ref,
+            },
+            "COMMITTED with output_hash and validation ref",
+        )
+    return "UNKNOWN", "uwg commit artifact is not an object", payload, "object"
+
+
 def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if payload is None:
         return "UNKNOWN", "exit artifact exists but could not be parsed", None, "readable JSON with whole-run exit"
     if not isinstance(payload, dict):
         return "UNKNOWN", "exit artifact is not an object", payload, "object"
-    if payload.get("exactly_one_x3") is False:
-        return "FAIL", "whole-run exit exactly_one_x3 is false", payload.get("exactly_one_x3"), True
-    disposition = str(payload.get("x3_disposition") or "").strip()
+    inner = payload.get("payload") if isinstance(payload.get("payload"), dict) else payload
+    if inner.get("exactly_one_x3") is False:
+        return "FAIL", "whole-run exit exactly_one_x3 is false", inner.get("exactly_one_x3"), True
+    disposition = str(
+        inner.get("x3_disposition")
+        or inner.get("x3_code")
+        or payload.get("x3_disposition")
+        or ""
+    ).strip()
     if not disposition:
         return "UNKNOWN", "whole-run exit disposition missing", disposition, "non-empty disposition"
-    return "PASS", "whole-run exit packet has a single disposition", {"exactly_one_x3": payload.get("exactly_one_x3"), "x3_disposition": disposition}, "single disposition"
+    return "PASS", "whole-run exit packet has a single disposition", {"exactly_one_x3": inner.get("exactly_one_x3"), "x3_disposition": disposition}, "single disposition"
 
 
 def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[str, float, str, str, Any, Any]:
@@ -299,6 +355,10 @@ def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[
         verdict, reason, observed, threshold = _l6_non_mutating_verdict(payload)
     elif gate_id == "exit_exactly_one_x3":
         verdict, reason, observed, threshold = _exit_verdict(payload)
+    elif gate_id == "uwg_validation_receipt_pass":
+        verdict, reason, observed, threshold = _uwg_validation_verdict(payload)
+    elif gate_id == "uwg_commit_receipt_bound":
+        verdict, reason, observed, threshold = _uwg_commit_verdict(payload)
     else:
         verdict, reason, observed, threshold = "PASS", "artifact-level proof resolved", artifact_ref, "artifact_ref"
     failure_mode = "" if verdict in {"PASS", "WARN"} else f"microstep.{gate_id}"
@@ -318,7 +378,7 @@ def _scope_key(item: dict[str, Any]) -> str:
     if lane:
         return f"lane:{lane}"
     component = str(item.get("component_id") or "")
-    if component in {"apps_rg.eval_package", "apps_rg.whole_run_exit", "apps_rg.final_assembly", "apps_rg.cross_section"}:
+    if component in {"apps_rg.eval_package", "apps_rg.whole_run_exit", "apps_rg.final_assembly", "apps_rg.cross_section", "apps_rg.uwg_commit"}:
         return "cross_run"
     return "global"
 

@@ -1173,8 +1173,6 @@ def run_unify_bullets_execution(
                 artifact_base=artifact_dir,
             )
         ]
-    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-
     trace = attach_reasoning_to_prompt_trace(
         {
             "runtime_path": "apps_rg.runtime.sections.unify_bullets_lane",
@@ -1294,9 +1292,9 @@ def run_unify_bullets_execution(
         for _r in _panel_rows:
             _r["adjudicator_panel_row"] = True
         x1d = list(x1d) + _panel_rows
-        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
         _adjudication_record["escalated"] = True
         _adjudication_record["panel_provider_keys"] = list(_panel_keys)
+    write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
     write_json(artifact_dir / "bullet_adjudication.json", _adjudication_record)
     write_json(artifact_dir / "bullet_x2_aggregation.json", _agg.to_dict())
 

@@ -189,6 +189,11 @@ class TestCuratedTargetingFallback:
             jd_context={
                 "company_name": "Anthropic",
                 "job_title": "Manager of Applied AI Architecture, Partnerships",
+                "content": (
+                    "Lead partner solutions architects for GSIs, cloud partners, "
+                    "joint solution development, indirect revenue, GTM strategy, "
+                    "enterprise AI deployments, API integrations, and Claude adoption."
+                ),
             },
         )
 
@@ -199,6 +204,9 @@ class TestCuratedTargetingFallback:
         assert "adoption_motion" in findings
         assert "tech_stack_and_tools" in findings
         assert "recent_news_and_signals" in findings
+        assert "competitive_landscape" in findings
+        assert "leadership_and_org" in findings
+        assert "financials_and_growth" in findings
         assert all(value.strip() for value in findings.values())
         assert all("\nhttps://example.com/" in value for value in findings.values())
 
@@ -231,6 +239,25 @@ class TestCuratedTargetingFallback:
 
         source = inspect.getsource(CompanyBriefEngine)
         assert "apps_research.integrations.tavily_retrieval" not in source
+
+    def test_jd_restatement_bullet_scrub_is_deterministic(self, engine):
+        draft = "\n".join(
+            [
+                "## apps_rg Positioning Themes (targeting only, not proof)",
+                "- Building foundational teams in uncertain growth phases",
+                "- Partner ecosystem scale through repeatable architecture",
+            ]
+        )
+
+        scrubbed = engine._drop_jd_restatement_bullets(
+            draft,
+            (
+                "jd_restatement_in_bullet_text:Building foundational teams in uncertain growth phases",
+            ),
+        )
+
+        assert "Building foundational teams" not in scrubbed
+        assert "Partner ecosystem scale" in scrubbed
 
 
 class TestAssembleBrief:

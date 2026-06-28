@@ -121,6 +121,22 @@ def _artifact_repo_rel(path: Path, repo_root: Path) -> str:
         return str(path).replace("\\", "/")
 
 
+def _source_fact_root_id(raw: Any, allowed_fact_ids: set[str] | None = None) -> str:
+    raw_s = str(raw or "").strip()
+    if not raw_s or raw_s.startswith("metric_"):
+        return ""
+    repaired = _fix_fact_id_typos(raw_s, allowed_fact_ids)
+    fid = str(repaired or "").strip()
+    if not fid or fid.startswith("metric_"):
+        return ""
+    root = fid.split("_metric_", 1)[0].strip()
+    if not root or root.startswith("metric_"):
+        return ""
+    if allowed_fact_ids is not None and root not in allowed_fact_ids:
+        return ""
+    return root
+
+
 def canonicalize_competency_terms_for_proof(
     parsed: dict[str, Any],
     *,
@@ -134,9 +150,9 @@ def canonicalize_competency_terms_for_proof(
         if not isinstance(cat, dict):
             continue
         ids_norm = [
-            _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
+            fid
             for x in (cat.get("source_fact_ids") or [])
-            if x
+            if (fid := _source_fact_root_id(x, allowed_fact_ids))
         ]
         terms_raw = cat.get("terms") if isinstance(cat.get("terms"), list) else []
         new_terms: list[dict[str, Any]] = []
@@ -145,7 +161,7 @@ def canonicalize_competency_terms_for_proof(
                 txt = term_phrase(t)
                 sid_raw = t.get("source_fact_id")
                 sid = (
-                    _fix_fact_id_typos(str(sid_raw), allowed_fact_ids).split("_metric_")[0]
+                    _source_fact_root_id(sid_raw, allowed_fact_ids)
                     if sid_raw is not None and str(sid_raw).strip()
                     else ""
                 )
@@ -155,8 +171,9 @@ def canonicalize_competency_terms_for_proof(
                 if isinstance(sup, list) and sup:
                     sf_ids = sorted(
                         {
-                            _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
+                            fid
                             for x in sup
+                            if (fid := _source_fact_root_id(x, allowed_fact_ids))
                         }
                     )
                 else:
@@ -309,7 +326,9 @@ def _candidate_phrases_for_category(cat: dict[str, Any], rows_by_id: dict[str, d
     """Phrases grounded in sourced bullets only (technologies + short claim fragments)."""
     ordered: list[str] = []
     seen_l: set[str] = set()
-    fid_list = [_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in (cat.get("source_fact_ids") or [])]
+    fid_list = [
+        fid for x in (cat.get("source_fact_ids") or []) if (fid := _source_fact_root_id(x))
+    ]
 
     def push(phrase: str) -> None:
         p = str(phrase).strip().rstrip(".,;:")
@@ -376,9 +395,12 @@ def repair_structured_competencies_source_facts(
         if not _terms_list_has_dict(terms_raw):
             continue
 
-        raw_ids = [_fix_fact_id_typos(str(x), allowed_fact_ids) for x in (cat.get("source_fact_ids") or [])]
         validated = sorted(
-            {base for x in raw_ids if (base := x.split("_metric_")[0]) in allowed_fact_ids}
+            {
+                fid
+                for x in (cat.get("source_fact_ids") or [])
+                if (fid := _source_fact_root_id(x, allowed_fact_ids))
+            }
         )
         if not validated:
             continue
@@ -393,7 +415,7 @@ def repair_structured_competencies_source_facts(
             sr = raw_t.get("source_fact_id")
             current_base = ""
             if sr is not None and str(sr).strip():
-                current_base = _fix_fact_id_typos(str(sr), allowed_fact_ids).split("_metric_")[0]
+                current_base = _source_fact_root_id(sr, allowed_fact_ids)
 
             picked = ""
             if current_base in allowed_fact_ids and term_primary_support_overlap(
@@ -409,7 +431,7 @@ def repair_structured_competencies_source_facts(
             fallback = validated[0]
             resolved = picked or fallback
 
-            if str(raw_t.get("source_fact_id", "")).split("_metric_")[0] != resolved:
+            if _source_fact_root_id(raw_t.get("source_fact_id", ""), allowed_fact_ids) != resolved:
                 raw_before = raw_t.get("source_fact_id")
                 raw_t["source_fact_id"] = resolved
                 changelog.append(
@@ -428,14 +450,14 @@ def repair_structured_competencies_source_facts(
 
             repaired_sids: list[str] = []
             for x in raw_t.get("source_fact_ids") or []:
-                base = _fix_fact_id_typos(str(x), allowed_fact_ids).split("_metric_")[0]
-                if base in allowed_fact_ids and base not in repaired_sids:
+                base = _source_fact_root_id(x, allowed_fact_ids)
+                if base and base not in repaired_sids:
                     repaired_sids.append(base)
             if not repaired_sids:
                 repaired_sids = [resolved]
             if raw_t.get("source_fact_ids") != repaired_sids:
                 raw_t["source_fact_ids"] = repaired_sids
-            if str(raw_t.get("source_fact_id", "")).split("_metric_")[0] not in allowed_fact_ids:
+            if not _source_fact_root_id(raw_t.get("source_fact_id", ""), allowed_fact_ids):
                 raw_t["source_fact_id"] = repaired_sids[0]
 
 
@@ -500,7 +522,7 @@ def coerce_structured_competencies_resume_support(
                 continue
             sr = raw_t.get("source_fact_id")
             fid_base = (
-                _fix_fact_id_typos(str(sr), allowed_fact_ids).split("_metric_")[0]
+                _source_fact_root_id(sr, allowed_fact_ids)
                 if sr is not None and str(sr).strip()
                 else ""
             )
@@ -779,9 +801,8 @@ def expand_structured_competencies_min_two_terms(
 
             validated_set: set[str] = set()
             for sr in cat.get("source_fact_ids") or []:
-                x = _fix_fact_id_typos(str(sr))
-                fid = x.split("_metric_")[0]
-                if fid in allowed_fact_ids:
+                fid = _source_fact_root_id(sr, allowed_fact_ids)
+                if fid:
                     validated_set.add(fid)
             validated = sorted(validated_set)
             if not validated:
@@ -1166,8 +1187,13 @@ def rebuild_claim_ledger_from_competencies(parsed: dict[str, Any], allowed_fact_
     for cat in comps:
         if not isinstance(cat, dict):
             continue
-        raw_ids = [_fix_fact_id_typos(str(x)) for x in (cat.get("source_fact_ids") or [])]
-        ids = sorted({x.split("_metric_")[0] for x in raw_ids if x.split("_metric_")[0] in allowed_fact_ids})
+        ids = sorted(
+            {
+                fid
+                for x in (cat.get("source_fact_ids") or [])
+                if (fid := _source_fact_root_id(x, allowed_fact_ids))
+            }
+        )
         if not ids:
             continue
         cat["source_fact_ids"] = ids
@@ -1176,10 +1202,10 @@ def rebuild_claim_ledger_from_competencies(parsed: dict[str, Any], allowed_fact_
             if not ts:
                 continue
             if isinstance(raw_t, dict) and raw_t.get("source_fact_id") is not None:
-                sid = _fix_fact_id_typos(str(raw_t["source_fact_id"])).split("_metric_")[0]
-                if sid in allowed_fact_ids:
+                sid = _source_fact_root_id(raw_t["source_fact_id"], allowed_fact_ids)
+                if sid:
                     ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
-                continue
+                    continue
             ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
     parsed["claim_ledger"] = ledger
 
@@ -1193,8 +1219,11 @@ def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[s
     for cat in comps:
         if not isinstance(cat, dict):
             continue
-        raw_ids = [_fix_fact_id_typos(str(x)) for x in (cat.get("source_fact_ids") or [])]
-        ids = [x.split("_metric_")[0] for x in raw_ids if x.split("_metric_")[0] in allowed_fact_ids]
+        ids = [
+            fid
+            for x in (cat.get("source_fact_ids") or [])
+            if (fid := _source_fact_root_id(x, allowed_fact_ids))
+        ]
         if not ids:
             continue
         cat["source_fact_ids"] = ids
@@ -1204,9 +1233,11 @@ def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[s
                 continue
             if ts.lower() not in covered:
                 if isinstance(raw_t, dict) and raw_t.get("source_fact_id") is not None:
-                    sid = _fix_fact_id_typos(str(raw_t["source_fact_id"])).split("_metric_")[0]
-                    if sid in allowed_fact_ids:
+                    sid = _source_fact_root_id(raw_t["source_fact_id"], allowed_fact_ids)
+                    if sid:
                         ledger.append({"claim_text": ts, "source_fact_ids": [sid]})
+                    else:
+                        ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
                 else:
                     ledger.append({"claim_text": ts, "source_fact_ids": list(ids)})
                 covered.add(ts.lower())
@@ -1214,7 +1245,9 @@ def ensure_claim_ledger_coverage(parsed: dict[str, Any], allowed_fact_ids: set[s
         raw_ids = entry.get("source_fact_ids")
         if not isinstance(raw_ids, list):
             continue
-        entry["source_fact_ids"] = [_fix_fact_id_typos(str(x)).split("_metric_")[0] for x in raw_ids]
+        entry["source_fact_ids"] = [
+            fid for x in raw_ids if (fid := _source_fact_root_id(x, allowed_fact_ids))
+        ]
     parsed["claim_ledger"] = ledger
 
 
@@ -1345,9 +1378,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         return {"text": phrase, "source_fact_id": fid, "source_fact_ids": [fid]}
 
     raw_allowed = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])]
-    allowed = [x for x in raw_allowed if "_metric_" not in x]
-    if not allowed and raw_allowed:
-        allowed = sorted({x.split("_metric_", 1)[0] for x in raw_allowed})
+    allowed = sorted({fid for x in raw_allowed if (fid := _source_fact_root_id(x))})
     if not allowed:
         allowed = ["proof_pool_placeholder"]
     plan_facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
@@ -1400,7 +1431,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
             if not ts:
                 continue
             if isinstance(t, dict) and t.get("source_fact_id") is not None:
-                sid = _fix_fact_id_typos(str(t["source_fact_id"])).split("_metric_")[0]
+                sid = _source_fact_root_id(t["source_fact_id"]) or str(t["source_fact_id"])
                 ledger_out.append({"claim_text": ts, "source_fact_ids": [sid]})
             else:
                 ledger_out.append({"claim_text": ts, "source_fact_ids": list(ids)})

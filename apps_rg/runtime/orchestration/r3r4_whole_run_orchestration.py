@@ -22,6 +22,10 @@ from apps_rg.runtime.full_resume_review_bundle import (
     REVIEW_BUNDLE_FILENAME,
     emit_full_resume_review_bundle,
 )
+from apps_rg.runtime.executive_summary_certification import (
+    EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3,
+    executive_summary_certification_block,
+)
 from apps_rg.runtime.proof.x3_disposition_normalize import normalize_x3_code
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import (
@@ -606,14 +610,53 @@ def run_whole_run_with_route_governance(
         except OSError:
             review_zip = None
 
-    outcome = result.fault == "" and result.x3_disposition in _SUCCESS_X3
-    aggregate_x3 = _aggregate_x3_for_outcome(result.x3_disposition, outcome=outcome)
+    exec_summary_block = executive_summary_certification_block(art)
+    exec_summary_blocked = bool(exec_summary_block.get("blocked"))
+    effective_x3 = (
+        str(exec_summary_block.get("x3_disposition") or EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3)
+        if exec_summary_blocked
+        else result.x3_disposition
+    )
+    outcome = (
+        result.fault == ""
+        and not exec_summary_blocked
+        and effective_x3 in _SUCCESS_X3
+    )
+    post_x3_completion: dict[str, Any] = {}
+    result_fault = result.fault
+    if outcome:
+        from apps_rg.runtime.post_x3_completion import complete_apps_rg_post_x3
+
+        post_x3_completion = complete_apps_rg_post_x3(
+            artifact_dir=art,
+            result={
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+                "x3_disposition": effective_x3,
+                "fault": result.fault,
+                "artifact_dir": str(art),
+                "run_id": result.run_id,
+                "request_id": result.request_id,
+            },
+            raw_request=raw_request,
+        )
+        if not (
+            post_x3_completion.get("completed")
+            and post_x3_completion.get("x3_to_uwg_to_eval_to_l6_completed")
+        ):
+            outcome = False
+            result_fault = str(
+                post_x3_completion.get("failure_stage")
+                or "post_x3_completion"
+            )
+    aggregate_x3 = _aggregate_x3_for_outcome(effective_x3, outcome=outcome)
     payload: dict[str, Any] = {
         "exit_status": "success" if outcome else "error",
         "execution_status": "completed" if outcome else "failed",
         "outcome_authorized": outcome,
         "x3_disposition": aggregate_x3,
-        "fault": result.fault,
+        "fault": result_fault,
         "artifact_dir": str(art),
         "run_id": result.run_id,
         "request_id": result.request_id,
@@ -624,6 +667,25 @@ def run_whole_run_with_route_governance(
         "research_delegation_executed": research_ran,
         "l7_how_trace_emitted": bool(result.fault == "" and (art / "agentic_core_how_trace.json").is_file()),
         "terminal_r5": result.terminal_r5,
+        "executive_summary_certification_block": exec_summary_block,
+        "post_x3_completion": post_x3_completion,
+        "uwg_commit_receipt_ref": (
+            (post_x3_completion.get("uwg") or {})
+            .get("artifacts", {})
+            .get("uwg_commit_receipt", "")
+            if isinstance(post_x3_completion.get("uwg"), dict)
+            else ""
+        ),
+        "apps_eval_record_ref": (
+            (post_x3_completion.get("apps_eval") or {}).get("eval_record_ref", "")
+            if isinstance(post_x3_completion.get("apps_eval"), dict)
+            else ""
+        ),
+        "l6_shadow_bridge_ref": (
+            (post_x3_completion.get("l6_shadow") or {}).get("l6_shadow_bridge_ref", "")
+            if isinstance(post_x3_completion.get("l6_shadow"), dict)
+            else ""
+        ),
     }
     if research_ran:
         payload["delegated_briefing"] = str(art / sr.FILENAME_DELEGATED_BRIEFING)

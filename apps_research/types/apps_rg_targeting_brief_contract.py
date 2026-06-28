@@ -527,6 +527,7 @@ def assess_targeting_brief_semantics(
     *,
     jd_text: str = "",
     research_notes: str = "",
+    source_family_keys: tuple[str, ...] | list[str] | None = None,
     profile: str = DEFAULT_BRIEFING_PROFILE,
 ) -> BriefingSemanticsAssessment:
     """Assess whether the brief is dense enough to hand off to apps_rg.
@@ -557,6 +558,19 @@ def assess_targeting_brief_semantics(
     missing_sections = tuple(section for section in required_sections if section not in header_blob)
 
     source_families = _research_families(research_notes)
+    if source_family_keys:
+        source_families = tuple(
+            dict.fromkeys(
+                (
+                    *source_families,
+                    *(
+                        _semantic_family_name(str(family).strip().lower())
+                        for family in source_family_keys
+                        if str(family).strip()
+                    ),
+                )
+            )
+        )
     base_required_families = ("overview", "strategic_priorities", "leadership", "recent_moves")
     intent_required_families = tuple(
         dict.fromkeys(_semantic_family_name(fam) for fam in required_families_for_intents(intents))

@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
+from apps_rg.runtime.executive_summary_certification import (
+    executive_summary_x3_requires_failure,
+)
 
 SPINE_FEC_ARTIFACT = "final_evidence_contract.json"
 LEGACY_FEC_BRIDGE_ALIAS = "final_evidence_contract_bridge.json"
@@ -47,6 +50,8 @@ def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
     of REVIEW vs BLOCK. Hard failures (X3_BLOCK, fault) still produce ``failure`` and cascade.
     """
     code = str(x3_doc.get("x3_code") or getattr(x3, "x3_code", "") or "")
+    if executive_summary_x3_requires_failure(x3_doc):
+        return "failure"
     if hasattr(x3, "pass_"):
         if bool(x3.pass_):
             return "success"

@@ -36,7 +36,9 @@ COMPETENCIES_EXPORT_MIN_CATEGORIES = MIN_CATEGORY_COUNT
 # Schema / export alignment (mirror narrative + headline X2).
 RG_HEADLINE_MAX_CHARS = HEADLINE_MAX_CHARS
 RG_ROLE_NARRATIVE_MAX_CHARS = NARRATIVE_MAX_CHARS
-RG_BULLET_MAX_CHARS = 250
+# Longest locked-copy early-career SSOT bullet is ~390 chars; the export schema
+# must not silently mutate locked sections that final assembly preserves verbatim.
+RG_BULLET_MAX_CHARS = 420
 
 __all__ = [
     "COMPETENCIES_EXPORT_MAX_CATEGORIES",

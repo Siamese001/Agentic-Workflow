@@ -78,6 +78,14 @@ def test_w1_competencies_chat_timeout_caps_extended_budget(monkeypatch):
     assert competencies_provider_chat_timeout_s() == 120  # default for normal runs stays bounded
 
 
+def test_competencies_output_budget_covers_structured_candidate_json():
+    from apps_rg.runtime.sections.competencies_lane_defaults import (
+        COMPETENCIES_MAX_OUTPUT_TOKENS,
+    )
+
+    assert COMPETENCIES_MAX_OUTPUT_TOKENS >= 6000
+
+
 # --------------------------------------------------------------------------------------------------
 # W2 — transport timing metadata + last-progress on timeout
 # --------------------------------------------------------------------------------------------------

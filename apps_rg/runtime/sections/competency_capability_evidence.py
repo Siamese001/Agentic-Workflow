@@ -57,6 +57,17 @@ PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER: tuple[str, ...] = (
 VISIBLE_GRAPH_TERMS_MIN = 3
 VISIBLE_GRAPH_TERMS_MAX = 3
 
+
+def _source_fact_root_id(raw: Any) -> str:
+    raw_s = str(raw or "").strip()
+    if not raw_s or raw_s.startswith("metric_"):
+        return ""
+    fid = raw_s.split("_metric_", 1)[0].strip()
+    if not fid or fid.startswith("metric_"):
+        return ""
+    return fid
+
+
 VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES: dict[str, tuple[str, ...]] = {
     "ccb_partner_applied_ai_architecture": (
         "partner-ready applied AI reference architectures",
@@ -528,7 +539,7 @@ def hydrate_competency_bundle_graph_evidence(
     if not isinstance(competencies, list):
         return competencies
     pkt = packet or build_competency_capability_section_packet("competencies")
-    allowed = {str(x) for x in (allowed_fact_ids or set()) if str(x).strip()}
+    allowed = {fid for raw in (allowed_fact_ids or set()) if (fid := _source_fact_root_id(raw))}
     by_id: dict[str, dict[str, Any]] = {
         str(r.get("competency_bundle_id")): r
         for r in (pkt.get("competency_bundles") or [])
@@ -571,7 +582,7 @@ def hydrate_competency_bundle_graph_evidence(
     }
 
     def _append_allowed(out: list[str], raw: Any) -> None:
-        fid = str(raw).split("_metric_", 1)[0].strip()
+        fid = _source_fact_root_id(raw)
         if fid and fid in allowed and fid not in out:
             out.append(fid)
 
@@ -624,9 +635,9 @@ def hydrate_competency_bundle_graph_evidence(
             continue
 
         existing = [
-            str(fid).split("_metric_", 1)[0].strip()
+            root
             for fid in (cat.get("source_fact_ids") or [])
-            if str(fid).strip()
+            if (root := _source_fact_root_id(fid))
         ]
         existing_linked = [fid for fid in existing if fid in linked_facts]
         # Replace projection-default facts unless the category already cites this bundle.
@@ -644,9 +655,9 @@ def hydrate_competency_bundle_graph_evidence(
             if not isinstance(raw_term, dict):
                 continue
             term_ids = [
-                str(fid).split("_metric_", 1)[0].strip()
+                root
                 for fid in (raw_term.get("source_fact_ids") or [])
-                if str(fid).strip()
+                if (root := _source_fact_root_id(fid))
             ]
             term_linked = [fid for fid in term_ids if fid in linked_facts]
             if not term_linked:
@@ -748,12 +759,10 @@ def _graph_surface_term(
 
 
 def _category_fact_ids(cat: dict[str, Any], allowed_fact_ids: set[str] | None) -> list[str]:
-    allowed = {str(x).split("_metric_", 1)[0] for x in (allowed_fact_ids or set()) if str(x).strip()}
+    allowed = {fid for raw in (allowed_fact_ids or set()) if (fid := _source_fact_root_id(raw))}
     out: list[str] = []
     for raw in cat.get("source_fact_ids") or []:
-        fid = str(raw).split("_metric_", 1)[0].strip()
-        if str(raw).strip().startswith("metric_") or fid.startswith("metric_"):
-            continue
+        fid = _source_fact_root_id(raw)
         if not fid:
             continue
         if allowed and fid not in allowed:
@@ -764,9 +773,7 @@ def _category_fact_ids(cat: dict[str, Any], allowed_fact_ids: set[str] | None) -
         if not isinstance(term, dict):
             continue
         for raw in list(term.get("source_fact_ids") or []) + [term.get("source_fact_id")]:
-            fid = str(raw or "").split("_metric_", 1)[0].strip()
-            if str(raw or "").strip().startswith("metric_") or fid.startswith("metric_"):
-                continue
+            fid = _source_fact_root_id(raw)
             if not fid:
                 continue
             if allowed and fid not in allowed:
@@ -798,24 +805,18 @@ def _plan_fact_ids_for_bundle(
     selected_graph_evidence_plan: dict[str, Any] | None,
     allowed_fact_ids: set[str] | None,
 ) -> list[str]:
-    allowed = {str(x).split("_metric_", 1)[0] for x in (allowed_fact_ids or set()) if str(x).strip()}
-    if not allowed:
-        allowed = {str(x) for x in (allowed_fact_ids or set()) if str(x).strip()}
+    allowed = {fid for raw in (allowed_fact_ids or set()) if (fid := _source_fact_root_id(raw))}
     bundle_skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
     out: list[str] = []
 
     def _append(raw: Any) -> None:
-        fid = str(raw or "").split("_metric_", 1)[0].strip()
-        raw_s = str(raw or "").strip()
-        for candidate in (fid, raw_s):
-            if not candidate:
-                continue
-            if candidate.startswith("metric_"):
-                continue
-            if allowed and candidate not in allowed:
-                continue
-            if candidate not in out:
-                out.append(candidate)
+        fid = _source_fact_root_id(raw)
+        if not fid:
+            return
+        if allowed and fid not in allowed:
+            return
+        if fid not in out:
+            out.append(fid)
 
     plan = selected_graph_evidence_plan if isinstance(selected_graph_evidence_plan, dict) else {}
     for fact in plan.get("facts") or []:

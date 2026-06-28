@@ -58,6 +58,20 @@ def test_lane_outcome_authorized_from_x3_dict_review_treated_as_success_with_rev
     assert exit_status == "success"
 
 
+def test_executive_summary_non_certified_review_is_not_authorized() -> None:
+    x3 = {
+        "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
+        "pass": False,
+        "publish_disposition": "judge_certification_required",
+        "x1d_certified": False,
+        "blocking_judge_ids": ["gemini_pro"],
+    }
+    assert lane_outcome_authorized_from_x3(x3) is False
+    _, exit_status, code = _lane_dispatch_status_from_x3(x3)
+    assert exit_status == "error"
+    assert code == "X3_REVIEW_JUDGE_SOFT_FAIL"
+
+
 def test_executive_summary_publish_disposition_certified_dict_dispatch_success() -> None:
     """Mirrors executive_summary_lane ctx x3 after publish_disposition (dict mirror on disk)."""
     x3_doc = {

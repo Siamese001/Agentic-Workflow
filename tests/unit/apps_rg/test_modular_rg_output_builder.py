@@ -380,6 +380,8 @@ def test_early_career_included_with_single_locked_bullet(tmp_path: Path) -> None
     assert "Early Career Roles" in companies
     early = next(x for x in exp if str(x.get("company")) == "Early Career Roles")
     assert len(early.get("bullets") or []) == 1
+    base_early = next(e for e in base["facts"]["employment"] if e.get("fact_id") == "exp_early_career_001")
+    assert early["bullets"][0]["text"] == base_early["bullets"][0]["text"]
 
 
 def test_compact_early_career_maps_when_three_base_bullets(tmp_path: Path) -> None:

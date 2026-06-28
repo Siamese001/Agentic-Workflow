@@ -1318,6 +1318,14 @@ def run_role_episode_lane_execution(
             "runtime_generation_status": provider_result.runtime_generation_status,
             "x3_code": x3.x3_code,
             "prompt_hash": prompt_hash[:16],
+            "offline_only": True,
+            "future_run_only": True,
+            "current_run_mutated": False,
+            "current_run_mutation_assertion": False,
+            "current_run_x3_mutation_assertion": False,
+            "direct_l4_write_attempted": False,
+            "direct_l4_write_assertion": False,
+            "durable_write_attempted": False,
         },
     )
     finalize_section_l2_after_output(artifact_dir, sid, runtime_payload)

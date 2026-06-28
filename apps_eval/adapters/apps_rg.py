@@ -295,6 +295,22 @@ def _normalize_live_snapshot(
     )
 
 
+def normalize_existing_apps_rg_run_snapshot(
+    *,
+    scenario_id: str,
+    result: dict[str, Any],
+    artifact_dir: Path,
+    preflight: dict[str, Any] | None = None,
+) -> AppOutputSnapshot:
+    """Normalize an already-produced apps_rg run for current-run evaluation."""
+    return _normalize_live_snapshot(
+        scenario_id=scenario_id,
+        result=result,
+        artifact_dir=artifact_dir,
+        preflight=preflight or {"status": "passed", "resolved_inputs": {}},
+    )
+
+
 def run_apps_rg_live(scenario_id: str, payload: dict[str, Any], artifact_dir: Path) -> AppOutputSnapshot:
     from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
 
@@ -337,3 +353,9 @@ def run_apps_rg_live(scenario_id: str, payload: dict[str, Any], artifact_dir: Pa
         artifact_dir=artifact_dir,
         preflight=preflight,
     )
+
+
+__all__ = [
+    "normalize_existing_apps_rg_run_snapshot",
+    "run_apps_rg_live",
+]

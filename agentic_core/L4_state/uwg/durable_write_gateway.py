@@ -159,6 +159,7 @@ class DurableWriteGateway:
         self._lock_mgr = _WriteLockManager()
         self._snapshot_counter: int = 0
         self._snapshot_lock = threading.Lock()
+        self._validations: Dict[str, UWGValidationReceipt] = {}
         self._commits: Dict[str, UWGCommitReceipt] = {}
         self._blocked: Dict[str, UWGBlockedCommitReceipt] = {}
         self._rollbacks: Dict[str, UWGRollbackReceipt] = {}
@@ -180,6 +181,9 @@ class DurableWriteGateway:
 
     def get_commit_receipt(self, commit_receipt_id: str) -> Optional[UWGCommitReceipt]:
         return self._commits.get(commit_receipt_id)
+
+    def get_validation_receipt(self, validation_receipt_id: str) -> Optional[UWGValidationReceipt]:
+        return self._validations.get(validation_receipt_id)
 
     def get_blocked_receipt(self, blocked_id: str) -> Optional[UWGBlockedCommitReceipt]:
         return self._blocked.get(blocked_id)
@@ -607,6 +611,7 @@ class DurableWriteGateway:
             reason_codes=tuple(reason_codes),
         )
         validation = stamp_digest(validation)
+        self._validations[validation.uwg_validation_receipt_id] = validation
         emit_uwg_span(
             "uwg.commit.validate",
             policy_hash=commit_request.policy_hash,

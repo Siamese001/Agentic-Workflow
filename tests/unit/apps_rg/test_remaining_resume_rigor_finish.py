@@ -277,6 +277,7 @@ def test_unify_role_episode_bundles_validate_with_bindings():
         "reb_unify_production_adoption_lifecycle",
         "reb_unify_distributed_ecosystem_engineering",
         "reb_unify_platform_commercialization_leadership",
+        "reb_unify_partner_channel_cosell",
     }
     assert required <= ids
     for b in bundles:
@@ -286,6 +287,8 @@ def test_unify_role_episode_bundles_validate_with_bindings():
         assert "time_window" not in b
         assert UNIFY_TIME_WINDOW == "2023-02 to present"
         assert b["graph_skill_node_ids"]
+    partner_bundle = next(b for b in bundles if b["role_episode_bundle_id"] == "reb_unify_partner_channel_cosell")
+    assert "executive_summary" in partner_bundle["section_eligibility"]
 
 
 def test_unify_metric_outcome_nodes_are_graph_ssot():
@@ -766,3 +769,92 @@ def test_competencies_anchor_injection_no_fabrication_without_allowed_fact():
         cats, packet=_llmops_packet(), allowed_fact_ids={"fact_exec_002"}
     )
     assert len(cats[0]["terms"]) == before
+
+
+def test_competencies_bundle_hydration_replaces_metric_only_source_fact_ids():
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        hydrate_competency_bundle_graph_evidence,
+    )
+
+    metric_id = "metric_unify_high_availability_distributed_service_patterns"
+    root_id = "reb_unify_distributed_ecosystem_engineering"
+    cats = [
+        {
+            "category_label": "Engineering Leadership & Operating Model",
+            "competency_bundle_id": "ccb_engineering_leadership",
+            "graph_skill_node_ids": ["skill_svp_it_strategy_innovation"],
+            "source_fact_ids": [metric_id],
+            "terms": [
+                {
+                    "text": "Engineering operating model",
+                    "source_fact_id": metric_id,
+                    "source_fact_ids": [metric_id],
+                    "support_class": "GRAPH_BACKED_BUNDLE",
+                }
+            ],
+        }
+    ]
+    packet = {
+        "competency_bundles": [
+            {
+                "competency_bundle_id": "ccb_engineering_leadership",
+                "capability_family": "engineering_leadership",
+                "graph_skill_node_ids": ["skill_svp_it_strategy_innovation"],
+                "linked_source_fact_ids": [],
+            }
+        ]
+    }
+    plan = {
+        "facts": [
+            {
+                "fact_id": root_id,
+                "role_episode_bundle_id": root_id,
+                "graph_skill_node_ids": ["skill_svp_it_strategy_innovation"],
+                "source_fact_ids": [],
+                "metric_outcome_ids": [metric_id],
+            }
+        ]
+    }
+
+    hydrate_competency_bundle_graph_evidence(
+        cats,
+        packet=packet,
+        allowed_fact_ids={root_id, metric_id},
+        selected_graph_evidence_plan=plan,
+    )
+
+    assert cats[0]["source_fact_ids"] == [root_id]
+    assert cats[0]["terms"][0]["source_fact_id"] == root_id
+    assert cats[0]["terms"][0]["source_fact_ids"] == [root_id]
+
+
+def test_competencies_claim_ledger_rebuild_rejects_metric_only_source_ids():
+    from apps_rg.runtime.sections.competencies_lane_runtime import (
+        rebuild_claim_ledger_from_competencies,
+    )
+
+    metric_id = "metric_unify_high_availability_distributed_service_patterns"
+    root_id = "reb_unify_distributed_ecosystem_engineering"
+    parsed = {
+        "competencies": [
+            {
+                "category_label": "Engineering Leadership & Operating Model",
+                "source_fact_ids": [metric_id, f"{root_id}_metric_{metric_id}"],
+                "terms": [
+                    {
+                        "text": "Engineering operating model",
+                        "source_fact_id": metric_id,
+                        "source_fact_ids": [metric_id],
+                    }
+                ],
+            }
+        ],
+        "claim_ledger": [],
+    }
+
+    rebuild_claim_ledger_from_competencies(parsed, {root_id})
+
+    assert parsed["competencies"][0]["source_fact_ids"] == [root_id]
+    assert parsed["claim_ledger"] == [
+        {"claim_text": "Engineering operating model", "source_fact_ids": [root_id]}
+    ]

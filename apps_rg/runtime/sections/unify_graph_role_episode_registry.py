@@ -87,7 +87,13 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
         required_fields=REQUIRED_BUNDLE_FIELDS,
         employer_id=UNIFY_EMPLOYER_ID,
         employer_node_id=UNIFY_EMPLOYER_NODE_ID,
-        valid_sections={"unify_bullets", "unify_narrative", "competencies", "headline"},
+        valid_sections={
+            "unify_bullets",
+            "unify_narrative",
+            "competencies",
+            "headline",
+            "executive_summary",
+        },
         valid_employer_labels=_VALID_EMPLOYER_LABELS,
         shared_sections=(),
     )

@@ -41,6 +41,16 @@ class LaneSectionStatusRow:
     x2_failed_gate_ids: str
     runtime_generation_status: str
     executed: bool
+    judge_summary: str = ""
+    aggregation_pass: str = ""
+    aggregation_method: str = ""
+    mean_normalized_score: str = ""
+    model_backed_pass_count: str = ""
+    model_backed_total: str = ""
+    judge_details: tuple[dict[str, Any], ...] = ()
+
+
+FINAL_AGGREGATION_LANE = "final_resume_aggregation"
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -67,7 +77,10 @@ def _resolve_lane_display_txt(lane_dir: Path) -> tuple[str | None, Path | None]:
 
 
 def _x2_summary(lane_dir: Path) -> tuple[str, str]:
-    x2 = _load_json(lane_dir / "x2_gate_outputs.json")
+    return _x2_summary_doc(_load_json(lane_dir / "x2_gate_outputs.json"))
+
+
+def _x2_summary_doc(x2: dict[str, Any]) -> tuple[str, str]:
     gates = x2.get("gates")
     if not isinstance(gates, list):
         failed_art = x2.get("failed_gates") or x2.get("x2_failed_gate_ids")
@@ -78,6 +91,118 @@ def _x2_summary(lane_dir: Path) -> tuple[str, str]:
     if failed:
         return "FAIL", ", ".join(failed[:8])
     return "PASS", ""
+
+
+def _final_assembly_dir(root: Path) -> Path:
+    modular = root / "modular_r4" / "final_resume_assembly"
+    if modular.is_dir():
+        return modular
+    return root / "final_resume_assembly"
+
+
+def _score_text(value: Any) -> str:
+    if value is None:
+        return "—"
+    if isinstance(value, float):
+        return f"{value:.2f}".rstrip("0").rstrip(".")
+    return str(value)
+
+
+def _judge_summary(judges: list[dict[str, Any]]) -> str:
+    cells: list[str] = []
+    for judge in judges:
+        provider = str(judge.get("provider_name") or judge.get("provider_key") or "judge")
+        model = str(judge.get("model_name") or judge.get("model_actual") or "").strip()
+        score = _score_text(judge.get("score"))
+        threshold = _score_text(judge.get("threshold"))
+        status = "PASS" if judge.get("pass") is True else "FAIL" if judge.get("pass") is False else "UNKNOWN"
+        model_suffix = f" `{model}`" if model else ""
+        cells.append(f"{provider}{model_suffix}: {score}/5 vs {threshold} {status}")
+    return "; ".join(cells)
+
+
+def _collect_final_aggregation_status(root: Path, repo: Path) -> LaneSectionStatusRow:
+    asm = _final_assembly_dir(root)
+    display = asm / "final_resume.json"
+    if not asm.is_dir():
+        return LaneSectionStatusRow(
+            lane=FINAL_AGGREGATION_LANE,
+            lane_dir=None,
+            display_txt_rel=None,
+            display_txt_abs=None,
+            x3_code="NOT_RUN",
+            product_quality="—",
+            x2_pass="—",
+            x2_failed_gate_ids="",
+            runtime_generation_status="—",
+            executed=False,
+        )
+
+    x2_pass, x2_failed = _x2_summary_doc(_load_json(asm / "final_resume_x2_gate_outputs.json"))
+    preflight = _load_json(asm / "aggregation_preflight.json")
+    review = _load_json(asm / "full_resume_llm_coherence_review.json")
+    x1d = _load_json(asm / "x1d_full_resume_judge_outputs.json")
+    aggregation = x1d.get("aggregation") if isinstance(x1d.get("aggregation"), dict) else {}
+    judges_raw = x1d.get("judges") or review.get("judge_verdicts") or []
+    judges = [j for j in judges_raw if isinstance(j, dict)]
+    criteria = review.get("criteria_scores") if isinstance(review.get("criteria_scores"), dict) else {}
+    aggregation_pass = aggregation.get("full_resume_coherence_pass")
+    if aggregation_pass is None:
+        aggregation_pass = review.get("full_resume_coherence_pass")
+    if aggregation_pass is None:
+        aggregation_pass_text = "UNKNOWN"
+    else:
+        aggregation_pass_text = "PASS" if bool(aggregation_pass) else "FAIL"
+    preflight_pass = preflight.get("all_pass")
+    x3_code = "X3_ALLOW" if aggregation_pass_text == "PASS" and x2_pass == "PASS" else "X3_REVIEW_AGGREGATION"
+    if preflight_pass is False:
+        x3_code = "X3_REVIEW_AGGREGATION_PREFLIGHT"
+    product_quality = "PASS" if x3_code == "X3_ALLOW" else aggregation_pass_text
+    display_rel = _repo_rel(display, root) if display.is_file() else None
+    return LaneSectionStatusRow(
+        lane=FINAL_AGGREGATION_LANE,
+        lane_dir=_repo_rel(asm, repo),
+        display_txt_rel=display_rel,
+        display_txt_abs=str(display.resolve()) if display.is_file() else None,
+        x3_code=x3_code,
+        product_quality=product_quality,
+        x2_pass=x2_pass,
+        x2_failed_gate_ids=x2_failed,
+        runtime_generation_status="ASSEMBLED",
+        executed=True,
+        judge_summary=_judge_summary(judges),
+        aggregation_pass=aggregation_pass_text,
+        aggregation_method=str(
+            aggregation.get("aggregation_method")
+            or review.get("aggregation_method")
+            or ""
+        ),
+        mean_normalized_score=_score_text(criteria.get("mean_normalized_score")),
+        model_backed_pass_count=_score_text(
+            aggregation.get("model_backed_pass_count")
+            or review.get("model_backed_pass_count")
+            or criteria.get("model_backed_pass_count")
+        ),
+        model_backed_total=_score_text(
+            aggregation.get("model_backed_total")
+            or review.get("model_backed_total")
+            or criteria.get("model_backed_total")
+        ),
+        judge_details=tuple(
+            {
+                "judge_id": j.get("judge_id"),
+                "provider_name": j.get("provider_name"),
+                "provider_key": j.get("provider_key"),
+                "model_name": j.get("model_name") or j.get("model_actual"),
+                "score": j.get("score"),
+                "threshold": j.get("threshold"),
+                "pass": j.get("pass"),
+                "provider_status": j.get("provider_status"),
+                "raw_response_ref": j.get("raw_response_ref"),
+            }
+            for j in judges
+        ),
+    )
 
 
 def collect_full_run_section_status(
@@ -144,6 +269,7 @@ def collect_full_run_section_status(
                 executed=True,
             )
         )
+    rows.append(_collect_final_aggregation_status(root, repo))
     return rows
 
 
@@ -159,8 +285,8 @@ def render_full_run_section_status_markdown(
         "",
         f"Run folder: `{root_name}`",
         "",
-        "| Section | X3 | X2 | Product quality | Runtime | Display text |",
-        "|---|---|---|---|---|---|",
+        "| Section | X3 | X2 | Product quality | Runtime | Judges / score | Display text |",
+        "|---|---|---|---|---|---|---|",
     ]
     repo = (repo_root or Path(run_root)).resolve()
     for row in rows:
@@ -168,14 +294,15 @@ def render_full_run_section_status_markdown(
             link = f"[{row.display_txt_rel}]({_repo_rel(Path(row.display_txt_abs), repo)})"
         else:
             link = "— (missing)"
+        judges = row.judge_summary or "—"
         lines.append(
             f"| {row.lane} | {row.x3_code} | {row.x2_pass} | {row.product_quality} | "
-            f"{row.runtime_generation_status} | {link} |"
+            f"{row.runtime_generation_status} | {judges} | {link} |"
         )
         if row.x2_failed_gate_ids:
-            lines.append(f"| ↳ failed gates | | | | | `{row.x2_failed_gate_ids}` |")
+            lines.append(f"| ↳ failed gates | | | | | | `{row.x2_failed_gate_ids}` |")
         if row.x3_code.startswith("PRE_RUN:"):
-            lines.append(f"| ↳ pre-run | | | | | `{row.x3_code}` |")
+            lines.append(f"| ↳ pre-run | | | | | | `{row.x3_code}` |")
     lines.append("")
     return "\n".join(lines)
 
@@ -206,6 +333,13 @@ def persist_full_run_section_status(
                 "x2_pass": r.x2_pass,
                 "x2_failed_gate_ids": r.x2_failed_gate_ids,
                 "runtime_generation_status": r.runtime_generation_status,
+                "judge_summary": r.judge_summary,
+                "aggregation_pass": r.aggregation_pass,
+                "aggregation_method": r.aggregation_method,
+                "mean_normalized_score": r.mean_normalized_score,
+                "model_backed_pass_count": r.model_backed_pass_count,
+                "model_backed_total": r.model_backed_total,
+                "judges": list(r.judge_details),
             }
             for r in rows
         ],
@@ -234,6 +368,7 @@ def emit_full_run_section_status(
 __all__ = [
     "FULL_RUN_SECTION_STATUS_JSON",
     "FULL_RUN_SECTION_STATUS_MD",
+    "FINAL_AGGREGATION_LANE",
     "LANE_DISPLAY_TXT_CANDIDATES",
     "LaneSectionStatusRow",
     "collect_full_run_section_status",

@@ -124,8 +124,8 @@
                         "text": {
                           "type": "string",
                           "minLength": 20,
-                          "maxLength": 250,
-                          "description": "Bullet text (one achievement)"
+                          "maxLength": 420,
+                          "description": "Bullet text (one achievement; accommodates locked-copy early-career SSOT)"
                         },
                         "source_id": {
                           "type": "string",
