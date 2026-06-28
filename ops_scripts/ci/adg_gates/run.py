@@ -52,8 +52,8 @@ sys.path.insert(0, str(REPO_ROOT))
 from ops_scripts.ci.adg_gates.unified_registry import (  # noqa: E402
     CANONICAL_GATES,
     WIRING_GATES,
-    GateSpec,
     Enforcement,
+    GateSpec,
 )
 
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
@@ -519,7 +519,7 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, ImportError, OSError):
         snapshot = None
 
-    # H5: fleet now covers CANONICAL_GATES (12, ADGGateBase) + WIRING_GATES (13, WiringGate).
+    # H5: fleet now covers CANONICAL_GATES (13, ADGGateBase) + WIRING_GATES (13, WiringGate).
     # VALIDATION_GATES remain pipeline-phase gates inside generate_full_adg.py
     # and are not dispatched here.
     fleet: list[GateSpec] = [*CANONICAL_GATES, *WIRING_GATES]

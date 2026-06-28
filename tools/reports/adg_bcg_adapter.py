@@ -7,8 +7,21 @@ view; JSON can keep legacy aliases and richer evidence payloads.
 
 from __future__ import annotations
 
+import datetime as _dt
+import json
+import shutil
+import sys
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any
+
+from tools.reports.gate_signal_catalog import (
+    display_verdict,
+    display_verdict_sub,
+    format_gate_signal,
+    recommended_next_step,
+    verdict_sort_key,
+)
 
 BCG_NORTH_STAR = (
     "Maintain SVP engineer-level repo standards: executive decisions, explicit "
@@ -19,6 +32,49 @@ LEGACY_ROW_ALIASES: dict[str, str] = {
     "business_reason": "why_it_matters",
     "technical_reason": "evidence",
     "decision": "next_step",
+}
+
+BCG_GATE_ADAPTER_SCHEMA_VERSION = "1.0"
+BCG_GATE_ADAPTER_POLICY_VERSION = "2026-06-28.high_signal_burndown_v1"
+
+# These signals are useful to monitor, but they are not a burn-down queue unless
+# a future plan gives them an owner, target, and explicit retirement condition.
+KPI_OR_WATCHLIST_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "S4_unused_imports_ratchet",
+        "Q2_cyclomatic_complexity_ratchet",
+        "M1_module_loc_ratchet",
+        "D1_layer_doc_binding",
+        "D2_role_duplication_warn",
+        "K1_churn_complexity_kpi",
+        "E3_trace_theater_kpi",
+        "H3_ap_velocity_kpi",
+    }
+)
+
+KPI_OR_WATCHLIST_TOKENS: tuple[str, ...] = (
+    "_kpi",
+    "cyclomatic",
+    "unused_imports",
+    "module_loc",
+    "layer_doc_binding",
+    "role_duplication",
+)
+
+SECTION_ORDER: tuple[str, ...] = ("fix_now", "burn_down", "kpi_watchlist", "clear")
+
+SECTION_LABELS: dict[str, str] = {
+    "fix_now": "Fix now",
+    "burn_down": "Burn down / owned backlog",
+    "kpi_watchlist": "KPI / watchlist",
+    "clear": "Clear",
+}
+
+SECTION_DESCRIPTIONS: dict[str, str] = {
+    "fix_now": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
+    "burn_down": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
+    "kpi_watchlist": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
+    "clear": "Zero-action rows.",
 }
 
 
@@ -76,6 +132,281 @@ def _row_value(row: dict[str, Any], *keys: str) -> str:
         if value not in (None, ""):
             return _md(value)
     return ""
+
+
+def _now() -> str:
+    return _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds")
+
+
+def _gate_id(gate: dict[str, Any]) -> str:
+    return str(gate.get("gate_id") or gate.get("gate_family") or gate.get("name") or "").strip()
+
+
+def _gate_rows(gate: dict[str, Any]) -> int:
+    try:
+        return int(gate.get("violation_count") or gate.get("violations_count") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def is_kpi_or_watchlist_gate(gate: dict[str, Any]) -> bool:
+    """Return True for report-only health/KPI signals.
+
+    These gates may still matter, but they are not automatically burn-down work.
+    Keeping the classification here prevents every report from inventing its own
+    definition of "not actionable unless planned."
+    """
+    gate_id = _gate_id(gate)
+    lowered = gate_id.lower()
+    if gate_id in KPI_OR_WATCHLIST_GATE_IDS:
+        return True
+    if any(token in lowered for token in KPI_OR_WATCHLIST_TOKENS):
+        return True
+    return str(gate.get("band") or "") == "P3" and str(gate.get("enforcement") or "") == "warn"
+
+
+def _section_for_gate(gate: dict[str, Any]) -> str:
+    verdict = display_verdict(gate)
+    if verdict == "FIX":
+        return "fix_now"
+    if verdict == "CLEAR":
+        return "clear"
+    if is_kpi_or_watchlist_gate(gate):
+        return "kpi_watchlist"
+    return "burn_down"
+
+
+def _materiality_for_gate(gate: dict[str, Any], section: str) -> str:
+    gate_id = _gate_id(gate)
+    lowered = gate_id.lower()
+    if gate_id == "13_core_imports_apps" or "core_imports_apps" in lowered:
+        return "core_app_boundary"
+    if "provider" in lowered or gate_id in {"4_capability_egress", "C2_l5_bypass_pview"}:
+        return "provider_model_path"
+    if "embedding" in lowered or "retrieval" in lowered:
+        return "retrieval_accuracy"
+    if gate_id == "10_infra_wiring" or "apps_direct_infra" in lowered:
+        return "runtime_infra_boundary"
+    if section == "kpi_watchlist":
+        return "governance_hygiene"
+    return "architecture_backlog"
+
+
+def normalize_bcg_gate_row(gate: dict[str, Any]) -> dict[str, Any]:
+    """Normalize one dispatcher gate row for BCG/high-signal report consumers."""
+    gate_id = _gate_id(gate)
+    section = _section_for_gate(gate)
+    verdict = display_verdict(gate)
+    sub = display_verdict_sub(gate)
+    rows = _gate_rows(gate)
+    materiality = _materiality_for_gate(gate, section)
+    baseline = gate.get("baseline_count")
+    delta = None
+    if baseline not in (None, ""):
+        try:
+            delta = rows - int(baseline)
+        except (TypeError, ValueError):
+            delta = None
+    return {
+        "gate_id": gate_id,
+        "gate_class": str(gate.get("gate_class") or ""),
+        "band": str(gate.get("band") or ""),
+        "enforcement": str(gate.get("enforcement") or ""),
+        "classification": str(gate.get("classification") or ""),
+        "status": str(gate.get("status") or ""),
+        "verdict": verdict,
+        "sub": sub,
+        "section": section,
+        "section_label": SECTION_LABELS[section],
+        "materiality": materiality,
+        "rows": rows,
+        "baseline_count": baseline,
+        "delta_vs_baseline": delta,
+        "is_kpi_or_watchlist": section == "kpi_watchlist",
+        "is_burndown_work": section in {"fix_now", "burn_down"},
+        "reported_for_priority_queue": section in {"fix_now", "burn_down"},
+        "signal": format_gate_signal(gate),
+        "next_step": recommended_next_step(gate),
+        "raw_gate": gate,
+    }
+
+
+def _sort_adapter_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    section_rank = {name: idx for idx, name in enumerate(SECTION_ORDER)}
+    return sorted(
+        rows,
+        key=lambda row: (
+            section_rank.get(str(row.get("section") or ""), 99),
+            verdict_sort_key(row.get("raw_gate") or {}),
+            -int(row.get("rows") or 0),
+            str(row.get("gate_id") or ""),
+        ),
+    )
+
+
+def build_bcg_gate_adapter(
+    gates_doc: dict[str, Any] | None,
+    burndown: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the normalized BCG adapter for a full ADG gate run.
+
+    The adapter is intentionally machine-readable. Human reports should render
+    FIX and burn-down rows as work, and KPI/watchlist rows as a separate trend
+    section rather than smuggling them into the action queue.
+    """
+    source = gates_doc or {}
+    gates = [g for g in list(source.get("gates") or []) if isinstance(g, dict)]
+    rows = _sort_adapter_rows([normalize_bcg_gate_row(g) for g in gates])
+    sections: dict[str, dict[str, Any]] = {}
+    for section in SECTION_ORDER:
+        section_rows = [row for row in rows if row.get("section") == section]
+        sections[section] = {
+            "label": SECTION_LABELS[section],
+            "description": SECTION_DESCRIPTIONS[section],
+            "gate_count": len(section_rows),
+            "row_count": sum(int(row.get("rows") or 0) for row in section_rows),
+            "rows": section_rows,
+        }
+
+    priority_rows = sections["fix_now"]["rows"] + sections["burn_down"]["rows"]
+    report_only_rows = sections["kpi_watchlist"]["rows"]
+    summary = {
+        "total_gates": len(rows),
+        "fix_now_gates": sections["fix_now"]["gate_count"],
+        "burn_down_gates": sections["burn_down"]["gate_count"],
+        "kpi_watchlist_gates": sections["kpi_watchlist"]["gate_count"],
+        "clear_gates": sections["clear"]["gate_count"],
+        "fix_now_rows": sections["fix_now"]["row_count"],
+        "burn_down_rows": sections["burn_down"]["row_count"],
+        "kpi_watchlist_rows": sections["kpi_watchlist"]["row_count"],
+        "priority_queue_gate_count": len(priority_rows),
+        "priority_queue_row_count": sum(int(row.get("rows") or 0) for row in priority_rows),
+        "report_only_gate_count": len(report_only_rows),
+        "report_only_row_count": sum(int(row.get("rows") or 0) for row in report_only_rows),
+    }
+    return {
+        "schema_version": BCG_GATE_ADAPTER_SCHEMA_VERSION,
+        "artifact_kind": "adg_bcg_gate_adapter",
+        "policy_version": BCG_GATE_ADAPTER_POLICY_VERSION,
+        "generated_at_utc": _now(),
+        "source": {
+            "timestamp": source.get("timestamp"),
+            "snapshot": source.get("snapshot"),
+            "snapshot_path": source.get("snapshot_path"),
+            "overall_exit_code": source.get("overall_exit_code"),
+            "burndown_schema_version": (burndown or {}).get("schema_version"),
+        },
+        "policy": {
+            "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
+            "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
+            "section_order": list(SECTION_ORDER),
+        },
+        "summary": summary,
+        "sections": sections,
+        "priority_rows": priority_rows,
+        "report_only_rows": report_only_rows,
+    }
+
+
+def render_bcg_gate_adapter_md(adapter: dict[str, Any]) -> str:
+    """Render the BCG gate adapter as compact markdown."""
+    lines: list[str] = []
+    a = lines.append
+    summary = adapter.get("summary") or {}
+    a("# ADG BCG Gate Adapter")
+    a("")
+    a(f"- **Generated:** {_md(adapter.get('generated_at_utc'))}")
+    a(f"- **Policy:** `{_md(adapter.get('policy_version'))}`")
+    a(f"- **Source timestamp:** {_md((adapter.get('source') or {}).get('timestamp') or 'n/a')}")
+    a(
+        "- **Priority queue:** "
+        f"{_fmt_int(summary.get('priority_queue_gate_count'))} gate(s) / "
+        f"{_fmt_int(summary.get('priority_queue_row_count'))} row(s)"
+    )
+    a(
+        "- **KPI/watchlist:** "
+        f"{_fmt_int(summary.get('report_only_gate_count'))} gate(s) / "
+        f"{_fmt_int(summary.get('report_only_row_count'))} row(s)"
+    )
+    a("")
+    a("This adapter separates work from watchlist: FIX and burn-down rows can enter the action queue; KPI/watchlist rows stay visible without becoming automatic cleanup work.")
+    for section in SECTION_ORDER:
+        sec = (adapter.get("sections") or {}).get(section) or {}
+        rows = list(sec.get("rows") or [])
+        a("")
+        a(f"## {sec.get('label') or SECTION_LABELS[section]}")
+        a("")
+        a(str(sec.get("description") or SECTION_DESCRIPTIONS[section]))
+        a("")
+        if not rows:
+            a("_No rows._")
+            continue
+        a("| Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |")
+        a("|------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|")
+        for row in rows[:12]:
+            a(
+                f"| `{_md(row.get('gate_id'))}` | "
+                f"{_md(row.get('materiality'))} | "
+                f"{_md(row.get('band'))} | "
+                f"{_md(row.get('enforcement'))} | "
+                f"{_md(row.get('verdict'))} | "
+                f"{_md(row.get('sub'))} | "
+                f"{_fmt_int(row.get('rows'))} | "
+                f"{_md(row.get('next_step'))} |"
+            )
+    return "\n".join(lines) + "\n"
+
+
+def _read_json(path: Path | None) -> dict[str, Any] | None:
+    if path is None or not path.is_file():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return data if isinstance(data, dict) else {"value": data}
+
+
+def _write_json(path: Path, doc: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, indent=2, sort_keys=True, default=str), encoding="utf-8")
+
+
+def emit_bcg_gate_adapter(
+    *,
+    adg_artifacts_dir: Path,
+    ts: str,
+    gate_results_path: Path | None = None,
+    burndown_path: Path | None = None,
+    docs_dir: Path | None = None,
+    print_inline: bool = False,
+    fail_closed: bool = False,
+) -> tuple[int, Path | None]:
+    """Emit the first BCG artifact for a generated ADG run."""
+    try:
+        gates_doc = _read_json(gate_results_path)
+        if gates_doc is None:
+            raise FileNotFoundError(f"gate results missing: {gate_results_path}")
+        burndown = _read_json(burndown_path) or {}
+        adapter = build_bcg_gate_adapter(gates_doc, burndown)
+        md = render_bcg_gate_adapter_md(adapter)
+        base = adg_artifacts_dir / f"adg_bcg_adapter_{ts}"
+        json_path = base.with_suffix(".json")
+        md_path = base.with_suffix(".md")
+        _write_json(json_path, adapter)
+        md_path.write_text(md, encoding="utf-8")
+        docs_target = docs_dir or Path("docs/reports/adg")
+        for suffix, src in (("json", json_path), ("md", md_path)):
+            latest = adg_artifacts_dir / f"adg_bcg_adapter_latest.{suffix}"
+            docs_latest = docs_target / f"adg_bcg_adapter_latest.{suffix}"
+            latest.parent.mkdir(parents=True, exist_ok=True)
+            docs_latest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, latest)
+            shutil.copyfile(src, docs_latest)
+        if print_inline:
+            sys.stdout.write("\n" + md)
+        print(f"[adg_bcg_adapter] ADAPTER={json_path}", file=sys.stderr)
+        return 0, json_path
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
+        print(f"[adg_bcg_adapter] ADAPTER_ERROR={exc}", file=sys.stderr)
+        return (2 if fail_closed else 0), None
 
 
 def _normalize_priority_row(row: dict[str, Any] | ExecutivePriorityRow | None) -> dict[str, Any]:
@@ -173,7 +504,7 @@ def build_bcg_brief(
         "technical_read": _text_list(technical_read),
         "priority_rule": priority_rule or "",
         "priority_rows": normalized_rows,
-        "why_this_order": [item for item in _text_list(why_this_order)],
+        "why_this_order": list(_text_list(why_this_order)),
         "next_step": next_step or "",
         "status": status or "",
         "status_label": status_label or "Status",

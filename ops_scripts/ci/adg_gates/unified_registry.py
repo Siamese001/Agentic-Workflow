@@ -5,7 +5,7 @@ this registry unifies three previously scattered gate planes under a single
 (band, enforcement, source) taxonomy anchored in
 `agentic_core/adg/severity_bands.py`:
 
-    1. Canonical ADGGateBase gates in `ops_scripts/ci/adg_gates/` (12 gates)
+    1. Canonical ADGGateBase gates in `ops_scripts/ci/adg_gates/` (13 gates)
     2. Validation gates in `tools/generate/validation/gates.py` (7 functions)
     3. Residual wiring-CI gates in `ops_scripts/ci/check_*.py` (10 gates,
        post-H1 cleanup — 5 duplicates already deleted)
@@ -168,6 +168,16 @@ CANONICAL_GATES: list[GateSpec] = [
         "adg_gates",
         "ops_scripts.ci.adg_gates.gate_infra_wiring",
         gate_class="InfraWiringGate",
+    ),
+    GateSpec(
+        "13_core_imports_apps",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
+        notes="Narrow core/app boundary gate: agentic_core must not import apps_* implementation packages.",
+        gate_class="CoreImportsAppsGate",
     ),
     GateSpec(
         "11_architecture_witness",

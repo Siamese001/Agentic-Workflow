@@ -121,6 +121,34 @@ def _judge_summary(judges: list[dict[str, Any]]) -> str:
     return "; ".join(cells)
 
 
+def _lane_judge_details(lane_dir: Path) -> tuple[dict[str, Any], ...]:
+    """Load observed X1D judge rows for a section lane."""
+    x1d = _load_json(lane_dir / "x1d_llm_judge_outputs.json")
+    raw_judges = x1d.get("judges")
+    if not isinstance(raw_judges, list):
+        return ()
+    rows: list[dict[str, Any]] = []
+    for judge in raw_judges:
+        if not isinstance(judge, dict):
+            continue
+        rows.append(
+            {
+                "judge_id": judge.get("judge_id"),
+                "provider_name": judge.get("provider_name"),
+                "provider_key": judge.get("provider_key"),
+                "model_name": judge.get("model_name") or judge.get("model_actual"),
+                "score": judge.get("score"),
+                "threshold": judge.get("threshold"),
+                "pass": judge.get("pass"),
+                "provider_status": judge.get("provider_status") or judge.get("mode"),
+                "raw_response_ref": judge.get("raw_response_ref"),
+                "decisive_failure": judge.get("decisive_failure"),
+                "error": judge.get("error"),
+            }
+        )
+    return tuple(rows)
+
+
 def _collect_final_aggregation_status(root: Path, repo: Path) -> LaneSectionStatusRow:
     asm = _final_assembly_dir(root)
     display = asm / "final_resume.json"
@@ -254,6 +282,7 @@ def collect_full_run_section_status(
             or x3.get("runtime_generation_status")
             or "UNKNOWN"
         )
+        judge_details = _lane_judge_details(lane_dir)
 
         rows.append(
             LaneSectionStatusRow(
@@ -267,6 +296,8 @@ def collect_full_run_section_status(
                 x2_failed_gate_ids=x2_failed,
                 runtime_generation_status=rgs,
                 executed=True,
+                judge_summary=_judge_summary(list(judge_details)),
+                judge_details=judge_details,
             )
         )
     rows.append(_collect_final_aggregation_status(root, repo))

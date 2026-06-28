@@ -595,7 +595,6 @@ def run_whole_run_with_route_governance(
     emit_integrated_run_bundle_index(repo, art, run_id=rid or None, correlation_id=rid or None)
     maybe_ingest_r1b_post_exit(raw_request=raw_request, artifact_dir=art, runs_dir=art.parent)
 
-    review_zip = None
     section_status_md: str | None = None
     if is_integrated_whole_run_dir_name(art.name):
         try:
@@ -605,10 +604,6 @@ def run_whole_run_with_route_governance(
             section_status_md = str(status_emit["markdown_path"])
         except OSError:
             section_status_md = None
-        try:
-            review_zip = emit_full_resume_review_bundle(art)
-        except OSError:
-            review_zip = None
 
     exec_summary_block = executive_summary_certification_block(art)
     exec_summary_blocked = bool(exec_summary_block.get("blocked"))
@@ -690,6 +685,31 @@ def run_whole_run_with_route_governance(
     if research_ran:
         payload["delegated_briefing"] = str(art / sr.FILENAME_DELEGATED_BRIEFING)
         payload["research_bridge_response"] = str(art / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE)
+    mandatory_outputs: dict[str, Any] = {}
+    if is_integrated_whole_run_dir_name(art.name):
+        try:
+            from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
+
+            mandatory_emit = emit_mandatory_run_outputs(
+                art,
+                repo_root=repo,
+                result=payload,
+                print_stdout=False,
+            )
+            mandatory_outputs = {
+                "mandatory_run_output_json": str(mandatory_emit["json_path"]),
+                "mandatory_run_output_md": str(mandatory_emit["markdown_path"]),
+                "bcg_executive_output_md": str(mandatory_emit["bcg_markdown_path"]),
+            }
+            payload.update(mandatory_outputs)
+        except OSError:
+            mandatory_outputs = {}
+    review_zip = None
+    if is_integrated_whole_run_dir_name(art.name):
+        try:
+            review_zip = emit_full_resume_review_bundle(art)
+        except OSError:
+            review_zip = None
     if review_zip is not None:
         payload["review_bundle_zip"] = str(review_zip)
         payload["review_bundle_relpath"] = REVIEW_BUNDLE_FILENAME

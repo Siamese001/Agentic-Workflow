@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from typing import Protocol, runtime_checkable
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +23,49 @@ class SimilarityResult:
     content_hash: str
     similarity_score: float
     content_preview: str
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddingModelProfile:
+    """Provider-neutral embedding model metadata."""
+
+    profile_id: str
+    model_ref: str
+    dimensions: int
+    distance_metric: str = "cosine"
+    normalization: str = "l2"
+    max_batch_size: int = 1
+    local_execution: bool = False
+    cache_namespace: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddingRequest:
+    """Provider-neutral embedding request."""
+
+    texts: tuple[str, ...]
+    profile: EmbeddingModelProfile
+    request_id: str = ""
+    namespace: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddingVector:
+    """Provider-neutral embedding vector result."""
+
+    text_index: int
+    vector: tuple[float, ...]
+    profile_id: str
+    dimensions: int
+
+
+@runtime_checkable
+class EmbeddingProvider(Protocol):
+    """Minimal provider-neutral embedding adapter contract."""
+
+    def embed(self, request: EmbeddingRequest) -> tuple[EmbeddingVector, ...]:
+        """Return vectors for ``request.texts`` using ``request.profile``."""
+        ...
 
 
 def _normalize_top_k(top_k: int) -> int:
@@ -64,4 +108,11 @@ def query_similarity(query: str, top_k: int = _MAX_TOP_K, namespace: str = "") -
     return results
 
 
-__all__ = ["SimilarityResult", "query_similarity"]
+__all__ = [
+    "EmbeddingModelProfile",
+    "EmbeddingProvider",
+    "EmbeddingRequest",
+    "EmbeddingVector",
+    "SimilarityResult",
+    "query_similarity",
+]

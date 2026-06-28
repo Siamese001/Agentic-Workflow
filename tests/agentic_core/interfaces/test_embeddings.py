@@ -10,6 +10,12 @@ import importlib
 
 import pytest
 
+from agentic_core.interfaces.embeddings import (
+    EmbeddingModelProfile,
+    EmbeddingProvider,
+    EmbeddingRequest,
+    EmbeddingVector,
+)
 
 MODULE_PATH = "agentic_core.interfaces.embeddings"
 
@@ -52,3 +58,31 @@ def test_module_layer_path_matches():
     assert "agentic_core" in file.replace("\\", "/"), (
         f"{MODULE_PATH} not under agentic_core: {file}"
     )
+
+
+def test_provider_neutral_embedding_contract_runtime_checkable() -> None:
+    class StaticEmbeddingProvider:
+        def embed(self, request: EmbeddingRequest) -> tuple[EmbeddingVector, ...]:
+            return (
+                EmbeddingVector(
+                    text_index=0,
+                    vector=(0.1, 0.2, 0.3),
+                    profile_id=request.profile.profile_id,
+                    dimensions=request.profile.dimensions,
+                ),
+            )
+
+    profile = EmbeddingModelProfile(
+        profile_id="local-small",
+        model_ref="model-ref",
+        dimensions=3,
+        max_batch_size=16,
+        local_execution=True,
+    )
+    request = EmbeddingRequest(texts=("hello",), profile=profile, namespace="test")
+    provider = StaticEmbeddingProvider()
+
+    assert isinstance(provider, EmbeddingProvider)
+    result = provider.embed(request)
+    assert result[0].profile_id == "local-small"
+    assert result[0].dimensions == 3

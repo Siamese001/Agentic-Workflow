@@ -15,15 +15,19 @@ import pytest
 
 from agentic_core.runtime.providers.provider_types import (
     BudgetStatus,
+    ModelCapability,
+    ProviderCapabilityProfile,
     ProviderCredentialsMissingError,
     ProviderGatewayError,
     ProviderInvocationReceipt,
     ProviderKind,
-    ProviderModeBlockedError,
     ProviderMode,
+    ProviderModeBlockedError,
     ProviderNotAllowedError,
+    ProviderOutputContract,
     ProviderProfile,
     ProviderProfileNotFoundError,
+    ProviderRequest,
     SafetyStatus,
     TimeoutStatus,
     TokenUsage,
@@ -31,6 +35,17 @@ from agentic_core.runtime.providers.provider_types import (
 
 
 class TestEnums:
+    def test_model_capability_values_are_provider_neutral(self) -> None:
+        assert {c.value for c in ModelCapability} == {
+            "text_generation",
+            "structured_output",
+            "tool_calling",
+            "streaming",
+            "local_inference",
+            "embeddings",
+            "vision_input",
+        }
+
     def test_provider_kind_values(self) -> None:
         assert {k.value for k in ProviderKind} == {
             "stub", "local_vllm", "external_api", "deterministic",
@@ -70,11 +85,51 @@ class TestProviderProfile:
         assert p.temperature_range == (0.0, 1.0)
         assert p.requires_network is False
         assert p.sandbox_safe is True
+        assert isinstance(p.capability_profile, ProviderCapabilityProfile)
 
     def test_frozen(self) -> None:
         p = ProviderProfile(profile_id="p1", provider_kind=ProviderKind.STUB)
         with pytest.raises(dataclasses.FrozenInstanceError):
             p.max_tokens = 1  # type: ignore[misc]
+
+
+class TestProviderCapabilityProfile:
+    def test_supports_enum_and_string_capabilities(self) -> None:
+        profile = ProviderCapabilityProfile(
+            capabilities=(ModelCapability.STRUCTURED_OUTPUT, "low_latency"),
+            max_context_tokens=128_000,
+            supports_json_schema=True,
+        )
+
+        assert profile.supports(ModelCapability.STRUCTURED_OUTPUT)
+        assert profile.supports("low_latency")
+        assert not profile.supports(ModelCapability.EMBEDDINGS)
+        assert profile.as_dict()["capabilities"] == ["structured_output", "low_latency"]
+        assert profile.as_dict()["supports_json_schema"] is True
+
+
+class TestProviderOutputContract:
+    def test_output_contract_records_required_capabilities(self) -> None:
+        contract = ProviderOutputContract(
+            response_mime_type="application/json",
+            json_schema={"type": "object"},
+            required_capabilities=(ModelCapability.STRUCTURED_OUTPUT,),
+        )
+
+        assert contract.requires("structured_output")
+        assert contract.as_dict() == {
+            "response_mime_type": "application/json",
+            "json_schema": {"type": "object"},
+            "required_capabilities": ["structured_output"],
+        }
+
+    def test_provider_request_has_neutral_output_contract_default(self) -> None:
+        profile = ProviderProfile(profile_id="p1", provider_kind=ProviderKind.STUB)
+
+        request = ProviderRequest(prompt_text="hello", provider_profile=profile)
+
+        assert isinstance(request.output_contract, ProviderOutputContract)
+        assert request.output_contract.response_mime_type == "text/plain"
 
 
 class TestTokenUsage:
@@ -92,24 +147,24 @@ class TestTokenUsage:
 
 
 def _receipt(**overrides: object) -> ProviderInvocationReceipt:
-    base = dict(
-        invocation_id="inv-1",
-        provider_profile_ref="ref-1",
-        provider_kind=ProviderKind.DETERMINISTIC,
-        model_ref="m1",
-        request_id="req-1",
-        run_id="run-1",
-        trace_root="t1",
-        node_id="n1",
-        prompt_artifact_ref="pa-1",
-        input_digest="id1",
-        output_digest="od1",
-        latency_ms=12.3456,
-        token_usage=TokenUsage(total_tokens=7),
-        budget_status=BudgetStatus.WITHIN_BUDGET,
-        timeout_status=TimeoutStatus.WITHIN_LIMIT,
-        safety_status=SafetyStatus.SAFE,
-    )
+    base = {
+        "invocation_id": "inv-1",
+        "provider_profile_ref": "ref-1",
+        "provider_kind": ProviderKind.DETERMINISTIC,
+        "model_ref": "m1",
+        "request_id": "req-1",
+        "run_id": "run-1",
+        "trace_root": "t1",
+        "node_id": "n1",
+        "prompt_artifact_ref": "pa-1",
+        "input_digest": "id1",
+        "output_digest": "od1",
+        "latency_ms": 12.3456,
+        "token_usage": TokenUsage(total_tokens=7),
+        "budget_status": BudgetStatus.WITHIN_BUDGET,
+        "timeout_status": TimeoutStatus.WITHIN_LIMIT,
+        "safety_status": SafetyStatus.SAFE,
+    }
     base.update(overrides)
     return ProviderInvocationReceipt(**base)  # type: ignore[arg-type]
 

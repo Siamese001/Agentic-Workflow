@@ -153,8 +153,8 @@ def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     md = render(gate, burndown)
-    assert "| TRACK | inventory | 848 |" in md
-    assert "| TRACK | floor | 2792 |" in md
+    assert "| `3_write_sovereignty` | P0 | block | BURN | inventory | 848 |" in md
+    assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 |" in md
     assert "| FIX |" not in md.split("3_write_sovereignty")[1][:80]
 
 
@@ -184,7 +184,7 @@ def test_render_fix_cluster_for_blocked_gate(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| FIX | block | 2 |" in md
     assert "### Fix now" in md
-    assert "| P0 | BLOCKED | 1 | 0 gates / 0 rows | red gates present | fix red gates first |" in md
+    assert "| P0 | BLOCKED | 1 | 0 gates / 0 rows | 0 gates / 0 rows | red gates present | fix red gates first |" in md
 
 
 def test_verdict_three_clusters_mece() -> None:
@@ -264,14 +264,47 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
-    assert "Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/net math is only in Severity Inventory." in md
-    assert "| Band | Status | Fix now | Tracked backlog | Read it as | Next move |" in md
-    assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
+    assert "Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work." in md
+    assert "| Band | Status | Fix now | Burn-down backlog | KPI / watchlist | Read it as | Next move |" in md
+    assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | 0 gates / 0 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
     assert "Allowed Floor" in md
-    assert "| Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
-    assert "| `G_REACH_l0_reachability` | P0 | ratchet | TRACK | floor | 2792 | 2792 |" in md
+    assert "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
+    assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 | 2792 |" in md
     assert md.index("## 1. ADG Status By Band") < md.index("## 2. ADG CI Gates")
-    assert md.index("## 2. ADG CI Gates") < md.index("## 3. Severity Inventory Burndown")
+    assert md.index("## 2. ADG CI Gates") < md.index("## 3. KPI / Watchlist Signals")
+    assert md.index("## 3. KPI / Watchlist Signals") < md.index("## 4. Severity Inventory Burndown")
+
+
+def test_render_separates_kpi_watchlist_from_burndown(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    gate.write_text(
+        json.dumps(
+            {
+                "overall_exit_code": 0,
+                "timestamp": "2026-05-25T00:00:00Z",
+                "summary": {},
+                "gates": [
+                    {
+                        "gate_id": "S4_unused_imports_ratchet",
+                        "band": "P3",
+                        "enforcement": "ratchet",
+                        "classification": "pass",
+                        "violation_count": 10750,
+                        "baseline_count": 10750,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    burndown.write_text(json.dumps({"schema_version": "2.2", "summary": {}}), encoding="utf-8")
+
+    md = render(gate, burndown)
+
+    assert "| P3 | PASS | 0 | 0 gates / 0 rows | 1 gate / 10,750 rows | green; KPI/watchlist only | watch trend; no burn-down action |" in md
+    assert "## 3. KPI / Watchlist Signals" in md
+    assert "| `S4_unused_imports_ratchet` | P3 | 10750 | KPI/watchlist signal, not an owned burn-down item." in md
 
 
 def test_emit_fail_closed_when_gate_results_missing(tmp_path: Path) -> None:

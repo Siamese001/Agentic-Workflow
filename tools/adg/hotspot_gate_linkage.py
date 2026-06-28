@@ -20,6 +20,7 @@ ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 # P-view name -> gate_id (SSOT: ops_scripts/ci/adg_gates/unified_registry.py notes)
 P_VIEW_TO_GATE_ID: dict[str, str] = {
     "v_p0_apps_direct_infra": "10_infra_wiring",
+    "v_p0_core_imports_apps": "13_core_imports_apps",
     "v_p0_write_bypass_uwg": "C1_uwg_bypass_pview",
     "v_p0_provider_bypass": "C2_l5_bypass_pview",
     "v_p0_l1_direct_infra": "10_infra_wiring",

@@ -245,6 +245,29 @@ WHERE e.relation_type = 'imports'
 """
 
 
+_VIEW_P0_CORE_IMPORTS_APPS = """
+CREATE VIEW IF NOT EXISTS v_p0_core_imports_apps AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    n_dst.resolved_path AS app_file,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P0: agentic_core imports apps_*' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_src.resolved_path LIKE 'agentic_core/%'
+  AND n_dst.resolved_path LIKE 'apps_%/%'
+  AND n_dst.resolved_path NOT LIKE 'apps_shared/%'
+  AND n_src.resolved_path NOT LIKE 'agentic_core/%/tests/%'
+  AND n_src.resolved_path NOT LIKE 'agentic_core/%/docs/%'
+"""
+
+
 # P1-7: Critical infra adapter with no approved runtime callers.
 # Checks BOTH module-level imports (dst_id = module node) AND symbol-level imports
 # (dst_id = any symbol node whose resolved_path matches the adapter).
@@ -613,6 +636,9 @@ UNION ALL
 SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
 FROM v_p0_provider_bypass
 UNION ALL
+SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
+FROM v_p0_core_imports_apps
+UNION ALL
 SELECT violation_edge_id, writer_file AS consumer_file, writer_layer AS consumer_layer,
        write_symbol AS import_symbol, write_line AS import_line, violation_type
 FROM v_p0_write_bypass_uwg
@@ -687,6 +713,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
             "v_infra_violations_summary",  # depends on P0 views, drop first
             "v_p0_apps_direct_infra",
             "v_p0_provider_bypass",
+            "v_p0_core_imports_apps",
             "v_p0_write_bypass_uwg",
             "v_p0_l1_direct_infra",
             "v_p0_l6_mutation",
@@ -735,6 +762,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         sanctioned_app_clause = _build_sanctioned_app_clause()
         cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause))
         cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
+        cursor.execute(_VIEW_P0_CORE_IMPORTS_APPS)
         cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
         cursor.execute(_VIEW_P0_L1_DIRECT_INFRA.format(infra_adg_names=infra_in))
         cursor.execute(_VIEW_P0_L6_MUTATION.format(infra_adg_names=infra_in))
@@ -778,6 +806,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         _ALL_VIEW_NAMES = (
             "v_p0_apps_direct_infra",
             "v_p0_provider_bypass",
+            "v_p0_core_imports_apps",
             "v_p0_write_bypass_uwg",
             "v_p0_l1_direct_infra",
             "v_p0_l6_mutation",
@@ -805,12 +834,13 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
 
 def enrich_and_report(sqlite_path: Path) -> None:
     """Enrich ADG SQLite with infra views and print summary."""
-    print("[ADG] Materializing infrastructure wiring views (15 checks)...")
+    print("[ADG] Materializing infrastructure wiring views (16 checks)...")
     counts = materialize_infra_views(sqlite_path)
 
     p0_views = [
         "v_p0_apps_direct_infra",
         "v_p0_provider_bypass",
+        "v_p0_core_imports_apps",
         "v_p0_write_bypass_uwg",
         "v_p0_l1_direct_infra",
         "v_p0_l6_mutation",

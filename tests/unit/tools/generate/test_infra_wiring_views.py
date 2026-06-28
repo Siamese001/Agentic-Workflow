@@ -215,7 +215,7 @@ class TestMaterializeInfraViews:
         assert counts1 == counts2
 
     def test_views_exist_in_sqlite(self, tmp_path: Path) -> None:
-        """Verification: all 16 views are registered in sqlite_master."""
+        """Verification: all infra wiring views are registered in sqlite_master."""
         db_path = _create_test_db(tmp_path)
         materialize_infra_views(db_path)
         conn = sqlite3.connect(str(db_path))
@@ -226,6 +226,7 @@ class TestMaterializeInfraViews:
         expected = {
             "v_p0_apps_direct_infra",
             "v_p0_provider_bypass",
+            "v_p0_core_imports_apps",
             "v_p0_write_bypass_uwg",
             "v_p0_l1_direct_infra",
             "v_p0_l6_mutation",
@@ -260,12 +261,72 @@ class TestMaterializeInfraViews:
         p0_total = (
             counts["v_p0_apps_direct_infra"]
             + counts["v_p0_provider_bypass"]
+            + counts["v_p0_core_imports_apps"]
             + counts["v_p0_write_bypass_uwg"]
             + counts["v_p0_l1_direct_infra"]
             + counts["v_p0_l6_mutation"]
             + counts["v_p0_l0_raw_execution"]
         )
         assert counts["v_infra_violations_summary"] == p0_total
+
+    def test_detects_agentic_core_importing_apps_package(self, tmp_path: Path) -> None:
+        """Regression: core importing apps_* must be a first-class P0 view."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/L0_routing/gates/app_gate.py",
+            "module",
+            "L0",
+            "repo_module",
+            "agentic_core/L0_routing/gates/app_gate.py",
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Module::apps_demo/runtime/binding.py",
+            "module",
+            "L_APP",
+            "repo_module",
+            "apps_demo/runtime/binding.py",
+        )
+        _insert_edge(conn, 1, 2, "imports", "agentic_core/L0_routing/gates/app_gate.py", 18, "apps_demo")
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_core_imports_apps"] == 1
+        assert counts["v_infra_violations_summary"] == 1
+
+    def test_core_importing_apps_shared_not_flagged(self, tmp_path: Path) -> None:
+        """apps_shared is the shared app layer, not an app implementation leak."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/runtime/ok.py",
+            "module",
+            "L2",
+            "repo_module",
+            "agentic_core/runtime/ok.py",
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Module::apps_shared/contracts.py",
+            "module",
+            "L_SHARED",
+            "repo_module",
+            "apps_shared/contracts.py",
+        )
+        _insert_edge(conn, 1, 2, "imports", "agentic_core/runtime/ok.py", 9, "apps_shared")
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_core_imports_apps"] == 0
 
 
 class TestP0ProviderBypass:
