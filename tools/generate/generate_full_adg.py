@@ -1651,6 +1651,7 @@ def generate_full_adg(
 
     # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
     action_queue_path: Path | None = None
+    bcg_adapter_path: Path | None = None
     review_template_path: Path | None = None
     dead_code_report_path: Path | None = None
     cleanup_queue_and_p2_blocker_trace_path: Path | None = None
@@ -1671,6 +1672,37 @@ def generate_full_adg(
         print(
             f"[adg_action_queue] NEXT_ACTION_ERROR={_action_queue_exc}",
             file=sys.stderr,
+        )
+
+    # --- BCG gate adapter first: normalize FIX/BURN/KPI/CLEAR before reports consume it ---
+    try:
+        from tools.reports.adg_bcg_adapter import emit_bcg_gate_adapter  # noqa: PLC0415
+
+        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
+        _bcg_adapter_rc, bcg_adapter_path = emit_bcg_gate_adapter(
+            adg_artifacts_dir=adg_artifacts_dir,
+            ts=ts,
+            gate_results_path=gate_results_path,
+            burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
+            fail_closed=False,
+            print_inline=False,
+        )
+        if _bcg_adapter_rc != 0:
+            print(f"[ADG] WARNING: BCG adapter emit returned {_bcg_adapter_rc}", file=sys.stderr)
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _bcg_adapter_exc:
+        print(f"[adg_bcg_adapter] ADAPTER_ERROR={_bcg_adapter_exc}", file=sys.stderr)
+
+    _rec_bcg_adapter = _current_recorder()
+    if _rec_bcg_adapter is not None:
+        _rec_bcg_adapter.record(
+            "adg_bcg_adapter",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status="pass" if bcg_adapter_path is not None and bcg_adapter_path.is_file() else "fail",
+            exit_code=0 if bcg_adapter_path is not None and bcg_adapter_path.is_file() else 1,
+            script_rel="tools/reports/adg_bcg_adapter.py",
+            message="mandatory first BCG gate adapter",
         )
 
     # --- Mandatory CI burndown markdown artifacts (inline replay happens after BCG) ---
@@ -1938,6 +1970,14 @@ def generate_full_adg(
     for _burndown_md in BURNDOWN_REPORT_OUTPUTS:
         if _burndown_md.is_file():
             extra_files.append(_burndown_md)
+    if bcg_adapter_path is not None and bcg_adapter_path.is_file():
+        extra_files.append(bcg_adapter_path)
+        bcg_adapter_md_path = bcg_adapter_path.with_suffix(".md")
+        if bcg_adapter_md_path.is_file():
+            extra_files.append(bcg_adapter_md_path)
+        for _bcg_adapter_latest in adg_artifacts_dir.glob("adg_bcg_adapter_latest.*"):
+            if _bcg_adapter_latest.is_file():
+                extra_files.append(_bcg_adapter_latest)
     if review_template_path is not None and review_template_path.is_file():
         extra_files.append(review_template_path)
         review_template_yaml_path = review_template_path.with_suffix(".yaml")
@@ -2511,6 +2551,20 @@ def main() -> None:
             )
         except Exception as _e:  # noqa: BLE001
             print(f"[ADG] WARN manifest finalize failed: {_e}")
+        try:
+            from tools.reports.adg_bcg_adapter import emit_bcg_gate_adapter  # noqa: PLC0415
+
+            _dispatcher_latest = _resolve_dispatcher_results_path("", adg_artifacts_dir)
+            emit_bcg_gate_adapter(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                gate_results_path=Path(_dispatcher_latest) if _dispatcher_latest else None,
+                burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
+                print_inline=False,
+                fail_closed=False,
+            )
+        except ImportError:
+            pass
         _burndown_emit_rc = 2
         try:
             from tools.reports.adg_burndown_report import (  # noqa: PLC0415

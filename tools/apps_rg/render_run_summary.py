@@ -267,6 +267,61 @@ def _render_whole_run_cache_preflight(run_dir: Path) -> List[str]:
     return lines
 
 
+def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
+    ledger_path = run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json"
+    ledger_md = run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.md"
+    bcg_md = run_dir / "BCG_EXECUTIVE_OUTPUT.md"
+    ledger = _load_json(ledger_path) or {}
+    lines: List[str] = ["## Mandatory BCG / Run-Ledger Outputs", ""]
+    lines.append("| Artifact | Path | Status |")
+    lines.append("|---|---|---|")
+    for label, path in (
+        ("BCG executive output", bcg_md),
+        ("Mandatory run output", ledger_md),
+        ("Mandatory run output JSON", ledger_path),
+    ):
+        lines.append(
+            f"| **{label}** | `{_repo_rel(path)}` | {_artifact_status(path, required=True)} |"
+        )
+    if not ledger:
+        lines.append("")
+        lines.append(
+            "**RCA gap:** mandatory run output JSON is missing. This run is not "
+            "operator-ready until BCG and run-ledger artifacts are emitted."
+        )
+        lines.append("")
+        return lines
+
+    counts = ledger.get("section_counts") if isinstance(ledger.get("section_counts"), dict) else {}
+    result = ledger.get("result_summary") if isinstance(ledger.get("result_summary"), dict) else {}
+    rca = ledger.get("rca_findings") if isinstance(ledger.get("rca_findings"), list) else []
+    lines.append("")
+    lines.append("| Signal | Value |")
+    lines.append("|---|---|")
+    lines.append(f"| Outcome authorized | `{result.get('outcome_authorized')}` |")
+    lines.append(f"| Exit status | `{result.get('exit_status') or '—'}` |")
+    lines.append(f"| X3 disposition | `{result.get('x3_disposition') or '—'}` |")
+    lines.append(
+        "| Section counts | "
+        f"total `{counts.get('total', 0)}`, real LLM `{counts.get('ran_real_llm', 0)}`, "
+        f"allow `{counts.get('allowed', 0)}`, block `{counts.get('blocked', 0)}`, "
+        f"pre-run `{counts.get('pre_run_blocked', 0)}`, not-run `{counts.get('not_run', 0)}` |"
+    )
+    lines.append(f"| RCA findings | `{len(rca)}` |")
+    if rca:
+        lines.append("")
+        lines.append("Top RCA findings:")
+        for finding in rca[:5]:
+            if not isinstance(finding, dict):
+                continue
+            lines.append(
+                f"- `{finding.get('section')}`: {finding.get('classification')} "
+                f"({finding.get('evidence') or 'no gate evidence'})."
+            )
+    lines.append("")
+    return lines
+
+
 def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     if not (run_dir / "competencies_display.txt").is_file():
         return []
@@ -990,6 +1045,7 @@ def render(run_dir: Path) -> str:
     parts += _render_identity(run_dir, identity, manifest)
     parts += _render_fact_vector_readiness_gates(run_dir)
     parts += _render_whole_run_cache_preflight(run_dir)
+    parts += _render_mandatory_run_outputs(run_dir)
     parts += _render_bcg_competencies_report(run_dir)
     parts += _render_bcg_unify_bullets_report(run_dir)
     parts += _render_l2_substages(terminal)

@@ -24,7 +24,7 @@ the apps_rg *run + report* loop.
 |---|---|
 | "run apps_rg" / `python -m apps_rg` without all inputs in the same turn | Issue ONE prompt requesting ALL missing inputs at once (template below); do not pre-fill flags |
 | User names company + role + JD + briefing in the same turn | Run with those flags; source resume is static — resolve from the configured/most-recent path |
-| Run finished (exit 0 or not) / "show me the run summary" / "how did the resume go" | Invoke `python tools/apps_rg/render_run_summary.py [<run_dir>]` and surface its markdown inline, verbatim |
+| Run finished (exit 0 or not) / "show me the run summary" / "how did the resume go" | Confirm mandatory `BCG_EXECUTIVE_OUTPUT.md` + `APPS_RG_MANDATORY_RUN_OUTPUT.md/.json` exist, invoke `python tools/apps_rg/render_run_summary.py [<run_dir>]`, and surface the decision RCA plus renderer markdown |
 | `--section executive_summary` run | Lead with the 3-sentence layman block, then technical detail |
 
 ## Hard Routing Rules (do not violate)
@@ -34,7 +34,8 @@ the apps_rg *run + report* loop.
 | Never pre-fill `--target-company`/`--target-role`/`--jd`/`--manual-brief` from inferred or prior-turn context | The in-app wizard owns these (`apps-rg-interactive-discipline.md`, constitutional §6/§18) |
 | One single-prompt request for all missing inputs — no multi-turn back-and-forth | Same rule; minimizes round-trips |
 | After ANY run, render `render_run_summary.py` output inline before claiming success | `apps-rg-post-run-summary.md` — "exit 0" without the table is at most PARTIAL |
-| Failure/aborted runs MUST still render the summary | Failure runs are MORE valuable for evidence, not less |
+| Failure/aborted runs MUST still emit and surface mandatory BCG + run ledger | Failure runs are MORE valuable for evidence, not less |
+| The initial run closeout must answer "what ran, what did not, which judges ran, and why" | Mandatory `APPS_RG_MANDATORY_RUN_OUTPUT.md/.json` is the SSOT for that operator ledger |
 | executive_summary response leads with exactly 3 layman sentences, no jargon | `apps-rg-executive-summary-response.md` |
 
 ## Standard Procedure
@@ -48,12 +49,14 @@ the apps_rg *run + report* loop.
    ```
 2. **Run** `python -m apps_rg ...` exactly as scoped — no added flags when the user typed a bare invocation.
 3. **Locate the run dir** — `--out-dir` if passed, else the most-recently-modified dir under `artifacts/apps_rg/runs/`.
-4. **Render evidence** — `python tools/apps_rg/render_run_summary.py [<run_dir>]`; paste the full markdown inline under `## apps_rg Runtime Evidence`. Do not paraphrase or truncate.
-5. **Shape the response** — for executive_summary, 3-sentence layman lead first, then a technical table (parity, briefing chars, X3 code, judges, exit code) and the repo-work proof floor.
+4. **Validate mandatory outputs** — verify these files exist in the run dir: `BCG_EXECUTIVE_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. If missing, regenerate them with `python -m apps_rg.runtime.mandatory_run_outputs <run_dir>`.
+5. **Render evidence** — `python tools/apps_rg/render_run_summary.py [<run_dir>]`; paste the full markdown inline under `## apps_rg Runtime Evidence`. Do not paraphrase or truncate.
+6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). For executive_summary, 3-sentence layman lead first, then a technical table (parity, briefing chars, X3 code, judges, exit code) and the repo-work proof floor.
 
 ## Forbidden Patterns
 
 - ❌ Reporting "the pipeline succeeded" / "exit 0" without rendering the summary table (`apps-rg-post-run-summary.md`).
+- ❌ Reporting a failed run as only "it failed" without a BCG RCA and mandatory section/judge ledger.
 - ❌ Hand-summarizing the run JSON instead of invoking the renderer (content-drift / hallucination risk).
 - ❌ Pre-filling wizard flags from session memory or stale `apps_rg/scripts/*.json` files.
 - ❌ Starting the executive_summary response with `X3_BLOCK`, a digest, or a gate-failure list.

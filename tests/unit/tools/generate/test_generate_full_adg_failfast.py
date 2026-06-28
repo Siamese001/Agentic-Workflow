@@ -141,6 +141,32 @@ class TestBCGInlineOrdering:
         finalize_inline = source.index("emit_existing_burndown_markdown()", finalize_bcg)
         assert finalize_materialize < finalize_bcg < finalize_inline
 
+    def test_bcg_adapter_emits_before_burndown_materialization(self):
+        source_path = next(
+            candidate / "tools" / "generate" / "generate_full_adg.py"
+            for candidate in Path(__file__).resolve().parents
+            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+        )
+        source = source_path.read_text(encoding="utf-8")
+
+        main_adapter = source.index("_bcg_adapter_rc, bcg_adapter_path = emit_bcg_gate_adapter(")
+        main_materialize = source.index(
+            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
+            "        burndown=adg_artifacts_dir / \"adg_burndown_table.json\",\n"
+            "        fail_closed=False,\n"
+            "        print_inline=False,"
+        )
+        assert main_adapter < main_materialize
+
+        finalize_adapter = source.index("emit_bcg_gate_adapter(", main_materialize)
+        finalize_materialize = source.index(
+            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
+            "                fail_closed=False,\n"
+            "                print_inline=False,",
+            finalize_adapter,
+        )
+        assert finalize_adapter < finalize_materialize
+
 
 class TestDispatcherResultsPathResolution:
     """Regression coverage for noisy gate-dispatcher stdout."""

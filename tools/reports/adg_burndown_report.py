@@ -42,15 +42,17 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
-from tools.reports.adg_bcg_adapter import build_report_bcg_findings, render_report_bcg_findings_md
+from tools.reports.adg_bcg_adapter import (
+    build_bcg_gate_adapter,
+    build_report_bcg_findings,
+    render_report_bcg_findings_md,
+)
 
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
     display_verdict,
     display_verdict_sub,
     format_gate_signal,
-    has_backlog_findings,
-    needs_fix,
     recommended_next_step,
     render_verdict_legend_markdown,
     verdict_sort_key,
@@ -103,19 +105,25 @@ def _allowed_floor_display(gate: dict[str, Any]) -> str:
     return "0"
 
 
-def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+def _ci_band_summary(gates: list[dict[str, Any]], adapter: dict[str, Any] | None = None) -> dict[str, dict[str, int]]:
+    adapter_by_id = {
+        str(row.get("gate_id")): row
+        for row in (adapter or {}).get("priority_rows", []) + (adapter or {}).get("report_only_rows", [])
+    }
     rows: dict[str, dict[str, int]] = {}
     for band in ("P0", "P1", "P2", "P3"):
         rows[band] = {
             "total": 0,
             "fix": 0,
             "track": 0,
+            "kpi": 0,
             "clear": 0,
             "block_fail": 0,
             "ratchet_regressed": 0,
             "seed_missing": 0,
             "findings": 0,
             "track_rows": 0,
+            "kpi_rows": 0,
         }
     for gate in gates:
         band = str(gate.get("band", "P3"))
@@ -125,22 +133,28 @@ def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
                 "total": 0,
                 "fix": 0,
                 "track": 0,
+                "kpi": 0,
                 "clear": 0,
                 "block_fail": 0,
                 "ratchet_regressed": 0,
                 "seed_missing": 0,
                 "findings": 0,
                 "track_rows": 0,
+                "kpi_rows": 0,
             },
         )
         violation_count = int(gate.get("violation_count") or 0)
         row["total"] += 1
         row["findings"] += violation_count
         cluster = display_verdict(gate).lower()
-        if cluster in ("fix", "track", "clear"):
+        adapter_row = adapter_by_id.get(str(gate.get("gate_id")))
+        if adapter_row and adapter_row.get("section") == "kpi_watchlist":
+            row["kpi"] += 1
+            row["kpi_rows"] += violation_count
+        elif cluster in ("fix", "track", "clear"):
             row[cluster] += 1
-        if cluster == "track":
-            row["track_rows"] += violation_count
+            if cluster == "track":
+                row["track_rows"] += violation_count
         sub = display_verdict_sub(gate)
         if sub == "block":
             row["block_fail"] += 1
@@ -166,6 +180,12 @@ def _band_backlog_cell(row: dict[str, int]) -> str:
     return f"{_plural(track, 'gate')} / {_plural(track_rows, 'row')}"
 
 
+def _band_kpi_cell(row: dict[str, int]) -> str:
+    kpi = int(row.get("kpi", 0))
+    kpi_rows = int(row.get("kpi_rows", 0))
+    return f"{_plural(kpi, 'gate')} / {_plural(kpi_rows, 'row')}"
+
+
 def _band_status(row: dict[str, int]) -> str:
     return "BLOCKED" if int(row.get("fix", 0)) else "PASS"
 
@@ -174,6 +194,8 @@ def _band_plain_read(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "red gates present"
     if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        if not int(row.get("track", 0)) and int(row.get("kpi", 0)):
+            return "green; KPI/watchlist only"
         return "green; tracked backlog"
     return "green; no backlog"
 
@@ -182,6 +204,8 @@ def _band_next_move(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "fix red gates first"
     if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        if not int(row.get("track", 0)) and int(row.get("kpi", 0)):
+            return "watch trend; no burn-down action"
         return "work ranked queue; do not treat as new failures"
     return "no action"
 
@@ -340,30 +364,32 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
     gates: list[dict[str, Any]] = list(gates_doc.get("gates") or [])
     summary = gates_doc.get("summary", {}) if isinstance(gates_doc.get("summary"), dict) else {}
     overall = "PASS" if gates_doc.get("overall_exit_code", 1) == 0 else "BLOCKED"
-    fix_gates = [g for g in gates if needs_fix(g)]
-    track_gates = [g for g in gates if has_backlog_findings(g)]
+    adapter = build_bcg_gate_adapter(gates_doc, burndown)
+    fix_rows = list(adapter.get("sections", {}).get("fix_now", {}).get("rows", []))
+    burn_rows = list(adapter.get("sections", {}).get("burn_down", {}).get("rows", []))
+    kpi_rows = list(adapter.get("sections", {}).get("kpi_watchlist", {}).get("rows", []))
     cluster_counts = _count_by_cluster(gates)
     priority_rows: list[dict[str, Any]] = []
-    for gate in sorted(fix_gates, key=lambda r: (-int(r.get("violation_count", 0) or 0), str(r.get("gate_id", ""))))[:4]:
+    for gate in sorted(fix_rows, key=lambda r: (-int(r.get("rows", 0) or 0), str(r.get("gate_id", ""))))[:4]:
         priority_rows.append(
             {
                 "priority": len(priority_rows) + 1,
                 "move": f"Fix {gate.get('gate_id', '?')}",
                 "why_it_matters": "This gate is marked FIX, so the ADG run is not decision-grade green until it clears.",
-                "evidence": f"{gate.get('band', '?')} {gate.get('enforcement', '?')} gate; rows={gate.get('violation_count', 0)}; sub={_verdict_sub_display(gate)}.",
-                "next_step": recommended_next_step(gate),
+                "evidence": f"{gate.get('band', '?')} {gate.get('enforcement', '?')} gate; rows={gate.get('rows', 0)}; sub={gate.get('sub', '?')}.",
+                "next_step": gate.get("next_step"),
                 "decision": "fix_gate",
             }
         )
-    if not priority_rows and track_gates:
-        for gate in sorted(track_gates, key=lambda r: (-int(r.get("violation_count", 0) or 0), str(r.get("gate_id", ""))))[:4]:
+    if not priority_rows and burn_rows:
+        for gate in sorted(burn_rows, key=lambda r: (-int(r.get("rows", 0) or 0), str(r.get("gate_id", ""))))[:4]:
             priority_rows.append(
                 {
                     "priority": len(priority_rows) + 1,
                     "move": f"Burn down {gate.get('gate_id', '?')}",
                     "why_it_matters": "This is accepted or advisory debt; reduce it after FIX rows are clear.",
-                    "evidence": f"TRACK gate; rows={gate.get('violation_count', 0)}; allowed floor={_allowed_floor_display(gate)}.",
-                    "next_step": recommended_next_step(gate),
+                    "evidence": f"Burn-down gate; rows={gate.get('rows', 0)}; sub={gate.get('sub', '?')}.",
+                    "next_step": gate.get("next_step"),
                     "decision": "track_after_green",
                 }
             )
@@ -372,7 +398,7 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
             {
                 "priority": 1,
                 "move": "Hold ADG green posture",
-                "why_it_matters": "No FIX or TRACK findings were promoted by the burndown report.",
+                "why_it_matters": "No FIX or owned burn-down findings were promoted by the burndown report.",
                 "evidence": "All reported gate clusters are clear or empty.",
                 "next_step": "No burndown action required from this report.",
                 "decision": "hold",
@@ -381,11 +407,15 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
 
     business_read = (
         "ADG is BLOCKED: fix the red gates before treating the run as green."
-        if fix_gates
+        if fix_rows
         else (
             "ADG is PASS with tracked backlog: burn down accepted debt after green."
-            if track_gates
-            else "ADG is PASS and no burndown backlog was promoted."
+            if burn_rows
+            else (
+                "ADG is PASS with KPI/watchlist signals only: monitor trends; no burn-down action is implied."
+                if kpi_rows
+                else "ADG is PASS and no burndown backlog was promoted."
+            )
         )
     )
     return build_report_bcg_findings(
@@ -397,16 +427,18 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
         technical_read=[
             f"Snapshot timestamp: {gates_doc.get('timestamp', 'n/a')}",
             f"Total gates: {gates_doc.get('total_gates', len(gates))}",
-            f"FIX gates: {cluster_counts.get('FIX', 0)}",
-            f"TRACK gates: {cluster_counts.get('TRACK', 0)}",
+            f"FIX gates: {len(fix_rows)}",
+            f"Burn-down gates: {len(burn_rows)}",
+            f"KPI/watchlist gates: {len(kpi_rows)}",
             f"CLEAR gates: {cluster_counts.get('CLEAR', 0)}",
             f"block_fail={summary.get('block_fail', 0)}; ratchet_regressed={summary.get('ratchet_regressed', 0)}",
         ],
-        priority_rule="FIX gates first, then TRACK ratchets/backlog, then no-action CLEAR gates.",
+        priority_rule="FIX gates first, then owned burn-down backlog, then KPI/watchlist trends outside the work queue.",
         priority_rows=priority_rows,
         why_this_order=[
             "FIX gates block a decision-grade green run.",
-            "TRACK rows are accepted or advisory debt and should not distract from red gates.",
+            "Burn-down rows are accepted debt and should not distract from red gates.",
+            "KPI/watchlist rows are visible, but are not cleanup work unless owned by a plan.",
             "CLEAR rows need no action and should stay out of the work queue.",
         ],
         next_step=priority_rows[0].get("next_step", "Follow the first priority row."),
@@ -438,15 +470,23 @@ def render(
     a(f"- **Total gates:** {gates_doc.get('total_gates', len(gates))}")
     a(f"- **Overall verdict:** **{overall}** (run halt — exit code)")
     cluster_counts = _count_by_cluster(gates)
+    gate_adapter = build_bcg_gate_adapter(gates_doc, burndown)
+    adapter_by_id = {
+        str(row.get("gate_id")): row
+        for row in gate_adapter.get("priority_rows", []) + gate_adapter.get("report_only_rows", [])
+    }
     bcg_findings = build_burndown_bcg_findings(gates_doc, burndown)
     a("")
     a(render_report_bcg_findings_md(bcg_findings))
-    fix_n = cluster_counts.get("FIX", 0)
-    track_n = cluster_counts.get("TRACK", 0)
-    if fix_n or track_n:
+    adapter_summary = gate_adapter.get("summary", {})
+    fix_n = int(adapter_summary.get("fix_now_gates") or 0)
+    burn_n = int(adapter_summary.get("burn_down_gates") or 0)
+    kpi_n = int(adapter_summary.get("kpi_watchlist_gates") or 0)
+    if fix_n or burn_n or kpi_n:
         a(
             f"- **Action:** **FIX**={fix_n} (address for green ADG) · "
-            f"**TRACK**={track_n} (CI OK, backlog) · "
+            f"**BURN**={burn_n} (owned backlog) · "
+            f"**KPI**={kpi_n} (watchlist only) · "
             f"**CLEAR**={cluster_counts.get('CLEAR', 0)}"
         )
     a("")
@@ -455,19 +495,20 @@ def render(
     a("## 1. ADG Status By Band")
     a("")
     a("Operator summary from `adg_gate_results_*.json`.")
-    a("Backlog rows are summed only from TRACK gate `violation_count`; guardian gross/net math is only in Severity Inventory.")
+    a("Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work.")
     a("")
-    a("| Band | Status | Fix now | Tracked backlog | Read it as | Next move |")
-    a("|------|:------:|--------:|-----------------|------------|-----------|")
-    band_rows = _ci_band_summary(gates)
+    a("| Band | Status | Fix now | Burn-down backlog | KPI / watchlist | Read it as | Next move |")
+    a("|------|:------:|--------:|-------------------|-----------------|------------|-----------|")
+    band_rows = _ci_band_summary(gates, gate_adapter)
     for band in ("P0", "P1", "P2", "P3"):
         row = band_rows.get(band, {})
         a(
             f"| {band} | {_band_status(row)} | {_fmt_int(row.get('fix', 0))} | "
-            f"{_band_backlog_cell(row)} | {_band_plain_read(row)} | {_band_next_move(row)} |"
+            f"{_band_backlog_cell(row)} | {_band_kpi_cell(row)} | "
+            f"{_band_plain_read(row)} | {_band_next_move(row)} |"
         )
     a("")
-    a("`Fix now` counts red gates. `Tracked backlog` is old or advisory inventory that does not block this run.")
+    a("`Fix now` counts red gates. `Burn-down backlog` is accepted work. `KPI / watchlist` is report-only unless a plan gives it an owner and target.")
     a("")
 
     # ---------------------------------------------------- §2 all gates
@@ -475,15 +516,15 @@ def render(
     a("")
     a("One row per registered gate.")
     a("")
-    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero rows.")
+    a("- **Section** — **FIX** = address now · **BURN** = owned backlog · **KPI** = watchlist only · **CLEAR** = zero rows.")
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
     a("- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise.")
     a("- **Rows** — gate-specific `violation_count`; meaning depends on Action/Sub.")
     a("- **Signal** — what Rows count + short Sub note.")
     a("- **Next Best Action** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |")
-    a("|---------|:-------:|-------------|:------:|:---:|---------:|---------------|--------|------------------|")
+    a("| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |")
+    a("|---------|:-------:|-------------|:-------:|:---:|---------:|---------------|--------|------------------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
         gates,
@@ -494,18 +535,25 @@ def render(
         ),
     )
     for g in sorted_gates:
+        adapted = adapter_by_id.get(str(g.get("gate_id"))) or {}
+        section_label = {
+            "fix_now": "FIX",
+            "burn_down": "BURN",
+            "kpi_watchlist": "KPI",
+            "clear": "CLEAR",
+        }.get(str(adapted.get("section") or ""), _verdict_display(g))
         a(
             f"| `{g.get('gate_id', '?')}` | "
             f"{g.get('band', '?')} | "
             f"{g.get('enforcement', '?')} | "
-            f"{_verdict_display(g)} | "
+            f"{section_label} | "
             f"{_verdict_sub_display(g)} | "
             f"{g.get('violation_count', 0)} | "
             f"{_allowed_floor_display(g)} | "
             f"{_describe(g)} | "
             f"{recommended_next_step(g)} |"
         )
-    fix_gates = [g for g in gates if needs_fix(g)]
+    fix_gates = list(gate_adapter.get("sections", {}).get("fix_now", {}).get("rows", []))
     if fix_gates:
         a("")
         a("### Fix now (Verdict FIX)")
@@ -514,33 +562,55 @@ def render(
         a("|---------|:---:|---------:|")
         for g in sorted(
             fix_gates,
-            key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", "")),
+            key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", "")),
         ):
             a(
                 f"| `{g.get('gate_id', '?')}` | "
-                f"{_verdict_sub_display(g)} | "
-                f"{g.get('violation_count', 0)} |"
+                f"{g.get('sub', '?')} | "
+                f"{g.get('rows', 0)} |"
             )
-    track_gates = [g for g in gates if has_backlog_findings(g)]
-    if track_gates:
+    burn_gates = list(gate_adapter.get("sections", {}).get("burn_down", {}).get("rows", []))
+    if burn_gates:
         a("")
-        a("### Track later (Verdict TRACK — CI OK, backlog remains)")
+        a("### Burn down later (owned backlog — CI OK)")
         a("")
         a("| Gate ID | Sub | Rows |")
         a("|---------|:---:|---------:|")
         for g in sorted(
-            track_gates,
-            key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", "")),
+            burn_gates,
+            key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", "")),
         ):
             a(
                 f"| `{g.get('gate_id', '?')}` | "
-                f"{_verdict_sub_display(g)} | "
-                f"{g.get('violation_count', 0)} |"
+                f"{g.get('sub', '?')} | "
+                f"{g.get('rows', 0)} |"
             )
     a("")
 
-    # ---------------------------------------------------- §3 severity inventory by band
-    a("## 3. Severity Inventory Burndown")
+    # ---------------------------------------------------- §3 KPI/watchlist
+    a("## 3. KPI / Watchlist Signals")
+    a("")
+    a("These rows are visible for trend awareness, but they are not burn-down work unless a plan gives them an owner, target, and retirement condition.")
+    kpi_gates = list(gate_adapter.get("sections", {}).get("kpi_watchlist", {}).get("rows", []))
+    if not kpi_gates:
+        a("")
+        a("_No KPI/watchlist rows promoted._")
+    else:
+        a("")
+        a("| Gate ID | Band | Rows | Why it is separate | Next step |")
+        a("|---------|:----:|-----:|--------------------|-----------|")
+        for row in sorted(kpi_gates, key=lambda r: (-int(r.get("rows") or 0), str(r.get("gate_id") or "")))[:12]:
+            a(
+                f"| `{row.get('gate_id', '?')}` | "
+                f"{row.get('band', '?')} | "
+                f"{row.get('rows', 0)} | "
+                "KPI/watchlist signal, not an owned burn-down item. | "
+                f"{row.get('next_step', '')} |"
+            )
+    a("")
+
+    # ---------------------------------------------------- §4 severity inventory by band
+    a("## 4. Severity Inventory Burndown")
     a("")
     a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
     a("This is raw MV defect inventory by severity/source band; it is not one row per CI gate.")
@@ -568,8 +638,8 @@ def render(
     # ---------------------------------------------------- §4 verdict glossary
     a(render_verdict_legend_markdown())
 
-    # ---------------------------------------------------- §4 aggregates
-    a("## 4. Aggregate Verdicts")
+    # ---------------------------------------------------- §5 aggregates
+    a("## 5. Aggregate Verdicts")
     a("")
     a("| Verdict | Count | Meaning |")
     a("|---------|------:|---------|")
@@ -600,25 +670,25 @@ def render(
         a(f"| {label} | {n} | {VERDICT_CLUSTER_DEFINITIONS[label]} |")
     a("")
 
-    # ---------------------------------------------------- §5 top blockers
-    a("## 5. Fix now (detail)")
+    # ---------------------------------------------------- §6 top blockers
+    a("## 6. Fix now (detail)")
     a("")
-    blockers = [g for g in gates if needs_fix(g)]
+    blockers = list(gate_adapter.get("sections", {}).get("fix_now", {}).get("rows", []))
     if not blockers:
         a("_No FIX gates._")
     else:
         a("| Gate | Band | Enf | Sub | Rows | Signal |")
         a("|------|:----:|:---:|:---:|---------:|--------|")
         for g in sorted(
-            blockers, key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", ""))
+            blockers, key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", ""))
         ):
             a(
                 f"| `{g.get('gate_id', '?')}` | "
                 f"{g.get('band', '?')} | "
                 f"{g.get('enforcement', '?')} | "
-                f"{_verdict_sub_display(g)} | "
-                f"{g.get('violation_count', 0)} | "
-                f"{_describe(g)} |"
+                f"{g.get('sub', '?')} | "
+                f"{g.get('rows', 0)} | "
+                f"{g.get('signal', '')} |"
             )
     a("")
 

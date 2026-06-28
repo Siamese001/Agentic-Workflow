@@ -83,6 +83,7 @@ PVIEW_SPECS: tuple[PViewProjectionSpec, ...] = (
     # P0 — node_id keyed (via writer_id / consumer_id)
     PViewProjectionSpec(view="v_p0_write_bypass_uwg", key_col="writer_id"),
     PViewProjectionSpec(view="v_p0_apps_direct_infra", key_col="consumer_id"),
+    PViewProjectionSpec(view="v_p0_core_imports_apps", key_col="consumer_id"),
     PViewProjectionSpec(view="v_p0_l0_raw_execution", key_col="consumer_id"),
     PViewProjectionSpec(view="v_p0_l1_direct_infra", key_col="consumer_id"),
     PViewProjectionSpec(view="v_p0_l6_mutation", key_col="writer_id"),

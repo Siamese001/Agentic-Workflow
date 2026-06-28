@@ -1383,11 +1383,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 print(f"review_bundle_zip={rbz}", flush=True)
             if not section_eff and isinstance(result, dict) and result.get("artifact_dir"):
                 from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
+                from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
                 from apps_rg.runtime.runtime_proof_layout import is_integrated_whole_run_dir_name
 
                 ad = Path(str(result["artifact_dir"]))
                 if is_integrated_whole_run_dir_name(ad.name) or result.get("full_run_section_status_md"):
                     emit_full_run_section_status(ad, print_stdout=True)
+                    emit_mandatory_run_outputs(ad, result=result, print_stdout=True)
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
             from apps_rg.runtime.c0.c02_fact_vector_ingest import (
@@ -1429,6 +1431,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 out_txt = str((result or {}).get(text_key) or "").strip()
                 if out_txt:
                     print(out_txt, flush=True)
+            if res_dict.get("artifact_dir"):
+                from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
+
+                emit_mandatory_run_outputs(
+                    Path(str(res_dict["artifact_dir"])),
+                    result=res_dict,
+                    section_id=section_eff,
+                    print_stdout=True,
+                )
             from apps_rg.runtime.cli_exit_codes import exit_code_from_lane_result
 
             rc = exit_code_from_lane_result(res_dict, section_id=section_eff)

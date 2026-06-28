@@ -104,6 +104,10 @@
   `trace_reconciliation.json`; apps_eval grades it as optional observability evidence and L6 turns gaps
   into future-run-only recommendations. Detail:
   `memory/codex/apps_rg_otel_trace_reconciliation_consumer.md`.
+- **apps_rg mandatory BCG/run-ledger outputs (2026-06-28):** every apps_rg run must emit
+  `BCG_EXECUTIVE_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.md`, and
+  `APPS_RG_MANDATORY_RUN_OUTPUT.json`; failed runs still need RCA, section/judge ledger, and
+  remediation. Detail: `memory/codex/apps_rg_mandatory_bcg_run_outputs.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

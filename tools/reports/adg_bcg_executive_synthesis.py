@@ -24,6 +24,7 @@ from typing import Any
 import yaml
 
 from tools.reports.adg_bcg_adapter import (
+    build_bcg_gate_adapter,
     build_bcg_brief,
     build_deprecation_deletion_plan as _build_deprecation_deletion_plan,
     render_bcg_brief_md,
@@ -985,7 +986,18 @@ def build_canonical_next_best_actions(
                 )
             )
             break
-    ratchets = [g for g in gate_rows if display_verdict(g) == "TRACK" and display_verdict_sub(g) == "floor"]
+    gate_adapter = build_bcg_gate_adapter({"gates": gate_rows})
+    burn_down_gate_ids = {
+        str(row.get("gate_id"))
+        for row in gate_adapter.get("sections", {}).get("burn_down", {}).get("rows", [])
+    }
+    ratchets = [
+        g
+        for g in gate_rows
+        if display_verdict(g) == "TRACK"
+        and display_verdict_sub(g) == "floor"
+        and str(g.get("gate_id")) in burn_down_gate_ids
+    ]
     if ratchets:
         g = sorted(ratchets, key=lambda r: (-int(r.get("violation_count") or 0), str(r.get("gate_id", ""))))[0]
         why = "Accepted baseline debt should fall after red gates are clear."
@@ -1223,23 +1235,33 @@ def _patient_size(repo_root: Path, gate_doc: dict[str, Any] | None) -> dict[str,
     return {"status": "present", "total_python_files": len(py_files), "production_python_files": len(prod), "test_python_files": len(tests), "agentic_core": {"file_count": len(core), "largest_layers": [{"layer": k, "file_count": v, "executive_read": "Large core layer; treat as control-plane blast-radius context."} for k, v in sorted(layer_counts.items(), key=lambda x: -x[1])[:5]]}, "apps": {"total_files": len(apps), "app_breakdown": [{"app": k, "file_count": v, "executive_read": "Product surface; prioritize when high blast radius and missing e2e/regression tests overlap."} for k, v in sorted(app_counts.items(), key=lambda x: -x[1])[:8]]}, "tests": {"total_files": len(tests), "folder_breakdown": [{"folder": k, "file_count": v} for k, v in folder_counts.items()]}, "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.", "snapshot_ts": (gate_doc or {}).get("timestamp")}
 
 
-def _health_lens(gates: list[dict[str, Any]]) -> dict[str, Any]:
-    buckets = {"CLEAR": 0, "TRACK": 0, "FIX": 0}
-    for g in gates:
-        buckets[display_verdict(g)] = buckets.get(display_verdict(g), 0) + 1
+def _health_lens(gates: list[dict[str, Any]], gate_adapter: dict[str, Any] | None = None) -> dict[str, Any]:
+    adapter = gate_adapter or build_bcg_gate_adapter({"gates": gates})
+    sections = adapter.get("sections", {})
+    fix_rows = list(sections.get("fix_now", {}).get("rows", []))
+    burn_rows = list(sections.get("burn_down", {}).get("rows", []))
+    kpi_rows = list(sections.get("kpi_watchlist", {}).get("rows", []))
+    clear_rows = list(sections.get("clear", {}).get("rows", []))
+    buckets = {
+        "CLEAR": len(clear_rows),
+        "BURN": len(burn_rows),
+        "KPI": len(kpi_rows),
+        "FIX": len(fix_rows),
+    }
     red = []
-    for g in [x for x in gates if display_verdict(x) == "FIX"]:
-        red.append({"gate_id": str(g.get("gate_id", "")), "band": str(g.get("band", "")), "enforcement": str(g.get("enforcement", "")), "total_records": int(g.get("violation_count") or 0), "baseline_records": g.get("baseline_count"), "regression_delta": _reg_delta(g), "record_type": str(g.get("record_type") or g.get("signal") or "gate records"), "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.", "next_action": recommended_next_step(g), "done_condition": "Gate returns CLEAR/TRACK with no current FIX verdict."})
-    track = [g for g in gates if display_verdict(g) == "TRACK"]
-    ratchets = [g for g in track if display_verdict_sub(g) == "floor"]
-    open_non = [g for g in track if display_verdict_sub(g) != "floor"]
+    for g in fix_rows:
+        raw_gate = g.get("raw_gate") if isinstance(g.get("raw_gate"), dict) else g
+        red.append({"gate_id": str(g.get("gate_id", "")), "band": str(g.get("band", "")), "enforcement": str(g.get("enforcement", "")), "total_records": int(g.get("rows") or 0), "baseline_records": g.get("baseline_count"), "regression_delta": _reg_delta(raw_gate), "record_type": str(g.get("signal") or "gate records"), "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.", "next_action": str(g.get("next_step") or recommended_next_step(raw_gate)), "done_condition": "Gate leaves the adapter FIX section."})
+    ratchets = [g for g in burn_rows if str(g.get("sub")) == "floor"]
+    open_non = [g for g in burn_rows if str(g.get("sub")) != "floor"]
     return {
         "status": "present",
-        "why_it_matters": "Health gates tell leaders whether the run is green, blocked, or carrying accepted debt; they should not hide report inconsistency or runtime failures.",
-        "summary": {"total_gates": len(gates), "clear_gates": buckets.get("CLEAR", 0), "track_gates": buckets.get("TRACK", 0), "fix_gates": buckets.get("FIX", 0), "overall_verdict": "BLOCKED" if buckets.get("FIX") else "PASS", "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action."},
-        "buckets": [{"bucket": k, "count": buckets.get(k, 0), "plain_meaning": {"CLEAR": "No action now.", "TRACK": "Known debt or advisory inventory; burn down after red gates.", "FIX": "Current blocker or regression requiring action before decision-grade green."}[k]} for k in ("CLEAR", "TRACK", "FIX")],
+        "why_it_matters": "Health gates tell leaders whether the run is green, blocked, carrying owned burn-down debt, or merely showing KPI/watchlist signals.",
+        "summary": {"total_gates": len(gates), "clear_gates": buckets.get("CLEAR", 0), "track_gates": buckets.get("BURN", 0), "burn_down_gates": buckets.get("BURN", 0), "kpi_watchlist_gates": buckets.get("KPI", 0), "fix_gates": buckets.get("FIX", 0), "overall_verdict": "BLOCKED" if buckets.get("FIX") else "PASS", "executive_read": "FIX blocks green; BURN is accepted work; KPI is trend/watchlist; CLEAR needs no action."},
+        "buckets": [{"bucket": k, "count": buckets.get(k, 0), "plain_meaning": {"CLEAR": "No action now.", "BURN": "Owned backlog; burn down after red gates.", "KPI": "Watchlist/trend only; no burn-down unless planned.", "FIX": "Current blocker or regression requiring action before decision-grade green."}[k]} for k in ("CLEAR", "BURN", "KPI", "FIX")],
         "red_gates": red,
-        "managed_debt": {"ratchet_floor_records": sum(int(g.get("violation_count") or 0) for g in ratchets), "open_non_ratchet_records": sum(int(g.get("violation_count") or 0) for g in open_non), "top_ratchets": [{"gate_id": str(g.get("gate_id", "")), "records": int(g.get("violation_count") or 0), "executive_read": "Accepted baseline debt, not current red.", "after_green_action": "Burn down after FIX rows clear."} for g in sorted(ratchets, key=lambda x: -int(x.get("violation_count") or 0))[:5]]},
+        "managed_debt": {"ratchet_floor_records": sum(int(g.get("rows") or 0) for g in ratchets), "open_non_ratchet_records": sum(int(g.get("rows") or 0) for g in open_non), "top_ratchets": [{"gate_id": str(g.get("gate_id", "")), "records": int(g.get("rows") or 0), "executive_read": "Accepted baseline debt, not current red.", "after_green_action": "Burn down after FIX rows clear."} for g in sorted(ratchets, key=lambda x: -int(x.get("rows") or 0))[:5]]},
+        "kpi_watchlist": {"gate_count": len(kpi_rows), "row_count": sum(int(g.get("rows") or 0) for g in kpi_rows), "top_signals": [{"gate_id": str(g.get("gate_id", "")), "records": int(g.get("rows") or 0), "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.", "recommended_action": str(g.get("next_step") or "Watch trend.")} for g in sorted(kpi_rows, key=lambda x: -int(x.get("rows") or 0))[:8]]},
         "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
         "action_impact_rows": _action_impact(
             [
@@ -1380,7 +1402,7 @@ def _base_doc(ts: str, sqlite_path: Path, gate_doc: dict[str, Any] | None, degra
 
 
 def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | None]) -> dict[str, Any]:
-    artifacts = {"gate_results": gate_results_path, "action_queue": action_queue_path, "review_template": review_template_path, "burndown_table": burndown_path, "burndown_report": adg_artifacts_dir / "adg_burndown_report.md", "sqlite_snapshot": sqlite_path, "generation_manifest": adg_artifacts_dir / f"adg_generation_manifest_{ts}.json", **p7_paths}
+    artifacts = {"gate_results": gate_results_path, "bcg_adapter": adg_artifacts_dir / f"adg_bcg_adapter_{ts}.json", "action_queue": action_queue_path, "review_template": review_template_path, "burndown_table": burndown_path, "burndown_report": adg_artifacts_dir / "adg_burndown_report.md", "sqlite_snapshot": sqlite_path, "generation_manifest": adg_artifacts_dir / f"adg_generation_manifest_{ts}.json", **p7_paths}
     loaded = {
         k: doc
         for k, v in artifacts.items()
@@ -1396,6 +1418,9 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
         degraded.append("missing sqlite_snapshot: cannot query MV/GraphDB decision impact")
     doc = _base_doc(ts, sqlite_path, gate_doc, degraded)
     gates = list((gate_doc or {}).get("gates") or [])
+    gate_adapter = loaded.get("bcg_adapter")
+    if not isinstance(gate_adapter, dict) or gate_adapter.get("artifact_kind") != "adg_bcg_gate_adapter":
+        gate_adapter = build_bcg_gate_adapter(gate_doc or {"gates": gates}, loaded.get("burndown_table") or {})
     doc["patient_size"] = _patient_size(REPO_ROOT, gate_doc)
     test_inventory = build_test_scope_inventory(REPO_ROOT)
     testing = synthesize_testing_investment_map(sqlite_path, REPO_ROOT, test_inventory, action_queue)
@@ -1410,7 +1435,7 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
     dead_code_report = loaded.get("dead_code_report") or {}
     deprecation_plan = build_deprecation_deletion_plan(dead_code_report, mv_audit, artifact_matrix)
     consistency = _artifact_consistency(sqlite_path)
-    health = _health_lens(gates)
+    health = _health_lens(gates, gate_adapter)
     runtime = _runtime_lens(p7_docs, sqlite_path)
     p0_landmines = _p0_landmine_lens(p7_docs.get("p0_wave_plan"))
     product = _product_lens(testing, graph)
@@ -1424,7 +1449,7 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
         sqlite_path=sqlite_path,
         run_id=ts,
     )
-    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "dead_code_report": dead_code_report, "deprecation_deletion_plan": deprecation_plan, "defer_delete_deprecate": {"status": "present", "rows": deprecation_plan.get("cleanup_candidates", [])}, "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
+    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "bcg_gate_adapter": gate_adapter, "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "dead_code_report": dead_code_report, "deprecation_deletion_plan": deprecation_plan, "defer_delete_deprecate": {"status": "present", "rows": deprecation_plan.get("cleanup_candidates", [])}, "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
     doc["bcg_findings"] = _executive_bcg_brief(doc)
     doc["run"]["repo_state_hash"] = _hash_repo_state([p for p in artifacts.values() if p])
     doc["run"]["decision_grade_status"] = doc["executive_decision"]["verdict"]
@@ -1625,13 +1650,14 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
                 else f"ADG source: missing (snapshot {doc.get('run', {}).get('snapshot_ts') or doc.get('run', {}).get('run_id') or 'missing'})"
             ),
             f"FIX gates: {_fmt_int(health.get('summary', {}).get('fix_gates', 0))}; "
-            f"TRACK gates: {_fmt_int(health.get('summary', {}).get('track_gates', 0))}",
+            f"burn-down gates: {_fmt_int(health.get('summary', {}).get('burn_down_gates', health.get('summary', {}).get('track_gates', 0)))}; "
+            f"KPI/watchlist gates: {_fmt_int(health.get('summary', {}).get('kpi_watchlist_gates', 0))}",
             runtime.get("measurement_gap_vs_quality_failure") or runtime.get("executive_read", ""),
             testing.get("executive_read") or testing.get("why_it_matters", ""),
             graph.get("executive_read", ""),
             f"Action rows emitted: {_fmt_int(len(actions))}",
         ],
-        priority_rule=priority_rule,
+        priority_rule=priority_rule.replace("accepted debt", "owned burn-down debt").replace("ratchets", "owned burn-down backlog"),
         priority_rows=priority_rows,
         why_this_order=why_this_order,
         next_step=(
@@ -1712,6 +1738,12 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("Action impact:")
     a("")
     a(_action_impact_markdown(h))
+    a("")
+    a("KPI / watchlist signals:")
+    a("")
+    kpi = h.get("kpi_watchlist") or {}
+    kpi_rows = kpi.get("top_signals") or [{"gate_id": "None", "records": 0, "executive_read": "No KPI/watchlist signal was promoted.", "recommended_action": "No KPI action."}]
+    a(_table(["Signal", "Rows", "Executive read", "Recommended action"], [[r.get("gate_id"), r.get("records"), r.get("executive_read"), r.get("recommended_action")] for r in kpi_rows[:8]]))
     a("")
     a("### 6. Gap Analysis — Lens 2: Runtime Proof / Observability")
     a("")

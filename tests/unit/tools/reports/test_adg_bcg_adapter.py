@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from tools.reports.adg_bcg_adapter import (
     build_bcg_brief,
+    build_bcg_gate_adapter,
+    build_deprecation_deletion_plan,
     build_report_bcg_findings,
     has_bcg_findings,
-    build_deprecation_deletion_plan,
     render_bcg_brief_md,
+    render_bcg_gate_adapter_md,
 )
 
 
@@ -142,3 +144,63 @@ def test_build_report_bcg_findings_emits_required_management_story() -> None:
     assert has_bcg_findings({"bcg_findings": findings}) is True
     assert has_bcg_findings({"brief": findings["brief"]}) is True
     assert has_bcg_findings({"not_bcg": {}}) is False
+
+
+def test_bcg_gate_adapter_separates_kpi_from_burndown() -> None:
+    adapter = build_bcg_gate_adapter(
+        {
+            "timestamp": "run",
+            "gates": [
+                {
+                    "gate_id": "C2_l5_bypass_pview",
+                    "band": "P0",
+                    "enforcement": "block",
+                    "classification": "blocked",
+                    "violation_count": 2,
+                },
+                {
+                    "gate_id": "G_REACH_l0_reachability",
+                    "band": "P0",
+                    "enforcement": "ratchet",
+                    "classification": "pass",
+                    "violation_count": 2800,
+                    "baseline_count": 2800,
+                },
+                {
+                    "gate_id": "S4_unused_imports_ratchet",
+                    "band": "P3",
+                    "enforcement": "ratchet",
+                    "classification": "pass",
+                    "violation_count": 10750,
+                    "baseline_count": 10750,
+                },
+                {
+                    "gate_id": "D2_role_duplication_warn",
+                    "band": "P2",
+                    "enforcement": "warn",
+                    "classification": "pass",
+                    "violation_count": 4,
+                },
+                {
+                    "gate_id": "13_core_imports_apps",
+                    "band": "P0",
+                    "enforcement": "block",
+                    "classification": "blocked",
+                    "violation_count": 3,
+                },
+            ],
+        }
+    )
+
+    assert adapter["artifact_kind"] == "adg_bcg_gate_adapter"
+    assert adapter["sections"]["fix_now"]["gate_count"] == 2
+    assert adapter["sections"]["burn_down"]["gate_count"] == 1
+    assert adapter["sections"]["kpi_watchlist"]["gate_count"] == 2
+    assert adapter["summary"]["priority_queue_gate_count"] == 3
+    assert adapter["summary"]["report_only_gate_count"] == 2
+    assert adapter["sections"]["kpi_watchlist"]["rows"][0]["gate_id"] == "S4_unused_imports_ratchet"
+    assert adapter["sections"]["kpi_watchlist"]["rows"][1]["gate_id"] == "D2_role_duplication_warn"
+    assert adapter["sections"]["fix_now"]["rows"][0]["materiality"] == "core_app_boundary"
+    md = render_bcg_gate_adapter_md(adapter)
+    assert "## KPI / watchlist" in md
+    assert "`S4_unused_imports_ratchet`" in md
