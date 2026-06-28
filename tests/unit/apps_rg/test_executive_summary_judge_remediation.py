@@ -499,7 +499,7 @@ def test_retry_provider_falls_back_when_core_runner_refuses(tmp_path: Path, monk
 
     new_raw, new_parsed, receipt = retry_provider_for_judge_remediation(
         [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
-        {"model": "qwen-test"},
+        {"model": "retired_provider-test"},
         raw,
         parsed,
         x1d_judges=[_claude_soft_fail_with_dimension_verdicts()],

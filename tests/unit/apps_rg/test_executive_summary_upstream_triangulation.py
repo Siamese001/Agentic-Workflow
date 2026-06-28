@@ -120,7 +120,7 @@ def test_trigger_uses_dimension_consensus() -> None:
     assert receipt.get("trigger_mode") == "any_judge_below_floor"
 
 
-def test_triangulation_maps_qwen_surfaces() -> None:
+def test_triangulation_maps_retired_provider_surfaces() -> None:
     judges = [
         _judge(
             "anthropic_claude",
@@ -139,13 +139,13 @@ def test_triangulation_maps_qwen_surfaces() -> None:
         post_regen_judge_mode="soft_failed_only",
     )
     assert doc["schema"] == "executive_summary_dimension_upstream_triangulation_v1"
-    assert "compiled_prompt.txt" in doc["qwen_prompt_refs"]["compiled_prompt"]
+    assert "compiled_prompt.txt" in doc["retired_provider_prompt_refs"]["compiled_prompt"]
     synth_rows = [r for r in doc["per_dimension"] if r["dimension_id"] == "synthesis_quality"]
     assert synth_rows
-    assert "executive_summary_composition_plan.json" in synth_rows[0]["qwen_prompt_surfaces"]
+    assert "executive_summary_composition_plan.json" in synth_rows[0]["retired_provider_prompt_surfaces"]
 
 
-def test_triangulation_x2_block_recommends_qwen_first() -> None:
+def test_triangulation_x2_block_recommends_retired_provider_first() -> None:
     doc = build_dimension_upstream_triangulation(
         x1d_judges=[],
         x2_failed_gate_ids=["x2_exec_summary_no_credential_dump"],

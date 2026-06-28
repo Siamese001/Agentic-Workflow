@@ -23,8 +23,8 @@ def test_ibm_narrative_word_budget_gate_present_and_passes_in_band() -> None:
         jd_text="Targeting only.",
         parsed_output={"narrative_sentence": narrative, "claim_ledger": []},
         raw_output="{}",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         runtime_generation_status="REAL_LLM",
     )
     by_id = _gate_map(gates)
@@ -43,8 +43,8 @@ def test_ibm_narrative_word_budget_fails_over_58_words() -> None:
         jd_text="Targeting only.",
         parsed_output={"narrative_sentence": narrative},
         raw_output="{}",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         runtime_generation_status="REAL_LLM",
     )
     by_id = _gate_map(gates)
@@ -60,8 +60,8 @@ def test_ibm_narrative_word_budget_fails_over_360_chars() -> None:
         jd_text="Targeting only.",
         parsed_output={"narrative_sentence": narrative},
         raw_output="{}",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         runtime_generation_status="REAL_LLM",
     )
     assert _gate_map(gates).get("x2_ibm_narrative_word_budget") is False
@@ -76,8 +76,8 @@ def test_ibm_narrative_exactly_one_sentence_fails_two_sentences() -> None:
         jd_text="Targeting only.",
         parsed_output={"narrative_sentence": narrative},
         raw_output="{}",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         runtime_generation_status="REAL_LLM",
     )
     by_id = _gate_map(gates)

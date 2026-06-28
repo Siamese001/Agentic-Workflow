@@ -116,7 +116,7 @@ def extract_material_targeting_from_compiled_prompt(content: str) -> tuple[str, 
 
 
 def generation_material_context_from_bundle(bundle: MaterialTargetingBundle) -> GenerationMaterialContext:
-    """SSOT for L2 vs X1D parity — same frozen bundle Qwen PA and judges must use."""
+    """SSOT for L2 vs X1D parity — same frozen bundle PROVIDER_MODEL PA and judges must use."""
     jd = bundle.jd_text_frozen
     br = bundle.briefing_text_frozen
     return GenerationMaterialContext(

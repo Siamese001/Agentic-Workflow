@@ -22,7 +22,7 @@ purpose: |
   Model IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1 must foreground enterprise AI/data platform architecture,
   cloud and data modernization, reusable platform/productization patterns, lineage + observability +
   regulatory response, and hyperscaler/commercial partnership leverage.
-  Each SC path outputs exactly 5 newly synthesized bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
+  Each SC path outputs exactly 5 newly synthesized bullets; Claude pool selector starts with two paths and expands to four only if slot coverage or min score fails.
   No narrative paragraphs. No unsupported claims. No JD-as-proof copying. No ATS keyword stuffing.
   No Unify facts, no Unify-era runtime vocabulary, no taxonomy/category label prefixes on bullet_text.
 
@@ -130,7 +130,9 @@ output_contract:
 
 rewrite_rules:
   pool_selection:
-    sc_paths: 4
+    sc_paths: 2
+    max_sc_paths: 4
+    adaptive_expansion: "expand_to_4_only_if_slot_coverage_or_min_score_fails"
     final_bullet_count: 5
     selector: "claude_pool_top_n_pass"
     min_selection_score: 0.72

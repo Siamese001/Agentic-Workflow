@@ -151,7 +151,7 @@ def test_full_l2_then_exit_chain(tmp_path: Path, section_id: str):
         tmp_path / "compiled_prompt_artifact.json",
         {"evidence_contract_consumed": True, "fec_bridge_mode": "section_fec_bridge"},
     )
-    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="qwen_vllm")
+    prepare_section_l2_before_provider(tmp_path, section_id, payload, provider_lane="retired_provider_profile")
     _write_json(tmp_path / "provider_request.json", {})
     _write_json(tmp_path / "provider_response.json", {})
     _write_json(tmp_path / "l2_output.json", {"section_id": section_id})

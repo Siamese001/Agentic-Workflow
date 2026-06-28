@@ -30,7 +30,7 @@ _GOOD_SUMMARY = (
 )
 
 
-def _good_qwen_json() -> str:
+def _good_retired_provider_json() -> str:
     return json.dumps(
         {
             "resume_display_text": _GOOD_SUMMARY,
@@ -51,7 +51,7 @@ def _harness_lane_namespace() -> argparse.Namespace:
     import apps_rg.runtime.sections.executive_summary_lane as lane
     from apps_rg.runtime.section_cli_defaults import resolve_cli_lane_provider_with_source
 
-    prov, prov_src = resolve_cli_lane_provider_with_source("qwen_vllm")
+    prov, prov_src = resolve_cli_lane_provider_with_source("retired_provider_profile")
     return SimpleNamespace(
         provider=prov,
         provider_resolution_source=prov_src,
@@ -73,7 +73,7 @@ def _apply_harness_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
     monkeypatch.setenv("APPS_RG_MOCK_JUDGES", "1")
     monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "1")
-    monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
+    monkeypatch.delenv("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", raising=False)
 
 
 def _harness_artifact_dir(tmp_path: Path) -> Path:
@@ -105,21 +105,21 @@ def _run_lane_in_process(
     _apply_harness_env(monkeypatch)
     artifact_dir = _harness_artifact_dir(tmp_path)
 
-    def _fake_qwen(_payload: dict, **_kwargs: Any) -> ProviderResult:
+    def _fake_retired_provider(_payload: dict, **_kwargs: Any) -> ProviderResult:
         return ProviderResult(
-            provider_requested="qwen_vllm",
+            provider_requested="retired_provider_profile",
             provider_attempted=True,
             provider_available=provider_available,
             exact_provider_error=None if provider_available else "connection refused",
             runtime_generation_status=runtime_generation_status,
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            model="Retired/Provider-Model",
             raw_model_output=raw_model_output,
-            provider_response={"stub": False, "model": "Qwen/Qwen2.5-32B-Instruct-AWQ"},
+            provider_response={"stub": False, "model": "Retired/Provider-Model"},
         )
 
     monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: artifact_dir)
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
-    monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
+    monkeypatch.setattr(lane, "call_retired_provider_profile", _fake_retired_provider)
 
     def _passthrough_token_budget(section_compiled: Any, **_kwargs: Any) -> tuple[Any, dict[str, Any]]:
         return section_compiled, {"status": "PASS", "fail_closed_reason": "", "operator_message": ""}
@@ -156,7 +156,7 @@ def _assert_required_artifacts(rd: Path) -> None:
 
 
 def test_in_process_harness_emits_x3_and_l2_artifacts(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     rd = Path(ctx["artifact_dir"])
     x3_path = rd / "x3_disposition.json"
     assert x3_path.is_file()
@@ -170,7 +170,7 @@ def test_in_process_harness_emits_x3_and_l2_artifacts(monkeypatch: pytest.Monkey
 def test_in_process_harness_emits_required_exec_summary_artifacts(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ):
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     _assert_required_artifacts(Path(ctx["artifact_dir"]))
 
 
@@ -187,7 +187,7 @@ def test_standalone_executive_summary_pipeline_removed():
     ).exists()
 
 
-def test_canonical_claim_ledger_always_on_truncated_qwen(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+def test_canonical_claim_ledger_always_on_truncated_retired_provider(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ctx = _run_lane_in_process(
         monkeypatch, tmp_path, raw_model_output='{"resume_display_text": "truncated'
     )
@@ -213,7 +213,7 @@ def test_required_artifacts_gate_passes_when_files_present(
 ):
     from apps_rg.runtime.validators.executive_summary_x2 import check_required_artifacts
 
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     ok, reason = check_required_artifacts(Path(ctx["artifact_dir"]))
     assert ok, reason
 
@@ -239,7 +239,7 @@ def _x2_gate_dicts(x2_rows: list) -> dict[str, dict]:
 def test_in_process_harness_product_shape_gates_pass(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ):
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     by_id = _x2_gate_dicts(ctx["x2"])
     assert by_id["x2_exec_summary_no_credential_dump"]["pass"] is True
     assert by_id["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
@@ -248,14 +248,14 @@ def test_in_process_harness_product_shape_gates_pass(
 
 
 def test_allow_non_allow_exit_zero_does_not_mutate_x3(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     x3_blob = ctx["x3"] if isinstance(ctx["x3"], dict) else ctx["x3"].to_dict()
     x3_first = json.dumps(x3_blob, sort_keys=True)
     x3_second = json.dumps(x3_blob, sort_keys=True)
     assert x3_first == x3_second
 
 
-def test_qwen_unavailable_does_not_mock(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+def test_retired_provider_unavailable_does_not_mock(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ctx = _run_lane_in_process(
         monkeypatch,
         tmp_path,
@@ -271,7 +271,7 @@ def test_qwen_unavailable_does_not_mock(monkeypatch: pytest.MonkeyPatch, tmp_pat
 def test_in_process_runtime_proof_surfaces_and_canonical_bundle_producers(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ):
-    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
+    ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_retired_provider_json())
     rd = Path(ctx["artifact_dir"])
     for name in (
         "artifact_inventory.json",
@@ -335,18 +335,18 @@ def test_allowed_fact_ids_exclude_jd_tokens():
 
 
 @pytest.mark.integration
-def test_live_cli_subprocess_when_vllm_available():
-    """Optional live slice: skipped unless VLLM is reachable (no offline stub)."""
+def test_live_cli_subprocess_when_local_model_server_available():
+    """Optional live slice: skipped unless LOCAL_MODEL_SERVER is reachable (no offline stub)."""
     import urllib.request
 
-    base_url = os.environ.get("VLLM_BASE_URL", "http://localhost:8000").rstrip("/")
+    base_url = os.environ.get("LOCAL_MODEL_SERVER_BASE_URL", "http://localhost:8000").rstrip("/")
     try:
         urllib.request.urlopen(f"{base_url}/v1/models", timeout=3)
     except Exception:
-        pytest.skip(f"vLLM not reachable at {base_url}")
+        pytest.skip(f"local model server not reachable at {base_url}")
 
     env = {**os.environ, "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
-    env.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
+    env.pop("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", None)
     import apps_rg.runtime.sections.executive_summary_lane as lane
 
     cmd = [
@@ -364,7 +364,7 @@ def test_live_cli_subprocess_when_vllm_available():
         "--manual-brief",
         lane.BRIEFING_DEFAULT,
         "--provider",
-        "qwen_vllm",
+        "retired_provider_profile",
         "--allow-non-allow-exit-zero",
     ]
     r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=300, env=env)

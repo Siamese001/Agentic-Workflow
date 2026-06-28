@@ -69,7 +69,7 @@ def audit_judge_feedback_pack(
 
 
 def transport_stats_for_cycle(artifact_dir: Path | str | None, cycle_index: int) -> dict[str, int]:
-    """Count Qwen transport rows for judge_regen at ``cycle_index`` (0-based, matches ledger)."""
+    """Count PROVIDER_MODEL transport rows for judge_regen at ``cycle_index`` (0-based, matches ledger)."""
     if artifact_dir is None:
         return {"transport_attempts_per_cycle": 0, "semantic_rewrite_attempts": 0}
     from apps_rg.runtime.sections.executive_summary_regen_dispatch import regen_budget_ledger

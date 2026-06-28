@@ -30,7 +30,7 @@ STORY_BULLET_LANES = ("unify_bullets", "ibm_bullets")
 
 @pytest.fixture
 def stub_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
+    monkeypatch.setenv("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", "1")
 
 
 @pytest.mark.skipif(not LEDGER.is_file(), reason="master candidate fact ledger missing")
@@ -43,7 +43,7 @@ def test_story_bullet_lane_graph_proof_pool_and_no_base_hydration(
     run_dir = harness_run(f"_graph_story_{uuid.uuid4().hex[:12]}", section_id)
     run_dir.mkdir(parents=True, exist_ok=True)
     args = argparse.Namespace(
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
         temperature=0.45,
         x1d_judges="gemini_pro",
         mock_judges=True,

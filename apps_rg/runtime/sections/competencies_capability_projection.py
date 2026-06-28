@@ -12,6 +12,7 @@ from apps_rg.runtime.sections.competencies_certification_contract import (
 )
 from apps_rg.runtime.sections.competencies_rigor import (
     MAX_CATEGORY_COUNT,
+    MIN_CATEGORY_COUNT,
     MIN_ITEMS_PER_CATEGORY,
     _is_low_rigor_two_word_phrase,
     check_competencies_no_all_generic_skill_phrase,
@@ -270,6 +271,13 @@ def _register_phrase_keyword_freq(phrase: str, freq: dict[str, int]) -> None:
         freq[w] = freq.get(w, 0) + 1
 
 
+def _phrase_conflicts_with_seen(phrase: str, seen_phrases: set[str] | None) -> bool:
+    ph = _norm(phrase)
+    if not ph or not seen_phrases:
+        return False
+    return any(ph == other or ph in other or other in ph for other in seen_phrases if other)
+
+
 def _backfill_terms_for_category(
     cat: dict[str, Any],
     *,
@@ -280,6 +288,7 @@ def _backfill_terms_for_category(
     changelog: list[dict[str, Any]],
     default_fid: str = "",
     global_keyword_freq: dict[str, int] | None = None,
+    global_phrase_seen: set[str] | None = None,
 ) -> None:
     terms = cat.get("terms")
     if not isinstance(terms, list):
@@ -310,6 +319,8 @@ def _backfill_terms_for_category(
             phrase = str(row.get("term") or "").strip()
             if not phrase or _norm(phrase) in seen:
                 continue
+            if _phrase_conflicts_with_seen(phrase, global_phrase_seen):
+                continue
             if is_raw_fragment_term(phrase) or is_credential_competency_term(phrase):
                 continue
             if _phrase_violates_keyword_budget(phrase, keyword_freq):
@@ -323,6 +334,8 @@ def _backfill_terms_for_category(
             }
             terms.append(candidate)
             seen.add(_norm(phrase))
+            if global_phrase_seen is not None:
+                global_phrase_seen.add(_norm(phrase))
             _register_phrase_keyword_freq(phrase, keyword_freq)
             added_any = True
             changelog.append(
@@ -341,6 +354,8 @@ def _backfill_terms_for_category(
                 phrase = str(row.get("term") or "").strip()
                 if not phrase or _norm(phrase) in seen:
                     continue
+                if _phrase_conflicts_with_seen(phrase, global_phrase_seen):
+                    continue
                 if is_raw_fragment_term(phrase) or is_credential_competency_term(phrase):
                     continue
                 if _phrase_violates_keyword_budget(phrase, keyword_freq):
@@ -354,6 +369,8 @@ def _backfill_terms_for_category(
                 }
                 terms.append(candidate)
                 seen.add(_norm(phrase))
+                if global_phrase_seen is not None:
+                    global_phrase_seen.add(_norm(phrase))
                 _register_phrase_keyword_freq(phrase, keyword_freq)
                 changelog.append(
                     {
@@ -366,6 +383,44 @@ def _backfill_terms_for_category(
                 break
         if not added_any:
             break
+
+    if _count() < MIN_ITEMS_PER_CATEGORY:
+        fallback_rows = list(backfill_rows) + [
+            row
+            for row in (tax.get("backfill_capabilities") or [])
+            if isinstance(row, dict) and row not in backfill_rows
+        ]
+        for row in fallback_rows:
+            if _count() >= MIN_ITEMS_PER_CATEGORY:
+                break
+            if not isinstance(row, dict):
+                continue
+            phrase = str(row.get("term") or "").strip()
+            if not phrase or _norm(phrase) in seen:
+                continue
+            if _phrase_conflicts_with_seen(phrase, global_phrase_seen):
+                continue
+            if is_raw_fragment_term(phrase) or is_credential_competency_term(phrase):
+                continue
+            candidate = {
+                "term": phrase,
+                "source_fact_ids": [default_fid] if default_fid else [],
+                "source_skill_ids": [],
+                "support_class": SUPPORT_CLASS_FACT_ONLY,
+                "proof_source": "default_fid_backfill_min_floor",
+            }
+            terms.append(candidate)
+            seen.add(_norm(phrase))
+            if global_phrase_seen is not None:
+                global_phrase_seen.add(_norm(phrase))
+            _register_phrase_keyword_freq(phrase, keyword_freq)
+            changelog.append(
+                {
+                    "operation": "backfill_taxonomy_capability_min_floor",
+                    "category_id": cid,
+                    "term": phrase,
+                }
+            )
 
 
 def _resolve_category_id(raw_label: str, raw_cid: str = "") -> str | None:
@@ -399,6 +454,16 @@ def _taxonomy_emit_max_count(tax: dict[str, Any]) -> int:
     except (TypeError, ValueError):
         mx = 0
     return mx if mx > 0 else MAX_CATEGORY_COUNT
+
+
+def _taxonomy_default_emit_count(tax: dict[str, Any]) -> int:
+    try:
+        default_count = int(tax.get("default_category_count") or 0)
+    except (TypeError, ValueError):
+        default_count = 0
+    if default_count <= 0:
+        default_count = MIN_CATEGORY_COUNT
+    return max(MIN_CATEGORY_COUNT, min(MAX_CATEGORY_COUNT, default_count))
 
 
 def _trim_categories_to_emit_count(
@@ -503,11 +568,15 @@ def apply_executive_capability_projection(
             buckets[cid].append(coerced)
             _register_phrase_keyword_freq(term_phrase(coerced), global_keyword_freq)
 
+    incoming_cids = {cid for cid, term_list in buckets.items() if term_list}
+    preserve_selected_only = len(incoming_cids) >= MIN_CATEGORY_COUNT
     projected: list[dict[str, Any]] = []
     for row in tax.get("categories") or []:
         if not isinstance(row, dict):
             continue
         cid = str(row.get("category_id") or "").strip()
+        if preserve_selected_only and cid not in incoming_cids:
+            continue
         label = str(row.get("category_label") or "").strip()
         terms = _dedupe_terms(buckets.get(cid) or [])
         cat_fact_ids: list[str] = []
@@ -566,7 +635,8 @@ def apply_executive_capability_projection(
             cat_fact_ids = [default_fid]
         cat["source_fact_ids"] = cat_fact_ids
     max_emit = _taxonomy_emit_max_count(tax)
-    incoming_cids = {cid for cid, term_list in buckets.items() if term_list}
+    if not preserve_selected_only:
+        max_emit = min(max_emit, _taxonomy_default_emit_count(tax))
     tax_rows = [r for r in tax.get("categories") or [] if isinstance(r, dict)]
     v3_cats, dropped = _trim_categories_to_emit_count(
         v3_cats,
@@ -872,6 +942,12 @@ def _reapply_taxonomy_floors(
     sync_categories_competencies(parsed)
     cats = [c for c in extract_categories(parsed) if isinstance(c, dict)]
     global_keyword_freq = _accumulate_keyword_freq_from_categories(cats)
+    global_phrase_seen = {
+        _norm(term_phrase(t))
+        for cat in cats
+        for t in (cat.get("terms") or [])
+        if isinstance(t, dict) and term_phrase(t)
+    }
     for cat in cats:
         _backfill_terms_for_category(
             cat,
@@ -882,6 +958,7 @@ def _reapply_taxonomy_floors(
             changelog=changelog,
             default_fid=default_fid,
             global_keyword_freq=global_keyword_freq,
+            global_phrase_seen=global_phrase_seen,
         )
         cat_fact_ids: list[str] = []
         for t in cat.get("terms") or []:
@@ -990,6 +1067,13 @@ def finalize_competencies_v3_output(
         resume_support_blob_lower=resume_support_blob_lower,
     )
     dedupe_structured_competency_terms(out)
+    _reapply_taxonomy_floors(
+        out,
+        allowed_fact_ids=allowed_fact_ids,
+        allowed_skill_ids=allowed_skill_ids,
+        skill_rows_by_id=skill_rows_by_id,
+        resume_support_blob_lower=resume_support_blob_lower,
+    )
     from apps_rg.runtime.sections.competencies_v3_contract import category_v3_from_legacy
 
     comps_final = out.get("competencies")

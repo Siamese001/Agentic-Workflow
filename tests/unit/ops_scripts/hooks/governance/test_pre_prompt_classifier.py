@@ -500,26 +500,26 @@ class TestMain:
         result = self._run(payload, adg_red=False, redis_down=False)
         assert result in (0, 2)
 
-    # --- memory mandate ---
+    # --- memory mandate retired by ADR-095 ---
 
-    def test_memory_mandate_emitted_when_no_session_state(self, capsys, tmp_path):
-        """Mandate fires on first turn (no session_state.json) as a human-diagnostic advisory."""
+    def test_memory_mandate_not_emitted_when_no_session_state(self, capsys, tmp_path):
+        """No MCP recall mandate fires on first turn; native file memory is the SSOT."""
         state_path = tmp_path / "session_state.json"
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         captured = capsys.readouterr()
-        assert "mem_recall_session_start not yet called" in captured.err
+        assert "mem_recall_session_start not yet called" not in captured.err
 
-    def test_memory_mandate_emitted_when_not_recalled(self, capsys, tmp_path):
-        """Advisory fires when memory_recalled=False in session state."""
+    def test_memory_mandate_not_emitted_when_not_recalled(self, capsys, tmp_path):
+        """Legacy memory_recalled=False no longer triggers an MCP recall advisory."""
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.session_state", state_path):
             self._run(payload)
         captured = capsys.readouterr()
-        assert "mem_recall_session_start not yet called" in captured.err
+        assert "mem_recall_session_start not yet called" not in captured.err
 
     def test_memory_mandate_suppressed_when_recalled(self, capsys, tmp_path):
         """Advisory is NOT emitted when memory_recalled=True in session state."""
@@ -601,22 +601,22 @@ class TestMain:
 
 
 class TestShouldEmitMemoryMandate:
-    def test_returns_true_when_no_file(self, tmp_path):
+    def test_returns_false_when_no_file(self, tmp_path):
         state_path = tmp_path / "missing_state.json"
         with patch("pre_prompt_classifier.session_state", state_path):
-            assert _should_emit_memory_mandate() is True
+            assert _should_emit_memory_mandate() is False
 
-    def test_returns_true_when_field_absent(self, tmp_path):
+    def test_returns_false_when_field_absent(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"current_tier": "T2"}), encoding="utf-8")
         with patch("pre_prompt_classifier.session_state", state_path):
-            assert _should_emit_memory_mandate() is True
+            assert _should_emit_memory_mandate() is False
 
-    def test_returns_true_when_false(self, tmp_path):
+    def test_returns_false_when_legacy_flag_false(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
         with patch("pre_prompt_classifier.session_state", state_path):
-            assert _should_emit_memory_mandate() is True
+            assert _should_emit_memory_mandate() is False
 
     def test_returns_false_when_true(self, tmp_path):
         state_path = tmp_path / "session_state.json"
@@ -624,11 +624,11 @@ class TestShouldEmitMemoryMandate:
         with patch("pre_prompt_classifier.session_state", state_path):
             assert _should_emit_memory_mandate() is False
 
-    def test_fail_open_on_corrupt_json(self, tmp_path):
+    def test_returns_false_on_corrupt_json(self, tmp_path):
         state_path = tmp_path / "session_state.json"
         state_path.write_text("{bad json", encoding="utf-8")
         with patch("pre_prompt_classifier.session_state", state_path):
-            assert _should_emit_memory_mandate() is True
+            assert _should_emit_memory_mandate() is False
 
 
 # ---------------------------------------------------------------------------

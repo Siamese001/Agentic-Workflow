@@ -175,6 +175,6 @@ def build_manifest(
         "llm_generated": False,
         "rewrite_allowed": False,
         "provider_calls_made": False,
-        "qwen_calls_made": False,
+        "PROVIDER_MODEL_calls_made": False,
         "sections": [s.to_dict() for s in sections],
     }

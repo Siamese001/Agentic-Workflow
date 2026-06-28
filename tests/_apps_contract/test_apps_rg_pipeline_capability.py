@@ -16,7 +16,7 @@ import pytest
 # Ensure force-stub for all tests (no Docker dependency)
 @pytest.fixture(autouse=True)
 def _force_stub_mode(monkeypatch):
-    """Force L2 stub mode so tests don't require Qwen vLLM container."""
+    """Force L2 stub mode so tests don't require RetiredProvider local model server container."""
     monkeypatch.setenv("APPS_RG_L2_FORCE_STUB", "1")
 
 
@@ -265,8 +265,8 @@ class TestL2StubBehavior:
             prompt_blocks={"system": "You are a resume writer", "user": "Write a resume"},
             system_preamble="You are a resume writer",
             user_instruction="Write a resume",
-            target_model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            target_provider="vllm",
+            target_model="Retired/Provider-Model",
+            target_provider="local_model_server",
             max_tokens=4096,
             temperature=0.4,
             compilation_hash="abc123",

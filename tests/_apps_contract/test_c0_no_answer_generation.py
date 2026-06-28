@@ -87,7 +87,7 @@ class TestC0NoPromptAssembly(unittest.TestCase):
             "model.generate",
             "openai.",
             "anthropic.",
-            "vllm.",
+            "local_model_server.",
         ]
         
         for pattern in llm_patterns:

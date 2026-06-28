@@ -30,10 +30,10 @@ def test_resolve_modular_lane_provider_override_default_empty(monkeypatch: pytes
     assert resolve_apps_rg_modular_lane_provider_override() == ""
 
 
-def test_resolve_modular_lane_provider_qwen_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    # Post-Qwen-removal: qwen_vllm is a deprecated provider and is now rejected — the only
+def test_resolve_modular_lane_provider_retired_provider_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Post-RetiredProvider-removal: retired_provider_profile is a deprecated provider and is now rejected — the only
     # accepted modular lane providers are external_claude / external_openai.
-    monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "qwen_vllm")
+    monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "retired_provider_profile")
     with pytest.raises(RuntimeError, match="INVALID_APPS_RG_MODULAR_LANE_PROVIDER"):
         resolve_apps_rg_modular_lane_provider()
 

@@ -339,6 +339,26 @@
       "severity": "BLOCK"
     },
     {
+      "microstep_id": "L6.trace_reconciliation.present",
+      "stage_id": "L6",
+      "component_id": "apps_rg.observability",
+      "subcomponent_id": "trace_reconciliation",
+      "required": false,
+      "artifact_role": "trace_reconciliation",
+      "gate_id": "trace_reconciliation_present",
+      "severity": "WARN"
+    },
+    {
+      "microstep_id": "L6.trace_reconciliation.consumed",
+      "stage_id": "L6",
+      "component_id": "apps_rg.observability",
+      "subcomponent_id": "trace_reconciliation",
+      "required": false,
+      "artifact_role": "trace_reconciliation",
+      "gate_id": "trace_reconciliation_consumed",
+      "severity": "WARN"
+    },
+    {
       "microstep_id": "PACKAGE.scorecard_rows.present",
       "stage_id": "PACKAGE",
       "component_id": "apps_rg.eval_package",

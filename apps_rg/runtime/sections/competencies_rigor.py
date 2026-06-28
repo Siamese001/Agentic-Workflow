@@ -10,11 +10,11 @@ from apps_rg.runtime.sections.competencies_certification_contract import (
 )
 from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 
-MIN_CATEGORY_COUNT = 8
+MIN_CATEGORY_COUNT = 6
 MAX_CATEGORY_COUNT = 8
-# Variance-class alignment (2026-06): the graph pool now exposes the exact final
-# category set. Selection rigor (min_score 0.72 + per-category graph_skill_node_ids
-# X2 gate) is unchanged.
+# HBS/SVP alignment (2026-06): emit only the highest-signal executive categories.
+# The graph pool may consider 8 candidates, but final display is an adaptive 6-8 band
+# selected by JD/briefing emphasis and graph-backed selector score.
 CANDIDATE_CATEGORY_COUNT = 8
 # Floor raised 2->3 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7 W2): the generic-category
 # graph-terms gate (GENERIC_CATEGORY_MIN_GRAPH_TERMS=3) requires >=3 graph-backed terms per generic

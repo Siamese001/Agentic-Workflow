@@ -86,7 +86,7 @@ def _make_sealed(
         generated_content="Summary text",
         proposed_state_diff={"target_company": "Acme", "target_role": "SWE"},
         compilation_hash=compilation_hash,
-        sovereign_execution_receipt="vllm-stub-receipt",
+        sovereign_execution_receipt="local_model_server-stub-receipt",
         tenant_id="apps_rg",
         l5_certification_ref="test-sealed-l2-w4",
     )

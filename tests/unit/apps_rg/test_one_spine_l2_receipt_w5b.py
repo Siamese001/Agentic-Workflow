@@ -54,7 +54,7 @@ def test_l2_execution_packet_contract_shape(section_id: str):
     pkt = build_l2_execution_packet_for_section(
         section_id=section_id,
         runtime_payload=payload,
-        provider_lane="qwen_vllm",
+        provider_lane="retired_provider_profile",
         model_lane="test-model",
     )
     assert pkt["contract_type"] == "L2ExecutionPacket"
@@ -121,7 +121,7 @@ def test_prepare_finalize_emits_l2_artifacts(tmp_path: Path, section_id: str):
         tmp_path,
         section_id,
         payload,
-        provider_lane="qwen_vllm",
+        provider_lane="retired_provider_profile",
     )
     assert (tmp_path / L2_EXECUTION_PACKET_ARTIFACT).is_file()
     pkt = json.loads((tmp_path / L2_EXECUTION_PACKET_ARTIFACT).read_text(encoding="utf-8"))

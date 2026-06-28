@@ -61,8 +61,8 @@ def test_real_llm_payload_with_mock_fixture_language_fails_marker_gate() -> None
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         raw_output=raw_out,
         x1d_judges=_three_pass_judges(),
     )
@@ -89,8 +89,8 @@ def test_x2_pass_rows_have_null_failure_reason_for_style_gates() -> None:
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="retired_provider_profile",
+        provider_attempted="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )
@@ -227,7 +227,7 @@ def test_single_token_acronym_passes_compact_gate_when_structured():
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        cli_provider="qwen_vllm",
+        cli_provider="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )
@@ -259,7 +259,7 @@ def test_single_token_unsupported_generic_fails_compact_gate():
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        cli_provider="qwen_vllm",
+        cli_provider="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )
@@ -291,7 +291,7 @@ def test_seven_word_term_passes_compact_gate():
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        cli_provider="qwen_vllm",
+        cli_provider="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )
@@ -323,7 +323,7 @@ def test_eight_word_term_fails_compact_gate():
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        cli_provider="qwen_vllm",
+        cli_provider="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )
@@ -355,7 +355,7 @@ def test_sentence_like_term_fails_full_sentence_gate():
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        cli_provider="qwen_vllm",
+        cli_provider="retired_provider_profile",
         raw_output=json.dumps(parsed, sort_keys=True),
         x1d_judges=_three_pass_judges(),
     )

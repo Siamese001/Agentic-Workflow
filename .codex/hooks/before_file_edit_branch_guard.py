@@ -29,6 +29,8 @@ require NO app segment (``claude-governance-hooks`` stays valid).
 
 Self-contained: no dependency on ``lib.codex_hook_common`` (absent in some
 checkouts). Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master`` (csv).
+New worktree remediation always targets ``<repo-parent>/<repo-name>-worktrees``;
+``CHAT_WORKTREE_ROOT`` is ignored for branch creation guidance.
 Execution owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
 The branch prefix is derived only from that owner; ``WORKTREE_BRANCH_PREFIX`` is ignored.
 """
@@ -217,9 +219,6 @@ def _primary_checkout_name() -> str:
 
 
 def _worktree_parent() -> Path:
-    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
-    if override:
-        return Path(override)
     return REPO_ROOT.parent / f"{_primary_checkout_name()}-worktrees"
 
 

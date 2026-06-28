@@ -134,7 +134,7 @@ def build_incremental_repair_contract(
     provider_lane = str(
         provider_payload.get("provider")
         or compile_ctx.get("target_provider")
-        or "vllm",
+        or "external model",
     )
 
     trigger_source = TriggerSource.X3_JUDGE

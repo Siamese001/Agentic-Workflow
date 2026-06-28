@@ -7,7 +7,7 @@ rewrite_intent: "COMPETENCY_SELECTOR"
 purpose: |
   Target-aware, fact-constrained SELECTION and GROUPING for ENGINEERING & PLATFORM COMPETENCIES (graph_8x8 product mode).
   Rank the 8 executive capability category candidates from VERIFIED_SKILL_INVENTORY_PROJECTION (augmented_skills_graph)
-  and employment-bullet facts; emit exactly 8 categories that pass graph/fact reality checks.
+  and employment-bullet facts; emit only the highest-signal 6-8 categories that pass graph/fact reality checks.
   Never seed categories or terms from locked base-resume `facts.skills` rows or copy base competency tables as proof.
   Terms come only from graph-backed skill rows plus bul_* / fact_* ids in the competencies SRFS allowlist when SRFS is active;
   never derive competency proof from JD text or briefing alone.
@@ -50,8 +50,8 @@ input_contract:
       value: "8"
       constraint: "Rank the 8 graph-matched capability category candidates before final selection"
     - name: emitted_category_count
-      value: "8"
-      constraint: "Emit exactly 8 executive capability categories in final JSON output"
+      value: "6-8"
+      constraint: "Emit 6-8 executive capability categories in final JSON output; do not pad with low-signal categories"
     - name: candidate_fact_map
       schema: "{facts: [{fact_id, fact_text, employment_source, bullet_references}]}"
       description: "Map of all candidate facts with bullet cross-references"
@@ -66,15 +66,15 @@ input_contract:
       access_level: "TARGETING_CONTEXT_ONLY"
       constraint: "Company research only — not proof source"
     - name: required_category_count
-      value: "8"
-      constraint: "Exactly 8 executive capability clusters in output"
+      value: "6-8"
+      constraint: "6-8 executive capability clusters in output"
 
 output_contract:
   format: "JSON"
   required_fields:
     - name: competencies
       type: "array"
-      min_items: 8
+      min_items: 6
       max_items: 8
       item_schema:
         category_label: "string (approved taxonomy label or graph-grounded equivalent)"
@@ -140,8 +140,8 @@ output_contract:
     - name: self_check
       type: "object"
       schema:
-        category_count_exactly_eight: "boolean (exactly 8 categories, must be true)"
-        candidate_categories_ranked: "array (optional) — up to 10 ranked category candidates with scores before top-8 cut"
+        category_count_in_range_6_8: "boolean (6-8 categories, must be true)"
+        candidate_categories_ranked: "array (optional) - up to 8 ranked category candidates with scores before final selection"
         min_three_terms_per_category: "boolean (must be true) — generic capability labels require >=3 graph-backed terms"
         format_valid: "boolean (must be true) — Category Label: term, term, term"
         no_full_sentences: "boolean (must be true)"
@@ -158,12 +158,14 @@ output_contract:
 selection_model:
   id: graph_8x8_v1
   candidate_category_count: 8
-  emitted_category_count: 8
+  emitted_category_count: "6-8"
+  min_emitted_category_count: 6
+  max_emitted_category_count: 8
   skills_authority: augmented_skills_graph
   display_format: "Category Label: term, term, term"
 
 base_categories:
-  required_count: 8
+  required_count: "6-8"
   candidate_pool_count: 8
   taxonomy_ref: apps_rg/config/competencies/executive_capability_taxonomy.yaml
   labels:
@@ -177,10 +179,12 @@ base_categories:
   allowed_operations:
     - "Use approved taxonomy category_id and category_label"
     - "Reorder categories for JD emphasis"
+    - "Select the highest-signal 6-8 categories from the graph-backed candidate pool"
     - "Emit executive capability terms (not scraped resume fragments)"
   forbidden_operations:
     - "Invent categories outside approved taxonomy"
-    - "Emit fewer than eight or more than eight categories"
+    - "Emit fewer than six or more than eight categories"
+    - "Pad the output with low-signal categories just to reach eight"
     - "Seed categories from base-resume facts.skills table"
     - "Use full sentences or paragraphs"
     - "Use bullet format"
@@ -239,11 +243,11 @@ forbidden_patterns:
   - pattern: "em_dash"
     check: "Character U+2014 or U+2013 present"
     action: "REJECT"
-  - pattern: "seventh_category"
+  - pattern: "too_many_categories"
     check: "Output contains more than 8 categories"
     action: "REJECT"
-  - pattern: "missing_category"
-    check: "Output contains fewer than 8 categories"
+  - pattern: "too_few_categories"
+    check: "Output contains fewer than 6 categories"
     action: "REJECT"
   - pattern: "base_resume_skills_seed"
     check: "Category or terms copied from locked base-resume facts.skills without graph/fact backing"
@@ -251,9 +255,9 @@ forbidden_patterns:
 
 validation_rules:
   pre_output:
-    - assert: "len(output.competencies) == 8"
+    - assert: "6 <= len(output.competencies) <= 8"
       error: "CATEGORY_COUNT_INVALID"
-      message: "Must emit exactly 8 graph-grounded executive categories with 2–6 capability terms each; never a Certifications category"
+      message: "Must emit 6-8 graph-grounded executive categories with 3-6 capability terms each; never a Certifications category"
     - assert: "all([c.category_label for c in output.competencies])"
       error: "MISSING_CATEGORY_LABEL"
       message: "Every category must have a label"
@@ -264,8 +268,8 @@ validation_rules:
       error: "TERM_TOO_LONG"
       message: "Terms should be concise (max 5 words)"
   post_output:
-    - assert: "output.self_check.category_count_exactly_eight == true"
-    - assert: "output.self_check.min_two_terms_per_category == true"
+    - assert: "output.self_check.category_count_in_range_6_8 == true"
+    - assert: "output.self_check.min_three_terms_per_category == true"
     - assert: "output.self_check.format_valid == true"
     - assert: "output.self_check.no_full_sentences == true"
     - assert: "output.self_check.no_bullets == true"
@@ -279,11 +283,11 @@ temperature_profile:
   range: "0.10 - 0.25"
   default: 0.15
   rationale: "Conservative variation for taxonomy precision — competency selection is curation, not generation"
-  sweep_validation: "Must pass at 0.10, 0.175, 0.25 with consistent 8-category structure"
+  sweep_validation: "Must pass at 0.10, 0.175, 0.25 with a consistent 6-8 category structure"
 
 payload_scope:
   input_tokens_estimate: "~4,000 (skill inventory + finalized bullets + JD)"
-  output_tokens_estimate: "~850 (8 categories with terms; optional 8-candidate rank metadata)"
+  output_tokens_estimate: "~650-850 (6-8 categories with terms; optional 8-candidate rank metadata)"
   context_window_required: "8K minimum"
   json_schema_strict: true
 
@@ -293,7 +297,7 @@ w5_proof_targeting_harmonization: |
   allowlist. VERIFIED_SKILL_INVENTORY_PROJECTION (augmented_skills_graph) is organizational/targeting context unless each
   emitted term's source_fact_ids intersect the competencies SRFS slice and skill rows are graph-backed. Targeting only: JD,
   briefing, title, company, companion sections — labels/order only, never standalone proof. Out-of-slice source_fact_ids fail
-  X2. Rank up to 10 category candidates; emit top 6 with graph reality. No invented competency labels or domains unsupported
+  X2. Rank up to 8 category candidates; emit the highest-signal 6-8 with graph reality. No invented competency labels or domains unsupported
   by selected facts; omit unsupported JD-only skills. Never use base-resume facts.skills as authority.
 
 metadata:

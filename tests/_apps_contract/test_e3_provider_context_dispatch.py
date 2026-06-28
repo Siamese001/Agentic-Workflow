@@ -108,7 +108,7 @@ class TestQnaProviderContextDispatch:
         assert ctx.dispatch("anything") == ""
 
     def test_has_model_true_with_model_id(self):
-        ctx = QnaProviderContext(model_id="qwen-2.5")
+        ctx = QnaProviderContext(model_id="retired_provider-2.5")
         assert ctx.has_model() is True
 
 

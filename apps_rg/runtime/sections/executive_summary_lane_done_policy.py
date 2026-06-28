@@ -54,7 +54,7 @@ def _soft_judge_only_rescore_eligible(
     trigger_receipt: dict[str, Any],
     x1d_judges: list[dict[str, Any]],
 ) -> bool:
-    """Deprecated path: any judge below floor triggers Qwen regen (no rescore-only shortcut)."""
+    """Deprecated path: any judge below floor triggers PROVIDER_MODEL regen (no rescore-only shortcut)."""
     del judge_regen_triggered, trigger_receipt, x1d_judges
     return False
 

@@ -137,7 +137,7 @@ def test_canonicalize_bul_ibm_double_underscore_source_fact_id():
 def test_lane_proof_bundle_mock_judge_hatch_unit():
     from types import SimpleNamespace
 
-    from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+    from apps_rg.runtime.retired_provider_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
     from apps_rg.runtime.section_proof.mock_runtime_proof_policy import compute_lane_proof_bundle
 
     class X3Allow:
@@ -159,7 +159,7 @@ def test_lane_proof_bundle_mock_judge_hatch_unit():
         mock_judges=False,
         allow_test_mock_judges=True,
         allow_non_allow_exit_zero=False,
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
         allow_test_mock_provider=False,
     )
     hatch_bundle = compute_lane_proof_bundle(
@@ -200,10 +200,10 @@ def test_ibm_bullet_taxonomy_prefix_detector():
 def test_provider_request_dict_redacts_bearer_substrings():
     import json
 
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderRequest
+    from apps_rg.runtime.providers.retired_provider_profile_provider import ProviderRequest
 
     req = ProviderRequest(
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         provider_url="http://127.0.0.1:8000/v1/chat?api_key=supersecret",
         model="m",

@@ -253,7 +253,7 @@ class TestReceiptCompliance:
             "notes": [
                 "PA remains package-only: assembles U0 inputs without modification",
                 "C0-free path: references only supplied source_materials from U0",
-                "Provider-neutral: compatible with Qwen vLLM and future lanes",
+                "Provider-neutral: compatible with RetiredProvider local model server and future lanes",
                 "Anti-invention enforced: strict rules against unsupported claims",
             ],
         }

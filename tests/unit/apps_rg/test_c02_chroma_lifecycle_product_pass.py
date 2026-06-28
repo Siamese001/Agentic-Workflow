@@ -96,13 +96,13 @@ def test_lane_bar_rejects_same_run_ingest_pass_without_index_receipt(
             {
                 "runtime_generation_status": "REAL_LLM",
                 "product_quality_status": "PASS",
-                "provider_requested": "qwen_vllm",
+                "provider_requested": "retired_provider_profile",
             }
         ),
         encoding="utf-8",
     )
     (run_dir / "provider_request.json").write_text(
-        json.dumps({"provider": "qwen_vllm"}), encoding="utf-8"
+        json.dumps({"provider": "retired_provider_profile"}), encoding="utf-8"
     )
     (run_dir / "x3_disposition.json").write_text(
         json.dumps({"x3_code": "X3_ALLOW"}), encoding="utf-8"

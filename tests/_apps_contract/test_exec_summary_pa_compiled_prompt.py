@@ -262,13 +262,13 @@ def test_graph_lane_retry_is_x2_aligned_not_five_part_slots():
     assert "exactly 6" in src.lower() or "6 sentences" in src.lower()
     assert "claim_ledger" in src and "source_fact_id" in src
     assert "repair_messages2" not in src
-    assert "result2 = call_qwen" not in src
+    assert "result2 = call_retired_provider" not in src
     assert "SRFS SURGICAL DENSITY REPAIR" not in src
     assert "do not expand Sentence 4" not in src
 
 
-def test_offline_qwen_stub_classifies_as_plumbing_not_product_proof(monkeypatch: pytest.MonkeyPatch):
-    from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+def test_offline_retired_provider_stub_classifies_as_plumbing_not_product_proof(monkeypatch: pytest.MonkeyPatch):
+    from apps_rg.runtime.retired_provider_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
     from apps_rg.runtime.section_proof.mock_runtime_proof_policy import infer_product_quality_blocked_or_mock
 
     monkeypatch.setattr(

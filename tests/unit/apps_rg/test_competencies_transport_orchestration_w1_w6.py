@@ -9,7 +9,7 @@ Covers the plan acceptance criteria WITHOUT touching the network:
 * W3 — the Claude pool selector resolves its own timeout env and writes an honest
   lifecycle receipt.
 * W4 — per-path progress receipt is written BEFORE the first path completes and updated per path.
-* W5/W6 — closeout mode is explicit/auditable and NEVER weakens the competencies contract (still 8
+* W5/W6 — closeout mode is explicit/auditable and NEVER weakens the competencies contract (adaptive 6-8
   final categories, graph-only proof authority, unchanged min selection score, X2/X3 unaffected).
 """
 from __future__ import annotations
@@ -209,6 +209,7 @@ def test_w4_progress_receipt_written_before_first_path_completes(tmp_path, monke
     import apps_rg.runtime.reasoning.bullet_lane_self_consistency as scmod
     from apps_rg.runtime.providers.provider_contract import ProviderResult
 
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_PARALLEL", "0")
     seen_started_row = {"ok": False}
 
     def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
@@ -289,10 +290,75 @@ def test_competencies_self_consistency_payload_gets_path_diversity_framing(
 
     assert len(paths) == 2
     assert len(seen_contents) == 2
-    assert "COMPETENCIES_PATH_DIVERSITY (path_index=0" in seen_contents[0]
-    assert "COMPETENCIES_PATH_DIVERSITY (path_index=1" in seen_contents[1]
-    assert "agentic platform architecture" in seen_contents[0]
-    assert "runtime governance and gates" in seen_contents[1]
+    by_path = {
+        0: next(c for c in seen_contents if "COMPETENCIES_PATH_DIVERSITY (path_index=0" in c),
+        1: next(c for c in seen_contents if "COMPETENCIES_PATH_DIVERSITY (path_index=1" in c),
+    }
+    assert "agentic platform architecture" in by_path[0]
+    assert "runtime governance and gates" in by_path[1]
+
+
+def test_competencies_self_consistency_runs_paths_with_bounded_parallelism(
+    tmp_path,
+    monkeypatch,
+):
+    import re
+    import threading
+    import time
+
+    import apps_rg.runtime.reasoning.bullet_lane_self_consistency as scmod
+    from apps_rg.runtime.providers.provider_contract import ProviderResult
+
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_PARALLEL", "1")
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_MAX_PARALLEL", "2")
+    lock = threading.Lock()
+    active = {"count": 0, "max": 0}
+
+    def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
+        content = str((payload.get("messages") or [{}])[-1].get("content") or "")
+        match = re.search(r"path_index=(\d+)", content)
+        idx = int(match.group(1)) if match else -1
+        with lock:
+            active["count"] += 1
+            active["max"] = max(active["max"], active["count"])
+        time.sleep(0.05)
+        with lock:
+            active["count"] -= 1
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output=json.dumps({"competencies": [{"category_label": f"C{idx}", "terms": []}]}),
+            provider_response={},
+        )
+
+    monkeypatch.setattr(scmod, "call_section_model_provider", fake_call)
+
+    paths, _last = scmod.run_provider_self_consistency_paths(
+        section_lane="competencies",
+        provider_payload={"messages": [{"role": "user", "content": "base"}]},
+        parse_model_json=lambda raw: (json.loads(raw), ""),
+        artifact_dir=tmp_path,
+        run_id="run-1",
+        temperature_bounds=(0.30, 0.50),
+        base_temperature=0.4,
+        path_count=4,
+    )
+
+    assert active["max"] == 2
+    assert [p.path_index for p in paths] == [0, 1, 2, 3]
+    assert [
+        (p.parsed or {}).get("competencies", [{}])[0].get("category_label") for p in paths
+    ] == ["C0", "C1", "C2", "C3"]
+    doc = json.loads((tmp_path / "self_consistency_paths.json").read_text(encoding="utf-8"))
+    assert doc["execution_mode"] == "parallel"
+    assert doc["max_parallel"] == 2
+    progress = json.loads((tmp_path / scmod.PROGRESS_RECEIPT_FILENAME).read_text(encoding="utf-8"))
+    assert progress["execution_mode"] == "parallel"
+    assert progress["paths_completed"] == 4
 
 
 # --------------------------------------------------------------------------------------------------
@@ -329,12 +395,13 @@ def test_w6_strict_default_regen_unchanged(monkeypatch):
 
 
 def test_w6_closeout_does_not_weaken_contract(monkeypatch):
-    """Closeout keeps 8 categories + graph authority + unchanged score floor."""
+    """Closeout keeps adaptive 6-8 categories + graph authority + unchanged score floor."""
     from apps_rg.runtime.reasoning import competencies_graph_pool as cgp
 
     monkeypatch.delenv("APPS_RG_COMPETENCIES_MIN_SELECTION_SCORE", raising=False)
     monkeypatch.delenv("APPS_RG_EMPLOYMENT_BULLET_MIN_SELECTION_SCORE", raising=False)
     monkeypatch.setenv("APPS_RG_E2E_CLOSEOUT_MODE", "1")
+    assert cgp.COMPETENCIES_MIN_CATEGORY_COUNT == 6
     assert cgp.COMPETENCIES_FINAL_CATEGORY_COUNT == 8
     assert cgp.COMPETENCIES_CANDIDATE_CATEGORY_COUNT == 8
     # The selection score floor is NOT lowered by closeout mode.

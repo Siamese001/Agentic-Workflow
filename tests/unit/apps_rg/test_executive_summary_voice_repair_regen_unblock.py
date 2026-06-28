@@ -29,7 +29,7 @@ _FACTS_WITH_METRICS = [
     },
 ]
 
-_QWEN_LIKE_SIX = (
+_RETIRED_PROVIDER_LIKE_SIX = (
     "Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and "
     "commercialization into one IT strategy and innovation agenda for decentralized regulated enterprises. "
     "Designed and operationalized a governed agentic AI platform with deterministic routing and multi-agent orchestration, ensuring validation-ready delivery. "
@@ -45,9 +45,9 @@ _CREDENTIAL_DUMP_S5 = (
 )
 
 
-def test_qwen_like_s5_metric_preserved_after_voice_repair() -> None:
+def test_retired_provider_like_s5_metric_preserved_after_voice_repair() -> None:
     parsed = {
-        "resume_display_text": _QWEN_LIKE_SIX,
+        "resume_display_text": _RETIRED_PROVIDER_LIKE_SIX,
         "claim_ledger": [{"claim_text": "stub", "source_fact_ids": ["fact_quant_hpc_001"]}],
     }
     out, receipt = apply_voice_repair_to_parsed(parsed, selected_facts=_FACTS_WITH_METRICS)

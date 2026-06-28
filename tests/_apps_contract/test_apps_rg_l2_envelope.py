@@ -43,7 +43,7 @@ from apps_rg.runtime.bindings.l2_envelope_adapter import (
 def _make_minimal_cpa(**overrides: Any) -> CompiledPromptArtifact:
     """Build a minimal CompiledPromptArtifact for testing."""
     # Ensure target_model is always in allowed_models for valid CPA
-    target_model = overrides.get("target_model", "Qwen/Qwen2.5-32B-Instruct-AWQ")
+    target_model = overrides.get("target_model", "Retired/Provider-Model")
     allowed_models = overrides.get("allowed_models", (target_model,))
     defaults = {
         "request_id": "req-test-001",
@@ -56,7 +56,7 @@ def _make_minimal_cpa(**overrides: Any) -> CompiledPromptArtifact:
         "assembly_timestamp": "2026-05-13T12:00:00Z",
         "schema_version": "W6.0",
         "target_model": target_model,
-        "target_provider": "local_vllm",
+        "target_provider": "local_local_model_server",
         "evidence_digest": "sha256:abc123",
         "compilation_hash": "sha256:def456",
         "slot_lineage_map": {},
@@ -163,7 +163,7 @@ class TestE1FrozenExecutionContext:
         fec = _build_frozen_execution_context(cpa)
 
         assert fec.model_runtime_version == "unknown"
-        assert fec.provider_lane == "local_vllm"
+        assert fec.provider_lane == "local_local_model_server"
         assert fec.filesystem_view == "()"
         assert fec.network_rules == "()"
         assert fec.secrets_scope == ""
@@ -867,8 +867,8 @@ class TestE3ExecutionPass:
     def test_e3_builds_provider_request_from_cpa(self) -> None:
         """Test E3 builds ProviderRequest using CPA fields exactly."""
         cpa = _make_minimal_cpa(
-            target_model="Qwen/Qwen2.5-32B-Instruct-AWQ",
-            target_provider="local_vllm",
+            target_model="Retired/Provider-Model",
+            target_provider="local_local_model_server",
             max_tokens=2048,
             temperature=0.5,
         )
@@ -994,7 +994,7 @@ class TestE3ExecutionFail:
         """Test E3 does not silently switch provider or model."""
         cpa = _make_minimal_cpa(
             target_model="specific-model-for-test",
-            target_provider="local_vllm",
+            target_provider="local_local_model_server",
         )
         prep_output = _build_prep_output(cpa)
         validation_output = _validate_work_order(prep_output, cpa)
@@ -1958,8 +1958,8 @@ def _make_successful_attempt(
         decisive_reason_code="E3_SUCCESS",
         proposed_state_diff={"generated_resume": generated_resume},
         local_check_results={
-            "provider_lane": "vllm-local",
-            "model_or_tool_name": "qwen-32b",
+            "provider_lane": "local_model_server-local",
+            "model_or_tool_name": "retired_provider-32b",
             "span_ids": ["span-001"],
         },
     )
@@ -2058,9 +2058,9 @@ class TestE5SealPass:
         )
         
         assert len(sealed.provider_receipts) == 1
-        assert "provider:vllm-local" in sealed.provider_receipts
+        assert "provider:local_model_server-local" in sealed.provider_receipts
         assert len(sealed.model_call_refs) == 1
-        assert "model:qwen-32b" in sealed.model_call_refs
+        assert "model:retired_provider-32b" in sealed.model_call_refs
 
     def test_e5_populates_replay_and_snapshot_refs(self) -> None:
         """Test E5 populates replay_key, replay_manifest, and snapshot_refs."""
@@ -2586,7 +2586,7 @@ class TestW7BBoundaryChecks:
         source = inspect.getsource(l2_binding)
         
         # Should not contain private gateway method calls
-        assert "_invoke_local_vllm" not in source
+        assert "_invoke_local_local_model_server" not in source
         assert "_invoke_external_api" not in source
 
     def test_w7b_no_direct_urllib_requests_httpx_openai_anthropic(self) -> None:
@@ -3367,7 +3367,7 @@ class TestW7BBoundaryChecks:
         source = inspect.getsource(l2_binding)
         
         # Should not contain private gateway method calls
-        assert "_invoke_local_vllm" not in source
+        assert "_invoke_local_local_model_server" not in source
         assert "_invoke_external_api" not in source
 
     def test_w7b_no_direct_urllib_requests_httpx_openai_anthropic(self) -> None:

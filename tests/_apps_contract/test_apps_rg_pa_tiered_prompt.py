@@ -563,10 +563,10 @@ class TestPABoundaryGuards:
             assert forbidden not in source, \
                 f"pa_binding must not make HTTP calls: found '{forbidden}'"
 
-    def test_pa_binding_does_not_call_vllm_or_qwen_directly(self):
+    def test_pa_binding_does_not_call_local_model_server_or_retired_provider_directly(self):
         import apps_rg.runtime.bindings.pa_binding as pa_mod
         source = inspect.getsource(pa_mod)
-        for forbidden in ("vllm.invoke", "gateway.invoke", "provider.invoke"):
+        for forbidden in ("local_model_server.invoke", "gateway.invoke", "provider.invoke"):
             assert forbidden not in source, \
                 f"pa_binding must not call provider endpoints: found '{forbidden}'"
 
@@ -616,7 +616,7 @@ class TestPABoundaryGuards:
         profile_path = repo_root / "apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"
         with open(profile_path, encoding="utf-8") as f:
             content = f.read()
-        for forbidden in ("openai", "anthropic", "qwen", "vllm", "httpx", "subprocess"):
+        for forbidden in ("openai", "anthropic", "retired_provider", "local_model_server", "httpx", "subprocess"):
             assert forbidden.lower() not in content.lower(), \
                 f"PA prompt profile must not contain provider refs: found '{forbidden}'"
 

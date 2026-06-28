@@ -84,7 +84,7 @@ def test_migration_scan_disabled_on_product_fail_closed(
         encoding="utf-8",
     )
     (orphan / "provider_request.json").write_text(
-        json.dumps({"provider_requested": "qwen_vllm"}),
+        json.dumps({"provider_requested": "retired_provider_profile"}),
         encoding="utf-8",
     )
     rd, tag = resolve_accepted_real_rollup_run_dir(REPO, lane)
@@ -186,7 +186,7 @@ def test_lane_run_dir_rejects_phase0_synthetic_stub(product_fail_closed_env: Non
     )
     (run_dir / "x3_disposition.json").write_text(json.dumps({"x3_code": "X3_ALLOW"}), encoding="utf-8")
     (run_dir / "provider_request.json").write_text(
-        json.dumps({"provider_requested": "qwen_vllm"}),
+        json.dumps({"provider_requested": "retired_provider_profile"}),
         encoding="utf-8",
     )
     ok, reason = lane_run_dir_meets_product_bar(run_dir)

@@ -144,7 +144,7 @@ def test_section_slot_bom_from_compiled_shape() -> None:
         canonical_slot_order=["S0", "I0", "C0"],
         slot_payloads=[payload],
         component_hash_map=None,
-        provider_render_manifest={"model": "qwen"},
+        provider_render_manifest={"model": "retired_provider"},
     )
     compiled = SimpleNamespace(
         section_id="executive_summary",

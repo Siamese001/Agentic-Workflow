@@ -38,7 +38,7 @@ def _write_lane_product_bundle(
     }
     (run_dir / "l2_output.json").write_text(json.dumps(l2), encoding="utf-8")
     (run_dir / "provider_request.json").write_text(
-        json.dumps({"provider_requested": "qwen_vllm", "provider_attempted": True}),
+        json.dumps({"provider_requested": "retired_provider_profile", "provider_attempted": True}),
         encoding="utf-8",
     )
     (run_dir / "x3_disposition.json").write_text(

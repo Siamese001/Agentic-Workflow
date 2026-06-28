@@ -24,7 +24,10 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EXEC_SUMMARY_MAX_WORDS as X2_MAX_WORDS,
     EXEC_SUMMARY_MIN_SENTENCES as X2_MIN_SENT,
 )
-from apps_rg.runtime.reasoning.employment_bullet_pool import SC_PATH_COUNT_BY_LANE
+from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    SC_PATH_COUNT_BY_LANE,
+    max_sc_path_count_for_lane,
+)
 from tests.unit.apps_rg.section_rigor.lane_registry import spec_for_lane
 
 
@@ -60,6 +63,8 @@ def test_critical_gates_cover_ssot_product_shape(lane: str) -> None:
 def test_unify_pool_shape_ssot() -> None:
     shape = section_product_shape("unify_bullets")
     assert str(SC_PATH_COUNT_BY_LANE["unify_bullets"]) in shape.shape_summary
+    assert str(max_sc_path_count_for_lane("unify_bullets")) in shape.shape_summary
+    assert "adaptive" in shape.shape_summary
     assert "Claude" in shape.shape_summary
     assert "HEAVY" not in shape.shape_summary
 
@@ -67,6 +72,8 @@ def test_unify_pool_shape_ssot() -> None:
 def test_ibm_pool_shape_ssot() -> None:
     shape = section_product_shape("ibm_bullets")
     assert str(SC_PATH_COUNT_BY_LANE["ibm_bullets"]) in shape.shape_summary
+    assert str(max_sc_path_count_for_lane("ibm_bullets")) in shape.shape_summary
+    assert "adaptive" in shape.shape_summary
     assert "HEAVY" not in shape.shape_summary
 
 
@@ -76,8 +83,9 @@ def test_pool_compile_hints_use_self_consistency_label(lane: str) -> None:
     combined = " ".join((shape.shape_summary, *shape.compile_hints))
     assert "self-consistency pool" in combined
     assert "sc_pool_paths=" in combined
-    assert "Qwen pool" not in combined
-    assert "qwen_pool_paths=" not in combined
+    assert "sc_max_paths=" in combined
+    assert "RetiredProvider pool" not in combined
+    assert "retired_provider_pool_paths=" not in combined
 
 
 def test_headline_word_band_ssot() -> None:

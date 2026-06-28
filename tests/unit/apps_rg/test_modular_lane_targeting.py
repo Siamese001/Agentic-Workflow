@@ -57,9 +57,9 @@ def test_build_modular_lane_argv_includes_targeting_flags() -> None:
     assert argv[argv.index("--briefing") + 1] == "Culture note."
 
 
-def test_build_modular_lane_argv_rejects_retired_qwen_provider() -> None:
+def test_build_modular_lane_argv_rejects_retired_retired_provider_provider() -> None:
     with pytest.raises(ValueError, match="Unsupported modular lane provider"):
-        build_modular_lane_argv(provider="qwen_vllm", targeting=None)
+        build_modular_lane_argv(provider="retired_provider_profile", targeting=None)
 
 
 def test_modular_lane_targeting_loads_manual_brief_file(tmp_path: Path) -> None:

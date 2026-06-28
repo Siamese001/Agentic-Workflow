@@ -200,11 +200,11 @@ class TestBoundaryGuard(unittest.TestCase):
             f"Forbidden import found: anthropic in {imports}",
         )
 
-    def test_no_vllm(self) -> None:
+    def test_no_local_model_server(self) -> None:
         imports = self._get_imports()
         self.assertFalse(
-            any(m.startswith("vllm") for m in imports),
-            f"Forbidden import found: vllm in {imports}",
+            any(m.startswith("local_model_server") for m in imports),
+            f"Forbidden import found: local_model_server in {imports}",
         )
 
     def test_no_requests_post(self) -> None:

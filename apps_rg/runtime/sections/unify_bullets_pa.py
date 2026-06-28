@@ -99,7 +99,7 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "only when supported by linked ledger facts. "
         "claim_ledger: one row per bullet; claim_text non-empty after trim; source_fact_ids must match "
         "ALLOWED_SOURCE_FACT_IDS exactly (see C0 hygiene — bul_un_ify_* typos fail fact-scope).\n"
-        "POOL: each Qwen path emits a full 6-bullet set with semantically distinct framing; "
+        "POOL: each PROVIDER_MODEL path emits a full 6-bullet set with semantically distinct framing; "
         "Claude selector picks best variant per slot. "
         "Each slot must use the slot-specific metric_outcome_usage_contract from C0: select at least "
         "one approved metric_outcome_id from that role_episode_bundle, surface its metric/surface_tokens "

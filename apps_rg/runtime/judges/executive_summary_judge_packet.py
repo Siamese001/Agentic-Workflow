@@ -43,7 +43,7 @@ Mandatory rules:
   claim that gate failed or cite retired criteria (five-part S1–S5 arc, mandatory S5 credential sentence, etc.).
 - **DISPLAY_OVERRIDE PARITY (CRITICAL):** When an `allowed_fact_packet` row carries a non-empty
   `display_override_text` field, treat the **UNION** of `claim_text` + `display_override_text` as the
-  authorized fact substrate for that fact_id. The generator (Qwen) is contractually required by X2 gate
+  authorized fact substrate for that fact_id. The generator (PROVIDER_MODEL) is contractually required by X2 gate
   `x2_exec_summary_display_override_compliance` to emit the override text verbatim. Phrases drawn from
   `display_override_text` are **NOT unsupported extensions** and MUST NOT be cited as "extending beyond
   fact scope" or as inferential stretches. Grade fidelity to the union, not to `claim_text` alone.
@@ -225,7 +225,7 @@ def enrich_allowed_fact_packet_for_judges(
     graph_bindings: list[dict[str, Any]] | None = None,
     repo_root: Any = None,
 ) -> list[dict[str, Any]]:
-    """Include metric-derivative rows AND attach C0 display-override text so X1D judges see the same fact substrate as X2/Qwen.
+    """Include metric-derivative rows AND attach C0 display-override text so X1D judges see the same fact substrate as X2/PROVIDER_MODEL.
 
     Without ``display_override_text``, judges grade against the raw ``claim_text`` and
     flag the authorized override phrases as unsupported extensions, producing structural

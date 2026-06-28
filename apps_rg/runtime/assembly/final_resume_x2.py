@@ -442,7 +442,7 @@ def run_final_resume_x2_gates(
 
     allowed_artifact_files = ASSEMBLY_ALLOWED_ARTIFACT_FILES
     prov_hits: list[str] = []
-    qwen_hits: list[str] = []
+    generation_hits: list[str] = []
     judge_hits: list[str] = []
     docx_hits: list[str] = []
     if out_dir.is_dir():
@@ -461,15 +461,15 @@ def run_final_resume_x2_gates(
                 continue
             if "provider_" in name and name.endswith(".json"):
                 prov_hits.append(f.name)
-            if "qwen" in name or name == "real_l2_generation_result.json":
-                qwen_hits.append(f.name)
+            if name == "real_l2_generation_result.json":
+                generation_hits.append(f.name)
             if "x1d" in name or "llm_judge" in name or "judge" in name:
                 judge_hits.append(f.name)
             if name.endswith(".docx"):
                 docx_hits.append(f.name)
 
     _add(gates, "x2_no_provider_calls", len(prov_hits) == 0, prov_hits, [])
-    _add(gates, "x2_no_qwen_calls", len(qwen_hits) == 0, qwen_hits, [])
+    _add(gates, "x2_no_l2_generation_calls", len(generation_hits) == 0, generation_hits, [])
     _add(gates, "x2_no_docx_render", len(docx_hits) == 0, docx_hits, [])
 
     product_mode = (

@@ -8,6 +8,7 @@ import pytest
 
 from tools.reports.adg_burndown_report import (
     BURNDOWN_REPORT_OUTPUTS,
+    emit_existing_burndown_markdown,
     emit_mandatory_adg_burndown_report,
     render,
 )
@@ -96,6 +97,21 @@ def test_emit_prints_markdown_to_stdout(
     assert emit_mandatory_adg_burndown_report(gate_results=gate, burndown=burndown) == 0
     captured = capsys.readouterr()
     assert "# ADG CI Burndown Report" in captured.out
+
+
+def test_emit_existing_burndown_markdown_replays_written_artifact(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    report = tmp_path / "adg_burndown_report.md"
+    report.write_text("# ADG CI Burndown Report\n\nReplay me.\n", encoding="utf-8")
+    monkeypatch.setattr("tools.reports.adg_burndown_report.BURNDOWN_REPORT_OUTPUTS", (report,))
+    monkeypatch.delenv("ADG_BURNDOWN_INLINE_BYPASS", raising=False)
+
+    assert emit_existing_burndown_markdown() == 0
+
+    captured = capsys.readouterr()
+    assert "# ADG CI Burndown Report" in captured.out
+    assert "Replay me." in captured.out
 
 
 def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:

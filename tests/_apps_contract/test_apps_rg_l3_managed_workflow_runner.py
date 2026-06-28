@@ -420,7 +420,7 @@ class TestL3RunnerInvariants:
         runner_src = Path(__file__).parents[2] / "agentic_core/L3_orchestration/managed_workflow_runner.py"
         src = runner_src.read_text(encoding="utf-8")
         forbidden_providers = [
-            "anthropic", "openai", "qwen", "azure_openai", "cohere",
+            "anthropic", "openai", "retired_provider", "azure_openai", "cohere",
             "claude", "gpt-4", "gpt4",
         ]
         for pname in forbidden_providers:

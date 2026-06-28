@@ -88,7 +88,7 @@ def build_assembly_manifest(
         "final_resume_hash": final_resume_hash,
         "calls": {
             "provider_calls_made": False,
-            "qwen_calls_made": False,
+            "PROVIDER_MODEL_calls_made": False,
             "judge_calls_made": False,
             "docx_rendered": False,
         },

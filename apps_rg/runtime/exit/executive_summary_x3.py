@@ -274,7 +274,7 @@ def aggregate_x3(
     elif runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         code = "X3_REVIEW_MOCKED_PLUMBING_ONLY"
         reason = (
-            "Offline Qwen contract stub (APPS_RG_QWEN_OFFLINE_CONTRACT_STUB); "
+            "Offline PROVIDER_MODEL contract stub (APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB); "
             "not live LLM transport proof."
         )
         review_reason = reason

@@ -5,9 +5,11 @@ from __future__ import annotations
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from threading import Lock
 from typing import Any, Callable
 
 from apps_rg.runtime.providers.provider_contract import ProviderResult
@@ -15,6 +17,8 @@ from apps_rg.runtime.providers.section_provider_call import call_section_model_p
 from apps_rg.runtime.sections.section_generation import tag_reasoning_lane
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     EMPLOYMENT_BULLET_LANES,
+    adaptive_sc_enabled_for_lane,
+    max_sc_path_count_for_lane,
     sc_path_count_for_lane,
 )
 from apps_rg.runtime.reasoning.section_reasoning_intensity import (
@@ -26,6 +30,10 @@ from apps_rg.runtime.section_execution_plan import BULLET_LANES
 ParseFn = Callable[[str], tuple[dict[str, Any] | None, str]]
 
 BULLET_POOL_LANES: frozenset[str] = frozenset((*BULLET_LANES, "competencies"))
+PARALLEL_EMPLOYMENT_BULLET_SC_LANES: frozenset[str] = frozenset(
+    ("unify_bullets", "ibm_bullets")
+)
+_DISABLE_FLAGS = frozenset(("0", "false", "no", "off"))
 
 
 def bullet_lane_sc_enabled(section_lane: str) -> bool:
@@ -83,6 +91,9 @@ def _flush_progress_receipt(
     artifact_dir: Path | None,
     section_lane: str,
     rows: list[dict[str, Any]],
+    *,
+    execution_mode: str = "serial",
+    max_parallel: int = 1,
 ) -> None:
     """Flush the live per-path progress board to disk after EVERY path (not just the batch).
 
@@ -94,14 +105,20 @@ def _flush_progress_receipt(
     """
     if artifact_dir is None:
         return
-    in_progress = sum(1 for r in rows if r.get("completed_at") is None)
+    rows_for_doc = sorted(
+        [r for r in rows if isinstance(r, dict)],
+        key=lambda r: int(r.get("path_index", 0)),
+    )
+    in_progress = sum(1 for r in rows_for_doc if r.get("completed_at") is None)
     doc = {
         "section_lane": section_lane,
-        "path_count": len(rows),
+        "path_count": len(rows_for_doc),
+        "execution_mode": execution_mode,
+        "max_parallel": max(1, int(max_parallel)),
         "paths_in_progress": in_progress,
-        "paths_completed": len(rows) - in_progress,
+        "paths_completed": len(rows_for_doc) - in_progress,
         "last_update": datetime.now(timezone.utc).isoformat(),
-        "paths": rows,
+        "paths": rows_for_doc,
     }
     try:
         artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -111,6 +128,188 @@ def _flush_progress_receipt(
         )
     except OSError:  # guardian: allow-silent-swallow -- diagnostic progress board is best-effort, never fatal
         pass
+
+
+def self_consistency_parallel_enabled(section_lane: str) -> bool:
+    lane = str(section_lane or "").strip().lower()
+    if lane == "competencies":
+        flag = os.environ.get("APPS_RG_COMPETENCIES_SC_PARALLEL", "1").strip().lower()
+        return flag not in _DISABLE_FLAGS
+    if lane in PARALLEL_EMPLOYMENT_BULLET_SC_LANES:
+        flag = os.environ.get("APPS_RG_EMPLOYMENT_BULLET_SC_PARALLEL", "1").strip().lower()
+        return flag not in _DISABLE_FLAGS
+    return False
+
+
+def self_consistency_max_parallel(section_lane: str, path_count: int) -> int:
+    lane = str(section_lane or "").strip().lower()
+    if lane == "competencies":
+        env_name = "APPS_RG_COMPETENCIES_SC_MAX_PARALLEL"
+        default = 4
+    elif lane in PARALLEL_EMPLOYMENT_BULLET_SC_LANES:
+        env_name = "APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL"
+        default = 2
+    else:
+        return 1
+    raw = os.environ.get(env_name, "").strip()
+    try:
+        requested = int(raw) if raw else default
+    except ValueError:
+        requested = default
+    return max(1, min(max(1, int(path_count)), requested))
+
+
+def competencies_sc_parallel_enabled(section_lane: str) -> bool:
+    lane = str(section_lane or "").strip().lower()
+    return lane == "competencies" and self_consistency_parallel_enabled(lane)
+
+
+def competencies_sc_max_parallel(path_count: int) -> int:
+    return self_consistency_max_parallel("competencies", path_count)
+
+
+def _tagged_path_payload(
+    provider_payload: dict[str, Any],
+    *,
+    section_lane: str,
+    path_index: int,
+    temperature: float,
+) -> dict[str, Any]:
+    tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
+    if section_lane == "unify_bullets":
+        from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
+            append_unify_path_framing_to_messages,
+        )
+
+        msgs = list(tagged.get("messages") or [])
+        return {
+            **tagged,
+            "messages": append_unify_path_framing_to_messages(
+                msgs, path_index=path_index, temperature=temperature
+            ),
+        }
+    if section_lane == "competencies":
+        from apps_rg.runtime.sections.competency_capability_evidence import (
+            append_competencies_path_diversity_to_messages,
+        )
+
+        msgs = list(tagged.get("messages") or [])
+        return {
+            **tagged,
+            "messages": append_competencies_path_diversity_to_messages(
+                msgs, path_index=path_index, temperature=temperature
+            ),
+        }
+    return tagged
+
+
+def _parse_sc_provider_result(
+    result: ProviderResult,
+    *,
+    parse_model_json: ParseFn,
+) -> tuple[str, dict[str, Any] | None, str]:
+    raw = result.raw_model_output or ""
+    parsed: dict[str, Any] | None = None
+    parse_error = ""
+    if result.runtime_generation_status == "REAL_LLM":
+        parsed, parse_error = parse_model_json(raw)
+        if parsed is not None:
+            from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+                strip_employment_bullet_intensity_model,
+            )
+
+            parsed = strip_employment_bullet_intensity_model(parsed)
+    elif result.runtime_generation_status not in ("REAL_LLM",):
+        parse_error = result.exact_provider_error or "provider blocked"
+    return raw, parsed, parse_error
+
+
+def _run_one_self_consistency_path(
+    *,
+    section_lane: str,
+    provider_payload: dict[str, Any],
+    parse_model_json: ParseFn,
+    artifact_dir: Path | None,
+    run_id: str | None,
+    provider_profile: str | None,
+    path_index: int,
+    temperature: float,
+    progress_rows: list[dict[str, Any]],
+    progress_lock: Lock,
+    execution_mode: str,
+    max_parallel: int,
+) -> SelfConsistencyPath:
+    started_at = datetime.now(timezone.utc).isoformat()
+    t0 = time.monotonic()
+    progress_row: dict[str, Any] = {
+        "section_lane": section_lane,
+        "path_index": path_index,
+        "temperature": temperature,
+        "started_at": started_at,
+        "completed_at": None,
+        "duration_s": None,
+        "runtime_generation_status": "IN_PROGRESS",
+        "raw_output_chars": 0,
+        "parse_ok": None,
+        "provider_error": None,
+    }
+    with progress_lock:
+        progress_rows.append(progress_row)
+        _flush_progress_receipt(
+            artifact_dir,
+            section_lane,
+            progress_rows,
+            execution_mode=execution_mode,
+            max_parallel=max_parallel,
+        )
+
+    tagged = _tagged_path_payload(
+        provider_payload,
+        section_lane=section_lane,
+        path_index=path_index,
+        temperature=temperature,
+    )
+    result = call_section_model_provider(
+        provider_profile,
+        tagged,
+        artifact_dir=artifact_dir,
+        run_id=run_id,
+        temperature_override=temperature,
+    )
+    raw, parsed, parse_error = _parse_sc_provider_result(
+        result,
+        parse_model_json=parse_model_json,
+    )
+    path = SelfConsistencyPath(
+        path_index=path_index,
+        temperature=temperature,
+        runtime_generation_status=result.runtime_generation_status,
+        raw_output=raw,
+        parsed=parsed,
+        parse_error=parse_error,
+        provider_result=result,
+    )
+    with progress_lock:
+        progress_row.update(
+            {
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "duration_s": round(time.monotonic() - t0, 4),
+                "runtime_generation_status": result.runtime_generation_status,
+                "raw_output_chars": len(raw),
+                "parse_ok": parsed is not None,
+                "provider_error": (result.exact_provider_error or None)
+                if result.runtime_generation_status != "REAL_LLM"
+                else None,
+            }
+        )
+        _flush_progress_receipt(
+            artifact_dir,
+            section_lane,
+            progress_rows,
+            execution_mode=execution_mode,
+            max_parallel=max_parallel,
+        )
+    return path
 
 
 def run_provider_self_consistency_paths(
@@ -134,7 +333,6 @@ def run_provider_self_consistency_paths(
     temps = temperature_ladder(base, n_paths, bounds=temperature_bounds)
 
     paths: list[SelfConsistencyPath] = []
-    last_result: ProviderResult | None = None
 
     # W4: live per-path progress board. On append/regen batches, carry prior rows forward so the
     # board shows the full accumulated pool, not just the current batch.
@@ -149,97 +347,48 @@ def run_provider_self_consistency_paths(
             except (json.JSONDecodeError, OSError):
                 progress_rows = []
 
-    for offset, temp in enumerate(temps):
-        idx = path_index_start + offset
-        # Append a "started" row BEFORE the provider call and flush — a stuck path is now visible.
-        started_at = datetime.now(timezone.utc).isoformat()
-        t0 = time.monotonic()
-        progress_row: dict[str, Any] = {
-            "section_lane": section_lane,
-            "path_index": idx,
-            "temperature": temp,
-            "started_at": started_at,
-            "completed_at": None,
-            "duration_s": None,
-            "runtime_generation_status": "IN_PROGRESS",
-            "raw_output_chars": 0,
-            "parse_ok": None,
-            "provider_error": None,
-        }
-        progress_rows.append(progress_row)
-        _flush_progress_receipt(artifact_dir, section_lane, progress_rows)
+    progress_lock = Lock()
+    max_parallel = (
+        self_consistency_max_parallel(section_lane, n_paths)
+        if self_consistency_parallel_enabled(section_lane) and n_paths > 1
+        else 1
+    )
+    execution_mode = "parallel" if max_parallel > 1 else "serial"
+    thread_prefix = f"apps-rg-{str(section_lane or 'lane').replace('_', '-')}-sc"
 
-        tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
-        if section_lane == "unify_bullets":
-            from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
-                append_unify_path_framing_to_messages,
-            )
-
-            msgs = list(tagged.get("messages") or [])
-            tagged = {
-                **tagged,
-                "messages": append_unify_path_framing_to_messages(
-                    msgs, path_index=idx, temperature=temp
-                ),
-            }
-        if section_lane == "competencies":
-            from apps_rg.runtime.sections.competency_capability_evidence import (
-                append_competencies_path_diversity_to_messages,
-            )
-
-            msgs = list(tagged.get("messages") or [])
-            tagged = {
-                **tagged,
-                "messages": append_competencies_path_diversity_to_messages(
-                    msgs, path_index=idx, temperature=temp
-                ),
-            }
-        result = call_section_model_provider(
-            provider_profile,
-            tagged,
+    def _run(offset: int, temp: float) -> SelfConsistencyPath:
+        return _run_one_self_consistency_path(
+            section_lane=section_lane,
+            provider_payload=provider_payload,
+            parse_model_json=parse_model_json,
             artifact_dir=artifact_dir,
             run_id=run_id,
-            temperature_override=temp,
+            provider_profile=provider_profile,
+            path_index=path_index_start + offset,
+            temperature=temp,
+            progress_rows=progress_rows,
+            progress_lock=progress_lock,
+            execution_mode=execution_mode,
+            max_parallel=max_parallel,
         )
-        last_result = result
-        raw = result.raw_model_output or ""
-        parsed: dict[str, Any] | None = None
-        parse_error = ""
-        if result.runtime_generation_status == "REAL_LLM":
-            parsed, parse_error = parse_model_json(raw)
-            if parsed is not None:
-                from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
-                    strip_employment_bullet_intensity_model,
-                )
 
-                parsed = strip_employment_bullet_intensity_model(parsed)
-        elif result.runtime_generation_status not in ("REAL_LLM",):
-            parse_error = result.exact_provider_error or "provider blocked"
-        paths.append(
-            SelfConsistencyPath(
-                path_index=idx,
-                temperature=temp,
-                runtime_generation_status=result.runtime_generation_status,
-                raw_output=raw,
-                parsed=parsed,
-                parse_error=parse_error,
-                provider_result=result,
-            )
-        )
-        # Update the row with the completed outcome and flush — last-completed is now observable.
-        progress_row.update(
-            {
-                "completed_at": datetime.now(timezone.utc).isoformat(),
-                "duration_s": round(time.monotonic() - t0, 4),
-                "runtime_generation_status": result.runtime_generation_status,
-                "raw_output_chars": len(raw),
-                "parse_ok": parsed is not None,
-                "provider_error": (result.exact_provider_error or None)
-                if result.runtime_generation_status != "REAL_LLM"
-                else None,
+    if execution_mode == "parallel":
+        with ThreadPoolExecutor(
+            max_workers=max_parallel,
+            thread_name_prefix=thread_prefix,
+        ) as executor:
+            future_by_offset = {
+                executor.submit(_run, offset, temp): offset
+                for offset, temp in enumerate(temps)
             }
-        )
-        _flush_progress_receipt(artifact_dir, section_lane, progress_rows)
+            for future in as_completed(future_by_offset):
+                paths.append(future.result())
+    else:
+        for offset, temp in enumerate(temps):
+            paths.append(_run(offset, temp))
+
+    paths.sort(key=lambda p: p.path_index)
+    last_result = paths[-1].provider_result if paths else None
 
     if artifact_dir is not None:
         _write_paths_artifact(
@@ -248,6 +397,8 @@ def run_provider_self_consistency_paths(
             paths,
             append=append_artifacts,
             path_index_start=path_index_start,
+            execution_mode=execution_mode,
+            max_parallel=max_parallel,
         )
 
     return paths, last_result
@@ -260,9 +411,10 @@ def _write_paths_artifact(
     *,
     append: bool = False,
     path_index_start: int = 0,
+    execution_mode: str = "serial",
+    max_parallel: int = 1,
 ) -> None:
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    from apps_rg.runtime.reasoning.employment_bullet_pool import SC_PATH_COUNT_BY_LANE
 
     new_entries = [
         {
@@ -284,14 +436,23 @@ def _write_paths_artifact(
     else:
         merged_entries = new_entries
 
+    if section_lane in EMPLOYMENT_BULLET_LANES:
+        generation_mode = (
+            f"provider_employment_bullet_pool_adaptive_"
+            f"{sc_path_count_for_lane(section_lane)}_{max_sc_path_count_for_lane(section_lane)}"
+            if adaptive_sc_enabled_for_lane(section_lane)
+            else f"provider_employment_bullet_pool_{sc_path_count_for_lane(section_lane)}"
+        )
+    else:
+        generation_mode = "provider_self_consistency"
+
     doc = {
         "section_lane": section_lane,
         "path_count": len(merged_entries),
-        "generation_mode": (
-            f"provider_employment_bullet_pool_{SC_PATH_COUNT_BY_LANE.get(section_lane, 'n')}"
-            if section_lane in EMPLOYMENT_BULLET_LANES
-            else "provider_self_consistency"
-        ),
+        "batch_path_count": len(paths),
+        "execution_mode": execution_mode,
+        "max_parallel": max(1, int(max_parallel)),
+        "generation_mode": generation_mode,
         "paths": merged_entries,
     }
     (artifact_dir / "self_consistency_paths.json").write_text(
@@ -347,18 +508,23 @@ def patch_receipt_samples_executed(
         )
         row["proved_reference"] = json.dumps(blob)
         row["receipt_state"] = "APPLIED"
-        row["gap_notes"] = "multi_sample_qwen_paths_executed"
+        row["gap_notes"] = "multi_sample_PROVIDER_MODEL_paths_executed"
         break
 
 
 __all__ = [
     "BULLET_POOL_LANES",
     "EMPLOYMENT_BULLET_LANES",
+    "PARALLEL_EMPLOYMENT_BULLET_SC_LANES",
     "PROGRESS_RECEIPT_FILENAME",
     "SelfConsistencyPath",
     "bullet_lane_sc_enabled",
+    "competencies_sc_max_parallel",
+    "competencies_sc_parallel_enabled",
     "patch_receipt_samples_executed",
     "run_provider_self_consistency_paths",
     "self_consistency_path_count",
+    "self_consistency_max_parallel",
+    "self_consistency_parallel_enabled",
     "temperature_ladder",
 ]

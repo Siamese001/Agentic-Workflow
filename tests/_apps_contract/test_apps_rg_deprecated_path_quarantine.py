@@ -33,7 +33,7 @@ def test_runtime_dry_run_directory_removed() -> None:
 
 NON_PRODUCT_PROOF_ENV: dict[str, str] = {
     "APPS_RG_R4_GENERATION_MODE": MODE_MODULAR_SECTION_LANES,
-    "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1",
+    "APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB": "1",
     "APPS_RG_L2_PROVIDER_MODE": "stub_only",
     "APPS_RG_L2_FORCE_STUB": "1",
 }

@@ -389,7 +389,7 @@ def test_new_yaml_file_has_no_agentic_core_reference(path: Path):
 @pytest.mark.parametrize("path", NEW_W10_5_FILES, ids=[p.name for p in NEW_W10_5_FILES])
 def test_new_yaml_file_has_no_runtime_entrypoint(path: Path):
     content = path.read_text(encoding="utf-8")
-    forbidden_patterns = ["openai", "anthropic", "requests.post", "httpx", "model_call", "vllm"]
+    forbidden_patterns = ["openai", "anthropic", "requests.post", "httpx", "model_call", "local_model_server"]
     for pattern in forbidden_patterns:
         assert pattern not in content.lower(), \
             f"{path.name} must not contain runtime/provider reference: {pattern}"

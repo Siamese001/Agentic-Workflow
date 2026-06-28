@@ -391,7 +391,7 @@ def audit_policy_sections_proof_judge_roster() -> list[TransportViolation]:
     Recalibrated 2026-06-08: Claude Sonnet 4.6 is the generator for every lane, so ``anthropic_claude``
     must NOT appear in any judge roster (a self-judge shares the generator's blind spots). Each roster
     must be a non-empty subset of the available proof providers (``PROOF_JUDGE_PROVIDER_KEYS``). Panel
-    SIZE is per-section policy (the 3-provider panel was Qwen-era and is no longer required).
+    SIZE is per-section policy (the 3-provider panel was PROVIDER_MODEL-era and is no longer required).
     """
     violations: list[TransportViolation] = []
     available = frozenset(PROOF_JUDGE_PROVIDER_KEYS)

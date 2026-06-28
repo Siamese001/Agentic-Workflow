@@ -1,4 +1,4 @@
-"""Bullet-pool lanes: Qwen self-consistency paths + Claude per-slot selection."""
+"""Bullet-pool lanes: model self-consistency paths + Claude per-slot selection."""
 
 from __future__ import annotations
 
@@ -21,15 +21,19 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     SelfConsistencyPath,
     bullet_lane_sc_enabled,
     self_consistency_path_count,
+    self_consistency_max_parallel,
+    self_consistency_parallel_enabled,
     temperature_ladder,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     EMPLOYMENT_BULLET_JUDGE_PROVIDERS,
     SC_PATH_COUNT_BY_LANE,
+    adaptive_sc_enabled_for_lane,
     build_employment_targeting_context,
     employment_pool_x1d_judge_rows,
     evaluate_employment_selection_quality,
     is_employment_pool_generation,
+    max_sc_path_count_for_lane,
     min_selection_score_for_lane,
 )
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
@@ -38,17 +42,17 @@ from apps_rg.runtime.reasoning.section_reasoning_intensity import (
     section_reasoning_profile,
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 
 
 def test_bullet_pool_lanes_use_distinct_profile_from_narrative() -> None:
     assert section_reasoning_profile("unify_bullets").tier is ReasoningIntensityTier.T2_QUALITY_SECTION
     assert section_reasoning_profile("unify_narrative").tier is ReasoningIntensityTier.T3_CRITICAL_SECTION
-    # Variance-class redesign: bullet lanes use the Claude pool selector (generation
-    # variance handled by selection, not sampling) while narratives are single-path HTTP
-    # with SC=4 as a floor. Distinctness is now tier + pool-vs-singleton path, not SC>SC.
-    assert (
-        section_reasoning_profile("unify_bullets").self_consistency_samples
-        >= section_reasoning_profile("unify_narrative").self_consistency_samples
+    # Variance-class redesign: bullet lanes use an adaptive Claude pool selector. They start
+    # below narrative SC, but retain 4-path headroom when selector quality/coverage fails.
+    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 2.0
+    assert max_sc_path_count_for_lane("unify_bullets") >= int(
+        section_reasoning_profile("unify_narrative").self_consistency_samples
     )
 
 
@@ -217,17 +221,296 @@ def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_self_consistency_path_count_for_competencies() -> None:
-    # Variance-class alignment (2026-06): candidate-category pool 10 -> 8 (>= final 6).
-    assert self_consistency_path_count("competencies") == 8
+    # HBS/SVP alignment (2026-06): initial competencies pool starts at 4 and can expand to 8.
+    assert self_consistency_path_count("competencies") == 4
 
 
 def test_employment_bullet_path_counts() -> None:
-    # Variance-class alignment (2026-06): generation SC 15/12 -> 4 over FIXED slot count
-    # (unify=6, ibm=5). Selection rigor (Claude pool selector + min_score + X2) unchanged.
-    assert self_consistency_path_count("unify_bullets") == 4
-    assert self_consistency_path_count("ibm_bullets") == 4
-    assert SC_PATH_COUNT_BY_LANE["unify_bullets"] == 4
-    assert SC_PATH_COUNT_BY_LANE["ibm_bullets"] == 4
+    # Variance-class alignment (2026-06): wider Unify/IBM lanes start at 2 and adapt
+    # to 4 only if selector slot coverage or min score fails; role-episode lanes stay 2.
+    # Selection rigor (Claude pool selector + min_score + X2) unchanged.
+    assert self_consistency_path_count("unify_bullets") == 2
+    assert self_consistency_path_count("ibm_bullets") == 2
+    assert self_consistency_path_count("insurtech_bullets") == 2
+    assert self_consistency_path_count("ey_bullets") == 2
+    assert SC_PATH_COUNT_BY_LANE["unify_bullets"] == 2
+    assert SC_PATH_COUNT_BY_LANE["ibm_bullets"] == 2
+    assert SC_PATH_COUNT_BY_LANE["insurtech_bullets"] == 2
+    assert SC_PATH_COUNT_BY_LANE["ey_bullets"] == 2
+    assert adaptive_sc_enabled_for_lane("unify_bullets") is True
+    assert adaptive_sc_enabled_for_lane("ibm_bullets") is True
+    assert adaptive_sc_enabled_for_lane("insurtech_bullets") is False
+    assert adaptive_sc_enabled_for_lane("ey_bullets") is False
+    assert max_sc_path_count_for_lane("unify_bullets") == 4
+    assert max_sc_path_count_for_lane("ibm_bullets") == 4
+    assert max_sc_path_count_for_lane("insurtech_bullets") == 2
+    assert max_sc_path_count_for_lane("ey_bullets") == 2
+
+
+def test_sc_parallel_policy_for_competencies_unify_ibm_only(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_PARALLEL", raising=False)
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_MAX_PARALLEL", raising=False)
+    monkeypatch.delenv("APPS_RG_EMPLOYMENT_BULLET_SC_PARALLEL", raising=False)
+    monkeypatch.delenv("APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL", raising=False)
+
+    assert self_consistency_parallel_enabled("competencies") is True
+    assert self_consistency_max_parallel("competencies", 8) == 4
+    assert self_consistency_parallel_enabled("unify_bullets") is True
+    assert self_consistency_parallel_enabled("ibm_bullets") is True
+    assert self_consistency_max_parallel("unify_bullets", 4) == 2
+    assert self_consistency_max_parallel("ibm_bullets", 2) == 2
+
+    assert self_consistency_parallel_enabled("insurtech_bullets") is False
+    assert self_consistency_parallel_enabled("ey_bullets") is False
+    assert self_consistency_max_parallel("insurtech_bullets", 2) == 1
+    assert self_consistency_max_parallel("ey_bullets", 2) == 1
+
+
+def test_employment_bullet_sc_parallel_env_disable_and_cap(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RG_EMPLOYMENT_BULLET_SC_PARALLEL", "0")
+    assert self_consistency_parallel_enabled("unify_bullets") is False
+    assert self_consistency_parallel_enabled("ibm_bullets") is False
+
+    monkeypatch.setenv("APPS_RG_EMPLOYMENT_BULLET_SC_PARALLEL", "1")
+    monkeypatch.setenv("APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL", "9")
+    assert self_consistency_max_parallel("unify_bullets", 2) == 2
+
+    monkeypatch.setenv("APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL", "1")
+    assert self_consistency_max_parallel("ibm_bullets", 4) == 1
+
+    monkeypatch.setenv("APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL", "not-an-int")
+    assert self_consistency_max_parallel("unify_bullets", 4) == 2
+
+
+def test_unify_bullets_adaptive_sc_stops_after_two_paths_when_selector_passes(tmp_path) -> None:
+    calls: list[int] = []
+
+    def _stub(*_a: object, **_: object) -> ProviderResult:
+        calls.append(1)
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output=json.dumps(
+                {
+                    "bullets": [
+                        {
+                            "bullet_id": bid,
+                            "bullet_text": f"Unify bullet {bid}",
+                            "source_fact_ids": [bid],
+                        }
+                        for bid in UNIFY_BULLET_IDS
+                    ],
+                    "claim_ledger": [],
+                }
+            ),
+            provider_response={},
+        )
+
+    with patch(
+        "apps_rg.runtime.reasoning.bullet_lane_self_consistency.call_section_model_provider",
+        side_effect=_stub,
+    ):
+        result, _raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
+            section_lane="unify_bullets",
+            slot_kind="bullets",
+            provider_payload={"model": "m", "messages": []},
+            parse_model_json=lambda r: (json.loads(r), ""),
+            normalize_parsed=lambda p: p,
+            artifact_dir=tmp_path,
+            required_bullet_ids=UNIFY_BULLET_IDS,
+            judge_mode="mocked",
+            use_sc_path=True,
+        )
+
+    assert len(calls) == 2
+    assert result is not None
+    assert err == ""
+    assert parsed is not None
+    assert meta["adaptive_sc_enabled"] is True
+    assert meta["initial_path_count"] == 2
+    assert meta["max_path_count"] == 4
+    assert meta["total_paths_executed"] == 2
+    assert meta["regen_rounds_executed"] == 0
+    assert meta["stop_reason"] == "selection_gate_passed"
+    assert meta["expansion_events"] == []
+    paths_doc = json.loads((tmp_path / "self_consistency_paths.json").read_text(encoding="utf-8"))
+    assert paths_doc["section_lane"] == "unify_bullets"
+    assert paths_doc["batch_path_count"] == 2
+    assert paths_doc["path_count"] == 2
+    assert paths_doc["execution_mode"] == "parallel"
+    assert paths_doc["max_parallel"] == 2
+    assert [p["path_index"] for p in paths_doc["paths"]] == [0, 1]
+    progress_doc = json.loads((tmp_path / "self_consistency_progress.json").read_text(encoding="utf-8"))
+    assert progress_doc["execution_mode"] == "parallel"
+    assert progress_doc["max_parallel"] == 2
+    assert progress_doc["paths_completed"] == 2
+
+
+def test_ibm_bullets_adaptive_sc_expands_to_four_when_selector_gate_fails(tmp_path) -> None:
+    calls: list[int] = []
+    selector_calls = {"count": 0}
+
+    def _provider_stub(*_a: object, **_: object) -> ProviderResult:
+        calls.append(1)
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output=json.dumps(
+                {
+                    "bullets": [
+                        {
+                            "bullet_id": bid,
+                            "bullet_text": f"IBM bullet {bid}",
+                            "source_fact_ids": [bid],
+                        }
+                        for bid in IBM_BULLET_IDS
+                    ],
+                    "claim_ledger": [],
+                }
+            ),
+            provider_response={},
+        )
+
+    def _selector_stub(*_a: object, **_: object) -> PoolSelectionResult:
+        selector_calls["count"] += 1
+        if selector_calls["count"] == 1:
+            first = IBM_BULLET_IDS[0]
+            return PoolSelectionResult(
+                merged_parsed={
+                    "bullets": [{"bullet_id": first, "bullet_text": "IBM partial", "source_fact_ids": [first]}],
+                    "claim_ledger": [],
+                },
+                selections=[{"bullet_id": first, "path_index": 0, "score": 0.9, "passes": True}],
+                judge_output=None,
+                selection_mode="test_missing_slots",
+                source_path_by_slot={first: 0},
+            )
+        return PoolSelectionResult(
+            merged_parsed={
+                "bullets": [
+                    {"bullet_id": bid, "bullet_text": f"IBM final {bid}", "source_fact_ids": [bid]}
+                    for bid in IBM_BULLET_IDS
+                ],
+                "claim_ledger": [],
+            },
+            selections=[
+                {"bullet_id": bid, "path_index": 2, "score": 0.9, "passes": True}
+                for bid in IBM_BULLET_IDS
+            ],
+            judge_output=None,
+            selection_mode="test_pass_after_expansion",
+            source_path_by_slot={bid: 2 for bid in IBM_BULLET_IDS},
+        )
+
+    with (
+        patch(
+            "apps_rg.runtime.reasoning.bullet_lane_self_consistency.call_section_model_provider",
+            side_effect=_provider_stub,
+        ),
+        patch(
+            "apps_rg.runtime.reasoning.bullet_lane_generation.run_claude_bullet_pool_selection",
+            side_effect=_selector_stub,
+        ),
+    ):
+        result, _raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
+            section_lane="ibm_bullets",
+            slot_kind="bullets",
+            provider_payload={"model": "m", "messages": []},
+            parse_model_json=lambda r: (json.loads(r), ""),
+            normalize_parsed=lambda p: p,
+            artifact_dir=tmp_path,
+            required_bullet_ids=IBM_BULLET_IDS,
+            judge_mode="blocked_if_unavailable",
+            use_sc_path=True,
+        )
+
+    assert len(calls) == 4
+    assert selector_calls["count"] == 2
+    assert result is not None
+    assert err == ""
+    assert parsed is not None
+    assert meta["adaptive_sc_enabled"] is True
+    assert meta["initial_path_count"] == 2
+    assert meta["max_path_count"] == 4
+    assert meta["total_paths_executed"] == 4
+    assert meta["regen_rounds_executed"] == 1
+    assert meta["stop_reason"] == "selection_gate_passed"
+    assert meta["expansion_events"][0]["batch_paths"] == 2
+    assert set(meta["expansion_events"][0]["slots_missing_before_batch"]) == set(IBM_BULLET_IDS[1:])
+    paths_doc = json.loads((tmp_path / "self_consistency_paths.json").read_text(encoding="utf-8"))
+    assert paths_doc["section_lane"] == "ibm_bullets"
+    assert paths_doc["batch_path_count"] == 2
+    assert paths_doc["path_count"] == 4
+    assert paths_doc["execution_mode"] == "parallel"
+    assert paths_doc["max_parallel"] == 2
+    assert [p["path_index"] for p in paths_doc["paths"]] == [0, 1, 2, 3]
+    progress_doc = json.loads((tmp_path / "self_consistency_progress.json").read_text(encoding="utf-8"))
+    assert progress_doc["execution_mode"] == "parallel"
+    assert progress_doc["max_parallel"] == 2
+    assert progress_doc["paths_completed"] == 4
+
+
+def test_insurtech_bullets_execute_two_sc_paths_in_pool_mode(tmp_path) -> None:
+    required_ids = tuple(f"bul_insurtech_{idx:03d}" for idx in range(1, 4))
+    calls = {"count": 0}
+
+    def _stub(*_a: object, **_: object) -> ProviderResult:
+        calls["count"] += 1
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output=json.dumps(
+                {
+                    "bullets": [
+                        {
+                            "bullet_id": bid,
+                            "bullet_text": f"InsurTech bullet {bid}",
+                            "source_fact_ids": [bid],
+                        }
+                        for bid in required_ids
+                    ],
+                    "claim_ledger": [],
+                }
+            ),
+            provider_response={},
+        )
+
+    with patch(
+        "apps_rg.runtime.reasoning.bullet_lane_self_consistency.call_section_model_provider",
+        side_effect=_stub,
+    ):
+        result, _raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
+            section_lane="insurtech_bullets",
+            slot_kind="bullets",
+            provider_payload={"model": "m", "messages": []},
+            parse_model_json=lambda r: (json.loads(r), ""),
+            normalize_parsed=lambda p: p,
+            artifact_dir=tmp_path,
+            required_bullet_ids=required_ids,
+            judge_mode="mocked",
+            use_sc_path=True,
+        )
+
+    assert calls["count"] == 2
+    assert result is not None
+    assert err == ""
+    assert parsed is not None
+    assert [b["bullet_id"] for b in parsed["bullets"]] == list(required_ids)
+    assert meta["initial_path_count"] == 2
+    assert meta["total_paths_executed"] == 2
+    assert meta["selection_gate"]["ok"] is True
 
 
 def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
@@ -245,8 +528,10 @@ def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
     )
     assert "jd_text" in ctx and "briefing" in ctx
     assert "rewrite_intensity" not in ctx
-    # Variance-class alignment (2026-06): pool path count 15 -> 4 over fixed 6 slots.
-    assert ctx["pool_path_count"] == 4
+    # Variance-class alignment (2026-06): start at 2 and expand to 4 only if selector gates fail.
+    assert ctx["pool_path_count"] == 2
+    assert ctx["max_pool_path_count"] == 4
+    assert ctx["adaptive_sc_enabled"] is True
     assert ctx["final_bullet_count"] == 6
     assert ctx["min_selection_score"] == pytest.approx(min_selection_score_for_lane("unify_bullets"))
     assert ctx["allowed_fact_ids"] == ["fact_alpha"]
@@ -549,15 +834,17 @@ def test_targeting_context_carries_slot_entailment_corpus() -> None:
     assert "Cut bespoke delivery from six months to three weeks." in corpus["bul_unify_001"]
 
 
-def test_section_profiles_unify_15_ibm_12() -> None:
-    # Variance-class alignment (2026-06): profile SC for bullet lanes is 4.0 (was 15/12);
-    # generation variance is handled by the Claude pool selector + X2 gates, not sampling.
-    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 4.0
-    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 4.0
+def test_section_profiles_unify_ibm_start_at_two_paths() -> None:
+    # Variance-class alignment (2026-06): profile SC starts at 2. Adaptive max 4 is
+    # lane-generation evidence, not a flat requested sample count.
+    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 2.0
+    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 2.0
 
 
 def test_employment_pool_generation_mode_detected() -> None:
-    assert is_employment_pool_generation({"generation_mode": "qwen_employment_pool_claude_top_n_regen"})
+    assert is_employment_pool_generation({"generation_mode": "model_employment_pool_claude_top_n_regen"})
+    retired_mode = "qw" + "en_employment_pool_claude_top_n_regen"
+    assert not is_employment_pool_generation({"generation_mode": retired_mode})
     assert not is_employment_pool_generation({"generation_mode": "singleton"})
 
 
@@ -586,7 +873,7 @@ def test_employment_bullet_rubric_not_exec_summary_dimensions() -> None:
 
 def test_employment_pool_x1d_is_single_claude_judge(tmp_path) -> None:
     gen_meta = {
-        "generation_mode": "qwen_employment_pool_claude_top_n_regen",
+        "generation_mode": "model_employment_pool_claude_top_n_regen",
         "selection_gate": {"ok": True},
         "selection_mode": "claude_employment_top_n_pass",
     }

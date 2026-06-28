@@ -69,7 +69,7 @@ def _lane_args() -> argparse.Namespace:
         briefing=BRIEFING_DEFAULT,
         broad_skills_ledger_path="",
         base_resume_ref="",
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
     )
 
 

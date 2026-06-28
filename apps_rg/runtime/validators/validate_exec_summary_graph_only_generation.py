@@ -25,7 +25,7 @@ LANE = "executive_summary"
 MOCK_PROVIDER_MARKERS = (
     "DEV_DEFAULT_MOCK",
     "OFFLINE_CONTRACT_STUB",
-    "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+    "APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB",
     "runtime_generation_status\": \"OFFLINE",
     "runtime_generation_status\": \"MOCK",
     "provider\": \"mock",
@@ -263,8 +263,8 @@ def validate_run_dir(run_dir: Path, *, repo: Path) -> ValidationReport:
         f"runtime_generation_status={runtime_status!r}",
     )
 
-    if os.environ.get("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "").strip():
-        report.mock_provider_flags.append("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=set")
+    if os.environ.get("APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB", "").strip():
+        report.mock_provider_flags.append("APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB=set")
     if report.provider_resolution_source == "DEV_DEFAULT_MOCK":
         report.mock_provider_flags.append("provider_resolution_source=DEV_DEFAULT_MOCK")
 
@@ -274,7 +274,7 @@ def validate_run_dir(run_dir: Path, *, repo: Path) -> ValidationReport:
             if marker not in report.mock_provider_flags:
                 report.mock_provider_flags.append(marker)
     prov_low = report.provider_name.lower()
-    if prov_low and any(x in prov_low for x in ("mock", "stub")) and "qwen" not in prov_low:
+    if prov_low and any(x in prov_low for x in ("mock", "stub")) and "PROVIDER_MODEL" not in prov_low:
         report.mock_provider_flags.append(f"provider_name={report.provider_name}")
     if runtime_status in ("MOCK", "OFFLINE", "OFFLINE_CONTRACT_STUB"):
         report.mock_provider_flags.append(f"runtime_generation_status={runtime_status}")

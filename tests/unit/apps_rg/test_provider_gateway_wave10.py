@@ -56,7 +56,7 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
         "headline": "claude-opus-4-8",
         "executive_summary": "claude-opus-4-8",
     }
-    assert "local_qwen_generator" not in profiles
+    assert "local_retired_provider_generator" not in profiles
 
 
 def test_external_claude_default_model_is_sonnet() -> None:

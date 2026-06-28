@@ -120,7 +120,7 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
         "section_level_x3": {"lanes_detail": [], "rollup_x3_non_allow": []},
         "non_generation_stage_guarantees": {
             "provider_calls_made": False,
-            "qwen_calls_made": False,
+            "retired_provider_calls_made": False,
             "judge_calls_made": False,
         },
         "explicit_waiver_needed_for_allow_when_section_review": False,
@@ -155,7 +155,7 @@ def test_run_orchestration_step_order_without_real_providers(tmp_path: Path) -> 
     ):
         out = ofr.run_orchestration(
             repo=repo,
-            provider="qwen_vllm",
+            provider="retired_provider_profile",
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
@@ -220,7 +220,7 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
         "section_level_x3": {"lanes_detail": [], "rollup_x3_non_allow": []},
         "non_generation_stage_guarantees": {
             "provider_calls_made": False,
-            "qwen_calls_made": False,
+            "retired_provider_calls_made": False,
             "judge_calls_made": False,
         },
         "explicit_waiver_needed_for_allow_when_section_review": False,
@@ -255,7 +255,7 @@ def test_override_base_resume_used_when_provided(tmp_path: Path) -> None:
     ):
         out = ofr.run_orchestration(
             repo=repo,
-            provider="qwen_vllm",
+            provider="retired_provider_profile",
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
@@ -297,7 +297,7 @@ def test_orchestrator_rejects_mock_judges_without_allow_test_hatch(tmp_path: Pat
     with pytest.raises(ValueError, match="allow_test_mock_judges"):
         ofr.run_orchestration(
             repo=repo,
-            provider="qwen_vllm",
+            provider="retired_provider_profile",
             x1d_judges="gemini_pro",
             allow_non_allow_exit_zero=False,
             mock_judges=True,
@@ -317,7 +317,7 @@ def test_missing_default_base_resume_fails_before_subprocess(tmp_path: Path) -> 
         with pytest.raises(ValueError, match="canonical default base resume"):
             ofr.run_orchestration(
                 repo=repo,
-                provider="qwen_vllm",
+                provider="retired_provider_profile",
                 x1d_judges="gemini_pro",
                 allow_non_allow_exit_zero=False,
                 mock_judges=True,

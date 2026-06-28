@@ -23,7 +23,7 @@ ROLLUP_PY = REPO_ROOT / "apps_rg" / "runtime" / "reports" / "generated_lane_roll
 
 
 def _lane_artifact_base(lane: str) -> Path:
-    """Prefer accepted REAL_LLM+qwen rollup dir; fall back to legacy flat lane root."""
+    """Prefer accepted REAL_LLM+retired_provider rollup dir; fall back to legacy flat lane root."""
     rd, tag = resolve_accepted_real_rollup_run_dir(REPO_ROOT, lane)
     if rd is not None and tag != "missing_successful_real_run" and (rd / "x2_gate_outputs.json").is_file():
         return rd
@@ -170,7 +170,7 @@ def _write_json(p: Path, obj: dict) -> None:
 def _write_min_proof_bundle(rd: Path, *, run_id: str, runtime_generation_status: str) -> None:
     _write_json(
         rd / "provider_request.json",
-        {"provider_requested": "qwen_vllm", "provider_attempted": runtime_generation_status == "REAL_LLM"},
+        {"provider_requested": "retired_provider_profile", "provider_attempted": runtime_generation_status == "REAL_LLM"},
     )
     _write_json(
         rd / "l2_output.json",
@@ -198,17 +198,17 @@ def _write_min_proof_bundle(rd: Path, *, run_id: str, runtime_generation_status:
 def test_finalize_real_llm_writes_latest_successful_real_pointer(tmp_path: Path):
     repo = tmp_path
     rid = "ok_run"
-    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", rid)
+    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", rid)
     _write_min_proof_bundle(ad, run_id=rid, runtime_generation_status="REAL_LLM")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad,
         run_id=rid,
         section_id=_LANE_PT,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         command="pytest",
     )
@@ -221,32 +221,32 @@ def test_finalize_real_llm_writes_latest_successful_real_pointer(tmp_path: Path)
 def test_finalize_blocked_does_not_update_latest_successful_real_pointer(tmp_path: Path):
     repo = tmp_path
     ok = "ok_run"
-    ad_ok = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", ok)
+    ad_ok = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", ok)
     _write_min_proof_bundle(ad_ok, run_id=ok, runtime_generation_status="REAL_LLM")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_ok,
         run_id=ok,
         section_id=_LANE_PT,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         command="pytest",
     )
     blocked = "blocked_run"
-    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", blocked)
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", blocked)
     _write_min_proof_bundle(ad_b, run_id=blocked, runtime_generation_status="BLOCKED")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_b,
         run_id=blocked,
         section_id=_LANE_PT,
         runtime_generation_status="BLOCKED",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         command="pytest",
     )
@@ -281,17 +281,17 @@ def test_migration_scan_finds_prior_real_llm_when_successful_pointer_removed(tmp
     """Simulates blocked contract test overwriting latest_real but not polluting accepted evidence."""
     repo = tmp_path
     good = "good_run"
-    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", good)
+    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", good)
     _write_min_proof_bundle(ad_g, run_id=good, runtime_generation_status="REAL_LLM")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_g,
         run_id=good,
         section_id=_LANE_PT,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         command="pytest",
     )
@@ -300,62 +300,62 @@ def test_migration_scan_finds_prior_real_llm_when_successful_pointer_removed(tmp
     succ.unlink()
 
     bad = "bad_run"
-    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", bad)
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", bad)
     _write_min_proof_bundle(ad_b, run_id=bad, runtime_generation_status="BLOCKED")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_b,
         run_id=bad,
         section_id=_LANE_PT,
         runtime_generation_status="BLOCKED",
         provider_attempted=False,
-        command="pytest-qwen-unavailable-contract",
-        provider_requested="qwen_vllm",
+        command="pytest-retired_provider-unavailable-contract",
+        provider_requested="retired_provider_profile",
     )
 
     rd, tag = resolve_accepted_real_rollup_run_dir(repo, _LANE_PT)
-    assert tag == "migration_real_llm_qwen_vllm_scan"
+    assert tag == "migration_real_llm_retired_provider_profile_scan"
     assert rd is not None and rd.name == good
 
 
 def test_collect_lane_rolls_up_via_successful_bundle_not_blocked_attempt(tmp_path: Path):
     repo = tmp_path
     good = "good_run"
-    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", good)
+    ad_g = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", good)
     _write_min_proof_bundle(ad_g, run_id=good, runtime_generation_status="REAL_LLM")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_g,
         run_id=good,
         section_id=_LANE_PT,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=True,
         command="pytest",
     )
     (repo / "artifacts" / "apps_rg" / "runtime_proofs" / _LANE_PT / "latest_successful_real_run.json").unlink()
     bad = "bad_run"
-    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", bad)
+    ad_b = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", bad)
     _write_min_proof_bundle(ad_b, run_id=bad, runtime_generation_status="BLOCKED")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad_b,
         run_id=bad,
         section_id=_LANE_PT,
         runtime_generation_status="BLOCKED",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=False,
         command="pytest",
     )
     row = glr.collect_lane(_LANE_PT, repo=repo, rollup_artifact_mode="real")
     assert row["rollup_source_run_dir"].replace("\\", "/").endswith(f"{_LANE_PT}/real/{good}")
-    assert row["accepted_real_evidence_resolution"] == "migration_real_llm_qwen_vllm_scan"
+    assert row["accepted_real_evidence_resolution"] == "migration_real_llm_retired_provider_profile_scan"
     assert row["runtime_generation_status"] == "REAL_LLM"
     assert row["latest_real_attempt_runtime_generation_status"] == "BLOCKED"
 
@@ -363,17 +363,17 @@ def test_collect_lane_rolls_up_via_successful_bundle_not_blocked_attempt(tmp_pat
 def test_collect_lane_raises_when_no_accepted_real_bundle(tmp_path: Path):
     repo = tmp_path
     only = "blocked_only"
-    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "qwen_vllm", only)
+    ad = prepare_runtime_proof_run_dir(repo, _LANE_PT, "retired_provider_profile", only)
     _write_min_proof_bundle(ad, run_id=only, runtime_generation_status="BLOCKED")
     finalize_runtime_proof_run(
         repo,
         _LANE_PT,
-        "qwen_vllm",
+        "retired_provider_profile",
         ad,
         run_id=only,
         section_id=_LANE_PT,
         runtime_generation_status="BLOCKED",
-        provider_requested="qwen_vllm",
+        provider_requested="retired_provider_profile",
         provider_attempted=False,
         command="pytest",
     )

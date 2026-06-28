@@ -77,7 +77,7 @@ def build_locked_copy(
         "llm_generated": False,
         "rewrite_allowed": False,
         "provider_calls_made": False,
-        "qwen_calls_made": False,
+        "PROVIDER_MODEL_calls_made": False,
         "x2_passed": x2_payload["x2_passed"],
         "x2_failed": x2_payload["x2_failed"],
         "x2_failed_gate_ids": x2_payload["failed_gates"],

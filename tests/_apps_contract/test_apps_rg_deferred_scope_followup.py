@@ -186,7 +186,7 @@ def test_section_core_pa_signing_and_span_emit() -> None:
 def test_l2_handoff_receipt_passes_with_pa_hmac() -> None:
     payload = {
         "product_visible": True,
-        "compiled_prompt_artifact_summary": {"signature": "a" * 64, "target_provider": "vllm"},
+        "compiled_prompt_artifact_summary": {"signature": "a" * 64, "target_provider": "local_model_server"},
         "trace_root": "trace-1",
         "grounding_required": True,
     }

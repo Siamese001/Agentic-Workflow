@@ -623,7 +623,7 @@ def assemble_final_resume(
 
             "provider_calls_made": False,
 
-            "qwen_calls_made": False,
+            "PROVIDER_MODEL_calls_made": False,
 
             "judge_calls_made": False,
 

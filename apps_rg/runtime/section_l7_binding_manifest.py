@@ -18,6 +18,7 @@ from apps_rg.runtime.section_binding_taxonomy import (
     L7_CORE_ARTIFACTS,
     design_law_owner_for_artifact,
 )
+from apps_rg.runtime.providers.provider_attempt_spans import summarize_provider_attempt_spans
 
 BINDING_MANIFEST_ARTIFACT = "section_l7_binding_manifest.json"
 SCHEMA_VERSION = "section_l7_binding_manifest_v2"
@@ -246,6 +247,63 @@ def _product_certification_impact(artifact_dir: Path) -> dict[str, Any]:
     }
 
 
+def _span_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    spans: list[dict[str, Any]] = []
+    for item in value:
+        if isinstance(item, Mapping):
+            spans.append(dict(item))
+    return spans
+
+
+def _provider_attempt_spans_from_provider_response(
+    doc: Mapping[str, Any],
+) -> tuple[list[dict[str, Any]], str]:
+    reasoning_receipt = doc.get("reasoning_execution_receipt")
+    if isinstance(reasoning_receipt, Mapping):
+        fallback = reasoning_receipt.get("apps_rg_availability_fallback")
+        if isinstance(fallback, Mapping):
+            spans = _span_list(fallback.get("provider_attempt_spans"))
+            if spans:
+                return spans, "reasoning_execution_receipt.apps_rg_availability_fallback"
+
+    provider_response = doc.get("provider_response")
+    if isinstance(provider_response, Mapping):
+        fallback = provider_response.get("apps_rg_availability_fallback")
+        if isinstance(fallback, Mapping):
+            spans = _span_list(fallback.get("provider_attempt_spans"))
+            if spans:
+                return spans, "provider_response.apps_rg_availability_fallback"
+        spans = _span_list(provider_response.get("provider_attempt_spans"))
+        if spans:
+            return spans, "provider_response.provider_attempt_spans"
+
+    spans = _span_list(doc.get("provider_attempt_spans"))
+    if spans:
+        return spans, "provider_attempt_spans"
+    return [], "absent"
+
+
+def _provider_attempt_timing_summary(
+    *,
+    repo_root: Path,
+    artifact_dir: Path,
+) -> dict[str, Any]:
+    provider_response_path = artifact_dir / "provider_response.json"
+    doc = _load_json(provider_response_path)
+    spans, source = _provider_attempt_spans_from_provider_response(doc)
+    summary = summarize_provider_attempt_spans(spans)
+    summary.update(
+        {
+            "provider_response_ref": _repo_rel(repo_root, provider_response_path),
+            "span_source": source,
+            "provider_attempt_spans_present": bool(spans),
+        }
+    )
+    return summary
+
+
 def _proof_classification(
     *,
     integrated_l7_invoked: bool,
@@ -436,6 +494,15 @@ def build_section_l7_binding_manifest(
         explicit_non_claims.extend(shadow_q.get("explicit_non_claims") or [])
 
     pc_impact = _product_certification_impact(artifact_dir)
+    provider_attempt_spans, provider_attempt_span_source = (
+        _provider_attempt_spans_from_provider_response(
+            _load_json(artifact_dir / "provider_response.json")
+        )
+    )
+    provider_attempt_timing = _provider_attempt_timing_summary(
+        repo_root=repo_root,
+        artifact_dir=artifact_dir,
+    )
     proof_class = _proof_classification(
         integrated_l7_invoked=integrated_l7_invoked,
         l7_trusted_count=sum(1 for v in l7_emitted_flags.values() if v),
@@ -484,6 +551,12 @@ def build_section_l7_binding_manifest(
         "durable_write_evidence": durable,
         "explicit_non_claims": explicit_non_claims,
         "product_certification_impact": pc_impact,
+        "provider_attempt_span_refs": {
+            "provider_response.json": _repo_rel(repo_root, artifact_dir / "provider_response.json")
+        },
+        "provider_attempt_span_source": provider_attempt_span_source,
+        "provider_attempt_spans": provider_attempt_spans,
+        "provider_attempt_timing_summary": provider_attempt_timing,
         "proof_classification": proof_class,
         "proof_classification_legacy": (
             "SECTION_RUN_WITH_INTEGRATED_L7_REFS"

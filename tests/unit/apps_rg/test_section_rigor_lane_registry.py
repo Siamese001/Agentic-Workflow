@@ -25,4 +25,4 @@ def test_each_lane_has_critical_gates_and_brown_targeting() -> None:
         assert spec.critical_gates, spec.lane
         assert C0_CRITICAL_GATES.issubset(spec.critical_gates), spec.lane
         assert "Brown & Brown" in spec.extra_cli_args
-        assert spec.provider_mode == "qwen_live"
+        assert spec.provider_mode == "retired_provider_live"

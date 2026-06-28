@@ -1,7 +1,7 @@
 """Hatch helpers for mocked judges in section dispatch CLIs (plumbing-only path).
 
-Generation provider is always ``qwen_vllm`` (offline contract tests use
-``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1`` — emits ``OFFLINE_CONTRACT_STUB`` transport status).
+Generation provider is always ``external_model`` (offline contract tests use
+``APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB=1`` — emits ``OFFLINE_CONTRACT_STUB`` transport status).
 
 Keeps deterministic exit codes + proof-field wiring shared across headline, competencies,
 IBM bullets/narrative, unify narrative/bullets (legacy ``-m``), and orchestration harnesses."""
@@ -62,7 +62,7 @@ def infer_product_quality_blocked_or_mock(
     if runtime_generation_status == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
         return (
             "PARTIAL",
-            "Offline Qwen contract stub (APPS_RG_QWEN_OFFLINE_CONTRACT_STUB); plumbing-only (not live transport proof).",
+            "Offline PROVIDER_MODEL contract stub (APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB); plumbing-only (not live transport proof).",
         )
     if runtime_generation_status != "REAL_LLM":
         return "PARTIAL", "Mocked or blocked generation can prove plumbing only."

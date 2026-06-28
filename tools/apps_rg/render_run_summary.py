@@ -219,8 +219,50 @@ def _render_fact_vector_readiness_gates(run_dir: Path) -> List[str]:
     lines.append("")
     lines.append(
         "Policy: live `fact_vectors` must be hydrated before U0/C0; section generation "
-        "may compare against them but may not write live proof vectors in the same run."
+        "may compare against them. Grounded write-back rows stage during C0 and may only "
+        "promote to live Chroma after X3 through UWG/L4."
     )
+    lines.append("")
+    return lines
+
+
+def _render_whole_run_cache_preflight(run_dir: Path) -> List[str]:
+    receipt = _load_json(run_dir / "whole_run_cache_preflight.json")
+    if not receipt:
+        return []
+    eligibility = receipt.get("r1b_eligibility") if isinstance(receipt.get("r1b_eligibility"), dict) else {}
+    preflight = receipt.get("preflight") if isinstance(receipt.get("preflight"), dict) else {}
+    if not eligibility and isinstance(preflight.get("r1b_eligibility"), dict):
+        eligibility = preflight.get("r1b_eligibility") or {}
+    reuse_policy = receipt.get("reuse_authority_policy") if isinstance(receipt.get("reuse_authority_policy"), dict) else {}
+    rows = [
+        ("R1A", str(receipt.get("r1a_preflight_status") or "—"), ""),
+        (
+            "R1B",
+            str(receipt.get("r1b_preflight_status") or "—"),
+            str(receipt.get("r1b_preflight_reason") or eligibility.get("reason") or "—"),
+        ),
+        (
+            "R1B reuse authority",
+            _yes_no(eligibility.get("reuse_authority_enabled")),
+            str(eligibility.get("reuse_authority_env") or "APPS_RG_ENABLE_R1B_SEMANTIC_CACHE"),
+        ),
+        (
+            "R1B probeable",
+            _yes_no(eligibility.get("probeable")),
+            str(eligibility.get("decisive_reason") or "—"),
+        ),
+        (
+            "C0 fact_vectors consulted",
+            _yes_no(reuse_policy.get("c0_fact_vectors_consulted")),
+            "R1B is separate from C0 fact_vectors",
+        ),
+    ]
+    lines = ["## Whole-Run Cache Preflight", ""]
+    lines.append("| Lane | Status | Reason |")
+    lines.append("|---|---|---|")
+    for lane, status, reason in rows:
+        lines.append(f"| **{lane}** | `{status}` | `{reason}` |")
     lines.append("")
     return lines
 
@@ -831,6 +873,18 @@ def _render_post_x3_completion(run_dir: Path) -> List[str]:
         ),
         ("L6 bridge", str(l6.get("l6_shadow_bridge_ref") or "—")),
     ]
+    fact_vectors = receipt.get("fact_vector_writeback")
+    if isinstance(fact_vectors, dict):
+        rows.append(
+            (
+                "Fact-vector write-back",
+                (
+                    f"{fact_vectors.get('status') or '—'}; "
+                    f"{fact_vectors.get('reason') or '—'}; "
+                    f"promotions={len(fact_vectors.get('promotions') or [])}"
+                ),
+            )
+        )
     lines: List[str] = ["## Post-X3 Completion", ""]
     lines.append("| Field | Value |")
     lines.append("|---|---|")
@@ -935,6 +989,7 @@ def render(run_dir: Path) -> str:
     parts: List[str] = [title, "", f"_Rendered at {rendered_at}_", ""]
     parts += _render_identity(run_dir, identity, manifest)
     parts += _render_fact_vector_readiness_gates(run_dir)
+    parts += _render_whole_run_cache_preflight(run_dir)
     parts += _render_bcg_competencies_report(run_dir)
     parts += _render_bcg_unify_bullets_report(run_dir)
     parts += _render_l2_substages(terminal)

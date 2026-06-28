@@ -50,7 +50,7 @@ class TestExitChainRuntime(unittest.TestCase):
             compilation_hash="sha256:testhash123",
             generated_content=generated_content,
             proposed_state_diff=proposed_state_diff,
-            sovereign_execution_receipt="vllm-test-receipt-001",
+            sovereign_execution_receipt="local_model_server-test-receipt-001",
             tenant_id="apps_rg",
             l5_certification_ref="test-cert-ref-001",
         )
@@ -280,7 +280,7 @@ class TestRuntimeExhaustBundleOrder(unittest.TestCase):
                 "target_company": "TestCorp",
                 "target_role": "Engineer",
             },
-            sovereign_execution_receipt="vllm-test-receipt-004",
+            sovereign_execution_receipt="local_model_server-test-receipt-004",
             tenant_id="apps_rg",
             l5_certification_ref="test-cert-ref-004",
         )

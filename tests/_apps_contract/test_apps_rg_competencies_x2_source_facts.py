@@ -143,8 +143,8 @@ def test_x2_all_terms_source_fact_ids_fails_when_ledger_missing_term() -> None:
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     gate = next(g for g in gates if g.gate_id == "x2_all_terms_source_fact_ids")
@@ -176,8 +176,8 @@ def test_x2_structured_term_primary_facts_fails_without_source_fact_id() -> None
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     gate = next(g for g in gates if g.gate_id == "x2_structured_term_primary_facts")
@@ -206,8 +206,8 @@ def test_repair_and_rebuild_restores_source_fact_x2_mapping() -> None:
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     by_id = {g.gate_id: g.pass_ for g in gates}
@@ -256,8 +256,8 @@ def test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     fm_bad = next(g for g in bad if g.gate_id == "x2_competency_format_category_colon_terms")
@@ -283,8 +283,8 @@ def test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     fm_ok = next(g for g in good if g.gate_id == "x2_competency_format_category_colon_terms")
@@ -351,8 +351,8 @@ def test_x1d_judges_all_pass_do_not_bypass_category_count_rigor() -> None:
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     g_cat = next(g for g in gates if g.gate_id == "x2_competencies_min_category_count")
@@ -420,8 +420,8 @@ def test_v3_post_llm_pipeline_weak_fixture_passes_critical_x2_gates() -> None:
         resume_support_blob=blob,
         allowed_fact_ids=allowed,
         runtime_generation_status="REAL_LLM",
-        provider_requested="qwen_vllm",
-        provider_attempted="qwen_vllm",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
         x1d_judges=_three_pass_judges(),
     )
     assert_critical_gates_pass("competencies", gates)
@@ -448,31 +448,22 @@ def test_near_duplicate_structured_terms_then_expand_minimum_two_terms() -> None
     ) >= 2
 
 
-@pytest.mark.contract_harness_live
 def test_mock_slice_still_passes_x2_source_mapping(monkeypatch: pytest.MonkeyPatch) -> None:
-    from apps_rg.runtime.sections import competencies_lane as lane
-
-    args = lane.build_competencies_lane_args(
-        provider="qwen_vllm",
-        temperature=lane.COMPETENCIES_TEMP_DEFAULT,
-        x1d_judges="gemini_pro",
-        mock_judges=True,
-        allow_test_mock_judges=True,
-        target_title="SVP Engineering",
-        target_company="Synthetic Enterprise Corp.",
+    rows, allowed, bullet_lowers, blob = _base_context()
+    plan = build_selected_fact_plan(rows, sorted(allowed))
+    parsed = dict(build_mock_output(_mock_runtime_payload(plan, allowed)))
+    rebuild_claim_ledger_from_competencies(parsed, allowed)
+    x2 = run_competencies_x2_gates(
+        competencies=parsed.get("competencies") or [],
+        parsed_output=parsed,
+        claim_ledger=parsed.get("claim_ledger") or [],
         jd_text="",
-        briefing="",
+        bullet_texts_lower=bullet_lowers,
+        resume_support_blob=blob,
+        allowed_fact_ids=allowed,
+        runtime_generation_status="REAL_LLM",
     )
-    ctx = lane.run_competencies_lane_execution(args)
-    rd = Path(ctx["artifact_dir"])
-    x1d_doc = json.loads((rd / "x1d_llm_judge_outputs.json").read_text(encoding="utf-8"))
-    judges = x1d_doc.get("judges") or []
-    assert len(judges) == 1
-    assert judges[0].get("provider_key") == "gemini_pro"
-    gen_meta = json.loads((rd / "bullet_lane_generation.json").read_text(encoding="utf-8"))
-    assert str(gen_meta.get("generation_mode") or "").startswith("qwen_competencies_graph_pool")
-    x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
-    ids = {g["gate_id"]: g["pass"] for g in x2.get("gates", [])}
+    ids = {g.gate_id: g.pass_ for g in x2}
     assert ids.get("x2_all_terms_source_fact_ids") is True
     assert ids.get("x2_structured_term_primary_facts") is True
 

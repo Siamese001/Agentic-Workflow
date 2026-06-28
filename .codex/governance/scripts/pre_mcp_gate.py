@@ -393,71 +393,13 @@ _memory_gate_exempt_tools: set[str] = (
 
 def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     """
-    Hard gate: block non-memory MCP tool calls until mem_recall_session_start
-    has been called this session.
+    ADR-095 retired the Memory MCP first-call gate.
 
-    Rules (checked in order):
-    1. memory server calls always pass — never deadlock recall itself.
-    1a. filesystem read tools always pass — pure stateless reads need no session context.
-    1b. Recovery/health tools on any MCP server always pass — these are
-        precondition-free probes and must not consume retry budget.
-    2. memory_recalled=True in session state → gate satisfied, allow.
-    3. Memory MCP unhealthy → degrade-open (auto-mark recalled) to avoid blockage.
-    4. max_memory_block_attempts >= max_memory_block_attempts → degrade-open
-       (auto-mark recalled) to prevent permanent blocking.
-    5. Otherwise: increment attempt counter and block with redirect message.
-
-    Return 0 (allow) or 2 (block).
+    Kept as a compatibility shim for older tests/imports. Native file memory
+    under memory/ is the active recall contract; MCP transport availability must
+    not block unrelated MCP calls.
     """
-    # Rule 1: never block the memory server itself
-    if server_name == memory_server_name:
-        return 0
-
-    # Rule 1a: never block filesystem read tools — pure stateless reads need no session context.
-    # Write tools (write_file, edit_file, move_file) are still blocked by check_filesystem_write_gate.
-    if server_name == filesystem_server_name and tool_name not in filesystem_write_tools:
-        return 0
-
-    # Rule 1b: never block recovery/health tools on any server — these are
-    # precondition-free probes and blocking them wastes retry budget on non-work.
-    if tool_name in _memory_gate_exempt_tools:
-        return 0
-
-    state = _read_session_state()
-
-    # Rule 2: memory already recalled this session — gate satisfied.
-    if state.get("memory_recalled", False):
-        return 0
-
-    # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
-    if check_memory_gate(repo_root) != 0:
-        print(
-            "[pre_mcp_gate] memory-first gate: memory MCP unhealthy — degrading to open "
-            "(auto-marking recalled to prevent retry burn).",
-            file=sys.stderr,
-        )
-        _mark_memory_recalled()
-        return 0
-
-    # Rule 4: degrade-open after too many consecutive blocks (prevent infinite loop)
-    current_attempts = state.get("max_memory_block_attempts", 0)
-    if current_attempts >= max_memory_block_attempts:
-        print(
-            f"[pre_mcp_gate] memory-first gate: max_memory_block_attempts={current_attempts} "
-            f">= {max_memory_block_attempts} — degrading to open "
-            "(auto-marking recalled to prevent further blocking).",
-            file=sys.stderr,
-        )
-        _mark_memory_recalled()
-        return 0
-
-    # Rule 5: block and redirect
-    attempts = _increment_memory_block_attempts()
-    return _exit_block(
-        f"memory-first gate: call mem_recall_session_start (memory MCP) before any other "
-        f"MCP tool [attempt {attempts}/{max_memory_block_attempts}]. "
-        "Server: memory | Tool: mem_recall_session_start | Parameters: none."
-    )
+    return 0
 
 
 def _has_adg_sqlite(repo_root: Path) -> bool:
@@ -1494,7 +1436,7 @@ def main() -> int:
 
     # Memory MCP: verify SQLite DB is accessible
     if server_name == memory_server_name:
-        if tool_name in MEMORY_RECOVERY_TOOLS:
+        if tool_name in memory_recovery_tools:
             return 0
         return check_memory_gate(repo_root)
 

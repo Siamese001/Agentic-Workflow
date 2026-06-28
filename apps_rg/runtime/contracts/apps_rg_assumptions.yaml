@@ -207,7 +207,7 @@ assumptions:
     stage: L2
     owner: apps_rg.runtime.ports.ProviderGatewayPort
     decision_authority: provider_execution
-    description: "All model calls through ProviderGatewayPort; no direct qwen calls"
+    description: "All model calls through ProviderGatewayPort; no direct PROVIDER_MODEL calls"
     input_fields:
       - CompiledPromptArtifact
       - provider_profile

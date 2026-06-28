@@ -44,7 +44,7 @@ def test_exit_emits_x3_disposition() -> None:
         proposed_state_diff={"header": {"name": "Test User"}},
         compilation_hash="sha256::abc123",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     result = exit_finalize_apps_rg(
@@ -82,7 +82,7 @@ def test_user_visible_resume_preserved_no_durable_write() -> None:
         proposed_state_diff=resume_content,
         compilation_hash="sha256::def456",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     result = exit_finalize_apps_rg(
@@ -139,7 +139,7 @@ def test_commit_candidates_are_inert() -> None:
         proposed_state_diff={"test": "data"},
         compilation_hash="sha256::ghi789",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     result = exit_finalize_apps_rg(
@@ -279,7 +279,7 @@ def test_exit_emits_exactly_one_x3_with_correct_properties() -> None:
         proposed_state_diff={"test": "data"},
         compilation_hash="sha256::jkl012",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     result = exit_finalize_apps_rg(
@@ -366,7 +366,7 @@ def test_no_filesystem_mutation_happy_path(tmp_path: Path) -> None:
         proposed_state_diff={"header": {"name": "Test"}},
         compilation_hash="sha256::mno345",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     # Use a temp path that shouldn't be created
@@ -405,7 +405,7 @@ def test_gap001_final_receipt() -> None:
         proposed_state_diff={"gap_001": "test"},
         compilation_hash="sha256::gap001",
         l5_certification_ref="cert-test-ref",
-        sovereign_execution_receipt="vllm-test-receipt",
+        sovereign_execution_receipt="local_model_server-test-receipt",
     )
 
     result = exit_finalize_apps_rg(

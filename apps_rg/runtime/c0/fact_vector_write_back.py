@@ -27,6 +27,7 @@ import json
 import logging
 import os
 from collections.abc import Mapping, Sequence
+from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -79,6 +80,9 @@ PROMOTION_MODE_INLINE = "inline"
 PROMOTION_MODE_DEFERRED = "deferred"
 DEFAULT_PROMOTION_SCORE_FLOOR = 0.48
 PROMOTION_RECEIPT_NAME = "fact_vector_promotion_receipt.json"
+FACT_VECTOR_UWG_DIR = "fact_vectors_uwg"
+FACT_VECTORS_UWG_TARGET_SURFACE = "l4.apps_rg.fact_vectors"
+FACT_VECTORS_UWG_SCHEMA_REF = "schema:apps_rg.fact_vectors@2.1"
 X3_ALLOW = "X3_ALLOW"
 PROMOTION_HOLD_REASON_METADATA_KEY = "promotion_hold_reason"
 
@@ -255,6 +259,227 @@ def _promotion_receipt_digest(receipt: Mapping[str, Any]) -> str:
     }
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _json_ready(value: Any) -> Any:
+    if is_dataclass(value):
+        return _json_ready(asdict(value))
+    if isinstance(value, tuple):
+        return [_json_ready(v) for v in value]
+    if isinstance(value, list):
+        return [_json_ready(v) for v in value]
+    if isinstance(value, dict):
+        return {str(k): _json_ready(v) for k, v in value.items()}
+    return value
+
+
+def _rows_digest(rows: Sequence[PromotedFactRow]) -> str:
+    payload = [
+        {
+            "row_id": row.row_id,
+            "document_sha256": hashlib.sha256(row.document.encode("utf-8")).hexdigest(),
+            "chunk_digest": row.metadata.get("chunk_digest"),
+            "source_document_id": row.metadata.get("source_document_id"),
+            "run_id": row.metadata.get("run_id"),
+        }
+        for row in rows
+    ]
+    encoded = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _build_fact_vectors_uwg_commit_bundle(
+    *,
+    rows: Sequence[PromotedFactRow],
+    request: PromotionRequest,
+) -> tuple[Any, list[Any], Any, Any]:
+    """Build the Exit-sourced UWG admission packet before live Chroma projection."""
+    from agentic_core.L4_state.contracts.records import (
+        CommitRequest,
+        ReadSurfaceRefreshPlan,
+        RollbackPlan,
+        StateDiff,
+        stamp_digest,
+    )
+
+    row_digest = _rows_digest(rows)
+    run_id = _norm(request.run_id) or _norm(request.promotion_run_id) or row_digest[:12]
+    policy_hash = _norm(os.environ.get("APPS_RG_POLICY_HASH")) or "policy:apps_rg_fact_vectors_v1"
+    blueprint_hash = _norm(os.environ.get("APPS_RG_BLUEPRINT_HASH")) or "blueprint:apps_rg_fact_vectors_v1"
+    request_id = _norm(os.environ.get("APPS_RG_REQUEST_ID")) or f"req:fact-vectors:{run_id}"
+    trace_root = _norm(os.environ.get("APPS_RG_TRACE_ROOT")) or f"trace:fact-vectors:{run_id}"
+    replay_key = f"fact-vectors:{row_digest}"
+    rollback = stamp_digest(
+        RollbackPlan(
+            rollback_plan_id=f"rp:apps-rg-fact-vectors:{row_digest[:16]}",
+            blast_radius="single_surface",
+            target_surfaces=(FACT_VECTORS_UWG_TARGET_SURFACE,),
+            before_snapshot_refs=("snap:fact-vectors:before",),
+            rollback_operation_types=("tombstone",),
+        )
+    )
+    refresh = stamp_digest(
+        ReadSurfaceRefreshPlan(
+            refresh_plan_id=f"rfp:apps-rg-fact-vectors:{row_digest[:16]}",
+            source_commit_receipt_ref="<pending>",
+            before_snapshot="snap:fact-vectors:before",
+            expected_after_snapshot="snap:fact-vectors:after",
+            stale_projection_policy="fail_closed",
+            retry_policy="none",
+            policy_hash=policy_hash,
+            blueprint_hash=blueprint_hash,
+            affected_surfaces=(FACT_VECTORS_UWG_TARGET_SURFACE,),
+            required_refreshes=("fact_vectors_chroma_projection",),
+            refresh_order=("fact_vectors_chroma_projection",),
+        )
+    )
+    state_diff = stamp_digest(
+        StateDiff(
+            state_diff_id=f"sd:apps-rg-fact-vectors:{row_digest[:16]}",
+            target_surface=FACT_VECTORS_UWG_TARGET_SURFACE,
+            operation_type="memory_promotion",
+            after_candidate=f"fact_vectors:promotion:{request.promotion_run_id}:sha256:{row_digest}",
+            schema_ref=FACT_VECTORS_UWG_SCHEMA_REF,
+            blast_radius="single_surface",
+            rollback_plan_ref=rollback.rollback_plan_id,
+            proposed_by_surface="Exit",
+            created_at=request.promoted_at_utc,
+            replay_refs=(replay_key,),
+            audit_refs=(
+                request.receipt_path or PROMOTION_RECEIPT_NAME,
+                f"run_id:{request.run_id}",
+                f"x3_code:{request.x3_code}",
+            ),
+        )
+    )
+    gate_refs = [
+        "fact_vectors_staging_revalidation",
+        "fact_vectors_source_provenance_gate",
+    ]
+    if request.x3_code:
+        gate_refs.append(f"x3:{request.x3_code}")
+    commit_request = stamp_digest(
+        CommitRequest(
+            commit_request_id=f"cr:apps-rg-fact-vectors:{row_digest[:16]}",
+            cleared_exit_review_packet_ref="x3_disposition.json"
+            if request.x3_code
+            else "fact_vectors_promotion_gate",
+            request_id=request_id,
+            run_id=run_id,
+            trace_root=trace_root,
+            tenant_id="apps_rg",
+            policy_hash=policy_hash,
+            blueprint_hash=blueprint_hash,
+            route_contract_ref="route:apps_rg:fact_vectors_writeback",
+            replay_key=replay_key,
+            rollback_plan_ref=rollback.rollback_plan_id,
+            blast_radius="single_surface",
+            state_diff_refs=(state_diff.state_diff_id,),
+            gate_verdict_refs=tuple(gate_refs),
+            l5_certification_ref=f"l5:apps-rg-fact-vectors:{row_digest[:16]}",
+            affected_state_surfaces=(FACT_VECTORS_UWG_TARGET_SURFACE,),
+            expected_read_surface_refreshes=("fact_vectors_chroma_projection",),
+            audit_refs=(request.receipt_path or PROMOTION_RECEIPT_NAME,),
+        )
+    )
+    return commit_request, [state_diff], rollback, refresh
+
+
+def _write_fact_vectors_uwg_artifacts(
+    *,
+    artifact_dir: str | Path | None,
+    commit_request: Any,
+    state_diffs: list[Any],
+    rollback_plan: Any,
+    refresh_plan: Any,
+    commit_receipt: Any | None,
+    blocked_receipt: Any | None,
+    refresh_receipts: Sequence[Any],
+) -> dict[str, str]:
+    if artifact_dir is None:
+        return {}
+    root = Path(artifact_dir) / FACT_VECTOR_UWG_DIR
+    root.mkdir(parents=True, exist_ok=True)
+    files: dict[str, tuple[str, Any]] = {
+        "commit_request": ("commit_request.json", commit_request),
+        "state_diff": ("state_diff.json", state_diffs[0] if state_diffs else {}),
+        "rollback_plan": ("rollback_plan.json", rollback_plan),
+        "read_surface_refresh_plan": ("read_surface_refresh_plan.json", refresh_plan),
+        "refresh_receipts": ("uwg_refresh_receipts.json", list(refresh_receipts)),
+    }
+    if commit_receipt is not None:
+        files["uwg_commit_receipt"] = ("uwg_commit_receipt.json", commit_receipt)
+    if blocked_receipt is not None:
+        files["blocked_write_receipt"] = ("blocked_write_receipt.json", blocked_receipt)
+    written: dict[str, str] = {}
+    for key, (name, payload) in files.items():
+        path = root / name
+        path.write_text(
+            json.dumps(_json_ready(payload), indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        written[key] = str(path)
+    return written
+
+
+def _admit_fact_vector_promotion_via_uwg(
+    *,
+    rows: Sequence[PromotedFactRow],
+    request: PromotionRequest,
+    artifact_dir: str | Path | None,
+    gateway: Any | None = None,
+) -> dict[str, Any]:
+    """Submit the fact_vectors promotion to UWG before mutating live Chroma."""
+    from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
+
+    commit_request, state_diffs, rollback, refresh = _build_fact_vectors_uwg_commit_bundle(
+        rows=rows,
+        request=request,
+    )
+    gw = gateway or get_default_gateway()
+    try:
+        commit_receipt, blocked_receipt, refresh_receipts = gw.commit(
+            commit_request=commit_request,
+            state_diffs=state_diffs,
+            rollback_plan=rollback,
+            refresh_plan=refresh,
+        )
+    except ValueError as exc:
+        blocked_receipt = None
+        commit_receipt = None
+        refresh_receipts = []
+        status = "BLOCKED"
+        reason = str(exc)
+    else:
+        status = "ADMITTED" if commit_receipt is not None and blocked_receipt is None else "BLOCKED"
+        reason = "" if status == "ADMITTED" else ",".join(
+            str(v) for v in getattr(blocked_receipt, "blocked_reason_codes", ()) or ()
+        )
+    artifacts = _write_fact_vectors_uwg_artifacts(
+        artifact_dir=artifact_dir,
+        commit_request=commit_request,
+        state_diffs=state_diffs,
+        rollback_plan=rollback,
+        refresh_plan=refresh,
+        commit_receipt=commit_receipt,
+        blocked_receipt=blocked_receipt,
+        refresh_receipts=refresh_receipts,
+    )
+    return {
+        "schema_version": "apps_rg.fact_vectors_uwg_promotion.v1",
+        "target_surface": FACT_VECTORS_UWG_TARGET_SURFACE,
+        "status": status,
+        "reason": reason,
+        "commit_request_id": str(commit_request.commit_request_id),
+        "state_diff_refs": [str(sd.state_diff_id) for sd in state_diffs],
+        "uwg_commit_receipt_id": str(getattr(commit_receipt, "commit_receipt_id", "") or ""),
+        "blocked_commit_receipt_id": str(
+            getattr(blocked_receipt, "blocked_commit_receipt_id", "") or ""
+        ),
+        "blocked_reason_codes": list(getattr(blocked_receipt, "blocked_reason_codes", ()) or ()),
+        "refresh_receipt_count": len(refresh_receipts),
+        "artifacts": artifacts,
+    }
 
 
 def _attach_promotion_uwg_witness(
@@ -446,6 +671,62 @@ class _ChromaFactWritebackStore:
             return 0
         return int(self._live.count())
 
+    def get_live_rows_by_ids(self, row_ids: Sequence[str]) -> dict[str, Any]:
+        if self._live is None or not row_ids:
+            return {"ids": [], "documents": [], "metadatas": []}
+        return self._live.get(
+            ids=list(row_ids),
+            include=["documents", "metadatas"],
+        )
+
+
+class _UwgGuardedFactWritebackStore:
+    """FactWritebackStore wrapper that admits live projection through UWG first."""
+
+    def __init__(
+        self,
+        inner: _ChromaFactWritebackStore,
+        *,
+        request: PromotionRequest,
+        artifact_dir: str | Path | None,
+        gateway: Any | None = None,
+    ) -> None:
+        self._inner = inner
+        self._request = request
+        self._artifact_dir = artifact_dir
+        self._gateway = gateway
+        self.uwg_outcome: dict[str, Any] = {}
+
+    def list_staged_rows(self, *, include_embeddings: bool = True) -> list[StagedFactRow]:
+        return self._inner.list_staged_rows(include_embeddings=include_embeddings)
+
+    def find_live_id_by_digest(self, digest: str) -> str:
+        return self._inner.find_live_id_by_digest(digest)
+
+    def upsert_live_rows(self, rows: Sequence[PromotedFactRow]) -> None:
+        self.uwg_outcome = _admit_fact_vector_promotion_via_uwg(
+            rows=rows,
+            request=self._request,
+            artifact_dir=self._artifact_dir,
+            gateway=self._gateway,
+        )
+        if self.uwg_outcome.get("status") != "ADMITTED":
+            reason = str(self.uwg_outcome.get("reason") or "uwg_fact_vector_promotion_blocked")
+            raise RuntimeError(f"UWG_BLOCKED_FACT_VECTOR_PROMOTION:{reason}")
+        self._inner.upsert_live_rows(rows)
+
+    def delete_staged_rows(self, row_ids: Sequence[str]) -> None:
+        self._inner.delete_staged_rows(row_ids)
+
+    def mark_staged_rows_held(
+        self,
+        metadata_by_id: Mapping[str, Mapping[str, str | int | float | bool]],
+    ) -> None:
+        self._inner.mark_staged_rows_held(metadata_by_id)
+
+    def live_count(self) -> int:
+        return self._inner.live_count()
+
 
 def _open_collection(*, chroma_path: str, collection_name: str, collection_role: str) -> Any:
     from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
@@ -545,6 +826,44 @@ def _sync_sparse_fact_vectors(
     return _sync
 
 
+def _build_live_projection_proof(
+    *,
+    store: _ChromaFactWritebackStore,
+    promoted_ids: Sequence[str],
+    dense_count_before: int,
+) -> dict[str, Any]:
+    row_ids = [str(v) for v in promoted_ids if _norm(v)]
+    dense_count_after = store.live_count()
+    proof: dict[str, Any] = {
+        "schema_version": "apps_rg.fact_vectors_live_projection_proof.v1",
+        "projection_surface": "chromadb.fact_vectors",
+        "target_l4_surface": FACT_VECTORS_UWG_TARGET_SURFACE,
+        "retrieval_mode": "live_id_get",
+        "dense_count_before": dense_count_before,
+        "dense_count_after": dense_count_after,
+        "promoted_ids": row_ids,
+        "retrieved_ids": [],
+        "missing_ids": list(row_ids),
+        "status": "EMPTY" if not row_ids else "FAIL",
+        "reason": "no_promoted_ids" if not row_ids else "not_verified",
+    }
+    if not row_ids:
+        return proof
+    try:
+        got = store.get_live_rows_by_ids(row_ids)
+        retrieved = [str(v) for v in list(got.get("ids") or [])]
+        missing = [row_id for row_id in row_ids if row_id not in set(retrieved)]
+        proof["retrieved_ids"] = retrieved
+        proof["missing_ids"] = missing
+        proof["retrieved_count"] = len(retrieved)
+        proof["status"] = "PASS" if not missing else "FAIL"
+        proof["reason"] = "all_promoted_ids_retrieved" if not missing else "missing_promoted_ids"
+    except Exception as exc:  # guardian: projection proof is diagnostic; promotion receipt captures failure.
+        proof["status"] = "FAIL"
+        proof["reason"] = f"{type(exc).__name__}:{exc}"
+    return proof
+
+
 def promote_staged_fact_vectors(
     *,
     chroma_path: str,
@@ -560,6 +879,7 @@ def promote_staged_fact_vectors(
     run_id: str | None = None,
     x3_code: str | None = None,
     require_x3_allow: bool = False,
+    gateway: Any | None = None,
 ) -> dict[str, Any]:
     """Promote validated staged chunks from ``fact_vectors_staging`` to live ``fact_vectors``.
 
@@ -577,6 +897,9 @@ def promote_staged_fact_vectors(
     resolved_score_floor = promotion_score_floor(score_floor)
     resolved_run_id = _norm(run_id)
     resolved_x3_code = _norm(x3_code)
+    gate_x3_code = resolved_x3_code
+    if require_x3_allow and resolved_x3_code in {"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"}:
+        gate_x3_code = X3_ALLOW
     selected_ids = tuple(str(v).strip() for v in (ids or []) if _norm(v))
     request = PromotionRequest(
         staging_collection=staging_collection,
@@ -588,12 +911,14 @@ def promote_staged_fact_vectors(
         hitl_required=promotion_hitl_required(require_hitl),
         selected_ids=selected_ids,
         run_id=resolved_run_id,
-        x3_code=resolved_x3_code,
+        x3_code=gate_x3_code,
         require_x3_allow=bool(require_x3_allow),
         limit=limit,
         receipt_path=str(Path(artifact_dir) / PROMOTION_RECEIPT_NAME) if artifact_dir is not None else "",
     )
     receipt = _ENGINE.make_promotion_receipt(request)
+    receipt["source_x3_code"] = resolved_x3_code
+    receipt["x3_finish_code_normalized"] = gate_x3_code if gate_x3_code != resolved_x3_code else ""
 
     def _finish(done: dict[str, Any]) -> dict[str, Any]:
         if done.get("status") == "HELD_FOR_HITL":
@@ -612,8 +937,15 @@ def promote_staged_fact_vectors(
             staging_collection=staging_collection,
             live_collection=live_collection,
         )
-        receipt = _ENGINE.promote(
+        dense_count_before = store.live_count()
+        guarded_store = _UwgGuardedFactWritebackStore(
             store,
+            request=request,
+            artifact_dir=artifact_dir,
+            gateway=gateway,
+        )
+        receipt = _ENGINE.promote(
+            guarded_store,
             request,
             sparse_sync_callback=_sync_sparse_fact_vectors(
                 chroma_path=chroma_path,
@@ -621,6 +953,34 @@ def promote_staged_fact_vectors(
                 sparse_dir=sparse_dir,
             ),
         )
+        receipt["source_x3_code"] = resolved_x3_code
+        receipt["x3_finish_code_normalized"] = gate_x3_code if gate_x3_code != resolved_x3_code else ""
+        promoted_ids = [str(item.get("id") or "") for item in list(receipt.get("promoted") or [])]
+        receipt["uwg"] = dict(guarded_store.uwg_outcome)
+        receipt["live_projection"] = _build_live_projection_proof(
+            store=store,
+            promoted_ids=promoted_ids,
+            dense_count_before=dense_count_before,
+        )
+        receipt["retrieval_proof"] = dict(receipt["live_projection"])
+        receipt["l7_auditability"] = {
+            "uwg_required_before_live_chroma_projection": True,
+            "target_l4_surface": FACT_VECTORS_UWG_TARGET_SURFACE,
+            "staging_collection": staging_collection,
+            "live_collection": live_collection,
+            "x3_required": bool(require_x3_allow),
+            "x3_code": resolved_x3_code,
+            "x3_gate_code": gate_x3_code,
+            "uwg_status": str((receipt.get("uwg") or {}).get("status") or ""),
+            "live_projection_status": str((receipt.get("live_projection") or {}).get("status") or ""),
+            "retrieval_proof_status": str((receipt.get("retrieval_proof") or {}).get("status") or ""),
+        }
+        if receipt.get("status") == "PASS" and receipt["l7_auditability"]["uwg_status"] != "ADMITTED":
+            receipt["status"] = "FAIL"
+            receipt["reason"] = "uwg_admission_missing_for_live_projection"
+        if receipt.get("status") == "PASS" and receipt["l7_auditability"]["retrieval_proof_status"] != "PASS":
+            receipt["status"] = "FAIL"
+            receipt["reason"] = "live_fact_vector_retrieval_proof_missing"
     except Exception as exc:  # guardian: allow-broad-except -- promotion is best-effort, recorded in receipt
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
@@ -751,6 +1111,9 @@ __all__ = [
     "ENRICH",
     "EXTRACT",
     "FUSE",
+    "FACT_VECTOR_UWG_DIR",
+    "FACT_VECTORS_UWG_SCHEMA_REF",
+    "FACT_VECTORS_UWG_TARGET_SURFACE",
     "GENERATED",
     "LIVE_COLLECTION_NAME",
     "PROMOTION_RECEIPT_NAME",

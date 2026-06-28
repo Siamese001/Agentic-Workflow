@@ -35,6 +35,17 @@ def test_remediation_defaults_to_claude_owned_worktree(monkeypatch: pytest.Monke
     assert "claude-governance-hooks" in text
 
 
+def test_remediation_ignores_chat_worktree_root_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CHAT_WORKTREE_ROOT", r"C:\Users\amita\.codex\worktrees")
+
+    text = guard._remediation_example("governance-hooks")
+
+    assert "Agentic-Workflow-FRESH-worktrees" in text
+    assert r"C:\Users\amita\.codex\worktrees" not in text
+
+
 def test_remediation_can_render_codex_owned_worktree(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
     monkeypatch.setenv("WORKTREE_IDE_OWNER", "codex")

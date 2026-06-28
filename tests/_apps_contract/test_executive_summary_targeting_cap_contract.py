@@ -80,8 +80,8 @@ def test_brown_scale_token_budget_receipt_includes_targeting_cap_fields():
         _, receipt = apply_executive_summary_token_budget_policy(
             compiled,
             runtime_payload=payload,
-            provider="qwen_vllm",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            provider="retired_provider_profile",
+            model="Retired/Provider-Model",
             requested_max_output_tokens=1024,
             provider_context_window=16384,
         )

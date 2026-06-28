@@ -32,8 +32,8 @@ FORBIDDEN_SPINE_MODEL_ENV_GET: frozenset[str] = frozenset(
 # Canonical modular generation surface (HIGH static).
 PRODUCT_GENERATION_ROOTS: tuple[Path, ...] = (
     REPO_ROOT / "apps_rg" / "runtime" / "sections",
-    REPO_ROOT / "apps_rg" / "runtime" / "providers" / "qwen_vllm_provider.py",
-    REPO_ROOT / "apps_rg" / "runtime" / "providers" / "section_qwen_slice.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "providers" / "retired_provider_profile_provider.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "providers" / "section_retired_provider_slice.py",
 )
 
 # Explicitly classified non-generation (must not fail W2 if they reference spine vars).
@@ -112,12 +112,12 @@ def test_product_generation_modules_do_not_read_spine_model_env_vars(root: Path)
     assert not violations, "W2 spine env getenv in generation path:\n" + "\n".join(violations)
 
 
-def test_qwen_vllm_provider_uses_qwen_vllm_env_defaults() -> None:
-    mod = REPO_ROOT / "apps_rg" / "runtime" / "providers" / "qwen_vllm_provider.py"
+def test_retired_provider_profile_provider_uses_retired_provider_profile_env_defaults() -> None:
+    mod = REPO_ROOT / "apps_rg" / "runtime" / "providers" / "retired_provider_profile_provider.py"
     text = mod.read_text(encoding="utf-8")
-    assert 'os.environ.get("VLLM_BASE_URL"' in text or 'getenv("VLLM_BASE_URL"' in text
-    assert "QWEN_VLLM_MODEL" in text
-    assert "DEFAULT_QWEN_MODEL" in text
+    assert 'os.environ.get("LOCAL_MODEL_SERVER_BASE_URL"' in text or 'getenv("LOCAL_MODEL_SERVER_BASE_URL"' in text
+    assert "RETIRED_PROVIDER_PROFILE_MODEL" in text
+    assert "DEFAULT_RETIRED_PROVIDER_MODEL" in text
 
 
 def test_classified_non_generation_paths_are_documented() -> None:

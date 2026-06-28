@@ -11,6 +11,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any, Mapping
@@ -352,7 +353,9 @@ def _bind_completion_artifacts(
     l6_bridge_path: str,
     l6_bridge_hash: str,
     commit_receipt_id: str,
+    fact_vector_writeback: Mapping[str, Any] | None = None,
 ) -> None:
+    fv = dict(fact_vector_writeback or {})
     updates = {
         "apps_rg_post_x3_completion_status": "PASS",
         "apps_rg_post_x3_completion_ref": _repo_rel(receipt_path, artifact_dir),
@@ -365,6 +368,8 @@ def _bind_completion_artifacts(
         "apps_eval_record_sha256": f"sha256:{eval_record_hash}",
         "l6_shadow_bridge_ref": l6_bridge_path,
         "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
+        "fact_vector_writeback_status": str(fv.get("status") or ""),
+        "fact_vector_writeback_reason": str(fv.get("reason") or ""),
     }
     _update_plain_manifest(artifact_dir / "r4_run_manifest.json", updates)
     manifest_hash = _update_envelope_payload(artifact_dir / "integrated_runtime_artifact_manifest.json", updates)
@@ -386,6 +391,7 @@ def _bind_completion_artifacts(
             "uwg_commit_receipt_ref": updates["uwg_commit_receipt_ref"],
             "apps_eval_record_ref": eval_record_path,
             "l6_shadow_bridge_ref": l6_bridge_path,
+            "fact_vector_writeback": fv,
             "note": "route-family certification is separate from app workflow completion",
         }
         coverage_doc["artifact_hash"] = compute_artifact_hash(coverage_payload)
@@ -428,6 +434,117 @@ def _run_current_eval(
         deterministic_only=True,
         emit_l6_handoff=True,
     )
+
+
+def _complete_fact_vector_writeback_after_x3(
+    *,
+    artifact_dir: Path,
+    result: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Promote deferred grounded fact vectors for the full run after X3 success."""
+    from apps_rg.runtime.c0.c02_fact_vector_ingest import INGEST_RECEIPT_NAME
+    from apps_rg.runtime.c0.fact_vector_write_back import (
+        PROMOTION_MODE_DEFERRED,
+        promote_staged_fact_vectors,
+        promotion_mode,
+    )
+
+    receipts: list[dict[str, Any]] = []
+    candidate_run_ids: list[str] = []
+    for path in artifact_dir.rglob(INGEST_RECEIPT_NAME):
+        doc = _read_json(path)
+        if not doc:
+            continue
+        rel = _repo_rel(path, artifact_dir)
+        staged_count = int(doc.get("staged_count") or 0)
+        promoted_count = int((doc.get("promotion") or {}).get("promoted_count") or 0)
+        receipts.append(
+            {
+                "path": rel,
+                "status": str(doc.get("status") or ""),
+                "reason": str(doc.get("reason") or ""),
+                "run_id": str(doc.get("run_id") or ""),
+                "section_id": str(doc.get("section_id") or ""),
+                "staged_count": staged_count,
+                "promoted_count": promoted_count,
+                "promotion_mode": str(doc.get("promotion_mode") or ""),
+            }
+        )
+        if staged_count > 0 and str(doc.get("status") or "") == "STAGED_DEFERRED":
+            rid = str(doc.get("run_id") or "").strip()
+            if rid and rid not in candidate_run_ids:
+                candidate_run_ids.append(rid)
+
+    mode = promotion_mode()
+    payload: dict[str, Any] = {
+        "schema_version": "apps_rg.fact_vector_writeback_post_x3_completion.v1",
+        "status": "EMPTY",
+        "reason": "no_deferred_grounded_fact_vectors",
+        "promotion_mode": mode,
+        "candidate_run_ids": candidate_run_ids,
+        "ingest_receipts": receipts,
+        "promotions": [],
+    }
+    if not candidate_run_ids:
+        return payload
+    if mode != PROMOTION_MODE_DEFERRED:
+        payload["status"] = "SKIPPED"
+        payload["reason"] = "promotion_mode_not_deferred"
+        return payload
+
+    chroma_path = str(os.environ.get("CHROMA_PERSIST_DIR", "")).strip()
+    payload["chroma_path"] = chroma_path or None
+    if not chroma_path:
+        payload["status"] = "FAIL"
+        payload["reason"] = "CHROMA_PERSIST_DIR unset"
+        return payload
+
+    source_x3 = str(result.get("x3_disposition") or "").strip()
+    for rid in candidate_run_ids:
+        safe_rid = rid.replace(":", "_").replace("\\", "_").replace("/", "_")
+        promotion_dir = artifact_dir / "fact_vectors_post_x3" / safe_rid
+        promotion = promote_staged_fact_vectors(
+            chroma_path=chroma_path,
+            artifact_dir=promotion_dir,
+            run_id=rid,
+            x3_code=source_x3,
+            require_x3_allow=True,
+            promotion_run_id=f"post_x3:{rid}",
+        )
+        payload["promotions"].append(
+            {
+                "run_id": rid,
+                "artifact_dir": _repo_rel(promotion_dir, artifact_dir),
+                "status": str(promotion.get("status") or ""),
+                "reason": str(promotion.get("reason") or ""),
+                "promoted_count": int(promotion.get("promoted_count") or 0),
+                "uwg_status": str((promotion.get("uwg") or {}).get("status") or ""),
+                "live_projection_status": str(
+                    (promotion.get("live_projection") or {}).get("status") or ""
+                ),
+                "retrieval_proof_status": str(
+                    (promotion.get("retrieval_proof") or {}).get("status") or ""
+                ),
+                "receipt_ref": _repo_rel(
+                    promotion_dir / "fact_vector_promotion_receipt.json",
+                    artifact_dir,
+                ),
+            }
+        )
+
+    failures = [
+        p for p in payload["promotions"]
+        if p["status"] != "PASS"
+        or p["uwg_status"] != "ADMITTED"
+        or p["retrieval_proof_status"] != "PASS"
+    ]
+    payload["status"] = "FAIL" if failures else "PASS"
+    payload["reason"] = (
+        "fact_vector_writeback_chain_failed"
+        if failures
+        else "fact_vector_writeback_chain_complete"
+    )
+    return payload
 
 
 def complete_apps_rg_post_x3(
@@ -516,6 +633,23 @@ def complete_apps_rg_post_x3(
         output_hash=output_hash,
         ids=ids,
     )
+    fact_vector_writeback = _complete_fact_vector_writeback_after_x3(
+        artifact_dir=art,
+        result=result,
+    )
+    _write_json(art / "fact_vector_writeback_completion_receipt.json", fact_vector_writeback)
+    if fact_vector_writeback.get("status") == "FAIL":
+        payload = {
+            "schema_version": "apps_rg.post_x3_completion.v1",
+            "generated_at_utc": _utc_now_iso(),
+            "status": "FAIL",
+            "completed": False,
+            "x3_to_uwg_to_eval_to_l6_completed": False,
+            "failure_stage": "fact_vector_writeback",
+            "fact_vector_writeback": fact_vector_writeback,
+        }
+        _write_json(receipt_path, payload)
+        return payload
     eval_record = _run_current_eval(
         artifact_dir=art,
         result=result,
@@ -545,6 +679,7 @@ def complete_apps_rg_post_x3(
             "commit_status": "COMMITTED",
             "artifacts": dict(uwg_paths),
         },
+        "fact_vector_writeback": fact_vector_writeback,
         "apps_eval": {
             "record_id": eval_record.record_id,
             "eval_record_ref": eval_record_path,
@@ -575,6 +710,7 @@ def complete_apps_rg_post_x3(
             l6_bridge_path=l6_bridge_path,
             l6_bridge_hash=l6_bridge_hash,
             commit_receipt_id=commit_receipt.commit_receipt_id,
+            fact_vector_writeback=fact_vector_writeback,
         )
     return payload
 

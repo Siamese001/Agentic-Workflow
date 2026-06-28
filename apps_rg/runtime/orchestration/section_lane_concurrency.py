@@ -1,4 +1,4 @@
-"""vLLM-aware Phase-1 lane wave scheduling (plan apps-rg-parallel-section-orchestration-f2a8c4)."""
+"""external model-aware Phase-1 lane wave scheduling (plan apps-rg-parallel-section-orchestration-f2a8c4)."""
 from __future__ import annotations
 
 import os

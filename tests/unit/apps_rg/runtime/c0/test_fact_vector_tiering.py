@@ -148,10 +148,13 @@ def test_metadata_tier_does_not_change_c2_metadata_fit_score() -> None:
 
 
 def test_promotion_stamps_live_rows_as_learned(tmp_path, monkeypatch) -> None:
-    import chromadb
-
     import apps_rg.runtime.chroma_precomputed_collection as cpc
+    from apps_rg.runtime.c0.chroma_persistent_client import (
+        ensure_apps_rg_chroma_client,
+        reset_apps_rg_chroma_client_cache_for_tests,
+    )
 
+    reset_apps_rg_chroma_client_cache_for_tests()
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
 
     def _plain(client, name, *, metadata=None):
@@ -161,7 +164,7 @@ def test_promotion_stamps_live_rows_as_learned(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(cpc, "get_precomputed_embeddings_collection", _plain)
 
     chroma_path = str(tmp_path / "chroma")
-    client = chromadb.PersistentClient(path=chroma_path)
+    client = ensure_apps_rg_chroma_client(chroma_path)
     staging = client.get_or_create_collection(name=STAGING_COLLECTION_NAME)
     staging.upsert(
         ids=["apps_rg:fv:f1"],

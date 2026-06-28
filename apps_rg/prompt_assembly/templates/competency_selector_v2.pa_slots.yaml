@@ -23,7 +23,7 @@ slot_bodies:
     </authority_hierarchy>
     <north_star_task>
     Scannable executive capability index: "Category Label: compact phrase, compact phrase, ...".
-    Graph_8x8: rank the 8 category candidates from VERIFIED_SKILL_INVENTORY_PROJECTION; emit exactly 8 in output.
+    Graph_8x8: rank the 8 category candidates from VERIFIED_SKILL_INVENTORY_PROJECTION; emit the highest-signal 6-8 in output.
     Terms are compact noun phrases (typically 2–5 words);
     no bullets, paragraphs, sentences, metrics, or accomplishment prose as terms.
     </north_star_task>
@@ -55,9 +55,9 @@ slot_bodies:
     </proof_law_v1>
 
     <construction_checklist>
-    - categories[] (legacy mirror competencies[]): exactly 8 objects with category_label, terms (3–6 compact noun phrases;
+    - categories[] (legacy mirror competencies[]): 6-8 objects with category_label, terms (3–6 compact noun phrases;
       emit AT LEAST 3 terms per category — generic capability labels REQUIRE >=3 graph-backed terms),
-      ranked from 8 graph-matched category candidates;
+      ranked from 8 graph-matched category candidates; do not pad with low-signal categories just to reach 8;
       source_fact_ids (non-empty bul_* on category).
     - terms[]: prefer objects {text, source_fact_id, source_fact_ids, optional jd_signal_ids} for JD-informed ranking only.
     - selected_fact_plan stub: {section_id, selection_method, required_fact_ids} — do not paste facts[] array.

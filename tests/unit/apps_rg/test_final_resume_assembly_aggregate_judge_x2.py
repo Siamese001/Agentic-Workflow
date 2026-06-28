@@ -13,7 +13,7 @@ def _minimal_final_resume(*, judge_calls_made: bool) -> dict:
         "final_resume_hash": "abc",
         "calls": {
             "provider_calls_made": False,
-            "qwen_calls_made": False,
+            "retired_provider_calls_made": False,
             "judge_calls_made": judge_calls_made,
             "docx_rendered": False,
         },

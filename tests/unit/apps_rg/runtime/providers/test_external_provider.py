@@ -62,6 +62,13 @@ def test_external_provider_blocks_without_credentials_and_does_not_call_transpor
     assert result.provider_response is not None
     assert result.provider_response["attempt_started_at_utc"]
     assert result.provider_response["attempt_completed_at_utc"]
+    spans = result.provider_response["provider_attempt_spans"]
+    assert len(spans) == 1
+    assert spans[0]["schema_version"] == "apps_rg_provider_attempt_span_v1"
+    assert spans[0]["provider"] == "external_openai"
+    assert spans[0]["provider_attempted"] is False
+    assert spans[0]["runtime_generation_status"] == "BLOCKED"
+    assert spans[0]["duration_seconds"] is not None
 
 
 def test_external_provider_threads_request_to_injected_transport() -> None:
@@ -95,6 +102,14 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
     assert result.provider_response["attempt_started_at_utc"]
     assert result.provider_response["attempt_completed_at_utc"]
     assert result.provider_response["transport_response"]["text"] == "Generated section."
+    spans = result.provider_response["provider_attempt_spans"]
+    assert len(spans) == 1
+    assert spans[0]["provider"] == "external_openai"
+    assert spans[0]["model"] == "external-test-model"
+    assert spans[0]["runtime_generation_status"] == "REAL_LLM"
+    assert spans[0]["timeout_seconds"] == 6.5
+    assert spans[0]["token_budget"] == 88
+    assert result.provider_response["provider_attempt_timing_summary"]["span_count"] == 1
     assert captured == {
         "provider_profile": "external_openai",
         "model": "external-test-model",
@@ -123,6 +138,11 @@ def test_external_provider_transport_errors_fail_closed() -> None:
     assert result.provider_response is not None
     assert result.provider_response["attempt_started_at_utc"]
     assert result.provider_response["attempt_completed_at_utc"]
+    span = result.provider_response["provider_attempt_spans"][0]
+    assert span["provider_attempted"] is True
+    assert span["provider_available"] is False
+    assert span["runtime_generation_status"] == "BLOCKED"
+    assert "ProviderGatewayError" in span["exact_provider_error"]
 
 
 def test_external_provider_json_errors_fail_closed() -> None:

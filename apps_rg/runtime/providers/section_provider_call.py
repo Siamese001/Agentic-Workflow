@@ -1,7 +1,7 @@
 """Provider-neutral section-lane model calls.
 
 Older apps_rg lanes still build OpenAI-compatible ``messages`` payloads for the
-local qwen slice. This helper keeps the payload shape intact while letting the
+local PROVIDER_MODEL slice. This helper keeps the payload shape intact while letting the
 same requests route through ``ProviderGateway`` for external profiles.
 """
 

@@ -1,4 +1,4 @@
-"""Post-X1D judge-informed Qwen remediation for executive_summary (apps_rg only)."""
+"""Post-X1D judge-informed PROVIDER_MODEL remediation for executive_summary (apps_rg only)."""
 
 from __future__ import annotations
 
@@ -135,7 +135,7 @@ def evaluate_judge_remediation_trigger(
     runtime_generation_status: str,
     x2_passed: bool,
 ) -> tuple[bool, dict[str, Any]]:
-    """Return whether post-judge Qwen regen should run (X2 must already be green).
+    """Return whether post-judge PROVIDER_MODEL regen should run (X2 must already be green).
 
     Policy (executive_summary): any model-backed judge below floor → regen (bounded
     by ``judge_regen_max_attempts()``, hard cap 3). No quorum / solitary-severe skip.

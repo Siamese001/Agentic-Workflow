@@ -109,7 +109,7 @@ def fake_artifact_dir(tmp_path):
 
     # prompt_bom (compiled prompt artifact)
     (d / "prompt_bom.json").write_text(json.dumps({
-        "model_id": "qwen-72b",
+        "model_id": "retired_provider-72b",
         "prompt_hash": "sha256:def456",
         "compiled": True,
     }))

@@ -71,6 +71,79 @@ def test_x2_not_classified_as_gate_verdict(tmp_path: Path) -> None:
     assert doc["artifact_classifications"]["x2_gate_outputs.json"] != "GateVerdict"
 
 
+def test_manifest_surfaces_provider_attempt_spans(tmp_path: Path) -> None:
+    ad = tmp_path / "run"
+    ad.mkdir()
+    spans = [
+        {
+            "schema_version": "apps_rg_provider_attempt_span_v1",
+            "span_kind": "provider_attempt",
+            "attempt_kind": "requested",
+            "attempt_index": 0,
+            "provider": "external_claude",
+            "model": "claude-sonnet-4-6",
+            "provider_attempted": True,
+            "provider_available": False,
+            "runtime_generation_status": "BLOCKED",
+            "started_at_utc": "2026-06-20T16:00:00+00:00",
+            "completed_at_utc": "2026-06-20T16:00:02+00:00",
+            "duration_seconds": 2.0,
+            "exact_provider_error": "External provider HTTP 429: rate_limit_error",
+            "fallback_reason": "provider_throttling_failure",
+            "output_accepted": False,
+        },
+        {
+            "schema_version": "apps_rg_provider_attempt_span_v1",
+            "span_kind": "provider_attempt",
+            "attempt_kind": "fallback",
+            "attempt_index": 1,
+            "provider": "external_openai",
+            "model": "gpt-ssot",
+            "provider_attempted": True,
+            "provider_available": True,
+            "runtime_generation_status": "REAL_LLM",
+            "started_at_utc": "2026-06-20T16:00:02+00:00",
+            "completed_at_utc": "2026-06-20T16:00:05+00:00",
+            "duration_seconds": 3.0,
+            "fallback_reason": "provider_throttling_failure",
+            "output_accepted": True,
+        },
+    ]
+    _touch(
+        ad,
+        "provider_response.json",
+        {
+            "provider_requested": "external_claude",
+            "reasoning_execution_receipt": {
+                "apps_rg_availability_fallback": {
+                    "provider_attempt_spans": spans,
+                }
+            },
+        },
+    )
+
+    doc = build_section_l7_binding_manifest(
+        repo_root=tmp_path,
+        artifact_dir=ad,
+        section_id="executive_summary",
+        run_id="r1",
+    )
+
+    assert doc["provider_attempt_span_refs"]["provider_response.json"] == (
+        "run/provider_response.json"
+    )
+    assert doc["provider_attempt_span_source"] == (
+        "reasoning_execution_receipt.apps_rg_availability_fallback"
+    )
+    assert doc["provider_attempt_spans"] == spans
+    summary = doc["provider_attempt_timing_summary"]
+    assert summary["span_count"] == 2
+    assert summary["fallback_attempted"] is True
+    assert summary["fallback_attempt_count"] == 1
+    assert summary["total_duration_seconds"] == 5.0
+    assert summary["accepted_output_provider"] == "external_openai"
+
+
 def test_section_runtime_proof_bundle_not_99(tmp_path: Path) -> None:
     ad = tmp_path / "run"
     ad.mkdir()

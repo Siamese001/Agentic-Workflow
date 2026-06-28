@@ -10,7 +10,7 @@ def test_attach_reasoning_to_prompt_trace_leaves_non_claude_trace_unchanged() ->
 
     out = attach_reasoning_to_prompt_trace(
         trace,
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
         lane_key="headline",
         provider_result_data={"reasoning_execution_receipt": {"id": "r1"}},
     )

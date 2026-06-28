@@ -192,7 +192,7 @@ def test_runtime_proof_pool_preserves_role_family_key_for_unify_bullets() -> Non
         jd_text=jd_text,
         briefing=briefing,
         base_resume_ref="",
-        provider="qwen_vllm",
+        provider="retired_provider_profile",
     )
     pool, _base, _path, _hash, _front_spine = load_section_proof_for_lane(
         section_id="unify_bullets",

@@ -1,6 +1,6 @@
 """Credential preflight for IBM narrative clean X3 ALLOW attempts (apps_rg-only).
 
-Fails fast **before** Qwen narrative generation when model-backed X1D is requested and a
+Fails fast **before** PROVIDER_MODEL narrative generation when model-backed X1D is requested and a
 required judge provider has no usable API credential configured.
 
 Live provider rate-limit / transient errors are discoverable only at judge-call time unless

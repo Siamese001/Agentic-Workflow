@@ -6,7 +6,6 @@ from pathlib import Path
 from apps_eval.contracts import EvalRequest
 from apps_eval.runner.core import run_eval
 from apps_rg.runtime.spine.l6_shadow_eval_runner import run_l6_v40_shadow_eval_for_section
-
 from tests.l6_observability.test_runtime_exhaust_v40_adapter import _seed_artifacts
 
 
@@ -57,7 +56,10 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["durable_write_attempted"] is False
     assert eval_bridge["future_run_only"] is True
     assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
-    assert eval_alignment["rows_expected"] == len(eval_record.scorecard.scorecard_rows)
+    required_rows = [
+        row for row in eval_record.scorecard.scorecard_rows if row.get("required", True)
+    ]
+    assert eval_alignment["rows_expected"] == len(required_rows)
     assert eval_alignment["missing_in_l6"] == []
     assert eval_alignment["missing_in_apps_eval"] == []
     assert eval_alignment["authority_mismatch"] is False

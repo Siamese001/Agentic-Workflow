@@ -91,7 +91,7 @@ def test_nonempty_selection_is_not_flagged_empty() -> None:
 
 def _pool_gen_meta(**overrides: object) -> dict:
     meta: dict = {
-        "generation_mode": "qwen_employment_pool_claude_top_n_regen",
+        "generation_mode": "retired_provider_employment_pool_claude_top_n_regen",
         "total_paths_executed": 4,
         "claude_selection_count": 0,
         "min_selection_score": 0.72,

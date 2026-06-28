@@ -30,7 +30,7 @@ def test_apps_rg_microstep_contract_expands_all_lane_rows() -> None:
     )
 
     rows = [row.to_dict() for row in evaluation["rows"]]
-    assert len(rows) == 134
+    assert len(rows) == 136
     for lane in lanes:
         lane_rows = [row for row in rows if row["lane_id"] == lane]
         assert len(lane_rows) == 10
@@ -84,3 +84,33 @@ def test_apps_rg_microstep_rows_pass_when_required_lane_artifacts_resolve(tmp_pa
 
     assert headline_rows
     assert all(row.verdict == "PASS" for row in headline_rows)
+
+
+def test_apps_rg_microstep_consumes_trace_reconciliation_when_present(tmp_path) -> None:
+    (tmp_path / "trace_reconciliation.json").write_text(
+        '{"schema_version":"apps_rg.trace_reconciliation.v1","trace_verdict":"TRACE_UNAVAILABLE",'
+        '"otel_snapshot_available":false,"summary":{"fail_count":0,"warn_count":2}}',
+        encoding="utf-8",
+    )
+    snapshot = AppOutputSnapshot(
+        app_id="apps_rg",
+        scenario_id="scenario",
+        x3_disposition="X3D_ALLOW_FINISH",
+        output={"sections": {}},
+        run_root=str(tmp_path),
+    )
+
+    evaluation = build_apps_rg_microstep_evaluation(
+        suite_id="apps_rg.dev.resume_generation",
+        scenario_id="scenario",
+        snapshot=snapshot,
+        run_id="run",
+        created_at="1970-01-01T00:00:00Z",
+    )
+
+    rows = [row for row in evaluation["rows"] if row.artifact_role == "trace_reconciliation"]
+    assert {row.gate_id for row in rows} == {
+        "trace_reconciliation_present",
+        "trace_reconciliation_consumed",
+    }
+    assert {row.verdict for row in rows} == {"PASS", "WARN"}

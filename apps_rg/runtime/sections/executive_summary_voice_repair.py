@@ -846,7 +846,7 @@ def _reduce_formulaic_bridge_echo(sentences: list[str]) -> list[str]:
     """Lower stock-bridge density without touching facts or metric anchors.
 
     x2_exec_summary_stock_bridge_max_two caps stock-bridge openers in S2–S5 at 2. When
-    Qwen + canonical sentence injection collectively exceed that cap, rewrite the latest
+    PROVIDER_MODEL + canonical sentence injection collectively exceed that cap, rewrite the latest
     stock-bridge S2–S5 opener to a non-stock alternative.
     """
     out = list(sentences)
@@ -1924,10 +1924,10 @@ def _strip_commercialization_thread_for_strategy_lane(
     *,
     target_role: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Deterministic post-Qwen substitution: on SVP IT Strategy lanes the literal word
+    """Deterministic post-PROVIDER_MODEL substitution: on SVP IT Strategy lanes the literal word
     'commercialization' hard-fails x2_exec_summary_strategy_no_commercialization_thread.
 
-    Qwen drifts here because the underlying fact name is
+    PROVIDER_MODEL drifts here because the underlying fact name is
     ``skill_agentic_platform_commercialization``. The prompt forbids it but variance still
     leaks the word into S3. This repair preserves all metrics ($22M, 20%, 8→28) and the
     causal structure while replacing the forbidden token with strategy-register phrasing

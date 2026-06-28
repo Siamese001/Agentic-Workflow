@@ -207,7 +207,7 @@ def _run_section_one_pipeline(artifact_dir: Path, section_id: str = "headline") 
             artifact_dir,
             section_id,
             payload,
-            provider_lane="qwen_vllm",
+            provider_lane="retired_provider_profile",
         )
         for name, body in (
             ("provider_request.json", {}),

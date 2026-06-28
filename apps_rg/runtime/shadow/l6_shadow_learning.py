@@ -11,6 +11,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.observability.trace_reconciliation import (
+    TRACE_MISMATCH,
+    TRACE_PARTIAL,
+    TRACE_RECONCILIATION_ARTIFACT,
+    TRACE_RECONCILIATION_ROWS_ARTIFACT,
+    TRACE_UNAVAILABLE,
+)
 from apps_rg.runtime.shadow.l6_handoff_packet import (
     L6_LEGACY_HANDOFF_AUTHORITY_SCOPE,
     repo_rel,
@@ -98,6 +105,8 @@ def build_l6_shadow_learning_record(
     x1 = x1_raw if isinstance(x1_raw, dict) else {}
     l6_v40_raw = _load_json(ad / "l6_v40_shadow_eval_package.json")
     l6_v40 = l6_v40_raw if isinstance(l6_v40_raw, dict) else {}
+    trace_raw = _load_json(ad / TRACE_RECONCILIATION_ARTIFACT)
+    trace_reconciliation = trace_raw if isinstance(trace_raw, dict) else {}
     x2_sum = summarize_x2(x2)
     x1_sum = summarize_x1d(x1)
     x3_sum = summarize_x3(x3_raw)
@@ -208,6 +217,17 @@ def build_l6_shadow_learning_record(
                 ),
             }
         )
+    trace_verdict = str(trace_reconciliation.get("trace_verdict") or "")
+    if trace_verdict in {TRACE_MISMATCH, TRACE_PARTIAL, TRACE_UNAVAILABLE}:
+        recs.append(
+            {
+                "applies_to": "future_run_only",
+                "recommendation": (
+                    "Review trace_reconciliation.json before the next run: OTel/backend observability "
+                    f"reported {trace_verdict}, while local receipts remain the proof authority for this run."
+                ),
+            }
+        )
 
     if section_id == "executive_summary" and judge_gap:
         soft = list(x1_sum.get("soft_failed_judges") or [])
@@ -263,11 +283,24 @@ def build_l6_shadow_learning_record(
             "l6_shadow_eval_package_ref": _ref(rr, ad, "l6_shadow_eval_package.json"),
             "l6_v40_shadow_eval_package_ref": _ref(rr, ad, "l6_v40_shadow_eval_package.json"),
             "l6_v40_shadow_eval_spans_ref": _ref(rr, ad, "l6_v40_shadow_eval_spans.json"),
+            "trace_reconciliation_ref": _ref(rr, ad, TRACE_RECONCILIATION_ARTIFACT),
+            "trace_reconciliation_rows_ref": _ref(rr, ad, TRACE_RECONCILIATION_ROWS_ARTIFACT),
         },
         "l6_v40_shadow_eval_snapshot": {
             "readiness_decision": l6_v40.get("readiness_decision"),
             "valid_v40_shadow_exhaust": l6_v40.get("valid_v40_shadow_exhaust"),
             "v40_gap_codes": list(l6_v40.get("v40_gap_codes") or []),
+        },
+        "trace_reconciliation_snapshot": {
+            "trace_verdict": trace_reconciliation.get("trace_verdict"),
+            "otel_snapshot_available": trace_reconciliation.get("otel_snapshot_available"),
+            "local_provider_attempt_span_count": trace_reconciliation.get(
+                "local_provider_attempt_span_count"
+            ),
+            "otel_provider_attempt_span_count": trace_reconciliation.get(
+                "otel_provider_attempt_span_count"
+            ),
+            "summary": trace_reconciliation.get("summary"),
         },
         "consumed_x3_code": x3_sum.get("x3_code"),
         "consumed_x2_blocking_failures": failed_ids,

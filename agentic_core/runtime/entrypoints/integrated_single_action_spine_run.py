@@ -717,6 +717,8 @@ def _manifest_cache_fields(cache_preflight_evidence: Mapping[str, Any] | None) -
         "cache_preflight_completed",
         "r1a_preflight_status",
         "r1b_preflight_status",
+        "r1b_preflight_reason",
+        "r1b_eligibility",
         "cache_result",
         "cache_miss_receipt_ref",
         "generation_spine_invocation_allowed",

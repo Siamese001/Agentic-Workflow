@@ -231,8 +231,8 @@ class TestNoAppsResearchHardcodingInCore:
         for term in forbidden:
             assert term not in content, f"Generic L2 still contains synthetic output: {term}"
     
-    def test_w6_no_vllm_url_hardcoded_in_generic_l2(self):
-        """Generic L2 must not hardcode vLLM URL."""
+    def test_w6_no_local_model_server_url_hardcoded_in_generic_l2(self):
+        """Generic L2 must not hardcode local model server URL."""
         repo_root = Path(__file__).parent.parent.parent
         generic_l2 = repo_root / "agentic_core/L2_execution/l2_package_driven_executor.py"
         
@@ -240,11 +240,11 @@ class TestNoAppsResearchHardcodingInCore:
         
         forbidden = [
             "localhost:8000",
-            "_VLLM_BASE_URL",
+            "_LOCAL_MODEL_SERVER_BASE_URL",
         ]
         
         for term in forbidden:
-            assert term not in content, f"Generic L2 hardcodes vLLM URL: {term}"
+            assert term not in content, f"Generic L2 hardcodes local model server URL: {term}"
     
     def test_w6_apps_research_l2_adapter_is_thin_only(self):
         """apps_research L2 adapter must only delegate."""
@@ -259,7 +259,7 @@ class TestNoAppsResearchHardcodingInCore:
         # Must NOT have execution logic
         forbidden = [
             "_call_llm",
-            "vllm_url",
+            "local_model_server_url",
             "urllib.request",
         ]
         

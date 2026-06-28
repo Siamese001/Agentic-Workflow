@@ -11,12 +11,12 @@ GUIDE = REPO / "docs" / "apps_rg" / "executive_summary_operator_guide.md"
 def test_operator_guide_includes_token_regen_budget_sections() -> None:
     text = GUIDE.read_text(encoding="utf-8")
     required = (
-        "Token budget & Qwen transport",
+        "Token budget & RetiredProvider transport",
         "APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS",
         "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT",
         "provider_context_window_source",
         "Transport timeout vs budget",
-        "executive_summary_qwen_call_plan.json",
+        "executive_summary_retired_provider_call_plan.json",
         "regen_token_budget_receipt.json",
         "call_id",
         "Brown budget soak",

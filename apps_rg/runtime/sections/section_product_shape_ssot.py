@@ -27,6 +27,8 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     FINAL_BULLET_COUNT,
     SC_PATH_COUNT_BY_LANE,
+    adaptive_sc_enabled_for_lane,
+    max_sc_path_count_for_lane,
 )
 from apps_rg.runtime.validators.bullet_line_discipline_x2 import DEFAULT_BULLET_MAX_CHARS
 from apps_rg.runtime.validators.competencies_quality_x2 import GENERIC_CATEGORY_MIN_GRAPH_TERMS
@@ -100,6 +102,8 @@ SECTION_CONSTRAINTS: dict[str, dict[str, int]] = {
         lane: {
             "final_count": FINAL_BULLET_COUNT.get(lane, 0),
             "sc_pool_paths": SC_PATH_COUNT_BY_LANE.get(lane, 0),
+            "sc_max_paths": max_sc_path_count_for_lane(lane),
+            "adaptive_sc_enabled": adaptive_sc_enabled_for_lane(lane),
         }
         for lane in _BULLET_LANES
     },
@@ -357,7 +361,7 @@ def _competencies_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/competencies_x2.py",
         display_field="competencies",
         shape_summary=(
-            f"graph_8x8: top {MIN_CATEGORY_COUNT} of {CANDIDATE_CATEGORY_COUNT} categories; "
+            f"graph_8x8: adaptive {MIN_CATEGORY_COUNT}-{MAX_CATEGORY_COUNT} of {CANDIDATE_CATEGORY_COUNT} categories; "
             f"{MIN_ITEMS_PER_CATEGORY}-{MAX_ITEMS_PER_CATEGORY} terms/category; "
             "compact noun phrases; augmented_skills_graph authority"
         ),
@@ -409,13 +413,15 @@ def _competencies_shape() -> SectionProductShape:
 
 def _unify_bullets_shape() -> SectionProductShape:
     pool_n = SC_PATH_COUNT_BY_LANE["unify_bullets"]
+    max_pool_n = max_sc_path_count_for_lane("unify_bullets")
     return SectionProductShape(
         section_id="unify_bullets",
         template_ref="apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
         x2_module_ref="apps_rg/runtime/validators/unify_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"6 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-6 passing score; "
+            f"6 bullets from adaptive {pool_n}->{max_pool_n}-path self-consistency pool; "
+            "Claude pool selector picks top-6 passing score; "
             "bul_unify_* fact ids only; "
             f"each bullet_text exactly 1 sentence, single line, <= {DEFAULT_BULLET_MAX_CHARS} chars"
         ),
@@ -463,7 +469,7 @@ def _unify_bullets_shape() -> SectionProductShape:
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"sc_pool_paths={pool_n}; claude_top_n=6; min_score gate",
+            f"sc_pool_paths={pool_n}; sc_max_paths={max_pool_n}; adaptive_sc=true; claude_top_n=6; min_score gate",
             "each bullet binds role_episode_bundle_id + approved metric_outcome_ids[]",
             "graph traversal receipt proves roots->skills->metric outcomes with rejected sibling frontier",
             "companion_context_allowed=false",
@@ -514,13 +520,15 @@ def _unify_narrative_shape() -> SectionProductShape:
 
 def _ibm_bullets_shape() -> SectionProductShape:
     pool_n = SC_PATH_COUNT_BY_LANE["ibm_bullets"]
+    max_pool_n = max_sc_path_count_for_lane("ibm_bullets")
     return SectionProductShape(
         section_id="ibm_bullets",
         template_ref="apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
         x2_module_ref="apps_rg/runtime/validators/ibm_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"5 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-5 passing score; "
+            f"5 bullets from adaptive {pool_n}->{max_pool_n}-path self-consistency pool; "
+            "Claude pool selector picks top-5 passing score; "
             "bul_ibm_* only; "
             f"each bullet_text exactly 1 sentence, single line, <= {DEFAULT_BULLET_MAX_CHARS} chars"
         ),
@@ -556,7 +564,7 @@ def _ibm_bullets_shape() -> SectionProductShape:
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"sc_pool_paths={pool_n}; claude_top_n=5; min_score gate",
+            f"sc_pool_paths={pool_n}; sc_max_paths={max_pool_n}; adaptive_sc=true; claude_top_n=5; min_score gate",
             "IBM_BULLETS_FOUNDATION slice",
         ),
     )

@@ -100,5 +100,5 @@ Create a new worktree only when the app, subsystem, or durable objective changes
 
 - Rule: `.codex/rules/git-branch-per-chat.md`
 - Hooks: `.codex/hooks/session_start_branch_guard.py`, `before_file_edit_branch_guard.py`, `prune_merged_chat_worktrees.py`
-- Config envs: `BRANCH_PER_CHAT_BYPASS`, `BRANCH_PER_CHAT_PROTECTED`, `CHAT_WORKTREE_ROOT`, `WORKTREE_IDE_OWNER`
+- Config envs: `BRANCH_PER_CHAT_BYPASS`, `BRANCH_PER_CHAT_PROTECTED`, `WORKTREE_IDE_OWNER`
 - Sibling skills: `gitkraken`, `scope-containment`; plan placement -> `plan-location.md` rule

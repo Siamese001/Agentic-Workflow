@@ -110,6 +110,38 @@ class TestDeadCodeReportWiring:
         assert "dead_code_zone_control_report_" in source
 
 
+class TestBCGInlineOrdering:
+    """Static regression coverage for BCG-before-burndown inline ordering."""
+
+    def test_bcg_emits_before_burndown_inline_in_primary_and_finalize_paths(self):
+        source_path = next(
+            candidate / "tools" / "generate" / "generate_full_adg.py"
+            for candidate in Path(__file__).resolve().parents
+            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+        )
+        source = source_path.read_text(encoding="utf-8")
+
+        main_materialize = source.index(
+            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
+            "        burndown=adg_artifacts_dir / \"adg_burndown_table.json\",\n"
+            "        fail_closed=False,\n"
+            "        print_inline=False,"
+        )
+        main_bcg = source.index("_bcg_rc, bcg_summary_path = emit_bcg_executive_summary(", main_materialize)
+        main_inline = source.index("_burndown_inline_rc = emit_existing_burndown_markdown()", main_bcg)
+        assert main_materialize < main_bcg < main_inline
+
+        finalize_materialize = source.index(
+            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
+            "                fail_closed=False,\n"
+            "                print_inline=False,",
+            main_inline,
+        )
+        finalize_bcg = source.index("emit_bcg_executive_summary(", finalize_materialize)
+        finalize_inline = source.index("emit_existing_burndown_markdown()", finalize_bcg)
+        assert finalize_materialize < finalize_bcg < finalize_inline
+
+
 class TestDispatcherResultsPathResolution:
     """Regression coverage for noisy gate-dispatcher stdout."""
 

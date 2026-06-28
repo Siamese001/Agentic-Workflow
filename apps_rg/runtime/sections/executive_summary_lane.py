@@ -191,7 +191,7 @@ def _args_jd_text(args: argparse.Namespace) -> str:
     )
 
 
-def truncate_briefing_for_exec_summary_vllm(
+def truncate_briefing_for_exec_summary_external_model(
     briefing: str,
     *,
     role_family_key: str | None = None,
@@ -397,7 +397,7 @@ def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str
 
 
 def salvage_truncated_executive_summary_json(text: str) -> tuple[dict[str, Any] | None, str]:
-    """Recover exec-summary JSON when vLLM hits max_tokens mid self_check (finish_reason=length)."""
+    """Recover exec-summary JSON when external model hits max_tokens mid self_check (finish_reason=length)."""
     if '"resume_display_text"' not in text:
         return None, "no salvage anchor"
     marker = '"self_check"'
@@ -713,7 +713,7 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
             "companion_context_used_as_proof": False,
         },
         "gap_notes": [],
-        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB"}],
         "self_check": {"no_first_person": True, "no_inline_source_tags": True, "fit_to_evidence": True},
     }
 
@@ -4100,7 +4100,7 @@ __all__ = [
     "TARGET_TITLE_DEFAULT",
     "BASE_JSON_DEFAULT",
     "BASE_POINTER",
-    "truncate_briefing_for_exec_summary_vllm",
+    "truncate_briefing_for_exec_summary_external_model",
     "build_mock_output",
     "build_prompt_messages",
     "build_runtime_payload",

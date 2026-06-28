@@ -1,6 +1,6 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-27T09:17:32+00:00
+- **Generated:** 2026-06-28T11:05:23+00:00
 - **Gate-results source:** `artifacts\adg\adg_gate_results_20260627_091354.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
 - **Snapshot timestamp:** 2026-06-27T09:13:54.310304+00:00
@@ -144,12 +144,12 @@ Use this section for guardian math, not the status table above.
 
 | Severity Band | Label | Gross | Guardian | Net | Diff vs prev |
 |---------------|-------|------:|---------:|----:|-------------:|
-| P0 | layer_violations | 43 | 40 | 3 | +40 |
-| P1 | anti_patterns_high | 1151 | 1146 | 5 | +1146 |
-| P2 | anti_patterns_medium | 733 | 714 | 19 | +714 |
-| P3 | style_warnings | 19065 | 87 | 18978 | +87 |
+| P0 | layer_violations | 0 | 0 | 0 | +0 |
+| P1 | anti_patterns_high | 0 | 0 | 0 | +0 |
+| P2 | anti_patterns_medium | 0 | 0 | 0 | +0 |
+| P3 | style_warnings | 0 | 0 | 0 | +0 |
 
-_p0_clean = False • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
+_p0_clean = True • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 
 ## Verdict glossary
 

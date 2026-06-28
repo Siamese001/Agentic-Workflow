@@ -15,7 +15,7 @@ FORBIDDEN IMPORTS (enforced by TestBoundaryGuard in test suite):
 - write_section_to_semantic_cache
 - l6_shadow_learning
 - fact_vectors
-- openai / anthropic / qwen / vllm
+- openai / anthropic / PROVIDER_MODEL / external model
 - requests.post / httpx
 - pa_binding / l2_binding / c0_binding (circular)
 - agentic_core (only stdlib + pathlib + json allowed)

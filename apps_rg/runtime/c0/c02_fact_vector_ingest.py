@@ -47,9 +47,13 @@ def _promotion_mode(override: str | None = None) -> str:
     return promotion_mode(override)
 
 
-def _promote_staged_fact_vectors(**kwargs: Any) -> dict[str, Any]:
+def promote_staged_fact_vectors(**kwargs: Any) -> dict[str, Any]:
     from apps_rg.runtime.c0.fact_vector_write_back import promote_staged_fact_vectors
 
+    return promote_staged_fact_vectors(**kwargs)
+
+
+def _promote_staged_fact_vectors(**kwargs: Any) -> dict[str, Any]:
     return promote_staged_fact_vectors(**kwargs)
 
 
@@ -200,9 +204,6 @@ def upsert_fact_vector_chunks(
     """Upsert chunks into Chroma (stable ids — safe to re-run per section)."""
     if not chunks:
         return 0
-    from agentic_core.L4_state.utils.client.chroma_client import (
-        chromadb_module as chromadb,
-    )
     from apps_rg.runtime.chroma_precomputed_collection import (
         get_precomputed_embeddings_collection,
     )
@@ -352,7 +353,10 @@ def maybe_upsert_c02_fact_vectors(
         )
         receipt["promotion"] = promotion
         receipt["upserted_count"] = int(promotion.get("promoted_count", 0))
-        if promotion.get("status") == "HELD_FOR_HITL":
+        if promotion.get("status") == "FAIL":
+            receipt["status"] = "FAIL"
+            receipt["reason"] = str(promotion.get("reason") or "promotion_failed")
+        elif promotion.get("status") == "HELD_FOR_HITL":
             receipt["status"] = "STAGED_HELD"
             receipt["reason"] = "staged_awaiting_hitl_promotion"
         elif receipt["upserted_count"]:
@@ -509,5 +513,6 @@ __all__ = [
     "maybe_upsert_c02_fact_vectors",
     "maybe_upsert_c05_fact_vector_write_back_atoms",
     "promote_deferred_c02_fact_vectors_after_x3",
+    "promote_staged_fact_vectors",
     "upsert_fact_vector_chunks",
 ]

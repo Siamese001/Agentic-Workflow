@@ -22,7 +22,7 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 | `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Structural deps + T2/T3 plans; §22 graph layer (mv_*, P-views, semantic edges). | [`adg-sqlite`](.codex/skills/adg-sqlite/SKILL.md) |
 | `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`deepwiki`](.codex/skills/deepwiki/SKILL.md) |
 | `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`filesystem-mcp`](.codex/skills/filesystem-mcp/SKILL.md) |
-| `memory` | Persistent cross-session knowledge graph | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Read at session start; write back major decisions. | [`memory-mcp`](.codex/skills/memory-mcp/SKILL.md) |
+| `memory` | Optional graph-backed memory projection | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Native file memory under `memory/` is SSOT; use MCP when available, but do not block on transport failure. | [`memory-mcp`](.codex/skills/memory-mcp/SKILL.md) |
 | `vector_db` | Semantic search and embeddings | `semantic_search, query_collection, vector_stats, list_collections` | Not for structural dependency analysis. | [`vector-db`](.codex/skills/vector-db/SKILL.md) |
 | `otel_mcp` | Telemetry, traces, anomalies, runtime ADG ingest | `otel_server_info, otel_trace, otel_anomalies, otel_ingest_to_runtime_adg` | Check otel_server_info before restart logic. | [`otel-telemetry`](.codex/skills/otel-telemetry/SKILL.md) |
 | `task_manager` | Task decomposition and task state tracking | `create_task, decompose_task, update_task, task_info` | Use when the user explicitly wants tracked multi-step work. | [`task-manager-mcp`](.codex/skills/task-manager-mcp/SKILL.md) |
@@ -63,9 +63,9 @@ Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.codex/
 
 ## Memory
 
-First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Native file memory under `memory/` is canonical and the knowledge-graph MCP is optional. Detail: `memory/MEMORY.md` and `memory/codex/memory_summary.md`.
+At session start, load native file memory from `memory/MEMORY.md`. For non-trivial work, also read `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task.
 
-Codex project-memory loader convention: for non-trivial work in this repo, read `memory/MEMORY.md` first and then `memory/codex/memory_summary.md` when Codex-specific run history, branch workflow memory, or repo-specific Codex skills could affect the task. Treat `C:\Users\amita\.codex\memories` as global/user memory only; do not make it the SSOT for Agentic Workflow project memory.
+The knowledge-graph Memory MCP is optional for graph queries or writeback when its transport is healthy; if it fails, continue from file memory and do not retry-loop on the transport. Treat `C:\Users\amita\.codex\memories` and Codex product memories as global/user memory only; do not make them the SSOT for Agentic Workflow project memory.
 
 ## Constitutional floor
 

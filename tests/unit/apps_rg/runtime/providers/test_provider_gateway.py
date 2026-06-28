@@ -59,7 +59,7 @@ def test_normalize_provider_profile_aliases_and_errors() -> None:
     assert normalize_provider_profile("external_default") == ProviderProfile.EXTERNAL_DEFAULT
 
     with pytest.raises(ProviderGatewayError, match="Unknown apps_rg provider profile"):
-        normalize_provider_profile("local_qwen")
+        normalize_provider_profile("local_retired_provider")
 
 
 def test_resolve_provider_profile_precedence(monkeypatch) -> None:

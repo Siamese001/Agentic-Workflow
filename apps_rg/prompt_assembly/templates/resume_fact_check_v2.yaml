@@ -161,7 +161,7 @@ temperature_profile:
 payload_scope:
   input_tokens_estimate: "~10,000 (resume + canonical JSON + claim ledger)"
   output_tokens_estimate: "~4,000 (verification report + findings)"
-  context_window_required: "24K minimum (24576 served; align VLLM_MAX_MODEL_LEN with Docker)"
+  context_window_required: "24K minimum (24576 served; align external model_MAX_MODEL_LEN with Docker)"
   json_schema_strict: true
 
 metadata:

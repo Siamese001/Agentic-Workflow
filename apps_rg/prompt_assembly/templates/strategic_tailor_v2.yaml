@@ -171,9 +171,9 @@ slot_bodies:
           OUTPUT_FORMAT: Object with per-section budgets:
             - headline: {max_tokens: 50, max_words: 11, notes: "X | Y | Z format only"}
             - executive_summary: {max_tokens: 300, length_policy: "fit_to_evidence", visual_footprint_policy: "visually comparable to base summary unless section_budget explicitly says tighten", notes: "no padding, no arbitrary compression, every sentence must add distinct signal"}
-            - experience.unify.bullets: {max_tokens: 1200, bullet_count: 6, notes: "Qwen pool + Claude top-6 selection"}
+            - experience.unify.bullets: {max_tokens: 1200, bullet_count: 6, notes: "PROVIDER_MODEL pool + Claude top-6 selection"}
             - experience.unify.position_narrative: {max_tokens: 300, max_chars: 250, notes: "exactly one sentence"}
-            - experience.ibm.bullets: {max_tokens: 1000, bullet_count: 5, notes: "Qwen pool + Claude top-5 selection; foundation framing"}
+            - experience.ibm.bullets: {max_tokens: 1000, bullet_count: 5, notes: "PROVIDER_MODEL pool + Claude top-5 selection; foundation framing"}
             - experience.ibm.position_narrative: {max_tokens: 350, max_chars: 250, notes: "exactly one sentence, foundation framing"}
             - competencies: {max_tokens: 800, category_count: 8, notes: "Category Label: term, term, term format"}
         </section_budget>

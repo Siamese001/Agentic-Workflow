@@ -161,7 +161,7 @@ def test_env_x1d_judges_override_wins_for_ibm(monkeypatch) -> None:
 def test_non_bullet_sections_keep_standard_panel_default(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
     # Claude-base recalibration: headline / executive_summary -> dual cross-provider panel
-    # (was the 3-provider qwen-era panel; anthropic_claude dropped as a self-judge).
+    # (was the 3-provider retired_provider-era panel; anthropic_claude dropped as a self-judge).
     panel = "gemini_pro,openai_chatgpt"
     assert resolve_cli_x1d_judges(None, section_id="headline") == panel
     assert resolve_cli_x1d_judges(None, section_id="executive_summary") == panel
@@ -206,7 +206,7 @@ def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
         job_description_ref="",
         job_description_text="",
         manual_brief="",
-        lane_provider="qwen_vllm",
+        lane_provider="retired_provider_profile",
         lane_x1d_judges=lambda lane: resolve_cli_x1d_judges(None, section_id=lane),
         lane_mock_judges=False,
     )
@@ -259,7 +259,7 @@ def test_lane_execution_context_passthrough_string() -> None:
         job_description_ref="",
         job_description_text="",
         manual_brief="",
-        lane_provider="qwen_vllm",
+        lane_provider="retired_provider_profile",
         lane_x1d_judges="anthropic_claude",
         lane_mock_judges=False,
     )

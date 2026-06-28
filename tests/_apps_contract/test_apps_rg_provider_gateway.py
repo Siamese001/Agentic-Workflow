@@ -64,12 +64,12 @@ def stub_provider_profile():
 
 
 @pytest.fixture
-def local_vllm_profile():
-    """Create a local vLLM provider profile."""
+def local_local_model_server_profile():
+    """Create a local local model server provider profile."""
     return ProviderProfile(
-        profile_id="test_local_vllm",
-        provider_kind=ProviderKind.LOCAL_VLLM,
-        model_id="Qwen/Qwen2.5-32B-Instruct-AWQ",
+        profile_id="test_local_local_model_server",
+        provider_kind=ProviderKind.LOCAL_LOCAL_MODEL_SERVER,
+        model_id="Retired/Provider-Model",
         endpoint_url="http://localhost:8000/v1",
         capabilities=("text_generation", "structured_json_generation"),
         sandbox_safe=True,
@@ -118,24 +118,24 @@ class TestProviderGatewayLoadsProfile:
         assert response.receipt.provider_profile_ref == "test_stub"
         assert response.receipt.provider_kind == ProviderKind.STUB
     
-    def test_loads_local_vllm_profile(self, local_vllm_profile):
-        """Gateway can load local vLLM profile (stub mode may block)."""
+    def test_loads_local_local_model_server_profile(self, local_local_model_server_profile):
+        """Gateway can load local local model server profile (stub mode may block)."""
         gateway = ProviderGateway(provider_mode=ProviderMode.LOCAL_ONLY)
         
         request = ProviderRequest(
             prompt_text="Test prompt",
-            provider_profile=local_vllm_profile,
+            provider_profile=local_local_model_server_profile,
             run_id="test-run-002",
             node_id="node-002",
         )
         
-        # In test mode without real vLLM, this may fail or return stub
+        # In test mode without real local model server, this may fail or return stub
         # depending on health probe
         response = gateway.invoke(request)
         
         # Should either succeed or fail gracefully with receipt
         assert response.receipt is not None
-        assert response.receipt.provider_profile_ref == "test_local_vllm"
+        assert response.receipt.provider_profile_ref == "test_local_local_model_server"
 
 
 class TestProviderGatewayBlocksMissingProfile:
@@ -351,13 +351,13 @@ class TestProviderGatewayEmitsReceipt:
 class TestProviderModeRestrictions:
     """Provider mode restrictions per RB13."""
     
-    def test_stub_only_blocks_live(self, local_vllm_profile):
-        """STUB_ONLY mode blocks local_vllm providers."""
+    def test_stub_only_blocks_live(self, local_local_model_server_profile):
+        """STUB_ONLY mode blocks local_local_model_server providers."""
         gateway = ProviderGateway(provider_mode=ProviderMode.STUB_ONLY)
         
         request = ProviderRequest(
             prompt_text="Test",
-            provider_profile=local_vllm_profile,
+            provider_profile=local_local_model_server_profile,
         )
         
         with pytest.raises(ProviderModeBlockedError):
@@ -395,13 +395,13 @@ class TestProviderModeRestrictions:
 
 
 class TestProviderGatewayLocalVllmThreadsProfile:
-    """LOCAL_VLLM must use CPA/profile model_id and base URL (not env-only defaults)."""
+    """LOCAL_LOCAL_MODEL_SERVER must use CPA/profile model_id and base URL (not env-only defaults)."""
 
-    def test_qwen_gateway_gets_model_and_url_from_profile(self):
+    def test_retired_provider_gateway_gets_model_and_url_from_profile(self):
         from unittest.mock import patch
 
-        from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway import (
-            QwenInferenceResponse,
+        from agentic_core.L3_orchestration.inference.retired_provider_profile.reasoning.retired_provider_inference_gateway import (
+            RetiredProviderInferenceResponse,
         )
 
         captured: dict[str, object] = {}
@@ -416,7 +416,7 @@ class TestProviderGatewayLocalVllmThreadsProfile:
                 captured["temperature"] = request.temperature
                 captured["top_p"] = request.top_p
                 captured["response_format"] = request.response_format
-                return QwenInferenceResponse(
+                return RetiredProviderInferenceResponse(
                     success=True,
                     response="{}",
                     confidence=1.0,
@@ -429,8 +429,8 @@ class TestProviderGatewayLocalVllmThreadsProfile:
 
         gateway = ProviderGateway(provider_mode=ProviderMode.LOCAL_ONLY)
         profile = ProviderProfile(
-            profile_id="test_local_vllm_thread",
-            provider_kind=ProviderKind.LOCAL_VLLM,
+            profile_id="test_local_local_model_server_thread",
+            provider_kind=ProviderKind.LOCAL_LOCAL_MODEL_SERVER,
             model_id="profile-model-id-xyz",
             endpoint_url="http://127.0.0.1:9999/v1",
             capabilities=("text_generation",),
@@ -442,12 +442,12 @@ class TestProviderGatewayLocalVllmThreadsProfile:
             max_tokens=2048,
             temperature=0.0,
             top_p=0.8,
-            run_id="run-vllm",
+            run_id="run-local_model_server",
             node_id="n1",
         )
 
         with patch(
-            "agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway.QwenInferenceGateway",
+            "agentic_core.L3_orchestration.inference.retired_provider_profile.reasoning.retired_provider_inference_gateway.RetiredProviderInferenceGateway",
             _FakeGateway,
         ):
             response = gateway.invoke(request)
@@ -471,7 +471,7 @@ class TestNoProviderHardcoding:
         source = inspect.getsource(provider_gateway)
         
         # Should not have hardcoded provider API calls or endpoints
-        # Provider kinds are ok (stub, local_vllm, external_api are generic)
+        # Provider kinds are ok (stub, local_local_model_server, external_api are generic)
         # External vendor default hosts — forbid *new* ad-hoc endpoints; Gemini OpenAI-compat
         # base is intentionally centralized in ``_resolve_base_url`` (RB13 external routing).
         hardcoded_api_calls = [

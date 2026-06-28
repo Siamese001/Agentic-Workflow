@@ -191,7 +191,7 @@
     },
     {
       "section_id": "executive_summary",
-      "module_path": "apps_rg/runtime/sections/executive_summary_qwen_regen_dispatch.py",
+      "module_path": "apps_rg/runtime/sections/executive_summary_retired_provider_regen_dispatch.py",
       "loc": 28
     },
     {

@@ -117,7 +117,7 @@ def _server_context_window_from_models_payload(
     *,
     model_id: str,
 ) -> int | None:
-    """Best-effort parse of vLLM/OpenAI-compatible ``/v1/models`` rows."""
+    """Best-effort parse of external model/OpenAI-compatible ``/v1/models`` rows."""
     rows = payload.get("data") if isinstance(payload.get("data"), list) else []
     needle = str(model_id or "").strip().lower()
     for row in rows:

@@ -67,7 +67,7 @@ def extend_ibm_bullets_l6_learning_fields(
 
     foundation_calibration: dict[str, Any] = {
         "foundation_proof_model_id": FOUNDATION_MODEL_ID,
-        "treatment_profile": "QWEN_POOL_CLAUDE_TOP_N_SELECTION",
+        "treatment_profile": "PROVIDER_MODEL_POOL_CLAUDE_TOP_N_SELECTION",
         "bullet_count_observed": len(bullets or []),
         "pool_selection_ref": _ref_if(rr, ad, "bullet_pool_selection.json"),
         "taxonomy_label_prefix_gate_pass": _x2_gate_pass(
@@ -117,7 +117,7 @@ def extend_ibm_bullets_l6_learning_fields(
         "test_only_mock_judges": proof_bundle.get("test_only_mock_judges"),
         "offline_contract_stub_used": proof_bundle.get("offline_contract_stub_used"),
         "offline_contract_stub_reason": (
-            "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB" if proof_bundle.get("offline_contract_stub_used") else None
+            "APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB" if proof_bundle.get("offline_contract_stub_used") else None
         ),
         "artifact_namespace_class": proof_bundle.get("artifact_namespace_class"),
         "runtime_generation_status_class": proof_bundle.get("runtime_generation_status_class"),

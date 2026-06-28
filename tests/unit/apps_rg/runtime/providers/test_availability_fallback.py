@@ -170,6 +170,17 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
     assert attempts[1]["provider"] == ProviderProfile.EXTERNAL_OPENAI.value
     assert attempts[1]["model"] == "gpt-ssot"
     assert attempts[1]["started_at_utc"]
+    spans = receipt["provider_attempt_spans"]
+    assert [span["attempt_kind"] for span in spans] == ["requested", "fallback"]
+    assert spans[0]["provider"] == ProviderProfile.EXTERNAL_CLAUDE.value
+    assert spans[0]["duration_seconds"] == 1.0
+    assert spans[0]["output_accepted"] is False
+    assert spans[1]["provider"] == ProviderProfile.EXTERNAL_OPENAI.value
+    assert spans[1]["model"] == "gpt-ssot"
+    assert spans[1]["fallback_reason"] == "provider_throttling_failure"
+    assert spans[1]["output_accepted"] is True
+    assert receipt["provider_attempt_timing_summary"]["fallback_attempt_count"] == 1
+    assert result.provider_response["provider_attempt_spans"] == spans
 
 
 def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(monkeypatch) -> None:
@@ -210,3 +221,9 @@ def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(mon
     assert receipt["accepted_output_provider"] is None
     assert receipt["accepted_output_model"] is None
     assert receipt["accepted_output_source"] == "initial_blocked_result"
+    spans = receipt["provider_attempt_spans"]
+    assert [span["attempt_kind"] for span in spans] == ["requested", "fallback"]
+    assert spans[1]["provider"] == ProviderProfile.EXTERNAL_OPENAI.value
+    assert spans[1]["provider_attempted"] is False
+    assert spans[1]["runtime_generation_status"] == "BLOCKED"
+    assert spans[1]["output_accepted"] is False

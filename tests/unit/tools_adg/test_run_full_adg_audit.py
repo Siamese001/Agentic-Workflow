@@ -288,6 +288,37 @@ def test_wrapper_passes_explicit_snapshot_to_report(temp_artifacts, monkeypatch)
     assert Path(call_kwargs["snapshot"]).resolve() == snap.resolve()
 
 
+def test_wrapper_emits_bcg_before_burndown_inline(temp_artifacts, monkeypatch):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    _patch_generator(monkeypatch, snapshot=snap)
+    _patch_report(monkeypatch)
+
+    import tools.reports.adg_bcg_executive_synthesis as bcg_mod
+    import tools.reports.adg_burndown_report as burndown_mod
+
+    call_order: list[object] = []
+
+    def _fake_bcg(**kwargs):  # noqa: ARG001
+        call_order.append("bcg")
+        return 0, wrapper.ARTIFACTS_ADG / "adg_bcg_executive_summary_test.json"
+
+    def _fake_burndown(**kwargs):
+        call_order.append(("burndown_emit", kwargs.get("print_inline")))
+        return 0
+
+    def _fake_burndown_inline(**kwargs):  # noqa: ARG001
+        call_order.append("burndown_inline")
+        return 0
+
+    monkeypatch.setattr(bcg_mod, "emit_bcg_executive_summary_from_latest", _fake_bcg)
+    monkeypatch.setattr(burndown_mod, "emit_mandatory_adg_burndown_report", _fake_burndown)
+    monkeypatch.setattr(burndown_mod, "emit_existing_burndown_markdown", _fake_burndown_inline)
+
+    wrapper.run_audit(mode="certification")
+
+    assert call_order[:3] == ["bcg", ("burndown_emit", False), "burndown_inline"]
+
+
 def test_certification_fails_when_gate_invocation_manifest_missing(temp_artifacts, monkeypatch):
     snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
     # Generator runs but writes ONLY the generation manifest (simulate crash mid-finalize).

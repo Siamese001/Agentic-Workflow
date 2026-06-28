@@ -1,8 +1,8 @@
 """Production runtime guard for the apps_rg section CLI.
 
-Historically this enforced *live Qwen vLLM* (no offline stub) in addition to the live-judge
-policy. The Qwen/vLLM local provider was removed; the external generation provider owns its
-own transport, so the Qwen-readiness env checks are gone. The non-Qwen production policy
+Historically this enforced *live PROVIDER_MODEL external model* (no offline stub) in addition to the live-judge
+policy. The PROVIDER_MODEL/external model local provider was removed; the external generation provider owns its
+own transport, so the PROVIDER_MODEL-readiness env checks are gone. The non-PROVIDER_MODEL production policy
 remains: ``python -m apps_rg`` never accepts mock-judge CLI flags (X1D judges are always live;
 mock judges are test-harness env-only).
 """

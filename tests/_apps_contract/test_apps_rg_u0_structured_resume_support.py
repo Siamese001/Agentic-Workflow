@@ -631,10 +631,10 @@ class TestU0BoundaryGuards:
         assert "requests.post" not in source
         assert "httpx.post" not in source
 
-    def test_no_qwen_vllm_reference(self):
+    def test_no_retired_provider_profile_reference(self):
         source = self._read_classifier_source()
-        assert "qwen_vllm" not in source
-        assert "vllm" not in source.lower().replace("valid", "").replace("invalid", "")
+        assert "retired_provider_profile" not in source
+        assert "local_model_server" not in source.lower().replace("valid", "").replace("invalid", "")
 
     def test_result_is_dataclass_frozen(self):
         from apps_rg.runtime.u0.structured_resume_classifier import StructuredResumeClassification

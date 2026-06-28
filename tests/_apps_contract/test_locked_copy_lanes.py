@@ -151,11 +151,11 @@ def test_no_provider_request_artifact(build_once: subprocess.CompletedProcess[st
     assert not (ARTIFACT_DIR / "x1d_llm_judge_outputs.json").is_file()
 
 
-def test_no_qwen_call_in_receipt(manifest: dict, build_once: subprocess.CompletedProcess[str]):
-    assert manifest.get("qwen_calls_made") is False
+def test_no_retired_provider_call_in_receipt(manifest: dict, build_once: subprocess.CompletedProcess[str]):
+    assert manifest.get("retired_provider_calls_made") is False
     assert manifest.get("provider_calls_made") is False
     receipt = json.loads(RECEIPT_PATH.read_text(encoding="utf-8"))
-    assert receipt.get("qwen_calls_made") is False
+    assert receipt.get("retired_provider_calls_made") is False
 
 
 def test_x2_gate_outputs_all_pass(build_once: subprocess.CompletedProcess[str]):

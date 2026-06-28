@@ -8,6 +8,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from apps_rg.runtime.observability.trace_reconciliation import (
+    TRACE_RECONCILIATION_ARTIFACT,
+    TRACE_RECONCILIATION_ROWS_ARTIFACT,
+)
 
 L6_PACKET_TYPE = "L6_SHADOW_HANDOFF_PACKET"
 L6_PACKET_VERSION = "1"
@@ -235,10 +239,10 @@ def build_l6_shadow_handoff_dict(
     rr = repo_root.resolve()
 
     from apps_rg.runtime.spine.governed_l6_shadow_compose import (
+        GOVERNED_L6_SHADOW_MODE_SECTION,
         assert_l6_shadow_ingest_preconditions,
         build_governed_l6_handoff_envelope,
         governed_l6_shadow_enabled,
-        GOVERNED_L6_SHADOW_MODE_SECTION,
     )
 
     assert_l6_shadow_ingest_preconditions(
@@ -292,6 +296,8 @@ def build_l6_shadow_handoff_dict(
     l6_pkg_path = ad / "l6_shadow_eval_package.json"
     l6_v40_path = ad / "l6_v40_shadow_eval_package.json"
     l6_v40_spans_path = ad / "l6_v40_shadow_eval_spans.json"
+    trace_reconciliation_path = ad / TRACE_RECONCILIATION_ARTIFACT
+    trace_reconciliation_rows_path = ad / TRACE_RECONCILIATION_ROWS_ARTIFACT
     pkt: dict[str, Any] = {
         "packet_type": L6_PACKET_TYPE,
         "packet_version": L6_PACKET_VERSION,
@@ -311,6 +317,12 @@ def build_l6_shadow_handoff_dict(
         else "l6_v40_shadow_eval_package.json",
         "l6_v40_shadow_eval_spans_ref": repo_rel(rr, l6_v40_spans_path)
         if l6_v40_spans_path.is_file()
+        else None,
+        "trace_reconciliation_ref": repo_rel(rr, trace_reconciliation_path)
+        if trace_reconciliation_path.is_file()
+        else None,
+        "trace_reconciliation_rows_ref": repo_rel(rr, trace_reconciliation_rows_path)
+        if trace_reconciliation_rows_path.is_file()
         else None,
         "l6_v40_g28_g29_receipts_required": True,
         "section_output_ref": repo_rel(rr, l2_path),
@@ -425,7 +437,7 @@ def build_l6_shadow_handoff_dict(
                 "Compare claim_text gate (x2_claim_ledger_claim_text_non_empty) and allow-list gate against compiled allowed_fact_ids.",
             ],
             "future_run_recommendations": [
-                "When infra allows, re-run without APPS_RG_QWEN_OFFLINE_CONTRACT_STUB for live Qwen calibration signal.",
+                "When infra allows, re-run without APPS_RG_PROVIDER_MODEL_OFFLINE_CONTRACT_STUB for live PROVIDER_MODEL calibration signal.",
             ],
             "promotion_request_candidate": False,
             "current_run_effect": "none",

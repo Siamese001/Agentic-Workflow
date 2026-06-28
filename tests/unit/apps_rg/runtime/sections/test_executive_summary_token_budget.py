@@ -134,7 +134,7 @@ def test_srfs_shape_block_never_replaced_by_stub():
 
 
 def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
-    """Brown-scale prompts must block — not compress I0/SRFS and limp to Qwen."""
+    """Brown-scale prompts must block — not compress I0/SRFS and limp to RetiredProvider."""
     payload = _minimal_payload(briefing="B" * 18000)
     payload["jd_text"] = "J" * 12000
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
@@ -142,8 +142,8 @@ def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
         apply_executive_summary_token_budget_policy(
             compiled,
             runtime_payload=payload,
-            provider="qwen_vllm",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            provider="retired_provider_profile",
+            model="Retired/Provider-Model",
             requested_max_output_tokens=1024,
             provider_context_window=4096,
         )
@@ -168,8 +168,8 @@ def test_fail_closed_when_required_content_still_exceeds_budget():
         apply_executive_summary_token_budget_policy(
             compiled,
             runtime_payload=payload,
-            provider="qwen_vllm",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            provider="retired_provider_profile",
+            model="Retired/Provider-Model",
             requested_max_output_tokens=1024,
             provider_context_window=4096,
         )
@@ -191,8 +191,8 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     out, receipt = apply_executive_summary_token_budget_policy(
         compiled,
         runtime_payload=payload,
-        provider="qwen_vllm",
-        model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+        provider="retired_provider_profile",
+        model="Retired/Provider-Model",
         requested_max_output_tokens=1024,
         provider_context_window=ctx_window,
     )
@@ -214,8 +214,8 @@ def test_context_window_provenance_uses_yaml_ssot(monkeypatch) -> None:
     """Legacy env context values must not cap or raise the section context budget."""
     from apps_rg.runtime import section_model_limits
 
-    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW", raising=False)
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_VERIFY_LOCAL_MODEL_SERVER_CONTEXT_WINDOW", raising=False)
+    monkeypatch.setenv("LOCAL_MODEL_SERVER_MAX_MODEL_LEN", "16384")
     monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "4096")
     prov = resolve_context_window_provenance()
     assert prov.provider_context_window == section_model_limits.SECTION_MODEL_MAX_MODEL_LEN
@@ -253,8 +253,8 @@ def test_apply_policy_fail_closed_on_first_pass_95pct_after_optional_trim() -> N
         apply_executive_summary_token_budget_policy(
             compiled,
             runtime_payload=payload,
-            provider="qwen_vllm",
-            model="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            provider="retired_provider_profile",
+            model="Retired/Provider-Model",
             requested_max_output_tokens=1024,
             provider_context_window=8000,
         )

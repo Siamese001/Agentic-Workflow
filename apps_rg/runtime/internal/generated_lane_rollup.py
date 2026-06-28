@@ -33,20 +33,20 @@ RUNTIME_PROOFS = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs"
 ROLLUP_DIR = RUNTIME_PROOFS / "generated_lane_rollup"
 
 # Canonical user-facing invocation (documentation only — does not execute).
-CANONICAL_QWEN_JUDGES_FLAGS: str = (
+CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS: str = (
     f"--provider external_claude --x1d-judges {','.join(REQUIRED_JUDGE_PROVIDER_KEYS)} "
     "--allow-non-allow-exit-zero"
 )
-COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS: str = (
+COMPETENCIES_CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS: str = (
     "--provider external_claude --x1d-judges openai_chatgpt --allow-non-allow-exit-zero"
 )
 
 
 def canonical_lane_command(lane: str) -> str:
     flags = (
-        COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS
+        COMPETENCIES_CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS
         if str(lane or "").strip().lower() == "competencies"
-        else CANONICAL_QWEN_JUDGES_FLAGS
+        else CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS
     )
     return f"python -m apps_rg --section {lane} {flags}"
 

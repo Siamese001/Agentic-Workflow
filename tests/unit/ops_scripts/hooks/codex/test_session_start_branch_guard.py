@@ -36,6 +36,19 @@ def test_default_named_worktree_path_and_branch(monkeypatch: pytest.MonkeyPatch)
     assert ".chat-worktrees" not in str(guard._worktree_path("apps-rg"))
 
 
+def test_chat_worktree_root_override_is_ignored_for_new_worktree_guidance(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CHAT_WORKTREE_ROOT", r"C:\Users\amita\.codex\worktrees")
+
+    path = guard._worktree_path("apps-rg")
+
+    assert path == (
+        guard.REPO_ROOT.parent / "Agentic-Workflow-FRESH-worktrees" / "claude-apps-rg"
+    )
+    assert r"C:\Users\amita\.codex\worktrees" not in str(path)
+
+
 def test_codex_owner_sets_branch_and_worktree_directory(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
     monkeypatch.setenv("WORKTREE_IDE_OWNER", "codex")

@@ -39,7 +39,7 @@ def test_fsa_display_override_has_strategic_connector() -> None:
     # which would trigger synthesis regen and strip the anchor on re-attempt.
     assert text.lower().startswith("that regulatory foundation"), (
         "Override opener must avoid the forbidden meta-filler phrase 'governance discipline' "
-        "to keep Qwen synthesis from getting rejected on attempt 1 and dropping the X2 anchor."
+        "to keep RetiredProvider synthesis from getting rejected on attempt 1 and dropping the X2 anchor."
     )
     assert "governance discipline" not in text.lower()
     assert "informing data governance" in text.lower()

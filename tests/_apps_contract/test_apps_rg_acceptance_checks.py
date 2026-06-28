@@ -80,8 +80,8 @@ class TestModelCallGating:
 
         bom = capture_prompt_bom(
             hop_name="H3_orchestrator",
-            model="qwen-72b",
-            provider_lane="qwen_vllm",
+            model="retired_provider-72b",
+            provider_lane="retired_provider_profile",
             prompt_template="Generate a resume for {company}",
             token_budget=4096,
             run_dir=tmp_path,
@@ -90,8 +90,8 @@ class TestModelCallGating:
         assert bom_file.exists()
         content = json.loads(bom_file.read_text())
         assert content["hop_name"] == "H3_orchestrator"
-        assert content["model"] == "qwen-72b"
-        assert content["provider_lane"] == "qwen_vllm"
+        assert content["model"] == "retired_provider-72b"
+        assert content["provider_lane"] == "retired_provider_profile"
         assert content["token_budget"] == 4096
         assert "prompt_template_hash" in content
         assert len(content["prompt_template_hash"]) == 16  # first 16 hex chars
@@ -253,8 +253,8 @@ class TestLayerReceiptCompleteness:
         bom_dir.mkdir()
         (bom_dir / "H3_orchestrator.json").write_text(json.dumps({
             "hop_name": "H3_orchestrator",
-            "model": "qwen-72b",
-            "provider_lane": "qwen_vllm",
+            "model": "retired_provider-72b",
+            "provider_lane": "retired_provider_profile",
             "prompt_template_hash": "a1b2c3d4e5f6g7h8",
             "token_budget": 4096,
             "replay_key": "abc123def456",

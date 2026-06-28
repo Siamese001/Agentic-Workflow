@@ -1,10 +1,10 @@
 """Tests for positional bullet_id injection into pool samples.
 
 Closes Bug:BulletPoolSelectorBulletIdMissing — Brown SVP run
-``full_resume_183cf9252e02`` ibm_bullets X3_BLOCK loop where Qwen self-consistency
+``full_resume_183cf9252e02`` ibm_bullets X3_BLOCK loop where RetiredProvider self-consistency
 samples emitted bullets shaped ``{bullet_theme, bullet_text}`` (no ``bullet_id``),
 ``_bullet_by_id`` returned None for every required slot, and the Claude pool
-selector merged zero bullets even though Qwen's text was fully populated.
+selector merged zero bullets even though RetiredProvider's text was fully populated.
 """
 
 from __future__ import annotations
@@ -31,8 +31,8 @@ def _path(idx: int, bullets: list[dict[str, Any]]) -> SelfConsistencyPath:
     )
 
 
-def _qwen_style_pool_sample() -> list[dict[str, Any]]:
-    """Mirror the actual Qwen pool shape captured in provider_response.json on the failing run."""
+def _retired_provider_style_pool_sample() -> list[dict[str, Any]]:
+    """Mirror the actual RetiredProvider pool shape captured in provider_response.json on the failing run."""
     return [
         {"bullet_theme": "Regulatory IT Transformations", "bullet_text": "Directed large-scale regulatory IT transformations and legacy-modernization programs."},
         {"bullet_theme": "Salesforce Analytics", "bullet_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new ARR."},
@@ -46,7 +46,7 @@ IBM_REQUIRED = ("bul_ibm_001", "bul_ibm_002", "bul_ibm_003", "bul_ibm_004", "bul
 
 
 def test_injection_assigns_bullet_ids_when_missing() -> None:
-    paths = [_path(0, _qwen_style_pool_sample())]
+    paths = [_path(0, _retired_provider_style_pool_sample())]
     injected = inject_positional_bullet_ids_into_pool(paths, IBM_REQUIRED)
     assert injected == 5
     parsed = paths[0].parsed
@@ -80,7 +80,7 @@ def test_injection_skips_bullets_with_empty_text() -> None:
 
 
 def test_injection_no_op_when_required_ids_empty() -> None:
-    paths = [_path(0, _qwen_style_pool_sample())]
+    paths = [_path(0, _retired_provider_style_pool_sample())]
     injected = inject_positional_bullet_ids_into_pool(paths, None)
     assert injected == 0
     assert "bullet_id" not in paths[0].parsed["bullets"][0]
@@ -90,7 +90,7 @@ def test_injection_no_op_when_required_ids_empty() -> None:
 
 def test_pool_text_renders_real_bullets_after_injection() -> None:
     """End-to-end: post-injection, _format_bullet_pool emits text instead of MISSING."""
-    paths = [_path(0, _qwen_style_pool_sample())]
+    paths = [_path(0, _retired_provider_style_pool_sample())]
     pool_text_before = _format_bullet_pool(paths, IBM_REQUIRED)
     assert pool_text_before.count("MISSING") == 5
     inject_positional_bullet_ids_into_pool(paths, IBM_REQUIRED)
@@ -102,7 +102,7 @@ def test_pool_text_renders_real_bullets_after_injection() -> None:
 
 
 def test_bullet_by_id_resolves_each_required_slot_after_injection() -> None:
-    paths = [_path(0, _qwen_style_pool_sample())]
+    paths = [_path(0, _retired_provider_style_pool_sample())]
     inject_positional_bullet_ids_into_pool(paths, IBM_REQUIRED)
     parsed = paths[0].parsed
     for bid in IBM_REQUIRED:

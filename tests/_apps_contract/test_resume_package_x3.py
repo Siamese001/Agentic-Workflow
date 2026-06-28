@@ -66,9 +66,9 @@ def _emit_lane_dir(rr: Path, lk: str) -> dict[str, str]:
     (ldir / "provider_request.json").write_text(
         json.dumps(
             {
-                "provider_requested": "qwen_vllm",
+                "provider_requested": "retired_provider_profile",
                 "provider_attempted": True,
-                "model": "Synthetic/QwenStub",
+                "model": "Synthetic/RetiredProviderStub",
                 "temperature": 0.4,
                 "max_tokens": 1200,
                 "prompt_hash": "a" * 16,
@@ -187,7 +187,7 @@ def _write_minimal_fixture_tree(rr: Path) -> ResumePackageProofPaths:
     (asm / "final_resume_manifest.json").write_text(
         json.dumps(
             {
-                "calls": {"provider_calls_made": False, "qwen_calls_made": False, "judge_calls_made": False},
+                "calls": {"provider_calls_made": False, "retired_provider_calls_made": False, "judge_calls_made": False},
                 "rollup_id_source": "synthetic",
             }
         ),
@@ -202,7 +202,7 @@ def _write_minimal_fixture_tree(rr: Path) -> ResumePackageProofPaths:
             {
                 "guarantees": {
                     "provider_calls_made": False,
-                    "qwen_calls_made": False,
+                    "retired_provider_calls_made": False,
                     "judge_calls_made": False,
                 }
             }
@@ -215,7 +215,7 @@ def _write_minimal_fixture_tree(rr: Path) -> ResumePackageProofPaths:
     doc_dir = rr / _ART / "docx"
     doc_dir.mkdir(parents=True, exist_ok=True)
     (doc_dir / "out.docx").write_bytes(b"fake docx")
-    drm = {"output_docx": docx_rel, "verification": {k: False for k in ("provider_calls_made", "qwen_calls_made", "judge_calls_made")}}
+    drm = {"output_docx": docx_rel, "verification": {k: False for k in ("provider_calls_made", "retired_provider_calls_made", "judge_calls_made")}}
     (doc_dir / "docx_render_manifest.json").write_text(json.dumps(drm), encoding="utf-8")
     (doc_dir / "docx_render_x2_gate_outputs.json").write_text(json.dumps(_mk_x2(True)), encoding="utf-8")
 
@@ -521,5 +521,5 @@ def test_non_generation_guarantees_false():
     p = _workspace_package_paths_or_skip()
     g = json.loads(p.package_x3_json().read_text(encoding="utf-8"))["non_generation_stage_guarantees"]
     assert g["provider_calls_made"] is False
-    assert g["qwen_calls_made"] is False
+    assert g["retired_provider_calls_made"] is False
     assert g["judge_calls_made"] is False

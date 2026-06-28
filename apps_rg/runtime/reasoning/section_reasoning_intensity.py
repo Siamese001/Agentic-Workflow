@@ -1,10 +1,10 @@
-"""Declarative reasoning intensity intents per apps_rg Qwen lane.
+"""Declarative reasoning intensity intents per apps_rg PROVIDER_MODEL lane.
 
-Narrative lanes (executive_summary, unify_narrative, ibm_narrative) use a single Qwen HTTP call;
+Narrative lanes (executive_summary, unify_narrative, ibm_narrative) use a single PROVIDER_MODEL HTTP call;
 orchestration knobs stay honest IGNORED on the singleton transport.
 
-Employment bullet lanes: Unify 15× / IBM 12× Qwen paths (skills/JD/briefing in PA), Claude top-6 / top-5
-with minimum score floor; regen extra paths if threshold not met (see employment_bullet_pool).
+Employment bullet lanes: Unify / IBM start with 2 PROVIDER_MODEL paths and adapt to 4 only
+if the Claude selector misses slot coverage or the minimum score floor (see employment_bullet_pool).
 
 Competencies uses a smaller pool (4 paths) + Claude category selection.
 """
@@ -101,10 +101,10 @@ _T2_QUALITY = SectionReasoningProfile(
 #
 # Tuned per dominant failure mode of each section, NOT per "how creative is this section":
 #
-#   IBM bullets        : metric preservation dominates -> SC small, deterministic anchors carry
-#                        the load. SC=4 (was 12).
-#   Unify bullets      : differentiation/angle dominates -> SC=4 angle-diverse generations,
-#                        judge picks. (was 15).
+#   IBM bullets        : metric preservation dominates -> SC starts at 2, adaptive max 4
+#                        only if slot coverage or min score fails. (was flat 12, then 4).
+#   Unify bullets      : differentiation/angle dominates -> SC starts at 2, adaptive max 4
+#                        only if slot coverage or min score fails. (was flat 15, then 4).
 #   Competencies       : required-anchor coverage dominates -> Pass-0 family coverage + anchor
 #                        injection is deterministic. SC near 1-2 is enough. SC=2 (was 10).
 #   Executive summary  : prose flow + 5 mechanical blockers, all deterministic-guard-addressable
@@ -122,7 +122,7 @@ _UNIFY_BULLET_POOL = SectionReasoningProfile(
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=4.0,
+    self_consistency_samples=2.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )
@@ -132,7 +132,7 @@ _IBM_BULLET_POOL = SectionReasoningProfile(
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=4.0,
+    self_consistency_samples=2.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )
@@ -164,7 +164,7 @@ _NARRATIVE_SINGLE_PATH = SectionReasoningProfile(
 _lane_map: Final[dict[str, SectionReasoningProfile]] = {
     "education": _T0_LOCKED,
     "certifications": _T0_LOCKED,
-    # HTTP singleton Qwen transport forwards only temperature/max_tokens — declaring ToT/reflexion as
+    # HTTP singleton PROVIDER_MODEL transport forwards only temperature/max_tokens — declaring ToT/reflexion as
     # required would always IGNORE them and deny quality certification; headline matches transport.
     "headline": _T0_LOCKED,
     "executive_summary": _EXEC_SUMMARY_PROFILE,

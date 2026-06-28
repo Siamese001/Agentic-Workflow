@@ -268,7 +268,7 @@ def test_l6_shadow_handoff_follows_canonical_run(ibm_bullets_lane_run_dir: Path)
     assert l6.get("claim_ledger_summary", {}).get("row_count", 0) >= 5
     cal = l6.get("foundation_proof_calibration") or {}
     assert cal.get("foundation_proof_model_id") == "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
-    assert cal.get("treatment_profile") == "QWEN_POOL_CLAUDE_TOP_N_SELECTION"
+    assert cal.get("treatment_profile") == "MODEL_POOL_CLAUDE_TOP_N_SELECTION"
     assert int(cal.get("bullet_count_observed") or 0) >= 5
     summ = l6.get("allowed_fact_ids_summary") or {}
     assert isinstance(summ.get("allowed_fact_ids_sorted"), list)

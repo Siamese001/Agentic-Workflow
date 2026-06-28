@@ -1,4 +1,4 @@
-"""W4 — competencies graph_8x8 pool (8 paths -> 8 categories) + selector/judge split.
+"""W4 — competencies graph_8x8 pool (adaptive paths -> 6-8 categories) + selector/judge split.
 
 The selector receipt is Anthropic-backed; the formal competencies judge is Gemini-backed.
 """
@@ -21,10 +21,14 @@ from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lan
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
+    COMPETENCIES_MAX_CATEGORY_COUNT,
+    COMPETENCIES_MIN_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
     build_competencies_rejected_neighbor_audit,
     build_competencies_targeting_context,
+    competencies_max_sc_path_count,
     evaluate_competencies_selection_quality,
+    high_signal_competencies_selection_score,
     is_competencies_pool_generation,
     merge_competencies_graph_pool_top_eight,
     min_competencies_selection_score,
@@ -39,7 +43,15 @@ from apps_rg.runtime.sections.section_product_shape_ssot import section_product_
 def _cat(label: str, terms: list[str]) -> dict:
     return {
         "category_label": label,
-        "terms": [{"text": t, "source_fact_ids": ["bul_001"]} for t in terms],
+        "terms": [
+            {
+                "text": t,
+                "source_fact_id": "bul_001",
+                "source_fact_ids": ["bul_001"],
+                "support_class": "FACT_ONLY",
+            }
+            for t in terms
+        ],
         "source_fact_ids": ["bul_001"],
     }
 
@@ -107,14 +119,14 @@ class _FakeSelectorJudge:
 
 def test_competencies_pool_generation_mode_detected() -> None:
     assert is_competencies_pool_generation(
-        {"generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen"}
+        {"generation_mode": "model_competencies_graph_pool_adaptive_6_8_regen"}
     )
     assert not is_competencies_pool_generation({"generation_mode": "singleton"})
 
 
 def test_sc_path_count_and_targeting_context_graph_8x8() -> None:
-    # Variance-class alignment (2026-06): candidate-category pool is the final exact 8.
-    assert sc_path_count_for_lane("competencies") == COMPETENCIES_SC_PATH_COUNT == 8
+    # HBS/SVP alignment (2026-06): start with 4 SC paths, expand toward 8 only if gates need it.
+    assert sc_path_count_for_lane("competencies") == COMPETENCIES_SC_PATH_COUNT == 4
     ctx = build_competencies_targeting_context(
         {
             "target_title": "SVP",
@@ -132,20 +144,26 @@ def test_sc_path_count_and_targeting_context_graph_8x8() -> None:
         allowed_skill_ids={"sk_graph_001"},
     )
     assert ctx["candidate_category_count"] == COMPETENCIES_CANDIDATE_CATEGORY_COUNT
+    assert ctx["min_category_count"] == COMPETENCIES_MIN_CATEGORY_COUNT
+    assert ctx["max_category_count"] == COMPETENCIES_MAX_CATEGORY_COUNT
     assert ctx["final_category_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
-    assert ctx["pool_path_count"] == 8
+    assert ctx["pool_path_count"] == 4
+    assert ctx["initial_sc_path_count"] == 4
+    assert ctx["max_sc_path_count"] == 8
+    assert ctx["high_signal_selection_score"] == high_signal_competencies_selection_score()
     assert ctx["proof_pool_type"] == "augmented_skills_graph"
     assert ctx["selection_model"] == "graph_8x8_v1"
 
 
-def test_section_product_shape_competencies_exactly_eight() -> None:
+def test_section_product_shape_competencies_adaptive_six_to_eight() -> None:
     shape = section_product_shape("competencies")
     assert "x2_competencies_min_category_count" in shape.required_gate_ids
     assert "graph_8x8" in shape.shape_summary
+    assert "adaptive 6-8" in shape.shape_summary
 
 
-def test_evaluate_competencies_gate_requires_eight_passing_categories() -> None:
-    labels = [f"Cat_{i}" for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)]
+def test_evaluate_competencies_gate_accepts_six_passing_categories() -> None:
+    labels = [f"Cat_{i}" for i in range(COMPETENCIES_MIN_CATEGORY_COUNT)]
     selections = [
         {"category_label": lab, "path_index": 0, "score": 0.9, "passes": True} for lab in labels
     ]
@@ -156,7 +174,9 @@ def test_evaluate_competencies_gate_requires_eight_passing_categories() -> None:
         min_score=min_competencies_selection_score(),
     )
     assert gate.ok is True
-    assert gate.categories_in_merged == COMPETENCIES_FINAL_CATEGORY_COUNT
+    assert gate.categories_in_merged == COMPETENCIES_MIN_CATEGORY_COUNT
+    assert gate.min_category_count == COMPETENCIES_MIN_CATEGORY_COUNT
+    assert gate.max_category_count == COMPETENCIES_MAX_CATEGORY_COUNT
 
 
 def test_merge_competencies_graph_pool_preserves_selector_scores() -> None:
@@ -176,15 +196,15 @@ def test_merge_competencies_graph_pool_preserves_selector_scores() -> None:
         row.get("selection_score")
         for row in (merged.get("competencies") or [])
     ]
-    assert merged_scores == scores
+    assert merged_scores == scores[:COMPETENCIES_MIN_CATEGORY_COUNT]
 
 
 def test_competencies_rejected_neighbor_audit_records_unselected_candidates() -> None:
     paths = [_path_with_categories(0), _path_with_categories(1)]
     labels = [f"Category_0_{i}" for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)]
     selections = [
-        {"category_label": lab, "path_index": 0, "score": 0.9 - idx * 0.01, "passes": True}
-        for idx, lab in enumerate(labels)
+        {"category_label": lab, "path_index": 0, "score": 0.9, "passes": True}
+        for lab in labels
     ]
     merged, source_map = merge_competencies_graph_pool_top_eight(
         paths,
@@ -210,7 +230,7 @@ def test_competencies_rejected_neighbor_audit_records_unselected_candidates() ->
     }
 
 
-def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_openai_competencies_selection_emits_high_signal_categories(monkeypatch: pytest.MonkeyPatch) -> None:
     paths = [_path_with_categories(0)]
     selections = [
         {
@@ -243,7 +263,7 @@ def test_openai_competencies_selection_emits_eight_categories(monkeypatch: pytes
         },
         mode="blocked_if_unavailable",
     )
-    assert pool.selection_mode == "openai_competencies_top_8_pass"
+    assert pool.selection_mode == "openai_competencies_adaptive_6_8_pass"
     assert pool.judge_output is not None
     assert pool.judge_output.provider_key == "openai_chatgpt"
     assert pool.judge_output.model_name == "gpt-5.5"
@@ -282,7 +302,7 @@ def test_openai_competencies_selector_fails_closed_without_credentials(
 
 
 def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.MonkeyPatch) -> None:
-    paths = [_path_with_categories(i, n_categories=COMPETENCIES_FINAL_CATEGORY_COUNT) for i in range(8)]
+    paths = [_path_with_categories(i, n_categories=COMPETENCIES_FINAL_CATEGORY_COUNT) for i in range(4)]
 
     class _Judge:
         provider_key = "openai_chatgpt"
@@ -308,9 +328,10 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
                 "rationale": self.rationale,
             }
 
-    def _fake_paths(**_: object) -> tuple[list[SelfConsistencyPath], ProviderResult]:
-        return paths, ProviderResult(
-            provider_requested="qwen_vllm",
+    def _fake_paths(**kwargs: object) -> tuple[list[SelfConsistencyPath], ProviderResult]:
+        path_count = int(kwargs.get("path_count") or len(paths))
+        return paths[:path_count], ProviderResult(
+            provider_requested="external_claude",
             provider_attempted=True,
             provider_available=True,
             exact_provider_error=None,
@@ -360,7 +381,10 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
     )
     assert err == ""
     assert is_competencies_pool_generation(meta)
-    assert meta["initial_path_count"] == 8
+    assert meta["initial_path_count"] == 4
+    assert meta["max_path_count"] == competencies_max_sc_path_count()
+    assert meta["adaptive_sc_enabled"] is True
+    assert meta["stop_reason"] == "selection_gate_passed"
     assert meta["final_category_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
     assert parsed is not None
     assert len(parsed.get("competencies") or []) == COMPETENCIES_FINAL_CATEGORY_COUNT
@@ -379,7 +403,7 @@ def test_generate_competencies_graph_pool_lane_forced_sc_ignores_disable_toggle(
             '{"competencies":[],"claim_ledger":[]}',
             {"competencies": [], "claim_ledger": []},
             "",
-            {"generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen"},
+            {"generation_mode": "model_competencies_graph_pool_adaptive_6_8_regen"},
         )
 
     monkeypatch.setenv("APPS_RG_BULLET_SC_DISABLE", "1")
@@ -404,7 +428,7 @@ def test_generate_competencies_graph_pool_lane_forced_sc_ignores_disable_toggle(
     assert raw == '{"competencies":[],"claim_ledger":[]}'
     assert parsed == {"competencies": [], "claim_ledger": []}
     assert err == ""
-    assert meta["generation_mode"] == "qwen_competencies_graph_pool_claude_top_8_regen"
+    assert meta["generation_mode"] == "model_competencies_graph_pool_adaptive_6_8_regen"
 
 
 def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
@@ -417,9 +441,9 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
         encoding="utf-8",
     )
     gen_meta = {
-        "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
+        "generation_mode": "model_competencies_graph_pool_adaptive_6_8_regen",
         "selection_gate": {"ok": True, "categories_in_merged": COMPETENCIES_FINAL_CATEGORY_COUNT},
-        "selection_mode": "openai_competencies_top_8_pass",
+        "selection_mode": "openai_competencies_adaptive_6_8_pass",
     }
     rows = competencies_pool_x1d_judge_rows(
         artifact_dir=tmp_path,
@@ -431,7 +455,7 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
     assert rows[0]["provider_key"] == "openai_chatgpt"
     assert rows[0]["provider_name"] == "OpenAI ChatGPT"
     assert rows[0]["model_name"] == "gpt-5.5"
-    assert rows[0]["selection_mode"] == "openai_competencies_top_8_pass"
+    assert rows[0]["selection_mode"] == "openai_competencies_adaptive_6_8_pass"
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
     assert rows[0]["advisory_only"] is True
     assert rows[0]["proof_eligible_judge"] is False
@@ -453,7 +477,7 @@ def test_competencies_non_sc_path_is_removed() -> None:
         )
 
 
-def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:
+def test_apply_executive_capability_projection_preserves_adaptive_selection() -> None:
     from apps_rg.runtime.sections.competencies_capability_projection import (
         apply_executive_capability_projection,
     )
@@ -461,14 +485,30 @@ def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:
 
     parsed = {
         "competencies": [
-            _cat("Technology Strategy & Innovation", ["roadmap", "portfolio"]),
-            _cat("AI Platform Leadership", ["graphrag", "orchestration"]),
-            _cat("Data & Analytics Modernization", ["lakehouse", "catalog"]),
-            _cat("Governance, Risk & Compliance", ["lineage", "policy"]),
-            _cat("Engineering & Delivery Leadership", ["scale-out", "sre"]),
-            _cat("Commercial & Operating Impact", ["gtm", "revenue"]),
-            _cat("LLMOps & Reliability", ["evaluation", "telemetry"]),
-            _cat("Distributed Infrastructure", ["lakehouse", "streaming"]),
+            _cat(
+                "Technology Strategy & Innovation",
+                ["Enterprise roadmap ownership", "Innovation portfolio governance"],
+            ),
+            _cat(
+                "AI Platform Leadership",
+                ["GraphRAG retrieval engineering", "Multi-agent orchestration"],
+            ),
+            _cat(
+                "Data & Analytics Modernization",
+                ["Lakehouse data modernization", "Enterprise data cataloging"],
+            ),
+            _cat(
+                "Governance, Risk & Compliance",
+                ["Policy-gated AI governance", "Audit traceability controls"],
+            ),
+            _cat(
+                "Engineering & Delivery Leadership",
+                ["Engineering organization scale-out", "Cross-functional delivery governance"],
+            ),
+            _cat(
+                "Commercial & Operating Impact",
+                ["IP-led commercialization strategy", "Enterprise platform adoption"],
+            ),
         ],
         "change_log": [],
     }
@@ -482,8 +522,8 @@ def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:
         resume_support_blob_lower="bul_001 graphrag orchestration",
     )
     comps = out.get("competencies") or []
-    assert len(comps) == MAX_CATEGORY_COUNT
-    assert len(out.get("categories") or []) == MAX_CATEGORY_COUNT
+    assert COMPETENCIES_MIN_CATEGORY_COUNT <= len(comps) <= MAX_CATEGORY_COUNT
+    assert COMPETENCIES_MIN_CATEGORY_COUNT <= len(out.get("categories") or []) <= MAX_CATEGORY_COUNT
 
 
 def test_canonical_competencies_cli_uses_openai_chatgpt_only() -> None:

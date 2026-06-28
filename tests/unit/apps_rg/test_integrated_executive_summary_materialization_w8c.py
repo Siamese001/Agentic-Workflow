@@ -107,7 +107,7 @@ def test_executive_summary_dispatch_uses_inline_briefing_not_path_resolver() -> 
             source_resume_text="",
             generation_mode="strategic_tailor",
             artifact_dir="",
-            lane_provider="qwen_vllm",
+            lane_provider="retired_provider_profile",
             lane_provider_resolution_source="CLI_OVERRIDE",
             lane_temperature=0.45,
             lane_x1d_judges="gemini_pro",
@@ -187,13 +187,13 @@ def test_phase1_attempts_executive_summary_under_modular_sections_root() -> None
                 {
                     "section_id": "executive_summary",
                     "runtime_generation_status": "REAL_LLM",
-                    "provider_requested": "qwen_vllm",
+                    "provider_requested": "retired_provider_profile",
                 }
             ),
             encoding="utf-8",
         )
         (run_dir / "provider_request.json").write_text(
-            json.dumps({"provider_requested": "qwen_vllm", "provider_attempted": True}),
+            json.dumps({"provider_requested": "retired_provider_profile", "provider_attempted": True}),
             encoding="utf-8",
         )
         (run_dir / "x3_disposition.json").write_text(

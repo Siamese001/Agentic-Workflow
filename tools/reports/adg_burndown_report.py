@@ -221,6 +221,43 @@ def _inline_burndown_bypassed() -> bool:
     )
 
 
+def _emit_inline_markdown(md: str, *, source: str) -> None:
+    sys.stdout.write("\n")
+    sys.stdout.write(md)
+    if not md.endswith("\n"):
+        sys.stdout.write("\n")
+    print(
+        f"[adg_burndown_report] inline markdown emitted to stdout for Cursor display ({source})",
+        file=sys.stderr,
+    )
+
+
+def emit_existing_burndown_markdown(*, report_path: Path | None = None) -> int:
+    """Replay an already-written burndown markdown artifact to stdout."""
+    if _inline_burndown_bypassed():
+        print(
+            "[adg_burndown_report] WARNING: inline stdout suppressed "
+            "(ADG_BURNDOWN_INLINE_BYPASS=1)",
+            file=sys.stderr,
+        )
+        return 0
+
+    target = (report_path or BURNDOWN_REPORT_OUTPUTS[0]).resolve()
+    if not target.is_file():
+        print(
+            f"[adg_burndown_report] inline replay blocked — missing report: {target}",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        _emit_inline_markdown(target.read_text(encoding="utf-8"), source="existing artifact")
+    except OSError as exc:
+        print(f"[adg_burndown_report] inline replay failed: {exc}", file=sys.stderr)
+        return 2
+    return 0
+
+
 def emit_mandatory_adg_burndown_report(
     *,
     gate_results: Path | None = None,
@@ -276,14 +313,7 @@ def emit_mandatory_adg_burndown_report(
                 file=sys.stderr,
             )
         if print_inline and not _inline_burndown_bypassed():
-            sys.stdout.write("\n")
-            sys.stdout.write(md)
-            if not md.endswith("\n"):
-                sys.stdout.write("\n")
-            print(
-                "[adg_burndown_report] inline markdown emitted to stdout for Cursor display",
-                file=sys.stderr,
-            )
+            _emit_inline_markdown(md, source="fresh render")
         elif _inline_burndown_bypassed():
             print(
                 "[adg_burndown_report] WARNING: inline stdout suppressed "

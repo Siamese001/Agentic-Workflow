@@ -34,8 +34,8 @@ def test_apps_rg_l6_microsteps_expand_contract_and_observe_section_lane(tmp_path
     rows = [observation.to_dict() for observation in observations]
     headline_rows = [row for row in rows if row["lane_id"] == "headline"]
 
-    assert len(rows) == 134
-    assert len(eval_rows) == 134
+    assert len(rows) == 136
+    assert len(eval_rows) == 136
     assert contract_digest.startswith("sha256:")
     assert len(headline_rows) == 10
     assert all(row["observed_status"] == "OBSERVED" for row in headline_rows)
