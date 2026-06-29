@@ -81,8 +81,8 @@ class _BaseAdapter:
         return HealingResult(territory=territory, dry_run=not context.heal, violations_fixed=fixed)
 
 
-class HierarchyHealerAdapter(_BaseAdapter):
-    agent_name = "HierarchyHealerAgent"
+class StructureEnforcerAdapter(_BaseAdapter):
+    agent_name = "StructureEnforcerAgent"
 
 
 class LocationHealerAdapter(_BaseAdapter):
@@ -101,7 +101,7 @@ class AdapterCoordinator:
     def __init__(self, project_root: Path):
         self.project_root = Path(project_root)
         self.agents = [
-            HierarchyHealerAdapter(project_root),
+            StructureEnforcerAdapter(project_root),
             LocationHealerAdapter(project_root),
             GravityHealerAdapter(project_root),
             FilesystemReconcilerAdapter(project_root),

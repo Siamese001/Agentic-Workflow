@@ -56,8 +56,8 @@ def _as_list(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
 
 
-class HierarchyHealerAdapter(TerritoryHealerProtocol):
-    """Adapter for HierarchyHealerAgent to implement TerritoryHealerProtocol."""
+class StructureEnforcerAdapter(TerritoryHealerProtocol):
+    """Adapter for StructureEnforcerAgent to implement TerritoryHealerProtocol."""
 
     def __init__(self, project_root: Path):
         self.project_root = Path(project_root).resolve()
@@ -65,18 +65,18 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
 
     @property
     def agent_name(self) -> str:
-        return "HierarchyHealerAgent"
+        return "StructureEnforcerAgent"
 
     def _get_agent(self):
         """Lazy load the underlying agent."""
         if self._agent is None:
-            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+            from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-            self._agent = HierarchyHealerAgent(project_root=self.project_root)
+            self._agent = StructureEnforcerAgent(project_root=self.project_root)
         return self._agent
 
     def can_handle(self, territory: str) -> bool:
-        """HierarchyHealer can handle any territory."""
+        """StructureEnforcer can handle any territory."""
         return True
 
     def scan_territory(self, territory: str) -> ScanResult:
@@ -131,7 +131,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
         )
 
     def heal_territory(self, territory: str, context: HealingContext) -> HealingResult:
-        """Heal hierarchy violations in territory."""
+        """Heal structure violations in territory."""
         agent = self._get_agent()
 
         # First scan
@@ -143,36 +143,13 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
 
         if context.heal and scan_result.violations_found > 0:
             try:
-                # Heal root violations with territory context
-                heal_result = agent.heal_root_violations(
+                heal_result = agent.heal_repository(
                     dry_run=False,
+                    execute=True,
                     target_territory=territory,
                 )
-
-                # Track actions
-                for action in heal_result.get("actions", []):
-                    actions_taken.append(action)
-                    if action.get("applied"):
-                        violations_fixed += 1
-
-                # Track errors
-                errors.extend(heal_result.get("errors", []))
-
-                # Also run test structure mirror validation for tests territory
-                if territory == "tests":
-                    mirror_result = agent.validate_test_structure_mirror(
-                        dry_run=False,
-                        execute=True,
-                    )
-                    if mirror_result.get("folders_created", 0) > 0:
-                        actions_taken.append(
-                            {
-                                "type": "TEST_MIRROR_FOLDERS_CREATED",
-                                "count": mirror_result["folders_created"],
-                                "applied": True,
-                            }
-                        )
-                        violations_fixed += mirror_result.get("violations_found", 0)
+                violations_fixed = int(heal_result.get("fixed") or 0)
+                errors.extend(str(error) for error in _as_list(heal_result.get("errors")))
 
             except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception(f"Healing failed for {territory}: {e}")
@@ -465,7 +442,7 @@ def create_adapter_coordinator(project_root: Path | None = None) -> "TerritoryHe
     coordinator = TerritoryHealingCoordinator(root)
 
     # Register all adapters
-    coordinator.register_agent(HierarchyHealerAdapter(root))
+    coordinator.register_agent(StructureEnforcerAdapter(root))
     coordinator.register_agent(LocationHealerAdapter(root))
     coordinator.register_agent(GravityHealerAdapter(root))
     coordinator.register_agent(FilesystemReconcilerAdapter(root))

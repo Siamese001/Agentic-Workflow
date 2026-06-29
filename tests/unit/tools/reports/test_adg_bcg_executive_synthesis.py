@@ -90,6 +90,25 @@ def _p0_plan(path: Path) -> None:
     )
 
 
+def _p0_empty_plan(path: Path) -> None:
+    _write_json(
+        path,
+        {
+            "schema_version": "1.0",
+            "plan_required": False,
+            "summary": {
+                "total_p0_issues": 0,
+                "layer_violations": 0,
+                "circular_imports": 0,
+                "dynamic_exec": 0,
+                "protected_layer_violations": 0,
+            },
+            "waves": [],
+            "top_files": [],
+        },
+    )
+
+
 def _gate(gate_id: str, *, verdict: str = "FIX", band: str = "P0", records: int = 1, baseline: int = 0) -> dict:
     classification = "blocked" if verdict == "FIX" else "pass"
     enforcement = "block" if verdict == "FIX" else "ratchet"
@@ -240,21 +259,88 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
 
     first_three = actions["rows"][:3]
     assert [r["scope"] for r in first_three] == [
-        "B2_layer_skip_ratchet",
         "C2_l5_bypass_pview",
+        "B2_layer_skip_ratchet",
         "F1_untyped_seam_ratchet",
     ]
-    assert first_three[0]["move"] == "Clear layer-jump regression"
-    assert first_three[1]["move"] == "Stop L5 gateway bypass"
+    assert first_three[0]["move"] == "Stop L5 gateway bypass"
+    assert first_three[1]["move"] == "Clear layer-jump regression"
     assert first_three[2]["move"] == "Close untyped cross-layer seams"
-    assert "direct dependency links" in first_three[0]["evidence"].lower()
-    assert "provider/tool calls bypassing the l5 gateway" in first_three[1]["evidence"].lower()
+    assert "provider/tool calls bypassing the l5 gateway" in first_three[0]["evidence"].lower()
+    assert "direct dependency links" in first_three[1]["evidence"].lower()
     assert "cross-layer imports with empty type surfaces" in first_three[2]["evidence"].lower()
     assert "fix convenience coupling" in first_three[0]["next_step"].lower()
     assert "fix convenience coupling" in first_three[1]["next_step"].lower()
     assert "fix convenience coupling" in first_three[2]["next_step"].lower()
     assert first_three[0]["decision_options"][0]["label"] == "Fix"
     assert first_three[0]["done_condition"].startswith("Rerun ADG")
+
+
+def test_canonical_next_best_actions_prioritizes_p0_over_p3_hygiene(tmp_path: Path) -> None:
+    gate_rows = [
+        {
+            "gate_id": "S4_unused_imports_ratchet",
+            "band": "P3",
+            "enforcement": "ratchet",
+            "violation_count": 10772,
+            "baseline_count": 10750,
+            "classification": "regressed",
+        },
+        {
+            "gate_id": "13_core_imports_apps",
+            "band": "P0",
+            "enforcement": "block",
+            "violation_count": 35,
+            "classification": "blocked",
+        },
+        {
+            "gate_id": "10_infra_wiring",
+            "band": "P0",
+            "enforcement": "block",
+            "violation_count": 3,
+            "classification": "blocked",
+        },
+        {
+            "gate_id": "S2_uwg_bypass_ratchet",
+            "band": "P0",
+            "enforcement": "ratchet",
+            "violation_count": 1601,
+            "baseline_count": 1571,
+            "classification": "regressed",
+        },
+        {
+            "gate_id": "Q2_cyclomatic_complexity_ratchet",
+            "band": "P3",
+            "enforcement": "ratchet",
+            "violation_count": 1168,
+            "baseline_count": 1148,
+            "classification": "regressed",
+        },
+    ]
+    db = tmp_path / "adg_bcg_executive_synthesis_test.sqlite"
+    _sqlite(db)
+    actions = build_canonical_next_best_actions(
+        gate_rows,
+        {"top_graph_risks": []},
+        {"investment_map": []},
+        {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
+        {"rows": []},
+        {},
+        sqlite_path=db,
+        run_id="run-123",
+    )
+
+    assert [r["scope"] for r in actions["rows"][:3]] == [
+        "10_infra_wiring",
+        "13_core_imports_apps",
+        "S2_uwg_bypass_ratchet",
+    ]
+    assert [r["move"] for r in actions["rows"][:3]] == [
+        "Clear infra wiring P0 block",
+        "Stop core importing apps",
+        "Close UWG bypass regression",
+    ]
+    assert "S4_unused_imports_ratchet" not in [r["scope"] for r in actions["rows"][:3]]
 
 
 def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path: Path) -> None:
@@ -454,7 +540,9 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "TESTING_CONTROL_GAP",
         "RUNTIME_PROOF_FAILING",
     }
+    assert data["kpi_scorecard"]["rule"].startswith("Do not add these counts together")
     assert data["lens_0_p0_landmines"]["summary"]["wrong_way_imports"] == 1
+    assert data["lens_0_p0_landmines"]["display_name"] == "Foundation blockers"
     assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
     assert data["dead_code_report"]["summary"]["total_dead_code_candidates"] == 0
@@ -476,7 +564,8 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "### 1. What ADG Is",
         "### 2. Patient Size",
         "### 3. Executive Decision",
-        "### 4. Lens 0 — P0 Landmines / Foundation Cracks",
+        "### 3A. KPI Scorecard — Decision vs Audit",
+        "### 4. Lens 0 — Foundation Blockers",
         "### 5. Gap Analysis — Lens 1: Health Gates",
         "### 6. Gap Analysis — Lens 2: Runtime Proof / Observability",
         "### 7. Gap Analysis — Lens 3: Product / App Risk",
@@ -497,6 +586,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "Why this order" not in md
     assert "fix_blocker" not in md
     assert "ADG source:" in md
+    assert "KPI split:" in md
     assert "adg_indexed_run.sqlite" in md
     assert "(snapshot run)" in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
@@ -658,6 +748,43 @@ def test_artifact_staleness_flagged_on_divergent_timestamp(tmp_path: Path) -> No
     assert by["old"]["stale"] is True
 
 
+def test_summary_fails_when_gate_artifacts_do_not_match_sqlite_snapshot(tmp_path: Path) -> None:
+    from tools.reports.adg_bcg_executive_synthesis import build_bcg_executive_summary
+
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_06272026_2302.sqlite"
+    _sqlite(db)
+    gate = artifacts / "adg_gate_results_20260627_091354.json"
+    _write_json(gate, {"timestamp": "2026-06-27T09:13:54Z", "total_gates": 1, "gates": [_gate("old_blocker")]})
+    _write_json(
+        artifacts / "adg_generation_manifest_06272026_2302.json",
+        {
+            "certification_status": "failed",
+            "sqlite_path": None,
+            "snapshot_path": None,
+        },
+    )
+
+    doc = build_bcg_executive_summary(
+        artifacts,
+        "06272026_2302",
+        db,
+        gate,
+        None,
+        None,
+        None,
+        {},
+    )
+
+    consistency = doc["audit_notes"]["artifact_consistency"]
+    assert consistency["status"] == "FAIL"
+    assert doc["executive_decision"]["verdict"] == "REPORT_INCONSISTENT"
+    mismatch_types = {err["mismatch_type"] for err in consistency["errors"]}
+    assert "artifact_timestamp_mismatch" in mismatch_types
+    assert "generation_manifest_not_certified" in mismatch_types
+
+
 def test_missing_artifact_is_not_loaded_or_used_even_if_requested(tmp_path: Path) -> None:
     missing = tmp_path / "missing_p0.json"
     matrix = build_artifact_usage_matrix(
@@ -703,6 +830,62 @@ def test_p0_wave_plan_json_drives_lens_zero(tmp_path: Path) -> None:
     assert lens["summary"]["wrong_way_imports"] == 1
     assert any(r["landmine"] == "Wrong-way layer import" for r in lens["landmines"])
     assert any(r["direct_fan_in"] == 20 for r in lens["landmines"])
+
+
+def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Path) -> None:
+    _repo_tests(tmp_path)
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("G_REACH_l0_reachability", records=3)]})
+    p0_json = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
+    _p0_empty_plan(p0_json)
+    burndown = artifacts / "adg_burndown_table_run.json"
+    _write_json(
+        burndown,
+        {
+            "summary": {
+                "P0": {"gross": 43, "guardian": 40, "net": 3},
+                "P1": {"gross": 10, "guardian": 8, "net": 2},
+                "P2": {"gross": 7, "guardian": 2, "net": 5},
+                "P3": {"gross": 0, "guardian": 0, "net": 0},
+            }
+        },
+    )
+
+    rc, out = emit_bcg_executive_summary(
+        artifacts,
+        "run",
+        db,
+        gate,
+        None,
+        None,
+        burndown,
+        {"p0_wave_plan": p0_json},
+        print_inline=False,
+        docs_dir=tmp_path / "docs_mirror",
+    )
+
+    assert rc == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    kpis = {row["id"]: row for row in doc["kpi_scorecard"]["kpis"]}
+    assert kpis["foundation_blockers"]["value"] == 0
+    assert kpis["p0_audit_net"]["value"] == 3
+    assert kpis["p0_live_gate_drivers"]["value"] == 1
+    assert doc["audit_notes"]["guardian_summary"][0]["audit_net"] == 3
+    assert doc["audit_notes"]["guardian_summary"][0]["non_exempt"] == 3
+    assert doc["lens_0_p0_landmines"]["summary"]["foundation_blockers"] == 0
+
+    md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
+    assert "### 3A. KPI Scorecard — Decision vs Audit" in md
+    assert "| Foundation blockers | 0 |" in md
+    assert "| P0 audit net | 3 |" in md
+    assert "| P0 | 43 | 40 | 3 | 0 | 1 |" in md
+    assert "Zero foundation blockers can coexist with nonzero P0 audit net" in md
+    assert "### 4. Lens 0 — Foundation Blockers" in md
+    assert "### 4. Lens 0 — P0 Landmines / Foundation Cracks" not in md
 
 
 def test_report_inconsistency_and_runtime_failure_precede_fix_gates() -> None:

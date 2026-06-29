@@ -318,8 +318,81 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
                 f"- `{finding.get('section')}`: {finding.get('classification')} "
                 f"({finding.get('evidence') or 'no gate evidence'})."
             )
+            lines.append(f"  - Root cause: {finding.get('root_cause') or 'missing'}")
+            allocation = _rca_causal_allocation(finding)
+            if allocation:
+                lines.append("  - Causal allocation:")
+                lines.append(f"    - Dominant cause: {allocation['dominant_cause']}")
+                lines.append(
+                    f"    - Retry recoverability: `{allocation['retry_recoverability']}` - "
+                    f"{allocation['retry_recoverability_reason']}"
+                )
+                lines.append("    - Allocation rows:")
+                for row in allocation["allocation"]:
+                    evidence = ", ".join(str(ref) for ref in row.get("evidence_refs") or [])
+                    lines.append(
+                        f"      - `{row['domain']}` / `{row['causal_role']}` / "
+                        f"`{row['work_share']}`: {row['root_cause_link']} "
+                        f"Evidence: `{evidence}`. Required work: {row['required_work']}"
+                    )
+            else:
+                lines.append(
+                    "  - **RCA format gap:** missing causal allocation with concrete root-cause-linked rows."
+                )
+            plan = _rca_implementation_plan(finding)
+            if plan:
+                lines.append("  - Required implementation plan:")
+                for item in plan:
+                    lines.append(f"    - {item}")
+            else:
+                lines.append(
+                    "  - **RCA format gap:** missing 3-5 root-cause implementation bullets."
+                )
     lines.append("")
     return lines
+
+
+def _rca_implementation_plan(finding: Dict[str, Any]) -> List[str]:
+    plan = finding.get("implementation_plan")
+    if not isinstance(plan, list):
+        return []
+    items = [str(item).strip() for item in plan if str(item).strip()]
+    if 3 <= len(items) <= 5:
+        return items
+    return []
+
+
+def _rca_causal_allocation(finding: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    allocation = finding.get("causal_allocation")
+    if not isinstance(allocation, dict):
+        return None
+    rows = allocation.get("allocation")
+    if not isinstance(rows, list) or not rows:
+        return None
+    required = {"domain", "causal_role", "root_cause_link", "work_share", "evidence_refs", "required_work"}
+    valid_rows: List[Dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict) or not required.issubset(row):
+            return None
+        domain = str(row.get("domain") or "").strip()
+        root_cause_link = str(row.get("root_cause_link") or "").strip()
+        if not domain or not root_cause_link or domain == root_cause_link or len(root_cause_link) < 20:
+            return None
+        evidence_refs = row.get("evidence_refs")
+        if not isinstance(evidence_refs, list) or not evidence_refs:
+            return None
+        valid_rows.append(row)
+    dominant = str(allocation.get("dominant_cause") or "").strip()
+    retry = str(allocation.get("retry_recoverability") or "").strip()
+    retry_reason = str(allocation.get("retry_recoverability_reason") or "").strip()
+    if not dominant or not retry or not retry_reason:
+        return None
+    return {
+        "dominant_cause": dominant,
+        "retry_recoverability": retry,
+        "retry_recoverability_reason": retry_reason,
+        "allocation": valid_rows,
+    }
 
 
 def _render_bcg_competencies_report(run_dir: Path) -> List[str]:

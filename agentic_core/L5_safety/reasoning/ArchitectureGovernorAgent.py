@@ -670,9 +670,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 validator = self._get_structure_validator()
                 report = validator.validate_structure(root_path)
                 try:
-                    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-                    hierarchy = HierarchyAgent(project_root=self.project_root)
+                    hierarchy = StructureEnforcerAgent(project_root=self.project_root)
                     h_report = hierarchy.scan_root_violations(target_territory=root_name)
                     for h_violation in tqdm(h_report.get("violations", []), desc="Processing", unit="item"):
                         total_violations += 1
@@ -1383,9 +1383,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if "violations" not in audit_results:
             audit_results["violations"] = []
         try:
-            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-            hierarchy = HierarchyAgent(project_root=self.project_root)
+            hierarchy = StructureEnforcerAgent(project_root=self.project_root)
             for territory in tqdm(target_territories, desc="Processing", unit="item"):
                 h_report = hierarchy.scan_root_violations(target_territory=territory)
                 for v in h_report.get("violations", []):

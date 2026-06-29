@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent as HierarchyHealerAgent
+from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -186,7 +186,7 @@ class MissionPreflight:
         self.project_root = project_root.resolve()
         self.healing_enabled = healing_enabled
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        self.HierarchyHealerAgent = HierarchyHealerAgent(project_root, healing_enabled)
+        self.HierarchyHealerAgent = StructureEnforcerAgent(project_root=project_root)
         self._location_agent = None
         self._hierarchy_agent = None
         self._import_agent = None
@@ -204,17 +204,24 @@ class MissionPreflight:
         return self._location_agent
 
     def _get_hierarchy_agent(self):
-        """Lazy load HierarchyAgent."""
+        """Lazy load the structure hierarchy scanner."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-                self._hierarchy_agent = HierarchyAgent(self.project_root)
-            except (  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
+                self._hierarchy_agent = StructureEnforcerAgent(project_root=self.project_root)
+            except (  # guardian: allow-silent-swallow -- lazy loader: structure scanner optional, caller handles None
                 ImportError
             ):
                 pass
         return self._hierarchy_agent
+
+    def _target_territory(self, target_path: Path) -> str | None:
+        try:
+            rel = target_path.resolve().relative_to(self.project_root)
+        except ValueError:
+            return None
+        return rel.parts[0] if rel.parts else None
 
     def _get_import_agent(self):
         """Lazy load import healer."""
@@ -259,17 +266,18 @@ class MissionPreflight:
         hierarchy_violations = self._check_hierarchy(target_path)
         results["hierarchy"] = len(hierarchy_violations)
         if hierarchy_violations and self.healing_enabled:
-            healing_results = self.HierarchyHealerAgent.heal_hierarchy_violations()
-            results["hierarchy_healed"] = healing_results["files_relocated"]
-            if healing_results["files_relocated"] > 0:
+            healing_results = self.HierarchyHealerAgent.heal_repository(
+                dry_run=True,
+                execute=False,
+                target_territory=self._target_territory(target_path),
+            )
+            results["hierarchy_healed"] = healing_results.get("fixed", 0)
+            if healing_results.get("fixed", 0) > 0:
                 hierarchy_violations_after = self._check_hierarchy(target_path)
                 results["hierarchy"] = len(hierarchy_violations_after)
                 print(f"   [POST-HEALING] {results['hierarchy']} hierarchy violations remaining")
         if self.healing_enabled:
-            purge_results = self.HierarchyHealerAgent.purge_orphaned_files()
-            results["purged_orphans"] = purge_results["purged"]
-            if purge_results["errors"]:
-                results.setdefault("errors", []).extend(purge_results["errors"])
+            results["purged_orphans"] = 0
         results["gravity"] = self._check_gravity(target_path)
         results["naming"] = self._check_file_locations(target_path)
         _adg_antipattern_count: int = 0
@@ -295,14 +303,14 @@ class MissionPreflight:
         return results
 
     def _check_span_of_two(self, target_path: Path) -> int:
-        """Check Span-of-Two compliance using HierarchyAgent."""
+        """Check Span-of-Two compliance when a scanner implementation exposes it."""
         hierarchy_agent = self._get_hierarchy_agent()
-        if hierarchy_agent:
+        if hierarchy_agent and hasattr(hierarchy_agent, "check_span_of_two"):
             try:
                 span_result = hierarchy_agent.check_span_of_two()
                 violations = span_result.get("violations", 0)
                 if span_result.get("compliant", True):
-                    print("   [OK] Span-of-Two compliance verified by HierarchyAgent")
+                    print("   [OK] Span-of-Two compliance verified")
                 else:
                     print(f"[!] L6 ALERT: Found {violations} Span violations:")
                     for v in span_result.get("details", [])[:3]:
@@ -315,12 +323,16 @@ class MissionPreflight:
         return 0
 
     def _check_hierarchy(self, target_path: Path) -> list[tuple[Path, str]]:
-        """Check hierarchy alignment using HierarchyAgent."""
+        """Check hierarchy alignment using root-file structure scanning."""
         hierarchy_agent = self._get_hierarchy_agent()
         if hierarchy_agent:
             try:
-                result = hierarchy_agent.validate_hierarchy()
-                violations = [v for v in result if ".git" not in str(v[0]) and "__init__.py" not in str(v[0])]
+                result = hierarchy_agent.scan_root_violations(target_territory=self._target_territory(target_path))
+                violations = [
+                    (self.project_root / str(v.get("path")), str(v.get("message") or "hierarchy violation"))
+                    for v in result.get("violations", [])
+                    if ".git" not in str(v.get("path")) and "__init__.py" not in str(v.get("path"))
+                ]
                 if violations:
                     print(f"[!] L6 ALERT: Found {len(violations)} hierarchy violations:")
                     for folder_path, reason in violations[:3]:

@@ -341,9 +341,9 @@ def heal_gravity_violations(*args: Any, **kwargs: Any) -> HealCheckResult:
 def heal_hierarchy_violations(*args: Any, **kwargs: Any) -> HealCheckResult:
     context = _merge_heal_context(*args, **kwargs)
     repo_root = _repo_root(context)
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    agent = HierarchyHealerAgent(project_root=repo_root)
+    agent = StructureEnforcerAgent(project_root=repo_root)
     raw = agent.heal_repository(
         dry_run=_bool_context(context, "dry_run", True),
         execute=_bool_context(context, "execute", False),
@@ -355,9 +355,9 @@ def heal_hierarchy_violations(*args: Any, **kwargs: Any) -> HealCheckResult:
 def heal_missing_structure(*args: Any, **kwargs: Any) -> HealCheckResult:
     context = _merge_heal_context(*args, **kwargs)
     repo_root = _repo_root(context)
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    agent = HierarchyHealerAgent(project_root=repo_root)
+    agent = StructureEnforcerAgent(project_root=repo_root)
     raw = agent.heal_repository(
         dry_run=_bool_context(context, "dry_run", True),
         execute=_bool_context(context, "execute", False),
@@ -369,9 +369,9 @@ def heal_missing_structure(*args: Any, **kwargs: Any) -> HealCheckResult:
 def heal_subfolder_compliance(*args: Any, **kwargs: Any) -> HealCheckResult:
     context = _merge_heal_context(*args, **kwargs)
     repo_root = _repo_root(context)
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    agent = HierarchyHealerAgent(project_root=repo_root)
+    agent = StructureEnforcerAgent(project_root=repo_root)
     raw = agent.heal_repository(
         dry_run=_bool_context(context, "dry_run", True),
         execute=_bool_context(context, "execute", False),

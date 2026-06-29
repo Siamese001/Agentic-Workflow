@@ -83,13 +83,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-          "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
+          "evidence": "6 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
           "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 1,
           "rank": 1,
           "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
-          "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
+          "technical_reason": "6 MEDIUM hygiene record(s) in the published snapshot.",
           "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
           "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
           "work": "Reduce MEDIUM hygiene debt"
@@ -132,7 +132,7 @@
           "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 3,
           "rank": 3,
-          "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+          "scope": "apps_rg/runtime/observability/trace_reconciliation.py",
           "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
           "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
           "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
@@ -142,17 +142,17 @@
       "priority_rule": "Deletions require dead-code proof; live unresolved-import cleanup outranks archived noise; P2 ceiling work outranks broad cleanup when over ceiling.",
       "secondary_statuses": {
         "Cleanup status": "PASS",
-        "P2 status": "within_ceiling"
+        "P2 status": "over_ceiling"
       },
       "status": "PRESENT",
       "status_label": "Trace status",
       "table_limit": 6,
       "technical_read": [
         "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-        "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+        "The published snapshot is still 5 over the P2 ceiling, so the ratchet remains blocked.",
         "Live cleanup queue rows: 9",
         "Archived cleanup queue rows: 1",
-        "P2 delta: 0"
+        "P2 delta: 5"
       ],
       "title": "BCG Cleanup + P2 Blocker Brief",
       "why_this_order": [
@@ -288,13 +288,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+          "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
           "move": "Reduce low-confidence noise",
           "next_step": "Lower the noise floor, then rerun the scan.",
           "priority": 5,
           "rank": 5,
           "scope": "first-party nodes",
-          "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+          "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
           "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
           "why_this_rank": "Lower the noise floor, then rerun the scan.",
           "work": "Reduce low-confidence noise"
@@ -330,12 +330,12 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_06272026_0458.sqlite (snapshot 06272026_0458)",
-        "Dead code candidates: 965",
-        "Dead imports: 965",
+        "ADG source: artifacts/adg/adg_indexed_06282026_1945.sqlite (snapshot 06282026_1945)",
+        "Dead code candidates: 964",
+        "Dead imports: 964",
         "Unresolved imports: 483",
         "First-party low-confidence ratio: 1.57%",
-        "Inferred-symbol ratio: 10.15%",
+        "Inferred-symbol ratio: 10.16%",
         "Cleanup candidates surfaced: 0"
       ],
       "title": "BCG Cleanup Brief",
@@ -486,7 +486,7 @@
         "move": "Triage unresolved imports",
         "next_step": "Trace the live imports, then rerun the scan.",
         "priority": 9,
-        "scope": "ADG::Module::agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "scope": "ADG::Module::agentic_core/L4_state/utils/memory/graph_knowledge_store.py",
         "surface": "live",
         "technical_reason": "6 unresolved import(s) on this surface.",
         "why_it_matters": "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy.",
@@ -593,13 +593,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+        "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
         "move": "Reduce low-confidence noise",
         "next_step": "Lower the noise floor, then rerun the scan.",
         "priority": 5,
         "rank": 5,
         "scope": "first-party nodes",
-        "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+        "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
         "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
         "why_this_rank": "Lower the noise floor, then rerun the scan.",
         "work": "Reduce low-confidence noise"
@@ -631,11 +631,11 @@
     "status": "PASS",
     "summary": {
       "cleanup_candidate_count": 0,
-      "dead_code_candidates": 965,
-      "dead_imports": 965,
+      "dead_code_candidates": 964,
+      "dead_imports": 964,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5690988239880448,
-      "inferred_symbol_ratio": 10.148942149423904,
+      "first_party_low_confidence_ratio": 1.5661986445734295,
+      "inferred_symbol_ratio": 10.160485856791082,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -645,10 +645,10 @@
       ]
     }
   },
-  "generated_at_utc": "2026-06-27T09:15:13+00:00",
+  "generated_at_utc": "2026-06-28T23:55:12+00:00",
   "p2": {
     "brief": {
-      "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+      "business_read": "The published snapshot is still 5 over the P2 ceiling, so the ratchet remains blocked.",
       "next_step": "Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.",
       "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
       "priority_rows": [
@@ -663,13 +663,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-          "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
+          "evidence": "6 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
           "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 1,
           "rank": 1,
           "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
-          "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
+          "technical_reason": "6 MEDIUM hygiene record(s) in the published snapshot.",
           "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
           "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
           "work": "Reduce MEDIUM hygiene debt"
@@ -712,7 +712,7 @@
           "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 3,
           "rank": 3,
-          "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+          "scope": "apps_rg/runtime/observability/trace_reconciliation.py",
           "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
           "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
           "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
@@ -729,13 +729,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-          "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+          "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
           "move": "Reduce MEDIUM hygiene debt",
           "next_step": "Burn down the highest-count files, then rerun ADG.",
           "priority": 4,
           "rank": 4,
-          "scope": "apps_rg/runtime/c0/c02_semantic_cache_payload.py",
-          "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+          "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+          "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
           "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
           "why_this_rank": "Burn down the highest-count files, then rerun ADG.",
           "work": "Reduce MEDIUM hygiene debt"
@@ -751,13 +751,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
-          "evidence": "Current count=19; ceiling=19; delta=0.",
+          "evidence": "Current count=27; ceiling=22; delta=5.",
           "move": "Re-run ADG and keep the ceiling honest",
           "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
           "priority": 5,
           "rank": 5,
-          "scope": "p2_ratchet.json",
-          "technical_reason": "Current count=19; ceiling=19; delta=0.",
+          "scope": "adg_indexed_06272026_2302.sqlite",
+          "technical_reason": "Current count=27; ceiling=22; delta=5.",
           "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
           "why_this_rank": "Re-baselining before cleanup only hides the blocker.",
           "work": "Re-run ADG and keep the ceiling honest"
@@ -765,16 +765,16 @@
       ],
       "priority_rule": "Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.",
       "secondary_statuses": {},
-      "status": "WITHIN_CEILING",
+      "status": "OVER_CEILING",
       "status_label": "P2 ratchet status",
       "table_limit": 6,
       "technical_read": [
-        "Published sqlite snapshot: artifacts/adg/adg_indexed_06272026_0458.sqlite",
-        "P2 ceiling: 19",
-        "Current MEDIUM hygiene count: 19",
-        "Delta vs ceiling: +0",
-        "Baseline snapshot: missing",
-        "Latest failed run: 2026-06-27T08:18:53Z (failed)"
+        "Published sqlite snapshot: artifacts/adg/adg_indexed_06282026_1945.sqlite",
+        "P2 ceiling: 22",
+        "Current MEDIUM hygiene count: 27",
+        "Delta vs ceiling: +5",
+        "Baseline snapshot: adg_indexed_06272026_2302.sqlite",
+        "Latest failed run: 2026-06-28T23:55:12Z (failed)"
       ],
       "title": "BCG P2 Ratchet Brief",
       "why_this_order": [
@@ -783,22 +783,27 @@
         "Re-baselining too early hides the blocker instead of paying it down."
       ]
     },
-    "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+    "business_read": "The published snapshot is still 5 over the P2 ceiling, so the ratchet remains blocked.",
     "evidence_buckets": [
       {
-        "count": 9,
-        "evidence": "Exception",
-        "interpretation": "Broad exception catch or swallow on a live hygiene path."
-      },
-      {
-        "count": 6,
+        "count": 10,
         "evidence": "OSError",
         "interpretation": "Filesystem / IO error handling needs to be narrowed."
       },
       {
-        "count": 2,
+        "count": 10,
+        "evidence": "Exception",
+        "interpretation": "Broad exception catch or swallow on a live hygiene path."
+      },
+      {
+        "count": 3,
         "evidence": "ValueError",
         "interpretation": "Parsing or validation guard should be tightened."
+      },
+      {
+        "count": 1,
+        "evidence": "getattr",
+        "interpretation": "Hygiene debt on the current published snapshot."
       },
       {
         "count": 1,
@@ -809,21 +814,26 @@
         "count": 1,
         "evidence": "ImportError",
         "interpretation": "Import fallback logic should be explicit and local."
+      },
+      {
+        "count": 1,
+        "evidence": "TypeError",
+        "interpretation": "Hygiene debt on the current published snapshot."
       }
     ],
     "file_hotspots": [
       {
         "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
-        "count": 5,
+        "count": 6,
         "decision": "reduce",
         "decision_options": [],
         "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-        "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
+        "evidence": "6 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
         "surface": "live runtime",
-        "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
+        "technical_reason": "6 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
@@ -851,9 +861,69 @@
         "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_rg/runtime/observability/trace_reconciliation.py",
+        "surface": "live runtime",
+        "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 2,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
         "surface": "live runtime",
         "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 1,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_eval/coverage/apps_rg.py",
+        "surface": "apps",
+        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 1,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_rg/cache/whole_run_entrypoint_preflight.py",
+        "surface": "apps",
+        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 1,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_rg/fact_inventory/__init__.py",
+        "surface": "apps",
+        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
@@ -941,6 +1011,21 @@
         "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_rg/runtime/providers/provider_attempt_spans.py",
+        "surface": "live runtime",
+        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 1,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
         "scope": "apps_rg/runtime/reasoning/bullet_fact_entailment.py",
         "surface": "live runtime",
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
@@ -976,6 +1061,21 @@
         "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
+      },
+      {
+        "business_reason": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "count": 1,
+        "decision": "reduce",
+        "decision_options": [],
+        "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
+        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "move": "Reduce MEDIUM hygiene debt",
+        "next_step": "Burn down the highest-count files, then rerun ADG.",
+        "scope": "apps_rg/runtime/shadow/l6_microstep_observability.py",
+        "surface": "live runtime",
+        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
+        "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       }
     ],
     "priority_rows": [
@@ -984,12 +1084,12 @@
         "decision": "reduce",
         "decision_options": [],
         "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-        "evidence": "5 MEDIUM hygiene record(s) in the published snapshot.",
+        "evidence": "6 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 1,
         "scope": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "technical_reason": "5 MEDIUM hygiene record(s) in the published snapshot.",
+        "technical_reason": "6 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
@@ -1016,7 +1116,7 @@
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 3,
-        "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+        "scope": "apps_rg/runtime/observability/trace_reconciliation.py",
         "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
@@ -1026,12 +1126,12 @@
         "decision": "reduce",
         "decision_options": [],
         "done_condition": "The published MEDIUM hygiene count is at or below the ceiling.",
-        "evidence": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "evidence": "2 MEDIUM hygiene record(s) in the published snapshot.",
         "move": "Reduce MEDIUM hygiene debt",
         "next_step": "Burn down the highest-count files, then rerun ADG.",
         "priority": 4,
-        "scope": "apps_rg/runtime/c0/c02_semantic_cache_payload.py",
-        "technical_reason": "1 MEDIUM hygiene record(s) in the published snapshot.",
+        "scope": "apps_rg/runtime/section_graph_skills_proof_pool.py",
+        "technical_reason": "2 MEDIUM hygiene record(s) in the published snapshot.",
         "why_it_matters": "This is a live surface where removing hygiene debt improves trust in the next run.",
         "why_this_rank": "Burn down the highest-count files, then rerun ADG."
       },
@@ -1040,17 +1140,41 @@
         "decision": "rebaseline_if_intentional",
         "decision_options": [],
         "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
-        "evidence": "Current count=19; ceiling=19; delta=0.",
+        "evidence": "Current count=27; ceiling=22; delta=5.",
         "move": "Re-run ADG and keep the ceiling honest",
         "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
         "priority": 5,
-        "scope": "p2_ratchet.json",
-        "technical_reason": "Current count=19; ceiling=19; delta=0.",
+        "scope": "adg_indexed_06272026_2302.sqlite",
+        "technical_reason": "Current count=27; ceiling=22; delta=5.",
         "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
         "why_this_rank": "Re-baselining before cleanup only hides the blocker."
       }
     ],
     "sample_rows": [
+      {
+        "disposition": "untriaged",
+        "evidence": "OSError",
+        "file_path": "apps_eval/coverage/apps_rg.py",
+        "line_no": 101,
+        "severity": "MEDIUM",
+        "violation_class": "hygiene"
+      },
+      {
+        "disposition": "untriaged",
+        "evidence": "OSError",
+        "file_path": "apps_rg/cache/whole_run_entrypoint_preflight.py",
+        "line_no": 294,
+        "severity": "MEDIUM",
+        "violation_class": "hygiene"
+      },
+      {
+        "disposition": "untriaged",
+        "evidence": "getattr",
+        "file_path": "apps_rg/fact_inventory/__init__.py",
+        "line_no": 59,
+        "severity": "MEDIUM",
+        "violation_class": "hygiene"
+      },
       {
         "disposition": "untriaged",
         "evidence": "OSError",
@@ -1095,7 +1219,7 @@
         "disposition": "untriaged",
         "evidence": "ImportError",
         "file_path": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "line_no": 343,
+        "line_no": 568,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       },
@@ -1103,7 +1227,7 @@
         "disposition": "untriaged",
         "evidence": "Exception",
         "file_path": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "line_no": 441,
+        "line_no": 666,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       },
@@ -1111,7 +1235,7 @@
         "disposition": "untriaged",
         "evidence": "Exception",
         "file_path": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "line_no": 624,
+        "line_no": 861,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       },
@@ -1119,44 +1243,20 @@
         "disposition": "untriaged",
         "evidence": "Exception",
         "file_path": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "line_no": 656,
-        "severity": "MEDIUM",
-        "violation_class": "hygiene"
-      },
-      {
-        "disposition": "untriaged",
-        "evidence": "Exception",
-        "file_path": "apps_rg/runtime/c0/fact_vector_write_back.py",
-        "line_no": 701,
-        "severity": "MEDIUM",
-        "violation_class": "hygiene"
-      },
-      {
-        "disposition": "untriaged",
-        "evidence": "OSError",
-        "file_path": "apps_rg/runtime/fact_vectors_bootstrap.py",
-        "line_no": 345,
-        "severity": "MEDIUM",
-        "violation_class": "hygiene"
-      },
-      {
-        "disposition": "untriaged",
-        "evidence": "OSError",
-        "file_path": "apps_rg/runtime/orchestration/patch_run.py",
-        "line_no": 88,
+        "line_no": 984,
         "severity": "MEDIUM",
         "violation_class": "hygiene"
       }
     ],
-    "status": "within_ceiling",
+    "status": "over_ceiling",
     "summary": {
-      "baseline_snapshot": "",
-      "ceiling": 19,
-      "current_medium_hygiene_count": 19,
-      "delta": 0,
+      "baseline_snapshot": "adg_indexed_06272026_2302.sqlite",
+      "ceiling": 22,
+      "current_medium_hygiene_count": 27,
+      "delta": 5,
       "failed_run_status": "failed",
-      "failed_run_timestamp": "2026-06-27T08:18:53Z",
-      "published_snapshot": "artifacts/adg/adg_indexed_06272026_0458.sqlite"
+      "failed_run_timestamp": "2026-06-28T23:55:12Z",
+      "published_snapshot": "artifacts/adg/adg_indexed_06282026_1945.sqlite"
     }
   },
   "source_snapshots": {
@@ -1266,13 +1366,13 @@
               "decision_options": [],
               "diagram": null,
               "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-              "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+              "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
               "move": "Reduce low-confidence noise",
               "next_step": "Lower the noise floor, then rerun the scan.",
               "priority": 5,
               "rank": 5,
               "scope": "first-party nodes",
-              "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+              "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
               "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
               "why_this_rank": "Lower the noise floor, then rerun the scan.",
               "work": "Reduce low-confidence noise"
@@ -1308,12 +1408,12 @@
           "status_label": "Deletion status",
           "table_limit": 6,
           "technical_read": [
-            "ADG source: artifacts/adg/adg_indexed_06272026_0458.sqlite (snapshot 06272026_0458)",
-            "Dead code candidates: 965",
-            "Dead imports: 965",
+            "ADG source: artifacts/adg/adg_indexed_06282026_1945.sqlite (snapshot 06282026_1945)",
+            "Dead code candidates: 964",
+            "Dead imports: 964",
             "Unresolved imports: 483",
             "First-party low-confidence ratio: 1.57%",
-            "Inferred-symbol ratio: 10.15%",
+            "Inferred-symbol ratio: 10.16%",
             "Cleanup candidates surfaced: 0"
           ],
           "title": "BCG Deletion Brief",
@@ -1425,13 +1525,13 @@
             "decision_options": [],
             "diagram": null,
             "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-            "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+            "evidence": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
             "move": "Reduce low-confidence noise",
             "next_step": "Lower the noise floor, then rerun the scan.",
             "priority": 5,
             "rank": 5,
             "scope": "first-party nodes",
-            "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.15%.",
+            "technical_reason": "First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%.",
             "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
             "why_this_rank": "Lower the noise floor, then rerun the scan.",
             "work": "Reduce low-confidence noise"
@@ -1462,11 +1562,11 @@
         "status": "present",
         "summary": {
           "cleanup_candidate_count": 0,
-          "dead_code_candidates": 965,
-          "dead_imports": 965,
+          "dead_code_candidates": 964,
+          "dead_imports": 964,
           "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-          "first_party_low_confidence_ratio": 1.5690988239880448,
-          "inferred_symbol_ratio": 10.148942149423904,
+          "first_party_low_confidence_ratio": 1.5661986445734295,
+          "inferred_symbol_ratio": 10.160485856791082,
           "unresolved_imports": 483,
           "why_this_order": [
             "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -1478,26 +1578,26 @@
       },
       "dead_code_candidates": {
         "dead_code_by_confidence": {
-          "HIGH": 898
+          "HIGH": 897
         },
         "dead_code_by_entity_type": {
-          "module": 898,
-          "symbol": 413
+          "module": 897,
+          "symbol": 412
         },
         "dead_code_by_layer": {
           "L0": 8,
           "L1": 114,
-          "L2": 18,
+          "L2": 17,
           "L3": 41,
           "L4": 37,
-          "L5": 30,
+          "L5": 29,
           "L6": 27,
           "L_APP": 18,
           "L_OPS": 38,
           "L_PG": 6,
           "L_RUNTIME": 18,
           "L_SHARED": 34,
-          "L_TEST": 418,
+          "L_TEST": 419,
           "L_TOOLS": 91
         },
         "dead_code_hotspots": [
@@ -1543,7 +1643,7 @@
           ]
         ],
         "source": "dead_import_overlay",
-        "total_dead_code_candidates": 965
+        "total_dead_code_candidates": 964
       },
       "dead_imports": {
         "dead_import_hotspots": [
@@ -1591,33 +1691,33 @@
         "dead_imports_by_confidence": {},
         "dead_imports_by_domain": {},
         "dead_imports_by_entity_type": {
-          "module": 898,
-          "symbol": 413
+          "module": 897,
+          "symbol": 412
         },
         "dead_imports_by_layer": {},
         "l4_dead_imports": 0,
         "overlay_dead_imports_by_severity": {},
         "source_counts": {
           "legacy_dead_import_edges": 0,
-          "overlay_dead_import_resolved": 965
+          "overlay_dead_import_resolved": 964
         },
-        "total_dead_imports": 965
+        "total_dead_imports": 964
       },
       "errors": [],
       "executive_readiness": {
         "executive_metrics": {
-          "dead_code_count": 965,
-          "dead_import_count": 965,
-          "first_party_low_confidence_ratio": 1.5690988239880448,
-          "inferred_symbol_ratio": 10.148942149423904,
+          "dead_code_count": 964,
+          "dead_import_count": 964,
+          "first_party_low_confidence_ratio": 1.5661986445734295,
+          "inferred_symbol_ratio": 10.160485856791082,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 483,
           "unresolved_import_count": 483
         },
         "executive_ready": true,
         "first_party_metrics": {
-          "dead_code_count": 898,
-          "dead_import_count": 898,
+          "dead_code_count": 897,
+          "dead_import_count": 897,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 483,
           "unresolved_import_count": 483
@@ -1626,31 +1726,31 @@
       },
       "inferred_symbols": {
         "inferred_by_confidence": {
-          "MEDIUM": 17696
+          "MEDIUM": 17784
         },
         "inferred_by_layer": {
           "L0": 1349,
           "L1": 574,
           "L2": 892,
-          "L3": 861,
+          "L3": 859,
           "L4": 604,
-          "L5": 1291,
-          "L6": 1304,
-          "L_APP": 5316,
-          "L_OPS": 494,
+          "L5": 1283,
+          "L6": 1320,
+          "L_APP": 5377,
+          "L_OPS": 498,
           "L_PG": 497,
-          "L_RUNTIME": 1076,
-          "L_SHARED": 595,
+          "L_RUNTIME": 1079,
+          "L_SHARED": 601,
           "L_TEST": 289,
-          "L_TOOLS": 2338,
+          "L_TOOLS": 2346,
           "L_UNKNOWN": 216
         },
-        "inferred_symbol_ratio": 10.148942149423904,
-        "total_inferred_symbols": 17696,
-        "total_symbols": 174363
+        "inferred_symbol_ratio": 10.160485856791082,
+        "total_inferred_symbols": 17784,
+        "total_symbols": 175031
       },
       "low_confidence_zones": {
-        "first_party_low_confidence_ratio": 1.5690988239880448,
+        "first_party_low_confidence_ratio": 1.5661986445734295,
         "governance_low_confidence_ratio": 0.0,
         "low_conf_by_entity_type": {
           "symbol": 483
@@ -1670,8 +1770,8 @@
         "total_low_confidence": 483
       },
       "source": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06272026_0458.sqlite",
-        "adg_snapshot_ts": "06272026_0458",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06282026_1945.sqlite",
+        "adg_snapshot_ts": "06282026_1945",
         "dead_code_signal_sources": [
           "overlay_violations.category=dead_import_resolved",
           "mv_dead_import_hotspots_overlay",
@@ -1681,14 +1781,14 @@
       },
       "status": "PASS",
       "summary": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_06272026_0458.sqlite",
-        "adg_snapshot_ts": "06272026_0458",
+        "adg_snapshot": "artifacts/adg/adg_indexed_06282026_1945.sqlite",
+        "adg_snapshot_ts": "06282026_1945",
         "executive_ready": true,
-        "first_party_low_confidence_ratio": 1.5690988239880448,
-        "inferred_symbol_ratio": 10.148942149423904,
+        "first_party_low_confidence_ratio": 1.5661986445734295,
+        "inferred_symbol_ratio": 10.160485856791082,
         "l4_unresolved_imports": 0,
-        "total_dead_code_candidates": 965,
-        "total_dead_imports": 965,
+        "total_dead_code_candidates": 964,
+        "total_dead_imports": 964,
         "total_low_confidence": 483,
         "total_unresolved_imports": 483
       },
@@ -1739,7 +1839,7 @@
             7
           ],
           [
-            "ADG::Module::agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+            "ADG::Module::agentic_core/L4_state/utils/memory/graph_knowledge_store.py",
             6
           ]
         ]
@@ -1752,58 +1852,72 @@
     },
     "failed_run_manifest": {
       "certification_status": "failed",
-      "deferred_failures": [],
+      "deferred_failures": [
+        {
+          "blocking_mode": "hard_fail",
+          "duration_s": 0.01600000000325963,
+          "exit_code": null,
+          "finished_at_utc": "2026-06-28T23:46:29Z",
+          "kind": "validation",
+          "message": "P2_ratchet",
+          "name": "p2_ratchet",
+          "phase": "build",
+          "script_rel": null,
+          "started_at_utc": "2026-06-28T23:46:29Z",
+          "status": "deferred_fail"
+        }
+      ],
       "failed_gates": [
         {
           "blocking_mode": "hard_fail",
           "duration_s": null,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:14:35Z",
+          "finished_at_utc": "2026-06-28T23:51:16Z",
           "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260627_081435.json",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260628_235116.json",
           "name": "adg_gate_dispatcher",
           "phase": "post-commit-validation",
           "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-06-27T08:14:35Z",
+          "started_at_utc": "2026-06-28T23:51:16Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 13.062999999994645,
+          "duration_s": 13.922000000020489,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 36.860000000015134,
+          "duration_s": 34.81200000003446,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.485000000015134,
+          "duration_s": 0.45300000003771856,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         }
       ],
@@ -1812,293 +1926,322 @@
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T07:59:18Z",
+          "finished_at_utc": "2026-06-28T23:45:23Z",
           "kind": "python_function",
           "message": null,
           "name": "mcp_config_drift",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T07:59:18Z",
+          "started_at_utc": "2026-06-28T23:45:23Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5150000000139698,
+          "duration_s": 0.5630000000237487,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T07:59:18Z",
+          "finished_at_utc": "2026-06-28T23:45:23Z",
           "kind": "python_function",
           "message": null,
           "name": "wal_checkpoint",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T07:59:18Z",
+          "started_at_utc": "2026-06-28T23:45:23Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T07:59:18Z",
+          "finished_at_utc": "2026-06-28T23:45:23Z",
           "kind": "python_function",
           "message": null,
           "name": "locked_files",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T07:59:18Z",
+          "started_at_utc": "2026-06-28T23:45:23Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.01600000000325963,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:00:20Z",
+          "finished_at_utc": "2026-06-28T23:46:29Z",
           "kind": "validation",
-          "message": null,
+          "message": "P2_ratchet",
           "name": "p2_ratchet",
           "phase": "build",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:00:20Z",
-          "status": "pass"
+          "started_at_utc": "2026-06-28T23:46:29Z",
+          "status": "deferred_fail"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": null,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:14:35Z",
+          "finished_at_utc": "2026-06-28T23:51:16Z",
           "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260627_081435.json",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260628_235116.json",
           "name": "adg_gate_dispatcher",
           "phase": "post-commit-validation",
           "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-06-27T08:14:35Z",
+          "started_at_utc": "2026-06-28T23:51:16Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.01600000000325963,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:15:54Z",
+          "finished_at_utc": "2026-06-28T23:51:28Z",
           "kind": "validation",
           "message": null,
           "name": "p0_violations",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:15:54Z",
+          "started_at_utc": "2026-06-28T23:51:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:15:54Z",
+          "finished_at_utc": "2026-06-28T23:51:28Z",
           "kind": "validation",
           "message": null,
           "name": "p1_ratchet",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:15:54Z",
+          "started_at_utc": "2026-06-28T23:51:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.28099999998812564,
+          "duration_s": 0.29699999996228144,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:15:54Z",
+          "finished_at_utc": "2026-06-28T23:51:28Z",
           "kind": "validation",
           "message": null,
           "name": "dead_production_imports",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:15:54Z",
+          "started_at_utc": "2026-06-28T23:51:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.46900000001187436,
+          "duration_s": 0.43700000003445894,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:15:54Z",
+          "finished_at_utc": "2026-06-28T23:51:28Z",
           "kind": "validation",
           "message": null,
           "name": "structural_conformance",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:15:54Z",
+          "started_at_utc": "2026-06-28T23:51:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.01600000000325963,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:15:54Z",
+          "finished_at_utc": "2026-06-28T23:51:28Z",
           "kind": "validation",
           "message": null,
           "name": "agentic_antipatterns",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:15:54Z",
+          "started_at_utc": "2026-06-28T23:51:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-06-27T08:16:04Z",
+          "finished_at_utc": "2026-06-28T23:51:38Z",
           "kind": "validation",
           "message": null,
           "name": "witness_tier_gates",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-06-27T08:16:04Z",
+          "started_at_utc": "2026-06-28T23:51:38Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:17:00Z",
+          "finished_at_utc": "2026-06-28T23:52:31Z",
+          "kind": "subprocess",
+          "message": "mandatory first BCG gate adapter",
+          "name": "adg_bcg_adapter",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_bcg_adapter.py",
+          "started_at_utc": "2026-06-28T23:52:31Z",
+          "status": "pass"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 0,
+          "finished_at_utc": "2026-06-28T23:52:31Z",
           "kind": "subprocess",
           "message": "mandatory markdown burndown",
           "name": "adg_burndown_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_burndown_report.py",
-          "started_at_utc": "2026-06-27T08:17:00Z",
+          "started_at_utc": "2026-06-28T23:52:31Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:17:00Z",
+          "finished_at_utc": "2026-06-28T23:52:31Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML review template",
           "name": "adg_review_template",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_review_template.py",
-          "started_at_utc": "2026-06-27T08:17:00Z",
+          "started_at_utc": "2026-06-28T23:52:31Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:17:01Z",
+          "finished_at_utc": "2026-06-28T23:52:32Z",
           "kind": "subprocess",
           "message": "mandatory JSON dead-code control report",
           "name": "adg_dead_code_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_dead_code_report.py",
-          "started_at_utc": "2026-06-27T08:17:01Z",
+          "started_at_utc": "2026-06-28T23:52:32Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:17:01Z",
+          "finished_at_utc": "2026-06-28T23:52:32Z",
           "kind": "subprocess",
           "message": "mandatory cleanup queue and P2 blocker trace report",
           "name": "adg_cleanup_queue_and_p2_blocker_trace",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
-          "started_at_utc": "2026-06-27T08:17:01Z",
+          "started_at_utc": "2026-06-28T23:52:32Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:17:20Z",
+          "finished_at_utc": "2026-06-28T23:52:48Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML/Markdown BCG executive synthesis",
           "name": "adg_bcg_executive_summary",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_bcg_executive_synthesis.py",
-          "started_at_utc": "2026-06-27T08:17:20Z",
+          "started_at_utc": "2026-06-28T23:52:48Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.1879999999946449,
+          "duration_s": 0.1720000000204891,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": null,
           "name": "wiring",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_expected_wiring.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 13.062999999994645,
+          "duration_s": 13.922000000020489,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 36.860000000015134,
+          "duration_s": 34.81200000003446,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5,
+          "duration_s": 0.46799999999348074,
           "exit_code": 0,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": null,
           "name": "except-contract",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_exception_contract.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.485000000015134,
+          "duration_s": 0.45300000003771856,
           "exit_code": 1,
-          "finished_at_utc": "2026-06-27T08:18:53Z",
+          "finished_at_utc": "2026-06-28T23:55:12Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-06-27T08:18:53Z",
+          "started_at_utc": "2026-06-28T23:55:12Z",
           "status": "fail"
         }
       ],
-      "generation_exit_code": null,
+      "generation_exit_code": 1,
       "generator_entrypoint": "tools/generate/generate_full_adg.py",
-      "sqlite_path": null,
-      "timestamp": "2026-06-27T08:18:53Z",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06282026_1945.sqlite",
+      "timestamp": "2026-06-28T23:55:12Z",
       "unexpected_skips": []
     },
     "p2_ratchet": {
-      "exception_swallow_ceiling": 19
+      "absorbed_at": "2026-06-28T03:03:51.745072+00:00",
+      "exception_swallow_ceiling": 22,
+      "snapshot": "adg_indexed_06272026_2302.sqlite"
     },
-    "sqlite_manifest": {}
+    "sqlite_manifest": {
+      "certification_status": "failed",
+      "commit_sha": null,
+      "created_at_utc": "2026-06-28T23:55:12Z",
+      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_06282026_1945.json",
+      "generation_exit_code": 1,
+      "p0_status": "deferred_fail",
+      "registry_bucket_edge_count": 0,
+      "repo_state_hash": null,
+      "runtime_attested_edge_count": 0,
+      "runtime_proof_status": "view_present_zero_attested",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06282026_1945.sqlite",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06282026_1945.sqlite",
+      "timestamp": "2026-06-28T23:55:12Z"
+    }
   },
   "sources": {
     "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06272026_0359.json",
+    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_06282026_1945.json",
     "ratchet": "artifacts/adg/p2_ratchet.json",
-    "sqlite": "artifacts/adg/adg_indexed_06272026_0458.sqlite",
-    "sqlite_manifest": ""
+    "sqlite": "artifacts/adg/adg_indexed_06282026_1945.sqlite",
+    "sqlite_manifest": "artifacts/adg/adg_generation_manifest_latest.json"
   },
   "status": "present"
 }

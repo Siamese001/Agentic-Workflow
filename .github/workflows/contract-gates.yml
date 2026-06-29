@@ -26,6 +26,9 @@ jobs:
       apps-rg-prompt-judge-sync: ${{ steps.filter.outputs.apps-rg-prompt-judge-sync }}
       apps-e2e-harness-verifier: ${{ steps.filter.outputs.apps-e2e-harness-verifier }}
       eval-smoke: ${{ steps.filter.outputs.eval-smoke }}
+      r1b-terminal: ${{ steps.filter.outputs.r1b-terminal }}
+      runtime-spine: ${{ steps.filter.outputs.runtime-spine }}
+      uwg-block: ${{ steps.filter.outputs.uwg-block }}
       selected-lanes: ${{ steps.filter.outputs.selected-lanes }}
       any: ${{ steps.filter.outputs.any }}
       base-ref: ${{ steps.filter.outputs.base-ref }}
@@ -188,14 +191,6 @@ jobs:
             tests/runtime/test_agentic_core_spine_proof.py \
             -q --no-header -p no:cacheprovider
 
-      - name: Check apps_e2e spine certification
-        continue-on-error: true
-        run: python -m ops_scripts.ci.check_apps_e2e_spine_certification
-
-      - name: Check apps_e2e harness
-        continue-on-error: true
-        run: python -m ops_scripts.ci.check_apps_e2e_harness
-
   eval-smoke:
     name: eval-smoke
     needs: changes
@@ -217,6 +212,54 @@ jobs:
             --smoke \
             --out artifacts/eval/pr_smoke.json
 
+  r1b-terminal:
+    name: r1b-terminal
+    needs: changes
+    if: needs.changes.outputs.r1b-terminal == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: R1B terminal representative smoke
+        run: python -m pytest tests/runtime/test_r1b_terminal_exit_proof.py -p no:xdist -p no:testmon -q --timeout=120
+
+  runtime-spine:
+    name: runtime-spine
+    needs: changes
+    if: needs.changes.outputs.runtime-spine == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Runtime spine representative smoke
+        run: |
+          python ops_scripts/ci/verify_runtime_certification_matrix_schema.py
+          python ops_scripts/ci/verify_runtime_certification_acceptance.py
+          python ops_scripts/ci/verify_source_divergence.py
+
+  uwg-block:
+    name: uwg-block
+    needs: changes
+    if: needs.changes.outputs.uwg-block == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: UWG block representative smoke
+        run: python -m pytest tests/runtime/test_cache_fixture_vs_uwg_proof.py -p no:xdist -p no:testmon -q --timeout=120
+
   contract-summary:
     name: contract-summary
     needs:
@@ -228,6 +271,9 @@ jobs:
       - apps-rg-prompt-judge-sync
       - apps-e2e-harness-verifier
       - eval-smoke
+      - r1b-terminal
+      - runtime-spine
+      - uwg-block
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -251,6 +297,9 @@ jobs:
           APPS_RG_PROMPT_JUDGE_SYNC_RESULT: ${{ needs.apps-rg-prompt-judge-sync.result }}
           APPS_E2E_RESULT: ${{ needs.apps-e2e-harness-verifier.result }}
           EVAL_SMOKE_RESULT: ${{ needs.eval-smoke.result }}
+          R1B_RESULT: ${{ needs.r1b-terminal.result }}
+          RUNTIME_SPINE_RESULT: ${{ needs.runtime-spine.result }}
+          UWG_RESULT: ${{ needs.uwg-block.result }}
           CHANGED_FILES: ${{ needs.changes.outputs.changed-files }}
           SELECTED_LANES: ${{ needs.changes.outputs.selected-lanes }}
         run: |
@@ -277,7 +326,10 @@ jobs:
               "codex-adapter:${CODEX_ADAPTER_RESULT}" \
               "apps-rg-prompt-judge-sync:${APPS_RG_PROMPT_JUDGE_SYNC_RESULT}" \
               "apps-e2e-harness-verifier:${APPS_E2E_RESULT}" \
-              "eval-smoke:${EVAL_SMOKE_RESULT}"; do
+              "eval-smoke:${EVAL_SMOKE_RESULT}" \
+              "r1b-terminal:${R1B_RESULT}" \
+              "runtime-spine:${RUNTIME_SPINE_RESULT}" \
+              "uwg-block:${UWG_RESULT}"; do
               name="${lane%%:*}"
               result="${lane#*:}"
               echo "${name}: ${result}"

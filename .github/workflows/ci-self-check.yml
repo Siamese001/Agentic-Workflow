@@ -3,8 +3,20 @@ name: ci-self-check
 on:
   pull_request:
     branches: ["**"]
+    paths:
+      - ".github/workflows/**"
+      - ".github/actions/**"
+      - ".github/workflow-config.yaml"
+      - "ops_scripts/ci/audit_required_checks.py"
+      - "ops_scripts/ci/check_workflow_references.py"
   push:
     branches: [main, master]
+    paths:
+      - ".github/workflows/**"
+      - ".github/actions/**"
+      - ".github/workflow-config.yaml"
+      - "ops_scripts/ci/audit_required_checks.py"
+      - "ops_scripts/ci/check_workflow_references.py"
   workflow_dispatch:
 
 permissions:

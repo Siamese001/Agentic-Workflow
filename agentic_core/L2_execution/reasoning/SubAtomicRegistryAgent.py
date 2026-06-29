@@ -336,7 +336,7 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
     from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
     from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import SafetyDetectorAgent
     from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import SafetyExecutorAgent
-    from agentic_core.L5_safety.reasoning.StructureHealerAgent_types import StructureHealerAgent
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
     return {
         "DeadCodeDetectorAgent": CodeDetectorAgent,
@@ -350,11 +350,11 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
         "CanonHealerAgent": CodeHealerAgent,
         "ImportHealerAgent": CodeHealerAgent,
         "StructuralHealerAgent": CodeHealerAgent,
-        "GravityHealerAgent": StructureHealerAgent,
-        "HierarchyHealerAgent": StructureHealerAgent,
-        "NamingLawHealerAgent": StructureHealerAgent,
-        "TerritoryHealerAgent": StructureHealerAgent,
-        "BlueprintHierarchyHealerAgent": StructureHealerAgent,
+        "GravityHealerAgent": StructureEnforcerAgent,
+        "HierarchyHealerAgent": StructureEnforcerAgent,
+        "NamingLawHealerAgent": StructureEnforcerAgent,
+        "TerritoryHealerAgent": StructureEnforcerAgent,
+        "BlueprintHierarchyHealerAgent": StructureEnforcerAgent,
         "ModelRouterAgent": ModelRouterAgent,
         "DynamicModelRouterAgent": ModelRouterAgent,
         "MultiProviderRouterAgent": ModelRouterAgent,

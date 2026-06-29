@@ -198,8 +198,8 @@ AGENT_REGISTRY = {
         ["heal_repository"],
     ),
     "HierarchyAgent": (
-        "agentic_core.L5_safety.reasoning.hierarchy_healer",
-        "HierarchyAgent",
+        "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
         ["heal_repository"],
     ),
     "ArchitectureGovernorAgent": (

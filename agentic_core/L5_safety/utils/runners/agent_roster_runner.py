@@ -209,7 +209,7 @@ def validate_agent_roster() -> dict:
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
         from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import FilesystemSSOTReconcilerAgent
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
         # MW-9 (2026-04-24): Class body relocated to utils module.
         from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
@@ -220,7 +220,7 @@ def validate_agent_roster() -> dict:
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,
             "location": LocationHealerAgent,
-            "hierarchy": HierarchyAgent,
+            "hierarchy": StructureEnforcerAgent,
             "arch_governor": ArchitectureGovernorAgent,
             "gravity_repair": GravityLeakRepairAgent,
             "system_architect": SystemArchitectAgent,
