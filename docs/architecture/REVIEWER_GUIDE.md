@@ -8,17 +8,17 @@
 
 ## What was built
 
-A **shared agentic substrate** that every application-layer app (`apps_*`) runs through.  
-Instead of each app implementing its own routing, retrieval, and governance logic, they all
-reuse one pipeline:
+A **shared agentic substrate** for app packages that have adopted the governed runtime path.
+Instead of each adopted app implementing its own routing, retrieval, and governance logic, the
+governed entries reuse one pipeline:
 
 ```
 L1 (intent decomposition) → L0 (routing) → C0 (grounded retrieval)
   → L2 (governed execution chokepoint) → L5 (exit gate) → L6 (shadow telemetry)
 ```
 
-This is enforced structurally — the shared base class `GovernedAppRunner` owns the pipeline,
-app subclasses supply only `_build_query()` and a record mapper.
+For governed entries, this is enforced structurally: the shared base class or canonical dispatch
+entrypoint owns the pipeline, and app code supplies bounded app-specific mapping.
 
 Apps that structurally cannot adopt this pattern have **formal governed exceptions** — not
 ad hoc bypasses — with reason codes, compensating controls, and annual review cadence.
@@ -39,19 +39,20 @@ ad hoc bypasses — with reason codes, compensating controls, and annual review 
 
 ## Executive walkthrough (2-minute version)
 
-**Problem:** Seven `apps_*` packages — each with its own routing, retrieval, and governance wiring.
-No shared substrate, no structural enforcement, no provable behavioral guarantees.
+**Problem:** App packages can drift into separate routing, retrieval, and governance wiring unless
+the shared substrate and exception model are checked continuously.
 
 **Solution:**
 1. Built `GovernedAppRunner` — a shared base class that runs the full L1→L0→C0→L2→L5→L6 pipeline.
-2. Migrated five apps onto it: `apps_research`, `apps_exec`, `apps_rfp`, `apps_rg`, `apps_lic`.
-3. Two apps have structural exceptions (`apps_eval`: circular dependency; `apps_underwriting_ai`:
-   regulated domain). Both are formalized with reason codes, compensating controls, and gate-verified.
+2. Classified the current registry as three governed entries: `apps_exec`, `apps_research`, and `apps_rg`.
+3. Formalized three exceptions: `apps_eval` (circular dependency), `apps_lic` (canonical-dispatch product
+   spine), and `apps_underwriting_ai` (regulated domain). Each has reason codes, compensating controls,
+   and gate-verifiable metadata.
 4. One conformance gate (`check_governed_app_conformance.py`) enforces the schema at CI time.
-5. One proof harness (`retrieval_benchmark.py`) verifies the live behavior of all 7 apps.
+5. One proof harness (`retrieval_benchmark.py`) verifies governed behavior and exception controls.
 6. One release gate (`run_architecture_proof.py`) composes all checks into one command.
 
-**Result:** Any reviewer can confirm the architecture is sound in one command.
+**Result:** Any reviewer can inspect the architecture and current gap list in one command.
 
 ---
 
@@ -80,9 +81,6 @@ python tools/eval/retrieval_benchmark.py --lic-pilot-proof
 python tools/eval/retrieval_benchmark.py --eval-exception-proof
 python tools/eval/retrieval_benchmark.py --uw-exception-proof
 
-# Full penta-app E2E
-python tools/eval/retrieval_benchmark.py --penta-app-proof
-
 # Exception framework only
 python tools/eval/retrieval_benchmark.py --exception-framework-proof
 ```
@@ -99,12 +97,12 @@ python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; \
 ## What to look for when reviewing
 
 **Structural correctness (S1 — 36 checks):**
-- Every `apps_*` package is registered in `app_registry.py`.
+- Registry completeness is checked against `app_registry.py`.
 - Governed apps: runner importable, subclass of `GovernedAppRunner`, versioned capability token.
 - Exception apps: `FormalExceptionEntry` in registry (not ad hoc), valid reason code, blocked/safe
   layers declared, ≥2 compensating controls, partial adoption module importable, controls verified.
 
-**Behavioral correctness (S2 — ~80 checks):**
+**Behavioral correctness (S2):**
 - Each governed app runs both a **happy path** (grounded, proceed) and a **degraded path**
   (no vector store → abstain). The substrate handles degradation correctly.
 - Exception app handlers instantiate without errors, emit telemetry, and pass CC checks.
@@ -115,15 +113,19 @@ python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; \
 
 ---
 
-## Current green state
+## Current Validation Posture
 
-```
-S1  Conformance Gate        PASS  36/36 checks
-S2  Exception Framework     PASS  ~80 checks (penta + eval + uw + no-adhoc)
-S3  Regression Check        PASS  RC01-RC12
-```
+The command output is the source of truth. A docs-refresh validation run on this snapshot found S1
+registry/import drift that should be treated as the current gap list until the gate passes:
 
-**Registry state:** 5 governed + 2 formal exceptions + 0 ad hoc.
+| Gap | Evidence from S1 conformance gate |
+|---|---|
+| Missing registry entries | `apps_architect`, `apps_qna` |
+| Stale governed import | `apps_exec.integrations` not importable |
+| Canonical dispatch mismatch | `apps_rg` entrypoint does not subclass `GovernedAppRunner` |
+| Exception handler drift | `apps_lic` handler class mismatch; `apps_eval` and `apps_underwriting_ai` exception modules not importable |
+
+**Registry state:** 3 governed + 3 formal exceptions + 0 ad hoc, per `apps_shared/integrations/app_registry.py`.
 
 ---
 

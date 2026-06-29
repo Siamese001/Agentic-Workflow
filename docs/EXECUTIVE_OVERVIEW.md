@@ -14,13 +14,13 @@ A governed runtime addresses these as **system invariants**, not features layere
 
 ## What the system demonstrates
 
-- **Route authority** — every request is dispatched through a contract-bound router (cache, RAG, action, fallback). Routing is a typed decision, not a prompt.
+- **Route authority** — runtime paths are dispatched through contract-bound routers (cache, RAG, action, fallback). Routing is a typed decision, not a prompt.
 - **Verified context (C0)** — retrieved context is grounded against canonical state before it ever reaches the model. Retrieval cannot route or execute.
 - **Prompt assembly as an engineering control** — prompts are assembled from verified components, not concatenated strings.
 - **Bounded execution (L2)** — tool use is schema-driven, sandboxed, and contract-enforced. No hallucinated tool calls, no uncontrolled side effects.
-- **Runtime exit gates** — every live packet, step, and write proposal passes a current-run disposition (allow / deny / reroute / escalate) before commit.
-- **Universal Write Gateway (UWG)** — the only durable write admission path. No silent mutations, no bypasses.
-- **Replayability** — every run produces a determinism digest and a replay key. Incidents can be reconstructed exactly; CI/CD can validate AI behavior like ordinary software.
+- **Runtime exit gates** — live packets, steps, and write proposals are evaluated for a current-run disposition (allow / deny / reroute / escalate) before commit.
+- **Universal Write Gateway (UWG)** — the intended durable write admission path, backed by bypass-risk checks in ADG and CI.
+- **Replayability** — replayable paths produce determinism digests and replay keys so incidents can be reconstructed from recorded evidence and validated in CI/CD.
 - **Shadow learning (L6)** — the system learns only from completed runs and proposes future-run improvements through approved promotion paths. No live drift.
 
 ## Runtime control model
@@ -33,7 +33,7 @@ L1 reasons → L0 routes → C0 grounds → L2 executes → Exit clears → UWG 
 
 - **L5** is the cross-cutting policy plane. It certifies authority, registry, origin trust, capability, sandbox, egress, HITL, replay, and audit evidence.
 - **Runtime gates** decide whether *this* live packet, step, tool call, output, or write proposal may proceed *now*.
-- **Exit Evaluation** emits exactly one current-run disposition.
+- **Exit Evaluation** emits a current-run disposition.
 - **UWG** is the only durable write admission path.
 - **L4** stores durable state.
 - **L6** learns only from completed runs.
