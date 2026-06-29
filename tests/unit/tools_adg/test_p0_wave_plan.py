@@ -111,3 +111,54 @@ def test_p0_wave_plan_stays_clean_when_modules_are_l0_reachable(tmp_path, monkey
     assert plan["plan_required"] is False
     assert plan["summary"]["total_p0_issues"] == 0
     assert plan["summary"]["l0_reachability_orphans"] == 0
+
+
+def test_p0_wave_plan_accepts_nodes_without_file_path_column(tmp_path, monkeypatch):
+    monkeypatch.setattr(p0_wave_plan, "_REPO_ROOT", tmp_path)
+    _write_source(tmp_path, "agentic_core/L0_routing/entry.py")
+    _write_source(tmp_path, "agentic_core/L3_orchestration/orphan.py")
+    sqlite_path = tmp_path / "adg_no_file_path.sqlite"
+    con = sqlite3.connect(sqlite_path)
+    try:
+        con.execute(
+            """
+            CREATE TABLE nodes (
+                id INTEGER PRIMARY KEY,
+                layer TEXT,
+                entity_type TEXT,
+                resolved_path TEXT,
+                adg_name TEXT
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE edges (
+                id INTEGER PRIMARY KEY,
+                src_id INTEGER,
+                dst_id INTEGER,
+                relation_type TEXT,
+                source_file TEXT,
+                line_no INTEGER
+            )
+            """
+        )
+        con.executemany(
+            "INSERT INTO nodes VALUES (?, ?, ?, ?, ?)",
+            [
+                (1, "L0", "module", "agentic_core/L0_routing/entry.py", "ADG::Module::entry"),
+                (2, "L3", "module", "agentic_core/L3_orchestration/orphan.py", "ADG::Module::orphan"),
+            ],
+        )
+        con.commit()
+    finally:
+        con.close()
+
+    plan = p0_wave_plan.build_p0_remediation_wave_plan(sqlite_path)
+
+    assert plan["plan_required"] is True
+    assert plan["summary"]["l0_reachability_orphans"] == 1
+    reachability_wave = next(
+        wave for wave in plan["waves"] if wave["wave_id"] == "wave_1_l0_reachability_ratchet"
+    )
+    assert reachability_wave["items"][0]["source_file"] == "agentic_core/L3_orchestration/orphan.py"

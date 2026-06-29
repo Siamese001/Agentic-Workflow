@@ -20,6 +20,10 @@
   artifacts, `G_REACH` is core-layer L0 reachability only (`L_APP` excluded), and deleted
   `hierarchy_healer.py` behavior is routed through `StructureEnforcerAgent`. Detail:
   `memory/codex/generate_full_adg_gate_rationalization.md`.
+- **ADG Redis hotcache query alignment (2026-06-29):** Redis query helpers must read the versioned
+  `adg:v1:<snapshot_id>:` keys written by `adg_redis_ingest`; staleness checks compare commits to
+  `adg:meta.sqlite_mtime` using Git `--after=@<epoch>` to avoid UTC/local drift, and the canonical generator is
+  `tools/generate/generate_full_adg.py`. Detail: `memory/codex/adg_redis_hotcache_query_alignment.md`.
 - **apps_rg C0.3 graph skills** use `master_skills_arsenal_ledger.json` as canonical source and generated
   SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
 - **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling

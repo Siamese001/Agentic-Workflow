@@ -1033,24 +1033,6 @@ def build_canonical_next_best_actions(
     run_id: str = "",
 ) -> dict[str, Any]:
     actions = []
-    inconsistent = [r for r in artifact_usage_matrix.get("rows", []) if not r.get("exists") and r.get("artifact_key") in {"gate_results", "sqlite_snapshot"}]
-    if inconsistent:
-        actions.append(
-            _action(
-                "repair_reporting",
-                "Repair missing decision-grade ADG artifact",
-                "ADG reporting",
-                "A required artifact is missing, so the run is degraded.",
-                "artifact",
-                "Confirm artifacts emit and latest/docs copies exist.",
-                "now",
-                "high",
-                business_reason="Decision-grade reporting is incomplete until the required artifact exists.",
-                technical_reason="The run is missing a required artifact, so ADG cannot be treated as fully decision-grade.",
-                why_this_rank="Repair report integrity before ranking any fix slice.",
-                next_step="Repair the missing artifact, then rerun ADG before ranking any fix slice.",
-            )
-        )
     fix = [g for g in gate_rows if display_verdict(g) == "FIX"]
     for g in sorted(fix, key=_fix_work_order_key)[:3]:
         row = build_executive_priority_row(g, sqlite_path, run_id)
@@ -1180,6 +1162,103 @@ def build_canonical_next_best_actions(
         row["rank"] = i
         row["priority"] = i
     return {"status": "present", "rows": actions[:8]}
+
+
+def _mece_gate_summary(
+    *,
+    verdict: dict[str, Any],
+    consistency: dict[str, Any],
+    runtime: dict[str, Any],
+    gate_adapter: dict[str, Any],
+    audit_notes: dict[str, Any],
+) -> dict[str, Any]:
+    sections = gate_adapter.get("sections") or {}
+    decision_gates: list[dict[str, Any]] = []
+    verdict_id = str(verdict.get("verdict") or "")
+    if verdict_id == "REPORT_INCONSISTENT":
+        errors = (consistency or {}).get("errors") or []
+        decision_gates.append(
+            {
+                "bucket": "DECISION_GATE",
+                "gate_id": "report_consistency",
+                "move": "Repair graph/report consistency",
+                "why_it_matters": "The executive order is not decision-grade until graph and report agree.",
+                "evidence": f"{_fmt_int(len(errors))} graph/report mismatch row(s) block decision-grade ordering.",
+                "next_step": "Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative.",
+                "scope": "mv_graph_vs_report_mismatches",
+                "action_type": "decision_gate",
+                "decision": "repair_reporting",
+            }
+        )
+    elif verdict_id == "DEGRADED":
+        reasons = "; ".join(str(v) for v in (verdict.get("degradation_reasons") or [])[:3])
+        decision_gates.append(
+            {
+                "bucket": "DECISION_GATE",
+                "gate_id": "required_report_inputs",
+                "move": "Restore decision-grade artifacts",
+                "why_it_matters": "Missing required inputs make lower-priority ordering unreliable.",
+                "evidence": reasons or "Required artifacts are missing.",
+                "next_step": "Restore required report inputs, then rerun the executive summary.",
+                "scope": "required report inputs",
+                "action_type": "decision_gate",
+                "decision": "repair_reporting",
+            }
+        )
+    elif verdict_id == "RUNTIME_PROOF_FAILING":
+        decision_gates.append(
+            {
+                "bucket": "DECISION_GATE",
+                "gate_id": "runtime_spine",
+                "move": "Fix failing runtime proof",
+                "why_it_matters": "Observed runtime failure is a quality failure, not a diagnostic detail.",
+                "evidence": runtime.get("measurement_gap_vs_quality_failure") or "Runtime proof is failing.",
+                "next_step": "Fix the failing runtime path before relying on ordinary gate cleanup ordering.",
+                "scope": "runtime_spine",
+                "action_type": "decision_gate",
+                "decision": "repair_runtime",
+            }
+        )
+
+    def _section_rows(section: str, bucket: str) -> list[dict[str, Any]]:
+        rows = []
+        for row in (sections.get(section) or {}).get("rows", []) or []:
+            item = dict(row)
+            item["bucket"] = bucket
+            rows.append(item)
+        return rows
+
+    severity_rows = []
+    for row in (audit_notes.get("guardian_summary") or []):
+        item = dict(row)
+        item["bucket"] = "SEVERITY_INVENTORY"
+        severity_rows.append(item)
+
+    summary = {
+        "schema_version": "adg-report-mece/v1",
+        "rule": (
+            "Decision gates, fix work, burn-down backlog, KPI/watchlist, severity inventory, "
+            "and clear gates are mutually exclusive ownership buckets."
+        ),
+        "decision_gates": decision_gates,
+        "fix_now": _section_rows("fix_now", "FIX_NOW"),
+        "burn_down_after_green": _section_rows("burn_down", "BURN_DOWN_AFTER_GREEN"),
+        "kpi_watchlist": _section_rows("kpi_watchlist", "KPI_WATCHLIST"),
+        "severity_inventory": severity_rows,
+        "clear": _section_rows("clear", "CLEAR"),
+    }
+    summary["bucket_counts"] = {
+        key: len(summary[key])
+        for key in (
+            "decision_gates",
+            "fix_now",
+            "burn_down_after_green",
+            "kpi_watchlist",
+            "severity_inventory",
+            "clear",
+        )
+    }
+    return summary
 
 
 def _reg_delta(g: dict[str, Any]) -> int:
@@ -1612,13 +1691,22 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
     )
     audit_notes = _audit_notes(gates, loaded.get("burndown_table"), consistency)
     kpi_scorecard = _p0_p3_reconciliation(p0_landmines, audit_notes, health)
+    executive_decision = _verdict(health, runtime, testing, artifact_matrix, consistency)
+    gate_mece_summary = _mece_gate_summary(
+        verdict=executive_decision,
+        consistency=consistency,
+        runtime=runtime,
+        gate_adapter=gate_adapter,
+        audit_notes=audit_notes,
+    )
     doc.update(
         {
-            "executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency),
+            "executive_decision": executive_decision,
             "prioritization_model": _prioritization_model(),
             "bcg_gate_adapter": gate_adapter,
             "kpi_scorecard": kpi_scorecard,
             "p0_p3_reconciliation": kpi_scorecard,
+            "gate_mece_summary": gate_mece_summary,
             "lens_0_p0_landmines": p0_landmines,
             "lens_1_health_gates": health,
             "lens_2_runtime_proof_observability": runtime,
@@ -1850,51 +1938,14 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     artifacts = raw_inputs.get("artifacts") or {}
     sqlite_snapshot = str(artifacts.get("sqlite_snapshot") or "").strip()
     snapshot_ts = _sqlite_ts(Path(sqlite_snapshot)) if sqlite_snapshot else ""
+    decision_gate_rows = list((doc.get("gate_mece_summary") or {}).get("decision_gates") or [])
     priority_rows: list[dict[str, Any]] = []
     verdict = str(d.get("verdict") or "UNKNOWN")
     recommendation = str(d.get("recommendation") or "no recommendation emitted").rstrip(".")
-    if verdict == "REPORT_INCONSISTENT":
-        errors = ((doc.get("audit_notes") or {}).get("artifact_consistency") or {}).get("errors") or []
-        priority_rows.append(
-            {
-                "priority": 1,
-                "move": "Repair graph/report consistency",
-                "scope": "mv_graph_vs_report_mismatches",
-                "business_reason": d.get("recommendation"),
-                "technical_reason": f"{_fmt_int(len(errors))} graph/report mismatch row(s) block decision-grade ordering.",
-                "why_this_rank": "The report says its own action order is not trustworthy until graph and report agree.",
-                "decision": "repair_reporting",
-            }
-        )
-    elif verdict == "DEGRADED":
-        priority_rows.append(
-            {
-                "priority": 1,
-                "move": "Restore decision-grade artifacts",
-                "scope": "required report inputs",
-                "business_reason": d.get("recommendation"),
-                "technical_reason": "; ".join(str(v) for v in (doc.get("run") or {}).get("degradation_reasons", [])[:3]) or "Required artifacts are missing.",
-                "why_this_rank": "Missing inputs make lower-priority ordering unreliable.",
-                "decision": "repair_reporting",
-            }
-        )
-    elif verdict == "RUNTIME_PROOF_FAILING":
-        priority_rows.append(
-            {
-                "priority": 1,
-                "move": "Fix failing runtime proof",
-                "scope": "runtime_spine",
-                "business_reason": d.get("recommendation"),
-                "technical_reason": runtime.get("measurement_gap_vs_quality_failure") or "Runtime proof is failing.",
-                "why_this_rank": "Observed runtime failure outranks ordinary gate cleanup.",
-                "decision": "repair_runtime",
-            }
-        )
-    rank_offset = len(priority_rows)
     for row in actions[:4]:
         priority_rows.append(
             {
-                "priority": int(row.get("rank") or 0) + rank_offset,
+                "priority": int(row.get("rank") or len(priority_rows) + 1),
                 "move": row.get("move") or row.get("action"),
                 "why_it_matters": row.get("why_it_matters") or row.get("business_reason") or row.get("why_now"),
                 "evidence": row.get("evidence") or row.get("technical_reason") or row.get("testing_requirement") or row.get("action"),
@@ -1972,6 +2023,7 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             graph.get("executive_read", ""),
             f"Action rows emitted: {_fmt_int(len(actions))}",
         ],
+        decision_gates=decision_gate_rows,
         priority_rule=priority_rule.replace("accepted debt", "owned burn-down debt").replace("ratchets", "owned burn-down backlog"),
         priority_rows=priority_rows,
         why_this_order=why_this_order,
@@ -2159,7 +2211,32 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
         a("")
         a(_table(["Rank", "Scope", "Graph signal", "Centrality", "Blast radius", "Reverse dep", "Executive read"], [[r.get("rank"), r.get("scope"), r.get("graph_signal"), r.get("centrality"), r.get("blast_radius"), r.get("reverse_dependency"), r.get("executive_read")] for r in graph_risks]))
         a("")
-    a("### 10. Next Best Actions")
+    a("### 10. MECE Decision Gate and Work Queue")
+    a("")
+    mece = doc.get("gate_mece_summary") or {}
+    decision_rows = mece.get("decision_gates") or []
+    if decision_rows:
+        a("Decision gate — fixes report/runtime trust before ranking becomes authoritative:")
+        a("")
+        a(
+            _table(
+                ["Gate", "Why it matters", "Evidence", "Required before ranking"],
+                [
+                    [
+                        r.get("move") or r.get("gate_id"),
+                        r.get("why_it_matters"),
+                        r.get("evidence"),
+                        r.get("next_step"),
+                    ]
+                    for r in decision_rows
+                ],
+            )
+        )
+        a("")
+    else:
+        a("Decision gate: none. The work queue below is decision-grade for this run.")
+        a("")
+    a("Fix now — ranked work items only:")
     a("")
     a(
         _table(

@@ -1,9 +1,9 @@
 {
   "gate": "G-THREE-BUCKET-GAP",
   "tier": "B",
-  "timestamp": "2026-06-28T11:05:10.322430+00:00",
+  "timestamp": "2026-06-29T18:42:30.291758+00:00",
   "report_path": "docs\\reports\\adg\\THREE_BUCKET_GAP_REPORT.json",
-  "snapshot": "adg_indexed_06272026_2302.sqlite",
+  "snapshot": "adg_indexed_06292026_0701.sqlite",
   "strict_mode": true,
   "runtime_view_present": true,
   "health_score_pct_triplet_attested": 0.0,
@@ -41,7 +41,7 @@
     {
       "defect_class": "UNOBSERVED_CODE",
       "severity": "P3",
-      "edge_count": 564057,
+      "edge_count": 564969,
       "edge_pct": 99.9,
       "threshold_count": null,
       "threshold_pct": null,

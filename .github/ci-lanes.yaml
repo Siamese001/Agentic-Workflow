@@ -41,6 +41,19 @@ workflows:
           - ".codex/skills/structured-reasoning/**"
           - ".codex/skills/mcp-integration/**"
         command: python scripts/governance/verify_codex_primary.py --repo-only
+      adg-report-mece:
+        match:
+          - "tools/reports/adg_bcg_adapter.py"
+          - "tools/reports/adg_bcg_executive_synthesis.py"
+          - "tools/reports/adg_burndown_report.py"
+          - "ops_scripts/ci/verify_adg_report_mece.py"
+          - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+          - "tests/unit/tools/reports/**"
+          - "docs/reports/adg/adg_bcg_*"
+          - "docs/reports/adg/adg_burndown_report.md"
+          - ".github/ci-lanes.yaml"
+          - ".github/workflows/contract-gates.yml"
+        command: python ops_scripts/ci/verify_adg_report_mece.py
       apps-rg-prompt-judge-sync:
         match:
           - "apps_rg/prompt_assembly/**"
