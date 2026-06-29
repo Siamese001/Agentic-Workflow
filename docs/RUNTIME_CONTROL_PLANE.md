@@ -29,7 +29,7 @@ The repository implements those seven concerns as distinct, contract-bound layer
 [6] Shadow evaluation   → telemetry, regression, future-run promotion
 ```
 
-L5 is the cross-cutting policy plane and operates over every step.
+L5 is the cross-cutting policy plane and operates across runtime steps.
 
 ## Layer responsibilities
 
@@ -50,7 +50,7 @@ The architecture enforces strict separation between **certifying authority** and
 
 - **L5 certifies** — authority, policy, registry, origin trust, capability, sandbox, egress, HITL, replay, and audit evidence.
 - **Runtime gates decide** — whether live packets, steps, tool calls, outputs, or write proposals may proceed *now*.
-- **Exit Evaluation emits exactly one current-run disposition** — allow, deny, reroute, or escalate.
+- **Exit Evaluation emits a current-run disposition** — allow, deny, reroute, or escalate.
 - **UWG is the only durable write admission path.**
 - **L4 stores durable state.**
 - **L6 learns only from completed runs** and proposes future-run improvements through approved promotion paths. L6 cannot mutate a live run.
@@ -82,7 +82,7 @@ This separation is what allows context quality to be reasoned about independentl
 
 ## Write-control model
 
-Every state change in the system is admitted through one path:
+Durable state changes are designed to be admitted through one path:
 
 ```
 L2 output → Exit Evaluation → UWG → L4
@@ -90,16 +90,16 @@ L2 output → Exit Evaluation → UWG → L4
 
 Properties:
 
-- **Single-door** — there is no other admission path. Direct database writes, side-channel mutations, and "temporary" bypasses are structurally absent.
+- **Single-door** — UWG is the intended durable-write admission path, with ADG/CI checks used to detect bypass risk.
 - **Validated** — UWG checks schema, policy version, and authority before commit.
-- **Signed and recorded** — every commit binds to the exact policy hash, run digest, and evidence trace that produced it.
+- **Signed and recorded** — commits bind to the policy hash, run digest, and evidence trace that produced them.
 - **Auditable** — provenance is reconstructable from the commit alone.
 
 This is what makes "no silent corruption" a system property rather than an aspiration.
 
 ## Evaluation and replay
 
-Every run produces:
+Replayable runs produce:
 
 - A **full execution trace** — ordered, deterministic, replayable.
 - A **determinism digest** — a content hash that pins the entire run.
@@ -107,11 +107,11 @@ Every run produces:
 
 Operationally, this means:
 
-- Incidents can be reconstructed exactly.
+- Incidents can be reconstructed from recorded evidence and replay keys.
 - Regression tests can compare digests across builds.
 - AI behavior gets the same CI/CD treatment as ordinary software.
 
-Exit Evaluation is the placement point where current-run policy, schema, and trajectory checks meet. It emits exactly one disposition. It is *not* the same surface as L6 shadow evaluation, which never affects the live run.
+Exit Evaluation is the placement point where current-run policy, schema, and trajectory checks meet. It emits the current disposition. It is *not* the same surface as L6 shadow evaluation, which does not mutate the live run.
 
 ## Future-run learning
 
