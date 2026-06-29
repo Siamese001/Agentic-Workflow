@@ -45,16 +45,42 @@ TEST_FOLDERS = ("unit", "e2e", "regression", "integration", "smoke", "golden", "
 TEST_TYPE_BY_FOLDER = {"fixtures": "fixture"}
 VERDICTS = {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
 
-# The next-slice fix ordering is intentionally human-readable, not a raw count sort.
-# We keep the broad architecture drift row ahead of the narrow control bypass row,
-# then the contract-seam debt row, so the executive brief can explain the business
-# tradeoff in plain English.
-_FIX_PRIORITY_FAMILY_ORDER: dict[str, int] = {
-    "LayerSkipGate": 0,
-    "L5BypassGate": 1,
-    "UntypedSeamGate": 2,
-    "LpgDriftRatchetGate": 3,
-    "UnusedImportsRatchetGate": 4,
+_EXECUTIVE_GATE_OVERRIDES: dict[str, dict[str, str]] = {
+    "10_infra_wiring": {
+        "move": "Clear infra wiring P0 block",
+        "why_it_matters": "Small P0 infra-wiring hard stops are usually the fastest path to remove a red ADG gate without broad refactor.",
+        "next_step": "Inspect the infra-wiring rows and remove or route the invalid pipeline/spine wiring. Do not re-baseline a P0 block.",
+    },
+    "13_core_imports_apps": {
+        "move": "Stop core importing apps",
+        "why_it_matters": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
+        "next_step": "Move app-specific bindings behind an adapter or app-owned wiring surface; core should keep only generic contracts.",
+    },
+    "S2_uwg_bypass_ratchet": {
+        "move": "Close UWG bypass regression",
+        "why_it_matters": "New UWG bypass paths weaken write-governance correctness and can materially affect app run safety.",
+        "next_step": "Investigate the new bypass delta and route writes through UWG or an approved adapter; re-baseline only with explicit sign-off.",
+    },
+    "C3_silent_writes_ratchet": {
+        "move": "Close silent write regression",
+        "why_it_matters": "Silent writes weaken replay, audit, and side-effect accountability.",
+        "next_step": "Fix the new silent-write delta by emitting side-effect evidence or routing through the governed write path.",
+    },
+    "8_trace_replay_eval": {
+        "move": "Repair trace/replay eval regression",
+        "why_it_matters": "Trace/replay regressions reduce confidence that runtime behavior is actually proven.",
+        "next_step": "Restore the failing trace/replay coverage before relying on runtime proof for the affected path.",
+    },
+    "S4_unused_imports_ratchet": {
+        "move": "Remove unused-import regression only",
+        "why_it_matters": "Unused imports are graph-noise hygiene; they should not outrank P0 safety or governance gates.",
+        "next_step": "Fix only the new unused-import delta after P0/P1 blockers are clear, unless a row masks a current blocker.",
+    },
+    "Q2_cyclomatic_complexity_ratchet": {
+        "move": "Reduce complexity in touched hotspots",
+        "why_it_matters": "Complexity is maintainability risk; it should be scoped to touched or high-blast-radius code, not used as a blanket priority.",
+        "next_step": "Refactor only the regressed or high-blast-radius functions tied to current work.",
+    },
 }
 
 
@@ -1026,7 +1052,7 @@ def build_canonical_next_best_actions(
             )
         )
     fix = [g for g in gate_rows if display_verdict(g) == "FIX"]
-    for g in sorted(fix, key=lambda r: (_fix_priority_family_rank(r), -_reg_delta(r), -int(r.get("violation_count") or 0), str(r.get("gate_id", ""))))[:3]:
+    for g in sorted(fix, key=_fix_work_order_key)[:3]:
         row = build_executive_priority_row(g, sqlite_path, run_id)
         actions.append(
             _action(
@@ -1236,22 +1262,36 @@ def _action(
     }
 
 
-def _fix_priority_family_rank(gate: dict[str, Any]) -> int:
-    gate_class = str(gate.get("gate_class") or "").strip()
+def _fix_work_order_key(gate: dict[str, Any]) -> tuple[int, int, int, int, str]:
+    """Decision-grade FIX ordering for BCG/action output.
+
+    This is deliberately not a hygiene sorter. A P3 gate with a large row count
+    must not outrank a P0 blocker or P0 regression just because it is noisy.
+    """
     gate_id = str(gate.get("gate_id") or "").strip()
-    if gate_class in _FIX_PRIORITY_FAMILY_ORDER:
-        return _FIX_PRIORITY_FAMILY_ORDER[gate_class]
-    if gate_id.startswith("B2_"):
-        return 0
-    if gate_id.startswith("C2_"):
-        return 1
-    if gate_id.startswith("F1_"):
-        return 2
-    if gate_id.startswith("L2_"):
-        return 3
-    if gate_id.startswith("S4_"):
-        return 4
-    return 50
+    band = str(gate.get("band") or "").strip().upper()
+    enforcement = str(gate.get("enforcement") or "").strip().lower()
+    band_rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}.get(band, 9)
+    enforcement_rank = 0 if enforcement == "block" else 1
+    if enforcement == "block":
+        # For hard stops at the same severity, take the smallest concrete block
+        # first: it is usually the fastest path to remove a merge stopper.
+        secondary = int(gate.get("violation_count") or gate.get("total_records") or 0)
+    else:
+        secondary = -_reg_delta(gate)
+    materiality_rank = {
+        "10_infra_wiring": 0,
+        "13_core_imports_apps": 1,
+        "S2_uwg_bypass_ratchet": 2,
+        "C3_silent_writes_ratchet": 0,
+        "8_trace_replay_eval": 1,
+        "M_taint_actionable_ratchet": 2,
+        "I2_replay_surface_gaps_ratchet": 0,
+        "Q2_cyclomatic_complexity_ratchet": 0,
+        "M1_module_loc_ratchet": 1,
+        "S4_unused_imports_ratchet": 2,
+    }.get(gate_id, 50)
+    return (band_rank, enforcement_rank, materiality_rank, secondary, gate_id)
 
 
 def _format_decision_options(gate: dict[str, Any], breakout: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1280,6 +1320,7 @@ def build_executive_priority_row(
     sqlite_path: Path | None,
     run_id: str,
 ) -> dict[str, Any]:
+    gate_id = str(gate.get("gate_id") or "")
     copy = executive_gate_copy(gate)
     breakout = build_gate_breakout(gate, sqlite_path) if sqlite_path is not None else {
         "status": "missing",
@@ -1298,22 +1339,26 @@ def build_executive_priority_row(
     ]
     if not affected_layers and breakout.get("summary") and breakout.get("summary") != "breakout unavailable":
         affected_layers = [str(breakout.get("summary"))]
+    override = _EXECUTIVE_GATE_OVERRIDES.get(gate_id, {})
+    move = override.get("move") or copy.move
+    why_it_matters = override.get("why_it_matters") or copy.why_it_matters
+    next_step = override.get("next_step") or next_step
     return {
         "rank": None,
         "priority": None,
         "action_type": "fix_blocker",
-        "action": copy.move,
-        "move": copy.move,
-        "scope": str(gate.get("gate_id") or ""),
-        "why_now": copy.why_it_matters,
-        "why_it_matters": copy.why_it_matters,
-        "business_reason": copy.why_it_matters,
+        "action": move,
+        "move": move,
+        "scope": gate_id,
+        "why_now": why_it_matters,
+        "why_it_matters": why_it_matters,
+        "business_reason": why_it_matters,
         "evidence": evidence,
         "technical_reason": evidence,
         "next_step": next_step,
         "why_this_rank": next_step,
         "decision": "fix_blocker",
-        "evidence_used": [{"signal_name": str(gate.get("gate_id") or ""), "signal_type": "gate", "decision_effect": copy.why_it_matters}],
+        "evidence_used": [{"signal_name": gate_id, "signal_type": "gate", "decision_effect": why_it_matters}],
         "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
         "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
         "confidence": "high",
@@ -1867,10 +1912,13 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
         )
     if verdict == "REPORT_INCONSISTENT":
         business_suffix = "Repair report consistency before treating blocker order as authoritative."
-        priority_rule = "Repair report consistency first, then clear blockers, then close testing exposure."
+        priority_rule = (
+            "Decision queue: repair consistency, then remove concrete P0 hard stops/regressions; "
+            "do not let high-volume P3 hygiene outrank P0 safety/governance gates."
+        )
         why_this_order = [
             "Graph/report mismatch means the action order is not decision-grade yet.",
-            "Once report consistency is restored, clear current FIX gates before accepted debt.",
+            "After that, concrete P0 FIX gates outrank P3 hygiene even when the P3 row count is larger.",
             "Testing exposure should travel with the relevant fix slice.",
         ]
     elif verdict == "DEGRADED":
@@ -1882,14 +1930,20 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
         ]
     elif verdict == "RUNTIME_PROOF_FAILING":
         business_suffix = "Fix failing runtime proof before ordinary gate cleanup."
-        priority_rule = "Fix runtime proof first, then clear blockers, then close testing exposure."
+        priority_rule = (
+            "Decision queue: fix runtime proof, then remove concrete P0 hard stops/regressions; "
+            "defer high-volume P3 hygiene until safety/governance gates are clear."
+        )
         why_this_order = [
             "Observed runtime failure is a quality failure, not a diagnostic detail.",
             "Once runtime proof is clean, ordinary FIX gates can drive the next slice.",
         ]
     else:
         business_suffix = "Spend executive time on blockers and test gaps before accepted debt."
-        priority_rule = "Fix blockers first, then close testing exposure, then reduce accepted debt."
+        priority_rule = (
+            "Decision queue: concrete FIX gates by materiality and severity first; "
+            "P3 hygiene only wins when it is tied to the current blocker slice."
+        )
         why_this_order = (doc.get("honest_bottom_line") or {}).get("bullets", [])[:4]
     return build_bcg_brief(
         title="BCG Executive Brief",

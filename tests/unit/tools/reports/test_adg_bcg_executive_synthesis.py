@@ -259,21 +259,88 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
 
     first_three = actions["rows"][:3]
     assert [r["scope"] for r in first_three] == [
-        "B2_layer_skip_ratchet",
         "C2_l5_bypass_pview",
+        "B2_layer_skip_ratchet",
         "F1_untyped_seam_ratchet",
     ]
-    assert first_three[0]["move"] == "Clear layer-jump regression"
-    assert first_three[1]["move"] == "Stop L5 gateway bypass"
+    assert first_three[0]["move"] == "Stop L5 gateway bypass"
+    assert first_three[1]["move"] == "Clear layer-jump regression"
     assert first_three[2]["move"] == "Close untyped cross-layer seams"
-    assert "direct dependency links" in first_three[0]["evidence"].lower()
-    assert "provider/tool calls bypassing the l5 gateway" in first_three[1]["evidence"].lower()
+    assert "provider/tool calls bypassing the l5 gateway" in first_three[0]["evidence"].lower()
+    assert "direct dependency links" in first_three[1]["evidence"].lower()
     assert "cross-layer imports with empty type surfaces" in first_three[2]["evidence"].lower()
     assert "fix convenience coupling" in first_three[0]["next_step"].lower()
     assert "fix convenience coupling" in first_three[1]["next_step"].lower()
     assert "fix convenience coupling" in first_three[2]["next_step"].lower()
     assert first_three[0]["decision_options"][0]["label"] == "Fix"
     assert first_three[0]["done_condition"].startswith("Rerun ADG")
+
+
+def test_canonical_next_best_actions_prioritizes_p0_over_p3_hygiene(tmp_path: Path) -> None:
+    gate_rows = [
+        {
+            "gate_id": "S4_unused_imports_ratchet",
+            "band": "P3",
+            "enforcement": "ratchet",
+            "violation_count": 10772,
+            "baseline_count": 10750,
+            "classification": "regressed",
+        },
+        {
+            "gate_id": "13_core_imports_apps",
+            "band": "P0",
+            "enforcement": "block",
+            "violation_count": 35,
+            "classification": "blocked",
+        },
+        {
+            "gate_id": "10_infra_wiring",
+            "band": "P0",
+            "enforcement": "block",
+            "violation_count": 3,
+            "classification": "blocked",
+        },
+        {
+            "gate_id": "S2_uwg_bypass_ratchet",
+            "band": "P0",
+            "enforcement": "ratchet",
+            "violation_count": 1601,
+            "baseline_count": 1571,
+            "classification": "regressed",
+        },
+        {
+            "gate_id": "Q2_cyclomatic_complexity_ratchet",
+            "band": "P3",
+            "enforcement": "ratchet",
+            "violation_count": 1168,
+            "baseline_count": 1148,
+            "classification": "regressed",
+        },
+    ]
+    db = tmp_path / "adg_bcg_executive_synthesis_test.sqlite"
+    _sqlite(db)
+    actions = build_canonical_next_best_actions(
+        gate_rows,
+        {"top_graph_risks": []},
+        {"investment_map": []},
+        {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
+        {"rows": []},
+        {},
+        sqlite_path=db,
+        run_id="run-123",
+    )
+
+    assert [r["scope"] for r in actions["rows"][:3]] == [
+        "10_infra_wiring",
+        "13_core_imports_apps",
+        "S2_uwg_bypass_ratchet",
+    ]
+    assert [r["move"] for r in actions["rows"][:3]] == [
+        "Clear infra wiring P0 block",
+        "Stop core importing apps",
+        "Close UWG bypass regression",
+    ]
+    assert "S4_unused_imports_ratchet" not in [r["scope"] for r in actions["rows"][:3]]
 
 
 def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path: Path) -> None:

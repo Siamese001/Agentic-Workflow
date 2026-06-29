@@ -36,11 +36,11 @@ branch_protection:
   protected_branches:
     - main
   required_checks:
-    - workflow-reference-check
     - contract-summary
-    - smoke-summary
   optional_checks:
     - adg-pr-delta / adg-pr-summary
+    - workflow-reference-check
+    - smoke-summary
   remove_required_checks:
     - r1b-terminal-smoke
     - runtime-spine-smoke
@@ -58,5 +58,7 @@ branch_protection:
     - Author-Gate Harness HITL
     - agentic-core-auditability
     - ci-self-check / workflow-reference-check
+    - workflow-reference-check
     - contract-gates / contract-summary
     - runtime-smokes / smoke-summary
+    - smoke-summary

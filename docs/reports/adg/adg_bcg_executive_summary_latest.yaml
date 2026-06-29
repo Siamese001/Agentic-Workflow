@@ -2,9 +2,9 @@ schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
   run_id: 06282026_1945
-  generated_at_utc: '2026-06-28T23:55:15+00:00'
+  generated_at_utc: '2026-06-29T00:26:13+00:00'
   snapshot_ts: '2026-06-28T23:51:16.197008+00:00'
-  commit_sha: 9e8f1e338d2475c12050a3428125cc3e81126f1a
+  commit_sha: c7f72bd6bc732424c0fe9e848b642f8403727437
   repo_state_hash: 47f3af58e9f25b8d
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
@@ -7185,28 +7185,29 @@ canonical_next_best_actions:
   - rank: 1
     priority: 1
     action_type: fix_blocker
-    action: Remove unused imports
-    move: Remove unused imports
-    scope: S4_unused_imports_ratchet
-    why_now: Unused imports add clutter and obscure the live dependency graph.
-    why_it_matters: Unused imports add clutter and obscure the live dependency graph.
-    business_reason: Unused imports add clutter and obscure the live dependency graph.
-    evidence: 'ADG `06282026_1945`: `S4_unused_imports_ratchet` found 10,772 S4_unused_imports_ratchet,
-      +22 above baseline 10750. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `S4_unused_imports_ratchet` found 10,772
-      S4_unused_imports_ratchet, +22 above baseline 10750. Breakout unavailable.'
-    next_step: Review the unused import edges evidence. Investigate evidence before
-      changing code; the current choices are Investigate evidence, Fix, Adapter/interface,
-      Guardian exemption.
-    why_this_rank: Review the unused import edges evidence. Investigate evidence before
-      changing code; the current choices are Investigate evidence, Fix, Adapter/interface,
-      Guardian exemption.
+    action: Clear infra wiring P0 block
+    move: Clear infra wiring P0 block
+    scope: 10_infra_wiring
+    why_now: Small P0 infra-wiring hard stops are usually the fastest path to remove
+      a red ADG gate without broad refactor.
+    why_it_matters: Small P0 infra-wiring hard stops are usually the fastest path
+      to remove a red ADG gate without broad refactor.
+    business_reason: Small P0 infra-wiring hard stops are usually the fastest path
+      to remove a red ADG gate without broad refactor.
+    evidence: 'ADG `06282026_1945`: `10_infra_wiring` found 3 10_infra_wiring. Breakout
+      unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `10_infra_wiring` found 3 10_infra_wiring.
+      Breakout unavailable.'
+    next_step: Inspect the infra-wiring rows and remove or route the invalid pipeline/spine
+      wiring. Do not re-baseline a P0 block.
+    why_this_rank: Inspect the infra-wiring rows and remove or route the invalid pipeline/spine
+      wiring. Do not re-baseline a P0 block.
     decision: fix_blocker
     evidence_used:
-    - signal_name: S4_unused_imports_ratchet
+    - signal_name: 10_infra_wiring
       signal_type: gate
-      decision_effect: Unused imports add clutter and obscure the live dependency
-        graph.
+      decision_effect: Small P0 infra-wiring hard stops are usually the fastest path
+        to remove a red ADG gate without broad refactor.
     testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
     done_condition: Rerun ADG and confirm the gate returns to green or is explicitly
       waived.
@@ -7239,39 +7240,37 @@ canonical_next_best_actions:
       description: Use when the architecture policy intentionally changed.
       required_proof: Approval, new baseline artifact, reason, reviewer, and migration
         plan.
-    affected_system: tools
+    affected_system: ''
     affected_layers: []
     change_breakout: []
     diagram: null
-    work: Remove unused imports
+    work: Clear infra wiring P0 block
   - rank: 2
     priority: 2
     action_type: fix_blocker
-    action: Address S2_uwg_bypass_ratchet
-    move: Address S2_uwg_bypass_ratchet
-    scope: S2_uwg_bypass_ratchet
-    why_now: This gate still carries decision-grade risk and should be reviewed on
-      its own terms.
-    why_it_matters: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    business_reason: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    evidence: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
-      +30 above baseline 1571. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
-      +30 above baseline 1571. Breakout unavailable.'
-    next_step: Review the Write paths that bypass UWG (overlay on write_sovereignty
-      edges). evidence. Investigate evidence before changing code; the current choices
-      are Investigate evidence, Fix, Adapter/interface, Guardian exemption.
-    why_this_rank: Review the Write paths that bypass UWG (overlay on write_sovereignty
-      edges). evidence. Investigate evidence before changing code; the current choices
-      are Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    action: Stop core importing apps
+    move: Stop core importing apps
+    scope: 13_core_imports_apps
+    why_now: Core importing apps breaks the core/app boundary and directly weakens
+      provider-agnostic core.
+    why_it_matters: Core importing apps breaks the core/app boundary and directly
+      weakens provider-agnostic core.
+    business_reason: Core importing apps breaks the core/app boundary and directly
+      weakens provider-agnostic core.
+    evidence: 'ADG `06282026_1945`: `13_core_imports_apps` found 35 13_core_imports_apps.
+      Breakout unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `13_core_imports_apps` found 35 13_core_imports_apps.
+      Breakout unavailable.'
+    next_step: Move app-specific bindings behind an adapter or app-owned wiring surface;
+      core should keep only generic contracts.
+    why_this_rank: Move app-specific bindings behind an adapter or app-owned wiring
+      surface; core should keep only generic contracts.
     decision: fix_blocker
     evidence_used:
-    - signal_name: S2_uwg_bypass_ratchet
+    - signal_name: 13_core_imports_apps
       signal_type: gate
-      decision_effect: This gate still carries decision-grade risk and should be reviewed
-        on its own terms.
+      decision_effect: Core importing apps breaks the core/app boundary and directly
+        weakens provider-agnostic core.
     testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
     done_condition: Rerun ADG and confirm the gate returns to green or is explicitly
       waived.
@@ -7308,35 +7307,33 @@ canonical_next_best_actions:
     affected_layers: []
     change_breakout: []
     diagram: null
-    work: Address S2_uwg_bypass_ratchet
+    work: Stop core importing apps
   - rank: 3
     priority: 3
     action_type: fix_blocker
-    action: Address Q2_cyclomatic_complexity_ratchet
-    move: Address Q2_cyclomatic_complexity_ratchet
-    scope: Q2_cyclomatic_complexity_ratchet
-    why_now: This gate still carries decision-grade risk and should be reviewed on
-      its own terms.
-    why_it_matters: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    business_reason: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    evidence: 'ADG `06282026_1945`: `Q2_cyclomatic_complexity_ratchet` found 1,168
-      Q2_cyclomatic_complexity_ratchet, +20 above baseline 1148. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `Q2_cyclomatic_complexity_ratchet` found
-      1,168 Q2_cyclomatic_complexity_ratchet, +20 above baseline 1148. Breakout unavailable.'
-    next_step: Review the Functions with McCabe cyclomatic complexity above ceiling.
-      evidence. Investigate evidence before changing code; the current choices are
-      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
-    why_this_rank: Review the Functions with McCabe cyclomatic complexity above ceiling.
-      evidence. Investigate evidence before changing code; the current choices are
-      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    action: Close UWG bypass regression
+    move: Close UWG bypass regression
+    scope: S2_uwg_bypass_ratchet
+    why_now: New UWG bypass paths weaken write-governance correctness and can materially
+      affect app run safety.
+    why_it_matters: New UWG bypass paths weaken write-governance correctness and can
+      materially affect app run safety.
+    business_reason: New UWG bypass paths weaken write-governance correctness and
+      can materially affect app run safety.
+    evidence: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
+      +30 above baseline 1571. Breakout unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
+      +30 above baseline 1571. Breakout unavailable.'
+    next_step: Investigate the new bypass delta and route writes through UWG or an
+      approved adapter; re-baseline only with explicit sign-off.
+    why_this_rank: Investigate the new bypass delta and route writes through UWG or
+      an approved adapter; re-baseline only with explicit sign-off.
     decision: fix_blocker
     evidence_used:
-    - signal_name: Q2_cyclomatic_complexity_ratchet
+    - signal_name: S2_uwg_bypass_ratchet
       signal_type: gate
-      decision_effect: This gate still carries decision-grade risk and should be reviewed
-        on its own terms.
+      decision_effect: New UWG bypass paths weaken write-governance correctness and
+        can materially affect app run safety.
     testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
     done_condition: Rerun ADG and confirm the gate returns to green or is explicitly
       waived.
@@ -7373,7 +7370,7 @@ canonical_next_best_actions:
     affected_layers: []
     change_breakout: []
     diagram: null
-    work: Address Q2_cyclomatic_complexity_ratchet
+    work: Close UWG bypass regression
   - rank: 4
     priority: 4
     action_type: add_tests
@@ -9257,7 +9254,7 @@ honest_bottom_line:
     after green unless it overlaps current work.
   - Runtime proof gaps are measurement gaps unless runtime artifacts show observed
     quality failure.
-  - Remove unused imports
+  - Clear infra wiring P0 block
   - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without
     a decision role.
 raw_inputs:
@@ -9642,8 +9639,9 @@ bcg_findings:
     a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay
     diagnostic.
   - 'Action rows emitted: 7'
-  priority_rule: Repair report consistency first, then clear blockers, then close
-    testing exposure.
+  priority_rule: 'Decision queue: repair consistency, then remove concrete P0 hard
+    stops/regressions; do not let high-volume P3 hygiene outrank P0 safety/governance
+    gates.'
   priority_rows:
   - priority: 1
     rank: 1
@@ -9670,24 +9668,24 @@ bcg_findings:
     action_type: ''
   - priority: 2
     rank: 2
-    move: Remove unused imports
-    action: Remove unused imports
-    work: Remove unused imports
-    why_it_matters: Unused imports add clutter and obscure the live dependency graph.
-    business_reason: Unused imports add clutter and obscure the live dependency graph.
-    evidence: 'ADG `06282026_1945`: `S4_unused_imports_ratchet` found 10,772 S4_unused_imports_ratchet,
-      +22 above baseline 10750. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `S4_unused_imports_ratchet` found 10,772
-      S4_unused_imports_ratchet, +22 above baseline 10750. Breakout unavailable.'
-    next_step: Review the unused import edges evidence. Investigate evidence before
-      changing code; the current choices are Investigate evidence, Fix, Adapter/interface,
-      Guardian exemption.
-    why_this_rank: Review the unused import edges evidence. Investigate evidence before
-      changing code; the current choices are Investigate evidence, Fix, Adapter/interface,
-      Guardian exemption.
+    move: Clear infra wiring P0 block
+    action: Clear infra wiring P0 block
+    work: Clear infra wiring P0 block
+    why_it_matters: Small P0 infra-wiring hard stops are usually the fastest path
+      to remove a red ADG gate without broad refactor.
+    business_reason: Small P0 infra-wiring hard stops are usually the fastest path
+      to remove a red ADG gate without broad refactor.
+    evidence: 'ADG `06282026_1945`: `10_infra_wiring` found 3 10_infra_wiring. Breakout
+      unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `10_infra_wiring` found 3 10_infra_wiring.
+      Breakout unavailable.'
+    next_step: Inspect the infra-wiring rows and remove or route the invalid pipeline/spine
+      wiring. Do not re-baseline a P0 block.
+    why_this_rank: Inspect the infra-wiring rows and remove or route the invalid pipeline/spine
+      wiring. Do not re-baseline a P0 block.
     decision: fix_blocker
-    scope: S4_unused_imports_ratchet
-    affected_system: tools
+    scope: 10_infra_wiring
+    affected_system: ''
     affected_layers: []
     change_breakout: []
     decision_options:
@@ -9702,25 +9700,23 @@ bcg_findings:
     action_type: fix_blocker
   - priority: 3
     rank: 3
-    move: Address S2_uwg_bypass_ratchet
-    action: Address S2_uwg_bypass_ratchet
-    work: Address S2_uwg_bypass_ratchet
-    why_it_matters: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    business_reason: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    evidence: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
-      +30 above baseline 1571. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
-      +30 above baseline 1571. Breakout unavailable.'
-    next_step: Review the Write paths that bypass UWG (overlay on write_sovereignty
-      edges). evidence. Investigate evidence before changing code; the current choices
-      are Investigate evidence, Fix, Adapter/interface, Guardian exemption.
-    why_this_rank: Review the Write paths that bypass UWG (overlay on write_sovereignty
-      edges). evidence. Investigate evidence before changing code; the current choices
-      are Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    move: Stop core importing apps
+    action: Stop core importing apps
+    work: Stop core importing apps
+    why_it_matters: Core importing apps breaks the core/app boundary and directly
+      weakens provider-agnostic core.
+    business_reason: Core importing apps breaks the core/app boundary and directly
+      weakens provider-agnostic core.
+    evidence: 'ADG `06282026_1945`: `13_core_imports_apps` found 35 13_core_imports_apps.
+      Breakout unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `13_core_imports_apps` found 35 13_core_imports_apps.
+      Breakout unavailable.'
+    next_step: Move app-specific bindings behind an adapter or app-owned wiring surface;
+      core should keep only generic contracts.
+    why_this_rank: Move app-specific bindings behind an adapter or app-owned wiring
+      surface; core should keep only generic contracts.
     decision: fix_blocker
-    scope: S2_uwg_bypass_ratchet
+    scope: 13_core_imports_apps
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -9736,25 +9732,23 @@ bcg_findings:
     action_type: fix_blocker
   - priority: 4
     rank: 4
-    move: Address Q2_cyclomatic_complexity_ratchet
-    action: Address Q2_cyclomatic_complexity_ratchet
-    work: Address Q2_cyclomatic_complexity_ratchet
-    why_it_matters: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    business_reason: This gate still carries decision-grade risk and should be reviewed
-      on its own terms.
-    evidence: 'ADG `06282026_1945`: `Q2_cyclomatic_complexity_ratchet` found 1,168
-      Q2_cyclomatic_complexity_ratchet, +20 above baseline 1148. Breakout unavailable.'
-    technical_reason: 'ADG `06282026_1945`: `Q2_cyclomatic_complexity_ratchet` found
-      1,168 Q2_cyclomatic_complexity_ratchet, +20 above baseline 1148. Breakout unavailable.'
-    next_step: Review the Functions with McCabe cyclomatic complexity above ceiling.
-      evidence. Investigate evidence before changing code; the current choices are
-      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
-    why_this_rank: Review the Functions with McCabe cyclomatic complexity above ceiling.
-      evidence. Investigate evidence before changing code; the current choices are
-      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    move: Close UWG bypass regression
+    action: Close UWG bypass regression
+    work: Close UWG bypass regression
+    why_it_matters: New UWG bypass paths weaken write-governance correctness and can
+      materially affect app run safety.
+    business_reason: New UWG bypass paths weaken write-governance correctness and
+      can materially affect app run safety.
+    evidence: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
+      +30 above baseline 1571. Breakout unavailable.'
+    technical_reason: 'ADG `06282026_1945`: `S2_uwg_bypass_ratchet` found 1,601 S2_uwg_bypass_ratchet,
+      +30 above baseline 1571. Breakout unavailable.'
+    next_step: Investigate the new bypass delta and route writes through UWG or an
+      approved adapter; re-baseline only with explicit sign-off.
+    why_this_rank: Investigate the new bypass delta and route writes through UWG or
+      an approved adapter; re-baseline only with explicit sign-off.
     decision: fix_blocker
-    scope: Q2_cyclomatic_complexity_ratchet
+    scope: S2_uwg_bypass_ratchet
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -9793,7 +9787,8 @@ bcg_findings:
     action_type: add_tests
   why_this_order:
   - Graph/report mismatch means the action order is not decision-grade yet.
-  - Once report consistency is restored, clear current FIX gates before accepted debt.
+  - After that, concrete P0 FIX gates outrank P3 hygiene even when the P3 row count
+    is larger.
   - Testing exposure should travel with the relevant fix slice.
   next_step: Repair graph/report consistency first.
   status: REPORT_INCONSISTENT
