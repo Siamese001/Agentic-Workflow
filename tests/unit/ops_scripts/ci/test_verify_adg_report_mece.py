@@ -83,6 +83,28 @@ def test_verify_adg_report_mece_rejects_p3_hygiene_before_p0_live_gate() -> None
     assert any("P3 hygiene gate" in error for error in errors)
 
 
+def test_verify_adg_report_mece_allows_decision_gate_to_block_p0_ranking() -> None:
+    summary = _summary()
+    summary["canonical_next_best_actions"]["rows"] = [
+        {"action_type": "add_tests", "scope": "unknown", "move": "Fund mapped tests for unknown"},
+    ]
+
+    errors = validate(summary, _adapter(), "Decision gate:\n\nFix now:\n")
+
+    assert errors == []
+
+
+def test_verify_adg_report_mece_still_rejects_p3_hygiene_when_decision_gate_exists() -> None:
+    summary = _summary()
+    summary["canonical_next_best_actions"]["rows"] = [
+        {"action_type": "fix_blocker", "scope": "S4_unused_imports_ratchet", "move": "Remove unused-import regression only"},
+    ]
+
+    errors = validate(summary, _adapter(), "Decision gate:\n\nFix now:\n")
+
+    assert any("P3 hygiene gate" in error for error in errors)
+
+
 def test_verify_adg_report_mece_rejects_markdown_without_decision_gate() -> None:
     errors = validate(_summary(), _adapter(), "Fix now:\n")
 

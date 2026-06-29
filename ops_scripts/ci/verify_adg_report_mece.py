@@ -86,14 +86,14 @@ def _validate_watchlist_not_work(adapter: dict[str, Any]) -> list[str]:
 def _validate_ranked_actions(summary: dict[str, Any], adapter: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     actions = list((summary.get("canonical_next_best_actions") or {}).get("rows") or [])
+    decision_gates = list((summary.get("gate_mece_summary") or {}).get("decision_gates") or [])
     for row in actions:
         action_type = str(row.get("action_type") or row.get("decision") or "")
         move = _row_move(row).lower()
         if action_type in DECISION_GATE_ACTION_TYPES or move in DECISION_GATE_MOVES:
             errors.append(f"decision gate {move!r} appears in canonical_next_best_actions")
 
-    mece = summary.get("gate_mece_summary") or {}
-    for row in mece.get("decision_gates") or []:
+    for row in decision_gates:
         gate_move = _row_move(row)
         for action in actions:
             if gate_move and gate_move == _row_move(action):
@@ -109,7 +109,15 @@ def _validate_ranked_actions(summary: dict[str, Any], adapter: dict[str, Any]) -
             first_p0_index = index
             break
     if first_p0_index is None:
-        errors.append("P0 live FIX gates exist but none appear in canonical_next_best_actions")
+        ranked_p3 = sorted(
+            str(row.get("scope") or "")
+            for row in actions
+            if str(row.get("scope") or "") in P3_HYGIENE_IDS
+        )
+        for scope in ranked_p3:
+            errors.append(f"P3 hygiene gate {scope!r} outranks live P0 gates")
+        if not decision_gates and not ranked_p3:
+            errors.append("P0 live FIX gates exist but none appear in canonical_next_best_actions")
         return errors
     for index, row in enumerate(actions):
         scope = str(row.get("scope") or "")
