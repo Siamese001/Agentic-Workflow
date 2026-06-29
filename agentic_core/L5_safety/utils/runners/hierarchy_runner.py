@@ -1,8 +1,8 @@
 """
-L5 Runner for HierarchyAgent.
+L5 runner for structure hierarchy checks.
 
 This module provides subprocess-callable entry points for L0 scripts
-to invoke HierarchyAgent without creating upward import edges.
+to invoke StructureEnforcerAgent without creating upward import edges.
 
 Usage from subprocess:
     python -m agentic_core.L5_safety.runners.hierarchy_runner --action=dry_run
@@ -180,7 +180,7 @@ def get_project_root() -> Path:
 
 
 def run_hierarchy_dry_run(project_root: Path) -> dict:
-    """Run HierarchyAgent in dry-run mode."""
+    """Run structure hierarchy scan in dry-run mode."""
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "run_hierarchy_dry_run", "state_snapshot")
@@ -196,38 +196,39 @@ def run_hierarchy_dry_run(project_root: Path) -> dict:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "run_hierarchy_dry_run")
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    agent = HierarchyAgent(project_root, healing_enabled=False)
-    agent.heal_hierarchy(create_structure=True, relocate_files=True, enforce_depth=True, purge_orphans=True)
-    return {"success": True, "mode": "dry_run", "message": "Dry run complete - no changes made"}
+    agent = StructureEnforcerAgent(project_root=project_root)
+    result = agent.heal_repository(dry_run=True, execute=False)
+    return {"success": True, "mode": "dry_run", "message": "Dry run complete - no changes made", **result}
 
 
 def run_heal_violations(project_root: Path) -> dict:
-    """Run HierarchyAgent to heal violations in dry-run mode."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+    """Run StructureEnforcerAgent to report healable violations."""
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    agent = HierarchyAgent(project_root, healing_enabled=False)
-    result = agent.heal_hierarchy_violations()
+    agent = StructureEnforcerAgent(project_root=project_root)
+    result = agent.heal_repository(dry_run=True, execute=False)
     return {
         "success": True,
-        "files_relocated": result.get("files_relocated", 0),
-        "folders_removed": result.get("folders_removed", 0),
+        "files_relocated": result.get("fixed", 0),
+        "folders_removed": 0,
         "errors": result.get("errors", []),
+        "violations": result.get("violations", 0),
     }
 
 
 def verify_mro() -> dict:
-    """Verify HierarchyAgent MRO structure."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+    """Verify StructureEnforcerAgent MRO structure."""
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-    mro = [cls.__name__ for cls in HierarchyAgent.__mro__]
-    return {"success": True, "agent": "HierarchyAgent", "mro": mro, "mro_length": len(mro)}
+    mro = [cls.__name__ for cls in StructureEnforcerAgent.__mro__]
+    return {"success": True, "agent": "StructureEnforcerAgent", "mro": mro, "mro_length": len(mro)}
 
 
 def main() -> int:
     """CLI entry point for subprocess invocation."""
-    parser = argparse.ArgumentParser(description="HierarchyAgent Runner")
+    parser = argparse.ArgumentParser(description="Structure hierarchy runner")
     parser.add_argument(
         "--action",
         choices=["dry_run", "heal_violations", "verify_mro"],

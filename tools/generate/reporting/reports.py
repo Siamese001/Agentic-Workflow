@@ -605,7 +605,8 @@ def _print_defect_table(
         except (OSError, json.JSONDecodeError, ValueError):
             pass
 
-    print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=actionable  %=exempt/gross")
+    print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=audit net/actionable candidates  %=exempt/gross")
+    print("  P0 BCG foundation blockers are reported separately in the BCG KPI scorecard.")
     print("  Gate: *=BLOCKS  ^=ratchet  ~=watch  ✓=clean  ✗=failing  CI✓/CI✗=ci-gate")
 
     _p2_delta_val = max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0

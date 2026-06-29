@@ -315,7 +315,7 @@ def invoke_agent_roster_validation() -> dict[str, Any]:
 
 def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dict[str, Any]:
     """
-    Invoke HierarchyAgent via subprocess.
+    Invoke the structural hierarchy runner via subprocess.
 
     Args:
         action: One of 'dry_run', 'heal_violations', 'verify_mro'
@@ -324,7 +324,7 @@ def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dic
     Returns:
         Dict with 'success' key and action-specific results
     """
-    cmd = [sys.executable, "-m", "agentic_core.L5_safety.runners.hierarchy_runner", f"--action={action}"]
+    cmd = [sys.executable, "-m", "agentic_core.L5_safety.utils.runners.hierarchy_runner", f"--action={action}"]
     if project_root:
         cmd.append(f"--project-root={project_root}")
     return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT, cwd=project_root)

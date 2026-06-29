@@ -1878,26 +1878,29 @@ _SEMANTIC_DEPTH_THRESHOLDS: dict[str, float] = {
 }
 
 
+def _import_target_module_key(symbol_or_module_name: str) -> str:
+    raw = symbol_or_module_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
+    mod_part = raw.split("::")[0]
+    return mod_part.replace(".", "/")
+
+
+def _module_node_key(module_name: str) -> str:
+    raw = module_name.replace("ADG::Module::", "")
+    return raw.replace("/__init__.py", "").replace(".py", "")
+
+
+def _module_key_prefixes(module_key: str) -> tuple[str, ...]:
+    parts = [part for part in module_key.split("/") if part]
+    return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
+
+
 def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
-    def _symbol_to_module_key(sym_name: str) -> str:
-        raw = sym_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
-        mod_part = raw.split("::")[0]
-        return mod_part.replace(".", "/")
-
-    def _module_to_key(mod_name: str) -> str:
-        raw = mod_name.replace("ADG::Module::", "")
-        return raw.replace("/__init__.py", "").replace(".py", "")
-
-    def _key_prefixes(module_key: str) -> tuple[str, ...]:
-        parts = [part for part in module_key.split("/") if part]
-        return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
-
     importers_of: dict[str, set[str]] = {}
     violating_modules: set[str] = set()
 
     for edge in result.edges:
         if edge.relation_type == "imports" and edge.from_name.startswith("ADG::Module::"):
-            for prefix in _key_prefixes(_symbol_to_module_key(edge.to_name)):
+            for prefix in _module_key_prefixes(_import_target_module_key(edge.to_name)):
                 importers_of.setdefault(prefix, set()).add(edge.from_name)
         elif edge.relation_type == "violates":
             violating_modules.add(edge.from_name)
@@ -1905,7 +1908,7 @@ def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
     eligible_edge_count = 0
     eligible_module_targets: set[str] = set()
     for violating_module in tqdm(violating_modules, desc="violation scan", unit="module", leave=False):
-        violating_key = _module_to_key(violating_module)
+        violating_key = _module_node_key(violating_module)
         visited: set[str] = {violating_module}
         frontier = {
             importer
@@ -1918,7 +1921,7 @@ def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
         for _depth in tqdm(range(2, _MAX_PROPAGATION_DEPTH + 1), desc="  depth", unit="lvl", leave=False):
             next_frontier: set[str] = set()
             for node in frontier:
-                node_key = _module_to_key(node)
+                node_key = _module_node_key(node)
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
                         visited.add(importer)
@@ -1952,31 +1955,12 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
     violation_propagates_through edges showing blast radius.
     """
 
-    def _symbol_to_module_key(sym_name: str) -> str:
-        """Convert ADG::Symbol::agentic_core.L0_routing.foo::bar to module key."""
-        raw = sym_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
-        # Strip symbol suffix after ::
-        mod_part = raw.split("::")[0]
-        # Convert dots to slashes for module key
-        return mod_part.replace(".", "/")
-
-    def _module_to_key(mod_name: str) -> str:
-        """Normalize ADG::Module::path/to/file.py to key format."""
-        raw = mod_name.replace("ADG::Module::", "")
-        # Remove .py and /__init__ to get package key
-        raw = raw.replace("/__init__.py", "").replace(".py", "")
-        return raw
-
-    def _key_prefixes(module_key: str) -> tuple[str, ...]:
-        parts = [part for part in module_key.split("/") if part]
-        return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
-
     # Build reverse import adjacency: package_key → {importing module names}
     importers_of: dict[str, set[str]] = {}
     for e in result.edges:
         if e.relation_type == "imports" and e.from_name.startswith("ADG::Module::"):
-            target_key = _symbol_to_module_key(e.to_name)
-            for prefix in _key_prefixes(target_key):
+            target_key = _import_target_module_key(e.to_name)
+            for prefix in _module_key_prefixes(target_key):
                 importers_of.setdefault(prefix, set()).add(e.from_name)
 
     # Collect violating modules (from_name of violates edges)
@@ -1993,7 +1977,7 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
     # Also build module→key map for BFS traversal
     module_key_map: dict[str, str] = {}
     for vm in violating_modules:
-        module_key_map[vm] = _module_to_key(vm)
+        module_key_map[vm] = _module_node_key(vm)
 
     violating_modules_set2: set[str] = set(violating_modules)
     propagation_edges: list[Edge] = []
@@ -2036,7 +2020,7 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
         for depth in tqdm(range(2, _MAX_PROPAGATION_DEPTH + 1), desc="  bfs depth", unit="lvl", leave=False):
             next_frontier: list[str] = []
             for node in tqdm(frontier, desc="  bfs nodes", unit="node", leave=False):
-                node_key = _module_to_key(node)
+                node_key = _module_node_key(node)
                 # S7: sorted for stable BFS traversal order
                 for importer in tqdm(
                     sorted(importers_of.get(node_key, set())), desc="  importers", unit="mod", leave=False

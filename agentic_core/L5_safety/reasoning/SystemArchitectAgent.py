@@ -303,9 +303,14 @@ class SystemArchitectAgent(SovereignBaseAgent):
             if "pytest" in str(proj_root) or "tmp" in str(proj_root):
                 Logger.info("Test Environment Detected: Bypassing strict HierarchyAgent validation.")
                 return []
-            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-            return HierarchyAgent(proj_root).validate_hierarchy()
+            scanner = StructureEnforcerAgent(project_root=proj_root)
+            scan = scanner.scan_root_violations()
+            return [
+                (proj_root / str(violation.get("path")), str(violation.get("message") or "hierarchy violation"))
+                for violation in scan.get("violations", [])
+            ]
 
         # guardian: allow-path-string
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()

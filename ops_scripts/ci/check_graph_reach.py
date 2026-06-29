@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Gate G-REACH: L0-reachability of production modules (H2).
+"""Gate G-REACH: L0-reachability of core production modules (H2).
 
-Graph-native check: every module in a production layer
-(L1/L2/L3/L4/L5/L_APP/L_PG) MUST be reachable via ``imports`` edges from at
-least one L0 entry node.
+Graph-native check: every module in a core production layer (L1/L2/L3/L4/L5/L_PG)
+MUST be reachable via ``imports`` edges from at least one L0 entry node. App
+layers are intentionally excluded because forcing apps_* to be reachable from
+core L0 would create the core-to-app import direction this repo forbids.
 
 Rationale
     The C0 Context Engine orphan class (plan c0-context-engine-wiring-fix-9e42a1)
@@ -45,7 +46,7 @@ from ops_scripts.ci._adg_wiring_gate_base import (  # noqa: E402
 
 GATE_ID = "G_REACH_l0_reachability"
 
-_PRODUCTION_LAYERS = ("L1", "L2", "L3", "L4", "L5", "L_APP", "L_PG")
+_CORE_PRODUCTION_LAYERS = ("L1", "L2", "L3", "L4", "L5", "L_PG")
 
 
 def _source_file_exists(resolved_path: str) -> bool:
@@ -104,7 +105,7 @@ class GraphReachGate(WiringGate):
         for node_id, data in g.nodes(data=True):
             if data.get("entity_type") != "module":
                 continue
-            if data.get("layer") not in _PRODUCTION_LAYERS:
+            if data.get("layer") not in _CORE_PRODUCTION_LAYERS:
                 continue
             path = data.get("resolved_path") or data.get("adg_name") or f"node#{node_id}"
             if data.get("resolved_path") and not _source_file_exists(data["resolved_path"]):

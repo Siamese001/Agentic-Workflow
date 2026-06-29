@@ -198,7 +198,7 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
         # MW-9 (2026-04-24): Class body relocated to utils module.
         from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
@@ -206,7 +206,7 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
         orchestrator = get_consolidated_orchestrator(project_root)
         active_roster = [
             ("LocationAgent", LocationHealerAgent(project_root)),
-            ("HierarchyAgent", HierarchyAgent(project_root)),
+            ("HierarchyAgent", StructureEnforcerAgent(project_root=project_root)),
             ("ArchitectureGovernorAgent", ArchitectureGovernorAgent(project_root)),
             ("GravityLeakRepairAgent", GravityLeakRepairAgent(project_root)),
         ]

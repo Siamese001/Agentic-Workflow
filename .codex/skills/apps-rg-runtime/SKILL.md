@@ -36,6 +36,8 @@ the apps_rg *run + report* loop.
 | After ANY run, render `render_run_summary.py` output inline before claiming success | `apps-rg-post-run-summary.md` — "exit 0" without the table is at most PARTIAL |
 | Failure/aborted runs MUST still emit and surface mandatory BCG + run ledger | Failure runs are MORE valuable for evidence, not less |
 | The initial run closeout must answer "what ran, what did not, which judges ran, and why" | Mandatory `APPS_RG_MANDATORY_RUN_OUTPUT.md/.json` is the SSOT for that operator ledger |
+| Every RCA required fix MUST be a 3-5 bullet implementation plan aimed at the core root cause | Single-line actions and symptom fixes are not operator-ready |
+| Every RCA finding MUST include causal allocation tied to the actual root cause | Broad buckets are invalid unless each row names the concrete causal mechanism, evidence, work share, and retry recoverability |
 | executive_summary response leads with exactly 3 layman sentences, no jargon | `apps-rg-executive-summary-response.md` |
 
 ## Standard Procedure
@@ -51,12 +53,14 @@ the apps_rg *run + report* loop.
 3. **Locate the run dir** — `--out-dir` if passed, else the most-recently-modified dir under `artifacts/apps_rg/runs/`.
 4. **Validate mandatory outputs** — verify these files exist in the run dir: `BCG_EXECUTIVE_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. If missing, regenerate them with `python -m apps_rg.runtime.mandatory_run_outputs <run_dir>`.
 5. **Render evidence** — `python tools/apps_rg/render_run_summary.py [<run_dir>]`; paste the full markdown inline under `## apps_rg Runtime Evidence`. Do not paraphrase or truncate.
-6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). For executive_summary, 3-sentence layman lead first, then a technical table (parity, briefing chars, X3 code, judges, exit code) and the repo-work proof floor.
+6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). Each RCA finding must include `root_cause`, causal allocation (`dominant_cause`, retry recoverability, and root-cause-linked allocation rows), plus a 3-5 bullet implementation plan that changes the producer/parser/validator contract causing the failure; do not present symptom-only rerun, prompt tweak, or threshold-relaxation actions as required fixes. For executive_summary, 3-sentence layman lead first, then a technical table (parity, briefing chars, X3 code, judges, exit code) and the repo-work proof floor.
 
 ## Forbidden Patterns
 
 - ❌ Reporting "the pipeline succeeded" / "exit 0" without rendering the summary table (`apps-rg-post-run-summary.md`).
 - ❌ Reporting a failed run as only "it failed" without a BCG RCA and mandatory section/judge ledger.
+- ❌ Reporting RCA required fixes as one-line actions, rerun instructions, prompt-only changes, or gate-threshold changes instead of a 3-5 bullet root-cause implementation plan.
+- ❌ Reporting causal allocation as generic buckets ("graph", "gates", "retries") without a concrete `root_cause_link`, evidence refs, work share, and required work.
 - ❌ Hand-summarizing the run JSON instead of invoking the renderer (content-drift / hallucination risk).
 - ❌ Pre-filling wizard flags from session memory or stale `apps_rg/scripts/*.json` files.
 - ❌ Starting the executive_summary response with `X3_BLOCK`, a digest, or a gate-failure list.

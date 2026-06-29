@@ -178,16 +178,16 @@ _AGENT_IMPORTS: dict[str, tuple[str, str]] = {
         "StructureEnforcerAgent",
     ),
     "StructuralHealerAgent": (
-        "agentic_core.L5_safety.validators.StructuralHealerAgent",
-        "StructuralHealerAgent",
+        "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
     "GovernanceAgent": (
         "agentic_core.L5_safety.reasoning.GovernanceAgent",
         "GovernanceAgent",
     ),
     "HierarchyAgent": (
-        "agentic_core.L5_safety.reasoning.hierarchy_healer",
-        "HierarchyAgent",
+        "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
     ),
 }
 

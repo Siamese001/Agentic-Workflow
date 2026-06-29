@@ -253,7 +253,7 @@ Examples:
         return 0
     else:
         print("[FAIL] SSOT Violations Detected.")
-        print("   Run 'python -m agentic_core.L5_safety.reasoning.hierarchy_healer --heal' to fix.")
+        print("   Run the structure hierarchy runner in dry-run mode before applying any relocation.")
         return 1
 
 

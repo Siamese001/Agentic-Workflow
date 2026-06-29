@@ -16,6 +16,10 @@
   `runtime_customization_package`. No app literals/branches in core without a migration receipt.
 - **ADG SQLite** (`artifacts/adg/adg_indexed_*.sqlite`) is the structural-truth SSOT; Redis is a hot
   projection; MCP is the read-only gateway. ADG wins conflicts vs text-search/intuition.
+- **Generate-full-ADG gate rationalization (2026-06-28):** ADG reporting must fail fast on mixed-run
+  artifacts, `G_REACH` is core-layer L0 reachability only (`L_APP` excluded), and deleted
+  `hierarchy_healer.py` behavior is routed through `StructureEnforcerAgent`. Detail:
+  `memory/codex/generate_full_adg_gate_rationalization.md`.
 - **apps_rg C0.3 graph skills** use `master_skills_arsenal_ledger.json` as canonical source and generated
   SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
 - **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling
@@ -107,7 +111,10 @@
 - **apps_rg mandatory BCG/run-ledger outputs (2026-06-28):** every apps_rg run must emit
   `BCG_EXECUTIVE_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.md`, and
   `APPS_RG_MANDATORY_RUN_OUTPUT.json`; failed runs still need RCA, section/judge ledger, and
-  remediation. Detail: `memory/codex/apps_rg_mandatory_bcg_run_outputs.md`.
+  3-5 bullet root-cause implementation plans plus causal allocation with concrete
+  root-cause-linked rows, not symptom-only remediation or generic buckets. Causal-control
+  fixtures live in `tests/unit/apps_rg/test_causal_rca_regression_fixtures.py`. Detail:
+  `memory/codex/apps_rg_mandatory_bcg_run_outputs.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

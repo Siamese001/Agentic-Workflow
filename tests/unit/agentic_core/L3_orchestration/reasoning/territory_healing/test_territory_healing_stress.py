@@ -175,23 +175,23 @@ class TestTerritoryHealing:
 class TestAgentSpecificHealing:
     """Test each agent type individually."""
 
-    def test_hierarchy_healer_adapter(self):
-        """Test HierarchyHealerAdapter specifically."""
+    def test_structure_enforcer_adapter(self):
+        """Test StructureEnforcerAdapter specifically."""
         from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
-            HierarchyHealerAdapter,
+            StructureEnforcerAdapter,
         )
 
-        adapter = HierarchyHealerAdapter(REPO_ROOT)
+        adapter = StructureEnforcerAdapter(REPO_ROOT)
 
         # Test basic properties
-        assert adapter.agent_name == "HierarchyHealerAgent"
+        assert adapter.agent_name == "StructureEnforcerAgent"
         assert adapter.can_handle("tests")
         assert adapter.can_handle("agentic_core")
 
         # Test scanning
         scan_result = adapter.scan_territory("tests")
         assert scan_result.territory == "tests"
-        logger.info(f"HierarchyHealer scan: {scan_result.violations_found} violations")
+        logger.info(f"StructureEnforcer scan: {scan_result.violations_found} violations")
 
         # Check for territory root files
         root_file_violations = [v for v in scan_result.violations if v.type == "TERRITORY_ROOT_FILE"]

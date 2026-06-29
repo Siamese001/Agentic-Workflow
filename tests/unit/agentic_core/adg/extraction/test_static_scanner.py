@@ -13,7 +13,11 @@ from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanManifest,
     ScanResult,
+    _import_target_module_key,
     _is_scannable_static_path,
+    _module_key_prefixes,
+    _module_node_key,
+    _propagate_violations,
 )
 
 
@@ -216,3 +220,50 @@ class TestScannablePathExclusions:
 
     def test_keeps_real_source_cache_packages(self) -> None:
         assert _is_scannable_static_path("agentic_core/cache/cache_loader.py", include_tests=False)
+
+
+class TestViolationPropagation:
+    def test_module_key_helpers_normalize_symbols_modules_and_prefixes(self) -> None:
+        assert (
+            _import_target_module_key("ADG::Symbol::agentic_core.L5_safety.target::Thing")
+            == "agentic_core/L5_safety/target"
+        )
+        assert _module_node_key("ADG::Module::agentic_core/L5_safety/target.py") == "agentic_core/L5_safety/target"
+        assert _module_node_key("ADG::Module::apps_rg/__init__.py") == "apps_rg"
+        assert _module_key_prefixes("agentic_core/L5_safety/target") == (
+            "agentic_core",
+            "agentic_core/L5_safety",
+            "agentic_core/L5_safety/target",
+        )
+
+    def test_propagates_violation_through_symbol_import(self) -> None:
+        violating_module = "ADG::Module::agentic_core/L5_safety/target.py"
+        importing_module = "ADG::Module::agentic_core/L0_routing/entry.py"
+        result = ScanResult(
+            edges=[
+                Edge(
+                    violating_module,
+                    "violates",
+                    "layer_rule",
+                    "violation",
+                    "agentic_core/L5_safety/target.py",
+                    1,
+                ),
+                Edge(
+                    importing_module,
+                    "imports",
+                    "ADG::Symbol::agentic_core.L5_safety.target::Thing",
+                    "import",
+                    "agentic_core/L0_routing/entry.py",
+                    2,
+                ),
+            ]
+        )
+
+        propagated = _propagate_violations(result)
+
+        assert len(propagated) == 1
+        assert propagated[0].from_name == violating_module
+        assert propagated[0].to_name == importing_module
+        assert propagated[0].relation_type == "violation_propagates_through"
+        assert propagated[0].dynamic_resolution == "derived"

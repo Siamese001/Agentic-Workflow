@@ -105,7 +105,6 @@ def _build_l0_reachability_orphans(conn: sqlite3.Connection, limit: int) -> list
             COALESCE(layer, '') AS layer,
             COALESCE(entity_type, '') AS entity_type,
             COALESCE(resolved_path, '') AS resolved_path,
-            COALESCE(file_path, '') AS file_path,
             COALESCE(adg_name, '') AS adg_name
         FROM nodes
         """
@@ -146,7 +145,7 @@ def _build_l0_reachability_orphans(conn: sqlite3.Connection, limit: int) -> list
         layer = str(data.get("layer") or "")
         if layer not in _PRODUCTION_LAYERS:
             continue
-        source_file = str(data.get("resolved_path") or data.get("file_path") or "")
+        source_file = str(data.get("resolved_path") or "")
         if source_file and not _source_file_exists(source_file):
             continue
         if node_id in reachable:

@@ -263,7 +263,71 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         Returns:
             Dict with healing summary
         """
-        return {"violations": 0, "fixed": 0, "errors": 0}
+        target_territory = kwargs.get("target_territory")
+        scan = self.scan_root_violations(target_territory=target_territory)
+        fixed = 0
+        return {
+            "violations": scan["violations_found"],
+            "fixed": fixed,
+            "errors": 0,
+            "dry_run": dry_run,
+            "execute": execute,
+            "roots_scanned": scan["roots_scanned"],
+            "territory_root_files": scan["territory_root_files"],
+            "message": "No root violations to heal" if scan["violations_found"] == 0 else "Root violations require explicit relocation",
+        }
+
+    def _hierarchy_scan_roots(self, target_territory: str | None = None) -> list[Path]:
+        if target_territory:
+            return [self.project_root / target_territory]
+        roots = [
+            self.project_root / name
+            for name in ("agentic_core", "apps_eval", "apps_research", "apps_rg", "ops_scripts", "tools", "tests")
+        ]
+        try:
+            app_roots = sorted(path for path in self.project_root.iterdir() if path.is_dir() and path.name.startswith("apps_"))
+        except OSError:
+            app_roots = []
+        seen: set[Path] = set()
+        ordered: list[Path] = []
+        for root in [*roots, *app_roots]:
+            resolved = root.resolve()
+            if resolved not in seen:
+                seen.add(resolved)
+                ordered.append(root)
+        return ordered
+
+    def scan_root_violations(self, target_territory: str | None = None) -> dict[str, Any]:
+        """Find Python files sitting directly in a territory root."""
+        allowed_root_files = {"__init__.py", "__main__.py", "conftest.py"}
+        violations: list[dict[str, Any]] = []
+        roots_scanned: list[str] = []
+        for root in self._hierarchy_scan_roots(target_territory):
+            if not root.exists() or not root.is_dir():
+                continue
+            try:
+                roots_scanned.append(root.relative_to(self.project_root).as_posix())
+            except ValueError:
+                roots_scanned.append(str(root))
+            for child in sorted(root.iterdir()):
+                if not child.is_file() or child.suffix != ".py" or child.name in allowed_root_files:
+                    continue
+                rel_path = child.relative_to(self.project_root).as_posix()
+                violations.append(
+                    {
+                        "file": child.name,
+                        "path": rel_path,
+                        "territory": root.name,
+                        "message": "File sitting in territory root. Move it to an approved subfolder.",
+                        "severity": "ERROR",
+                    }
+                )
+        return {
+            "violations_found": len(violations),
+            "violations": violations,
+            "territory_root_files": violations,
+            "roots_scanned": roots_scanned,
+        }
 
     LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
     GRAVITY_RULES = {

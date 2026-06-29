@@ -367,7 +367,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             is_compliant, results = agent.run_ci_verification_sync()
             sys.exit(0 if is_compliant else 1)
         """
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
         from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         Logger.info("Starting CI SSOT Verification (headless mode)...")
@@ -378,9 +378,9 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             "roots_checked": [],
             "is_compliant": False,
         }
-        hierarchy_agent = HierarchyAgent(self.project_root, healing_enabled=False, auto_approve=True)
-        hierarchy_results = hierarchy_agent.heal_hierarchy(execute=True, dry_run=True, auto_approve=True)
-        hierarchy_violations = hierarchy_results.get("summary", {}).get("violations_found", 0)
+        hierarchy_agent = StructureEnforcerAgent(project_root=self.project_root)
+        hierarchy_results = hierarchy_agent.heal_repository(execute=False, dry_run=True)
+        hierarchy_violations = hierarchy_results.get("violations", 0)
         results["hierarchy_violations"] = hierarchy_violations
         location_agent = LocationValidatorAgent(project_root=self.project_root)
         location_results = location_agent.run()

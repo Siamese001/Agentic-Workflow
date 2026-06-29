@@ -177,7 +177,7 @@ class HierarchyValidatorAgent:
         self.project_root = Path(project_root).resolve()
 
     def scan_root_violations(self, target_territory: str | None = None) -> dict[str, Any]:
-        """Delegate to HierarchyAgent.scan_root_violations (read-only)."""
+        """Delegate to StructureEnforcerAgent.scan_root_violations (read-only)."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
@@ -193,7 +193,7 @@ class HierarchyValidatorAgent:
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
 
-        agent = HierarchyAgent(project_root=self.project_root, healing_enabled=False)
+        agent = StructureEnforcerAgent(project_root=self.project_root)
         return agent.scan_root_violations(target_territory=target_territory)
