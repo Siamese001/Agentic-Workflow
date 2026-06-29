@@ -15,7 +15,7 @@ The argument this repo makes — and demonstrates in code — is the opposite:
 
 > **The agent is not the product. The governed runtime around the agent is the product.**
 
-Production AI in regulated environments fails on five predictable edges, every time:
+Production AI in regulated environments tends to fail on five predictable edges:
 
 1. **No route authority** — the model decides what to do next, instead of a typed, contract-bound dispatcher.
 2. **No context guarantees** — retrieval quietly routes and executes, instead of grounding against canonical state.
@@ -23,7 +23,7 @@ Production AI in regulated environments fails on five predictable edges, every t
 4. **No write controls** — state mutates through any code path that can reach a database.
 5. **No replay** — incidents cannot be reconstructed, so nothing can be audited, regressed, or learned from safely.
 
-Every one of those failure modes is a **system engineering problem**, not a prompt-engineering problem. This repository is the engineering substrate behind the positioning: **AI that behaves like software, not experiments.**
+Those failure modes are **system engineering problems**, not prompt-engineering problems. This repository is the engineering substrate behind the positioning: **AI that behaves like software, not experiments.**
 
 ---
 
@@ -51,7 +51,7 @@ This is the centerpiece. Each pattern below is a load-bearing structural decisio
 
 ### 1. Layered Control Plane (L0–L7) — Separation of Authority
 
-A 7-layer plane in which every layer has **exactly one accountability** and every cross-layer call has a typed contract. There is no "everything talks to everything" mesh — there is a directed, auditable structure.
+A 7-layer plane in which each layer has a clear accountability and cross-layer calls are expected to use typed contracts. The intended shape is a directed, auditable structure rather than an "everything talks to everything" mesh.
 
 | Layer | Persona | Single accountability | Authority |
 |-------|---------|------------------------|-----------|
@@ -68,7 +68,7 @@ A 7-layer plane in which every layer has **exactly one accountability** and ever
 
 ### 2. Universal Write Gateway (UWG) — Single-Door State Mutation
 
-Every durable write in the system passes through one validated, signed, recorded gateway. No direct DB writes. No silent mutations. No bypass paths. State integrity becomes a **structural** property, not a code-review property.
+Durable writes are designed to pass through one validated, signed, recorded gateway, with bypass checks carried by ADG and CI gates. The goal is to make state integrity a **structural** property, not a code-review property.
 
 ```
 ANY STATE CHANGE → UWG (validate · authorize · sign · record) → L4
@@ -76,11 +76,11 @@ ANY STATE CHANGE → UWG (validate · authorize · sign · record) → L4
 
 ### 3. Deterministic Replay — Trace + Digest + Replay Key
 
-Every run emits a **determinism digest** and a **replay key**. Any past run reconstructs exactly. Wall clocks are removed; randomness is seeded; model parameters are pinned; execution order is fixed. No "it worked yesterday." Replay is the audit, regression, and incident-review primitive — at the system level, not the model level.
+Replayable paths emit a **determinism digest** and a **replay key** so incidents and regressions can be reconstructed from recorded evidence. Wall-clock and randomness controls are treated as proof obligations rather than after-the-fact debugging notes.
 
 ### 4. Programmatic Tool Calling (PTC) — Schema-Enforced Action Surface
 
-Tool usage is **schema-driven and contract-enforced**, not free-text JSON the model invents. A call that doesn't conform to the contract never reaches L2. Hallucinated tool calls are structurally impossible.
+Tool usage is **schema-driven and contract-enforced**, not free-text JSON the model invents. Calls that do not conform to the contract are blocked before L2 by the programmatic action surface.
 
 ### 5. AST Dependency Graph (ADG) — Source-of-Truth for the Codebase Itself
 
@@ -96,17 +96,17 @@ Ten routers across L0–L6 (bandit / r5 / c0 / cascade / shape / reroute / uwg /
 
 ### 7. Author-Gate Decision Pattern — Scored Options with Dominance Rule
 
-Ambiguous decisions are surfaced as **scored options on [0.00–1.00]** with explicit confidence, gap-to-next, and a dominance rule (top ≥ 0.85 *and* gap ≥ 0.12 → surface alone, ⭐ recommended). Decisions are captured to a SQLite ledger and mirrored to Notion. Every Author-Gate surface carries a clickable description with `· trade-off:` text — enforced at emit time, audit time, and CI time.
+Ambiguous decisions are surfaced as **scored options on [0.00–1.00]** with explicit confidence, gap-to-next, and a dominance rule (top >= 0.85 and gap >= 0.12 -> surface alone, recommended). The current Codex-primary flow preserves the pattern as a decision-ledger and choice-surface discipline; historical Notion mirroring is not the active governance source of truth.
 
 ### 8. Codex Rules + Hooks + CI Gates — Three-Tier Enforcement
 
 Discipline is encoded at three layers:
 
-- **Tier 1 — always-on rules** (`.codex/rules/*.md`) — prose invariants the agent reads every turn.
+- **Tier 1 — always-on rules** (`.codex/rules/*.md`) — prose invariants the agent reads during governed work.
 - **Tier 2 — pre/post hooks** (`.codex/hooks.json`, `.codex/hooks/**`, `.codex/governance/scripts/**`) — deterministic checks around write, tool-use, and response time.
 - **Tier 3 — pre-commit + CI gates** (`ops_scripts/ci/check_*.py`) — fail-closed at commit and pipeline.
 
-Each invariant lives in **one** SSOT and is enforced by **all three** layers, so drift is structurally hard.
+High-signal invariants are assigned to one source of truth and then checked at the layer where enforcement is strongest, so drift is visible instead of buried in duplicated guidance.
 
 ### 9. Fort Knox Certification — Two-Arm Signed Runtime Proof
 
@@ -120,7 +120,7 @@ Multi-stage app workflows are expressed as **typed HOP topologies** (e.g. underw
 
 ### 11. Final Evidence Contract (FEC) — Per-Claim Provenance
 
-Every grounded app produces a versioned `final_evidence_contract` (schema_version=1.0) with `producer`, `grounded`, `retrieval_sources`, `template_ids`, `route_id`, `evidence_sufficiency`. The evaluator and HITL-policy router consume it; the Exit pipeline records it. Outputs without provenance never commit.
+Grounded app outputs use a versioned `final_evidence_contract` (schema_version=1.0) with `producer`, `grounded`, `retrieval_sources`, `template_ids`, `route_id`, `evidence_sufficiency`. The evaluator and HITL-policy router consume it; the Exit pipeline records provenance before commit.
 
 ### 12. Spine Manifest + Boundary Adapters — Static Route Claim per App
 
@@ -128,7 +128,7 @@ Each app ships a `spine_manifest.yaml` declaring the canonical route it serves o
 
 ### 13. Ledger Family — Append-Only Decision Substrate
 
-Thirty-plus append-only ledgers and the Memory MCP knowledge graph give every router, gate, and promotion a durable consult-and-record surface. Schema-versioned, fail-soft writers, weekly Wilson-CI rollups. The substrate that makes pattern #6 (closed-loop routers) actually closed.
+Thirty-plus append-only ledgers and the Memory MCP knowledge graph give routers, gates, and promotions durable consult-and-record surfaces. Schema-versioned, fail-soft writers, weekly Wilson-CI rollups. The substrate that makes pattern #6 (closed-loop routers) actually closed.
 
 ### 14. Skill + Rule + Workflow Trinity (Development Harness)
 
@@ -140,10 +140,10 @@ The development harness follows the same separation it imposes on the runtime: *
 
 ```
 DETERMINISM         · Same input → same output → same digest
-REPLAYABILITY       · Any execution can be reconstructed exactly
-NO HIDDEN ENTROPY   · No wall-clock, no unseeded randomness
-CONTROLLED MUTATION · No state changes outside the UWG
-FULL PROVENANCE     · Every decision tied to exact state + policy hash
+REPLAYABILITY       · Replayable paths bind execution evidence to digest keys
+ENTROPY CONTROL     · Wall-clock and randomness use are explicit proof obligations
+CONTROLLED MUTATION · Durable writes route through the UWG contract
+FULL PROVENANCE     · Decisions tie back to state, policy hash, and evidence
 EXECUTION ISOLATION · L2 actions occur in sandboxed environments
 GOVERNANCE FIRST    · Nothing executes without policy validation
 LAYERED SCALING     · Single-accountability layers enable safe growth
@@ -213,7 +213,7 @@ For a deeper walk-through of the governance model and the SQL queries a reviewer
 
 ## Application Portfolio
 
-Seven active apps are built on the governed control plane. The app surfaces use a common governance documentation pattern — **README**, **Runbook** (operations), **SLO** (performance budget), and **SVP Engineering Review** (architecture certification) where present. Three active apps also ship a formal **Threat Model**.
+The GitHub-facing app portfolio below is a navigation map for active app and shared-library surfaces. Runtime-governance classification is separately anchored in [`apps_shared/integrations/app_registry.py`](apps_shared/integrations/app_registry.py), which is the authoritative source for governed vs. formal-exception status.
 
 | App | What it does | README | Runbook | SLO | SVP Review | Threat Model |
 |---|---|:-:|:-:|:-:|:-:|:-:|
@@ -254,7 +254,7 @@ python -m apps_eval --all
 python -m apps_research --topic "agentic governance" --mode brief
 python -m apps_underwriting_ai --demo
 
-# Architecture proof pack (S1 + S2 + S3, ~17s, exit 0 = green)
+# Architecture proof pack (exit 0 = green; current output is authoritative)
 python ops_scripts/ci/run_architecture_proof.py
 ```
 
@@ -262,7 +262,7 @@ python ops_scripts/ci/run_architecture_proof.py
 
 ## Governed Architecture Proof Pack
 
-Five apps governed. Three formal exceptions. One release gate.
+Current registry snapshot: three governed entries and three formal exceptions, with one release gate. The proof command is authoritative for current pass/fail status; this README is not a substitute for the gate output.
 
 ```bash
 python ops_scripts/ci/run_architecture_proof.py
@@ -273,6 +273,13 @@ python ops_scripts/ci/run_architecture_proof.py
 | S1 — Conformance Gate | Registry + imports: CONF01-08 + EXCF01-08 (36 checks) |
 | S2 — Exception Framework | Behavioral E2E across governed apps + eval/uw exception controls |
 | S3 — Regression Check | Evidence governance regression baseline (RC01-12) |
+
+Registry status as of the committed docs snapshot:
+
+| Status | Apps |
+|---|---|
+| Governed | `apps_exec`, `apps_research`, `apps_rg` |
+| Formal exception | `apps_eval`, `apps_lic`, `apps_underwriting_ai` |
 
 **Reviewer journey:**
 
