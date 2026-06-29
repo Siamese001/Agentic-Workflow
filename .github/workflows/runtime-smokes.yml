@@ -1,8 +1,8 @@
 name: runtime-smokes
 
 on:
-  # Runtime smoke lanes now feed the required contract-summary check.
-  # Keep this workflow as an explicit operator-run surface.
+  pull_request:
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
