@@ -20,7 +20,6 @@ from tools.reports.gate_signal_catalog import (
     display_verdict_sub,
     format_gate_signal,
     recommended_next_step,
-    verdict_sort_key,
 )
 
 BCG_NORTH_STAR = (
@@ -233,13 +232,28 @@ def normalize_bcg_gate_row(gate: dict[str, Any]) -> dict[str, Any]:
 
 def _sort_adapter_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     section_rank = {name: idx for idx, name in enumerate(SECTION_ORDER)}
+
+    def _within_section_key(row: dict[str, Any]) -> tuple[int, int, int, int, str]:
+        section = str(row.get("section") or "")
+        band_rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}.get(str(row.get("band") or "").upper(), 9)
+        enforcement_rank = 0 if str(row.get("enforcement") or "").lower() == "block" else 1
+        materiality_rank = {
+            "runtime_infra_boundary": 0,
+            "core_app_boundary": 1,
+            "provider_model_path": 2,
+            "retrieval_accuracy": 3,
+            "architecture_backlog": 4,
+            "governance_hygiene": 5,
+        }.get(str(row.get("materiality") or ""), 9)
+        if section == "fix_now":
+            return (band_rank, enforcement_rank, materiality_rank, -int(row.get("delta_vs_baseline") or 0), str(row.get("gate_id") or ""))
+        return (band_rank, materiality_rank, -int(row.get("rows") or 0), 0, str(row.get("gate_id") or ""))
+
     return sorted(
         rows,
         key=lambda row: (
             section_rank.get(str(row.get("section") or ""), 99),
-            verdict_sort_key(row.get("raw_gate") or {}),
-            -int(row.get("rows") or 0),
-            str(row.get("gate_id") or ""),
+            _within_section_key(row),
         ),
     )
 
@@ -268,6 +282,8 @@ def build_bcg_gate_adapter(
             "rows": section_rows,
         }
 
+    # Backward-compatible alias: these are work-visible rows, not one blended
+    # priority list. Consumers should prefer ``sections`` for MECE ownership.
     priority_rows = sections["fix_now"]["rows"] + sections["burn_down"]["rows"]
     report_only_rows = sections["kpi_watchlist"]["rows"]
     summary = {
@@ -279,6 +295,8 @@ def build_bcg_gate_adapter(
         "fix_now_rows": sections["fix_now"]["row_count"],
         "burn_down_rows": sections["burn_down"]["row_count"],
         "kpi_watchlist_rows": sections["kpi_watchlist"]["row_count"],
+        "work_section_gate_count": len(priority_rows),
+        "work_section_row_count": sum(int(row.get("rows") or 0) for row in priority_rows),
         "priority_queue_gate_count": len(priority_rows),
         "priority_queue_row_count": sum(int(row.get("rows") or 0) for row in priority_rows),
         "report_only_gate_count": len(report_only_rows),
@@ -319,9 +337,9 @@ def render_bcg_gate_adapter_md(adapter: dict[str, Any]) -> str:
     a(f"- **Policy:** `{_md(adapter.get('policy_version'))}`")
     a(f"- **Source timestamp:** {_md((adapter.get('source') or {}).get('timestamp') or 'n/a')}")
     a(
-        "- **Priority queue:** "
-        f"{_fmt_int(summary.get('priority_queue_gate_count'))} gate(s) / "
-        f"{_fmt_int(summary.get('priority_queue_row_count'))} row(s)"
+        "- **Work sections:** "
+        f"{_fmt_int(summary.get('work_section_gate_count', summary.get('priority_queue_gate_count')))} gate(s) / "
+        f"{_fmt_int(summary.get('work_section_row_count', summary.get('priority_queue_row_count')))} row(s)"
     )
     a(
         "- **KPI/watchlist:** "
@@ -329,7 +347,7 @@ def render_bcg_gate_adapter_md(adapter: dict[str, Any]) -> str:
         f"{_fmt_int(summary.get('report_only_row_count'))} row(s)"
     )
     a("")
-    a("This adapter separates work from watchlist: FIX and burn-down rows can enter the action queue; KPI/watchlist rows stay visible without becoming automatic cleanup work.")
+    a("This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.")
     for section in SECTION_ORDER:
         sec = (adapter.get("sections") or {}).get(section) or {}
         rows = list(sec.get("rows") or [])
@@ -486,6 +504,7 @@ def build_bcg_brief(
     title: str,
     business_read: str,
     technical_read: str | list[str] | None = None,
+    decision_gates: list[dict[str, Any]] | None = None,
     priority_rule: str | None = None,
     priority_rows: list[dict[str, Any]] | None = None,
     why_this_order: list[str] | None = None,
@@ -496,12 +515,14 @@ def build_bcg_brief(
     table_limit: int = 6,
 ) -> dict[str, Any]:
     """Create a normalized BCG brief payload for rendering."""
+    normalized_decision_gates = [_normalize_priority_row(row) for row in list(decision_gates or [])]
     normalized_rows = [_normalize_priority_row(row) for row in list(priority_rows or [])]
     return {
         "title": title,
         "north_star": BCG_NORTH_STAR,
         "business_read": business_read,
         "technical_read": _text_list(technical_read),
+        "decision_gates": normalized_decision_gates,
         "priority_rule": priority_rule or "",
         "priority_rows": normalized_rows,
         "why_this_order": list(_text_list(why_this_order)),
@@ -520,6 +541,7 @@ def build_report_bcg_findings(
     title: str,
     business_read: str,
     technical_read: str | list[str] | None = None,
+    decision_gates: list[dict[str, Any]] | None = None,
     priority_rule: str | None = None,
     priority_rows: list[dict[str, Any]] | None = None,
     why_this_order: list[str] | None = None,
@@ -542,6 +564,7 @@ def build_report_bcg_findings(
         secondary_statuses=secondary_statuses,
         business_read=business_read,
         technical_read=technical_read,
+        decision_gates=decision_gates,
         priority_rule=priority_rule,
         priority_rows=priority_rows,
         why_this_order=why_this_order,
@@ -554,6 +577,7 @@ def build_report_bcg_findings(
         "brief": brief,
         "business_read": brief["business_read"],
         "technical_read": brief["technical_read"],
+        "decision_gates": brief["decision_gates"],
         "priority_rule": brief["priority_rule"],
         "priority_rows": brief["priority_rows"],
         "why_this_order": brief["why_this_order"],
@@ -572,6 +596,7 @@ def render_report_bcg_findings_md(findings: dict[str, Any]) -> str:
             title=str((findings or {}).get("title") or "BCG Brief"),
             business_read=str((findings or {}).get("business_read") or "No business read emitted."),
             technical_read=(findings or {}).get("technical_read") or [],
+            decision_gates=(findings or {}).get("decision_gates") or [],
             priority_rule=str((findings or {}).get("priority_rule") or ""),
             priority_rows=(findings or {}).get("priority_rows") or [],
             why_this_order=(findings or {}).get("why_this_order") or [],
@@ -619,8 +644,24 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     priority_rule = str(brief.get("priority_rule") or "").strip()
     if priority_rule:
         a(f"- **Priority rule:** {_md(priority_rule)}")
+    decision_gates = [_normalize_priority_row(row) for row in list(brief.get("decision_gates") or [])]
+    if decision_gates:
+        a("")
+        a("Decision gate:")
+        a("")
+        a("| Gate | Why it matters | Evidence | Required before ranking |")
+        a("|------|----------------|----------|-------------------------|")
+        for row in decision_gates:
+            a(
+                f"| {_row_value(row, 'move', 'work', 'priority_work', 'action')} | "
+                f"{_row_value(row, 'why_it_matters', 'business_reason', 'business', 'why_now')} | "
+                f"{_row_value(row, 'evidence', 'technical_reason', 'technical', 'testing_mv_action')} | "
+                f"{_row_value(row, 'next_step', 'decision', 'why_this_rank', 'why')} |"
+            )
     priority_rows = [_normalize_priority_row(row) for row in list(brief.get("priority_rows") or [])]
     if priority_rows:
+        a("")
+        a("Fix now:")
         a("")
         a("| Priority | Move | Why it matters | Evidence | Next step |")
         a("|---------:|------|----------------|----------|-----------|")

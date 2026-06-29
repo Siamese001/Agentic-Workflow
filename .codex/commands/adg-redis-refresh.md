@@ -15,18 +15,15 @@ Invoke with `/adg-redis-refresh`. Runs after any refactor, import change, or str
 **MANDATORY FIRST STEP** - Ensures Redis is available before any cache operations.
 
 // turbo
-```
-python tools/adg/redis_health_check.py --auto-start
+```powershell
+python tools/adg/adg_redis_ingest.py --check
 ```
 
 **Exit codes:**
-- `0` → Redis running + ADG cache HOT → **SKIP to STEP 5**
-- `1` → Redis running + ADG cache cold → **Continue to STEP 1**
-- `2` → Redis down (auto-start attempted) → **STOP and fix Redis**
+- `0` → Redis running + latest ADG cache HOT → continue to STEP 1 for staleness verification
+- `1` → Redis unavailable or latest ADG cache COLD → continue to STEP 3 if SQLite is current; otherwise STEP 2
 
-If exit code 2, Redis could not be started automatically. Manual intervention required:
-- Windows: Start Redis service via `sc start Redis` or launch `redis-server.exe`
-- Verify: `redis-cli ping` should return `PONG`
+If Redis is down, start Redis manually and verify `redis-cli ping` returns `PONG`.
 
 ---
 
@@ -35,7 +32,7 @@ If exit code 2, Redis could not be started automatically. Manual intervention re
 **Use the canonical staleness guard (Accelerator #2) — never inline Redis queries:**
 
 // turbo
-```
+```powershell
 python tools/adg/adg_stale_guard.py --json
 ```
 
@@ -45,7 +42,7 @@ Interpret output:
 - Exit 1 (Redis unavailable) → start Redis first, then retry
 
 To list exactly which files changed since last ingest:
-```
+```powershell
 python tools/adg/adg_stale_guard.py --files
 ```
 
@@ -56,8 +53,8 @@ python tools/adg/adg_stale_guard.py --files
 **Only run if code has changed since last ADG generation.**
 This is an expensive full AST scan (~2-5 min). Do not skip if code changed.
 
-```
-python tools/generate_full_adg.py
+```powershell
+python tools/generate/generate_full_adg.py
 ```
 
 Wait for completion. Verify new `.sqlite` and `_snapshot_*.json` files appear in `artifacts/adg/`.
@@ -66,33 +63,27 @@ Wait for completion. Verify new `.sqlite` and `_snapshot_*.json` files appear in
 invokes `ops_scripts/ci/check_expected_wiring.py` after artifacts verify, so any
 violation of the declared call-site assertions in `config/expected_wiring.yaml`
 surfaces here — not hours later at pre-commit or CI. The process exits non-zero
-on violation. Emergency opt-out: `python tools/generate_full_adg.py --no-wiring-check`.
+on violation. Emergency opt-out: `python tools/generate/generate_full_adg.py --no-wiring-check`.
 
 ---
 
 ## STEP 3: Load refreshed ADG into Redis
 
 // turbo
-```
+```powershell
 python tools/adg/adg_redis_ingest.py --force
 ```
 
 Expected output:
-```
-[redis] connected localhost:6379
-[sqlite] tables: ['edges', 'meta', 'nodes', 'sqlite_sequence']
-[redis] flushing existing adg:* keys ...
-[sqlite] ingesting N nodes ...
-[redis] nodes done
-[sqlite] ingesting N edges ...
-[redis] edges done
-[redis] snapshot stored
-[redis] meta written
-[redis] adg:status sentinel written (timestamp=MMDDYYYY_HHMM)
-[done] ADG -> Redis ingest complete
+```text
+[adg_redis_ingest] Snapshot : MMDDYYYY_HHMM
+[adg_redis_ingest] SQLite   : ...\artifacts\adg\adg_indexed_MMDDYYYY_HHMM.sqlite
+[adg_redis_ingest] Nodes written : N
+[adg_redis_ingest] Edges written : N
+[adg_redis_ingest] Done in Ns - cache is HOT
 ```
 
-**Verify the timestamp** in `adg:status sentinel written (timestamp=...)` matches the `adg_indexed_<ts>.sqlite` filename — this confirms the ingest used the correct (fresh) artifact, not a hardcoded stale value.
+**Verify the timestamp** in `Snapshot : ...` matches the `adg_indexed_<ts>.sqlite` filename — this confirms the ingest used the correct artifact, not a hardcoded stale value.
 
 ---
 
@@ -101,11 +92,11 @@ Expected output:
 **Option A — script (fastest, no MCP restart needed):**
 
 // turbo
-```
-python tools/adg/redis_health_check.py --verbose
+```powershell
+python tools/adg/adg_redis_ingest.py --check
 ```
 
-**Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding.
+**Gate:** Must see `Cache is HOT` for the latest `adg_indexed_<ts>.sqlite` snapshot before proceeding.
 
 **Option B — current MCP servers (preferred after legacy editor restart picks up the config):**
 
@@ -123,34 +114,27 @@ The cache surface is `redis`; the structural graph authority remains `adg_sqlite
 From this point all analysis queries use Redis Tier-1 lookups via `tools/adg/adg_redis_query.py`.
 
 **Accelerator #3 — Use `search-nodes` with layer and entity_type filters (never raw Redis inline):**
-```
+```powershell
 # Find all agents in L3:
-python tools/adg/adg_redis_query.py search-nodes --query Agent --layer L3
+python tools/adg/adg_redis_query.py search-nodes Agent --layer L3
 
 # Find class nodes only:
-python tools/adg/adg_redis_query.py search-nodes --query Orchestrator --entity-type class
+python tools/adg/adg_redis_query.py search-nodes Orchestrator --entity-type class
 
 # Combined filter:
-python tools/adg/adg_redis_query.py search-nodes --query Checker --layer L5 --entity-type class
+python tools/adg/adg_redis_query.py search-nodes Checker --layer L5 --entity-type class
 ```
 
-**Accelerator #5 — Use `adg_test_selector.py` to select tests for changed files:**
-```
-python tools/adg/adg_test_selector.py --from-diff
-```
-
-**Accelerator #4 — Use `adg_type_check.py` for incremental type checking:**
-```
-python tools/adg/adg_type_check.py --from-diff
-```
+Use `tools/adg/adg_redis_query.py` for quick cache-backed node and edge lookups. Use MCP `adg_sqlite`
+or direct SQLite fallback for JOIN/CTE queries that are not expressible as Redis node/edge lookups.
 
 Raw Redis key reference:
-- `adg:node:<id>` — node details by integer ID
-- `adg:nodes:by_layer:<layer>` — all node IDs in a layer (L0–L_UNKNOWN)
-- `adg:nodes:by_file:<resolved_path>` — all node IDs for a file
-- `adg:edge:<src_id>:<relation_type>` — fan-out targets
-- `adg:edge:in:<dst_id>:<relation_type>` — fan-in sources
-- `adg:snapshot` — full snapshot JSON
+- `adg:v1:<snapshot_id>:node:<id>` — node details by integer ID
+- `adg:v1:<snapshot_id>:edge:<src_id>:<relation_type>` — fan-out edge IDs
+- `adg:v1:<snapshot_id>:fanin:<dst_id>:<relation_type>` — fan-in edge IDs
+- `adg:v1:<snapshot_id>:edge_detail:<edge_id>` — edge detail hash
+- `adg:v1:<snapshot_id>:_hot` — hot-cache sentinel
+- `adg:meta` / `adg:status` / `adg:snapshot` — global metadata for the active snapshot
 
 Fall back to `artifacts/adg/adg_indexed_*.sqlite` only for JOIN/CTE queries not expressible via key lookups.
 
@@ -169,7 +153,10 @@ Fall back to `artifacts/adg/adg_indexed_*.sqlite` only for JOIN/CTE queries not 
 
 ## Staleness guard behaviour
 
-The ingest script (`tools/adg/adg_redis_ingest.py`) auto-detects staleness by comparing the `sqlite_mtime` stored in `adg:meta` against the current `.sqlite` file modification time. Without `--force`, it will skip ingest if the cache is already current.
+The ingest script (`tools/adg/adg_redis_ingest.py --check`) verifies the hot sentinel for the latest
+timestamped SQLite snapshot. Use `tools/adg/adg_stale_guard.py --json` to determine whether source commits
+landed after the cached SQLite snapshot's `sqlite_mtime`; re-ingesting an old SQLite file must not be
+treated as a fresh full-ADG regeneration.
 
 ---
 
@@ -178,9 +165,7 @@ The ingest script (`tools/adg/adg_redis_ingest.py`) auto-detects staleness by co
 - Ingest script: `tools/adg/adg_redis_ingest.py`
 - Query helper: `tools/adg/adg_redis_query.py` (Accelerator #3: `search-nodes --layer --entity-type`)
 - Staleness guard: `tools/adg/adg_stale_guard.py` (Accelerator #2)
-- Test selector: `tools/adg/adg_test_selector.py` (Accelerator #5)
-- Type checker: `tools/adg/adg_type_check.py` (Accelerator #4)
 - Anti-pattern fixer: `tools/adg/adg_antipattern_fixer.py` (Accelerator #1)
 - ADG artifacts: `artifacts/adg/`
-- ADG regeneration: `tools/generate_full_adg.py`
+- ADG regeneration: `tools/generate/generate_full_adg.py`
 - Memory: ADG Pre-Ingest Rule (MEMORY[1c4e46e0])

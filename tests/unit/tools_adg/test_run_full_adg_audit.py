@@ -32,6 +32,18 @@ def temp_artifacts(tmp_path, monkeypatch):
     monkeypatch.setattr(wrapper, "ARTIFACTS_ADG", tmp_path / "artifacts" / "adg")
     monkeypatch.setattr(wrapper, "RECEIPT_PATH", tmp_path / "docs" / "receipt.json")
     wrapper.ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
+
+    import tools.reports.adg_burndown_report as burndown_mod
+
+    monkeypatch.setattr(burndown_mod, "BURNDOWN_TABLE_DEFAULT", wrapper.ARTIFACTS_ADG / "adg_burndown_table.json")
+    monkeypatch.setattr(
+        burndown_mod,
+        "BURNDOWN_REPORT_OUTPUTS",
+        (
+            wrapper.ARTIFACTS_ADG / "adg_burndown_report.md",
+            tmp_path / "docs" / "reports" / "adg" / "adg_burndown_report.md",
+        ),
+    )
     return tmp_path
 
 
@@ -56,7 +68,7 @@ def _make_snapshot(path: Path, *, with_runtime_view: bool, attested: int) -> Pat
 def _write_manifests(
     artifacts_dir: Path,
     *,
-    ts: str = "test01",
+    ts: str = "06292026_0101",
     snapshot: Path,
     runtime_proof_status: str = "attested",
     runtime_attested: int = 5,
@@ -310,13 +322,69 @@ def test_wrapper_emits_bcg_before_burndown_inline(temp_artifacts, monkeypatch):
         call_order.append("burndown_inline")
         return 0
 
-    monkeypatch.setattr(bcg_mod, "emit_bcg_executive_summary_from_latest", _fake_bcg)
+    monkeypatch.setattr(bcg_mod, "emit_bcg_executive_summary", _fake_bcg)
     monkeypatch.setattr(burndown_mod, "emit_mandatory_adg_burndown_report", _fake_burndown)
     monkeypatch.setattr(burndown_mod, "emit_existing_burndown_markdown", _fake_burndown_inline)
 
     wrapper.run_audit(mode="certification")
 
     assert call_order[:3] == ["bcg", ("burndown_emit", False), "burndown_inline"]
+
+
+def test_failed_generator_emits_degraded_required_outputs_but_blocks_handoff(temp_artifacts, monkeypatch):
+    stamp = "06292026_0202"
+    snap = _make_snapshot(
+        wrapper.ARTIFACTS_ADG / f"adg_indexed_{stamp}.sqlite",
+        with_runtime_view=True,
+        attested=1,
+    )
+    _patch_generator(monkeypatch, return_code=1, snapshot=snap, gate_kwargs={"ts": stamp})
+    _patch_report(monkeypatch)
+
+    import tools.reports.adg_bcg_executive_synthesis as bcg_mod
+    import tools.reports.adg_burndown_report as burndown_mod
+
+    call_order: list[object] = []
+    real_burndown_emit = burndown_mod.emit_mandatory_adg_burndown_report
+
+    def _fake_bcg(**kwargs):
+        call_order.append("bcg")
+        out = wrapper.ARTIFACTS_ADG / f"adg_bcg_executive_summary_{kwargs['ts']}.json"
+        out.write_text(json.dumps({"run": {"emit_status": "DEGRADED"}}), encoding="utf-8")
+        return 0, out
+
+    def _wrapped_burndown(**kwargs):
+        call_order.append(("burndown_emit", kwargs.get("print_inline")))
+        return real_burndown_emit(**kwargs)
+
+    def _fake_burndown_inline(**kwargs):  # noqa: ARG001
+        call_order.append("burndown_inline")
+        return 0
+
+    monkeypatch.setattr(bcg_mod, "emit_bcg_executive_summary", _fake_bcg)
+    monkeypatch.setattr(burndown_mod, "emit_mandatory_adg_burndown_report", _wrapped_burndown)
+    monkeypatch.setattr(burndown_mod, "emit_existing_burndown_markdown", _fake_burndown_inline)
+
+    result = wrapper.run_audit(mode="certification", continue_on_p0=True)
+
+    assert result.certification_status == "failed"
+    assert result.artifact_status == "incomplete"
+    assert call_order[:3] == ["bcg", ("burndown_emit", False), "burndown_inline"]
+    for name in (
+        f"adg_gate_results_{stamp}.json",
+        f"adg_action_queue_{stamp}.json",
+        f"adg_burndown_table_{stamp}.json",
+        f"adg_bcg_executive_summary_{stamp}.json",
+    ):
+        assert (wrapper.ARTIFACTS_ADG / name).is_file()
+    assert (wrapper.ARTIFACTS_ADG / "adg_burndown_report.md").is_file()
+
+    gate_results = json.loads((wrapper.ARTIFACTS_ADG / f"adg_gate_results_{stamp}.json").read_text())
+    burndown_table = json.loads((wrapper.ARTIFACTS_ADG / f"adg_burndown_table_{stamp}.json").read_text())
+    assert gate_results["fallback_status"] == "degraded_pre_dispatch_fallback"
+    assert set(burndown_table["summary"]) == {"P0", "P1", "P2", "P3"}
+    assert all(key in result.repair_handoff["artifacts"] for key in wrapper.REPAIR_ARTIFACT_KEYS)
+    assert any("degraded pre-dispatch fallback" in error for error in result.repair_handoff["validation_errors"])
 
 
 def test_certification_fails_when_gate_invocation_manifest_missing(temp_artifacts, monkeypatch):

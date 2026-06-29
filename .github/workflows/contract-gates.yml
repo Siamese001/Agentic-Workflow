@@ -23,6 +23,7 @@ jobs:
       pytest-config: ${{ steps.filter.outputs.pytest-config }}
       config-sync: ${{ steps.filter.outputs.config-sync }}
       codex-adapter: ${{ steps.filter.outputs.codex-adapter }}
+      adg-report-mece: ${{ steps.filter.outputs.adg-report-mece }}
       apps-rg-prompt-judge-sync: ${{ steps.filter.outputs.apps-rg-prompt-judge-sync }}
       apps-e2e-harness-verifier: ${{ steps.filter.outputs.apps-e2e-harness-verifier }}
       eval-smoke: ${{ steps.filter.outputs.eval-smoke }}
@@ -143,6 +144,21 @@ jobs:
           install-mode: minimal
       - name: Verify Codex primary adapter
         run: python scripts/governance/verify_codex_primary.py --repo-only
+
+  adg-report-mece:
+    name: adg-report-mece
+    needs: changes
+    if: needs.changes.outputs.adg-report-mece == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Verify ADG report MECE contract
+        run: python ops_scripts/ci/verify_adg_report_mece.py
 
   apps-rg-prompt-judge-sync:
     name: apps-rg-prompt-judge-sync
@@ -268,6 +284,7 @@ jobs:
       - pytest-config
       - config-sync
       - codex-adapter
+      - adg-report-mece
       - apps-rg-prompt-judge-sync
       - apps-e2e-harness-verifier
       - eval-smoke
@@ -294,6 +311,7 @@ jobs:
           PYTEST_RESULT: ${{ needs.pytest-config.result }}
           CONFIG_RESULT: ${{ needs.config-sync.result }}
           CODEX_ADAPTER_RESULT: ${{ needs.codex-adapter.result }}
+          ADG_REPORT_MECE_RESULT: ${{ needs.adg-report-mece.result }}
           APPS_RG_PROMPT_JUDGE_SYNC_RESULT: ${{ needs.apps-rg-prompt-judge-sync.result }}
           APPS_E2E_RESULT: ${{ needs.apps-e2e-harness-verifier.result }}
           EVAL_SMOKE_RESULT: ${{ needs.eval-smoke.result }}
@@ -324,6 +342,7 @@ jobs:
               "pytest-config:${PYTEST_RESULT}" \
               "config-sync:${CONFIG_RESULT}" \
               "codex-adapter:${CODEX_ADAPTER_RESULT}" \
+              "adg-report-mece:${ADG_REPORT_MECE_RESULT}" \
               "apps-rg-prompt-judge-sync:${APPS_RG_PROMPT_JUDGE_SYNC_RESULT}" \
               "apps-e2e-harness-verifier:${APPS_E2E_RESULT}" \
               "eval-smoke:${EVAL_SMOKE_RESULT}" \

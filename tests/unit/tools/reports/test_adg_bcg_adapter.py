@@ -19,6 +19,14 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
         secondary_statuses={"Decision status": "BLOCKED"},
         business_read="Fix the blocker first, then clean the waste.",
         technical_read=["FIX gates: 1", "TRACK gates: 2"],
+        decision_gates=[
+            {
+                "move": "Repair graph/report consistency",
+                "why_it_matters": "Ranking is not trustworthy yet.",
+                "evidence": "1 mismatch.",
+                "next_step": "Repair consistency before ranking work.",
+            }
+        ],
         priority_rule="Blockers before backlog.",
         priority_rows=[
             {
@@ -47,6 +55,9 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
     assert "- **Decision status:** BLOCKED" in md
     assert "- **Status:** PASS" not in md
     assert "- **Business read:** Fix the blocker first, then clean the waste." in md
+    assert "Decision gate:" in md
+    assert "| Repair graph/report consistency | Ranking is not trustworthy yet. | 1 mismatch. | Repair consistency before ranking work. |" in md
+    assert "Fix now:" in md
     assert "| Priority | Move | Why it matters | Evidence | Next step |" in md
     assert "Business reason" not in md
     assert "Technical reason" not in md
@@ -198,8 +209,10 @@ def test_bcg_gate_adapter_separates_kpi_from_burndown() -> None:
     assert adapter["sections"]["kpi_watchlist"]["gate_count"] == 2
     assert adapter["summary"]["priority_queue_gate_count"] == 3
     assert adapter["summary"]["report_only_gate_count"] == 2
-    assert adapter["sections"]["kpi_watchlist"]["rows"][0]["gate_id"] == "S4_unused_imports_ratchet"
-    assert adapter["sections"]["kpi_watchlist"]["rows"][1]["gate_id"] == "D2_role_duplication_warn"
+    assert {row["gate_id"] for row in adapter["sections"]["kpi_watchlist"]["rows"]} == {
+        "S4_unused_imports_ratchet",
+        "D2_role_duplication_warn",
+    }
     assert adapter["sections"]["fix_now"]["rows"][0]["materiality"] == "core_app_boundary"
     md = render_bcg_gate_adapter_md(adapter)
     assert "## KPI / watchlist" in md
