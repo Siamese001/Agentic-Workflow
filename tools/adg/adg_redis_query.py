@@ -24,6 +24,8 @@ from typing import Any
 
 import redis
 
+from tools.adg.shared_modules.config import resolve_adg_redis_url
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -219,15 +221,51 @@ if str(_ROOT) not in sys.path:
 
 
 class ADGRedisClient:
-    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
-        self._r = redis.Redis(host=host, port=port, db=db, decode_responses=True)
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 6379,
+        db: int = 0,
+        client: Any | None = None,
+    ):
+        self._snapshot_id_cache: str | None = None
+        self._cache_version_cache: str | None = None
+        if client is not None:
+            self._r = client
+        else:
+            redis_url = resolve_adg_redis_url()
+            if redis_url:
+                self._r = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self._r = redis.Redis(host=host, port=port, db=db, decode_responses=True)
+
+    def _snapshot_id(self) -> str:
+        if self._snapshot_id_cache is not None:
+            return self._snapshot_id_cache
+        meta = self.meta()
+        snapshot_id = meta.get("snapshot_id") or self._r.get("adg:status")
+        if not snapshot_id:
+            raise RuntimeError("ADG Redis snapshot id is missing. Run: python tools/adg/adg_redis_ingest.py")
+        self._snapshot_id_cache = str(snapshot_id)
+        return self._snapshot_id_cache
+
+    def _cache_version(self) -> str:
+        if self._cache_version_cache is None:
+            self._cache_version_cache = self.meta().get("cache_version", "v1")
+        return self._cache_version_cache
+
+    def _key(self, base: str) -> str:
+        return f"adg:{self._cache_version()}:{self._snapshot_id()}:{base}"
 
     def ping(self) -> bool:
         """Verify Redis is up and ADG cache is loaded."""
         self._r.ping()
-        loaded = self._r.exists("adg:meta")
-        if not loaded:
+        meta = self.meta()
+        if not meta:
             raise RuntimeError("ADG Redis cache is not loaded. Run: python tools/adg/adg_redis_ingest.py")
+        hot_key = meta.get("hot_key") or self._key("_hot")
+        if not self._r.exists(hot_key):
+            raise RuntimeError(f"ADG Redis hot sentinel is missing: {hot_key}")
         return True
 
     def meta(self) -> dict[str, str]:
@@ -241,27 +279,28 @@ class ADGRedisClient:
 
     def get_node(self, node_id: str) -> dict[str, str]:
         """Return a node hash by its ID string."""
-        return self._r.hgetall(f"adg:node:{node_id}")
+        return self._r.hgetall(self._key(f"node:{node_id}"))
 
     def nodes_in_file(self, file_path: str) -> set[str]:
         """Return all node IDs defined in a given file path."""
-        return self._r.smembers(f"adg:nodes:by_file:{file_path}")
+        return {node["id"] for node in self.search_nodes(file_path, field="resolved_path") if "id" in node}
 
     def nodes_in_layer(self, layer: str) -> set[str]:
         """Return all node IDs belonging to a layer (e.g. 'L0', 'L5')."""
-        return self._r.smembers(f"adg:nodes:by_layer:{layer}")
+        return {node["id"] for node in self.search_nodes("", layer=layer) if "id" in node}
 
     def fan_out(self, node_id: str, relation: str) -> set[str]:
         """Return all targets of edges (node_id)-[relation]->(*)."""
-        return self._r.smembers(f"adg:edge:{node_id}:{relation}")
+        return self._r.smembers(self._key(f"edge:{node_id}:{relation}"))
 
     def fan_in(self, node_id: str, relation: str) -> set[str]:
         """Return all sources of edges (*)-[relation]->(node_id)."""
-        return self._r.smembers(f"adg:edge:in:{node_id}:{relation}")
+        return self._r.smembers(self._key(f"fanin:{node_id}:{relation}"))
 
     def all_edge_relations_from(self, node_id: str) -> list[str]:
         """Return all distinct relation types emanating from node_id."""
-        pattern = f"adg:edge:{node_id}:*"
+        prefix = self._key(f"edge:{node_id}:")
+        pattern = f"{prefix}*"
         keys = []
         cursor = 0
         while True:
@@ -269,7 +308,6 @@ class ADGRedisClient:
             keys.extend(batch)
             if cursor == 0:
                 break
-        prefix = f"adg:edge:{node_id}:"
         return [k[len(prefix) :] for k in keys]
 
     def violations(self) -> list[dict]:
@@ -290,16 +328,11 @@ class ADGRedisClient:
         Uses Redis SCAN on key names — O(matching keys), does not read hash fields.
         Example: adg.search_files("dashboard") -> ["agentic_core/.../dashboard_util.py", ...]
         """
-        prefix = "adg:nodes:by_file:"
-        pattern = f"{prefix}*{substring}*"
-        matches: list[str] = []
-        cursor = 0
-        while True:
-            cursor, keys = self._r.scan(cursor, match=pattern, count=500)
-            for key in keys:
-                matches.append(key[len(prefix) :])
-            if cursor == 0:
-                break
+        matches: set[str] = set()
+        for node in self.search_nodes(substring, field="resolved_path"):
+            path = node.get("resolved_path") or node.get("file_path")
+            if path:
+                matches.add(path)
         return sorted(matches)
 
     def search_nodes(
@@ -330,7 +363,7 @@ class ADGRedisClient:
         matches: list[dict[str, str]] = []
         cursor = 0
         while True:
-            cursor, keys = self._r.scan(cursor, match="adg:node:*", count=500)
+            cursor, keys = self._r.scan(cursor, match=self._key("node:*"), count=500)
             for key in keys:
                 node = self._r.hgetall(key)
                 if term and term not in node.get(field, "").lower():

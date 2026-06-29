@@ -17,7 +17,6 @@ Usage (CLI):
 
 from __future__ import annotations
 
-import datetime
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -213,16 +212,16 @@ class ADGStalenessChecker:
         self._root = repo_root or ROOT
 
     def _get_ingest_time(self) -> float:
-        """Get ADG ingest timestamp from Redis meta hash.
+        """Get ADG snapshot freshness timestamp from Redis meta hash.
 
         Raises:
-            RuntimeError: if Redis unavailable or 'ingested_at' field is missing.
+            RuntimeError: if Redis unavailable or freshness fields are missing.
         """
         meta = self._adg.meta()
-        val = meta.get("ingested_at")
+        val = meta.get("sqlite_mtime") or meta.get("ingested_at")
         if val is None:
             raise RuntimeError(
-                "ADG meta key 'ingested_at' is missing — cache may be corrupt. "
+                "ADG meta key 'sqlite_mtime' is missing — cache may be corrupt. "
                 "Run: python tools/adg/adg_redis_ingest.py --force",
             )
         return float(val)
@@ -257,13 +256,12 @@ class ADGStalenessChecker:
         Raises:
             RuntimeError: if git command fails or times out.
         """
-        dt = datetime.datetime.utcfromtimestamp(since_timestamp).strftime("%Y-%m-%d %H:%M:%S")
         try:
             result = subprocess.run(
                 [
                     "git",
                     "log",
-                    f"--after={dt}",
+                    f"--after=@{int(since_timestamp)}",
                     "--name-only",
                     "--format=",
                     "--",

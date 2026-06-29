@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-06-28T23:55:12+00:00
+- **Generated:** 2026-06-29T11:18:56+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_06282026_1945.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_06292026_0701.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06282026_1945.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_06292026_0701.json`
 
 ### BCG Cleanup Brief
 
@@ -14,14 +14,16 @@
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_06282026_1945.sqlite (snapshot 06282026_1945)
+  - ADG source: artifacts/adg/adg_indexed_06292026_0701.sqlite (snapshot 06292026_0701)
   - Dead code candidates: 964
   - Dead imports: 964
   - Unresolved imports: 483
-  - First-party low-confidence ratio: 1.57%
+  - First-party low-confidence ratio: 1.56%
   - Inferred-symbol ratio: 10.16%
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
+
+Fix now:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
@@ -29,7 +31,7 @@
 | 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
-| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.57% and inferred-symbol ratio = 10.16%. | Lower the noise floor, then rerun the scan. |
+| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.56% and inferred-symbol ratio = 10.16%. | Lower the noise floor, then rerun the scan. |
 | 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
 
 Next step: Deprecate first, then delete after the evidence stays clean.
@@ -65,16 +67,18 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 ### BCG P2 Ratchet Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **P2 ratchet status:** OVER_CEILING
-- **Business read:** The published snapshot is still 5 over the P2 ceiling, so the ratchet remains blocked.
+- **P2 ratchet status:** WITHIN_CEILING
+- **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_06282026_1945.sqlite
-  - P2 ceiling: 22
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_06292026_0701.sqlite
+  - P2 ceiling: 27
   - Current MEDIUM hygiene count: 27
-  - Delta vs ceiling: +5
-  - Baseline snapshot: adg_indexed_06272026_2302.sqlite
-  - Latest failed run: 2026-06-28T23:55:12Z (failed)
+  - Delta vs ceiling: +0
+  - Baseline snapshot: adg_indexed_06292026_0701.sqlite
+  - Latest failed run: 2026-06-29T11:18:55Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
+
+Fix now:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
@@ -82,18 +86,18 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 | 2 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 4 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 3 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 4 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=27; ceiling=22; delta=5. | Re-baseline only after the evidence changes are intentional and approved. |
+| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=27; ceiling=27; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
 
 Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.
 
 ### Trace Summary
 
 - **Current MEDIUM hygiene count:** 27
-- **Ceiling:** 22
-- **Delta:** +5
-- **Baseline snapshot:** adg_indexed_06272026_2302.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_06282026_1945.sqlite
-- **Latest failed run:** 2026-06-28T23:55:12Z (failed)
+- **Ceiling:** 27
+- **Delta:** +0
+- **Baseline snapshot:** adg_indexed_06292026_0701.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_06292026_0701.sqlite
+- **Latest failed run:** 2026-06-29T11:18:55Z (failed)
 
 ### Evidence Buckets
 

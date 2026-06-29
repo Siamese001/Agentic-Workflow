@@ -336,6 +336,225 @@ def _resolve_burndown_for_handoff(
     return None, materialize_error or same_run_error
 
 
+def _degraded_output_reasons(
+    *,
+    generator_exit_code: int | None,
+    missing: list[str],
+) -> list[str]:
+    reasons = ["mandatory-output recovery ran before dispatcher completion"]
+    if generator_exit_code is not None:
+        reasons.append(f"generator exit_code={generator_exit_code}")
+    reasons.extend(f"{item} was absent for this ADG run" for item in missing)
+    return reasons
+
+
+def _write_degraded_gate_results(
+    *,
+    snapshot_path: Path,
+    adg_run_id: str,
+    generator_exit_code: int | None,
+    missing: list[str],
+) -> Path:
+    out = ARTIFACTS_ADG / f"adg_gate_results_{adg_run_id}.json"
+    reasons = _degraded_output_reasons(generator_exit_code=generator_exit_code, missing=missing)
+    payload = {
+        "schema_version": 1,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "snapshot": snapshot_path.name,
+        "snapshot_path": str(snapshot_path),
+        "overall_exit_code": 1,
+        "total_gates": 0,
+        "gates": [],
+        "degraded": True,
+        "synthetic": True,
+        "fallback_status": "degraded_pre_dispatch_fallback",
+        "degradation_reasons": reasons,
+        "summary": {
+            "classification": "blocked",
+            "reason": "dispatcher gate results were not emitted before generator failure",
+        },
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return out
+
+
+def _empty_burndown_band(label: str) -> dict[str, Any]:
+    return {
+        "label": label,
+        "gross": 0,
+        "guardian": 0,
+        "net": 0,
+        "diff": 0,
+        "status": "degraded_unavailable",
+    }
+
+
+def _write_degraded_burndown_table(
+    *,
+    snapshot_path: Path,
+    adg_run_id: str,
+    generator_exit_code: int | None,
+    missing: list[str],
+) -> Path:
+    reasons = _degraded_output_reasons(generator_exit_code=generator_exit_code, missing=missing)
+    summary = {
+        "P0": _empty_burndown_band("Foundation Blockers"),
+        "P1": _empty_burndown_band("Ratchet / Regression Guards"),
+        "P2": _empty_burndown_band("Warning / Strategic Gaps"),
+        "P3": _empty_burndown_band("Hygiene / Advisory"),
+    }
+    payload = {
+        "schema_version": "2.2",
+        "status": "degraded",
+        "degraded": True,
+        "synthetic": True,
+        "fallback_status": "degraded_pre_dispatch_fallback",
+        "summary": summary,
+        "bands": summary,
+        "p0_clean": False,
+        "p1_no_ratchet": False,
+        "provenance": {
+            "generator_module": "tools.adg.run_full_adg_audit",
+            "counting_mode": "degraded_pre_dispatch_fallback",
+            "sqlite_source_path": str(snapshot_path),
+            "degradation_reasons": reasons,
+        },
+    }
+    latest = ARTIFACTS_ADG / "adg_burndown_table.json"
+    timestamped = ARTIFACTS_ADG / f"adg_burndown_table_{adg_run_id}.json"
+    latest.parent.mkdir(parents=True, exist_ok=True)
+    rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    latest.write_text(rendered, encoding="utf-8")
+    timestamped.write_text(rendered, encoding="utf-8")
+    return timestamped
+
+
+def _json_has_degraded_fallback_marker(path: Path) -> bool:
+    if path.suffix.lower() != ".json":
+        return False
+    try:
+        data = _load_json(path)
+    except (OSError, json.JSONDecodeError):
+        return False
+    provenance = data.get("provenance") if isinstance(data.get("provenance"), dict) else {}
+    return any(
+        (
+            data.get("synthetic") is True,
+            data.get("fallback_status") == "degraded_pre_dispatch_fallback",
+            provenance.get("counting_mode") == "degraded_pre_dispatch_fallback",
+        )
+    )
+
+
+def _optional_run_artifact(adg_run_id: str, name: str) -> Path | None:
+    path = ARTIFACTS_ADG / name.format(ts=adg_run_id)
+    return path if path.is_file() else None
+
+
+def _emit_mandatory_run_outputs(
+    *,
+    snapshot_path: Path | None,
+    adg_run_id: str | None,
+    since_wall_start: float,
+    generator_exit_code: int | None,
+) -> list[str]:
+    if snapshot_path is None or not snapshot_path.is_file():
+        return ["mandatory ADG outputs not emitted because same-run snapshot is unavailable"]
+    if not adg_run_id:
+        return ["mandatory ADG outputs not emitted because adg_run_id is unavailable"]
+
+    errors: list[str] = []
+    missing: list[str] = []
+    gate_results_path, _gate_errors = _find_gate_results_for_snapshot(
+        snapshot_path,
+        since_wall_start=since_wall_start,
+    )
+    if gate_results_path is None:
+        missing.append("gate_results")
+        gate_results_path = _write_degraded_gate_results(
+            snapshot_path=snapshot_path,
+            adg_run_id=adg_run_id,
+            generator_exit_code=generator_exit_code,
+            missing=missing,
+        )
+
+    burndown_table_path, _burndown_error = _resolve_burndown_for_handoff(
+        key="burndown_table",
+        source=ARTIFACTS_ADG / "adg_burndown_table.json",
+        adg_run_id=adg_run_id,
+        since_wall_start=since_wall_start,
+    )
+    if burndown_table_path is None:
+        missing.append("burndown_table")
+        burndown_table_path = _write_degraded_burndown_table(
+            snapshot_path=snapshot_path,
+            adg_run_id=adg_run_id,
+            generator_exit_code=generator_exit_code,
+            missing=missing,
+        )
+
+    action_queue_path, queue_errors = _ensure_action_queue_for_handoff(
+        gate_results_path=gate_results_path,
+        burndown_table_path=burndown_table_path,
+        snapshot_path=snapshot_path,
+        adg_run_id=adg_run_id,
+    )
+    errors.extend(queue_errors)
+
+    try:
+        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
+
+        bcg_rc, _bcg_path = emit_bcg_executive_summary(
+            adg_artifacts_dir=ARTIFACTS_ADG,
+            ts=adg_run_id,
+            sqlite_path=snapshot_path,
+            gate_results_path=gate_results_path,
+            action_queue_path=action_queue_path,
+            review_template_path=_optional_run_artifact(adg_run_id, "adg_review_template_{ts}.json"),
+            burndown_path=burndown_table_path,
+            p7_paths={
+                "structural_outputs": _optional_run_artifact(adg_run_id, "adg_structural_outputs_{ts}.json"),
+                "refactor_accelerator": _optional_run_artifact(adg_run_id, "adg_refactor_accelerator_{ts}.json"),
+                "graphdb_queries": _optional_run_artifact(adg_run_id, "adg_graphdb_queries_{ts}.json"),
+                "runtime_spine": _optional_run_artifact(adg_run_id, "adg_runtime_spine_{ts}.json"),
+                "graphdb_projection": _optional_run_artifact(adg_run_id, "adg_graphdb_projection_{ts}.json"),
+                "graphdb_metadata": _optional_run_artifact(adg_run_id, "adg_graphdb_metadata_{ts}.json"),
+                "graphdb_index": _optional_run_artifact(adg_run_id, "adg_graphdb_index_{ts}.json"),
+                "graph_watchlist": _optional_run_artifact(adg_run_id, "adg_graph_watchlist_{ts}.json"),
+                "p0_wave_plan": ARTIFACTS_ADG / "issues" / f"p0_remediation_wave_plan_{adg_run_id}.json",
+                "dead_code_report": _optional_run_artifact(adg_run_id, "dead_code_zone_control_report_{ts}.json"),
+            },
+            print_inline=True,
+            fail_closed=False,
+        )
+        if bcg_rc != 0:
+            errors.append(f"BCG executive summary emit exit_code={bcg_rc}")
+    except ImportError as exc:
+        errors.append(f"BCG executive summary module unavailable: {exc}")
+
+    try:
+        from tools.reports.adg_burndown_report import (  # noqa: PLC0415
+            emit_existing_burndown_markdown,
+            emit_mandatory_adg_burndown_report,
+        )
+
+        burndown_rc = emit_mandatory_adg_burndown_report(
+            gate_results=gate_results_path,
+            burndown=burndown_table_path,
+            fail_closed=False,
+            print_inline=False,
+        )
+        if burndown_rc != 0:
+            errors.append(f"burndown report emit exit_code={burndown_rc}")
+        elif emit_existing_burndown_markdown() != 0:
+            errors.append("burndown inline replay exit_code=2")
+    except ImportError as exc:
+        errors.append(f"burndown report module unavailable: {exc}")
+
+    return errors
+
+
 def _ensure_action_queue_for_handoff(
     *,
     gate_results_path: Path,
@@ -513,6 +732,8 @@ def _build_repair_handoff(
         if not _is_timestamped_artifact(path, key):
             errors.append(f"{key} latest-only or untimestamped path rejected: {path}")
             continue
+        if key in {"gate_results", "burndown_table"} and _json_has_degraded_fallback_marker(path):
+            errors.append(f"{key} is degraded pre-dispatch fallback and not downstream-consumable: {path}")
         artifacts[key] = _artifact_ref(key, path)
 
     counts = {
@@ -878,41 +1099,6 @@ def run_audit(
         if certification_mode and not diagnostic_allow_failed_generator:
             reasons.append(f"generator exit_code={gen_rc}")
 
-    # Mandatory BCG + burndown inline ordering (best-effort after Stage-1; full emit is in generate_full_adg).
-    try:
-        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary_from_latest  # noqa: PLC0415
-
-        _bcg_rc, _bcg_path = emit_bcg_executive_summary_from_latest(
-            print_inline=True,
-            fail_closed=False,
-            adg_artifacts_dir=ARTIFACTS_ADG,
-        )
-        if _bcg_rc != 0 and certification_mode:
-            reasons.append(f"BCG executive summary emit exit_code={_bcg_rc}")
-    except ImportError as _bcg_import_err:
-        if certification_mode:
-            reasons.append(f"BCG executive summary module unavailable: {_bcg_import_err}")
-
-    try:
-        from tools.reports.adg_burndown_report import (  # noqa: PLC0415
-            emit_existing_burndown_markdown,
-            emit_mandatory_adg_burndown_report,
-        )
-
-        _burndown_rc = emit_mandatory_adg_burndown_report(
-            fail_closed=False,
-            print_inline=False,
-        )
-        if _burndown_rc == 0:
-            _burndown_inline_rc = emit_existing_burndown_markdown()
-            if _burndown_inline_rc != 0 and certification_mode:
-                reasons.append(f"burndown inline replay exit_code={_burndown_inline_rc}")
-        if _burndown_rc != 0 and certification_mode:
-            reasons.append(f"burndown report emit exit_code={_burndown_rc}")
-    except ImportError as _burndown_import_err:
-        if certification_mode:
-            reasons.append(f"burndown report module unavailable: {_burndown_import_err}")
-
     # Locate manifests.
     gen_manifest_path = _find_generation_manifest(wall_start)
     gate_manifest_path: Path | None = None
@@ -937,6 +1123,33 @@ def run_audit(
             reasons.append(f"failed to read generation manifest: {e}")
 
     snapshot_raw = generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
+    adg_run_id_for_outputs = _derive_adg_run_stamp(
+        generation_manifest,
+        gen_manifest_path,
+        Path(snapshot_raw) if snapshot_raw else None,
+    )
+    snapshot_path_for_outputs = _abs(Path(snapshot_raw)) if snapshot_raw else None
+    snapshot_path_for_outputs, snapshot_recovery_errors = _recover_snapshot_from_run_stamp(
+        snapshot_path=snapshot_path_for_outputs,
+        adg_run_id=adg_run_id_for_outputs,
+        since_wall_start=wall_start,
+    )
+    if snapshot_path_for_outputs is not None and snapshot_path_for_outputs.is_file():
+        snapshot_raw = str(snapshot_path_for_outputs)
+    elif certification_mode:
+        reasons.extend(snapshot_recovery_errors)
+
+    # Mandatory BCG + burndown inline ordering. Use same-run artifacts only;
+    # when dispatcher output is absent, emit degraded artifacts that remain
+    # blocked for downstream repair consumption.
+    mandatory_output_errors = _emit_mandatory_run_outputs(
+        snapshot_path=snapshot_path_for_outputs,
+        adg_run_id=adg_run_id_for_outputs,
+        since_wall_start=wall_start,
+        generator_exit_code=gen_rc,
+    )
+    if certification_mode:
+        reasons.extend(mandatory_output_errors)
 
     # Plane 2 — three-graph manifest (certification; generator skips via env).
     if certification_mode and snapshot_raw and gate_manifest_path:
@@ -963,15 +1176,20 @@ def run_audit(
             ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
             key=lambda p: p.stat().st_mtime,
         )
-        if disp_candidates:
+        for disp_candidate in reversed(disp_candidates):
             try:
-                disp_payload = _load_json(disp_candidates[-1])
+                disp_payload = _load_json(disp_candidate)
+                if _json_has_degraded_fallback_marker(disp_candidate):
+                    continue
                 if int(disp_payload.get("overall_exit_code", 0)) != 0:
                     reasons.append(
                         f"adg_gate_dispatcher overall_exit_code={disp_payload.get('overall_exit_code')}"
                     )
+                    break
+                break
             except (OSError, json.JSONDecodeError):
                 reasons.append("adg_gate_dispatcher results unreadable")
+                break
 
     # Runtime-proof gate.
     if require_runtime_proof and runtime_proof_status != "attested":

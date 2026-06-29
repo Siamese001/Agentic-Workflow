@@ -210,7 +210,7 @@ def test_testing_map_can_prioritize_apps_testing_over_p0_ratchet(tmp_path: Path)
     artifacts = build_artifact_usage_matrix({"gate_results": tmp_path / "gate.json", "sqlite_snapshot": db}, {}, {"used_artifact_keys": ["sqlite_snapshot"]})
     mv = build_mv_usefulness_audit(db, graph, [])
     actions = build_canonical_next_best_actions([_gate("p0_ratchet", verdict="TRACK", records=99)], graph, testing, artifacts, mv, action_queue)
-    assert actions["rows"][0]["action_type"] in {"repair_reporting", "add_tests", "burn_down_ratchet"}
+    assert actions["rows"][0]["action_type"] in {"add_tests", "burn_down_ratchet"}
     assert any(r["action_type"] == "add_tests" and r["scope"].startswith("apps_sales") for r in actions["rows"])
 
 
@@ -571,7 +571,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "### 7. Gap Analysis — Lens 3: Product / App Risk",
         "### 8. Gap Analysis — Lens 4: Testing Control Gaps",
         "### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact",
-        "### 10. Next Best Actions",
+        "### 10. MECE Decision Gate and Work Queue",
         "### 11. Defer / Delete / Deprecate",
         "### BCG Deletion Brief",
         "### 12. Honest Bottom Line",
@@ -622,7 +622,10 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "- **Decision status:** REPORT_INCONSISTENT" in md
     assert "- **Emit status:** PASS" in md
     assert "- **Status:** PASS" not in md
-    assert "| 1 | Repair graph/report consistency | Repair report consistency first" in md
+    assert "Decision gate:" in md
+    assert "| Repair graph/report consistency |" in md
+    assert "| 1 | Repair graph/report consistency |" not in md
+    assert "Fix now:" in md
     assert "Next step: Repair graph/report consistency first." in md
 
 

@@ -1,8 +1,8 @@
 {
   "suite": "quick",
   "snapshot_id": "snap",
-  "started_at": "2026-06-28T11:04:58.678803+00:00",
-  "finished_at": "2026-06-28T11:05:12.029708+00:00",
+  "started_at": "2026-06-29T18:42:20.192822+00:00",
+  "finished_at": "2026-06-29T18:42:31.738944+00:00",
   "strict_mode": true,
   "gates": [
     {
@@ -25,9 +25,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "d236c85d6ed211fe",
+      "artifact_hash": "53ba998a13d4b26f",
       "duration_ms": 0,
-      "started_at": "2026-06-28T11:05:00.101472+00:00"
+      "started_at": "2026-06-29T18:42:21.477527+00:00"
     },
     {
       "gate_id": "preflight.schema_version",
@@ -45,9 +45,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "sqlite_error: no such table: meta",
-      "artifact_hash": "20911d779f2af0a7",
+      "artifact_hash": "18470b93a5e98132",
       "duration_ms": 0,
-      "started_at": "2026-06-28T11:05:01.702716+00:00"
+      "started_at": "2026-06-29T18:42:22.896821+00:00"
     },
     {
       "gate_id": "static.snapshot_has_mvs",
@@ -68,9 +68,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "87a13b56fe30fb2c",
-      "duration_ms": 41,
-      "started_at": "2026-06-28T11:05:01.949658+00:00"
+      "artifact_hash": "444104b4a361b1dc",
+      "duration_ms": 53,
+      "started_at": "2026-06-29T18:42:23.073329+00:00"
     },
     {
       "gate_id": "static.edge_authority_well_formed",
@@ -90,9 +90,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "4d19dc954547448b",
-      "duration_ms": 1694,
-      "started_at": "2026-06-28T11:05:03.644163+00:00"
+      "artifact_hash": "253083716cd0c89a",
+      "duration_ms": 1410,
+      "started_at": "2026-06-29T18:42:24.483347+00:00"
     },
     {
       "gate_id": "static.no_null_triplet",
@@ -110,9 +110,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "sqlite_error: no such column: authority_status",
-      "artifact_hash": "7dd03de71b2c1a68",
+      "artifact_hash": "4532f419fa138786",
       "duration_ms": 0,
-      "started_at": "2026-06-28T11:05:05.090793+00:00"
+      "started_at": "2026-06-29T18:42:25.787243+00:00"
     },
     {
       "gate_id": "registry.graph_integrity",
@@ -120,30 +120,30 @@
       "status": "WARN",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_06132026_1042",
+      "snapshot_id": "adg_indexed_06292026_0701",
       "input_refs": [
         "edges WHERE bucket='registry'",
         "nodes WHERE entity_type='registry_node'",
         "meta.artifact_digest"
       ],
       "counts": {
-        "total_registry_edges": 245,
-        "total_registry_nodes": 58,
+        "total_registry_edges": 281,
+        "total_registry_nodes": 65,
         "relation:AGENT_SPEC_DECLARED": 8,
-        "relation:MCP_SERVER_DECLARED": 8,
+        "relation:MCP_SERVER_DECLARED": 9,
         "relation:PROMPT_SLOT_DECLARED": 2,
         "relation:ROUTE_CONTRACT_DECLARED": 3,
-        "relation:references_agent_spec": 17,
-        "relation:references_mcp_server": 207,
-        "missing_owner": 21,
-        "missing_version": 21,
-        "missing_digest": 21,
-        "missing_declared_surface": 21,
+        "relation:references_agent_spec": 16,
+        "relation:references_mcp_server": 243,
+        "missing_owner": 22,
+        "missing_version": 22,
+        "missing_digest": 22,
+        "missing_declared_surface": 22,
         "missing_AGENT_SPEC_DECLARED.execution_profile": 8,
-        "missing_references_mcp_server.capability_binding": 207,
+        "missing_references_mcp_server.capability_binding": 243,
         "missing_ROUTE_CONTRACT_DECLARED.gateway_resolution": 3,
-        "missing_MCP_SERVER_DECLARED.transport": 8,
-        "missing_MCP_SERVER_DECLARED.scope": 8,
+        "missing_MCP_SERVER_DECLARED.transport": 9,
+        "missing_MCP_SERVER_DECLARED.scope": 9,
         "fail_codes_count": 0,
         "warn_codes_count": 2
       },
@@ -152,70 +152,70 @@
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 184348,
+          "node_id": 186991,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 184348,
+          "node_id": 186991,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 184348,
+          "node_id": 186991,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 184348,
+          "node_id": 186991,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 184349,
+          "node_id": 186992,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 184349,
+          "node_id": 186992,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 184349,
+          "node_id": 186992,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 184349,
+          "node_id": 186992,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 184350,
+          "node_id": 186993,
           "adg_name": "Registry::MCP::deepwiki"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 184350,
+          "node_id": 186993,
           "adg_name": "Registry::MCP::deepwiki"
         }
       ],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "34fa5cfb25f3dc7a",
-      "duration_ms": 3,
-      "started_at": "2026-06-13T14:52:46.239067+00:00"
+      "artifact_hash": "1abbf8038e105a4c",
+      "duration_ms": 5,
+      "started_at": "2026-06-29T11:19:37.212181+00:00"
     },
     {
       "gate_id": "registry.bucket_count_floor",
@@ -233,9 +233,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "sqlite_error: no such column: bucket",
-      "artifact_hash": "6afe29158a723e6c",
+      "artifact_hash": "83f96aa24346baa3",
       "duration_ms": 0,
-      "started_at": "2026-06-28T11:05:08.360195+00:00"
+      "started_at": "2026-06-29T18:42:28.612801+00:00"
     },
     {
       "gate_id": "runtime.proof_view_well_formed",
@@ -255,9 +255,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "fef4a87becdbc8a1",
-      "duration_ms": 40,
-      "started_at": "2026-06-28T11:05:08.627032+00:00"
+      "artifact_hash": "ae0b31dfbe9aa1b7",
+      "duration_ms": 54,
+      "started_at": "2026-06-29T18:42:28.797845+00:00"
     },
     {
       "gate_id": "runtime.trace_topology",
@@ -276,9 +276,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "3e12ef26d758d829",
+      "artifact_hash": "02f6e963c5581275",
       "duration_ms": 0,
-      "started_at": "2026-06-28T11:04:55.037144+00:00"
+      "started_at": "2026-06-29T18:42:07.195646+00:00"
     },
     {
       "gate_id": "cross_bucket.gap_thresholds",
@@ -298,9 +298,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "78dc7fbc80152bd9",
-      "duration_ms": 53,
-      "started_at": "2026-06-28T11:05:10.330131+00:00"
+      "artifact_hash": "f598854e8181f1bc",
+      "duration_ms": 55,
+      "started_at": "2026-06-29T18:42:30.295777+00:00"
     },
     {
       "gate_id": "cross_bucket.impossible_states",
@@ -308,7 +308,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_06132026_1042",
+      "snapshot_id": "adg_indexed_06292026_0701",
       "input_refs": [
         "edges (bucket, evidence_refs, source_file)",
         "v_runtime_proof (latest_trace_id, latest_span_id, static_edge_id)",
@@ -321,7 +321,7 @@
         "i4_triplet_missing_ref": 0,
         "i5_auth_runtime_no_span": 0,
         "i6_registry_only_prod_route": 0,
-        "i7_static_critical_unclassified": 187674,
+        "i7_static_critical_unclassified": 187939,
         "fail_codes_count": 0
       },
       "thresholds": {},
@@ -329,9 +329,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "f3264af6cf5f9ddc",
-      "duration_ms": 374,
-      "started_at": "2026-06-13T14:52:47.165614+00:00"
+      "artifact_hash": "56fa78334621f3ef",
+      "duration_ms": 406,
+      "started_at": "2026-06-29T11:19:42.806196+00:00"
     }
   ],
   "summary_by_bucket": {
