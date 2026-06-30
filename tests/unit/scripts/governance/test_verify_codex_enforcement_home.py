@@ -29,10 +29,20 @@ def _handoff_toml_block(automation_id: str, **overrides: object) -> str:
     return "\n".join(lines)
 
 
+def _publication_runtime_toml_block(**overrides: object) -> str:
+    runtime = dict(mod.PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT)
+    runtime.update(overrides)
+    lines = ["", "[runtime_optimization]"]
+    for field in mod.PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT:
+        lines.append(f"{field} = {json.dumps(runtime[field])}")
+    return "\n".join(lines)
+
+
 def _automation_toml(
     automation_id: str,
     prompt: str,
     root: Path,
+    include_publication_runtime: bool = True,
     **handoff_overrides: object,
 ) -> str:
     escaped_prompt = prompt.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
@@ -54,6 +64,8 @@ def _automation_toml(
             "updated_at = 1",
         ]
     )
+    if automation_id == "on-demand-pr-main-publisher" and include_publication_runtime:
+        text += _publication_runtime_toml_block()
     return text + _handoff_toml_block(automation_id, **handoff_overrides)
 
 
@@ -122,6 +134,33 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
+def test_user_profile_thin_automation_launcher_passes(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml"
+    prompt = (
+        "Run the Agentic-Workflow ADG Audit and Burndown automation. "
+        f"Use the repo-owned contract at \"{root / '.codex' / 'automations' / 'adg-audit-and-burndown' / 'automation.toml'}\" "
+        "as the source of truth."
+    )
+    _write(launcher, _automation_toml("weekly-adg-audit-and-burndown", prompt, root))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert not any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_copied_automation_contract_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    copied_contract = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(copied_contract, _automation_toml("adg-p0-blocker-burndown", _adg_p0_prompt(), root))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
 def test_repo_local_singular_automation_tree_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     _write(root / ".codex" / "automation" / "misplaced.toml")
@@ -178,6 +217,38 @@ def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Pat
     issues = mod.validate(root, tmp_path / "user-codex")
 
     assert any(issue.code == "publication_prompt_obsolete" for issue in issues)
+
+
+def test_publication_runtime_optimization_metadata_required(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    automation.write_text(
+        _automation_toml(
+            "on-demand-pr-main-publisher",
+            _publication_prompt(),
+            root,
+            include_publication_runtime=False,
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_runtime_optimization_missing" for issue in issues)
+
+
+def test_publication_runtime_optimization_rejects_always_rerun_policy(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    text = _automation_toml("on-demand-pr-main-publisher", _publication_prompt(), root)
+    automation.write_text(
+        text.replace('rerun_policy = "mutation_triggered"', 'rerun_policy = "always"'),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_runtime_optimization_contract" for issue in issues)
 
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:
