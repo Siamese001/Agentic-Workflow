@@ -24,7 +24,8 @@ EXPECTED_REPO = Path(r"C:\Git\Agentic-Workflow-FRESH")
 AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
     "weekly-adg-audit-and-burndown",
-    "adg-p0-p1-burndown",
+    "adg-p0-blocker-burndown",
+    "adg-p1-ratchet-burndown",
     "adg-bcg-p2-next-action",
     "adg-p3-promotion-hygiene",
     "weekly-svp-readme-documentation-refresh",
@@ -74,25 +75,35 @@ ADG_REQUIRED_PROMPT_SNIPPETS = (
     "RCA block",
 )
 
-ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS = (
+ADG_P0_REQUIRED_PROMPT_SNIPPETS = (
     "artifact_status=certified or artifact_status=repair_ready",
+    "P0=0 before merge",
     "Burn down all P0 FIX queue/report items first",
-    "Only after P0 FIX is zero",
-    "Never consume overwritten latest files as the source of truth",
-    "P1 reaches 0 before 4:00 AM",
-    "Mandatory burndown tale",
+    "Never consume overwritten latest files as source of truth",
+    "Use a non-squash merge method. Do not squash.",
+    "codex_main_closeout.py --check --fetch --json",
+)
+
+ADG_P1_REQUIRED_PROMPT_SNIPPETS = (
+    "artifact_status=certified or artifact_status=repair_ready",
+    "fresh post-P0 full ADG receipt proving P0=0",
+    "ordinary_p1_target = current_ordinary_p1_count",
+    "ratchet_target = max(25 rows, ceil(selected_gate_rows * 0.05))",
+    "Use a non-squash merge method. Do not squash.",
+    "codex_main_closeout.py --check --fetch --json",
 )
 
 ADG_P2_REQUIRED_PROMPT_SNIPPETS = (
     "artifact_status=certified or artifact_status=repair_ready",
     "same released ADG receipt",
-    "P0/P1 lane has proven P0/P1 clean",
-    "stop and defer to the P0/P1 automation",
+    "P0 blocker lane has proven P0=0",
+    "P1 ratchet lane has met its target",
 )
 
 ADG_P3_REQUIRED_PROMPT_SNIPPETS = (
     "artifact_status=certified or artifact_status=repair_ready",
-    "P0/P1 is clean for the same released ADG receipt",
+    "P0=0",
+    "P1 ratchet lane has met its target",
     "P2 lane has no safe actionable blocker",
     "P2 should remain ahead",
 )
@@ -126,7 +137,8 @@ ADG_HANDOFF_VALIDATOR = (
 ADG_HANDOFF_STATUSES = ("certified", "repair_ready")
 ADG_HANDOFF_CHAIN = (
     "weekly-adg-audit-and-burndown",
-    "adg-p0-p1-burndown",
+    "adg-p0-blocker-burndown",
+    "adg-p1-ratchet-burndown",
     "adg-bcg-p2-next-action",
     "adg-p3-promotion-hygiene",
 )
@@ -142,13 +154,13 @@ ADG_HANDOFF_CONTRACTS = {
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
         "depends_on": [],
-        "unblocks": ["adg-p0-p1-burndown"],
+        "unblocks": ["adg-p0-blocker-burndown"],
         "requires_prior_lane_clean": [],
         "requires_prior_lane_not_actionable": [],
     },
-    "adg-p0-p1-burndown": {
+    "adg-p0-blocker-burndown": {
         "chain": ADG_HANDOFF_SCHEMA,
-        "lane": "p0_p1_burndown",
+        "lane": "p0_blocker_burndown",
         "role": "consumer",
         "order": 1,
         "producer_id": "weekly-adg-audit-and-burndown",
@@ -157,13 +169,13 @@ ADG_HANDOFF_CONTRACTS = {
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
         "depends_on": ["weekly-adg-audit-and-burndown"],
-        "unblocks": ["adg-bcg-p2-next-action"],
+        "unblocks": ["adg-p1-ratchet-burndown"],
         "requires_prior_lane_clean": [],
         "requires_prior_lane_not_actionable": [],
     },
-    "adg-bcg-p2-next-action": {
+    "adg-p1-ratchet-burndown": {
         "chain": ADG_HANDOFF_SCHEMA,
-        "lane": "p2_next_action",
+        "lane": "p1_ratchet_burndown",
         "role": "consumer",
         "order": 2,
         "producer_id": "weekly-adg-audit-and-burndown",
@@ -171,14 +183,14 @@ ADG_HANDOFF_CONTRACTS = {
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
-        "depends_on": ["weekly-adg-audit-and-burndown", "adg-p0-p1-burndown"],
-        "unblocks": ["adg-p3-promotion-hygiene"],
-        "requires_prior_lane_clean": ["adg-p0-p1-burndown"],
+        "depends_on": ["weekly-adg-audit-and-burndown", "adg-p0-blocker-burndown"],
+        "unblocks": ["adg-bcg-p2-next-action"],
+        "requires_prior_lane_clean": ["adg-p0-blocker-burndown"],
         "requires_prior_lane_not_actionable": [],
     },
-    "adg-p3-promotion-hygiene": {
+    "adg-bcg-p2-next-action": {
         "chain": ADG_HANDOFF_SCHEMA,
-        "lane": "p3_promotion_hygiene",
+        "lane": "p2_next_action",
         "role": "consumer",
         "order": 3,
         "producer_id": "weekly-adg-audit-and-burndown",
@@ -188,17 +200,38 @@ ADG_HANDOFF_CONTRACTS = {
         "requires_direct_artifact_status_source": True,
         "depends_on": [
             "weekly-adg-audit-and-burndown",
-            "adg-p0-p1-burndown",
+            "adg-p0-blocker-burndown",
+            "adg-p1-ratchet-burndown",
+        ],
+        "unblocks": ["adg-p3-promotion-hygiene"],
+        "requires_prior_lane_clean": ["adg-p0-blocker-burndown", "adg-p1-ratchet-burndown"],
+        "requires_prior_lane_not_actionable": [],
+    },
+    "adg-p3-promotion-hygiene": {
+        "chain": ADG_HANDOFF_SCHEMA,
+        "lane": "p3_promotion_hygiene",
+        "role": "consumer",
+        "order": 4,
+        "producer_id": "weekly-adg-audit-and-burndown",
+        "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "validator": ADG_HANDOFF_VALIDATOR,
+        "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
+        "requires_direct_artifact_status_source": True,
+        "depends_on": [
+            "weekly-adg-audit-and-burndown",
+            "adg-p0-blocker-burndown",
+            "adg-p1-ratchet-burndown",
             "adg-bcg-p2-next-action",
         ],
         "unblocks": [],
-        "requires_prior_lane_clean": ["adg-p0-p1-burndown"],
+        "requires_prior_lane_clean": ["adg-p0-blocker-burndown", "adg-p1-ratchet-burndown"],
         "requires_prior_lane_not_actionable": ["adg-bcg-p2-next-action"],
     },
 }
 ADG_DIRECT_HANDOFF_EDGES = (
-    ("weekly-adg-audit-and-burndown", "adg-p0-p1-burndown"),
-    ("adg-p0-p1-burndown", "adg-bcg-p2-next-action"),
+    ("weekly-adg-audit-and-burndown", "adg-p0-blocker-burndown"),
+    ("adg-p0-blocker-burndown", "adg-p1-ratchet-burndown"),
+    ("adg-p1-ratchet-burndown", "adg-bcg-p2-next-action"),
     ("adg-bcg-p2-next-action", "adg-p3-promotion-hygiene"),
 )
 
@@ -390,13 +423,22 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
         issues.extend(_validate_publication_prompt(automation_id, prompt))
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
-    if automation_id == "adg-p0-p1-burndown":
+    if automation_id == "adg-p0-blocker-burndown":
         issues.extend(
             _validate_prompt_snippets(
                 automation_id=automation_id,
                 prompt=prompt,
-                snippets=ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS,
-                code="adg_p0_p1_prompt_missing",
+                snippets=ADG_P0_REQUIRED_PROMPT_SNIPPETS,
+                code="adg_p0_prompt_missing",
+            )
+        )
+    if automation_id == "adg-p1-ratchet-burndown":
+        issues.extend(
+            _validate_prompt_snippets(
+                automation_id=automation_id,
+                prompt=prompt,
+                snippets=ADG_P1_REQUIRED_PROMPT_SNIPPETS,
+                code="adg_p1_prompt_missing",
             )
         )
     if automation_id == "adg-bcg-p2-next-action":

@@ -6,7 +6,7 @@ prompt = '''
 Run the Agentic-Workflow downstream P3 promotion/hygiene automation.
 
 Mission:
-Consume the fresh BCG/ADG evidence produced by the separate full ADG audit and act only on P3 items that have earned attention through promotion signals, BCG next steps, or repeated trend concentration. Do not modify, reschedule, or depend on changing the full ADG audit automation. Do not publish or merge; publication is handled separately.
+Consume the fresh BCG/ADG evidence produced by the separate full ADG audit and act only on P3 items that have earned attention through promotion signals, BCG next steps, or repeated trend concentration. P3 is a promotion/KPI monitor, not a significant-burndown lane. Do not modify, reschedule, or depend on changing the full ADG audit automation.
 
 Generate-full-ADG dependency gate:
 - This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
@@ -22,18 +22,18 @@ Generate-full-ADG dependency gate:
 - Never regenerate full ADG, rewrite the receipt, or infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
 
 Severity-lane order:
-- This is the third downstream severity lane after generate_full_adg.
-- It must run only after P0/P1 is clean for the same released ADG receipt and after the P2 lane has no safe actionable blocker that should take precedence.
+- This is the fifth downstream severity lane after generate_full_adg.
+- It must run only after P0=0, the P1 ratchet lane has met its target or reported no remaining safe blocker for the same released ADG receipt, and after the P2 lane has no safe actionable blocker that should take precedence.
 - It is promotion/watch-driven, not a whole-backlog burndown lane.
 - Any future P4 automation must follow this lane unless the generated ADG receipt explicitly ranks a P4 item ahead through documented promotion policy.
 
 Authority:
-Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits.
+Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. If validated changes are produced, complete the end-of-run merge/publication step in this automation instead of handing off to a separate publisher.
 
 Startup gates:
 - Verify fresh ADG artifacts exist from the latest full ADG run: artifacts/adg/adg_bcg_executive_summary_latest.md or .json, artifacts/adg/adg_burndown_report.md, newest artifacts/adg/adg_action_queue_*.json, and P3 trend artifacts when available.
 - Run or inspect the P3 trend runner evidence. P3 is watch/promotion-driven; do not treat the whole P3 backlog as an overnight burndown target.
-- Verify P0/P1 are clean and that the P2 next-action lane is not currently producing a blocker that should take precedence. If P0/P1 are not clean, stop. If P2 is still safely actionable, report that P2 should remain ahead and stop unless there is an explicit P3 promotion candidate.
+- Verify P0=0, verify the P1 ratchet lane has met its target or reported no remaining safe blocker, and verify that the P2 next-action lane is not currently producing a blocker that should take precedence. If P0 is not clean, stop. If P1 precedence is not satisfied, stop. If P2 is still safely actionable, report that P2 should remain ahead and stop unless there is an explicit P3 promotion candidate.
 - Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
 
 Automation-owned planning and approval:
@@ -48,6 +48,7 @@ Required P3 promotion/watchlist plan:
 - The plan must identify the receipt, snapshot timestamp, action queue path, burndown table/report paths, P3 trend or KPI source, current P3 watchlist counts, promotion reason, selected item, validation commands, rollback/skip criteria, and stop conditions.
 - Treat P3 as KPI/watchlist by default. It becomes editable only when the latest ADG evidence promotes a local, mechanical, correctness-preserving item ahead of ordinary watchlist noise.
 - For the 06292026_0701-style full ADG output, read P3 from artifacts/adg/adg_burndown_table_*.json and artifacts/adg/adg_burndown_report*.md when no dedicated P3 trend artifact exists; do not invent a separate P3 burndown source.
+- Do not compute or enforce a broad P3 burndown target. Significant overnight burn belongs to P2; P3 may only report, promote, or fix one explicitly promoted local mechanical item.
 - Execute at most one P3 promotion/hygiene wave per run, then recompute or re-read the exact P3 evidence before closeout.
 
 Priority order:
@@ -70,8 +71,18 @@ Validation:
 - Run targeted tests or static checks appropriate to touched files.
 - Run lightweight ADG/trend validation when practical; otherwise clearly state why full ADG validation was deferred.
 
+End-of-run merge/publication:
+- If no source changes were made, do not merge; close out with the no-promotion/no-change RCA and remaining watchlist state.
+- If source changes were made and validation passes, commit the P3 promotion/hygiene changes on the automation branch, push the branch, open or update the PR to main when needed, and merge to main before final closeout.
+- Use a non-squash merge method. Do not squash.
+- Any direct PR completion command (`gh pr merge`) or direct push to main must chain the local closeout checks in the same shell command.
+- After merging, push origin main and run:
+  python scripts/governance/codex_main_closeout.py --apply --fetch --json
+  python scripts/governance/codex_main_closeout.py --check --fetch --json
+- If merge or push is blocked by conflicts, failing validation, dirty unrelated worktrees, missing credentials, or remote rejection, stop and report MERGE_BLOCKED with exact commands attempted, blocker evidence, and next action.
+
 Closeout:
-Summarize the selected BCG/P3 source artifact, generated P3 promotion/watchlist plan, promotion reason, changed files, validation commands and results, branch/worktree status, remaining/promoted P3 signal, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
+Summarize the selected BCG/P3 source artifact, generated P3 promotion/watchlist plan, promotion reason, changed files, validation commands and results, branch/worktree status, merge/publication result, final main/origin state, remaining/promoted P3 signal, and whether any PR/publication follow-up remains. Include an RCA block for any stop/failure.
 '''
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=5;BYMINUTE=0;BYDAY=FR"
@@ -80,19 +91,19 @@ reasoning_effort = "xhigh"
 execution_environment = "worktree"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782240902194
-updated_at = 1782307800000
+updated_at = 1782309600000
 
 [handoff]
 chain = "adg-severity-lanes/v1"
 lane = "p3_promotion_hygiene"
 role = "consumer"
-order = 3
+order = 4
 producer_id = "weekly-adg-audit-and-burndown"
 receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
 validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
 consumable_artifact_statuses = ["certified", "repair_ready"]
 requires_direct_artifact_status_source = true
-depends_on = ["weekly-adg-audit-and-burndown", "adg-p0-p1-burndown", "adg-bcg-p2-next-action"]
+depends_on = ["weekly-adg-audit-and-burndown", "adg-p0-blocker-burndown", "adg-p1-ratchet-burndown", "adg-bcg-p2-next-action"]
 unblocks = []
-requires_prior_lane_clean = ["adg-p0-p1-burndown"]
+requires_prior_lane_clean = ["adg-p0-blocker-burndown", "adg-p1-ratchet-burndown"]
 requires_prior_lane_not_actionable = ["adg-bcg-p2-next-action"]

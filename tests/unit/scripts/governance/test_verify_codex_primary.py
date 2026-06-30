@@ -61,10 +61,18 @@ def _valid_root(tmp_path: Path) -> Path:
         ),
     )
     _write(
-        tmp_path / ".codex" / "automations" / "adg-p0-p1-burndown" / "automation.toml",
+        tmp_path / ".codex" / "automations" / "adg-p0-blocker-burndown" / "automation.toml",
         _automation_toml(
-            "adg-p0-p1-burndown",
-            "\n".join(mod.verify_codex_enforcement_home.ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS),
+            "adg-p0-blocker-burndown",
+            "\n".join(mod.verify_codex_enforcement_home.ADG_P0_REQUIRED_PROMPT_SNIPPETS),
+            tmp_path,
+        ),
+    )
+    _write(
+        tmp_path / ".codex" / "automations" / "adg-p1-ratchet-burndown" / "automation.toml",
+        _automation_toml(
+            "adg-p1-ratchet-burndown",
+            "\n".join(mod.verify_codex_enforcement_home.ADG_P1_REQUIRED_PROMPT_SNIPPETS),
             tmp_path,
         ),
     )

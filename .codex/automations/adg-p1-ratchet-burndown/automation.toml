@@ -1,0 +1,107 @@
+version = 1
+id = "adg-p1-ratchet-burndown"
+kind = "cron"
+name = "ADG P1 Ratchet Burndown"
+prompt = """
+Run the Agentic-Workflow P1 ADG ratchet burndown after P0 has been cleared and a fresh full ADG generation proves P0=0.
+
+Mission:
+Consume the fresh generate_full_adg handoff after P0 blocker publication and burn down a significant, bounded P1 scope. Ordinary P1 high anti-pattern rows come first; P1 ratchet backlog follows only after ordinary P1 is clear or no safe ordinary P1 item remains.
+
+Generate-full-ADG dependency gate:
+- This automation is downstream of the generate_full_adg lane and the P0 blocker lane: weekly-adg-audit-and-burndown -> adg-p0-blocker-burndown.
+- Treat the [handoff] metadata in this TOML as the machine-checkable dependency contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
+- Do not begin source edits until the latest full ADG audit has completed and released docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json for this run window.
+- The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
+- Run this exact validator before editing:
+  python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json
+- Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and after the P0 blocker lane merge/push that this run depends on.
+- If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, not direct, or older than the P0 blocker publication, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
+- Never consume overwritten latest files as source of truth when timestamped artifacts exist.
+- Never regenerate full ADG, rewrite the receipt, or infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
+
+Severity-lane order:
+- This is the second downstream severity lane after generate_full_adg.
+- It must run only after the P0 blocker lane has merged and a fresh post-P0 full ADG receipt proving P0=0 exists for the same post-P0 generation.
+- P2, P3, and any future P4 automation must not edit from the same audit generation until this lane completes its P1 target or reports a target_status=missed blocker.
+
+Authority:
+Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. If validated changes are produced, complete the end-of-run merge/publication step in this automation.
+
+Startup gate:
+- Before any edit, create/use the dedicated P1 worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown on a codex/adg-p1-ratchet-burndown-* branch. Use the canonical repo root only to read the audit receipt and bootstrap the worktree.
+- Read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json first and run the validator above before editing.
+- Verify P0=0 from the latest released ADG receipt, gate results, and burndown table/report. If P0 is not zero, stop and defer to adg-p0-blocker-burndown.
+- Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
+
+Automation-owned planning and approval:
+- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- The automation must still create a concrete P1 execution and burndown plan before edits, but it must do so inside the run without waiting for user interaction.
+- Treat the generated P1 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P1 ratchet evidence, and gate artifacts consumed by the run.
+- Do not stop only to request plan approval when the selected P1 item stays within this TOML's standing approval scope.
+- If the generated plan reveals work outside standing approval, stop at that point and report the specific blocker instead of editing.
+
+Required P1 burndown plan:
+- Read the exact ADG action queue/report and compute current ordinary P1 count plus P1 ratchet gate/floor backlog before edits.
+- Burn down ordinary P1 high anti-pattern rows first.
+- ordinary_p1_target = current_ordinary_p1_count when current_ordinary_p1_count <= 10; otherwise ordinary_p1_target = max(5, ceil(current_ordinary_p1_count * 0.50)).
+- For the 06292026_0701-style full ADG output, current_ordinary_p1_count=6, so ordinary_p1_target=6. This is defensible because the ordinary P1 queue is small, high severity, and should be fully cleared before lower-severity lanes run.
+- After ordinary P1 is clear, or if no safe ordinary P1 item remains, choose one P1 ratchet gate/family and set ratchet_target = max(25 rows, ceil(selected_gate_rows * 0.05)).
+- The ratchet target is intentionally per-gate/family, not 25% of all P1 ratchet rows, because the latest ratchet backlog is broad structural debt (for example 9 gates / 5,565 rows) and a whole-backlog percentage would force unsafe sweeping refactors.
+- Set target_rows = ordinary_p1_target + ratchet_target when a ratchet family is selected; if no safe ratchet family is available, target_rows = ordinary_p1_target and closeout must explain why ratchet work was skipped.
+- The plan must identify ratchet source artifact, current count/baseline, selected gate/family, ordinary_p1_target, ratchet_target, priority ordering, dependency grouping, estimated per-wave scope, estimated validation cost, timeout/deadline assumption, validation commands, rollback/skip criteria, and stop conditions.
+- Generate enough bounded waves to plausibly reach ordinary_p1_target and then ratchet_target while keeping each wave small enough to validate and recover.
+- Do not stop after a single successful batch while target_rows remains unmet and additional safe standing-scope P1 candidates remain.
+
+Standing approval and stop conditions:
+- Standing approval applies only to bounded, mechanical P1 ADG fixes directly supported by the fresh queue/report and small focused patches.
+- Stop before editing any item requiring design choice, broad cross-layer refactor, public contract change, migration receipt, uncertain ownership decision, repeated test failure, dirty unrelated user changes, or merge conflict.
+- If one item blocks, skip it only when other independent ordinary P1 or selected-ratchet items can safely proceed; otherwise stop and report the blocker.
+
+Validation:
+- Run targeted tests or static checks appropriate to touched files after each wave.
+- Run lightweight ADG/burndown validation when practical; otherwise clearly state why full ADG validation was deferred.
+- Re-read exact P1 evidence after validation when regenerated.
+
+End-of-run merge/publication:
+- If no source changes were made, do not merge; close out with the no-change RCA and remaining target status.
+- If source changes were made and validation passes, commit the P1 changes on the automation branch, push the branch, open or update the PR to main when needed, and merge to main before final closeout. P1 does not require P1=0 to merge; it requires validation plus target met, or target_status=missed with blocker RCA.
+- Use a non-squash merge method. Do not squash.
+- Any direct PR completion command (`gh pr merge`) or direct push to main must chain the local closeout checks in the same shell command.
+- After merging, push origin main and run:
+  python scripts/governance/codex_main_closeout.py --apply --fetch --json
+  python scripts/governance/codex_main_closeout.py --check --fetch --json
+- If merge or push is blocked by conflicts, failing validation, dirty unrelated worktrees, missing credentials, or remote rejection, stop and report MERGE_BLOCKED with exact commands attempted, blocker evidence, and next action.
+
+Closeout:
+- Emit a JSON run receipt when substantial edits occur.
+- Summarize selected P1 source artifacts, generated P1 burndown plan, ordinary_p1_target, ratchet_target, planned_rows, attempted_rows, cleared_rows, remaining_rows, target_status, changed files, validation commands and results, artifact paths, branch/commit/PR status, merge/publication result, final main/origin state, and blockers.
+- If cleared_rows < target_rows, set target_status=missed and include an RCA block with blocker_type, blocker_evidence, why additional safe candidates were unavailable, and the next unblock action.
+"""
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=1;BYMINUTE=15;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "local"
+cwds = [
+  "C:\\Git\\Agentic-Workflow-FRESH",
+  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+]
+created_at = 1782309600000
+updated_at = 1782309600000
+
+[handoff]
+chain = "adg-severity-lanes/v1"
+lane = "p1_ratchet_burndown"
+role = "consumer"
+order = 2
+producer_id = "weekly-adg-audit-and-burndown"
+receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
+validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+consumable_artifact_statuses = ["certified", "repair_ready"]
+requires_direct_artifact_status_source = true
+depends_on = ["weekly-adg-audit-and-burndown", "adg-p0-blocker-burndown"]
+unblocks = ["adg-bcg-p2-next-action"]
+requires_prior_lane_clean = ["adg-p0-blocker-burndown"]
+requires_prior_lane_not_actionable = []

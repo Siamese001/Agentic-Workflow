@@ -1,0 +1,111 @@
+version = 1
+id = "adg-p0-blocker-burndown"
+kind = "cron"
+name = "ADG P0 Blocker Burndown"
+prompt = """
+Run the Agentic-Workflow P0 ADG blocker burndown after the full ADG audit.
+
+Mission:
+Consume the fresh generate_full_adg handoff and clear only P0 FIX blockers. This lane is all-or-nothing: P0 must be 0 before merge. Do not spend time on P1/P2/P3 while P0 is red.
+
+Generate-full-ADG dependency gate:
+- This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
+- Treat the [handoff] metadata in this TOML as the machine-checkable dependency contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
+- Do not begin source edits until the latest full ADG audit has completed and released docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json for this run window.
+- The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
+- Run this exact validator before editing:
+  python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json
+- Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and before this downstream lane starts editing.
+- If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, or not direct, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
+- Never consume overwritten latest files as source of truth when timestamped artifacts exist.
+- Never regenerate full ADG, rewrite the receipt, or infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
+
+Severity-lane order:
+- This is the first downstream severity lane after generate_full_adg.
+- It owns P0 FIX blockers only.
+- P1, P2, P3, and any future P4 automation must not edit from the same audit generation until this lane proves P0=0 or explicitly stops with a blocker.
+
+Authority:
+Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. If validated changes are produced and P0=0 is proven, complete the end-of-run merge/publication step in this automation.
+
+Startup gate:
+- Before any edit, create/use the dedicated P0 worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown on a codex/adg-p0-blocker-burndown-* branch. Use the canonical repo root only to read the audit receipt and bootstrap the worktree.
+- Treat the full-ADG audit as the prerequisite, but do not require clean certification when the audit produced repair-ready artifacts.
+- Read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json first and run the validator above before editing.
+- If the full ADG audit is still running, wait and poll for completion until the local deadline policy says to stop.
+- If artifacts are stale, missing, timestamp-inconsistent, or only available through overwritten latest files without a timestamped source, stop without editing and report RCA.
+- Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
+
+Automation-owned planning and approval:
+- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- The automation must still create a concrete P0 execution plan before edits, but it must do so inside the run without waiting for user interaction.
+- Treat the generated P0 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P0 gate artifacts, and P0 wave artifacts consumed by the run.
+- Do not stop only to request plan approval when the remaining P0 work stays within this TOML's standing approval scope.
+- If the generated plan reveals work outside standing approval, stop at that point and report the specific blocker instead of editing.
+
+Required P0 blocker plan:
+- Read the exact ADG action queue/report and compute current P0 FIX count and P0 gate rows before edits.
+- Burn down all P0 FIX queue/report items first.
+- The plan must identify receipt, snapshot timestamp, action queue path, burndown table/report paths, gate results path, P0 blocker IDs, file/symbol scope when available, validation commands, rollback/skip criteria, and stop conditions.
+- Generate enough bounded waves to plausibly reach P0=0 while keeping each wave small enough to validate and recover.
+- After every wave, run targeted tests plus ADG validation appropriate to the touched surface, recompute remaining P0 from exact artifacts or regenerated digest-bound post-fix artifacts, and continue while P0 remains above 0 and safe P0 candidates remain.
+- Do not do P1/P2/P3 work in this lane.
+
+Required end state:
+- P0=0 before merge.
+- P0=0 means every released P0 FIX gate/item has been burned down and replayed successfully against the exact consumed ADG artifacts or regenerated digest-bound post-fix artifacts preserved in the run receipt.
+- If P0 remains above 0, stop as BLOCKED or PARTIAL, do not publish or merge, and report the remaining P0 items as blockers.
+
+Standing approval and stop conditions:
+- Standing approval applies only to bounded, mechanical P0 ADG fixes directly supported by the fresh queue/report and small focused patches.
+- Stop before editing any item requiring design choice, broad cross-layer refactor, public contract change, migration receipt, uncertain ownership decision, repeated test failure, dirty unrelated user changes, or merge conflict.
+- If one item blocks, skip it only when other independent P0 items can safely proceed; otherwise stop and report the blocker.
+
+Validation:
+- Run targeted tests or static checks appropriate to touched files.
+- Run lightweight ADG/gate validation after each wave when practical; otherwise clearly state why full ADG validation was deferred.
+- Do not claim P0=0 unless reproduced from exact queue/report/gate artifacts or regenerated digest-bound post-fix artifacts.
+
+End-of-run merge/publication:
+- If no source changes were made, do not merge; close out with the no-change RCA and remaining P0 status.
+- If source changes were made, validation passes, and P0=0 is proven, commit the P0 changes on the automation branch, push the branch, open or update the PR to main when needed, and merge to main before final closeout.
+- Use a non-squash merge method. Do not squash.
+- Any direct PR completion command (`gh pr merge`) or direct push to main must chain the local closeout checks in the same shell command.
+- After merging, push origin main and run:
+  python scripts/governance/codex_main_closeout.py --apply --fetch --json
+  python scripts/governance/codex_main_closeout.py --check --fetch --json
+- If merge or push is blocked by conflicts, failing validation, P0 still above 0, dirty unrelated worktrees, missing credentials, or remote rejection, stop and report MERGE_BLOCKED with exact commands attempted, blocker evidence, and next action.
+
+Closeout:
+- Emit a JSON run receipt when substantial edits occur.
+- Summarize selected P0 source artifacts, changed files, P0 blockers planned/attempted/cleared/remaining, validation commands and results, artifact paths, branch/commit/PR status, merge/publication result, final main/origin state, and blockers.
+- Include an RCA block for any stop/failure.
+"""
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=15;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.4-mini"
+reasoning_effort = "xhigh"
+execution_environment = "local"
+cwds = [
+  "C:\\Git\\Agentic-Workflow-FRESH",
+  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+]
+created_at = 1782309600000
+updated_at = 1782309600000
+
+[handoff]
+chain = "adg-severity-lanes/v1"
+lane = "p0_blocker_burndown"
+role = "consumer"
+order = 1
+producer_id = "weekly-adg-audit-and-burndown"
+receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
+validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+consumable_artifact_statuses = ["certified", "repair_ready"]
+requires_direct_artifact_status_source = true
+depends_on = ["weekly-adg-audit-and-burndown"]
+unblocks = ["adg-p1-ratchet-burndown"]
+requires_prior_lane_clean = []
+requires_prior_lane_not_actionable = []
+
