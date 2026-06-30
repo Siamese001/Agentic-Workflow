@@ -34,7 +34,7 @@ Hard stops:
 - Never force-push main.
 - Never squash.
 - Never publish directly from main/master, a conflicted state, an ambiguous branch, or a dirty execution surface.
-- Never treat dirty main as a reason to drop scope. Dirty main triggers dirty-worktree recovery mode; stop only if classification or preservation is unsafe.
+- Never treat dirty main as a reason to drop scope. Dirty main triggers dirty-worktree recovery mode; stop only after named branch or named stash preservation fails or would overwrite/drop data.
 - Never push directly to refs/heads/main or run git push origin main in this automation, even with explicit local-main publication wording; use a different direct-main automation for that.
 - Never claim publication success unless a GitHub PR existed for the selected work and was merged through gh pr merge --merge or an equivalent GitHub PR merge API.
 - Never merge/rebase a prior PR/source branch wholesale during recovery unless the user explicitly asked for whole-branch integration.
@@ -70,6 +70,7 @@ Run before PR, branch, cherry-pick, merge, or cleanup work:
 Rules:
 - If current_worktree_conflicted, fetch_failed, origin_main_missing, github_main_unavailable, origin_main_differs_from_github_main, or pr_flow_contract_violation appears as a blocker, do not publish from that surface. Enter remediation only if the blocker is repo-local and safely recoverable; otherwise stop with RCA.
 - If current_worktree_dirty appears as a blocker, do not publish directly from that dirty surface. Enter dirty-worktree recovery mode instead of stopping immediately.
+- Dirty-worktree recovery must perform a preservation mutation before any RCA stop: create a timestamped non-main recovery branch commit, create a named stash with file-list proof, or clean only proven generated/disposable files with proof.
 - If the audit recommends clean_detached_origin_main_worktree, create or reuse a clean worktree under C:\Git\Agentic-Workflow-FRESH-worktrees from current origin/main and continue there after preserving any dirty protected worktree.
 - Dirty protected worktrees are preservation warnings during intake only. They must be cleaned, committed, safely fast-forwarded, removed, stashed with explicit proof, or reported as a blocker before final success.
 - The audit's unmerged_branches and git cherry -v evidence are the branch-recovery inventory, but not closeout proof.
@@ -125,12 +126,13 @@ Classify every modified, deleted, renamed, staged, and untracked file into exact
 
 Rules:
 - Preserve every non-disposable dirty file before cleanup.
-- Preservation means one of: commit to a named non-main branch, stash with explicit stash name and file list, or retain with an RCA blocker.
+- Preservation means one of: commit to a named non-main branch or stash with explicit stash name and file list. Retained RCA blockers are allowed only after both preservation paths are unsafe or fail.
 - Restore or delete only files proven generated/disposable, and record the proof before acting.
 - Do not overwrite, drop, restore, delete, or ignore dirty files without explicit preservation proof.
 - If the selected publication scope is coherent, create or select a non-main publication branch and commit only that scope.
-- If unrelated dirty files exist, route them to separate recovery branches, explicit stashes, or retained blockers before final success.
-- If classification is unsafe, stop with RCA and list all retained files.
+- If the selected publication scope is not coherent, create a timestamped non-main recovery branch from the dirty worktree, commit all non-disposable dirty files there with an explicit file list, and treat that branch as separate_recovery_scope unless the user explicitly requested whole-tree publication.
+- If unrelated dirty files exist, route them to separate recovery branches or explicit stashes before final success; retained blockers are last resort only after preservation fails.
+- If classification is unsafe, classify the file as unsafe_or_unknown_scope and preserve it before cleanup; stop only if named branch commit and named stash preservation are both unsafe or fail.
 - After preservation/routing, return C:\Git\Agentic-Workflow-FRESH main to clean origin/main when safe. If not safe, report the exact blocker.
 - Use an explicit user branch when provided; otherwise use the current checked-out non-main branch only if clean and unambiguous.
 - Commit staged publication-scope work before publication.
@@ -313,7 +315,7 @@ reasoning_effort = "xhigh"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-on-demand-pr-main-publisher", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-gpu-policy-invariant", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-competencies-evidence-closeout", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-preserve-worktrees-folder-closeout"]
 created_at = 1781951933034
-updated_at = 1784207279000
+updated_at = 1782851854256
 
 [runtime_optimization]
 schema = "publisher-runtime-optimization/v1"
