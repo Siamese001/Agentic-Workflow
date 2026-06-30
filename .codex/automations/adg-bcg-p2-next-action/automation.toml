@@ -36,6 +36,20 @@ Startup gates:
 - Verify P0/P1 have no FIX gates or ratchet regressions in the latest burndown/gate results. If P0/P1 are not clean, stop and defer to the P0/P1 automation.
 - Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
 
+Automation-owned planning and approval:
+- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- The automation must still create a concrete P2 execution and burndown plan before edits, but it must do so inside the run without waiting for user interaction.
+- Treat the generated P2 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P2 ratchet trace, and gate artifacts consumed by the run.
+- Do not stop only to request plan approval when the selected P2 item stays within this TOML's standing approval scope.
+- If the generated plan reveals work outside standing approval, stop at that point and report the specific blocker instead of editing.
+
+Required P2 burndown plan:
+- Generate the P2 burndown plan from the same released ADG generation consumed by the validator, not from stale latest-file inference.
+- The plan must identify the receipt, snapshot timestamp, action queue path, burndown table/report paths, P2 ratchet source, current P2 MEDIUM hygiene count, ceiling, delta, top file hotspots, evidence buckets, selected item, validation commands, rollback/skip criteria, and stop conditions.
+- Use the current ADG ordering: P0/P1 blockers first, then P2 MEDIUM hygiene hotspots, then star-import or dependency-hiding cleanup, then rebaseline only after intentional evidence-backed cleanup and explicit approval.
+- For the 06292026_0701-style full ADG output, prefer the live runtime/core hotspots named in artifacts/adg/adg_cleanup_queue_and_p2_blocker_trace_latest.* and artifacts/adg/adg_burndown_table_*.json; do not treat archived dead-import bundles as safe P2 edits.
+- Execute at most one P2 burndown wave per run, then recompute or re-read the exact P2 evidence before closeout.
+
 Priority order:
 1. Use artifacts/adg/adg_cleanup_queue_and_p2_blocker_trace_latest.* as the primary source for P2 MEDIUM hygiene hotspots.
 2. Select the highest-ranked live runtime/core P2 hotspot that is directly supported by the BCG/P2 trace and can be fixed mechanically.
@@ -55,7 +69,7 @@ Validation:
 - Re-read the latest P2 trace or burndown after validation when regenerated.
 
 Closeout:
-Summarize the selected BCG/P2 source artifact, changed files, P2 hotspot count before/after if measurable, validation commands and results, branch/worktree status, remaining P2 count or blocked next item, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
+Summarize the selected BCG/P2 source artifact, generated P2 burndown plan, changed files, P2 hotspot count before/after if measurable, validation commands and results, branch/worktree status, remaining P2 count or blocked next item, and whether a PR/publication step is needed. Include an RCA block for any stop/failure.
 '''
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=4;BYMINUTE=20;BYDAY=SU,MO,TU,WE,TH,FR,SA"
@@ -64,7 +78,7 @@ reasoning_effort = "xhigh"
 execution_environment = "worktree"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782240890932
-updated_at = 1782241115737
+updated_at = 1782307800000
 
 [handoff]
 chain = "adg-severity-lanes/v1"
