@@ -33,6 +33,13 @@ Startup gate:
 - If the full ADG audit is still running, wait and poll for completion until the local deadline policy says to stop.
 - If artifacts are stale, missing, timestamp-inconsistent, or only available through overwritten latest files without a timestamped source, stop without editing and report RCA.
 
+Automation-owned planning and approval:
+- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- The automation must still create a concrete execution plan before edits, but it must do so inside the run without waiting for user interaction.
+- Treat the generated execution plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, and gate artifacts consumed by the run.
+- Do not stop only to request plan approval when the remaining work stays within this TOML's standing approval scope.
+- If the generated plan reveals work outside standing approval, stop at that point and report the specific blocker instead of editing.
+
 Zero-loss artifact contract:
 - Never consume overwritten latest files as the source of truth when timestamped artifacts exist.
 - Record exact repair_handoff artifact paths, sha256 digests, validator counts, and snapshot timestamp before every edit wave.
@@ -86,7 +93,7 @@ cwds = [
   "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-p1-burndown",
 ]
 created_at = 1782207251406
-updated_at = 1782293487839
+updated_at = 1782305448000
 
 [handoff]
 chain = "adg-severity-lanes/v1"
