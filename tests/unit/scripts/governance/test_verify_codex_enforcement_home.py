@@ -65,8 +65,12 @@ def _adg_prompt() -> str:
     return "\n".join(mod.ADG_REQUIRED_PROMPT_SNIPPETS)
 
 
-def _adg_p0_p1_prompt() -> str:
-    return "\n".join(mod.ADG_P0_P1_REQUIRED_PROMPT_SNIPPETS)
+def _adg_p0_prompt() -> str:
+    return "\n".join(mod.ADG_P0_REQUIRED_PROMPT_SNIPPETS)
+
+
+def _adg_p1_prompt() -> str:
+    return "\n".join(mod.ADG_P1_REQUIRED_PROMPT_SNIPPETS)
 
 
 def _adg_p2_prompt() -> str:
@@ -85,7 +89,8 @@ def _valid_root(tmp_path: Path) -> Path:
     prompt_by_id = {
         "on-demand-pr-main-publisher": _publication_prompt(),
         "weekly-adg-audit-and-burndown": _adg_prompt(),
-        "adg-p0-p1-burndown": _adg_p0_p1_prompt(),
+        "adg-p0-blocker-burndown": _adg_p0_prompt(),
+        "adg-p1-ratchet-burndown": _adg_p1_prompt(),
         "adg-bcg-p2-next-action": _adg_p2_prompt(),
         "adg-p3-promotion-hygiene": _adg_p3_prompt(),
         "weekly-svp-readme-documentation-refresh": _svp_docs_prompt(),
@@ -207,7 +212,7 @@ def test_registered_worktree_accepts_canonical_repo_cwd(
     assert not any(issue.code == "automation_cwd" for issue in issues)
 
 
-def test_adg_handoff_graph_requires_producer_to_unblock_p0_p1(tmp_path: Path) -> None:
+def test_adg_handoff_graph_requires_producer_to_unblock_p0(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = mod._automation_path(root, "weekly-adg-audit-and-burndown")
     automation.write_text(
@@ -226,13 +231,13 @@ def test_adg_handoff_graph_requires_producer_to_unblock_p0_p1(tmp_path: Path) ->
     assert any(issue.code == "adg_handoff_graph_edge" for issue in issues)
 
 
-def test_adg_handoff_graph_requires_p0_p1_to_unblock_p2(tmp_path: Path) -> None:
+def test_adg_handoff_graph_requires_p0_to_unblock_p1(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
-    automation = mod._automation_path(root, "adg-p0-p1-burndown")
+    automation = mod._automation_path(root, "adg-p0-blocker-burndown")
     automation.write_text(
         _automation_toml(
-            "adg-p0-p1-burndown",
-            _adg_p0_p1_prompt(),
+            "adg-p0-blocker-burndown",
+            _adg_p0_prompt(),
             root,
             unblocks=[],
         ),
@@ -245,7 +250,26 @@ def test_adg_handoff_graph_requires_p0_p1_to_unblock_p2(tmp_path: Path) -> None:
     assert any(issue.code == "adg_handoff_graph_edge" for issue in issues)
 
 
-def test_adg_handoff_graph_requires_p2_to_depend_on_p0_p1(tmp_path: Path) -> None:
+def test_adg_handoff_graph_requires_p1_to_unblock_p2(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "adg-p1-ratchet-burndown")
+    automation.write_text(
+        _automation_toml(
+            "adg-p1-ratchet-burndown",
+            _adg_p1_prompt(),
+            root,
+            unblocks=[],
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "adg_handoff_contract" for issue in issues)
+    assert any(issue.code == "adg_handoff_graph_edge" for issue in issues)
+
+
+def test_adg_handoff_graph_requires_p2_to_depend_on_p0_and_p1(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = mod._automation_path(root, "adg-bcg-p2-next-action")
     automation.write_text(
