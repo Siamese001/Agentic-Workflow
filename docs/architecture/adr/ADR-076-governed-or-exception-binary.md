@@ -10,14 +10,23 @@
 
 ## Context
 
-The platform now has 7 `apps_*` packages: `apps_eval`, `apps_exec`, `apps_lic`,
-`apps_research`, `apps_rfp`, `apps_rg`, `apps_shared`, `apps_underwriting_ai`.
-Five are fully governed by `apps_shared.integrations.governed_app_runner.GovernedAppRunner`
-(the substrate that codifies the L1→L0→C0→L2→L5+L6 pipeline). Two are
-documented permanent exceptions:
+The platform now has 9 `apps_*` packages: `apps_architect`, `apps_eval`,
+`apps_exec`, `apps_lic`, `apps_qna`, `apps_research`, `apps_rg`,
+`apps_shared`, and `apps_underwriting_ai`. `apps_shared` is the substrate
+library and is excluded from the app registry scan. Among the eight
+non-infrastructure app packages, three are fully governed by
+`apps_shared.integrations.governed_app_runner.GovernedAppRunner` or by a
+canonical governed callable. Five are documented formal exceptions:
 
+- `apps_architect` — pending GovernedAppRunner migration; product scan is
+  wrapped by `apps_shared.spine_emission.governed_run` and cert FEC evidence.
 - `apps_eval` — circular dependency (the substrate calls `evaluate_and_emit`,
   which would route through `apps_eval` itself).
+- `apps_lic` — pending migration; product runtime uses the canonical
+  `run_canonical_apps_lic_spine` dispatch rather than the deleted
+  `GovernedLicRun`.
+- `apps_qna` — pending migration; build-time pack generation uses a
+  `ValidatedRequest` spine handoff, but no GovernedAppRunner subclass exists.
 - `apps_underwriting_ai` — regulatory domain constraint (legally-binding
   credit decisions cannot be funneled through a generic evidence-retrieval
   substrate).
@@ -101,8 +110,8 @@ runs in pre-commit and as a standalone CI check.
 
 ### Migration
 
-No migration needed: all 7 existing `apps_*` packages already have registry
-entries (5 governed, 2 formal exceptions).
+Current migration state: all eight non-infrastructure `apps_*` packages have
+registry entries (3 governed, 5 formal exceptions).
 
 ## Verification
 

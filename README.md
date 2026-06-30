@@ -217,7 +217,9 @@ The GitHub-facing app portfolio below is a navigation map for active app and sha
 
 | App | What it does | README | Runbook | SLO | SVP Review | Threat Model |
 |---|---|:-:|:-:|:-:|:-:|:-:|
+| [`apps_architect`](apps_architect/) | Pattern Collection & Repo Hardening Engine — deterministic pattern scan and hardening-rule emission | — | — | — | — | — |
 | [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | — | — | — | — |
+| [`apps_exec`](apps_exec/) | Executive Brief Generator — governed registry surface with historical product docs | — | — | — | [→](docs/reports/apps_exec/PRODUCT_SPEC.md) | — |
 | [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
 | [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode, plus compact downstream briefs for `apps_rg` and `apps_lic` | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
@@ -225,7 +227,7 @@ The GitHub-facing app portfolio below is a navigation map for active app and sha
 | [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
 | [`apps_shared`](apps_shared/) | Shared adapters, validators, HOP executor, proof harness — library-only | [→](apps_shared/README.md) | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/validators/proof/THREAT_MODEL.md) |
 
-> `apps_exec` (Executive Brief Generator) was archived 2026-05-05 — see `archives/apps_exec_20260505/` for the snapshot.
+> Historical `apps_exec` product snapshots remain under `archives/apps_exec_20260505/`; the current registry surface is the governed adapter named in `apps_shared/integrations/app_registry.py`.
 
 `apps_research` also exposes compact downstream consumer briefs:
 - `apps_rg` uses `downstream_research_substrate_v1`
@@ -262,7 +264,7 @@ python ops_scripts/ci/run_architecture_proof.py
 
 ## Governed Architecture Proof Pack
 
-Current registry snapshot: three governed entries and three formal exceptions, with one release gate. The proof command is authoritative for current pass/fail status; this README is not a substitute for the gate output.
+Current registry snapshot: three governed entries and five formal exceptions, with one release gate. The proof command is authoritative for current pass/fail status; this README is not a substitute for the gate output.
 
 ```bash
 python ops_scripts/ci/run_architecture_proof.py
@@ -270,7 +272,7 @@ python ops_scripts/ci/run_architecture_proof.py
 
 | Suite | Validates |
 |---|---|
-| S1 — Conformance Gate | Registry + imports: CONF01-08 + EXCF01-08 (36 checks) |
+| S1 — Conformance Gate | Registry + imports: CONF01-08 + EXCF01-08 (52 checks) |
 | S2 — Exception Framework | Behavioral E2E across governed apps + eval/uw exception controls |
 | S3 — Regression Check | Evidence governance regression baseline (RC01-12) |
 
@@ -279,7 +281,7 @@ Registry status as of the committed docs snapshot:
 | Status | Apps |
 |---|---|
 | Governed | `apps_exec`, `apps_research`, `apps_rg` |
-| Formal exception | `apps_eval`, `apps_lic`, `apps_underwriting_ai` |
+| Formal exception | `apps_architect`, `apps_eval`, `apps_lic`, `apps_qna`, `apps_underwriting_ai` |
 
 **Reviewer journey:**
 

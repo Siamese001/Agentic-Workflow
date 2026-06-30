@@ -181,11 +181,34 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEn
         review_cadence="annual",
         owner="apps_lic team",
         target_phase="N/A — canonical_dispatch is product SSOT",
-        partial_adoption_module="apps_lic.runtime.dispatch.canonical_dispatch",
-        partial_adoption_class="CanonicalDispatchResult",
+        partial_adoption_module="apps_lic.integrations.governed_lic_exception",
+        partial_adoption_class="GovernedLicException",
         proof_prefix="LIC",
     ),
     # ── Formal governed exceptions (permanent; FormalExceptionEntry required) ──
+    "apps_architect": FormalExceptionEntry(
+        app_name="apps_architect",
+        status=GovernanceStatus.EXCEPTION,
+        exception_reason_code=ExceptionReasonCode.PENDING_MIGRATION,
+        exception_reason=(
+            "apps_architect currently runs through apps_shared.spine_emission "
+            "governed_run and cert FEC producers, but does not expose a "
+            "GovernedAppRunner subclass. Registry tracks this as a pending "
+            "runner migration rather than claiming a missing adapter."
+        ),
+        blocked_layers=("GovernedAppRunner",),
+        safe_layers=("apps_shared.spine_emission", "cert_fec_producer"),
+        compensating_controls=(
+            "CC-ARCH-01: product scan is wrapped by apps_shared.spine_emission governed_run",
+            "CC-ARCH-02: apps_architect.cert.fec_producer emits grounded FEC evidence",
+        ),
+        review_cadence="quarterly",
+        owner="apps_architect team",
+        target_phase="pending GovernedAppRunner adapter migration",
+        partial_adoption_module="apps_architect.integrations.governed_architect_exception",
+        partial_adoption_class="GovernedArchitectException",
+        proof_prefix="ARCH",
+    ),
     "apps_eval": FormalExceptionEntry(
         app_name="apps_eval",
         status=GovernanceStatus.EXCEPTION,
@@ -209,6 +232,29 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEn
         partial_adoption_module="apps_eval.integrations.governed_eval_exception",
         partial_adoption_class="GovernedEvalException",
         proof_prefix="EVAL",
+    ),
+    "apps_qna": FormalExceptionEntry(
+        app_name="apps_qna",
+        status=GovernanceStatus.EXCEPTION,
+        exception_reason_code=ExceptionReasonCode.PENDING_MIGRATION,
+        exception_reason=(
+            "apps_qna has a build-time compiler route plus an R4 single-action "
+            "runtime pack route. The build-time path is wrapped in a "
+            "ValidatedRequest spine handoff, but the app does not expose a "
+            "GovernedAppRunner subclass yet."
+        ),
+        blocked_layers=("GovernedAppRunner",),
+        safe_layers=("ValidatedRequest spine_handoff", "runtime bindings"),
+        compensating_controls=(
+            "CC-QNA-01: build_pack_via_spine emits ValidatedRequest handoff evidence",
+            "CC-QNA-02: live runtime pack route exposes canonical runtime bindings",
+        ),
+        review_cadence="quarterly",
+        owner="apps_qna team",
+        target_phase="pending GovernedAppRunner adapter migration",
+        partial_adoption_module="apps_qna.integrations.governed_qna_exception",
+        partial_adoption_class="GovernedQnaException",
+        proof_prefix="QNA",
     ),
     "apps_underwriting_ai": FormalExceptionEntry(
         app_name="apps_underwriting_ai",
