@@ -60,7 +60,7 @@ def test_adr_076_documents_governed_or_exception_binary() -> None:
 def test_gate_passes_on_current_tree() -> None:
     """W7: the gate must exit 0 on the current repo state.
 
-    All 7 apps_* packages (excluding the infrastructure apps_shared) are
+    All apps_* packages (excluding the infrastructure apps_shared) are
     properly classified in APP_REGISTRY.
     """
     proc = subprocess.run(
@@ -99,14 +99,16 @@ def test_discover_apps_packages_excludes_apps_shared() -> None:
 
 
 def test_discover_apps_packages_includes_all_known_apps() -> None:
-    """W7: the seven non-infrastructure apps must all be discovered."""
+    """W7: the non-infrastructure apps must all be discovered."""
     from ops_scripts.ci.check_app_registry_conformance import _discover_apps_packages
 
     discovered = set(_discover_apps_packages())
     expected = {
+        "apps_architect",
         "apps_eval",
         "apps_exec",
         "apps_lic",
+        "apps_qna",
         "apps_research",
         "apps_rg",
         "apps_underwriting_ai",

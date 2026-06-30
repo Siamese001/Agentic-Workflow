@@ -566,6 +566,14 @@ def build_readiness_report(
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="Emit JSON output")
+    parser.add_argument(
+        "--docs-only",
+        action="store_true",
+        help=(
+            "Use docs-only readiness posture: do not require default MCP "
+            "callable routes and allow direct ADG SQLite fallback."
+        ),
+    )
     parser.add_argument("--require-clean-worktree", action="store_true", help="Fail when git status is dirty")
     parser.add_argument(
         "--git-publication",
@@ -618,15 +626,21 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def _resolve_required_callable_routes(args: argparse.Namespace) -> tuple[str, ...]:
+    supplied = tuple(args.required_callable_routes or ())
+    if args.docs_only or args.no_default_callable_routes:
+        return supplied
+    return DEFAULT_REQUIRED_CALLABLE_ROUTES + supplied
+
+
+def _resolve_allow_adg_sqlite_fallback(args: argparse.Namespace) -> bool:
+    return bool((args.docs_only or args.allow_adg_sqlite_fallback) and not args.no_adg_sqlite_fallback)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    required_routes: tuple[str, ...]
-    supplied = tuple(args.required_callable_routes or ())
-    if args.no_default_callable_routes:
-        required_routes = supplied
-    else:
-        required_routes = DEFAULT_REQUIRED_CALLABLE_ROUTES + supplied
-    allow_adg_sqlite_fallback = bool(args.allow_adg_sqlite_fallback and not args.no_adg_sqlite_fallback)
+    required_routes = _resolve_required_callable_routes(args)
+    allow_adg_sqlite_fallback = _resolve_allow_adg_sqlite_fallback(args)
     report = build_readiness_report(
         require_clean=args.require_clean_worktree,
         git_publication=args.git_publication,

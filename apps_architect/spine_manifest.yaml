@@ -28,7 +28,7 @@ claimed_routes:
       - "C0 mandatory — patterns are grounded in actual recent plans/rules"
       - "No CommitRequest expected — output is documentation + recommendations"
       - "No build_time_compiler semantics — requests run on demand"
-      - "No formal exception — uses standard GovernedAppRunner substrate"
+      - "Formal registry exception while GovernedAppRunner adapter migration is pending"
 
 # References:
 # - apps_research/spine_manifest.yaml  (canonical R3_grounded_read reference)

@@ -45,7 +45,7 @@ Startup gates:
   - Treat dirty generated/automation artifacts as non-authoritative unless they are committed, timestamp-consistent, and certified by the repo workflow. Do not base SVP claims on local generated churn alone.
   - If documentation edits are warranted while unrelated generated/automation artifacts are dirty, create or use an isolated clean docs branch/worktree from origin/main before editing, or stop after the audit if isolation is unavailable.
   - Stop before editing when dirty entries include active README-family files, GitHub community-health files, Codex automation contracts, governance docs relevant to the edit, source/config files that would affect the claims being made, conflicts, staged mixed-scope changes, or ambiguous user work.
-- For long or PR-producing runs, run python scripts/governance/codex_readiness.py --json.
+- For long or PR-producing docs-only runs, run python scripts/governance/codex_readiness.py --docs-only --json.
 - A codex_readiness.py failure caused only by unrelated dirty generated/automation artifacts is a publication blocker for the current dirty surface, not a blocker for read-only audit or isolated-branch documentation work. Record the failure and continue within the allowed scope above.
 - If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts are touched, validation must include python scripts/governance/verify_codex_primary.py.
 
@@ -126,7 +126,7 @@ Workflow:
 11. Record remaining work as backlog instead of touching every file.
 12. Re-check git status and confirm changed files are documentation-only and isolated from unrelated generated/automation churn.
 13. Validate.
-14. Commit, push, and create/update a PR only if edits were made and publication is authorized by the run context.
+14. If edits were made and publication is authorized by the run context, stage every dirty file produced by the automation run, commit the complete run diff, merge it to main, push main, fetch, and prove local main equals origin/main.
 
 Validation:
 - Always run git diff --check.
@@ -137,7 +137,11 @@ Validation:
 - Do not run broad test suites unless current repo docs require them for documentation-only changes.
 
 Publication:
-If edits are made and publication is authorized, create or use an isolated clean branch/worktree from origin/main named codex/docs-readme-refresh-YYYYMMDD, commit only documentation-scope changes, push the branch, and create or update a PR targeting main. Never push directly to main, force-push main, merge without explicit user authorization, squash without explicit user authorization, or include unrelated local changes. Dirty generated/automation artifacts in another worktree may be reported as background noise, but they must not be included in the docs PR.
+If edits are made and publication is authorized, create or use an isolated branch/worktree from origin/main named codex/docs-readme-refresh-YYYYMMDD, then commit the full dirty set produced in that automation worktree. Do not leave automation-produced dirty files behind as unstaged, staged-but-uncommitted, or unmerged residue.
+
+When the user explicitly authorizes publication or this TOML is invoked in an approved publication mode, merge the complete committed run diff to local main, push main to origin, fetch origin, and prove `git rev-parse main` equals `git rev-parse origin/main`. The final local main and origin/main refs must be identical, and `git status --short --branch` on main must show no dirty files from the automation run.
+
+Dirty files in another protected worktree are not background once the user or automation mode says to include dirty files in the merge. In that mode, enumerate every dirty path from every participating worktree, classify ownership/scope, bring each included dirty file into the publication commit or stop with RCA if a conflict or unsafe ownership question prevents inclusion. Never force-push main, squash without explicit user authorization, or merge a partial subset of the approved dirty-file publication set.
 
 Final report:
 Return branch name, PR URL if created, changed files, README audit highlights, validation evidence, best-practice sources applied, remaining documentation backlog, degraded route or fallback used, and stopped or unsafe items.

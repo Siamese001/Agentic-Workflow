@@ -8,7 +8,7 @@ Enforces the repo-wide governed-app standard defined in:
 Checks
 ------
 CONF01  All governed apps: runner module is importable
-CONF02  All governed apps: runner class is a GovernedAppRunner subclass
+CONF02  All governed apps: runner class is a GovernedAppRunner subclass or canonical callable
 CONF03  All governed apps: capability_token is non-empty and versioned (contains ".")
 CONF04  All CANDIDATE apps (ExceptionAppEntry): exception_reason is non-empty (>= 20 chars)
 CONF05  All CANDIDATE apps (ExceptionAppEntry): exception_category is one of the valid set
@@ -81,21 +81,29 @@ def _check_governed_entry(entry: "GovernedAppEntry") -> list[tuple[str, bool, st
     mod, conf01_pass, conf01_detail = _safe_import_module(entry.runner_module)
     results.append((f"CONF01 [{entry.app_name}] runner module importable", conf01_pass, conf01_detail))
 
-    # CONF02: runner class is GovernedAppRunner subclass
+    # CONF02: runner class is GovernedAppRunner subclass or canonical callable.
+    # The registry contract allows canonical product entrypoints for apps whose
+    # fully-governed spine no longer lives behind a per-app subclass wrapper.
     if conf01_pass and mod is not None:
         try:
             from apps_shared.integrations.governed_app_runner import GovernedAppRunner  # noqa: PLC0415
 
-            cls = getattr(mod, entry.runner_class, None)
-            if cls is None:
+            runner = getattr(mod, entry.runner_class, None)
+            if runner is None:
                 conf02_pass = False
                 conf02_detail = f"class {entry.runner_class!r} not found in module"
-            elif not (isinstance(cls, type) and issubclass(cls, GovernedAppRunner)):
-                conf02_pass = False
-                conf02_detail = f"{entry.runner_class} does not subclass GovernedAppRunner"
-            else:
+            elif isinstance(runner, type) and issubclass(runner, GovernedAppRunner):
                 conf02_pass = True
-                conf02_detail = f"{entry.runner_class} -> {cls.__mro__[1].__name__}"
+                conf02_detail = f"{entry.runner_class} -> {runner.__mro__[1].__name__}"
+            elif not isinstance(runner, type) and callable(runner):
+                conf02_pass = True
+                conf02_detail = f"{entry.runner_class} -> canonical callable"
+            else:
+                conf02_pass = False
+                conf02_detail = (
+                    f"{entry.runner_class} is neither GovernedAppRunner subclass "
+                    "nor callable entrypoint"
+                )
         except (ImportError, AttributeError) as exc:
             conf02_pass = False
             conf02_detail = str(exc)[:60]
@@ -103,7 +111,11 @@ def _check_governed_entry(entry: "GovernedAppEntry") -> list[tuple[str, bool, st
         conf02_pass = False
         conf02_detail = "skipped — module not importable"
     results.append(
-        (f"CONF02 [{entry.app_name}] runner is GovernedAppRunner subclass", conf02_pass, conf02_detail)
+        (
+            f"CONF02 [{entry.app_name}] runner is governed runner/callable",
+            conf02_pass,
+            conf02_detail,
+        )
     )
 
     # CONF03: capability_token is non-empty and versioned

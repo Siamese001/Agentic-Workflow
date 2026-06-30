@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import tomllib
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -212,6 +213,37 @@ def _norm_path(path: str | Path) -> str:
     return str(Path(path)).replace("/", "\\").rstrip("\\").casefold()
 
 
+def _git_common_repo_root(root: Path) -> Path | None:
+    """Return the primary repository root for a linked worktree when provable."""
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    common_dir = proc.stdout.strip()
+    if not common_dir:
+        return None
+    path = Path(common_dir)
+    if path.name.casefold() != ".git":
+        return None
+    return path.parent.resolve()
+
+
+def _allowed_automation_cwd_roots(root: Path) -> set[str]:
+    allowed = {_norm_path(root)}
+    common_root = _git_common_repo_root(root)
+    if common_root is not None:
+        allowed.add(_norm_path(common_root))
+    return allowed
+
+
 def _load_toml(path: Path) -> tuple[dict[str, Any] | None, str | None]:
     try:
         return tomllib.loads(path.read_text(encoding="utf-8")), None
@@ -246,12 +278,12 @@ def _validate_common_automation(
         issues.append(EnforcementHomeIssue("automation_status", f"{automation_id}: status must be ACTIVE"))
 
     cwds = data.get("cwds")
-    expected_root = _norm_path(root)
-    if not isinstance(cwds, list) or expected_root not in {_norm_path(str(item)) for item in cwds}:
+    allowed_roots = _allowed_automation_cwd_roots(root)
+    if not isinstance(cwds, list) or not allowed_roots.intersection({_norm_path(str(item)) for item in cwds}):
         issues.append(
             EnforcementHomeIssue(
                 "automation_cwd",
-                f"{automation_id}: cwds must include {root}",
+                f"{automation_id}: cwds must include {root} or this worktree's canonical repo root",
             )
         )
     return issues

@@ -78,18 +78,24 @@ Governed entries are expected to pass CONF01–CONF03 (runner importable, govern
 
 ## 3. Formal Governed Exceptions
 
-Three `apps_*` packages have formal exceptions from GovernedAppRunner or the generic governed substrate.
-Both are formalized — not ad hoc.
+Five `apps_*` packages have formal exceptions from GovernedAppRunner or the generic governed substrate.
+Each is formalized — not ad hoc.
 
 | App | Reason Code | Blocked Layers | Safe Adoption | Compensating Controls | Handler |
 |---|---|---|---|---|---|
+| `apps_architect` | `PENDING_MIGRATION` | GovernedAppRunner | apps_shared.spine_emission, cert_fec_producer | CC-ARCH-01..02 | `GovernedArchitectException` |
 | `apps_eval` | `CIRCULAR_DEPENDENCY` | L0,L1,C0,L2,L5,L6 | BUS_T_telemetry, conformance_metadata | CC-EVAL-01..04 | `GovernedEvalException` |
-| `apps_lic` | `PENDING_MIGRATION` | GovernedAppRunner, GovernedLicRun | canonical_dispatch, agentic_core spine bindings | CC-LIC-01..02 | `CanonicalDispatchResult` |
+| `apps_lic` | `PENDING_MIGRATION` | GovernedAppRunner, GovernedLicRun | canonical_dispatch, agentic_core spine bindings | CC-LIC-01..02 | `GovernedLicException` |
+| `apps_qna` | `PENDING_MIGRATION` | GovernedAppRunner | ValidatedRequest spine_handoff, runtime bindings | CC-QNA-01..02 | `GovernedQnaException` |
 | `apps_underwriting_ai` | `REGULATORY_DOMAIN` | L0,L1,C0,L2,L5 | BUS_T_telemetry, conformance_metadata | CC-UW-01..04 | `GovernedUwException` |
+
+**Why `apps_architect` is an exception:** the product scan is currently wrapped by `apps_shared.spine_emission.governed_run` and emits cert FEC evidence, but it does not expose a `GovernedAppRunner` subclass yet.
 
 **Why `apps_eval` cannot be governed:** it IS the evaluation framework. Routing it through `GovernedAppRunner` (which calls `evaluate_and_emit` in L5) would create a circular evaluation-of-evaluator dependency. The `GovernedEvalException` handler emits BUS-T telemetry without calling `evaluate_and_emit`.
 
 **Why `apps_lic` is an exception:** the product runtime uses the canonical-dispatch spine (`run_canonical_apps_lic_spine`) rather than `GovernedAppRunner`; the registry records the safe adopted layers and compensating controls.
+
+**Why `apps_qna` is an exception:** build-time pack generation is wrapped in a `ValidatedRequest` spine handoff and the live runtime pack route exposes canonical runtime bindings, but no `GovernedAppRunner` subclass exists yet.
 
 **Why `apps_underwriting_ai` cannot be governed:** underwriting decisions are legally-binding credit determinations. The generic evidence-retrieval substrate is inappropriate for a regulated decision domain. The app provides its own `CoreAdapter` + `CoreHandoffPayload` governance protocol (equivalent L2 guarantee) and `ObservabilityAdapter` (equivalent L6).
 
@@ -108,7 +114,7 @@ python ops_scripts/ci/run_architecture_proof.py
 
 | Suite ID | Command | Checks | What it validates |
 |---|---|---|---|
-| S1 | `python ops_scripts/ci/check_governed_app_conformance.py` | 36 (CONF01–CONF08, EXCF01–EXCF08) | Registry structure, runner imports, formal exception schema |
+| S1 | `python ops_scripts/ci/check_governed_app_conformance.py` | 52 (CONF01–CONF08, EXCF01–EXCF08) | Registry structure, runner imports, formal exception schema |
 | S2 | `python tools/eval/retrieval_benchmark.py --exception-framework-proof` | governed apps + exception controls + no-adhoc | Behavioral proof for governed loop and exception controls |
 | S3 | `python tools/eval/retrieval_benchmark.py --regression-check` | regression baseline | Evidence governance regression (grounding, coverage, telemetry) |
 
@@ -145,7 +151,7 @@ When the proof pack is green, the expected shape is:
 ```
 Suite  Label                           Expected
 ─────  ──────────────────────────────  ────────────────────────────────────
-S1     Conformance Gate                36/36 PASS (CONF01-08 + EXCF01-08)
+S1     Conformance Gate                52/52 PASS (CONF01-08 + EXCF01-08)
 S2     Exception Framework Proof       PASS
        ├─ governed_apps                PASS (registry-governed entries)
        ├─ eval_exception               10/10 PASS (EVAL01-EVAL10)
@@ -157,10 +163,9 @@ S3     Regression Check                PASS
 FINAL  Architecture Proof Pack         PASS
 ```
 
-**Current docs-refresh S1 result:** FAIL. The conformance gate reports missing registry entries for
-`apps_architect` and `apps_qna`; stale import/handler drift for `apps_exec`, `apps_eval`,
-`apps_underwriting_ai`, and `apps_lic`; and an `apps_rg` governed-entrypoint shape mismatch. Treat the
-command output as authoritative until these gaps are repaired.
+**Current docs-refresh S1 result:** PASS. The conformance gate reports 52/52 checks passing after registry rows,
+runner imports, formal exception handlers, and the `apps_rg` canonical callable shape were aligned. Treat the
+command output as authoritative for current status.
 
 ---
 
@@ -201,5 +206,8 @@ All three gaps manifest in test-harness context only (no live vector store, mock
 | Conformance gate | `ops_scripts/ci/check_governed_app_conformance.py` |
 | Release gate (one command) | `ops_scripts/ci/run_architecture_proof.py` |
 | Proof harness | `tools/eval/retrieval_benchmark.py` |
+| architect exception handler | `apps_architect/integrations/governed_architect_exception.py` |
 | eval exception handler | `apps_eval/integrations/governed_eval_exception.py` |
+| lic exception handler | `apps_lic/integrations/governed_lic_exception.py` |
+| qna exception handler | `apps_qna/integrations/governed_qna_exception.py` |
 | uw exception handler | `apps_underwriting_ai/integrations/governed_uw_exception.py` |

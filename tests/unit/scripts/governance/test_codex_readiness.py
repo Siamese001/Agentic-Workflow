@@ -88,6 +88,25 @@ def test_default_required_callable_routes_cover_core_only() -> None:
     assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == ("memory", "GitKraken")
 
 
+def test_docs_only_mode_omits_default_callable_routes_and_allows_adg_fallback() -> None:
+    args = mod.parse_args(["--docs-only"])
+
+    assert mod._resolve_required_callable_routes(args) == ()
+    assert mod._resolve_allow_adg_sqlite_fallback(args) is True
+
+
+def test_docs_only_mode_keeps_explicit_required_routes() -> None:
+    args = mod.parse_args(["--docs-only", "--require-callable-route", "vector_db"])
+
+    assert mod._resolve_required_callable_routes(args) == ("vector_db",)
+
+
+def test_no_adg_sqlite_fallback_overrides_docs_only() -> None:
+    args = mod.parse_args(["--docs-only", "--no-adg-sqlite-fallback"])
+
+    assert mod._resolve_allow_adg_sqlite_fallback(args) is False
+
+
 def test_vector_semantic_guard_warns_without_explicit_state(monkeypatch) -> None:
     monkeypatch.delenv("CODEX_MCP_VECTOR_DB_SEMANTIC_STATE", raising=False)
 
