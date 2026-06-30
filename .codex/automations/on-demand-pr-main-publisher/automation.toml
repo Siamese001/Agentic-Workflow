@@ -51,6 +51,13 @@ Use five phases to reduce runtime without reducing scope:
 4. Debug CI and merge through PR.
 5. Prove closeout and cleanup once, then repeat only failed gates after specific remediation.
 
+Runtime evidence discipline:
+- Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state.
+- A mutation is one of: stash, restore, commit, cherry-pick, merge, rebase, branch create/delete, worktree add/remove, push, PR create/update/merge/close, CI rerun, or closeout cleanup apply.
+- Read-only commands may enrich the current evidence packet, but they must not trigger a full re-audit by themselves.
+- Store command, exit code, head/tree SHA when applicable, and the key output needed for the final proof table as the run proceeds.
+- Rerun only the failed gate bundle after remediation; do not rerun the full proof stack while no state has changed.
+
 0. Intake audit first
 Run before PR, branch, cherry-pick, merge, or cleanup work:
 - git fetch origin --prune
@@ -66,6 +73,7 @@ Rules:
 - If the audit recommends clean_detached_origin_main_worktree, create or reuse a clean worktree under C:\Git\Agentic-Workflow-FRESH-worktrees from current origin/main and continue there after preserving any dirty protected worktree.
 - Dirty protected worktrees are preservation warnings during intake only. They must be cleaned, committed, safely fast-forwarded, removed, stashed with explicit proof, or reported as a blocker before final success.
 - The audit's unmerged_branches and git cherry -v evidence are the branch-recovery inventory, but not closeout proof.
+- Persist the intake outputs as the baseline evidence packet. Reuse the packet until a mutation listed in Runtime evidence discipline occurs.
 - If any required pass criterion or proof-table row is FAIL at final closeout, the automation is not done; keep working the remediation loop until every required gate passes, or stop only with RCA for an external blocker that cannot be cleared in-run.
 
 State checkpoint:
@@ -140,6 +148,7 @@ Inventory:
 Runtime simplification:
 - Keep the prior PR/source recovery scope. Do not skip branch recovery solely to save time.
 - First run the shallow inventory for all no-merged candidate branches.
+- If git branch --no-merged origin/main is empty, record that empty output and skip deep prior-branch inspection.
 - Deep inspect only branches that are current, non-duplicative, relevant to the requested publication or cleanup goal, or blocking final closeout.
 - For stale, generated-only, superseded, unclear, or explicitly retained branches, record the skip/retain reason and do not run deeper per-file replay unless the branch blocks closeout.
 
@@ -174,7 +183,10 @@ Run:
 - focused checks based on changed files
 - python scripts/governance/verify_codex_primary.py if Codex docs/scripts changed
 
-Re-run publication audit and checkpoint once before PR creation/update.
+Run local validation once per committed tree. If the tree hash is unchanged, reuse the validation evidence instead of rerunning the same local checks.
+
+Re-run the non-strict publication audit and checkpoint once before PR creation/update only if a mutation occurred after the intake packet.
+Treat strict single-main closeout as a post-merge gate; before merge, a live publication branch is expected to be ahead of origin/main and must not cause duplicate strict closeout loops.
 
 Then:
 - push the publication branch to origin.
@@ -188,7 +200,9 @@ For every pushed head SHA:
 - gh run list --branch <publication_branch>
 
 If checks are pending:
-- poll pending checks with bounded waits.
+- Capture the PR headRefOid and watch only checks/runs for that exact SHA.
+- Prefer gh pr checks <number> --watch --fail-fast for current-head CI when available; otherwise poll pending checks with bounded waits.
+- Do not repeatedly query broad gh run list output after headRefOid and current-head checks are unambiguous.
 
 If checks fail, are cancelled, skipped-unknown, or missing:
 - gh run view <run_id>
@@ -203,7 +217,7 @@ Rules:
 - If blocked by secrets, permission, external outage, branch protection, or broad redesign, stop with RCA.
 
 6. Publish through PR
-Re-run publication audit and checkpoint once before merge.
+Re-run publication audit and checkpoint once before merge only if local or remote state changed since PR creation/update.
 
 Rules:
 - Never squash.
@@ -228,6 +242,7 @@ Run once after PR merge:
 Runtime simplification:
 - Repeat the full closeout proof stack only after a specific remediation is applied for a failed closeout gate.
 - Do not repeat the full stack while no state has changed.
+- Run codex_main_closeout.py --apply --fetch --json once after PR merge, then codex_main_closeout.py --check --fetch --json once. Repeat that pair only if apply changed state or check reports a concrete blocker that was then remediated.
 
 Success requires:
 - a GitHub PR number/URL exists for the selected publication work and is MERGED
@@ -280,6 +295,7 @@ Include:
 - worktrees removed/retained
 - final GitHub main SHA
 - run receipt path if created
+- state mutations that triggered re-proof, plus any skipped duplicate proof loops and the evidence packet reused
 - RCA for any stop/failure
 - include the verifier phrase proof table with columns requirement, runtime evidence, and result in the report contract text so the repo-owned enforcement guard can match it
 
@@ -298,3 +314,30 @@ execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-on-demand-pr-main-publisher", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-gpu-policy-invariant", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-competencies-evidence-closeout", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-preserve-worktrees-folder-closeout"]
 created_at = 1781951933034
 updated_at = 1784207279000
+
+[runtime_optimization]
+schema = "publisher-runtime-optimization/v1"
+snapshot_granularity = "phase"
+rerun_policy = "mutation_triggered"
+strict_single_main_phase = "post_merge"
+ci_watch_mode = "pr_checks_watch_fail_fast"
+ci_identity_field = "headRefOid"
+skip_deep_branch_inspection_when_no_unmerged = true
+local_validation_cache_key = "tree_hash"
+closeout_apply_check_policy = "once_then_repeat_after_remediation"
+broad_run_list_policy = "only_when_checks_missing_or_ambiguous"
+evidence_packet_required = true
+mutation_events = [
+  "stash",
+  "restore",
+  "commit",
+  "cherry_pick",
+  "merge",
+  "rebase",
+  "branch_create_delete",
+  "worktree_add_remove",
+  "push",
+  "pr_create_update_merge_close",
+  "ci_rerun",
+  "closeout_cleanup_apply",
+]

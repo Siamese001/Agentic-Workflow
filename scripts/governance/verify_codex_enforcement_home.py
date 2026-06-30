@@ -38,15 +38,23 @@ FORBIDDEN_REPO_CODEX_TREES = (
     ".codex/agent-instructions",
     ".codex/automation",
 )
-# Codex app deployment records live under CODEX_HOME/automations. This guard
-# only rejects legacy repo-source copies that were historically misplaced there.
-FORBIDDEN_USER_PROFILE_AUTOMATION_IDS = (
-    "on-demand-pr-main-publisher",
-    "weekly-adg-audit-and-burndown",
-)
+# Codex app deployment records live under CODEX_HOME/automations. Thin
+# launchers are allowed there only when they point back at repo-owned contracts;
+# copied governance contracts in the user profile are forbidden.
+USER_PROFILE_AUTOMATION_IDS = AUTOMATION_IDS + ("on-demand-pr-main-publisher-2",)
+USER_PROFILE_LAUNCHER_SNIPPET = "Use the repo-owned contract at"
+USER_PROFILE_LAUNCHER_MAX_PROMPT_CHARS = 1000
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
+    "Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state",
+    "Read-only commands may enrich the current evidence packet, but they must not trigger a full re-audit by themselves",
+    "If git branch --no-merged origin/main is empty, record that empty output and skip deep prior-branch inspection",
+    "Run local validation once per committed tree",
+    "Treat strict single-main closeout as a post-merge gate",
+    "Capture the PR headRefOid and watch only checks/runs for that exact SHA",
+    "Prefer gh pr checks <number> --watch --fail-fast",
+    "Run codex_main_closeout.py --apply --fetch --json once after PR merge",
     "HEAD == origin/main",
     "git status --short --branch shows only ## main...origin/main",
     "git diff --stat has no output",
@@ -66,6 +74,33 @@ PUBLICATION_FORBIDDEN_PROMPT_SNIPPETS = (
     "retained dirty worktrees",
     "preserved dirty worktrees",
 )
+PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT = {
+    "schema": "publisher-runtime-optimization/v1",
+    "snapshot_granularity": "phase",
+    "rerun_policy": "mutation_triggered",
+    "strict_single_main_phase": "post_merge",
+    "ci_watch_mode": "pr_checks_watch_fail_fast",
+    "ci_identity_field": "headRefOid",
+    "skip_deep_branch_inspection_when_no_unmerged": True,
+    "local_validation_cache_key": "tree_hash",
+    "closeout_apply_check_policy": "once_then_repeat_after_remediation",
+    "broad_run_list_policy": "only_when_checks_missing_or_ambiguous",
+    "evidence_packet_required": True,
+    "mutation_events": [
+        "stash",
+        "restore",
+        "commit",
+        "cherry_pick",
+        "merge",
+        "rebase",
+        "branch_create_delete",
+        "worktree_add_remove",
+        "push",
+        "pr_create_update_merge_close",
+        "ci_rerun",
+        "closeout_cleanup_apply",
+    ],
+}
 
 ADG_REQUIRED_PROMPT_SNIPPETS = (
     "clean main-branch state",
@@ -344,6 +379,32 @@ def _validate_publication_prompt(automation_id: str, prompt: str) -> list[Enforc
     return issues
 
 
+def _validate_publication_runtime_optimization(
+    automation_id: str,
+    data: dict[str, Any],
+) -> list[EnforcementHomeIssue]:
+    runtime = data.get("runtime_optimization")
+    if not isinstance(runtime, dict):
+        return [
+            EnforcementHomeIssue(
+                "publication_runtime_optimization_missing",
+                f"{automation_id}: missing [runtime_optimization] metadata",
+            )
+        ]
+
+    issues: list[EnforcementHomeIssue] = []
+    for field, expected_value in PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT.items():
+        actual_value = runtime.get(field)
+        if actual_value != expected_value:
+            issues.append(
+                EnforcementHomeIssue(
+                    "publication_runtime_optimization_contract",
+                    f"{automation_id}: runtime_optimization.{field} expected {expected_value!r}, got {actual_value!r}",
+                )
+            )
+    return issues
+
+
 def _validate_adg_prompt(automation_id: str, prompt: str) -> list[EnforcementHomeIssue]:
     issues: list[EnforcementHomeIssue] = []
     for snippet in ADG_REQUIRED_PROMPT_SNIPPETS:
@@ -421,6 +482,7 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
         return issues
     if automation_id == "on-demand-pr-main-publisher":
         issues.extend(_validate_publication_prompt(automation_id, prompt))
+        issues.extend(_validate_publication_runtime_optimization(automation_id, data))
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
     if automation_id == "adg-p0-blocker-burndown":
@@ -546,14 +608,31 @@ def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
     return issues
 
 
-def _forbidden_user_profile_paths(user_codex_home: Path) -> list[Path]:
-    paths: list[Path] = []
-    paths.extend(
+def _user_profile_automation_paths(user_codex_home: Path) -> list[Path]:
+    return [
         user_codex_home / "automations" / automation_id / "automation.toml"
-        for automation_id in FORBIDDEN_USER_PROFILE_AUTOMATION_IDS
+        for automation_id in USER_PROFILE_AUTOMATION_IDS
+    ]
+
+
+def _forbidden_user_profile_skill_paths(user_codex_home: Path) -> list[Path]:
+    return [user_codex_home / "skills" / skill_id / "SKILL.md" for skill_id in REPO_SKILL_IDS]
+
+
+def _is_thin_user_profile_launcher(path: Path, root: Path) -> bool:
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    prompt = data.get("prompt")
+    if not isinstance(prompt, str):
+        return False
+    repo_contract_prefix = str(root / ".codex" / "automations")
+    return (
+        USER_PROFILE_LAUNCHER_SNIPPET in prompt
+        and repo_contract_prefix in prompt
+        and len(prompt) <= USER_PROFILE_LAUNCHER_MAX_PROMPT_CHARS
     )
-    paths.extend(user_codex_home / "skills" / skill_id / "SKILL.md" for skill_id in REPO_SKILL_IDS)
-    return paths
 
 
 def _forbidden_repo_paths(root: Path) -> list[Path]:
@@ -583,7 +662,17 @@ def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_
         if not skill_path.exists():
             issues.append(EnforcementHomeIssue("repo_skill_missing", f"{skill_path}: missing repo-owned skill"))
 
-    for path in _forbidden_user_profile_paths(user_codex_home):
+    for path in _user_profile_automation_paths(user_codex_home):
+        if path.exists():
+            if not _is_thin_user_profile_launcher(path, root):
+                issues.append(
+                    EnforcementHomeIssue(
+                        "user_profile_enforcement_artifact",
+                        f"{path}: Agentic-Workflow enforcement must live under {root}; user-profile automation files may only be thin launchers to repo-owned contracts",
+                    )
+                )
+
+    for path in _forbidden_user_profile_skill_paths(user_codex_home):
         if path.exists():
             issues.append(
                 EnforcementHomeIssue(
