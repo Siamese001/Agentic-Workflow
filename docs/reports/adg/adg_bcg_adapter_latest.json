@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-01T08:39:25+00:00",
+  "generated_at_utc": "2026-07-01T09:06:20+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -13,6 +13,43 @@
   },
   "policy_version": "2026-06-28.high_signal_burndown_v1",
   "priority_rows": [
+    {
+      "band": "P0",
+      "baseline_count": null,
+      "classification": "blocked",
+      "delta_vs_baseline": null,
+      "enforcement": "block",
+      "gate_class": "CoreImportsAppsGate",
+      "gate_id": "13_core_imports_apps",
+      "is_burndown_work": true,
+      "is_kpi_or_watchlist": false,
+      "materiality": "core_app_boundary",
+      "next_step": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
+      "raw_gate": {
+        "band": "P0",
+        "baseline_count": null,
+        "classification": "blocked",
+        "dispatch": "in-process",
+        "enforcement": "block",
+        "exit_code": 1,
+        "gate_class": "CoreImportsAppsGate",
+        "gate_id": "13_core_imports_apps",
+        "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
+        "owner": "adg_gates",
+        "source": "sql",
+        "status": "fail",
+        "stderr_tail": [],
+        "violation_count": 3
+      },
+      "reported_for_priority_queue": true,
+      "rows": 3,
+      "section": "fix_now",
+      "section_label": "Fix now",
+      "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
+      "status": "fail",
+      "sub": "block",
+      "verdict": "FIX"
+    },
     {
       "band": "P0",
       "baseline_count": 1601,
@@ -533,7 +570,7 @@
     },
     {
       "band": "P2",
-      "baseline_count": 979,
+      "baseline_count": 980,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -545,7 +582,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P2",
-        "baseline_count": 979,
+        "baseline_count": 980,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -557,13 +594,13 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 979
+        "violation_count": 980
       },
       "reported_for_priority_queue": true,
-      "rows": 979,
+      "rows": 980,
       "section": "burn_down",
       "section_label": "Burn down / owned backlog",
-      "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 979 at floor (baseline 979); no new debt.",
+      "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 980 at floor (baseline 980); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -609,7 +646,7 @@
     },
     {
       "band": "P3",
-      "baseline_count": 10778,
+      "baseline_count": 10781,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -621,7 +658,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P3",
-        "baseline_count": 10778,
+        "baseline_count": 10781,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -633,20 +670,20 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 10778
+        "violation_count": 10781
       },
       "reported_for_priority_queue": false,
-      "rows": 10778,
+      "rows": 10781,
       "section": "kpi_watchlist",
       "section_label": "KPI / watchlist",
-      "signal": "Counts: Unused import edges in production modules. Sub: 10778 at floor (baseline 10778); no new debt.",
+      "signal": "Counts: Unused import edges in production modules. Sub: 10781 at floor (baseline 10781); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
     },
     {
       "band": "P3",
-      "baseline_count": 1171,
+      "baseline_count": 1168,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -658,7 +695,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P3",
-        "baseline_count": 1171,
+        "baseline_count": 1168,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -670,13 +707,13 @@
         "source": "disk",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 1171
+        "violation_count": 1168
       },
       "reported_for_priority_queue": false,
-      "rows": 1171,
+      "rows": 1168,
       "section": "kpi_watchlist",
       "section_label": "KPI / watchlist",
-      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1171 at floor (baseline 1171); no new debt.",
+      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1168 at floor (baseline 1168); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -762,7 +799,7 @@
       "description": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
       "gate_count": 15,
       "label": "Burn down / owned backlog",
-      "row_count": 11390,
+      "row_count": 11391,
       "rows": [
         {
           "band": "P0",
@@ -1284,7 +1321,7 @@
         },
         {
           "band": "P2",
-          "baseline_count": 979,
+          "baseline_count": 980,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -1296,7 +1333,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P2",
-            "baseline_count": 979,
+            "baseline_count": 980,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -1308,13 +1345,13 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 979
+            "violation_count": 980
           },
           "reported_for_priority_queue": true,
-          "rows": 979,
+          "rows": 980,
           "section": "burn_down",
           "section_label": "Burn down / owned backlog",
-          "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 979 at floor (baseline 979); no new debt.",
+          "signal": "Counts: Cross-layer imports where target has empty type_surface. Sub: 980 at floor (baseline 980); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -1323,7 +1360,7 @@
     },
     "clear": {
       "description": "Zero-action rows.",
-      "gate_count": 29,
+      "gate_count": 28,
       "label": "Clear",
       "row_count": 0,
       "rows": [
@@ -1360,43 +1397,6 @@
           "section": "clear",
           "section_label": "Clear",
           "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: No rows.",
-          "status": "pass",
-          "sub": "\u2014",
-          "verdict": "CLEAR"
-        },
-        {
-          "band": "P0",
-          "baseline_count": null,
-          "classification": "pass",
-          "delta_vs_baseline": null,
-          "enforcement": "block",
-          "gate_class": "CoreImportsAppsGate",
-          "gate_id": "13_core_imports_apps",
-          "is_burndown_work": false,
-          "is_kpi_or_watchlist": false,
-          "materiality": "core_app_boundary",
-          "next_step": "None \u2014 gate clean (zero rows).",
-          "raw_gate": {
-            "band": "P0",
-            "baseline_count": null,
-            "classification": "pass",
-            "dispatch": "in-process",
-            "enforcement": "block",
-            "exit_code": 0,
-            "gate_class": "CoreImportsAppsGate",
-            "gate_id": "13_core_imports_apps",
-            "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
-            "owner": "adg_gates",
-            "source": "sql",
-            "status": "pass",
-            "stderr_tail": [],
-            "violation_count": 0
-          },
-          "reported_for_priority_queue": false,
-          "rows": 0,
-          "section": "clear",
-          "section_label": "Clear",
-          "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: No rows.",
           "status": "pass",
           "sub": "\u2014",
           "verdict": "CLEAR"
@@ -2404,10 +2404,48 @@
     },
     "fix_now": {
       "description": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
-      "gate_count": 0,
+      "gate_count": 1,
       "label": "Fix now",
-      "row_count": 0,
-      "rows": []
+      "row_count": 3,
+      "rows": [
+        {
+          "band": "P0",
+          "baseline_count": null,
+          "classification": "blocked",
+          "delta_vs_baseline": null,
+          "enforcement": "block",
+          "gate_class": "CoreImportsAppsGate",
+          "gate_id": "13_core_imports_apps",
+          "is_burndown_work": true,
+          "is_kpi_or_watchlist": false,
+          "materiality": "core_app_boundary",
+          "next_step": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
+          "raw_gate": {
+            "band": "P0",
+            "baseline_count": null,
+            "classification": "blocked",
+            "dispatch": "in-process",
+            "enforcement": "block",
+            "exit_code": 1,
+            "gate_class": "CoreImportsAppsGate",
+            "gate_id": "13_core_imports_apps",
+            "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
+            "owner": "adg_gates",
+            "source": "sql",
+            "status": "fail",
+            "stderr_tail": [],
+            "violation_count": 3
+          },
+          "reported_for_priority_queue": true,
+          "rows": 3,
+          "section": "fix_now",
+          "section_label": "Fix now",
+          "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
+          "status": "fail",
+          "sub": "block",
+          "verdict": "FIX"
+        }
+      ]
     },
     "kpi_watchlist": {
       "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
@@ -2454,7 +2492,7 @@
         },
         {
           "band": "P3",
-          "baseline_count": 10778,
+          "baseline_count": 10781,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -2466,7 +2504,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P3",
-            "baseline_count": 10778,
+            "baseline_count": 10781,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -2478,20 +2516,20 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 10778
+            "violation_count": 10781
           },
           "reported_for_priority_queue": false,
-          "rows": 10778,
+          "rows": 10781,
           "section": "kpi_watchlist",
           "section_label": "KPI / watchlist",
-          "signal": "Counts: Unused import edges in production modules. Sub: 10778 at floor (baseline 10778); no new debt.",
+          "signal": "Counts: Unused import edges in production modules. Sub: 10781 at floor (baseline 10781); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
         },
         {
           "band": "P3",
-          "baseline_count": 1171,
+          "baseline_count": 1168,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -2503,7 +2541,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P3",
-            "baseline_count": 1171,
+            "baseline_count": 1168,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -2515,13 +2553,13 @@
             "source": "disk",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 1171
+            "violation_count": 1168
           },
           "reported_for_priority_queue": false,
-          "rows": 1171,
+          "rows": 1168,
           "section": "kpi_watchlist",
           "section_label": "KPI / watchlist",
-          "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1171 at floor (baseline 1171); no new debt.",
+          "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1168 at floor (baseline 1168); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -2605,25 +2643,25 @@
   },
   "source": {
     "burndown_schema_version": "2.2",
-    "overall_exit_code": 0,
-    "snapshot": "adg_indexed_07012026_0418.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07012026_0418.sqlite",
-    "timestamp": "2026-07-01T08:35:52.571517+00:00"
+    "overall_exit_code": 1,
+    "snapshot": "adg_indexed_07012026_0451.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07012026_0451.sqlite",
+    "timestamp": "2026-07-01T09:04:01.251261+00:00"
   },
   "summary": {
     "burn_down_gates": 15,
-    "burn_down_rows": 11390,
-    "clear_gates": 29,
-    "fix_now_gates": 0,
-    "fix_now_rows": 0,
+    "burn_down_rows": 11391,
+    "clear_gates": 28,
+    "fix_now_gates": 1,
+    "fix_now_rows": 3,
     "kpi_watchlist_gates": 5,
     "kpi_watchlist_rows": 12523,
-    "priority_queue_gate_count": 15,
-    "priority_queue_row_count": 11390,
+    "priority_queue_gate_count": 16,
+    "priority_queue_row_count": 11394,
     "report_only_gate_count": 5,
     "report_only_row_count": 12523,
     "total_gates": 49,
-    "work_section_gate_count": 15,
-    "work_section_row_count": 11390
+    "work_section_gate_count": 16,
+    "work_section_row_count": 11394
   }
 }
