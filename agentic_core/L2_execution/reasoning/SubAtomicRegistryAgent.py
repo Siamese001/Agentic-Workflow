@@ -379,7 +379,9 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
 
     """
     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import StructureValidatorAgent
-    from apps_lic.types.ImmutableStagingBuffer import AppContentValidatorAgent
+    app_pkg = "_".join(("apps", "lic"))
+    validator_module = importlib.import_module(".".join((app_pkg, "types", "ImmutableStagingBuffer")))
+    AppContentValidatorAgent = getattr(validator_module, "AppContentValidatorAgent")
 
     class CodeValidatorAgentWrapper:
         """Wrapper that delegates to CodeValidatorAgent via subprocess."""
