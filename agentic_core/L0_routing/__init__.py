@@ -138,6 +138,7 @@ def _load_app_attr(module_parts: tuple[str, ...], attr: str):
 
 
 # Reachability anchors for the ADG modules that must stay live from L0 seeds.
+_reach_l1_cognition_package = import_module("agentic_core.L1_cognition")
 _reach_apply_c03_graph_full_zero_loss_overwrite = _load_app_attr(
     (_APP_RG_PKG, "fact_inventory", "apply_c03_graph_full_zero_loss_overwrite"),
     "apply_overwrite",
@@ -196,6 +197,7 @@ _reach_ensure_runtime_ready = _load_app_attr(
 )
 
 _REACHABILITY_ANCHORS = (
+    _reach_l1_cognition_package,
     _reach_apply_c03_graph_full_zero_loss_overwrite,
     _reach_apply_c03_graph_skill_granularity_hardening,
     _reach_apply_graphdb_capability_sqlite_hardening,
