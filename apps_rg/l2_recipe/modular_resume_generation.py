@@ -608,10 +608,9 @@ def run_modular_resume_generation(
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
         jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
         br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
-        # Per-lane composite-judge default: competencies -> openai_chatgpt, ibm_bullets ->
-        # anthropic_claude, everything else -> standard panel. Resolving WITHOUT a section_id
-        # would force the 3-provider panel onto every lane in whole-run mode, defeating the
-        # one-composite-judge default for the bullet/competency lanes. Resolve per-lane below.
+        # Per-lane composite-judge defaults preserve protected Claude-primary panels while keeping
+        # bullet/narrative lanes compact. Resolving WITHOUT a section_id would force one global
+        # panel onto every lane in whole-run mode, defeating the section policy. Resolve per-lane below.
         x1d_eff = resolve_cli_x1d_judges(None)
 
         def _lane_x1d_judges(lane_id: str) -> str:

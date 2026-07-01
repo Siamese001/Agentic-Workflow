@@ -168,6 +168,6 @@ def test_call_section_model_provider_pins_openai_competencies_model(monkeypatch)
     )
 
     assert captured["claude_model"] is None
-    assert captured["openai_model"] == "gpt-5.4-mini"
+    assert captured["openai_model"] == "gpt-5.4-mini-2026-03-17"
     assert gateway.calls[0]["profile"] == ProviderProfile.EXTERNAL_OPENAI
 

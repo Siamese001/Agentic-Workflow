@@ -82,7 +82,7 @@ def test_competencies_primary_and_backup_models_use_section_overrides() -> None:
     assert (
         sml.external_openai_generation_model(section_id="competencies")
         == _yaml_openai_section_model("competencies")
-        == "gpt-5.4-mini"
+        == "gpt-5.4-mini-2026-03-17"
     )
     assert sml.external_openai_generation_model(section_id="headline") == _yaml_openai_default_model()
 

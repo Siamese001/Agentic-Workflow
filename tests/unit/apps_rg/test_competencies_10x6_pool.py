@@ -526,7 +526,7 @@ def test_apply_executive_capability_projection_preserves_adaptive_selection() ->
     assert COMPETENCIES_MIN_CATEGORY_COUNT <= len(out.get("categories") or []) <= MAX_CATEGORY_COUNT
 
 
-def test_canonical_competencies_cli_uses_openai_chatgpt_only() -> None:
+def test_canonical_competencies_cli_uses_required_openai_judge() -> None:
     from apps_rg.runtime.internal.generated_lane_rollup import canonical_lane_command
 
     cmd = canonical_lane_command("competencies")

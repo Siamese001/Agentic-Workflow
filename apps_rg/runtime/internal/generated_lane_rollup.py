@@ -27,6 +27,7 @@ from apps_rg.runtime.runtime_proof_layout import (
     resolve_rollup_run_dir,
 )
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
+from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_PROOFS = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs"
@@ -38,7 +39,8 @@ CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS: str = (
     "--allow-non-allow-exit-zero"
 )
 COMPETENCIES_CANONICAL_PROVIDER_MODEL_JUDGES_FLAGS: str = (
-    "--provider external_claude --x1d-judges openai_chatgpt --allow-non-allow-exit-zero"
+    f"--provider external_claude --x1d-judges {COMPETENCIES_DEFAULT_X1D_JUDGES} "
+    "--allow-non-allow-exit-zero"
 )
 
 
