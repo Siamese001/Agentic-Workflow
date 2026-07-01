@@ -217,10 +217,10 @@ class MissionPreflight:
         return self._hierarchy_agent
 
     def _target_territory(self, target_path: Path) -> str | None:
-        try:
-            rel = target_path.resolve().relative_to(self.project_root)
-        except ValueError:
+        resolved = target_path.resolve()
+        if not resolved.is_relative_to(self.project_root):
             return None
+        rel = resolved.relative_to(self.project_root)
         return rel.parts[0] if rel.parts else None
 
     def _get_import_agent(self):

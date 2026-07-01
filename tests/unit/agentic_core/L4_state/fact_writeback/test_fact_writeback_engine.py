@@ -111,6 +111,12 @@ class _MemoryStore:
         return len(self.live)
 
 
+class _ExplodingStore(_MemoryStore):
+    def list_staged_rows(self, *, include_embeddings: bool = True) -> list[StagedFactRow]:
+        del include_embeddings
+        raise RuntimeError("staged rows unavailable")
+
+
 def test_profile_driven_routing_uses_no_app_taxonomy() -> None:
     engine = FactWritebackEngine(_profile())
 
@@ -194,6 +200,15 @@ def test_promotion_scores_dedupes_stamps_and_syncs() -> None:
     assert store.staged["duplicate"].metadata["promotion_hold_reason"] == "duplicate_digest:existing"
     assert store.staged["low"].metadata["promotion_hold_reason"].startswith("promotion_score_below_floor")
     assert store.staged["low"].metadata["promotion_score"] == 0.25
+
+
+def test_promotion_reports_specific_runtime_failures() -> None:
+    engine = FactWritebackEngine(_profile())
+
+    receipt = engine.promote(_ExplodingStore(), _request())
+
+    assert receipt["status"] == "FAIL"
+    assert receipt["reason"].startswith("RuntimeError:staged rows unavailable")
 
 
 def test_list_reject_and_drain_held_rows() -> None:

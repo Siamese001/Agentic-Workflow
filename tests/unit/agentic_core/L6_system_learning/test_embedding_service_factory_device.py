@@ -30,3 +30,15 @@ def test_embedding_service_defaults_to_cpu_without_cuda(monkeypatch) -> None:
     monkeypatch.setitem(sys.modules, "torch", fake_torch)
 
     assert EmbeddingServiceFactory._embedding_device() == "cpu"
+
+
+def test_embedding_service_defaults_to_cpu_when_cuda_probe_raises(monkeypatch) -> None:
+    def _boom() -> bool:
+        raise RuntimeError("cuda probe failed")
+
+    fake_torch = SimpleNamespace(cuda=SimpleNamespace(is_available=_boom))
+
+    monkeypatch.delenv("EMBEDDING_DEVICE", raising=False)
+    monkeypatch.setitem(sys.modules, "torch", fake_torch)
+
+    assert EmbeddingServiceFactory._embedding_device() == "cpu"

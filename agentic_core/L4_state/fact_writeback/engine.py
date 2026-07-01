@@ -189,7 +189,16 @@ class FactWritebackEngine:
         receipt = self.make_promotion_receipt(request)
         try:
             self._promote_into_receipt(store, request, receipt, sparse_sync_callback=sparse_sync_callback)
-        except Exception as exc:  # guardian: allow-broad-except -- promotion reports diagnostics off the hot path.
+        except (
+            AttributeError,
+            FileNotFoundError,
+            KeyError,
+            LookupError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:
             receipt["status"] = "FAIL"
             receipt["reason"] = f"{type(exc).__name__}:{exc}"
             _logger.warning("fact writeback promotion failed: %s", exc)

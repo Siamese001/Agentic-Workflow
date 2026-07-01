@@ -12,6 +12,7 @@ import json as _json
 import logging
 import os
 import time
+from numbers import Integral
 from pathlib import Path
 from typing import Any
 
@@ -124,13 +125,20 @@ class NativePersistentCacheClient:
     def _metadata_embedding_dimension(metadata: Any) -> int | None:
         if not isinstance(metadata, dict):
             return None
-        value = metadata.get("embedding_dimension") or metadata.get("dimension")
+        value = metadata.get("embedding_dimension")
+        if value is None:
+            value = metadata.get("dimension")
         if value is None:
             return None
-        try:
-            return int(value)
-        except (TypeError, ValueError):
+        if isinstance(value, bool):
             return None
+        if isinstance(value, Integral):
+            return int(value)
+        if isinstance(value, str):
+            text = value.strip()
+            if text and text.lstrip("+-").isdigit():
+                return int(text)
+        return None
 
     def _init_cache(self) -> None:
         """Initialize SQLite scalar store and ChromaDB vector store with built-in embeddings."""
@@ -221,9 +229,6 @@ class NativePersistentCacheClient:
             OSError,
         ):
             pass  # Migration probe failed — fall through to get_or_create below
-        except Exception as exc:  # guardian: allow-reraising-broad-exception -- Chroma versions disagree on missing-collection exception classes; only not-found probes are swallowed
-            if "not found" not in str(exc).lower():
-                raise
 
         try:
             return self._chroma_client.get_or_create_collection(**self._l2_collection_kwargs(_ef))

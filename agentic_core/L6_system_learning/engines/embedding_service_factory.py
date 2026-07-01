@@ -369,11 +369,16 @@ class EmbeddingServiceFactory:
             return override
         try:
             import torch  # noqa: PLC0415
-
+        except ImportError:
+            return "cpu"
+        except RuntimeError as exc:
+            logger.warning("[EmbeddingServiceFactory] torch import failed; using CPU: %s", exc)
+            return "cpu"
+        try:
             if torch.cuda.is_available():
                 return "cuda"
-        except (ImportError, RuntimeError):
-            pass
+        except RuntimeError as exc:
+            logger.warning("[EmbeddingServiceFactory] torch CUDA probe failed; using CPU: %s", exc)
         return "cpu"
 
     @staticmethod
