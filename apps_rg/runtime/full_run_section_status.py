@@ -9,9 +9,10 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
-
-FULL_RUN_SECTION_STATUS_MD = "FULL_RUN_SECTION_STATUS.md"
-FULL_RUN_SECTION_STATUS_JSON = "full_run_section_status.json"
+from apps_rg.runtime.run_output_contract import (
+    FULL_RUN_SECTION_STATUS_JSON,
+    FULL_RUN_SECTION_STATUS_MD,
+)
 
 # Human-readable section text (relative to lanes/<lane>/).
 LANE_DISPLAY_TXT_CANDIDATES: dict[str, tuple[str, ...]] = {

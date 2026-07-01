@@ -16,7 +16,6 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _extract_anthropic_message_text,
     _extract_json_from_text,
     _is_openai_gpt5_chat_model,
-    _resolve_anthropic_model,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
@@ -41,6 +40,10 @@ from apps_rg.runtime.sections.executive_summary_context_limits import (
     resolve_bullet_selector_briefing_max_chars,
     resolve_bullet_selector_jd_max_chars,
 )
+from apps_rg.runtime.section_model_limits import (
+    resolve_selector_provider_model,
+    selector_role_for_section,
+)
 
 SlotKind = Literal["bullets", "competencies"]
 
@@ -48,7 +51,7 @@ SlotKind = Literal["bullets", "competencies"]
 # previously sent build_x1d_judge_system_prompt(compact=True) as its system prompt. That prompt's
 # JUDGE_COMPACT_OUTPUT block hard-mandates "Return ONLY one compact JSON object" in the GRADE_ONLY
 # rubric shape ({"score_scale", ..., "dimension_verdicts"}), contradicting the user prompt's
-# {"selections": [...]} schema. claude-sonnet-4-6 stochastically resolved the conflict by emitting
+# {"selections": [...]} schema. Claude stochastically resolved the conflict by emitting
 # the rubric object — alone (zero selections, silent MODEL_BACKED degradation) or followed by the
 # selections object as a SECOND top-level JSON object (unparseable by _extract_json_from_text →
 # BLOCKED_RESPONSE_PARSE_ERROR → fallback_first_complete_path → X3_BLOCK). The selector is NOT a
@@ -117,16 +120,6 @@ class PoolSelectorUnavailableError(RuntimeError):
 
 def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
-
-
-def _resolve_openai_model(meta: dict[str, Any], *, section_id: str) -> tuple[str, str]:
-    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
-
-    resolution = resolve_section_proof_judge_model(section_id, "openai_chatgpt")
-    if resolution.model_actual and not resolution.blocked:
-        return resolution.model_actual, resolution.model_source
-    default = str(meta.get("default_model") or "gpt-5.5").strip() or "gpt-5.5"
-    return default, "default"
 
 
 def _bullet_by_id(parsed: dict[str, Any], bullet_id: str) -> dict[str, Any] | None:
@@ -704,7 +697,7 @@ def _parse_selections(text: str) -> dict[str, Any] | None:
     """Extract the pool-selection doc — the JSON object carrying a ``selections`` list.
 
     Bug:BulletPoolSelectorDualJsonObjects (AIG attempt4 + patch-run 2, 2026-06-11):
-    claude-sonnet-4-6 stochastically obeyed the old rubric system prompt IN ADDITION to the
+    Claude stochastically obeyed the old rubric system prompt IN ADDITION to the
     pool-selection user prompt and returned TWO top-level JSON objects — the rubric verdict
     first, then ``{"selections": [...]}`` — separated by a blank line (stop_reason=end_turn;
     not truncation). ``_extract_json_from_text`` cannot parse multi-object text: the direct
@@ -1551,6 +1544,8 @@ def run_claude_bullet_pool_selection(
     else:
         pool_text = _format_competency_pool(valid_paths)
 
+    selector_role = selector_role_for_section(section_id, slot_kind=slot_kind)
+    provider_key, model, model_source = resolve_selector_provider_model(selector_role)
     prompt = _selection_prompt(
         section_id=section_id,
         slot_kind=slot_kind,
@@ -1558,7 +1553,7 @@ def run_claude_bullet_pool_selection(
         required_bullet_ids=required_bullet_ids,
         targeting_context=targeting_context,
         min_score_threshold=min_score_threshold,
-        selector_name="openai_chatgpt" if competencies_selector else "anthropic_claude",
+        selector_name=provider_key,
         regen_note=regen_note,
     )
     input_hash = _sha16(prompt)
@@ -1571,14 +1566,13 @@ def run_claude_bullet_pool_selection(
             targeting_context=targeting_context,
         )
 
-    provider_key = "openai_chatgpt" if competencies_selector else "anthropic_claude"
     meta = PROVIDERS.get(provider_key) or {}
     bootstrap_apps_rg_env()
     api_key = os.environ.get(str(meta.get("env") or ""), "").strip()
     if not api_key:
         if competencies_selector:
             raise PoolSelectorUnavailableError(
-                "competencies selector unavailable: missing OpenAI credentials"
+                f"competencies selector unavailable: missing {provider_key} credentials"
             )
         return _fallback_first_complete_path(
             valid_paths,
@@ -1587,8 +1581,7 @@ def run_claude_bullet_pool_selection(
             targeting_context=targeting_context,
         )
 
-    if competencies_selector:
-        model, model_source = _resolve_openai_model(meta, section_id=section_id)
+    if provider_key == "openai_chatgpt":
         judge_out, parsed_sel = _call_openai_pool_selector(
             api_key=api_key,
             prompt=prompt,
@@ -1597,8 +1590,7 @@ def run_claude_bullet_pool_selection(
             model_source=model_source,
             artifact_dir=artifact_dir,
         )
-    else:
-        model, model_source = _resolve_anthropic_model(meta, section_id=section_id)
+    elif provider_key == "anthropic_claude":
         judge_out, parsed_sel = _call_anthropic_pool_selector(
             api_key=api_key,
             prompt=prompt,
@@ -1606,6 +1598,10 @@ def run_claude_bullet_pool_selection(
             input_hash=input_hash,
             model_source=model_source,
             artifact_dir=artifact_dir,
+        )
+    else:
+        raise PoolSelectorUnavailableError(
+            f"{selector_role} unavailable: unsupported selector provider {provider_key!r}"
         )
 
     if artifact_dir is not None:
@@ -1659,7 +1655,11 @@ def run_claude_bullet_pool_selection(
             min_score_threshold=floor,
             targeting_context=tc,
         )
-        selection_mode = "openai_competencies_adaptive_6_8_pass"
+        selection_mode = (
+            "claude_competencies_adaptive_6_8_pass"
+            if provider_key == "anthropic_claude"
+            else "openai_competencies_adaptive_6_8_pass"
+        )
     else:
         merged, source_map = merge_competency_selections(valid_paths, selections, base_parsed=base)
         selection_mode = "claude_per_slot_selection"

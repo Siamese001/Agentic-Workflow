@@ -30,7 +30,7 @@ slot_bodies:
     <product_shape_band>
     resume_display_text: **exactly 6** period-delimited sentences, one paragraph (legacy 4-5 and 5-6 retired).
     executive_strategy_thesis: one sentence, required before finalizing display prose (ledger-backed; see I0).
-    E0 teaches register and metric-weave density only — never copy E0 wording verbatim.
+    E0 teaches register and metric-weave density only - never copy E0 wording verbatim.
     Surface allowed metrics in resume_display_text when they strengthen executive_signal; claim_text may be fuller.
     </product_shape_band>
       </system_authority>
@@ -78,37 +78,37 @@ slot_bodies:
     </credential_policy_v1>
 
     <display_metric_weave_contract>
-    **CRITICAL (X1D executive_signal):** judges read `resume_display_text`, not claim_ledger alone — when a
+    **CRITICAL (X1D executive_signal):** judges read `resume_display_text`, not claim_ledger alone - when a
     cited allowed fact carries a dollar/percent/headcount outcome, weave that VALUE into the matching display
     sentence in plain prose (not a metric list), weighted to S3-S5; never park metrics only in claim_ledger.
-    **Allowed-fact utilization (X2):** surface the metric VALUES present in THIS run's ALLOWED_SOURCE_FACT_IDS —
+    **Allowed-fact utilization (X2):** surface the metric VALUES present in THIS run's ALLOWED_SOURCE_FACT_IDS -
     do not skip a required allowed metric for an abstract phrase.
     **Brushstroke coverage (X2 hard-fail):** the C0 composition plan may mark B1/B2/B3/B4 brushstrokes with
     `required_fact_ids`. Cite at least one required fact from EVERY non-empty brushstroke group across the
     six `claim_ledger` rows. S1 / `executive_strategy_thesis` must include and cite the B1 executive-identity
     required fact when B1 is present; do not replace it with a stronger-looking Unify or IBM fact.
     **Hardcoded-figure ban (X2 north_star_style_echo):** NEVER emit a $/percent/headcount unless it appears in a
-    cited allowed fact for THIS run — never copy a figure or its outcome phrase from an E0 style example (examples
+    cited allowed fact for THIS run - never copy a figure or its outcome phrase from an E0 style example (examples
     are domain-transposed and non-literal; retrieve real values from ALLOWED_SOURCE_FACT_IDS).
     On SVP IT strategy lanes frame revenue/margin outcomes as "IP-led revenue growth / margin expansion /
-    monetization of platform IP" — NEVER the literal word "commercialization" (X2 hard-fails it on strategy lanes).
+    monetization of platform IP" - NEVER the literal word "commercialization" (X2 hard-fails it on strategy lanes).
     </display_metric_weave_contract>
 
     <judge_alignment_contract>
-    **Synthesis target (X1D):** one leadership arc - not six bullets. JD/briefing are targeting vocabulary only; no JD-as-proof; leadership stays primary; **no verbatim JD phrase (no ≥3-word JD run, e.g. "with gsi and cloud partner") — X2 jd_phrase_copy**; no TARGET_COMPANY employment.
+    **Synthesis target (X1D):** one leadership arc - not six bullets. JD/briefing are targeting vocabulary only; no JD-as-proof; leadership stays primary; **no verbatim JD phrase (no ≥3-word JD run, e.g. "with gsi and cloud partner") - X2 jd_phrase_copy**; no TARGET_COMPANY employment.
     **Keyword discipline:** ATS and JD keywords may tune wording only; no keyword stuffing, laundry-list targeting, or keyword-only fit claims.
     **Workflow:** (1) Read C0 + allowlist; JD/briefing for emphasis only. (2) Write `executive_strategy_thesis` (one sentence, allowed facts). (3) Write six-sentence `resume_display_text` advancing that thesis; S1 paraphrases thesis (never verbatim copy).
-    **S1:** Sharp executive leadership register (EA governance, innovation programs, operating model) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` — NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges. **S1 is a strategic-register sentence, NOT a mechanism comma-list (X2 no_mechanism_inventory): ≤1 mechanism in S1, never a 3+ comma-stack.**
+    **S1:** Sharp executive leadership register (EA governance, innovation programs, operating model) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` - NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges. **S1 is a strategic-register sentence, NOT a mechanism comma-list (X2 no_mechanism_inventory): ≤1 mechanism in S1, never a 3+ comma-stack.**
     **S2-S3:** Platform/operating-model substance; connective causal thread when honest; surface allowed metric VALUES in display per the metric-weave contract above.
-    **S4:** Governance/lineage as parallel beat with an allowed outcome metric in display when one is cited; no forced "extended to" bridges across unrelated facts. On SVP strategy lanes with ≥3 brushstrokes, use a non-stock opener here (e.g. `In parallel,` / `That operating foundation also,`) — both stock-bridge slots are expected to be consumed in S2–S3.
-    **S4 sentence completeness (X2 hard-fail):** S4 MUST be a grammatically complete sentence with a finite main verb. FORBIDDEN: noun-phrase fragments like "Quantitative rigor established through..." or "FSA-chartered quantitative foundation, built through..." — these have no main verb and are auto-rejected as sentence fragments. REQUIRED: use the DISPLAY_OVERRIDE text for fact_quant_hpc_003 verbatim if provided.
+    **S4:** Governance/lineage as parallel beat with an allowed outcome metric in display when one is cited; no forced "extended to" bridges across unrelated facts. On SVP strategy lanes with ≥3 brushstrokes, use a non-stock opener here (e.g. `In parallel,` / `That operating foundation also,`) - both stock-bridge slots are expected to be consumed in S2–S3.
+    **S4 sentence completeness (X2 hard-fail: x2_exec_summary_no_sentence_fragment):** S4 MUST be a grammatically complete sentence with a finite main verb. FORBIDDEN: noun-phrase fragments like "Quantitative rigor established through..." or "FSA-chartered quantitative foundation, built through..." - these have no main verb and are auto-rejected as sentence fragments. REQUIRED: use the DISPLAY_OVERRIDE text for fact_quant_hpc_003 verbatim if provided.
     **S5:** One quantitative-rigor clause with an allowed percent/outcome in display; no derivatives/multi-Greek/Towers Perrin/ING/Aetna/FSA inventory; no meta ("rather than listing credentials").
-    **S2–S5 connective tissue (achievement stack prevention):** Each of S2, S3, S4, S5 MUST open with a thesis-referent connector that links back to the S1 thesis thread or the prior sentence's outcome. Approved connectors: "Through that [X]", "Building on that [X]", "That [X] discipline", "Against that [X] foundation", "In parallel,", "That operating foundation also". FORBIDDEN openings for S2–S5: bare achievement-verb openers like "Scaled ML engineering organization...", "Directed large-scale...", "Implemented Basel III..." — these read as achievement bullets, not a synthesized executive arc, and Claude-class judges flag them as `achievement_inventory_stack`.
-    **S6:** Forward capstone grounded in cited source_fact_ids; may use composition_plan TARGETING_FORWARD_ANCHOR for decentralized units / innovation mandate (targeting-only; jd_used_as_proof=false); forbid "Looking ahead," opener, "extend that arc toward", "this leadership profile", "can translate into", and S2-S5 recap. Never "audit/audit-ready" unless verbatim in allowed claim_text. S6 MUST open with modal/future-forward language ("can", "enables", "positions", "delivers", "scales") — NEVER open S6 with past-tense verbs ("Built", "Applied", "Directed", "Designed", "Implemented", "Scaled", "Developed") as that produces a backward-looking tool description that Claude-class judges flag as `thin_S6_forward_synthesis`.
-    **Connectives:** At most **two** stock openers (`Building on` / `Through that` / `Complementing` / `With that governance` / `Against that` / `From that`) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence). On SVP strategy lanes with ≥3 brushstrokes, S4 MUST use a non-stock opener (e.g. `In parallel,` / `That operating foundation also,`) — S2 and S3 are expected to consume both available stock-bridge slots.
+    **S2–S5 connective tissue (achievement stack prevention):** Each of S2, S3, S4, S5 MUST open with a thesis-referent connector that links back to the S1 thesis thread or the prior sentence's outcome. Approved connectors: "Through that [X]", "Building on that [X]", "That [X] discipline", "Against that [X] foundation", "In parallel,", "That operating foundation also". FORBIDDEN openings for S2–S5: bare achievement-verb openers like "Scaled ML engineering organization...", "Directed large-scale...", "Implemented Basel III..." - these read as achievement bullets, not a synthesized executive arc, and Claude-class judges flag them as `achievement_inventory_stack`.
+    **S6:** Forward capstone grounded in cited source_fact_ids; may use composition_plan TARGETING_FORWARD_ANCHOR for decentralized units / innovation mandate (targeting-only; jd_used_as_proof=false); forbid "Looking ahead," opener, "extend that arc toward", "this leadership profile", "can translate into", and S2-S5 recap. Never "audit/audit-ready" unless verbatim in allowed claim_text. S6 MUST open with modal/future-forward language ("can", "enables", "positions", "delivers", "scales") - NEVER open S6 with past-tense verbs ("Built", "Applied", "Directed", "Designed", "Implemented", "Scaled", "Developed") as that produces a backward-looking tool description that Claude-class judges flag as `thin_S6_forward_synthesis`.
+    **Connectives:** At most **two** stock openers (`Building on` / `Through that` / `Complementing` / `With that governance` / `Against that` / `From that`) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence). On SVP strategy lanes with ≥3 brushstrokes, S4 MUST use a non-stock opener (e.g. `In parallel,` / `That operating foundation also,`) - S2 and S3 are expected to consume both available stock-bridge slots.
     **Meta-filler ban:** no "governance discipline", "active-voice delivery", "selected facts" scaffolding.
     **SRFS forbidden phrases (X2):** "reusable platform services adopted across enterprise programs", "engineering scale-out", "bespoke delivery", "converting bespoke delivery".
-    U0 `narrative_arc_weights` = thematic emphasis only (weighting, not a per-sentence fact-count directive). claim_ledger: emit **exactly one row per displayed sentence** (one-to-one — 6 rows for the S1-S6 summary), each tracing to an allowed fact. Enforced as a deterministic one-row-per-sentence gate.
+    U0 `narrative_arc_weights` = thematic emphasis only (weighting, not a per-sentence fact-count directive). claim_ledger: emit **exactly one row per displayed sentence** (one-to-one - 6 rows for the S1-S6 summary), each tracing to an allowed fact. Enforced as deterministic gate x2_claim_ledger_row_count_matches_sentence_count.
     </judge_alignment_contract>
 
     <composition_heuristics>
@@ -120,9 +120,10 @@ slot_bodies:
     </internal_deliberation_controls>
 
     <self_check_requirements>
-    Verify before return (five fields only — X2 gates enforce the rest deterministically):
+    Verify before return (six fields only - X2 gates enforce the rest deterministically):
     executive_strategy_thesis_present; jd_used_as_proof_false; s6_forward_synthesis_not_recap;
-    material_metrics_surfaced_in_display_rows_3_4_5; every_material_claim_in_claim_ledger.
+    material_metrics_surfaced_in_display_rows_3_4_5; every_material_claim_in_claim_ledger;
+    no_first_person; s6_starts_with_looking_ahead_false.
     </self_check_requirements>
 
     </instructions>
@@ -154,15 +155,16 @@ slot_bodies:
     <style_advisory>
     Prefer concrete dollar/percent outcomes from ALLOWED_SOURCE_FACT_IDS in S3–S5 display prose.
     Executive synthesis is not abstract paraphrase of claim_text; judges grade resume_display_text for executive_signal.
-    Weave metrics into flowing clauses — not comma-stacked inventories.
+    Weave metrics into flowing clauses - not comma-stacked inventories.
     **Positive S5 weave (when fact_quant_hpc_003 + fact_quant_hpc_001 are cited):** one clause pairing FSA-chartered
-    quantitative foundation with the allowed HPC/stress-testing outcome metric in display — e.g. "FSA-chartered quantitative
+    quantitative foundation with the allowed HPC/stress-testing outcome metric in display - e.g. "FSA-chartered quantitative
     foundation underpins stress-testing discipline, with containerized HPC practice shortening stress-test cycles by 40%
     for platform investment decisions." Forbidden: verbatim "derivatives pricing" / multi-Greek inventory lists.
     </style_advisory>
 
   R0: |
     # R0_RESPONSE_SCHEMA - JSON schema injected at compile; X2 enforcement via PRODUCT_SHAPE + validators.
+    Return RAW JSON ONLY: first character `{`, last character `}`. No markdown fences, no prose before or after JSON.
 
 output_contract:
   format: json

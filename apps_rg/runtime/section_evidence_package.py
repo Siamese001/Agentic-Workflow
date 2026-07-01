@@ -30,6 +30,7 @@ RUN_LINKS_LANE_FILENAME = "RUN_LINKS.json"
 SCHEMA_EVIDENCE_PACKAGE_V2 = "evidence_package_index_v2"
 SCHEMA_SUBPHASE_COVERAGE_V1 = "spine_subphase_coverage_v1"
 _CANONICAL_PRODUCER = "apps_rg_section_evidence_package"
+_MAX_PATCHED_RUN_BUNDLE_INDEX_BYTES = 128 * 1024
 
 # Design-law owner taxonomy (W2)
 OWNER_CORE_RUNTIME_CONTRACT = "CORE_RUNTIME_CONTRACT"
@@ -1128,7 +1129,14 @@ def _patch_lane_run_bundle_index(
     doc["correlation_missing_reason"] = correlation_missing_reason
     if integrated_dir is not None:
         doc["correlated_integrated_run_id"] = integrated_dir.name
-    _wg.write_text(idx_path, json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    payload = json.dumps(doc, indent=2, ensure_ascii=False) + "\n"
+    proposed_bytes = len(payload.encode("utf-8"))
+    if proposed_bytes > _MAX_PATCHED_RUN_BUNDLE_INDEX_BYTES:
+        raise ValueError(
+            f"patched {RUN_BUNDLE_INDEX_FILENAME} exceeds bounded evidence-index size: "
+            f"{proposed_bytes}>{_MAX_PATCHED_RUN_BUNDLE_INDEX_BYTES}"
+        )
+    _wg.write_bytes(idx_path, payload.encode("utf-8"))
 
 
 def sync_binding_manifest_with_correlation(

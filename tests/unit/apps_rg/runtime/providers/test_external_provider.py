@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 
+import pytest
+
 from apps_rg.runtime.providers import external_provider as subject
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderProfile
@@ -49,6 +51,7 @@ def test_external_provider_blocks_without_credentials_and_does_not_call_transpor
 
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model="gpt-5.4-mini-2026-03-17",
         transport=_transport,
         environ={},
     )
@@ -125,6 +128,7 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
 def test_external_provider_transport_errors_fail_closed() -> None:
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model="gpt-5.4-mini-2026-03-17",
         transport=lambda _request: (_ for _ in ()).throw(OSError("down")),
         environ={"OPENAI_API_KEY": "test-key"},
     )
@@ -148,6 +152,7 @@ def test_external_provider_transport_errors_fail_closed() -> None:
 def test_external_provider_json_errors_fail_closed() -> None:
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model="gpt-5.4-mini-2026-03-17",
         transport=lambda _request: (_ for _ in ()).throw(
             json.JSONDecodeError("bad", "{}", 0)
         ),
@@ -160,3 +165,8 @@ def test_external_provider_json_errors_fail_closed() -> None:
     assert result.provider_attempted is True
     assert result.provider_available is False
     assert "JSONDecodeError" in str(result.exact_provider_error)
+
+
+def test_external_provider_requires_explicit_model() -> None:
+    with pytest.raises(Exception, match="requires an explicit model"):
+        ExternalProvider(provider_profile=ProviderProfile.EXTERNAL_OPENAI, environ={})

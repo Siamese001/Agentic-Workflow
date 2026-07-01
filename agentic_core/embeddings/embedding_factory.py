@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
     BGE_M3_MODEL_ID,
 )
 
@@ -501,7 +502,7 @@ def _create_bge_m3_client(model_name: str, device: str | None = None) -> Embeddi
             self.embedder_identity = {
                 "provider": "bge-m3",
                 "model": self.model_name,
-                "dimensions": 1024,  # BGE-M3 default
+                "dimensions": BGE_M3_EMBEDDING_DIMENSION,
                 "normalization_policy": "l2",
                 "chunking_policy": "none",
             }

@@ -132,7 +132,7 @@ class TestConsensusJurors:
 
     def test_consensus_jurors_env_override(self):
         """Test CONSENSUS_JURORS env var override."""
-        with patch.dict("os.environ", {"CONSENSUS_JURORS": "gpt-4o,claude-sonnet-4-6"}, clear=True):
+        with patch.dict("os.environ", {"CONSENSUS_JURORS": "gpt-4o,claude-sonnet-5"}, clear=True):
             from agentic_core.L0_routing.config import model_registry as mr_reload
             from importlib import reload
             reload(mr_reload)
@@ -140,7 +140,7 @@ class TestConsensusJurors:
             jurors = mr_reload.CONSENSUS_JURORS
             assert len(jurors) == 2
             assert "gpt-4o" in jurors
-            assert "claude-sonnet-4-6" in jurors
+            assert "claude-sonnet-5" in jurors
 
     def test_consensus_jurors_qwen_opt_in(self):
         """Test USE_QWEN_CONSENSUS_JUROR opt-in adds Qwen."""

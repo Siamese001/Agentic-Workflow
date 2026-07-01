@@ -1,6 +1,6 @@
 """HOP5 generation for LinkedIn recruiter outreach drafts.
 
-Generation is Claude Opus-primary. The only deterministic generation path is the
+Generation is Claude Sonnet-primary. The only deterministic generation path is the
 explicit ``APPS_LIC_TEST_PROVIDER_STUB=1`` mode used by tests. When the frontier
 provider is unavailable outside that test mode, this engine emits a non-passing
 draft shape so downstream gates fail closed.
@@ -23,6 +23,7 @@ from apps_lic.engines.generation_subject_policy import (
 from apps_lic.config.model_profiles import (
     resolve_generator_model,
     resolve_generator_provider,
+    resolve_generator_provider_profile,
     resolve_generator_transport_model_id,
 )
 from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
@@ -36,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 # Resolved from the model-profile SSOT (config/domain_contract/model_profiles.yaml).
 DEFAULT_MODEL = resolve_generator_model()
 DEFAULT_PROVIDER = resolve_generator_provider()
-DEFAULT_PROVIDER_PROFILE = "claude_opus_4_8_primary"
+DEFAULT_PROVIDER_PROFILE = resolve_generator_provider_profile()
 DEFAULT_TEMPERATURE = 0.82
 DEFAULT_TOP_P = 0.92
 DEFAULT_MAX_GENERATION_ATTEMPTS = 3

@@ -1225,35 +1225,36 @@ def run_ibm_bullets_execution(
         approved_metric_evidence=approved_promotable_metric_evidence("ibm_bullets"),
     )
     # Variance-class alignment (2026-06): on the employment-pool path the Claude pool
-    # SELECTOR has already model-scored every slot. Reuse that selection as the single
-    # composite X1D row (synthetic anthropic_claude row from the selector artifact),
-    # matching the unify_bullets pattern, instead of a SECOND independent Anthropic
-    # GRADE_ONLY call. The optional multi-provider adjudicator panel below still escalates
-    # borderline cases as a second opinion. Non-pool fallback keeps the real judge call.
+    # SELECTOR has already model-scored every slot, but that selector is advisory-only. The
+    # formal X1D proof row still comes from the section policy provider roster.
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    proof_judge_keys = list(get_section_judge_policy("ibm_bullets").required_judge_providers)
+    proof_x1d = [
+        j.to_dict()
+        for j in run_ibm_bullets_judges(
+            bullets=bullets,
+            claim_ledger=claim_ledger,
+            judge_keys=proof_judge_keys,
+            mode=judge_mode,
+            artifact_base=artifact_dir,
+            allowed_fact_packet=allowed_fact_packet,
+            targeting_context={
+                "target_title": str(runtime_payload.get("target_title") or ""),
+                "target_company": str(runtime_payload.get("target_company") or ""),
+                "jd_text": str(runtime_payload.get("jd_text") or ""),
+                "briefing": str(runtime_payload.get("briefing") or ""),
+            },
+        )
+    ]
     if is_employment_pool_generation(gen_meta):
-        x1d = employment_pool_x1d_judge_rows(
+        x1d = proof_x1d + employment_pool_x1d_judge_rows(
             artifact_dir=artifact_dir,
             section_id="ibm_bullets",
             gen_meta=gen_meta,
         )
     else:
-        x1d = [
-            j.to_dict()
-            for j in run_ibm_bullets_judges(
-                bullets=bullets,
-                claim_ledger=claim_ledger,
-                judge_keys=judge_keys,
-                mode=judge_mode,
-                artifact_base=artifact_dir,
-                allowed_fact_packet=allowed_fact_packet,
-                targeting_context={
-                    "target_title": str(runtime_payload.get("target_title") or ""),
-                    "target_company": str(runtime_payload.get("target_company") or ""),
-                    "jd_text": str(runtime_payload.get("jd_text") or ""),
-                    "briefing": str(runtime_payload.get("briefing") or ""),
-                },
-            )
-        ]
+        x1d = proof_x1d
     temperature = float(args.temperature) if args.provider == "external_claude" else IBM_TEMP_DEFAULT
 
     write_json(

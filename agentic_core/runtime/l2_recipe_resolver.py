@@ -43,7 +43,7 @@ def _register_builtin_recipes() -> dict[str, dict[str, Any]]:
         # guardian: allow-layer-violation -- L_RUNTIME resolver must lazy-import L_APP recipe registries; this is the canonical core-owned registration seam by design
         app_pkg = "_".join(("apps", "rg"))
         registry_module = _load_app_module((app_pkg, "l2_recipe", "registry"))
-        get_apps_rg_recipe_metadata = getattr(registry_module, "get_apps_rg_recipe_metadata")
+        get_apps_rg_recipe_metadata = registry_module.get_apps_rg_recipe_metadata
 
         meta = get_apps_rg_recipe_metadata()
         registry[meta["app_name"]] = meta
@@ -102,7 +102,12 @@ def resolve_l2_recipe(
         )
   # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
     meta = registry[app_name]  # guardian: allow-hallucinated-tool-name -- P1 ADG burndown
-    step_classes = meta["steps"]
+    recipe_scope = str(raw_request.get("execution_scope") or "").strip()
+    scope_steps = meta.get("scope_steps")
+    if recipe_scope and isinstance(scope_steps, dict) and recipe_scope in scope_steps:
+        step_classes = scope_steps[recipe_scope]
+    else:
+        step_classes = meta["steps"]
 
     def _composite_l2_callable() -> dict[str, Any]:
         """Execute the L2 recipe steps in sequence."""
@@ -144,7 +149,11 @@ def resolve_l2_recipe(
             "master_resume_data": master_resume_data,
             "flow_route": flow_route,
             "artifact_dir": artifact_dir,
+            "raw_request": dict(raw_request),
         }
+        l2_context = raw_request.get("l2_context")
+        if isinstance(l2_context, dict):
+            context.update(l2_context)
         results: list[dict[str, Any]] = []
         for step_cls in step_classes:
             step = step_cls()

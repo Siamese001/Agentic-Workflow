@@ -12,7 +12,6 @@ from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
     EMPLOYMENT_BULLET_RUBRIC_VERSION,
     pool_selector_dimension_ids,
 )
-from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_SC_PATH_COUNT,
     competencies_initial_sc_path_count,
@@ -22,13 +21,20 @@ from apps_rg.runtime.section_execution_plan import (
     DEFAULT_ACTIVE_SC_PATHS,
     MAX_SECTION_ATTEMPTS,
 )
+from apps_rg.runtime.section_model_limits import (
+    resolve_selector_provider_model,
+    selector_role_for_section,
+)
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
 EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset(BULLET_LANES)
 
-# Employment bullets: Claude pool selector is the sole X1D judge (not the 3-provider panel).
-EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
+# Employment bullets: Claude is the advisory pool selector, not an X1D proof judge.
+EMPLOYMENT_BULLET_SELECTOR_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
+# Backward-compatible name for code that still imports the symbol; validators must not use it
+# as a proof-provider roster.
+EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = EMPLOYMENT_BULLET_SELECTOR_PROVIDERS
 
 # Variance-class alignment (2026-06): bullet lanes generate over a FIXED slot count
 # (unify=6, ibm=5, insurtech=3, ey=3). Generation variance is handled by the Claude pool
@@ -289,6 +295,11 @@ def is_employment_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
     return mode.startswith("model_employment_pool")
 
 
+def _selector_model_row(section_id: str, *, slot_kind: str) -> tuple[str, str, str]:
+    role = selector_role_for_section(section_id, slot_kind=slot_kind)
+    return resolve_selector_provider_model(role)
+
+
 def competencies_pool_x1d_judge_rows(
     *,
     artifact_dir: Path,
@@ -301,7 +312,6 @@ def competencies_pool_x1d_judge_rows(
     competencies proof judge is model-backed OpenAI and is wired separately in the lane runtime.
     """
     from apps_rg.runtime.judges.competencies_x1d import JUDGE_RUBRIC_VERSION
-    from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
     from apps_rg.runtime.reasoning.competencies_graph_pool import (
         COMPETENCIES_FINAL_CATEGORY_COUNT,
         COMPETENCIES_MIN_CATEGORY_COUNT,
@@ -349,16 +359,17 @@ def competencies_pool_x1d_judge_rows(
             else "no_selection_input_artifact"
         )
 
-    selector_provider_key = "openai_chatgpt" if lane == "competencies" else "anthropic_claude"
-    selector_meta = PROVIDERS.get(selector_provider_key) or {}
-    selector_default_model = str(selector_meta.get("default_model") or "unknown")
-    selector_provider_name = str(selector_meta.get(
-        "provider_name",
-        "OpenAI ChatGPT" if selector_provider_key == "openai_chatgpt" else "Anthropic Claude",
-    ))
+    selector_provider_key, selector_model, selector_model_source = _selector_model_row(
+        lane,
+        slot_kind="competencies",
+    )
+    selector_provider_name = (
+        "Anthropic Claude" if selector_provider_key == "anthropic_claude" else "OpenAI ChatGPT"
+    )
     row.setdefault("judge_id", f"x1d_{selector_provider_key}_{lane}_pool")
     row.setdefault("provider_name", selector_provider_name)
-    row.setdefault("model_name", selector_default_model)
+    row.setdefault("model_name", selector_model)
+    row["model_source"] = str(row.get("model_source") or selector_model_source)
     row["provider_key"] = selector_provider_key
     row["section_id"] = lane
     row["evaluator_mode"] = "MODEL_BACKED"
@@ -381,9 +392,9 @@ def competencies_pool_x1d_judge_rows(
     row["selection_mode"] = str(
         (gen_meta or {}).get("selection_mode")
         or (
-            "openai_competencies_adaptive_6_8_pass"
-            if lane == "competencies"
-            else "claude_competencies_adaptive_6_8_pass"
+            "claude_competencies_adaptive_6_8_pass"
+            if selector_provider_key == "anthropic_claude"
+            else "openai_competencies_adaptive_6_8_pass"
         )
     )
     row["min_category_count"] = n_min
@@ -449,9 +460,18 @@ def employment_pool_x1d_judge_rows(
     slots_ok = bool(selections) and all(float(s.get("score") or 0.0) >= threshold for s in selections)
     passed = gate_ok and slots_ok
 
-    row.setdefault("judge_id", f"x1d_anthropic_claude_{lane}_pool")
-    row.setdefault("provider_name", "Anthropic Claude")
-    row["provider_key"] = "anthropic_claude"
+    selector_provider_key, selector_model, selector_model_source = _selector_model_row(
+        lane,
+        slot_kind="bullets",
+    )
+    row.setdefault("judge_id", f"x1d_{selector_provider_key}_{lane}_pool")
+    row.setdefault(
+        "provider_name",
+        "Anthropic Claude" if selector_provider_key == "anthropic_claude" else selector_provider_key,
+    )
+    row.setdefault("model_name", selector_model)
+    row["model_source"] = str(row.get("model_source") or selector_model_source)
+    row["provider_key"] = selector_provider_key
     row["section_id"] = lane
     row["evaluator_mode"] = "MODEL_BACKED"
     row["provider_available"] = True
@@ -465,8 +485,8 @@ def employment_pool_x1d_judge_rows(
     row["pass_"] = passed
     row["decisive_failure"] = not passed
     row["provider_status"] = "MODEL_BACKED_PASS" if passed else "MODEL_BACKED_FAIL"
-    row["proof_eligible_judge"] = True
-    row["advisory_only"] = False
+    row["proof_eligible_judge"] = False
+    row["advisory_only"] = True
     row["judge_role"] = "employment_bullet_pool_selector"
     row["rubric_ref"] = f"apps_rg/runtime/judges/employment_bullet_judge_rubric.py#{lane}"
     row["rubric_version"] = EMPLOYMENT_BULLET_RUBRIC_VERSION
@@ -485,6 +505,7 @@ __all__ = [
     "ADAPTIVE_EMPLOYMENT_BULLET_LANES",
     "COMPETENCIES_SC_PATH_COUNT",
     "DEFAULT_MIN_SELECTION_SCORE",
+    "EMPLOYMENT_BULLET_SELECTOR_PROVIDERS",
     "EMPLOYMENT_BULLET_JUDGE_PROVIDERS",
     "EMPLOYMENT_BULLET_LANES",
     "EMPLOYMENT_BULLET_SC_PATHS",

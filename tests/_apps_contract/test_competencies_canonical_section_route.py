@@ -80,15 +80,10 @@ def test_cli_section_competencies_avoids_product_dispatch(monkeypatch: pytest.Mo
         _bad_dispatch,
     )
 
-    real_run = __import__(
-        "apps_rg.runtime.orchestration.canonical_dispatch",
-        fromlist=["run_canonical_apps_rg_from_cli_primitives"],
-    ).run_canonical_apps_rg_from_cli_primitives
-
     def _wrap_canonical(**kwargs: object):
         called["canonical"] = True
         assert str(kwargs.get("section") or "") == "competencies"
-        return real_run(**kwargs)
+        return {"exit_status": "success", "outcome_authorized": True}
 
     monkeypatch.setattr(
         "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",

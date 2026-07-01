@@ -12,8 +12,7 @@ from apps_rg.runtime.section_cli_defaults import (
 def test_wave9_minimized_defaults_match_lane_x2_requirements(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
 
-    # Competencies is Claude-generated; the formal proof judge stays OpenAI-only.
-    assert resolve_section_default_x1d_judges("competencies") == "openai_chatgpt"
+    assert resolve_section_default_x1d_judges("competencies") == "gemini_pro,openai_chatgpt"
     assert resolve_section_default_x1d_judges("unify_bullets") == "gemini_pro"
     assert resolve_section_default_x1d_judges("ibm_bullets") == "gemini_pro"
 
@@ -39,12 +38,12 @@ def test_wave9_overrides_preserve_diagnostic_full_panel(monkeypatch) -> None:
     env_panel = "gemini_pro,anthropic_claude"
 
     monkeypatch.setenv("APPS_RG_E2E_X1D_JUDGES", env_panel)
-    assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == env_panel
-    assert resolve_cli_x1d_judges(cli_panel, section_id="ibm_bullets") == cli_panel
+    assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "gemini_pro"
+    assert resolve_cli_x1d_judges(cli_panel, section_id="ibm_bullets") == "gemini_pro,openai_chatgpt"
     assert resolve_cli_x1d_judges(cli_panel, section_id="competencies") == "gemini_pro,openai_chatgpt"
-    assert resolve_cli_x1d_judges("anthropic_claude", section_id="competencies") == "openai_chatgpt"
-    assert resolve_cli_x1d_judges(cli_panel, section_id="executive_summary") == cli_panel
-    assert resolve_cli_x1d_judges(cli_panel, section_id="headline") == cli_panel
+    assert resolve_cli_x1d_judges("anthropic_claude", section_id="competencies") == "gemini_pro,openai_chatgpt"
+    assert resolve_cli_x1d_judges(cli_panel, section_id="executive_summary") == "gemini_pro,openai_chatgpt"
+    assert resolve_cli_x1d_judges(cli_panel, section_id="headline") == "gemini_pro,openai_chatgpt"
 
 
 def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> None:
@@ -52,7 +51,7 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
     summary = summarize_section_x1d_minimization_policy()
 
     assert summary["competencies"]["judge_required_for_proof"] is True
-    assert summary["competencies"]["default_x1d_judges"] == ["openai_chatgpt"]
+    assert summary["competencies"]["default_x1d_judges"] == ["gemini_pro", "openai_chatgpt"]
     # Recalibrated: cross-provider single judge for bullets (no anthropic_claude self-judge).
     assert summary["unify_bullets"]["default_x1d_judges"] == ["gemini_pro"]
     assert summary["ibm_bullets"]["default_x1d_judges"] == ["gemini_pro"]
@@ -66,9 +65,8 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
         for sid, row in summary.items()
         if row["default_judge_count"] == 1
     ]
-    # Single-judge lanes: competencies + all 4 bullets + all 4 narratives.
+    # Single-judge lanes: all 4 bullets + all 4 narratives.
     assert set(minimized) == {
-        "competencies",
         "unify_bullets",
         "ibm_bullets",
         "insurtech_bullets",

@@ -49,6 +49,13 @@ import json
 from dataclasses import dataclass, field, fields, asdict
 from typing import Any, Dict, List, Optional
 
+from apps_lic.integrations.research_reason_codes import (
+    APPS_RESEARCH_BLOCKED,
+    APPS_RESEARCH_EMPTY,
+    APPS_RESEARCH_STALE,
+    APPS_RESEARCH_WEAK_SUPPORT,
+)
+
 # ---------------------------------------------------------------------------
 # Supporting types
 # ---------------------------------------------------------------------------
@@ -427,7 +434,7 @@ def validate_briefing_ready(
     if manifest.confidence_score < confidence_threshold:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_WEAK_SUPPORT",
+            r5_reason_code=APPS_RESEARCH_WEAK_SUPPORT,
             detail=(
                 f"confidence_score={manifest.confidence_score:.2f} < "
                 f"threshold={confidence_threshold:.2f}"
@@ -438,7 +445,7 @@ def validate_briefing_ready(
     if manifest.freshness_status not in acceptable_freshness:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_STALE",
+            r5_reason_code=APPS_RESEARCH_STALE,
             detail=(
                 f"freshness_status={manifest.freshness_status!r} not in "
                 f"acceptable={sorted(acceptable_freshness)}"
@@ -451,7 +458,7 @@ def validate_briefing_ready(
         if not val:
             return BriefingReadyResult(
                 is_valid=False,
-                r5_reason_code="APPS_RESEARCH_EMPTY",
+                r5_reason_code=APPS_RESEARCH_EMPTY,
                 detail=f"required_coverage_field {cov_field!r} is missing or empty",
             )
 
@@ -459,7 +466,7 @@ def validate_briefing_ready(
     if not manifest.source_items:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_EMPTY",
+            r5_reason_code=APPS_RESEARCH_EMPTY,
             detail="source_items is empty — no citations for claims",
         )
 
@@ -467,7 +474,7 @@ def validate_briefing_ready(
     if not manifest.audit_refs:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_BLOCKED",
+            r5_reason_code=APPS_RESEARCH_BLOCKED,
             detail="audit_refs is empty — no upstream evidence trace IDs",
         )
 
@@ -475,7 +482,7 @@ def validate_briefing_ready(
     if not manifest.content_hashes:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_EMPTY",
+            r5_reason_code=APPS_RESEARCH_EMPTY,
             detail="content_hashes is empty — no field-level hash binding",
         )
 
@@ -483,7 +490,7 @@ def validate_briefing_ready(
     if not manifest.origin_label_map:
         return BriefingReadyResult(
             is_valid=False,
-            r5_reason_code="APPS_RESEARCH_EMPTY",
+            r5_reason_code=APPS_RESEARCH_EMPTY,
             detail="origin_label_map is empty — no field-to-source traceability",
         )
 
@@ -494,7 +501,7 @@ def validate_briefing_ready(
         if perm not in valid_gap_dispositions:
             return BriefingReadyResult(
                 is_valid=False,
-                r5_reason_code="APPS_RESEARCH_BLOCKED",
+                r5_reason_code=APPS_RESEARCH_BLOCKED,
                 detail=(
                     f"unsupported_fact_flag {gap_claim!r} not classified in "
                     f"claim_permission_map (got {perm!r}); must be one of "
