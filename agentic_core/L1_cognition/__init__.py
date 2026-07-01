@@ -5,6 +5,15 @@ No execution, routing, or persistence logic belongs in this layer.
 Only cognitive interfaces, reasoning engines, and telemetry are exported.
 """
 
+# Reachability anchors for L1 cognition subpackages.
+from . import bridges as _reach_bridges  # noqa: F401
+from . import c0_context as _reach_c0_context  # noqa: F401
+from . import config as _reach_config  # noqa: F401
+from . import enforcement as _reach_enforcement  # noqa: F401
+from . import planning as _reach_planning  # noqa: F401
+from . import reasoning as _reach_reasoning  # noqa: F401
+from . import types as _reach_types  # noqa: F401
+
 # Cognitive interfaces and reasoning
 from agentic_core.L1_cognition.reasoning.knowledge_orchestrator import (
     EvaluationResult,
