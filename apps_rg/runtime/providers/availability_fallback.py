@@ -283,6 +283,16 @@ def maybe_fallback_to_openai_for_claude_availability(
         return initial_result
 
     sid = str(section_id or "").strip().lower() or None
+    if sid:
+        from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+        try:
+            policy = get_section_judge_policy(sid)
+        except KeyError:
+            policy = None
+        if policy is not None and not policy.replacement_generation_allowed:
+            return initial_result
+
     fallback_model = external_openai_generation_model(section_id=sid)
     fallback_model_source = external_openai_generation_model_source(sid)
     fallback_provider = ExternalProvider(

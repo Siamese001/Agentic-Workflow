@@ -145,7 +145,7 @@ def test_competencies_proof_bundle_blocks_when_required_judges_missing() -> None
 
 def test_competencies_proof_bundle_requires_proof_eligible_judge() -> None:
     args = type("Args", (), {"mock_judges": False, "provider": "external_claude"})()
-    judge = {
+    openai_judge = {
         "evaluator_mode": "MODEL_BACKED",
         "provider_status": "MODEL_BACKED_PASS",
         "pass": True,
@@ -160,7 +160,7 @@ def test_competencies_proof_bundle_requires_proof_eligible_judge() -> None:
         args,
         section_id="competencies",
         runtime_generation_status="REAL_LLM",
-        x1d_judges=[judge],
+        x1d_judges=[openai_judge],
         x2_gates=[{"gate_id": "x2_ok", "pass": True}],
         x3=_FakeX3(),
     )
@@ -278,9 +278,10 @@ def test_competencies_policy_requires_llm_judge_for_proof() -> None:
     p = get_section_judge_policy("competencies")
     assert p.judge_required_for_proof is True
     assert p.required_judge_providers == ("openai_chatgpt",)
-    res = resolve_section_proof_judge_model("competencies", "openai_chatgpt", {})
-    assert res.model_actual == "gpt-5.5"
-    assert res.proof_eligible_judge is True
+    assert "anthropic_claude" not in p.required_judge_providers
+    openai = resolve_section_proof_judge_model("competencies", "openai_chatgpt", {})
+    assert openai.model_actual == "gpt-5.5"
+    assert openai.proof_eligible_judge is True
     rubric = ""
     from apps_rg.runtime.judges import competencies_x1d
 

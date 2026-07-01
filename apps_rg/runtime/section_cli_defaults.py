@@ -108,7 +108,8 @@ def default_lane_provider_for_section(section_id: str | None = None) -> str:
 
 
 # Judges are calibrated against the per-section generator matrix. Claude-backed lanes never default
-# to anthropic_claude as judge; competencies uses OpenAI as its required proof judge.
+# to anthropic_claude as judge. Competencies is Claude-generated, so its proof judge remains the
+# single OpenAI judge required by the competencies contract.
 # Recalibrated 2026-06-08 from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
 # Explicit CLI/env overrides still win.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
@@ -121,8 +122,9 @@ INSURTECH_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_
 EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
 # Recalibrated judge panels (Claude Sonnet 4.6 base; cross-provider only):
-#   executive_summary / headline / final_aggregate_resume -> 2 (gemini_pro + openai_chatgpt)
-#   competencies -> 1 required proof judge (openai_chatgpt)
+#   competencies -> 1 required OpenAI proof judge (no Claude self-judge)
+#   executive_summary / headline / final_aggregate_resume -> 2
+#     (gemini_pro + openai_chatgpt)
 #   all bullets + all narratives -> 1 required proof judge (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
@@ -152,6 +154,10 @@ _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
     "headline": "dual_cross_provider_panel_claude_base_recalibrated",
     "executive_summary": "dual_cross_provider_panel_claude_base_recalibrated",
     "final_aggregate_resume": "dual_cross_provider_panel_claude_base_recalibrated",
+}
+
+_FORBIDDEN_X1D_JUDGES_BY_SECTION: Final[dict[str, frozenset[str]]] = {
+    "competencies": frozenset({"anthropic_claude"}),
 }
 
 
@@ -188,6 +194,24 @@ def summarize_section_x1d_minimization_policy() -> dict[str, dict[str, Any]]:
     return out
 
 
+def _sanitize_x1d_judges_for_section(section_id: str, judge_csv: str) -> str:
+    """Remove section-forbidden proof judges and keep required defaults present."""
+    forbidden = _FORBIDDEN_X1D_JUDGES_BY_SECTION.get(section_id, frozenset())
+    if not forbidden:
+        return judge_csv
+    judges = [j.strip() for j in str(judge_csv or "").split(",") if j.strip()]
+    kept = [j for j in judges if j not in forbidden]
+    required = [
+        j.strip()
+        for j in resolve_section_default_x1d_judges(section_id).split(",")
+        if j.strip()
+    ]
+    for judge in required:
+        if judge not in kept:
+            kept.append(judge)
+    return ",".join(kept) if kept else ",".join(required)
+
+
 def resolve_cli_x1d_judges(
     cli_value: str | None,
     *,
@@ -195,18 +219,22 @@ def resolve_cli_x1d_judges(
 ) -> str:
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
-    Per-section composite-judge defaults (one judge, not the full proof panel):
-      * ``competencies``  -> single required ``openai_chatgpt`` taxonomy judge.
+    Per-section composite-judge defaults:
+      * ``competencies``  -> required ``openai_chatgpt`` taxonomy judge.
       * bullets/narratives -> single ``gemini_pro`` cross-provider judge.
 
-    An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the
-    adjudicator panel is requested for borderline cases).
+    ``competencies`` runs Claude-primary generation and must not be widened to include
+    ``anthropic_claude`` by a whole-run TOML/env override. Other lanes still allow explicit/env
+    overrides for optional diagnostics.
     """
+    from apps_rg.runtime.section_judge_policy import normalize_section_id
+
+    sid = normalize_section_id(str(section_id or ""))
     if cli_value is not None and str(cli_value).strip():
-        return str(cli_value).strip()
+        return _sanitize_x1d_judges_for_section(sid, str(cli_value).strip())
     env_csv = (os.environ.get("APPS_RG_E2E_X1D_JUDGES") or "").strip()
     if env_csv:
-        return env_csv
+        return _sanitize_x1d_judges_for_section(sid, env_csv)
     return resolve_section_default_x1d_judges(section_id)
 
 

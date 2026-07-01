@@ -12,7 +12,7 @@ from apps_rg.runtime.section_cli_defaults import (
 def test_wave9_minimized_defaults_match_lane_x2_requirements(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
 
-    # Cross-provider only (no anthropic_claude self-judge) after the Claude-base recalibration.
+    # Competencies is Claude-generated; the formal proof judge stays OpenAI-only.
     assert resolve_section_default_x1d_judges("competencies") == "openai_chatgpt"
     assert resolve_section_default_x1d_judges("unify_bullets") == "gemini_pro"
     assert resolve_section_default_x1d_judges("ibm_bullets") == "gemini_pro"
@@ -41,7 +41,10 @@ def test_wave9_overrides_preserve_diagnostic_full_panel(monkeypatch) -> None:
     monkeypatch.setenv("APPS_RG_E2E_X1D_JUDGES", env_panel)
     assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == env_panel
     assert resolve_cli_x1d_judges(cli_panel, section_id="ibm_bullets") == cli_panel
-    assert resolve_cli_x1d_judges(cli_panel, section_id="competencies") == cli_panel
+    assert resolve_cli_x1d_judges(cli_panel, section_id="competencies") == "gemini_pro,openai_chatgpt"
+    assert resolve_cli_x1d_judges("anthropic_claude", section_id="competencies") == "openai_chatgpt"
+    assert resolve_cli_x1d_judges(cli_panel, section_id="executive_summary") == cli_panel
+    assert resolve_cli_x1d_judges(cli_panel, section_id="headline") == cli_panel
 
 
 def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> None:

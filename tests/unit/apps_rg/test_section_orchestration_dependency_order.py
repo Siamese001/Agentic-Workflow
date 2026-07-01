@@ -129,7 +129,7 @@ def test_ibm_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
     assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "gemini_pro"
 
 
-def test_competencies_defaults_to_single_required_judge(monkeypatch) -> None:
+def test_competencies_defaults_to_required_openai_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
     assert resolve_cli_x1d_judges(None, section_id="competencies") == "openai_chatgpt"
 
@@ -151,11 +151,16 @@ def test_explicit_x1d_judges_override_wins_for_ibm_adjudicator() -> None:
     # The 3-provider panel is reachable as the optional adjudicator via explicit override.
     panel = "gemini_pro,openai_chatgpt,anthropic_claude"
     assert resolve_cli_x1d_judges(panel, section_id="ibm_bullets") == panel
+    assert resolve_cli_x1d_judges(panel, section_id="competencies") == "gemini_pro,openai_chatgpt"
+    assert resolve_cli_x1d_judges("anthropic_claude", section_id="competencies") == "openai_chatgpt"
+    assert resolve_cli_x1d_judges(panel, section_id="executive_summary") == panel
+    assert resolve_cli_x1d_judges(panel, section_id="headline") == panel
 
 
 def test_env_x1d_judges_override_wins_for_ibm(monkeypatch) -> None:
     monkeypatch.setenv("APPS_RG_E2E_X1D_JUDGES", "gemini_pro,anthropic_claude")
     assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "gemini_pro,anthropic_claude"
+    assert resolve_cli_x1d_judges(None, section_id="competencies") == "gemini_pro,openai_chatgpt"
 
 
 def test_non_bullet_sections_keep_standard_panel_default(monkeypatch) -> None:

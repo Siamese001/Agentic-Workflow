@@ -330,7 +330,7 @@ def test_section_retry_profile_is_proportional() -> None:
     "section_id,expected_providers",
     [
         # Claude Sonnet 4.6 base recalibration: summaries/headline -> dual cross-provider
-        # panel; bullets/narratives -> single cross-provider judge. No anthropic_claude
+        # panel; competencies/bullets/narratives -> single proof judge. No anthropic_claude
         # self-judge (Claude is the generator, so it cannot also be a proof judge).
         ("executive_summary", ("gemini_pro", "openai_chatgpt")),
         ("headline", ("gemini_pro", "openai_chatgpt")),

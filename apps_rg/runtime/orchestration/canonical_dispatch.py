@@ -25,6 +25,7 @@ from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_pointer, proof_bucket_for_provider
+from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.executive_summary_certification import (
     EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3,
@@ -44,8 +45,8 @@ _IBM_BULLETS_SECTION_ID = "ibm_bullets"
 _IBM_NARRATIVE_SECTION_ID = "ibm_narrative"
 _COMPETENCIES_SECTION_ID = "competencies"
 _DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
-# Single pool-selector judge (graph_8x8); not the executive-summary triple panel.
-COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = "openai_chatgpt"
+# Competencies is a protected Claude-primary lane and uses the required OpenAI proof judge.
+COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = COMPETENCIES_DEFAULT_X1D_JUDGES
 
 
 def _effective_lane_provider(raw: str | None) -> str:

@@ -67,6 +67,7 @@ from apps_rg.runtime.sections.competencies_lane_defaults import (
     TARGET_COMPANY_DEFAULT,
     TARGET_TITLE_DEFAULT,
 )
+from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
 from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 from apps_rg.runtime.sections.lane_artifact_io import sha16, write_json
 from apps_rg.runtime.sections.lane_base_resume import load_base_resume
@@ -1584,8 +1585,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
     parser.add_argument(
         "--x1d-judges",
-        default="openai_chatgpt",
-        help="Single required X1D proof judge for competencies (OpenAI-backed by default; not a triple panel).",
+        default=COMPETENCIES_DEFAULT_X1D_JUDGES,
+        help="Required X1D proof judges for competencies (OpenAI by default; not an Anthropic self-judge).",
     )
     parser.add_argument(
         "--mock-judges",

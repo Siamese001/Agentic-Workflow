@@ -68,6 +68,10 @@
   graph traversal breadth/depth, rejected siblings, per-category granularity, JD-critical partnership axes,
   and decomposed confidence before certification. Detail:
   `memory/codex/apps_rg_competencies_graph_traversal_receipt.md`.
+- **apps_rg competencies X1D self-judge guard (2026-06-30):** competencies primary generation is
+  Claude-backed, so formal proof judging is OpenAI-required and `anthropic_claude` must be removed from
+  competencies X1D CLI/env overrides. Detail:
+  `memory/codex/apps_rg_competencies_x1d_self_judge_guard.md`.
 - **Codex repo-local memory placement (2026-06-16):** Agentic Workflow-specific Codex memory artifacts
   belong under `memory/codex/`, not only under the global user-profile path
   `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,

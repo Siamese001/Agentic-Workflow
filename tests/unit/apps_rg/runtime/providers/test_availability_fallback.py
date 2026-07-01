@@ -133,7 +133,6 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
         token_budget=321,
         temperature=0.11,
         timeout_seconds=9,
-        section_id="competencies",
     )
 
     assert created["provider_profile"] == ProviderProfile.EXTERNAL_OPENAI
@@ -156,8 +155,8 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
     assert receipt["initial_attempt_completed_at_utc"] == "2026-06-20T16:00:01+00:00"
     assert receipt["fallback_provider_actual"] == ProviderProfile.EXTERNAL_OPENAI.value
     assert receipt["fallback_model"] == "gpt-ssot"
-    assert receipt["fallback_model_source"] == "source:competencies"
-    assert receipt["fallback_section_id"] == "competencies"
+    assert receipt["fallback_model_source"] == "source:default"
+    assert receipt["fallback_section_id"] is None
     assert receipt["fallback_attempt_started_at_utc"]
     assert receipt["fallback_attempt_completed_at_utc"]
     assert receipt["fallback_output_accepted"] is True
@@ -181,6 +180,33 @@ def test_openai_fallback_uses_ssot_model_and_preserves_initial_provider_request(
     assert spans[1]["output_accepted"] is True
     assert receipt["provider_attempt_timing_summary"]["fallback_attempt_count"] == 1
     assert result.provider_response["provider_attempt_spans"] == spans
+
+
+def test_policy_locked_sections_do_not_accept_openai_generation_fallback(monkeypatch) -> None:
+    created: dict[str, object] = {}
+
+    class _FallbackProvider:
+        def __init__(self, *, provider_profile, model, environ=None) -> None:
+            created["provider_profile"] = provider_profile
+            created["model"] = model
+
+        def generate(self, compiled_prompt, *, token_budget, temperature=0.7, timeout_seconds=None):
+            raise AssertionError("fallback provider must not be called")
+
+    monkeypatch.setattr(subject, "ExternalProvider", _FallbackProvider)
+
+    for section_id in ("executive_summary", "headline", "competencies"):
+        initial = _result(error="External provider HTTP 429: rate_limit_error")
+        assert subject.maybe_fallback_to_openai_for_claude_availability(
+            initial,
+            SimpleNamespace(run_id="run"),
+            token_budget=321,
+            temperature=0.11,
+            timeout_seconds=9,
+            section_id=section_id,
+        ) is initial
+
+    assert created == {}
 
 
 def test_openai_fallback_failure_returns_initial_blocked_result_with_receipt(monkeypatch) -> None:

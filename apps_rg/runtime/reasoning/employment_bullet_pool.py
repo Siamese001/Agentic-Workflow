@@ -295,10 +295,10 @@ def competencies_pool_x1d_judge_rows(
     section_id: str,
     gen_meta: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Selector receipt row for the competencies graph pool (Anthropic selector artifact).
+    """Selector receipt row for the competencies graph pool.
 
-    This is the pool-selection receipt, not the formal competencies X1D judge. The real
-    competencies judge is model-backed Gemini and is wired separately in the lane runtime.
+    This is the pool-selection receipt, not the formal competencies X1D proof judge. The
+    competencies proof judge is model-backed OpenAI and is wired separately in the lane runtime.
     """
     from apps_rg.runtime.judges.competencies_x1d import JUDGE_RUBRIC_VERSION
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS

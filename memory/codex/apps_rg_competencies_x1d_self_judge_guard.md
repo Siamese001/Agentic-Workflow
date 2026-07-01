@@ -1,0 +1,9 @@
+# ProceduralPattern:AppsRgCompetenciesX1DSelfJudgeGuardInvariant
+
+- INVARIANT: Keep apps_rg competencies proof judging OpenAI-required and never allow `anthropic_claude` as a competencies X1D proof judge because competencies primary generation is Claude-backed.
+- scope: `apps_rg/runtime/section_cli_defaults.py`, `apps_rg/runtime/section_judge_policy.py`, competencies lane parser/rollup commands, and competencies X1D proof-bundle tests.
+- enforcement: `tests/_apps_contract/test_competencies_10x6_target_contract.py`, `tests/_apps_contract/test_competencies_graph_pool_w2.py`, `tests/unit/apps_rg/test_judge_minimization_wave9.py`, `tests/unit/apps_rg/test_section_judge_policy.py`, `tests/unit/apps_rg/test_section_orchestration_dependency_order.py`, `tests/unit/apps_rg/test_x1d_judge_transport_parity.py`, `tests/unit/apps_rg/test_competencies_10x6_pool.py`.
+- violation_examples: setting `COMPETENCIES_DEFAULT_X1D_JUDGES` or `_COMPETENCIES_JUDGE_PANEL` to `gemini_pro,openai_chatgpt`; letting `APPS_RG_E2E_X1D_JUDGES` or `--x1d-judges` pass `anthropic_claude` through for `section_id="competencies"`.
+- canonical_pattern: `COMPETENCIES_DEFAULT_X1D_JUDGES = "openai_chatgpt"`, `_COMPETENCIES_JUDGE_PANEL = ("openai_chatgpt",)`, and competencies override sanitization removes `anthropic_claude` while preserving/inserting the required OpenAI judge.
+- verification: `python -m pytest tests/unit/apps_rg/test_judge_minimization_wave9.py tests/unit/apps_rg/test_section_orchestration_dependency_order.py tests/unit/apps_rg/test_section_judge_policy.py tests/unit/apps_rg/test_x1d_judge_transport_parity.py tests/_apps_contract/test_competencies_10x6_target_contract.py tests/_apps_contract/test_competencies_graph_pool_w2.py tests/unit/apps_rg/test_competencies_10x6_pool.py -q`
+- discovered: 2026-06-30, validated: 2026-06-30
