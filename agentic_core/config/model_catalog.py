@@ -51,6 +51,13 @@ def model_id_list(path: str) -> tuple[str, ...]:
     return tuple(item.strip() for item in node)
 
 
+def model_int(path: str) -> int:
+    node = catalog_value(path)
+    if not isinstance(node, int) or isinstance(node, bool):
+        raise ModelCatalogError(f"Model catalog key must be an integer: {path}")
+    return node
+
+
 OPENAI_DEFAULT_MODEL_ID: Final[str] = model_id("openai.default")
 OPENAI_CHAT_JUDGE_MODEL_ID: Final[str] = model_id("openai.chat_judge")
 OPENAI_SMALL_CLASSIFIER_MODEL_ID: Final[str] = model_id("openai.small_classifier")
@@ -128,6 +135,7 @@ QWEN_7B_INSTRUCT_MODEL_ID: Final[str] = QWEN_LOCAL_MODEL_ID
 QWEN_VLLM_LABEL: Final[str] = model_id("qwen.vllm_label")
 
 BGE_M3_MODEL_ID: Final[str] = model_id("embedding.bge_m3")
+BGE_M3_EMBEDDING_DIMENSION: Final[int] = model_int("embedding.bge_m3_dimension")
 # Compatibility names intentionally alias BGE-M3. The repo does not need separate
 # BGE base/large/reranker downloads for the active vector path.
 BGE_M3_VERSION_ID: Final[str] = BGE_M3_MODEL_ID
@@ -160,6 +168,7 @@ __all__ = [
     "ANTHROPIC_SONNET_4_5_MODEL_ID",
     "ANTHROPIC_SONNET_MODEL_ID",
     "BGE_LARGE_EN_MODEL_ID",
+    "BGE_M3_EMBEDDING_DIMENSION",
     "BGE_M3_MODEL_ID",
     "BGE_M3_VERSION_ID",
     "BGE_RERANKER_BASE_MODEL_ID",
@@ -207,4 +216,5 @@ __all__ = [
     "catalog_value",
     "model_id",
     "model_id_list",
+    "model_int",
 ]

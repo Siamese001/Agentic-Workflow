@@ -637,7 +637,7 @@ def _quality_violations(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any
                 violations.append({"profile_id": row["profile_id"], "reason": f"{field}_false"})
         if (
             row.get("c0_recipient_class_status") == "RECIPIENT_CLASS_DERIVED"
-            and row.get("generation_generator") != "claude_opus_4_8_primary"
+            and row.get("generation_generator") != "claude_sonnet_5_primary"
         ):
             violations.append(
                 {
@@ -646,7 +646,7 @@ def _quality_violations(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any
                 }
             )
         if row.get("draft_text"):
-            if row.get("generation_generator") != "claude_opus_4_8_primary":
+            if row.get("generation_generator") != "claude_sonnet_5_primary":
                 violations.append(
                     {
                         "profile_id": row["profile_id"],
@@ -765,7 +765,7 @@ def run_post_w7_live_15_contact_company_validation(
     loaded_env_file = _load_env_file(env_file)
     old_provider_env = {key: os.environ.get(key) for key in LIVE_PROVIDER_ENV_KEYS}
     os.environ.pop("APPS_LIC_TEST_PROVIDER_STUB", None)
-    os.environ["APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID"] = "claude-opus-4-8"
+    os.environ["APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID"] = "claude-sonnet-5"
     os.environ["APPS_LIC_RUN_LIVE_GPT_X1D"] = (
         "1" if str(os.environ.get("OPENAI_API_KEY") or "").strip() else "0"
     )
@@ -809,7 +809,7 @@ def run_post_w7_live_15_contact_company_validation(
 
     row_tuple = tuple(rows)
     summary = _build_summary(row_tuple, generated_at=datetime.now(timezone.utc).isoformat())
-    summary["provider_mode"] = "live_claude_opus_4_8_primary_required"
+    summary["provider_mode"] = "live_claude_sonnet_5_primary_required"
     summary["x1d_provider_mode"] = (
         "live_gpt_required_when_x1d_required"
         if live_gpt_x1d_enabled

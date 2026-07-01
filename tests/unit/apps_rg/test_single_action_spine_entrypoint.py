@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import importlib
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -157,23 +156,56 @@ def test_cache_miss_invokes_spine_once(monkeypatch: pytest.MonkeyPatch, tmp_path
     assert (tmp_path / "whole_run_cache_preflight_miss.json").is_file()
 
 
-def test_section_path_does_not_call_whole_run_spine(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_section_path_invokes_integrated_spine_with_section_scope(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
     import apps_rg.runtime.orchestration.canonical_dispatch as cd
+    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+        ROUTE_ID,
+        SingleActionSpineRunResult,
+    )
 
-    whole_run_mock = MagicMock()
+    calls: list[dict] = []
+
+    def _fake_spine(**kwargs):  # noqa: ANN003
+        calls.append(kwargs)
+        return SingleActionSpineRunResult(
+            run_id="core-run-section",
+            request_id="core-req-section",
+            route_id=ROUTE_ID,
+            x3_disposition="EXIT_OK",
+            terminal_r5=False,
+            terminal_r5_reason="",
+            artifact_dir=tmp_path,
+            fault="",
+            l2_result={
+                "step_results": [
+                    {
+                        "section_result": {
+                            "outcome_authorized": True,
+                            "executive_summary_cli_output_text": "SECTION_OK",
+                        }
+                    }
+                ]
+            },
+        )
+
     monkeypatch.setattr(
         "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
-        whole_run_mock,
+        _fake_spine,
     )
-    monkeypatch.setattr(
-        "apps_rg.runtime.spine.apps_rg_spine_run.run_apps_rg_spine",
-        lambda **kwargs: {"exit_status": "success", "outcome_authorized": True},
-    )
+    monkeypatch.setattr(cd, "_apps_rg_u0_runtime_package_fields", lambda: {})
     cd.run_canonical_apps_rg_from_cli_primitives(
         target_company="Acme",
         target_role="Engineer",
         section="executive_summary",
         jd="jd",
         manual_brief="brief",
+        artifact_dir=str(tmp_path),
     )
-    whole_run_mock.assert_not_called()
+    assert len(calls) == 1
+    assert calls[0]["app_name"] == "apps_rg"
+    assert calls[0]["raw_request"]["execution_scope"] == "section"
+    assert calls[0]["raw_request"]["section_id"] == "executive_summary"
+    assert calls[0]["cache_preflight_evidence"]["cache_preflight_completed"] is True

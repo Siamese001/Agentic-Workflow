@@ -7,26 +7,29 @@
 - **Emit status:** PASS
 - **Business read:** ADG is REPORT_INCONSISTENT: Repair report consistency first; the executive order of work is not trustworthy until graph and report agree. Repair report consistency before treating blocker order as authoritative.
 - **Technical evidence:**
-  - ADG source: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-2967\test_clean_certification_run_r0\snap.sqlite (snapshot snap)
-  - FIX gates: 0; burn-down gates: 0; KPI/watchlist gates: 0
-  - KPI split: foundation blockers not loaded; P0 audit net 0; P0 live gate drivers 0
-  - Missing or empty runtime proof is a measurement gap (blind spot), not automatically a product failure, unless an artifact shows runtime failure evidence.
-  - Testing is a control gap where unknown lacks unit, regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
+  - ADG source: artifacts/adg/adg_indexed_07012026_0418.sqlite (snapshot 07012026_0418)
+  - FIX gates: 0; burn-down gates: 15; KPI/watchlist gates: 5
+  - KPI split: foundation blockers 200; P0 audit net 3; P0 live gate drivers 0
+  - Runtime proof is present and FAILING — treat as a quality failure to fix.
+  - Testing is a control gap where agentic_core/L5_safety/reasoning/FileClassificationAgent.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
   - GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.
-  - Action rows emitted: 1
+  - Action rows emitted: 4
 - **Priority rule:** Decision queue: repair consistency, then remove concrete P0 hard stops/regressions; do not let high-volume P3 hygiene outrank P0 safety/governance gates.
 
 Decision gate:
 
 | Gate | Why it matters | Evidence | Required before ranking |
 |------|----------------|----------|-------------------------|
-| Repair graph/report consistency | The executive order is not decision-grade until graph and report agree. | 2 graph/report mismatch row(s) block decision-grade ordering. | Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative. |
+| Repair graph/report consistency | The executive order is not decision-grade until graph and report agree. | 6 graph/report mismatch row(s) block decision-grade ordering. | Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative. |
 
 Fix now:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
-| 1 | Fund mapped tests for unknown | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/unit, tests/regression coverage for unknown. | Add mapped tests before touching this surface again. |
+| 1 | Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
+| 2 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
+| 3 | Burn down ratchet C3_silent_writes_ratchet | Accepted baseline debt should fall after red gates are clear. | 2,050 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
+| 4 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps | Suppress or retire signals that do not affect decisions. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Deprecate only after the higher-risk surfaces are handled. |
 
 Next step: Repair graph/report consistency first.
 
@@ -36,7 +39,7 @@ ADG is the X-ray of the codebase. It maps code connections and lets the system a
 
 ### 2. Patient Size
 
-This patient has 28895 Python files: 23662 production files and 5233 test files. agentic_core contributes 2891 files; apps_* contributes 1456 files. Current snapshot/run ID: 06292026_0101.
+This patient has 28904 Python files: 23671 production files and 5233 test files. agentic_core contributes 2891 files; apps_* contributes 1465 files. Current snapshot/run ID: 07012026_0418.
 
 ### 3. Executive Decision
 
@@ -50,41 +53,52 @@ Do not add these counts together. A P0 audit finding is not a foundation blocker
 
 | KPI | Value | Plain-English meaning | Action rule |
 |---|---|---|---|
-| Foundation blockers | not loaded | P0 trust hazards that can make ADG evidence incomplete, unstable, or misleading. | Stop the line if greater than zero; if not loaded, do not claim clean. |
-| P0 audit net | 0 | P0 severity audit inventory after guardian exemptions. | Audit-only unless mapped to a failing gate, runtime failure, hotspot, or changed code. |
+| Foundation blockers | 200 | P0 trust hazards that can make ADG evidence incomplete, unstable, or misleading. | Stop the line if greater than zero; if not loaded, do not claim clean. |
+| P0 audit net | 3 | P0 severity audit inventory after guardian exemptions. | Audit-only unless mapped to a failing gate, runtime failure, hotspot, or changed code. |
 | P0 live gate drivers | 0 | Current red P0 gates that can drive today's work order. | Can drive priority when the gate is FIX/red and decision-linked. |
 
 Zero foundation blockers can coexist with nonzero P0 audit net because they measure different ledgers: run-trust hazards versus severity audit inventory.
 
 | Band | Audit gross | Guardian / exempted | Audit net | Foundation blockers | Live gate drivers | Action role |
 |---|---|---|---|---|---|---|
-| P0 | 0 | 0 | 0 | not loaded | 0 | Stop-the-line only if foundation blockers are present; otherwise audit net is evidence to map. |
-| P1 | 0 | 0 | 0 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
-| P2 | 0 | 0 | 0 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
-| P3 | 0 | 0 | 0 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
+| P0 | 36 | 33 | 3 | 200 | 0 | Stop-the-line only if foundation blockers are present; otherwise audit net is evidence to map. |
+| P1 | 1,146 | 1,143 | 3 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
+| P2 | 743 | 716 | 27 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
+| P3 | 19,159 | 87 | 19,072 | n/a | 0 | Severity inventory to map to a failing gate, hotspot, changed code, or owner. |
 
 ### 4. Lens 0 — Foundation Blockers
 
-Foundation blockers are P0 trust hazards: if this artifact is missing, leaders cannot see whether the graph itself is structurally trustworthy.
+Foundation blockers are P0 trust hazards: they can make the graph incomplete, unstable, or misleading before ordinary gate counts are even interpreted.
 
-P0 wave-plan JSON was not loaded; do not claim there are no foundation blockers.
+Clear dynamic execution, circular imports, protected-surface boundary breaks, and high fan-in wrong-way imports before treating lower-priority cleanup as reliable.
 
 | Foundation signal | Count | Plain-English meaning |
 |---|---:|---|
 | Layer violations | 0 | Wrong-way dependencies across protected architecture layers. |
 | Circular imports | 0 | Modules depend on each other in a loop, making load order brittle. |
 | Dynamic execution | 0 | Code is executed dynamically, which can make graph evidence incomplete. |
-| Protected surfaces | 0 | Cracks in routing, execution, orchestration, or safety surfaces. |
+| Protected surfaces | 200 | Cracks in routing, execution, orchestration, or safety surfaces. |
 
 | Foundation blocker | File | Line | Layer path | Wrong-way? | Protected? | Fan-in | Recommended action |
 |---|---|---|---|---|---|---|---|
-| None |  | 0 |  | False | False | 0 | No foundation-blocker action required. |
+| l0_reachability_orphan | agentic_core/L1_cognition/__init__.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/apps_research_c0_binding.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/apps_research_l1_binding.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/apps_research_l1_binding_v2.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/bridges/__init__.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/bridges/u0_to_l1_plan.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/bridges/u0_to_l1_planning.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | agentic_core/L1_cognition/c0_context/__init__.py | 0 | L0 -> L1 | False | True | 0 | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| none | No immediate action impact. | Load the emitted P0 wave-plan JSON before trusting this lens. |
+| l0_reachability_orphan | Fixing this improves trust in ADG ordering before ordinary gate cleanup. | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | Fixing this improves trust in ADG ordering before ordinary gate cleanup. | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | Fixing this improves trust in ADG ordering before ordinary gate cleanup. | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | Fixing this improves trust in ADG ordering before ordinary gate cleanup. | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
+| l0_reachability_orphan | Fixing this improves trust in ADG ordering before ordinary gate cleanup. | Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety. |
 
 ### 5. Gap Analysis — Lens 1: Health Gates
 
@@ -94,9 +108,9 @@ FIX blocks green; BURN is accepted work; KPI is trend/watchlist; CLEAR needs no 
 
 | Bucket | Count | Executive meaning |
 |---|---:|---|
-| CLEAR | 0 | No action now. |
-| BURN | 0 | Owned backlog; burn down after red gates. |
-| KPI | 0 | Watchlist/trend only; no burn-down unless planned. |
+| CLEAR | 29 | No action now. |
+| BURN | 15 | Owned backlog; burn down after red gates. |
+| KPI | 5 | Watchlist/trend only; no burn-down unless planned. |
 | FIX | 0 | Current blocker or regression requiring action before decision-grade green. |
 
 | Red gate | Total records | Regression / new delta | Executive read | Next action |
@@ -113,27 +127,33 @@ KPI / watchlist signals:
 
 | Signal | Rows | Executive read | Recommended action |
 |---|---|---|---|
-| None | 0 | No KPI/watchlist signal was promoted. | No KPI action. |
+| S4_unused_imports_ratchet | 10778 | Watchlist signal; do not treat as burn-down work without an owner and target. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| Q2_cyclomatic_complexity_ratchet | 1171 | Watchlist signal; do not treat as burn-down work without an owner and target. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| M1_module_loc_ratchet | 466 | Watchlist signal; do not treat as burn-down work without an owner and target. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| D2_role_duplication_warn | 105 | Watchlist signal; do not treat as burn-down work without an owner and target. | Advisory KPI: watch the trend; no action required to pass CI. |
+| D1_layer_doc_binding | 3 | Watchlist signal; do not treat as burn-down work without an owner and target. | Advisory KPI: watch the trend; no action required to pass CI. |
 
 ### 6. Gap Analysis — Lens 2: Runtime Proof / Observability
 
 Runtime proof separates a real observed failure from a blind spot; leaders should not treat missing traces as proof of health.
 
-Missing or empty runtime proof is a measurement gap (blind spot), not automatically a product failure, unless an artifact shows runtime failure evidence.
+Runtime proof is present and FAILING — treat as a quality failure to fix.
 
 | Runtime proof signal | Status | Executive read | Action |
 |---|---|---|---|
-| runtime_spine | missing | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
-| graphdb_queries | missing | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
-| structural_outputs | missing | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
+| runtime_spine | present_failing | Runtime proof present and FAILING: 6 semantic failure(s) — a quality failure, not a measurement gap. | Fix the failing runtime path before relying on the trace. |
+| graphdb_queries | present | Runtime/structural proof present and clean for interpretation. | Use to confirm runtime path risk. |
+| structural_outputs | present | Runtime/structural proof present and clean for interpretation. | Use to confirm runtime path risk. |
+| mv_eval_coverage_by_path | present | replay/eval coverage MV present with 12 rows; gaps here are replay/eval blind spots, not proven failures. | Close replay/eval gaps for critical paths. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| runtime_spine | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
-| graphdb_queries | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
-| structural_outputs | Measurement blind spot; not automatically a product failure. | Enable or repair artifact emission if the decision needs runtime proof. |
+| runtime_spine | Runtime proof present and FAILING: 6 semantic failure(s) — a quality failure, not a measurement gap. | Fix the failing runtime path before relying on the trace. |
+| graphdb_queries | Runtime/structural proof present and clean for interpretation. | Use to confirm runtime path risk. |
+| structural_outputs | Runtime/structural proof present and clean for interpretation. | Use to confirm runtime path risk. |
+| mv_eval_coverage_by_path | replay/eval coverage MV present with 12 rows; gaps here are replay/eval blind spots, not proven failures. | Close replay/eval gaps for critical paths. |
 
 ### 7. Gap Analysis — Lens 3: Product / App Risk
 
@@ -155,29 +175,30 @@ Action impact:
 
 Tests are the control that prove a risky fix actually works; missing mapped tests turn every red-gate fix into a repeat-risk.
 
-Testing is a control gap where unknown lacks unit, regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
+Testing is a control gap where agentic_core/L5_safety/reasoning/FileClassificationAgent.py lacks regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.
 
 | Rank | Production scope | Current tests found | Missing test scope | Risk | Recommended investment | Trigger |
 |---:|---|---|---|---|---|---|
-| 1 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 2 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 3 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 4 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 5 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 6 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 7 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 8 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
-| 9 | unknown | none mapped | unit, regression | HIGH | Add mapped tests/unit, tests/regression coverage for unknown. | hotspot coverage MV / test inventory |
+| 1 | agentic_core/L5_safety/reasoning/FileClassificationAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 2 | agentic_core/L5_safety/utils/location_healer_util.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 3 | agentic_core/L5_safety/reasoning/root_hygiene_healer.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 4 | agentic_core/adg/extraction/static_scanner.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 5 | agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 6 | agentic_core/L5_safety/reasoning/location_validator.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 7 | agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 8 | agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 9 | agentic_core/L5_safety/reasoning/SystemArchitectAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
+| 10 | agentic_core/L5_safety/reasoning/CodeHealerAgent.py | unit: tests/system_learning/unit/test_ml_compatibility.py; unit: tests/system_learning/unit/test_ml_end_to_end_envelope.py; unit: tests/system_learning/unit/test_ml_write_envelope.py; unit: tests/system_learning/unit/test_runtime_antipattern_enforcement.py; unit: tests/system_learning/unit/test_runtime_state_digest.py; unit: tests/system_learning/unit/test_runtime_state_digest_advanced.py | regression | CRITICAL | Add mapped tests/regression coverage for agentic_core. | current action queue overlap |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| unknown | Fix confidence improves when this scope has mapped tests. | Add mapped tests/unit, tests/regression coverage for unknown. |
-| unknown | Fix confidence improves when this scope has mapped tests. | Add mapped tests/unit, tests/regression coverage for unknown. |
-| unknown | Fix confidence improves when this scope has mapped tests. | Add mapped tests/unit, tests/regression coverage for unknown. |
-| unknown | Fix confidence improves when this scope has mapped tests. | Add mapped tests/unit, tests/regression coverage for unknown. |
-| unknown | Fix confidence improves when this scope has mapped tests. | Add mapped tests/unit, tests/regression coverage for unknown. |
+| agentic_core/L5_safety/reasoning/FileClassificationAgent.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/L5_safety/utils/location_healer_util.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/L5_safety/reasoning/root_hygiene_healer.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/adg/extraction/static_scanner.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
+| agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py | Fix confidence improves when this scope has mapped tests. | Add mapped tests/regression coverage for agentic_core. |
 
 ### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact
 
@@ -187,12 +208,38 @@ GraphDB/MV signals drive decisions only when the studied structural risk (centra
 
 | Signal | Decision role | Used now? | Why / why not | Action |
 |---|---|---|---|---|
+| p0_wave_plan | used_after_green | True | Planned-slice / watchlist input for after-green burn-down ordering. | Use for blast-radius / refactor / runtime-path / after-green planning. |
+| mv_debt_concentration_hotspots | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_eval_coverage_by_path | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_exit_disposition_coverage | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_l2_phase_coverage | used_for_testing | True | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_dependency_cone_risk | used_now | True | Structural MV studied (25 ranked rows on `cone_risk_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_graph_chokepoint_bridges | used_now | True | Structural MV studied (25 ranked rows on `bridge_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_graph_critical_path_blast_radius | used_now | True | Structural MV studied (25 ranked rows on `weighted_blast_radius`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_graph_reverse_dependency_hotspots | used_now | True | Structural MV studied (25 ranked rows on `reverse_dependency_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_hotspot_centrality | used_now | True | Structural MV studied (25 ranked rows on `betweenness_approx`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_hotspot_coverage_risk | used_now | True | Linked to a current FIX/action signal, so it changes immediate work order. | Use in current fix slice. |
+| mv_newly_introduced_critical_paths | used_now | True | Structural MV studied (25 ranked rows on `criticality_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
 
 Action impact:
 
 | Signal | Action impact | Recommended action |
 |---|---|---|
-| none | No immediate action impact. | Keep graph signals diagnostic until they overlap a blocker, hotspot, or planned slice. |
+| mv_debt_concentration_hotspots | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_dependency_cone_risk | Structural MV studied (25 ranked rows on `cone_risk_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+| mv_eval_coverage_by_path | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_exit_disposition_coverage | Translates structural risk into concrete test-placement decisions. | Attach mapped tests to high-risk scopes. |
+| mv_graph_chokepoint_bridges | Structural MV studied (25 ranked rows on `bridge_score`); a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives work now. | Use in current fix slice. |
+
+Top structural risks (studied from the graph MVs — centrality / blast radius / reverse deps / cones):
+
+| Rank | Scope | Graph signal | Centrality | Blast radius | Reverse dep | Executive read |
+|---:|---|---|---|---|---|---|
+| 1 | agentic_core/adg/extraction/static_scanner.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint, newly_introduced | 2.1902 | 84.0 | 84.0 | High structural risk — newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot. |
+| 2 | agentic_core/base_agents/SovereignBaseAgent.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.8107 | 175.93 | 91.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 3 | agentic_core/L2_execution/utils/write_gateway.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 0.7445 | 160.06 | 81.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 4 | agentic_core/L0_routing/config/__init__.py | centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint | 2.5151 | 173.4 | 110.0 | High structural risk — overlaps an under-tested coverage hotspot. |
+| 5 | agentic_core/runtime/contracts/lifecycle_trace_contract.py | centrality, reverse_dependency, blast_radius, dependency_cone | 87.8234 | 3239.46 | 1770.0 | High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot. |
 
 ### 10. MECE Decision Gate and Work Queue
 
@@ -200,38 +247,45 @@ Decision gate — fixes report/runtime trust before ranking becomes authoritativ
 
 | Gate | Why it matters | Evidence | Required before ranking |
 |---|---|---|---|
-| Repair graph/report consistency | The executive order is not decision-grade until graph and report agree. | 2 graph/report mismatch row(s) block decision-grade ordering. | Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative. |
+| Repair graph/report consistency | The executive order is not decision-grade until graph and report agree. | 6 graph/report mismatch row(s) block decision-grade ordering. | Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative. |
 
 Fix now — ranked work items only:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---|---|---|---|---|
-| 1 | Fund mapped tests for unknown | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/unit, tests/regression coverage for unknown. | Add mapped tests before touching this surface again. |
+| 1 | Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py | Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down. | Add mapped tests/regression coverage for agentic_core. | Add mapped tests before touching this surface again. |
+| 2 | Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Refactor after the blocker and test exposure are explicit. |
+| 3 | Burn down ratchet C3_silent_writes_ratchet | Accepted baseline debt should fall after red gates are clear. | 2,050 floor-row(s) remain on the ratchet gate. | Burn down the ratchet after the current red gates clear. |
+| 4 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps | Suppress or retire signals that do not affect decisions. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Deprecate only after the higher-risk surfaces are handled. |
 
 ### 11. Defer / Delete / Deprecate
 
 ### BCG Deletion Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Deletion status:** NO_DELETIONS_APPROVED
-- **Business read:** No deletions are approved in this run because ADG found 0 confirmed dead-code candidates; reduce uncertainty first, then deprecate noisy diagnostics.
+- **Deletion status:** DELETION_CANDIDATES
+- **Source report status:** PASS
+- **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - Dead code candidates: 0
-  - Dead imports: 0
-  - Unresolved imports: 0
-  - First-party low-confidence ratio: 0.00%
-  - Inferred-symbol ratio: 0.00%
-  - Cleanup candidates surfaced: 13
+  - ADG source: artifacts/adg/adg_indexed_07012026_0418.sqlite (snapshot 07012026_0418)
+  - Dead code candidates: 950
+  - Dead imports: 950
+  - Unresolved imports: 483
+  - First-party low-confidence ratio: 1.56%
+  - Inferred-symbol ratio: 10.15%
+  - Cleanup candidates surfaced: 19
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
 Fix now:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
-| 1 | Hold all deletion | The scan found no confirmed dead code, so deleting anything now would be speculative and could break working paths. | Dead-code candidates = 0 and dead imports = 0. | No deletion move until a proven target appears. |
-| 2 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 0 unresolved imports; lead hotspot none (0). | Trace the top unresolved scope before deleting anything else. |
-| 3 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 0.00% and inferred-symbol ratio = 0.00%. | Lower the noise floor, then rerun the scan. |
-| 4 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 13 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
+| 1 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
+| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.56% and inferred-symbol ratio = 10.15%. | Lower the noise floor, then rerun the scan. |
+| 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 13 MV candidates and 6 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
 
 Next step: Deprecate first, then delete after the evidence stays clean.
 
@@ -239,18 +293,18 @@ Current low-value cleanup candidates:
 
 | Item | Type | Current value | Recommendation | Rationale |
 |---|---|---|---|---|
-| bcg_adapter | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| review_template | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| burndown_report | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| structural_outputs | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| refactor_accelerator | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| graphdb_queries | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| runtime_spine | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| graphdb_projection | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| graphdb_metadata | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| graphdb_index | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| graph_watchlist | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
-| p0_wave_plan | artifact | unused or missing | hide_inline | Available only as diagnostic/evidence context or missing from this run. |
+| mv_actionable_surface_without_schema | mv | 783 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_agent_specialization_overlap | mv | 3036 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_agent_tool_ratio | mv | 15 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_authority_boundary_breaches | mv | 7 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_capability_and_egress_gaps | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
+| mv_critical_path_segments | mv | 191 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_cross_cutting_witness_tiers | mv | 56 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_determinism_provenance_drift | mv | 6604 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_digest_reconciliation | mv | 6 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_exemptions_near_critical_paths | mv | 3158 rows; diagnostic_monitor | keep_hide_inline | Raw MV count alone is not a funding signal. |
+| mv_gateway_bypass_paths | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
+| mv_graph_scc_clusters | mv | 0 rows; stale_or_empty | deprecate | Raw MV count alone is not a funding signal. |
 
 ### 12. Honest Bottom Line
 
@@ -258,5 +312,5 @@ Current low-value cleanup candidates:
 - Actually blocking now: 0 FIX gates; inspect regression delta before declaring a platform crisis.
 - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.
 - Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.
-- Fund mapped tests for unknown
+- Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role.

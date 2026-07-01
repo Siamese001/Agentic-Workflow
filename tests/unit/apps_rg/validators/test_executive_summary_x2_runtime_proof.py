@@ -1,4 +1,4 @@
-"""Executive summary X2 proof gates for section-pinned primary/backup models."""
+"""Executive summary X2 proof gates for section-pinned primary model."""
 
 from __future__ import annotations
 
@@ -31,13 +31,14 @@ def test_pre_x2_artifact_gate_does_not_require_final_receipts(tmp_path) -> None:
     assert "x3_disposition.json" in str(full_reason)
 
 
-def test_executive_summary_model_allowlist_accepts_primary_and_pinned_openai_backup() -> None:
-    assert "claude-opus-4-8" in ALLOWED_MODELS
-    assert "gpt-5.4-mini-2026-03-17" in ALLOWED_MODELS
+def test_executive_summary_model_allowlist_accepts_only_pinned_claude_primary() -> None:
+    assert "claude-sonnet-5" in ALLOWED_MODELS
+    assert "gpt-5.4-mini-2026-03-17" not in ALLOWED_MODELS
     assert "gpt-5.4-mini" not in ALLOWED_MODELS
 
-    assert model_name_matches_allowed("claude-opus-4-8", ALLOWED_MODELS) is True
-    assert model_name_matches_allowed("gpt-5.4-mini-2026-03-17", ALLOWED_MODELS) is True
+    assert model_name_matches_allowed("claude-sonnet-5", ALLOWED_MODELS) is True
+    assert model_name_matches_allowed("claude-haiku-3-5", ALLOWED_MODELS) is False
+    assert model_name_matches_allowed("gpt-5.4-mini-2026-03-17", ALLOWED_MODELS) is False
     assert model_name_matches_allowed("gpt-5.4-mini", ALLOWED_MODELS) is False
     assert model_name_matches_allowed("gpt-5.5", ALLOWED_MODELS) is False
 

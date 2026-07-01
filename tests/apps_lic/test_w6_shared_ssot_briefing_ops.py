@@ -63,7 +63,7 @@ def test_apps_lic_consumes_briefing_file_via_manual_brief(tmp_path: Path) -> Non
 
 def test_runbook_documents_frontier_fail_closed_and_no_drift_ops() -> None:
     text = RUNBOOK.read_text(encoding="utf-8")
-    assert "Claude Opus 4.8" in text
+    assert "Claude Sonnet 5" in text
     assert "GPT-5.5" in text
     assert "fail-closed" in text.lower()
     assert "model_profiles.yaml" in text

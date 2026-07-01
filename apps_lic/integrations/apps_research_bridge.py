@@ -15,7 +15,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-APPS_RESEARCH_DEPRECATED = "APPS_RESEARCH_DEPRECATED"
+from apps_lic.integrations.research_reason_codes import APPS_RESEARCH_DEPRECATED
 
 
 def _stable_hash(*parts: Any) -> str:

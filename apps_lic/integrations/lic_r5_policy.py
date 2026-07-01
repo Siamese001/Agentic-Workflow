@@ -26,6 +26,14 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
 
+from apps_lic.integrations.research_reason_codes import (
+    APPS_RESEARCH_BLOCKED,
+    APPS_RESEARCH_EMPTY,
+    APPS_RESEARCH_FAILED,
+    APPS_RESEARCH_STALE,
+    APPS_RESEARCH_WEAK_SUPPORT,
+)
+
 
 class R5ReasonCode(str, Enum):
     """All 14 R5 reason codes for apps_lic fail-closed terminals.
@@ -45,11 +53,11 @@ class R5ReasonCode(str, Enum):
     #   Normal missing/stale briefing routes to R3R4_MANAGED_WORKFLOW — NOT this code.
 
     # --- apps_research result quality (P9 fail-closed codes) ---
-    APPS_RESEARCH_FAILED       = "APPS_RESEARCH_FAILED"
-    APPS_RESEARCH_EMPTY        = "APPS_RESEARCH_EMPTY"
-    APPS_RESEARCH_BLOCKED      = "APPS_RESEARCH_BLOCKED"
-    APPS_RESEARCH_STALE        = "APPS_RESEARCH_STALE"
-    APPS_RESEARCH_WEAK_SUPPORT = "APPS_RESEARCH_WEAK_SUPPORT"
+    APPS_RESEARCH_FAILED       = APPS_RESEARCH_FAILED
+    APPS_RESEARCH_EMPTY        = APPS_RESEARCH_EMPTY
+    APPS_RESEARCH_BLOCKED      = APPS_RESEARCH_BLOCKED
+    APPS_RESEARCH_STALE        = APPS_RESEARCH_STALE
+    APPS_RESEARCH_WEAK_SUPPORT = APPS_RESEARCH_WEAK_SUPPORT
 
     # --- Content policy failures ---
     SEND_MODE_FORBIDDEN        = "SEND_MODE_FORBIDDEN"

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import types
+from pathlib import Path
 
 import pytest
 
@@ -14,6 +15,7 @@ from apps_research.engines.company_brief_engine import (
     APPS_RESEARCH_BRIEF_MODEL,
     CompanyBriefEngine,
     CompanyBriefUnavailableError,
+    _company_brief_primary_openai_model,
     _v2_enabled,
 )
 
@@ -113,7 +115,6 @@ def test_c0_bundle_records_retrieval_provenance_and_jd_intent(monkeypatch: pytes
 
 
 def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RESEARCH_BRIEF_MODEL", "gpt-5.5")
     monkeypatch.setenv("APPS_RESEARCH_MAX_OUTPUT_TOKENS", "777")
 
     captured: list[dict[str, object]] = []
@@ -182,3 +183,21 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
     ]
     assert all(row["max_completion_tokens"] == 777 for row in captured)
     assert APPS_RESEARCH_BRIEF_MODEL == "gpt-5.4-mini"
+
+
+def test_company_brief_model_is_resolved_from_provider_profile() -> None:
+    assert APPS_RESEARCH_BRIEF_MODEL == _company_brief_primary_openai_model()
+
+
+def test_apps_research_active_contracts_do_not_restore_stale_model_pins() -> None:
+    repo = Path(__file__).resolve().parents[3]
+    stale_claude = "claude-sonnet-" + "4-6"
+    stale_gemini_provider = "gemini-pro-" + "3.1-preview"
+    checked = (
+        repo / "apps_research/config/domain_contract/provider_profile.company_brief.v1.yaml",
+        repo / "apps_research/types/apps_rg_targeting_brief_contract.py",
+    )
+    for path in checked:
+        text = path.read_text(encoding="utf-8")
+        assert stale_claude not in text
+        assert stale_gemini_provider not in text

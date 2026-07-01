@@ -207,9 +207,9 @@ class TestDefaultJurorsFromRegistry:
         assert models["anthropic"] == ANTHROPIC_JUROR.model_id
         assert models["openai"] == OPENAI_JUROR.model_id
 
-    def test_registered_model_pins_are_2026_05_01_fleet(self):
+    def test_registered_model_pins_are_2026_07_01_fleet(self):
         assert GEMINI_JUROR.model_id == "gemini-3.1-pro-preview"
-        assert ANTHROPIC_JUROR.model_id == "claude-sonnet-4-6"
+        assert ANTHROPIC_JUROR.model_id == "claude-sonnet-5"
         from agentic_core.L0_routing.config.model_catalog import OPENAI_DEFAULT_MODEL_ID
 
         assert OPENAI_JUROR.model_id == OPENAI_DEFAULT_MODEL_ID

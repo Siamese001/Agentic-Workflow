@@ -28,11 +28,6 @@ from apps_rg.runtime.providers.provider_attempt_spans import (
     summarize_provider_attempt_spans,
 )
 from apps_rg.runtime.providers.provider_contract import ProviderResult
-from apps_rg.runtime.section_model_limits import (
-    external_claude_generation_model,
-    external_openai_generation_model,
-)
-
 ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 
 DEFAULT_ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
@@ -138,11 +133,12 @@ class ExternalProvider:
         self.provider_profile = provider_profile
         self.environ = os.environ if environ is None else environ
         self._uses_process_environ = self.environ is os.environ
-        self.model = model or (
-            external_claude_generation_model(self.environ)
-            if provider_profile == ProviderProfile.EXTERNAL_CLAUDE
-            else external_openai_generation_model(self.environ)
-        )
+        if not str(model or "").strip():
+            raise ProviderGatewayError(
+                f"ExternalProvider requires an explicit model for profile={provider_profile.value}; "
+                "resolve the section pin before constructing the provider."
+            )
+        self.model = str(model).strip()
         self.api_key_env_var = api_key_env_var or (
             "ANTHROPIC_API_KEY"
             if provider_profile == ProviderProfile.EXTERNAL_CLAUDE

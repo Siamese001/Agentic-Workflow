@@ -28,7 +28,7 @@ from agentic_core.knowledge.retrieval.dual_pass_citation_orchestrator import (
     DualPassCitationOrchestrator,
 )
 
-_OPUS = "claude-opus-4-8"
+_OPUS = "claude-opus-4-5"
 
 
 def _fake_envelope(*, system: str, doc: str, abstain: bool = False):

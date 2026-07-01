@@ -12,25 +12,25 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from apps_rg.runtime.orchestration.integrated_spine_runner import (
-    run_integrated_single_action_spine,
-)
-
-from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
-from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
-from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
-from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_pointer, proof_bucket_for_provider
-from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
-from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.executive_summary_certification import (
     EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3,
     executive_summary_certification_block,
 )
+from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
+from apps_rg.runtime.orchestration.integrated_spine_runner import (
+    run_integrated_single_action_spine,
+)
+from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
+from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
+from apps_rg.runtime.runtime_proof_layout import (
+    find_repo_root,
+)
+from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 # V6 terminal codes short values (integrated R4); legacy strings retained.
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
@@ -62,8 +62,8 @@ _BRIEF_FETCH_MAX_BYTES = 2_000_000
 
 def _fetch_url_text(url: str, *, max_bytes: int = _BRIEF_FETCH_MAX_BYTES) -> str:
     """Fetch brief content from http(s); bounded read for CLI safety."""
-    req = Request(url, headers={"User-Agent": "apps_rg-cli/1"})
-    with urlopen(req, timeout=45) as resp:  # noqa: S310 — intentional user-supplied brief URL
+    req = Request(url, headers={"User-Agent": "apps_rg-cli/1"})  # noqa: S310
+    with urlopen(req, timeout=45) as resp:  # noqa: S310
         raw = resp.read(max_bytes + 1)
     if len(raw) > max_bytes:
         return ""
@@ -134,6 +134,33 @@ def _sha16(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
+def _apps_rg_u0_runtime_package_fields() -> dict[str, Any]:
+    """Resolve app-owned U0 runtime package fields for the core spine request."""
+    from apps_rg.runtime.bindings.u0_package_ingest import (
+        ingest_apps_rg_runtime_package,
+    )
+
+    pkg = ingest_apps_rg_runtime_package(
+        app_id="apps_rg",
+        task_class="resume_generation",
+        request_context={},
+    )
+    return {
+        "runtime_customization_package": pkg.package_dict,
+        "package_validation_receipt": {
+            "package_id": pkg.validation_receipt.package_id,
+            "package_version": pkg.validation_receipt.package_version,
+            "task_class": pkg.validation_receipt.task_class,
+            "validation_passed": pkg.validation_receipt.validation_passed,
+            "digest_verified": pkg.validation_receipt.digest_verified,
+            "timestamp_iso": pkg.validation_receipt.timestamp_iso,
+        },
+        "profile_manifest": dict(pkg.profile_manifest_refs),
+        "app_u0_assumptions_ref": "apps_rg/runtime/contracts/apps_rg_assumptions.yaml",
+        "app_u0_package_ref": pkg.package_ref,
+    }
+
+
 def build_raw_request_for_r4(
     *,
     target_company: str,
@@ -202,18 +229,28 @@ def build_raw_request_for_r4(
         "declared_schema": "apps_rg_jd_v1",
         "tenant_id": "default",
         "user_id": "apps_rg_cli_user",
+        "app_id": "apps_rg",
+        "task_class": "resume_generation",
         "target_company": target_company,
         "target_role": target_role,
         "target_level": target_level,
         "manual_brief": resolved_manual_brief,
+        "manual_brief_path": resolved_manual_brief,
+        "briefing_artifact_ref": resolved_manual_brief,
+        "briefing_text": brief_text,
         "generation_mode": generation_mode,
         "jd_payload": jd_payload,
+        "job_description_ref": jd_ref,
+        "job_description_text": jd_txt,
         "jd_hash": jd_hash,
         "brief_hash": brief_hash,
         "resume_hash": resume_hash,
+        "source_resume_ref": rp,
+        "source_resume_text": st,
         "master_resume_data": master_resume_data,
         "flow_route": "tailor_existing",
         "body_text": jd_blob,
+        **_apps_rg_u0_runtime_package_fields(),
     }
 
 

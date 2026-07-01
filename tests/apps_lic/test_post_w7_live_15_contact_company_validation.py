@@ -65,7 +65,7 @@ def test_post_w7_live_summary_contract_names_secondary_gate() -> None:
             "no_l4_write_assertion": True,
             "no_connector_post_assertion": True,
             "c0_recipient_class_status": "RECIPIENT_CLASS_DERIVED",
-            "generation_generator": "claude_opus_4_8_primary",
+            "generation_generator": "claude_sonnet_5_primary",
             "generation_qa_notes": [],
             "outcome_authorized": True,
             "proof_packet_id": f"proof_{company}_{index}",

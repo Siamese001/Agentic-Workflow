@@ -1,6 +1,6 @@
 {
   "gate_id": "AUDIT_6_violation_aging_sla",
-  "count": 19104,
-  "seeded_at": "2026-06-29T11:15:33.460522+00:00",
-  "snapshot": "adg_indexed_06292026_0701.sqlite"
+  "count": 19103,
+  "seeded_at": "2026-07-01T08:34:56.417717+00:00",
+  "snapshot": "adg_indexed_07012026_0418.sqlite"
 }

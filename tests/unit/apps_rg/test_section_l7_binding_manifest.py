@@ -81,7 +81,7 @@ def test_manifest_surfaces_provider_attempt_spans(tmp_path: Path) -> None:
             "attempt_kind": "requested",
             "attempt_index": 0,
             "provider": "external_claude",
-            "model": "claude-sonnet-4-6",
+            "model": "claude-sonnet-5",
             "provider_attempted": True,
             "provider_available": False,
             "runtime_generation_status": "BLOCKED",

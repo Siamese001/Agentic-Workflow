@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import pytest
 
+from apps_lic.config import model_profiles as mp
 from apps_lic.config.model_profiles import (
     GPT_X1D_PROVIDER_PROFILE,
+    ModelProfileSSOTError,
     resolve_generator_base_url,
     resolve_generator_model,
     resolve_generator_provider,
@@ -26,9 +28,9 @@ from apps_lic.policy.reasoning_intensity import (
 
 
 def test_generator_model_resolves_from_yaml_ssot() -> None:
-    assert resolve_generator_model() == "Claude Opus 4.8"
+    assert resolve_generator_model() == "Claude Sonnet 5"
     assert resolve_generator_provider() == "claude"
-    assert resolve_generator_transport_model_id() == "claude-opus-4-8"
+    assert resolve_generator_transport_model_id() == "claude-sonnet-5"
     assert resolve_generator_base_url() == ""
 
 
@@ -59,3 +61,14 @@ def test_reasoning_policy_x1d_provider_is_gpt_ssot() -> None:
         }
     )
     assert strict["x1d_provider_profile"] == GPT_X1D_PROVIDER_PROFILE
+
+
+def test_model_profile_ssot_missing_file_fails_closed(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    mp.load_model_profiles.cache_clear()
+    monkeypatch.setattr(mp, "_MODEL_PROFILES_PATH", tmp_path / "missing.yaml")
+    with pytest.raises(ModelProfileSSOTError):
+        mp.load_model_profiles()
+    mp.load_model_profiles.cache_clear()

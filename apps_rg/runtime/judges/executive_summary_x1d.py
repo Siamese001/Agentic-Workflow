@@ -5,11 +5,7 @@ Provider-backed judges with full normalization per X1D adapter spec.
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
-    ANTHROPIC_DEFAULT_MODEL_ID,
-    ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID,
-    GEMINI_20_FLASH_MODEL_ID,
     GEMINI_2_FAMILY_PREFIX,
-    GEMINI_25_PRO_MODEL_ID,
     GEMINI_3_FAMILY_PREFIX,
     OPENAI_GPT5_FAMILY_PREFIX,
 )
@@ -27,8 +23,6 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping
-
-from agentic_core.L0_routing.config.model_catalog import OPENAI_CHAT_JUDGE_MODEL_ID
 
 from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     dimension_verdicts_json_schema_fragment,
@@ -294,19 +288,32 @@ PROVIDERS = {
         "env": "GOOGLE_API_KEY",
         # GEMINI_API_KEY is a deprecated legacy alias (same credential as Google AI Gemini).
         "env_fallbacks": ("GEMINI_API_KEY",),
-        "default_model": GEMINI_25_PRO_MODEL_ID,
     },
     "openai_chatgpt": {
         "provider_name": "OpenAI ChatGPT",
         "env": "OPENAI_API_KEY",
-        "default_model": OPENAI_CHAT_JUDGE_MODEL_ID,
     },
     "anthropic_claude": {
         "provider_name": "Anthropic Claude",
         "env": "ANTHROPIC_API_KEY",
-        "default_model": ANTHROPIC_DEFAULT_MODEL_ID,
     },
 }
+
+
+def _policy_model_name(provider_key: str, section_id: str, fallback: str = "unknown") -> str:
+    """Return the section policy model name for evidence-only blocked/mocked rows."""
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
+
+    try:
+        resolution = resolve_section_proof_judge_model(section_id, provider_key)
+    except Exception:  # guardian: policy lookup is best-effort for evidence-only rows
+        return fallback or "unknown"
+    return (
+        resolution.model_requested
+        or resolution.model_actual
+        or fallback
+        or "unknown"
+    )
 
 
 def resolve_x1d_provider_credentials(provider_key: str, environ: Mapping[str, str]) -> tuple[str, list[str]]:
@@ -410,7 +417,10 @@ def _resolve_gemini_model(
     resolution = resolve_section_proof_judge_model(section_id, "gemini_pro")
     if resolution.model_actual and not resolution.blocked:
         return resolution.model_actual, resolution.model_source
-    return str(meta.get("default_model", GEMINI_20_FLASH_MODEL_ID)), "default"
+    raise RuntimeError(
+        resolution.block_reason
+        or f"proof judge model unavailable for section={section_id} provider=gemini_pro"
+    )
 
 
 def _resolve_anthropic_model(
@@ -424,8 +434,10 @@ def _resolve_anthropic_model(
     resolution = resolve_section_proof_judge_model(section_id, "anthropic_claude")
     if resolution.model_actual and not resolution.blocked:
         return resolution.model_actual, resolution.model_source
-    default = str(meta.get("default_model", ANTHROPIC_LEGACY_SONNET_35_20241022_MODEL_ID))
-    return default, "default"
+    raise RuntimeError(
+        resolution.block_reason
+        or f"proof judge model unavailable for section={section_id} provider=anthropic_claude"
+    )
 
 
 def _normalize_judge_result(raw: dict[str, Any]) -> dict[str, Any]:
@@ -733,15 +745,15 @@ def _make_blocked_output(
     """Create a blocked judge output with full context."""
     meta = PROVIDERS.get(provider_key, {
         "provider_name": provider_key,
-        "default_model": model_name or "unknown",
     })
+    evidence_model = model_name or _policy_model_name(provider_key, "executive_summary")
     return JudgeOutput(
         judge_id=f"x1d_{provider_key}_exec_summary",
         provider_name=meta["provider_name"],
         provider_key=provider_key,
         evaluator_mode=evaluator_mode,
         provider_status=provider_status,
-        model_name=model_name or meta.get("default_model", "unknown"),
+        model_name=evidence_model,
         provider_available=False,
         provider_blocked=True,  # Blocked providers are marked as such
         exact_provider_error=error,
@@ -1596,13 +1608,14 @@ def _call_gemini(
 def _mocked_output(provider_key: str, input_hash: str) -> JudgeOutput:
     """Create a mocked judge output."""
     meta = PROVIDERS[provider_key]
+    model_name = _policy_model_name(provider_key, "executive_summary")
     return JudgeOutput(
         judge_id=f"x1d_{provider_key}_exec_summary",
         provider_name=meta["provider_name"],
         provider_key=provider_key,
         evaluator_mode="MOCKED",
         provider_status="MOCKED",
-        model_name=meta.get("default_model", "unknown"),
+        model_name=model_name,
         provider_available=False,
         provider_blocked=False,  # Mocked is not blocked
         exact_provider_error=None,

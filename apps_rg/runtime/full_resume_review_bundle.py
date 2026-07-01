@@ -6,8 +6,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
-REVIEW_BUNDLE_FILENAME = "review_bundle.zip"
-REVIEW_INDEX_FILENAME = "REVIEW_INDEX.md"
+from apps_rg.runtime.run_output_contract import (
+    APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
+    APPS_RG_MANDATORY_RUN_OUTPUT_MD,
+    BCG_EXECUTIVE_OUTPUT_MD,
+    FULL_RUN_SECTION_STATUS_MD,
+    REVIEW_BUNDLE_FILENAME,
+    REVIEW_INDEX_FILENAME,
+)
 
 _SKIP_IN_ZIP = frozenset({REVIEW_BUNDLE_FILENAME})
 
@@ -41,13 +47,13 @@ def write_review_index(run_root: Path) -> Path:
         f"Generated: {_utc_now()}",
         f"Run folder: `{run_root.name}`",
         "",
-        "Upload **`review_bundle.zip`** (this folder's sibling) to ChatGPT or Gemini.",
+        f"Upload **`{REVIEW_BUNDLE_FILENAME}`** (this folder's sibling) to ChatGPT or Gemini.",
         "",
         "## Start here",
         "",
-        "- `BCG_EXECUTIVE_OUTPUT.md` — **mandatory executive RCA / decision brief**",
-        "- `APPS_RG_MANDATORY_RUN_OUTPUT.md` — **mandatory what-ran ledger: sections, judges, blockers, L6**",
-        "- `APPS_RG_MANDATORY_RUN_OUTPUT.json` — machine-readable mandatory run ledger",
+        f"- `{BCG_EXECUTIVE_OUTPUT_MD}` — **mandatory executive RCA / decision brief**",
+        f"- `{APPS_RG_MANDATORY_RUN_OUTPUT_MD}` — **mandatory what-ran ledger: sections, judges, blockers, L6**",
+        f"- `{APPS_RG_MANDATORY_RUN_OUTPUT_JSON}` — machine-readable mandatory run ledger",
         "- `spine_run_manifest.json` — **whole-DAG proof** (L0 route, R3R4 research delegation)",
         "- `route_contract.json` — canonical L0 route decision",
         "- `research_bridge_request.json` / `research_bridge_response.json` — apps_research hop (when delegated)",
@@ -59,13 +65,13 @@ def write_review_index(run_root: Path) -> Path:
         "## Per-lane outputs (flat)",
         "",
     ]
-    status_md = run_root / "FULL_RUN_SECTION_STATUS.md"
+    status_md = run_root / FULL_RUN_SECTION_STATUS_MD
     if status_md.is_file():
         lines.extend(
             [
                 "## Per-section status (mandatory)",
                 "",
-                f"See **[FULL_RUN_SECTION_STATUS.md](FULL_RUN_SECTION_STATUS.md)** — X3/X2 table with display `.txt` links.",
+                f"See **[{FULL_RUN_SECTION_STATUS_MD}]({FULL_RUN_SECTION_STATUS_MD})** — X3/X2 table with display `.txt` links.",
                 "",
             ]
         )

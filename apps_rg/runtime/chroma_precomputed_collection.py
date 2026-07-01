@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 
 FORBID_CHROMA_DEFAULT_EF_ENV = "APPS_RG_FORBID_CHROMA_DEFAULT_EF"
@@ -91,7 +92,7 @@ def _collection_embedding_function() -> ForbidChromaDefaultEmbeddingFunction | N
 
 # Canonical BAAI/bge-m3 dimensionality. Stored apps_rg vectors must match this; a 384-dim
 # Chroma DefaultEmbeddingFunction (MiniLM) collection would silently return zero/garbage hits.
-EXPECTED_BGE_DIMENSION = 1024
+EXPECTED_BGE_DIMENSION = BGE_M3_EMBEDDING_DIMENSION
 
 
 def assert_collection_embedding_parity(

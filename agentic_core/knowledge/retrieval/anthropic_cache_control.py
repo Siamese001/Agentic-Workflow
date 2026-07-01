@@ -26,7 +26,7 @@ Design invariants:
   - Pure functions. No I/O, no gateway calls. Caller ships the dict to
     Anthropic Messages API.
   - Minimum cacheable block is MODEL-SPECIFIC (Opus 4.x / Haiku 4.5 = 4096
-    tokens; Fable 5 / Sonnet 4.6 = 2048; Sonnet 4.5 and earlier = 1024). A
+    tokens; Fable 5 / Sonnet 5 = 2048; Sonnet 4.5 and earlier = 1024). A
     block below its model's floor is silently NOT cached by Anthropic
     (cache_creation_input_tokens stays 0, no error). We cannot verify token
     counts here (no tokenizer — this module is pure/no-I/O), so callers pass a
@@ -75,7 +75,7 @@ CACHE_TTL_1H: Literal["1h"] = "1h"
 # no error). Authoritative minimums (claude-api prompt-caching reference):
 #
 #   Opus 4.8 / 4.7 / 4.6 / 4.5, Haiku 4.5 ........ 4096 tokens
-#   Fable 5, Sonnet 4.6, Haiku 3.5 / 3 ........... 2048 tokens
+#   Fable 5, Sonnet 5, Haiku 3.5 / 3 ............. 2048 tokens
 #   Sonnet 4.5 / 4.1 / 4 / 3.7 ................... 1024 tokens
 #
 # This module is pure (no tokenizer / no I/O by contract), so we convert the
@@ -91,7 +91,7 @@ _DEFAULT_MIN_CACHEABLE_CHARS = 3500
 
 # (model-id substring, min cacheable tokens), most-specific FIRST so e.g.
 # ``claude-haiku-4-5`` resolves to 4096 before the generic ``claude-haiku``
-# (2048), and ``claude-sonnet-4-6`` (2048) before ``claude-sonnet`` (1024).
+# (2048), and ``claude-sonnet-5`` (2048) before ``claude-sonnet`` (1024).
 MODEL_CACHE_FLOOR_TOKENS: tuple[tuple[str, int], ...] = (
     (ANTHROPIC_HAIKU_MODEL_ID, 4096),
     (ANTHROPIC_GENERIC_OPUS_MODEL_ID, 4096),

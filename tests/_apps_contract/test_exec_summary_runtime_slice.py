@@ -1,3 +1,5 @@
+"""apps-test-model: APP CONTRACT."""
+
 from __future__ import annotations
 
 import io
@@ -20,6 +22,15 @@ CMD = [
     "apps_rg",
     "--section",
     "executive_summary",
+    "--allow-non-allow-exit-zero",
+    "--target-company",
+    "Synthetic Enterprise Corp.",
+    "--target-role",
+    "SVP Engineering",
+    "--jd",
+    "enterprise AI platform leadership with governed delivery",
+    "--manual-brief",
+    "regulated enterprise environment with platform modernization mandate",
 ]
 
 # Valid minimal ledger for unit tests calling ``aggregate_x3`` (required for input-authority closure).
@@ -98,9 +109,10 @@ def load_json(name: str):
 def test_mock_command_executes_and_prints_output():
     result = run_cmd()
     assert result.returncode == 0, result.stderr
-    assert "L2_EXECUTIVE_SUMMARY_OUTPUT:" in result.stdout
-    assert "X1D_LLM_JUDGE_OUTPUTS:" in result.stdout
-    assert "X3_DISPOSITION:" in result.stdout
+    assert "apps_rg completed: exit_status=" in result.stdout
+    assert "artifact_dir=" in result.stdout
+    assert "COMMAND_STATUS:" in result.stdout
+    assert "PRODUCT_X3_STATUS:" in result.stdout
 
 
 def test_mocked_judges_cannot_allow():
@@ -122,11 +134,18 @@ def test_mocked_judges_cannot_allow():
     assert x3["x3_code"] != "X3_ALLOW"
 
 
-def test_three_judge_rows_exist():
-    run_cmd()
-    judges = load_json("x1d_llm_judge_outputs.json")["judges"]
-    providers = {j["provider_name"] for j in judges}
-    assert providers == {"Google Gemini 3.1 Pro Preview", "OpenAI ChatGPT", "Anthropic Claude"}
+def test_required_proof_judge_rows_exist():
+    from apps_rg.runtime.section_cli_defaults import resolve_cli_x1d_judges
+
+    providers = set(resolve_cli_x1d_judges(None, section_id="executive_summary").split(","))
+    assert providers == {"gemini_pro", "openai_chatgpt"}
+    sanitized = set(
+        resolve_cli_x1d_judges(
+            "gemini_pro,openai_chatgpt,anthropic_claude",
+            section_id="executive_summary",
+        ).split(",")
+    )
+    assert sanitized == providers
 
 
 def test_judge_provider_status_tracking():
@@ -165,19 +184,31 @@ def test_provider_request_artifact_written():
     assert (mock_artifacts_dir() / "prompt_selection_trace.json").exists()
 
 
-def test_temperature_out_of_profile_fails_fast():
-    result = run_cmd("--provider", "retired_provider_profile", "--temperature", "0.7")
-    assert result.returncode != 0
-    assert "outside executive_summary profile" in (result.stderr + result.stdout)
+def test_temperature_out_of_range_clamps_to_profile_bound():
+    from apps_rg.runtime.sections.section_generation import build_section_request
+
+    request, payload = build_section_request(
+        messages=[{"role": "user", "content": "Return JSON."}],
+        prompt_hash="prompt-hash",
+        input_payload_hash="input-hash",
+        temperature=1.5,
+        model="test-generation-model",
+        provider_requested="external_openai",
+    )
+    assert request.temperature == pytest.approx(0.99)
+    assert payload["temperature"] == pytest.approx(0.99)
 
 
-def test_retired_provider_unavailable_blocks_not_mocks():
+def test_external_provider_unavailable_blocks_not_mocks():
     from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
 
-    env = {**_slice_subprocess_env(), "LOCAL_MODEL_SERVER_BASE_URL": "http://127.0.0.1:9/v1"}
-    env.pop("APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB", None)
+    env = {
+        **_slice_subprocess_env(),
+        "ANTHROPIC_API_KEY": "",
+        "APPS_RG_EXTERNAL_CLAUDE_BASE_URL": "http://127.0.0.1:9/v1",
+    }
     result = subprocess.run(
-        CMD + ["--provider", "retired_provider_profile"],
+        CMD + ["--provider", "external_claude"],
         cwd=REPO_ROOT,
         text=True,
         capture_output=True,
@@ -186,7 +217,7 @@ def test_retired_provider_unavailable_blocks_not_mocks():
     )
     assert result.returncode == 0
     rd = resolve_run_dir_from_pointer(REPO_ROOT, LANE_KEY, "real")
-    assert rd is not None, "expected a real-bucket run after retired_provider_profile dispatch"
+    assert rd is not None, "expected a real-bucket run after external_claude dispatch"
     real = json.loads((rd / "real_l2_generation_result.json").read_text(encoding="utf-8"))
     assert real["runtime_generation_status"] == "BLOCKED"
     assert real["exact_provider_error"]
@@ -438,15 +469,18 @@ def test_synthesized_paragraph_passes_synthesis_quality():
     from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
 
     text = (
-        "Across a governed agentic AI platform combining deterministic routing, multi-agent orchestration, "
-        "GraphRAG retrieval, policy gating, validation controls, and replayable execution traces, reusable "
-        "platform primitives have generated $22M in IP-led revenue, expanded gross margins by 20%, and grown "
-        "the ML engineering organization from 8 to 28 specialists. "
-        "The same platform discipline strengthens retrieval quality, context assembly, evaluation gates, "
-        "telemetry instrumentation, rollback controls, and AI CI/CD standards that underpin reliable delivery. "
-        "With intake, validation, execution, monitoring, and remediation standardized end to end, "
-        "lab-to-production cycle time has fallen from six months to three weeks. "
-        "The operating model ties architecture decisions to commercial adoption and delivery discipline."
+        "Governed agentic AI platform leadership connects deterministic routing and multi-agent orchestration "
+        "to regulated enterprise delivery. "
+        "That platform discipline strengthens GraphRAG retrieval, policy gating, validation controls, and "
+        "replayable execution traces for reliable production systems. "
+        "Building on that foundation, reusable platform primitives have generated $22M in IP-led revenue and "
+        "expanded gross margins by 20%. "
+        "In parallel, standardized intake, validation, execution, monitoring, and remediation have reduced "
+        "lab-to-production cycle time from six months to three weeks. "
+        "That operating model ties architecture decisions to commercial adoption, delivery discipline, and "
+        "quantitative governance across enterprise programs. "
+        "The resulting leadership arc positions governed AI platforms to scale innovation without weakening "
+        "auditability, reliability, or executive accountability."
     )
     ok, reason = check_synthesis_quality(text)
     assert ok is True, reason
@@ -606,7 +640,7 @@ def test_percentage_scores_out_of_0_to_1_range_blocked():
     assert out.provider_status == "BLOCKED_SCHEMA_VALIDATION_ERROR"
 
 
-def test_gemini_judge_model_env_precedence(monkeypatch):
+def test_gemini_judge_model_ignores_env_override(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
     for key in (
@@ -619,11 +653,11 @@ def test_gemini_judge_model_env_precedence(monkeypatch):
     monkeypatch.setenv("APPS_RG_GEMINI_JUDGE_MODEL", "gemini-judge-override")
     monkeypatch.setenv("GEMINI_MODEL", "gemini-3-flash-preview")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
-    assert model == "gemini-judge-override"
-    assert source == "APPS_RG_GEMINI_JUDGE_MODEL"
+    assert model == "gemini-3.1-pro-preview"
+    assert source == "yaml_judge_models"
 
 
-def test_gemini_model_falls_back_to_google_ai_pro_model_env(monkeypatch):
+def test_gemini_model_ignores_google_ai_pro_model_env(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
     for key in (
@@ -635,11 +669,11 @@ def test_gemini_model_falls_back_to_google_ai_pro_model_env(monkeypatch):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("GOOGLE_AI_PRO_MODEL", "gemini-2.5-pro")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"], section_id="headline")
-    assert model == "gemini-2.5-pro"
-    assert source == "GOOGLE_AI_PRO_MODEL"
+    assert model == "gemini-3.1-pro-preview"
+    assert source == "yaml_judge_models"
 
 
-def test_gemini_model_falls_back_to_legacy_gemini_pro_model_env(monkeypatch):
+def test_gemini_model_ignores_legacy_gemini_pro_model_env(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_gemini_model
 
     for key in (
@@ -652,10 +686,10 @@ def test_gemini_model_falls_back_to_legacy_gemini_pro_model_env(monkeypatch):
     monkeypatch.setenv("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview")
     model, source = _resolve_gemini_model(PROVIDERS["gemini_pro"])
     assert model == "gemini-3.1-pro-preview"
-    assert source == "profile_default"
+    assert source == "yaml_judge_models"
 
 
-def test_anthropic_model_ignores_general_model_env_for_enhanced_judge(monkeypatch):
+def test_anthropic_model_blocked_for_executive_summary_proof(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS, _resolve_anthropic_model
 
     for key in (
@@ -665,9 +699,8 @@ def test_anthropic_model_ignores_general_model_env_for_enhanced_judge(monkeypatc
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-4.5")
-    model, source = _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
-    assert model == "claude-opus-4-6"
-    assert source == "profile_default"
+    with pytest.raises(RuntimeError, match="not a proof judge"):
+        _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
 
 
 def test_gemini_max_tokens_finish_blocked():
@@ -767,7 +800,7 @@ def test_anthropic_content_block_valid_json_parses():
     out = _finish_judge_text_parse(
         provider_key="anthropic_claude",
         input_hash="hash-anthropic-ok",
-        model_name="claude-sonnet-4-6",
+        model_name="claude-sonnet-5",
         raw_path=Path("artifacts/apps_rg/runtime_proofs/executive_summary/test_raw.json"),
         text=text,
     )
@@ -799,7 +832,7 @@ def test_anthropic_fenced_json_parses():
     out = _finish_judge_text_parse(
         provider_key="anthropic_claude",
         input_hash="hash-anthropic-fence",
-        model_name="claude-sonnet-4-6",
+        model_name="claude-sonnet-5",
         raw_path=Path("artifacts/apps_rg/runtime_proofs/executive_summary/test_raw.json"),
         text=text,
     )
@@ -814,7 +847,7 @@ def test_anthropic_parse_failure_preserves_blocked_status():
     out = _finish_judge_text_parse(
         provider_key="anthropic_claude",
         input_hash="hash-anthropic-bad",
-        model_name="claude-sonnet-4-6",
+        model_name="claude-sonnet-5",
         raw_path=Path("artifacts/apps_rg/runtime_proofs/executive_summary/test_raw.json"),
         text="not valid judge json at all",
     )
@@ -871,16 +904,14 @@ def test_anthropic_model_not_found_blocked(monkeypatch):
     assert out.decisive_failure is False
 
 
-def test_anthropic_env_model_override_respected(monkeypatch):
+def test_anthropic_env_model_override_blocked_for_executive_summary(monkeypatch):
     from apps_rg.runtime.judges.executive_summary_x1d import _resolve_anthropic_model, PROVIDERS
 
     monkeypatch.delenv("APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED", raising=False)
     monkeypatch.setenv("APPS_RG_ANTHROPIC_JUDGE_MODEL", "claude-custom-judge-v1")
     monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-4.5")
-    model, source = _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
-    assert model == "claude-custom-judge-v1"
-    assert source == "APPS_RG_ANTHROPIC_JUDGE_MODEL"
-    assert source == "APPS_RG_ANTHROPIC_JUDGE_MODEL"
+    with pytest.raises(RuntimeError, match="not a proof judge"):
+        _resolve_anthropic_model(PROVIDERS["anthropic_claude"])
 
 
 def test_anthropic_fallback_not_used_without_flag(monkeypatch):
@@ -1529,7 +1560,7 @@ def test_no_agentic_core_in_overlay_files():
     overlay_files = [
         "apps_rg/runtime/sections/executive_summary_lane.py",
         "apps_rg/runtime/sections/executive_summary_lane.py",
-        "apps_rg/runtime/providers/retired_provider_profile_provider.py",
+        "apps_rg/runtime/providers/external_provider.py",
         "apps_rg/runtime/validators/executive_summary_x2.py",
         "apps_rg/runtime/judges/executive_summary_x1d.py",
         "apps_rg/runtime/exit/executive_summary_x3.py",

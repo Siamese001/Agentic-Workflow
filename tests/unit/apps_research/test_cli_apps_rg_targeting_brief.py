@@ -63,7 +63,7 @@ def _sidecar_for(brief: str) -> dict:
         "brief_text_sha256": hashlib.sha256(normalized.encode("utf-8")).hexdigest(),
         "handoff_eligible": True,
         "briefing_semantic_score": 0.91,
-        "judge_name": "gemini-pro-3.1-preview",
+        "judge_name": "gemini_pro",
         "judge_model": "gemini-3.1-pro-preview",
         "role_archetype": "partnerships",
         "required_sections_present": ["jd complement"],

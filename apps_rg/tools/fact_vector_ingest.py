@@ -12,8 +12,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-BGE_M3_MODEL_ID = "BAAI/bge-m3"
-BGE_M3_DIM = 1024
+from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
+    BGE_M3_MODEL_ID,
+)
+
+BGE_M3_DIM = BGE_M3_EMBEDDING_DIMENSION
 
 
 @dataclass(frozen=True)

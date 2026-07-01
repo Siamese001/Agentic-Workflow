@@ -65,7 +65,7 @@ x1d:
     normal: required_when_x1d_depth_gt_zero
     high_risk: required_for_every_judge
     generator_provider: claude
-    generator_model: Claude Opus 4.8
+    generator_model: Claude Sonnet 5
   availability_policy:
     missing_or_unavailable_required_judge: blocked
     non_live_required_judge: blocked

@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
     BGE_M3_MODEL_ID,
 )
 
@@ -42,7 +43,7 @@ class ModelLoader:
     """
 
     DEFAULT_MODEL = BGE_M3_MODEL_ID  # HITL-10C-001 selection
-    EMBEDDING_DIM = 1024
+    EMBEDDING_DIM = BGE_M3_EMBEDDING_DIMENSION
 
     def __init__(self, model_name: str | None = None, device: str | None = None) -> None:
         self._model_name = model_name or self.DEFAULT_MODEL

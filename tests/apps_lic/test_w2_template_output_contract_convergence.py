@@ -32,8 +32,8 @@ GENERATION_REQUIRED_FIELDS = {
 }
 
 PROVIDER_LITERAL_FRAGMENTS = {
-    "claude_opus_4_8_primary",
-    "Claude Opus 4.8",
+    "claude_sonnet_5_primary",
+    "Claude Sonnet 5",
 }
 
 

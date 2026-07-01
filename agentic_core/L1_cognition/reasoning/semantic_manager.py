@@ -4,10 +4,14 @@ SemanticMemory - Semantic memory storage for cognitive agents.
 Provides semantic memory capabilities with embedding-based retrieval.
 """
 
+from typing import Any
+
 import logging
 
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-from typing import Any
+from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
+    BGE_M3_MODEL_ID,
+)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -199,13 +203,13 @@ class EmbeddingProvider:
                 return result
         except (ImportError, AttributeError, ValueError) as e:
             print(f"Embedding failed: {e}")
-        return [0.0] * 1024
+        return [0.0] * BGE_M3_EMBEDDING_DIMENSION
 
 
 class VectorIndex:
     """Index for vector storage and retrieval."""
 
-    def __init__(self, dimension: int = 1024):
+    def __init__(self, dimension: int = BGE_M3_EMBEDDING_DIMENSION):
         self.dimension = dimension
         self._vectors: dict[str, list[float]] = {}
 
