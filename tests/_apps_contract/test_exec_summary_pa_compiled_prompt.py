@@ -1,4 +1,7 @@
-"""W4: executive_summary prompt is PA-compiled via section_prompt_adapter (indirect: executive_summary_pa)."""
+"""apps-test-model: APP CONTRACT.
+
+W4: executive_summary prompt is PA-compiled via section_prompt_adapter (indirect: executive_summary_pa).
+"""
 
 from __future__ import annotations
 
@@ -123,8 +126,7 @@ def test_template_includes_many_shot_examples_and_deliberation_guards():
     assert "<many_shot_examples>" in e0
     assert e0.count("<positive_example ") >= 1
     assert "exec_summary_pos_svp_it_strategy_001" in e0
-    assert "exec_summary_gold_base_resume_001" not in e0
-    assert "E0_STYLE_EXAMPLE_NOT_PROOF" in e0
+    assert '<negative_example id="exec_summary_gold_base_resume_001">' in e0
     assert e0.count("<negative_example ") >= 3
     assert "<internal_deliberation_controls>" in raw
     assert "chain-of-thought" in raw.lower() or "chain of thought" in raw.lower()
@@ -268,7 +270,7 @@ def test_graph_lane_retry_is_x2_aligned_not_five_part_slots():
 
 
 def test_offline_retired_provider_stub_classifies_as_plumbing_not_product_proof(monkeypatch: pytest.MonkeyPatch):
-    from apps_rg.runtime.retired_provider_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+    from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
     from apps_rg.runtime.section_proof.mock_runtime_proof_policy import infer_product_quality_blocked_or_mock
 
     monkeypatch.setattr(
@@ -322,9 +324,10 @@ def test_examples_yaml_contains_gold_style_example_not_proof():
     assert "exec_summary_neg_mechanism_inventory_001" in ids
     assert "exec_summary_pos_credibility_implied_001" in ids
     gold = next(e for e in data["examples"] if e["id"] == "exec_summary_gold_base_resume_001")
-    assert gold["category"] == "positive_gold"
-    assert gold["authority"] == "E0_STYLE_EXAMPLE_NOT_PROOF"
-    assert "weak" not in gold["annotation"].lower()
+    assert gold["category"] == "negative"
+    assert gold["authority"] == "E0_NEGATIVE_FORBIDDEN_PHRASES"
+    annotation = gold["annotation"].lower()
+    assert "converted from positive_gold to negative" in annotation or "never copy" in annotation
     assert "exec_summary_pos_001" not in ids
 
 
@@ -406,7 +409,7 @@ def test_proof_judge_model_blocks_flash_and_mini_tiers():
     assert is_forbidden_proof_judge_model("gemini-2.0-flash")
     assert is_forbidden_proof_judge_model("gpt-4o-mini")
     assert not is_forbidden_proof_judge_model("gemini-3.1-pro-preview")
-    assert not is_forbidden_proof_judge_model("claude-sonnet-4-6")
+    assert not is_forbidden_proof_judge_model("claude-sonnet-5")
 
     res = resolve_executive_summary_proof_judge_model(
         "gemini_pro", {"APPS_RG_GOOGLE_JUDGE_MODEL": "gemini-2.0-flash"}

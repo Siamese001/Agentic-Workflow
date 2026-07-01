@@ -14,6 +14,7 @@ from __future__ import annotations
 # W6 ADG consumer mode declaration.
 __adg_consumer_mode__ = "inventory"
 
+import json
 import sqlite3
 import sys
 from datetime import datetime, timezone
@@ -29,11 +30,48 @@ def _bootstrap_repo_root() -> Path:
 
 
 _REPO_ROOT = _bootstrap_repo_root()
+_MIGRATION_RECEIPTS_DIR = _REPO_ROOT / "artifacts" / "governance" / "migration_receipts"
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation  # noqa: E402
 from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy  # noqa: E402
 
 _VIEW = "v_p0_core_imports_apps"
+
+
+def _has_migration_receipt(rel_path: str) -> bool:
+    """Return True when the file path is covered by an approved migration receipt."""
+    if not _MIGRATION_RECEIPTS_DIR.exists():
+        return False
+
+    normalized_rel_path = rel_path.replace("\\", "/")
+
+    def _matches(candidate: object) -> bool:
+        if not isinstance(candidate, str) or not candidate:
+            return False
+        normalized_candidate = candidate.replace("\\", "/")
+        return normalized_rel_path == normalized_candidate or normalized_rel_path.endswith(normalized_candidate)
+
+    for receipt_file in _MIGRATION_RECEIPTS_DIR.glob("*.json"):
+        try:
+            receipt = json.loads(receipt_file.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        if any(_matches(item) for item in (receipt.get("agentic_core_files_changed") or [])):
+            return True
+        if _matches(receipt.get("binding_file")):
+            return True
+        original_binding = receipt.get("original_binding") or {}
+        if isinstance(original_binding, dict) and _matches(original_binding.get("file")):
+            return True
+        for file_item in receipt.get("files_created") or []:
+            if isinstance(file_item, dict):
+                if _matches(file_item.get("path")):
+                    return True
+            elif _matches(file_item):
+                return True
+
+    return False
 
 
 class CoreImportsAppsGate(ADGGateBase):
@@ -64,6 +102,8 @@ class CoreImportsAppsGate(ADGGateBase):
 
         rows = self._fetch_rows()
         for row in rows:
+            if _has_migration_receipt(str(row["consumer_file"])):
+                continue
             app_name = str(row["app_file"]).split("/", 1)[0]
             summary["by_app"][app_name] = summary["by_app"].get(app_name, 0) + 1
             in_mod = self._is_in_modified_area(row["consumer_file"])

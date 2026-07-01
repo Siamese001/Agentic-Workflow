@@ -30,15 +30,15 @@
     }
   },
   "anthropic": {
-    "default": "claude-sonnet-4-6",
+    "default": "claude-sonnet-5",
     "haiku": "claude-haiku-4-5",
     "haiku_dated": "claude-haiku-4-5-20260101",
-    "sonnet": "claude-sonnet-4-6",
+    "sonnet": "claude-sonnet-5",
     "sonnet_4_20250514": "claude-sonnet-4-20250514",
     "sonnet_4_5": "claude-sonnet-4-5",
     "sonnet_4_5_20250929": "claude-sonnet-4-5-20250929",
     "sonnet_4_5_dot": "claude-sonnet-4.5",
-    "opus": "claude-opus-4-6",
+    "opus": "claude-sonnet-5",
     "opus_4_5": "claude-opus-4-5",
     "opus_4_7_dot": "claude-opus-4.7",
     "haiku_4_5_dot": "claude-haiku-4.5",
@@ -84,6 +84,7 @@
     "vllm_label": "Qwen/vLLM"
   },
   "embedding": {
-    "bge_m3": "BAAI/bge-m3"
+    "bge_m3": "BAAI/bge-m3",
+    "bge_m3_dimension": 1024
   }
 }

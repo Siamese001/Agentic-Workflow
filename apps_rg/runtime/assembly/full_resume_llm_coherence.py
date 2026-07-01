@@ -19,10 +19,9 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _call_openai,
     _invoke_judge_with_bounded_retries,
     _make_blocked_output,
-    _resolve_anthropic_model,
-    _resolve_gemini_model,
     resolve_x1d_provider_credentials,
 )
+from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.sections.competencies_certification_contract import (
     check_competencies_no_reserved_certification_category,
@@ -102,13 +101,16 @@ def _build_prompt(
 
 def _mocked(provider_key: str, input_hash: str) -> JudgeOutput:
     meta = PROVIDERS[provider_key]
+    from apps_rg.runtime.judges.executive_summary_x1d import _policy_model_name
+
+    model_name = _policy_model_name(provider_key, "full_resume_coherence")
     return JudgeOutput(
         judge_id=f"x1d_{provider_key}_full_resume_coherence",
         provider_name=meta["provider_name"],
         provider_key=provider_key,
         evaluator_mode="MOCKED",
         provider_status="MOCKED",
-        model_name=meta.get("default_model", "unknown"),
+        model_name=model_name,
         provider_available=False,
         provider_blocked=False,
         exact_provider_error=None,
@@ -191,14 +193,25 @@ def run_full_resume_coherence_judges(
             outputs.append(out)
             continue
 
-        if key == "gemini_pro":
-            model, model_source = _resolve_gemini_model(meta, section_id="full_resume_coherence")
-        elif key == "anthropic_claude":
-            model, model_source = _resolve_anthropic_model(meta)
-        else:
-            model_env = meta.get("model_env", meta["env"].replace("_API_KEY", "_MODEL"))
-            model = os.environ.get(model_env, "").strip() or meta.get("default_model", "unknown")
-            model_source = model_env if model else "default"
+        resolution = resolve_section_proof_judge_model("full_resume_coherence", key)
+        if resolution.blocked:
+            out = _make_blocked_output(
+                key,
+                input_hash,
+                "BLOCKED_MODEL_CONFIG",
+                "BLOCKED_MODEL_CONFIG",
+                resolution.block_reason or "proof judge model unavailable",
+                model_name=resolution.model_requested or "unconfigured",
+            )
+            out.judge_id = f"x1d_{key}_full_resume_coherence"
+            out.section_id = "full_resume_coherence"
+            out.model_tier = resolution.model_tier
+            outputs.append(out)
+            continue
+        model = resolution.model_actual
+        model_source = resolution.model_source
+        model_requested = resolution.model_requested or model
+        reasoning_effort = resolution.reasoning_effort
 
         try:
             def _dispatch(attempt_no: int) -> JudgeOutput:
@@ -210,6 +223,9 @@ def run_full_resume_coherence_judges(
                         input_hash,
                         key,
                         artifact_base=artifact_base,
+                        reasoning_effort=reasoning_effort,
+                        model_requested=model_requested,
+                        model_env_source=model_source,
                         attempt=attempt_no,
                         section_id="full_resume_coherence",
                     )

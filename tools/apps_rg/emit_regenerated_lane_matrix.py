@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 REGEN_RUNS = (
     ("headline", "headline_20260518_233123"),
@@ -33,7 +34,7 @@ def main() -> int:
                 "artifact_dir": rd.relative_to(repo).as_posix() if rd.is_dir() else None,
                 "command": (
                     f"python -m apps_rg --section {lane} --provider qwen_vllm "
-                    "--x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero"
+                    f"--x1d-judges {','.join(REQUIRED_JUDGE_PROVIDER_KEYS)} --allow-non-allow-exit-zero"
                 ),
                 "runtime_generation_status": x3.get("runtime_generation_status"),
                 "x3_code": x3.get("x3_code"),

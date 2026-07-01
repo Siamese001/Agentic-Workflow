@@ -10,11 +10,11 @@ schema_version: "1.0"
 
 # Approved model lanes (from lowest to highest priority)
 approved_model_lanes:
-  # Primary lane: external Claude via the generic provider gateway
+  # Primary lane: OpenAI-compatible synthesis path used by CompanyBriefEngine.
   primary:
     lane_id: research_synthesis_primary
-    provider: external_claude
-    model: claude-sonnet-4-6
+    provider: external_openai
+    model: gpt-5.4-mini
     
     capabilities:
       - json_mode
@@ -26,14 +26,15 @@ approved_model_lanes:
       timeout_seconds: 120
       
     reliability:
-      credential_env_var: ANTHROPIC_API_KEY
+      credential_env_var: OPENAI_API_KEY
       circuit_breaker_threshold: 3
       
-  # Fallback lane: external OpenAI-compatible provider with reduced context
+  # Fallback lane is documented for the future generic gateway path; the current
+  # CompanyBriefEngine resolver only permits the primary OpenAI synthesis lane.
   fallback_1:
     lane_id: research_synthesis_fallback
-    provider: external_openai
-    model: gpt-5.4-mini
+    provider: external_claude
+    model: claude-sonnet-5
     
     modifications:
       max_tokens: 2048

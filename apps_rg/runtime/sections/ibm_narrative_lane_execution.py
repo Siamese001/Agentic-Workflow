@@ -200,9 +200,9 @@ def run_ibm_narrative_lane_execution(
     )
 
     section_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id="ibm_narrative")
         if str(args.provider) == "external_openai"
-        else external_claude_generation_model()
+        else external_claude_generation_model(section_id="ibm_narrative")
     )
     provider_req, provider_payload = build_section_request(
         messages=messages,

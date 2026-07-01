@@ -76,13 +76,12 @@ class SectionJudgePolicy:
 
 
 # Default judges are calibrated against the per-section generator matrix, not a single global
-# generator. Claude-backed lanes never use anthropic_claude as their default judge; competencies
-# keeps the single OpenAI proof judge required by its section contract.
+# generator. Anthropic/Claude selector calls are advisory-only and never satisfy X1D proof gates.
 # Recalibrated 2026-06-08 from the older 3-provider
 # PROVIDER_MODEL-era panel. See .codex/rules/judge-calibration-cadence.md.
 _DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
-_COMPETENCIES_JUDGE_PANEL: tuple[str, ...] = ("openai_chatgpt",)
+_COMPETENCIES_JUDGE_PANEL: tuple[str, ...] = _DUAL_JUDGE_PANEL
 
 REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = _DUAL_JUDGE_PANEL
 

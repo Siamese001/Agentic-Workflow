@@ -27,7 +27,10 @@ import logging
 import os
 from typing import Any, Protocol, runtime_checkable
 
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
+    BGE_M3_MODEL_ID,
+)
 from apps_research.engines.research_retrieval_engine import RetrievedResearch
 
 _log = logging.getLogger(__name__)
@@ -38,7 +41,7 @@ _log = logging.getLogger(__name__)
 
 COLLECTION_NAME: str = "process_docs"
 EMBEDDING_MODEL: str = BGE_M3_MODEL_ID
-EMBEDDING_DIMENSIONS: int = 1024
+EMBEDDING_DIMENSIONS: int = BGE_M3_EMBEDDING_DIMENSION
 
 live_wiring_deferred: bool = True
 _WIRING_GATE: str = "APPS_RESEARCH_CHROMA_RUNTIME_WIRING_REQUIRED"

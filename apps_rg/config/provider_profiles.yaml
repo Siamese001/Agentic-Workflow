@@ -23,11 +23,13 @@ profiles:
     profile_id: apps_rg::provider::external_openai_generator::v1
     provider_profile: external_openai
     provider_class: external_api
-    # default_model = shared OpenAI generation tier for non-overridden lanes/backups.
-    # model_by_section = section-specific OpenAI generation overrides.
-    default_model: gpt-5.4-mini-2026-03-17
+    # Explicit OpenAI generation pins. No provider-level default model is allowed for
+    # proof-bearing apps_rg lanes.
     model_by_section:
-      competencies: gpt-5.4-mini-2026-03-17
+      unify_narrative: gpt-5.4-mini-2026-03-17
+      ibm_narrative: gpt-5.4-mini-2026-03-17
+      insurtech_narrative: gpt-5.4-mini-2026-03-17
+      ey_narrative: gpt-5.4-mini-2026-03-17
     endpoint_env_var: APPS_RG_EXTERNAL_OPENAI_BASE_URL
     api_key_env_var: OPENAI_API_KEY
     capabilities:
@@ -40,15 +42,16 @@ profiles:
     profile_id: apps_rg::provider::external_claude_generator::v1
     provider_profile: external_claude
     provider_class: external_api
-    # SINGLE SSOT for the apps_rg section generator model (no other file/env may define it).
-    # default_model = high-signal default (all bullets).
-    # model_by_section = per-lane Claude overrides (headline + executive_summary -> Opus).
-    # Resolver: section_model_limits.resolve_section_generation_model(section_id).
-    default_model: claude-sonnet-4-6
+    # Explicit Claude generation pins. No provider-level default model is allowed for
+    # proof-bearing apps_rg lanes.
     model_by_section:
-      competencies: claude-sonnet-4-6
-      headline: claude-opus-4-8
-      executive_summary: claude-opus-4-8
+      competencies: claude-sonnet-5
+      unify_bullets: claude-sonnet-5
+      ibm_bullets: claude-sonnet-5
+      insurtech_bullets: claude-sonnet-5
+      ey_bullets: claude-sonnet-5
+      headline: claude-sonnet-5
+      executive_summary: claude-sonnet-5
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL
     api_key_env_var: ANTHROPIC_API_KEY
     capabilities:
@@ -104,11 +107,21 @@ judge_models:
   enhanced:
     gemini_pro: gemini-3.1-pro-preview
     openai_chatgpt: gpt-5.5
-    anthropic_claude: claude-sonnet-4-6
+    anthropic_claude: claude-sonnet-5
   standard:
     gemini_pro: gemini-3.1-pro-preview
     openai_chatgpt: gpt-5.5
-    anthropic_claude: claude-sonnet-4-6
+    anthropic_claude: claude-sonnet-5
+
+# Selector models are live provider calls that choose among self-consistency pools.
+# They are advisory/non-proof receipts and must never satisfy X1D proof gates.
+selector_models:
+  competencies_graph_pool_selector:
+    provider_key: anthropic_claude
+    model: claude-sonnet-5
+  employment_bullet_pool_selector:
+    provider_key: anthropic_claude
+    model: claude-sonnet-5
 
 runtime_limits:
   section_context_window: 131072

@@ -978,17 +978,21 @@ def run_ibm_bullets_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    from apps_rg.runtime.reasoning.employment_bullet_pool import EMPLOYMENT_BULLET_JUDGE_PROVIDERS
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    required_judge_providers = list(
+        get_section_judge_policy("ibm_bullets").required_judge_providers
+    )
 
     judges_ok, judges_reason = check_judge_rows_present(
         x1d_judges,
-        required_providers=list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+        required_providers=required_judge_providers,
     )
     add(
         "x2_x1d_required_judges_present",
         judges_ok,
         judges_reason,
-        list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+        required_judge_providers,
         judges_reason,
     )
 

@@ -126,13 +126,16 @@ def _build_prompt(
 
 def _mocked(provider_key: str, input_hash: str) -> JudgeOutput:
     meta = PROVIDERS[provider_key]
+    from apps_rg.runtime.judges.executive_summary_x1d import _policy_model_name
+
+    model_name = _policy_model_name(provider_key, "competencies")
     return JudgeOutput(
         judge_id=f"x1d_{provider_key}_competencies",
         provider_name=meta["provider_name"],
         provider_key=provider_key,
         evaluator_mode="MOCKED",
         provider_status="MOCKED",
-        model_name=meta.get("default_model", "unknown"),
+        model_name=model_name,
         provider_available=False,
         provider_blocked=False,
         exact_provider_error=None,

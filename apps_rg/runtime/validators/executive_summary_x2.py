@@ -10,10 +10,7 @@ from dataclasses import dataclass, asdict
 from typing import Any
 
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
-from apps_rg.runtime.section_model_limits import (
-    external_openai_generation_model,
-    resolve_section_generation_model,
-)
+from apps_rg.runtime.section_model_limits import resolve_section_generation_model
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
 EXEC_SUMMARY_MIN_SENTENCES = 6
@@ -402,7 +399,6 @@ PRE_X2_REQUIRED_ARTIFACTS = [
 EXECUTIVE_SUMMARY_SECTION_ID = "executive_summary"
 ALLOWED_MODELS = [
     resolve_section_generation_model(EXECUTIVE_SUMMARY_SECTION_ID),
-    external_openai_generation_model(section_id=EXECUTIVE_SUMMARY_SECTION_ID),
 ]
 
 # Required X1D judge providers
@@ -594,6 +590,9 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     
     Returns: (pass, reason)
     """
+    if re.search(r"\bthis was achieved while\b", text, re.IGNORECASE):
+        return False, "Bridge phrase 'This was achieved while' indicates bullet-like stacking"
+
     sentences = split_sentences(text)
     if len(sentences) < EXEC_SUMMARY_MIN_SENTENCES:
         if EXEC_SUMMARY_MIN_SENTENCES == EXEC_SUMMARY_MAX_SENTENCES:
@@ -609,9 +608,6 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
         )
     if len(sentences) < 2:
         return False, "Output too short for executive summary"
-
-    if re.search(r"\bthis was achieved while\b", text, re.IGNORECASE):
-        return False, "Bridge phrase 'This was achieved while' indicates bullet-like stacking"
 
     mechanical_hits = 0
     for sentence in sentences:

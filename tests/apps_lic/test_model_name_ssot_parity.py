@@ -47,7 +47,7 @@ def test_engine_constants_resolve_from_ssot() -> None:
 def test_generator_is_claude_opus_core() -> None:
     # Claude Opus is the core apps_lic generation model.
     gen = resolve_generator_model()
-    assert gen == "Claude Opus 4.8" and resolve_generator_provider() == "claude"
+    assert gen == "Claude Sonnet 5" and resolve_generator_provider() == "claude"
 
 
 def test_validation_exit_yaml_mirrors_ssot() -> None:

@@ -20,7 +20,7 @@ def test_w3_schema_receipt_contract_excludes_provider_model_output_fields() -> N
     assert {"provider_profile", "model"} <= set(receipt.forbidden_output_fields)
     assert "provider_profile" not in receipt.json_contract
     assert "Claude/" not in receipt.json_contract
-    assert "claude_opus_4_8_primary" not in receipt.json_contract
+    assert "claude_sonnet_5_primary" not in receipt.json_contract
 
 
 def test_w3_pa_component_hash_map_carries_ssot_receipt_hashes() -> None:
@@ -64,7 +64,7 @@ def test_w3_model_facing_output_contract_is_schema_derived_not_provider_derived(
     assert "subject" in system_text
     assert "message_body" in system_text
     assert "provider_profile" not in system_text
-    assert "claude_opus_4_8_primary" not in system_text
+    assert "claude_sonnet_5_primary" not in system_text
     assert APPS_LIC_TARGET_MODEL not in system_text
 
 

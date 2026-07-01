@@ -34,6 +34,7 @@ from apps_rg.runtime.section_evidence_package import (
     EVIDENCE_PACKAGE_INDEX_ARTIFACT,
     SUBPHASE_COVERAGE_INDEX_ARTIFACT,
 )
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 pytestmark = pytest.mark.e2e
 
@@ -187,9 +188,8 @@ def _x3_payload(lane: str) -> dict[str, Any]:
 def _x1d_payload() -> dict[str, Any]:
     return {
         "judges": [
-            {"provider_key": "gemini_pro", "provider_status": "MOCKED", "pass": True},
-            {"provider_key": "openai_chatgpt", "provider_status": "MOCKED", "pass": True},
-            {"provider_key": "anthropic_claude", "provider_status": "MOCKED", "pass": True},
+            {"provider_key": provider_key, "provider_status": "MOCKED", "pass": True}
+            for provider_key in REQUIRED_JUDGE_PROVIDER_KEYS
         ]
     }
 
@@ -330,7 +330,7 @@ def test_apps_rg_e2e_artifact_contract(
         assert rollup_row["freshness"]["provider_attempted"] is False
         assert rollup_row["gemini_provider_status"] == "MOCKED"
         assert rollup_row["openai_provider_status"] == "MOCKED"
-        assert rollup_row["anthropic_provider_status"] == "MOCKED"
+        assert all("anthropic" not in key for key in rollup_row)
         assert rollup_row["x3_code"] == _x3_payload(lane)["x3_code"]
 
     comp_rollup = collect_lane_from_run_dir("competencies", lane_run_dirs["competencies"], repo=repo)

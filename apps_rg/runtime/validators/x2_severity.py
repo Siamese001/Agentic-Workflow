@@ -1,4 +1,4 @@
-"""X2 gate severity SSOT — Claude Sonnet 4.6 base recalibration (plan x2-gate-slimdown-b4e8d2).
+"""X2 gate severity SSOT — Claude Sonnet 5 base recalibration (plan x2-gate-slimdown-b4e8d2).
 
 A small, central lever to demote adversarially-verified STYLE gates from hard-FAIL to WARN
 WITHOUT touching their detection logic. A demoted gate still runs and computes its real verdict;

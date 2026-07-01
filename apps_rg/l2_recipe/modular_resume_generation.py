@@ -55,6 +55,7 @@ from apps_rg.runtime.section_cli_defaults import (
     resolve_cli_lane_provider_with_source,
     resolve_cli_x1d_judges,
 )
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_execution_plan import BULLET_LANES, NARRATIVE_LANES
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
@@ -275,9 +276,8 @@ def _phase1_materialize_lane_run_dir(
 def _minimal_judge_blob() -> dict[str, Any]:
     return {
         "judges": [
-            {"provider_key": "gemini_pro", "provider_status": "OK", "pass": True},
-            {"provider_key": "openai_chatgpt", "provider_status": "OK", "pass": True},
-            {"provider_key": "anthropic_claude", "provider_status": "OK", "pass": True},
+            {"provider_key": provider_key, "provider_status": "OK", "pass": True}
+            for provider_key in REQUIRED_JUDGE_PROVIDER_KEYS
         ],
     }
 
@@ -400,7 +400,6 @@ def _synthetic_lane_row(repo: Path, modular_root: Path, lane: str) -> dict[str, 
         "x2_artifact_failed_gates": [],
         "gemini_provider_status": "OK",
         "openai_provider_status": "OK",
-        "anthropic_provider_status": "OK",
         "soft_failed_judges": [],
         "blocked_judges": [],
         "x3_code": "X3_ALLOW",

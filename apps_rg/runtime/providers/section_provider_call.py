@@ -41,23 +41,24 @@ def build_section_provider_gateway(
 ) -> ProviderGateway:
     """Section provider gateway.
 
-    ``claude_model`` (when set) pins the EXTERNAL_CLAUDE provider's generation model for this
-    call — the per-section tier resolved via ``resolve_section_generation_model``. Empty/None
-    falls back to ``ExternalProvider``'s SSOT ``default_model`` for each provider profile.
-    ``openai_model`` mirrors that for section-specific OpenAI generation overrides.
+    ``claude_model`` pins the EXTERNAL_CLAUDE provider's generation model for this call.
+    ``openai_model`` mirrors that for section-specific OpenAI generation pins. At least one
+    explicit model must be supplied; there is no provider-level model fallback.
     """
-    return ProviderGateway(
-        {
-            ProviderProfile.EXTERNAL_CLAUDE: ExternalProvider(
-                provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
-                model=str(claude_model or ""),
-            ),
-            ProviderProfile.EXTERNAL_OPENAI: ExternalProvider(
-                provider_profile=ProviderProfile.EXTERNAL_OPENAI,
-                model=str(openai_model or ""),
-            ),
-        }
-    )
+    providers: dict[ProviderProfile, ExternalProvider] = {}
+    if str(claude_model or "").strip():
+        providers[ProviderProfile.EXTERNAL_CLAUDE] = ExternalProvider(
+            provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+            model=str(claude_model).strip(),
+        )
+    if str(openai_model or "").strip():
+        providers[ProviderProfile.EXTERNAL_OPENAI] = ExternalProvider(
+            provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+            model=str(openai_model).strip(),
+        )
+    if not providers:
+        raise ValueError("build_section_provider_gateway requires at least one explicit model")
+    return ProviderGateway(providers)
 
 
 def _compiled_prompt_from_payload(provider_payload: dict[str, Any], *, run_id: str | None) -> _CompiledMessagesPrompt:

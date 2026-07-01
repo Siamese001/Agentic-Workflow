@@ -135,8 +135,8 @@ ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
 )
 """Identifier for the Anthropic juror in ConsensusEngine and W2b cert consensus.
 
-Default ``claude-sonnet-4-6`` confirmed current per operator directive
-2026-05-01. Override via ``ANTHROPIC_MODEL`` env var.
+Default comes from ``config/model_catalog.json`` and is currently
+``claude-sonnet-5`` per the apps_rg SSOT refresh. Override via ``ANTHROPIC_MODEL`` env var.
 """
 
 
@@ -173,7 +173,7 @@ CONSENSUS_JURORS: Final[tuple[str, ...]] = _resolve_consensus_jurors()
 Rationale for default selection (3 jurors, heterogeneous):
   - OpenAI — catalog-backed dominant general-purpose reasoning baseline,
     GPT-5 family
-  - Anthropic (claude-sonnet-4-6) — alternative reasoning topology, known
+  - Anthropic (claude-sonnet-5) — alternative reasoning topology, known
     for catching logic bugs the OpenAI family misses
   - Google (gemini-3.1-pro-preview) — third diverse family, Gemini-3.1
     generation (refreshed 2026-05-01), strong context integration;

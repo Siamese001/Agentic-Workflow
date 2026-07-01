@@ -5,7 +5,7 @@ live-provider allow proof is certifiable ONLY through the explicit
 three-juror LLM-as-Judge consensus panel defined here:
 
     1. google_gemini / gemini / gemini-3.1-pro-preview
-    2. anthropic    / claude / claude-sonnet-4-6
+    2. anthropic    / claude / claude-sonnet-5
     3. openai       / openai / config/model_catalog.json openai.default
 
 This module is the ONE authoritative registry consumed by:

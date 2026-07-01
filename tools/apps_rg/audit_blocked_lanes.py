@@ -12,6 +12,7 @@ from typing import Any
 from apps_rg.runtime.aggregation.preflight import REQUIRED_PROOF_FILES
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 AUDIT_LANES = (
     "headline",
@@ -102,7 +103,10 @@ def _classify_blockers(run_dir: Path | None) -> dict[str, Any]:
 
     fix = "pin existing product-ALLOW run in coherent rollup"
     if "OFFLINE_CONTRACT_STUB" in blockers or "x3_mock_plumbing" in blockers:
-        fix = "regenerate: python -m apps_rg --section <lane> --provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude --allow-non-allow-exit-zero"
+        fix = (
+            "regenerate: python -m apps_rg --section <lane> --provider qwen_vllm "
+            f"--x1d-judges {','.join(REQUIRED_JUDGE_PROVIDER_KEYS)} --allow-non-allow-exit-zero"
+        )
     elif "x3_review_disposition" in blockers or "judge_soft_fail" in blockers:
         fix = "regenerate with live judges; resolve soft-fail root cause (no mock judges)"
     elif "x2_failure" in blockers or "pool_receipt_mismatch" in blockers:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -214,7 +215,7 @@ class SubAtomicEngineImpl:
             return await self.embedding_gateway.get_embedding(text, provider="bge-m3")
         except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Embedding failed: {e}")
-            return [0.0] * 1024
+            return [0.0] * BGE_M3_EMBEDDING_DIMENSION
 
     async def resilient_mutation(self, *args, **kwargs) -> str:
         """Gateway-backed mutation."""

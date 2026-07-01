@@ -7,7 +7,7 @@
   "source_run_environment": {
     "worktree": "apps_rg_e2e",
     "provider_requested": "external_claude",
-    "model": "claude-sonnet-4-6",
+    "model": "claude-sonnet-5",
     "checkout_state": "fresh apps_rg_e2e worktree (live E2E)"
   },
   "expected_failure_signature": {

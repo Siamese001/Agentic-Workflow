@@ -15,32 +15,30 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from apps_rg.l2_recipe.resume_generation_contract import (
-    MODE_DIAGNOSTIC,
-    MODE_FULL,
-    MODE_STUB_RECEIPT,
-    normalize_resume_artifact_contract_mode,
-)
-from apps_rg.l2_recipe.resume_output_shape import (
-    STRUCTURED_RESUME_OK,
-    FAILED_PROVIDER,
-    ResumeShapeReport,
-    classify_resume_payload,
+from apps_rg.l2_recipe.r4_generation_mode import (
+    MODE_MODULAR_SECTION_LANES,
+    resolve_apps_rg_modular_lane_provider_override,
+    resolve_apps_rg_r4_generation_mode,
 )
 from apps_rg.l2_recipe.resume_artifact_gate import (
     merge_manifest_after_artifact_gate,
     persist_json_product_outputs,
     verify_full_resume_artifact_bundle,
 )
-from apps_rg.l2_recipe.r4_generation_mode import (
-    MODE_MODULAR_SECTION_LANES,
-    resolve_apps_rg_modular_lane_provider_override,
-    resolve_apps_rg_r4_generation_mode,
+from apps_rg.l2_recipe.resume_generation_contract import (
+    MODE_DIAGNOSTIC,
+    MODE_STUB_RECEIPT,
+    normalize_resume_artifact_contract_mode,
 )
-from apps_rg.l2_recipe.sealed_resume_extract import generated_resume_from_sealed_l2
+from apps_rg.l2_recipe.resume_output_shape import (
+    STRUCTURED_RESUME_OK,
+    ResumeShapeReport,
+    classify_resume_payload,
+)
 
 __all__ = [
     "GenerateResumeStep",
+    "GenerateSectionStep",
     "ResumeArtifactGateStep",
     "BaseRecipeStep",
     "PAGuardError",
@@ -292,6 +290,72 @@ class GenerateResumeStep(BaseRecipeStep):
                 "with resume_artifact_contract_mode stub_receipt/diagnostic."
             )
         return self._modular_section_lanes_generation(context)
+
+
+class GenerateSectionStep(BaseRecipeStep):
+    """Section-scoped L2 recipe step.
+
+    The core spine owns U0→L1→L0→C0/PA-bypass→L2→Exit→L7 sequencing.
+    This step is only the apps_rg section L2 implementation selected by the
+    core recipe resolver when ``raw_request.execution_scope == "section"``.
+    """
+
+    REQUIRES_PA: bool = False
+    STEP_NAME: str = "generate_section"
+
+    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
+        raw = context.get("raw_request")
+        raw_request = raw if isinstance(raw, dict) else {}
+        section_id = str(
+            context.get("section_id") or raw_request.get("section_id") or ""
+        ).strip().lower()
+        if not section_id:
+            raise RuntimeError("SECTION_SCOPE_RECIPE_FAILED: section_id is required")
+
+        from apps_rg.runtime.spine.section_cli_runners import (
+            run_registered_section_lane,
+        )
+
+        result = run_registered_section_lane(
+            section_id,
+            target_company=str(context.get("target_company") or ""),
+            target_role=str(context.get("target_role") or ""),
+            target_level=str(context.get("target_level") or ""),
+            jd=str(context.get("jd") or ""),
+            job_description_ref=str(context.get("job_description_ref") or ""),
+            job_description_text=str(context.get("job_description_text") or ""),
+            manual_brief=str(context.get("manual_brief") or ""),
+            resume_path=str(context.get("resume_path") or ""),
+            source_resume_text=str(context.get("source_resume_text") or ""),
+            generation_mode=str(context.get("generation_mode") or "section_regen"),
+            artifact_dir=str(context.get("artifact_dir") or ""),
+            lane_provider=str(context.get("lane_provider") or ""),
+            lane_provider_resolution_source=context.get("lane_provider_resolution_source"),
+            lane_temperature=float(context.get("lane_temperature") or 0.45),
+            lane_x1d_judges=str(context.get("lane_x1d_judges") or ""),
+            lane_mock_judges=bool(context.get("lane_mock_judges")),
+            lane_allow_non_allow_exit_zero=bool(
+                context.get("lane_allow_non_allow_exit_zero")
+            ),
+            lane_allow_test_mock_judges=bool(
+                context.get("lane_allow_test_mock_judges")
+            ),
+        )
+        if not bool(result.get("outcome_authorized")):
+            x3 = str(result.get("x3_disposition") or "")
+            fault = str(result.get("fault") or result.get("error") or "section_not_authorized")
+            raise RuntimeError(
+                f"SECTION_SCOPE_RECIPE_FAILED:{section_id}:{x3}:{fault}"
+            )
+
+        return {
+            "status": "ok",
+            "step": self.STEP_NAME,
+            "section_id": section_id,
+            "run_dir": result.get("artifact_dir", ""),
+            "section_result": result,
+            "exit_code": 0,
+        }
 
 
 class ResumeArtifactGateStep(BaseRecipeStep):

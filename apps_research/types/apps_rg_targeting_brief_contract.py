@@ -185,7 +185,7 @@ class BriefingSemanticsAssessment:
     signal_terms_missing: tuple[str, ...] = ()
     evidence_intents: tuple[str, ...] = ()
     handoff_eligible: bool = False
-    judge_name: str = "gemini-pro-3.1-preview"
+    judge_name: str = "gemini_pro"
     judge_model: str = "gemini-3.1-pro-preview"
     reason: str = ""
 
