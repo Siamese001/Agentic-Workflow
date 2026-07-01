@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import re
-import sqlite3
 import shutil
+import sqlite3
 import time
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm
 
@@ -57,6 +59,35 @@ _SCRATCH_FAST_AGE_HOURS_DEFAULT = 1.0
 _SCRATCH_SLOW_AGE_HOURS_DEFAULT = 24.0
 # Back-compat alias for callers (and the docstring header).
 _SCRATCH_AGE_DAYS_DEFAULT = _SCRATCH_SLOW_AGE_HOURS_DEFAULT / 24.0
+
+_RETENTION_PATTERNS: tuple[str, ...] = (
+    "adg_*.json",
+    "adg_*.md",
+    "adg_*.yaml",
+    "adg_*.yml",
+    "adg_*.sqlite",
+    "adg_*.sqlite-shm",
+    "adg_*.sqlite-wal",
+    "adg_*.sqlite.intoto.jsonl",
+    "adg_run_*.zip",
+    "archive_skipped_*.txt",
+    "graphdb_*",
+    "scan_result_cache.json",
+    "*_report_*.json",
+    "*_report_*.md",
+    "*_report_*.yaml",
+    "*_report_*.yml",
+    "dead_code_zone_control_report_*.json",
+    "dead_code_zone_control_report_*.md",
+    "dead_code_zone_control_report_*.yaml",
+    "dead_code_zone_control_report_*.yml",
+    "repair_log_*.json",
+    "test_surface_coverage_*.json",
+    "p1_ratchet.json",
+    "p2_ratchet.json",
+)
+
+_SQLITE_RUN_RE = re.compile(r"adg_indexed_(\d{8}_\d{4})\.sqlite")
 
 
 def _extract_timestamp(filename: str) -> str | None:
@@ -140,6 +171,99 @@ def _parse_timestamp(ts: str) -> datetime:
             return datetime.strptime(ts, "%Y%m%d")
         return datetime.strptime(ts, "%m%d%Y")
     return datetime.strptime(ts, "%Y%m%dT%H%M%SZ")
+
+
+def _extract_sqlite_run_id(value: object) -> str | None:
+    """Return main-generator run id embedded in a path-ish value."""
+    if not isinstance(value, str) or not value:
+        return None
+    match = _SQLITE_RUN_RE.search(value.replace("\\", "/"))
+    return match.group(1) if match else None
+
+
+def _walk_json_values(value: Any) -> list[str]:
+    """Collect string values from small JSON metadata for retention grouping."""
+    found: list[str] = []
+    stack = [value]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, str):
+            found.append(item)
+        elif isinstance(item, dict):
+            stack.extend(item.values())
+        elif isinstance(item, list):
+            stack.extend(item)
+    return found
+
+
+def _run_id_from_json_metadata(path: Path, *, max_bytes: int = 2_000_000) -> str | None:
+    """Map helper artifacts back to their canonical ``adg_indexed_<run>.sqlite``.
+
+    Gate results and watchlists often use UTC stamps such as
+    ``20260701_080018`` while their payload points at the main local run id
+    (``07012026_0354``). Retention must group those helpers with the SQLite
+    run instead of treating them as independent newer runs.
+    """
+    if path.suffix.lower() != ".json":
+        return None
+    try:
+        if path.stat().st_size > max_bytes:
+            return None
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+
+    priority_keys = (
+        "sqlite_source",
+        "sqlite_used",
+        "sqlite_path",
+        "snapshot_path",
+        "snapshot",
+        "adg_snapshot",
+        "published_snapshot",
+        "baseline_snapshot",
+    )
+    if isinstance(data, dict):
+        for key in priority_keys:
+            run_id = _extract_sqlite_run_id(data.get(key))
+            if run_id:
+                return run_id
+            nested = data.get(key)
+            if isinstance(nested, dict):
+                for value in nested.values():
+                    run_id = _extract_sqlite_run_id(value)
+                    if run_id:
+                        return run_id
+
+    for value in _walk_json_values(data):
+        run_id = _extract_sqlite_run_id(value)
+        if run_id:
+            return run_id
+    return None
+
+
+def _is_year_leading_timestamp(ts: str | None) -> bool:
+    if ts is None or "_" not in ts:
+        return False
+    date_part, time_part = ts.split("_", 1)
+    return (
+        len(date_part) == 8
+        and date_part.startswith(("202", "203", "204", "205", "206"))
+        and len(time_part) == 6
+    )
+
+
+def _artifact_retention_run_id(path: Path) -> str | None:
+    """Return the retention bucket id for an artifact."""
+    if path.name.startswith("adg_run_") and path.suffix == ".zip":
+        return path.stem.replace("adg_run_", "")
+
+    ts_opt = _extract_timestamp(path.name)
+    if _is_year_leading_timestamp(ts_opt) or ts_opt is None:
+        metadata_run_id = _run_id_from_json_metadata(path)
+        if metadata_run_id:
+            return metadata_run_id
+    return ts_opt
 
 
 _SQLITE_SIDE_SUFFIXES = (".sqlite", ".sqlite-wal", ".sqlite-shm")
@@ -259,6 +383,10 @@ def _remove_artifact_path(path: Path) -> int:
     return 1
 
 
+def _has_primary_sqlite(files: list[Path], ts: str) -> bool:
+    return any(path.name == f"adg_indexed_{ts}.sqlite" for path in files)
+
+
 def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -> None:
     """Archive old ADG runs to keep artifacts directory clean.
 
@@ -273,35 +401,21 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         return
 
     runs: dict[str, list[Path]] = defaultdict(list)
+    seen_paths: dict[str, set[Path]] = defaultdict(set)
 
-    for pattern in [
-        "adg_*.json",
-        "adg_*.sqlite",
-        "adg_*.sqlite-shm",
-        "adg_*.sqlite-wal",
-        "adg_run_*.zip",
-        "graphdb_*",
-        "scan_result_cache.json",
-        "*_report_*.json",
-        "test_surface_coverage_*.json",
-        "repair_log_*.json",
-        "p1_ratchet.json",
-        "p2_ratchet.json",
-        "archive_skipped_*.txt",
-    ]:
+    for pattern in _RETENTION_PATTERNS:
         for path in adg_dir.glob(pattern):  # tqdm: pre-scan accumulation, no display needed
             if "LATEST" in path.name or "latest" in path.name:
                 continue
             if "_archive" in path.parts:
                 continue
 
-            if path.name.startswith("adg_run_") and path.suffix == ".zip":
-                ts_opt: str | None = path.stem.replace("adg_run_", "")
-            else:
-                ts_opt = _extract_timestamp(path.name)
-
+            ts_opt = _artifact_retention_run_id(path)
             if ts_opt:
+                if path in seen_paths[ts_opt]:
+                    continue
                 runs[ts_opt].append(path)
+                seen_paths[ts_opt].add(path)
 
     if len(runs) <= keep_runs:
         return
@@ -322,7 +436,15 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     _purge_unparseable_buckets(runs, unparseable_ts, _STALE_UNPARSEABLE_AGE_DAYS_DEFAULT)
 
     sorted_timestamps = [ts for ts, _dt in sorted(valid_timestamps, key=lambda item: item[1], reverse=True)]
-    to_archive = sorted_timestamps[keep_runs:]
+    canonical_timestamps = [
+        ts for ts in sorted_timestamps if _has_primary_sqlite(runs.get(ts, []), ts)
+    ]
+    protected_timestamps = set(canonical_timestamps[:keep_runs])
+    if current_ts:
+        protected_timestamps.add(current_ts)
+    if not protected_timestamps:
+        protected_timestamps.update(sorted_timestamps[:keep_runs])
+    to_archive = [ts for ts in sorted_timestamps if ts not in protected_timestamps]
 
     # 2026-04-28 RCA: the run that just completed (``current_ts``) MUST NEVER
     # be archived, even if a sub-builder artifact in a different timezone
@@ -399,6 +521,16 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         pct = (savings / bytes_original * 100) if bytes_original > 0 else 0
         print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
+    _write_retention_manifest(
+        adg_dir=adg_dir,
+        current_ts=current_ts,
+        protected_timestamps=sorted(protected_timestamps),
+        archived_timestamps=to_archive,
+        archived_count=archived_count,
+        bytes_original=bytes_original,
+        bytes_archived=bytes_archived,
+    )
+
     # Delegate cleanup of validation packages and MANIFEST files
     from tools.generate.reporting.analysis import _cleanup_validation_files
 
@@ -409,6 +541,36 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     # main retention pass so it can't race the current-run zip or delete
     # anything the generator touched this cycle.
     _cleanup_session_scratch(adg_dir, max_age_days=_SCRATCH_AGE_DAYS_DEFAULT)
+
+
+def _write_retention_manifest(
+    *,
+    adg_dir: Path,
+    current_ts: str,
+    protected_timestamps: list[str],
+    archived_timestamps: list[str],
+    archived_count: int,
+    bytes_original: int,
+    bytes_archived: int,
+) -> None:
+    """Write a compact receipt for retention decisions."""
+    if not current_ts:
+        return
+    payload = {
+        "schema_version": "adg-retention-manifest/v1",
+        "current_ts": current_ts,
+        "protected_timestamps": protected_timestamps,
+        "archived_timestamps": archived_timestamps,
+        "archived_count": archived_count,
+        "bytes_original": bytes_original,
+        "bytes_archived": bytes_archived,
+        "generated_at_epoch": time.time(),
+    }
+    try:
+        path = adg_dir / f"adg_retention_manifest_{current_ts}.json"
+        path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    except OSError as exc:
+        print(f"[ADG] Archive: failed to write retention manifest: {exc}")
 
 
 def _purge_unparseable_buckets(
