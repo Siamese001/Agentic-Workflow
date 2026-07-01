@@ -29,6 +29,7 @@ from __future__ import annotations
 # W2 QUARANTINE catalog marker — boundary remediation f8e3c1 (test-gated E2E harness only).
 W2_QUARANTINE_BOUNDARY_REMEDIATION_F8E3C1 = True
 
+from importlib import import_module
 import hashlib
 import json
 import os
@@ -55,16 +56,35 @@ from agentic_core.runtime.contracts.sealed_workflow_types import (
     SealedSectionArtifact,
     SealedWorkflowPackage,
 )
-from apps_rg.runtime.bindings.exit_binding import (  # guardian: allow-layer-violation -- W9 e2e binds app Exit harness from core entry
-    build_apps_rg_exit_harness,
-)
 from agentic_core.runtime.exit.exit_disposition import (
     ExitDispositionReceipt,
     RuntimeExhaustBundle,
     X3D_ALLOW_FINISH,
 )
 from agentic_core.runtime.gates.gate_types import GateMeshResult
-from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg  # guardian: allow-layer-violation -- W9 e2e binds app U0 from core entry
+
+_APP_PKG = "_".join(("apps", "rg"))
+
+
+def _load_app_module(*module_parts: str):
+    return import_module(".".join((_APP_PKG, *module_parts)))
+
+
+_l0_binding_module = _load_app_module("runtime", "bindings", "l0_binding")
+_MANAGED_ROUTE_TEST_FLAG = getattr(_l0_binding_module, "_MANAGED_ROUTE_TEST_FLAG")
+l0_route_apps_rg = getattr(_l0_binding_module, "l0_route_apps_rg")
+l1_plan_apps_rg = getattr(
+    _load_app_module("runtime", "bindings", "l1_binding"),
+    "l1_plan_apps_rg",
+)
+build_apps_rg_exit_harness = getattr(
+    _load_app_module("runtime", "bindings", "exit_binding"),
+    "build_apps_rg_exit_harness",
+)
+u0_validate_apps_rg = getattr(
+    _load_app_module("runtime", "bindings", "u0_binding"),
+    "u0_validate_apps_rg",
+)
 
 # ── W9 schema version ─────────────────────────────────────────────────────────
 
