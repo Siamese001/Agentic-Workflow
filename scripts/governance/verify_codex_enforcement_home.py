@@ -38,12 +38,11 @@ FORBIDDEN_REPO_CODEX_TREES = (
     ".codex/agent-instructions",
     ".codex/automation",
 )
-# Codex app deployment records live under CODEX_HOME/automations. Thin
-# launchers are allowed there only when they point back at repo-owned contracts;
-# copied governance contracts in the user profile are forbidden.
-USER_PROFILE_AUTOMATION_IDS = AUTOMATION_IDS + ("on-demand-pr-main-publisher-2",)
-USER_PROFILE_LAUNCHER_SNIPPET = "Use the repo-owned contract at"
-USER_PROFILE_LAUNCHER_MAX_PROMPT_CHARS = 1000
+MANUAL_AUTOMATION_IDS = ("on-demand-pr-main-publisher",)
+USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
+    "on-demand-pr-main-publisher-2",
+    "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+)
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
@@ -333,6 +332,9 @@ def _validate_common_automation(
     data: dict[str, Any],
 ) -> list[EnforcementHomeIssue]:
     issues: list[EnforcementHomeIssue] = []
+    manual = automation_id in MANUAL_AUTOMATION_IDS
+    expected_kind = "manual" if manual else "cron"
+    expected_status = "ON_DEMAND" if manual else "ACTIVE"
     if data.get("id") != automation_id:
         issues.append(
             EnforcementHomeIssue(
@@ -340,10 +342,22 @@ def _validate_common_automation(
                 f"{automation_id}: expected id {automation_id!r}, got {data.get('id')!r}",
             )
         )
-    if data.get("kind") != "cron":
-        issues.append(EnforcementHomeIssue("automation_kind", f"{automation_id}: kind must be 'cron'"))
-    if data.get("status") != "ACTIVE":
-        issues.append(EnforcementHomeIssue("automation_status", f"{automation_id}: status must be ACTIVE"))
+    if data.get("kind") != expected_kind:
+        issues.append(
+            EnforcementHomeIssue(
+                "automation_kind",
+                f"{automation_id}: kind must be {expected_kind!r}",
+            )
+        )
+    if data.get("status") != expected_status:
+        issues.append(
+            EnforcementHomeIssue(
+                "automation_status",
+                f"{automation_id}: status must be {expected_status}",
+            )
+        )
+    if manual and "rrule" in data:
+        issues.append(EnforcementHomeIssue("automation_rrule", f"{automation_id}: manual automation must not have rrule"))
 
     cwds = data.get("cwds")
     allowed_roots = _allowed_automation_cwd_roots(root)
@@ -608,31 +622,55 @@ def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
     return issues
 
 
-def _user_profile_automation_paths(user_codex_home: Path) -> list[Path]:
-    return [
-        user_codex_home / "automations" / automation_id / "automation.toml"
-        for automation_id in USER_PROFILE_AUTOMATION_IDS
-    ]
+def _value_references_repo(value: object, root: Path) -> bool:
+    root_text = str(root)
+    markers = (
+        root_text,
+        root_text.replace("\\", "/"),
+        root_text.replace("/", "\\"),
+        "Agentic-Workflow-FRESH",
+        "Agentic-Workflow",
+    )
+    if isinstance(value, str):
+        return any(marker in value for marker in markers)
+    if isinstance(value, (list, tuple)):
+        return any(_value_references_repo(item, root) for item in value)
+    if isinstance(value, dict):
+        return any(_value_references_repo(item, root) for item in value.values())
+    return False
+
+
+def _automation_toml_references_repo(path: Path, root: Path) -> bool:
+    data, error = _load_toml(path)
+    if data is not None:
+        return _value_references_repo(data, root)
+    try:
+        return _value_references_repo(path.read_text(encoding="utf-8", errors="ignore"), root)
+    except OSError:
+        return error is not None
+
+
+def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> list[Path]:
+    automations_root = user_codex_home / "automations"
+    if not automations_root.exists():
+        return []
+    artifacts: list[Path] = []
+    try:
+        automation_dirs = sorted(path for path in automations_root.iterdir() if path.is_dir())
+    except OSError:
+        return [automations_root]
+    for automation_dir in automation_dirs:
+        automation_toml = automation_dir / "automation.toml"
+        if automation_dir.name in USER_PROFILE_REPO_AUTOMATION_IDS:
+            artifacts.append(automation_toml if automation_toml.exists() else automation_dir)
+            continue
+        if automation_toml.exists() and _automation_toml_references_repo(automation_toml, root):
+            artifacts.append(automation_toml)
+    return artifacts
 
 
 def _forbidden_user_profile_skill_paths(user_codex_home: Path) -> list[Path]:
     return [user_codex_home / "skills" / skill_id / "SKILL.md" for skill_id in REPO_SKILL_IDS]
-
-
-def _is_thin_user_profile_launcher(path: Path, root: Path) -> bool:
-    try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
-    except (OSError, tomllib.TOMLDecodeError):
-        return False
-    prompt = data.get("prompt")
-    if not isinstance(prompt, str):
-        return False
-    repo_contract_prefix = str(root / ".codex" / "automations")
-    return (
-        USER_PROFILE_LAUNCHER_SNIPPET in prompt
-        and repo_contract_prefix in prompt
-        and len(prompt) <= USER_PROFILE_LAUNCHER_MAX_PROMPT_CHARS
-    )
 
 
 def _forbidden_repo_paths(root: Path) -> list[Path]:
@@ -662,15 +700,13 @@ def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_
         if not skill_path.exists():
             issues.append(EnforcementHomeIssue("repo_skill_missing", f"{skill_path}: missing repo-owned skill"))
 
-    for path in _user_profile_automation_paths(user_codex_home):
-        if path.exists():
-            if not _is_thin_user_profile_launcher(path, root):
-                issues.append(
-                    EnforcementHomeIssue(
-                        "user_profile_enforcement_artifact",
-                        f"{path}: Agentic-Workflow enforcement must live under {root}; user-profile automation files may only be thin launchers to repo-owned contracts",
-                    )
-                )
+    for path in _user_profile_automation_artifacts(user_codex_home, root):
+        issues.append(
+            EnforcementHomeIssue(
+                "user_profile_enforcement_artifact",
+                f"{path}: Agentic-Workflow automation artifacts must live under {root / '.codex' / 'automations'}, not under the user Codex profile",
+            )
+        )
 
     for path in _forbidden_user_profile_skill_paths(user_codex_home):
         if path.exists():

@@ -1,6 +1,6 @@
 version = 1
 id = "on-demand-pr-main-publisher"
-kind = "cron"
+kind = "manual"
 name = "On-Demand PR Main Publisher"
 publication_mode = "pull_request"
 allow_direct_main_push = false
@@ -24,6 +24,7 @@ Definitions:
 - execution surface = the worktree where publication edits, verification, and PR branch updates are performed.
 - protected main worktree = C:\Git\Agentic-Workflow-FRESH when it is checked out on main/master or otherwise carrying local dirty work that must be preserved.
 - dirty-worktree recovery mode = the required preservation and routing flow for modified, deleted, renamed, or untracked files before publication or final success.
+- extra worktree branch = any non-main branch checked out in another worktree returned by git worktree list --porcelain.
 - publication scope = the coherent set of files selected for the current PR publication.
 - publication branch = explicit user branch, current checked-out non-main branch, or a non-main branch created during dirty-worktree recovery or clean detached origin/main publication.
 - publication PR = a GitHub Pull Request from the publication branch to main.
@@ -39,6 +40,7 @@ Hard stops:
 - Never claim publication success unless a GitHub PR existed for the selected work and was merged through gh pr merge --merge or an equivalent GitHub PR merge API.
 - Never merge/rebase a prior PR/source branch wholesale during recovery unless the user explicitly asked for whole-branch integration.
 - Never delete dirty worktrees or unproven branches.
+- Never treat dirty extra worktree branches as optional cleanup. Final closeout must preserve, publish through PR, merge, explicitly retain with RCA, or otherwise safely route their dirty files before any worktree/branch deletion.
 - Never delete or call a branch done based only on git cherry patch-equivalence.
 - Never claim local main sync if a protected main/master/release worktree is dirty or cannot be fast-forwarded safely.
 - Never claim success unless GitHub main contains the selected publication work, every completed source branch is ancestor-contained in origin/main, HEAD equals origin/main, and the local repo has exactly one clean main worktree at C:\Git\Agentic-Workflow-FRESH.
@@ -49,7 +51,7 @@ Use five phases to reduce runtime without reducing scope:
 2. Recover and route dirty work.
 3. Publish the selected non-main branch through PR.
 4. Debug CI and merge through PR.
-5. Prove closeout and cleanup once, then repeat only failed gates after specific remediation.
+5. Prove closeout and cleanup once, including extra worktree branch preservation/publication/removal, then repeat only failed gates after specific remediation.
 
 Runtime evidence discipline:
 - Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state.
@@ -109,7 +111,7 @@ Rules:
 - If main is dirty, do not stop merely because it is dirty. Start dirty-worktree recovery mode.
 
 2. Dirty-worktree recovery and publication branch intake
-Use when the protected main worktree or execution surface is dirty, or when no explicit non-main publication branch has been selected.
+Use when the protected main worktree, execution surface, or any extra worktree branch is dirty, or when no explicit non-main publication branch has been selected.
 
 Inventory:
 - git status --short --branch
@@ -132,6 +134,7 @@ Rules:
 - If the selected publication scope is coherent, create or select a non-main publication branch and commit only that scope.
 - If the selected publication scope is not coherent, create a timestamped non-main recovery branch from the dirty worktree, commit all non-disposable dirty files there with an explicit file list, and treat that branch as separate_recovery_scope unless the user explicitly requested whole-tree publication.
 - If unrelated dirty files exist, route them to separate recovery branches or explicit stashes before final success; retained blockers are last resort only after preservation fails.
+- For each dirty extra worktree branch, first commit non-disposable dirty files to that checked-out branch or a named recovery branch, push it, publish it through a GitHub PR, merge it into main after green checks, and only then allow clean ancestry-proven worktree removal and local branch deletion. If the dirty files are intentionally not publishable, preserve them in a named stash or retained recovery branch and report the explicit RCA blocker.
 - If classification is unsafe, classify the file as unsafe_or_unknown_scope and preserve it before cleanup; stop only if named branch commit and named stash preservation are both unsafe or fail.
 - After preservation/routing, return C:\Git\Agentic-Workflow-FRESH main to clean origin/main when safe. If not safe, report the exact blocker.
 - Use an explicit user branch when provided; otherwise use the current checked-out non-main branch only if clean and unambiguous.
@@ -269,6 +272,7 @@ For each publication/source branch:
 - prove contained in origin/main and GitHub main with git merge-base --is-ancestor <branch> origin/main
 - verify clean with git -C <literal-path> status --short
 - if clean and ancestry-proven, git worktree remove <literal-path> and git branch -d <branch>
+- if dirty, return to dirty-worktree recovery for that literal path; commit or stash the dirty files before continuing cleanup
 - never use git branch -D for cleanup
 - never force-remove dirty worktrees
 - never delete patch-equivalent-only branches
@@ -308,8 +312,7 @@ evidence:
 fix_or_next: fix:<...> or next:<...>
 recurrence_guard:
 '''
-status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+status = "ON_DEMAND"
 model = "gpt-5.5"
 reasoning_effort = "xhigh"
 execution_environment = "local"
