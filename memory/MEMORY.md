@@ -24,6 +24,10 @@
   `adg:v1:<snapshot_id>:` keys written by `adg_redis_ingest`; staleness checks compare commits to
   `adg:meta.sqlite_mtime` using Git `--after=@<epoch>` to avoid UTC/local drift, and the canonical generator is
   `tools/generate/generate_full_adg.py`. Detail: `memory/codex/adg_redis_hotcache_query_alignment.md`.
+- **ADG scheduled retention contract (2026-07-01):** scheduled automation enters through
+  `tools/adg/run_full_adg_audit.py`, so retention must be invoked there as a fail-soft sweep and must group
+  UTC helper artifacts by their canonical `adg_indexed_<ts>.sqlite` metadata. Detail:
+  `memory/codex/adg_scheduled_retention_contract.md`.
 - **apps_rg C0.3 graph skills** use `master_skills_arsenal_ledger.json` as canonical source and generated
   SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
 - **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling

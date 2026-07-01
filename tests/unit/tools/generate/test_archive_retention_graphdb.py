@@ -118,3 +118,69 @@ def test_archive_old_artifacts_removes_old_graphdb_workdir(tmp_path: Path, monke
     assert not old_workdir.exists(), "old graphdb workdir should leave artifacts/adg root"
     assert (archive_dir / old_workdir.name).is_dir(), "graphdb workdir moved under _archive"
     assert current_workdir.exists()
+
+
+def test_archive_old_artifacts_archives_markdown_yaml_and_intoto_sidecars(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Non-JSON ADG sidecars must not accumulate in artifacts/adg root."""
+    adg_dir = tmp_path / "adg"
+    adg_dir.mkdir(parents=True)
+    current_ts = "07012026_0354"
+    old_ts = "06292026_0701"
+
+    (adg_dir / f"adg_indexed_{current_ts}.sqlite").write_text("current", encoding="utf-8")
+    old_md = adg_dir / f"adg_bcg_executive_summary_{old_ts}.md"
+    old_yaml = adg_dir / f"adg_bcg_executive_summary_{old_ts}.yaml"
+    old_intoto = adg_dir / f"adg_indexed_{old_ts}.sqlite.intoto.jsonl"
+    for path in (old_md, old_yaml, old_intoto):
+        path.write_text("old", encoding="utf-8")
+
+    from tools.generate.reporting import analysis as reporting_analysis
+
+    monkeypatch.setattr(reporting_analysis, "_cleanup_validation_files", lambda *_a, **_k: None)
+
+    _archive_old_artifacts(adg_dir=adg_dir, current_ts=current_ts, keep_runs=1)
+
+    archive_dir = adg_dir / "_archive" / "2026-06"
+    for path in (old_md, old_yaml, old_intoto):
+        assert not path.exists()
+        assert (archive_dir / f"{path.name}.gz").is_file()
+    assert (adg_dir / f"adg_indexed_{current_ts}.sqlite").exists()
+
+
+def test_archive_old_artifacts_groups_current_utc_helpers_by_sqlite_metadata(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Multiple UTC helper buckets for the current run must stay protected."""
+    adg_dir = tmp_path / "adg"
+    adg_dir.mkdir(parents=True)
+    current_ts = "07012026_0354"
+    old_ts = "06292026_0701"
+
+    current_sqlite = adg_dir / f"adg_indexed_{current_ts}.sqlite"
+    current_sqlite.write_text("current", encoding="utf-8")
+    (adg_dir / f"adg_indexed_{old_ts}.sqlite").write_text("old", encoding="utf-8")
+    helper_one = adg_dir / "adg_gate_results_20260701_080018.json"
+    helper_one.write_text(
+        f'{{"snapshot_path": "{current_sqlite.as_posix()}"}}',
+        encoding="utf-8",
+    )
+    helper_two = adg_dir / "adg_graph_watchlist_20260701_040041.json"
+    helper_two.write_text(
+        f'{{"sqlite_source": "adg_indexed_{current_ts}.sqlite"}}',
+        encoding="utf-8",
+    )
+
+    from tools.generate.reporting import analysis as reporting_analysis
+
+    monkeypatch.setattr(reporting_analysis, "_cleanup_validation_files", lambda *_a, **_k: None)
+
+    _archive_old_artifacts(adg_dir=adg_dir, current_ts=current_ts, keep_runs=1)
+
+    assert helper_one.exists()
+    assert helper_two.exists()
+    assert current_sqlite.exists()
+    assert not (adg_dir / f"adg_indexed_{old_ts}.sqlite").exists()
