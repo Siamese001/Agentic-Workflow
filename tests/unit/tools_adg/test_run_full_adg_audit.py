@@ -18,8 +18,8 @@ from unittest import mock
 
 import pytest
 
-from tools.adg import run_full_adg_audit as wrapper
 from tools.adg import consume_adg_repair_handoff
+from tools.adg import run_full_adg_audit as wrapper
 from tools.generate._required_gates import required_gate_names
 
 
@@ -636,6 +636,26 @@ def test_derive_adg_run_stamp_falls_back_to_snapshot_filename():
         )
         == stamp
     )
+
+
+def test_wrapper_runs_retention_from_recent_sqlite_when_manifest_missing(temp_artifacts, monkeypatch):
+    stamp = "07012026_0354"
+    snap = wrapper.ARTIFACTS_ADG / f"adg_indexed_{stamp}.sqlite"
+
+    def _fake_generator(extra_args, timeout_s, certification_mode):  # noqa: ARG001
+        _make_snapshot(snap, with_runtime_view=True, attested=1)
+        return 1
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_fake_generator))
+    _patch_report(monkeypatch)
+    retention = mock.Mock()
+    monkeypatch.setattr(wrapper, "_run_retention_sweep", retention)
+
+    result = wrapper.run_audit(mode="certification")
+
+    retention.assert_called_once_with(stamp)
+    assert result.certification_status == "failed"
+    assert "generation manifest missing" in result.reasons[1]
 
 
 def test_enforcement_report_uses_generation_manifest_run_stamp(temp_artifacts, monkeypatch):
