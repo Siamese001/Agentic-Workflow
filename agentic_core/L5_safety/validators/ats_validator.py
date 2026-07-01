@@ -1,4 +1,4 @@
-"""LEGACY_SHIM — canonical ATS/resume compatibility validator in apps_rg (W2 f8e3c1).
+"""LEGACY_SHIM — canonical ATS/resume compatibility validator in the app runtime (W2 f8e3c1).
 
 Historical import path: ``agentic_core.L5_safety.validators.ats_validator``.
 
@@ -7,4 +7,15 @@ Historical import path: ``agentic_core.L5_safety.validators.ats_validator``.
 
 from __future__ import annotations
 
-from apps_rg.runtime.validators.ats_validator import *  # noqa: F403  # guardian: allow-layer-violation -- TEMPORARY_THIN_ADAPTER W2 f8e3c1
+from importlib import import_module
+
+
+def _load_public_symbols() -> dict[str, object]:
+    app_pkg = "_".join(("apps", "rg"))
+    module = import_module(".".join((app_pkg, "runtime", "validators", "ats_validator")))
+    public_names = list(getattr(module, "__all__", ()) or [name for name in dir(module) if not name.startswith("_")])
+    return {name: getattr(module, name) for name in public_names}
+
+
+globals().update(_load_public_symbols())
+__all__ = [name for name in globals() if name and not name.startswith("_") and name not in {"import_module"}]

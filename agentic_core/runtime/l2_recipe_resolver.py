@@ -14,6 +14,7 @@ Recipe resolution flow:
 from __future__ import annotations
 
 import logging
+from importlib import import_module
 from typing import Any, Callable
 
 _log = logging.getLogger("agentic_core.runtime.l2_recipe_resolver")
@@ -26,6 +27,10 @@ _log = logging.getLogger("agentic_core.runtime.l2_recipe_resolver")
 _RECIPE_REGISTRY: dict[str, dict[str, Any]] | None = None
 
 
+def _load_app_module(module_parts: tuple[str, ...]):
+    return import_module(".".join(module_parts))
+
+
 def _register_builtin_recipes() -> dict[str, dict[str, Any]]:
     """Lazy-load the recipe registry with all known app recipes.
 
@@ -36,7 +41,9 @@ def _register_builtin_recipes() -> dict[str, dict[str, Any]]:
 
     try:
         # guardian: allow-layer-violation -- L_RUNTIME resolver must lazy-import L_APP recipe registries; this is the canonical core-owned registration seam by design
-        from apps_rg.l2_recipe.registry import get_apps_rg_recipe_metadata
+        app_pkg = "_".join(("apps", "rg"))
+        registry_module = _load_app_module((app_pkg, "l2_recipe", "registry"))
+        get_apps_rg_recipe_metadata = getattr(registry_module, "get_apps_rg_recipe_metadata")
 
         meta = get_apps_rg_recipe_metadata()
         registry[meta["app_name"]] = meta

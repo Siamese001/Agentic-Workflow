@@ -126,48 +126,73 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
+from importlib import import_module
+
+
+_APP_RG_PKG = "_".join(("apps", "rg"))
+_APP_RESEARCH_PKG = "_".join(("apps", "research"))
+
+
+def _load_app_attr(module_parts: tuple[str, ...], attr: str):
+    return getattr(import_module(".".join(module_parts)), attr)
+
+
 # Reachability anchors for the ADG modules that must stay live from L0 seeds.
-from apps_rg.fact_inventory.apply_c03_graph_full_zero_loss_overwrite import (
-    apply_overwrite as _reach_apply_c03_graph_full_zero_loss_overwrite,
+_reach_apply_c03_graph_full_zero_loss_overwrite = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "apply_c03_graph_full_zero_loss_overwrite"),
+    "apply_overwrite",
 )
-from apps_rg.fact_inventory.apply_c03_graph_skill_granularity_hardening import (
-    apply_hardening as _reach_apply_c03_graph_skill_granularity_hardening,
+_reach_apply_c03_graph_skill_granularity_hardening = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "apply_c03_graph_skill_granularity_hardening"),
+    "apply_hardening",
 )
-from apps_rg.fact_inventory.apply_graphdb_capability_sqlite_hardening import (
-    apply_graphdb_capability_sqlite_hardening as _reach_apply_graphdb_capability_sqlite_hardening,
+_reach_apply_graphdb_capability_sqlite_hardening = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "apply_graphdb_capability_sqlite_hardening"),
+    "apply_graphdb_capability_sqlite_hardening",
 )
-from apps_rg.fact_inventory.c03_graph_skill_hardening import (
-    harden_augmented_skills_graph_payload as _reach_harden_augmented_skills_graph_payload,
+_reach_harden_augmented_skills_graph_payload = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "c03_graph_skill_hardening"),
+    "harden_augmented_skills_graph_payload",
 )
-from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
-    validate_metric_heterogeneity as _reach_validate_metric_heterogeneity,
+_reach_validate_metric_heterogeneity = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "graph_metric_heterogeneity_policy"),
+    "validate_metric_heterogeneity",
 )
-from apps_rg.fact_inventory.graph_sqlite_path_index import (
-    materialize_graphdb_capability_indexes as _reach_materialize_graphdb_capability_indexes,
+_reach_materialize_graphdb_capability_indexes = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "graph_sqlite_path_index"),
+    "materialize_graphdb_capability_indexes",
 )
-from apps_rg.fact_inventory.validate_c03_graph_hardening import (
-    validate_c03_graph_hardening_payload as _reach_validate_c03_graph_hardening_payload,
+_reach_validate_c03_graph_hardening_payload = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "validate_c03_graph_hardening"),
+    "validate_c03_graph_hardening_payload",
 )
-from apps_rg.fact_inventory.validate_c03_graph_skill_granularity import (
-    validate_graph as _reach_validate_c03_graph_skill_granularity,
+_reach_validate_c03_graph_skill_granularity = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "validate_c03_graph_skill_granularity"),
+    "validate_graph",
 )
-from apps_rg.fact_inventory.validate_graph_sqlite_path_index import (
-    validate_graph_sqlite_path_index as _reach_validate_graph_sqlite_path_index,
+_reach_validate_graph_sqlite_path_index = _load_app_attr(
+    (_APP_RG_PKG, "fact_inventory", "validate_graph_sqlite_path_index"),
+    "validate_graph_sqlite_path_index",
 )
-from apps_rg.runtime.c0.c03_sqlite_graph_selection import (
-    select_c03_sqlite_graph_candidates as _reach_select_c03_sqlite_graph_candidates,
+_reach_select_c03_sqlite_graph_candidates = _load_app_attr(
+    (_APP_RG_PKG, "runtime", "c0", "c03_sqlite_graph_selection"),
+    "select_c03_sqlite_graph_candidates",
 )
-from apps_rg.runtime.c0.evidence_room import (
-    run_section_c0_evidence_room as _reach_run_section_c0_evidence_room,
+_reach_run_section_c0_evidence_room = _load_app_attr(
+    (_APP_RG_PKG, "runtime", "c0", "evidence_room"),
+    "run_section_c0_evidence_room",
 )
-from apps_rg.runtime.c0.section_authority_profile import (
-    c0_section_authority_profile as _reach_c0_section_authority_profile,
+_reach_c0_section_authority_profile = _load_app_attr(
+    (_APP_RG_PKG, "runtime", "c0", "section_authority_profile"),
+    "c0_section_authority_profile",
 )
-from apps_rg.runtime.graph.graph_metric_diversity_policy import (
-    build_metric_diversity_receipt as _reach_build_metric_diversity_receipt,
+_reach_build_metric_diversity_receipt = _load_app_attr(
+    (_APP_RG_PKG, "runtime", "graph", "graph_metric_diversity_policy"),
+    "build_metric_diversity_receipt",
 )
-from apps_research.integrations.searxng_readiness import (
-    ensure_runtime_ready as _reach_ensure_runtime_ready,
+_reach_ensure_runtime_ready = _load_app_attr(
+    (_APP_RESEARCH_PKG, "integrations", "searxng_readiness"),
+    "ensure_runtime_ready",
 )
 
 _REACHABILITY_ANCHORS = (

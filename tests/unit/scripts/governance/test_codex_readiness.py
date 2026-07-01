@@ -349,6 +349,50 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
     assert not any(check["id"].startswith("mcp.") for check in report["checks"])
 
 
+def test_git_publication_pr_flow_treats_dirty_worktree_as_recovery_warning(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(
+        mod.codex_publication_audit,
+        "build_publication_audit",
+        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+            "blockers": [],
+            "warnings": ["current_worktree_dirty"],
+            "recovery_required": ["current_worktree_dirty"],
+            "current_worktree": {"dirty": True, "conflicted": False, "raw": "## main...origin/main\n M docs/a.md"},
+            "dirty_protected_worktrees": [],
+            "dirty_protected_summary": "",
+            "refs": {"origin_main_equals_github_main": True},
+            "fetch": {"ok": True, "stdout": "", "stderr": ""},
+            "unmerged_branches": [],
+            "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
+            "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
+        },
+    )
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+
+    report = mod.build_readiness_report(
+        tmp_path,
+        git_publication=True,
+        require_pr_flow=True,
+    )
+
+    assert report["status"] == "WARN"
+    check = next(check for check in report["checks"] if check["id"] == "git.publication.current_worktree")
+    assert check["status"] == "WARN"
+    assert "dirty-worktree recovery" in check["summary"]
+
+
 def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
         mod.codex_publication_audit,

@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 from apps_rg.fact_inventory.augmented_skills_graph import (
     SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
     load_augmented_skills_graph,

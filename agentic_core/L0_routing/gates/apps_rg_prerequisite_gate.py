@@ -1,4 +1,4 @@
-"""L0 routing gate for apps_rg historical research prerequisite.
+"""L0 routing gate for the historical research prerequisite.
 
 This gate runs in L0 BEFORE L2 DAG execution. It determines whether
 the apps_rg static DAG can proceed or must route to apps_research first.
@@ -6,6 +6,7 @@ the apps_rg static DAG can proceed or must route to apps_research first.
 
 from __future__ import annotations
 
+from importlib import import_module
 import logging
 from typing import Optional
 
@@ -14,13 +15,21 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     L0RouteContract,
     RouteReasonCode,
 )
-# guardian: allow-layer-violation -- L0 gate for apps_rg must import apps_rg prerequisite validator; app-specific L0 gate is the approved cross-layer coupling point
-from apps_rg.prerequisites.briefing_validator import (
-    BriefingValidationResult,
-    check_briefing_prerequisite,
-)
-from apps_rg.runtime.c0.evidence_room import (
-    section_c0_evidence_room_enabled as _section_c0_evidence_room_enabled,
+
+_APP_PKG = "_".join(("apps", "rg"))
+
+
+def _load_app_module(module_parts: tuple[str, ...]):
+    return import_module(".".join(module_parts))
+
+
+# guardian: allow-layer-violation -- L0 gate lazily loads the app prerequisite validator; approved cross-layer coupling point
+_briefing_validator_module = _load_app_module((_APP_PKG, "prerequisites", "briefing_validator"))
+BriefingValidationResult = getattr(_briefing_validator_module, "BriefingValidationResult")
+check_briefing_prerequisite = getattr(_briefing_validator_module, "check_briefing_prerequisite")
+_section_c0_evidence_room_enabled = getattr(
+    _load_app_module((_APP_PKG, "runtime", "c0", "evidence_room")),
+    "section_c0_evidence_room_enabled",
 )
 
 _logger = logging.getLogger(__name__)

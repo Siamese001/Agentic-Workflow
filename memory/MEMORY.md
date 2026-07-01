@@ -60,6 +60,11 @@
   Use `python ops_scripts/ci/inventory_adr_liveness.py --json` for live-binding classification and
   `python ops_scripts/ci/check_adr_hygiene.py --advisory` for namespace drift; details:
   `memory/codex/adr_liveness_hygiene.md`.
+- **On-demand PR publisher dirty-worktree intake (2026-06-30):** `codex_publication_audit.py
+  --require-pr-flow` must return WARN plus `recovery_required=["current_worktree_dirty"]` for
+  dirty-but-recoverable intake, not FAIL; strict closeout with `--require-single-main-worktree`
+  still fails until cleanup clears dirty state. Detail:
+  `memory/codex/pr_publisher_dirty_worktree_recovery_contract.md`.
 - **apps_research targeting briefs fail closed (2026-06-21):** fresh `python -m apps_research
   --target-company <company> --target-role <role> --jd <jd-path>` must print an `artifact=<...briefing.md>`
   before apps_rg may consume it. Missing grounded `company_brief_text` is a failure; do not substitute stale

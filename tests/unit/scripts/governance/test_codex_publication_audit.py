@@ -173,6 +173,67 @@ def test_publication_audit_can_require_pr_flow_contract(monkeypatch, tmp_path: P
     assert report["pr_flow"]["allow_bypass_merge"] is False
 
 
+def test_publication_audit_routes_dirty_current_worktree_to_recovery_with_pr_flow(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    contract = tmp_path / "automation.toml"
+    contract.write_text(
+        '\n'.join(
+            (
+                'publication_mode = "pull_request"',
+                "allow_direct_main_push = false",
+                "require_github_ci_green = true",
+                "allow_bypass_merge = false",
+                "",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("fetch", "origin", "--prune"):
+            return 0, "", ""
+        if command == ("rev-parse", "--verify", "origin/main"):
+            return 0, "abc", ""
+        if command == ("ls-remote", "origin", "refs/heads/main"):
+            return 0, "abc\trefs/heads/main", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main\n M docs/a.md\n?? scratch.txt", ""
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod, "run_git", fake_git)
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(mod, "verify_single_main_worktree", lambda *args, **kwargs: [])
+
+    intake = mod.build_publication_audit(
+        tmp_path,
+        require_pr_flow=True,
+        automation_contract_path=contract,
+    )
+    strict_closeout = mod.build_publication_audit(
+        tmp_path,
+        require_pr_flow=True,
+        require_single_main_worktree=True,
+        automation_contract_path=contract,
+    )
+
+    assert intake["status"] == "WARN"
+    assert "current_worktree_dirty" in intake["warnings"]
+    assert "current_worktree_dirty" not in intake["blockers"]
+    assert intake["recovery_required"] == ["current_worktree_dirty"]
+    assert intake["recommended_execution_surface"] == "clean_detached_origin_main_worktree"
+    assert intake["pr_flow"]["clean"] is True
+
+    assert strict_closeout["status"] == "FAIL"
+    assert "current_worktree_dirty" in strict_closeout["blockers"]
+
+
 def test_publication_audit_fails_when_pr_flow_contract_allows_direct_push(monkeypatch, tmp_path: Path) -> None:
     contract = tmp_path / "automation.toml"
     contract.write_text(

@@ -125,12 +125,18 @@ def _check_protected_worktree_hygiene(root: Path, require_clean: bool) -> Readin
 def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck]:
     checks: list[ReadinessCheck] = []
     current = audit.get("current_worktree", {})
+    current_dirty = bool(current.get("dirty"))
+    dirty_is_blocker = "current_worktree_dirty" in (audit.get("blockers") or [])
     checks.append(
         ReadinessCheck(
             "git.publication.current_worktree",
-            "FAIL" if current.get("dirty") else "PASS",
-            "critical",
-            "Current publication worktree is clean." if not current.get("dirty") else "Current publication worktree has uncommitted changes.",
+            "FAIL" if dirty_is_blocker else ("WARN" if current_dirty else "PASS"),
+            "critical" if dirty_is_blocker or not current_dirty else "advisory",
+            (
+                "Current publication worktree is clean."
+                if not current_dirty
+                else "Current publication worktree requires dirty-worktree recovery before publication."
+            ),
             str(current.get("raw", "")),
         )
     )

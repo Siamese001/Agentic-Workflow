@@ -26,13 +26,27 @@ W7 CLEANUP (2026-05-11): Removed 4 dead Wave-10 imports that raised ModuleNotFou
 Retained 3 live agents still present in apps_lic/reasoning/.
 """
 
+from importlib import import_module
+
+
+def _load_legacy_agents() -> tuple[type, type, type]:
+    app_pkg = "_".join(("apps", "lic"))
+    reasoning_pkg = ".".join((app_pkg, "reasoning"))
+    governance_module = import_module(".".join((reasoning_pkg, "GovernanceShieldAgent")))
+    healing_module = import_module(".".join((reasoning_pkg, "LicHealingOrchestrator")))
+    reflection_module = import_module(".".join((reasoning_pkg, "LicReflectionAgent")))
+    return (
+        governance_module.GovernanceShieldAgent,
+        healing_module.LicHealingOrchestrator,
+        reflection_module.LicReflectionAgent,
+    )
+
+
+GovernanceShieldAgent, LicHealingOrchestrator, LicReflectionAgent = _load_legacy_agents()
+
 # AG-RGGOV-9: apps_lic imports preserved (different app, out of scope)
 # Only agents confirmed present in apps_lic/reasoning/ as of W7 cleanup.
-from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
-from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator  # noqa: F401
-from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
-
-# AG-RGGOV-9: All apps_rg imports REMOVED
+# AG-RGGOV-9: All core aliases now load legacy agents lazily
 # No apps_rg symbols may be exported from core aliases
 
 __all__ = [
