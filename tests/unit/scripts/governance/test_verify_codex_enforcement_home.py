@@ -47,15 +47,21 @@ def _automation_toml(
 ) -> str:
     escaped_prompt = prompt.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
     escaped_root = str(root).replace("\\", "\\\\")
-    text = "\n".join(
+    manual = automation_id in mod.MANUAL_AUTOMATION_IDS
+    kind = "manual" if manual else "cron"
+    status = "ON_DEMAND" if manual else "ACTIVE"
+    lines = [
+        "version = 1",
+        f'id = "{automation_id}"',
+        f'kind = "{kind}"',
+        f'name = "{automation_id}"',
+        f'prompt = "{escaped_prompt}"',
+        f'status = "{status}"',
+    ]
+    if not manual:
+        lines.append('rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"')
+    lines.extend(
         [
-            "version = 1",
-            f'id = "{automation_id}"',
-            'kind = "cron"',
-            f'name = "{automation_id}"',
-            f'prompt = "{escaped_prompt}"',
-            'status = "ACTIVE"',
-            'rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
             'model = "gpt-5.4-mini"',
             'reasoning_effort = "xhigh"',
             'execution_environment = "local"',
@@ -64,6 +70,7 @@ def _automation_toml(
             "updated_at = 1",
         ]
     )
+    text = "\n".join(lines)
     if automation_id == "on-demand-pr-main-publisher" and include_publication_runtime:
         text += _publication_runtime_toml_block()
     return text + _handoff_toml_block(automation_id, **handoff_overrides)
@@ -134,7 +141,7 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
-def test_user_profile_thin_automation_launcher_passes(tmp_path: Path) -> None:
+def test_user_profile_thin_automation_launcher_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
     launcher = user_codex_home / "automations" / "weekly-adg-audit-and-burndown" / "automation.toml"
@@ -147,7 +154,28 @@ def test_user_profile_thin_automation_launcher_passes(tmp_path: Path) -> None:
 
     issues = mod.validate(root, user_codex_home)
 
-    assert not any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_memory_only_known_automation_dir_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    _write(user_codex_home / "automations" / "on-demand-pr-main-publisher" / "memory.md")
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_unknown_repo_referencing_automation_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    automation = user_codex_home / "automations" / "custom-agentic-workflow" / "automation.toml"
+    _write(automation, _automation_toml("custom-agentic-workflow", f"Run Agentic-Workflow in {root}", root))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
 def test_user_profile_copied_automation_contract_fails(tmp_path: Path) -> None:
@@ -249,6 +277,26 @@ def test_publication_runtime_optimization_rejects_always_rerun_policy(tmp_path: 
     issues = mod.validate(root, tmp_path / "user-codex")
 
     assert any(issue.code == "publication_runtime_optimization_contract" for issue in issues)
+
+
+def test_on_demand_publication_rejects_cron_schedule(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    cron_text = (
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt(), root)
+        .replace('kind = "manual"', 'kind = "cron"')
+        .replace(
+            'status = "ON_DEMAND"',
+            'status = "ACTIVE"\nrrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
+        )
+    )
+    automation.write_text(cron_text, encoding="utf-8")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "automation_kind" for issue in issues)
+    assert any(issue.code == "automation_status" for issue in issues)
+    assert any(issue.code == "automation_rrule" for issue in issues)
 
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:
