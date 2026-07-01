@@ -975,9 +975,10 @@ def _make_migration_target():
 def test_bgem3_collection_created_with_contract_metadata() -> None:
     """W2: collection creation must carry the BGE-M3 model, dimension, threshold, and EF."""
     embedding_functions = pytest.importorskip("chromadb.utils.embedding_functions")
+    chroma_errors = pytest.importorskip("chromadb.errors")
     inst = _make_migration_target()
     mock_client = MagicMock()
-    mock_client.get_collection.side_effect = Exception("collection not found")
+    mock_client.get_collection.side_effect = chroma_errors.NotFoundError("collection not found")
     inst._chroma_client = mock_client
 
     with patch.object(embedding_functions, "SentenceTransformerEmbeddingFunction") as mock_ef:
@@ -1079,9 +1080,10 @@ def test_clear_recreates_bgem3_collection_contract() -> None:
 
 def test_migration_guard_handles_missing_collection_silently() -> None:
     """_get_or_create_bgem3_collection must not raise when collection doesn't exist yet."""
+    chroma_errors = pytest.importorskip("chromadb.errors")
     inst = _make_migration_target()
     mock_client = MagicMock()
-    mock_client.get_collection.side_effect = Exception("collection not found")
+    mock_client.get_collection.side_effect = chroma_errors.NotFoundError("collection not found")
     inst._chroma_client = mock_client
 
     inst._get_or_create_bgem3_collection()  # must not raise
