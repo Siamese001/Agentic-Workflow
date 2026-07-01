@@ -13,6 +13,8 @@ import hashlib
 from typing import Any
 import math
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
+
 
 @dataclass
 class EmbeddingOutput:
@@ -33,7 +35,7 @@ class ForwardPass:
 
     def __init__(self, model: Any | None = None) -> None:
         self._model = model
-        self._dim = 1024
+        self._dim = BGE_M3_EMBEDDING_DIMENSION
 
     @staticmethod
     def _stable_seed(text: str) -> int:

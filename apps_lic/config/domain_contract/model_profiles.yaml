@@ -8,12 +8,12 @@
 schema_version: apps_lic.model_profiles.v1
 
 generator:
-  # HOP5 whole-message generation runs on Claude Opus 4.8.
+  # HOP5 whole-message generation runs on Claude Sonnet 5.
   role: linkedin_message_generation
   provider: claude
-  provider_profile: claude_opus_4_8_primary
-  model: "Claude Opus 4.8"
-  transport_model_id: "claude-opus-4-8"
+  provider_profile: claude_sonnet_5_primary
+  model: "Claude Sonnet 5"
+  transport_model_id: "claude-sonnet-5"
   # Documented overrides (env > yaml; first match wins).
   model_env_overrides:
     - APPS_LIC_GENERATOR_MODEL

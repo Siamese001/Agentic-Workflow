@@ -7,7 +7,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from apps_rg.l2_recipe.steps import GenerateResumeStep, ResumeArtifactGateStep
+from apps_rg.l2_recipe.steps import (
+    GenerateResumeStep,
+    GenerateSectionStep,
+    ResumeArtifactGateStep,
+)
 
 
 def get_apps_rg_recipe_metadata() -> dict[str, Any]:
@@ -22,6 +26,9 @@ def get_apps_rg_recipe_metadata() -> dict[str, Any]:
         "app_name": "apps_rg",
         "dag_id": "apps_rg_resume_r4_v1",
         "steps": (GenerateResumeStep, ResumeArtifactGateStep),
+        "scope_steps": {
+            "section": (GenerateSectionStep,),
+        },
     }
 
 

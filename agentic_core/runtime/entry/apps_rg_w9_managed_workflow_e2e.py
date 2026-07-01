@@ -43,11 +43,6 @@ from agentic_core.L3_orchestration.managed_workflow_runner import (
     ManagedWorkflowRunner,
     ManagedWorkflowRunnerError,
 )
-from apps_rg.runtime.bindings.l0_binding import (  # guardian: allow-layer-violation -- W9 e2e binds app L0 surface from core entry
-    _MANAGED_ROUTE_TEST_FLAG,
-    l0_route_apps_rg,
-)
-from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
 )

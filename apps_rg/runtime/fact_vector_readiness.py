@@ -17,6 +17,10 @@ from typing import Any
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
+from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
+    BGE_M3_MODEL_ID,
+)
 
 from apps_rg.runtime.c0.section_authority_profile import (
     c0_authority_manifest,
@@ -24,8 +28,7 @@ from apps_rg.runtime.c0.section_authority_profile import (
     direct_vector_section_ids,
 )
 
-BGE_M3_MODEL_ID = "BAAI/bge-m3"
-EXPECTED_BGE_DIMENSION = 1024
+EXPECTED_BGE_DIMENSION = BGE_M3_EMBEDDING_DIMENSION
 COLLECTION_NAME = "fact_vectors"
 MANIFEST_REL = "artifacts/apps_rg/c0/fact_vectors_bootstrap_manifest.json"
 SPARSE_SIDE_CAR_REL = "data/cache/sparse/fact_vectors.db"

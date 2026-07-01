@@ -98,8 +98,8 @@ def test_manual_brief_r4_uses_frontier_stub_and_l2_hop(tmp_path: Path, monkeypat
     assert draft["channel"] == "linkedin_inmail"
     assert draft["subject_line"]
     assert draft["recipient_class"] == "recruiter"
-    assert draft["provider_profile"] == "claude_opus_4_8_primary"
-    assert draft["model"] == "Claude Opus 4.8"
+    assert draft["provider_profile"] == "claude_sonnet_5_primary"
+    assert draft["model"] == "Claude Sonnet 5"
     assert len(draft["message_text"]) <= 1900
     assert "—" not in draft["message_text"]
 
@@ -135,6 +135,6 @@ def test_l3_boundary_has_no_hop_or_research_execution() -> None:
 
 def test_provider_profile_documented_in_env_example() -> None:
     src = Path(".env.example").read_text(encoding="utf-8")
-    assert "APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID=claude-opus-4-8" in src
-    assert "APPS_LIC_GENERATOR_MODEL=Claude Opus 4.8" in src
+    assert "APPS_LIC_GENERATOR_TRANSPORT_MODEL_ID=claude-sonnet-5" in src
+    assert "APPS_LIC_GENERATOR_MODEL=Claude Sonnet 5" in src
     assert "APPS_LIC_TEST_PROVIDER_STUB=0" in src

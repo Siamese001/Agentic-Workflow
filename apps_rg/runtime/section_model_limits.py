@@ -178,17 +178,73 @@ def runtime_limit_mapping(path: str) -> dict[str, Any]:
 SECTION_MODEL_MAX_MODEL_LEN: Final[int] = runtime_limit_int("section_context_window")
 
 
-def _ssot_default_model(profile_key: str = "external_claude_generator") -> str:
-    """Return ``profiles.<profile_key>.default_model`` from provider_profiles.yaml."""
-    profiles = _provider_profiles()
-    model = (profiles.get(profile_key) or {}).get("default_model")
-    if not isinstance(model, str) or not model.strip():
-        raise SectionModelSSOTError(f"Missing default_model for profiles.{profile_key}: {_PROVIDER_PROFILES_PATH}")
-    return model.strip()
+def _required_section_model(profile_key: str, section_id: str | None) -> str:
+    sid = str(section_id or "").strip().lower()
+    if not sid:
+        raise SectionModelSSOTError(
+            f"Missing section_id for profiles.{profile_key}.model_by_section lookup in {_PROVIDER_PROFILES_PATH}"
+        )
+    by_section = _ssot_model_by_section(profile_key)
+    model = by_section.get(sid)
+    if not model:
+        raise SectionModelSSOTError(
+            f"Missing profiles.{profile_key}.model_by_section.{sid} in {_PROVIDER_PROFILES_PATH}"
+        )
+    return model
+
+
+def _selector_models() -> dict[str, dict[str, str]]:
+    raw = _provider_config().get("selector_models") or {}
+    if not isinstance(raw, dict):
+        raise SectionModelSSOTError(f"selector_models must be a mapping in {_PROVIDER_PROFILES_PATH}")
+    out: dict[str, dict[str, str]] = {}
+    for selector_role, value in raw.items():
+        if not isinstance(value, dict):
+            raise SectionModelSSOTError(
+                f"selector_models.{selector_role} must be a mapping in {_PROVIDER_PROFILES_PATH}"
+            )
+        provider_key = str(value.get("provider_key") or "").strip()
+        model = str(value.get("model") or "").strip()
+        if not provider_key or not model:
+            raise SectionModelSSOTError(
+                f"selector_models.{selector_role} requires provider_key and model in {_PROVIDER_PROFILES_PATH}"
+            )
+        out[str(selector_role).strip().lower()] = {
+            "provider_key": provider_key,
+            "model": model,
+        }
+    return out
+
+
+def resolve_selector_provider_model(selector_role: str) -> tuple[str, str, str]:
+    """Return ``(provider_key, model, model_source)`` for an advisory pool selector."""
+    role = str(selector_role or "").strip().lower()
+    if not role:
+        raise SectionModelSSOTError(f"Missing selector role for selector_models lookup in {_PROVIDER_PROFILES_PATH}")
+    selectors = _selector_models()
+    row = selectors.get(role)
+    if row is None:
+        raise SectionModelSSOTError(f"Missing selector_models.{role} in {_PROVIDER_PROFILES_PATH}")
+    return (
+        row["provider_key"],
+        row["model"],
+        f"apps_rg/config/provider_profiles.yaml:selector_models.{role}.model",
+    )
+
+
+def selector_role_for_section(section_id: str, *, slot_kind: str | None = None) -> str:
+    """Map a section/slot to the selector-model role in provider_profiles.yaml."""
+    sid = str(section_id or "").strip().lower()
+    kind = str(slot_kind or "").strip().lower()
+    if sid == "competencies" and kind == "competencies":
+        return "competencies_graph_pool_selector"
+    if sid in {"unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets"}:
+        return "employment_bullet_pool_selector"
+    raise SectionModelSSOTError(f"No selector model configured for section={sid!r} slot_kind={kind!r}")
 
 
 def _ssot_model_by_section(profile_key: str = "external_claude_generator") -> dict[str, str]:
-    """Per-section model overrides from the provider-profiles SSOT."""
+    """Per-section model pins from the provider-profiles SSOT."""
     profiles = _provider_profiles()
     raw = (profiles.get(profile_key) or {}).get("model_by_section") or {}
     if not isinstance(raw, dict):
@@ -209,26 +265,39 @@ def resolve_section_generation_model(
     Every apps_rg generation dispatch MUST route the model through this function so the
     provider request carries the per-section model and no other source can win.
 
-    Precedence:
-      1. ``provider_profiles.yaml`` ``external_claude_generator.model_by_section[section]``
-      2. ``provider_profiles.yaml`` ``external_claude_generator.default_model``
+    Missing/unknown section ids fail closed. Provider-level default models are intentionally not
+    supported for proof-bearing apps_rg lanes.
     """
     _ = environ
     sid = str(section_id or "").strip().lower()
-    if sid:
-        by_section = _ssot_model_by_section("external_claude_generator")
-        if sid in by_section:
-            return by_section[sid]
-    return _ssot_default_model("external_claude_generator")
+    if not sid:
+        raise SectionModelSSOTError(f"Missing section_id for generation model resolution in {_PROVIDER_PROFILES_PATH}")
+
+    matches = [
+        (profile_key, models[sid])
+        for profile_key in ("external_claude_generator", "external_openai_generator")
+        for models in (_ssot_model_by_section(profile_key),)
+        if sid in models
+    ]
+    if len(matches) == 1:
+        return matches[0][1]
+    if len(matches) > 1:
+        profiles = ", ".join(profile_key for profile_key, _model in matches)
+        raise SectionModelSSOTError(
+            f"Ambiguous generation model pin for section={sid!r}; found in profiles {profiles}"
+        )
+    raise SectionModelSSOTError(
+        f"Missing generation model pin for section={sid!r} in {_PROVIDER_PROFILES_PATH}"
+    )
 
 
-def external_claude_generation_model(environ: Mapping[str, str] | None = None) -> str:
-    """Section-agnostic default generator model (no per-section override).
-
-    Equivalent to ``resolve_section_generation_model(None)``. Callers that know their section MUST prefer
-    :func:`resolve_section_generation_model` so the per-section tier applies.
-    """
-    return resolve_section_generation_model(None, environ)
+def external_claude_generation_model(
+    environ: Mapping[str, str] | None = None,
+    *,
+    section_id: str | None = None,
+) -> str:
+    """Claude generator model for one explicit section."""
+    return resolve_section_generation_model(section_id, environ)
 
 
 def external_openai_generation_model(
@@ -238,17 +307,10 @@ def external_openai_generation_model(
 ) -> str:
     """OpenAI generator model from apps_rg provider_profiles.yaml.
 
-    Section-aware callers may pass ``section_id`` to pick an explicit
-    ``external_openai_generator.model_by_section`` override. Untagged callers get the
-    shared OpenAI default.
+    OpenAI generator model for one explicit section. Missing/unknown section ids fail closed.
     """
     _ = environ
-    sid = str(section_id or "").strip().lower()
-    if sid:
-        by_section = _ssot_model_by_section("external_openai_generator")
-        if sid in by_section:
-            return by_section[sid]
-    return _ssot_default_model("external_openai_generator")
+    return _required_section_model("external_openai_generator", section_id)
 
 
 def external_openai_generation_model_source(section_id: str | None = None) -> str:
@@ -259,16 +321,16 @@ def external_openai_generation_model_source(section_id: str | None = None) -> st
             "apps_rg/config/provider_profiles.yaml:"
             f"profiles.external_openai_generator.model_by_section.{sid}"
         )
-    return "apps_rg/config/provider_profiles.yaml:profiles.external_openai_generator.default_model"
+    raise SectionModelSSOTError(
+        f"Missing profiles.external_openai_generator.model_by_section.{sid or '<empty>'} in {_PROVIDER_PROFILES_PATH}"
+    )
 
 
-# Canonical generation model identity for Claude-backed apps_rg sections — resolved from the
-# external Claude generation profile (``provider_profiles.yaml`` -> external_claude_generator) so
-# the X2 ``x2_model_name_allowed`` proof and prompt-render manifests reference the actual Claude
-# model pin for those lanes.
-SECTION_MODEL_ID: Final[str] = external_claude_generation_model()
-DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = _ssot_default_model("external_claude_generator")
-DEFAULT_EXTERNAL_OPENAI_MODEL: Final[str] = _ssot_default_model("external_openai_generator")
+# Compatibility labels for legacy PA metadata. These are explicit lane pins, not resolver
+# fallbacks; runtime dispatch must call the section-aware resolvers above.
+SECTION_MODEL_ID: Final[str] = resolve_section_generation_model("competencies")
+DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = resolve_section_generation_model("competencies")
+DEFAULT_EXTERNAL_OPENAI_MODEL: Final[str] = external_openai_generation_model(section_id="unify_narrative")
 
 __all__ = [
     "DEFAULT_EXTERNAL_CLAUDE_MODEL",
@@ -280,8 +342,10 @@ __all__ = [
     "external_openai_generation_model",
     "external_openai_generation_model_source",
     "resolve_section_generation_model",
+    "resolve_selector_provider_model",
     "runtime_limit_float",
     "runtime_limit_mapping",
     "runtime_limit_int",
     "runtime_limit_str",
+    "selector_role_for_section",
 ]

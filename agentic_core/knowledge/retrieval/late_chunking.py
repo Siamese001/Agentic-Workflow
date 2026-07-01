@@ -58,6 +58,8 @@ import threading
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import numpy as np
 
@@ -438,8 +440,8 @@ class LateChunkingEmbedder:
                     chunk.start,
                     chunk.end,
                 )
-                # 1024-dim zero vector keeps downstream shape invariant.
-                out[chunk.chunk_id] = [0.0] * 1024
+                # Zero vector keeps downstream shape invariant when source text is empty.
+                out[chunk.chunk_id] = [0.0] * BGE_M3_EMBEDDING_DIMENSION
                 continue
             out[chunk.chunk_id] = bge_embed_query(text)
         return out

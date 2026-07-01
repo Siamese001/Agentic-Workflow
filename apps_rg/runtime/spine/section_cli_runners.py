@@ -1,16 +1,16 @@
 """Section spine CLI runners — invoked only via apps_rg_spine_run (d8f4a2)."""
 from __future__ import annotations
 
+import inspect
 import os
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 from apps_rg.runtime.orchestration.canonical_dispatch import (
-    build_raw_request_for_r4,
     _effective_lane_provider,
-    _read_optional_brief,
     _resolve_lane_manual_brief,
+    build_raw_request_for_r4,
 )
 from apps_rg.runtime.section_cli_defaults import default_lane_provider_for_section
 from apps_rg.runtime.spine.section_x3_finalize import (
@@ -24,6 +24,58 @@ def _lane_dispatch_status_from_x3(x3: Any) -> tuple[bool, str, str]:
     authorized = lane_outcome_authorized_from_x3(x3)
     exit_status = "success" if authorized else "error"
     return authorized, exit_status, lane_x3_code_from_x3(x3)
+
+
+def _env_truthy(name: str) -> bool:
+    return str(os.environ.get(name) or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "on",
+    }
+
+
+def _run_specific_targeting_required() -> bool:
+    return (
+        _env_truthy("APPS_RG_WHOLE_RUN_ENVELOPE")
+        or bool(str(os.environ.get("APPS_RG_CORRELATED_CLI_RUN") or "").strip())
+        or _env_truthy("APPS_RG_REQUIRE_RUN_SPECIFIC_TARGETING")
+    )
+
+
+def _section_targeting_error(section_id: str) -> dict[str, Any]:
+    return {
+        "exit_status": "error",
+        "execution_status": "failed",
+        "outcome_authorized": False,
+        "error": (
+            f"{section_id} requires run-specific briefing material in whole-run mode "
+            "(--manual-brief path/URI or inline text)"
+        ),
+        "x3_disposition": "",
+        "fault": "missing_run_specific_briefing",
+        "artifact_dir": "",
+        "run_id": "",
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+    }
+
+
+def _resolve_section_briefing_for_spine(
+    section_id: str,
+    raw_request: dict[str, Any],
+    manual_brief: str,
+    default_briefing: str,
+) -> tuple[str, dict[str, Any] | None]:
+    ref = str(raw_request.get("manual_brief") or manual_brief or "").strip()
+    briefing = _resolve_lane_manual_brief(ref)
+    if str(briefing).strip():
+        return briefing, None
+    if _run_specific_targeting_required():
+        return "", _section_targeting_error(section_id)
+    return str(default_briefing or ""), None
 
 def run_section_competencies_spine(
     *,
@@ -65,10 +117,14 @@ def run_section_competencies_spine(
     )
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    resolved_manual_brief = str(raw_request.get("manual_brief") or manual_brief or "").strip()
-    briefing = _read_optional_brief(resolved_manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "competencies",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section("competencies")
 
@@ -152,10 +208,14 @@ def run_section_headline_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    resolved_manual_brief = str(raw_request.get("manual_brief") or manual_brief or "").strip()
-    briefing = _read_optional_brief(resolved_manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "headline",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     eff_prov = _effective_lane_provider(lane_provider)
     args = lane.build_headline_lane_args(
@@ -256,7 +316,14 @@ def run_section_executive_summary_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _resolve_lane_manual_brief(manual_brief)
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "executive_summary",
+        raw_request,
+        manual_brief,
+        "",
+    )
+    if briefing_error is not None:
+        return briefing_error
     if not str(briefing).strip():
         return {
             "exit_status": "error",
@@ -431,9 +498,14 @@ def run_section_unify_bullets_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "unify_bullets",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(
         "unify_narrative"
@@ -536,9 +608,14 @@ def run_section_unify_narrative_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "unify_narrative",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(
         "ibm_narrative"
@@ -641,9 +718,14 @@ def run_section_ibm_bullets_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "ibm_bullets",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = _effective_lane_provider(lane_provider)
 
@@ -745,9 +827,14 @@ def run_section_ibm_narrative_spine(
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
     if not jd_text:
         jd_text = lane.JD_TEXT_DEFAULT
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        briefing = lane.BRIEFING_DEFAULT
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        "ibm_narrative",
+        raw_request,
+        manual_brief,
+        lane.BRIEFING_DEFAULT,
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = _effective_lane_provider(lane_provider)
 
@@ -848,9 +935,14 @@ def _run_section_role_episode_spine(
     )
     jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
     jd_text = str(jp.get("description") or jp.get("title") or "").strip()
-    briefing = _read_optional_brief(manual_brief)
-    if not str(briefing).strip():
-        briefing = _resolve_lane_manual_brief(raw_request)
+    briefing, briefing_error = _resolve_section_briefing_for_spine(
+        section_id,
+        raw_request,
+        manual_brief,
+        "",
+    )
+    if briefing_error is not None:
+        return briefing_error
 
     lane_provider_eff = str(lane_provider or "").strip() or default_lane_provider_for_section(section_id)
 
@@ -918,3 +1010,32 @@ def run_section_insurtech_narrative_spine(**kwargs: Any) -> dict[str, Any]:
 def run_section_ey_narrative_spine(**kwargs: Any) -> dict[str, Any]:
     kwargs.pop("lane_provider_resolution_source", None)
     return _run_section_role_episode_spine("ey_narrative", **kwargs)
+
+
+SECTION_LANE_RUNNERS: dict[str, Any] = {
+    "headline": run_section_headline_spine,
+    "executive_summary": run_section_executive_summary_spine,
+    "unify_bullets": run_section_unify_bullets_spine,
+    "unify_narrative": run_section_unify_narrative_spine,
+    "ibm_bullets": run_section_ibm_bullets_spine,
+    "ibm_narrative": run_section_ibm_narrative_spine,
+    "insurtech_bullets": run_section_insurtech_bullets_spine,
+    "insurtech_narrative": run_section_insurtech_narrative_spine,
+    "ey_bullets": run_section_ey_bullets_spine,
+    "ey_narrative": run_section_ey_narrative_spine,
+    "competencies": run_section_competencies_spine,
+}
+
+
+def run_registered_section_lane(section_id: str, **kwargs: Any) -> dict[str, Any]:
+    """Run an apps_rg section lane as the section-scoped L2 recipe body."""
+    sid = str(section_id or "").strip().lower()
+    runner = SECTION_LANE_RUNNERS.get(sid)
+    if runner is None:
+        raise KeyError(f"unknown section_id: {section_id!r}")
+    accepted = inspect.signature(runner).parameters
+    if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in accepted.values()):
+        filtered = dict(kwargs)
+    else:
+        filtered = {k: v for k, v in kwargs.items() if k in accepted}
+    return runner(**filtered)

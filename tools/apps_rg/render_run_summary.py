@@ -37,6 +37,13 @@ RUNS_ROOT = REPO_ROOT / "artifacts" / "apps_rg" / "runs"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from apps_rg.runtime.run_output_contract import (
+    APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
+    APPS_RG_MANDATORY_RUN_OUTPUT_MD,
+    BCG_EXECUTIVE_OUTPUT_MD,
+    FULL_RUN_SECTION_STATUS_JSON,
+    REVIEW_BUNDLE_FILENAME,
+)
 from apps_rg.runtime.section_display_labels import summary_section_label
 
 # ----------------------------------------------------------------- read helpers
@@ -268,9 +275,9 @@ def _render_whole_run_cache_preflight(run_dir: Path) -> List[str]:
 
 
 def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
-    ledger_path = run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json"
-    ledger_md = run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.md"
-    bcg_md = run_dir / "BCG_EXECUTIVE_OUTPUT.md"
+    ledger_path = run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_JSON
+    ledger_md = run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_MD
+    bcg_md = run_dir / BCG_EXECUTIVE_OUTPUT_MD
     ledger = _load_json(ledger_path) or {}
     lines: List[str] = ["## Mandatory BCG / Run-Ledger Outputs", ""]
     lines.append("| Artifact | Path | Status |")
@@ -781,7 +788,7 @@ def _render_l2_substages(terminal_packet: Optional[Dict[str, Any]]) -> List[str]
 def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]], run_dir: Path | None = None) -> List[str]:
     lines: List[str] = ["## Narrative HOP Checkpoints (Sub-steps)", ""]
     if not run_report:
-        if run_dir is not None and (run_dir / "full_run_section_status.json").is_file():
+        if run_dir is not None and (run_dir / FULL_RUN_SECTION_STATUS_JSON).is_file():
             lines.append(
                 "_Legacy run_report.json not emitted; modular R4 section status is rendered below._"
             )
@@ -807,7 +814,7 @@ def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]], run_dir: Path 
 def _render_section_verdicts(run_report: Optional[Dict[str, Any]], run_dir: Path | None = None) -> List[str]:
     lines: List[str] = ["## Per-Section Narrative Verdicts", ""]
     if not run_report:
-        if run_dir is not None and (run_dir / "full_run_section_status.json").is_file():
+        if run_dir is not None and (run_dir / FULL_RUN_SECTION_STATUS_JSON).is_file():
             lines.append(
                 "_Legacy run_report.json not emitted; modular R4 section verdicts are rendered below._"
             )
@@ -839,13 +846,13 @@ def _render_section_verdicts(run_report: Optional[Dict[str, Any]], run_dir: Path
 
 
 def _render_modular_section_status(run_dir: Path) -> List[str]:
-    status_doc = _load_json(run_dir / "full_run_section_status.json") or {}
+    status_doc = _load_json(run_dir / FULL_RUN_SECTION_STATUS_JSON) or {}
     lanes = [row for row in (status_doc.get("lanes") or []) if isinstance(row, dict)]
     if not lanes:
         return []
     lines: List[str] = ["## Modular Section Status", ""]
     lines.append(
-        "Source: `full_run_section_status.json` — modular R4 section evidence "
+        f"Source: `{FULL_RUN_SECTION_STATUS_JSON}` — modular R4 section evidence "
         "when legacy `run_report.json` is not emitted."
     )
     lines.append("")
@@ -1056,10 +1063,10 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
         )
     run_report_path = run_dir / "run_report.json"
     run_report_required = _bundle_role_required(run_dir, "narrative_run_report", default=False)
-    section_status = run_dir / "full_run_section_status.json"
+    section_status = run_dir / FULL_RUN_SECTION_STATUS_JSON
     final_assembly = run_dir / "modular_r4" / "final_resume_assembly" / "final_resume_manifest.json"
     final_assembly_required = (run_dir / "modular_r4").is_dir() or bool(output_manifest)
-    review_bundle = run_dir / "review_bundle.zip"
+    review_bundle = run_dir / REVIEW_BUNDLE_FILENAME
     rows: List[Tuple[str, str, str]] = []
     artifact_rows: List[Tuple[str, Path, bool, str]] = [
         ("Resume JSON", json_resume, json_required, ""),
@@ -1069,7 +1076,7 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
             "Run report",
             run_report_path,
             run_report_required,
-            "modular R4 uses full_run_section_status.json",
+            f"modular R4 uses {FULL_RUN_SECTION_STATUS_JSON}",
         ),
         ("Section status", section_status, False, "legacy narrative report replacement"),
         ("Final assembly manifest", final_assembly, final_assembly_required, ""),

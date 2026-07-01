@@ -93,7 +93,7 @@ def test_w2_matrix_acceptance_does_not_fail_slot_class_split_when_profile_explai
         "no_l4_write_assertion": True,
         "no_connector_post_assertion": True,
         "c0_recipient_class_status": "RECIPIENT_CLASS_DERIVED",
-        "generation_generator": "claude_opus_4_8_primary",
+        "generation_generator": "claude_sonnet_5_primary",
         "generation_qa_notes": [],
         "draft_text": "Hi Firat, test draft.\n\nAmit",
         "proof_packet_id": "proof:test",
