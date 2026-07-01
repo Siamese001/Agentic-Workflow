@@ -43,7 +43,53 @@ from apps_research.types.jd_intent_coverage import (
 
 # Plan §P1.4 — V2 retrieval pipeline behind feature flag.
 _RETRIEVAL_V2_FLAG = "APPS_RESEARCH_RETRIEVAL_V2"
-APPS_RESEARCH_BRIEF_MODEL: Final[str] = "gpt-5.4-mini"
+_COMPANY_BRIEF_PROVIDER_PROFILE: Final[Path] = (
+    Path(__file__).resolve().parents[1]
+    / "config"
+    / "domain_contract"
+    / "provider_profile.company_brief.v1.yaml"
+)
+
+
+class CompanyBriefProviderProfileError(RuntimeError):
+    """Raised when apps_research company-brief provider profile is invalid."""
+
+
+def _company_brief_primary_openai_model() -> str:
+    """Resolve the runtime synthesis model from the provider-profile SSOT."""
+    try:
+        import yaml  # noqa: PLC0415
+
+        data = yaml.safe_load(_COMPANY_BRIEF_PROVIDER_PROFILE.read_text(encoding="utf-8"))
+    except ImportError as exc:
+        raise CompanyBriefProviderProfileError(
+            f"Cannot load apps_research provider profile SSOT: {_COMPANY_BRIEF_PROVIDER_PROFILE}"
+        ) from exc
+    except (AttributeError, OSError, TypeError, UnicodeError, ValueError, yaml.YAMLError) as exc:
+        raise CompanyBriefProviderProfileError(
+            f"Cannot load apps_research provider profile SSOT: {_COMPANY_BRIEF_PROVIDER_PROFILE}"
+        ) from exc
+    lanes = (data or {}).get("approved_model_lanes") if isinstance(data, dict) else None
+    primary = lanes.get("primary") if isinstance(lanes, dict) else None
+    if not isinstance(primary, dict):
+        raise CompanyBriefProviderProfileError(
+            f"Missing approved_model_lanes.primary in {_COMPANY_BRIEF_PROVIDER_PROFILE}"
+        )
+    provider = str(primary.get("provider") or "").strip()
+    model = str(primary.get("model") or "").strip()
+    if provider != "external_openai":
+        raise CompanyBriefProviderProfileError(
+            "CompanyBriefEngine currently supports only approved_model_lanes.primary.provider="
+            f"external_openai; got {provider!r} in {_COMPANY_BRIEF_PROVIDER_PROFILE}"
+        )
+    if not model:
+        raise CompanyBriefProviderProfileError(
+            f"Missing approved_model_lanes.primary.model in {_COMPANY_BRIEF_PROVIDER_PROFILE}"
+        )
+    return model
+
+
+APPS_RESEARCH_BRIEF_MODEL: Final[str] = _company_brief_primary_openai_model()
 
 
 def _v2_enabled() -> bool:

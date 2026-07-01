@@ -78,6 +78,7 @@ from apps_lic.engines.x1d_gpt_judge_adapter import (
     OpenAIGPTX1DTransport,
     run_gpt_x1d_judges,
 )
+from apps_lic.integrations.research_reason_codes import APPS_RESEARCH_DEPRECATED
 from apps_lic.types.linkedin_route_envelope import resolve_linkedin_route_envelope
 
 ROUTE_FAMILY_R4 = ROUTE_FAMILY_R4_MANAGED_DRAFT
@@ -86,7 +87,7 @@ ROUTE_FAMILY_R5 = ROUTE_FAMILY_R5_FALLBACK
 
 _EXECUTION_MANAGED = "managed_workflow"
 _EXECUTION_TERMINAL = "terminal_fallback"
-_APPS_RESEARCH_DEPRECATED_REASON = "APPS_RESEARCH_DEPRECATED"
+_APPS_RESEARCH_DEPRECATED_REASON = APPS_RESEARCH_DEPRECATED
 _APPS_LIC_RUN_LIVE_GPT_X1D = "APPS_LIC_RUN_LIVE_GPT_X1D"
 
 

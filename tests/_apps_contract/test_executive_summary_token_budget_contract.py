@@ -104,6 +104,7 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
         prompt_hash="abc",
         input_payload_hash="def",
         max_tokens=1024,
+        model="claude-sonnet-5",
     )
     assert req.mock_fallback_allowed is False
     after_tokens = receipt["compiled_prompt_tokens_after_trim"]

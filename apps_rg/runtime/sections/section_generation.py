@@ -61,7 +61,7 @@ def build_section_request(
     max_tokens: int = 700,
     timeout_seconds: int = DEFAULT_SECTION_TIMEOUT_SECONDS,
     base_url: str = "",
-    model: str = SECTION_MODEL_ID,
+    model: str | None = None,
     provider_requested: str = "external_claude",
     temperature_bounds: tuple[float, float] = (0.0, 0.99),
 ) -> tuple[ProviderRequest, dict[str, Any]]:
@@ -69,6 +69,9 @@ def build_section_request(
 
     The provenance record and model are caller-supplied so the receipt matches the active lane.
     """
+    if not str(model or "").strip():
+        raise ValueError("build_section_request requires an explicit section model pin")
+    resolved_model = str(model).strip()
     t_low, t_high = temperature_bounds
     bounded = float(min(max(float(temperature), t_low), t_high))
     assert_temperature_in_profile(bounded, low=t_low, high=t_high)
@@ -76,7 +79,7 @@ def build_section_request(
         provider_requested=provider_requested,
         provider_attempted=True,
         provider_url=base_url,
-        model=model,
+        model=resolved_model,
         temperature=bounded,
         max_tokens=max_tokens,
         timeout_seconds=timeout_seconds,
@@ -85,7 +88,7 @@ def build_section_request(
         mock_fallback_allowed=False,
     )
     payload = {
-        "model": model,
+        "model": resolved_model,
         "messages": messages,
         "temperature": bounded,
         "max_tokens": max_tokens,

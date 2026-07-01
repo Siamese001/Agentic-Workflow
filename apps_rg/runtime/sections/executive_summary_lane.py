@@ -1955,7 +1955,7 @@ def run_executive_summary_execution(
     )
 
     section_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id=LANE_KEY)
         if str(args.provider) == "external_openai"
         else resolve_section_generation_model(LANE_KEY)
     )

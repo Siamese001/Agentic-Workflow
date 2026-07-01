@@ -23,10 +23,16 @@ from apps_rg.runtime.full_run_section_status import (
     LaneSectionStatusRow,
     collect_full_run_section_status,
 )
+from apps_rg.runtime.run_output_contract import (
+    APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
+    APPS_RG_MANDATORY_RUN_OUTPUT_MD,
+    BCG_EXECUTIVE_OUTPUT_MD,
+    FULL_RUN_SECTION_STATUS_JSON,
+    REVIEW_BUNDLE_FILENAME,
+)
 
-MANDATORY_RUN_OUTPUT_JSON = "APPS_RG_MANDATORY_RUN_OUTPUT.json"
-MANDATORY_RUN_OUTPUT_MD = "APPS_RG_MANDATORY_RUN_OUTPUT.md"
-BCG_EXECUTIVE_OUTPUT_MD = "BCG_EXECUTIVE_OUTPUT.md"
+MANDATORY_RUN_OUTPUT_JSON = APPS_RG_MANDATORY_RUN_OUTPUT_JSON
+MANDATORY_RUN_OUTPUT_MD = APPS_RG_MANDATORY_RUN_OUTPUT_MD
 
 
 def _utc_now() -> str:
@@ -695,7 +701,7 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     causal_role="CONTRIBUTING",
                     root_cause_link="The dependent narrative must not schedule until its upstream bullets lane is certified.",
                     work_share="25%",
-                    evidence_refs=["APPS_RG_MANDATORY_RUN_OUTPUT.json"],
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
                     required_work="Consume the upstream token before dependent-lane scheduling.",
                 ),
                 _allocation_row(
@@ -727,7 +733,7 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     causal_role="PRIMARY",
                     root_cause_link="The mandatory section ledger contains blocked, pre-run-blocked, or not-run required lanes.",
                     work_share="60%",
-                    evidence_refs=["APPS_RG_MANDATORY_RUN_OUTPUT.json"],
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
                     required_work="Compute final aggregation eligibility directly from the required-lane product-authorization ledger.",
                 ),
                 _allocation_row(
@@ -735,7 +741,7 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     causal_role="CONTRIBUTING",
                     root_cause_link="Final assembly must wait for upstream lane tokens rather than inferred run completion.",
                     work_share="20%",
-                    evidence_refs=["full_run_section_status.json"],
+                    evidence_refs=[FULL_RUN_SECTION_STATUS_JSON],
                     required_work="Require same-run product-authorization tokens for every required section.",
                 ),
                 _allocation_row(
@@ -743,7 +749,7 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     causal_role="NO_RECOVERY",
                     root_cause_link="Retrying aggregation cannot repair missing upstream product authorization.",
                     work_share="10%",
-                    evidence_refs=["full_run_section_status.json"],
+                    evidence_refs=[FULL_RUN_SECTION_STATUS_JSON],
                     required_work="Route repair to the blocking lanes before aggregation.",
                 ),
                 _allocation_row(
@@ -751,7 +757,7 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     causal_role="REPORTING_GAP",
                     root_cause_link="The output must name every non-authorized required lane that prevents assembly.",
                     work_share="10%",
-                    evidence_refs=["APPS_RG_MANDATORY_RUN_OUTPUT.json"],
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
                     required_work="Emit a missing-lane manifest in the aggregation RCA.",
                 ),
             ],
@@ -1054,8 +1060,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     lines.extend(["", "## Evidence Map", ""])
     lines.append(f"- Mandatory run ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}`")
     lines.append(f"- Machine-readable ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}`")
-    lines.append(f"- Section status: `@{doc['run_root_abs']}\\full_run_section_status.json`")
-    lines.append(f"- Review bundle: `@{doc['run_root_abs']}\\review_bundle.zip`")
+    lines.append(f"- Section status: `@{doc['run_root_abs']}\\{FULL_RUN_SECTION_STATUS_JSON}`")
+    lines.append(f"- Review bundle: `@{doc['run_root_abs']}\\{REVIEW_BUNDLE_FILENAME}`")
     return "\n".join(lines)
 
 

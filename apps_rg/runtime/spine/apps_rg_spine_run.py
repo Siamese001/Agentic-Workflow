@@ -4,40 +4,40 @@
 """
 from __future__ import annotations
 
-import inspect
 from pathlib import Path
 from typing import Any, Literal
 
-from apps_rg.runtime.spine.section_cli_runners import (
-    run_section_competencies_spine,
-    run_section_ey_bullets_spine,
-    run_section_ey_narrative_spine,
-    run_section_executive_summary_spine,
-    run_section_headline_spine,
-    run_section_ibm_bullets_spine,
-    run_section_ibm_narrative_spine,
-    run_section_insurtech_bullets_spine,
-    run_section_insurtech_narrative_spine,
-    run_section_unify_bullets_spine,
-    run_section_unify_narrative_spine,
-)
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 _DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
+_SECTION_SUCCESS_X3: frozenset[str] = frozenset(
+    {"X3C", "X3D", "X3_ALLOW", "EXIT_OK", "EXIT_PARTIAL", "allow"}
+)
 
-_SECTION_RUNNERS: dict[str, Any] = {
-    "headline": run_section_headline_spine,
-    "executive_summary": run_section_executive_summary_spine,
-    "unify_bullets": run_section_unify_bullets_spine,
-    "unify_narrative": run_section_unify_narrative_spine,
-    "ibm_bullets": run_section_ibm_bullets_spine,
-    "ibm_narrative": run_section_ibm_narrative_spine,
-    "insurtech_bullets": run_section_insurtech_bullets_spine,
-    "insurtech_narrative": run_section_insurtech_narrative_spine,
-    "ey_bullets": run_section_ey_bullets_spine,
-    "ey_narrative": run_section_ey_narrative_spine,
-    "competencies": run_section_competencies_spine,
-}
+
+def _section_cache_preflight_evidence(section_id: str) -> dict[str, Any]:
+    """Section scope has no whole-run cache hit path; mark spine entry allowed."""
+    return {
+        "cache_preflight_completed": True,
+        "r1a_preflight_status": "not_applicable_section_scope",
+        "r1b_preflight_status": "not_applicable_section_scope",
+        "r1b_preflight_reason": "section_scope_uses_core_spine_no_whole_run_cache",
+        "r1b_eligibility": "not_applicable",
+        "cache_result": "not_applicable",
+        "generation_spine_invocation_allowed": True,
+        "generation_spine_invocation_blocked_reason": "",
+        "route_family": "R4_SINGLE_ACTION",
+        "section_id": section_id,
+    }
+
+
+def _section_result_from_l2_result(l2_result: Any) -> dict[str, Any]:
+    if not isinstance(l2_result, dict):
+        return {}
+    for step in l2_result.get("step_results") or ():
+        if isinstance(step, dict) and isinstance(step.get("section_result"), dict):
+            return dict(step["section_result"])
+    return {}
 
 
 def run_apps_rg_spine(
@@ -97,8 +97,9 @@ def run_apps_rg_spine(
                 "l7_how_trace_emitted": False,
                 "terminal_r5": False,
             }
-        runner = _SECTION_RUNNERS.get(sid)
-        if runner is None:
+        from apps_rg.runtime.spine.section_cli_runners import SECTION_LANE_RUNNERS
+
+        if sid not in SECTION_LANE_RUNNERS:
             return {
                 "exit_status": "error",
                 "execution_status": "failed",
@@ -112,32 +113,92 @@ def run_apps_rg_spine(
                 "l7_how_trace_emitted": False,
                 "terminal_r5": False,
             }
-        section_kwargs = {
-            "target_company": tc,
-            "target_role": tr,
-            "target_level": target_level,
-            "jd": jd,
-            "job_description_ref": job_description_ref,
-            "job_description_text": job_description_text,
-            "manual_brief": manual_brief,
-            "resume_path": resume_path,
-            "source_resume_text": source_resume_text,
-            "generation_mode": generation_mode,
-            "artifact_dir": artifact_dir,
-            "lane_provider": lane_provider,
-            "lane_provider_resolution_source": lane_provider_resolution_source,
-            "lane_temperature": float(lane_temperature),
-            "lane_x1d_judges": lane_x1d_judges,
-            "lane_mock_judges": lane_mock_judges,
-            "lane_allow_non_allow_exit_zero": lane_allow_non_allow_exit_zero,
-            "lane_allow_test_mock_judges": lane_allow_test_mock_judges,
-        }
-        accepted = inspect.signature(runner).parameters
-        if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in accepted.values()):
-            filtered = dict(section_kwargs)
-        else:
-            filtered = {k: v for k, v in section_kwargs.items() if k in accepted}
-        return runner(**filtered)
+        from apps_rg.runtime.orchestration.canonical_dispatch import (
+            build_raw_request_for_r4,
+        )
+        from apps_rg.runtime.orchestration.integrated_spine_runner import (
+            run_integrated_single_action_spine,
+        )
+        from apps_rg.runtime.runtime_proof_layout import (
+            allocate_full_resume_artifact_dir,
+            find_repo_root,
+        )
+
+        art = (
+            Path(artifact_dir).expanduser().resolve()
+            if str(artifact_dir or "").strip()
+            else allocate_full_resume_artifact_dir(find_repo_root(), "")
+        )
+        raw_request = build_raw_request_for_r4(
+            target_company=tc,
+            target_role=tr,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+        )
+        raw_request.update(
+            {
+                "execution_scope": "section",
+                "section_id": sid,
+                "resume_artifact_contract_mode": "section",
+                "l2_context": {
+                    "section_id": sid,
+                    "target_level": target_level,
+                    "jd": jd,
+                    "job_description_ref": job_description_ref,
+                    "job_description_text": job_description_text,
+                    "manual_brief": manual_brief,
+                    "resume_path": resume_path,
+                    "source_resume_text": source_resume_text,
+                    "generation_mode": generation_mode or "section_regen",
+                    "lane_provider": lane_provider,
+                    "lane_provider_resolution_source": lane_provider_resolution_source,
+                    "lane_temperature": float(lane_temperature),
+                    "lane_x1d_judges": lane_x1d_judges,
+                    "lane_mock_judges": lane_mock_judges,
+                    "lane_allow_non_allow_exit_zero": lane_allow_non_allow_exit_zero,
+                    "lane_allow_test_mock_judges": lane_allow_test_mock_judges,
+                },
+            }
+        )
+        result = run_integrated_single_action_spine(
+            raw_request=raw_request,
+            app_name="apps_rg",
+            artifact_dir=art,
+            route_family="R4_SINGLE_ACTION",
+            cache_preflight_evidence=_section_cache_preflight_evidence(sid),
+        )
+        section_result = _section_result_from_l2_result(
+            getattr(result, "l2_result", None)
+        )
+        out = dict(section_result)
+        if section_result.get("run_id"):
+            out["lane_run_id"] = section_result.get("run_id")
+        x3 = str(getattr(result, "x3_disposition", "") or "")
+        fault = str(getattr(result, "fault", "") or "")
+        outcome = not fault and (x3 in _SECTION_SUCCESS_X3 or bool(out.get("outcome_authorized")))
+        out.update(
+            {
+                "exit_status": "success" if outcome else "error",
+                "execution_status": "completed" if outcome else "failed",
+                "outcome_authorized": outcome,
+                "x3_disposition": x3,
+                "fault": fault,
+                "artifact_dir": str(art),
+                "run_id": str(getattr(result, "run_id", "") or ""),
+                "request_id": str(getattr(result, "request_id", "") or ""),
+                "l7_how_trace_emitted": bool(
+                    not fault and (art / "agentic_core_how_trace.json").is_file()
+                ),
+                "terminal_r5": bool(getattr(result, "terminal_r5", False)),
+            }
+        )
+        return out
 
     from apps_rg.runtime.orchestration.canonical_dispatch import (
         run_canonical_full_resume_from_cli_primitives,

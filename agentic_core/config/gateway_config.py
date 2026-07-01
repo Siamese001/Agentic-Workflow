@@ -27,6 +27,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -329,14 +330,14 @@ class _StubEmbeddingGateway:
         provider: EmbeddingProvider = "bge-m3",
         use_cache: bool = True,
     ) -> list[float]:
-        return [0.0] * 1024
+        return [0.0] * BGE_M3_EMBEDDING_DIMENSION
 
     async def get_embeddings_batch(
         self,
         contents: list[str],
         provider: EmbeddingProvider = "bge-m3",
     ) -> list[list[float]]:
-        return [[0.0] * 1024 for _ in contents]
+        return [[0.0] * BGE_M3_EMBEDDING_DIMENSION for _ in contents]
 
 
 class _StubValidatorOrchestrator:

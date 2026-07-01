@@ -50,7 +50,7 @@ def test_competencies_resolves_to_pinned_model_via_tag(monkeypatch):
         {"_reasoning_section_lane": "competencies", "messages": [{"role": "user", "content": "x"}]},
     )
     assert captured["claude_model"] == resolve_section_generation_model("competencies")
-    assert captured["claude_model"] == "claude-sonnet-4-6"
+    assert captured["claude_model"] == "claude-sonnet-5"
 
 
 def test_explicit_section_id_resolves_pin(monkeypatch):
@@ -59,45 +59,41 @@ def test_explicit_section_id_resolves_pin(monkeypatch):
     spc.call_section_model_provider(
         "external_claude",
         {"messages": [{"role": "user", "content": "x"}]},
-        section_id="ibm_narrative",
+        section_id="ibm_bullets",
     )
-    assert captured["claude_model"] == "claude-sonnet-4-6"
+    assert captured["claude_model"] == "claude-sonnet-5"
 
 
-def test_untagged_lane_uses_default_not_pin(monkeypatch):
+def test_untagged_lane_fails_closed(monkeypatch):
     monkeypatch.delenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", raising=False)
-    captured = _capture_gateway_model(monkeypatch)
-    spc.call_section_model_provider(
-        "external_claude",
-        {"messages": [{"role": "user", "content": "x"}]},
-    )
-    # No section -> section-agnostic default (Sonnet), NOT a per-section Opus override.
-    assert captured["claude_model"] == resolve_section_generation_model(None)
-    assert captured["claude_model"] != "claude-opus-4-8"
+    _capture_gateway_model(monkeypatch)
+    with pytest.raises(Exception):
+        spc.call_section_model_provider(
+            "external_claude",
+            {"messages": [{"role": "user", "content": "x"}]},
+        )
 
 
 def test_operator_pin_does_not_override_per_section(monkeypatch):
-    monkeypatch.setenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", "claude-opus-4-8")
+    monkeypatch.setenv("APPS_RG_EXTERNAL_CLAUDE_MODEL", "ignored-operator-override")
     captured = _capture_gateway_model(monkeypatch)
     spc.call_section_model_provider(
         "external_claude",
         {"_reasoning_section_lane": "competencies", "messages": [{"role": "user", "content": "x"}]},
     )
-    assert captured["claude_model"] == "claude-sonnet-4-6"  # per-section/default pin remains authoritative
+    assert captured["claude_model"] == "claude-sonnet-5"
 
 
 def test_gateway_pins_model_on_claude_provider():
-    gw = spc.build_section_provider_gateway(claude_model="claude-sonnet-4-6")
+    gw = spc.build_section_provider_gateway(claude_model="claude-sonnet-5")
     prov = gw._providers[ProviderProfile.EXTERNAL_CLAUDE]
     assert isinstance(prov, ExternalProvider)
-    assert prov.model == "claude-sonnet-4-6"
+    assert prov.model == "claude-sonnet-5"
 
 
-def test_gateway_empty_model_falls_back_to_default():
-    gw = spc.build_section_provider_gateway()  # no pin
-    prov = gw._providers[ProviderProfile.EXTERNAL_CLAUDE]
-    assert prov.model  # non-empty: resolved to the SSOT default / operator pin
-    assert prov.model != ""
+def test_gateway_empty_model_fails_closed():
+    with pytest.raises(ValueError):
+        spc.build_section_provider_gateway()
 
 
 if __name__ == "__main__":  # pragma: no cover

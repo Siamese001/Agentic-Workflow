@@ -21,6 +21,8 @@ def test_openai_catalog_exports_non_empty_model_ids() -> None:
 def test_catalog_json_is_the_loaded_source() -> None:
     data = json.loads(model_catalog.MODEL_CATALOG_PATH.read_text(encoding="utf-8"))
     assert data["openai"]["default"] == model_catalog.OPENAI_DEFAULT_MODEL_ID
+    assert data["embedding"]["bge_m3_dimension"] == model_catalog.BGE_M3_EMBEDDING_DIMENSION
+    assert model_catalog.model_int("embedding.bge_m3_dimension") == model_catalog.BGE_M3_EMBEDDING_DIMENSION
 
 
 def test_missing_catalog_key_fails_closed() -> None:

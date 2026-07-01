@@ -904,7 +904,7 @@ def test_employment_pool_x1d_is_single_claude_judge(tmp_path) -> None:
 # Bug:BulletPoolSelectorDualJsonObjects — regression coverage (2026-06-11)
 #
 # Live failure (reproduced twice: AIG full-run attempt4 + patch-run 2, ibm_bullets):
-# claude-sonnet-4-6 obeyed the old X1D rubric system prompt IN ADDITION to the pool-selection
+# Claude obeyed the old X1D rubric system prompt IN ADDITION to the pool-selection
 # user prompt and returned TWO top-level JSON objects (rubric verdict, blank line, selections).
 # _extract_json_from_text raised "Extra data" on every strategy -> _parse_selections returned
 # None -> BLOCKED_RESPONSE_PARSE_ERROR "Pool selector JSON missing selections array" ->

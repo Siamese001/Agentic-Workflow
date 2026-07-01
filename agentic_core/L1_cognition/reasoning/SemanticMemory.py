@@ -7,6 +7,7 @@ Provides semantic memory capabilities with embedding-based retrieval.
 import logging
 from typing import Any
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -173,13 +174,13 @@ class EmbeddingProvider:
         self.model = model
 
     def embed(self, text: str) -> list[float]:
-        return [0.0] * 1024  # BGE-M3 embedding size
+        return [0.0] * BGE_M3_EMBEDDING_DIMENSION
 
 
 class VectorIndex:
     """Index for vector storage and retrieval."""
 
-    def __init__(self, dimension: int = 1024):
+    def __init__(self, dimension: int = BGE_M3_EMBEDDING_DIMENSION):
         self.dimension = dimension
         self._vectors: dict[str, list[float]] = {}
 

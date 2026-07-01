@@ -7,6 +7,7 @@ Core D2 ``l2_semantic_cache`` / ``promote_to_long_term`` paths are never used he
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
     BGE_M3_MODEL_ID,
 )
 
@@ -17,8 +18,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
-
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
 
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM, R1B_UWG_TARGET_SURFACE
 from apps_rg.cache.r1b_bge_embedding import (
@@ -156,10 +155,10 @@ def _assert_bge_vector_for_chroma_upsert(payload: Mapping[str, Any], *, context:
         return
     dims = int(payload.get("dimensions") or len(payload.get("values") or []))
     model = str(payload.get("embedding_model") or payload.get("query_vector_source") or "")
-    if dims != 1024 or "pseudo_digest" in model:
+    if dims != BGE_M3_EMBEDDING_DIMENSION or "pseudo_digest" in model:
         raise RuntimeError(
             f"R1B Chroma upsert forbidden ({context}): dimensions={dims} embedding_model={model!r}; "
-            f"require {BGE_M3_MODEL_ID} (1024d) on product path"
+            f"require {BGE_M3_MODEL_ID} ({BGE_M3_EMBEDDING_DIMENSION}d) on product path"
         )
 
 
@@ -171,7 +170,7 @@ def _bge_intent_payload(*, digest: str, values: list[float]) -> dict[str, Any]:
         "not_c0_fact_vectors": True,
         "not_chroma_default_ef": True,
         "normalized_intent_digest": digest,
-        "dimensions": 1024,
+        "dimensions": BGE_M3_EMBEDDING_DIMENSION,
         "values": values,
     }
 
@@ -180,7 +179,7 @@ def _bge_chunk_payload(*, chunk_id: str, values: list[float]) -> dict[str, Any]:
     return {
         "chunk_id": chunk_id,
         "embedding_model": BGE_M3_MODEL_ID,
-        "dimensions": 1024,
+        "dimensions": BGE_M3_EMBEDDING_DIMENSION,
         "values": values,
     }
 

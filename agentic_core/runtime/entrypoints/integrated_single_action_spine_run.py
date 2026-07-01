@@ -85,45 +85,36 @@ _log = logging.getLogger(__name__)
 from agentic_core.L0_routing.intake.envelope import RawIngressEnvelope
 from agentic_core.L0_routing.intake.pipeline import run_request_intake
 from agentic_core.L0_routing.intake.validated_request import ValidatedRequest
+from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
 from agentic_core.L1_cognition.bridges.u0_to_l1_plan import (
     validated_request_to_plan_contract,
-)
-from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
-from agentic_core.L0_routing.doctrine.terminal_routes import (
-    TerminalExecutionForm,
-    TerminalRetPacket,
-)
-from agentic_core.L3_orchestration.exit_eval.v6.types import (
-    ExitReviewPacket,
-    GateResult,
-    GateVerdict,
-    SourceType,
-    V6Disposition,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
     ExitEvalPipeline,
     ExitEvalResult,
 )
+from agentic_core.L3_orchestration.exit_eval.v6.types import (
+    V6Disposition,
+)
+from agentic_core.L5_safety.certification.integrated_l5_evidence import (
+    binding_payload_from_identity,
+    build_hitl_reclearance_not_applicable,
+    certification_ref_from_binding,
+)
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
+    W2_CHAIN_LINKAGE,
+    ProvenanceStamp,
     compute_artifact_hash,
     emit_artifact,
-    ProvenanceStamp,
-    W2_CHAIN_LINKAGE,
 )
 from agentic_core.runtime.artifacts.spine_proof_bundle import (
     git_commit_and_dirty,
-    utc_iso_now,
 )
 from agentic_core.runtime.contracts.c0_bypass_receipt import (
     build_c0_bypass_receipt,
 )
 from agentic_core.runtime.contracts.identity import (
     build_runtime_identity_envelope,
-)
-from agentic_core.L5_safety.certification.integrated_l5_evidence import (
-    binding_payload_from_identity,
-    build_hitl_reclearance_not_applicable,
-    certification_ref_from_binding,
 )
 from agentic_core.runtime.contracts.prompt_assembly_bypass_receipt import (
     build_prompt_assembly_bypass_receipt,
@@ -137,10 +128,10 @@ from agentic_core.runtime.contracts.safe_reuse_decision import (
     SafeReuseDecision,
 )
 from agentic_core.runtime.profiles.profile_resolver import (
+    InvalidProfileError,
+    MissingProfileError,
     RuntimeProfileResolver,
     UnknownAppError,
-    MissingProfileError,
-    InvalidProfileError,
 )
 
 # ---------------------------------------------------------------------------
@@ -194,6 +185,7 @@ class SingleActionSpineRunResult:
     producer_component: str = _PRODUCER_COMPONENT
     fault: str = ""              # populated on unexpected internal error
     observability_status: Mapping[str, Any] = field(default_factory=dict)
+    l2_result: Any = None        # additive: caller-visible L2 recipe summary
 
 
 # ---------------------------------------------------------------------------
@@ -285,7 +277,7 @@ def _utc_now_iso() -> str:
 
 def _get_app_defaults(app_name: str) -> dict[str, str]:
     """Get app identity defaults from profile.
-    
+
     Fail-closed: returns empty dict if profile resolution fails,
     forcing caller to handle missing defaults explicitly.
     """
@@ -506,24 +498,24 @@ def _build_raw_envelope(
     app_name: str = "",
 ) -> RawIngressEnvelope:
     """Map caller dict → RawIngressEnvelope for U0 intake.
-    
+
     Uses profile-driven defaults for app-specific identity values.
     """
     # Get app defaults from profile (fail-closed: empty dict on failure)
     defaults = _get_app_defaults(app_name)
-    
+
     body_text = (
         raw_request.get("body_text")
         or raw_request.get("query")
         or json.dumps(raw_request.get("jd_payload") or {})
     )
-    
+
     # Use profile defaults or fallback to empty string (not hardcoded app literals)
     default_source_channel = defaults.get("source_channel", "")
     default_user_id = defaults.get("user_id_default", "")
     default_auth_kind = defaults.get("auth_kind", "internal")
     default_auth_token = defaults.get("auth_token", "")
-    
+
     return RawIngressEnvelope(
         transport=str(raw_request.get("transport", "api")),
         method=str(raw_request.get("method", "POST")),
@@ -1001,7 +993,7 @@ def run_integrated_single_action_spine(
     _identity_defaults = _get_app_defaults(app_name)
     _caller_surface = _identity_defaults.get("caller_surface", "") or app_name or ""
     _app_name_for_identity = app_name or _identity_defaults.get("app_id", "")
-    
+
     identity = build_runtime_identity_envelope(
         run_id=run_id,
         request_id=request_id,
@@ -1033,6 +1025,18 @@ def run_integrated_single_action_spine(
         "user_id": str(getattr(validated, "user_id", "") or raw_request.get("user_id", _identity_defaults.get("user_id_default", ""))),
         "transport": str(getattr(envelope, "transport", "api")),
         "source_channel": str(getattr(envelope, "source_channel", _identity_defaults.get("source_channel", ""))),
+        "app_id": str(raw_request.get("app_id") or app_name or ""),
+        "task_class": str(raw_request.get("task_class") or ""),
+        "execution_scope": str(raw_request.get("execution_scope") or "full"),
+        "section_id": str(raw_request.get("section_id") or ""),
+        "runtime_customization_package_present": isinstance(
+            raw_request.get("runtime_customization_package"), dict
+        ),
+        "runtime_customization_package_digest": str(
+            (raw_request.get("runtime_customization_package") or {}).get("package_digest")
+            if isinstance(raw_request.get("runtime_customization_package"), dict)
+            else ""
+        ),
         "target_company": raw_request.get("target_company", ""),
         "target_role": raw_request.get("target_role", ""),
         "intake_status": "VALIDATED",
@@ -1283,10 +1287,10 @@ def run_integrated_single_action_spine(
     # ── L7_AUDITABILITY evidence plane ──
     # Mandatory cross-cutting evidence plane. Pure projection over chain
     # artifacts emitted so far; non-mutating; non-routing.
-    from agentic_core.L7_auditability.how_trace import build_how_trace as _build_how_trace
     from agentic_core.L7_auditability.coverage import (
         build_l7_route_family_coverage as _build_rfc,
     )
+    from agentic_core.L7_auditability.how_trace import build_how_trace as _build_how_trace
     from agentic_core.runtime.artifacts.spine_proof_bundle import (
         build_spine_proof_payload as _build_spine_proof,
     )
@@ -1530,4 +1534,5 @@ def run_integrated_single_action_spine(
         artifact_dir=artifact_dir,
         fault=l2_fault,
         observability_status=observability_status,
+        l2_result=l2_result,
     )

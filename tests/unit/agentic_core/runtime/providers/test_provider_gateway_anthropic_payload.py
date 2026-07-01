@@ -35,7 +35,7 @@ from agentic_core.runtime.providers.provider_types import (
 # --------------------------------------------------------------------------- helpers
 
 
-def _make_message(*, text="generated text", model="claude-sonnet-4-6", usage=None, content=None):
+def _make_message(*, text="generated text", model="claude-sonnet-5", usage=None, content=None):
     """Build a fake Anthropic Message (duck-typed: .content / .model / .usage)."""
     return SimpleNamespace(
         content=content if content is not None else [SimpleNamespace(type="text", text=text)],
@@ -66,7 +66,7 @@ def _anthropic_profile(**overrides) -> ProviderProfile:
     base = {
         "profile_id": "anthropic_test",
         "provider_kind": ProviderKind.EXTERNAL_API,
-        "model_id": "claude-sonnet-4-6",
+        "model_id": "claude-sonnet-5",
         "api_key_env_var": "ANTHROPIC_API_KEY",
         "vendor": "anthropic",
         "max_tokens": 1024,
@@ -105,7 +105,7 @@ def test_anthropic_prompt_text_backcompat(anthropic_env):
     ck = recorder["create_kwargs"]
     assert ck["messages"] == [{"role": "user", "content": "hello"}]
     # gateway owns model/max_tokens/temperature
-    assert ck["model"] == "claude-sonnet-4-6"
+    assert ck["model"] == "claude-sonnet-5"
     assert ck["max_tokens"] == 1024
     assert "temperature" in ck
     # no beta header sent by default

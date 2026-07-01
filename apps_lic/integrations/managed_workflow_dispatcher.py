@@ -6,9 +6,8 @@ import hashlib
 import json
 import os
 import time
-import uuid
 from dataclasses import asdict, dataclass, field
-from enum import Enum
+import uuid
 from typing import Any
 
 from apps_lic.engines.archetype_tone_selector import ArchetypeToneSelector
@@ -26,29 +25,16 @@ from apps_lic.integrations.preloaded_outreach_context_manifest import (
     build_manifest,
     validate_briefing_ready,
 )
-
-APPS_RESEARCH_DEPRECATED = "APPS_RESEARCH_DEPRECATED"
-
-RESEARCH_FAILURE_REASON_CODES = frozenset(
-    {
-        "APPS_RESEARCH_FAILED",
-        "APPS_RESEARCH_EMPTY",
-        "APPS_RESEARCH_BLOCKED",
-        "APPS_RESEARCH_STALE",
-        "APPS_RESEARCH_WEAK_SUPPORT",
-    }
+from apps_lic.integrations.research_reason_codes import (
+    APPS_RESEARCH_BLOCKED,
+    APPS_RESEARCH_DEPRECATED,
+    APPS_RESEARCH_EMPTY,
+    APPS_RESEARCH_FAILED,
+    APPS_RESEARCH_STALE,
+    APPS_RESEARCH_WEAK_SUPPORT,
+    RESEARCH_FAILURE_REASON_CODES,
+    ResearchFailureReason,
 )
-
-
-class ResearchFailureReason(str, Enum):
-    """Terminal reason emitted by the managed research dispatcher."""
-
-    APPS_RESEARCH_DEPRECATED = APPS_RESEARCH_DEPRECATED
-    APPS_RESEARCH_FAILED = "APPS_RESEARCH_FAILED"
-    APPS_RESEARCH_EMPTY = "APPS_RESEARCH_EMPTY"
-    APPS_RESEARCH_BLOCKED = "APPS_RESEARCH_BLOCKED"
-    APPS_RESEARCH_STALE = "APPS_RESEARCH_STALE"
-    APPS_RESEARCH_WEAK_SUPPORT = "APPS_RESEARCH_WEAK_SUPPORT"
 
 
 @dataclass(frozen=True)
@@ -309,7 +295,7 @@ def dispatch_managed_briefing(
     if not request.research_authorized:
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_BLOCKED",
+            reason_code=APPS_RESEARCH_BLOCKED,
             detail="research_authorized=False; managed research is disabled for this request.",
             start_ms=start_ms,
         )
@@ -331,7 +317,7 @@ def dispatch_managed_briefing(
     except Exception as exc:  # noqa: BLE001
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_FAILED",
+            reason_code=APPS_RESEARCH_FAILED,
             detail=f"{type(exc).__name__}: {exc}",
             start_ms=start_ms,
         )
@@ -339,7 +325,7 @@ def dispatch_managed_briefing(
     if _coerce_bool(getattr(research_result, "is_blocked", False)):
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_BLOCKED",
+            reason_code=APPS_RESEARCH_BLOCKED,
             detail=_coerce_str(getattr(research_result, "block_reason", None), default="research_result_blocked"),
             start_ms=start_ms,
         )
@@ -348,7 +334,7 @@ def dispatch_managed_briefing(
     if not evidence_items:
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_EMPTY",
+            reason_code=APPS_RESEARCH_EMPTY,
             detail="research_result.evidence_items is empty",
             start_ms=start_ms,
         )
@@ -359,7 +345,7 @@ def dispatch_managed_briefing(
     if not quality_bypass and _coerce_bool(getattr(research_result, "is_stale", False)):
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_STALE",
+            reason_code=APPS_RESEARCH_STALE,
             detail="research_result.is_stale=True",
             start_ms=start_ms,
         )
@@ -367,7 +353,7 @@ def dispatch_managed_briefing(
     if not quality_bypass and confidence_score < float(request.min_confidence_threshold):
         return _build_failure(
             request,
-            reason_code="APPS_RESEARCH_WEAK_SUPPORT",
+            reason_code=APPS_RESEARCH_WEAK_SUPPORT,
             detail=(
                 f"confidence_score={confidence_score:.2f} "
                 f"< threshold={float(request.min_confidence_threshold):.2f}"
@@ -384,7 +370,7 @@ def dispatch_managed_briefing(
     if not manifest_check.is_valid:
         return _build_failure(
             request,
-            reason_code=manifest_check.r5_reason_code or "APPS_RESEARCH_BLOCKED",
+            reason_code=manifest_check.r5_reason_code or APPS_RESEARCH_BLOCKED,
             detail=manifest_check.detail,
             start_ms=start_ms,
         )
@@ -396,7 +382,7 @@ def dispatch_managed_briefing(
     if quality_decision.quality_level == "fail" and not quality_bypass:
         return _build_failure(
             request,
-            reason_code=quality_decision.r5_reason_code or "APPS_RESEARCH_WEAK_SUPPORT",
+            reason_code=quality_decision.r5_reason_code or APPS_RESEARCH_WEAK_SUPPORT,
             detail="; ".join(quality_decision.fail_reasons) or "quality gate failed",
             start_ms=start_ms,
         )

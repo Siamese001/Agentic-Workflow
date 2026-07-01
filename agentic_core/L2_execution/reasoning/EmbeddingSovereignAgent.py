@@ -18,7 +18,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
 from agentic_core.utils.runners.providers import get_clock
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
+from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
+    BGE_M3_MODEL_ID,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -296,7 +299,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         return {
             "gemini": self.config.EMBEDDING_DIM_GEMINI,
             "openai": self.config.EMBEDDING_DIM_OPENAI,
-            "bge-m3": 1024,
+            "bge-m3": BGE_M3_EMBEDDING_DIMENSION,
         }
 
     def _audit(self, provider: str, success: bool, cached: bool, latency_ms: float) -> None:

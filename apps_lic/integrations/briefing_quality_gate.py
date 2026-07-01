@@ -35,6 +35,11 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional
 
+from apps_lic.integrations.research_reason_codes import (
+    APPS_RESEARCH_STALE,
+    APPS_RESEARCH_WEAK_SUPPORT,
+)
+
 _CONFIG_PATH = Path(__file__).parent.parent / "config" / "briefing_quality_policy.yaml"
 
 
@@ -226,7 +231,7 @@ class BriefingQualityGate:
         else:
             coverage_ok = False
             hard_fail = True
-            r5_code = "APPS_RESEARCH_WEAK_SUPPORT"
+            r5_code = APPS_RESEARCH_WEAK_SUPPORT
             fail_reasons.append(
                 f"coverage_fail: {evidence_count} items < marginal_min={min_marginal}"
             )
@@ -238,7 +243,7 @@ class BriefingQualityGate:
         elif age_days > fail_days:
             recency_ok = False
             hard_fail = True
-            r5_code = r5_code or "APPS_RESEARCH_STALE"
+            r5_code = r5_code or APPS_RESEARCH_STALE
             fail_reasons.append(
                 f"recency_fail: age_days={age_days:.1f} > fail_threshold={fail_days} "
                 f"(recipient_class={recipient_class})"

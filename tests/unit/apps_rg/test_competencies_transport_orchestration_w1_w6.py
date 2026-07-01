@@ -111,6 +111,7 @@ def test_w2_stream_transport_records_timing_and_progress(monkeypatch):
 
     prov = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
         environ={"ANTHROPIC_API_KEY": "k"},
     )
     sink: dict = {}
@@ -135,6 +136,7 @@ def test_w2_generate_success_returns_real_llm_and_surfaces_timing():
 
     prov = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
         environ={"ANTHROPIC_API_KEY": "k"},
         transport=fake_transport,
     )
@@ -154,6 +156,7 @@ def test_w2_generate_timeout_surfaces_last_progress():
 
     prov = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
         environ={"ANTHROPIC_API_KEY": "k"},
         transport=stalling_transport,
     )
