@@ -263,6 +263,39 @@ def _recover_snapshot_from_run_stamp(
     return recovered, ([] if error is None else [error])
 
 
+def _find_recent_sqlite_run_stamp(*, since_wall_start: float) -> str | None:
+    """Recover a run id from a same-wrapper SQLite when manifests are missing."""
+    candidates = sorted(
+        ARTIFACTS_ADG.glob("adg_indexed_*.sqlite"),
+        key=lambda p: p.stat().st_mtime,
+    )
+    for candidate in reversed(candidates):
+        if candidate.stat().st_mtime + 2 < since_wall_start:
+            continue
+        stamp = _stamp_from_artifact_name(
+            candidate,
+            prefix="adg_indexed_",
+            suffix=".sqlite",
+        )
+        if stamp:
+            return stamp
+    return None
+
+
+def _run_retention_sweep(adg_run_id: str | None) -> None:
+    """Best-effort ADG artifact cleanup shared by scheduled wrapper runs."""
+    if not adg_run_id:
+        print("[audit] retention skipped: no ADG run id available")
+        return
+    try:
+        from tools.generate.archiving import _archive_old_artifacts  # noqa: PLC0415
+
+        _archive_old_artifacts(ARTIFACTS_ADG, adg_run_id, keep_runs=1)
+        print(f"[audit] retention sweep complete: current_ts={adg_run_id}")
+    except (ImportError, OSError, RuntimeError, ValueError) as exc:
+        print(f"[audit] retention sweep failed: {exc}", file=sys.stderr)
+
+
 def _find_gate_results_for_snapshot(
     snapshot_path: Path,
     *,
@@ -1270,6 +1303,10 @@ def run_audit(
         gen_manifest_path,
         Path(snapshot) if snapshot else None,
     )
+    retention_run_id = adg_run_id or adg_run_id_for_outputs or _find_recent_sqlite_run_stamp(
+        since_wall_start=wall_start,
+    )
+    _run_retention_sweep(retention_run_id)
     completed_at_utc = _utcnow_iso()
 
     result = WrapperResult(
