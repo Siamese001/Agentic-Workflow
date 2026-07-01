@@ -603,22 +603,26 @@ def _prompt_object(prompt_text: str, *, run_id: str, prompt_hash: str) -> Simple
     )
 
 
-def _provider_gateway() -> ProviderGateway:
-    claude_model = external_claude_generation_model()
-    claude_url = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_BASE_URL", "")
-    openai_model = external_openai_generation_model()
-    openai_url = os.environ.get("APPS_RG_EXTERNAL_OPENAI_BASE_URL", "")
+def _provider_gateway(section_id: str, provider: str) -> ProviderGateway:
+    provider_key = str(provider or "").strip().lower()
+    if provider_key == ProviderProfile.EXTERNAL_OPENAI.value:
+        openai_model = external_openai_generation_model(section_id=section_id)
+        return ProviderGateway(
+            {
+                ProviderProfile.EXTERNAL_OPENAI: ExternalProvider(
+                    provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+                    model=openai_model,
+                    base_url=os.environ.get("APPS_RG_EXTERNAL_OPENAI_BASE_URL", ""),
+                ),
+            }
+        )
+    claude_model = external_claude_generation_model(section_id=section_id)
     return ProviderGateway(
         {
             ProviderProfile.EXTERNAL_CLAUDE: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
                 model=claude_model,
-                base_url=claude_url,
-            ),
-            ProviderProfile.EXTERNAL_OPENAI: ExternalProvider(
-                provider_profile=ProviderProfile.EXTERNAL_OPENAI,
-                model=openai_model,
-                base_url=openai_url,
+                base_url=os.environ.get("APPS_RG_EXTERNAL_CLAUDE_BASE_URL", ""),
             ),
         }
     )
@@ -811,52 +815,58 @@ def _judge_rows(
     cfg: RoleEpisodeLaneConfig,
     provider_result: ProviderResult,
     x2_gates: list[dict[str, Any]],
+    l2: dict[str, Any],
+    allowed_fact_ids: list[str],
     mock_judges: bool,
     artifact_dir: Path | None = None,
     generation_meta: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    if mock_judges:
-        return [
-            {
-                "provider_key": "anthropic_claude",
-                "provider_status": "MOCKED",
-                "evaluator_mode": "MOCKED",
-                "pass": True,
-                "section_id": cfg.section_id,
-            }
-        ]
-    if cfg.is_bullet_lane and artifact_dir is not None and is_employment_pool_generation(generation_meta):
-        return employment_pool_x1d_judge_rows(
-            artifact_dir=artifact_dir,
-            section_id=cfg.section_id,
-            gen_meta=generation_meta,
-        )
+    from apps_rg.runtime.judges.role_episode_x1d import run_role_episode_judges
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    required_judge_keys = list(get_section_judge_policy(cfg.section_id).required_judge_providers)
     if provider_result.runtime_generation_status != "REAL_LLM":
         return [
             {
-                "provider_key": "anthropic_claude",
+                "provider_key": provider_key,
                 "provider_status": "BLOCKED_PROVIDER_UNAVAILABLE",
                 "evaluator_mode": "BLOCKED_PROVIDER_UNAVAILABLE",
                 "provider_blocked": True,
                 "exact_provider_error": provider_result.exact_provider_error,
                 "pass": False,
+                "proof_eligible_judge": False,
+                "advisory_only": False,
                 "section_id": cfg.section_id,
             }
+            for provider_key in required_judge_keys
         ]
-    deterministic_pass = all(g.get("pass") for g in x2_gates)
-    return [
-        {
-            "provider_key": "anthropic_claude",
-            "provider_status": "MODEL_BACKED_PASS" if deterministic_pass else "MODEL_BACKED_FAIL",
-            "evaluator_mode": "MODEL_BACKED",
-            "pass": deterministic_pass,
-            "normalized_score": 1.0 if deterministic_pass else 0.0,
-            "normalized_threshold": 0.72,
-            "decisive_failure": not deterministic_pass,
-            "section_id": cfg.section_id,
-            "selection_basis": "same_provider_generation_packet_plus_deterministic_x2",
-        }
+    mode = "mocked" if mock_judges else "blocked_if_unavailable"
+    proof_rows = [
+        judge.to_dict()
+        for judge in run_role_episode_judges(
+            section_id=cfg.section_id,
+            candidate_output=l2,
+            claim_ledger=list(l2.get("claim_ledger") or []),
+            judge_keys=required_judge_keys,
+            mode=mode,
+            artifact_base=artifact_dir,
+            targeting_context={
+                "jd_alignment": l2.get("jd_alignment"),
+                "targeting_only": True,
+            },
+            deterministic_gate_summary={"x2_gates": x2_gates},
+            allowed_fact_packet={"allowed_fact_ids": allowed_fact_ids},
+        )
     ]
+    if cfg.is_bullet_lane and artifact_dir is not None and is_employment_pool_generation(generation_meta):
+        proof_rows.extend(
+            employment_pool_x1d_judge_rows(
+                artifact_dir=artifact_dir,
+                section_id=cfg.section_id,
+                gen_meta=generation_meta,
+            )
+        )
+    return proof_rows
 
 
 def _write_blocked_artifacts(
@@ -895,9 +905,9 @@ def _write_blocked_artifacts(
         "required_remediation": [reason],
     }
     generation_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id=cfg.section_id)
         if str(args.provider) == "external_openai"
-        else external_claude_generation_model()
+        else external_claude_generation_model(section_id=cfg.section_id)
     )
     provider_req = {
         "provider_requested": str(args.provider),
@@ -1072,9 +1082,9 @@ def run_role_episode_lane_execution(
     )
 
     generation_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id=sid)
         if str(args.provider) == "external_openai"
-        else external_claude_generation_model()
+        else external_claude_generation_model(section_id=sid)
     )
     messages = [
         {"role": "system", "content": compiled_obj.system_preamble},
@@ -1133,7 +1143,7 @@ def run_role_episode_lane_execution(
         )
     else:
         try:
-            provider_result = _provider_gateway().generate(
+            provider_result = _provider_gateway(sid, str(args.provider)).generate(
                 str(args.provider),
                 compiled_obj,
                 token_budget=MAX_OUTPUT_TOKENS,
@@ -1259,6 +1269,8 @@ def run_role_episode_lane_execution(
         cfg=cfg,
         provider_result=provider_result,
         x2_gates=x2,
+        l2=l2,
+        allowed_fact_ids=allowed_fact_ids,
         mock_judges=bool(getattr(args, "mock_judges", False)),
         artifact_dir=artifact_dir,
         generation_meta=generation_meta,

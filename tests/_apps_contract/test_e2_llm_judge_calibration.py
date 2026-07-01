@@ -172,7 +172,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
     judge_override = os.getenv("JUDGE_PROVIDER", "").strip().lower()
 
     if judge_override == "anthropic" and anthropic_key:
-        return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
+        return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-5')})"
     if judge_override == "openai" and openai_key:
         return True, f"openai ({os.getenv('OPENAI_MODEL', OPENAI_DEFAULT_MODEL_ID)})"
     if judge_override in ("gemini", "google") and google_key:
@@ -182,7 +182,7 @@ def _check_llm_provider_available() -> tuple[bool, str]:
 
     if not judge_override:
         if anthropic_key:
-            return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
+            return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-5')})"
         if openai_key:
             return True, f"openai ({os.getenv('OPENAI_MODEL', OPENAI_DEFAULT_MODEL_ID)})"
         if google_key:

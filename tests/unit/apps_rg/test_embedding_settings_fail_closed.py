@@ -8,8 +8,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION, BGE_M3_MODEL_ID
 from apps_rg.runtime.embedding_settings import (
     AppsRgEmbeddingFailClosedError,
+    BGE_M3_DIMENSION,
+    BGE_M3_MODEL_ID as APPS_RG_BGE_M3_MODEL_ID,
     apply_apps_rg_embedding_env_guards,
     bootstrap_apps_rg_embedding_env,
     load_bge_sentence_transformer,
@@ -49,6 +52,11 @@ def test_bootstrap_defaults_chroma_and_embedding_without_manual_env(
     assert applied["EMBEDDING_ENABLED"] == "true"
     assert os.environ["CHROMA_PERSIST_DIR"] == str((repo / "data" / "cache" / "chromadb").resolve())
     assert os.environ.get("EMBEDDING_ENABLED") == "true"
+
+
+def test_embedding_settings_alias_model_catalog() -> None:
+    assert APPS_RG_BGE_M3_MODEL_ID == BGE_M3_MODEL_ID
+    assert BGE_M3_DIMENSION == BGE_M3_EMBEDDING_DIMENSION
 
 
 def test_bootstrap_enables_bge_when_hf_snapshot_present(

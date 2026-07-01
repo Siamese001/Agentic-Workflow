@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
     BGE_M3_MODEL_ID,
 )
 
@@ -180,7 +181,7 @@ _emit_gated_by_confidence("p1", "cache_entry_types", "confidence_gate")
 Logger: Any = logging.getLogger(__name__)
 SIMILARITY_THRESHOLD = 0.92
 EMBEDDING_MODEL = BGE_M3_MODEL_ID
-EMBEDDING_DIM = 1024
+EMBEDDING_DIM = BGE_M3_EMBEDDING_DIMENSION
 
 
 @dataclass

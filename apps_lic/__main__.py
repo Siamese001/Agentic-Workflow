@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any
 
 import apps_lic.cert  # noqa: F401 — FEC producer side-effect registration
+from apps_lic.integrations.research_reason_codes import APPS_RESEARCH_DEPRECATED
 
 _DEFAULT_BRIEF_PATH = "apps_lic/scripts/_interactive_brief.json"
 
@@ -238,7 +239,7 @@ def main() -> int:
 
     if args.auto_research:
         _emit_r5_terminal_via_exit(
-            reason_code="APPS_RESEARCH_DEPRECATED",
+            reason_code=APPS_RESEARCH_DEPRECATED,
             detail="--auto-research is deprecated and disabled for apps_lic.",
             exit_code=2,
         )

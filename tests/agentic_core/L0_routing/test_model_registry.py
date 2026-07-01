@@ -65,14 +65,14 @@ class TestModelRegistry:
 
     def test_anthropic_model_id(self):
         """Test Anthropic model ID for consensus."""
-        assert model_registry.ANTHROPIC_MODEL_ID == "claude-sonnet-4-6"
+        assert model_registry.ANTHROPIC_MODEL_ID == "claude-sonnet-5"
 
     def test_consensus_jurors_default(self):
         """Test default consensus jurors (3 jurors, refreshed 2026-05-01)."""
         jurors = model_registry.CONSENSUS_JURORS
         assert len(jurors) == 3
         assert OPENAI_DEFAULT_MODEL_ID in jurors
-        assert "claude-sonnet-4-6" in jurors
+        assert "claude-sonnet-5" in jurors
         assert "gemini-3.1-pro-preview" in jurors
 
     def test_consensus_jurors_with_qwen(self):
@@ -87,7 +87,7 @@ class TestModelRegistry:
 
     def test_consensus_jurors_env_override(self):
         """Test consensus jurors can be overridden by env var."""
-        custom_jurors = f"{OPENAI_DEFAULT_MODEL_ID},claude-sonnet-4-6,gemini-3.1-pro-preview,o3"
+        custom_jurors = f"{OPENAI_DEFAULT_MODEL_ID},claude-sonnet-5,gemini-3.1-pro-preview,o3"
         with patch.dict("os.environ", {"CONSENSUS_JURORS": custom_jurors}):
             import importlib
 

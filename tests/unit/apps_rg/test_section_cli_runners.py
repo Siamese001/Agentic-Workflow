@@ -80,3 +80,55 @@ def test_competencies_spine_uses_generated_raw_request_brief(tmp_path: Path, mon
     assert captured["briefing"].strip() == "Generated company brief for Acme."
     assert result["outcome_authorized"] is True
     assert result["competencies_cli_output_text"] == "COMPETENCIES_STUB"
+
+
+def test_competencies_whole_run_fails_closed_without_run_specific_brief(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("APPS_RG_WHOLE_RUN_ENVELOPE", "1")
+    monkeypatch.setenv("APPS_RG_CORRELATED_CLI_RUN", str(tmp_path / "run"))
+
+    def fake_build_raw_request_for_r4(**kwargs):
+        return {
+            "jd_payload": {"description": "Run the platform team."},
+            "manual_brief": "",
+        }
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("lane execution must not run without a fresh briefing")
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_cli_runners.build_raw_request_for_r4",
+        fake_build_raw_request_for_r4,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.competencies_lane.BRIEFING_DEFAULT",
+        "STATIC DEFAULT BRIEF",
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.competencies_lane.run_competencies_lane_execution",
+        fail_if_called,
+    )
+
+    result = run_section_competencies_spine(
+        target_company="Acme",
+        target_role="SVP IT Strategy",
+        target_level="",
+        jd="",
+        job_description_ref="",
+        job_description_text="",
+        manual_brief="",
+        resume_path=str(tmp_path / "resume.json"),
+        source_resume_text="",
+        generation_mode="strategic_tailor",
+        artifact_dir=str(tmp_path / "out"),
+        lane_provider="external_openai",
+        lane_temperature=0.38,
+        lane_x1d_judges="gemini_pro",
+        lane_mock_judges=False,
+        lane_allow_test_mock_judges=False,
+    )
+
+    assert result["outcome_authorized"] is False
+    assert result["fault"] == "missing_run_specific_briefing"

@@ -117,6 +117,10 @@
 - **apps_rg L7 provider attempt spans (2026-06-28):** provider RCA timing now has a normalized
   `provider_attempt_spans` surface on provider responses, fallback receipts, and section L7 binding
   manifests. Detail: `memory/codex/apps_rg_l7_provider_attempt_spans.md`.
+- **apps_rg single-spine section scope invariant (2026-07-01):** apps_rg section execution must attach
+  app-owned U0 runtime package fields and enter `agentic_core`'s integrated single-action spine; the
+  app-owned section lane is selected only as a scoped L2 recipe body, while L7 remains core-owned.
+  Detail: `memory/codex/apps_rg_single_spine_section_scope_invariant.md`.
 - **apps_rg OTel trace reconciliation consumer (2026-06-28):** OTel is consumed post-run through
   `trace_reconciliation.json`; apps_eval grades it as optional observability evidence and L6 turns gaps
   into future-run-only recommendations. Detail:

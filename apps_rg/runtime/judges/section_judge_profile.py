@@ -130,6 +130,23 @@ def resolve_section_proof_judge_model(
             block_reason=f"Unknown judge provider key: {provider_key}",
             proof_eligible_judge=False,
         )
+    if provider_key not in policy.required_judge_providers:
+        return SectionJudgeModelResolution(
+            provider_key=provider_key,
+            section_id=sid,
+            judge_tier=tier.value,
+            model_requested="",
+            model_actual="",
+            model_source="not_section_proof_provider",
+            model_tier="advisory_or_blocked",
+            blocked=True,
+            block_reason=(
+                f"Provider {provider_key} is not a proof judge for section={sid}; "
+                "selector/advisory providers cannot satisfy X1D proof."
+            ),
+            advisory_only=True,
+            proof_eligible_judge=False,
+        )
 
     yaml_tier = _yaml_judge_models().get(_tier_yaml_label(tier)) or {}
     yaml_model = yaml_tier.get(provider_key) if isinstance(yaml_tier, dict) else None

@@ -5,7 +5,7 @@ Plan: prompt-cache-anthropic-best-practice-c7a1e9 (W2).
 Covers DoD-3 (no `cache_control` marker emitted below its model's token floor),
 the silent-non-caching-on-Opus fix, and backward compatibility of the legacy
 ``model=None`` default. Authoritative Anthropic minimums (claude-api ref):
-Opus 4.x / Haiku 4.5 = 4096 tokens; Fable 5 / Sonnet 4.6 = 2048; Sonnet 4.5 = 1024.
+Opus 4.x / Haiku 4.5 = 4096 tokens; Fable 5 / Sonnet 5 = 2048; Sonnet 4.5 = 1024.
 """
 
 from __future__ import annotations
@@ -22,10 +22,10 @@ from agentic_core.knowledge.retrieval.anthropic_cache_control import (
     min_cacheable_chars,
 )
 
-# _CHARS_PER_TOKEN is 4, so: opus/haiku-4.5 = 16384 chars, sonnet-4.6/fable = 8192,
+# _CHARS_PER_TOKEN is 4, so: opus/haiku-4.5 = 16384 chars, sonnet-5/fable = 8192,
 # sonnet-4.5 = 4096, default(None/unknown) = 3500.
-_OPUS = "claude-opus-4-8"
-_SONNET = "claude-sonnet-4-6"
+_OPUS = "claude-opus-4-5"
+_SONNET = "claude-sonnet-5"
 _HAIKU45 = "claude-haiku-4-5"
 _FABLE = "claude-fable-5"
 
@@ -38,10 +38,10 @@ _FABLE = "claude-fable-5"
 @pytest.mark.parametrize(
     "model, expected",
     [
-        ("claude-opus-4-8", 4096),
+        ("claude-opus-4-5", 4096),
         ("claude-opus-4-5", 4096),
         ("claude-haiku-4-5", 4096),
-        ("claude-sonnet-4-6", 2048),
+        ("claude-sonnet-5", 2048),
         ("claude-fable-5", 2048),
         ("claude-haiku-3-5", 2048),  # generic haiku (not 4.5) → 2048
         ("claude-sonnet-4-5", 1024),
@@ -66,10 +66,10 @@ def test_haiku_4_5_resolves_before_generic_haiku():
 
 
 def test_model_floor_table_is_ordered_most_specific_first():
-    # The specific 4.5/4.6 entries must precede their generic family entries.
+    # The specific model aliases must precede their generic family entries.
     keys = [k for k, _ in MODEL_CACHE_FLOOR_TOKENS]
     assert keys.index("claude-haiku-4-5") < keys.index("claude-haiku")
-    assert keys.index("claude-sonnet-4-6") < keys.index("claude-sonnet")
+    assert keys.index("claude-sonnet-5") < keys.index("claude-sonnet")
 
 
 # --------------------------------------------------------------------------- #
@@ -107,7 +107,7 @@ def test_opus_keeps_marker_above_floor():
 
 
 def test_floor_is_model_specific_same_block_differs_by_model():
-    # A 9000-char block: above Sonnet 4.6's 8192 floor, below Opus's 16384.
+    # A 9000-char block: above Sonnet 5's 8192 floor, below Opus's 16384.
     text = "x" * 9000
     assert "cache_control" in build_system_blocks(text, model=_SONNET)[0]
     assert "cache_control" not in build_system_blocks(text, model=_OPUS)[0]
@@ -145,7 +145,7 @@ def test_messages_payload_threads_model_to_floor():
     system = "x" * 9000  # above sonnet floor, below opus floor
     # Opus: system block below its floor → 0 markers.
     assert count_cache_markers(build_messages_payload("hi", system_prompt=system, model=_OPUS)) == 0
-    # Sonnet 4.6: above its 8192 floor → 1 marker.
+    # Sonnet 5: above its 8192 floor → 1 marker.
     assert count_cache_markers(build_messages_payload("hi", system_prompt=system, model=_SONNET)) == 1
     # Legacy default (no model): above 3500 → 1 marker (unchanged behavior).
     assert count_cache_markers(build_messages_payload("hi", system_prompt=system)) == 1

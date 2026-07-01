@@ -88,7 +88,7 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["competencies"]["judge_required_for_proof"] is True
     assert matrix["competencies"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["competencies"]["generator_model_class"] == "EXTERNAL_CLAUDE"
-    assert matrix["competencies"]["required_judge_providers"] == ["openai_chatgpt"]
+    assert matrix["competencies"]["required_judge_providers"] == ["gemini_pro", "openai_chatgpt"]
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value
     assert matrix["final_aggregate_resume"]["judge_runtime_profile"] == matrix["executive_summary"]["judge_runtime_profile"]
 
@@ -184,16 +184,18 @@ def test_forbidden_models_fail_proof_resolution() -> None:
 
 def test_anthropic_judge_tier_yaml_ssot_ignores_env() -> None:
     env = {
-        "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED": "claude-opus-4-6",
-        "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD": "claude-sonnet-4-6",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED": "ignored-anthropic-judge-env",
+        "APPS_RG_ANTHROPIC_JUDGE_MODEL_STANDARD": "claude-sonnet-5",
         "ANTHROPIC_MODEL": "claude-haiku-4-5",
     }
     enhanced = resolve_section_proof_judge_model("executive_summary", "anthropic_claude", env)
-    assert enhanced.model_actual == _yaml_judge_model("enhanced", "anthropic_claude")
-    assert enhanced.model_source == "yaml_judge_models"
+    assert enhanced.model_actual == ""
+    assert enhanced.model_source == "not_section_proof_provider"
+    assert enhanced.blocked is True
     standard = resolve_section_proof_judge_model("headline", "anthropic_claude", env)
-    assert standard.model_actual == _yaml_judge_model("standard", "anthropic_claude")
-    assert standard.model_source == "yaml_judge_models"
+    assert standard.model_actual == ""
+    assert standard.model_source == "not_section_proof_provider"
+    assert standard.blocked is True
 
 
 def test_openai_judge_tier_yaml_ssot_ignores_env() -> None:
@@ -277,8 +279,11 @@ def test_competencies_x3_blocks_without_required_judges() -> None:
 def test_competencies_policy_requires_llm_judge_for_proof() -> None:
     p = get_section_judge_policy("competencies")
     assert p.judge_required_for_proof is True
-    assert p.required_judge_providers == ("openai_chatgpt",)
+    assert p.required_judge_providers == ("gemini_pro", "openai_chatgpt")
     assert "anthropic_claude" not in p.required_judge_providers
+    gemini = resolve_section_proof_judge_model("competencies", "gemini_pro", {})
+    assert gemini.model_actual == "gemini-3.1-pro-preview"
+    assert gemini.proof_eligible_judge is True
     openai = resolve_section_proof_judge_model("competencies", "openai_chatgpt", {})
     assert openai.model_actual == "gpt-5.5"
     assert openai.proof_eligible_judge is True

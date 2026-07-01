@@ -8,6 +8,7 @@ only when embeddings are disabled (tests / CI without weights).
 from __future__ import annotations
 
 from agentic_core.config.model_catalog import (
+    BGE_M3_EMBEDDING_DIMENSION,
     BGE_M3_MODEL_ID,
 )
 
@@ -15,13 +16,11 @@ import logging
 import threading
 from typing import Any, Sequence
 
-from agentic_core.config.model_catalog import BGE_M3_MODEL_ID
-
 from apps_rg.cache.r1b_constants import R1B_STORAGE_SUBSYSTEM
 
 _logger = logging.getLogger(__name__)
 
-_BGE_DIM = 1024
+_BGE_DIM = BGE_M3_EMBEDDING_DIMENSION
 _model_lock = threading.Lock()
 _bge_model: Any = None
 

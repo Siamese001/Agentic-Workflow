@@ -920,9 +920,9 @@ def run_unify_narrative_execution(
     )
 
     section_model = (
-        external_openai_generation_model()
+        external_openai_generation_model(section_id=LANE_KEY)
         if str(args.provider) == "external_openai"
-        else external_claude_generation_model()
+        else external_claude_generation_model(section_id=LANE_KEY)
     )
     provider_req, provider_payload = build_section_request(
         messages=messages,

@@ -16,6 +16,8 @@ import math
 import re
 from typing import Any
 
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
+
 from .base import EvaluationMetric
 
 try:
@@ -37,7 +39,7 @@ def _trace_id(operation: str, payload: str) -> str:
     return hashlib.sha256(f"{operation}|{payload}".encode("utf-8")).hexdigest()[:16]
 
 
-_DEFAULT_EMBED_DIM = 1024
+_DEFAULT_EMBED_DIM = BGE_M3_EMBEDDING_DIMENSION
 _FAITHFULNESS_THRESHOLD = 0.75
 
 

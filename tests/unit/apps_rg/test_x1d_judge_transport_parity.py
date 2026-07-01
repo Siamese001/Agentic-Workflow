@@ -329,12 +329,12 @@ def test_section_retry_profile_is_proportional() -> None:
 @pytest.mark.parametrize(
     "section_id,expected_providers",
     [
-        # Claude Sonnet 4.6 base recalibration: summaries/headline -> dual cross-provider
-        # panel; competencies/bullets/narratives -> single proof judge. No anthropic_claude
+        # Claude Sonnet 5 base recalibration: summaries/headline/competencies -> dual cross-provider
+        # panel; bullets/narratives -> single proof judge. No anthropic_claude
         # self-judge (Claude is the generator, so it cannot also be a proof judge).
         ("executive_summary", ("gemini_pro", "openai_chatgpt")),
         ("headline", ("gemini_pro", "openai_chatgpt")),
-        ("competencies", ("openai_chatgpt",)),
+        ("competencies", ("gemini_pro", "openai_chatgpt")),
         ("unify_bullets", ("gemini_pro",)),
         ("ibm_bullets", ("gemini_pro",)),
         ("unify_narrative", ("gemini_pro",)),
@@ -456,3 +456,18 @@ def test_gemini_retry_attempt_token_budget_matches_openai() -> None:
 
 def test_unified_token_budget_ssot_path_documented() -> None:
     assert UNIFIED_MAX_OUTPUT_TOKENS_SSOT_PATH == "runtime_limits.judge.x1d_max_output_tokens"
+
+
+def test_rollup_and_operator_tools_do_not_restore_anthropic_proof_slot() -> None:
+    forbidden_panel = ",".join(("gemini_pro", "openai_chatgpt", "anthropic_claude"))
+    forbidden_rollup_column = "anthropic" + "_provider_status"
+    checked = (
+        _REPO / "apps_rg/runtime/internal/generated_lane_rollup.py",
+        _REPO / "apps_rg/l2_recipe/modular_resume_generation.py",
+        _REPO / "tools/apps_rg/audit_blocked_lanes.py",
+        _REPO / "tools/apps_rg/emit_regenerated_lane_matrix.py",
+    )
+    for path in checked:
+        text = path.read_text(encoding="utf-8")
+        assert forbidden_panel not in text
+        assert forbidden_rollup_column not in text

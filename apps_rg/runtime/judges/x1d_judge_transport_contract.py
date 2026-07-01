@@ -388,7 +388,7 @@ def audit_score_normalization_provider_neutral() -> list[TransportViolation]:
 def audit_policy_sections_proof_judge_roster() -> list[TransportViolation]:
     """Proof sections must use a non-empty CROSS-PROVIDER roster that excludes the generator family.
 
-    Recalibrated 2026-06-08: Claude Sonnet 4.6 is the generator for every lane, so ``anthropic_claude``
+    Recalibrated 2026-07-01: Claude Sonnet 5 is the generator for Claude-primary lanes, so ``anthropic_claude``
     must NOT appear in any judge roster (a self-judge shares the generator's blind spots). Each roster
     must be a non-empty subset of the available proof providers (``PROOF_JUDGE_PROVIDER_KEYS``). Panel
     SIZE is per-section policy (the 3-provider panel was PROVIDER_MODEL-era and is no longer required).

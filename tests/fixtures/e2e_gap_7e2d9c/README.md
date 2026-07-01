@@ -6,7 +6,7 @@ Plan: [apps-rg-e2e-gap-remediation-7e2d9c](../../../plans/apps-rg-e2e-gap-remedi
 
 A **frozen snapshot** of the failing end-to-end signature for two targets — **AIG**
 (VP, Global Head of Agentic AI Solutions) and **Brown & Brown** (SVP IT Strategy &
-Innovation) — captured on 2026-06-08 from a live `external_claude` / `claude-sonnet-4-6`
+Innovation) — captured on 2026-06-08 from a live `external_claude` / `claude-sonnet-5`
 run in the `apps_rg_e2e` worktree.
 
 Both targets produced **no resume**: all 11 lanes blocked upstream of company-specific

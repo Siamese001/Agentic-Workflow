@@ -55,26 +55,25 @@ def test_resolver_sources_enhanced_gemini_from_yaml_when_env_absent():
     assert not res.blocked
 
 
-def test_resolver_sources_standard_anthropic_from_yaml_when_env_absent():
+def test_resolver_blocks_standard_anthropic_as_proof_when_env_absent():
     from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 
     res = resolve_section_proof_judge_model("unify_narrative", "anthropic_claude", environ={})
-    assert res.model_actual == _judge_models()["standard"]["anthropic_claude"]
-    assert res.model_source == "yaml_judge_models"
-    assert not res.blocked
+    assert res.model_actual == ""
+    assert res.model_source == "not_section_proof_provider"
+    assert res.blocked
+    assert res.advisory_only is True
 
 
-def test_w4_enhanced_anthropic_judge_migrated_to_sonnet():
-    # W4: APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED removed from .env; the SSOT pins the enhanced
-    # anthropic judge to claude-sonnet-4-6 (the actual prior runtime value). With env absent, the
-    # resolver sources sonnet from the YAML judge_models SSOT (not the opus code aspiration).
+def test_w4_enhanced_anthropic_judge_metadata_is_sonnet5_but_not_proof():
     from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 
-    assert _judge_models()["enhanced"]["anthropic_claude"] == "claude-sonnet-4-6"
+    assert _judge_models()["enhanced"]["anthropic_claude"] == "claude-sonnet-5"
     res = resolve_section_proof_judge_model("executive_summary", "anthropic_claude", environ={})
-    assert res.model_actual == "claude-sonnet-4-6"
-    assert res.model_source == "yaml_judge_models"
-    assert not res.blocked
+    assert res.model_actual == ""
+    assert res.model_source == "not_section_proof_provider"
+    assert res.blocked
+    assert res.proof_eligible_judge is False
 
 
 def test_missing_judge_model_ssot_entry_fails_closed(monkeypatch):

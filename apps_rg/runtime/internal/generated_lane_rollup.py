@@ -239,7 +239,7 @@ def _output_summary(l2: Mapping[str, Any], lane: str) -> dict[str, Any]:
 
 
 def _judge_triple(judges: list[dict[str, Any]]) -> dict[str, str]:
-    out = {"gemini_pro": "MISSING", "openai_chatgpt": "MISSING", "anthropic_claude": "MISSING"}
+    out = {provider_key: "MISSING" for provider_key in REQUIRED_JUDGE_PROVIDER_KEYS}
     for j in judges:
         pk = j.get("provider_key")
         if pk in out:
@@ -354,9 +354,8 @@ def collect_lane(
         "x2_failed": x2n["x2_failed"],
         "x2_failed_gate_ids": list(x2n["failed_gate_ids"]),
         "x2_artifact_failed_gates": list(x2n["artifact_failed_gates"]),
-        "gemini_provider_status": triple["gemini_pro"],
-        "openai_provider_status": triple["openai_chatgpt"],
-        "anthropic_provider_status": triple["anthropic_claude"],
+        "gemini_provider_status": triple.get("gemini_pro", "NOT_REQUIRED"),
+        "openai_provider_status": triple.get("openai_chatgpt", "NOT_REQUIRED"),
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
         "x3_code": rollup_x3_code,
@@ -456,9 +455,8 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
         "x2_failed": x2n["x2_failed"],
         "x2_failed_gate_ids": list(x2n["failed_gate_ids"]),
         "x2_artifact_failed_gates": list(x2n["artifact_failed_gates"]),
-        "gemini_provider_status": triple["gemini_pro"],
-        "openai_provider_status": triple["openai_chatgpt"],
-        "anthropic_provider_status": triple["anthropic_claude"],
+        "gemini_provider_status": triple.get("gemini_pro", "NOT_REQUIRED"),
+        "openai_provider_status": triple.get("openai_chatgpt", "NOT_REQUIRED"),
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
         "x3_code": rollup_x3_code,
@@ -636,9 +634,9 @@ def render_markdown(data: dict[str, Any]) -> str:
     lines.append("")
     header = (
         "| lane | section_id | runtime_gen | x3_code | x2 pass/fail/total | "
-        "Gemini | OpenAI | Anthropic | proceed | L6 offline | blocked | soft_fail |"
+        "Gemini | OpenAI | proceed | L6 offline | blocked | soft_fail |"
     )
-    sep = "|---|---|:---:|---|---:|---|---|---|:---:|---|---|---|"
+    sep = "|---|---|:---:|---|---:|---|---|:---:|---|---|---|"
     lines.append(header)
     lines.append(sep)
     for lane in GENERATED_LANES:
@@ -652,7 +650,6 @@ def render_markdown(data: dict[str, Any]) -> str:
             x2s,
             row["gemini_provider_status"],
             row["openai_provider_status"],
-            row["anthropic_provider_status"],
             str(row["proceed_to_runtime"]),
             str(row["l6_offline_only"]),
             ",".join(row["blocked_judges"]) or "—",

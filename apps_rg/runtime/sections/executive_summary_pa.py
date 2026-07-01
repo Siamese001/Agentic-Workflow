@@ -450,7 +450,8 @@ def build_executive_summary_assembly_input(
         f"{leadership_voice}"
         f"{strategy_voice}"
         "Return bare JSON per R0 (executive_strategy_thesis, resume_display_text, claim_ledger, jd_alignment, "
-        "gap_notes, change_log, self_check). Do not emit selected_fact_plan."
+        "gap_notes, change_log, self_check). Return RAW JSON ONLY: first character `{`, last character `}`. "
+        "No markdown fences, no prose before or after JSON. Do not emit selected_fact_plan."
     )
     product_patch = (
         "\nGRAPH PRODUCT HARD RULES: JD_TEXT/BRIEFING are targeting-only framing; NEVER list them "

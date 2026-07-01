@@ -12,6 +12,7 @@ import apps_rg.runtime.providers.section_provider_call as section_provider_call_
 from apps_rg.runtime.section_model_limits import (
     DEFAULT_EXTERNAL_CLAUDE_MODEL,
     DEFAULT_EXTERNAL_OPENAI_MODEL,
+    SectionModelSSOTError,
     external_claude_generation_model,
     external_openai_generation_model,
     resolve_section_generation_model,
@@ -44,44 +45,51 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     assert data["wave10a_policy"]["default_provider"] == "external_claude"
     assert data["wave10a_policy"]["external_default_status"] == "claude_default_for_apps_rg_e2e"
     profiles = data["profiles"]
-    assert profiles["external_openai_generator"]["default_model"] == DEFAULT_EXTERNAL_OPENAI_MODEL
+    assert "default_model" not in profiles["external_openai_generator"]
     assert profiles["external_openai_generator"]["model_by_section"] == {
-        "competencies": "gpt-5.4-mini-2026-03-17",
+        "unify_narrative": "gpt-5.4-mini-2026-03-17",
+        "ibm_narrative": "gpt-5.4-mini-2026-03-17",
+        "insurtech_narrative": "gpt-5.4-mini-2026-03-17",
+        "ey_narrative": "gpt-5.4-mini-2026-03-17",
     }
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
-    assert profiles["external_claude_generator"]["default_model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
+    assert "default_model" not in profiles["external_claude_generator"]
     assert profiles["external_claude_generator"]["model_by_section"] == {
-        "competencies": "claude-sonnet-4-6",
-        "headline": "claude-opus-4-8",
-        "executive_summary": "claude-opus-4-8",
+        "competencies": "claude-sonnet-5",
+        "unify_bullets": "claude-sonnet-5",
+        "ibm_bullets": "claude-sonnet-5",
+        "insurtech_bullets": "claude-sonnet-5",
+        "ey_bullets": "claude-sonnet-5",
+        "headline": "claude-sonnet-5",
+        "executive_summary": "claude-sonnet-5",
     }
     assert "local_retired_provider_generator" not in profiles
 
 
-def test_external_claude_default_model_is_sonnet() -> None:
-    # Default tier is sonnet for Claude-backed bullets. Headline and executive_summary override to
-    # Opus in provider_profiles.yaml; the OpenAI-backed lanes use the pinned
-    # gpt-5.4-mini-2026-03-17 tier unless they have an explicit OpenAI section override.
-    assert external_claude_generation_model({}) == DEFAULT_EXTERNAL_CLAUDE_MODEL
+def test_external_claude_competencies_pin_is_sonnet() -> None:
+    assert external_claude_generation_model(section_id="competencies") == DEFAULT_EXTERNAL_CLAUDE_MODEL
+    assert DEFAULT_EXTERNAL_CLAUDE_MODEL == "claude-sonnet-5"
     assert "haiku" not in DEFAULT_EXTERNAL_CLAUDE_MODEL
 
 
-def test_external_openai_default_model_is_gpt_5_4_mini() -> None:
-    assert external_openai_generation_model({}) == DEFAULT_EXTERNAL_OPENAI_MODEL
+def test_external_openai_narrative_pin_is_gpt_5_4_mini() -> None:
+    assert external_openai_generation_model(section_id="unify_narrative") == DEFAULT_EXTERNAL_OPENAI_MODEL
     assert DEFAULT_EXTERNAL_OPENAI_MODEL == "gpt-5.4-mini-2026-03-17"
 
 
 def test_competencies_primary_and_backup_models() -> None:
-    assert resolve_section_generation_model("competencies") == "claude-sonnet-4-6"
-    assert external_openai_generation_model(section_id="competencies") == "gpt-5.4-mini-2026-03-17"
+    assert resolve_section_generation_model("competencies") == "claude-sonnet-5"
+    with pytest.raises(SectionModelSSOTError):
+        external_openai_generation_model(section_id="competencies")
 
 
-def test_section_request_uses_external_claude_default_model() -> None:
+def test_section_request_uses_external_claude_section_pin() -> None:
     request, payload = build_section_request(
         messages=[{"role": "user", "content": "Return competencies JSON."}],
         prompt_hash="prompt-hash",
         input_payload_hash="input-hash",
+        model=resolve_section_generation_model("competencies"),
     )
 
     assert request.provider_requested == "external_claude"
@@ -145,7 +153,11 @@ def test_provider_gateway_blocks_unregistered_profile() -> None:
 
 def test_external_provider_fail_closed_without_credentials(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    provider = ExternalProvider(provider_profile=ProviderProfile.EXTERNAL_OPENAI, environ={})
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model=DEFAULT_EXTERNAL_OPENAI_MODEL,
+        environ={},
+    )
     result = provider.generate(_prompt(), token_budget=100)
     assert result.runtime_generation_status == "BLOCKED"
     assert result.provider_attempted is False
@@ -167,6 +179,7 @@ def test_external_provider_bootstraps_process_env_before_credential_gate(monkeyp
     )
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model=DEFAULT_EXTERNAL_OPENAI_MODEL,
         transport=lambda _request: {"text": "bootstrapped output"},
     )
 
@@ -286,6 +299,7 @@ def test_section_provider_call_threads_payload_timeout_to_gateway(monkeypatch) -
             "temperature": 0.33,
             "timeout_seconds": 7,
         },
+        section_id="competencies",
     )
 
     assert result.runtime_generation_status == "REAL_LLM"
@@ -307,6 +321,7 @@ def test_external_provider_wall_clock_timeout_fails_closed(monkeypatch) -> None:
 
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model=DEFAULT_EXTERNAL_OPENAI_MODEL,
         transport=_slow_transport,
     )
 
@@ -325,6 +340,7 @@ def test_external_default_routes_to_registered_external_provider(monkeypatch) ->
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     provider = ExternalProvider(
         provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        model=DEFAULT_EXTERNAL_OPENAI_MODEL,
         transport=lambda _request: {"text": "default external"},
     )
     gateway = ProviderGateway({ProviderProfile.EXTERNAL_OPENAI: provider})

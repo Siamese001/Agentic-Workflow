@@ -1155,24 +1155,33 @@ def run_unify_bullets_execution(
         apply_proof_pool_to_usage_ledger(usage_doc, pool),
     )
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    judge_keys = list(get_section_judge_policy(LANE_KEY).required_judge_providers)
+    proof_x1d = [
+        j.to_dict()
+        for j in run_unify_bullets_judges(
+            bullets=bullets,
+            claim_ledger=claim_ledger,
+            judge_keys=judge_keys,
+            mode=judge_mode,
+            artifact_base=artifact_dir,
+            targeting_context={
+                "target_title": str(runtime_payload.get("target_title") or ""),
+                "target_company": str(runtime_payload.get("target_company") or ""),
+                "jd_text": str(runtime_payload.get("jd_text") or ""),
+                "briefing": str(runtime_payload.get("briefing") or ""),
+            },
+        )
+    ]
     if is_employment_pool_generation(gen_meta):
-        x1d = employment_pool_x1d_judge_rows(
+        x1d = proof_x1d + employment_pool_x1d_judge_rows(
             artifact_dir=artifact_dir,
             section_id=LANE_KEY,
             gen_meta=gen_meta,
         )
     else:
-        judge_keys = ["anthropic_claude"]
-        x1d = [
-            j.to_dict()
-            for j in run_unify_bullets_judges(
-                bullets=bullets,
-                claim_ledger=claim_ledger,
-                judge_keys=judge_keys,
-                mode=judge_mode,
-                artifact_base=artifact_dir,
-            )
-        ]
+        x1d = proof_x1d
     trace = attach_reasoning_to_prompt_trace(
         {
             "runtime_path": "apps_rg.runtime.sections.unify_bullets_lane",
