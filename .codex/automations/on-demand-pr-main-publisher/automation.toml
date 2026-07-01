@@ -69,7 +69,7 @@ Run before PR, branch, cherry-pick, merge, or cleanup work:
 
 Rules:
 - If current_worktree_conflicted, fetch_failed, origin_main_missing, github_main_unavailable, origin_main_differs_from_github_main, or pr_flow_contract_violation appears as a blocker, do not publish from that surface. Enter remediation only if the blocker is repo-local and safely recoverable; otherwise stop with RCA.
-- If current_worktree_dirty appears as a blocker, do not publish directly from that dirty surface. Enter dirty-worktree recovery mode instead of stopping immediately.
+- If current_worktree_dirty appears as a warning or recovery_required signal, do not publish directly from that dirty surface. Enter dirty-worktree recovery mode instead of stopping immediately. During strict final closeout, current_worktree_dirty is a blocker until the recovery/cleanup loop clears it.
 - Dirty-worktree recovery must perform a preservation mutation before any RCA stop: create a timestamped non-main recovery branch commit, create a named stash with file-list proof, or clean only proven generated/disposable files with proof.
 - If the audit recommends clean_detached_origin_main_worktree, create or reuse a clean worktree under C:\Git\Agentic-Workflow-FRESH-worktrees from current origin/main and continue there after preserving any dirty protected worktree.
 - Dirty protected worktrees are preservation warnings during intake only. They must be cleaned, committed, safely fast-forwarded, removed, stashed with explicit proof, or reported as a blocker before final success.

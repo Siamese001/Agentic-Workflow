@@ -193,8 +193,13 @@ def build_publication_audit(
     warnings: list[str] = []
     if not status["ok"]:
         blockers.append("git_status_failed")
+    recovery_required: list[str] = []
     if status["dirty"]:
-        blockers.append("current_worktree_dirty")
+        recovery_required.append("current_worktree_dirty")
+        if require_single_main_worktree:
+            blockers.append("current_worktree_dirty")
+        else:
+            warnings.append("current_worktree_dirty")
     if status["conflicted"]:
         blockers.append("current_worktree_conflicted")
     if protected_issues:
@@ -233,6 +238,7 @@ def build_publication_audit(
         "status": "FAIL" if blockers else ("WARN" if warnings else "PASS"),
         "blockers": blockers,
         "warnings": warnings,
+        "recovery_required": recovery_required,
         "fetch": fetch_result,
         "refs": {
             "base_ref": base_ref,
