@@ -302,6 +302,54 @@ def test_publication_prompt_requires_strict_single_main_contract(tmp_path: Path)
     assert any(issue.code == "publication_prompt_missing" for issue in issues)
 
 
+def test_publication_prompt_requires_dirty_preservation_not_publication(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = (
+        "Dirty preservation is not publication; incoherent, local_or_config_scope, and "
+        "unsafe_or_unknown_scope files must be stashed or retained, not merged to main."
+    )
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
+def test_publication_prompt_requires_review_thread_gate(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = "Before merge, block on unresolved GitHub review threads with P1 or P2 findings for the PR head."
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
+def test_publication_prompt_requires_branch_reuse_guard(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = (
+        "Do not reuse a head branch that already had a merged or closed PR unless this run is explicitly "
+        "an ancestry-recording PR."
+    )
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
 def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
@@ -309,6 +357,23 @@ def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Pat
         _automation_toml(
             "on-demand-pr-main-publisher",
             _publication_prompt() + "\ndirty protected worktrees reported and preserved",
+            root,
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_obsolete" for issue in issues)
+
+
+def test_publication_prompt_rejects_obsolete_whole_dirty_merge_wording(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    automation.write_text(
+        _automation_toml(
+            "on-demand-pr-main-publisher",
+            _publication_prompt() + "\ncommit all non-disposable dirty files there",
             root,
         ),
         encoding="utf-8",

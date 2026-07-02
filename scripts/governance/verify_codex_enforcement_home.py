@@ -67,9 +67,13 @@ PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "Read-only commands may enrich the current evidence packet, but they must not trigger a full re-audit by themselves",
     "If git branch --no-merged origin/main is empty, record that empty output and skip deep prior-branch inspection",
     "Run local validation once per committed tree",
+    "Dirty preservation is not publication; incoherent, local_or_config_scope, and unsafe_or_unknown_scope files must be stashed or retained, not merged to main.",
+    "Do not reuse a head branch that already had a merged or closed PR unless this run is explicitly an ancestry-recording PR.",
+    "Do not publish generated ADG reports or ratchet baselines unless the source generator changed and regeneration proof is included.",
     "Treat strict single-main closeout as a post-merge gate",
     "Capture the PR headRefOid and watch only checks/runs for that exact SHA",
     "Prefer gh pr checks <number> --watch --fail-fast",
+    "Before merge, block on unresolved GitHub review threads with P1 or P2 findings for the PR head.",
     "Run codex_main_closeout.py --apply --fetch --json once after PR merge",
     "HEAD == origin/main",
     "git status --short --branch shows only ## main...origin/main",
@@ -89,6 +93,8 @@ PUBLICATION_FORBIDDEN_PROMPT_SNIPPETS = (
     "dirty protected worktrees reported and preserved",
     "retained dirty worktrees",
     "preserved dirty worktrees",
+    "commit all non-disposable dirty files there",
+    "push it, publish it through a GitHub PR, merge it into main after green checks",
 )
 PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT = {
     "schema": "publisher-runtime-optimization/v1",
