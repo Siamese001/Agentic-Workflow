@@ -132,6 +132,101 @@ def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytes
     assert route_decision["briefing_input_present"] is True
 
 
+def test_whole_run_custom_artifact_dir_emits_output_gates(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("APPS_RG_MOCK_RESEARCH", "1")
+    monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
+
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    class _FakeResult:
+        run_id = "draft-run-custom"
+        request_id = "req-custom"
+        x3_disposition = "X3A"
+        fault = "L2_EXECUTION_ERROR:PoolSelectorUnavailableError:test"
+        terminal_r5 = False
+
+    from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
+
+    def _fake_spine(**kwargs: object) -> _FakeResult:
+        art = Path(kwargs["artifact_dir"])
+        lane = art / "modular_r4" / "sections" / "competencies"
+        lane.mkdir(parents=True, exist_ok=True)
+        (art / "r4_run_manifest.json").write_text(
+            json.dumps({"chain_kind": "R4_SINGLE_ACTION", "route_family": "R4_SINGLE_ACTION"}),
+            encoding="utf-8",
+        )
+        (lane / "integrated_lane_pre_run_failure.json").write_text(
+            json.dumps({"blocker": "EXECUTED_X3A"}),
+            encoding="utf-8",
+        )
+        return _FakeResult()
+
+    status_calls: list[Path] = []
+    mandatory_calls: list[Path] = []
+    review_calls: list[Path] = []
+
+    monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.run_whole_run_cache_preflight",
+        lambda **kwargs: WholeRunCachePreflightOutcome(
+            entrypoint="canonical_dispatch",
+            generation_required=True,
+        ),
+    )
+    monkeypatch.setattr(orch, "emit_integrated_run_bundle_index", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.maybe_ingest_r1b_post_exit",
+        lambda **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.full_run_section_status.emit_full_run_section_status",
+        lambda run_root, **kwargs: status_calls.append(Path(run_root))
+        or {"markdown_path": str(Path(run_root) / "FULL_RUN_SECTION_STATUS.md")},
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.mandatory_run_outputs.emit_mandatory_run_outputs",
+        lambda run_root, **kwargs: mandatory_calls.append(Path(run_root))
+        or {
+            "json_path": Path(run_root) / "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "markdown_path": Path(run_root) / "APPS_RG_MANDATORY_RUN_OUTPUT.md",
+            "bcg_markdown_path": Path(run_root) / "BCG_EXECUTIVE_OUTPUT.md",
+        },
+    )
+    monkeypatch.setattr(
+        orch,
+        "emit_full_resume_review_bundle",
+        lambda run_root: review_calls.append(Path(run_root)) or Path(run_root) / "review_bundle.zip",
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_whole_run_cache_preflight_artifact",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_cache_miss_receipt",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "anthropic_custom_run")
+
+    brief = tmp_path / "brief.txt"
+    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+
+    result = orch.run_whole_run_with_route_governance(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd="Target JD text for testing.",
+        manual_brief=str(brief),
+        generation_mode="strategic_tailor",
+        auto_research_internal=True,
+        artifact_dir=str(tmp_path / "anthropic_custom_run"),
+    )
+
+    art = Path(result["artifact_dir"])
+    assert status_calls == [art]
+    assert mandatory_calls == [art]
+    assert review_calls == [art]
+    assert result["bcg_executive_output_md"].endswith("BCG_EXECUTIVE_OUTPUT.md")
+
+
 def test_whole_run_fails_when_exec_summary_judge_not_certified(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

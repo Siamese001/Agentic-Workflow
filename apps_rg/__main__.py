@@ -68,7 +68,11 @@ from apps_rg.runtime.cli_section_execution_report import (
     emit_cli_section_execution_summary,
 )
 from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
-from apps_rg.runtime.runtime_proof_layout import find_repo_root, is_integrated_whole_run_dir_name
+from apps_rg.runtime.runtime_proof_layout import (
+    find_repo_root,
+    is_integrated_whole_run_artifact_dir,
+    is_integrated_whole_run_dir_name,
+)
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
 from apps_rg.runtime.section_execution_plan import (
     GENERATED_CONTENT_LANES,
@@ -1385,10 +1389,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             if not section_eff and isinstance(result, dict) and result.get("artifact_dir"):
                 from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
                 from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
-                from apps_rg.runtime.runtime_proof_layout import is_integrated_whole_run_dir_name
-
                 ad = Path(str(result["artifact_dir"]))
-                if is_integrated_whole_run_dir_name(ad.name) or result.get("full_run_section_status_md"):
+                if is_integrated_whole_run_artifact_dir(ad) or result.get("full_run_section_status_md"):
                     emit_full_run_section_status(ad, print_stdout=True)
                     emit_mandatory_run_outputs(ad, result=result, print_stdout=True)
         if section_eff in section_lane_ids:

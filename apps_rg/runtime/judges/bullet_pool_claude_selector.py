@@ -118,6 +118,18 @@ class PoolSelectorUnavailableError(RuntimeError):
     """Raised when the selector cannot produce a real selection."""
 
 
+def _first_path_failure_detail(paths: list[SelfConsistencyPath]) -> str:
+    for path in paths:
+        result = getattr(path, "provider_result", None)
+        provider_error = str(getattr(result, "exact_provider_error", "") or "").strip()
+        if provider_error:
+            return provider_error
+        parse_error = str(getattr(path, "parse_error", "") or "").strip()
+        if parse_error:
+            return parse_error
+    return ""
+
+
 def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
 
@@ -781,6 +793,9 @@ def _call_anthropic_pool_selector(
     import urllib.request
     from datetime import datetime, timezone
 
+    from apps_rg.runtime.providers.external_provider import (
+        apply_anthropic_temperature_capability,
+    )
     from apps_rg.runtime.judges.executive_summary_x1d import (
         _judge_live_https_allowed_under_pytest,
         _make_blocked_output,
@@ -798,6 +813,7 @@ def _call_anthropic_pool_selector(
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
+    apply_anthropic_temperature_capability(payload)
     started_wall = datetime.now(timezone.utc).isoformat()
     req_path = _artifact_path("anthropic_claude", "provider_request", artifact_base=artifact_dir)
     _write_artifact(
@@ -1490,8 +1506,10 @@ def run_claude_bullet_pool_selection(
     valid_paths = [p for p in paths if p.parsed is not None]
     if not valid_paths:
         if competencies_selector:
+            detail = _first_path_failure_detail(paths)
+            suffix = f"; first failure: {detail[:300]}" if detail else ""
             raise PoolSelectorUnavailableError(
-                "competencies selector unavailable: no parsed candidate paths"
+                f"competencies selector unavailable: no parsed candidate paths{suffix}"
             )
         return _fallback_first_complete_path(
             paths,

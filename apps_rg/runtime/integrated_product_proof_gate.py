@@ -209,6 +209,14 @@ def _invalid_binding_classification_claims(blobs: list[dict[str, Any]]) -> list[
 
 
 def _detect_section_mode(run_dir: Path, blobs: list[dict[str, Any]]) -> bool:
+    whole_run_markers = (
+        run_dir / "r4_run_manifest.json",
+        run_dir / "spine_run_manifest.json",
+        run_dir / "integrated_runtime_artifact_manifest.json",
+    )
+    whole_run_layout = (run_dir / "lanes").is_dir() or (run_dir / "modular_r4" / "sections").is_dir()
+    if whole_run_layout and any(marker.is_file() for marker in whole_run_markers):
+        return False
     if (run_dir / "section_l7_binding_manifest.json").is_file():
         return True
     for blob in blobs:

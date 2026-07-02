@@ -1165,6 +1165,9 @@ def _call_anthropic(
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
+    from apps_rg.runtime.providers.external_provider import apply_anthropic_temperature_capability
+
+    apply_anthropic_temperature_capability(payload)
 
     # Write request artifact
     req_path = _artifact_path(provider_key, "provider_request", artifact_base=artifact_base)
@@ -1176,7 +1179,7 @@ def _call_anthropic(
         "provider_name": "anthropic",
         "model_env_source": model_source,
         "max_tokens": max_tokens,
-        "temperature": 0.1,
+        "temperature": payload.get("temperature"),
         "response_format": "system_json_instruction",
         "judge_attempt": attempt,
         "judge_max_attempts": section_max_attempts,
