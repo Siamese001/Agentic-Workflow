@@ -167,6 +167,83 @@ def test_external_provider_json_errors_fail_closed() -> None:
     assert "JSONDecodeError" in str(result.exact_provider_error)
 
 
+def test_anthropic_messages_transport_omits_temperature_for_sonnet5(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _StreamResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return iter(
+                [
+                    b'data: {"type":"message_start","message":{"model":"claude-sonnet-5"}}\n',
+                    b'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"{}"}}\n',
+                    b'data: {"type":"message_stop"}\n',
+                ]
+            )
+
+    def _urlopen(req, timeout):
+        captured["timeout"] = timeout
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        return _StreamResponse()
+
+    monkeypatch.setattr(subject.urllib.request, "urlopen", _urlopen)
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    response = provider._anthropic_messages_transport(
+        {"prompt": "Return JSON", "max_tokens": 20, "temperature": 0.4}
+    )
+
+    assert response["text"] == "{}"
+    assert captured["body"]["model"] == "claude-sonnet-5"
+    assert "temperature" not in captured["body"]
+
+
+def test_anthropic_messages_transport_keeps_temperature_for_sonnet4(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _StreamResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return iter(
+                [
+                    b'data: {"type":"message_start","message":{"model":"claude-sonnet-4-6"}}\n',
+                    b'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"{}"}}\n',
+                    b'data: {"type":"message_stop"}\n',
+                ]
+            )
+
+    def _urlopen(req, timeout):
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        return _StreamResponse()
+
+    monkeypatch.setattr(subject.urllib.request, "urlopen", _urlopen)
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-4-6",
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    provider._anthropic_messages_transport(
+        {"prompt": "Return JSON", "max_tokens": 20, "temperature": 0.4}
+    )
+
+    assert captured["body"]["temperature"] == 0.4
+
+
 def test_external_provider_requires_explicit_model() -> None:
     with pytest.raises(Exception, match="requires an explicit model"):
         ExternalProvider(provider_profile=ProviderProfile.EXTERNAL_OPENAI, environ={})

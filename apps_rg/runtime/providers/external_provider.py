@@ -39,6 +39,31 @@ DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS = 90.0
 DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS = 300.0
 
 
+ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES: frozenset[str] = frozenset(
+    {
+        "claude-sonnet-5",
+    }
+)
+
+
+def anthropic_model_omits_temperature(model: Any) -> bool:
+    """Return True for Anthropic models whose Messages API rejects temperature."""
+    model_id = str(model or "").strip().lower()
+    if not model_id:
+        return False
+    return any(
+        model_id == prefix or model_id.startswith(f"{prefix}-")
+        for prefix in ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES
+    )
+
+
+def apply_anthropic_temperature_capability(body: dict[str, Any]) -> dict[str, Any]:
+    """Remove temperature from Anthropic payloads for models that reject it."""
+    if anthropic_model_omits_temperature(body.get("model")):
+        body.pop("temperature", None)
+    return body
+
+
 def external_provider_timeout_max_s() -> float:
     """Shared ceiling (seconds) for external section provider wall-clock budgets.
 
@@ -168,6 +193,7 @@ class ExternalProvider:
             "messages": [{"role": "user", "content": prompt}],
             "stream": True,
         }
+        apply_anthropic_temperature_capability(body)
         url = str(request.get("base_url") or self.base_url or DEFAULT_ANTHROPIC_MESSAGES_URL)
         headers = {
             "Content-Type": "application/json",
@@ -581,8 +607,11 @@ class ExternalProvider:
 
 
 __all__ = [
+    "ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES",
     "ExternalProvider",
     "ExternalTransport",
+    "anthropic_model_omits_temperature",
+    "apply_anthropic_temperature_capability",
     "external_provider_timeout_max_s",
     "resolve_external_section_timeout_s",
 ]

@@ -168,6 +168,36 @@ def test_full_run_section_status_loads_lane_judges(tmp_path: Path) -> None:
     assert headline.judge_details[0]["model_name"] == "gemini-test"
 
 
+def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_custom_run"
+    lane = run / "modular_r4" / "sections" / "competencies"
+    lane.mkdir(parents=True, exist_ok=True)
+    _write_json(
+        lane / "integrated_lane_pre_run_failure.json",
+        {
+            "blocker": "EXECUTED_X3A",
+            "lane_exec_status": (
+                "L2_EXECUTION_ERROR:PoolSelectorUnavailableError:"
+                "competencies selector unavailable: no parsed candidate paths; "
+                "first failure: External provider HTTP 400: `temperature` is deprecated for this model."
+            ),
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    payload = emitted["payload"]
+    comp = next(row for row in payload["sections"] if row["section"] == "competencies")
+    assert comp["status_bucket"] == "pre_run_blocked"
+    assert "temperature" in comp["failure_classification"]
+    assert payload["section_counts"]["total"] >= 1
+    assert payload["rca_findings"]
+
+
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
     run = tmp_path / "full_resume_review01"
     run.mkdir()

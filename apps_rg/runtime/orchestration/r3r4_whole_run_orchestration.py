@@ -31,7 +31,7 @@ from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import (
     allocate_full_resume_artifact_dir,
     find_repo_root,
-    is_integrated_whole_run_dir_name,
+    is_integrated_whole_run_artifact_dir,
 )
 
 ROUTE_FAMILY_R3R4 = "R3R4_MANAGED_WORKFLOW"
@@ -596,7 +596,7 @@ def run_whole_run_with_route_governance(
     maybe_ingest_r1b_post_exit(raw_request=raw_request, artifact_dir=art, runs_dir=art.parent)
 
     section_status_md: str | None = None
-    if is_integrated_whole_run_dir_name(art.name):
+    if is_integrated_whole_run_artifact_dir(art):
         try:
             from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
 
@@ -686,7 +686,7 @@ def run_whole_run_with_route_governance(
         payload["delegated_briefing"] = str(art / sr.FILENAME_DELEGATED_BRIEFING)
         payload["research_bridge_response"] = str(art / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE)
     mandatory_outputs: dict[str, Any] = {}
-    if is_integrated_whole_run_dir_name(art.name):
+    if is_integrated_whole_run_artifact_dir(art):
         try:
             from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
 
@@ -705,7 +705,7 @@ def run_whole_run_with_route_governance(
         except OSError:
             mandatory_outputs = {}
     review_zip = None
-    if is_integrated_whole_run_dir_name(art.name):
+    if is_integrated_whole_run_artifact_dir(art):
         try:
             review_zip = emit_full_resume_review_bundle(art)
         except OSError:

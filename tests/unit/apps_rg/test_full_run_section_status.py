@@ -134,6 +134,50 @@ def test_collect_rows_include_display_txt_links(tmp_path: Path):
     assert "x2_competencies_keyword_repetition_limit" in md
 
 
+def test_collect_rows_support_modular_r4_sections_layout(tmp_path: Path):
+    run_root = tmp_path / "anthropic_custom_run"
+    comp_base = run_root / "modular_r4" / "sections" / "competencies"
+    comp_run = comp_base / "real" / "competencies_20260702_120000"
+    comp_run.mkdir(parents=True, exist_ok=True)
+    (comp_run / "competencies_display.txt").write_text(
+        "Applied AI Partnerships: partner architecture\n",
+        encoding="utf-8",
+    )
+    (comp_run / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW", "product_quality_status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    (comp_run / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_smoke", "pass": True}]}) + "\n",
+        encoding="utf-8",
+    )
+    (comp_run / "run_manifest.json").write_text(
+        json.dumps({"runtime_generation_status": "REAL_LLM"}) + "\n",
+        encoding="utf-8",
+    )
+    (comp_base / "latest_real_run.json").write_text(
+        json.dumps({"run_dir": comp_run.relative_to(tmp_path).as_posix()}) + "\n",
+        encoding="utf-8",
+    )
+
+    headline_base = run_root / "modular_r4" / "sections" / "headline"
+    headline_base.mkdir(parents=True, exist_ok=True)
+    (headline_base / "integrated_lane_pre_run_failure.json").write_text(
+        json.dumps({"blocker": "PHASE1_NO_RUN_DIR"}) + "\n",
+        encoding="utf-8",
+    )
+
+    rows = collect_full_run_section_status(run_root, repo_root=tmp_path)
+    by_lane = {r.lane: r for r in rows}
+
+    assert by_lane["competencies"].display_txt_rel.endswith(
+        "modular_r4/sections/competencies/real/competencies_20260702_120000/competencies_display.txt"
+    )
+    assert by_lane["competencies"].x3_code == "X3_ALLOW"
+    assert by_lane["competencies"].runtime_generation_status == "REAL_LLM"
+    assert by_lane["headline"].x3_code == "PRE_RUN:PHASE1_NO_RUN_DIR"
+
+
 def test_collect_rows_append_final_aggregation_lane_with_judges(tmp_path: Path):
     run_root = tmp_path / "full_resume_test123"
     _write_lane(run_root, "headline", txt_name="headline_output.txt", txt_body="SVP | AI | Cloud")

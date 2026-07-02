@@ -301,6 +301,36 @@ def test_openai_competencies_selector_fails_closed_without_credentials(
         )
 
 
+def test_competencies_no_parsed_paths_preserves_first_provider_error() -> None:
+    paths = [
+        SelfConsistencyPath(
+            path_index=0,
+            temperature=0.38,
+            runtime_generation_status="BLOCKED",
+            raw_output="",
+            parsed=None,
+            parse_error=(
+                "External provider HTTP 400: "
+                "`temperature` is deprecated for this model."
+            ),
+            provider_result=None,
+        )
+    ]
+
+    with pytest.raises(PoolSelectorUnavailableError, match="temperature.*deprecated"):
+        run_claude_bullet_pool_selection(
+            section_id="competencies",
+            slot_kind="competencies",
+            paths=paths,
+            targeting_context={
+                "allowed_fact_ids": ["bul_001"],
+                "allowed_skill_ids": [],
+                "resume_support_blob_lower": "bul_001 alpha beta",
+            },
+            mode="blocked_if_unavailable",
+        )
+
+
 def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.MonkeyPatch) -> None:
     paths = [_path_with_categories(i, n_categories=COMPETENCIES_FINAL_CATEGORY_COUNT) for i in range(4)]
 
