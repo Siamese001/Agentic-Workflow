@@ -91,4 +91,67 @@ def test_write_user_profile_projection_is_validator_compliant(monkeypatch, tmp_p
     written = projection.write_user_profile_projections(root=root, user_codex_home=user_codex_home)
 
     assert len(written) == 1
+    data, error = enforcement_home._load_toml(Path(written[0]))
+    assert error is None
+    assert data is not None
+    assert data["schema"] == enforcement_home.AUTOMATION_PROJECTION_SCHEMA
+    assert data["projection_kind"] == "repo_contract_pointer"
+    assert data["automation_id"] == "weekly-adg-audit-and-burndown"
+    assert "contract_path" in data
+    assert "contract_sha256" in data
+    assert "prompt" not in data
+    assert "model" not in data
+    assert "reasoning_effort" not in data
+    assert enforcement_home.validate(root, user_codex_home) == []
+
+
+def test_projection_payloads_are_pointer_only(monkeypatch, tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    user_codex_home = tmp_path / "user-codex"
+    monkeypatch.setattr(enforcement_home, "AUTOMATION_IDS", ("weekly-adg-audit-and-burndown",))
+    monkeypatch.setattr(enforcement_home, "REPO_SKILL_IDS", ())
+    _write(enforcement_home._automation_path(root, "weekly-adg-audit-and-burndown"), _automation_toml("weekly-adg-audit-and-burndown", root))
+
+    report = projection.build_report(
+        root=root,
+        user_codex_home=user_codex_home,
+        write_user_profile=False,
+        include_payloads=True,
+    )
+
+    payload = report["launcher_pointer_payloads"][0]
+    assert payload["mode"] == "pointer"
+    assert "contractPath" in payload
+    assert "contractSha256" in payload
+    assert "prompt" not in payload
+    assert "model" not in payload
+    assert "cwds" not in payload
+
+
+def test_disable_stale_user_profile_launchers_then_writes_pointer(monkeypatch, tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    user_codex_home = tmp_path / "user-codex"
+    automation_id = "weekly-adg-audit-and-burndown"
+    monkeypatch.setattr(enforcement_home, "AUTOMATION_IDS", (automation_id,))
+    monkeypatch.setattr(enforcement_home, "REPO_SKILL_IDS", ())
+    _write(enforcement_home._automation_path(root, automation_id), _automation_toml(automation_id, root))
+    stale_launcher = user_codex_home / "automations" / automation_id / "automation.toml"
+    _write(stale_launcher, _automation_toml(automation_id, root))
+
+    report = projection.build_report(
+        root=root,
+        user_codex_home=user_codex_home,
+        write_user_profile=True,
+        disable_stale_user_profile_launchers_before_write=True,
+    )
+
+    assert report["status"] == "PASS"
+    assert len(report["disabled_stale_launchers"]) == 1
+    assert Path(report["disabled_stale_launchers"][0]["destination"]).exists()
+    assert stale_launcher.exists()
+    data, error = enforcement_home._load_toml(stale_launcher)
+    assert error is None
+    assert data is not None
+    assert data["projection_kind"] == "repo_contract_pointer"
+    assert "prompt" not in data
     assert enforcement_home.validate(root, user_codex_home) == []

@@ -1,15 +1,17 @@
-r"""Project repo-owned Codex automation contracts into Codex Desktop launchers.
+r"""Project repo-owned Codex automation contracts into Codex Desktop launcher pointers.
 
 The versioned source of truth stays under ``.codex/automations``. This helper
-builds the derived launcher payloads expected under the Codex user profile so
-the desktop UI can display approved schedules without becoming a second policy
-registry.
+builds pointer-only launcher metadata under the Codex user profile so the
+desktop UI can display approved schedules without becoming a second policy
+registry. Copied prompts, model choices, cwd lists, handoff metadata, and other
+contract payloads must stay in the repo-owned TOMLs.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -36,16 +38,18 @@ def _projection_toml(projection: dict[str, Any], existing: dict[str, Any] | None
         created_at = now_ms
     lines = [
         "version = 1",
+        f"schema = {_toml_value(projection['schema'])}",
+        f"projection_kind = {_toml_value(projection['projection_kind'])}",
         f"id = {_toml_value(projection['id'])}",
+        f"automation_id = {_toml_value(projection['automation_id'])}",
         f"kind = {_toml_value(projection['kind'])}",
         f"name = {_toml_value(projection.get('name') or projection['id'])}",
-        f"prompt = {_toml_value(projection['prompt'])}",
         f"status = {_toml_value(projection['status'])}",
         f"rrule = {_toml_value(projection['rrule'])}",
-        f"model = {_toml_value(projection['model'])}",
-        f"reasoning_effort = {_toml_value(projection['reasoning_effort'])}",
-        f"execution_environment = {_toml_value(projection['execution_environment'])}",
-        f"cwds = {_toml_value(projection['cwds'])}",
+        f"enabled = {_toml_value(projection['enabled'])}",
+        f"repo_root = {_toml_value(projection['repo_root'])}",
+        f"contract_path = {_toml_value(projection['contract_path'])}",
+        f"contract_sha256 = {_toml_value(projection['contract_sha256'])}",
         f"created_at = {created_at}",
         f"updated_at = {now_ms}",
         "",
@@ -75,15 +79,59 @@ def write_user_profile_projections(*, root: Path, user_codex_home: Path) -> list
     return written
 
 
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
+def _unique_disabled_destination(disabled_root: Path, automation_dir: Path) -> Path:
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    base_name = f"{automation_dir.name}-{timestamp}"
+    destination = disabled_root / base_name
+    counter = 2
+    while destination.exists():
+        destination = disabled_root / f"{base_name}-{counter}"
+        counter += 1
+    return destination
+
+
+def disable_stale_user_profile_launchers(*, root: Path, user_codex_home: Path) -> list[dict[str, str]]:
+    """Move stale repo-specific profile launchers to a disabled holding directory."""
+    root = root.resolve()
+    user_codex_home = user_codex_home.resolve()
+    automations_root = (user_codex_home / "automations").resolve()
+    disabled_root = user_codex_home / "automations-disabled"
+    moved: list[dict[str, str]] = []
+    for artifact in enforcement_home._user_profile_automation_artifacts(user_codex_home, root):  # noqa: SLF001
+        candidate = artifact.parent if artifact.name == "automation.toml" else artifact
+        automation_dir = candidate.resolve()
+        if automation_dir == automations_root or not _is_relative_to(automation_dir, automations_root):
+            continue
+        if not automation_dir.is_dir():
+            continue
+        destination = _unique_disabled_destination(disabled_root, automation_dir)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(automation_dir), str(destination))
+        moved.append({"source": str(automation_dir), "destination": str(destination)})
+    return moved
+
+
 def build_report(
     *,
     root: Path,
     user_codex_home: Path,
     write_user_profile: bool,
+    disable_stale_user_profile_launchers_before_write: bool = False,
     include_payloads: bool = False,
 ) -> dict[str, Any]:
     root = root.resolve()
     user_codex_home = user_codex_home.resolve()
+    disabled: list[dict[str, str]] = []
+    if disable_stale_user_profile_launchers_before_write:
+        disabled = disable_stale_user_profile_launchers(root=root, user_codex_home=user_codex_home)
     written: list[str] = []
     if write_user_profile:
         written = write_user_profile_projections(root=root, user_codex_home=user_codex_home)
@@ -92,29 +140,30 @@ def build_report(
     expected_ids = [projection["id"] for projection in projections]
     issues = enforcement_home.validate(root, user_codex_home)
     report: dict[str, Any] = {
-        "schema_version": "codex-automation-projection/v1",
+        "schema_version": "codex-automation-pointer-projection/v1",
         "status": "PASS" if not issues else "FAIL",
         "repo_root": str(root),
         "user_codex_home": str(user_codex_home),
         "expected_projection_ids": expected_ids,
         "projection_count": len(expected_ids),
+        "disabled_stale_launchers": disabled,
         "written": written,
         "issues": [issue.__dict__ for issue in issues],
     }
     if include_payloads:
-        report["automation_update_payloads"] = [
+        report["launcher_pointer_payloads"] = [
             {
-                "mode": "update",
+                "mode": "pointer",
+                "schema": projection["schema"],
                 "id": projection["id"],
+                "automationId": projection["automation_id"],
                 "kind": projection["kind"],
                 "name": projection.get("name") or projection["id"],
-                "prompt": projection["prompt"],
                 "status": projection["status"],
                 "rrule": projection["rrule"],
-                "model": projection["model"],
-                "reasoningEffort": projection["reasoning_effort"],
-                "executionEnvironment": projection["execution_environment"],
-                "cwds": projection["cwds"],
+                "repoRoot": projection["repo_root"],
+                "contractPath": projection["contract_path"],
+                "contractSha256": projection["contract_sha256"],
             }
             for projection in projections
         ]
@@ -133,12 +182,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--write-user-profile",
         action="store_true",
-        help="Write derived launcher TOMLs for active repo cron automations",
+        help="Write pointer launcher TOMLs for active repo cron automations",
+    )
+    parser.add_argument(
+        "--disable-stale-user-profile-launchers",
+        action="store_true",
+        help="Move stale full-copy user-profile launchers to automations-disabled before writing",
     )
     parser.add_argument(
         "--include-payloads",
         action="store_true",
-        help="Include full automation_update-compatible payloads in the report",
+        help="Include pointer launcher payloads in the report",
     )
     parser.add_argument("--json", action="store_true", help="Emit JSON output")
     return parser.parse_args(argv)
@@ -150,12 +204,13 @@ def main(argv: list[str] | None = None) -> int:
         root=args.root,
         user_codex_home=args.user_codex_home,
         write_user_profile=args.write_user_profile,
+        disable_stale_user_profile_launchers_before_write=args.disable_stale_user_profile_launchers,
         include_payloads=args.include_payloads,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
-        print(f"{report['status']}: {report['projection_count']} expected Codex Desktop automation projections")
+        print(f"{report['status']}: {report['projection_count']} expected Codex Desktop automation pointer launchers")
         for automation_id in report["expected_projection_ids"]:
             print(f"- {automation_id}")
         for issue in report["issues"]:

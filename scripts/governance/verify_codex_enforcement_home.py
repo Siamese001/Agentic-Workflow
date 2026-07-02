@@ -48,18 +48,29 @@ USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
     "on-demand-pr-main-publisher-2",
 )
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
-AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-projection/v1"
-AUTOMATION_PROJECTION_SOURCE_MARKER = "Repo-owned contract SHA256:"
-AUTOMATION_PROJECTION_PROMPT_SEPARATOR = "--- Repo-owned automation prompt follows ---"
+AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-pointer/v1"
 AUTOMATION_PROJECTION_FIELDS = (
+    "schema",
+    "projection_kind",
     "id",
+    "automation_id",
     "kind",
+    "name",
     "status",
     "rrule",
+    "enabled",
+    "repo_root",
+    "contract_path",
+    "contract_sha256",
+)
+USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS = (
+    "prompt",
     "model",
     "reasoning_effort",
     "execution_environment",
     "cwds",
+    "runtime_optimization",
+    "handoff",
 )
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
@@ -609,28 +620,9 @@ def _automation_contract_digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build_user_profile_projection_prompt(
-    *,
-    root: Path,
-    automation_id: str,
-    prompt: str,
-) -> str:
-    """Return the generated prompt stored in the Codex Desktop launcher."""
-    contract_path = _automation_path(root, automation_id)
-    digest = _automation_contract_digest(contract_path)
-    return (
-        f"Generated Codex Desktop launcher projection.\n"
-        f"Schema: {AUTOMATION_PROJECTION_SCHEMA}\n"
-        f"Repo-owned contract: {contract_path}\n"
-        f"{AUTOMATION_PROJECTION_SOURCE_MARKER} {digest}\n"
-        f"Source of truth: regenerate this launcher from the repo contract; do not edit it by hand.\n"
-        f"\n{AUTOMATION_PROJECTION_PROMPT_SEPARATOR}\n\n"
-        f"{prompt}"
-    )
-
-
 def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, Any] | None:
-    """Build the allowed Codex Desktop launcher projection for an active repo cron contract."""
+    """Build the allowed Codex Desktop launcher pointer for an active repo cron contract."""
+    root = root.resolve()
     data = _load_automation(root, automation_id)
     if data is None:
         return None
@@ -639,10 +631,21 @@ def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, A
     prompt = data.get("prompt")
     if not isinstance(prompt, str) or not prompt.strip():
         return None
-    projection = {field: data.get(field) for field in AUTOMATION_PROJECTION_FIELDS}
-    projection["name"] = data.get("name", automation_id)
-    projection["prompt"] = build_user_profile_projection_prompt(root=root, automation_id=automation_id, prompt=prompt)
-    return projection
+    contract_path = _automation_path(root, automation_id).resolve()
+    return {
+        "schema": AUTOMATION_PROJECTION_SCHEMA,
+        "projection_kind": "repo_contract_pointer",
+        "id": data.get("id"),
+        "automation_id": automation_id,
+        "kind": data.get("kind"),
+        "name": data.get("name", automation_id),
+        "status": data.get("status"),
+        "rrule": data.get("rrule"),
+        "enabled": True,
+        "repo_root": str(root),
+        "contract_path": str(contract_path),
+        "contract_sha256": _automation_contract_digest(contract_path),
+    }
 
 
 def iter_user_profile_projections(root: Path) -> list[dict[str, Any]]:
@@ -750,7 +753,9 @@ def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
     data, error = _load_toml(path)
     if data is None or error is not None:
         return False
-    automation_id = data.get("id")
+    if any(field in data for field in USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS):
+        return False
+    automation_id = data.get("automation_id")
     if not isinstance(automation_id, str):
         return False
     expected = build_user_profile_projection(root, automation_id)
@@ -759,9 +764,6 @@ def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
     for field in AUTOMATION_PROJECTION_FIELDS:
         if data.get(field) != expected.get(field):
             return False
-    prompt = data.get("prompt")
-    if prompt != expected.get("prompt"):
-        return False
     return True
 
 

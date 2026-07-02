@@ -80,21 +80,14 @@ def _projection_toml(root: Path, automation_id: str, **overrides: object) -> str
     projection = mod.build_user_profile_projection(root, automation_id)
     assert projection is not None
     projection.update(overrides)
-    lines = [
-        "version = 1",
-        f'id = {json.dumps(projection["id"])}',
-        f'kind = {json.dumps(projection["kind"])}',
-        f'name = {json.dumps(projection["name"])}',
-        f'prompt = {json.dumps(projection["prompt"])}',
-        f'status = {json.dumps(projection["status"])}',
-        f'rrule = {json.dumps(projection["rrule"])}',
-        f'model = {json.dumps(projection["model"])}',
-        f'reasoning_effort = {json.dumps(projection["reasoning_effort"])}',
-        f'execution_environment = {json.dumps(projection["execution_environment"])}',
-        f'cwds = {json.dumps(projection["cwds"])}',
-        "created_at = 1",
-        "updated_at = 1",
-    ]
+    lines = ["version = 1"]
+    emitted = set()
+    for field in mod.AUTOMATION_PROJECTION_FIELDS:
+        lines.append(f"{field} = {json.dumps(projection[field])}")
+        emitted.add(field)
+    for field in sorted(set(projection) - emitted):
+        lines.append(f"{field} = {json.dumps(projection[field])}")
+    lines.extend(["created_at = 1", "updated_at = 1"])
     return "\n".join(lines)
 
 
@@ -222,6 +215,34 @@ def test_user_profile_projection_rejects_schedule_drift(tmp_path: Path) -> None:
             "adg-p0-blocker-burndown",
             rrule="RRULE:FREQ=WEEKLY;BYHOUR=7;BYMINUTE=45;BYDAY=MO",
         ),
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_contract_path_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(root, "adg-p0-blocker-burndown", contract_path=str(root / "stale" / "automation.toml")),
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_prompt_payload(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(root, "adg-p0-blocker-burndown", prompt="Copied repo-owned automation prompt."),
     )
 
     issues = mod.validate(root, user_codex_home)

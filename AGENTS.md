@@ -110,7 +110,7 @@ Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/gov
 Codex is the primary local execution surface for this repo. Repo-owned governance files remain the versioned rule inputs; Codex owns run readiness, execution evidence, and closeout receipts.
 
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
-- Repo-specific Codex enforcement files, including cadence automation contracts, live under `.codex/automations/` and must not live under `C:\Users\amita\.codex`.
+- Repo-specific Codex enforcement files, including cadence automation contracts, live under `.codex/automations/`. The user profile at `C:\Users\amita\.codex\automations` may contain only generated pointer launchers with repo path and digest metadata; it must not contain copied Agentic-Workflow prompts, model settings, cwd lists, handoff metadata, or other contract payloads.
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
 - For post-publication closeout, use `python scripts/governance/codex_main_closeout.py --check --json`; local cleanup may use `--apply` only for clean, ancestor-contained branches/worktrees.
 - Direct PR completion commands (`gh pr merge` or push-to-main) must chain `codex_main_closeout.py --apply --fetch --json` and `codex_main_closeout.py --check --fetch --json` in the same shell command.
