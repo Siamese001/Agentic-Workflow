@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-07-01T09:06:21+00:00
-- **Report status:** degraded
+- **Generated:** 2026-07-02T03:23:44+00:00
+- **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_07012026_0451.sqlite`
-- **P2 ratchet:** `missing`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07012026_0451.json`
+- **Published sqlite:** `artifacts/adg/adg_indexed_07012026_2302.sqlite`
+- **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07012026_2302.json`
 
 ### BCG Cleanup Brief
 
@@ -14,9 +14,9 @@
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_07012026_0451.sqlite (snapshot 07012026_0451)
-  - Dead code candidates: 914
-  - Dead imports: 914
+  - ADG source: artifacts/adg/adg_indexed_07012026_2302.sqlite (snapshot 07012026_2302)
+  - Dead code candidates: 949
+  - Dead imports: 949
   - Unresolved imports: 483
   - First-party low-confidence ratio: 1.56%
   - Inferred-symbol ratio: 10.15%
@@ -27,9 +27,9 @@ Fix now:
 
 | Priority | Move | Why it matters | Evidence | Next step |
 |---------:|------|----------------|----------|-----------|
-| 1 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
-| 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 12 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
-| 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 11 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 1 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 19 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 14 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
+| 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 13 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
 | 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.56% and inferred-symbol ratio = 10.15%. | Lower the noise floor, then rerun the scan. |
 | 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
@@ -67,15 +67,15 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 ### BCG P2 Ratchet Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **P2 ratchet status:** OVER_CEILING
-- **Business read:** The published snapshot is still 27 over the P2 ceiling, so the ratchet remains blocked.
+- **P2 ratchet status:** WITHIN_CEILING
+- **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_07012026_0451.sqlite
-  - P2 ceiling: 0
-  - Current MEDIUM hygiene count: 27
-  - Delta vs ceiling: +27
-  - Baseline snapshot: missing
-  - Latest failed run: 2026-07-01T09:06:20Z (failed)
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_07012026_2302.sqlite
+  - P2 ceiling: 28
+  - Current MEDIUM hygiene count: 28
+  - Delta vs ceiling: +0
+  - Baseline snapshot: adg_indexed_07012026_2302.sqlite
+  - Latest failed run: 2026-07-02T03:23:43Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 Fix now:
@@ -86,25 +86,25 @@ Fix now:
 | 2 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 4 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 3 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 4 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=27; ceiling=0; delta=27. | Re-baseline only after the evidence changes are intentional and approved. |
+| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=28; ceiling=28; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
 
 Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.
 
 ### Trace Summary
 
-- **Current MEDIUM hygiene count:** 27
-- **Ceiling:** 0
-- **Delta:** +27
-- **Baseline snapshot:** missing
-- **Published snapshot:** artifacts/adg/adg_indexed_07012026_0451.sqlite
-- **Latest failed run:** 2026-07-01T09:06:20Z (failed)
+- **Current MEDIUM hygiene count:** 28
+- **Ceiling:** 28
+- **Delta:** +0
+- **Baseline snapshot:** adg_indexed_07012026_2302.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_07012026_2302.sqlite
+- **Latest failed run:** 2026-07-02T03:23:43Z (failed)
 
 ### Evidence Buckets
 
 | Evidence | Count | Interpretation |
 |---|---:|---|
+| Exception | 11 | Broad exception catch or swallow on a live hygiene path. |
 | OSError | 10 | Filesystem / IO error handling needs to be narrowed. |
-| Exception | 10 | Broad exception catch or swallow on a live hygiene path. |
 | ValueError | 3 | Parsing or validation guard should be tightened. |
 | getattr | 1 | Hygiene debt on the current published snapshot. |
 | NotADirectoryError | 1 | Hygiene debt on the current published snapshot. |

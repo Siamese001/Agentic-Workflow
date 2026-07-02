@@ -22,6 +22,7 @@ from lib.codex_hook_common import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GREP_WARNING = REPO_ROOT / ".codex" / "governance" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
+REQUIRED_MCP_GATE = REPO_ROOT / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
 ADG_SSOT_GATE = REPO_ROOT / ".codex" / "governance" / "scripts" / "pre_user_prompt_adg_ssot_gate.py"
 
 
@@ -107,6 +108,42 @@ def _run_adg_ssot_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
     return proc.returncode
 
 
+def _run_required_mcp_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
+    """Dispatch the all-required-MCP Codex transport gate.
+
+    Unlike advisory prompt enrichment, this gate is fail-closed: if the gate
+    cannot run, the hook cannot prove required MCP transports are green.
+    """
+    if not raw_stdin.strip():
+        return 0
+    if not REQUIRED_MCP_GATE.is_file():
+        reason = "pre_user_prompt_required_mcp_gate.py absent - required MCP green-light not enforced"
+        write_receipt("beforeSubmitPrompt", payload, "block", reason)
+        print(f"[required_mcp_gate] BLOCKED: {reason}", file=sys.stderr)
+        return 2
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(REQUIRED_MCP_GATE)],
+            input=raw_stdin,
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=int(__import__("os").environ.get("REQUIRED_MCP_GATE_HOOK_TIMEOUT_SEC", "180")),
+            check=False,
+            env={**dict(__import__("os").environ), "PYTHONPATH": str(REPO_ROOT)},
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        reason = f"required MCP gate unreachable: {type(exc).__name__}: {exc}"
+        write_receipt("beforeSubmitPrompt", payload, "block", reason)
+        print(f"[required_mcp_gate] BLOCKED: {reason}", file=sys.stderr)
+        return 2
+    if proc.stderr:
+        sys.stderr.write(proc.stderr)
+        if not proc.stderr.endswith("\n"):
+            sys.stderr.write("\n")
+    return proc.returncode
+
+
 raw_stdin = sys.stdin.read() if not sys.stdin.isatty() else ""
 payload = _parse_payload(raw_stdin)
 text = text_from_payload(payload) or raw_stdin
@@ -122,9 +159,22 @@ if legacy:
 if raw_stdin.strip():
     _run_grep_for_deps_warning(raw_stdin, payload)
 
-# Constitutional §13 ADG SQLite-SSOT green-light (Redis is advisory hot cache only).
+# Required Codex MCP transport green-light: every enabled repo MCP must be
+# callable through its configured Codex transport before normal prompt handling.
+if _run_required_mcp_gate(raw_stdin, payload) != 0:
+    reason = (
+        "Required Codex MCP transports unavailable before turn - "
+        "repair MCP transport/callability first."
+    )
+    write_receipt("beforeSubmitPrompt", payload, "block", reason)
+    raise SystemExit(block(reason))
+
+# Constitutional §13 ADG SQLite-SSOT + MCP transport green-light (Redis is advisory hot cache only).
 if _run_adg_ssot_gate(raw_stdin, payload) == 2:
-    reason = "ADG SQLite SSOT unavailable for T2/T3 prompt — regenerate the ADG snapshot before proceeding (constitutional §13)."
+    reason = (
+        "ADG SQLite SSOT or MCP transport unavailable for T2/T3 prompt - "
+        "restore active ADG callability before proceeding (constitutional §13)."
+    )
     write_receipt("beforeSubmitPrompt", payload, "block", reason)
     raise SystemExit(block(reason))
 

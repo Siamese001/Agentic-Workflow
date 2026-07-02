@@ -221,6 +221,23 @@ def _match_cmdline_marker(cmdline: list[Any], markers: tuple[str, ...]) -> str |
     return None
 
 
+def _is_windows_launcher_wrapper(process_name: Any, cmdline: list[Any]) -> bool:
+    """Return True for shell wrappers that launch the real MCP child process.
+
+    Codex Desktop projects repo MCPs through ``cmd /c ...`` on Windows. Killing
+    that wrapper during MCP initialize can close the host stdio pipe even when
+    the Python child server is healthy. The single-instance guard should target
+    the actual Python server process, never the shell launcher wrapped around it.
+    """
+    name = Path(str(process_name or "")).name.lower()
+    if not name and cmdline:
+        name = Path(str(cmdline[0])).name.lower()
+    if name not in {"cmd.exe", "cmd", "powershell.exe", "powershell", "pwsh.exe", "pwsh"}:
+        return False
+    normalized = {_normalize_marker_text(str(part)) for part in cmdline}
+    return bool({"/c", "-c", "-command", "-encodedcommand"} & normalized)
+
+
 def guard_single_instance(
     script_marker: "str | Sequence[str]",
     *,
@@ -313,6 +330,14 @@ def guard_single_instance(
             if proc.info["pid"] == my_pid:
                 continue
             cmdline = proc.info.get("cmdline") or []
+            if _is_windows_launcher_wrapper(proc.info.get("name"), cmdline):
+                logger.debug(
+                    "GUARD_SKIP_WRAPPER: pid=%d name=%s cmdline=%s",
+                    proc.info["pid"],
+                    proc.info.get("name"),
+                    " ".join(str(c) for c in cmdline)[:200],
+                )
+                continue
             matched_marker = _match_cmdline_marker(cmdline, markers)
             if matched_marker is None:
                 continue

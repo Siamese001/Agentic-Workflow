@@ -9,6 +9,7 @@ be versioned from the repo under ``C:\Git``.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -23,6 +24,7 @@ DEFAULT_USER_CODEX_HOME = Path(os.environ.get("CODEX_HOME", r"C:\Users\amita\.co
 EXPECTED_REPO = Path(r"C:\Git\Agentic-Workflow-FRESH")
 AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
+    "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
     "weekly-adg-audit-and-burndown",
     "adg-p0-blocker-burndown",
     "adg-p1-ratchet-burndown",
@@ -38,12 +40,27 @@ FORBIDDEN_REPO_CODEX_TREES = (
     ".codex/agent-instructions",
     ".codex/automation",
 )
-MANUAL_AUTOMATION_IDS = ("on-demand-pr-main-publisher",)
-USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
-    "on-demand-pr-main-publisher-2",
+MANUAL_AUTOMATION_IDS = (
+    "on-demand-pr-main-publisher",
     "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
 )
+USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
+    "on-demand-pr-main-publisher-2",
+)
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
+AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-projection/v1"
+AUTOMATION_PROJECTION_SOURCE_MARKER = "Repo-owned contract SHA256:"
+AUTOMATION_PROJECTION_PROMPT_SEPARATOR = "--- Repo-owned automation prompt follows ---"
+AUTOMATION_PROJECTION_FIELDS = (
+    "id",
+    "kind",
+    "status",
+    "rrule",
+    "model",
+    "reasoning_effort",
+    "execution_environment",
+    "cwds",
+)
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state",
@@ -160,6 +177,21 @@ SVP_DOCS_REQUIRED_PROMPT_SNIPPETS = (
     "X2 decides whether the docs are mechanically true, scoped, current, and safe",
     "X3 decides whether this weekly Codex run may publish, must stop at plan, or must block",
     "Eval never waives a runtime or publication gate",
+)
+APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
+    "Run the Agentic-Workflow apps_rg Anthropic partnership fresh source-to-end E2E",
+    "python -m apps_rg --target-company \"Anthropic\"",
+    "--target-role \"Manager of Applied AI Architecture, Partnerships\"",
+    "--target-level \"Manager\"",
+    "--jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt",
+    "--manual-brief apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md",
+    "artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e",
+    "BCG_EXECUTIVE_OUTPUT.md",
+    "APPS_RG_MANDATORY_RUN_OUTPUT.md",
+    "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+    "python tools/apps_rg/render_run_summary.py <run_dir>",
+    "Do not reschedule, enable, or convert this automation to recurring active mode",
+    "Do not claim success from process exit alone",
 )
 
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
@@ -497,6 +529,15 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
     if automation_id == "on-demand-pr-main-publisher":
         issues.extend(_validate_publication_prompt(automation_id, prompt))
         issues.extend(_validate_publication_runtime_optimization(automation_id, data))
+    if automation_id == "on-demand-apps-rg-anthropic-partnership-fresh-s2e":
+        issues.extend(
+            _validate_prompt_snippets(
+                automation_id=automation_id,
+                prompt=prompt,
+                snippets=APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS,
+                code="apps_rg_s2e_prompt_missing",
+            )
+        )
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
     if automation_id == "adg-p0-blocker-burndown":
@@ -556,6 +597,55 @@ def _load_automation(root: Path, automation_id: str) -> dict[str, Any] | None:
     if error is not None:
         return None
     return data
+
+
+def _automation_contract_digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def build_user_profile_projection_prompt(
+    *,
+    root: Path,
+    automation_id: str,
+    prompt: str,
+) -> str:
+    """Return the generated prompt stored in the Codex Desktop launcher."""
+    contract_path = _automation_path(root, automation_id)
+    digest = _automation_contract_digest(contract_path)
+    return (
+        f"Generated Codex Desktop launcher projection.\n"
+        f"Schema: {AUTOMATION_PROJECTION_SCHEMA}\n"
+        f"Repo-owned contract: {contract_path}\n"
+        f"{AUTOMATION_PROJECTION_SOURCE_MARKER} {digest}\n"
+        f"Source of truth: regenerate this launcher from the repo contract; do not edit it by hand.\n"
+        f"\n{AUTOMATION_PROJECTION_PROMPT_SEPARATOR}\n\n"
+        f"{prompt}"
+    )
+
+
+def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, Any] | None:
+    """Build the allowed Codex Desktop launcher projection for an active repo cron contract."""
+    data = _load_automation(root, automation_id)
+    if data is None:
+        return None
+    if data.get("kind") != "cron" or data.get("status") != "ACTIVE" or not isinstance(data.get("rrule"), str):
+        return None
+    prompt = data.get("prompt")
+    if not isinstance(prompt, str) or not prompt.strip():
+        return None
+    projection = {field: data.get(field) for field in AUTOMATION_PROJECTION_FIELDS}
+    projection["name"] = data.get("name", automation_id)
+    projection["prompt"] = build_user_profile_projection_prompt(root=root, automation_id=automation_id, prompt=prompt)
+    return projection
+
+
+def iter_user_profile_projections(root: Path) -> list[dict[str, Any]]:
+    projections: list[dict[str, Any]] = []
+    for automation_id in AUTOMATION_IDS:
+        projection = build_user_profile_projection(root, automation_id)
+        if projection is not None:
+            projections.append(projection)
+    return projections
 
 
 def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
@@ -650,6 +740,25 @@ def _automation_toml_references_repo(path: Path, root: Path) -> bool:
         return error is not None
 
 
+def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
+    data, error = _load_toml(path)
+    if data is None or error is not None:
+        return False
+    automation_id = data.get("id")
+    if not isinstance(automation_id, str):
+        return False
+    expected = build_user_profile_projection(root, automation_id)
+    if expected is None:
+        return False
+    for field in AUTOMATION_PROJECTION_FIELDS:
+        if data.get(field) != expected.get(field):
+            return False
+    prompt = data.get("prompt")
+    if prompt != expected.get("prompt"):
+        return False
+    return True
+
+
 def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> list[Path]:
     automations_root = user_codex_home / "automations"
     if not automations_root.exists():
@@ -661,6 +770,8 @@ def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> lis
         return [automations_root]
     for automation_dir in automation_dirs:
         automation_toml = automation_dir / "automation.toml"
+        if automation_toml.exists() and _is_valid_user_profile_projection(automation_toml, root):
+            continue
         if automation_dir.name in USER_PROFILE_REPO_AUTOMATION_IDS:
             artifacts.append(automation_toml if automation_toml.exists() else automation_dir)
             continue

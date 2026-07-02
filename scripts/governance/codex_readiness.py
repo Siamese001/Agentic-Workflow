@@ -26,6 +26,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GOVERNANCE_DIR = Path(__file__).resolve().parent
 MCP_TOOL_EXPOSURE_AUDIT_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "mcp_tool_exposure_audit.py"
+REQUIRED_MCP_GATE_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
 if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
 
@@ -34,7 +35,7 @@ import codex_publication_audit  # noqa: E402
 import ensure_searxng_readiness  # noqa: E402
 from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
 
-DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken")
+DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "adg_sqlite")
 CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
 DUPLICATE_PROCESS_CLASSIFICATIONS = {"duplicate", "duplicate_launch_tree"}
 VECTOR_SEMANTIC_READY_VALUES = {"ready", "healthy", "true", "1", "semantic_ready"}
@@ -289,6 +290,56 @@ def _check_required_routes(report: dict[str, Any], required_routes: Sequence[str
     return checks
 
 
+def _check_required_mcp_protocol_gate(root: Path) -> ReadinessCheck:
+    """Run the per-turn required MCP gate as the Codex transport authority."""
+    gate_path = root / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
+    if not gate_path.is_file():
+        gate_path = REQUIRED_MCP_GATE_PATH
+    if not gate_path.is_file():
+        return ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "FAIL",
+            "critical",
+            "Required MCP protocol gate is missing.",
+            str(gate_path),
+        )
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(gate_path)],
+            input=json.dumps({"prompt": "codex readiness preflight"}),
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=180,
+            check=False,
+            env={**dict(__import__("os").environ), "PYTHONPATH": str(root)},
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "FAIL",
+            "critical",
+            "Required MCP protocol gate could not run.",
+            f"{type(exc).__name__}: {exc}",
+        )
+    detail = "\n".join(part for part in (proc.stdout.strip(), proc.stderr.strip()) if part)
+    if proc.returncode == 0:
+        return ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "PASS",
+            "critical",
+            "All enabled repo MCP transports completed initialize/tools-list.",
+            detail,
+        )
+    return ReadinessCheck(
+        "mcp.required_protocol_gate",
+        "FAIL",
+        "critical",
+        "One or more required repo MCP transports failed initialize/tools-list.",
+        detail,
+    )
+
+
 def _route_failure_detail(server_id: str, state: dict[str, Any]) -> str:
     """Explain route proof failures without conflating them with process hygiene."""
     detail = dict(state)
@@ -541,11 +592,23 @@ def build_readiness_report(
     checks.append(_check_git_state(root, require_clean))
     checks.append(_check_protected_worktree_hygiene(root, require_clean))
     checks.extend(_check_env(transport_report))
-    checks.extend(_check_required_routes(transport_report, required_callable_routes))
-    vector_guard = _check_vector_semantic_guard(required_callable_routes)
-    if vector_guard is not None:
-        checks.append(vector_guard)
-    checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
+    protocol_gate = _check_required_mcp_protocol_gate(root)
+    checks.append(protocol_gate)
+    if protocol_gate.status == "PASS":
+        checks.append(
+            ReadinessCheck(
+                "mcp.route_contract",
+                "PASS",
+                "advisory",
+                "Live required-MCP protocol gate supersedes stale route-contract callability proof.",
+            )
+        )
+    else:
+        checks.extend(_check_required_routes(transport_report, required_callable_routes))
+        vector_guard = _check_vector_semantic_guard(required_callable_routes)
+        if vector_guard is not None:
+            checks.append(vector_guard)
+        checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
     checks.extend(_check_process_hygiene(transport_report, fail_duplicate_processes))
     checks.append(_check_major_mcp_exposure(exposure_summary))
     if check_searxng:

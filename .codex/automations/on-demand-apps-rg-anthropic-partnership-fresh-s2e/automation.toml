@@ -1,0 +1,80 @@
+version = 1
+id = "on-demand-apps-rg-anthropic-partnership-fresh-s2e"
+kind = "manual"
+name = "On-Demand apps_rg Anthropic Partnership Fresh S2E"
+prompt = '''
+Run the Agentic-Workflow apps_rg Anthropic partnership fresh source-to-end E2E from:
+
+C:\Git\Agentic-Workflow-FRESH
+
+Mission:
+Execute a fresh apps_rg source-to-end run for the Anthropic Manager of Applied AI Architecture, Partnerships target using the repo-owned fixtures, then render the mandatory run evidence. This is an on-demand proof run, not a recurring schedule and not a publication automation.
+
+Authority:
+Follow AGENTS.md, docs/codex-primary-execution.md, and .codex/skills/apps-rg-runtime/SKILL.md. Use repo-owned .codex only; do not use legacy governance directories or user-profile automation files as source of truth. Use bounded PowerShell-compatible commands. Do not set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1.
+
+Hard stops:
+- Do not reschedule, enable, or convert this automation to recurring active mode.
+- Do not create, update, merge, or publish a PR from this automation unless the user explicitly expands the run from proof-only into repair/publication work.
+- Do not edit the primary checkout for run failures. If repair is required, stop with RCA and proposed branch/worktree plan.
+- Do not infer missing target inputs from memory. Use only the fixture paths named below unless the user explicitly supplies a replacement.
+- Do not claim success from process exit alone. The final report must include the rendered run summary and mandatory output status.
+
+Target fixtures:
+- Target company: Anthropic
+- Target role: Manager of Applied AI Architecture, Partnerships
+- Target level: Manager
+- JD: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
+- Manual brief: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
+- Output root: artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
+
+Preflight:
+1. Run: python scripts/governance/codex_readiness.py --json
+2. Confirm these files exist:
+   - apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
+   - apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
+   - tools/apps_rg/render_run_summary.py
+3. Record git status, but do not mutate git state.
+
+Run:
+Run the canonical full apps_rg entrypoint:
+
+python -m apps_rg --target-company "Anthropic" --target-role "Manager of Applied AI Architecture, Partnerships" --target-level "Manager" --jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt --manual-brief apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md --artifact-dir artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
+
+Evidence:
+1. Locate the run directory. Use --artifact-dir if that directory contains the run outputs; otherwise use the most recently modified child under artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e or artifacts/apps_rg/runs.
+2. Verify these mandatory outputs exist in the run directory:
+   - BCG_EXECUTIVE_OUTPUT.md
+   - APPS_RG_MANDATORY_RUN_OUTPUT.md
+   - APPS_RG_MANDATORY_RUN_OUTPUT.json
+3. If mandatory outputs are missing but the run directory exists, run:
+   python -m apps_rg.runtime.mandatory_run_outputs <run_dir>
+4. Render evidence with:
+   python tools/apps_rg/render_run_summary.py <run_dir>
+
+Final report:
+Include:
+- readiness status
+- exact command run
+- run directory
+- process exit code
+- mandatory output presence
+- rendered run summary
+- X3/section disposition summary
+- blockers and RCA, if any
+- whether any files changed unexpectedly
+
+RCA format for failures:
+symptom:
+root_cause:
+evidence:
+fix_or_next: fix:<...> or next:<...>
+recurrence_guard:
+'''
+status = "ON_DEMAND"
+model = "gpt-5.5"
+reasoning_effort = "xhigh"
+execution_environment = "local"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
+created_at = 1782898656099
+updated_at = 1782899007124

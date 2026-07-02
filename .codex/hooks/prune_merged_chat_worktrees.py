@@ -37,10 +37,12 @@ Dry-run (report, don't delete): default for CLI unless ``--delete-merged`` is pa
 Grace window: ``WORKTREE_CLEANUP_MIN_AGE_MINUTES`` (default ``30`` — never reap a worktree whose
   HEAD is newer than N minutes; item #1, raised from ``0`` to end the mid-session reap-race).
 Reap prefixes: ``WORKTREE_REAP_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``; opt other
-  prefixes in only for explicit manual cleanup).
+  prefixes in only for explicit manual cleanup). Use ``*`` for an explicit all-local-branch
+  sweep; protected/current/dirty/unmerged/keep-marker gates still apply.
 Branch-prune toggle: ``WORKTREE_PRUNE_MERGED_BRANCHES`` (default ``1`` — set ``0`` to disable the
   standalone merged-branch sweep and only reap worktrees).
-Branch-prune prefixes: ``WORKTREE_PRUNE_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``).
+Branch-prune prefixes: ``WORKTREE_PRUNE_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``);
+  use ``*`` for an explicit all-local-branch sweep.
 Trunk acceptance ref: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``). The branch tip must
   be an ancestor of that ref.
 Opt-out marker: a ``.keep-worktree`` file in any worktree exempts it permanently.
@@ -176,6 +178,8 @@ def _prune_branch_prefixes() -> tuple[str, ...]:
 
 def _matched_prefix(branch: str, prefixes: tuple[str, ...]) -> str | None:
     for p in prefixes:
+        if p == "*":
+            return p
         if p and branch.startswith(p):
             return p
     return None

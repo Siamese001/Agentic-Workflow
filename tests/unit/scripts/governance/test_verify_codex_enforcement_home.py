@@ -76,6 +76,28 @@ def _automation_toml(
     return text + _handoff_toml_block(automation_id, **handoff_overrides)
 
 
+def _projection_toml(root: Path, automation_id: str, **overrides: object) -> str:
+    projection = mod.build_user_profile_projection(root, automation_id)
+    assert projection is not None
+    projection.update(overrides)
+    lines = [
+        "version = 1",
+        f'id = {json.dumps(projection["id"])}',
+        f'kind = {json.dumps(projection["kind"])}',
+        f'name = {json.dumps(projection["name"])}',
+        f'prompt = {json.dumps(projection["prompt"])}',
+        f'status = {json.dumps(projection["status"])}',
+        f'rrule = {json.dumps(projection["rrule"])}',
+        f'model = {json.dumps(projection["model"])}',
+        f'reasoning_effort = {json.dumps(projection["reasoning_effort"])}',
+        f'execution_environment = {json.dumps(projection["execution_environment"])}',
+        f'cwds = {json.dumps(projection["cwds"])}',
+        "created_at = 1",
+        "updated_at = 1",
+    ]
+    return "\n".join(lines)
+
+
 def _publication_prompt() -> str:
     return "\n".join(mod.PUBLICATION_REQUIRED_PROMPT_SNIPPETS)
 
@@ -104,9 +126,14 @@ def _svp_docs_prompt() -> str:
     return "\n".join(mod.SVP_DOCS_REQUIRED_PROMPT_SNIPPETS)
 
 
+def _apps_rg_s2e_prompt() -> str:
+    return "\n".join(mod.APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS)
+
+
 def _valid_root(tmp_path: Path) -> Path:
     prompt_by_id = {
         "on-demand-pr-main-publisher": _publication_prompt(),
+        "on-demand-apps-rg-anthropic-partnership-fresh-s2e": _apps_rg_s2e_prompt(),
         "weekly-adg-audit-and-burndown": _adg_prompt(),
         "adg-p0-blocker-burndown": _adg_p0_prompt(),
         "adg-p1-ratchet-burndown": _adg_p1_prompt(),
@@ -151,6 +178,51 @@ def test_user_profile_thin_automation_launcher_fails(tmp_path: Path) -> None:
         "as the source of truth."
     )
     _write(launcher, _automation_toml("weekly-adg-audit-and-burndown", prompt, root))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_generated_projection_passes(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(root, "adg-p0-blocker-burndown"))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert issues == []
+
+
+def test_user_profile_projection_detects_contract_digest_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(root, "adg-p0-blocker-burndown"))
+    automation = mod._automation_path(root, "adg-p0-blocker-burndown")
+    automation.write_text(
+        _automation_toml("adg-p0-blocker-burndown", _adg_p0_prompt() + "\nNew source contract line.", root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_schedule_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(
+            root,
+            "adg-p0-blocker-burndown",
+            rrule="RRULE:FREQ=WEEKLY;BYHOUR=7;BYMINUTE=45;BYDAY=MO",
+        ),
+    )
 
     issues = mod.validate(root, user_codex_home)
 
@@ -297,6 +369,61 @@ def test_on_demand_publication_rejects_cron_schedule(tmp_path: Path) -> None:
     assert any(issue.code == "automation_kind" for issue in issues)
     assert any(issue.code == "automation_status" for issue in issues)
     assert any(issue.code == "automation_rrule" for issue in issues)
+
+
+def test_apps_rg_s2e_automation_is_required(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    automation.unlink()
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(
+        issue.code == "automation_missing"
+        and "on-demand-apps-rg-anthropic-partnership-fresh-s2e" in issue.detail
+        for issue in issues
+    )
+
+
+def test_apps_rg_s2e_rejects_cron_schedule(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    cron_text = (
+        _automation_toml(
+            "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+            _apps_rg_s2e_prompt(),
+            root,
+        )
+        .replace('kind = "manual"', 'kind = "cron"')
+        .replace(
+            'status = "ON_DEMAND"',
+            'status = "ACTIVE"\nrrule = "RRULE:FREQ=WEEKLY;BYHOUR=2;BYMINUTE=10;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
+        )
+    )
+    automation.write_text(cron_text, encoding="utf-8")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "automation_kind" for issue in issues)
+    assert any(issue.code == "automation_status" for issue in issues)
+    assert any(issue.code == "automation_rrule" for issue in issues)
+
+
+def test_apps_rg_s2e_prompt_requires_real_e2e_command(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    automation.write_text(
+        _automation_toml(
+            "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+            "Run apps_rg eventually.",
+            root,
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "apps_rg_s2e_prompt_missing" for issue in issues)
 
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:

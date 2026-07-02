@@ -51,7 +51,7 @@ from lib.codex_hook_common import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO_ROOT / ".codex" / "governance" / "scripts"
 _DISPATCH_RECEIPT = REPO_ROOT / "artifacts" / "governance" / "post_turn_dispatch_receipts.jsonl"
-_CLEANUP_SCRIPT = REPO_ROOT / ".claude" / "hooks" / "prune_merged_chat_worktrees.py"
+_CLEANUP_SCRIPT = REPO_ROOT / ".codex" / "hooks" / "prune_merged_chat_worktrees.py"
 _CLEANUP_PREFIXES = "chat/,feat/,codex-,claude-,bcg-"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {

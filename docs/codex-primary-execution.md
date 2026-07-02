@@ -135,6 +135,14 @@ CODEX_MCP_CALLABLE_ADG_SQLITE=healthy
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.
 
+ADG has an additional hard per-turn gate: ordinary T2/T3 prompts require
+`tools.adg.mcp.supervisor.transport_status().status == "open"`. A readable
+SQLite snapshot and a live ADG process are necessary but not sufficient when the
+active Codex MCP route is closed. The ADG PostToolUse proof hook writes a
+short-lived proof file after `adg_health`, `adg_runtime_info`, or
+`adg_process_identity` succeeds; explicit ADG transport recovery/RCA prompts may
+proceed while the proof is absent so the route can be repaired.
+
 ## MCP Lifecycle Cleanup Guard
 
 Process presence is not transport ownership. Do not kill Codex-owned MCP child processes by hand; the OS process table cannot prove which child owns the active stdio transport.

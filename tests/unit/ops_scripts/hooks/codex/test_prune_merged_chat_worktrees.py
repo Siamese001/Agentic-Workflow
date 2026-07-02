@@ -204,6 +204,43 @@ def test_optin_feat_prefix_keeps_unmerged_sibling(repo: Path) -> None:
     assert any(s["reason"] == "not_merged_into_trunk" for s in report["skipped"])
 
 
+# --- explicit all-scope cleanup ------------------------------------------------------------
+
+
+def test_wildcard_prefix_reaps_arbitrary_merged_sibling(repo: Path) -> None:
+    wt = _add_worktree_at(repo, repo.parent / "review-delivered", "review/delivered")
+    report = _reap(repo, reap_branch_prefixes=("*",))
+    assert [r["branch"] for r in report["reaped"]] == ["review/delivered"]
+    assert not wt.exists()
+
+
+def test_wildcard_prefix_keeps_arbitrary_unmerged_sibling(repo: Path) -> None:
+    wt = _add_worktree_at(repo, repo.parent / "review-active", "review/active")
+    (wt / "x.txt").write_text("x", encoding="utf-8")
+    _git(wt, "add", "-A")
+    _git(wt, "commit", "-qm", "active review work")
+    report = _reap(repo, reap_branch_prefixes=("*",))
+    assert report["reaped"] == []
+    assert wt.exists()
+    assert any(s["reason"] == "not_merged_into_trunk" for s in report["skipped"])
+
+
+def test_wildcard_prefix_keeps_dirty_sibling(repo: Path) -> None:
+    wt = _add_worktree_at(repo, repo.parent / "review-dirty", "review/dirty")
+    (wt / "dirty.txt").write_text("dirty", encoding="utf-8")
+    report = _reap(repo, reap_branch_prefixes=("*",))
+    assert report["reaped"] == []
+    assert wt.exists()
+    assert any(s["reason"] == "uncommitted_changes" for s in report["skipped"])
+
+
+def test_wildcard_prefix_keeps_protected_primary(repo: Path) -> None:
+    report = _reap(repo, reap_branch_prefixes=("*",))
+    assert report["reaped"] == []
+    assert repo.exists()
+    assert any(s["branch"] == "main" and s["reason"] == "not_chat_branch" for s in report["skipped"])
+
+
 # --- detached worktree reap opt-in ----------------------------------------------------------
 
 
@@ -223,6 +260,13 @@ def test_optin_detached_worktree_reaps_when_prefixed(repo: Path) -> None:
         reap_branch_prefixes=("chat/", "feat/", "bcg-"),
     )
     assert [r["label"] for r in report["reaped"]] == ["bcg-ssot-ad933e8e53"]
+    assert not wt.exists()
+
+
+def test_wildcard_prefix_reaps_detached_worktree_when_enabled(repo: Path) -> None:
+    wt = _add_detached_worktree(repo, repo.parent / "detached-helper")
+    report = _reap(repo, allow_detached=True, reap_branch_prefixes=("*",))
+    assert [r["label"] for r in report["reaped"]] == ["detached-helper"]
     assert not wt.exists()
 
 
@@ -419,6 +463,18 @@ def test_prune_feat_prefix_default(repo: Path) -> None:
     _git(repo, "branch", "feat/delivered-thing", "main")
     report = _prune(repo)  # default prefixes include feat/
     assert "feat/delivered-thing" in [d["branch"] for d in report["deleted"]]
+
+
+def test_prune_wildcard_deletes_arbitrary_merged_branch(repo: Path) -> None:
+    _git(repo, "branch", "review/delivered-thing", "main")
+    report = _prune(repo, branch_prefixes=("*",))
+    assert "review/delivered-thing" in [d["branch"] for d in report["deleted"]]
+
+
+def test_prune_wildcard_keeps_protected_branch(repo: Path) -> None:
+    report = _prune(repo, branch_prefixes=("*",))
+    assert report["deleted"] == []
+    assert any(s["branch"] == "main" and s["reason"] == "not_reap_prefix" for s in report["skipped"])
 
 
 def test_worktree_branches_helper() -> None:

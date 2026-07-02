@@ -52,11 +52,19 @@ python tools/mcp/check_adg_sqlite_transport.py --json
 
 This check is fail-closed for Codex callability: heartbeat/process evidence is
 not enough for `status=open`. It reports open only when a fresh authoritative
-heartbeat is paired with `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` and
-`CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid>`, where the PID is alive and matches
-the heartbeat owner. Set those only after a live `mcp__adg_sqlite.adg_health`,
-`adg_runtime_info`, or `adg_process_identity` call succeeds in the active Codex
-session.
+heartbeat is paired with active-session callability proof whose PID is alive and
+matches the heartbeat owner. Proof can come from either:
+
+- `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` plus
+  `CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid>`, set only after a live
+  `mcp__adg_sqlite.adg_health`, `adg_runtime_info`, or `adg_process_identity`
+  call succeeds in the active Codex session.
+- The Codex `PostToolUse` hook `.codex/hooks/after_mcp_execution.py`, which
+  records a short-lived proof file under `artifacts/mcp_heartbeat/` after one
+  of those ADG proof tools succeeds.
+
+Ordinary T2/T3 prompts are blocked while this check is not open; explicit ADG
+transport recovery/RCA prompts may proceed so the route can be repaired.
 
 For duplicate-cohort cleanup, use:
 
