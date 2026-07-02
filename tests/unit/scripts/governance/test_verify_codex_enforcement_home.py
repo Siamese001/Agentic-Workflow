@@ -300,6 +300,61 @@ def test_repo_local_agent_instruction_tree_fails(tmp_path: Path) -> None:
     assert any(issue.code == "repo_duplicate_enforcement_home" for issue in issues)
 
 
+def test_repo_local_agents_tree_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".agents" / "skills" / "legacy" / "SKILL.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" and ".agents" in issue.detail for issue in issues)
+
+
+def test_memory_codex_skill_surface_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / "memory" / "codex" / "skills" / "repo-main-merge-publish" / "SKILL.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" and "memory" in issue.detail for issue in issues)
+
+
+def test_codex_top_level_plan_file_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "plans" / "active-plan-a1b2c3.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_plan_archive_only" for issue in issues)
+
+
+def test_codex_plan_archive_file_passes(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "plans" / "README.md")
+    _write(root / ".codex" / "plans" / "_archive" / "2026-07" / "archived-plan-a1b2c3.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert issues == []
+
+
+def test_legacy_codex_rule_extension_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "rules" / "legacy-rule.mdc")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_legacy_rule_extension" for issue in issues)
+
+
+def test_stale_schema_authority_ref_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "schemas" / "example.schema.sql", "-- Location: .cursor/schemas/example.schema.sql")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_stale_schema_authority_ref" for issue in issues)
+
+
 def test_user_profile_skill_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"

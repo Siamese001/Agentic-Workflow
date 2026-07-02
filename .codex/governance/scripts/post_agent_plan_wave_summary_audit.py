@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Post-agent audit: plan edits must keep consolidated wave summary at top.
 
-Scans agent response text for ``plans/*.md`` (canonical repo-root) or legacy
-``.codex/plans/*.md`` paths, validates each file on disk via ``plan_wave_summary_top``.
+Scans agent response text for canonical repo-root ``plans/*.md`` paths and
+validates each file on disk via ``plan_wave_summary_top``.
 
 Bypass: ``PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS=1``.
 Strict (stderr + exit 2): ``PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT=1``.
@@ -22,11 +22,10 @@ _LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_wave_summary_top_violatio
 _BYPASS_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS"
 _STRICT_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT"
 
-# Match canonical repo-root ``plans/<slug>.md`` and legacy ``.codex/plans/<slug>.md``
-# (both end in ``/plans/<slug>.md``). The dead ``.cursor/plans`` pattern was fixed in
-# notion-wave-enforcement-removal — that path no longer exists post-relocation (c1a17d).
+# Match canonical repo-root ``plans/<slug>.md``. ``.codex/plans`` is archive-only
+# and must not be treated as a writable plan home.
 _PLAN_PATH_RE = re.compile(
-    r"(?:[\\/]|^)plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
+    r"(?<![A-Za-z0-9_.-])(?<!\.codex[\\/])plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
     re.IGNORECASE,
 )
 
@@ -55,15 +54,11 @@ def _find_edited_plans(response_text: str) -> list[Path]:
     stems = {m.group(1).lower() for m in _PLAN_PATH_RE.finditer(response_text)}
     if not stems:
         return []
-    # Forward-only relocation (c1a17d): canonical plans/ + legacy .codex/plans/.
-    plans_dirs = [_ROOT / "plans", _ROOT / ".codex" / "plans"]
     found: list[Path] = []
     for stem in sorted(stems):
-        for plans_dir in plans_dirs:
-            candidate = plans_dir / f"{stem}.md"
-            if candidate.is_file():
-                found.append(candidate)
-                break
+        candidate = _ROOT / "plans" / f"{stem}.md"
+        if candidate.is_file():
+            found.append(candidate)
     return found
 
 

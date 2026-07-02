@@ -14,7 +14,7 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Route evidence and Codex preflight | `scripts/governance/audit_codex_mcp_transports.py` and `scripts/governance/codex_readiness.py` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
-No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
+No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory, root `.agents` skill tree, memory-hosted `SKILL.md` tree, or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
@@ -39,6 +39,8 @@ The primary verifier includes `verify_codex_enforcement_home.py`, so it fails wh
 ```bash
 python scripts/governance/codex_automation_projection.py --disable-stale-user-profile-launchers --write-user-profile --json
 ```
+
+Active plan files live under repo-root `plans/`. `.codex/plans/` is archive-only; top-level plan files there are treated as SSOT drift.
 
 ## Required Preflight
 

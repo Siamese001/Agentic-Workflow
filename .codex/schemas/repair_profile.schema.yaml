@@ -5,7 +5,7 @@
 # to invoke app-specific recovery actions when a stage fails or scores below
 # threshold.
 #
-# SSOT: .cursor/schemas/repair_profile.schema.yaml
+# SSOT: .codex/schemas/repair_profile.schema.yaml
 # Referenced by: apps_*/config/domain_contract/repair_profiles.yaml
 # L4 record: AppDomainContractRecord.repair_profile_refs
 

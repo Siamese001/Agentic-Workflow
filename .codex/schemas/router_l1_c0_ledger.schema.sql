@@ -5,8 +5,8 @@
 -- agentic_core/L1_cognition/reasoning/retrieval_router.py. Closed-loop
 -- evidence per constitutional §29 row #3 (L1/c0).
 --
--- See plan: .cursor/plans/closed-loop-router-fleet-rollout-d8f2a3.md
--- See rule: .cursor/rules/closed-loop-router-enforcement.md (row #3 L1/c0)
+-- Historical plan: plans/archived-windsurf-closed-loop-router-fleet-rollout-d8f2a3.md
+-- Active rule: .codex/rules/closed-loop-router-enforcement.md (row #3 L1/c0)
 --
 -- event_kind values:
 --   "route_decision"  -- router chose a retrieval plan; outcome may bind later

@@ -46,14 +46,15 @@ def _script(rel_path: str) -> Path:
     return ROOT / rel_path
 
 
-# PFC1 (plan-format-simplification-rca-d4f8e2 W4): forward-only canonical scope.
-# Does NOT scan all of .codex/plans — explicit paths only (see W4 CI gate receipt).
+# PFC1 (plan-format-simplification-rca-d4f8e2 W4): explicit historical scope.
+# Active plans live under root plans/; these archived-windsurf files are preserved
+# root-plan records used by the legacy plan-format receipt.
 _PFC1_CANONICAL_PLAN_PATHS = (
-    ".codex/plans/plan-format-simplification-rca-d4f8e2.md",
+    "plans/archived-windsurf-plan-format-simplification-rca-d4f8e2.md",
     ".codex/templates/execution-plan-template.md",
-    ".codex/plans/acceptance-gates-master-tracking-b5c3e1.md",
-    ".codex/plans/adg-antipattern-hardening-e5a569.md",
-    ".codex/plans/agentic-core-signoff-hardening-b8e2c4.md",
+    "plans/archived-windsurf-acceptance-gates-master-tracking-b5c3e1.md",
+    "plans/archived-windsurf-adg-antipattern-hardening-e5a569.md",
+    "plans/archived-windsurf-agentic-core-signoff-hardening-b8e2c4.md",
 )
 
 

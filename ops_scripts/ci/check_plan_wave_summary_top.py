@@ -4,7 +4,7 @@ Requires (for ``plan_format: v2`` plans) ``## Status Tables`` → ``### Wave Pro
 7 columns) AND ``### Phase Progress`` summary tables **before** the first ``## Wave N`` detail
 section, and waves numbered in ascending execution order with no backward dependency.
 
-Scan: ``plans/*.md`` + ``.codex/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
+Scan: ``plans/*.md`` only. ``.codex/plans/`` is archive-only.
 
 Enforce-going-forward: v2 plans (the template carries the marker) are enforced — any FAIL → exit 1.
 Legacy plans (no marker) are grandfathered to advisory WARN unless
@@ -30,10 +30,7 @@ from ops_scripts.ci.plan_wave_summary_top import (
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_PLANS_DIR = _REPO_ROOT / ".codex" / "plans"
-# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
-# canonical NEW plans live in repo-root plans/; .codex/plans/ stays legacy-valid.
-_PLANS_DIRS = [_REPO_ROOT / "plans", _PLANS_DIR]
+_PLANS_DIR = _REPO_ROOT / "plans"
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_wave_summary_top_gate.json"
 
 
@@ -42,8 +39,10 @@ _PLAN_STEM_RE = re.compile(r"^[A-Za-z0-9_\-]+-[0-9a-f]{6}$", re.IGNORECASE)
 
 def _scan_plan_files() -> list[Path]:
     out: list[Path] = []
-    for p in sorted(p for _d in _PLANS_DIRS if _d.is_dir() for p in _d.glob("*.md")):
+    for p in sorted(_PLANS_DIR.glob("*.md") if _PLANS_DIR.is_dir() else []):
         if not p.is_file():
+            continue
+        if p.name.startswith("archived-"):
             continue
         stem = p.stem
         if stem.upper().endswith("_TEMPLATE") or stem.upper().endswith("TEMPLATE"):

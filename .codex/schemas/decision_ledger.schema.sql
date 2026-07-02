@@ -2,11 +2,11 @@
 -- Decision Ledger — Canonical DDL (SSOT)
 -- =====================================================================
 -- Location: .codex/state/refactor_decisions/refactor_decision_ledger.sqlite
--- Applied by: .cursor/scripts/apply_ledger_schema.py (idempotent)
+-- Applied by: .codex/governance/scripts/apply_ledger_schema.py (idempotent)
 -- Referenced by:
---   - .cursor/scripts/post_cursor_agent_hitl_capture.py (writer)
---   - .cursor/scripts/post_commit_outcome_binder.py (outcome writer)
---   - .cursor/skills/refactor-decision-memory/lookup_refactor_decisions.py (reader)
+--   - .codex/governance/scripts/post_ask_user_question_capture.py (writer)
+--   - .codex/governance/scripts/post_commit_outcome_binder.py (outcome writer)
+--   - .codex/skills/ledger-consulter-ask-user-question/SKILL.md (reader guidance)
 --   - ops_scripts/ci/author_gate/check_ledger_schema.py (validator)
 --   - ops_scripts/ci/author_gate/check_outcome_coverage.py (validator)
 --

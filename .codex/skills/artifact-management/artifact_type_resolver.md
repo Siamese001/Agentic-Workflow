@@ -6,10 +6,10 @@ Maps artifact types to their canonical SSOT directories.
 
 | Artifact Type | Canonical Directory | Notes |
 |---|---|---|
-| Execution plans | `.codex/plans/` | Naming: `<name>-<6hex>.md` |
-| RCA documents | `.codex/plans/` | Same dir as plans |
-| Evidence files | `.codex/plans/` | One per phase |
-| Governance reports | `.codex/plans/` | |
+| Execution plans | `plans/` | Naming: `<name>-<6hex>.md`; `.codex/plans/` is archive-only |
+| RCA documents | `docs/reports/rca/` | |
+| Evidence files | `artifacts/` or `docs/reports/` | Choose by artifact type |
+| Governance reports | `docs/reports/` | |
 | Architecture docs | `docs/architecture/` | ADRs in `docs/architecture/adr/` |
 | Telemetry reports | `docs/reports/telemetry/` | |
 | Freeze reports | `data/freeze_reports/` | |
@@ -30,4 +30,4 @@ Maps artifact types to their canonical SSOT directories.
 
 - `docs/reports/plans/` — reports directory, not plans
 - `C:\Users\*` — user-home paths never receive project artifacts
-- `.cursor/`, `.vscode/` — IDE system directories
+- `.cursor/`, `.vscode/`, `.codex/plans/` — retired or archive-only project artifact locations

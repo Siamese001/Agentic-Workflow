@@ -1,6 +1,6 @@
 -- Memory MCP knowledge_graph Schema Migrations
 -- Tracks additive migrations applied to the base schema
--- Location: .cursor/schemas/knowledge_graph_migrations.sql
+-- Location: .codex/schemas/knowledge_graph_migrations.sql
 
 -- Migration: 1.1.0 - Add decay tracking columns (confidence, last_reinforced, access_count)
 -- Applied: Idempotent via sqlite_memory_store.py _migrate_decay_columns()

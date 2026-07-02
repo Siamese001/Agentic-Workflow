@@ -134,7 +134,7 @@ def validate_cross_reference(ref: CrossRef) -> ValidationResult:
 
 def _load_notion_plan_identity_rule_refs() -> list[CrossRef]:
     """Load cross-references specifically from notion-plan-identity-verification.md."""
-    rule_file = RULES_DIR / "notion-plan-identity-verification.mdc"
+    rule_file = RULES_DIR / "notion-plan-identity-verification.md"
     if not rule_file.exists():
         return []
     return extract_cross_references(rule_file)
@@ -148,7 +148,7 @@ def main() -> int:
         return 0
     
     # Find all rule files
-    rule_files = sorted(RULES_DIR.glob("*.md")) + sorted(RULES_DIR.glob("*.mdc"))
+    rule_files = sorted(RULES_DIR.glob("*.md"))
     if not rule_files:
         print("[RULE-XREF] No rule files found", file=sys.stderr)
         return 0

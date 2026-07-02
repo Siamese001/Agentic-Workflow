@@ -38,7 +38,7 @@ ALLOWED_PATHS = [
     "artifacts/ci/",
     "artifacts/governance/",
     "agentic_core/L4_state/uwg/",
-    ".codex/plans/",
+    "plans/",
     "docs/",
 ]
 

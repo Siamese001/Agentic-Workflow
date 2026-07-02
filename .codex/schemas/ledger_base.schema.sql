@@ -2,7 +2,7 @@
 -- Ledger Base Schema — SSOT for all intelligence-capture ledgers
 -- =====================================================================
 -- This DDL is the canonical shape every ledger under artifacts/ledgers/
--- must conform to. Per-ledger schema files (.cursor/schemas/<name>_ledger.schema.sql)
+-- must conform to. Per-ledger schema files (.codex/schemas/<name>_ledger.schema.sql)
 -- may extend this base with ledger-specific columns via additive ALTER
 -- semantics, but must never remove or rename base columns.
 --

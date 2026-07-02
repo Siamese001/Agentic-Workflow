@@ -15,6 +15,7 @@ Exit Codes:
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -25,7 +26,8 @@ from typing import Dict, List, Optional, Tuple
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 GENERATOR_SCRIPT = REPO_ROOT / ".codex" / "governance" / "scripts" / "generate_rules_index.py"
-RULES_INDEX_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "RULES_INDEX.md"
+RULES_INDEX_PATH = REPO_ROOT / "docs" / "reports" / "codex" / "RULES_INDEX.md"
+_GENERATED_AT_LINE = re.compile(r'^\s*"generated_at":\s*"[^"]+",?\s*$')
 
 
 def run_generator() -> Tuple[bool, str, str]:
@@ -112,6 +114,19 @@ def compute_diff(generated: str, committed: str) -> Dict:
         "total_drift_lines": len(added) + len(removed) + len(modified),
         "has_drift": len(added) > 0 or len(removed) > 0 or len(modified) > 0,
     }
+
+
+def normalize_index_content(content: str) -> str:
+    """Normalize volatile generated fields before freshness comparison."""
+    lines = []
+    for line in content.splitlines():
+        if line.startswith("**Generated**:"):
+            continue
+        if _GENERATED_AT_LINE.match(line):
+            continue
+        lines.append(line.rstrip())
+    text = "\n".join(lines).strip()
+    return text + "\n" if text else ""
 
 
 def extract_counts_from_content(content: str) -> Dict:
@@ -401,7 +416,10 @@ Examples:
         sys.exit(1 if strict else 0)
     
     # Compute diff
-    drift_info = compute_diff(generated_content, committed_content)
+    drift_info = compute_diff(
+        normalize_index_content(generated_content),
+        normalize_index_content(committed_content),
+    )
     
     # Extract counts from both
     gen_counts = extract_counts_from_content(generated_content)
