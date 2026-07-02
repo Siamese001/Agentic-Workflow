@@ -117,6 +117,10 @@ def test_external_provider_threads_request_to_injected_transport() -> None:
         "provider_profile": "external_openai",
         "model": "external-test-model",
         "prompt": "system: System guard.\nuser: Write one bullet.",
+        "messages": [
+            {"role": "system", "content": "System guard."},
+            {"role": "user", "content": "Write one bullet."},
+        ],
         "max_tokens": 88,
         "temperature": 0.21,
         "base_url": "https://provider.example.test/responses",
@@ -205,6 +209,8 @@ def test_anthropic_messages_transport_omits_temperature_for_sonnet5(monkeypatch)
     assert response["text"] == "{}"
     assert captured["body"]["model"] == "claude-sonnet-5"
     assert "temperature" not in captured["body"]
+    assert captured["body"]["thinking"] == {"type": "adaptive", "display": "omitted"}
+    assert captured["body"]["output_config"] == {"effort": "low"}
 
 
 def test_anthropic_messages_transport_keeps_temperature_for_sonnet4(monkeypatch) -> None:
@@ -242,6 +248,158 @@ def test_anthropic_messages_transport_keeps_temperature_for_sonnet4(monkeypatch)
     )
 
     assert captured["body"]["temperature"] == 0.4
+    assert "thinking" not in captured["body"]
+    assert "output_config" not in captured["body"]
+
+
+def test_external_provider_empty_text_fails_closed_with_stop_details() -> None:
+    def _transport(_request):
+        return {
+            "text": "",
+            "model": "claude-sonnet-5",
+            "transport_timing": {"raw_output_chars": 0},
+            "raw_response": {
+                "stop_reason": "max_tokens",
+                "usage": {
+                    "output_tokens_details": {"thinking_tokens": 2048},
+                },
+            },
+        }
+
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
+        transport=_transport,
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    result = provider.generate(_compiled_prompt(), token_budget=2048)
+
+    assert result.runtime_generation_status == "BLOCKED"
+    assert result.provider_available is False
+    assert "External provider returned empty text" in str(result.exact_provider_error)
+    assert "stop_reason=max_tokens" in str(result.exact_provider_error)
+    assert "thinking_tokens" in str(result.exact_provider_error)
+
+
+def test_anthropic_messages_transport_preserves_system_and_user_messages(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _StreamResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return iter(
+                [
+                    b'data: {"type":"message_start","message":{"model":"claude-sonnet-5"}}\n',
+                    b'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"{}"}}\n',
+                    b'data: {"type":"message_stop"}\n',
+                ]
+            )
+
+    def _urlopen(req, timeout):
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        return _StreamResponse()
+
+    monkeypatch.setattr(subject.urllib.request, "urlopen", _urlopen)
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    provider._anthropic_messages_transport(
+        {
+            "prompt": "fallback prompt",
+            "max_tokens": 20,
+            "temperature": 0.4,
+            "messages": [
+                {"role": "system", "content": "Return compact JSON only."},
+                {"role": "user", "content": "Build competencies JSON."},
+            ],
+        }
+    )
+
+    assert captured["body"]["system"] == "Return compact JSON only."
+    assert captured["body"]["messages"] == [
+        {"role": "user", "content": "Build competencies JSON."}
+    ]
+
+
+def test_anthropic_messages_transport_does_not_duplicate_system_only_prompt(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class _StreamResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return iter(
+                [
+                    b'data: {"type":"message_start","message":{"model":"claude-sonnet-5"}}\n',
+                    b'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"{}"}}\n',
+                    b'data: {"type":"message_stop"}\n',
+                ]
+            )
+
+    def _urlopen(req, timeout):
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        return _StreamResponse()
+
+    monkeypatch.setattr(subject.urllib.request, "urlopen", _urlopen)
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    provider._anthropic_messages_transport(
+        {
+            "prompt": "system: System guard.",
+            "max_tokens": 20,
+            "temperature": 0.4,
+            "messages": [{"role": "system", "content": "System guard."}],
+        }
+    )
+
+    assert captured["body"]["system"] == "System guard."
+    assert captured["body"]["messages"] == [
+        {"role": "user", "content": subject.ANTHROPIC_SYSTEM_ONLY_USER_PROMPT}
+    ]
+    assert captured["body"]["messages"][0]["content"] != "system: System guard."
+
+
+def test_anthropic_stream_attempts_scale_to_wall_clock(monkeypatch) -> None:
+    calls = {"count": 0}
+
+    def _urlopen(req, timeout):
+        calls["count"] += 1
+        assert timeout == 20.0
+        raise TimeoutError("read timed out")
+
+    monkeypatch.setattr(subject.urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(subject.time, "sleep", lambda *_args, **_kwargs: None)
+    monkeypatch.setenv("APPS_RG_STREAM_READ_TIMEOUT_S", "20")
+    monkeypatch.delenv("APPS_RG_STREAM_ATTEMPTS", raising=False)
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+        model="claude-sonnet-5",
+        environ={"ANTHROPIC_API_KEY": "test-key"},
+    )
+
+    with pytest.raises(TimeoutError):
+        provider._anthropic_messages_transport(
+            {"prompt": "Return JSON", "max_tokens": 20, "temperature": 0.4, "timeout_seconds": 240}
+        )
+
+    assert calls["count"] == 12
 
 
 def test_external_provider_requires_explicit_model() -> None:

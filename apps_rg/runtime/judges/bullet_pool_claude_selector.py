@@ -794,6 +794,7 @@ def _call_anthropic_pool_selector(
     from datetime import datetime, timezone
 
     from apps_rg.runtime.providers.external_provider import (
+        apply_anthropic_adaptive_thinking_config,
         apply_anthropic_temperature_capability,
     )
     from apps_rg.runtime.judges.executive_summary_x1d import (
@@ -814,6 +815,7 @@ def _call_anthropic_pool_selector(
         "temperature": 0.1,
     }
     apply_anthropic_temperature_capability(payload)
+    apply_anthropic_adaptive_thinking_config(payload, os.environ)
     started_wall = datetime.now(timezone.utc).isoformat()
     req_path = _artifact_path("anthropic_claude", "provider_request", artifact_base=artifact_dir)
     _write_artifact(
@@ -941,6 +943,34 @@ def _call_anthropic_pool_selector(
             f"Anthropic pool selector parse error: {exc}",
             raw_response_ref=str(raw_path),
             model_name=model,
+        )
+        return blocked, None
+    if not str(text or "").strip():
+        usage = data.get("usage") if isinstance(data, dict) else {}
+        output_details = usage.get("output_tokens_details") if isinstance(usage, dict) else None
+        detail_parts = []
+        stop_reason = data.get("stop_reason") if isinstance(data, dict) else None
+        if stop_reason:
+            detail_parts.append(f"stop_reason={stop_reason}")
+        if isinstance(output_details, dict):
+            detail_parts.append(
+                "output_tokens_details="
+                + json.dumps(output_details, sort_keys=True, separators=(",", ":"))
+            )
+        detail = f" ({'; '.join(detail_parts)})" if detail_parts else ""
+        blocked = _make_blocked_output(
+            "anthropic_claude",
+            input_hash,
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            f"Pool selector returned empty text{detail}",
+            raw_response_ref=str(raw_path),
+            model_name=model,
+        )
+        sel_path = _artifact_path("anthropic_claude", "provider_parse_result", artifact_base=artifact_dir)
+        _write_artifact(
+            sel_path,
+            {"result": None, "raw_response_ref": str(raw_path), "purpose": "bullet_pool_claude_selector"},
         )
         return blocked, None
 

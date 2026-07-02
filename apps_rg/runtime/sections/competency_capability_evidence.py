@@ -38,6 +38,202 @@ COMPETENCIES_PATH_DIVERSITY_LENSES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("engineering operating model", ("engineering_leadership", "org_scale", "executive_alignment")),
     ("partner ecosystem execution", ("ecosystem_gtm", "hyperscaler_alliances", "joint_value_creation")),
 )
+COMPETENCIES_SC_COMPACT_SYSTEM_MARKER = "COMPETENCIES_SC_COMPACT_SYSTEM_V1"
+
+
+def _normalize_compact_prompt_newlines(content: str) -> str:
+    text = str(content or "")
+    if "\\n" in text:
+        text = text.replace("\\n", "\n")
+    return text
+
+
+def _slice_prompt_block(content: str, start_marker: str, end_marker: str) -> str:
+    start = content.find(start_marker)
+    if start < 0:
+        return ""
+    end = content.find(end_marker, start)
+    if end < 0:
+        return ""
+    end += len(end_marker)
+    return content[start:end].strip()
+
+
+def _compact_bundle_block(block: str) -> str:
+    block = _normalize_compact_prompt_newlines(block)
+    lines = block.splitlines()
+    if not lines:
+        return ""
+    keep: list[str] = [lines[0].strip()]
+    anchor_mode = False
+    anchor_count = 0
+    prefixes = (
+        "display_label_candidate:",
+        "target_taxonomy_category_ids:",
+        "graph_skill_node_ids:",
+        "linked_source_fact_ids:",
+        "allowed_partner_roots:",
+        "forbidden_partner_roots:",
+        "capability_facets:",
+    )
+    for raw in lines[1:]:
+        stripped = raw.strip()
+        if not stripped:
+            anchor_mode = False
+            continue
+        if stripped.startswith(prefixes):
+            keep.append(f"  {stripped}")
+            anchor_mode = False
+            continue
+        if stripped.startswith("vocabulary_anchors"):
+            keep.append("  vocabulary_anchors:")
+            anchor_mode = True
+            anchor_count = 0
+            continue
+        if anchor_mode and stripped.startswith("- ") and anchor_count < 3:
+            keep.append(f"    {stripped}")
+            anchor_count += 1
+    return "\n".join(keep)
+
+
+def _compact_allowed_fact_ids_block(block: str) -> str:
+    text = _normalize_compact_prompt_newlines(block)
+    if not text:
+        return ""
+    ids = re.findall(r"\b(?:reb|fact|skill)_[A-Za-z0-9_]+\b", text)
+    seen: list[str] = []
+    for raw in ids:
+        if raw.startswith("metric_") or raw in seen:
+            continue
+        seen.append(raw)
+    if not seen:
+        return "\n".join(line.strip() for line in text.splitlines()[:3] if line.strip())
+    return "ALLOWED_SOURCE_FACT_IDS_COMPACT:\n" + ", ".join(seen)
+
+
+def _compact_jd_requirements_block(block: str) -> str:
+    text = _normalize_compact_prompt_newlines(block)
+    if not text:
+        return ""
+    keep: list[str] = ["<jd_requirements_compact>"]
+    for raw in text.splitlines():
+        line = re.sub(r"\s+", " ", raw.strip())
+        if not line:
+            continue
+        lower = line.lower()
+        if line.startswith(("TARGET_TITLE", "TARGET_COMPANY")):
+            keep.append(line[:220])
+            continue
+        if any(
+            marker in lower
+            for marker in (
+                "applied ai architecture",
+                "partnership",
+                "solutions architect",
+                "claude",
+                "safe",
+                "reliable",
+            )
+        ):
+            keep.append(line[:280])
+        if len(keep) >= 10:
+            break
+    keep.append("</jd_requirements_compact>")
+    return "\n".join(keep)
+
+
+def _compact_competencies_sc_evidence(evidence: str) -> str:
+    """Reduce verbose C0 evidence to the fields needed for SC candidate generation."""
+    evidence = _normalize_compact_prompt_newlines(evidence)
+    employment = ""
+    allowed_ids = ""
+    employment_start = evidence.find("CANONICAL_EMPLOYMENT_BULLETS")
+    allowed_start = evidence.find("ALLOWED_SOURCE_FACT_IDS", employment_start)
+    projection_start = evidence.find("VERIFIED_SKILL_INVENTORY_PROJECTION", allowed_start)
+    if employment_start >= 0 and allowed_start > employment_start:
+        employment = evidence[employment_start:allowed_start].strip()
+    elif employment_start >= 0:
+        employment_end_candidates = [
+            pos for pos in (
+                evidence.find("COMPETENCY_BUNDLE ", employment_start),
+                evidence.find("COMPETENCY_CAPABILITY_EVIDENCE_PACK", employment_start),
+            )
+            if pos > employment_start
+        ]
+        employment_end = min(employment_end_candidates) if employment_end_candidates else len(evidence)
+        employment = evidence[employment_start:employment_end].strip()
+    if allowed_start >= 0:
+        allowed_end_candidates = [
+            pos for pos in (projection_start, evidence.find("COMPETENCY_CAPABILITY_EVIDENCE_PACK", allowed_start))
+            if pos > allowed_start
+        ]
+        allowed_end = min(allowed_end_candidates) if allowed_end_candidates else len(evidence)
+        allowed_ids = _compact_allowed_fact_ids_block(evidence[allowed_start:allowed_end].strip())
+
+    bundle_lines: list[str] = []
+    marker = "COMPETENCY_BUNDLE "
+    if marker in evidence:
+        for part in evidence.split(marker)[1:]:
+            block = marker + part
+            next_marker = block.find("\n\nCOMPETENCY_BUNDLE ", len(marker))
+            if next_marker > 0:
+                block = block[:next_marker]
+            compact = _compact_bundle_block(block)
+            if compact:
+                bundle_lines.append(compact)
+
+    sections = [
+        "COMPACT_C0_EVIDENCE_BLUEPRINT",
+        employment,
+        allowed_ids,
+        "COMPACT_COMPETENCY_BUNDLES:",
+        "\n\n".join(bundle_lines),
+    ]
+    return "\n\n".join(section for section in sections if section).strip()
+
+
+def _compact_competencies_sc_system_content(content: str) -> str:
+    """Keep proof-bearing evidence for SC generation, drop examples/schema repetition."""
+    content = _normalize_compact_prompt_newlines(content)
+    evidence = _slice_prompt_block(content, "<candidate_facts", "</candidate_facts>")
+    jd_requirements = _slice_prompt_block(content, "<jd_requirements", "</jd_requirements>")
+    if not evidence:
+        return content
+    compact_evidence = _compact_competencies_sc_evidence(evidence)
+    parts = [
+        COMPETENCIES_SC_COMPACT_SYSTEM_MARKER,
+        (
+            "Task: generate one compact competencies candidate for selector ranking. "
+            "Evidence authority is the retained C0 candidate_facts block only. "
+            "JD and briefing are targeting context only, never proof. Respond directly; "
+            "adaptive thinking is unnecessary for this extraction."
+        ),
+        (
+            "Output JSON only with categories, selected_fact_plan, claim_ledger, jd_alignment, "
+            "excluded_jd_skills, removed_or_rewritten_terms, gap_notes, change_log, and self_check. "
+            "Use 6-8 categories, exactly 3 compact terms per category, and source_fact_ids copied "
+            "verbatim from retained evidence. Do not wrap JSON in markdown fences."
+        ),
+        compact_evidence,
+    ]
+    if jd_requirements:
+        parts.append(_compact_jd_requirements_block(jd_requirements))
+    return "\n\n".join(parts)
+
+
+def compact_competencies_self_consistency_messages(
+    messages: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Compact provider payload messages for competencies SC candidate calls only."""
+    out: list[dict[str, Any]] = []
+    compacted = False
+    for msg in messages:
+        item = dict(msg)
+        if not compacted and str(item.get("role") or "").strip().lower() == "system":
+            item["content"] = _compact_competencies_sc_system_content(str(item.get("content") or ""))
+            compacted = True
+        out.append(item)
+    return out
 
 PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER: tuple[str, ...] = (
     "ccb_partner_applied_ai_architecture",
@@ -114,6 +310,49 @@ VISIBLE_GRAPH_SURFACE_TERM_OVERRIDES: dict[str, tuple[str, ...]] = {
         "cross-functional delivery governance at scale",
         "organization scale-out for platform execution",
     ),
+}
+
+COMPETENCY_BUNDLE_FAMILY_ROOT_HINTS: dict[str, tuple[str, ...]] = {
+    "agentic_platforms": (
+        "reb_unify_agentic_platform_architecture",
+        "reb_unify_production_adoption_lifecycle",
+        "reb_unify_distributed_ecosystem_engineering",
+    ),
+    "runtime_governance": (
+        "reb_unify_agentic_platform_architecture",
+        "reb_unify_production_adoption_lifecycle",
+        "reb_unify_distributed_ecosystem_engineering",
+    ),
+    "retrieval_context_engineering": (
+        "reb_unify_agentic_platform_architecture",
+        "reb_unify_distributed_ecosystem_engineering",
+    ),
+    "llmops_reliability": ("reb_unify_distributed_ecosystem_engineering",),
+    "distributed_systems_engineering": (
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_ibm_aws_modernization_architecture",
+        "reb_ibm_data_modeling_bi_decision_support",
+    ),
+    "platform_productization": (
+        "reb_unify_agentic_platform_architecture",
+        "reb_unify_production_adoption_lifecycle",
+        "reb_unify_partner_channel_cosell",
+    ),
+    "partner_applied_ai_architecture": (
+        "reb_unify_partner_channel_cosell",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "reb_ibm_presales_solution_engineering",
+    ),
+    "partnerships_ecosystem_execution": (
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+    ),
+    "engineering_leadership": (
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_unify_production_adoption_lifecycle",
+        "reb_ibm_presales_solution_engineering",
+        "reb_ibm_data_modeling_bi_decision_support",
+    ),
+    "data_governance_security": ("reb_ibm_data_modeling_bi_decision_support",),
 }
 
 VISIBLE_GRAPH_SURFACE_TAXONOMY_BY_BUNDLE: dict[str, tuple[str, str]] = {
@@ -381,16 +620,28 @@ def append_competencies_path_diversity_to_messages(
         f"\n\nCOMPETENCIES_PATH_DIVERSITY (path_index={path_index}, temperature={temperature:.2f}):\n"
         f"Primary graph-neighborhood lens: {lens_name}.\n"
         f"Graph terms to bias this candidate path: {', '.join(graph_terms)}.\n"
-        "Treat this path as candidate-neighborhood expansion before final selection: generate exactly "
-        "eight competencies, but make at least four category labels lens-specific alternatives rather "
+        "Treat this path as candidate-neighborhood expansion before final selection: generate 6-8 "
+        "competencies, and make at least four category labels lens-specific alternatives rather "
         "than a reorder of the same canonical eight labels. Every category still needs competency_bundle_id, "
         "graph_skill_node_ids, source_fact_ids, and compact graph-backed terms. JD and briefing text are "
-        "targeting context only, never proof.\n"
+        "targeting context only, never proof.\n\n"
+        "SELF_CONSISTENCY_CANDIDATE_CONTRACT:\n"
+        "Return compact JSON only. Emit categories[] and claim_ledger only as much as needed for "
+        "selector ranking and downstream normalization.\n"
+        "Do not wrap JSON in markdown fences or prose.\n"
+        "Use 6-8 categories with exactly 3 compact terms each. Each term must be an object with "
+        "text, source_fact_id, and source_fact_ids. Keep term text under 8 words.\n"
+        "Use selected_fact_plan as a stub with section_id, selection_method, and required_fact_ids only.\n"
+        "Use terse arrays for excluded_jd_skills, removed_or_rewritten_terms, gap_notes, change_log, "
+        "and self_check. Do not include rationale, prose, copied evidence, or expanded fact text.\n"
     )
-    out = [dict(m) for m in messages]
+    out = compact_competencies_self_consistency_messages(messages)
     last = out[-1]
     prev = str(last.get("content") or "").rstrip()
-    out[-1] = {**last, "content": f"{prev}{suffix}" if prev else suffix.strip()}
+    if str(last.get("role") or "").strip().lower() == "user":
+        out[-1] = {**last, "content": f"{prev}{suffix}" if prev else suffix.strip()}
+    else:
+        out.append({"role": "user", "content": suffix.strip()})
     return out
 
 
@@ -522,6 +773,67 @@ def stamp_competency_bundle_bindings(
     return competencies
 
 
+def _allowed_source_fact_ids(allowed_fact_ids: set[str] | None) -> set[str]:
+    return {fid for raw in (allowed_fact_ids or set()) if (fid := _source_fact_root_id(raw))}
+
+
+def _append_allowed_source_fact(out: list[str], raw: Any, *, allowed: set[str]) -> None:
+    fid = _source_fact_root_id(raw)
+    if fid and fid in allowed and fid not in out:
+        out.append(fid)
+
+
+def _bundle_allowed_linked_facts(
+    rec: dict[str, Any],
+    cat: dict[str, Any] | None,
+    *,
+    allowed_fact_ids: set[str] | None,
+    selected_graph_evidence_plan: dict[str, Any] | None,
+) -> list[str]:
+    allowed = _allowed_source_fact_ids(allowed_fact_ids)
+    if not allowed:
+        return []
+    plan = selected_graph_evidence_plan if isinstance(selected_graph_evidence_plan, dict) else {}
+    plan_facts = [row for row in (plan.get("facts") or []) if isinstance(row, dict)]
+    out: list[str] = []
+    for raw in rec.get("linked_source_fact_ids") or []:
+        _append_allowed_source_fact(out, raw, allowed=allowed)
+    if out:
+        return out
+
+    skill_ids = {
+        str(s).strip()
+        for s in list((cat or {}).get("graph_skill_node_ids") or [])
+        + list(rec.get("graph_skill_node_ids") or [])
+        if str(s).strip()
+    }
+    for fact in plan_facts:
+        fact_skills = {str(s).strip() for s in (fact.get("graph_skill_node_ids") or []) if str(s).strip()}
+        if skill_ids and fact_skills and not skill_ids.intersection(fact_skills):
+            continue
+        _append_allowed_source_fact(out, fact.get("fact_id") or fact.get("role_episode_bundle_id"), allowed=allowed)
+        for fid in fact.get("source_fact_ids") or []:
+            _append_allowed_source_fact(out, fid, allowed=allowed)
+        for mid in fact.get("metric_outcome_ids") or []:
+            _append_allowed_source_fact(out, mid, allowed=allowed)
+    if out:
+        return out
+
+    for root_id in COMPETENCY_BUNDLE_FAMILY_ROOT_HINTS.get(str(rec.get("capability_family") or ""), ()):
+        for fact in plan_facts:
+            if root_id not in {
+                str(fact.get("fact_id") or ""),
+                str(fact.get("role_episode_bundle_id") or ""),
+            }:
+                continue
+            _append_allowed_source_fact(out, fact.get("fact_id") or fact.get("role_episode_bundle_id"), allowed=allowed)
+            for fid in fact.get("source_fact_ids") or []:
+                _append_allowed_source_fact(out, fid, allowed=allowed)
+            for mid in fact.get("metric_outcome_ids") or []:
+                _append_allowed_source_fact(out, mid, allowed=allowed)
+    return out
+
+
 def hydrate_competency_bundle_graph_evidence(
     competencies: list[dict[str, Any]],
     *,
@@ -548,89 +860,18 @@ def hydrate_competency_bundle_graph_evidence(
     if not by_id or not allowed:
         return competencies
 
-    plan = selected_graph_evidence_plan if isinstance(selected_graph_evidence_plan, dict) else {}
-    plan_facts = [row for row in (plan.get("facts") or []) if isinstance(row, dict)]
-    family_root_hints: dict[str, tuple[str, ...]] = {
-        "agentic_platforms": ("reb_unify_agentic_platform_architecture",),
-        "runtime_governance": ("reb_unify_agentic_platform_architecture",),
-        "retrieval_context_engineering": (
-            "reb_unify_agentic_platform_architecture",
-            "reb_unify_distributed_ecosystem_engineering",
-        ),
-        "llmops_reliability": ("reb_unify_distributed_ecosystem_engineering",),
-        "distributed_systems_engineering": (
-            "reb_unify_distributed_ecosystem_engineering",
-            "reb_ibm_aws_modernization_architecture",
-            "reb_ibm_data_modeling_bi_decision_support",
-        ),
-        "platform_productization": (
-            "reb_unify_agentic_platform_architecture",
-            "reb_unify_partner_channel_cosell",
-        ),
-        "partner_applied_ai_architecture": (
-            "reb_unify_partner_channel_cosell",
-            "reb_ibm_aws_alliance_partner_cosell_gtm",
-        ),
-        "partnerships_ecosystem_execution": (
-            "reb_ibm_aws_alliance_partner_cosell_gtm",
-        ),
-        "engineering_leadership": (
-            "reb_unify_distributed_ecosystem_engineering",
-            "reb_ibm_data_modeling_bi_decision_support",
-        ),
-        "data_governance_security": ("reb_ibm_data_modeling_bi_decision_support",),
-    }
-
-    def _append_allowed(out: list[str], raw: Any) -> None:
-        fid = _source_fact_root_id(raw)
-        if fid and fid in allowed and fid not in out:
-            out.append(fid)
-
-    def _allowed_linked_facts(rec: dict[str, Any], cat: dict[str, Any]) -> list[str]:
-        out: list[str] = []
-        for raw in rec.get("linked_source_fact_ids") or []:
-            _append_allowed(out, raw)
-        if out:
-            return out
-
-        skill_ids = {
-            str(s).strip()
-            for s in list(cat.get("graph_skill_node_ids") or []) + list(rec.get("graph_skill_node_ids") or [])
-            if str(s).strip()
-        }
-        for fact in plan_facts:
-            fact_skills = {str(s).strip() for s in (fact.get("graph_skill_node_ids") or []) if str(s).strip()}
-            if not skill_ids.intersection(fact_skills):
-                continue
-            _append_allowed(out, fact.get("fact_id") or fact.get("role_episode_bundle_id"))
-            for fid in fact.get("source_fact_ids") or []:
-                _append_allowed(out, fid)
-            for mid in fact.get("metric_outcome_ids") or []:
-                _append_allowed(out, mid)
-        if out:
-            return out
-
-        for root_id in family_root_hints.get(str(rec.get("capability_family") or ""), ()):
-            for fact in plan_facts:
-                if root_id not in {
-                    str(fact.get("fact_id") or ""),
-                    str(fact.get("role_episode_bundle_id") or ""),
-                }:
-                    continue
-                _append_allowed(out, fact.get("fact_id") or fact.get("role_episode_bundle_id"))
-                for fid in fact.get("source_fact_ids") or []:
-                    _append_allowed(out, fid)
-                for mid in fact.get("metric_outcome_ids") or []:
-                    _append_allowed(out, mid)
-        return out
-
     for idx, cat in enumerate(competencies):
         if not isinstance(cat, dict):
             continue
         rec = by_id.get(str(cat.get("competency_bundle_id") or ""))
         if not rec:
             continue
-        linked_facts = _allowed_linked_facts(rec, cat)
+        linked_facts = _bundle_allowed_linked_facts(
+            rec,
+            cat,
+            allowed_fact_ids=allowed_fact_ids,
+            selected_graph_evidence_plan=selected_graph_evidence_plan,
+        )
         if not linked_facts:
             continue
 
@@ -802,9 +1043,19 @@ def _category_skill_ids(cat: dict[str, Any], rec: dict[str, Any]) -> list[str]:
 def _plan_fact_ids_for_bundle(
     rec: dict[str, Any],
     *,
+    cat: dict[str, Any] | None = None,
     selected_graph_evidence_plan: dict[str, Any] | None,
     allowed_fact_ids: set[str] | None,
 ) -> list[str]:
+    linked = _bundle_allowed_linked_facts(
+        rec,
+        cat,
+        allowed_fact_ids=allowed_fact_ids,
+        selected_graph_evidence_plan=selected_graph_evidence_plan,
+    )
+    if linked:
+        return linked
+
     allowed = {fid for raw in (allowed_fact_ids or set()) if (fid := _source_fact_root_id(raw))}
     bundle_skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
     out: list[str] = []
@@ -834,6 +1085,48 @@ def _plan_fact_ids_for_bundle(
     for linked in rec.get("linked_source_fact_ids") or []:
         _append(linked)
     return out
+
+
+def _graph_surface_selection_score(idx: int, *, fact_ids: list[str], skill_ids: list[str]) -> float:
+    fact_component = min(len(fact_ids), 4) * 0.018
+    skill_component = min(len(skill_ids), 10) * 0.004
+    rank_component = max(0.0, 0.035 - idx * 0.004)
+    return round(min(0.97, 0.78 + fact_component + skill_component + rank_component), 4)
+
+
+def _sync_visible_graph_claim_ledger(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str] | None,
+) -> None:
+    comps = parsed.get("competencies")
+    if not isinstance(comps, list):
+        comps = parsed.get("categories")
+    if not isinstance(comps, list):
+        return
+    ledger: list[dict[str, Any]] = []
+    for cat in comps:
+        if not isinstance(cat, dict):
+            continue
+        cat_ids = _category_fact_ids(cat, allowed_fact_ids)
+        if not cat_ids:
+            cat["source_fact_ids"] = []
+            continue
+        cat["source_fact_ids"] = list(cat_ids)
+        for term in cat.get("terms") or []:
+            phrase = term_phrase(term)
+            if not phrase:
+                continue
+            term_ids = _category_fact_ids({"source_fact_ids": [], "terms": [term]}, allowed_fact_ids)
+            ids = term_ids or cat_ids
+            if isinstance(term, dict):
+                term["source_fact_ids"] = list(ids)
+                term["source_fact_id"] = ids[0]
+                if term.get("source_skill_ids") or term.get("graph_skill_node_ids"):
+                    term["support_class"] = "FACT_AND_SKILL_GRAPH"
+            ledger.append({"claim_text": phrase, "source_fact_ids": list(ids)})
+    if ledger:
+        parsed["claim_ledger"] = ledger
 
 
 def _token_budget_allows(phrase: str, token_counts: dict[str, int], *, max_repeat: int = 3) -> bool:
@@ -907,6 +1200,7 @@ def enrich_competencies_visible_graph_surface(
             rec = by_id.get(bid)
             if not rec:
                 continue
+            display_idx = len(out)
             cat = by_bundle.get(bid)
             if cat is None and unassigned:
                 cat = unassigned.pop(0)
@@ -921,10 +1215,17 @@ def enrich_competencies_visible_graph_surface(
                     before_label or display_label,
                 ),
             )
-            fact_ids = _category_fact_ids(cat, allowed_fact_ids)
+            linked_fact_ids = _bundle_allowed_linked_facts(
+                rec,
+                cat,
+                allowed_fact_ids=allowed_fact_ids,
+                selected_graph_evidence_plan=selected_graph_evidence_plan,
+            )
+            fact_ids = linked_fact_ids or _category_fact_ids(cat, allowed_fact_ids)
             if not fact_ids:
                 fact_ids = _plan_fact_ids_for_bundle(
                     rec,
+                    cat=cat,
                     selected_graph_evidence_plan=selected_graph_evidence_plan,
                     allowed_fact_ids=allowed_fact_ids,
                 )
@@ -967,6 +1268,14 @@ def enrich_competencies_visible_graph_surface(
             cat["graph_skill_node_ids"] = list(skill_ids)
             if fact_ids:
                 cat["source_fact_ids"] = list(fact_ids)
+            graph_surface_score = _graph_surface_selection_score(
+                display_idx,
+                fact_ids=fact_ids,
+                skill_ids=skill_ids,
+            )
+            cat["confidence"] = graph_surface_score
+            cat["selection_score"] = graph_surface_score
+            cat["selector_confidence"] = graph_surface_score
             cat["resume_display_label"] = display_label
             cat["resume_display_order_reason"] = "anthropic_partnership_relevance_first"
             cat["visible_graph_surface"] = True
@@ -994,6 +1303,7 @@ def enrich_competencies_visible_graph_surface(
         parsed["categories"] = _rewrite(parsed.get("categories"), surface_name="categories")
     if isinstance(parsed.get("competencies"), list):
         parsed["competencies"] = _rewrite(parsed.get("competencies"), surface_name="competencies")
+    _sync_visible_graph_claim_ledger(parsed, allowed_fact_ids=allowed_fact_ids)
     receipt = {
         "schema_version": "competencies_visible_graph_surface_enrichment_receipt_v1",
         "producer": "apps_rg.runtime.sections.competency_capability_evidence.enrich_competencies_visible_graph_surface",
@@ -1243,12 +1553,14 @@ def augment_bound_category_family_terms(
 
 __all__ = [
     "COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER",
+    "COMPETENCIES_SC_COMPACT_SYSTEM_MARKER",
     "COMPETENCIES_PATH_DIVERSITY_LENSES",
     "PARTNERSHIP_FIRST_COMPETENCIES_BUNDLE_ORDER",
     "attach_competency_bundles_to_proof_pool_metadata",
     "append_competencies_path_diversity_to_messages",
     "augment_bound_category_family_terms",
     "build_competency_capability_section_packet",
+    "compact_competencies_self_consistency_messages",
     "enrich_competencies_visible_graph_surface",
     "format_competency_capability_evidence_pack",
     "hydrate_competency_bundle_graph_evidence",

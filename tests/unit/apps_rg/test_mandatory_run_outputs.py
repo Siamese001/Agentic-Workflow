@@ -198,6 +198,43 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert payload["rca_findings"]
 
 
+def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(tmp_path: Path) -> None:
+    run = tmp_path / "full_resume_patch_pass"
+    run.mkdir()
+    _write_json(
+        run / "terminal_ret_packet.json",
+        {
+            "payload": {
+                "l2_fault": "L2_EXECUTION_ERROR:old failed wrapper",
+                "x3_disposition": "X3A",
+                "run_id": "old-run",
+            }
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={
+            "decisive_status": "PASS",
+            "all_lanes_authorized": True,
+            "exit_code": 0,
+        },
+    )
+
+    summary = emitted["payload"]["result_summary"]
+    assert summary["exit_status"] == "success"
+    assert summary["execution_status"] == "completed"
+    assert summary["outcome_authorized"] is True
+    assert summary["x3_disposition"] == "X3_ALLOW"
+    assert summary["fault"] == ""
+    assert summary["decisive_status"] == "PASS"
+    bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
+    assert "None - all required sections and final aggregation are product-authorized" in bcg
+    assert "Fix the P0 blocker sections named above" not in bcg
+    assert "Preserve the generated output package and run evidence" in bcg
+
+
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
     run = tmp_path / "full_resume_review01"
     run.mkdir()

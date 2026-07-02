@@ -50,7 +50,7 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
 )
 from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3 as _aggregate_ibm_bullets_x3
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
-from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import (
     generate_bullet_lane_with_sc_and_claude,
@@ -1010,6 +1010,16 @@ def run_ibm_bullets_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import (
+        external_openai_generation_model,
+        resolve_section_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model(section_id=LANE_KEY)
+        if str(args.provider) == "external_openai"
+        else resolve_section_generation_model(LANE_KEY)
+    )
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
@@ -1017,12 +1027,13 @@ def run_ibm_bullets_execution(
         temperature=args.temperature,
         max_tokens=IBM_MAX_OUTPUT_TOKENS,
         temperature_bounds=IBM_TEMP_RANGE,
+        model=section_model,
         provider_requested=str(args.provider),
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
-    req_model = str(tagged.get("model", SECTION_MODEL_ID))
+    req_model = str(tagged.get("model", section_model))
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
         section_lane=LANE_KEY,

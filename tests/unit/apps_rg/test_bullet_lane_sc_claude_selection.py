@@ -254,7 +254,7 @@ def test_sc_parallel_policy_for_competencies_unify_ibm_only(monkeypatch) -> None
     monkeypatch.delenv("APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL", raising=False)
 
     assert self_consistency_parallel_enabled("competencies") is True
-    assert self_consistency_max_parallel("competencies", 8) == 4
+    assert self_consistency_max_parallel("competencies", 8) == 1
     assert self_consistency_parallel_enabled("unify_bullets") is True
     assert self_consistency_parallel_enabled("ibm_bullets") is True
     assert self_consistency_max_parallel("unify_bullets", 4) == 2
@@ -995,3 +995,5 @@ def test_pool_selector_system_prompt_is_selection_schema_not_rubric() -> None:
     src = inspect.getsource(_call_anthropic_pool_selector)
     assert "POOL_SELECTOR_SYSTEM_PROMPT" in src
     assert "build_x1d_judge_system_prompt" not in src
+    assert "apply_anthropic_adaptive_thinking_config" in src
+    assert "Pool selector returned empty text" in src

@@ -874,13 +874,44 @@ _STOPWORDS_FOR_ALIGNMENT = frozenset({
 })
 
 
-def _role_axis_coverage(plan: dict[str, Any]) -> dict[str, Any]:
+def _rendered_competency_skill_ids(parsed_output: dict[str, Any] | None) -> list[str]:
+    if not isinstance(parsed_output, dict):
+        return []
+    out: list[str] = []
+    for key in ("competencies", "categories"):
+        rows = parsed_output.get(key)
+        if not isinstance(rows, list):
+            continue
+        for cat in rows:
+            if not isinstance(cat, dict):
+                continue
+            for raw in cat.get("graph_skill_node_ids") or []:
+                sid = str(raw).strip()
+                if sid and sid not in out:
+                    out.append(sid)
+            for term in cat.get("terms") or []:
+                if not isinstance(term, dict):
+                    continue
+                for field in ("graph_skill_node_ids", "source_skill_ids"):
+                    for raw in term.get(field) or []:
+                        sid = str(raw).strip()
+                        if sid and sid not in out:
+                            out.append(sid)
+    return out
+
+
+def _role_axis_coverage(
+    plan: dict[str, Any],
+    *,
+    rendered_skill_ids: list[str] | None = None,
+) -> dict[str, Any]:
     profile = str(plan.get("target_role_profile") or "").strip()
     required = ROLE_PROFILE_REQUIRED_SKILL_AXES.get(profile, {})
     selected_skill_text = " ".join(
         [
             " ".join(_unique_strs(plan.get("selected_skill_ids") or [])),
             " ".join(str(row.get("skill_id") or "") for row in plan.get("selected_skills") or [] if isinstance(row, dict)),
+            " ".join(_unique_strs(rendered_skill_ids or [])),
         ]
     ).lower()
     covered: list[str] = []
@@ -1057,7 +1088,10 @@ def _build_traversal_sufficiency_receipt(
         "graph_evidence_depth_summary": depth_report.get("summary") or "",
         "graph_evidence_depth_pre_status": pre_depth_report.get("status") or "",
         "graph_evidence_depth_comparison": comparison_report,
-        "role_specific_axis_coverage": _role_axis_coverage(plan),
+        "role_specific_axis_coverage": _role_axis_coverage(
+            plan,
+            rendered_skill_ids=_rendered_competency_skill_ids(parsed_output),
+        ),
     }
 
 

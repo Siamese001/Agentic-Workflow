@@ -9,6 +9,11 @@ from apps_rg.runtime.sections.executive_summary_voice_repair import (
     _trim_paragraph_word_budget,
     polish_executive_summary_judge_alignment,
 )
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    _resume_word_count,
+    check_exec_summary_no_sentence_fragment,
+)
+
 
 def _word_count(sentences: list[str]) -> int:
     return len(re.findall(r"\S+", " ".join(sentences)))
@@ -57,6 +62,53 @@ def test_trim_paragraph_word_budget_noop_when_under_cap() -> None:
     ]
     trimmed = _trim_paragraph_word_budget(sentences, max_words=140)
     assert trimmed == sentences
+
+
+def test_trim_paragraph_word_budget_preserves_runtime_control_finite_verb() -> None:
+    """Regression for pinned Anthropic AI-partnership exec summary patch run."""
+    sentences = [
+        (
+            "An AI partnerships and platform architecture leader builds alliance co-sell "
+            "channel motions and governed runtime engineering into one enterprise adoption "
+            "strategy for partner-led AI deployment."
+        ),
+        (
+            "Through that partnership foundation, distributed cloud and data execution "
+            "infrastructure pairs with a standardized AI systems lifecycle that accelerates "
+            "lab-to-production adoption across partner and cloud ecosystems."
+        ),
+        (
+            "Building on that platform base, reusable solution accelerators package cloud, "
+            "data, and AI modernization patterns into repeatable client pursuits, while "
+            "founder-led GTM motions have owned insurer AWS modernization opportunities "
+            "directly with executive buyers."
+        ),
+        (
+            "In parallel, runtime reliability, governance, telemetry, evaluation, and "
+            "rollback discipline anchor an AWS shared-responsibility operating model that "
+            "maps cloud control ownership for regulated deployments."
+        ),
+        (
+            "That operating foundation also drives IBM-AWS alliance co-sell motions for "
+            "financial-services modernization, embedding release automation and security "
+            "scanning into regulated delivery paths alongside technical discovery and "
+            "solution mapping for enterprise pursuits."
+        ),
+        (
+            "This partnership and platform leadership can scale partner enablement, joint "
+            "solution development, and presales technical guidance across cloud and GSI "
+            "ecosystems to accelerate indirect revenue and enterprise AI adoption."
+        ),
+    ]
+
+    trimmed = _trim_paragraph_word_budget(sentences, max_words=140)
+    text = " ".join(trimmed)
+    fragment_ok, fragment_reason = check_exec_summary_no_sentence_fragment(text)
+
+    assert _resume_word_count(text) <= 140
+    assert fragment_ok is True, fragment_reason
+    assert "rollback discipline anchor" in text.lower()
+    assert "Runtime reliability, governance, telemetry, evaluation." not in text
 
 
 def test_rebuild_canonical_six_sentence_arc_preserves_identity_thesis() -> None:

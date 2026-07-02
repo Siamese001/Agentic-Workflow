@@ -11,7 +11,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.providers.availability_fallback import maybe_fallback_to_openai_for_claude_availability
+from apps_rg.runtime.providers.availability_fallback import (
+    maybe_fallback_to_openai_for_claude_availability,
+    maybe_retry_claude_availability_same_provider,
+)
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
@@ -125,6 +128,14 @@ def call_section_model_provider(
         token_budget=budget,
         temperature=temperature,
         timeout_seconds=timeout_seconds,
+    )
+    result = maybe_retry_claude_availability_same_provider(
+        result,
+        compiled,
+        token_budget=budget,
+        temperature=temperature,
+        timeout_seconds=timeout_seconds,
+        section_id=sid or None,
     )
     return maybe_fallback_to_openai_for_claude_availability(
         result,

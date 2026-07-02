@@ -37,6 +37,12 @@ def test_graph_era_fec_resolves_cited_slot_to_bundle() -> None:
     assert _subset_pass(fec, ["bul_ibm_001", "bul_ibm_005"]) is True
 
 
+def test_current_fec_resolves_bul_ibm_002_to_data_modeling_bundle() -> None:
+    fec = {"reb_ibm_data_modeling_bi_decision_support"}
+    assert IBM_BULLET_SLOT_BUNDLE_MAP["bul_ibm_002"] not in fec
+    assert _subset_pass(fec, ["bul_ibm_002"]) is True
+
+
 def test_slot_whose_bundle_absent_from_fec_still_fails() -> None:
     # Only bul_ibm_001's bundle is in the FEC; citing bul_ibm_005 (bundle absent) must fail.
     fec = {IBM_BULLET_SLOT_BUNDLE_MAP["bul_ibm_001"]}

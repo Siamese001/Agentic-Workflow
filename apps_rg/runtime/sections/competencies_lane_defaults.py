@@ -14,7 +14,20 @@ TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 COMPETENCIES_MAX_OUTPUT_TOKENS = 6000
+DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS = 4096
 LANE_KEY = "competencies"
+
+
+def competencies_self_consistency_output_tokens() -> int:
+    """Per-path live SC budget; full-lane/repair ceiling remains 6000."""
+    import os
+
+    raw = os.environ.get("APPS_RG_COMPETENCIES_SC_OUTPUT_TOKENS", "").strip()
+    try:
+        requested = int(raw) if raw else DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS
+    except ValueError:
+        requested = DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS
+    return max(1500, min(requested, COMPETENCIES_MAX_OUTPUT_TOKENS))
 
 
 def _find_repo_root() -> Path:

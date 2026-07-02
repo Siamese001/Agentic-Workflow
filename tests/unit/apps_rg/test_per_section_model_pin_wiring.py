@@ -7,6 +7,8 @@ through ``call_section_model_provider`` via the ``_reasoning_section_lane`` tag 
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 import apps_rg.runtime.providers.section_provider_call as spc
@@ -94,6 +96,18 @@ def test_gateway_pins_model_on_claude_provider():
 def test_gateway_empty_model_fails_closed():
     with pytest.raises(ValueError):
         spc.build_section_provider_gateway()
+
+
+def test_legacy_bullet_lanes_pass_explicit_section_model_pin_to_section_request():
+    repo_root = Path(__file__).resolve().parents[3]
+    for lane_relpath in (
+        "apps_rg/runtime/sections/unify_bullets_lane.py",
+        "apps_rg/runtime/sections/ibm_bullets_lane.py",
+    ):
+        source = (repo_root / lane_relpath).read_text(encoding="utf-8")
+        assert "resolve_section_generation_model(LANE_KEY)" in source
+        assert "external_openai_generation_model(section_id=LANE_KEY)" in source
+        assert "model=section_model" in source
 
 
 if __name__ == "__main__":  # pragma: no cover

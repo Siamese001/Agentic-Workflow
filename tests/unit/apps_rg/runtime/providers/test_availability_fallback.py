@@ -126,3 +126,54 @@ def test_policy_locked_sections_do_not_call_openai_fallback(monkeypatch) -> None
             timeout_seconds=9,
             section_id=section_id,
         ) is initial
+
+
+def test_claude_availability_failure_retries_same_provider(monkeypatch) -> None:
+    calls: list[dict] = []
+
+    class _RetryProvider:
+        def __init__(self, **kwargs):
+            calls.append({"init": kwargs})
+
+        def generate(self, compiled_prompt, **kwargs):
+            calls.append({"generate": kwargs, "compiled": compiled_prompt})
+            return _result(status="REAL_LLM", error=None, raw='{"summary":"ok"}')
+
+    monkeypatch.setattr(subject, "ExternalProvider", _RetryProvider)
+    initial = _result(error="External provider call failed: URLError: getaddrinfo failed")
+
+    out = subject.maybe_retry_claude_availability_same_provider(
+        initial,
+        SimpleNamespace(run_id="run"),
+        token_budget=321,
+        temperature=0.11,
+        timeout_seconds=9,
+        environ={"APPS_RG_CLAUDE_AVAILABILITY_RETRY_ATTEMPTS": "1"},
+        section_id="executive_summary",
+    )
+
+    assert out.runtime_generation_status == "REAL_LLM"
+    assert calls and calls[-1]["generate"]["token_budget"] == 321
+    receipt = out.provider_response["apps_rg_availability_retry"]
+    assert receipt["retry_output_accepted"] is True
+    assert receipt["accepted_output_source"] == "same_provider_retry"
+    assert len(receipt["provider_attempt_spans"]) == 2
+    assert receipt["provider_attempt_spans"][1]["attempt_kind"] == "retry"
+
+
+def test_same_provider_retry_disabled_by_env(monkeypatch) -> None:
+    def _forbidden_provider(*_args, **_kwargs):
+        raise AssertionError("same-provider retry must not be constructed")
+
+    monkeypatch.setattr(subject, "ExternalProvider", _forbidden_provider)
+    initial = _result(error="External provider call failed: URLError: getaddrinfo failed")
+
+    assert subject.maybe_retry_claude_availability_same_provider(
+        initial,
+        SimpleNamespace(run_id="run"),
+        token_budget=321,
+        temperature=0.11,
+        timeout_seconds=9,
+        environ={"APPS_RG_CLAUDE_AVAILABILITY_RETRY_ATTEMPTS": "0"},
+        section_id="executive_summary",
+    ) is initial

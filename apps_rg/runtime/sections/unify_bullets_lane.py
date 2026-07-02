@@ -58,7 +58,7 @@ from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prom
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3 as _aggregate_unify_bullets_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges  # singleton fallback only
 from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
-from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import (
     generate_bullet_lane_with_sc_and_claude,
@@ -956,6 +956,16 @@ def run_unify_bullets_execution(
         provider_lane=str(args.provider),
     )
 
+    from apps_rg.runtime.section_model_limits import (
+        external_openai_generation_model,
+        resolve_section_generation_model,
+    )
+
+    section_model = (
+        external_openai_generation_model(section_id=LANE_KEY)
+        if str(args.provider) == "external_openai"
+        else resolve_section_generation_model(LANE_KEY)
+    )
     provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
@@ -963,12 +973,13 @@ def run_unify_bullets_execution(
         temperature=args.temperature,
         max_tokens=UNIFY_MAX_OUTPUT_TOKENS,
         temperature_bounds=UNIFY_TEMP_RANGE,
+        model=section_model,
         provider_requested=str(args.provider),
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
+    req_model = str(provider_payload.get("model", section_model))
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     result, raw_output, parsed_in, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
         section_lane=LANE_KEY,

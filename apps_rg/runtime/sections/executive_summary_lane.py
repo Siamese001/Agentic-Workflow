@@ -1551,6 +1551,7 @@ def apply_exec_summary_word_budget_repair(
                     )
                     parsed = candidate
                     resume_display_text = new_text
+                    new_ledger = list(candidate.get("claim_ledger") or [])
                     claim_ledger = list(new_ledger)
                     accepted = True
                     receipt["accepted"] = True

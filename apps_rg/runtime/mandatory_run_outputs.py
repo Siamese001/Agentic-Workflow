@@ -364,27 +364,34 @@ def _count_sections(sections: list[dict[str, Any]]) -> dict[str, int]:
 
 def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, Any]:
     result = result or {}
+    result_pass = str(result.get("decisive_status") or "").upper() == "PASS" or (
+        result.get("exit_code") == 0 and result.get("all_lanes_authorized") is True
+    )
     terminal = _load_json(run_root / "terminal_ret_packet.json")
     terminal_payload = terminal.get("payload") if isinstance(terminal.get("payload"), dict) else {}
     exhaust = _load_json(run_root / "runtime_exhaust_bundle.json")
     exhaust_payload = exhaust.get("payload") if isinstance(exhaust.get("payload"), dict) else {}
     proof_gate = _load_json(run_root / "integrated_product_proof_gate_result.json")
+    terminal_fault = "" if result_pass else str(terminal_payload.get("l2_fault") or "")
     return {
-        "exit_status": result.get("exit_status") or ("error" if terminal_payload.get("l2_fault") else "unknown"),
-        "execution_status": result.get("execution_status") or ("failed" if terminal_payload.get("l2_fault") else "unknown"),
-        "outcome_authorized": bool(result.get("outcome_authorized")),
+        "exit_status": result.get("exit_status") or ("success" if result_pass else "error" if terminal_fault else "unknown"),
+        "execution_status": result.get("execution_status") or ("completed" if result_pass else "failed" if terminal_fault else "unknown"),
+        "outcome_authorized": bool(result.get("outcome_authorized") or result_pass),
+        "decisive_status": result.get("decisive_status") or "",
+        "all_lanes_authorized": result.get("all_lanes_authorized"),
         "x3_disposition": (
             result.get("x3_disposition")
+            or ("X3_ALLOW" if result_pass else "")
             or terminal_payload.get("x3_disposition")
             or exhaust_payload.get("x3_disposition")
             or ""
         ),
-        "fault": result.get("fault") or terminal_payload.get("l2_fault") or "",
+        "fault": result.get("fault") or (terminal_fault if not result_pass else ""),
         "run_id": result.get("run_id") or terminal_payload.get("run_id") or "",
         "request_id": result.get("request_id") or terminal_payload.get("request_id") or "",
         "proof_gate_status": proof_gate.get("status") or "",
         "proof_classification": proof_gate.get("proof_classification") or "",
-        "decisive_reason": proof_gate.get("decisive_reason") or "",
+        "decisive_reason": proof_gate.get("decisive_reason") or result.get("failure_reason") or "",
     }
 
 
@@ -1040,7 +1047,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
     failed_count = counts["blocked"] + counts["pre_run_blocked"] + counts["not_run"]
-    if summary.get("outcome_authorized"):
+    authorized = bool(summary.get("outcome_authorized"))
+    if authorized:
         answer = "The run reached an authorized product outcome. Preserve the generated outputs and review the run ledger for section and judge proof."
     elif failed_count:
         answer = (
@@ -1066,8 +1074,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         "|---|---|",
         f"| Did real generation run? | `{counts['ran_real_llm']}` section(s) reported `REAL_LLM`. |",
         f"| Was a final product authorized? | `{summary.get('outcome_authorized')}` |",
-        f"| What blocked the run? | `{_markdown_table_escape(summary.get('fault') or summary.get('decisive_reason') or 'section gates / aggregation')}` |",
-        f"| Primary decision | `Fix targeted blockers and rerun; do not weaken X2/X3 gates.` |",
+        f"| What blocked the run? | `{_markdown_table_escape('None - all required sections and final aggregation are product-authorized' if authorized else summary.get('fault') or summary.get('decisive_reason') or 'section gates / aggregation')}` |",
+        f"| Primary decision | `{_markdown_table_escape('Preserve outputs and review evidence ledgers; no blocker remediation required.' if authorized else 'Fix targeted blockers and rerun; do not weaken X2/X3 gates.')}` |",
         "",
         "## Run Scorecard",
         "",
@@ -1078,7 +1086,11 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         x3 = str(section.get("x3_code") or "")
         bucket = str(section.get("status_bucket") or "")
         if x3 == "X3_ALLOW":
-            interp = "Usable candidate content; still subject to whole-run assembly."
+            interp = (
+                "Authorized final assembly output."
+                if section.get("section") == "final_resume_aggregation"
+                else "Usable candidate content; product-authorized for this run."
+            )
         elif bucket == "pre_run_blocked":
             interp = "Did not become eligible because an upstream dependency failed."
         elif bucket == "not_run":
@@ -1108,9 +1120,14 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
             for item in _validated_plan_items(finding):
                 lines.append(f"    - {item}")
     lines.extend(["", "## Recommended Next Move", ""])
-    lines.append("1. Fix the P0 blocker sections named above.")
-    lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
-    lines.append("3. Treat final assembly as valid only when every required section is product-authorized.")
+    if authorized:
+        lines.append("1. Preserve the generated output package and run evidence.")
+        lines.append("2. Review the mandatory ledger and section-status table for audit details.")
+        lines.append("3. Treat future edits as new changes requiring the same X2/X3 gates.")
+    else:
+        lines.append("1. Fix the P0 blocker sections named above.")
+        lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
+        lines.append("3. Treat final assembly as valid only when every required section is product-authorized.")
     lines.extend(["", "## Evidence Map", ""])
     lines.append(f"- Mandatory run ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}`")
     lines.append(f"- Machine-readable ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}`")

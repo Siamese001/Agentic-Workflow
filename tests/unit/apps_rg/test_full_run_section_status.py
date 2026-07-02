@@ -178,6 +178,126 @@ def test_collect_rows_support_modular_r4_sections_layout(tmp_path: Path):
     assert by_lane["headline"].x3_code == "PRE_RUN:PHASE1_NO_RUN_DIR"
 
 
+def test_collect_rows_support_flat_lane_pointer_to_sibling_runtime_proof(tmp_path: Path):
+    run_root = tmp_path / "full_resume_wrapper"
+    lane_base = run_root / "lanes" / "competencies"
+    lane_base.mkdir(parents=True, exist_ok=True)
+    lane_run = tmp_path / "artifacts" / "apps_rg" / "runtime_proofs" / "competencies_real_123"
+    lane_run.mkdir(parents=True, exist_ok=True)
+    (lane_run / "competencies_display.txt").write_text(
+        "Applied AI Partnerships: partner architecture\n",
+        encoding="utf-8",
+    )
+    (lane_run / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW", "product_quality_status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_run / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_smoke", "pass": True}]}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_run / "run_manifest.json").write_text(
+        json.dumps({"runtime_generation_status": "REAL_LLM"}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_run / "x1d_llm_judge_outputs.json").write_text(
+        json.dumps(
+            {
+                "judges": [
+                    {
+                        "provider_name": "Google Gemini 3.1 Pro Preview",
+                        "model_name": "gemini-3.1-pro-preview",
+                        "score": 5.0,
+                        "threshold": 4.0,
+                        "pass": True,
+                    }
+                ]
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (lane_base / "latest_successful_real_run.json").write_text(
+        json.dumps({"run_dir": lane_run.relative_to(tmp_path).as_posix()}) + "\n",
+        encoding="utf-8",
+    )
+
+    rows = collect_full_run_section_status(run_root, repo_root=tmp_path)
+    row = {r.lane: r for r in rows}["competencies"]
+
+    assert row.lane_dir == lane_run.relative_to(tmp_path).as_posix()
+    assert row.display_txt_rel == (
+        lane_run / "competencies_display.txt"
+    ).relative_to(tmp_path).as_posix()
+    assert row.x3_code == "X3_ALLOW"
+    assert row.x2_pass == "PASS"
+    assert row.runtime_generation_status == "REAL_LLM"
+    assert "Google Gemini 3.1 Pro Preview" in row.judge_summary
+
+
+def test_collect_rows_prefers_current_generated_rollup_over_stale_pointer(tmp_path: Path):
+    run_root = tmp_path / "full_resume_wrapper"
+    lane_base = run_root / "lanes" / "executive_summary"
+    lane_base.mkdir(parents=True, exist_ok=True)
+    stale_run = tmp_path / "artifacts" / "apps_rg" / "runtime_proofs" / "exec_stale"
+    stale_run.mkdir(parents=True, exist_ok=True)
+    (stale_run / "resume_display_text.txt").write_text("Stale blocked summary.\n", encoding="utf-8")
+    (stale_run / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_BLOCK", "product_quality_status": "FAIL"}) + "\n",
+        encoding="utf-8",
+    )
+    (stale_run / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_old", "pass": False}]}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_base / "latest_successful_real_run.json").write_text(
+        json.dumps({"run_dir": stale_run.relative_to(tmp_path).as_posix()}) + "\n",
+        encoding="utf-8",
+    )
+
+    current_run = tmp_path / "artifacts" / "apps_rg" / "runtime_proofs" / "exec_current"
+    current_run.mkdir(parents=True, exist_ok=True)
+    (current_run / "resume_display_text.txt").write_text("Current authorized summary.\n", encoding="utf-8")
+    (current_run / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW", "product_quality_status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    (current_run / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_smoke", "pass": True}]}) + "\n",
+        encoding="utf-8",
+    )
+    (current_run / "run_manifest.json").write_text(
+        json.dumps({"runtime_generation_status": "REAL_LLM"}) + "\n",
+        encoding="utf-8",
+    )
+    rollup_dir = run_root / "modular_r4" / "generated_lane_rollup"
+    rollup_dir.mkdir(parents=True, exist_ok=True)
+    (rollup_dir / "generated_lane_rollup.json").write_text(
+        json.dumps(
+            {
+                "lanes": {
+                    "executive_summary": {
+                        "accepted_real_evidence_resolution": "modular_r4_explicit_run_dir",
+                        "rollup_source_run_dir": current_run.relative_to(tmp_path).as_posix(),
+                    }
+                }
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    rows = collect_full_run_section_status(run_root, repo_root=tmp_path)
+    row = {r.lane: r for r in rows}["executive_summary"]
+
+    assert row.lane_dir == current_run.relative_to(tmp_path).as_posix()
+    assert row.x3_code == "X3_ALLOW"
+    assert row.x2_pass == "PASS"
+    assert row.display_txt_rel == (
+        current_run / "resume_display_text.txt"
+    ).relative_to(tmp_path).as_posix()
+
+
 def test_collect_rows_append_final_aggregation_lane_with_judges(tmp_path: Path):
     run_root = tmp_path / "full_resume_test123"
     _write_lane(run_root, "headline", txt_name="headline_output.txt", txt_body="SVP | AI | Cloud")

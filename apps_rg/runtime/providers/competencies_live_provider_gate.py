@@ -24,18 +24,18 @@ def competencies_provider_chat_timeout_s() -> int:
     """Chat/completions wall-clock budget for the competencies lane (transport only; not an X2 gate).
 
     Honors ``APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS`` up to the shared
-    external-provider ceiling. Default for unattended/normal runs stays 120s;
+    external-provider ceiling. Default for unattended/normal runs is 240s;
     explicit budgets are capped at 300s by default so a bad live provider call
     fails closed instead of consuming a long agent run.
     """
     from apps_rg.runtime.providers.external_provider import external_provider_timeout_max_s
 
-    raw = os.environ.get("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", "120")
+    raw = os.environ.get("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", "240")
     ceiling = external_provider_timeout_max_s()
     try:
         return int(max(60.0, min(float(raw), ceiling)))
     except (TypeError, ValueError):
-        return 120
+        return 240
 
 
 def competencies_provider_preflight_disabled() -> bool:

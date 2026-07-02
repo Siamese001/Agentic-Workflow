@@ -33,6 +33,7 @@ ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 DEFAULT_ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS = 90.0
+ANTHROPIC_SYSTEM_ONLY_USER_PROMPT = "Return the requested JSON object now."
 # Shared upper safety bound for ANY external section provider wall-clock budget.
 # The competencies lane may opt into a longer-than-default budget, but it should
 # fail closed in minutes, not sit on an API call for an evaluation-era 1000s.
@@ -44,23 +45,57 @@ ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES: frozenset[str] = frozenset(
         "claude-sonnet-5",
     }
 )
+ANTHROPIC_ADAPTIVE_THINKING_MODEL_PREFIXES: frozenset[str] = frozenset(
+    {
+        "claude-sonnet-5",
+    }
+)
 
 
-def anthropic_model_omits_temperature(model: Any) -> bool:
-    """Return True for Anthropic models whose Messages API rejects temperature."""
+def _anthropic_model_matches_prefix(model: Any, prefixes: frozenset[str]) -> bool:
     model_id = str(model or "").strip().lower()
     if not model_id:
         return False
     return any(
         model_id == prefix or model_id.startswith(f"{prefix}-")
-        for prefix in ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES
+        for prefix in prefixes
     )
+
+
+def anthropic_model_omits_temperature(model: Any) -> bool:
+    """Return True for Anthropic models whose Messages API rejects temperature."""
+    return _anthropic_model_matches_prefix(model, ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES)
+
+
+def anthropic_model_uses_adaptive_thinking(model: Any) -> bool:
+    """Return True for Anthropic models that need adaptive thinking effort control."""
+    return _anthropic_model_matches_prefix(model, ANTHROPIC_ADAPTIVE_THINKING_MODEL_PREFIXES)
 
 
 def apply_anthropic_temperature_capability(body: dict[str, Any]) -> dict[str, Any]:
     """Remove temperature from Anthropic payloads for models that reject it."""
     if anthropic_model_omits_temperature(body.get("model")):
         body.pop("temperature", None)
+    return body
+
+
+def apply_anthropic_adaptive_thinking_config(
+    body: dict[str, Any],
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Constrain Sonnet 5 adaptive thinking so compact JSON calls leave budget for text."""
+    if not anthropic_model_uses_adaptive_thinking(body.get("model")):
+        return body
+    env = os.environ if environ is None else environ
+    effort = str(env.get("APPS_RG_ANTHROPIC_EFFORT") or "low").strip().lower()
+    if effort not in {"low", "medium", "high", "xhigh"}:
+        effort = "low"
+    body.setdefault("thinking", {"type": "adaptive", "display": "omitted"})
+    output_config = body.get("output_config")
+    if not isinstance(output_config, dict):
+        output_config = {}
+    output_config.setdefault("effort", effort)
+    body["output_config"] = output_config
     return body
 
 
@@ -122,6 +157,46 @@ def _prompt_text(compiled_prompt: Any) -> str:
     ).strip()
 
 
+def _prompt_messages(compiled_prompt: Any) -> list[dict[str, str]]:
+    blocks = getattr(compiled_prompt, "prompt_blocks", ()) or ()
+    messages: list[dict[str, str]] = []
+    for block in blocks:
+        role = str(getattr(block, "role", "") or "").strip().lower()
+        content = str(getattr(block, "content", "") or "")
+        if not content:
+            continue
+        if role not in {"system", "user", "assistant"}:
+            role = "user"
+        messages.append({"role": role, "content": content})
+    return messages
+
+
+def _anthropic_system_and_messages(request: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
+    raw_messages = request.get("messages")
+    system_parts: list[str] = []
+    messages: list[dict[str, str]] = []
+    if isinstance(raw_messages, list):
+        for item in raw_messages:
+            if not isinstance(item, Mapping):
+                continue
+            role = str(item.get("role") or "").strip().lower()
+            content = str(item.get("content") or "")
+            if not content:
+                continue
+            if role == "system":
+                system_parts.append(content)
+            elif role in {"user", "assistant"}:
+                messages.append({"role": role, "content": content})
+            else:
+                messages.append({"role": "user", "content": content})
+    if not messages and system_parts:
+        messages = [{"role": "user", "content": ANTHROPIC_SYSTEM_ONLY_USER_PROMPT}]
+    elif not messages:
+        messages = [{"role": "user", "content": str(request.get("prompt") or "")}]
+    system = "\n\n".join(part for part in system_parts if part).strip()
+    return system or "Return compact JSON only.", messages
+
+
 def _coerce_timeout_seconds(value: Any) -> float:
     try:
         timeout = float(value)
@@ -178,22 +253,23 @@ class ExternalProvider:
         return self._openai_responses_transport(request)
 
     def _anthropic_messages_transport(self, request: dict[str, Any]) -> dict[str, Any]:
-        prompt = str(request.get("prompt") or "")
         # STREAM the Messages API (SSE). Non-streaming holds the connection idle for the whole
         # server-side generation (~30s for a multi-thousand-token output); in the long-lived run
         # process that idle connection is dropped and the read hangs until timeout, while a tiny
         # output (no idle) and a fresh process both succeed. Streaming keeps tokens flowing, so the
         # connection never idles and the read returns normally. (Diagnosed 2026-06-16: in-process
         # probe — non-stream 2800-tok hangs; identical stream=True returns in ~34s/79 chunks.)
+        system, messages = _anthropic_system_and_messages(request)
         body = {
             "model": str(request.get("model") or self.model),
             "max_tokens": int(request.get("max_tokens") or 900),
             "temperature": float(request.get("temperature") or 0.0),
-            "system": "Return compact JSON only.",
-            "messages": [{"role": "user", "content": prompt}],
+            "system": system,
+            "messages": messages,
             "stream": True,
         }
         apply_anthropic_temperature_capability(body)
+        apply_anthropic_adaptive_thinking_config(body, self.environ)
         url = str(request.get("base_url") or self.base_url or DEFAULT_ANTHROPIC_MESSAGES_URL)
         headers = {
             "Content-Type": "application/json",
@@ -206,7 +282,12 @@ class ExternalProvider:
         # stall mid-stream (no data on an otherwise-open socket); cap each read and reconnect rather
         # than block to the wall-clock. A fresh stream completes in ~34s, so a retry recovers.
         per_read = float(os.environ.get("APPS_RG_STREAM_READ_TIMEOUT_S") or 18.0)
-        _attempts = int(os.environ.get("APPS_RG_STREAM_ATTEMPTS") or 8)
+        attempts_override = os.environ.get("APPS_RG_STREAM_ATTEMPTS", "").strip()
+        if attempts_override:
+            _attempts = int(attempts_override)
+        else:
+            wall_budget = resolve_external_section_timeout_s(request.get("timeout_seconds"))
+            _attempts = max(8, int((wall_budget / max(per_read, 1.0)) + 0.999))
         # W2 transport-progress instrumentation: a slow-but-active streamed response must be
         # observable as PROGRESSING, not indistinguishable from a stall. ``progress_sink`` (an
         # optional dict the caller owns) is mutated IN PLACE as chunks arrive, so even when the
@@ -230,6 +311,8 @@ class ExternalProvider:
         text_parts: list[str] = []
         resolved_model = str(body["model"])
         usage: dict[str, Any] = {}
+        stop_reason: str | None = None
+        stop_details: dict[str, Any] | None = None
         first_byte_after_s: float | None = None
         chunk_count = 0
         last_progress_after_s: float | None = None
@@ -237,6 +320,8 @@ class ExternalProvider:
             text_parts = []
             resolved_model = str(body["model"])
             usage = {}
+            stop_reason = None
+            stop_details = None
             chunk_count = 0
             first_byte_after_s = None
             try:
@@ -271,6 +356,12 @@ class ExternalProvider:
                             if delta.get("type") == "text_delta":
                                 text_parts.append(str(delta.get("text") or ""))
                         elif etype == "message_delta":
+                            delta = event.get("delta") or {}
+                            if isinstance(delta, dict):
+                                stop_reason = str(delta.get("stop_reason") or "") or stop_reason
+                                raw_stop_details = delta.get("stop_details")
+                                if isinstance(raw_stop_details, dict):
+                                    stop_details = dict(raw_stop_details)
                             if isinstance(event.get("usage"), dict):
                                 usage.update(event["usage"])
                         elif etype == "message_stop":
@@ -334,6 +425,8 @@ class ExternalProvider:
             "raw_response": {
                 "model": resolved_model,
                 "usage": usage,
+                "stop_reason": stop_reason,
+                "stop_details": stop_details,
                 "stream": True,
                 "transport_timing": timing,
                 "content": [{"type": "text", "text": text}],
@@ -489,6 +582,7 @@ class ExternalProvider:
             return response
 
         prompt = _prompt_text(compiled_prompt)
+        messages = _prompt_messages(compiled_prompt)
         # W1: resolve the effective wall-clock budget through the shared policy.
         provider_timeout_seconds = resolve_external_section_timeout_s(timeout_seconds)
         # W2: a caller-owned progress sink the streamed transport mutates in place, so a timeout
@@ -498,6 +592,7 @@ class ExternalProvider:
             "provider_profile": self.provider_profile.value,
             "model": self.model,
             "prompt": prompt,
+            "messages": messages,
             "max_tokens": int(token_budget),
             "temperature": float(temperature),
             "base_url": self.base_url,
@@ -580,6 +675,45 @@ class ExternalProvider:
             )
         text = str(response.get("text") or response.get("content") or "")
         resolved_model = str(response.get("model") or self.model)
+        if not text.strip():
+            raw_response = response.get("raw_response") if isinstance(response.get("raw_response"), Mapping) else {}
+            usage = raw_response.get("usage") if isinstance(raw_response, Mapping) else {}
+            output_details = usage.get("output_tokens_details") if isinstance(usage, Mapping) else None
+            stop_reason = raw_response.get("stop_reason") if isinstance(raw_response, Mapping) else None
+            detail_parts = []
+            if stop_reason:
+                detail_parts.append(f"stop_reason={stop_reason}")
+            if isinstance(output_details, Mapping):
+                detail_parts.append(
+                    "output_tokens_details="
+                    + json.dumps(dict(output_details), sort_keys=True, separators=(",", ":"))
+                )
+            detail = f" ({'; '.join(detail_parts)})" if detail_parts else ""
+            error = f"External provider returned empty text{detail}"
+            return ProviderResult(
+                provider_requested=self.provider_profile.value,
+                provider_attempted=True,
+                provider_available=False,
+                exact_provider_error=error,
+                runtime_generation_status="BLOCKED",
+                model=resolved_model,
+                raw_model_output="",
+                provider_response=_provider_response_with_attempt(
+                    {
+                        "provider_profile": self.provider_profile.value,
+                        "model": resolved_model,
+                        "request_digest": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
+                        "effective_timeout_seconds": provider_timeout_seconds,
+                        "transport_timing": response.get("transport_timing"),
+                        "transport_response": response,
+                    },
+                    provider_attempted=True,
+                    provider_available=False,
+                    runtime_generation_status="BLOCKED",
+                    exact_provider_error=error,
+                    model=resolved_model,
+                ),
+            )
         return ProviderResult(
             provider_requested=self.provider_profile.value,
             provider_attempted=True,
@@ -607,10 +741,13 @@ class ExternalProvider:
 
 
 __all__ = [
+    "ANTHROPIC_ADAPTIVE_THINKING_MODEL_PREFIXES",
     "ANTHROPIC_OMIT_TEMPERATURE_MODEL_PREFIXES",
     "ExternalProvider",
     "ExternalTransport",
     "anthropic_model_omits_temperature",
+    "anthropic_model_uses_adaptive_thinking",
+    "apply_anthropic_adaptive_thinking_config",
     "apply_anthropic_temperature_capability",
     "external_provider_timeout_max_s",
     "resolve_external_section_timeout_s",
