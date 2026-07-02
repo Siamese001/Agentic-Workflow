@@ -3,9 +3,8 @@
 RULES_INDEX Generator Script (W5.P1)
 
 Generates deterministic RULES_INDEX.md from source-of-truth files:
-- .codex/rules/*.mdc (and legacy *.md if present)
+- .codex/rules/*.md
 - .codex/skills/*/SKILL.md
-- docs/archive/windsurf/legacy-tree/workflows/*.md
 - .codex/hooks.json
 
 Usage:
@@ -26,13 +25,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-WINDSURF_DIR = REPO_ROOT / ".cursor"
-RULES_DIR = WINDSURF_DIR / "rules"
-SKILLS_DIR = WINDSURF_DIR / "skills"
-WORKFLOWS_DIR = WINDSURF_DIR / "workflows"
-HOOKS_JSON = WINDSURF_DIR / "hooks.json"
-RULES_INDEX_PATH = WINDSURF_DIR / "RULES_INDEX.md"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+CODEX_DIR = REPO_ROOT / ".codex"
+RULES_DIR = CODEX_DIR / "rules"
+SKILLS_DIR = CODEX_DIR / "skills"
+WORKFLOWS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "workflows"
+HOOKS_JSON = CODEX_DIR / "hooks.json"
+RULES_INDEX_PATH = REPO_ROOT / "docs" / "reports" / "codex" / "RULES_INDEX.md"
 
 
 def extract_frontmatter(content: str) -> Tuple[Dict[str, any], str]:
@@ -65,13 +64,13 @@ def extract_frontmatter(content: str) -> Tuple[Dict[str, any], str]:
 
 
 def scan_rules() -> List[Dict]:
-    """Scan .codex/rules/*.mdc (and legacy *.md) and extract metadata."""
+    """Scan .codex/rules/*.md and extract metadata."""
     rules = []
     
     if not RULES_DIR.exists():
         return rules
     
-    rule_files = sorted(set(RULES_DIR.glob("*.mdc")) | set(RULES_DIR.glob("*.md")))
+    rule_files = sorted(RULES_DIR.glob("*.md"))
     for rule_file in rule_files:
         if rule_file.name.startswith("_"):
             continue
@@ -80,7 +79,7 @@ def scan_rules() -> List[Dict]:
             content = rule_file.read_text(encoding="utf-8")
             metadata, body = extract_frontmatter(content)
             
-            # legacy editor .mdc: alwaysApply; legacy .md: trigger
+            # Codex rules use `trigger`; historical .mdc alwaysApply is no longer active.
             if metadata.get("alwaysApply") is True:
                 trigger = "always_on"
             else:
@@ -265,10 +264,10 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
     lines.append("## Always-On Discipline")
     lines.append("")
     lines.append("SSOT anchor for rules that reference `#always-on-discipline`. Keep always-on")
-    lines.append("`.mdc` files invariant-focused; put long procedures in skills/workflows.")
+    lines.append("`.md` rule files stay invariant-focused; put long procedures in skills/workflows.")
     lines.append("")
     lines.append("- **Tier-1 (always injected):** `AGENTS.md` + `000`–`003` `alwaysApply` rules only.")
-    lines.append("- **Tier-2 (on demand):** other `.codex/rules/*.mdc` via description/globs.")
+    lines.append("- **Tier-2 (on demand):** other `.codex/rules/*.md` via description/globs.")
     lines.append("- **Tier-3 (progressive):** `.codex/skills/*/SKILL.md` — prefer `mcp-integration` sections over redirect stubs.")
     lines.append("- **Hooks (zero-token enforcement):** `.codex/hooks.json` → `.codex/governance/scripts/*.py` + `.codex/governance/scripts/post_agent_*.py`.")
     lines.append("")
@@ -276,12 +275,12 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
     lines.append("")
     lines.append("| Concern | Canonical | Do not duplicate in |")
     lines.append("|---------|-----------|---------------------|")
-    lines.append("| Always-on invariants | `AGENTS.md`, `000`–`003` `.mdc` | Skills, hook stderr |")
+    lines.append("| Always-on invariants | `AGENTS.md`, `000`–`003` `.md` | Skills, hook stderr |")
     lines.append("| MCP routing tables | `AGENTS.md` autogen + `mcp-integration` §1–§13 | Per-server redirect stubs |")
     lines.append("| Notion DB IDs | `AGENTS.md` NOTION-MAP | `notion` skill body |")
     lines.append("| Author-Gate (native) | `003-author-gate-hitl.md` | `AskUserQuestion` + `ask-user-question-recommendation` skill |")
     lines.append("| Post-agent chain | `after_agent_governance_dispatch.py` | Active `.codex/governance/scripts/post_agent_*` hooks |")
-    lines.append("| Plan paths | `plan-location.mdc` | `AGENTS.md` prose |")
+    lines.append("| Plan paths | `plan-location.md` | `AGENTS.md` prose |")
     lines.append("")
     
     # Summary
@@ -472,7 +471,7 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate RULES_INDEX.md from legacy editor governance sources",
+        description="Generate RULES_INDEX.md report from Codex governance sources",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -518,6 +517,7 @@ Examples:
         # Destructive write mode
         if not args.quiet:
             print(f"Writing to {RULES_INDEX_PATH}...", file=sys.stderr)
+        RULES_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
         RULES_INDEX_PATH.write_text(generated_content, encoding="utf-8")
         if not args.quiet:
             print("Done.", file=sys.stderr)

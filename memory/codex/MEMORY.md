@@ -13,7 +13,7 @@ applies_to: cwd=C:\Git\Agentic-Workflow-FRESH; reuse_rule=reuse for this repo's 
 
 - codex/apps-rg-wave2-tests, detached merge worktree, tools.archive, archive_old_adg, git add -f, tests -k apps_rg --collect-only, Guardian Shield PASS, origin/main
 
-- Related skill: skills/repo-main-merge-publish/SKILL.md
+- Related runbook: runbooks/repo-main-merge-publish.md
 
 ## Task 2: ensure all local worktree branches merged to `main` and pushed, success
 
@@ -25,7 +25,7 @@ applies_to: cwd=C:\Git\Agentic-Workflow-FRESH; reuse_rule=reuse for this repo's 
 
 - git worktree list --porcelain, git branch --merged, git branch --no-merged, work/apps-lic-w1-model-ssot, merge-tree, origin/main, bypassed rule violations
 
-- Related skill: skills/repo-main-merge-publish/SKILL.md
+- Related runbook: runbooks/repo-main-merge-publish.md
 
 ## Task 3: merge archival preservation branch with `ours` and push, success
 
@@ -37,7 +37,7 @@ applies_to: cwd=C:\Git\Agentic-Workflow-FRESH; reuse_rule=reuse for this repo's 
 
 - codex/preserve-local-main-20260614, git merge -s ours --no-ff, branch containment, generated ADG reports, ops_scripts/ci/baselines, tools/git, Automatic merge failed
 
-- Related skill: skills/repo-main-merge-publish/SKILL.md
+- Related runbook: runbooks/repo-main-merge-publish.md
 
 ## User preferences
 

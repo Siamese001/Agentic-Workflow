@@ -1,6 +1,6 @@
 -- Memory MCP knowledge_graph Schema
 -- Canonical SSOT for Memory MCP SQLite schema
--- Location: .cursor/schemas/knowledge_graph.schema.sql
+-- Location: .codex/schemas/knowledge_graph.schema.sql
 -- Version: 1.0.0
 
 -- Core entities table

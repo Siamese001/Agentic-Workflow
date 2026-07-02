@@ -19,7 +19,7 @@ Environment:
 Output:
     artifacts/ci/mcp_config_schema.json
 
-Rule: `.codex/rules/mcp-config-ssot.mdc` + constitutional §27
+Rule: `.codex/rules/mcp-config-ssot.md` + constitutional §27
 """
 
 from __future__ import annotations

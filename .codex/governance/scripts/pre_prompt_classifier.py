@@ -536,12 +536,11 @@ def classify_tier(prompt: str) -> str:
 
 
 def check_plan_exists(tier: str) -> bool:
-    """Return True if a plan file exists in .codex/plans/ for T2/T3."""
+    """Return True if an active root plan file exists for T2/T3."""
     if tier not in ("T2", "T3"):
         return True
-    # Forward-only relocation (c1a17d): canonical plans/ + legacy .codex/plans/.
-    plans_dirs = [repo_root / "plans", repo_root / ".codex" / "plans"]
-    return any(d.exists() and any(d.glob("*.md")) for d in plans_dirs)
+    plans_dir = repo_root / "plans"
+    return plans_dir.exists() and any(plans_dir.glob("*.md"))
 
 
 # SSOT: the Redis hot-cache URL is owned by ADG_REDIS_URL (S-03/S-08). The writer
@@ -886,7 +885,7 @@ def main() -> int:
         if not check_plan_exists(tier):
             print(
                 f"[pre_prompt_classifier] WARNING: {tier} prompt detected but no plan file found "
-                "in .codex/plans/ — consider creating a plan per constitutional §10.",
+                "in repo-root plans/ — consider creating a plan per constitutional §10.",
                 file=sys.stderr,
             )
 

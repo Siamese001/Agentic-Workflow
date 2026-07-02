@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import tomllib
 from dataclasses import asdict, dataclass
@@ -39,6 +40,16 @@ AUTOMATION_DIR_BY_ID = {
 FORBIDDEN_REPO_CODEX_TREES = (
     ".codex/agent-instructions",
     ".codex/automation",
+)
+FORBIDDEN_REPO_ENFORCEMENT_TREES = {
+    ".agents": "Agentic-Workflow skills must live under .codex/skills; root .agents is not a Codex SSOT",
+    "memory/codex/skills": "memory/codex may reference skills, but must not host SKILL.md execution surfaces",
+}
+ALLOWED_CODEX_PLAN_TOP_LEVEL_FILES = {"README.md"}
+FORBIDDEN_SCHEMA_AUTHORITY_REF_RE = re.compile(
+    r"SSOT:\s+\.cursor|Location:\s+\.cursor|Applied by:\s+\.cursor|"
+    r"\.cursor/(?:scripts|schemas|skills)|\.windsurf/(?:plans|rules)",
+    re.IGNORECASE,
 )
 MANUAL_AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
@@ -796,6 +807,47 @@ def _forbidden_repo_paths(root: Path) -> list[Path]:
     return [root / relative_path for relative_path in FORBIDDEN_REPO_CODEX_TREES]
 
 
+def _forbidden_repo_enforcement_paths(root: Path) -> list[tuple[Path, str]]:
+    return [
+        (root / relative_path, detail)
+        for relative_path, detail in FORBIDDEN_REPO_ENFORCEMENT_TREES.items()
+    ]
+
+
+def _codex_top_level_plan_artifacts(root: Path) -> list[Path]:
+    plans_root = root / ".codex" / "plans"
+    if not plans_root.exists():
+        return []
+    return [
+        path
+        for path in sorted(plans_root.glob("*.md"))
+        if path.name not in ALLOWED_CODEX_PLAN_TOP_LEVEL_FILES
+    ]
+
+
+def _legacy_codex_rule_files(root: Path) -> list[Path]:
+    rules_root = root / ".codex" / "rules"
+    if not rules_root.exists():
+        return []
+    return sorted(path for path in rules_root.glob("*.mdc") if path.is_file())
+
+
+def _forbidden_schema_authority_refs(root: Path) -> list[tuple[Path, int, str]]:
+    schemas_root = root / ".codex" / "schemas"
+    if not schemas_root.exists():
+        return []
+    matches: list[tuple[Path, int, str]] = []
+    for path in sorted(p for p in schemas_root.rglob("*") if p.is_file()):
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line_number, line in enumerate(lines, 1):
+            if FORBIDDEN_SCHEMA_AUTHORITY_REF_RE.search(line):
+                matches.append((path, line_number, line.strip()))
+    return matches
+
+
 def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_HOME) -> list[EnforcementHomeIssue]:
     root = root.resolve()
     user_codex_home = user_codex_home.resolve()
@@ -809,6 +861,39 @@ def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_
                     f"{path}: automation contracts must live under {root / '.codex' / 'automations'}",
                 )
             )
+
+    for path, detail in _forbidden_repo_enforcement_paths(root):
+        if path.exists():
+            issues.append(
+                EnforcementHomeIssue(
+                    "repo_duplicate_enforcement_home",
+                    f"{path}: {detail}",
+                )
+            )
+
+    for path in _codex_top_level_plan_artifacts(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_plan_archive_only",
+                f"{path}: .codex/plans is archive-only; active plan files must live under {root / 'plans'}",
+            )
+        )
+
+    for path in _legacy_codex_rule_files(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_legacy_rule_extension",
+                f"{path}: active Codex rules must use .md; .mdc is historical only",
+            )
+        )
+
+    for path, line_number, line in _forbidden_schema_authority_refs(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_stale_schema_authority_ref",
+                f"{path}:{line_number}: stale authority reference in active schema comment: {line}",
+            )
+        )
 
     for automation_id in AUTOMATION_IDS:
         issues.extend(_validate_automation(root, automation_id))

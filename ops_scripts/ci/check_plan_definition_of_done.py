@@ -9,7 +9,7 @@ table cannot be audit-checked. The c8b3e1 plan would have caught its own
 non-functional runtime if a DoD row had said "DoD-N: `python -m apps_rg
 --dry-run` exit 0".
 
-Scan: `.codex/plans/*.md` (excluding `_archive/`, `_orphan_review/`).
+Scan: `plans/*.md` only. `.codex/plans/` is archive-only.
 Required: a `## Definition of Done` heading (case-insensitive, accepts
 `## Definition of Done` and `## Definitions of Done`) followed by content.
 
@@ -31,12 +31,9 @@ import sys
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-# SSOT: active plans live under `.codex/plans/` (plan-location.mdc). Only
-# top-level `*.md` is scanned — not `_archive/` trees — to cap gate cost.
-_PLANS_DIR = _REPO_ROOT / ".codex" / "plans"
-# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
-# canonical NEW plans live in repo-root plans/; .codex/plans/ stays legacy-valid.
-_PLANS_DIRS = [_REPO_ROOT / "plans", _PLANS_DIR]
+# SSOT: active plans live under repo-root `plans/` (plan-location.md).
+# `.codex/plans/` is archive-only and is not scanned by this gate.
+_PLANS_DIR = _REPO_ROOT / "plans"
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_dod_gate.json"
 
 _DOD_HEADING_RE = re.compile(
@@ -53,12 +50,14 @@ _FRONTMATTER_RE = re.compile(r"^---\n(.+?)\n---\n", re.DOTALL)
 
 
 def _scan_plan_files() -> list[Path]:
-    """Return all .md files directly under .codex/plans/ excluding archive subfolders."""
-    out: list[Path] = []
-    for _d in _PLANS_DIRS:
-        if _d.is_dir():
-            out.extend(p for p in _d.glob("*.md") if p.is_file())
-    return sorted(out)
+    """Return active root plan files; `.codex/plans` is archive-only."""
+    if not _PLANS_DIR.is_dir():
+        return []
+    return sorted(
+        p
+        for p in _PLANS_DIR.glob("*.md")
+        if p.is_file() and not p.name.startswith("archived-")
+    )
 
 
 def _is_exempt(content: str) -> bool:

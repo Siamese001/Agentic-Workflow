@@ -40,8 +40,8 @@ Consolidated skill that merges `evidence-bundle`, `ssot-write-gate`, and `progre
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Plans / evidence / RCAs | `.codex/plans/` |
-| Governance reports | `.codex/plans/` |
+| Plans | `plans/` |
+| Evidence / RCAs / governance reports | `docs/reports/` or `artifacts/` by artifact type |
 | Telemetry | `docs/reports/telemetry/` |
 | Freeze reports | `data/freeze_reports/` |
 | Architecture docs | `docs/architecture/` |
@@ -83,7 +83,9 @@ Every artifact reference in a response MUST use backtick citation format: `` `@<
 
 ### Evidence Contract
 
-Each phase produces exactly one evidence file under `.codex/plans/`.
+Each phase produces exactly one evidence file under `docs/reports/` or `artifacts/`
+by artifact type. Active plans live under repo-root `plans/`; `.codex/plans/` is
+archive-only.
 
 **Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
 **PowerShell invocation is FORBIDDEN.**
@@ -130,9 +132,8 @@ All file analysis operations MUST include:
 
 ### Example Progress Display
 ```python
-from .cursor.skills.artifact_management import ProgressTracker
-
-# Create progress tracker
+# Pseudocode: use the repo's current progress helper if one exists for the
+# surface being changed, or keep equivalent progress reporting inline.
 tracker = ProgressTracker(total_items, "Processing files")
 tracker.start()
 
@@ -155,10 +156,10 @@ tracker.complete(f"Processed {total_items} items")
 
 ## Constitutional Requirements Enforced
 
-- **§8:** All plans and reports MUST reside in `.codex/plans/`
+- **§8:** Active plans MUST reside in repo-root `plans/`; `.codex/plans/` is archive-only.
 - **§2.1:** Evidence files MUST be within repository sovereign territories
 - **§5.3:** Query timeout & progress reporting requirements
-- **IDE system paths:** `.codex/plans/`, `.codex/skills/`, `.codex/commands/`
+- **IDE system paths:** `.codex/skills/`, `.codex/commands/`
 
 ## Enforcement Scripts
 

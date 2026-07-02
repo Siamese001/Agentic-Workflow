@@ -46,9 +46,9 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. The DEFERRED_SCOPE/NEXT_STEP auto-post hooks were retired (enforcement-surface-consolidation-d8b3f6 W7); out-of-scope work now surfaces via native spawn_task (constitutional §24 / ADR-096). The deferred_scope_scorer P-Band engine is retained for batch backlog scoring. |
-| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `plans/<slug>-<6hex>.md` (repo-root SSOT; legacy `.codex/plans/` still valid). Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan creation under `plans/<slug>-<6hex>.md` (repo-root SSOT). `.codex/plans/` is archive-only. Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.codex/rules/*.mdc`. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.codex/rules/*.md`. No Notion write. |
 | MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated compatibility copies are non-authoritative. |
 | Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. (See .codex/rules/notion-archived-databases.md.) |
 | ADR Registry | ~~`e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`~~ | ~~`6ed25e12-bd92-4352-ac7a-3a971311f024`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write. |
@@ -95,7 +95,7 @@ Procedural MCP / Notion / ledgers: `scripts/governance/**`, `.codex/**`, and `do
 | Layer | Path | Notes |
 |-------|------|-------|
 | Always-on rules | `AGENTS.md` + `docs/codex-primary-execution.md` | Active Codex governance contract and rule floor |
-| On-demand rules | `scripts/governance/**` | Load by task surface and file scope |
+| On-demand rules | `.codex/rules/*.md` + `scripts/governance/**` | Load by task surface and file scope |
 | Skills | `.codex/skills/*/SKILL.md` | Repo-owned Codex procedural adapters |
 | Hooks | `.codex/hooks.json` + `.codex/hooks/**` | Native Codex hook registry and hook entrypoints |
 | Index | `docs/reports/codex/` + historical rule-index references | Generated route evidence and historical references only |
@@ -129,4 +129,6 @@ The repo must stay Codex-only:
 - Active hook registration lives in `.codex/hooks.json`.
 - Active hook entrypoints live in `.codex/hooks/**`.
 - Active repo Codex governance assets live in `.codex/rules`, `.codex/skills`, `.codex/governance`, `.codex/schemas`, `.codex/templates`, and `.codex/state`.
+- Active skills live only under `.codex/skills`; root `.agents` and `memory/codex/skills` must not contain Agentic-Workflow execution surfaces.
+- Active plan files live under repo-root `plans/`; `.codex/plans` is archive-only.
 - `scripts/governance/verify_codex_primary.py` is the guard for this contract and must pass after governance changes.

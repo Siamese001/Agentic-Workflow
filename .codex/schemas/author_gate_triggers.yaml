@@ -1,7 +1,7 @@
 # =====================================================================
 # Author-Gate Triggers — Observable features that require a HITL packet
 # =====================================================================
-# SSOT for .cursor/scripts/pre_author_gate.py
+# SSOT for Codex author-gate trigger metadata.
 #
 # Design philosophy (per Anthropic Auto Mode + Fowler harness):
 #   - DEFAULT = BALANCED (low false-positive rate, real tier-3 actions only)
@@ -9,7 +9,8 @@
 #   - Trigger evaluation only for Tier-3 actions
 #   - Every trigger below cites an observable feature — never intuition
 #
-# Change procedure: edit this file → run `pre_author_gate.py --self-test`
+# Change procedure: edit this file, then run the author-gate validator for
+# the changed trigger surface.
 # =====================================================================
 
 version: 1
