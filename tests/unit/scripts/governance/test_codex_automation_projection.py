@@ -95,17 +95,19 @@ def test_write_user_profile_projection_is_validator_compliant(monkeypatch, tmp_p
     assert error is None
     assert data is not None
     assert data["schema"] == enforcement_home.AUTOMATION_PROJECTION_SCHEMA
-    assert data["projection_kind"] == "repo_contract_pointer"
+    assert data["projection_kind"] == "repo_contract_ui_mirror"
     assert data["automation_id"] == "weekly-adg-audit-and-burndown"
     assert "contract_path" in data
     assert "contract_sha256" in data
-    assert "prompt" not in data
-    assert "model" not in data
-    assert "reasoning_effort" not in data
+    assert data["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
+    assert data["model"] == "gpt-5.4-mini"
+    assert data["reasoning_effort"] == "xhigh"
+    assert data["execution_environment"] == "local"
+    assert data["cwds"] == [str(root)]
     assert enforcement_home.validate(root, user_codex_home) == []
 
 
-def test_projection_payloads_are_pointer_only(monkeypatch, tmp_path: Path) -> None:
+def test_projection_payloads_include_ui_fields(monkeypatch, tmp_path: Path) -> None:
     root = tmp_path / "repo"
     user_codex_home = tmp_path / "user-codex"
     monkeypatch.setattr(enforcement_home, "AUTOMATION_IDS", ("weekly-adg-audit-and-burndown",))
@@ -119,16 +121,16 @@ def test_projection_payloads_are_pointer_only(monkeypatch, tmp_path: Path) -> No
         include_payloads=True,
     )
 
-    payload = report["launcher_pointer_payloads"][0]
-    assert payload["mode"] == "pointer"
+    payload = report["launcher_ui_mirror_payloads"][0]
+    assert payload["mode"] == "ui_mirror"
     assert "contractPath" in payload
     assert "contractSha256" in payload
-    assert "prompt" not in payload
-    assert "model" not in payload
-    assert "cwds" not in payload
+    assert payload["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
+    assert payload["model"] == "gpt-5.4-mini"
+    assert payload["cwds"] == [str(root)]
 
 
-def test_disable_stale_user_profile_launchers_then_writes_pointer(monkeypatch, tmp_path: Path) -> None:
+def test_disable_stale_user_profile_launchers_then_writes_ui_mirror(monkeypatch, tmp_path: Path) -> None:
     root = tmp_path / "repo"
     user_codex_home = tmp_path / "user-codex"
     automation_id = "weekly-adg-audit-and-burndown"
@@ -152,6 +154,7 @@ def test_disable_stale_user_profile_launchers_then_writes_pointer(monkeypatch, t
     data, error = enforcement_home._load_toml(stale_launcher)
     assert error is None
     assert data is not None
-    assert data["projection_kind"] == "repo_contract_pointer"
-    assert "prompt" not in data
+    assert data["projection_kind"] == "repo_contract_ui_mirror"
+    assert data["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
+    assert data["model"] == "gpt-5.4-mini"
     assert enforcement_home.validate(root, user_codex_home) == []

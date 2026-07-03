@@ -59,27 +59,27 @@ USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
     "on-demand-pr-main-publisher-2",
 )
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
-AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-pointer/v1"
+AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-ui-mirror/v1"
 AUTOMATION_PROJECTION_FIELDS = (
     "schema",
     "projection_kind",
-    "id",
     "automation_id",
-    "kind",
-    "name",
-    "status",
-    "rrule",
     "enabled",
     "repo_root",
     "contract_path",
     "contract_sha256",
-)
-USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS = (
+    "id",
+    "kind",
+    "name",
     "prompt",
+    "status",
+    "rrule",
     "model",
     "reasoning_effort",
     "execution_environment",
     "cwds",
+)
+USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS = (
     "runtime_optimization",
     "handoff",
 )
@@ -645,7 +645,7 @@ def _automation_contract_digest(path: Path) -> str:
 
 
 def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, Any] | None:
-    """Build the allowed Codex Desktop launcher pointer for an active repo cron contract."""
+    """Build the allowed Codex Desktop UI mirror for an active repo cron contract."""
     root = root.resolve()
     data = _load_automation(root, automation_id)
     if data is None:
@@ -658,17 +658,22 @@ def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, A
     contract_path = _automation_path(root, automation_id).resolve()
     return {
         "schema": AUTOMATION_PROJECTION_SCHEMA,
-        "projection_kind": "repo_contract_pointer",
-        "id": data.get("id"),
+        "projection_kind": "repo_contract_ui_mirror",
         "automation_id": automation_id,
-        "kind": data.get("kind"),
-        "name": data.get("name", automation_id),
-        "status": data.get("status"),
-        "rrule": data.get("rrule"),
         "enabled": True,
         "repo_root": str(root),
         "contract_path": str(contract_path),
         "contract_sha256": _automation_contract_digest(contract_path),
+        "id": data.get("id"),
+        "kind": data.get("kind"),
+        "name": data.get("name", automation_id),
+        "prompt": prompt,
+        "status": data.get("status"),
+        "rrule": data.get("rrule"),
+        "model": data.get("model"),
+        "reasoning_effort": data.get("reasoning_effort"),
+        "execution_environment": data.get("execution_environment"),
+        "cwds": data.get("cwds"),
     }
 
 

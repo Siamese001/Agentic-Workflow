@@ -18,7 +18,7 @@ No parallel registry: `.codex` is the only repo governance tree for Codex rules,
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
-Repo-specific Codex enforcement must live under this repository, not under the Windows user-profile Codex home. Cadence automation contracts live in `.codex/automations/`, repo-specific bootstrap skills live in `.codex/skills/`, and generated user-profile automation entries may only be pointer launchers with repo path plus digest metadata. They must not copy Agentic-Workflow prompts, model settings, cwd lists, handoff metadata, runtime optimization metadata, or other contract payloads. The guard is:
+Repo-specific Codex enforcement must live under this repository, not under the Windows user-profile Codex home. Cadence automation contracts live in `.codex/automations/`, repo-specific bootstrap skills live in `.codex/skills/`, and generated user-profile automation entries may only be digest-bound launcher mirrors with repo path metadata. They may mirror the repo contract's UI/runtime fields (`prompt`, `model`, `reasoning_effort`, `execution_environment`, and `cwds`) so Codex Desktop can display and run scheduled automations, but they must validate exactly against the repo-owned contract and must not carry hand-edited or stale payloads, handoff metadata, runtime optimization metadata, or other independent contract authority. The guard is:
 
 ```bash
 python scripts/governance/verify_codex_enforcement_home.py --json
@@ -34,7 +34,7 @@ Primary verification is repo-owned:
 python scripts/governance/verify_codex_primary.py
 ```
 
-The primary verifier includes `verify_codex_enforcement_home.py`, so it fails when Agentic-Workflow automation or skill enforcement drifts back into the user profile. To refresh Codex Desktop launcher pointers without creating a second SSOT, run:
+The primary verifier includes `verify_codex_enforcement_home.py`, so it fails when Agentic-Workflow automation or skill enforcement drifts back into the user profile. To refresh Codex Desktop launcher mirrors without creating a second SSOT, run:
 
 ```bash
 python scripts/governance/codex_automation_projection.py --disable-stale-user-profile-launchers --write-user-profile --json

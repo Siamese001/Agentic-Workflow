@@ -236,7 +236,7 @@ def test_user_profile_projection_rejects_contract_path_drift(tmp_path: Path) -> 
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
-def test_user_profile_projection_rejects_prompt_payload(tmp_path: Path) -> None:
+def test_user_profile_projection_rejects_prompt_drift(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
     launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
