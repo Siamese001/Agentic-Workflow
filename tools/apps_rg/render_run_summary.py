@@ -41,6 +41,10 @@ from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
     BCG_EXECUTIVE_OUTPUT_MD,
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_JSON,
+    FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_JSON,
     REVIEW_BUNDLE_FILENAME,
 )
@@ -302,12 +306,14 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     counts = ledger.get("section_counts") if isinstance(ledger.get("section_counts"), dict) else {}
     result = ledger.get("result_summary") if isinstance(ledger.get("result_summary"), dict) else {}
     rca = ledger.get("rca_findings") if isinstance(ledger.get("rca_findings"), list) else []
+    final_out = ledger.get("final_resume_output") if isinstance(ledger.get("final_resume_output"), dict) else {}
     lines.append("")
     lines.append("| Signal | Value |")
     lines.append("|---|---|")
     lines.append(f"| Outcome authorized | `{result.get('outcome_authorized')}` |")
     lines.append(f"| Exit status | `{result.get('exit_status') or '—'}` |")
     lines.append(f"| X3 disposition | `{result.get('x3_disposition') or '—'}` |")
+    lines.append(f"| Final resume output gate | `{final_out.get('status') or 'UNKNOWN'}` |")
     lines.append(
         "| Section counts | "
         f"total `{counts.get('total', 0)}`, real LLM `{counts.get('ran_real_llm', 0)}`, "
@@ -315,6 +321,28 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
         f"pre-run `{counts.get('pre_run_blocked', 0)}`, not-run `{counts.get('not_run', 0)}` |"
     )
     lines.append(f"| RCA findings | `{len(rca)}` |")
+    if final_out:
+        lines.append("")
+        lines.append("Final resume mandatory outputs:")
+        lines.append("")
+        lines.append("| Artifact | Path | Status | Bytes |")
+        lines.append("|---|---|---|---:|")
+        for label, key in (
+            ("Canonical final resume JSON", "final_resume_json"),
+            ("Rendered final resume text", "rendered_resume_text"),
+            ("Final resume DOCX", "resume_docx"),
+        ):
+            art = final_out.get(key) if isinstance(final_out.get(key), dict) else {}
+            exists = "PASS" if art.get("exists") else "MISSING"
+            lines.append(
+                f"| **{label}** | `{art.get('relpath') or '—'}` | `{exists}` | {int(art.get('bytes') or 0)} |"
+            )
+        failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+        lines.append("")
+        lines.append(
+            "Final resume failed gates: "
+            + ("`" + "`, `".join(str(g) for g in failed_final) + "`" if failed_final else "`none`")
+        )
     if rca:
         lines.append("")
         lines.append("Top RCA findings:")
@@ -1040,6 +1068,7 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
         run_dir,
         [
             json_rel,
+            Path(FINAL_RESUME_ASSEMBLY_JSON_RELPATH),
             Path("outputs/generated_resume.json"),
             Path("generated_resume.json"),
             Path("modular_r4/outputs/final_resume.json"),
@@ -1050,7 +1079,7 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
     docx = _first_existing_path(
         run_dir,
         [
-            Path("outputs/resume.docx"),
+            Path(FINAL_RESUME_DOCX_RELPATH),
             Path("Amit_Ayer_Resume.docx"),
         ],
     )
@@ -1061,6 +1090,8 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
             run_dir,
             "product_resume_docx_branded",
         )
+    if (run_dir / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file():
+        docx_required = True
     run_report_path = run_dir / "run_report.json"
     run_report_required = _bundle_role_required(run_dir, "narrative_run_report", default=False)
     section_status = run_dir / FULL_RUN_SECTION_STATUS_JSON
@@ -1070,7 +1101,9 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
     rows: List[Tuple[str, str, str]] = []
     artifact_rows: List[Tuple[str, Path, bool, str]] = [
         ("Resume JSON", json_resume, json_required, ""),
-        ("Resume DOCX", docx, docx_required, "docx_output_required=false"),
+        ("Final resume text", run_dir / FINAL_RESUME_OUTPUT_TXT, (run_dir / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file(), ""),
+        ("Final resume output contract", run_dir / FINAL_RESUME_OUTPUT_JSON, (run_dir / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file(), ""),
+        ("Resume DOCX", docx, docx_required, "final resume not assembled for this run"),
         ("Run manifest", run_dir / "r4_run_manifest.json", True, ""),
         (
             "Run report",

@@ -101,11 +101,16 @@ def test_integrated_coverage_roles_when_files_present(tmp_path: Path) -> None:
         "agentic_core_how_trace.json": "{}",
         "runtime_exhaust_bundle.json": "{}",
         "exit_review_packet.json": "{}",
+        "FINAL_RESUME_OUTPUT.txt": "resume",
+        "FINAL_RESUME_OUTPUT.json": "{}",
         "generated_resume.json": "[]",
         "Amit_Ayer_Resume.docx": "x",
     }
     for name, body in files.items():
         (d / name).write_text(body, encoding="utf-8")
+    asm = d / "modular_r4" / "final_resume_assembly"
+    asm.mkdir(parents=True)
+    (asm / "final_resume.json").write_text("{}", encoding="utf-8")
     outp = d / "outputs"
     outp.mkdir()
     (outp / "generated_resume.json").write_text("[]", encoding="utf-8")
@@ -122,6 +127,14 @@ def test_integrated_coverage_roles_when_files_present(tmp_path: Path) -> None:
     assert by_role["spine_exit_review_packet"]["exists"] is True
     assert by_role["product_resume_json_flat"]["exists"] is True
     assert by_role["product_resume_json_outputs"]["exists"] is True
+    assert by_role["product_final_resume_output_text"]["required"] is True
+    assert by_role["product_final_resume_output_text"]["exists"] is True
+    assert by_role["product_final_resume_output_json"]["required"] is True
+    assert by_role["product_final_resume_output_json"]["exists"] is True
+    assert by_role["product_final_resume_spine_json"]["required"] is True
+    assert by_role["product_final_resume_spine_json"]["exists"] is True
+    assert by_role["product_resume_docx_outputs"]["required"] is True
+    assert by_role["product_resume_docx_outputs"]["exists"] is True
 
 
 def test_lane_coverage_roles_when_files_present(tmp_path: Path) -> None:

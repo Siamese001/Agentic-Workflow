@@ -13,6 +13,7 @@ from apps_rg.runtime.assembly.full_resume_llm_coherence import assembly_product_
 CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
     "headline",
     "executive_summary",
+    "competencies",
     "unify_narrative",
     "unify_bullets",
     "ibm_narrative",
@@ -22,7 +23,6 @@ CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
     "ey_narrative",
     "ey_bullets",
     "early_career",
-    "competencies",
     "education",
     "certifications",
 )

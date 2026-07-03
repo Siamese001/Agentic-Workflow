@@ -292,13 +292,16 @@ def test_render_run_summary_uses_modular_r4_outputs_and_nested_l7(tmp_path: Path
     modular = run_dir / "modular_r4" / "final_resume_assembly"
     modular.mkdir(parents=True)
     (outputs / "generated_resume.json").write_text('{"resume": "ok"}\n', encoding="utf-8")
+    (outputs / "resume.docx").write_bytes(b"DOCX")
     _write_json(
         run_dir / "apps_rg_output_manifest.json",
         {
             "schema_version": "apps_rg_output_manifest.v1",
             "generated_resume_json_relpath": "outputs/generated_resume.json",
             "full_resume_generated": True,
-            "docx_output_required": False,
+            "docx_output_required": True,
+            "resume_docx_relpath": "outputs/resume.docx",
+            "docx_verified": True,
         },
     )
     _write_json(run_dir / "r4_run_manifest.json", {"run_id": "r4"})
@@ -352,7 +355,8 @@ def test_render_run_summary_uses_modular_r4_outputs_and_nested_l7(tmp_path: Path
     assert "| **Resume JSON** |" in out
     assert "outputs" in out and "generated_resume.json" in out
     assert "| **Resume DOCX** |" in out
-    assert "optional (docx_output_required=false)" in out
+    assert "outputs\\resume.docx" in out or "outputs/resume.docx" in out
+    assert "optional (docx_output_required=false)" not in out
     assert "| **Run report** |" in out
     assert "optional (modular R4 uses full_run_section_status.json)" in out
     assert "## Modular Section Status" in out

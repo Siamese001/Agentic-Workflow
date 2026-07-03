@@ -14,6 +14,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal, Mapping, MutableMapping, cast
 
+from apps_rg.runtime.run_output_contract import (
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_JSON,
+    FINAL_RESUME_OUTPUT_TXT,
+)
+
 _log = logging.getLogger(__name__)
 
 try:
@@ -298,10 +305,13 @@ _INTEGRATED_KNOWN: tuple[tuple[str, str, str, bool, str], ...] = (
 )
 
 _INTEGRATED_OPTIONAL_OUTPUTS: tuple[tuple[str, str, str, bool, str], ...] = (
+    ("product_final_resume_output_text", FINAL_RESUME_OUTPUT_TXT, "text/plain", True, "apps_rg_final_resume_output_gate"),
+    ("product_final_resume_output_json", FINAL_RESUME_OUTPUT_JSON, "application/json", True, "apps_rg_final_resume_output_gate"),
+    ("product_final_resume_spine_json", FINAL_RESUME_ASSEMBLY_JSON_RELPATH, "application/json", True, "apps_rg_final_resume_assembly"),
     ("product_resume_json_flat", "generated_resume.json", "application/json", False, "apps_rg_resume_assembly"),
     ("product_resume_docx_branded", "Amit_Ayer_Resume.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", False, "apps_rg_docx_export"),
     ("product_resume_json_outputs", "outputs/generated_resume.json", "application/json", False, "apps_rg_resume_assembly"),
-    ("product_resume_docx_outputs", "outputs/resume.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", False, "apps_rg_docx_export"),
+    ("product_resume_docx_outputs", FINAL_RESUME_DOCX_RELPATH, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", True, "apps_rg_docx_export"),
     ("spine_integrated_manifest", "integrated_runtime_artifact_manifest.json", "application/json", False, "integrated_single_action_spine"),
     ("spine_exit_review_packet", "exit_review_packet.json", "application/json", False, "integrated_single_action_spine"),
     ("spine_runtime_exhaust", "runtime_exhaust_bundle.json", "application/json", False, "integrated_single_action_spine"),

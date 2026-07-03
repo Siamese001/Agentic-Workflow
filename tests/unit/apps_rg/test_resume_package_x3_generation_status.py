@@ -35,6 +35,7 @@ def _run_root_with_artifacts(tmp: Path) -> Path:
         json.dumps({"headline": "SVP", "executive_summary": "x", "k": 1}),
         encoding="utf-8",
     )
+    (out / "resume.docx").write_bytes(b"DOCX")
     return docx_root
 
 
@@ -44,7 +45,9 @@ def _manifest(**overrides: object) -> dict:
         "resume_shape": REAL_RESUME,
         "full_resume_generated": True,
         "generated_resume_json_relpath": "outputs/generated_resume.json",
-        "docx_output_required": False,
+        "docx_output_required": True,
+        "resume_docx_relpath": "outputs/resume.docx",
+        "docx_verified": True,
     }
     m.update(overrides)
     return m
@@ -126,6 +129,7 @@ def test_w3_manifest_good_package_allow(tmp_path: Path) -> None:
     out = docx_root / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     (out / "generated_resume.json").write_text(json.dumps({"r": 1}), encoding="utf-8")
+    (out / "resume.docx").write_bytes(b"DOCX")
     paths.apps_rg_output_manifest_json.write_text(
         json.dumps(_manifest()),
         encoding="utf-8",
@@ -155,6 +159,7 @@ def test_w3_manifest_stub_blocks_package_allow(tmp_path: Path) -> None:
     out = docx_root / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     (out / "generated_resume.json").write_text(json.dumps({"r": 1}), encoding="utf-8")
+    (out / "resume.docx").write_bytes(b"DOCX")
     paths.apps_rg_output_manifest_json.write_text(
         json.dumps(_manifest(apps_rg_generation_status=STUB_RECEIPT, resume_shape=STUB_RECEIPT)),
         encoding="utf-8",

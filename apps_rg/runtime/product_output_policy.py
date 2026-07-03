@@ -8,9 +8,11 @@ from pathlib import Path
 
 
 def docx_output_required() -> bool:
-    """When False (default), gates and package X3 do not require DOCX artifacts."""
+    """Product runs require DOCX artifacts unless explicitly disabled for tests."""
     raw = os.environ.get("APPS_RG_DOCX_OUTPUT_REQUIRED", "").strip().lower()
-    return raw in ("1", "true", "yes", "on")
+    if raw in ("0", "false", "no", "off"):
+        return False
+    return True
 
 
 def _env_on(name: str) -> bool:

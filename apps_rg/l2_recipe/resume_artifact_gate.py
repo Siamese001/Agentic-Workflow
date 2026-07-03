@@ -51,10 +51,12 @@ def persist_json_product_outputs(
         "apps_rg_generation_status": shape_rep.generation_status,
         "full_resume_generated": shape_rep.full_resume_generated,
         "resume_shape": shape_rep.resume_shape,
-        "docx_output_required": False,
+        "docx_output_required": True,
         "required_artifacts": {
             "generated_resume_json": "present",
             "output_manifest": "present",
+            "resume_docx": "missing",
+            "docx_verified": False,
         },
     }
     man_path.write_text(
@@ -126,11 +128,13 @@ def merge_manifest_after_artifact_gate(
     manifest["apps_rg_generation_status"] = shape_rep.generation_status
     manifest["full_resume_generated"] = shape_rep.full_resume_generated
     manifest["resume_shape"] = shape_rep.resume_shape
-    manifest["docx_output_required"] = False
+    manifest["docx_output_required"] = True
     manifest["generated_resume_json_relpath"] = _REL_GENERATED_RESUME_JSON.as_posix()
     manifest["required_artifacts"] = {
         "generated_resume_json": "verified",
         "output_manifest": "verified",
+        "resume_docx": "verified" if (base / "outputs" / "resume.docx").is_file() else "missing",
+        "docx_verified": (base / "outputs" / "resume.docx").is_file(),
     }
     man_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",

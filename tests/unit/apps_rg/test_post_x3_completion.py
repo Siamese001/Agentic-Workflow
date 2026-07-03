@@ -23,6 +23,7 @@ def test_post_x3_completion_commits_generated_resume_and_binds_eval(
         "citations": [{"source_id": "src_1"}],
     }
     _write_json(tmp_path / "outputs" / "generated_resume.json", generated)
+    (tmp_path / "outputs" / "resume.docx").write_bytes(b"DOCX")
     _write_json(
         tmp_path / "apps_rg_output_manifest.json",
         {
@@ -31,8 +32,14 @@ def test_post_x3_completion_commits_generated_resume_and_binds_eval(
             "apps_rg_generation_status": "REAL_RESUME",
             "full_resume_generated": True,
             "resume_shape": "REAL_RESUME",
-            "docx_output_required": False,
-            "required_artifacts": {"generated_resume_json": "verified"},
+            "docx_output_required": True,
+            "resume_docx_relpath": "outputs/resume.docx",
+            "docx_verified": True,
+            "required_artifacts": {
+                "generated_resume_json": "verified",
+                "resume_docx": "verified",
+                "docx_verified": True,
+            },
         },
     )
     _write_json(

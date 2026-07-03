@@ -30,6 +30,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from apps_rg.runtime.assembly.full_resume_text import (  # noqa: E402
     CERTIFICATIONS_AND_CREDENTIALS_HEADING,
     ENGINEERING_PLATFORM_COMPETENCIES_HEADING,
+    base_role_headers_from_final_resume,
     bullets_from_list,
     contact_line,
     exp_header,
@@ -107,9 +108,15 @@ def _bullets(doc: Document, snap: dict[str, Any]) -> None:
         _para(doc, line, size=10)
 
 
-def _role_block(doc: Document, narr_snap: dict[str, Any], bullet_snap: dict[str, Any],
-                header_key: str) -> None:
-    hdr = narr_snap.get(header_key) or bullet_snap.get(header_key) or {}
+def _role_block(
+    doc: Document,
+    narr_snap: dict[str, Any],
+    bullet_snap: dict[str, Any],
+    header_key: str,
+    *,
+    base_header: dict[str, Any] | None = None,
+) -> None:
+    hdr = base_header or narr_snap.get(header_key) or bullet_snap.get(header_key) or {}
     if not hdr:
         return
     header_lines = exp_header(hdr)
@@ -167,28 +174,6 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
         _heading(doc, "Executive Summary")
         _para(doc, exec_text, size=10, space_after=4)
 
-    _heading(doc, "Professional Experience")
-    _role_block(doc, snap("unify_narrative"), snap("unify_bullets"), "unify_header")
-    _role_block(doc, snap("ibm_narrative"), snap("ibm_bullets"), "ibm_header")
-    _role_block(doc, snap("insurtech_narrative"), snap("insurtech_bullets"), "insurtech_header")
-    _role_block(doc, snap("ey_narrative"), snap("ey_bullets"), "ey_header")
-
-    early = (by_id.get("early_career") or {}).get("copied_text_exact")
-    if early:
-        obj = json.loads(early)
-        hdr_lines = exp_header(
-            {k: obj.get(k) for k in ("employer", "title", "location", "start_date", "end_date", "is_current")}
-        )
-        if hdr_lines:
-            _para(doc, hdr_lines[0], bold=True, size=11, space_after=0)
-            if len(hdr_lines) > 1:
-                _para(doc, hdr_lines[1], italic=True, size=9, space_after=2)
-        role_narr = str(obj.get("role_narrative") or "").strip()
-        if role_narr:
-            _para(doc, role_narr, italic=True, size=10)
-        for line in bullets_from_list(obj.get("bullets") or []):
-            _para(doc, line, size=10)
-
     comp_cats = snap("competencies").get("competencies") or []
     if comp_cats:
         _heading(doc, ENGINEERING_PLATFORM_COMPETENCIES_HEADING)
@@ -209,6 +194,55 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
                 run2 = para.add_run(", ".join(terms))
                 run2.font.size = Pt(10)
                 para.paragraph_format.space_after = Pt(2)
+
+    base_headers = base_role_headers_from_final_resume(blob)
+
+    _heading(doc, "Professional Experience")
+    _role_block(
+        doc,
+        snap("unify_narrative"),
+        snap("unify_bullets"),
+        "unify_header",
+        base_header=base_headers.get("unify"),
+    )
+    _role_block(
+        doc,
+        snap("ibm_narrative"),
+        snap("ibm_bullets"),
+        "ibm_header",
+        base_header=base_headers.get("ibm"),
+    )
+    _role_block(
+        doc,
+        snap("insurtech_narrative"),
+        snap("insurtech_bullets"),
+        "insurtech_header",
+        base_header=base_headers.get("insurtech"),
+    )
+    _role_block(
+        doc,
+        snap("ey_narrative"),
+        snap("ey_bullets"),
+        "ey_header",
+        base_header=base_headers.get("ey"),
+    )
+
+    early = (by_id.get("early_career") or {}).get("copied_text_exact")
+    if early:
+        obj = json.loads(early)
+        hdr = base_headers.get("early_career") or {
+            k: obj.get(k) for k in ("employer", "title", "location", "start_date", "end_date", "is_current")
+        }
+        hdr_lines = exp_header(hdr)
+        if hdr_lines:
+            _para(doc, hdr_lines[0], bold=True, size=11, space_after=0)
+            if len(hdr_lines) > 1:
+                _para(doc, hdr_lines[1], italic=True, size=9, space_after=2)
+        role_narr = str(obj.get("role_narrative") or "").strip()
+        if role_narr:
+            _para(doc, role_narr, italic=True, size=10)
+        for line in bullets_from_list(obj.get("bullets") or []):
+            _para(doc, line, size=10)
 
     edu_raw = (by_id.get("education") or {}).get("copied_text_exact")
     if edu_raw:

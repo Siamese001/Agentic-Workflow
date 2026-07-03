@@ -230,9 +230,9 @@ def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(t
     assert summary["fault"] == ""
     assert summary["decisive_status"] == "PASS"
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "None - all required sections and final aggregation are product-authorized" in bcg
+    assert "final resume output gate failed" in bcg
     assert "Fix the P0 blocker sections named above" not in bcg
-    assert "Preserve the generated output package and run evidence" in bcg
+    assert "Fix the final resume output gates before treating the run as product-ready" in bcg
 
 
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:

@@ -155,7 +155,8 @@ def test_gate_success_merges_manifest(tmp_path: Path) -> None:
     ra = man.get("required_artifacts")
     assert isinstance(ra, dict)
     assert ra.get("generated_resume_json") == "verified"
-    assert "resume_docx" not in ra
+    assert ra.get("resume_docx") == "missing"
+    assert ra.get("docx_verified") is False
 
 
 def test_persist_json_product_outputs_writes_files(tmp_path: Path) -> None:
@@ -173,3 +174,6 @@ def test_artifact_gate_step_json_only(tmp_path: Path) -> None:
     assert out["status"] == "ok"
     assert not (tmp_path / "outputs" / "resume.docx").exists()
     assert (tmp_path / "outputs" / "generated_resume.json").is_file()
+    man = json.loads((tmp_path / "apps_rg_output_manifest.json").read_text(encoding="utf-8"))
+    assert man["docx_output_required"] is True
+    assert man["required_artifacts"]["resume_docx"] == "missing"

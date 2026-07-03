@@ -23,10 +23,18 @@ from apps_rg.runtime.full_run_section_status import (
     LaneSectionStatusRow,
     collect_full_run_section_status,
 )
+from apps_rg.runtime.final_resume_outputs import (
+    build_final_resume_output_contract,
+    emit_final_resume_product_outputs,
+)
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
     BCG_EXECUTIVE_OUTPUT_MD,
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_JSON,
+    FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_JSON,
     REVIEW_BUNDLE_FILENAME,
 )
@@ -393,6 +401,10 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
         "proof_classification": proof_gate.get("proof_classification") or "",
         "decisive_reason": proof_gate.get("decisive_reason") or result.get("failure_reason") or "",
     }
+
+
+def _final_resume_output_required(run_root: Path, summary: dict[str, Any]) -> bool:
+    return bool(summary.get("outcome_authorized")) or (run_root / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
 
 
 def _top_rca_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -942,6 +954,7 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
     sections = doc["sections"]
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
     lines = [
         "# apps_rg Mandatory Run Output",
         "",
@@ -958,6 +971,7 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
         f"| X3 disposition | `{summary.get('x3_disposition') or '-'}` |",
         f"| Fault | `{_markdown_table_escape(summary.get('fault') or '-')}` |",
         f"| Integrated proof gate | `{summary.get('proof_gate_status') or '-'}` `{summary.get('proof_classification') or '-'}` |",
+        f"| Final resume output gate | `{final_out.get('status') or 'UNKNOWN'}` |",
         "",
         "## Section Counts",
         "",
@@ -989,6 +1003,49 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
             f"`{_markdown_table_escape(failed or '-')}` | "
             f"`{_markdown_table_escape(section.get('display_txt_relpath') or '-')}` |"
         )
+    lines.extend(
+        [
+            "",
+            "## Final Resume Product Outputs",
+            "",
+            "| Artifact | Path | Status | Bytes | SHA256 |",
+            "|---|---|---|---:|---|",
+        ]
+    )
+    final_artifacts = (
+        ("Canonical final resume JSON", final_out.get("final_resume_json")),
+        ("Rendered final resume text", final_out.get("rendered_resume_text")),
+        ("Final resume DOCX", final_out.get("resume_docx")),
+    )
+    for label, art in final_artifacts:
+        art = art if isinstance(art, dict) else {}
+        exists = "PASS" if art.get("exists") else "MISSING"
+        lines.append(
+            "| "
+            f"{label} | `{_markdown_table_escape(art.get('relpath') or '-')}` | "
+            f"`{exists}` | {int(art.get('bytes') or 0)} | "
+            f"`{_markdown_table_escape(art.get('sha256') or '-')}` |"
+        )
+    failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+    lines.extend(
+        [
+            "",
+            "| Gate | Status | Observed |",
+            "|---|---|---|",
+        ]
+    )
+    for gate in final_out.get("gates") or []:
+        if not isinstance(gate, dict):
+            continue
+        lines.append(
+            "| "
+            f"`{gate.get('gate_id')}` | "
+            f"`{'PASS' if gate.get('pass') is True else 'FAIL'}` | "
+            f"`{_markdown_table_escape(gate.get('observed_value'))}` |"
+        )
+    if failed_final:
+        lines.append("")
+        lines.append(f"Final resume output failed gates: `{_markdown_table_escape(', '.join(str(g) for g in failed_final))}`")
     lines.extend(["", "## Judge Execution Ledger", ""])
     lines.append("| Section | Judge | Model | Status | Score | Threshold | Pass | Issues |")
     lines.append("|---|---|---|---|---:|---:|---|---|")
@@ -1046,8 +1103,16 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     sections = doc["sections"]
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
     failed_count = counts["blocked"] + counts["pre_run_blocked"] + counts["not_run"]
-    authorized = bool(summary.get("outcome_authorized"))
+    final_status = str(final_out.get("status") or "UNKNOWN")
+    final_gate_blocks = final_status == "FAIL"
+    authorized = bool(summary.get("outcome_authorized")) and not final_gate_blocks
+    blocker_text = (
+        "final resume output gate failed"
+        if final_gate_blocks
+        else summary.get("fault") or summary.get("decisive_reason") or "section gates / aggregation"
+    )
     if authorized:
         answer = "The run reached an authorized product outcome. Preserve the generated outputs and review the run ledger for section and judge proof."
     elif failed_count:
@@ -1074,7 +1139,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         "|---|---|",
         f"| Did real generation run? | `{counts['ran_real_llm']}` section(s) reported `REAL_LLM`. |",
         f"| Was a final product authorized? | `{summary.get('outcome_authorized')}` |",
-        f"| What blocked the run? | `{_markdown_table_escape('None - all required sections and final aggregation are product-authorized' if authorized else summary.get('fault') or summary.get('decisive_reason') or 'section gates / aggregation')}` |",
+        f"| What blocked the run? | `{_markdown_table_escape('None - all required sections, final aggregation, and product outputs are authorized' if authorized else blocker_text)}` |",
+        f"| Final resume output gate | `{final_out.get('status') or 'UNKNOWN'}` |",
         f"| Primary decision | `{_markdown_table_escape('Preserve outputs and review evidence ledgers; no blocker remediation required.' if authorized else 'Fix targeted blockers and rerun; do not weaken X2/X3 gates.')}` |",
         "",
         "## Run Scorecard",
@@ -1124,6 +1190,10 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         lines.append("1. Preserve the generated output package and run evidence.")
         lines.append("2. Review the mandatory ledger and section-status table for audit details.")
         lines.append("3. Treat future edits as new changes requiring the same X2/X3 gates.")
+    elif final_gate_blocks:
+        lines.append("1. Fix the final resume output gates before treating the run as product-ready.")
+        lines.append("2. Regenerate the mandatory final resume text and DOCX from the canonical spine.")
+        lines.append("3. Re-render the mandatory ledger and summary after the product outputs pass.")
     else:
         lines.append("1. Fix the P0 blocker sections named above.")
         lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
@@ -1131,6 +1201,9 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     lines.extend(["", "## Evidence Map", ""])
     lines.append(f"- Mandatory run ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}`")
     lines.append(f"- Machine-readable ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}`")
+    lines.append(f"- Rendered final resume: `@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_TXT}`")
+    lines.append(f"- Final resume output contract: `@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}`")
+    lines.append(f"- Resume DOCX: `@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}`")
     lines.append(f"- Section status: `@{doc['run_root_abs']}\\{FULL_RUN_SECTION_STATUS_JSON}`")
     lines.append(f"- Review bundle: `@{doc['run_root_abs']}\\{REVIEW_BUNDLE_FILENAME}`")
     return "\n".join(lines)
@@ -1146,19 +1219,29 @@ def build_mandatory_run_output(
     root = Path(run_root).resolve()
     repo = (repo_root or root).resolve()
     sections = _collect_section_records(root, repo_root=repo, section_id=section_id)
+    result_summary = _result_summary(result, root)
+    final_required = _final_resume_output_required(root, result_summary)
+    final_output = _load_json(root / FINAL_RESUME_OUTPUT_JSON)
+    if not final_output:
+        final_output = build_final_resume_output_contract(root, repo_root=repo, required=final_required)
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),
         "run_root_abs": str(root),
         "run_root": _repo_rel(root, repo),
-        "result_summary": _result_summary(result, root),
+        "result_summary": result_summary,
         "section_counts": _count_sections(sections),
         "sections": sections,
+        "final_resume_output": final_output,
         "rca_findings": _top_rca_sections(sections),
         "mandatory_artifacts": {
             "bcg_executive_output_md": BCG_EXECUTIVE_OUTPUT_MD,
             "mandatory_run_output_md": MANDATORY_RUN_OUTPUT_MD,
             "mandatory_run_output_json": MANDATORY_RUN_OUTPUT_JSON,
+            "final_resume_output_txt": FINAL_RESUME_OUTPUT_TXT,
+            "final_resume_output_json": FINAL_RESUME_OUTPUT_JSON,
+            "final_resume_docx": FINAL_RESUME_DOCX_RELPATH,
+            "canonical_final_resume_json": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
         },
     }
     return doc
@@ -1175,6 +1258,13 @@ def emit_mandatory_run_outputs(
     """Write mandatory apps_rg run output artifacts."""
     root = Path(run_root).resolve()
     root.mkdir(parents=True, exist_ok=True)
+    pre_summary = _result_summary(result, root)
+    final_required = _final_resume_output_required(root, pre_summary)
+    emit_final_resume_product_outputs(
+        root,
+        repo_root=repo_root,
+        required=final_required,
+    )
     doc = build_mandatory_run_output(
         root,
         repo_root=repo_root,

@@ -118,8 +118,12 @@ def _load_output_manifest(artifact_dir: Path) -> dict[str, Any]:
         "apps_rg_generation_status": "REAL_RESUME",
         "full_resume_generated": True,
         "resume_shape": "REAL_RESUME",
-        "docx_output_required": False,
-        "required_artifacts": {"generated_resume_json": "verified"},
+        "docx_output_required": True,
+        "required_artifacts": {
+            "generated_resume_json": "verified",
+            "resume_docx": "missing",
+            "docx_verified": False,
+        },
     }
 
 
