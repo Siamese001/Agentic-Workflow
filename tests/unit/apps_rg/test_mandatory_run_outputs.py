@@ -11,6 +11,11 @@ from apps_rg.runtime.mandatory_run_outputs import (
     MANDATORY_RUN_OUTPUT_MD,
     emit_mandatory_run_outputs,
 )
+from apps_rg.runtime.run_output_contract import (
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_TXT,
+)
 from tools.apps_rg.render_run_summary import render
 
 
@@ -110,6 +115,39 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert comp["status_bucket"] == "ran_real_llm"
     assert comp["judges"][0]["provider"] == "OpenAI ChatGPT"
     assert comp["l6"]["file_count"] == 1
+    assert payload["final_resume_output"]["required"] is True
+    assert payload["final_resume_output"]["status"] == "FAIL"
+    assert payload["section_lane_table"]
+    assert payload["section_lane_table"][0]["order"] == 0
+    assert payload["section_lane_table"][0]["section"] == "research_briefing_input"
+    assert payload["section_lane_table"][0]["generation_status"] == "MISSING_BRIEFING"
+    inline = payload["inline_required_output"]
+    assert inline["schema_version"] == "apps_rg.inline_required_output.v1"
+    assert inline["immutable_section_order"] == [
+        "bcg",
+        "section_lane_summary_table",
+        "resume_docx_full_version_inline",
+    ]
+    assert inline["bcg"]["title"] == "BCG Executive Output - apps_rg Run"
+    assert inline["bcg"]["section_order"] == [
+        "executive_answer",
+        "p0_p1_px_recommendations",
+        "board_level_readout",
+        "issue_tree",
+        "recommended_next_move",
+        "evidence_map",
+    ]
+    assert {"P0", "P1", "PX"}.issubset(
+        {row["priority"] for row in inline["bcg"]["p0_p1_px_recommendations"]["rows"]}
+    )
+    assert all(
+        gate["pass"]
+        for gate in payload["mandatory_inline_output_gates"]
+        if gate["gate_id"].startswith("mandatory_")
+    )
+    assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
+    assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
+    assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
     finding = payload["rca_findings"][0]
     assert finding["section"] == "competencies"
     assert finding["root_cause"].startswith("Visible content can be rendered")
@@ -122,12 +160,16 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert all(row["root_cause_link"] != row["domain"] for row in allocation["allocation"])
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "Executive Answer" in bcg
+    assert "BCG Executive Output - apps_rg Run" in bcg
+    assert "P0/P1/PX Recommendations" in bcg
     assert "Evidence mapping failure" in bcg
     assert "Causal allocation" in bcg
     assert "Retry recoverability" in bcg
     assert "Required implementation plan" in bcg
     assert "Change the section enrichment step" in bcg
+    assert "Section Lane Summary Table" in mandatory
+    assert "Resume DOCX Full Version Inline" in mandatory
+    assert "[NOT_GENERATED_BY_RUN:" in mandatory
     assert "Causal allocation" in mandatory
     assert "Required implementation plan" in mandatory
 
@@ -170,6 +212,34 @@ def test_full_run_section_status_loads_lane_judges(tmp_path: Path) -> None:
 
 def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     run = tmp_path / "anthropic_custom_run"
+    _write_json(
+        run / "modular_r4" / "phase1_lane_inventory.json",
+        {
+            "lane_argv_targeting": {
+                "target_company": "Anthropic",
+                "target_title": "Manager of Applied AI Architecture, Partnerships",
+                "briefing_source": "RUN_SPECIFIC",
+                "briefing_digest": "brief-digest-123",
+                "briefing_ref_used": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+                "briefing_text": json.dumps(
+                    {
+                        "target_company": "Anthropic",
+                        "target_role": "Manager of Applied AI Architecture, Partnerships",
+                        "source": "RUN_SPECIFIC",
+                        "briefing_text": "Partner-enabled enterprise AI adoption briefing.",
+                    }
+                ),
+            }
+        },
+    )
+    _write_json(
+        run / "ingress_raw.json",
+        {
+            "auto_research_internal": True,
+            "manual_brief": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+        },
+    )
+    _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": False})
     lane = run / "modular_r4" / "sections" / "competencies"
     lane.mkdir(parents=True, exist_ok=True)
     _write_json(
@@ -191,6 +261,24 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     )
 
     payload = emitted["payload"]
+    briefing = payload["section_lane_table"][0]
+    assert briefing["order"] == 0
+    assert briefing["section"] == "research_briefing_input"
+    assert briefing["provider_call_attempted"] is False
+    assert briefing["primary_provider"] == "STATIC_MANUAL_BRIEF"
+    assert briefing["primary_model_observed"] == "NOT_OBSERVED"
+    assert briefing["generation_status"] == "P0_STATIC_MANUAL_BRIEF_USED"
+    assert briefing["x3"] == "FAIL"
+    assert "auto_research_internal=True" in briefing["past_fail_blocker"]
+    assert "research_delegation_executed=False" in briefing["past_fail_blocker"]
+    assert "brief-digest-123" in briefing["past_fail_blocker"]
+    assert "briefing_text_chars=" in briefing["past_fail_blocker"]
+    assert payload["section_lane_table"][1]["section"] == "competencies"
+    assert payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"][0]["priority"] == "P0"
+    assert (
+        payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"][0]["recommendation"]
+        == "Fail closed when auto_research_internal=True but apps_research delegation does not execute."
+    )
     comp = next(row for row in payload["sections"] if row["section"] == "competencies")
     assert comp["status_bucket"] == "pre_run_blocked"
     assert "temperature" in comp["failure_classification"]
@@ -230,9 +318,10 @@ def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(t
     assert summary["fault"] == ""
     assert summary["decisive_status"] == "PASS"
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "final resume output gate failed" in bcg
-    assert "Fix the P0 blocker sections named above" not in bcg
-    assert "Fix the final resume output gates before treating the run as product-ready" in bcg
+    assert "BCG Executive Output - apps_rg Run" in bcg
+    assert "P0/P1/PX Recommendations" in bcg
+    assert "Keep final resume product gate failed while generated-section gap markers exist." in bcg
+    assert "Fix P0 gates before rerun" in bcg
 
 
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
@@ -292,6 +381,9 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
     assert "Required implementation plan" in out
     assert "Patch enrichment so visible terms require canonical source facts." in out
     assert "real LLM `1`" in out
+    assert "## Locked BCG Output" in out
+    assert "## Locked Section Lane Summary Table" in out
+    assert "## Resume DOCX Full Version Inline" in out
 
 
 def test_render_run_summary_rejects_one_line_rca_action_as_format_gap(tmp_path: Path) -> None:

@@ -117,6 +117,10 @@ def _sample_values(values: Any, *, limit: int = 8) -> str:
     return ", ".join(vals[:limit]) + suffix
 
 
+def _md_cell(value: Any) -> str:
+    return str(value if value is not None else "").replace("|", "\\|").replace("\n", " ")
+
+
 def _gate_status(gates: Any, gate_id: str) -> str:
     for gate in gates or []:
         if not isinstance(gate, dict):
@@ -294,6 +298,12 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
         lines.append(
             f"| **{label}** | `{_repo_rel(path)}` | {_artifact_status(path, required=True)} |"
         )
+    bcg_text = _load_text(bcg_md)
+    if bcg_text:
+        lines.append("")
+        lines.append("## Locked BCG Output")
+        lines.append("")
+        lines.extend(bcg_text.splitlines())
     if not ledger:
         lines.append("")
         lines.append(
@@ -343,6 +353,49 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             "Final resume failed gates: "
             + ("`" + "`, `".join(str(g) for g in failed_final) + "`" if failed_final else "`none`")
         )
+    lane_table = ledger.get("section_lane_table") if isinstance(ledger.get("section_lane_table"), list) else []
+    lines.append("")
+    lines.append("## Locked Section Lane Summary Table")
+    lines.append("")
+    lines.append("| # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |")
+    lines.append("|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    if not lane_table:
+        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
+    for row in lane_table:
+        if not isinstance(row, dict):
+            continue
+        lines.append(
+            "| "
+            f"{row.get('order')} | "
+            f"`{_sample_values([row.get('section')], limit=1)}` | "
+            f"`{row.get('r1a')}` | "
+            f"`{row.get('r1b')}` | "
+            f"`{row.get('lane_record')}` | "
+            f"`{row.get('provider_call_attempted')}` | "
+            f"`{row.get('primary_provider')}` | "
+            f"`{row.get('primary_model_observed')}` | "
+            f"`{row.get('pooling_selector_llm')}` | "
+            f"`{row.get('secondary_provider')}` | "
+            f"`{row.get('secondary_model_observed')}` | "
+            f"`{row.get('generation_status')}` | "
+            f"`{row.get('judges_run')}` | "
+            f"`{_md_cell(row.get('judge_models_scores'))}` | "
+            f"`{_md_cell(row.get('judge_retry_fallback'))}` | "
+            f"`{row.get('x2')}` | "
+            f"`{row.get('x3')}` | "
+            f"`{_md_cell(row.get('past_fail_blocker'))}` | "
+            f"`{row.get('display_output')}` | "
+            f"`{row.get('l6_evidence')}` |"
+        )
+    resume_text = _load_text(run_dir / FINAL_RESUME_OUTPUT_TXT)
+    lines.append("")
+    lines.append("## Resume DOCX Full Version Inline")
+    lines.append("")
+    lines.append("Source: `FINAL_RESUME_OUTPUT.txt` rendered from the same final-resume spine used for `outputs/resume.docx`.")
+    lines.append("")
+    lines.append("```text")
+    lines.append(resume_text or "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]")
+    lines.append("```")
     if rca:
         lines.append("")
         lines.append("Top RCA findings:")
@@ -1101,9 +1154,9 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
     rows: List[Tuple[str, str, str]] = []
     artifact_rows: List[Tuple[str, Path, bool, str]] = [
         ("Resume JSON", json_resume, json_required, ""),
-        ("Final resume text", run_dir / FINAL_RESUME_OUTPUT_TXT, (run_dir / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file(), ""),
-        ("Final resume output contract", run_dir / FINAL_RESUME_OUTPUT_JSON, (run_dir / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file(), ""),
-        ("Resume DOCX", docx, docx_required, "final resume not assembled for this run"),
+        ("Final resume text", run_dir / FINAL_RESUME_OUTPUT_TXT, True, ""),
+        ("Final resume output contract", run_dir / FINAL_RESUME_OUTPUT_JSON, True, ""),
+        ("Resume DOCX", docx, True, ""),
         ("Run manifest", run_dir / "r4_run_manifest.json", True, ""),
         (
             "Run report",

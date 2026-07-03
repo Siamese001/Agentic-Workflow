@@ -144,3 +144,29 @@ def test_final_resume_outputs_preserve_base_facts_and_docx_order(tmp_path: Path)
     assert gate_ids["final_resume_docx_base_role_headers_preserved"] is True
     assert gate_ids["final_resume_docx_education_copied_from_base"] is True
     assert gate_ids["final_resume_docx_certifications_copied_from_base"] is True
+
+
+def test_final_resume_outputs_synthesize_required_failed_run_package(tmp_path: Path) -> None:
+    contract = emit_final_resume_product_outputs(tmp_path, repo_root=tmp_path, required=True)
+
+    assert contract["required"] is True
+    assert contract["status"] == "FAIL"
+    assert (tmp_path / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
+    assert (tmp_path / FINAL_RESUME_OUTPUT_TXT).is_file()
+    assert (tmp_path / FINAL_RESUME_OUTPUT_JSON).is_file()
+    assert (tmp_path / FINAL_RESUME_DOCX_RELPATH).is_file()
+
+    text = (tmp_path / FINAL_RESUME_OUTPUT_TXT).read_text(encoding="utf-8")
+    assert "AMIT AYER" in text.upper()
+    assert "+1-917-239-3830" in text
+    assert "Unify Consulting \u2014 SVP Engineering, Agentic AI Platforms" in text
+    assert "Boca Raton, FL | Feb 2023 \u2013 Present" in text
+    assert "Master of Science in Biostatistics, Columbia University" in text
+    assert "Fellow of the Society of Actuaries, 2010" in text
+    assert "[NOT_GENERATED_BY_RUN:" in text
+
+    gate_ids = {g["gate_id"]: g["pass"] for g in contract["gates"]}
+    assert gate_ids["final_resume_json_spine_present"] is True
+    assert gate_ids["final_resume_rendered_text_present"] is True
+    assert gate_ids["final_resume_docx_present_nonempty"] is True
+    assert gate_ids["final_resume_no_gap_markers"] is False

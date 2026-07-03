@@ -108,6 +108,16 @@ def _bullets(doc: Document, snap: dict[str, Any]) -> None:
         _para(doc, line, size=10)
 
 
+def _gap(doc: Document, section_id: str, reason: str) -> None:
+    _para(
+        doc,
+        f"[NOT_GENERATED_BY_RUN: {section_id} - {reason}]",
+        italic=True,
+        size=9,
+        space_after=4,
+    )
+
+
 def _role_block(
     doc: Document,
     narr_snap: dict[str, Any],
@@ -115,9 +125,11 @@ def _role_block(
     header_key: str,
     *,
     base_header: dict[str, Any] | None = None,
+    missing_label: str = "role",
 ) -> None:
     hdr = base_header or narr_snap.get(header_key) or bullet_snap.get(header_key) or {}
     if not hdr:
+        _gap(doc, missing_label, "missing_generated_role_section")
         return
     header_lines = exp_header(hdr)
     if header_lines:
@@ -127,7 +139,11 @@ def _role_block(
     narrative = str(narr_snap.get("narrative_sentence") or "").strip()
     if narrative:
         _para(doc, narrative, italic=True, size=10)
-    _bullets(doc, bullet_snap)
+    bullet_lines = bullets_from_list(bullet_snap.get("bullets") or [])
+    for line in bullet_lines:
+        _para(doc, line, size=10)
+    if not narrative and not bullet_lines:
+        _gap(doc, missing_label, "generated narrative and bullets were not produced in this run")
 
 
 def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
@@ -165,18 +181,24 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
     if cl:
         _para(doc, cl, size=9, center=True, space_after=4)
 
+    _heading(doc, "Headline")
     headline = str(snap("headline").get("headline_line") or "").strip()
     if headline:
         _para(doc, headline, bold=True, size=11, center=True, space_after=6)
+    else:
+        _gap(doc, "headline", "missing_or_empty_headline")
 
+    _heading(doc, "Executive Summary")
     exec_text = str(snap("executive_summary").get("resume_display_text") or "").strip()
     if exec_text:
-        _heading(doc, "Executive Summary")
         _para(doc, exec_text, size=10, space_after=4)
+    else:
+        _gap(doc, "executive_summary", "missing_or_empty_executive_summary")
 
     comp_cats = snap("competencies").get("competencies") or []
+    comp_display = str(snap("competencies").get("resume_display_text") or "").strip()
+    _heading(doc, ENGINEERING_PLATFORM_COMPETENCIES_HEADING)
     if comp_cats:
-        _heading(doc, ENGINEERING_PLATFORM_COMPETENCIES_HEADING)
         for cat in comp_cats:
             if not isinstance(cat, dict):
                 continue
@@ -194,6 +216,10 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
                 run2 = para.add_run(", ".join(terms))
                 run2.font.size = Pt(10)
                 para.paragraph_format.space_after = Pt(2)
+    elif comp_display:
+        _para(doc, comp_display, size=10)
+    else:
+        _gap(doc, "competencies", "missing_competencies_or_empty_graph_skills_signal")
 
     base_headers = base_role_headers_from_final_resume(blob)
 
@@ -204,6 +230,7 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
         snap("unify_bullets"),
         "unify_header",
         base_header=base_headers.get("unify"),
+        missing_label="unify",
     )
     _role_block(
         doc,
@@ -211,6 +238,7 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
         snap("ibm_bullets"),
         "ibm_header",
         base_header=base_headers.get("ibm"),
+        missing_label="ibm",
     )
     _role_block(
         doc,
@@ -218,6 +246,7 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
         snap("insurtech_bullets"),
         "insurtech_header",
         base_header=base_headers.get("insurtech"),
+        missing_label="insurtech",
     )
     _role_block(
         doc,
@@ -225,6 +254,7 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
         snap("ey_bullets"),
         "ey_header",
         base_header=base_headers.get("ey"),
+        missing_label="ey",
     )
 
     early = (by_id.get("early_career") or {}).get("copied_text_exact")
@@ -243,24 +273,30 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
             _para(doc, role_narr, italic=True, size=10)
         for line in bullets_from_list(obj.get("bullets") or []):
             _para(doc, line, size=10)
+    else:
+        _gap(doc, "early_career", "missing_locked_copy_section")
 
     edu_raw = (by_id.get("education") or {}).get("copied_text_exact")
+    _heading(doc, "Education")
     if edu_raw:
-        _heading(doc, "Education")
         for entry in json.loads(edu_raw):
             if isinstance(entry, dict):
                 line = format_edu(entry)
                 if line:
                     _para(doc, line, size=10)
+    else:
+        _gap(doc, "education", "missing_locked_education")
 
     cert_raw = (by_id.get("certifications") or {}).get("copied_text_exact")
+    _heading(doc, CERTIFICATIONS_AND_CREDENTIALS_HEADING)
     if cert_raw:
-        _heading(doc, CERTIFICATIONS_AND_CREDENTIALS_HEADING)
         for entry in json.loads(cert_raw):
             if isinstance(entry, dict):
                 line = format_cert(entry)
                 if line:
                     _para(doc, line, size=10)
+    else:
+        _gap(doc, "certifications", "missing_locked_certifications")
 
     if out_path is None:
         stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
