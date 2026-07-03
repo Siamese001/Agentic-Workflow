@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.prerequisites.briefing_validator import validate_apps_research_handoff
 from apps_rg.runtime.final_resume_outputs import (
     build_final_resume_output_contract,
     emit_final_resume_product_outputs,
@@ -60,6 +61,7 @@ BCG_OUTPUT_KEYS = ("title", "section_order", *BCG_LOCKED_SECTION_ORDER)
 SECTION_LANE_TABLE_COLUMNS = (
     "order",
     "section",
+    "apps_research_x1_x2_x3_gates",
     "r1a",
     "r1b",
     "lane_record",
@@ -519,18 +521,195 @@ def _briefing_blob(value: Any) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {"briefing_text": text}
 
 
-def _research_briefing_context(run_root: Path) -> dict[str, Any]:
+def _short_digest(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return "NOT_OBSERVED"
+    return text[:12]
+
+
+def _payload_dict(blob: dict[str, Any]) -> dict[str, Any]:
+    payload = blob.get("payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _artifact_input_value(blob: dict[str, Any], *keys: str) -> str:
+    payload = _payload_dict(blob)
+    for source in (blob, payload):
+        for key in keys:
+            value = str(source.get(key) or "").strip()
+            if value:
+                return value
+    return ""
+
+
+def _resolve_input_ref(ref: str, *, run_root: Path, repo_root: Path) -> str:
+    text = str(ref or "").strip()
+    if not text or text.startswith(("http://", "https://")):
+        return text
+    path = Path(text).expanduser()
+    if path.is_absolute():
+        return str(path)
+    for base in (run_root, repo_root, Path.cwd()):
+        try:
+            candidate = (base / path).resolve()
+            if candidate.is_file():
+                return str(candidate)
+        except OSError:
+            continue
+    return text
+
+
+def _first_existing_json(paths: list[Path]) -> tuple[Path | None, dict[str, Any]]:
+    for path in paths:
+        data = _load_json(path)
+        if data:
+            return path, data
+    return None, {}
+
+
+def _research_handoff_receipt(run_root: Path) -> dict[str, Any]:
+    candidates = [run_root / "apps_research_handoff_validation_receipt.json"]
+    try:
+        candidates.extend(sorted(run_root.rglob("apps_research_handoff_validation_receipt.json")))
+    except OSError:
+        pass
+    _path, data = _first_existing_json(candidates)
+    return data
+
+
+def _research_artifact_dirs(run_root: Path) -> list[Path]:
+    dirs: list[Path] = []
+    for ref_path in (
+        run_root / "research" / "research_artifact_ref.json",
+        run_root / "research_bridge_response.json",
+    ):
+        data = _load_json(ref_path)
+        raw = str(data.get("research_artifact_dir") or "").strip()
+        if raw:
+            dirs.append(Path(raw).expanduser())
+    return dirs
+
+
+def _research_envelope(run_root: Path, *, repo_root: Path, brief_ref: str) -> dict[str, Any]:
+    candidates: list[Path] = [run_root / "apps_research_briefing_envelope.json"]
+    resolved_brief = _resolve_input_ref(brief_ref, run_root=run_root, repo_root=repo_root)
+    if resolved_brief and not resolved_brief.startswith(("http://", "https://")):
+        brief_path = Path(resolved_brief)
+        candidates.extend(
+            [
+                brief_path.parent / "apps_research_briefing_envelope.json",
+                brief_path.with_suffix(brief_path.suffix + ".apps_research_envelope.json"),
+                brief_path.with_suffix(".envelope.json"),
+            ]
+        )
+    for artifact_dir in _research_artifact_dirs(run_root):
+        candidates.append(artifact_dir / "apps_research_briefing_envelope.json")
+    _path, data = _first_existing_json(candidates)
+    return data
+
+
+def _apps_research_gate_context(
+    run_root: Path,
+    *,
+    repo_root: Path,
+    ingress: dict[str, Any],
+    spine: dict[str, Any],
+    brief_ref: str,
+    auto_research_internal: Any,
+) -> dict[str, Any]:
+    jd_ref = _first_nonempty(
+        _artifact_input_value(ingress, "job_description_ref", "jd_ref", "jd_path"),
+        _artifact_input_value(ingress, "jd", "job_description_text", "jd_text"),
+    )
+    resolved_brief = _resolve_input_ref(brief_ref, run_root=run_root, repo_root=repo_root)
+    resolved_jd = _resolve_input_ref(jd_ref, run_root=run_root, repo_root=repo_root)
+    strict_required = auto_research_internal is True and bool(str(brief_ref or "").strip())
+    validation_envelope: dict[str, Any] | None = None
+    try:
+        validation = validate_apps_research_handoff(
+            brief_ref=resolved_brief,
+            jd_ref=resolved_jd,
+            require_observed=strict_required,
+            require_x1_x3_authorization=strict_required,
+        )
+        validation_receipt = validation.to_receipt()
+        validation_envelope = validation.envelope if isinstance(validation.envelope, dict) else None
+    except (OSError, ValueError) as exc:
+        validation_receipt = {
+            "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v1",
+            "observed": False,
+            "valid": not strict_required,
+            "reason": f"brief_ref_unresolvable:{type(exc).__name__}",
+            "envelope_path": "",
+        }
+    receipt = _research_handoff_receipt(run_root) or validation_receipt
+    envelope = (
+        validation_envelope
+        if isinstance(validation_envelope, dict)
+        else _research_envelope(run_root, repo_root=repo_root, brief_ref=resolved_brief)
+    )
+    auth = (
+        envelope.get("apps_research_x1_x3_authorization")
+        if isinstance(envelope.get("apps_research_x1_x3_authorization"), dict)
+        else {}
+    )
+    x1 = auth.get("x1") if isinstance(auth.get("x1"), dict) else {}
+    x2 = auth.get("x2") if isinstance(auth.get("x2"), dict) else {}
+    x3 = auth.get("x3") if isinstance(auth.get("x3"), dict) else {}
+    route_decision = spine.get("route_decision") if isinstance(spine.get("route_decision"), dict) else {}
+    observed = receipt.get("observed")
+    valid = receipt.get("valid")
+    reason = str(receipt.get("reason") or "NOT_OBSERVED")
+    x1_status = str(x1.get("status") or "NOT_OBSERVED")
+    x2_status = str(x2.get("status") or "NOT_OBSERVED")
+    x3_status = str(x3.get("status") or "NOT_OBSERVED")
+    x3_disposition = str(x3.get("disposition") or "NOT_OBSERVED")
+    x2_score = _score_text(x2.get("score")) if x2.get("score") is not None else "NOT_OBSERVED"
+    x2_judge_model = str(x2.get("judge_model") or "NOT_OBSERVED")
+    handoff_eligible = (
+        envelope.get("handoff_eligible") if isinstance(envelope, dict) else "NOT_OBSERVED"
+    )
+    summary = (
+        f"handoff_observed={observed}; handoff_valid={valid}; reason={reason}; "
+        f"run_id={str(envelope.get('run_id') or route_decision.get('research_run_id') or 'NOT_OBSERVED')}; "
+        f"eligible={handoff_eligible}; stale={envelope.get('is_stale', 'NOT_OBSERVED')}; "
+        f"X1={x1_status}; X2={x2_status}"
+        f"{' score=' + x2_score if x2_score != 'NOT_OBSERVED' else ''}"
+        f"{' judge_model=' + x2_judge_model if x2_judge_model != 'NOT_OBSERVED' else ''}; "
+        f"X3={x3_status}/{x3_disposition}; "
+        f"brief_sha={_short_digest(envelope.get('brief_sha256') or receipt.get('envelope_brief_sha256'))}; "
+        f"jd_sha={_short_digest(envelope.get('jd_sha256') or receipt.get('envelope_jd_sha256'))}"
+    )
+    return {
+        "summary": summary,
+        "observed": observed,
+        "valid": valid,
+        "reason": reason,
+        "x1_status": x1_status,
+        "x2_status": x2_status,
+        "x3_status": x3_status,
+        "x3_disposition": x3_disposition,
+        "x2_judge_model": x2_judge_model,
+        "x2_score": x2_score,
+    }
+
+
+def _research_briefing_context(run_root: Path, *, repo_root: Path) -> dict[str, Any]:
     phase1 = _load_json(run_root / "modular_r4" / "phase1_lane_inventory.json")
     targeting = phase1.get("lane_argv_targeting") if isinstance(phase1.get("lane_argv_targeting"), dict) else {}
     briefing = _briefing_blob(targeting.get("briefing_text"))
     ingress = _load_json(run_root / "ingress_raw.json")
     spine = _load_json(run_root / "spine_run_manifest.json")
+    route_decision = spine.get("route_decision") if isinstance(spine.get("route_decision"), dict) else {}
     delegation_observed = (
         spine.get("research_delegation_executed")
         if "research_delegation_executed" in spine
+        else route_decision.get("research_delegation_executed")
+        if "research_delegation_executed" in route_decision
         else "NOT_OBSERVED"
     )
-    auto_research_internal = ingress.get("auto_research_internal")
+    auto_research_internal = ingress.get("auto_research_internal", route_decision.get("research_delegation_enabled"))
     source = _first_nonempty(
         targeting.get("briefing_source"),
         briefing.get("source"),
@@ -546,6 +725,7 @@ def _research_briefing_context(run_root: Path) -> dict[str, Any]:
     ref = _first_nonempty(
         targeting.get("briefing_ref_used"),
         targeting.get("briefing_artifact_ref"),
+        route_decision.get("delegated_briefing_path"),
         ingress.get("manual_brief"),
         ingress.get("manual_brief_path"),
         ingress.get("briefing_artifact_ref"),
@@ -558,6 +738,14 @@ def _research_briefing_context(run_root: Path) -> dict[str, Any]:
         ingress.get("target_role"),
     )
     briefing_text = _first_nonempty(briefing.get("briefing_text"), targeting.get("briefing_text"), ingress.get("briefing_text"))
+    gates = _apps_research_gate_context(
+        run_root,
+        repo_root=repo_root,
+        ingress=ingress,
+        spine=spine,
+        brief_ref=ref,
+        auto_research_internal=auto_research_internal,
+    )
     return {
         "auto_research_internal": auto_research_internal,
         "research_delegation_executed": delegation_observed,
@@ -571,11 +759,12 @@ def _research_briefing_context(run_root: Path) -> dict[str, Any]:
         "fetched_at": _first_nonempty(briefing.get("fetched_at"), targeting.get("fetched_at")),
         "source_url": _first_nonempty(briefing.get("source_url"), targeting.get("source_url")),
         "briefing_present": bool(briefing_text or ref or digest),
+        "apps_research_gates": gates,
     }
 
 
-def _research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, Any]:
-    context = _research_briefing_context(run_root)
+def _research_briefing_row(run_root: Path, *, repo_root: Path, cache: dict[str, str]) -> dict[str, Any]:
+    context = _research_briefing_context(run_root, repo_root=repo_root)
     delegation_observed = context["research_delegation_executed"]
     auto_research_internal = context.get("auto_research_internal")
     source = str(context.get("source") or "NOT_OBSERVED")
@@ -584,6 +773,7 @@ def _research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, A
     company = str(context.get("target_company") or "")
     title = str(context.get("target_title") or "")
     briefing_present = bool(context.get("briefing_present"))
+    gates = context.get("apps_research_gates") if isinstance(context.get("apps_research_gates"), dict) else {}
     p0_static_manual = auto_research_internal is True and delegation_observed is not True
     evidence_parts = [
         f"auto_research_internal={auto_research_internal}",
@@ -605,6 +795,7 @@ def _research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, A
     return {
         "order": 0,
         "section": "research_briefing_input",
+        "apps_research_x1_x2_x3_gates": str(gates.get("summary") or "NOT_OBSERVED"),
         "r1a": cache["r1a"],
         "r1b": cache["r1b"],
         "lane_record": "YES" if briefing_present else "NO",
@@ -626,8 +817,12 @@ def _research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, A
         "judges_run": "N/A",
         "judge_models_scores": "N/A",
         "judge_retry_fallback": "N/A",
-        "x2": "N/A",
-        "x3": "FAIL" if p0_static_manual or not briefing_present else "PASS",
+        "x2": str(gates.get("x2_status") or "NOT_OBSERVED"),
+        "x3": (
+            "FAIL"
+            if p0_static_manual or not briefing_present
+            else str(gates.get("x3_disposition") or gates.get("x3_status") or "PASS")
+        ),
         "past_fail_blocker": "; ".join(evidence_parts),
         "display_output": ref or "MISSING",
         "l6_evidence": "N/A",
@@ -701,11 +896,16 @@ def _generation_ordered_section_ids(
     return ordered
 
 
-def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _build_section_lane_table(
+    run_root: Path,
+    sections: list[dict[str, Any]],
+    *,
+    repo_root: Path,
+) -> list[dict[str, Any]]:
     provider_records = _load_provider_call_records(run_root)
     cache = _cache_preflight(run_root)
     by_id = _section_by_id(sections)
-    rows: list[dict[str, Any]] = [_research_briefing_row(run_root, cache)]
+    rows: list[dict[str, Any]] = [_research_briefing_row(run_root, repo_root=repo_root, cache=cache)]
     for idx, section_id in enumerate(_generation_ordered_section_ids(sections, provider_records), 1):
         section = by_id.get(section_id, {})
         record = provider_records.get(section_id, {})
@@ -714,6 +914,7 @@ def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) ->
             {
                 "order": idx,
                 "section": section_id,
+                "apps_research_x1_x2_x3_gates": "N/A",
                 "r1a": cache["r1a"],
                 "r1b": cache["r1b"],
                 "lane_record": "YES" if record or section else "NO",
@@ -942,6 +1143,19 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
                 "generation_status": row0.get("generation_status"),
             },
             "threshold": "row 0 research_briefing_input",
+        },
+        {
+            "gate_id": "mandatory_apps_research_row0_x1_x2_x3_gates_locked",
+            "pass": (
+                row0.get("order") == 0
+                and row0.get("section") == "research_briefing_input"
+                and "handoff_observed=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
+                and "X1=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
+                and "X2=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
+                and "X3=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
+            ),
+            "observed_value": row0.get("apps_research_x1_x2_x3_gates"),
+            "threshold": "row 0 apps_research handoff_observed + X1/X2/X3 gate summary",
         },
         {
             "gate_id": "mandatory_resume_docx_inline_json_present",
@@ -1504,17 +1718,18 @@ def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
     lines = [
         "## Section Lane Summary Table",
         "",
-        "| # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
-        "|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| # | Section | apps_research X1/X2/X3 gates | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
+        "|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     if not rows:
-        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
+        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
         return lines
     for row in rows:
         lines.append(
             "| "
             f"{row.get('order')} | "
             f"`{_markdown_table_escape(row.get('section'))}` | "
+            f"`{_markdown_table_escape(row.get('apps_research_x1_x2_x3_gates'))}` | "
             f"`{_markdown_table_escape(row.get('r1a'))}` | "
             f"`{_markdown_table_escape(row.get('r1b'))}` | "
             f"`{_markdown_table_escape(row.get('lane_record'))}` | "
@@ -2312,7 +2527,7 @@ def build_mandatory_run_output(
     final_output = _load_json(root / FINAL_RESUME_OUTPUT_JSON)
     if not final_output:
         final_output = build_final_resume_output_contract(root, repo_root=repo, required=final_required)
-    section_lane_table = _build_section_lane_table(root, sections)
+    section_lane_table = _build_section_lane_table(root, sections, repo_root=repo)
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),

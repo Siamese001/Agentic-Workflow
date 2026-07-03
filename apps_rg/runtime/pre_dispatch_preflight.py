@@ -252,7 +252,7 @@ def _targeting_failure_message(
 def _apps_research_handoff_failure_message(
     validation: AppsResearchHandoffValidation,
 ) -> str | None:
-    if not validation.observed or validation.valid:
+    if validation.valid:
         return None
     return (
         "Pre-dispatch apps_research handoff gate blocked: "
@@ -312,6 +312,8 @@ def run_pre_dispatch_preflight(
     lane_provider: str,
     provider_resolution_source: str,
     docker_restart_audit: dict[str, Any] | None = None,
+    require_apps_research_handoff: bool = False,
+    require_apps_research_x1_x3: bool = False,
 ) -> PreDispatchPreflightResult:
     """Evaluate all mandatory gates; ``dispatch_started`` is False when any gate fails."""
     from apps_rg.runtime.validators.companion_bullet_finalization import (
@@ -323,6 +325,8 @@ def run_pre_dispatch_preflight(
     handoff_validation = validate_apps_research_handoff(
         brief_ref=manual_brief,
         jd_ref=jd,
+        require_observed=require_apps_research_handoff,
+        require_x1_x3_authorization=require_apps_research_x1_x3,
     )
     provider_health, provider_model, provider_detail = evaluate_provider_readiness(
         lane_provider=lane_provider,
@@ -386,7 +390,9 @@ def run_pre_dispatch_preflight(
         dispatch_started=dispatch_started,
         decisive_reason=decisive,
         apps_research_handoff_validation=(
-            handoff_validation.to_receipt() if handoff_validation.observed else None
+            handoff_validation.to_receipt()
+            if handoff_validation.observed or not handoff_validation.valid
+            else None
         ),
         apps_research_briefing_envelope=handoff_validation.envelope,
     )
@@ -435,6 +441,8 @@ def enforce_pre_dispatch_preflight(
     provider_resolution_source: str,
     artifact_dir: str = "",
     docker_restart_audit: dict[str, Any] | None = None,
+    require_apps_research_handoff: bool = False,
+    require_apps_research_x1_x3: bool = False,
 ) -> PreDispatchPreflightResult:
     """Run gates, persist receipt, raise ``SectionCliConfigError`` when blocked."""
     from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
@@ -446,6 +454,8 @@ def enforce_pre_dispatch_preflight(
         lane_provider=lane_provider,
         provider_resolution_source=provider_resolution_source,
         docker_restart_audit=docker_restart_audit,
+        require_apps_research_handoff=require_apps_research_handoff,
+        require_apps_research_x1_x3=require_apps_research_x1_x3,
     )
     receipt_path = resolve_preflight_receipt_path(artifact_dir=artifact_dir, section=section)
     write_pre_dispatch_preflight_receipt(receipt_path, result)

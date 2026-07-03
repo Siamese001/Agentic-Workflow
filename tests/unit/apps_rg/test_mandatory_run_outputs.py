@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from apps_rg.runtime.full_resume_review_bundle import write_review_index
@@ -269,6 +271,12 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert briefing["primary_model_observed"] == "NOT_OBSERVED"
     assert briefing["generation_status"] == "P0_STATIC_MANUAL_BRIEF_USED"
     assert briefing["x3"] == "FAIL"
+    assert "handoff_observed=False" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "handoff_valid=False" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "missing_apps_research_envelope" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X1=NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X2=NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X3=NOT_OBSERVED/NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
     assert "auto_research_internal=True" in briefing["past_fail_blocker"]
     assert "research_delegation_executed=False" in briefing["past_fail_blocker"]
     assert "brief-digest-123" in briefing["past_fail_blocker"]
@@ -284,6 +292,92 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert "temperature" in comp["failure_classification"]
     assert payload["section_counts"]["total"] >= 1
     assert payload["rca_findings"]
+
+
+def test_mandatory_row0_surfaces_apps_research_x1_x2_x3_gates(tmp_path: Path) -> None:
+    run = tmp_path / "authorized_research_handoff"
+    run.mkdir()
+    brief = tmp_path / "briefing.md"
+    jd = tmp_path / "jd.txt"
+    brief_text = "Fresh apps_research handoff briefing for Anthropic partnerships."
+    jd_text = "Manager of Applied AI Architecture, Partnerships at Anthropic."
+    brief.write_text(brief_text, encoding="utf-8")
+    jd.write_text(jd_text, encoding="utf-8")
+    brief_sha = hashlib.sha256(brief_text.encode("utf-8")).hexdigest()
+    jd_sha = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()
+    now = datetime.now(timezone.utc)
+    _write_json(
+        tmp_path / "apps_research_briefing_envelope.json",
+        {
+            "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
+            "producer_app": "apps_research",
+            "consumer_app": "apps_rg",
+            "run_id": "research-run-row0",
+            "target_company": "Anthropic",
+            "target_role": "Manager Applied AI Architecture Partnerships",
+            "generated_at_utc": now.isoformat(),
+            "expires_at_utc": (now + timedelta(days=7)).isoformat(),
+            "dry_run": False,
+            "stub_detected": False,
+            "is_stale": False,
+            "handoff_eligible": True,
+            "brief_sha256": brief_sha,
+            "jd_sha256": jd_sha,
+            "apps_research_x1_x3_authorization": {
+                "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
+                "run_id": "research-run-row0",
+                "brief_sha256": brief_sha,
+                "jd_sha256": jd_sha,
+                "x1": {"gate_id": "X1_TARGETING_BRIEF_CONTRACT", "status": "PASS"},
+                "x2": {
+                    "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+                    "status": "PASS",
+                    "score": 0.94,
+                    "judge_model": "gpt-5.4-mini",
+                },
+                "x3": {
+                    "gate_id": "X3_HANDOFF_AUTHORIZATION",
+                    "status": "PASS",
+                    "disposition": "ALLOW",
+                },
+            },
+        },
+    )
+    _write_json(
+        run / "ingress_raw.json",
+        {
+            "auto_research_internal": True,
+            "manual_brief": str(brief),
+            "job_description_ref": str(jd),
+        },
+    )
+    _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": True})
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    briefing = emitted["payload"]["section_lane_table"][0]
+    assert briefing["section"] == "research_briefing_input"
+    assert briefing["provider_call_attempted"] is True
+    assert briefing["primary_provider"] == "apps_research"
+    assert briefing["x2"] == "PASS"
+    assert briefing["x3"] == "ALLOW"
+    assert "handoff_observed=True" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "handoff_valid=True" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X1=PASS" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X2=PASS score=0.94 judge_model=gpt-5.4-mini" in briefing["apps_research_x1_x2_x3_gates"]
+    assert "X3=PASS/ALLOW" in briefing["apps_research_x1_x2_x3_gates"]
+    assert all(
+        gate["pass"]
+        for gate in emitted["payload"]["mandatory_inline_output_gates"]
+        if gate["gate_id"] == "mandatory_apps_research_row0_x1_x2_x3_gates_locked"
+    )
+    mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
+    assert "apps_research X1/X2/X3 gates" in mandatory
+    assert "X1=PASS" in mandatory
 
 
 def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(tmp_path: Path) -> None:
