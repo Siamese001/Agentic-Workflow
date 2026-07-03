@@ -562,7 +562,6 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     for section in [
         "## ADG Executive Brief",
-        "### BCG Executive Brief",
         "| Question | Answer |",
         "| Can we merge? | No. A P0 FIX gate is red. |",
         "| What blocks merge? |",
@@ -587,6 +586,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "Business read:" not in md
     assert "Technical evidence:" not in md
     assert "Fix now:" not in md
+    assert "### BCG Executive Brief" not in md
     assert "### 1. What ADG Is" not in md
     assert "### 2. Patient Size" not in md
     assert "### 3. Executive Decision" not in md

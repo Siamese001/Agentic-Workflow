@@ -2402,8 +2402,6 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("## ADG Executive Brief")
     a("")
     brief = _executive_bcg_brief(doc)
-    a("### BCG Executive Brief")
-    a("")
     a(_table(["Question", "Answer"], _executive_decision_rows(doc, brief)))
     a("")
     a("ADG Run Metrics")
