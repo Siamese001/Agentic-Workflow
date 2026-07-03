@@ -605,7 +605,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     for section in [
         "## ADG Executive Brief",
         "| Question | Answer |",
-        "| Can we merge? | No. A P0 FIX gate is red. |",
+        "| Can we merge? | No. A live P0 gate driver is red. |",
         "| What blocks merge? |",
         "ADG Run Metrics",
         "| Metric | Value |",
@@ -641,6 +641,9 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "Technical reason" not in md
     assert "Why this order" not in md
     assert "fix_blocker" not in md
+    assert "| FIX gates (all bands) | 1 |" in md
+    assert "| Live P0 gate drivers | 1 |" in md
+    assert "| P0 action queue | no P0 action-queue rows |" in md
     assert "| P0 ledgers |" in md
     assert "foundation risk inventory=3; audit net backlog=1; live merge drivers=1" in md
     assert "Classify remaining P0 counts after the rerun" in md
@@ -689,10 +692,10 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "Technical evidence:" not in md
     assert "ADG Run Metrics" in md
     assert "P0-P3 Severity Inventory" in md
-    assert "P0 blocker rows" in md
+    assert "P0 action queue" in md
     assert "Report consistency" in md
     assert "| Question | Answer |" in md
-    assert "| Can we merge? | No. A P0 FIX gate is red. |" in md
+    assert "| Can we merge? | No. A live P0 gate driver is red. |" in md
     assert "| What blocks merge? | `blocker` has 1 blocking row(s). |" in md
     assert "### 1. Key Findings" not in md
     assert "| Repair graph/report consistency |" not in md
@@ -704,6 +707,91 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing." in md
     assert "Post-P0 ADG has report consistency PASS or an explicit waiver." in md
     assert "Next step: Repair graph/report consistency first." not in md
+
+
+def test_inline_report_prioritizes_p0_wave_before_p1_fix(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite_structural(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    queue = artifacts / "adg_action_queue_run.json"
+    burndown = artifacts / "adg_burndown_table_run.json"
+    _write_json(
+        gate,
+        {
+            "timestamp": "run",
+            "total_gates": 1,
+            "overall_exit_code": 1,
+            "gates": [
+                {
+                    "gate_id": "H1_new_orphans_delta_ratchet",
+                    "band": "P1",
+                    "enforcement": "ratchet",
+                    "classification": "regressed",
+                    "violation_count": 1,
+                    "baseline_count": 0,
+                    "status": "fail",
+                }
+            ],
+        },
+    )
+    _write_json(
+        queue,
+        {
+            "actions": [
+                {"verdict_cluster": "FIX", "sort_band": "P1", "gate_id": "H1_new_orphans_delta_ratchet"},
+                {
+                    "verdict_cluster": "P0_WAVE",
+                    "sort_band": "P0",
+                    "action_kind": "p0_wave_file",
+                    "file_path": "agentic_core/L1_cognition/__init__.py",
+                },
+                {
+                    "verdict_cluster": "P0_WAVE",
+                    "sort_band": "P0",
+                    "action_kind": "p0_wave_file",
+                    "file_path": "agentic_core/L1_cognition/apps_research_c0_binding.py",
+                },
+            ]
+        },
+    )
+    _write_json(
+        burndown,
+        {
+            "summary": {
+                "P0": {"gross": 37, "guardian": 33, "net": 4},
+                "P1": {"gross": 1, "guardian": 0, "net": 1},
+                "P2": {},
+                "P3": {},
+            }
+        },
+    )
+
+    rc, out = emit_bcg_executive_summary(
+        artifacts,
+        "run",
+        db,
+        gate,
+        queue,
+        None,
+        burndown,
+        {},
+        print_inline=False,
+        docs_dir=tmp_path / "docs_mirror",
+    )
+
+    assert rc == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["p0_action_queue_summary"]["p0_wave_count"] == 2
+    md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
+    _validate_locked_bcg_inline_markdown(md)
+    assert "| Can we merge? | No. ADG is red and P0 foundation/wave work remains before lower-severity lanes. |" in md
+    assert "No. A P0 FIX gate is red." not in md
+    assert "| Live P0 gate drivers | 0 |" in md
+    assert "| P0 action queue | 2 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py |" in md
+    assert "top red FIX gate=H1_new_orphans_delta_ratchet; rows=1" in md
+    assert md.index("| 1 | Clear P0 foundation wave.") < md.rindex("Address H1_new_orphans_delta_ratchet")
 
 
 def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:

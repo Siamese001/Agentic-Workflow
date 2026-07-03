@@ -1663,7 +1663,7 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
     recommendation = "Fund the smallest slice that clears current blockers and attaches tests where hotspot evidence overlaps; keep ratchets after-green."
     if verdict == "REPORT_INCONSISTENT":
         if fix_gates:
-            recommendation = "Treat report inconsistency as a decision-quality caveat, not the first engineering work item; clear concrete P0 FIX gates first, then rerun ADG and repair report consistency if it persists."
+            recommendation = "Treat report inconsistency as a decision-quality caveat, not the first engineering work item; clear concrete red FIX/P0 evidence first, then rerun ADG and repair report consistency if it persists."
         else:
             recommendation = "Repair report consistency before treating lower-severity ranking as authoritative."
     elif verdict == "RUNTIME_PROOF_FAILING":
@@ -1745,6 +1745,7 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
             "bcg_gate_adapter": gate_adapter,
             "kpi_scorecard": kpi_scorecard,
             "p0_p3_reconciliation": kpi_scorecard,
+            "p0_action_queue_summary": _p0_action_queue_summary(action_queue),
             "gate_mece_summary": gate_mece_summary,
             "lens_0_p0_landmines": p0_landmines,
             "lens_1_health_gates": health,
@@ -1941,6 +1942,96 @@ def _table(headers: list[str], rows: list[list[Any]]) -> str:
     return "\n".join(out)
 
 
+def _int_value(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _action_queue_scope(row: dict[str, Any]) -> str:
+    return str(
+        row.get("file_path")
+        or row.get("source_id")
+        or row.get("gate_id")
+        or row.get("scope")
+        or row.get("symbol")
+        or "unknown"
+    )
+
+
+def _p0_action_queue_summary(action_queue: dict[str, Any]) -> dict[str, Any]:
+    actions = [row for row in action_queue.get("actions", []) or [] if isinstance(row, dict)]
+    p0_fix: list[dict[str, Any]] = []
+    p0_wave: list[dict[str, Any]] = []
+    for row in actions:
+        band = str(row.get("sort_band") or row.get("band") or "").upper()
+        cluster = str(row.get("verdict_cluster") or "").upper()
+        kind = str(row.get("action_kind") or "").lower()
+        if band.startswith("P0") and cluster == "FIX":
+            p0_fix.append(row)
+        elif band.startswith("P0") or cluster == "P0_WAVE" or kind.startswith("p0_"):
+            p0_wave.append(row)
+    rows = p0_fix + p0_wave
+    scopes = [_action_queue_scope(row) for row in rows]
+    top_scopes = scopes[:3]
+    if not rows:
+        metric = "no P0 action-queue rows"
+    elif p0_fix:
+        metric = f"{_display_count(len(p0_fix))} P0 FIX row(s)"
+        if p0_wave:
+            metric += f"; {_display_count(len(p0_wave))} P0 wave row(s)"
+    else:
+        metric = f"{_display_count(len(p0_wave))} P0 wave file row(s)"
+    if top_scopes:
+        metric += ": " + ", ".join(top_scopes)
+        if len(scopes) > len(top_scopes):
+            metric += f", +{len(scopes) - len(top_scopes)} more"
+    return {
+        "p0_fix_count": len(p0_fix),
+        "p0_wave_count": len(p0_wave),
+        "total_p0_rows": len(rows),
+        "top_scopes": top_scopes,
+        "metric": metric,
+        "rows": rows,
+    }
+
+
+def _kpis_by_id(doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
+    return {str(row.get("id") or ""): row for row in scorecard.get("kpis", []) or []}
+
+
+def _kpi_int(doc: dict[str, Any], key: str) -> int:
+    return _int_value((_kpis_by_id(doc).get(key) or {}).get("value"), 0)
+
+
+def _p0_priority_rows(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    p0_summary = doc.get("p0_action_queue_summary") or {}
+    if _int_value(p0_summary.get("total_p0_rows")) <= 0:
+        return []
+    has_fix = _int_value(p0_summary.get("p0_fix_count")) > 0
+    move = "Clear P0 FIX rows" if has_fix else "Clear P0 foundation wave"
+    return [
+        {
+            "priority": 1,
+            "move": move,
+            "why_it_matters": "P0 work is the first severity lane; do not let a P1 ratchet or graph/report caveat jump ahead of it.",
+            "evidence": p0_summary.get("metric"),
+            "next_step": "Burn down the listed P0 rows first, then rerun ADG before ranking P1-P3.",
+            "scope": "P0 action queue",
+            "decision_options": [],
+            "done_condition": "Rerun ADG and confirm P0 action rows/foundation blockers are zero or explicitly waived.",
+            "affected_system": "ADG P0 lane",
+            "affected_layers": [],
+            "change_breakout": [],
+            "diagram": None,
+            "action_type": "p0_action_queue",
+            "decision": "clear_p0_first",
+        }
+    ]
+
+
 def _action_impact_markdown(lens: dict[str, Any]) -> str:
     rows = lens.get("action_impact_rows") or []
     return _table(
@@ -1978,10 +2069,16 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     sqlite_snapshot = str(artifacts.get("sqlite_snapshot") or "").strip()
     snapshot_ts = _sqlite_ts(Path(sqlite_snapshot)) if sqlite_snapshot else ""
     decision_gate_rows = list((doc.get("gate_mece_summary") or {}).get("decision_gates") or [])
-    priority_rows: list[dict[str, Any]] = []
+    priority_rows: list[dict[str, Any]] = _p0_priority_rows(doc)
+    seen_scopes = {str(row.get("scope") or "") for row in priority_rows}
     verdict = str(d.get("verdict") or "UNKNOWN")
     recommendation = str(d.get("recommendation") or "no recommendation emitted").rstrip(".")
-    for row in actions[:4]:
+    for row in actions:
+        if len(priority_rows) >= 4:
+            break
+        scope = str(row.get("scope") or "")
+        if scope and scope in seen_scopes:
+            continue
         priority_rows.append(
             {
                 "priority": int(row.get("rank") or len(priority_rows) + 1),
@@ -2000,13 +2097,18 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
                 "decision": row.get("decision"),
             }
         )
+        if scope:
+            seen_scopes.add(scope)
     first_priority = priority_rows[0] if priority_rows else {}
     first_move = str(first_priority.get("move") or first_priority.get("scope") or "the first P0 blocker")
     first_scope = str(first_priority.get("scope") or first_move)
     first_evidence = str(first_priority.get("evidence") or "ADG emitted a concrete P0 row").rstrip(".")
     red_gates_by_id = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
     first_gate = red_gates_by_id.get(first_scope, {})
-    first_row_count = _fmt_int(first_gate.get("total_records") or first_gate.get("records") or first_gate.get("violation_count") or 0)
+    if first_scope == "P0 action queue":
+        first_row_count = _display_count((doc.get("p0_action_queue_summary") or {}).get("total_p0_rows"))
+    else:
+        first_row_count = _fmt_int(first_gate.get("total_records") or first_gate.get("records") or first_gate.get("violation_count") or 0)
     fix_gate_count = _fmt_int(health.get("summary", {}).get("fix_gates", 0))
     runtime_signals = runtime.get("runtime_proof_signals") or []
     runtime_status = str((runtime_signals[0] if runtime_signals else {}).get("status") or runtime.get("status") or "unknown")
@@ -2016,8 +2118,8 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     if verdict == "REPORT_INCONSISTENT":
         if priority_rows:
             business_suffix = (
-                "ADG is giving one safe decision, not a full ranked roadmap: clear the P0 core/app boundary "
-                "violation before merge. The report inconsistency only limits confidence in the lower-priority "
+                "ADG is giving one safe decision, not a full ranked roadmap: clear concrete P0 evidence "
+                "before lower-severity work. The report inconsistency only limits confidence in the lower-priority "
                 "ranking; it does not change the first engineering move."
             )
             priority_rule = (
@@ -2067,8 +2169,8 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     if verdict == "REPORT_INCONSISTENT" and priority_rows:
         business_read = business_suffix
         technical_read = [
-            f"P0 gate: `{first_scope}`; rows: {first_row_count}; boundary: `agentic_core` -> `apps_*`.",
-            f"Source: ADG `{doc.get('run', {}).get('run_id') or 'unknown'}` emitted this as a concrete FIX row.",
+            f"First P0 evidence: `{first_scope}`; rows: {first_row_count}.",
+            f"Source: ADG `{doc.get('run', {}).get('run_id') or 'unknown'}` emitted this as decision-linked queue evidence.",
             "Report caveat: graph/report consistency is FAIL; only lower-priority ranking is provisional.",
             f"Run context: {fix_gate_count} FIX gate(s); {_fmt_int(len(actions))} action rows emitted.",
             f"Runtime signal: {runtime_status}.",
@@ -2344,12 +2446,25 @@ def _first_testing_signal(doc: dict[str, Any]) -> str:
     return f"{row.get('production_scope', 'unknown')}; risk={risk}"
 
 
-def _first_p0_blocker_metric(doc: dict[str, Any], brief: dict[str, Any]) -> str:
-    first = (brief.get("priority_rows") or [{}])[0]
-    scope = str(first.get("scope") or first.get("move") or "none")
+def _p0_action_queue_metric(doc: dict[str, Any]) -> str:
+    return str((doc.get("p0_action_queue_summary") or {}).get("metric") or "no P0 action-queue rows")
+
+
+def _first_fix_gate_metric(doc: dict[str, Any], brief: dict[str, Any]) -> str:
     health = doc.get("lens_1_health_gates") or {}
     gates = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
-    row = gates.get(scope, {})
+    scope = ""
+    row: dict[str, Any] = {}
+    for candidate in brief.get("priority_rows") or []:
+        candidate_scope = str(candidate.get("scope") or "")
+        if candidate_scope in gates:
+            scope = candidate_scope
+            row = gates[candidate_scope]
+            break
+    if not row and gates:
+        scope, row = next(iter(gates.items()))
+    if not row:
+        return "none"
     count = _fmt_int(row.get("total_records") or row.get("records") or row.get("violation_count") or 0)
     return f"{scope}; rows={count}"
 
@@ -2368,8 +2483,10 @@ def _adg_run_metrics(doc: dict[str, Any], brief: dict[str, Any]) -> list[list[An
         ["Snapshot", (doc.get("run") or {}).get("snapshot_ts") or "unknown"],
         ["SQLite snapshot", artifacts.get("sqlite_snapshot") or "unknown"],
         ["Audit caveat", f"{(doc.get('executive_decision') or {}).get('verdict') or 'UNKNOWN'}; report consistency={consistency.get('status') or 'unknown'}"],
-        ["P0 FIX gates", _fmt_int(summary.get("fix_gates", 0))],
-        ["P0 blocker rows", _first_p0_blocker_metric(doc, brief)],
+        ["FIX gates (all bands)", _fmt_int(summary.get("fix_gates", 0))],
+        ["Live P0 gate drivers", _display_count(_kpi_int(doc, "p0_live_gate_drivers"))],
+        ["P0 action queue", _p0_action_queue_metric(doc)],
+        ["Top FIX gate", _first_fix_gate_metric(doc, brief)],
         ["Action rows", _fmt_int(len(actions))],
         [
             "P0 ledgers",
@@ -2414,12 +2531,30 @@ def _executive_decision_rows(doc: dict[str, Any], brief: dict[str, Any]) -> list
     row = gates.get(scope, {})
     count = _fmt_int(row.get("total_records") or row.get("records") or row.get("violation_count") or 0)
     consistency = (((doc.get("audit_notes") or {}).get("artifact_consistency") or {}).get("status") or "unknown")
-    if scope == "13_core_imports_apps":
-        blocker = f"`{scope}`: `agentic_core` imports `apps_*` in {count} row(s), violating the core/app boundary."
+    p0_summary = doc.get("p0_action_queue_summary") or {}
+    p0_queue_count = _int_value(p0_summary.get("total_p0_rows"))
+    p0_live_drivers = _kpi_int(doc, "p0_live_gate_drivers")
+    foundation_blockers = _kpi_int(doc, "foundation_blockers")
+    if p0_live_drivers > 0:
+        merge_status = "No. A live P0 gate driver is red."
+    elif p0_queue_count > 0 or foundation_blockers > 0:
+        merge_status = "No. ADG is red and P0 foundation/wave work remains before lower-severity lanes."
+    elif gates:
+        merge_status = "No. ADG has a red FIX gate."
     else:
+        merge_status = "No. ADG report consistency/runtime proof is not decision-grade." if str(consistency).upper() == "FAIL" else "Yes, if no external release gate is red."
+    if p0_queue_count > 0:
+        p0_detail = str(p0_summary.get("metric") or "P0 action queue has rows.")
+        non_p0_fix = _first_fix_gate_metric(doc, brief)
+        blocker = f"{p0_detail}. Live P0 gate drivers={_display_count(p0_live_drivers)}; top red FIX gate={non_p0_fix}."
+    elif scope == "13_core_imports_apps":
+        blocker = f"`{scope}`: `agentic_core` imports `apps_*` in {count} row(s), violating the core/app boundary."
+    elif gates:
         blocker = f"`{scope}` has {count} blocking row(s)."
+    else:
+        blocker = f"Report consistency is {consistency}; no red P0 live gate driver is present."
     return [
-        ["Can we merge?", "No. A P0 FIX gate is red."],
+        ["Can we merge?", merge_status],
         ["What blocks merge?", blocker],
         ["First engineering move", f"{move}. {next_step}"],
         ["What waits?", "P1-P3 work, ratchets, dead-code cleanup, and broad graph ranking."],

@@ -1,11 +1,13 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-07-03T08:15:23.434068+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_indexed_07032026_0358.sqlite",
+  "timestamp": "2026-07-03T10:54:09.292738+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07022026_2303.sqlite",
   "strict_mode": true,
-  "total_rows": 0,
-  "by_authority_status": {},
+  "total_rows": 3867,
+  "by_authority_status": {
+    "AUTHORITATIVE_RUNTIME": 3867
+  },
   "violations": [],
   "violation_count": 0,
   "status": "ok"
