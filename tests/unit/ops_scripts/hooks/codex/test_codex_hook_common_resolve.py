@@ -95,3 +95,21 @@ class TestResolveResponseText:
 
     def test_missing_transcript_returns_empty(self, chc, tmp_path) -> None:
         assert chc.resolve_response_text({"transcript_path": str(tmp_path / "nope.jsonl")}) == ""
+
+
+class TestMcpPayloadNormalization:
+    def test_splits_dotted_mcp_tool_name(self, chc) -> None:
+        normalized = chc.normalize_mcp_payload(
+            {"tool_name": "mcp__adg_sqlite.adg_health", "tool_input": {}}
+        )
+
+        assert normalized["tool_info"]["mcp_server_name"] == "adg_sqlite"
+        assert normalized["tool_info"]["mcp_tool_name"] == "adg_health"
+
+    def test_splits_double_underscore_mcp_tool_name(self, chc) -> None:
+        normalized = chc.normalize_mcp_payload(
+            {"tool_name": "mcp__memory__memory_health", "tool_input": {}}
+        )
+
+        assert normalized["tool_info"]["mcp_server_name"] == "memory"
+        assert normalized["tool_info"]["mcp_tool_name"] == "memory_health"

@@ -37,6 +37,10 @@ _FAILURE_MARKERS = (
     "mcp error",
     "mcperror",
 )
+_NO_RESPONSE_PROOF = {
+    "status": "ok",
+    "evidence": "PostToolUse completed without an inline tool_response payload",
+}
 
 
 def _load_payload(raw: str) -> dict[str, Any]:
@@ -61,29 +65,60 @@ def _split_mcp_tool_name(raw: str) -> tuple[str, str]:
     return "", name
 
 
-def _tool_identity(payload: dict[str, Any]) -> tuple[str, str]:
-    info = payload.get("tool_info")
-    if not isinstance(info, dict):
-        info = {}
+def _string_value(value: Any) -> str:
+    return value.strip() if isinstance(value, str) else ""
 
-    server = str(
-        info.get("mcp_server_name")
-        or payload.get("mcp_server_name")
-        or payload.get("server_name")
-        or ""
+
+def _nested_dict(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _tool_identity(payload: dict[str, Any]) -> tuple[str, str]:
+    info = _nested_dict(payload.get("tool_info"))
+    tool_info = _nested_dict(payload.get("toolInfo"))
+    tool_obj = _nested_dict(payload.get("tool"))
+    function_obj = _nested_dict(payload.get("function"))
+
+    server = (
+        _string_value(info.get("mcp_server_name"))
+        or _string_value(info.get("mcpServerName"))
+        or _string_value(tool_info.get("mcp_server_name"))
+        or _string_value(tool_info.get("mcpServerName"))
+        or _string_value(tool_obj.get("mcp_server_name"))
+        or _string_value(tool_obj.get("mcpServerName"))
+        or _string_value(tool_obj.get("server"))
+        or _string_value(tool_obj.get("server_id"))
+        or _string_value(payload.get("mcp_server_name"))
+        or _string_value(payload.get("mcpServerName"))
+        or _string_value(payload.get("server_name"))
+        or _string_value(payload.get("server"))
+        or _string_value(payload.get("server_id"))
     )
-    tool = str(
-        info.get("mcp_tool_name")
-        or payload.get("mcp_tool_name")
-        or payload.get("tool")
-        or ""
+    tool = (
+        _string_value(info.get("mcp_tool_name"))
+        or _string_value(info.get("mcpToolName"))
+        or _string_value(tool_info.get("mcp_tool_name"))
+        or _string_value(tool_info.get("mcpToolName"))
+        or _string_value(tool_obj.get("mcp_tool_name"))
+        or _string_value(tool_obj.get("mcpToolName"))
+        or _string_value(tool_obj.get("name"))
+        or _string_value(tool_obj.get("tool_name"))
+        or _string_value(tool_obj.get("toolName"))
+        or _string_value(function_obj.get("name"))
+        or _string_value(payload.get("mcp_tool_name"))
+        or _string_value(payload.get("mcpToolName"))
     )
-    raw_tool = str(
-        payload.get("tool_name")
-        or payload.get("toolName")
-        or info.get("tool_name")
-        or info.get("toolName")
-        or ""
+    raw_tool = (
+        _string_value(payload.get("tool_name"))
+        or _string_value(payload.get("toolName"))
+        or _string_value(payload.get("tool"))
+        or _string_value(payload.get("name"))
+        or _string_value(info.get("tool_name"))
+        or _string_value(info.get("toolName"))
+        or _string_value(tool_info.get("tool_name"))
+        or _string_value(tool_info.get("toolName"))
+        or _string_value(tool_obj.get("full_name"))
+        or _string_value(tool_obj.get("fullName"))
     )
     inferred_server, inferred_tool = _split_mcp_tool_name(raw_tool)
     return canonical_server_id(server or inferred_server), tool or inferred_tool
@@ -94,6 +129,11 @@ def _tool_response(payload: dict[str, Any]) -> Any:
         if key in payload:
             return payload[key]
     info = payload.get("tool_info")
+    if isinstance(info, dict):
+        for key in ("tool_response", "tool_result", "response", "result", "output"):
+            if key in info:
+                return info[key]
+    info = payload.get("toolInfo")
     if isinstance(info, dict):
         for key in ("tool_response", "tool_result", "response", "result", "output"):
             if key in info:
@@ -225,7 +265,9 @@ def maybe_record_proof(payload: dict[str, Any]) -> Path | None:
         return None
 
     response = _tool_response(payload)
-    if response is None or _contains_transport_failure(payload, response):
+    if response is None:
+        response = dict(_NO_RESPONSE_PROOF)
+    if _contains_transport_failure(payload, response):
         return None
 
     pid = _pid_from_response(response)

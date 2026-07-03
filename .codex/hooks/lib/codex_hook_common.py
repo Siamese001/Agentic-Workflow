@@ -210,6 +210,20 @@ def strip_mcp_tool_prefix(tool_name: str) -> str:
     return raw.split("_", 1)[1] if raw.startswith("mcp") else raw
 
 
+def split_mcp_tool_name(tool_name: str) -> tuple[str, str]:
+    raw = str(tool_name or "").strip()
+    if not raw.startswith("mcp__"):
+        return "", raw
+    remainder = raw[len("mcp__") :]
+    if "." in remainder:
+        server, tool = remainder.split(".", 1)
+        return server, tool
+    if "__" in remainder:
+        server, tool = remainder.split("__", 1)
+        return server, tool
+    return "", raw
+
+
 def parse_mcp_tool_input(payload: dict[str, Any]) -> dict[str, Any] | None:
     value = payload.get("tool_input")
     if value is None and isinstance(payload.get("toolInfo"), dict):
@@ -257,10 +271,9 @@ def _infer_server_name(payload: dict[str, Any]) -> str:
         if raw.lower() in server_keys:
             return server_keys[raw.lower()]
     tool_name = str(payload.get("tool_name") or payload.get("toolName") or "")
-    if tool_name.startswith("mcp__"):
-        parts = tool_name.split("__")
-        if len(parts) >= 3:
-            return parts[1]
+    inferred_server, _inferred_tool = split_mcp_tool_name(tool_name)
+    if inferred_server:
+        return inferred_server
     return ""
 
 
@@ -270,8 +283,10 @@ def normalize_mcp_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(tool_info, dict):
         tool_info = {}
     tool_info = dict(tool_info)
+    raw_tool_name = str(payload.get("tool_name") or payload.get("toolName") or "")
+    _inferred_server, inferred_tool = split_mcp_tool_name(raw_tool_name)
     tool_info.setdefault("mcp_server_name", _infer_server_name(payload))
-    tool_info.setdefault("mcp_tool_name", str(payload.get("tool_name") or payload.get("toolName") or ""))
+    tool_info.setdefault("mcp_tool_name", inferred_tool or raw_tool_name)
     normalized["tool_info"] = tool_info
     return normalized
 
