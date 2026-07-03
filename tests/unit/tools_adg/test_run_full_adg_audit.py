@@ -310,8 +310,8 @@ def test_wrapper_emits_bcg_before_burndown_inline(temp_artifacts, monkeypatch):
 
     call_order: list[object] = []
 
-    def _fake_bcg(**kwargs):  # noqa: ARG001
-        call_order.append("bcg")
+    def _fake_bcg(**kwargs):
+        call_order.append(("bcg", kwargs.get("print_inline")))
         return 0, wrapper.ARTIFACTS_ADG / "adg_bcg_executive_summary_test.json"
 
     def _fake_burndown(**kwargs):
@@ -328,7 +328,7 @@ def test_wrapper_emits_bcg_before_burndown_inline(temp_artifacts, monkeypatch):
 
     wrapper.run_audit(mode="certification")
 
-    assert call_order[:3] == ["bcg", ("burndown_emit", False), "burndown_inline"]
+    assert call_order[:3] == [("bcg", True), ("burndown_emit", False), "burndown_inline"]
 
 
 def test_failed_generator_emits_degraded_required_outputs_but_blocks_handoff(temp_artifacts, monkeypatch):
@@ -348,7 +348,7 @@ def test_failed_generator_emits_degraded_required_outputs_but_blocks_handoff(tem
     real_burndown_emit = burndown_mod.emit_mandatory_adg_burndown_report
 
     def _fake_bcg(**kwargs):
-        call_order.append("bcg")
+        call_order.append(("bcg", kwargs.get("print_inline")))
         out = wrapper.ARTIFACTS_ADG / f"adg_bcg_executive_summary_{kwargs['ts']}.json"
         out.write_text(json.dumps({"run": {"emit_status": "DEGRADED"}}), encoding="utf-8")
         return 0, out
@@ -369,7 +369,7 @@ def test_failed_generator_emits_degraded_required_outputs_but_blocks_handoff(tem
 
     assert result.certification_status == "failed"
     assert result.artifact_status == "incomplete"
-    assert call_order[:3] == ["bcg", ("burndown_emit", False), "burndown_inline"]
+    assert call_order[:3] == [("bcg", True), ("burndown_emit", False), "burndown_inline"]
     for name in (
         f"adg_gate_results_{stamp}.json",
         f"adg_action_queue_{stamp}.json",
@@ -808,6 +808,12 @@ def test_repair_counts_split_p0_fix_wave_and_backlog():
         "actions": [
             {"verdict_cluster": "FIX", "sort_band": "P0"},
             {"verdict_cluster": "P0_WAVE", "sort_band": "P0"},
+            {
+                "verdict_cluster": "P0_WAVE",
+                "sort_band": "P0",
+                "action_kind": "p0_wave_file",
+                "source_artifact": "p0_wave_plan",
+            },
             {"verdict_cluster": "FIX", "sort_band": "P1"},
         ]
     }

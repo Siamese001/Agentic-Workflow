@@ -651,6 +651,8 @@ def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -
     for action in action_queue.get("actions") or []:
         cluster = action.get("verdict_cluster")
         if cluster == "P0_WAVE" and action.get("sort_band") == "P0":
+            if action.get("action_kind") == "p0_wave_file" and action.get("source_artifact") == "p0_wave_plan":
+                continue
             counts["P0_WAVE"] += 1
             continue
         if cluster != "FIX":

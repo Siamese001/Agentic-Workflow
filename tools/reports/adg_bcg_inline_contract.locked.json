@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "adg_bcg_inline_markdown_contract",
+  "description": "Locked inline executive BCG markdown shape for full ADG chat output.",
+  "forbidden_substrings": [
+    "### BCG Executive Brief",
+    "### 1. Key Findings",
+    "### 2. Recommended Next Steps",
+    "### 1. What ADG Is",
+    "### 2. Patient Size",
+    "### 3. Executive Decision",
+    "### 3A. KPI Scorecard",
+    "### 4. Lens 0",
+    "### 8. Gap Analysis",
+    "### 9. Gap Analysis",
+    "### BCG Deletion Brief",
+    "| Finding | What it says |",
+    "| Finding | What it says | Response |",
+    "Business read:",
+    "Technical evidence:",
+    "Fix now:",
+    "Action impact:"
+  ],
+  "locked_format_name": "adg_bcg_inline_executive_v1",
+  "ordered_sections": [
+    "## ADG Executive Brief",
+    "| Question | Answer |",
+    "ADG Run Metrics",
+    "| Metric | Value |",
+    "P0-P3 Severity Inventory",
+    "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+    "### Recommended Next Steps",
+    "| Priority | Action | Evidence | Exit criterion |"
+  ],
+  "render_inline_required": true,
+  "schema_version": "1.0",
+  "starts_with": "## ADG Executive Brief"
+}

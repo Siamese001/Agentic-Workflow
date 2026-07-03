@@ -41,6 +41,7 @@ from tools.reports.gate_signal_catalog import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 DOCS_ADG = REPO_ROOT / "docs" / "reports" / "adg"
+BCG_INLINE_CONTRACT_PATH = Path(__file__).with_name("adg_bcg_inline_contract.locked.json")
 TEST_FOLDERS = ("unit", "e2e", "regression", "integration", "smoke", "golden", "contract", "fixtures", "unknown")
 TEST_TYPE_BY_FOLDER = {"fixtures": "fixture"}
 VERDICTS = {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
@@ -99,6 +100,37 @@ def _read_json(path: Path | None) -> dict[str, Any] | None:
     with path.open(encoding="utf-8") as fh:
         data = json.load(fh)
     return data if isinstance(data, dict) else {"value": data}
+
+
+def _load_locked_inline_contract() -> dict[str, Any]:
+    contract = _read_json(BCG_INLINE_CONTRACT_PATH)
+    if not isinstance(contract, dict):
+        raise ValueError(f"Missing locked BCG inline contract: {_repo_rel(BCG_INLINE_CONTRACT_PATH)}")
+    return contract
+
+
+def _validate_locked_bcg_inline_markdown(markdown: str, contract: dict[str, Any] | None = None) -> None:
+    contract = contract or _load_locked_inline_contract()
+    violations: list[str] = []
+    starts_with = str(contract.get("starts_with") or "")
+    if starts_with and not markdown.startswith(starts_with):
+        violations.append(f"must start with {starts_with!r}")
+    cursor = -1
+    for section in contract.get("ordered_sections") or []:
+        needle = str(section)
+        idx = markdown.find(needle)
+        if idx < 0:
+            violations.append(f"missing required section/table {needle!r}")
+            continue
+        if idx <= cursor:
+            violations.append(f"section/table out of order {needle!r}")
+        cursor = idx
+    for needle in contract.get("forbidden_substrings") or []:
+        text = str(needle)
+        if text and text in markdown:
+            violations.append(f"forbidden legacy inline content {text!r}")
+    if violations:
+        raise ValueError("BCG inline contract violation: " + "; ".join(violations))
 
 
 def _write_json(path: Path, doc: dict[str, Any]) -> None:
@@ -2412,15 +2444,13 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("")
     a(_table(["Band", "Gross", "Guardian exempted", "Net", "Foundation blockers", "Live gate drivers"], _p0_p3_severity_inventory(doc)))
     a("")
-    a("### 1. Key Findings")
-    a("")
-    a(_table(["Finding", "What it says"], _compact_key_findings(doc)))
-    a("")
-    a("### 2. Recommended Next Steps")
+    a("### Recommended Next Steps")
     a("")
     a(_table(["Priority", "Action", "Evidence", "Exit criterion"], _compact_next_steps(doc, brief)))
     a("")
-    return "\n".join(lines)
+    markdown = "\n".join(lines)
+    _validate_locked_bcg_inline_markdown(markdown)
+    return markdown
 
 
 def emit_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | None], print_inline: bool = True, fail_closed: bool = False, docs_dir: Path | None = None) -> tuple[int, Path | None]:

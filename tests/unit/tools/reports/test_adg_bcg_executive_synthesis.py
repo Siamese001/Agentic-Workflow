@@ -4,15 +4,19 @@ import json
 import sqlite3
 from pathlib import Path
 
+import pytest
 import yaml
 
 from tools.reports.adg_bcg_executive_synthesis import (
+    BCG_INLINE_CONTRACT_PATH,
     build_artifact_usage_matrix,
     build_canonical_next_best_actions,
     build_deprecation_deletion_plan,
     build_mv_usefulness_audit,
     build_test_scope_inventory,
     emit_bcg_executive_summary,
+    _load_locked_inline_contract,
+    _validate_locked_bcg_inline_markdown,
     render_bcg_inline_markdown,
     synthesize_graphdb_decision_impact,
     synthesize_testing_investment_map,
@@ -405,6 +409,43 @@ def test_deprecation_deletion_plan_prioritizes_confirmed_dead_code_before_noise(
     assert plan["summary"]["cleanup_candidate_count"] == 2
 
 
+def test_locked_inline_contract_validates_final_bcg_shape() -> None:
+    contract = _load_locked_inline_contract()
+    expected_sections = [
+        "## ADG Executive Brief",
+        "| Question | Answer |",
+        "ADG Run Metrics",
+        "| Metric | Value |",
+        "P0-P3 Severity Inventory",
+        "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+        "### Recommended Next Steps",
+        "| Priority | Action | Evidence | Exit criterion |",
+    ]
+
+    assert BCG_INLINE_CONTRACT_PATH.name == "adg_bcg_inline_contract.locked.json"
+    assert contract["render_inline_required"] is True
+    assert contract["ordered_sections"] == expected_sections
+    _validate_locked_bcg_inline_markdown("\n\n".join(expected_sections), contract)
+
+    with pytest.raises(ValueError, match="forbidden legacy inline content"):
+        _validate_locked_bcg_inline_markdown("\n\n".join(expected_sections + ["### 1. Key Findings"]), contract)
+
+    bad_order = "\n\n".join(
+        [
+            "## ADG Executive Brief",
+            "| Question | Answer |",
+            "### Recommended Next Steps",
+            "| Priority | Action | Evidence | Exit criterion |",
+            "ADG Run Metrics",
+            "| Metric | Value |",
+            "P0-P3 Severity Inventory",
+            "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+        ]
+    )
+    with pytest.raises(ValueError, match="section/table out of order"):
+        _validate_locked_bcg_inline_markdown(bad_order, contract)
+
+
 def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: Path, capsys) -> None:
     _repo_tests(tmp_path)
     artifacts = tmp_path / "artifacts" / "adg"
@@ -560,6 +601,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         assert data[key]["why_it_matters"]
         assert data[key]["action_impact_rows"]
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
+    _validate_locked_bcg_inline_markdown(md)
     for section in [
         "## ADG Executive Brief",
         "| Question | Answer |",
@@ -569,17 +611,14 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         "| Metric | Value |",
         "P0-P3 Severity Inventory",
         "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
-        "### 1. Key Findings",
-        "### 2. Recommended Next Steps",
+        "### Recommended Next Steps",
         "No deletions are approved in this run",
-        "| Finding | What it says |",
         "| Priority | Action | Evidence | Exit criterion |",
     ]:
         assert section in md
     assert md.index("| Question | Answer |") < md.index("ADG Run Metrics")
-    assert md.index("| Question | Answer |") < md.index("### 1. Key Findings")
     assert md.index("ADG Run Metrics") < md.index("P0-P3 Severity Inventory")
-    assert md.index("P0-P3 Severity Inventory") < md.index("### 1. Key Findings")
+    assert md.index("P0-P3 Severity Inventory") < md.index("### Recommended Next Steps")
     assert "- **Readout:**" not in md
     assert "### 1. Executive Bottom Line" not in md
     assert "North star:" not in md
@@ -607,6 +646,8 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "Classify remaining P0 counts after the rerun" in md
     assert "Do not open a separate product/app workstream" in md
     assert "Keep deletion/deprecation cleanup after P0" in md
+    assert "### 1. Key Findings" not in md
+    assert "| Finding | What it says |" not in md
     assert "| Finding | What it says | Response |" not in md
     assert "| P0 | 1 | 0 | 1 | 3 | 1 |" in md
     assert "adg_indexed_run.sqlite" in md
@@ -653,10 +694,10 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "| Question | Answer |" in md
     assert "| Can we merge? | No. A P0 FIX gate is red. |" in md
     assert "| What blocks merge? | `blocker` has 1 blocking row(s). |" in md
-    assert "### 1. Key Findings" in md
+    assert "### 1. Key Findings" not in md
     assert "| Repair graph/report consistency |" not in md
     assert "| 1 | Repair graph/report consistency |" not in md
-    assert "### 2. Recommended Next Steps" in md
+    assert "### Recommended Next Steps" in md
     assert "Fix now:" not in md
     assert "| Priority | Action | Evidence | Exit criterion |" in md
     assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." in md
@@ -924,8 +965,8 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
     assert "| P1 | 10 | 8 | 2 | n/a | 0 |" in md
     assert "| P2 | 7 | 2 | 5 | n/a | 0 |" in md
     assert "| P3 | 0 | 0 | 0 | n/a | 0 |" in md
-    assert "### 1. Key Findings" in md
-    assert "Foundation risk inventory=0; audit net backlog after exemptions=3; live merge-blocking drivers=1." in md
+    assert "### 1. Key Findings" not in md
+    assert "foundation risk inventory=0; audit net backlog=3; live merge drivers=1" in md
     assert "| P0 ledgers |" in md
     assert "Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates." in md
     assert "Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate." in md
