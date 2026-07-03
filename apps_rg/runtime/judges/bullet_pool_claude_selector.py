@@ -118,6 +118,18 @@ class PoolSelectorUnavailableError(RuntimeError):
     """Raised when the selector cannot produce a real selection."""
 
 
+def _first_path_failure_detail(paths: list[SelfConsistencyPath]) -> str:
+    for path in paths:
+        result = getattr(path, "provider_result", None)
+        provider_error = str(getattr(result, "exact_provider_error", "") or "").strip()
+        if provider_error:
+            return provider_error
+        parse_error = str(getattr(path, "parse_error", "") or "").strip()
+        if parse_error:
+            return parse_error
+    return ""
+
+
 def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
 
@@ -781,6 +793,10 @@ def _call_anthropic_pool_selector(
     import urllib.request
     from datetime import datetime, timezone
 
+    from apps_rg.runtime.providers.external_provider import (
+        apply_anthropic_adaptive_thinking_config,
+        apply_anthropic_temperature_capability,
+    )
     from apps_rg.runtime.judges.executive_summary_x1d import (
         _judge_live_https_allowed_under_pytest,
         _make_blocked_output,
@@ -798,6 +814,8 @@ def _call_anthropic_pool_selector(
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
+    apply_anthropic_temperature_capability(payload)
+    apply_anthropic_adaptive_thinking_config(payload, os.environ)
     started_wall = datetime.now(timezone.utc).isoformat()
     req_path = _artifact_path("anthropic_claude", "provider_request", artifact_base=artifact_dir)
     _write_artifact(
@@ -925,6 +943,34 @@ def _call_anthropic_pool_selector(
             f"Anthropic pool selector parse error: {exc}",
             raw_response_ref=str(raw_path),
             model_name=model,
+        )
+        return blocked, None
+    if not str(text or "").strip():
+        usage = data.get("usage") if isinstance(data, dict) else {}
+        output_details = usage.get("output_tokens_details") if isinstance(usage, dict) else None
+        detail_parts = []
+        stop_reason = data.get("stop_reason") if isinstance(data, dict) else None
+        if stop_reason:
+            detail_parts.append(f"stop_reason={stop_reason}")
+        if isinstance(output_details, dict):
+            detail_parts.append(
+                "output_tokens_details="
+                + json.dumps(output_details, sort_keys=True, separators=(",", ":"))
+            )
+        detail = f" ({'; '.join(detail_parts)})" if detail_parts else ""
+        blocked = _make_blocked_output(
+            "anthropic_claude",
+            input_hash,
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            f"Pool selector returned empty text{detail}",
+            raw_response_ref=str(raw_path),
+            model_name=model,
+        )
+        sel_path = _artifact_path("anthropic_claude", "provider_parse_result", artifact_base=artifact_dir)
+        _write_artifact(
+            sel_path,
+            {"result": None, "raw_response_ref": str(raw_path), "purpose": "bullet_pool_claude_selector"},
         )
         return blocked, None
 
@@ -1490,8 +1536,10 @@ def run_claude_bullet_pool_selection(
     valid_paths = [p for p in paths if p.parsed is not None]
     if not valid_paths:
         if competencies_selector:
+            detail = _first_path_failure_detail(paths)
+            suffix = f"; first failure: {detail[:300]}" if detail else ""
             raise PoolSelectorUnavailableError(
-                "competencies selector unavailable: no parsed candidate paths"
+                f"competencies selector unavailable: no parsed candidate paths{suffix}"
             )
         return _fallback_first_complete_path(
             paths,

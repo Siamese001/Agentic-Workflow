@@ -84,8 +84,48 @@ def test_required_route_accepts_substitute_callable() -> None:
     assert checks[0].status == "PASS"
 
 
+def test_required_mcp_protocol_gate_passes_when_script_exits_zero(monkeypatch, tmp_path: Path) -> None:
+    gate_path = tmp_path / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
+    gate_path.parent.mkdir(parents=True)
+    gate_path.write_text("", encoding="utf-8")
+
+    class Proc:
+        returncode = 0
+        stdout = ""
+        stderr = "[required_mcp_gate] PASS"
+
+    monkeypatch.setattr(mod.subprocess, "run", lambda *args, **kwargs: Proc())
+
+    check = mod._check_required_mcp_protocol_gate(tmp_path)
+
+    assert check.status == "PASS"
+    assert check.id == "mcp.required_protocol_gate"
+    assert "initialize/tools-list" in check.summary
+
+
+def test_required_mcp_protocol_gate_fails_when_script_exits_nonzero(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    gate_path = tmp_path / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
+    gate_path.parent.mkdir(parents=True)
+    gate_path.write_text("", encoding="utf-8")
+
+    class Proc:
+        returncode = 2
+        stdout = ""
+        stderr = "memory connection closed"
+
+    monkeypatch.setattr(mod.subprocess, "run", lambda *args, **kwargs: Proc())
+
+    check = mod._check_required_mcp_protocol_gate(tmp_path)
+
+    assert check.status == "FAIL"
+    assert "memory connection closed" in check.detail
+
+
 def test_default_required_callable_routes_cover_core_only() -> None:
-    assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == ("memory", "GitKraken")
+    assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == ("memory", "GitKraken", "adg_sqlite")
 
 
 def test_docs_only_mode_omits_default_callable_routes_and_allows_adg_fallback() -> None:
@@ -253,6 +293,16 @@ def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_pat
         "counts": {"GREEN": 8, "YELLOW": 0, "RED": 0},
         "servers": {},
     }
+    monkeypatch.setattr(
+        mod,
+        "_check_required_mcp_protocol_gate",
+        lambda root: mod.ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "PASS",
+            "critical",
+            "All enabled repo MCP transports completed initialize/tools-list.",
+        ),
+    )
     monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: exposure)
     monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
 
@@ -262,6 +312,56 @@ def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_pat
     assert report["transport_summary"]["major_mcp_exposure"] == exposure
     assert any(check["id"] == "mcp.major_exposure" for check in report["checks"])
     assert any(check["id"] == "docker.searxng" for check in report["checks"])
+    assert any(check["id"] == "mcp.required_protocol_gate" for check in report["checks"])
+
+
+def test_protocol_gate_pass_suppresses_legacy_route_failures(monkeypatch, tmp_path: Path) -> None:
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+    monkeypatch.setattr(mod, "_run_git_status", lambda root: (0, "", ""))
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(
+        mod.audit_codex_mcp_transports,
+        "build_report",
+        lambda route_contract=None: _transport_report(
+            {
+                "memory": "PROCESS_ONLY",
+                "GitKraken": "PROCESS_ONLY",
+                "adg_sqlite": "EXPOSED_BLOCKED",
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        mod,
+        "_check_required_mcp_protocol_gate",
+        lambda root: mod.ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "PASS",
+            "critical",
+            "All enabled repo MCP transports completed initialize/tools-list.",
+        ),
+    )
+    monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: {"available": True, "readiness_status": "PASS", "counts": {}})
+    monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
+
+    report = mod.build_readiness_report(tmp_path)
+
+    assert report["status"] == "PASS"
+    assert not any(
+        check["id"] in {"mcp.memory", "mcp.GitKraken", "mcp.adg_sqlite"}
+        and check["status"] == "FAIL"
+        for check in report["checks"]
+    )
+    route_contract = next(check for check in report["checks"] if check["id"] == "mcp.route_contract")
+    assert route_contract["status"] == "PASS"
 
 
 def test_searxng_check_passes_when_report_ready(monkeypatch) -> None:

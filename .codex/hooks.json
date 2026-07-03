@@ -154,6 +154,15 @@
           }
         ],
         "matcher": "AskUserQuestion|request_user_input|functions\\.request_user_input"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/after_mcp_execution.py\""
+          }
+        ],
+        "matcher": "mcp__adg_sqlite.*"
       }
     ],
     "Stop": [

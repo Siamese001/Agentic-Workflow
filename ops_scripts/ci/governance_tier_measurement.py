@@ -1,7 +1,8 @@
-"""Shared legacy editor governance tier measurement (W0 SSOT for always-on budget).
+"""Shared governance tier measurement helpers.
 
-Tier-1 (repo-native): ``.codex/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
-legacy editor legacy ``trigger: always_on`` ``.md`` files are reported separately (not summed into Tier-1).
+The `.mdc` helpers below are retained only for retired compatibility accounting.
+The real Codex surface is `AGENTS.md` plus `.codex/rules/*.md`, measured by
+`scan_claude_rules_all_md()`.
 """
 
 from __future__ import annotations

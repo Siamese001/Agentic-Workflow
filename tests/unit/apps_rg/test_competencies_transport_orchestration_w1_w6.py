@@ -75,15 +75,37 @@ def test_w1_competencies_chat_timeout_caps_extended_budget(monkeypatch):
     assert competencies_provider_chat_timeout_s() == 300
 
     monkeypatch.delenv("APPS_RG_COMPETENCIES_CHAT_TIMEOUT_SECONDS", raising=False)
-    assert competencies_provider_chat_timeout_s() == 120  # default for normal runs stays bounded
+    assert competencies_provider_chat_timeout_s() == 240  # default for normal runs stays bounded
 
 
 def test_competencies_output_budget_covers_structured_candidate_json():
     from apps_rg.runtime.sections.competencies_lane_defaults import (
         COMPETENCIES_MAX_OUTPUT_TOKENS,
+        competencies_self_consistency_output_tokens,
     )
 
     assert COMPETENCIES_MAX_OUTPUT_TOKENS >= 6000
+    assert 1500 <= competencies_self_consistency_output_tokens() <= COMPETENCIES_MAX_OUTPUT_TOKENS
+
+
+def test_competencies_sc_output_budget_env_is_bounded(monkeypatch):
+    from apps_rg.runtime.sections.competencies_lane_defaults import (
+        COMPETENCIES_MAX_OUTPUT_TOKENS,
+        DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS,
+        competencies_self_consistency_output_tokens,
+    )
+
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_OUTPUT_TOKENS", raising=False)
+    assert competencies_self_consistency_output_tokens() == DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS
+
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_OUTPUT_TOKENS", "999999")
+    assert competencies_self_consistency_output_tokens() == COMPETENCIES_MAX_OUTPUT_TOKENS
+
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_OUTPUT_TOKENS", "12")
+    assert competencies_self_consistency_output_tokens() == 1500
+
+    monkeypatch.setenv("APPS_RG_COMPETENCIES_SC_OUTPUT_TOKENS", "bad")
+    assert competencies_self_consistency_output_tokens() == DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS
 
 
 # --------------------------------------------------------------------------------------------------
@@ -264,9 +286,12 @@ def test_competencies_self_consistency_payload_gets_path_diversity_framing(
     from apps_rg.runtime.providers.provider_contract import ProviderResult
 
     seen_contents: list[str] = []
+    seen_messages: list[list[dict[str, object]]] = []
 
     def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
-        seen_contents.append(str((payload.get("messages") or [{}])[-1].get("content") or ""))
+        messages = list(payload.get("messages") or [])
+        seen_messages.append(messages)
+        seen_contents.append(str((messages or [{}])[-1].get("content") or ""))
         return ProviderResult(
             provider_requested="external_claude",
             provider_attempted=True,
@@ -282,7 +307,7 @@ def test_competencies_self_consistency_payload_gets_path_diversity_framing(
 
     paths, _last = scmod.run_provider_self_consistency_paths(
         section_lane="competencies",
-        provider_payload={"messages": [{"role": "user", "content": "base"}]},
+        provider_payload={"messages": [{"role": "system", "content": "base"}]},
         parse_model_json=lambda raw: (json.loads(raw), ""),
         artifact_dir=tmp_path,
         run_id="run-1",
@@ -293,12 +318,72 @@ def test_competencies_self_consistency_payload_gets_path_diversity_framing(
 
     assert len(paths) == 2
     assert len(seen_contents) == 2
+    assert all(msgs[-1]["role"] == "user" for msgs in seen_messages)
+    assert all("SELF_CONSISTENCY_CANDIDATE_CONTRACT" in content for content in seen_contents)
+    assert all("selected_fact_plan as a stub" in content for content in seen_contents)
     by_path = {
         0: next(c for c in seen_contents if "COMPETENCIES_PATH_DIVERSITY (path_index=0" in c),
         1: next(c for c in seen_contents if "COMPETENCIES_PATH_DIVERSITY (path_index=1" in c),
     }
     assert "agentic platform architecture" in by_path[0]
     assert "runtime governance and gates" in by_path[1]
+
+
+def test_competencies_self_consistency_compacts_system_prompt_for_provider():
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        COMPETENCIES_SC_COMPACT_SYSTEM_MARKER,
+        append_competencies_path_diversity_to_messages,
+    )
+
+    compiled_system = "\n".join(
+        [
+            "<!-- SLOT: S0 --> full system law",
+            "<candidate_facts confidence=\"1.0\">",
+            "CANONICAL_EMPLOYMENT_BULLETS:",
+            "- reb_unify_partner_channel_cosell: partner AI architecture",
+            (
+                "COMPETENCY_BUNDLE ccb_partner_applied_ai_architecture | "
+                "family: partner_applied_ai_architecture\\n"
+                "  display_label_candidate: Partner Applied AI Architecture\\n"
+                "  target_taxonomy_category_ids: ['cloud_partner_ecosystems']\\n"
+                "  graph_skill_node_ids: ['skill_partner_joint_solution_development']\\n"
+                "  linked_source_fact_ids: ['reb_ibm_aws_alliance_partner_cosell_gtm']\\n"
+                "  target_relevance_rationale: " + ("too verbose " * 160)
+            ),
+            "</candidate_facts>",
+            "<jd_requirements>",
+            "TARGET_TITLE (NOT PROOF): Manager of Applied AI Architecture, Partnerships",
+            "JD_TEXT (ranking only): " + ("partnerships applied AI architecture " * 120),
+            "</jd_requirements>",
+            "<!-- SLOT: E0 -->",
+            "<example id=\"too_large\">do not keep examples in SC payload</example>",
+            "<!-- SLOT: R0 -->",
+            "{\"large_schema\":\"do not keep schema repetition in SC payload\"}",
+        ]
+    )
+
+    messages = append_competencies_path_diversity_to_messages(
+        [{"role": "system", "content": compiled_system}],
+        path_index=0,
+        temperature=0.31,
+    )
+
+    assert len(messages) == 2
+    compact_system = str(messages[0]["content"])
+    user_request = str(messages[1]["content"])
+    assert messages[1]["role"] == "user"
+    assert COMPETENCIES_SC_COMPACT_SYSTEM_MARKER in compact_system
+    assert "CANONICAL_EMPLOYMENT_BULLETS" in compact_system
+    assert "COMPETENCY_BUNDLE ccb_partner_applied_ai_architecture" in compact_system
+    assert "target_taxonomy_category_ids" in compact_system
+    assert "skill_partner_joint_solution_development" in compact_system
+    assert "target_relevance_rationale" not in compact_system
+    assert "Manager of Applied AI Architecture, Partnerships" in compact_system
+    assert len(compact_system) < 5000
+    assert "too_large" not in compact_system
+    assert "large_schema" not in compact_system
+    assert "SELF_CONSISTENCY_CANDIDATE_CONTRACT" in user_request
+    assert "markdown fences" in user_request
 
 
 def test_competencies_self_consistency_runs_paths_with_bounded_parallelism(
@@ -362,6 +447,106 @@ def test_competencies_self_consistency_runs_paths_with_bounded_parallelism(
     progress = json.loads((tmp_path / scmod.PROGRESS_RECEIPT_FILENAME).read_text(encoding="utf-8"))
     assert progress["execution_mode"] == "parallel"
     assert progress["paths_completed"] == 4
+
+
+def test_competencies_self_consistency_defaults_to_serial_with_bounded_budget(
+    tmp_path,
+    monkeypatch,
+):
+    import apps_rg.runtime.reasoning.bullet_lane_self_consistency as scmod
+    from apps_rg.runtime.providers.provider_contract import ProviderResult
+    from apps_rg.runtime.sections.competencies_lane_defaults import (
+        DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS,
+    )
+
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_PARALLEL", raising=False)
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_MAX_PARALLEL", raising=False)
+    seen_budgets: list[int | None] = []
+
+    def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
+        seen_budgets.append(token_budget)
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="m",
+            raw_model_output=json.dumps({"competencies": [{"category_label": "C", "terms": []}]}),
+            provider_response={},
+        )
+
+    monkeypatch.setattr(scmod, "call_section_model_provider", fake_call)
+
+    paths, _last = scmod.run_provider_self_consistency_paths(
+        section_lane="competencies",
+        provider_payload={
+            "messages": [{"role": "user", "content": "base"}],
+            "max_tokens": 6000,
+        },
+        parse_model_json=lambda raw: (json.loads(raw), ""),
+        artifact_dir=tmp_path,
+        run_id="run-1",
+        temperature_bounds=(0.30, 0.50),
+        base_temperature=0.4,
+        path_count=2,
+    )
+
+    assert len(paths) == 2
+    assert seen_budgets == [DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS] * 2
+    doc = json.loads((tmp_path / "self_consistency_paths.json").read_text(encoding="utf-8"))
+    assert doc["execution_mode"] == "serial"
+    assert doc["max_parallel"] == 1
+    progress = json.loads((tmp_path / scmod.PROGRESS_RECEIPT_FILENAME).read_text(encoding="utf-8"))
+    assert progress["paths"][0]["token_budget"] == DEFAULT_COMPETENCIES_SC_OUTPUT_TOKENS
+
+
+def test_competencies_self_consistency_stops_after_zero_output_provider_timeout(
+    tmp_path,
+    monkeypatch,
+):
+    import apps_rg.runtime.reasoning.bullet_lane_self_consistency as scmod
+    from apps_rg.runtime.providers.provider_contract import ProviderResult
+
+    monkeypatch.delenv("APPS_RG_COMPETENCIES_SC_PARALLEL", raising=False)
+    calls = {"count": 0}
+
+    def fake_call(profile, payload, *, artifact_dir=None, run_id=None, temperature_override=None, token_budget=None):
+        calls["count"] += 1
+        return ProviderResult(
+            provider_requested="external_claude",
+            provider_attempted=True,
+            provider_available=False,
+            exact_provider_error=(
+                "External provider call failed: TimeoutError: External provider wall-clock timeout "
+                "after 240s [last_progress_after_s=236.718, chars_received=0, chunk_count=2]"
+            ),
+            runtime_generation_status="BLOCKED",
+            model="m",
+            raw_model_output="",
+            provider_response={},
+        )
+
+    monkeypatch.setattr(scmod, "call_section_model_provider", fake_call)
+
+    paths, last = scmod.run_provider_self_consistency_paths(
+        section_lane="competencies",
+        provider_payload={"messages": [{"role": "user", "content": "base"}]},
+        parse_model_json=lambda raw: (json.loads(raw), ""),
+        artifact_dir=tmp_path,
+        run_id="run-1",
+        temperature_bounds=(0.30, 0.50),
+        base_temperature=0.4,
+        path_count=3,
+    )
+
+    assert calls["count"] == 1
+    assert len(paths) == 1
+    assert last is paths[0].provider_result
+    progress = json.loads((tmp_path / scmod.PROGRESS_RECEIPT_FILENAME).read_text(encoding="utf-8"))
+    assert progress["path_count"] == 1
+    assert progress["paths_completed"] == 1
+    assert progress["paths"][0]["provider_error"].startswith("External provider call failed")
 
 
 # --------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 """CI gate — Anthropic two-tier Tier-1 budget (repo-native SSOT).
 
-Measures and enforces:
-- ``.codex/rules/*.mdc`` with ``alwaysApply: true``
+Measures and enforces the retired Tier-1 compatibility surface:
+- historical ``.codex/rules/*.mdc`` files with ``alwaysApply: true`` if any remain
 - ``AGENTS.md``
 
 Reports separately (not summed into Tier-1 fail threshold):
@@ -28,7 +28,7 @@ from governance_tier_measurement import (
 )
 
 # Re-baselined always-on budget for the real Claude Code surface (root AGENTS.md + every
-# .codex/rules/*.md, which the native loader injects each session). The legacy
+# .codex/rules/*.md, which the native loader injects each session). The historical
 # THRESHOLD_BYTES (51,200) was set for the retired 4-file .mdc design and is blind to the
 # real bundle; this is the enforced ceiling per plan always-on-rule-surface-cut-c7f3a1. 84 KiB.
 REAL_SURFACE_THRESHOLD = 86_016
@@ -49,7 +49,7 @@ def main() -> int:
     inventory_path = write_inventory(wave=os.environ.get("GOVERNANCE_INVENTORY_WAVE", "W0"))
     print(f"[always-on-budget] inventory: {inventory_path}")
 
-    print("tier_1_cursor_native (alwaysApply .mdc + AGENTS.md):")
+    print("tier_1_legacy_compat (historical alwaysApply .mdc + AGENTS.md):")
     for row in tier1_rows:
         print(f"  {row.bytes:>6}  {row.rel_path}")
     print(
@@ -89,7 +89,7 @@ def main() -> int:
 
     # --- Real Claude Code always-on surface (plan always-on-rule-surface-cut-c7f3a1) -------
     # The native loader globs AGENTS.md + EVERY .codex/rules/*.md into the per-session
-    # bundle. The legacy Tier-1 measurement above is blind to it (no .mdc files;
+    # bundle. The retired Tier-1 measurement above is blind to it (no .mdc files;
     # no .md carries `trigger: always_on`). Measure + report the honest surface here.
     # ADVISORY by default to honour the coupling (an honest+enforcing gate on an
     # untrimmed 189 KB surface would self-inflict a red gate). Flip to enforcing with

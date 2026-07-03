@@ -127,6 +127,22 @@ def is_integrated_whole_run_dir_name(name: str) -> bool:
     return str(name or "").strip().startswith(FULL_RESUME_DIR_PREFIX)
 
 
+def is_integrated_whole_run_artifact_dir(path: Path) -> bool:
+    """True for canonical or explicit artifact dirs that hold a whole-run envelope."""
+    root = Path(path).resolve()
+    if is_integrated_whole_run_dir_name(root.name):
+        return True
+    if not root.is_dir():
+        return False
+    whole_run_markers = (
+        root / "r4_run_manifest.json",
+        root / "spine_run_manifest.json",
+        root / "integrated_runtime_artifact_manifest.json",
+    )
+    has_lane_layout = (root / "lanes").is_dir() or (root / "modular_r4" / "sections").is_dir()
+    return has_lane_layout and any(marker.is_file() for marker in whole_run_markers)
+
+
 def _whole_run_envelope_active() -> bool:
     return os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
         "1",

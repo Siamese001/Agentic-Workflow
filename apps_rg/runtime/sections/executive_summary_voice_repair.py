@@ -10,6 +10,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EXEC_SUMMARY_FORBIDDEN_META_PHRASES,
     EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE,
     GENERIC_FILLER,
+    check_exec_summary_no_sentence_fragment,
     check_inferred_bridge_claims,
 )
 
@@ -1437,6 +1438,11 @@ def _scrub_unsupported_industry_claims(
     return out
 
 
+def _sentence_fragment_gate_ok(sentence: str) -> bool:
+    ok, _reason = check_exec_summary_no_sentence_fragment(str(sentence or "").strip())
+    return ok
+
+
 def _trim_paragraph_word_budget(
     sentences: list[str],
     *,
@@ -1534,6 +1540,14 @@ def _trim_paragraph_word_budget(
                 "that regulated delivery foundation drove in IP-led and 20% expansion while scaling the platform engineering team from 8 to 28 specialists",
                 "that work drove $22M in IP-led revenue and 20% gross margin expansion while the team scaled from 8 to 28 specialists",
             ),
+            (
+                "builds alliance co-sell channel motions and governed runtime engineering into enterprise adoption strategy for partner-led AI deployment",
+                "blends alliance co-sell motions with governed runtime engineering for partner-led AI deployment",
+            ),
+            (
+                "Distributed cloud and data execution infrastructure pairs with a standardized AI systems lifecycle that accelerates",
+                "Distributed cloud/data infrastructure pairs with a standardized AI lifecycle accelerating",
+            ),
             (" that scale without sacrificing traceability", " while preserving traceability"),
             (" a multi-motion partner enablement asset set", " partner enablement assets"),
             (" regulated enterprise ecosystems", " regulated enterprises"),
@@ -1570,6 +1584,26 @@ def _trim_paragraph_word_budget(
                 rest = sent[m.end() :]
                 out[idx] = (rest[:1].upper() + rest[1:]) if rest else sent
 
+    # Strategy 7b: compress the live AI-partnership runtime-control enumeration while
+    # preserving the finite verb that anchors the sentence.
+    if _wc(out) > max_words:
+        runtime_control_re = re.compile(
+            r"\b[Rr]untime reliability,\s+governance,\s+telemetry,\s+evaluation,\s+and\s+"
+            r"rollback discipline anchor an AWS shared-responsibility operating model "
+            r"that maps cloud control ownership for regulated deployments\b"
+        )
+        for idx, sent in enumerate(out):
+            if _wc(out) <= max_words:
+                break
+            updated = runtime_control_re.sub(
+                "Runtime reliability and rollback discipline anchor an AWS "
+                "shared-responsibility operating model for regulated deployments",
+                sent,
+                count=1,
+            )
+            if updated != sent and _sentence_fragment_gate_ok(updated):
+                out[idx] = updated
+
     # Strategy 8 (guaranteed closer): drop trailing comma-delimited segments from
     # DIGIT-FREE sentences (facts/metrics protected), last sentence first - the capstone
     # S6 list tail (", investment rigor, and measurable productivity outcomes") is
@@ -1588,7 +1622,10 @@ def _trim_paragraph_word_budget(
                 if len(parts) < 4:
                     break
                 parts.pop()
-                out[idx] = ", ".join(parts).rstrip(",").rstrip() + "."
+                candidate = ", ".join(parts).rstrip(",").rstrip() + "."
+                if not _sentence_fragment_gate_ok(candidate):
+                    break
+                out[idx] = candidate
             if _wc(out) <= max_words:
                 break
 

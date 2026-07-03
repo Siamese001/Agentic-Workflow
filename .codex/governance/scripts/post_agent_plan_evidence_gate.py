@@ -3,7 +3,7 @@
 post_agent_plan_evidence_gate.py — Stop-equivalent plan evidence gate (P2).
 
 Reads the Codex response from stdin. When the response edited or created
-any ``.codex/plans/*.md`` file, runs the canonical graph-layer evidence
+any root ``plans/*.md`` file, runs the canonical graph-layer evidence
 check (``ops_scripts/ci/check_graph_layer_evidence.py``) against that plan
 file immediately — closing the loop for plans that would otherwise only
 be validated at commit time.
@@ -36,14 +36,14 @@ from pathlib import Path
 fail_policy = "closed_for_refactor_plans"
 
 _ROOT = Path(__file__).resolve().parents[3]
-_PLANS_DIR = _ROOT / ".codex" / "plans"
+_PLANS_DIR = _ROOT / "plans"
 _LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl"
 _BYPASS_ENV = "PLAN_EVIDENCE_GATE_BYPASS"
 
 # Matches any plan file path mentioned in a Codex response (edit/write tool
 # invocations reference them). Absolute, backslash, or forward-slash forms.
 _PLAN_PATH_RE = re.compile(
-    r"(?:^|[\\/])\.codex[\\/]plans[\\/]([A-Za-z0-9_\-\\/]+-[0-9a-f]{6})\.md",
+    r"(?<![A-Za-z0-9_.-])(?<!\.codex[\\/])plans[\\/]([A-Za-z0-9_\-\\/]+-[0-9a-f]{6})\.md",
     re.IGNORECASE,
 )
 
@@ -78,7 +78,7 @@ def _extract_response_text(payload: object) -> str:
 
 
 def _find_edited_plans(response_text: str) -> list[str]:
-    """Return list of unique repo-relative plan paths under .codex/plans."""
+    """Return list of unique repo-relative plan paths under root plans/."""
     return sorted(set(_PLAN_PATH_RE.findall(response_text)))
 
 

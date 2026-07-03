@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import os
 from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
@@ -17,6 +18,7 @@ from apps_rg.runtime.providers.provider_gateway import ProviderProfile
 from apps_rg.runtime.section_model_limits import (
     external_openai_generation_model,
     external_openai_generation_model_source,
+    resolve_section_generation_model,
 )
 
 _HTTP_STATUS_RE = re.compile(r"\bHTTP\s+(\d{3})\b", re.IGNORECASE)
@@ -49,6 +51,17 @@ _FALLBACK_FORBIDDEN_REASON_CATEGORIES = (
     "parsing_failure",
     "validation_failure",
 )
+
+
+def _bounded_retry_attempts(environ: Mapping[str, str] | None) -> int:
+    raw = str(
+        (environ or os.environ).get("APPS_RG_CLAUDE_AVAILABILITY_RETRY_ATTEMPTS", "1")
+    ).strip()
+    try:
+        attempts = int(raw)
+    except ValueError:
+        attempts = 1
+    return max(0, min(attempts, 3))
 
 
 def _utc_now() -> str:
@@ -253,6 +266,152 @@ def _with_availability_receipt(result: ProviderResult, receipt: dict[str, Any]) 
     provider_response["provider_attempt_timing_summary"] = (
         receipt.get("provider_attempt_timing_summary") or {}
     )
+
+
+def _with_availability_retry_receipt(
+    result: ProviderResult,
+    receipt: dict[str, Any],
+) -> ProviderResult:
+    merged_receipt = dict(result.reasoning_execution_receipt or {})
+    merged_receipt["apps_rg_availability_retry"] = receipt
+    provider_response = dict(result.provider_response or {})
+    provider_response["apps_rg_availability_retry"] = receipt
+    provider_response["provider_attempt_spans"] = receipt.get("provider_attempt_spans") or []
+    provider_response["provider_attempt_timing_summary"] = (
+        receipt.get("provider_attempt_timing_summary") or {}
+    )
+    return replace(
+        result,
+        provider_response=provider_response or result.provider_response,
+        reasoning_execution_receipt=merged_receipt,
+    )
+
+
+def maybe_retry_claude_availability_same_provider(
+    initial_result: ProviderResult,
+    compiled_prompt: Any,
+    *,
+    token_budget: int,
+    temperature: float,
+    timeout_seconds: int | float | None = None,
+    environ: Mapping[str, str] | None = None,
+    section_id: str | None = None,
+) -> ProviderResult:
+    """Retry Claude generation once for transport availability failures.
+
+    This preserves grade-only/no-replacement policy: the retry uses the same provider family
+    and section-pinned model, and it runs only before parsing or quality validation.
+    """
+    if not is_claude_generation_availability_failure(initial_result):
+        return initial_result
+
+    sid = str(section_id or "").strip().lower() or None
+    if not sid:
+        return initial_result
+
+    max_retries = _bounded_retry_attempts(environ)
+    if max_retries < 1:
+        return initial_result
+
+    reason_category = _availability_failure_category(initial_result)
+    if reason_category not in _FALLBACK_ALLOWED_REASON_CATEGORIES:
+        return initial_result
+
+    model = resolve_section_generation_model(sid)
+    current = initial_result
+    spans = [
+        provider_result_attempt_span(
+            initial_result,
+            attempt_kind="requested",
+            attempt_index=0,
+            section_id=sid,
+            fallback_reason=reason_category,
+            output_accepted=False,
+            accepted_output_source="initial_blocked_result",
+        )
+    ]
+    model_attempts: list[dict[str, Any]] = [
+        {
+            "attempt": "requested",
+            "provider": initial_result.provider_requested,
+            "model": initial_result.model,
+            "runtime_generation_status": initial_result.runtime_generation_status,
+            "exact_provider_error": initial_result.exact_provider_error,
+        }
+    ]
+    receipt: dict[str, Any] = {}
+
+    for attempt_index in range(1, max_retries + 1):
+        provider = ExternalProvider(
+            provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
+            model=model,
+            environ=environ,
+        )
+        retry_started_at_utc = _utc_now()
+        retry_result = provider.generate(
+            compiled_prompt,
+            token_budget=token_budget,
+            temperature=temperature,
+            timeout_seconds=timeout_seconds,
+        )
+        retry_completed_at_utc = _utc_now()
+        retry_accepted = retry_result.runtime_generation_status == "REAL_LLM"
+        spans.append(
+            provider_result_attempt_span(
+                retry_result,
+                attempt_kind="retry",
+                attempt_index=attempt_index,
+                section_id=sid,
+                fallback_reason=reason_category,
+                output_accepted=retry_accepted,
+                accepted_output_source=(
+                    "same_provider_retry" if retry_accepted else "same_provider_retry_blocked"
+                ),
+                fallback_started_at_utc=retry_started_at_utc,
+                fallback_completed_at_utc=retry_completed_at_utc,
+            )
+        )
+        model_attempts.append(
+            {
+                "attempt": "retry",
+                "provider": retry_result.provider_requested,
+                "model": retry_result.model,
+                "started_at_utc": retry_started_at_utc,
+                "completed_at_utc": retry_completed_at_utc,
+                "runtime_generation_status": retry_result.runtime_generation_status,
+                "exact_provider_error": retry_result.exact_provider_error,
+            }
+        )
+        receipt = {
+            "policy": "apps_rg_generation_claude_availability_same_provider_retry",
+            "scope": "apps_rg_generation_only",
+            "receipt_created_at_utc": _utc_now(),
+            "retry_allowed": True,
+            "retry_reason_category": reason_category,
+            "retry_provider": ProviderProfile.EXTERNAL_CLAUDE.value,
+            "retry_model": model,
+            "retry_section_id": sid,
+            "max_retries": max_retries,
+            "retry_attempted_count": attempt_index,
+            "retry_output_accepted": retry_accepted,
+            "accepted_output_provider": retry_result.provider_requested if retry_accepted else None,
+            "accepted_output_model": retry_result.model if retry_accepted else None,
+            "accepted_output_source": "same_provider_retry" if retry_accepted else "initial_blocked_result",
+            "initial_exact_provider_error": initial_result.exact_provider_error,
+            "latest_exact_provider_error": retry_result.exact_provider_error,
+            "provider_attempt_spans": spans,
+            "provider_attempt_timing_summary": summarize_provider_attempt_spans(spans),
+            "model_attempts": model_attempts,
+        }
+        current = retry_result
+        if retry_accepted:
+            return _with_availability_retry_receipt(retry_result, receipt)
+        if not is_claude_generation_availability_failure(current):
+            break
+
+    if receipt:
+        return _with_availability_retry_receipt(current, receipt)
+    return current
     return replace(
         result,
         provider_response=provider_response or result.provider_response,
@@ -332,4 +491,5 @@ def maybe_fallback_to_openai_for_claude_availability(
 __all__ = [
     "is_claude_generation_availability_failure",
     "maybe_fallback_to_openai_for_claude_availability",
+    "maybe_retry_claude_availability_same_provider",
 ]

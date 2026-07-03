@@ -29,10 +29,13 @@ ADG_SERVER_MARKERS: tuple[str, str, str] = (
     "tools/adg/mcp/server",
 )
 DEFAULT_STATE_RELATIVE_PATH = Path("artifacts/mcp_heartbeat/adg_sqlite_launcher.json")
+DEFAULT_CALLABLE_PROOF_RELATIVE_PATH = Path("artifacts/mcp_heartbeat/adg_sqlite_callable_proof.json")
 REDIS_PROBE_TIMEOUT_SECONDS = 0.25
 CALLABLE_PROOF_ENV = "CODEX_MCP_CALLABLE_ADG_SQLITE"
 CALLABLE_PROOF_HEALTHY = "healthy"
 ATTACHED_PID_ENV = "CODEX_MCP_ATTACHED_ADG_SQLITE_PID"
+CALLABLE_PROOF_MAX_AGE_SECONDS_ENV = "ADG_CALLABLE_PROOF_MAX_AGE_SECONDS"
+DEFAULT_CALLABLE_PROOF_MAX_AGE_SECONDS = 300
 
 
 def _utc_now() -> str:
@@ -78,6 +81,19 @@ def resolve_state_path(
             return candidate
         return (repo_root or resolve_repo_root()) / candidate
     return (repo_root or resolve_repo_root()) / DEFAULT_STATE_RELATIVE_PATH
+
+
+def resolve_callable_proof_path(
+    proof_path: str | Path | None = None,
+    *,
+    repo_root: Path | None = None,
+) -> Path:
+    if proof_path is not None:
+        candidate = Path(proof_path)
+        if candidate.is_absolute():
+            return candidate
+        return (repo_root or resolve_repo_root()) / candidate
+    return (repo_root or resolve_repo_root()) / DEFAULT_CALLABLE_PROOF_RELATIVE_PATH
 
 
 def configure_process_environment(
@@ -259,6 +275,55 @@ def read_launcher_state(
         return None
 
 
+def write_callable_proof(
+    *,
+    tool: str,
+    pid: int,
+    evidence: str,
+    session_id: str = "",
+    proof_path: str | Path | None = None,
+    repo_root: Path | None = None,
+    proved_at: str | None = None,
+) -> Path:
+    """Record active-session ADG MCP callability proof.
+
+    This file is intentionally stricter than a heartbeat. It may be written only
+    after a live Codex MCP tool call succeeds, and `transport_status()` accepts
+    it only while the PID is alive, heartbeat-owned, and fresh.
+    """
+    path = resolve_callable_proof_path(proof_path, repo_root=repo_root)
+    payload = {
+        "schema_version": "adg-sqlite-callable-proof/v1",
+        "server_id": "adg_sqlite",
+        "status": CALLABLE_PROOF_HEALTHY,
+        "tool": tool,
+        "pid": int(pid),
+        "session_id": session_id,
+        "evidence": evidence[:1000],
+        "proved_at": proved_at or _utc_now(),
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(f"{path.suffix}.tmp")
+    tmp_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    tmp_path.replace(path)
+    return path
+
+
+def read_callable_proof(
+    *,
+    proof_path: str | Path | None = None,
+    repo_root: Path | None = None,
+) -> dict[str, Any] | None:
+    path = resolve_callable_proof_path(proof_path, repo_root=repo_root)
+    try:
+        if not path.exists():
+            return None
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else None
+    except (OSError, json.JSONDecodeError, TypeError):
+        return None
+
+
 def _process_alive(pid: int | None) -> bool | None:
     if not pid or pid <= 0:
         return None
@@ -426,7 +491,97 @@ def _parse_pid(raw: str | None) -> int | None:
     return pid if pid > 0 else None
 
 
-def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[str, Any]:
+def _callable_proof_max_age_seconds(env: MutableMapping[str, str] | None = None) -> int:
+    resolved_env = env if env is not None else os.environ
+    raw = (resolved_env.get(CALLABLE_PROOF_MAX_AGE_SECONDS_ENV) or "").strip()
+    if not raw:
+        return DEFAULT_CALLABLE_PROOF_MAX_AGE_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        return DEFAULT_CALLABLE_PROOF_MAX_AGE_SECONDS
+    return value if value > 0 else DEFAULT_CALLABLE_PROOF_MAX_AGE_SECONDS
+
+
+def _parse_iso_ts(value: Any) -> float | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.timestamp()
+
+
+def _file_callable_proof_status(
+    *,
+    proof_path: str | Path | None = None,
+    repo_root: Path | None = None,
+    env: MutableMapping[str, str] | None = None,
+    session_id: str | None = None,
+) -> dict[str, Any]:
+    proof = read_callable_proof(proof_path=proof_path, repo_root=repo_root)
+    max_age_s = _callable_proof_max_age_seconds(env)
+    if proof is None:
+        return {
+            "path": str(resolve_callable_proof_path(proof_path, repo_root=repo_root)),
+            "status": "absent",
+            "callable": False,
+            "pid": None,
+            "pid_alive": None,
+            "age_s": None,
+            "max_age_s": max_age_s,
+            "session_match": False if session_id else None,
+        }
+
+    pid = _parse_pid(str(proof.get("pid") or ""))
+    pid_alive = _process_alive(pid)
+    proved_ts = _parse_iso_ts(proof.get("proved_at"))
+    age_s = None if proved_ts is None else max(0.0, datetime.now(timezone.utc).timestamp() - proved_ts)
+    fresh = age_s is not None and age_s <= max_age_s
+    proof_session = str(proof.get("session_id") or "")
+    session_match = True
+    if session_id:
+        session_match = bool(proof_session) and proof_session == session_id
+    status = str(proof.get("status") or "").strip().lower() or "absent"
+    callable_ok = (
+        status == CALLABLE_PROOF_HEALTHY
+        and pid is not None
+        and pid_alive is True
+        and fresh
+        and session_match
+    )
+    if status == CALLABLE_PROOF_HEALTHY and not callable_ok:
+        if not fresh:
+            status = "stale_file_proof"
+        elif not session_match:
+            status = "session_mismatch"
+        elif pid_alive is not True:
+            status = "dead_pid"
+    return {
+        "path": str(resolve_callable_proof_path(proof_path, repo_root=repo_root)),
+        "status": status,
+        "callable": callable_ok,
+        "pid": pid,
+        "pid_alive": pid_alive,
+        "age_s": age_s,
+        "max_age_s": max_age_s,
+        "session_id": proof_session,
+        "session_match": session_match,
+        "tool": proof.get("tool"),
+        "evidence": proof.get("evidence"),
+    }
+
+
+def callable_proof_status(
+    env: MutableMapping[str, str] | None = None,
+    *,
+    proof_path: str | Path | None = None,
+    repo_root: Path | None = None,
+    session_id: str | None = None,
+) -> dict[str, Any]:
     """Return whether the active Codex host proved ADG MCP callability.
 
     A fresh heartbeat only proves that a Python MCP process is alive. It does
@@ -439,25 +594,42 @@ def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[s
     attached_pid_raw = resolved_env.get(ATTACHED_PID_ENV)
     attached_pid = _parse_pid(attached_pid_raw)
     attached_pid_alive = _process_alive(attached_pid)
-    callable_ok = (
+    env_callable = (
         raw == CALLABLE_PROOF_HEALTHY
         and attached_pid is not None
         and attached_pid_alive is True
     )
+    file_proof = _file_callable_proof_status(
+        proof_path=proof_path,
+        repo_root=repo_root,
+        env=resolved_env,
+        session_id=session_id,
+    )
+    file_pid = file_proof.get("pid") if isinstance(file_proof.get("pid"), int) else None
+    file_callable = bool(file_proof.get("callable"))
+    selected_source = "env" if env_callable else ("file" if file_callable else "none")
+    selected_pid = attached_pid if env_callable else (file_pid if file_callable else attached_pid or file_pid)
+    callable_ok = env_callable or file_callable
+    status = raw or str(file_proof.get("status") or "absent")
     return {
         "env_key": CALLABLE_PROOF_ENV,
-        "status": raw or "absent",
+        "status": status,
         "callable": callable_ok,
         "required_value": CALLABLE_PROOF_HEALTHY,
         "attached_pid_env_key": ATTACHED_PID_ENV,
-        "attached_pid": attached_pid,
+        "attached_pid": selected_pid,
+        "env_attached_pid": attached_pid,
         "attached_pid_alive": attached_pid_alive,
+        "selected_source": selected_source,
+        "env_callable": env_callable,
+        "file_proof": file_proof,
         "proof_required": (
             "Set CODEX_MCP_CALLABLE_ADG_SQLITE=healthy and "
             "CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid> only after a live "
             "mcp__adg_sqlite.adg_health or adg_runtime_info call succeeds "
-            "in the active Codex session; use adg_process_identity or "
-            "adg_runtime_info for the attached PID."
+            "in the active Codex session; or let the PostToolUse proof hook "
+            "write the active-session proof file. Use adg_process_identity or "
+            "adg_runtime_info for the attached PID when setting env proof."
         ),
     }
 
@@ -465,15 +637,22 @@ def callable_proof_status(env: MutableMapping[str, str] | None = None) -> dict[s
 def transport_status(
     *,
     state_path: str | Path | None = None,
+    proof_path: str | Path | None = None,
     require_redis: bool = False,
     env: MutableMapping[str, str] | None = None,
+    session_id: str | None = None,
 ) -> dict[str, Any]:
     resolved_env = env if env is not None else os.environ
     preflight = preflight_status(require_redis=require_redis, env=resolved_env)
     repo_root = Path(str(preflight["repo_root"]))
     state = read_launcher_state(state_path=state_path, repo_root=repo_root)
     heartbeats = heartbeat_status()
-    callable_proof = callable_proof_status(resolved_env)
+    callable_proof = callable_proof_status(
+        resolved_env,
+        proof_path=proof_path,
+        repo_root=repo_root,
+        session_id=session_id,
+    )
     heartbeat_authoritative = any(row.get("authoritative") for row in heartbeats)
     heartbeat_authoritative_pids = {
         int(row["pid"])
@@ -598,9 +777,16 @@ def main_check(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="emit JSON")
     parser.add_argument("--require-redis", action="store_true", help="treat Redis unavailability as blocked")
     parser.add_argument("--state-path", help="launcher state path; defaults under artifacts/mcp_heartbeat")
+    parser.add_argument("--proof-path", help="callability proof path; defaults under artifacts/mcp_heartbeat")
+    parser.add_argument("--session-id", help="require proof to match this Codex session id")
     args = parser.parse_args(argv)
 
-    result = transport_status(state_path=args.state_path, require_redis=args.require_redis)
+    result = transport_status(
+        state_path=args.state_path,
+        proof_path=args.proof_path,
+        require_redis=args.require_redis,
+        session_id=args.session_id or None,
+    )
     _emit(result, as_json=args.json)
     return _json_exit_code(result["status"])
 
@@ -610,6 +796,8 @@ __all__ = [
     "ATTACHED_PID_ENV",
     "CALLABLE_PROOF_ENV",
     "CALLABLE_PROOF_HEALTHY",
+    "CALLABLE_PROOF_MAX_AGE_SECONDS_ENV",
+    "DEFAULT_CALLABLE_PROOF_RELATIVE_PATH",
     "LAUNCHER_MARKER",
     "callable_proof_status",
     "configure_process_environment",
@@ -623,6 +811,9 @@ __all__ = [
     "redis_probe_status",
     "resolve_repo_root",
     "resolve_state_path",
+    "resolve_callable_proof_path",
     "transport_status",
+    "read_callable_proof",
+    "write_callable_proof",
     "write_launcher_state",
 ]

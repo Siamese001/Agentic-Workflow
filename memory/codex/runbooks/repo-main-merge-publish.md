@@ -1,16 +1,10 @@
----
-name: repo-main-merge-publish
-description: Audit local branches/worktrees, merge approved work into main safely, and choose detached-worktree or ours-merge paths when C:\Git\Agentic-Workflow-FRESH has a dirty main checkout or stale preservation branches.
-argument-hint: "[branch-or-mode]"
-disable-model-invocation: true
-user-invocable: false
-allowed-tools:
-  - Read
-  - Grep
-  - Bash
----
-
 # Repo Main Merge Publish
+
+Memory runbook for auditing local branches/worktrees, merging approved work into
+`main` safely, and choosing detached-worktree or ours-merge paths when
+`C:\Git\Agentic-Workflow-FRESH` has a dirty main checkout or stale preservation
+branches. This is not an executable Codex skill; repo-owned skills live under
+`.codex/skills`.
 
 Use this when:
 - The task is to merge a branch into `main` and push `origin/main` in `C:\Git\Agentic-Workflow-FRESH`.

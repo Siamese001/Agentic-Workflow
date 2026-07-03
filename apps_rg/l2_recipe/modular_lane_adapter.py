@@ -148,6 +148,30 @@ def run_dispatch_main(module_qualname: str, argv: list[str]) -> int:  # noqa: AR
     )
 
 
+def _discover_repo_root(path: Path) -> Path | None:
+    resolved = path.resolve()
+    for candidate in (resolved, *resolved.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return None
+
+
+def _artifact_ref(path: Path, artifact_dir: Path) -> str:
+    resolved = path.resolve()
+    artifact_root = artifact_dir.resolve()
+    try:
+        return resolved.relative_to(artifact_root).as_posix()
+    except ValueError:
+        pass
+    repo_root = _discover_repo_root(artifact_root) or _discover_repo_root(resolved)
+    if repo_root is not None:
+        try:
+            return resolved.relative_to(repo_root.resolve()).as_posix()
+        except ValueError:
+            pass
+    return resolved.as_posix()
+
+
 def resolve_latest_lane_run_dir(
     repo: Path,
     sections_root: Path,
@@ -233,7 +257,7 @@ def build_section_provider_call_record(
             tr = json.loads(trace_path.read_text(encoding="utf-8"))
             rec = tr.get("reasoning_execution_receipt") if isinstance(tr, dict) else None
             if rec is not None:
-                reasoning_execution_receipt_ref = trace_path.relative_to(artifact_dir).as_posix()
+                reasoning_execution_receipt_ref = _artifact_ref(trace_path, artifact_dir)
         except (json.JSONDecodeError, OSError, ValueError):
             reasoning_execution_receipt_ref = None
 
@@ -289,7 +313,7 @@ def build_section_provider_call_record(
         if isinstance(x3, dict):
             decisive_reason_code = str(x3.get("x3_code") or "UNKNOWN")
 
-    output_ref = l2p.relative_to(artifact_dir).as_posix()
+    output_ref = _artifact_ref(l2p, artifact_dir)
 
     return {
         "section_lane": lane,

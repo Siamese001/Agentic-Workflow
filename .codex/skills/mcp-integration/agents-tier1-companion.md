@@ -2,7 +2,7 @@
 
 > **Moved from root `AGENTS.md` in W1** (`cursor-governance-two-tier-b4e8f2`) per Option A.  
 > Tier-1 `AGENTS.md` keeps invariants + autogen tables; this file holds procedural detail.  
-> **Edit SSOT for rules:** `.codex/rules/*.mdc` only — legacy editor rules mirror is read-only (see repo `windsurf/rules/README.md`).
+> **Edit SSOT for rules:** `.codex/rules/*.md` only — legacy editor rule names are historical references, not edit targets.
 
 ## Notion — manual MCP use only (no plan-status enforcement)
 

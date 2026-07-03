@@ -14,11 +14,11 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Route evidence and Codex preflight | `scripts/governance/audit_codex_mcp_transports.py` and `scripts/governance/codex_readiness.py` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
-No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
+No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory, root `.agents` skill tree, memory-hosted `SKILL.md` tree, or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
-Repo-specific Codex enforcement must live under this repository, not under the Windows user-profile Codex home. Cadence automation contracts live in `.codex/automations/`, repo-specific bootstrap skills live in `.codex/skills/`, and the guard is:
+Repo-specific Codex enforcement must live under this repository, not under the Windows user-profile Codex home. Cadence automation contracts live in `.codex/automations/`, repo-specific bootstrap skills live in `.codex/skills/`, and generated user-profile automation entries may only be pointer launchers with repo path plus digest metadata. They must not copy Agentic-Workflow prompts, model settings, cwd lists, handoff metadata, runtime optimization metadata, or other contract payloads. The guard is:
 
 ```bash
 python scripts/governance/verify_codex_enforcement_home.py --json
@@ -34,7 +34,13 @@ Primary verification is repo-owned:
 python scripts/governance/verify_codex_primary.py
 ```
 
-The primary verifier includes `verify_codex_enforcement_home.py`, so it fails when Agentic-Workflow automation or skill enforcement drifts back into the user profile.
+The primary verifier includes `verify_codex_enforcement_home.py`, so it fails when Agentic-Workflow automation or skill enforcement drifts back into the user profile. To refresh Codex Desktop launcher pointers without creating a second SSOT, run:
+
+```bash
+python scripts/governance/codex_automation_projection.py --disable-stale-user-profile-launchers --write-user-profile --json
+```
+
+Active plan files live under repo-root `plans/`. `.codex/plans/` is archive-only; top-level plan files there are treated as SSOT drift.
 
 ## Required Preflight
 
@@ -134,6 +140,14 @@ CODEX_MCP_CALLABLE_ADG_SQLITE=healthy
 ```
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.
+
+ADG has an additional hard per-turn gate: ordinary T2/T3 prompts require
+`tools.adg.mcp.supervisor.transport_status().status == "open"`. A readable
+SQLite snapshot and a live ADG process are necessary but not sufficient when the
+active Codex MCP route is closed. The ADG PostToolUse proof hook writes a
+short-lived proof file after `adg_health`, `adg_runtime_info`, or
+`adg_process_identity` succeeds; explicit ADG transport recovery/RCA prompts may
+proceed while the proof is absent so the route can be repaired.
 
 ## MCP Lifecycle Cleanup Guard
 

@@ -8,6 +8,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
+from apps_rg.l2_recipe.modular_lane_adapter import build_section_provider_call_record
 from apps_rg.l2_recipe.modular_resume_generation import (
     LANE_DISPATCH_MODULES,
     ModularResumeInputPackage,
@@ -21,6 +22,49 @@ from apps_rg.runtime.sections_root_manifest import (
     SECTIONS_ROOT_MANIFEST_FILENAME,
     assert_sections_root_manifest_document_shape,
 )
+
+
+def test_section_provider_call_record_allows_sibling_runtime_proof_refs() -> None:
+    repo = find_repo_root()
+    art = repo / "artifacts" / "apps_rg" / "runs" / f"phase1_wrapper_{uuid.uuid4().hex[:10]}"
+    run_dir = (
+        repo
+        / "artifacts"
+        / "apps_rg"
+        / "runtime_proofs"
+        / f"phase1_lane_{uuid.uuid4().hex[:10]}"
+    )
+    art.mkdir(parents=True, exist_ok=True)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "l2_output.json").write_text(
+        json.dumps({"section_id": "competencies", "runtime_generation_status": "REAL_LLM"}),
+        encoding="utf-8",
+    )
+    (run_dir / "provider_request.json").write_text(
+        json.dumps({"provider_requested": "external_claude", "provider_attempted": True}),
+        encoding="utf-8",
+    )
+    (run_dir / "prompt_selection_trace.json").write_text(
+        json.dumps({"reasoning_execution_receipt": {"status": "ok"}}),
+        encoding="utf-8",
+    )
+
+    record = build_section_provider_call_record(
+        lane="competencies",
+        candidate_index=0,
+        run_dir=run_dir,
+        artifact_dir=art,
+        self_consistency_requested=0,
+        self_consistency_executed=0,
+        provider_profile="external_claude",
+    )
+
+    assert record["output_ref"] == (
+        run_dir / "l2_output.json"
+    ).resolve().relative_to(repo.resolve()).as_posix()
+    assert record["reasoning_execution_receipt_ref"] == (
+        run_dir / "prompt_selection_trace.json"
+    ).resolve().relative_to(repo.resolve()).as_posix()
 
 
 def test_phase1_runs_all_generated_lanes_mock_provider_no_envelope(monkeypatch: pytest.MonkeyPatch) -> None:

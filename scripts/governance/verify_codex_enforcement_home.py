@@ -9,8 +9,10 @@ be versioned from the repo under ``C:\Git``.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import re
 import subprocess
 import tomllib
 from dataclasses import asdict, dataclass
@@ -23,6 +25,7 @@ DEFAULT_USER_CODEX_HOME = Path(os.environ.get("CODEX_HOME", r"C:\Users\amita\.co
 EXPECTED_REPO = Path(r"C:\Git\Agentic-Workflow-FRESH")
 AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
+    "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
     "weekly-adg-audit-and-burndown",
     "adg-p0-blocker-burndown",
     "adg-p1-ratchet-burndown",
@@ -38,21 +41,61 @@ FORBIDDEN_REPO_CODEX_TREES = (
     ".codex/agent-instructions",
     ".codex/automation",
 )
-MANUAL_AUTOMATION_IDS = ("on-demand-pr-main-publisher",)
-USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
-    "on-demand-pr-main-publisher-2",
+FORBIDDEN_REPO_ENFORCEMENT_TREES = {
+    ".agents": "Agentic-Workflow skills must live under .codex/skills; root .agents is not a Codex SSOT",
+    "memory/codex/skills": "memory/codex may reference skills, but must not host SKILL.md execution surfaces",
+}
+ALLOWED_CODEX_PLAN_TOP_LEVEL_FILES = {"README.md"}
+FORBIDDEN_SCHEMA_AUTHORITY_REF_RE = re.compile(
+    r"SSOT:\s+\.cursor|Location:\s+\.cursor|Applied by:\s+\.cursor|"
+    r"\.cursor/(?:scripts|schemas|skills)|\.windsurf/(?:plans|rules)",
+    re.IGNORECASE,
+)
+MANUAL_AUTOMATION_IDS = (
+    "on-demand-pr-main-publisher",
     "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
 )
+USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
+    "on-demand-pr-main-publisher-2",
+)
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
+AUTOMATION_PROJECTION_SCHEMA = "agentic-workflow-codex-automation-pointer/v1"
+AUTOMATION_PROJECTION_FIELDS = (
+    "schema",
+    "projection_kind",
+    "id",
+    "automation_id",
+    "kind",
+    "name",
+    "status",
+    "rrule",
+    "enabled",
+    "repo_root",
+    "contract_path",
+    "contract_sha256",
+)
+USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS = (
+    "prompt",
+    "model",
+    "reasoning_effort",
+    "execution_environment",
+    "cwds",
+    "runtime_optimization",
+    "handoff",
+)
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state",
     "Read-only commands may enrich the current evidence packet, but they must not trigger a full re-audit by themselves",
     "If git branch --no-merged origin/main is empty, record that empty output and skip deep prior-branch inspection",
     "Run local validation once per committed tree",
+    "Dirty preservation is not publication; incoherent, local_or_config_scope, and unsafe_or_unknown_scope files must be stashed or retained, not merged to main.",
+    "Do not reuse a head branch that already had a merged or closed PR unless this run is explicitly an ancestry-recording PR.",
+    "Do not publish generated ADG reports or ratchet baselines unless the source generator changed and regeneration proof is included.",
     "Treat strict single-main closeout as a post-merge gate",
     "Capture the PR headRefOid and watch only checks/runs for that exact SHA",
     "Prefer gh pr checks <number> --watch --fail-fast",
+    "Before merge, block on unresolved GitHub review threads with P1 or P2 findings for the PR head.",
     "Run codex_main_closeout.py --apply --fetch --json once after PR merge",
     "HEAD == origin/main",
     "git status --short --branch shows only ## main...origin/main",
@@ -72,6 +115,8 @@ PUBLICATION_FORBIDDEN_PROMPT_SNIPPETS = (
     "dirty protected worktrees reported and preserved",
     "retained dirty worktrees",
     "preserved dirty worktrees",
+    "commit all non-disposable dirty files there",
+    "push it, publish it through a GitHub PR, merge it into main after green checks",
 )
 PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT = {
     "schema": "publisher-runtime-optimization/v1",
@@ -160,6 +205,21 @@ SVP_DOCS_REQUIRED_PROMPT_SNIPPETS = (
     "X2 decides whether the docs are mechanically true, scoped, current, and safe",
     "X3 decides whether this weekly Codex run may publish, must stop at plan, or must block",
     "Eval never waives a runtime or publication gate",
+)
+APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
+    "Run the Agentic-Workflow apps_rg Anthropic partnership fresh source-to-end E2E",
+    "python -m apps_rg --target-company \"Anthropic\"",
+    "--target-role \"Manager of Applied AI Architecture, Partnerships\"",
+    "--target-level \"Manager\"",
+    "--jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt",
+    "--manual-brief apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md",
+    "artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e",
+    "BCG_EXECUTIVE_OUTPUT.md",
+    "APPS_RG_MANDATORY_RUN_OUTPUT.md",
+    "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+    "python tools/apps_rg/render_run_summary.py <run_dir>",
+    "Do not reschedule, enable, or convert this automation to recurring active mode",
+    "Do not claim success from process exit alone",
 )
 
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
@@ -497,6 +557,15 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
     if automation_id == "on-demand-pr-main-publisher":
         issues.extend(_validate_publication_prompt(automation_id, prompt))
         issues.extend(_validate_publication_runtime_optimization(automation_id, data))
+    if automation_id == "on-demand-apps-rg-anthropic-partnership-fresh-s2e":
+        issues.extend(
+            _validate_prompt_snippets(
+                automation_id=automation_id,
+                prompt=prompt,
+                snippets=APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS,
+                code="apps_rg_s2e_prompt_missing",
+            )
+        )
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
     if automation_id == "adg-p0-blocker-burndown":
@@ -556,6 +625,47 @@ def _load_automation(root: Path, automation_id: str) -> dict[str, Any] | None:
     if error is not None:
         return None
     return data
+
+
+def _automation_contract_digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, Any] | None:
+    """Build the allowed Codex Desktop launcher pointer for an active repo cron contract."""
+    root = root.resolve()
+    data = _load_automation(root, automation_id)
+    if data is None:
+        return None
+    if data.get("kind") != "cron" or data.get("status") != "ACTIVE" or not isinstance(data.get("rrule"), str):
+        return None
+    prompt = data.get("prompt")
+    if not isinstance(prompt, str) or not prompt.strip():
+        return None
+    contract_path = _automation_path(root, automation_id).resolve()
+    return {
+        "schema": AUTOMATION_PROJECTION_SCHEMA,
+        "projection_kind": "repo_contract_pointer",
+        "id": data.get("id"),
+        "automation_id": automation_id,
+        "kind": data.get("kind"),
+        "name": data.get("name", automation_id),
+        "status": data.get("status"),
+        "rrule": data.get("rrule"),
+        "enabled": True,
+        "repo_root": str(root),
+        "contract_path": str(contract_path),
+        "contract_sha256": _automation_contract_digest(contract_path),
+    }
+
+
+def iter_user_profile_projections(root: Path) -> list[dict[str, Any]]:
+    projections: list[dict[str, Any]] = []
+    for automation_id in AUTOMATION_IDS:
+        projection = build_user_profile_projection(root, automation_id)
+        if projection is not None:
+            projections.append(projection)
+    return projections
 
 
 def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
@@ -650,6 +760,24 @@ def _automation_toml_references_repo(path: Path, root: Path) -> bool:
         return error is not None
 
 
+def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
+    data, error = _load_toml(path)
+    if data is None or error is not None:
+        return False
+    if any(field in data for field in USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS):
+        return False
+    automation_id = data.get("automation_id")
+    if not isinstance(automation_id, str):
+        return False
+    expected = build_user_profile_projection(root, automation_id)
+    if expected is None:
+        return False
+    for field in AUTOMATION_PROJECTION_FIELDS:
+        if data.get(field) != expected.get(field):
+            return False
+    return True
+
+
 def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> list[Path]:
     automations_root = user_codex_home / "automations"
     if not automations_root.exists():
@@ -661,6 +789,8 @@ def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> lis
         return [automations_root]
     for automation_dir in automation_dirs:
         automation_toml = automation_dir / "automation.toml"
+        if automation_toml.exists() and _is_valid_user_profile_projection(automation_toml, root):
+            continue
         if automation_dir.name in USER_PROFILE_REPO_AUTOMATION_IDS:
             artifacts.append(automation_toml if automation_toml.exists() else automation_dir)
             continue
@@ -677,6 +807,47 @@ def _forbidden_repo_paths(root: Path) -> list[Path]:
     return [root / relative_path for relative_path in FORBIDDEN_REPO_CODEX_TREES]
 
 
+def _forbidden_repo_enforcement_paths(root: Path) -> list[tuple[Path, str]]:
+    return [
+        (root / relative_path, detail)
+        for relative_path, detail in FORBIDDEN_REPO_ENFORCEMENT_TREES.items()
+    ]
+
+
+def _codex_top_level_plan_artifacts(root: Path) -> list[Path]:
+    plans_root = root / ".codex" / "plans"
+    if not plans_root.exists():
+        return []
+    return [
+        path
+        for path in sorted(plans_root.glob("*.md"))
+        if path.name not in ALLOWED_CODEX_PLAN_TOP_LEVEL_FILES
+    ]
+
+
+def _legacy_codex_rule_files(root: Path) -> list[Path]:
+    rules_root = root / ".codex" / "rules"
+    if not rules_root.exists():
+        return []
+    return sorted(path for path in rules_root.glob("*.mdc") if path.is_file())
+
+
+def _forbidden_schema_authority_refs(root: Path) -> list[tuple[Path, int, str]]:
+    schemas_root = root / ".codex" / "schemas"
+    if not schemas_root.exists():
+        return []
+    matches: list[tuple[Path, int, str]] = []
+    for path in sorted(p for p in schemas_root.rglob("*") if p.is_file()):
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line_number, line in enumerate(lines, 1):
+            if FORBIDDEN_SCHEMA_AUTHORITY_REF_RE.search(line):
+                matches.append((path, line_number, line.strip()))
+    return matches
+
+
 def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_HOME) -> list[EnforcementHomeIssue]:
     root = root.resolve()
     user_codex_home = user_codex_home.resolve()
@@ -690,6 +861,39 @@ def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_
                     f"{path}: automation contracts must live under {root / '.codex' / 'automations'}",
                 )
             )
+
+    for path, detail in _forbidden_repo_enforcement_paths(root):
+        if path.exists():
+            issues.append(
+                EnforcementHomeIssue(
+                    "repo_duplicate_enforcement_home",
+                    f"{path}: {detail}",
+                )
+            )
+
+    for path in _codex_top_level_plan_artifacts(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_plan_archive_only",
+                f"{path}: .codex/plans is archive-only; active plan files must live under {root / 'plans'}",
+            )
+        )
+
+    for path in _legacy_codex_rule_files(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_legacy_rule_extension",
+                f"{path}: active Codex rules must use .md; .mdc is historical only",
+            )
+        )
+
+    for path, line_number, line in _forbidden_schema_authority_refs(root):
+        issues.append(
+            EnforcementHomeIssue(
+                "repo_stale_schema_authority_ref",
+                f"{path}:{line_number}: stale authority reference in active schema comment: {line}",
+            )
+        )
 
     for automation_id in AUTOMATION_IDS:
         issues.extend(_validate_automation(root, automation_id))

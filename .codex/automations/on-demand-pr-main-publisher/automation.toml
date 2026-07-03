@@ -40,7 +40,7 @@ Hard stops:
 - Never claim publication success unless a GitHub PR existed for the selected work and was merged through gh pr merge --merge or an equivalent GitHub PR merge API.
 - Never merge/rebase a prior PR/source branch wholesale during recovery unless the user explicitly asked for whole-branch integration.
 - Never delete dirty worktrees or unproven branches.
-- Never treat dirty extra worktree branches as optional cleanup. Final closeout must preserve, publish through PR, merge, explicitly retain with RCA, or otherwise safely route their dirty files before any worktree/branch deletion.
+- Never treat dirty extra worktree branches as optional cleanup. Final closeout must preserve them without data loss, explicitly retain them with RCA, or publish only an explicitly selected, coherent scope through PR before any worktree/branch deletion.
 - Never delete or call a branch done based only on git cherry patch-equivalence.
 - Never claim local main sync if a protected main/master/release worktree is dirty or cannot be fast-forwarded safely.
 - Never claim success unless GitHub main contains the selected publication work, every completed source branch is ancestor-contained in origin/main, HEAD equals origin/main, and the local repo has exactly one clean main worktree at C:\Git\Agentic-Workflow-FRESH.
@@ -132,9 +132,10 @@ Rules:
 - Restore or delete only files proven generated/disposable, and record the proof before acting.
 - Do not overwrite, drop, restore, delete, or ignore dirty files without explicit preservation proof.
 - If the selected publication scope is coherent, create or select a non-main publication branch and commit only that scope.
-- If the selected publication scope is not coherent, create a timestamped non-main recovery branch from the dirty worktree, commit all non-disposable dirty files there with an explicit file list, and treat that branch as separate_recovery_scope unless the user explicitly requested whole-tree publication.
+- Dirty preservation is not publication; incoherent, local_or_config_scope, and unsafe_or_unknown_scope files must be stashed or retained, not merged to main.
+- If the selected publication scope is not coherent, create a named stash or timestamped non-main recovery branch from the dirty worktree, preserve every non-disposable dirty file with an explicit file list, and treat that branch as separate_recovery_scope unless the user explicitly requested whole-tree publication.
 - If unrelated dirty files exist, route them to separate recovery branches or explicit stashes before final success; retained blockers are last resort only after preservation fails.
-- For each dirty extra worktree branch, first commit non-disposable dirty files to that checked-out branch or a named recovery branch, push it, publish it through a GitHub PR, merge it into main after green checks, and only then allow clean ancestry-proven worktree removal and local branch deletion. If the dirty files are intentionally not publishable, preserve them in a named stash or retained recovery branch and report the explicit RCA blocker.
+- For each dirty extra worktree branch, first classify scope. Commit or stash only preservation scope, and publish through PR only when the selected scope is coherent, explicitly requested, and excludes local_or_config_scope plus unsafe_or_unknown_scope. If the dirty files are intentionally not publishable, preserve them in a named stash or retained recovery branch and report the explicit RCA blocker.
 - If classification is unsafe, classify the file as unsafe_or_unknown_scope and preserve it before cleanup; stop only if named branch commit and named stash preservation are both unsafe or fail.
 - After preservation/routing, return C:\Git\Agentic-Workflow-FRESH main to clean origin/main when safe. If not safe, report the exact blocker.
 - Use an explicit user branch when provided; otherwise use the current checked-out non-main branch only if clean and unambiguous.
@@ -159,9 +160,11 @@ Runtime simplification:
 
 Selection rules:
 - SELECT only current, narrow, non-duplicative, verifiable work.
+- Do not reuse a head branch that already had a merged or closed PR unless this run is explicitly an ancestry-recording PR.
 - Treat '-' git cherry rows as patch-equivalent evidence only. They prove content may already be represented, but the branch is still not done until its exact tip is ancestor-contained in origin/main.
 - Treat '+' rows as candidates for transplant or explicit supersession, not automatic whole-branch merges.
 - SKIP stale, broad, generated-only, superseded, unclear, or out-of-scope content replay.
+- Do not publish generated ADG reports or ratchet baselines unless the source generator changed and regeneration proof is included.
 - For generated artifacts under docs/reports/adg or ops_scripts/ci/baselines, prefer excluding stale generated files unless the source generator is changed and artifacts are regenerated in the same run.
 
 Allowed import/recording operations:
@@ -215,6 +218,7 @@ If checks fail, are cancelled, skipped-unknown, or missing:
 
 Rules:
 - Do not merge with pending, failing, cancelled, skipped-unknown, or missing checks.
+- Before merge, block on unresolved GitHub review threads with P1 or P2 findings for the PR head.
 - Do not inspect failed logs when all current-head checks are green.
 - For failures, get logs, identify exact failing command/assertion, reproduce locally when practical.
 - If repo-owned and in scope, fix narrowly, verify, commit, push, and repeat.
@@ -228,7 +232,7 @@ Rules:
 - Never squash.
 - If publication HEAD is already contained in origin/main, verify the PR was merged or close it only after proving the PR artifact records the publication outcome.
 - Rebase only if cleanly replayable and safe; push rewritten publication branch only with --force-with-lease; rerun CI.
-- Merge PRs only if non-draft, mergeable, no requested changes, approved for autopublish, and all current-head checks are green.
+- Merge PRs only if non-draft, mergeable, no requested changes, no unresolved P1/P2 review findings, approved for autopublish, and all current-head checks are green.
 - Merge with gh pr merge <number> --merge. The merge command must chain local closeout proof in the same shell command: git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json && python scripts/governance/codex_main_closeout.py --check --fetch --json.
 - Do not use git push origin main as a substitute for PR merge in this automation.
 

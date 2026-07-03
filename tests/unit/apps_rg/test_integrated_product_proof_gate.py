@@ -69,6 +69,25 @@ def test_section_only_run_dir_fails_product_proof():
     assert "section_mode" in result.decisive_reason
 
 
+def test_whole_run_root_with_section_blobs_is_not_section_mode(tmp_path: Path):
+    (tmp_path / "r4_run_manifest.json").write_text(
+        json.dumps({"chain_kind": "R4_SINGLE_ACTION", "route_family": "R4_SINGLE_ACTION"}),
+        encoding="utf-8",
+    )
+    lane = tmp_path / "modular_r4" / "sections" / "competencies"
+    lane.mkdir(parents=True)
+    (lane / "integrated_lane_pre_run_failure.json").write_text(
+        json.dumps({"section_id": "competencies", "blocker": "EXECUTED_X3A"}),
+        encoding="utf-8",
+    )
+
+    result = validate_integrated_product_proof(tmp_path)
+
+    assert result.status == "FAIL"
+    assert result.section_mode is False
+    assert "section_mode" not in result.decisive_reason
+
+
 def test_orchestrator_offline_rollup_fails(tmp_path: Path):
     receipt = orchestrator_non_product_stamp()
     (tmp_path / "orchestrator_receipt.json").write_text(json.dumps(receipt), encoding="utf-8")

@@ -6,7 +6,7 @@
 # served. Apps declare TTL, invalidation triggers, and semantic similarity
 # thresholds; the spine owns cache read/write mechanics.
 #
-# SSOT: .cursor/schemas/cache_profile.schema.yaml
+# SSOT: .codex/schemas/cache_profile.schema.yaml
 # Referenced by: apps_*/config/domain_contract/cache_profiles.yaml
 # L4 record: AppDomainContractRecord.cache_profile_refs
 

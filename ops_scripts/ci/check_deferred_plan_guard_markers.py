@@ -2,7 +2,7 @@
 """
 check_deferred_plan_guard_markers.py — CI gate: deferred-scope plan guard parity.
 
-Every .codex/plans/*.md file that contains "do not implement without"
+Every active plans/*.md file that contains "do not implement without"
 prose MUST also contain a matching DO_NOT_IMPLEMENT_GUARD: marker line.
 
 The marker is machine-readable and picked up by
@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".codex" / "plans"
+PLANS_DIR = REPO_ROOT / "plans"
 
 # Machine-readable guard marker
 _MARKER_RE = re.compile(r"^\s*DO_NOT_IMPLEMENT_GUARD\s*:", re.MULTILINE)
@@ -87,7 +87,7 @@ def _all_plans() -> list[Path]:
     try:
         return sorted(
             p for p in PLANS_DIR.glob("*.md")
-            if not p.name.startswith("_")
+            if not p.name.startswith("_") and not p.name.startswith("archived-")
         )
     except OSError:
         return []
@@ -99,7 +99,7 @@ def main() -> int:
     )
     parser.add_argument(
         "paths", nargs="*", type=Path,
-        help="Plan files to check (default: all .codex/plans/*.md)"
+        help="Plan files to check (default: all plans/*.md)"
     )
     args = parser.parse_args()
 

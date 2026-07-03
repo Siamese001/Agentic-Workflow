@@ -6,7 +6,7 @@
 # a candidate policy or model change may be promoted to production; the
 # spine owns the promotion mechanics (Wilson CI, regret accounting).
 #
-# SSOT: .cursor/schemas/learning_profile.schema.yaml
+# SSOT: .codex/schemas/learning_profile.schema.yaml
 # Referenced by: apps_*/config/domain_contract/learning_profiles.yaml
 # L4 record: AppDomainContractRecord.learning_profile_refs
 

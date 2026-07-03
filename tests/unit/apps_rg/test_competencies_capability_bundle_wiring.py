@@ -6,6 +6,7 @@ JD-only / coverage / rigor / density), calibration-vs-source discipline, and con
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -30,6 +31,7 @@ from apps_rg.runtime.sections.competencies_lane_execution import (
     _format_competencies_graph_sourcing_assessment,
 )
 from apps_rg.runtime.sections.competencies_rigor import (
+    check_competencies_no_metric_ids_in_source_fact_ids,
     check_competencies_visible_terms_svp_agentic_richness,
 )
 from apps_rg.runtime.validators import competencies_quality_x2 as q
@@ -39,6 +41,8 @@ ANTHROPIC_JD = _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_
 ANTHROPIC_BRIEF = (
     _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
 )
+ANTHROPIC_2026_JD_JSON = _REPO_ROOT / "apps_rg/config/targeting/jd_anthropic_partnerships_2026.json"
+ANTHROPIC_2026_BRIEF_JSON = _REPO_ROOT / "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json"
 
 
 # ---------------------------------------------------------------------------
@@ -596,6 +600,115 @@ def test_visible_graph_surface_uses_partnership_first_bundle_labels_and_terms():
     )
     richness_ok, richness_reason = check_competencies_visible_terms_svp_agentic_richness(competencies)
     assert richness_ok, richness_reason
+
+
+def test_visible_graph_surface_rehydrates_stale_metric_ids_and_claim_ledger():
+    """apps-test-model: APP CONTRACT
+
+    Regression: real Claude output generated good visible terms after transport fixes,
+    but stale metric IDs and old claim_ledger rows survived into X2/X3.
+    """
+    jd_text = json.loads(ANTHROPIC_2026_JD_JSON.read_text(encoding="utf-8"))["jd_text"]
+    brief_text = json.loads(ANTHROPIC_2026_BRIEF_JSON.read_text(encoding="utf-8"))["briefing_text"]
+    plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=_REPO_ROOT,
+        section_id="competencies",
+        target_role=jd_text.split("\n", 1)[0],
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "selected_graph_evidence_plan": plan,
+        },
+        section_id="competencies",
+    )
+    packet = meta["competency_capability_section_packet"]
+    allowed = {
+        str(fact.get("fact_id") or "")
+        for fact in plan.get("facts") or []
+        if isinstance(fact, dict) and str(fact.get("fact_id") or "").strip()
+    }
+    bundle_ids = [
+        "ccb_partner_applied_ai_architecture",
+        "ccb_agentic_platforms",
+        "ccb_runtime_governance",
+        "ccb_retrieval_context_engineering",
+        "ccb_platform_productization",
+        "ccb_llmops_reliability",
+        "ccb_distributed_systems_engineering",
+        "ccb_engineering_leadership",
+    ]
+    parsed = {
+        "competencies": [
+            {
+                "category_label": "AI Platform Leadership",
+                "competency_bundle_id": bundle_id,
+                "source_fact_ids": ["metric_stale_selector_only"],
+                "terms": [
+                    {
+                        "text": "stale unsupported selector phrase",
+                        "source_fact_id": "metric_stale_selector_only",
+                        "source_fact_ids": ["metric_stale_selector_only"],
+                    }
+                ],
+            }
+            for bundle_id in bundle_ids
+        ],
+        "claim_ledger": [
+            {"claim_text": "stale unsupported selector phrase", "source_fact_ids": ["metric_stale_selector_only"]}
+        ],
+        "competencies_rejected_neighbor_audit": {
+            "schema_version": "competencies_rejected_neighbor_audit_v1",
+            "audit_status": "present",
+            "candidate_label_count": 12,
+            "candidate_variant_count": 48,
+            "selected_count": 8,
+            "rejected_neighbor_count": 40,
+        },
+    }
+
+    enrich_competencies_visible_graph_surface(
+        parsed,
+        packet=packet,
+        allowed_fact_ids=allowed,
+        selected_graph_evidence_plan=plan,
+    )
+
+    competencies = parsed["competencies"]
+    assert check_competencies_no_metric_ids_in_source_fact_ids(competencies)[0] is True
+    assert q.check_per_category_confidence_nonconstant(competencies).passed is True
+    granularity = q.check_competencies_graph_granularity_gates(
+        competencies,
+        meta,
+        parsed,
+        jd_text=jd_text,
+        briefing_text=brief_text,
+    )
+    assert granularity.passed is True
+    term_texts = {
+        term["text"].strip().lower()
+        for cat in competencies
+        for term in cat["terms"]
+        if isinstance(term, dict)
+    }
+    ledger_texts = {
+        row["claim_text"].strip().lower()
+        for row in parsed["claim_ledger"]
+        if isinstance(row, dict)
+    }
+    assert term_texts <= ledger_texts
+    for cat in competencies:
+        assert cat["source_fact_ids"]
+        assert set(cat["source_fact_ids"]) <= allowed
+        assert cat["confidence"] == cat["selection_score"] == cat["selector_confidence"]
+        for term in cat["terms"]:
+            assert term["source_fact_id"] in term["source_fact_ids"]
+            assert set(term["source_fact_ids"]) <= allowed
+            assert term["support_class"] == "FACT_AND_SKILL_GRAPH"
+    for row in parsed["claim_ledger"]:
+        assert set(row["source_fact_ids"]) <= allowed
 
 
 def test_partner_applied_ai_architecture_bundle_is_root_bound_for_anthropic():

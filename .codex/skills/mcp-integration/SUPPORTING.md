@@ -17,7 +17,7 @@
 | "Decompose into subtasks" across sessions | ✅ Yes | — |
 | Long-horizon multi-session epic | ✅ Yes | — |
 | In-session multi-step work | ❌ No | native plan mode + `structured-reasoning` guidance |
-| Plan-file work | ❌ No | `.codex/plans/*.md` |
+| Plan-file work | ❌ No | `plans/*.md` |
 
 ### Tool Routing
 

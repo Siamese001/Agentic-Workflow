@@ -125,6 +125,23 @@ def _run_rel_path(repo_root: Path, rel: str) -> Path:
     return (repo_root / rel_norm).resolve()
 
 
+def _explicit_run_dir_is_real_authorized(row: dict[str, Any]) -> bool:
+    """Patch-run explicit lane dirs are acceptable when the lane itself is real X3_ALLOW."""
+    if str(row.get("runtime_generation_status") or "") != "REAL_LLM":
+        return False
+    if str(row.get("x3_code") or "") != "X3_ALLOW":
+        return False
+    try:
+        x2_failed = int(row.get("x2_failed") or 0)
+    except (TypeError, ValueError):
+        return False
+    if x2_failed != 0:
+        return False
+    if row.get("x2_failed_gate_ids"):
+        return False
+    return bool(str(row.get("rollup_source_run_dir") or "").strip())
+
+
 def run_final_resume_x2_gates(
     *,
     repo: Path,
@@ -173,7 +190,14 @@ def run_final_resume_x2_gates(
             gen_reason = f"missing lane {lane}"
             break
         accepted = str(row.get("accepted_real_evidence_resolution") or "")
-        if accepted not in ("latest_successful_real_run.json", "coherent_aggregation_pin"):
+        accepted_ok = accepted in (
+            "latest_successful_real_run.json",
+            "coherent_aggregation_pin",
+        ) or (
+            accepted == "modular_r4_explicit_run_dir"
+            and _explicit_run_dir_is_real_authorized(row)
+        )
+        if not accepted_ok:
             gen_ok = False
             gen_reason = f"{lane} resolution not accepted: {accepted}"
             break

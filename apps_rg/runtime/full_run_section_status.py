@@ -69,8 +69,13 @@ def _repo_rel(path: Path, repo_root: Path) -> str:
         return path.resolve().as_posix()
 
 
-def _resolve_lane_display_txt(lane_dir: Path) -> tuple[str | None, Path | None]:
-    for name in LANE_DISPLAY_TXT_CANDIDATES.get(lane_dir.name, ("command_output.txt",)):
+def _resolve_lane_display_txt(
+    lane_dir: Path,
+    *,
+    lane: str | None = None,
+) -> tuple[str | None, Path | None]:
+    lane_key = str(lane or lane_dir.name)
+    for name in LANE_DISPLAY_TXT_CANDIDATES.get(lane_key, ("command_output.txt",)):
         candidate = lane_dir / name
         if candidate.is_file() and candidate.stat().st_size > 0:
             return name, candidate
@@ -234,19 +239,108 @@ def _collect_final_aggregation_status(root: Path, repo: Path) -> LaneSectionStat
     )
 
 
+def _resolve_pointer_run_dir(lane_base: Path, repo: Path) -> Path | None:
+    for ptr_name in (
+        "latest_successful_real_run.json",
+        "latest_real_run.json",
+        "latest_mock_run.json",
+    ):
+        doc = _load_json(lane_base / ptr_name)
+        raw = str(doc.get("run_dir") or doc.get("artifact_dir") or "").strip()
+        if not raw:
+            continue
+        candidate = Path(raw)
+        if not candidate.is_absolute():
+            candidate = repo / candidate
+        if candidate.is_dir():
+            return candidate.resolve()
+    return None
+
+
+def _latest_child_run_dir(lane_base: Path) -> Path | None:
+    for bucket in ("real", "mock"):
+        bucket_root = lane_base / bucket
+        if not bucket_root.is_dir():
+            continue
+        candidates = sorted(p for p in bucket_root.iterdir() if p.is_dir())
+        if candidates:
+            return candidates[-1].resolve()
+    return None
+
+
+def _rollup_source_run_dirs(root: Path, repo: Path) -> dict[str, Path]:
+    """Current final assembly rollup dirs, used after patch-run reaggregation."""
+    doc = _load_json(root / "modular_r4" / "generated_lane_rollup" / "generated_lane_rollup.json")
+    lanes = doc.get("lanes")
+    if not isinstance(lanes, dict):
+        return {}
+    out: dict[str, Path] = {}
+    accepted_tags = {
+        "latest_successful_real_run.json",
+        "coherent_aggregation_pin",
+        "modular_r4_explicit_run_dir",
+    }
+    for lane, row in lanes.items():
+        if not isinstance(row, dict):
+            continue
+        accepted = str(row.get("accepted_real_evidence_resolution") or "")
+        if accepted not in accepted_tags:
+            continue
+        raw = str(
+            row.get("latest_successful_real_artifact_path")
+            or row.get("rollup_source_run_dir")
+            or ""
+        ).strip()
+        if not raw:
+            continue
+        candidate = Path(raw)
+        if not candidate.is_absolute():
+            candidate = repo / candidate
+        if candidate.is_dir():
+            out[str(lane)] = candidate.resolve()
+    return out
+
+
+def _lane_status_dirs(root: Path, repo: Path, lane: str) -> tuple[Path | None, Path | None]:
+    """Return the effective run dir and lane base dir for a whole-run lane."""
+    flat = root / "lanes" / lane
+    if flat.is_dir():
+        if (flat / "l2_output.json").is_file():
+            return flat, flat
+        effective = _resolve_pointer_run_dir(flat, repo) or _latest_child_run_dir(flat)
+        return effective or flat, flat
+    modular_base = root / "modular_r4" / "sections" / lane
+    if modular_base.is_dir():
+        effective = _resolve_pointer_run_dir(modular_base, repo) or _latest_child_run_dir(modular_base)
+        return effective or modular_base, modular_base
+    return None, None
+
+
+def _display_ref(path: Path, *, run_root: Path, repo_root: Path) -> str:
+    resolved = path.resolve()
+    root = run_root.resolve()
+    if resolved.is_relative_to(root):
+        return _repo_rel(resolved, root)
+    return _repo_rel(resolved, repo_root)
+
+
 def collect_full_run_section_status(
     run_root: Path,
     *,
     repo_root: Path | None = None,
 ) -> list[LaneSectionStatusRow]:
-    """Inspect ``run_root/lanes/<lane>`` and build one row per generated lane."""
+    """Inspect flat or modular whole-run lane artifacts and build one row per lane."""
     root = Path(run_root).resolve()
     repo = (repo_root or root).resolve()
-    lanes_root = root / "lanes"
     rows: list[LaneSectionStatusRow] = []
+    rollup_dirs = _rollup_source_run_dirs(root, repo)
 
     for lane in GENERATED_LANES:
-        lane_dir = lanes_root / lane if lanes_root.is_dir() else None
+        rollup_lane_dir = rollup_dirs.get(lane)
+        if rollup_lane_dir is not None:
+            lane_dir, lane_base = rollup_lane_dir, rollup_lane_dir
+        else:
+            lane_dir, lane_base = _lane_status_dirs(root, repo, lane)
         if lane_dir is None or not lane_dir.is_dir():
             rows.append(
                 LaneSectionStatusRow(
@@ -264,11 +358,13 @@ def collect_full_run_section_status(
             )
             continue
 
-        pre_fail = _load_json(lane_dir / "integrated_lane_pre_run_failure.json")
+        pre_fail = _load_json((lane_base or lane_dir) / "integrated_lane_pre_run_failure.json")
+        if not pre_fail:
+            pre_fail = _load_json(lane_dir / "integrated_lane_pre_run_failure.json")
         pre_blocker = str(pre_fail.get("blocker") or pre_fail.get("lane_exec_status") or "").strip()
 
-        txt_name, txt_path = _resolve_lane_display_txt(lane_dir)
-        txt_rel = f"lanes/{lane}/{txt_name}" if txt_name else None
+        txt_name, txt_path = _resolve_lane_display_txt(lane_dir, lane=lane)
+        txt_rel = _display_ref(txt_path, run_root=root, repo_root=repo) if txt_path else None
         x3 = _load_json(lane_dir / "x3_disposition.json")
         x3_code = str(x3.get("x3_code") or x3.get("disposition") or "UNKNOWN")
         if pre_blocker and x3_code == "UNKNOWN" and not txt_name:

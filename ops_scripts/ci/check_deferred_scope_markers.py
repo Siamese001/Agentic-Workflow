@@ -2,7 +2,7 @@
 """
 check_deferred_scope_markers.py — pre-commit + CI gate for DEFERRED_SCOPE marker contract.
 
-Scans plan files (`.codex/plans/*.md`) for prose deferred-scope language.
+Scans active plan files (`plans/*.md`) for prose deferred-scope language.
 If any are present AND the file lacks a matching `DEFERRED_SCOPE:` marker,
 a violation is reported.
 
@@ -13,7 +13,7 @@ Modes:
   --all: Scan all plan files on disk (CI mode)
 
 Scoped narrowly to avoid false positives:
-  - Only .codex/plans/*.md files (where backlog is recorded)
+  - Only plans/*.md files (where active backlog is recorded)
   - In --staged mode: only added lines (`+` in diff)
   - In --all mode: all lines (baseline scan)
   - Only if file lacks ANY DEFERRED_SCOPE: marker
@@ -59,7 +59,7 @@ PROSE_PATTERNS = [
 MARKER_RE = re.compile(r"^\s*DEFERRED_SCOPE:\s*", re.IGNORECASE | re.MULTILINE)
 
 # Files scoped to this gate
-PLAN_GLOB_RE = re.compile(r"^\.codex/plans/.+\.md$")
+PLAN_GLOB_RE = re.compile(r"^plans/.+\.md$")
 
 
 def _run(argv: list[str]) -> str:
@@ -115,10 +115,10 @@ def _file_has_marker(path: str) -> bool:
 
 def _all_plan_files() -> list[Path]:
     """Return all plan files on disk (CI mode)."""
-    plans_dir = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = REPO_ROOT / "plans"
     if not plans_dir.exists():
         return []
-    return list(plans_dir.glob("*.md"))
+    return [path for path in plans_dir.glob("*.md") if not path.name.startswith("archived-")]
 
 
 def _file_lines(path: Path) -> list[tuple[int, str]]:
@@ -149,7 +149,7 @@ def check_all_plans() -> dict[str, list[dict[str, Any]]]:
         if _file_has_marker_disk(path):
             continue  # file has marker — assumed compliant
         
-        rel_path = f".codex/plans/{path.name}"
+        rel_path = f"plans/{path.name}"
         for line_no, text in _file_lines(path):
             for pattern in PROSE_PATTERNS:
                 m = pattern.search(text)

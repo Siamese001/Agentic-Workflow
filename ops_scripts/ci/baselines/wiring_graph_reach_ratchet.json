@@ -68,8 +68,8 @@
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-01T09:03:58.997559+00:00",
-  "last_run_snapshot": "adg_indexed_07012026_0451.sqlite",
+  "last_run_at": "2026-07-02T03:20:33.905349+00:00",
+  "last_run_snapshot": "adg_indexed_07012026_2302.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",

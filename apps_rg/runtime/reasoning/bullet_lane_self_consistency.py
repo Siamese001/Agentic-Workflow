@@ -145,7 +145,7 @@ def self_consistency_max_parallel(section_lane: str, path_count: int) -> int:
     lane = str(section_lane or "").strip().lower()
     if lane == "competencies":
         env_name = "APPS_RG_COMPETENCIES_SC_MAX_PARALLEL"
-        default = 4
+        default = 1
     elif lane in PARALLEL_EMPLOYMENT_BULLET_SC_LANES:
         env_name = "APPS_RG_EMPLOYMENT_BULLET_SC_MAX_PARALLEL"
         default = 2
@@ -157,6 +157,26 @@ def self_consistency_max_parallel(section_lane: str, path_count: int) -> int:
     except ValueError:
         requested = default
     return max(1, min(max(1, int(path_count)), requested))
+
+
+def self_consistency_token_budget(
+    section_lane: str,
+    provider_payload: dict[str, Any],
+) -> int | None:
+    lane = str(section_lane or "").strip().lower()
+    if lane == "competencies":
+        from apps_rg.runtime.sections.competencies_lane_defaults import (
+            competencies_self_consistency_output_tokens,
+        )
+
+        requested = provider_payload.get("max_tokens") or provider_payload.get("max_output_tokens")
+        try:
+            upper = int(requested) if requested is not None else None
+        except (TypeError, ValueError):
+            upper = None
+        budget = competencies_self_consistency_output_tokens()
+        return min(budget, upper) if upper and upper > 0 else budget
+    return None
 
 
 def competencies_sc_parallel_enabled(section_lane: str) -> bool:
@@ -224,6 +244,20 @@ def _parse_sc_provider_result(
     return raw, parsed, parse_error
 
 
+def _zero_output_provider_timeout(path: SelfConsistencyPath) -> bool:
+    err = ""
+    if path.provider_result is not None:
+        err = str(path.provider_result.exact_provider_error or "")
+    err = err or str(path.parse_error or "")
+    err_l = err.lower()
+    return (
+        path.runtime_generation_status != "REAL_LLM"
+        and not str(path.raw_output or "").strip()
+        and "timeout" in err_l
+        and ("chars_received=0" in err_l or "raw_output_chars" not in err_l)
+    )
+
+
 def _run_one_self_consistency_path(
     *,
     section_lane: str,
@@ -253,6 +287,9 @@ def _run_one_self_consistency_path(
         "parse_ok": None,
         "provider_error": None,
     }
+    token_budget = self_consistency_token_budget(section_lane, provider_payload)
+    if token_budget is not None:
+        progress_row["token_budget"] = token_budget
     with progress_lock:
         progress_rows.append(progress_row)
         _flush_progress_receipt(
@@ -275,6 +312,7 @@ def _run_one_self_consistency_path(
         artifact_dir=artifact_dir,
         run_id=run_id,
         temperature_override=temperature,
+        token_budget=token_budget,
     )
     raw, parsed, parse_error = _parse_sc_provider_result(
         result,
@@ -385,7 +423,10 @@ def run_provider_self_consistency_paths(
                 paths.append(future.result())
     else:
         for offset, temp in enumerate(temps):
-            paths.append(_run(offset, temp))
+            path = _run(offset, temp)
+            paths.append(path)
+            if section_lane == "competencies" and _zero_output_provider_timeout(path):
+                break
 
     paths.sort(key=lambda p: p.path_index)
     last_result = paths[-1].provider_result if paths else None
@@ -525,6 +566,7 @@ __all__ = [
     "run_provider_self_consistency_paths",
     "self_consistency_path_count",
     "self_consistency_max_parallel",
+    "self_consistency_token_budget",
     "self_consistency_parallel_enabled",
     "temperature_ladder",
 ]

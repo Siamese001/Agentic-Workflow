@@ -252,3 +252,6 @@ class TestChainMembershipAndWiring:
         settings = json.loads((REPO_ROOT / ".codex" / "hooks.json").read_text(encoding="utf-8"))
         cmds = [h["command"] for group in settings["hooks"]["Stop"] for h in group["hooks"]]
         assert any("after_agent_governance_dispatch.py" in c for c in cmds), cmds
+
+    def test_worktree_cleanup_uses_codex_reaper(self, hook) -> None:
+        assert hook._CLEANUP_SCRIPT == REPO_ROOT / ".codex" / "hooks" / "prune_merged_chat_worktrees.py"

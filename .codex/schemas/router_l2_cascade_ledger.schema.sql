@@ -5,8 +5,8 @@
 -- in agentic_core/L2_execution/healers/. Closes constitutional §29 loop:
 -- prediction → outcome → calibration → meta-learner.
 --
--- See plan: .windsurf/plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md
--- See rule: .windsurf/rules/closed-loop-router-enforcement.md (row #4)
+-- Historical plan: plans/archived-windsurf-l2-cascade-router-closed-loop-wiring-c4d8a1.md
+-- Active rule: .codex/rules/closed-loop-router-enforcement.md (row #4)
 --
 -- event_kind values:
 --   "route_decision"  — router chose a tier/provider; outcome may bind later

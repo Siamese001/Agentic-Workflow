@@ -91,6 +91,10 @@
   project facts, governance decisions, and run history resolve to repo-local `memory/`; if Codex native
   memories are ever enabled, use `memories.disable_on_external_context = true` and do not let generated
   memories override checked-in project guidance.
+- **ADG transport-open per-turn gate (2026-07-01):** ordinary T2/T3 prompts require both ADG SQLite
+  SSOT health and active-session ADG MCP transport proof; heartbeat/process evidence or direct SQLite
+  fallback cannot substitute for a closed Codex MCP route. Detail:
+  `memory/codex/adg_transport_open_per_turn_gate.md`.
 - New `plans/*.md` files are **mint-gated** (`pre_write_plan_mint_gate.py`) — create only with explicit
   user authorization in-turn. Editing existing plan files is unrestricted.
 - Bash commands containing legacy execution tokens (`Windsurf`/`Cursor`) are **blocked** by

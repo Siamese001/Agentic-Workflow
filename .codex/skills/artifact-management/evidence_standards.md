@@ -41,7 +41,7 @@ Plain text paths = CONSTITUTIONAL VIOLATION.
 
 ## Evidence Contract
 
-- One evidence file per phase, under `.codex/plans/`
+- One evidence file per phase under `docs/reports/` or `artifacts/`; active plans live under `plans/`
 - Commands via `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
 - PowerShell invocation FORBIDDEN
 - ASCII-only output with ANSI escape sequences stripped

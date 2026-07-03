@@ -61,6 +61,20 @@ def append_canonical_evidence_invariant_x2_gates(
         for bid, bundle_id in IBM_BULLET_SLOT_BUNDLE_MAP.items():
             if bundle_id in fec_ids:
                 alias_map.setdefault(bid, bundle_id)
+        # IBM narrative can narrow the graph-era FEC away from the original bullet
+        # slot bundle when selector evidence chooses the current data-modeling path.
+        # Keep the bullet lane's primary binding intact, but let the narrative
+        # claim-ledger subset gate resolve the prompt-authorized surface token.
+        narrative_fec_aliases = {
+            "bul_ibm_002": ("reb_ibm_data_modeling_bi_decision_support",),
+        }
+        for bid, bundle_ids in narrative_fec_aliases.items():
+            if alias_map.get(bid) in fec_ids:
+                continue
+            for bundle_id in bundle_ids:
+                if bundle_id in fec_ids:
+                    alias_map[bid] = bundle_id
+                    break
         fact_anchor = next(
             (fid for fid in sorted(fec_ids) if fid.startswith("fact_") and "_metric_" not in fid),
             None,

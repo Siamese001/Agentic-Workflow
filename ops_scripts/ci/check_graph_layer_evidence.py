@@ -15,7 +15,7 @@ This gate enforces that T2/T3 refactoring plans use the graph-layer primitives
 (MVs, semantic edges, P-views) as PRIMARY drivers — not raw ``edges`` /
 ``violations`` table aggregations and never grep.
 
-Scans .codex/plans/*.md and validates that plans which declare a
+Scans plans/*.md and validates that plans which declare a
 refactoring intent include an ``## ADG_GRAPH_LAYER_EVIDENCE`` section with:
   * at least 3 materialized views (mv_*) cited
   * at least 1 semantic-edge relation beyond 'imports' OR 1 P-view cross-ref
@@ -39,16 +39,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-# Active-plan evaluation SSOT (W3 archive): top-level `.codex/plans/*.md` only.
-PLANS_DIR = ROOT / ".codex" / "plans"
+# Active-plan evaluation SSOT: top-level root `plans/*.md` only.
+PLANS_DIR = ROOT / "plans"
 _ACTIVE_PLAN_EXCLUDE_NAMES = frozenset({"README.md", "CURSOR_RUNTIME_SEAM_TEMPLATE.md"})
 LOG_DIR = ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "graph_layer_violations.jsonl"
 BASELINE_FILE = ROOT / "ops_scripts" / "ci" / "baselines" / "graph_layer_evidence_baseline.json"
 
-# SSOT plan trees — baseline entries may use `.codex/plans/` or `docs/archive/windsurf/legacy-tree/plans/`
-# prefixes; integrity checks must resolve against both roots.
+# Plan trees used for baseline integrity. Active plans live under root `plans/`;
+# historical baseline entries may still resolve under `.codex/plans/_archive/`
+# or the archived Windsurf tree.
 _PLAN_INTEGRITY_ROOTS: tuple[Path, ...] = (
+    ROOT / "plans",
     ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans",
     ROOT / ".codex" / "plans",
 )
@@ -295,8 +297,8 @@ def _baseline_entry_resolves(entry: str, existing_rel: set[str]) -> bool:
     for alias in _grandfather_path_aliases(entry):
         if alias in existing_rel:
             return True
-    # W3 archive: `.codex/plans/foo.md` may live at `.codex/plans/_archive/YYYY-MM/foo.md`
-    for prefix in (".codex/plans/", "docs/archive/windsurf/legacy-tree/plans/"):
+    # Historical entries may have moved into archive folders.
+    for prefix in ("plans/", ".codex/plans/", "docs/archive/windsurf/legacy-tree/plans/"):
         if not entry.startswith(prefix):
             continue
         leaf = entry[len(prefix) :]
@@ -314,14 +316,23 @@ def _baseline_entry_resolves(entry: str, existing_rel: set[str]) -> bool:
 
 
 def _grandfather_path_aliases(rel: str) -> set[str]:
-    """Baseline may list ``.codex/plans/…`` while the live file is under ``docs/archive/windsurf/legacy-tree/plans/…`` (or vice versa)."""
+    """Return current and historical aliases for a grandfathered plan path."""
     aliases = {rel}
+    prefix_root = "plans/"
     prefix_ws = "docs/archive/windsurf/legacy-tree/plans/"
     prefix_cc = ".codex/plans/"
-    if rel.startswith(prefix_ws):
+    if rel.startswith(prefix_root):
+        leaf = rel[len(prefix_root) :]
+        aliases.add(prefix_cc + leaf)
+        aliases.add(prefix_ws + leaf)
+    elif rel.startswith(prefix_ws):
+        leaf = rel[len(prefix_ws) :]
+        aliases.add(prefix_root + leaf)
         aliases.add(prefix_cc + rel[len(prefix_ws) :])
     elif rel.startswith(prefix_cc):
-        aliases.add(prefix_ws + rel[len(prefix_cc) :])
+        leaf = rel[len(prefix_cc) :]
+        aliases.add(prefix_root + leaf)
+        aliases.add(prefix_ws + leaf)
     return aliases
 
 
@@ -404,7 +415,7 @@ def _changed_plan_files(base_ref: str) -> list[str] | None:
 def _select_changed_plan_paths(changed_rel: list[str]) -> list[Path]:
     """Filter changed repo-relative paths to evaluable top-level active plans.
 
-    Keeps only ``*.md`` files directly under ``.codex/plans/`` (matching the whole-repo glob),
+    Keeps only ``*.md`` files directly under root ``plans/`` (matching the whole-repo glob),
     excluding README/template, and only those that still exist on disk (a deleted plan needs no
     evidence). This is what makes the gate *diff-scoped*: pre-existing plans nobody touched are
     not re-checked on an unrelated PR.
@@ -416,6 +427,7 @@ def _select_changed_plan_paths(changed_rel: list[str]) -> list[Path]:
             p.parent == PLANS_DIR
             and p.suffix == ".md"
             and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+            and not p.name.startswith("archived-")
             and p.is_file()
         ):
             selected.add(p)
@@ -468,7 +480,9 @@ def main(argv: list[str] | None = None) -> int:
         plans = sorted(
             p
             for p in PLANS_DIR.glob("*.md")
-            if p.is_file() and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+            if p.is_file()
+            and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+            and not p.name.startswith("archived-")
         )
         if not plans:
             print("[check_graph_layer_evidence] no plans found — OK")

@@ -76,6 +76,21 @@ def _automation_toml(
     return text + _handoff_toml_block(automation_id, **handoff_overrides)
 
 
+def _projection_toml(root: Path, automation_id: str, **overrides: object) -> str:
+    projection = mod.build_user_profile_projection(root, automation_id)
+    assert projection is not None
+    projection.update(overrides)
+    lines = ["version = 1"]
+    emitted = set()
+    for field in mod.AUTOMATION_PROJECTION_FIELDS:
+        lines.append(f"{field} = {json.dumps(projection[field])}")
+        emitted.add(field)
+    for field in sorted(set(projection) - emitted):
+        lines.append(f"{field} = {json.dumps(projection[field])}")
+    lines.extend(["created_at = 1", "updated_at = 1"])
+    return "\n".join(lines)
+
+
 def _publication_prompt() -> str:
     return "\n".join(mod.PUBLICATION_REQUIRED_PROMPT_SNIPPETS)
 
@@ -104,9 +119,14 @@ def _svp_docs_prompt() -> str:
     return "\n".join(mod.SVP_DOCS_REQUIRED_PROMPT_SNIPPETS)
 
 
+def _apps_rg_s2e_prompt() -> str:
+    return "\n".join(mod.APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS)
+
+
 def _valid_root(tmp_path: Path) -> Path:
     prompt_by_id = {
         "on-demand-pr-main-publisher": _publication_prompt(),
+        "on-demand-apps-rg-anthropic-partnership-fresh-s2e": _apps_rg_s2e_prompt(),
         "weekly-adg-audit-and-burndown": _adg_prompt(),
         "adg-p0-blocker-burndown": _adg_p0_prompt(),
         "adg-p1-ratchet-burndown": _adg_p1_prompt(),
@@ -151,6 +171,79 @@ def test_user_profile_thin_automation_launcher_fails(tmp_path: Path) -> None:
         "as the source of truth."
     )
     _write(launcher, _automation_toml("weekly-adg-audit-and-burndown", prompt, root))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_generated_projection_passes(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(root, "adg-p0-blocker-burndown"))
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert issues == []
+
+
+def test_user_profile_projection_detects_contract_digest_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(root, "adg-p0-blocker-burndown"))
+    automation = mod._automation_path(root, "adg-p0-blocker-burndown")
+    automation.write_text(
+        _automation_toml("adg-p0-blocker-burndown", _adg_p0_prompt() + "\nNew source contract line.", root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_schedule_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(
+            root,
+            "adg-p0-blocker-burndown",
+            rrule="RRULE:FREQ=WEEKLY;BYHOUR=7;BYMINUTE=45;BYDAY=MO",
+        ),
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_contract_path_drift(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(root, "adg-p0-blocker-burndown", contract_path=str(root / "stale" / "automation.toml")),
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_user_profile_projection_rejects_prompt_payload(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(
+        launcher,
+        _projection_toml(root, "adg-p0-blocker-burndown", prompt="Copied repo-owned automation prompt."),
+    )
 
     issues = mod.validate(root, user_codex_home)
 
@@ -207,6 +300,61 @@ def test_repo_local_agent_instruction_tree_fails(tmp_path: Path) -> None:
     assert any(issue.code == "repo_duplicate_enforcement_home" for issue in issues)
 
 
+def test_repo_local_agents_tree_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".agents" / "skills" / "legacy" / "SKILL.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" and ".agents" in issue.detail for issue in issues)
+
+
+def test_memory_codex_skill_surface_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / "memory" / "codex" / "skills" / "repo-main-merge-publish" / "SKILL.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_duplicate_enforcement_home" and "memory" in issue.detail for issue in issues)
+
+
+def test_codex_top_level_plan_file_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "plans" / "active-plan-a1b2c3.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_plan_archive_only" for issue in issues)
+
+
+def test_codex_plan_archive_file_passes(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "plans" / "README.md")
+    _write(root / ".codex" / "plans" / "_archive" / "2026-07" / "archived-plan-a1b2c3.md")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert issues == []
+
+
+def test_legacy_codex_rule_extension_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "rules" / "legacy-rule.mdc")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_legacy_rule_extension" for issue in issues)
+
+
+def test_stale_schema_authority_ref_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    _write(root / ".codex" / "schemas" / "example.schema.sql", "-- Location: .cursor/schemas/example.schema.sql")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "repo_stale_schema_authority_ref" for issue in issues)
+
+
 def test_user_profile_skill_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
@@ -230,6 +378,54 @@ def test_publication_prompt_requires_strict_single_main_contract(tmp_path: Path)
     assert any(issue.code == "publication_prompt_missing" for issue in issues)
 
 
+def test_publication_prompt_requires_dirty_preservation_not_publication(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = (
+        "Dirty preservation is not publication; incoherent, local_or_config_scope, and "
+        "unsafe_or_unknown_scope files must be stashed or retained, not merged to main."
+    )
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
+def test_publication_prompt_requires_review_thread_gate(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = "Before merge, block on unresolved GitHub review threads with P1 or P2 findings for the PR head."
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
+def test_publication_prompt_requires_branch_reuse_guard(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    required = (
+        "Do not reuse a head branch that already had a merged or closed PR unless this run is explicitly "
+        "an ancestry-recording PR."
+    )
+    automation.write_text(
+        _automation_toml("on-demand-pr-main-publisher", _publication_prompt().replace(required, ""), root),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_missing" and required in issue.detail for issue in issues)
+
+
 def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
@@ -237,6 +433,23 @@ def test_publication_prompt_rejects_obsolete_dirty_success_wording(tmp_path: Pat
         _automation_toml(
             "on-demand-pr-main-publisher",
             _publication_prompt() + "\ndirty protected worktrees reported and preserved",
+            root,
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "publication_prompt_obsolete" for issue in issues)
+
+
+def test_publication_prompt_rejects_obsolete_whole_dirty_merge_wording(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = root / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
+    automation.write_text(
+        _automation_toml(
+            "on-demand-pr-main-publisher",
+            _publication_prompt() + "\ncommit all non-disposable dirty files there",
             root,
         ),
         encoding="utf-8",
@@ -297,6 +510,61 @@ def test_on_demand_publication_rejects_cron_schedule(tmp_path: Path) -> None:
     assert any(issue.code == "automation_kind" for issue in issues)
     assert any(issue.code == "automation_status" for issue in issues)
     assert any(issue.code == "automation_rrule" for issue in issues)
+
+
+def test_apps_rg_s2e_automation_is_required(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    automation.unlink()
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(
+        issue.code == "automation_missing"
+        and "on-demand-apps-rg-anthropic-partnership-fresh-s2e" in issue.detail
+        for issue in issues
+    )
+
+
+def test_apps_rg_s2e_rejects_cron_schedule(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    cron_text = (
+        _automation_toml(
+            "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+            _apps_rg_s2e_prompt(),
+            root,
+        )
+        .replace('kind = "manual"', 'kind = "cron"')
+        .replace(
+            'status = "ON_DEMAND"',
+            'status = "ACTIVE"\nrrule = "RRULE:FREQ=WEEKLY;BYHOUR=2;BYMINUTE=10;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
+        )
+    )
+    automation.write_text(cron_text, encoding="utf-8")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "automation_kind" for issue in issues)
+    assert any(issue.code == "automation_status" for issue in issues)
+    assert any(issue.code == "automation_rrule" for issue in issues)
+
+
+def test_apps_rg_s2e_prompt_requires_real_e2e_command(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "on-demand-apps-rg-anthropic-partnership-fresh-s2e")
+    automation.write_text(
+        _automation_toml(
+            "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+            "Run apps_rg eventually.",
+            root,
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "apps_rg_s2e_prompt_missing" for issue in issues)
 
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:

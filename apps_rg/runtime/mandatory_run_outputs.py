@@ -220,8 +220,15 @@ def _status_bucket(row: LaneSectionStatusRow, pre_run: dict[str, Any]) -> str:
 
 def _classify_failure(section_id: str, failed_gates: list[dict[str, Any]], pre_run: dict[str, Any]) -> str:
     blocker = str(pre_run.get("blocker") or pre_run.get("lane_exec_status") or "").strip()
+    lane_status = str(pre_run.get("lane_exec_status") or "").strip()
+    pre_run_text = f"{blocker} {lane_status}".lower()
+    if "temperature" in pre_run_text and "deprecated" in pre_run_text:
+        return "Provider capability failure: Anthropic rejected deprecated temperature for the selected model."
     if pre_run and not failed_gates and blocker != "EXECUTED_X3_BLOCK":
-        return f"Pre-run dependency blocked execution: {blocker}"
+        detail = blocker
+        if lane_status and lane_status != blocker:
+            detail = f"{blocker}; {lane_status}"
+        return f"Pre-run dependency blocked execution: {detail}"
     gate_ids = " ".join(str(g.get("gate_id") or "") for g in failed_gates).lower()
     reasons = " ".join(str(g.get("failure_reason") or "") for g in failed_gates).lower()
     combined = f"{gate_ids} {reasons}"
@@ -312,7 +319,7 @@ def _collect_section_records(
     repo_root: Path,
     section_id: str | None,
 ) -> list[dict[str, Any]]:
-    if (run_root / "lanes").is_dir():
+    if (run_root / "lanes").is_dir() or (run_root / "modular_r4" / "sections").is_dir():
         rows = collect_full_run_section_status(run_root, repo_root=repo_root)
     elif (run_root / "x3_disposition.json").is_file() or section_id:
         rows = [
@@ -357,27 +364,34 @@ def _count_sections(sections: list[dict[str, Any]]) -> dict[str, int]:
 
 def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, Any]:
     result = result or {}
+    result_pass = str(result.get("decisive_status") or "").upper() == "PASS" or (
+        result.get("exit_code") == 0 and result.get("all_lanes_authorized") is True
+    )
     terminal = _load_json(run_root / "terminal_ret_packet.json")
     terminal_payload = terminal.get("payload") if isinstance(terminal.get("payload"), dict) else {}
     exhaust = _load_json(run_root / "runtime_exhaust_bundle.json")
     exhaust_payload = exhaust.get("payload") if isinstance(exhaust.get("payload"), dict) else {}
     proof_gate = _load_json(run_root / "integrated_product_proof_gate_result.json")
+    terminal_fault = "" if result_pass else str(terminal_payload.get("l2_fault") or "")
     return {
-        "exit_status": result.get("exit_status") or ("error" if terminal_payload.get("l2_fault") else "unknown"),
-        "execution_status": result.get("execution_status") or ("failed" if terminal_payload.get("l2_fault") else "unknown"),
-        "outcome_authorized": bool(result.get("outcome_authorized")),
+        "exit_status": result.get("exit_status") or ("success" if result_pass else "error" if terminal_fault else "unknown"),
+        "execution_status": result.get("execution_status") or ("completed" if result_pass else "failed" if terminal_fault else "unknown"),
+        "outcome_authorized": bool(result.get("outcome_authorized") or result_pass),
+        "decisive_status": result.get("decisive_status") or "",
+        "all_lanes_authorized": result.get("all_lanes_authorized"),
         "x3_disposition": (
             result.get("x3_disposition")
+            or ("X3_ALLOW" if result_pass else "")
             or terminal_payload.get("x3_disposition")
             or exhaust_payload.get("x3_disposition")
             or ""
         ),
-        "fault": result.get("fault") or terminal_payload.get("l2_fault") or "",
+        "fault": result.get("fault") or (terminal_fault if not result_pass else ""),
         "run_id": result.get("run_id") or terminal_payload.get("run_id") or "",
         "request_id": result.get("request_id") or terminal_payload.get("request_id") or "",
         "proof_gate_status": proof_gate.get("status") or "",
         "proof_classification": proof_gate.get("proof_classification") or "",
-        "decisive_reason": proof_gate.get("decisive_reason") or "",
+        "decisive_reason": proof_gate.get("decisive_reason") or result.get("failure_reason") or "",
     }
 
 
@@ -426,6 +440,11 @@ def _root_cause(section: dict[str, Any]) -> str:
             "Visible content can be rendered before every term or claim has source-fact IDs, "
             "graph lineage, and claim-ledger coverage."
         )
+    if "provider capability" in classification:
+        return (
+            "The Anthropic Messages API request included a model-incompatible temperature field "
+            "after the generation model changed to a no-temperature Sonnet 5 family model."
+        )
     if "pre-run" in classification:
         return (
             "The lane dependency graph allows a downstream lane to be scheduled without an "
@@ -463,6 +482,13 @@ def _implementation_plan(section: dict[str, Any]) -> list[str]:
             "Change the section enrichment step so selected visible terms are emitted only with canonical source_fact_ids and graph lineage.",
             "Add a pre-display validation guard that blocks rendering when any visible claim lacks lineage or per-term ledger coverage.",
             "Add a regression fixture that rejects ungrounded terms and accepts the same terms only when backed by source facts and graph paths.",
+        ]
+    if "provider capability" in classification:
+        return [
+            "Centralize provider request capability checks for Anthropic model families before any HTTP payload is serialized.",
+            "Omit temperature from Claude Sonnet 5 generation, selector, and judge payloads while preserving it for older supported Anthropic models.",
+            "Persist the exact provider HTTP error into lane pre-run failure receipts and mandatory RCA evidence.",
+            "Add regression tests that prove Sonnet 5 payloads omit temperature and the run ledger surfaces provider capability errors.",
         ]
     if "pre-run" in classification:
         return [
@@ -681,6 +707,39 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                 ),
             ],
         }
+    if "provider capability" in classification:
+        pre_run = _pre_run_reason(section)
+        return {
+            "dominant_cause": "The selected Anthropic model rejected a request field that the transport still emitted unconditionally.",
+            "retry_recoverability": "NONE",
+            "retry_recoverability_reason": "Repeating the same request cannot recover while the serialized payload contains the deprecated temperature field.",
+            "allocation": [
+                _allocation_row(
+                    domain="Provider capability contract",
+                    causal_role="PRIMARY",
+                    root_cause_link=pre_run or "Anthropic returned HTTP 400 for deprecated temperature.",
+                    work_share="55%",
+                    evidence_refs=["self_consistency_paths.json", "provider_request.json"],
+                    required_work="Sanitize Anthropic payloads by model capability before sending HTTP requests.",
+                ),
+                _allocation_row(
+                    domain="Model pin / provider profile",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="The generation model changed to Claude Sonnet 5 without updating transport capability rules.",
+                    work_share="25%",
+                    evidence_refs=["apps_rg/config/provider_profiles.yaml", "config/model_catalog.json"],
+                    required_work="Keep provider profile model changes paired with transport capability tests.",
+                ),
+                _allocation_row(
+                    domain="Observability / RCA reporting",
+                    causal_role="DETECTION",
+                    root_cause_link="The no-candidate selector error must carry the first provider HTTP error.",
+                    work_share="20%",
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON, "integrated_lane_pre_run_failure.json"],
+                    required_work="Propagate first provider failure details into mandatory run RCA records.",
+                ),
+            ],
+        }
     if "pre-run" in classification:
         pre_run = _pre_run_reason(section)
         return {
@@ -865,6 +924,8 @@ def _recommended_action(section: dict[str, Any]) -> str:
         return "Implement the evidence-bound specificity plan; do not rely on text-only regeneration."
     if "evidence mapping" in classification:
         return "Implement the evidence-mapping plan; do not accept visible claims without lineage."
+    if "provider capability" in classification:
+        return "Implement the provider-capability payload fix before rerunning Anthropic-backed lanes."
     if "pre-run" in classification:
         return "Implement the dependency-token plan before scheduling the dependent lane."
     if section_id == FINAL_AGGREGATION_LANE:
@@ -986,7 +1047,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
     failed_count = counts["blocked"] + counts["pre_run_blocked"] + counts["not_run"]
-    if summary.get("outcome_authorized"):
+    authorized = bool(summary.get("outcome_authorized"))
+    if authorized:
         answer = "The run reached an authorized product outcome. Preserve the generated outputs and review the run ledger for section and judge proof."
     elif failed_count:
         answer = (
@@ -1012,8 +1074,8 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         "|---|---|",
         f"| Did real generation run? | `{counts['ran_real_llm']}` section(s) reported `REAL_LLM`. |",
         f"| Was a final product authorized? | `{summary.get('outcome_authorized')}` |",
-        f"| What blocked the run? | `{_markdown_table_escape(summary.get('fault') or summary.get('decisive_reason') or 'section gates / aggregation')}` |",
-        f"| Primary decision | `Fix targeted blockers and rerun; do not weaken X2/X3 gates.` |",
+        f"| What blocked the run? | `{_markdown_table_escape('None - all required sections and final aggregation are product-authorized' if authorized else summary.get('fault') or summary.get('decisive_reason') or 'section gates / aggregation')}` |",
+        f"| Primary decision | `{_markdown_table_escape('Preserve outputs and review evidence ledgers; no blocker remediation required.' if authorized else 'Fix targeted blockers and rerun; do not weaken X2/X3 gates.')}` |",
         "",
         "## Run Scorecard",
         "",
@@ -1024,7 +1086,11 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
         x3 = str(section.get("x3_code") or "")
         bucket = str(section.get("status_bucket") or "")
         if x3 == "X3_ALLOW":
-            interp = "Usable candidate content; still subject to whole-run assembly."
+            interp = (
+                "Authorized final assembly output."
+                if section.get("section") == "final_resume_aggregation"
+                else "Usable candidate content; product-authorized for this run."
+            )
         elif bucket == "pre_run_blocked":
             interp = "Did not become eligible because an upstream dependency failed."
         elif bucket == "not_run":
@@ -1054,9 +1120,14 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
             for item in _validated_plan_items(finding):
                 lines.append(f"    - {item}")
     lines.extend(["", "## Recommended Next Move", ""])
-    lines.append("1. Fix the P0 blocker sections named above.")
-    lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
-    lines.append("3. Treat final assembly as valid only when every required section is product-authorized.")
+    if authorized:
+        lines.append("1. Preserve the generated output package and run evidence.")
+        lines.append("2. Review the mandatory ledger and section-status table for audit details.")
+        lines.append("3. Treat future edits as new changes requiring the same X2/X3 gates.")
+    else:
+        lines.append("1. Fix the P0 blocker sections named above.")
+        lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
+        lines.append("3. Treat final assembly as valid only when every required section is product-authorized.")
     lines.extend(["", "## Evidence Map", ""])
     lines.append(f"- Mandatory run ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}`")
     lines.append(f"- Machine-readable ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}`")

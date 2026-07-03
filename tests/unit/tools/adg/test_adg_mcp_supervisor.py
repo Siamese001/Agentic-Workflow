@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 import json
 import os
 from pathlib import Path
@@ -166,6 +167,124 @@ def test_transport_status_open_requires_authoritative_heartbeat_and_callable_pro
     assert result["callable_proof"]["callable"] is True
     assert result["proof_pid_matches_heartbeat"] is True
     assert result["open"] is True
+
+
+def test_transport_status_accepts_fresh_same_session_file_proof(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    adg_dir = tmp_path / "artifacts" / "adg"
+    _write_snapshot(adg_dir)
+    heartbeat_dir = tmp_path / "hb"
+    heartbeat_dir.mkdir()
+    proof_path = tmp_path / "proof.json"
+    monkeypatch.setenv("ADG_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+    monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+    monkeypatch.delenv(supervisor.CALLABLE_PROOF_ENV, raising=False)
+    monkeypatch.delenv(supervisor.ATTACHED_PID_ENV, raising=False)
+    monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
+    marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
+    marker_path.write_text(f"{time.time():.3f}:{os.getpid()}\n", encoding="utf-8")
+    supervisor.write_callable_proof(
+        tool="adg_process_identity",
+        pid=os.getpid(),
+        evidence='{"status":"ok"}',
+        session_id="session-a",
+        proof_path=proof_path,
+        repo_root=tmp_path,
+    )
+
+    result = supervisor.transport_status(
+        state_path=tmp_path / "missing.json",
+        proof_path=proof_path,
+        session_id="session-a",
+    )
+
+    assert result["status"] == "open"
+    assert result["callable_proof"]["selected_source"] == "file"
+    assert result["callable_proof"]["file_proof"]["session_match"] is True
+    assert result["open"] is True
+
+
+def test_transport_status_rejects_file_proof_for_wrong_session(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    adg_dir = tmp_path / "artifacts" / "adg"
+    _write_snapshot(adg_dir)
+    heartbeat_dir = tmp_path / "hb"
+    heartbeat_dir.mkdir()
+    proof_path = tmp_path / "proof.json"
+    monkeypatch.setenv("ADG_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+    monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+    monkeypatch.delenv(supervisor.CALLABLE_PROOF_ENV, raising=False)
+    monkeypatch.delenv(supervisor.ATTACHED_PID_ENV, raising=False)
+    monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
+    marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
+    marker_path.write_text(f"{time.time():.3f}:{os.getpid()}\n", encoding="utf-8")
+    supervisor.write_callable_proof(
+        tool="adg_process_identity",
+        pid=os.getpid(),
+        evidence='{"status":"ok"}',
+        session_id="session-a",
+        proof_path=proof_path,
+        repo_root=tmp_path,
+    )
+
+    result = supervisor.transport_status(
+        state_path=tmp_path / "missing.json",
+        proof_path=proof_path,
+        session_id="session-b",
+    )
+
+    assert result["status"] == "callability_unproven"
+    assert result["callable_proof"]["file_proof"]["status"] == "session_mismatch"
+    assert result["open"] is False
+
+
+def test_transport_status_rejects_stale_file_proof(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    adg_dir = tmp_path / "artifacts" / "adg"
+    _write_snapshot(adg_dir)
+    heartbeat_dir = tmp_path / "hb"
+    heartbeat_dir.mkdir()
+    proof_path = tmp_path / "proof.json"
+    old_ts = (datetime.now(timezone.utc) - timedelta(seconds=10)).isoformat()
+    monkeypatch.setenv("ADG_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("ADG_DIR", str(adg_dir))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+    monkeypatch.setenv(supervisor.CALLABLE_PROOF_MAX_AGE_SECONDS_ENV, "1")
+    monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+    monkeypatch.delenv(supervisor.CALLABLE_PROOF_ENV, raising=False)
+    monkeypatch.delenv(supervisor.ATTACHED_PID_ENV, raising=False)
+    monkeypatch.setattr(mcp_heartbeat, "_HEARTBEAT_DIR", heartbeat_dir)
+    marker_path = mcp_heartbeat._heartbeat_path(supervisor.ADG_SERVER_MARKERS[0])
+    marker_path.write_text(f"{time.time():.3f}:{os.getpid()}\n", encoding="utf-8")
+    supervisor.write_callable_proof(
+        tool="adg_process_identity",
+        pid=os.getpid(),
+        evidence='{"status":"ok"}',
+        session_id="session-a",
+        proof_path=proof_path,
+        repo_root=tmp_path,
+        proved_at=old_ts,
+    )
+
+    result = supervisor.transport_status(
+        state_path=tmp_path / "missing.json",
+        proof_path=proof_path,
+        session_id="session-a",
+    )
+
+    assert result["status"] == "callability_unproven"
+    assert result["callable_proof"]["file_proof"]["status"] == "stale_file_proof"
+    assert result["open"] is False
 
 
 def test_transport_status_healthy_proof_with_dead_pid_is_not_open(
