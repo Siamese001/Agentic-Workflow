@@ -88,19 +88,29 @@ def test_required_mcp_protocol_gate_passes_when_script_exits_zero(monkeypatch, t
     gate_path = tmp_path / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
     gate_path.parent.mkdir(parents=True)
     gate_path.write_text("", encoding="utf-8")
+    captured: dict[str, object] = {}
 
     class Proc:
         returncode = 0
         stdout = ""
         stderr = "[required_mcp_gate] PASS"
 
-    monkeypatch.setattr(mod.subprocess, "run", lambda *args, **kwargs: Proc())
+    def fake_run(*args, **kwargs):
+        captured["args"] = args
+        captured["kwargs"] = kwargs
+        return Proc()
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
 
     check = mod._check_required_mcp_protocol_gate(tmp_path)
 
     assert check.status == "PASS"
     assert check.id == "mcp.required_protocol_gate"
     assert "initialize/tools-list" in check.summary
+    assert (
+        captured["kwargs"]["env"]["REQUIRED_MCP_GATE_DISABLE_REPAIR_BYPASS"]
+        == "1"
+    )
 
 
 def test_required_mcp_protocol_gate_fails_when_script_exits_nonzero(
@@ -124,8 +134,13 @@ def test_required_mcp_protocol_gate_fails_when_script_exits_nonzero(
     assert "memory connection closed" in check.detail
 
 
-def test_default_required_callable_routes_cover_core_only() -> None:
-    assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == ("memory", "GitKraken", "adg_sqlite")
+def test_default_required_callable_routes_cover_core_and_vector() -> None:
+    assert mod.DEFAULT_REQUIRED_CALLABLE_ROUTES == (
+        "memory",
+        "GitKraken",
+        "adg_sqlite",
+        "vector_db",
+    )
 
 
 def test_docs_only_mode_omits_default_callable_routes_and_allows_adg_fallback() -> None:
@@ -315,7 +330,10 @@ def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_pat
     assert any(check["id"] == "mcp.required_protocol_gate" for check in report["checks"])
 
 
-def test_protocol_gate_pass_suppresses_legacy_route_failures(monkeypatch, tmp_path: Path) -> None:
+def test_protocol_gate_pass_does_not_suppress_route_callability_failures(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
     for path in (
         "docs/codex-primary-execution.md",
         "scripts/governance/verify_codex_primary.py",
@@ -354,14 +372,13 @@ def test_protocol_gate_pass_suppresses_legacy_route_failures(monkeypatch, tmp_pa
 
     report = mod.build_readiness_report(tmp_path)
 
-    assert report["status"] == "PASS"
-    assert not any(
+    assert report["status"] == "FAIL"
+    assert any(
         check["id"] in {"mcp.memory", "mcp.GitKraken", "mcp.adg_sqlite"}
         and check["status"] == "FAIL"
         for check in report["checks"]
     )
-    route_contract = next(check for check in report["checks"] if check["id"] == "mcp.route_contract")
-    assert route_contract["status"] == "PASS"
+    assert not any(check["id"] == "mcp.route_contract" for check in report["checks"])
 
 
 def test_searxng_check_passes_when_report_ready(monkeypatch) -> None:

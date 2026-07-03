@@ -44,6 +44,8 @@ _EXACT_PLACEHOLDER_RE = re.compile(r"\A\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}\Z
 # Each row: (server_id, use_for, example_tools, notes, skill)
 # `skill` is the slug under .codex/skills/<slug>/ that documents the
 # canonical routing/usage for this MCP. Empty string = no dedicated skill yet.
+# Rows may include dormant/restorable MCPs so compatibility notes can keep
+# metadata close by; AGENTS.md renders only server IDs present in root .mcp.json.
 server_rows = [
     (
         "GitKraken",
@@ -170,6 +172,21 @@ def validate_config(data: dict[str, Any]) -> list[str]:
         if env is not None and not isinstance(env, dict):
             issues.append(f"Server '{name}' env must be an object when present.")
     return issues
+
+
+def _live_server_rows(data: dict[str, Any] | None = None) -> list[tuple[str, str, str, str, str]]:
+    """Return metadata rows for MCP servers that are live in root .mcp.json."""
+    if data is None:
+        data = load_repo_config()
+    servers = data.get("mcpServers", {}) or {}
+    if not isinstance(servers, dict):
+        return []
+    live_ids = {
+        server_id
+        for server_id, cfg in servers.items()
+        if isinstance(cfg, dict) and not cfg.get("disabled")
+    }
+    return [row for row in server_rows if row[0] in live_ids]
 
 
 def _repo_root_for_toml(root: Path = repo_root) -> str:
@@ -358,7 +375,7 @@ def generate_mcp_quick_reference_block() -> str:
     lines.append("")
     lines.append("| Server ID | Use For | Example Tools | Notes | Skill |")
     lines.append("|---|---|---|---|---|")
-    for sid, use_for, tools, notes, skill in server_rows:
+    for sid, use_for, tools, notes, skill in _live_server_rows():
         skill_cell = f"[`{skill}`](.codex/skills/{skill}/SKILL.md)" if skill else "—"
         lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} | {skill_cell} |")
     lines.append("")
@@ -548,7 +565,7 @@ def sync_agents_md(agents_path: Path = agents_md) -> bool:
     """Refresh all autogen blocks in AGENTS.md.
 
     Blocks refreshed:
-      - MCP-QUICK-REFERENCE (from mcp.json via server_rows)
+      - MCP-QUICK-REFERENCE (live .mcp.json servers via server_rows metadata)
       - NOTION-MAP         (from config/notion_databases.yaml)
 
     The surrounding `## MCP Quick Reference` heading + intro paragraph are NOT

@@ -55,6 +55,17 @@ def test_validate_config_accepts_repo_data() -> None:
     assert sync_mod.validate_config(_repo_data()) == []
 
 
+def test_quick_reference_renders_only_live_repo_servers(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sync_mod, "load_repo_config", lambda: _repo_data())
+
+    block = sync_mod.generate_mcp_quick_reference_block()
+
+    assert "| `GitKraken` |" in block
+    assert "| `context7` |" in block
+    assert "| `otel_mcp` |" not in block
+    assert "| `pytest_mcp` |" not in block
+
+
 def test_sync_global_config_writes_alternate_path(tmp_path: Path) -> None:
     target = tmp_path / "editor.toml"
 

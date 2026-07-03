@@ -5,7 +5,7 @@ Regenerates each autogen block from its SSOT source and compares byte-for-byte
 against the current content in AGENTS.md. Any drift fails the check.
 
 Blocks validated:
-  - MCP-QUICK-REFERENCE  (SSOT: .mcp.json + server_rows)
+  - MCP-QUICK-REFERENCE  (SSOT: live .mcp.json servers + server_rows metadata)
   - NOTION-MAP           (SSOT: config/notion_databases.yaml)
 
 Usage:

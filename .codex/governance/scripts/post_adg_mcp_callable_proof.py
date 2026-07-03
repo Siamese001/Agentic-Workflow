@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Record active-session ADG MCP callability proof after successful tool use.
+"""Record active-session MCP callability proof after successful tool use.
 
 PostToolUse is the only native hook point that sees a completed MCP call and its
-response. This script records a short-lived proof file for the ADG supervisor
-only after a successful ADG SQLite MCP health/runtime/process-identity call. It
-never blocks: an error here must not wedge the Codex hook host.
+response. This script records current-epoch proof for required MCP routes after
+a successful active Codex MCP call. It also keeps the legacy ADG supervisor
+proof file for ADG health/runtime/process-identity calls.
+
+It never blocks: an error here must not wedge the Codex hook host.
 """
 
 from __future__ import annotations
@@ -20,7 +22,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-_PROOF_TOOLS = {"adg_health", "adg_runtime_info", "adg_process_identity"}
+_GOV_DIR = _REPO_ROOT / ".codex" / "governance" / "scripts"
+if str(_GOV_DIR) not in sys.path:
+    sys.path.insert(0, str(_GOV_DIR))
+
+from mcp_callability_epoch import canonical_server_id, write_callability_proof
+
+_ADG_SUPERVISOR_PROOF_TOOLS = {"adg_health", "adg_runtime_info", "adg_process_identity"}
+_REQUIRED_ROUTE_SERVERS = {"adg_sqlite", "memory", "vector_db", "GitKraken"}
 _FAILURE_MARKERS = (
     "transport closed",
     "tool call error",
@@ -77,7 +86,7 @@ def _tool_identity(payload: dict[str, Any]) -> tuple[str, str]:
         or ""
     )
     inferred_server, inferred_tool = _split_mcp_tool_name(raw_tool)
-    return server or inferred_server, tool or inferred_tool
+    return canonical_server_id(server or inferred_server), tool or inferred_tool
 
 
 def _tool_response(payload: dict[str, Any]) -> Any:
@@ -164,9 +173,55 @@ def _pid_from_heartbeat() -> int | None:
     return None
 
 
+def _record_route_proof(
+    *,
+    server: str,
+    tool: str,
+    response: Any,
+    payload: dict[str, Any],
+    pid: int | None,
+) -> Path | None:
+    if server not in _REQUIRED_ROUTE_SERVERS or not tool:
+        return None
+    return write_callability_proof(
+        server_id=server,
+        tool=tool,
+        evidence=_response_text(response),
+        repo_root=_REPO_ROOT,
+        session_id=_session_id(payload),
+        pid=pid,
+    )
+
+
+def _record_adg_supervisor_proof(
+    *,
+    server: str,
+    tool: str,
+    response: Any,
+    payload: dict[str, Any],
+    pid: int | None,
+) -> Path | None:
+    if server != "adg_sqlite" or tool not in _ADG_SUPERVISOR_PROOF_TOOLS:
+        return None
+    resolved_pid = pid
+    if resolved_pid is None:
+        resolved_pid = _pid_from_heartbeat()
+    if resolved_pid is None:
+        return None
+    from tools.adg.mcp import supervisor
+
+    return supervisor.write_callable_proof(
+        tool=tool,
+        pid=resolved_pid,
+        evidence=_response_text(response),
+        session_id=_session_id(payload),
+        repo_root=_REPO_ROOT,
+    )
+
+
 def maybe_record_proof(payload: dict[str, Any]) -> Path | None:
     server, tool = _tool_identity(payload)
-    if server != "adg_sqlite" or tool not in _PROOF_TOOLS:
+    if server not in _REQUIRED_ROUTE_SERVERS:
         return None
 
     response = _tool_response(payload)
@@ -174,21 +229,21 @@ def maybe_record_proof(payload: dict[str, Any]) -> Path | None:
         return None
 
     pid = _pid_from_response(response)
-    if pid is None:
-        pid = _pid_from_heartbeat()
-    if pid is None:
-        return None
-
-    evidence = _response_text(response)
-    from tools.adg.mcp import supervisor
-
-    return supervisor.write_callable_proof(
+    route_path = _record_route_proof(
+        server=server,
         tool=tool,
+        response=response,
+        payload=payload,
         pid=pid,
-        evidence=evidence,
-        session_id=_session_id(payload),
-        repo_root=_REPO_ROOT,
     )
+    adg_path = _record_adg_supervisor_proof(
+        server=server,
+        tool=tool,
+        response=response,
+        payload=payload,
+        pid=pid,
+    )
+    return adg_path or route_path
 
 
 def main() -> int:

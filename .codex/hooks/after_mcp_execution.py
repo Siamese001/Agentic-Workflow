@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""afterMcpExecution — PostToolUse relay for MCP-specific completion capture.
+"""afterMcpExecution - PostToolUse relay for MCP-specific completion capture.
 
-Currently records active-session ADG SQLite MCP callability proof after a
-successful health/runtime/process-identity call. PostToolUse hooks never block.
+Records active-session MCP callability proof after successful required-route
+MCP calls. PostToolUse hooks never block.
 """
 
 from __future__ import annotations

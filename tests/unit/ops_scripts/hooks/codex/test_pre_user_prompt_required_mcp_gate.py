@@ -28,6 +28,10 @@ def _payload(prompt: str = "refactor this feature") -> str:
     return json.dumps({"session_id": "s1", "prompt": prompt})
 
 
+def _callability_green(_servers: tuple[str, ...]) -> list:
+    return []
+
+
 def test_all_enabled_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> None:
     config = _write_config(
         tmp_path / ".mcp.json",
@@ -45,7 +49,16 @@ def test_all_enabled_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> 
         seen.append((spec.server_id, spec.transport))
         return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
 
-    assert gate.run_gate(_payload(), config_path=config, probe_func=probe, timeout=0.1) == 0
+    assert (
+        gate.run_gate(
+            _payload(),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 0
+    )
 
     assert sorted(seen) == [
         ("adg_sqlite", "stdio"),
@@ -69,16 +82,65 @@ def test_any_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> Non
             return gate.ProbeResult(spec.server_id, "fail", "connection closed", spec.transport)
         return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
 
-    assert gate.run_gate(_payload(), config_path=config, probe_func=probe, timeout=0.1) == 2
+    assert (
+        gate.run_gate(
+            _payload(),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 2
+    )
     err = capsys.readouterr().err
     assert "BLOCKED" in err
     assert "memory" in err
     assert "connection closed" in err
 
 
+def test_protocol_green_still_blocks_when_callability_route_red(
+    tmp_path: Path,
+    capsys,
+    monkeypatch,
+) -> None:
+    config = _write_config(tmp_path / ".mcp.json", {"memory": {"command": "python"}})
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.CALLABILITY_SERVER_LIST_ENV, raising=False)
+
+    def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
+        return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
+
+    def callability_check(required_servers: tuple[str, ...]) -> list[gate.ProbeResult]:
+        assert required_servers == gate.DEFAULT_CALLABILITY_REQUIRED_SERVERS
+        assert "vector_db" in required_servers
+        return [
+            gate.ProbeResult(
+                "memory",
+                "fail",
+                "classification=PROCESS_ONLY",
+                "codex-route",
+            )
+        ]
+
+    assert (
+        gate.run_gate(
+            _payload(),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=callability_check,
+            timeout=0.1,
+        )
+        == 2
+    )
+    err = capsys.readouterr().err
+    assert "memory" in err
+    assert "classification=PROCESS_ONLY" in err
+
+
 def test_mcp_repair_prompt_allows_without_probing(tmp_path: Path, monkeypatch, capsys) -> None:
     config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.DISABLE_REPAIR_BYPASS_ENV, raising=False)
 
     def probe(_spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
         raise AssertionError("repair prompts must not require a green transport first")
@@ -93,6 +155,60 @@ def test_mcp_repair_prompt_allows_without_probing(tmp_path: Path, monkeypatch, c
         == 0
     )
     assert "repair/RCA prompt" in capsys.readouterr().err
+
+
+def test_mcp_green_health_words_do_not_bypass_without_repair_intent(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.DISABLE_REPAIR_BYPASS_ENV, raising=False)
+
+    def probe(spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
+        return gate.ProbeResult(spec.server_id, "fail", "transport closed", spec.transport)
+
+    assert (
+        gate.run_gate(
+            _payload("prove MCP fleet green and healthy"),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 2
+    )
+    err = capsys.readouterr().err
+    assert "BLOCKED" in err
+    assert "transport closed" in err
+
+
+def test_disable_repair_bypass_forces_probe_even_for_explicit_repair_prompt(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.setenv(gate.DISABLE_REPAIR_BYPASS_ENV, "1")
+
+    def probe(spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
+        return gate.ProbeResult(spec.server_id, "fail", "transport closed", spec.transport)
+
+    assert (
+        gate.run_gate(
+            _payload("MCP_REPAIR: repair MCP transport"),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 2
+    )
+    err = capsys.readouterr().err
+    assert "BLOCKED" in err
+    assert "transport closed" in err
 
 
 def test_missing_auth_passthrough_env_blocks_before_spawn(
@@ -134,7 +250,16 @@ def test_server_filter_env_limits_required_set(tmp_path: Path, monkeypatch) -> N
         seen.append(spec.server_id)
         return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
 
-    assert gate.run_gate(_payload(), config_path=config, probe_func=probe, timeout=0.1) == 0
+    assert (
+        gate.run_gate(
+            _payload(),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 0
+    )
     assert seen == ["memory"]
 
 

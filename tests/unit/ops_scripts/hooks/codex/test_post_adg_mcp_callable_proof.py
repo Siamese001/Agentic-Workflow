@@ -19,6 +19,7 @@ _spec = importlib.util.spec_from_file_location("post_adg_mcp_callable_proof", _S
 assert _spec and _spec.loader
 cap = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cap)
+import mcp_callability_epoch as epoch  # noqa: E402
 
 
 def test_records_process_identity_proof(monkeypatch, tmp_path: Path) -> None:
@@ -94,3 +95,56 @@ def test_ignores_non_proof_adg_tool(tmp_path: Path, monkeypatch) -> None:
     }
 
     assert cap.maybe_record_proof(payload) is None
+
+
+def test_records_memory_health_in_current_epoch_ledger(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(cap, "_REPO_ROOT", tmp_path)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="session-123", epoch_id="epoch-1")
+    payload = {
+        "session_id": "session-123",
+        "tool_name": "mcp__memory.memory_health",
+        "tool_response": {"status": "ok", "process": {"pid": os.getpid()}},
+    }
+
+    path = cap.maybe_record_proof(payload)
+
+    assert path == tmp_path / epoch.DEFAULT_LEDGER_RELATIVE_PATH
+    status = epoch.proof_status("memory", repo_root=tmp_path)
+    assert status["status"] == "healthy"
+    assert status["tool"] == "memory_health"
+    assert status["pid"] == os.getpid()
+
+
+def test_records_vector_health_without_pid_in_current_epoch_ledger(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(cap, "_REPO_ROOT", tmp_path)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="session-123", epoch_id="epoch-1")
+    payload = {
+        "session_id": "session-123",
+        "tool_name": "mcp__vector_db.health_snapshot",
+        "tool_response": {"semantic_ready": True},
+    }
+
+    path = cap.maybe_record_proof(payload)
+
+    assert path == tmp_path / epoch.DEFAULT_LEDGER_RELATIVE_PATH
+    status = epoch.proof_status("vector_db", repo_root=tmp_path)
+    assert status["status"] == "healthy"
+    assert status["tool"] == "health_snapshot"
+
+
+def test_does_not_record_generic_route_proof_without_session_epoch(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(cap, "_REPO_ROOT", tmp_path)
+    payload = {
+        "session_id": "session-123",
+        "tool_name": "mcp__memory.memory_health",
+        "tool_response": {"status": "ok"},
+    }
+
+    assert cap.maybe_record_proof(payload) is None
+    assert not (tmp_path / epoch.DEFAULT_LEDGER_RELATIVE_PATH).exists()

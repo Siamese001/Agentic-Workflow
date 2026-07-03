@@ -22,6 +22,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 PRIMARY_ROOT = Path(os.environ.get("AGENTIC_PRIMARY_ROOT", r"C:/Git/Agentic-Workflow-FRESH"))
 PLACEHOLDER_START = "$" + "{"
+CODEX_GOVERNANCE_SCRIPTS = ROOT / ".codex" / "governance" / "scripts"
+if str(CODEX_GOVERNANCE_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(CODEX_GOVERNANCE_SCRIPTS))
+
+import mcp_callability_epoch
 
 
 SCRIPT_PATHS = [
@@ -233,11 +238,31 @@ def _load_route_contract(path: Path | None) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _callable_status(server_id: str) -> str:
+def _env_callable_status(server_id: str) -> str:
     value = os.environ.get(f"{CALLABLE_STATUS_ENV_PREFIX}{server_id.upper()}", "").strip().lower()
     if value in {"healthy", "closed_transport", "plugin_callable", "substitute_callable", "absent"}:
         return value
     return "absent"
+
+
+def _file_callable_status(server_id: str) -> dict[str, Any]:
+    try:
+        status = mcp_callability_epoch.proof_status(server_id, repo_root=ROOT)
+    except (OSError, RuntimeError, ValueError, TypeError) as exc:
+        return {
+            "server_id": server_id,
+            "status": "error",
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    return status
+
+
+def _callable_status(server_id: str) -> tuple[str, dict[str, Any]]:
+    value = _env_callable_status(server_id)
+    file_status = _file_callable_status(server_id)
+    if value == "absent" and file_status.get("status") == "healthy":
+        return "healthy", file_status
+    return value, file_status
 
 
 def _route_callable_status(route: dict[str, Any], *, trust_contract_proof: bool = False) -> str:
@@ -333,7 +358,7 @@ def build_route_evidence(
     for route in contract.get("routes", []):
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
-        callable_status = _callable_status(server_id)
+        callable_status, file_callability_proof = _callable_status(server_id)
         if callable_status == "absent":
             callable_status = _route_callable_status(
                 route,
@@ -350,6 +375,7 @@ def build_route_evidence(
             "process_count": process_state.get("process_count", 0),
             "route_owner": route.get("route_owner"),
             "w2_decision": route.get("w2_decision"),
+            "callability_proof": file_callability_proof,
         }
 
     return {

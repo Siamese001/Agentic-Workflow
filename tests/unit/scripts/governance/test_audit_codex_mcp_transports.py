@@ -10,6 +10,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
 
 import audit_codex_mcp_transports as mod  # noqa: E402
 import cleanup_duplicate_mcp_cohorts as cleanup  # noqa: E402
+import mcp_callability_epoch as epoch  # noqa: E402
 
 
 def _route(server_id: str, selected: str, fallback_key: str = "raw_mcp_unavailable") -> dict:
@@ -92,6 +93,51 @@ def test_contract_healthy_proof_can_be_explicitly_trusted(monkeypatch) -> None:
 
     assert evidence["servers"]["memory"]["classification"] == "CALLABLE"
     assert evidence["servers"]["memory"]["callable_status"] == "healthy"
+
+
+def test_current_epoch_file_proof_makes_route_callable(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(mod, "ROOT", tmp_path)
+    monkeypatch.delenv("CODEX_MCP_CALLABLE_MEMORY", raising=False)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="memory",
+        tool="memory_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+    )
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+
+    evidence = mod.build_route_evidence(contract, {})
+
+    assert evidence["servers"]["memory"]["classification"] == "CALLABLE"
+    assert evidence["servers"]["memory"]["callable_status"] == "healthy"
+    assert evidence["servers"]["memory"]["callability_proof"]["epoch_id"] == "epoch-1"
+
+
+def test_stale_epoch_file_proof_does_not_make_route_callable(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(mod, "ROOT", tmp_path)
+    monkeypatch.delenv("CODEX_MCP_CALLABLE_MEMORY", raising=False)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="memory",
+        tool="memory_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+    )
+    epoch.epoch_path(tmp_path).write_text(
+        '{"schema_version":"codex-mcp-session-epoch/v1","epoch_id":"epoch-2"}',
+        encoding="utf-8",
+    )
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+
+    evidence = mod.build_route_evidence(contract, {})
+
+    assert evidence["servers"]["memory"]["classification"] == "HOST_MCP_REQUIRED"
+    assert evidence["servers"]["memory"]["callable_status"] == "absent"
+    assert evidence["servers"]["memory"]["callability_proof"]["status"] == "stale_epoch"
 
 
 def test_raw_mcp_callable_requires_process_presence() -> None:

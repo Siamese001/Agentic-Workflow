@@ -37,6 +37,9 @@ if str(GOV_DIR) not in sys.path:
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+GOVERNANCE_SCRIPTS = REPO_ROOT / "scripts" / "governance"
+if str(GOVERNANCE_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(GOVERNANCE_SCRIPTS))
 
 MCP_CONFIG = REPO_ROOT / ".mcp.json"
 LOG_PATH = REPO_ROOT / "artifacts" / "mcp" / "required_mcp_gate.jsonl"
@@ -44,33 +47,30 @@ DEFAULT_TIMEOUT_SEC = 30.0
 DEFAULT_MAX_WORKERS = 8
 
 BYPASS_ENV = "REQUIRED_MCP_GATE_BYPASS"
+DISABLE_REPAIR_BYPASS_ENV = "REQUIRED_MCP_GATE_DISABLE_REPAIR_BYPASS"
 SERVER_LIST_ENV = "REQUIRED_MCP_GATE_SERVERS"
+CALLABILITY_SERVER_LIST_ENV = "REQUIRED_MCP_GATE_CALLABILITY_SERVERS"
 TIMEOUT_ENV = "REQUIRED_MCP_GATE_TIMEOUT_SEC"
 MAX_WORKERS_ENV = "REQUIRED_MCP_GATE_MAX_WORKERS"
 
-_MCP_REPAIR_TERMS = (
-    "broken",
-    "callability",
-    "callable",
-    "closed",
-    "debug",
-    "down",
-    "failed",
-    "failure",
-    "fix",
-    "green",
-    "handshake",
-    "healthy",
-    "initialize",
-    "rca",
-    "recover",
-    "reconnect",
-    "regress",
-    "repair",
-    "restore",
-    "resume",
-    "transport",
-    "unavailable",
+DEFAULT_CALLABILITY_REQUIRED_SERVERS = ("memory", "GitKraken", "adg_sqlite", "vector_db")
+CALLABLE_ROUTE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
+
+_MCP_REPAIR_PHRASES = (
+    "/mcp-failure-rca",
+    "mcp_repair:",
+    "mcp repair:",
+    "repair mcp transport",
+    "repair mcp callability",
+    "fix mcp transport",
+    "fix mcp callability",
+    "debug mcp transport",
+    "debug mcp callability",
+    "mcp transport rca",
+    "mcp callability rca",
+    "mcp failure rca",
+    "restore mcp transport",
+    "reconnect mcp transport",
 )
 
 
@@ -101,6 +101,7 @@ class ProbeResult:
 
 
 ProbeFunc = Callable[[ProbeSpec, float], ProbeResult]
+CallabilityCheckFunc = Callable[[tuple[str, ...]], list[ProbeResult]]
 
 
 def _parse_positive_float(raw: str, default: float) -> float:
@@ -153,8 +154,12 @@ def _read_prompt(raw: str) -> str:
 
 
 def _is_mcp_repair_prompt(prompt: str) -> bool:
-    text = prompt.lower()
-    return "mcp" in text and any(term in text for term in _MCP_REPAIR_TERMS)
+    text = " ".join(prompt.lower().split())
+    return any(phrase in text for phrase in _MCP_REPAIR_PHRASES)
+
+
+def _repair_bypass_enabled() -> bool:
+    return os.environ.get(DISABLE_REPAIR_BYPASS_ENV) != "1"
 
 
 def _server_filter_from_env() -> set[str] | None:
@@ -162,6 +167,13 @@ def _server_filter_from_env() -> set[str] | None:
     if not raw:
         return None
     return {part.strip() for part in raw.split(",") if part.strip()}
+
+
+def _callability_servers_from_env() -> tuple[str, ...]:
+    raw = os.environ.get(CALLABILITY_SERVER_LIST_ENV)
+    if raw is None:
+        return DEFAULT_CALLABILITY_REQUIRED_SERVERS
+    return tuple(part.strip() for part in raw.split(",") if part.strip())
 
 
 def _load_enabled_specs(config_path: Path = MCP_CONFIG) -> list[ProbeSpec]:
@@ -500,6 +512,76 @@ def _run_probes(specs: list[ProbeSpec], timeout: float, probe_func: ProbeFunc) -
     return sorted(results, key=lambda result: result.server_id.lower())
 
 
+def _route_failure_reason(state: dict[str, Any] | None) -> str:
+    if not isinstance(state, dict):
+        return "route evidence absent"
+    parts = [
+        f"classification={state.get('classification') or 'absent'}",
+        f"callable_status={state.get('callable_status') or 'absent'}",
+        f"selected_route={state.get('selected_codex_route') or 'absent'}",
+        f"process_classification={state.get('process_classification') or 'absent'}",
+        f"process_count={state.get('process_count') or 0}",
+    ]
+    fallback = state.get("fallback_message_key")
+    if fallback:
+        parts.append(f"fallback={fallback}")
+    return "; ".join(parts)
+
+
+def _check_required_route_callability(required_servers: tuple[str, ...]) -> list[ProbeResult]:
+    if not required_servers:
+        return []
+    try:
+        import audit_codex_mcp_transports as audit
+    except Exception as exc:
+        return [
+            ProbeResult(
+                "mcp_route_contract",
+                "fail",
+                f"route audit import failed: {type(exc).__name__}: {exc}",
+                "codex-route",
+            )
+        ]
+    try:
+        report = audit.build_report()
+    except Exception as exc:
+        return [
+            ProbeResult(
+                "mcp_route_contract",
+                "fail",
+                f"route audit failed: {type(exc).__name__}: {exc}",
+                "codex-route",
+            )
+        ]
+
+    evidence = report.get("route_evidence", {})
+    if not isinstance(evidence, dict) or not evidence.get("available"):
+        return [
+            ProbeResult(
+                "mcp_route_contract",
+                "fail",
+                f"route evidence unavailable: {evidence.get('reason') if isinstance(evidence, dict) else 'missing'}",
+                "codex-route",
+            )
+        ]
+    servers = evidence.get("servers", {})
+    failures: list[ProbeResult] = []
+    for server_id in required_servers:
+        state = servers.get(server_id) if isinstance(servers, dict) else None
+        classification = str(state.get("classification", "")) if isinstance(state, dict) else ""
+        if classification in CALLABLE_ROUTE_CLASSIFICATIONS:
+            continue
+        failures.append(
+            ProbeResult(
+                server_id,
+                "fail",
+                _route_failure_reason(state),
+                "codex-route",
+            )
+        )
+    return failures
+
+
 def _print_failures(failures: list[ProbeResult]) -> None:
     print("[required_mcp_gate] BLOCKED: required Codex MCP transports are not green.", file=sys.stderr)
     for failure in failures:
@@ -519,6 +601,7 @@ def run_gate(
     *,
     config_path: Path = MCP_CONFIG,
     probe_func: ProbeFunc = probe_server,
+    callability_check_func: CallabilityCheckFunc = _check_required_route_callability,
     timeout: float | None = None,
 ) -> int:
     payload = _read_payload(raw)
@@ -529,7 +612,7 @@ def run_gate(
         return 0
     if not raw.strip():
         return 0
-    if _is_mcp_repair_prompt(prompt):
+    if _repair_bypass_enabled() and _is_mcp_repair_prompt(prompt):
         print(
             "[required_mcp_gate] MCP repair/RCA prompt detected; allowing recovery path.",
             file=sys.stderr,
@@ -560,6 +643,12 @@ def run_gate(
     if failures:
         _print_failures(failures)
         _append_receipt(payload, results, "block")
+        return 2
+
+    callability_failures = callability_check_func(_callability_servers_from_env())
+    if callability_failures:
+        _print_failures(callability_failures)
+        _append_receipt(payload, [*results, *callability_failures], "block")
         return 2
 
     summary = ", ".join(f"{result.server_id}:{result.tools_count}" for result in results)

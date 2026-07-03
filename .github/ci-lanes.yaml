@@ -28,7 +28,7 @@ workflows:
           - ".github/actions/**"
           - "ops_scripts/ci/**"
           - "tools/generate/**"
-        command: python ops_scripts/ci/check_mcp_sync_integrity.py
+        command: python ops_scripts/ci/check_mcp_sync_integrity.py && python ops_scripts/ci/check_agents_mcp_coverage.py && python ops_scripts/ci/check_agents_md_sync.py
       codex-adapter:
         match:
           - "AGENTS.md"

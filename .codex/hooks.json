@@ -162,7 +162,7 @@
             "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/after_mcp_execution.py\""
           }
         ],
-        "matcher": "mcp__adg_sqlite.*"
+        "matcher": "mcp__.*"
       }
     ],
     "Stop": [

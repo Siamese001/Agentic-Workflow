@@ -3,7 +3,7 @@
 
 Validates:
 1) Root `.mcp.json` (repo MCP SSOT) is structurally valid.
-2) AGENTS.md MCP Quick Reference matches `.codex/governance/scripts/sync_mcp_config.py` output.
+2) AGENTS.md MCP Quick Reference matches `.codex/governance/scripts/sync_mcp_config.py` output for live repo MCPs.
 3) Optional: compare a candidate mirror against the repo SSOT (`--check-global`).
 
 Usage:

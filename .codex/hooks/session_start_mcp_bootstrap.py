@@ -24,14 +24,36 @@ from typing import Any
 REPO_ROOT = Path(os.environ.get("AGENTIC_REPO_ROOT") or Path(__file__).resolve().parents[2])
 LOG_PATH = REPO_ROOT / "artifacts" / "mcp" / "session_start_mcp_bootstrap.jsonl"
 DEFAULT_REDIS_URL = "redis://localhost:6379/0"
+GOVERNANCE_SCRIPTS = REPO_ROOT / ".codex" / "governance" / "scripts"
+if str(GOVERNANCE_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(GOVERNANCE_SCRIPTS))
+
+from mcp_callability_epoch import write_restart_epoch
 
 
-def _drain_stdin() -> None:
+def _drain_stdin() -> str:
     try:
         if not sys.stdin.closed:
-            sys.stdin.read()
+            return sys.stdin.read()
     except OSError:
-        return
+        return ""
+    return ""
+
+
+def _session_id_from_raw(raw: str) -> str:
+    if not raw.strip():
+        return ""
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    for key in ("session_id", "sessionId"):
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
 
 
 def _repo_posix() -> str:
@@ -116,8 +138,13 @@ def _append_log(record: dict[str, Any]) -> None:
 
 
 def main() -> int:
-    _drain_stdin()
+    raw_stdin = _drain_stdin() or ""
     env = _prepare_env()
+    epoch = write_restart_epoch(
+        repo_root=REPO_ROOT,
+        session_id=_session_id_from_raw(raw_stdin),
+        source="SessionStart",
+    )
     python = sys.executable
     steps = [
         _run_step(
@@ -194,6 +221,10 @@ def main() -> int:
         "schema_version": "session-start-mcp-bootstrap/v1",
         "generated_at": datetime.now(UTC).isoformat(),
         "repo_root": str(REPO_ROOT),
+        "mcp_callability_epoch": {
+            "epoch_id": epoch.get("epoch_id"),
+            "session_id": epoch.get("session_id"),
+        },
         "steps": steps,
     }
     _append_log(record)
