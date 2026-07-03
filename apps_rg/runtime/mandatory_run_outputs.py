@@ -404,7 +404,193 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
 
 
 def _final_resume_output_required(run_root: Path, summary: dict[str, Any]) -> bool:
-    return bool(summary.get("outcome_authorized")) or (run_root / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
+    return True
+
+
+def _load_provider_call_records(run_root: Path) -> dict[str, dict[str, Any]]:
+    candidates = (
+        run_root / "modular_r4" / "section_provider_calls.json",
+        run_root / "section_provider_calls.json",
+    )
+    for path in candidates:
+        doc = _load_json(path)
+        records = doc.get("records")
+        if not isinstance(records, list):
+            continue
+        out: dict[str, dict[str, Any]] = {}
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            lane = str(record.get("section_lane") or record.get("lane") or "").strip()
+            if lane:
+                out[lane] = record
+        if out:
+            return out
+    return {}
+
+
+def _cache_preflight(run_root: Path) -> dict[str, str]:
+    doc = _load_json(run_root / "whole_run_cache_preflight.json")
+    return {
+        "r1a": str(doc.get("r1a_preflight_status") or "NOT_OBSERVED"),
+        "r1b": str(doc.get("r1b_preflight_status") or "NOT_OBSERVED"),
+    }
+
+
+def _section_by_id(sections: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    return {str(section.get("section") or ""): section for section in sections}
+
+
+def _judge_model_score_cell(section: dict[str, Any]) -> str:
+    judges = section.get("judges") if isinstance(section.get("judges"), list) else []
+    cells: list[str] = []
+    for judge in judges:
+        if not isinstance(judge, dict):
+            continue
+        provider = str(judge.get("provider") or judge.get("provider_key") or "judge")
+        model = str(judge.get("model") or "NOT_OBSERVED")
+        score = _score_text(judge.get("score"))
+        threshold = _score_text(judge.get("threshold"))
+        passed = "PASS" if judge.get("pass") is True else "FAIL" if judge.get("pass") is False else "UNKNOWN"
+        cells.append(f"{provider} / {model}: {score} vs {threshold} {passed}")
+    return "; ".join(cells) if cells else "NOT_OBSERVED"
+
+
+def _judge_retry_fallback_cell(section: dict[str, Any]) -> str:
+    issues = section.get("judge_issue_summary") if isinstance(section.get("judge_issue_summary"), dict) else {}
+    cells: list[str] = []
+    for key in ("blocked_judges", "mocked_judges", "soft_failed_judges", "decisive_judge_failures"):
+        values = issues.get(key)
+        if isinstance(values, list) and values:
+            cells.append(f"{key}={','.join(str(v) for v in values)}")
+    return "; ".join(cells) if cells else "NOT_OBSERVED"
+
+
+def _provider_cell(record: dict[str, Any], key: str, *, default: str = "NOT_OBSERVED") -> str:
+    value = str(record.get(key) or "").strip()
+    return value or default
+
+
+def _pooling_selector_cell(section_id: str) -> str:
+    if section_id == "competencies" or section_id.endswith("_bullets"):
+        return "NOT_OBSERVED"
+    return "N/A"
+
+
+def _secondary_provider_cell(record: dict[str, Any]) -> str:
+    provider = _provider_cell(record, "secondary_provider", default="")
+    return provider or "NOT_OBSERVED"
+
+
+def _generation_ordered_section_ids(
+    sections: list[dict[str, Any]],
+    provider_records: dict[str, dict[str, Any]],
+) -> list[str]:
+    def candidate_index(lane: str) -> int:
+        raw = provider_records[lane].get("candidate_index")
+        try:
+            return int(raw)
+        except (TypeError, ValueError):
+            return 999
+
+    ordered = sorted(
+        provider_records,
+        key=candidate_index,
+    )
+    for section in sections:
+        lane = str(section.get("section") or "")
+        if lane and lane not in ordered:
+            ordered.append(lane)
+    return ordered
+
+
+def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    provider_records = _load_provider_call_records(run_root)
+    cache = _cache_preflight(run_root)
+    by_id = _section_by_id(sections)
+    rows: list[dict[str, Any]] = []
+    for idx, section_id in enumerate(_generation_ordered_section_ids(sections, provider_records), 1):
+        section = by_id.get(section_id, {})
+        record = provider_records.get(section_id, {})
+        l6 = section.get("l6") if isinstance(section.get("l6"), dict) else {}
+        rows.append(
+            {
+                "order": idx,
+                "section": section_id,
+                "r1a": cache["r1a"],
+                "r1b": cache["r1b"],
+                "lane_record": "YES" if record or section else "NO",
+                "provider_call_attempted": record.get("provider_call_attempted")
+                if "provider_call_attempted" in record
+                else "NOT_OBSERVED",
+                "primary_provider": _provider_cell(record, "provider_profile"),
+                "primary_model_observed": _provider_cell(record, "model_id"),
+                "pooling_selector_llm": _pooling_selector_cell(section_id),
+                "secondary_provider": _secondary_provider_cell(record),
+                "secondary_model_observed": _provider_cell(record, "secondary_model_id"),
+                "generation_status": _provider_cell(
+                    record,
+                    "generation_status",
+                    default=str(section.get("runtime_generation_status") or "NOT_OBSERVED"),
+                ),
+                "judges_run": "YES" if section.get("judges") else "NO",
+                "judge_models_scores": _judge_model_score_cell(section),
+                "judge_retry_fallback": _judge_retry_fallback_cell(section),
+                "x2": str(section.get("x2_pass") or "NOT_OBSERVED"),
+                "x3": str(section.get("x3_code") or record.get("decisive_reason_code") or "NOT_OBSERVED"),
+                "past_fail_blocker": str(
+                    section.get("failure_classification")
+                    or record.get("decisive_reason_code")
+                    or "NOT_OBSERVED"
+                ),
+                "display_output": str(section.get("display_txt_relpath") or "MISSING"),
+                "l6_evidence": str(l6.get("product_authority") or "NOT_OBSERVED"),
+            }
+        )
+    return rows
+
+
+def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    rendered = final_out.get("rendered_resume_text") if isinstance(final_out.get("rendered_resume_text"), dict) else {}
+    docx = final_out.get("resume_docx") if isinstance(final_out.get("resume_docx"), dict) else {}
+    spine = final_out.get("final_resume_json") if isinstance(final_out.get("final_resume_json"), dict) else {}
+    lane_table = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
+    gates = [
+        {
+            "gate_id": "mandatory_bcg_inline_output_present",
+            "pass": True,
+            "observed_value": BCG_EXECUTIVE_OUTPUT_MD,
+            "threshold": "BCG executive markdown rendered inline",
+        },
+        {
+            "gate_id": "mandatory_section_lane_table_inline_present",
+            "pass": bool(lane_table),
+            "observed_value": len(lane_table),
+            "threshold": ">=1 lane table row",
+        },
+        {
+            "gate_id": "mandatory_resume_text_inline_present",
+            "pass": bool(rendered.get("exists")) and int(rendered.get("bytes") or 0) > 0,
+            "observed_value": rendered,
+            "threshold": "nonempty FINAL_RESUME_OUTPUT.txt",
+        },
+        {
+            "gate_id": "mandatory_final_resume_json_present",
+            "pass": bool(spine.get("exists")) and int(spine.get("bytes") or 0) > 0,
+            "observed_value": spine,
+            "threshold": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+        },
+        {
+            "gate_id": "mandatory_resume_docx_present",
+            "pass": bool(docx.get("exists")) and int(docx.get("bytes") or 0) > 0,
+            "observed_value": docx,
+            "threshold": FINAL_RESUME_DOCX_RELPATH,
+        },
+    ]
+    for gate in gates:
+        gate["failure_reason"] = "" if gate["pass"] else "mandatory post-run inline output missing"
+    return gates
 
 
 def _top_rca_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -949,12 +1135,71 @@ def _markdown_table_escape(value: Any) -> str:
     return str(value if value is not None else "-").replace("|", "\\|").replace("\n", " ")
 
 
+def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
+    lines = [
+        "## Section Lane Summary Table",
+        "",
+        "| # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
+        "|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    if not rows:
+        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
+        return lines
+    for row in rows:
+        lines.append(
+            "| "
+            f"{row.get('order')} | "
+            f"`{_markdown_table_escape(row.get('section'))}` | "
+            f"`{_markdown_table_escape(row.get('r1a'))}` | "
+            f"`{_markdown_table_escape(row.get('r1b'))}` | "
+            f"`{_markdown_table_escape(row.get('lane_record'))}` | "
+            f"`{_markdown_table_escape(row.get('provider_call_attempted'))}` | "
+            f"`{_markdown_table_escape(row.get('primary_provider'))}` | "
+            f"`{_markdown_table_escape(row.get('primary_model_observed'))}` | "
+            f"`{_markdown_table_escape(row.get('pooling_selector_llm'))}` | "
+            f"`{_markdown_table_escape(row.get('secondary_provider'))}` | "
+            f"`{_markdown_table_escape(row.get('secondary_model_observed'))}` | "
+            f"`{_markdown_table_escape(row.get('generation_status'))}` | "
+            f"`{_markdown_table_escape(row.get('judges_run'))}` | "
+            f"`{_markdown_table_escape(row.get('judge_models_scores'))}` | "
+            f"`{_markdown_table_escape(row.get('judge_retry_fallback'))}` | "
+            f"`{_markdown_table_escape(row.get('x2'))}` | "
+            f"`{_markdown_table_escape(row.get('x3'))}` | "
+            f"`{_markdown_table_escape(row.get('past_fail_blocker'))}` | "
+            f"`{_markdown_table_escape(row.get('display_output'))}` | "
+            f"`{_markdown_table_escape(row.get('l6_evidence'))}` |"
+        )
+    return lines
+
+
+def _render_resume_inline_lines(doc: dict[str, Any]) -> list[str]:
+    run_root = Path(str(doc.get("run_root_abs") or ""))
+    resume_path = run_root / FINAL_RESUME_OUTPUT_TXT
+    text = ""
+    if resume_path.is_file():
+        try:
+            text = resume_path.read_text(encoding="utf-8").rstrip()
+        except OSError:
+            text = ""
+    return [
+        "## Resume DOCX Full Version Inline",
+        "",
+        "Source: `FINAL_RESUME_OUTPUT.txt` rendered from the same final-resume spine used for `outputs/resume.docx`.",
+        "",
+        "```text",
+        text or "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]",
+        "```",
+    ]
+
+
 def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
     summary = doc["result_summary"]
     sections = doc["sections"]
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
     final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    lane_table = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
+    inline_gates = doc.get("mandatory_inline_output_gates") if isinstance(doc.get("mandatory_inline_output_gates"), list) else []
     lines = [
         "# apps_rg Mandatory Run Output",
         "",
@@ -973,6 +1218,23 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
         f"| Integrated proof gate | `{summary.get('proof_gate_status') or '-'}` `{summary.get('proof_classification') or '-'}` |",
         f"| Final resume output gate | `{final_out.get('status') or 'UNKNOWN'}` |",
         "",
+        "## Mandatory Inline Output Gates",
+        "",
+        "| Gate | Status | Observed |",
+        "|---|---|---|",
+    ]
+    for gate in inline_gates:
+        if not isinstance(gate, dict):
+            continue
+        lines.append(
+            "| "
+            f"`{gate.get('gate_id')}` | "
+            f"`{'PASS' if gate.get('pass') is True else 'FAIL'}` | "
+            f"`{_markdown_table_escape(gate.get('observed_value'))}` |"
+        )
+    lines.extend(
+        [
+            "",
         "## Section Counts",
         "",
         "| Total | Real LLM | X3 allow | X3 block | Pre-run blocked | Not run | Unknown/other |",
@@ -983,11 +1245,18 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
             f"{counts['unknown']} |"
         ),
         "",
+        ]
+    )
+    lines.extend(_render_section_lane_table_lines(lane_table))
+    lines.extend(
+        [
+            "",
         "## Section Execution Ledger",
         "",
         "| Section | Ran status | X3 | X2 | Product | Runtime | Failed gates | Display |",
         "|---|---|---|---|---|---|---|---|",
-    ]
+        ]
+    )
     for section in sections:
         failed = ", ".join(
             str(g.get("gate_id"))
@@ -1095,6 +1364,8 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
         lines.append(
             f"| `{section.get('section')}` | {int(l6.get('file_count') or 0)} | `{l6.get('product_authority') or '-'}` |"
         )
+    lines.extend([""])
+    lines.extend(_render_resume_inline_lines(doc))
     return "\n".join(lines)
 
 
@@ -1209,6 +1480,128 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _render_bcg_markdown_locked(doc: dict[str, Any]) -> str:
+    summary = doc["result_summary"]
+    counts = doc["section_counts"]
+    rca = doc["rca_findings"]
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    final_status = str(final_out.get("status") or "UNKNOWN")
+    authorized = bool(summary.get("outcome_authorized")) and final_status == "PASS"
+    blocked_count = counts["blocked"] + counts["pre_run_blocked"] + counts["not_run"]
+    status = "AUTHORIZED" if authorized else "BLOCKED"
+    business_read = (
+        "Final resume package is authorized; preserve the generated product and evidence ledgers."
+        if authorized
+        else (
+            "No final resume can be authorized until mandatory generated-section gaps and "
+            "final product gates are resolved. Locked base-resume fields are still rendered inline for review."
+        )
+    )
+    technical_read = (
+        f"Sections total={counts['total']}, REAL_LLM={counts['ran_real_llm']}, "
+        f"X3 allow={counts['allowed']}, blocked/pre-run/not-run={blocked_count}, "
+        f"final_resume_output_gate={final_status}."
+    )
+    priority_rows: list[dict[str, str]] = []
+    failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+    if final_status != "PASS":
+        priority_rows.append(
+            {
+                "priority": "P0",
+                "finding": "Final resume product output gate is not PASS.",
+                "evidence": ", ".join(str(x) for x in failed_final) or final_status,
+                "required_action": "Keep final output blocked while preserving mandatory inline resume, JSON spine, and DOCX evidence.",
+            }
+        )
+    for finding in rca[:6]:
+        if not isinstance(finding, dict):
+            continue
+        priority_rows.append(
+            {
+                "priority": "P0" if not authorized else "P1",
+                "finding": f"{finding.get('section')}: {finding.get('classification')}",
+                "evidence": str(finding.get("evidence") or "-"),
+                "required_action": str(finding.get("action") or "Apply the root-cause implementation plan."),
+            }
+        )
+    if not priority_rows:
+        priority_rows.append(
+            {
+                "priority": "P1",
+                "finding": "No blocking section RCA rows were emitted.",
+                "evidence": "mandatory ledger",
+                "required_action": "Preserve gates and continue rendering BCG, lane table, and full resume inline after each run.",
+            }
+        )
+
+    lines = [
+        "# BCG Executive Brief",
+        "",
+        f"Generated: `{doc['generated_at_utc']}`",
+        f"Run root: `@{doc['run_root_abs']}`",
+        "",
+        "North star: Produce a complete, auditable resume output package with real generation provenance, judge evidence, final resume text, and DOCX output visible inline.",
+        f"Decision status: `{status}`",
+        f"Business read: {business_read}",
+        f"Technical evidence: {technical_read}",
+        "Priority rule: Fix P0 product-output and lane-authorization blockers before rerun; treat P1 rows as hardening opportunities after P0 clears.",
+        "",
+        "## Decision Gates",
+        "",
+        "| Gate | Status | Evidence |",
+        "|---|---|---|",
+        f"| Outcome authorization | `{'PASS' if authorized else 'FAIL'}` | `outcome_authorized={summary.get('outcome_authorized')}` |",
+        f"| Real generation observed | `{'PASS' if counts['ran_real_llm'] else 'FAIL'}` | `{counts['ran_real_llm']}` REAL_LLM section(s) |",
+        f"| Final resume output | `{'PASS' if final_status == 'PASS' else 'FAIL'}` | `{final_status}` |",
+        "| Inline output contract | `PASS` | BCG, section lane table, and resume text are mandatory surfaces |",
+        "",
+        "## P0-P1 Opportunities",
+        "",
+        "| Priority | Finding | Evidence | Required action |",
+        "|---|---|---|---|",
+    ]
+    for row in priority_rows:
+        lines.append(
+            "| "
+            f"`{row['priority']}` | "
+            f"{_markdown_table_escape(row['finding'])} | "
+            f"`{_markdown_table_escape(row['evidence'])}` | "
+            f"{_markdown_table_escape(row['required_action'])} |"
+        )
+    lines.extend(["", "## Issue Tree", ""])
+    if not rca:
+        lines.append("- No blocking issue tree was generated from section evidence.")
+    else:
+        for finding in rca:
+            lines.append(
+                f"- `{finding['section']}`: {finding['classification']} "
+                f"({finding['evidence']})."
+            )
+            lines.append(f"  - Root cause: {finding.get('root_cause') or '-'}")
+            lines.extend(_render_causal_allocation_lines(finding, indent="  "))
+            lines.append("  - Required implementation plan:")
+            for item in _validated_plan_items(finding):
+                lines.append(f"    - {item}")
+    lines.extend(["", "## Next Step", ""])
+    if authorized:
+        lines.append("1. Preserve the generated output package and run evidence.")
+        lines.append("2. Review the mandatory ledger and section-status table for audit details.")
+        lines.append("3. Treat future edits as new changes requiring the same X2/X3 gates.")
+    else:
+        lines.append("1. Fix the P0 blocker rows above.")
+        lines.append("2. Rerun the integrated apps_rg path with the same JD and briefing.")
+        lines.append("3. Treat final assembly as valid only when every required section and product output is product-authorized.")
+    lines.extend(["", "## Evidence Map", ""])
+    lines.append(f"- Mandatory run ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}`")
+    lines.append(f"- Machine-readable ledger: `@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}`")
+    lines.append(f"- Rendered final resume: `@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_TXT}`")
+    lines.append(f"- Final resume output contract: `@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}`")
+    lines.append(f"- Resume DOCX: `@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}`")
+    lines.append(f"- Section status: `@{doc['run_root_abs']}\\{FULL_RUN_SECTION_STATUS_JSON}`")
+    lines.append(f"- Review bundle: `@{doc['run_root_abs']}\\{REVIEW_BUNDLE_FILENAME}`")
+    return "\n".join(lines)
+
+
 def build_mandatory_run_output(
     run_root: Path,
     *,
@@ -1224,6 +1617,7 @@ def build_mandatory_run_output(
     final_output = _load_json(root / FINAL_RESUME_OUTPUT_JSON)
     if not final_output:
         final_output = build_final_resume_output_contract(root, repo_root=repo, required=final_required)
+    section_lane_table = _build_section_lane_table(root, sections)
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),
@@ -1232,6 +1626,7 @@ def build_mandatory_run_output(
         "result_summary": result_summary,
         "section_counts": _count_sections(sections),
         "sections": sections,
+        "section_lane_table": section_lane_table,
         "final_resume_output": final_output,
         "rca_findings": _top_rca_sections(sections),
         "mandatory_artifacts": {
@@ -1244,6 +1639,7 @@ def build_mandatory_run_output(
             "canonical_final_resume_json": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
         },
     }
+    doc["mandatory_inline_output_gates"] = _inline_output_gates(doc)
     return doc
 
 
@@ -1276,7 +1672,7 @@ def emit_mandatory_run_outputs(
     bcg_path = root / BCG_EXECUTIVE_OUTPUT_MD
     json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     _write_text(md_path, _render_mandatory_markdown(doc))
-    _write_text(bcg_path, _render_bcg_markdown(doc))
+    _write_text(bcg_path, _render_bcg_markdown_locked(doc))
     if print_stdout:
         print((bcg_path).read_text(encoding="utf-8"), flush=True)
         print((md_path).read_text(encoding="utf-8"), flush=True)

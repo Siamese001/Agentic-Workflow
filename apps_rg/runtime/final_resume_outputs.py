@@ -21,11 +21,31 @@ from apps_rg.runtime.assembly.full_resume_text import (
     format_edu,
     rendered_resume_section_order,
 )
+from apps_rg.runtime.full_run_section_status import (
+    LANE_DISPLAY_TXT_CANDIDATES,
+    collect_full_run_section_status,
+)
 from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
     FINAL_RESUME_DOCX_RELPATH,
     FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
+)
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+BASE_RESUME_RELPATH = Path("apps_rg/resume/base/amit_ayer_base_resume_v1.json")
+GENERATED_SECTION_IDS: tuple[str, ...] = (
+    "headline",
+    "executive_summary",
+    "competencies",
+    "unify_bullets",
+    "unify_narrative",
+    "ibm_bullets",
+    "ibm_narrative",
+    "insurtech_bullets",
+    "insurtech_narrative",
+    "ey_bullets",
+    "ey_narrative",
 )
 
 
@@ -65,6 +85,190 @@ def _load_json(path: Path) -> dict[str, Any]:
     except (OSError, json.JSONDecodeError, TypeError):
         return {}
     return raw if isinstance(raw, dict) else {}
+
+
+def _load_text(path: Path) -> str:
+    if not path.is_file():
+        return ""
+    try:
+        return path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def _base_resume_path(repo_root: Path | None) -> Path:
+    candidates: list[Path] = []
+    if repo_root is not None:
+        candidates.append(Path(repo_root).resolve() / BASE_RESUME_RELPATH)
+    candidates.append(REPO_ROOT / BASE_RESUME_RELPATH)
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[-1]
+
+
+def _load_base_resume(repo_root: Path | None) -> dict[str, Any]:
+    return _load_json(_base_resume_path(repo_root))
+
+
+def _json_dumps(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+
+def _display_text_for_lane(run_root: Path, lane: str) -> str:
+    for row in collect_full_run_section_status(run_root, repo_root=REPO_ROOT):
+        if row.lane != lane or not row.display_txt_abs:
+            continue
+        text = _load_text(Path(row.display_txt_abs))
+        if text:
+            return text
+    for rel in LANE_DISPLAY_TXT_CANDIDATES.get(lane, ("command_output.txt",)):
+        for base in (run_root / "lanes" / lane, run_root / "modular_r4" / "sections" / lane):
+            text = _load_text(base / rel)
+            if text:
+                return text
+    return ""
+
+
+def _lane_l2_snapshot(run_root: Path, lane: str) -> dict[str, Any]:
+    for row in collect_full_run_section_status(run_root, repo_root=REPO_ROOT):
+        if row.lane != lane or not row.lane_dir:
+            continue
+        lane_dir = Path(row.lane_dir)
+        if not lane_dir.is_absolute():
+            lane_dir = REPO_ROOT / lane_dir
+        l2 = _load_json(lane_dir / "l2_output.json")
+        if l2:
+            return l2
+    for base in (run_root / "lanes" / lane, run_root / "modular_r4" / "sections" / lane):
+        l2 = _load_json(base / "l2_output.json")
+        if l2:
+            return l2
+    return {}
+
+
+def _bullet_rows(text: str) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for line in text.splitlines():
+        cleaned = line.strip().lstrip("-*•").strip()
+        if cleaned:
+            rows.append({"bullet_text": cleaned})
+    return rows
+
+
+def _snapshot_from_lane_artifacts(run_root: Path, lane: str) -> dict[str, Any]:
+    l2 = _lane_l2_snapshot(run_root, lane)
+    if l2:
+        return l2
+    text = _display_text_for_lane(run_root, lane)
+    if not text:
+        return {}
+    if lane == "headline":
+        return {"headline_line": text}
+    if lane == "executive_summary":
+        return {"resume_display_text": text}
+    if lane == "competencies":
+        return {"resume_display_text": text}
+    if lane.endswith("_bullets"):
+        return {"bullets": _bullet_rows(text)}
+    if lane.endswith("_narrative"):
+        return {"narrative_sentence": text}
+    return {"resume_display_text": text}
+
+
+def _generated_section(order: int, section_id: str, snapshot: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "assemble_order": order,
+        "section_id": section_id,
+        "section_kind": "generated_lane",
+        "l2_output_snapshot": snapshot,
+        "generated_content_observed": bool(snapshot),
+        "source_artifact_refs": {},
+        "disposition_refs": {},
+    }
+
+
+def _fallback_final_resume_blob(run_root: Path, repo_root: Path | None) -> dict[str, Any]:
+    base = _load_base_resume(repo_root)
+    facts = base.get("facts") if isinstance(base.get("facts"), dict) else {}
+    employment = [row for row in facts.get("employment") or [] if isinstance(row, dict)]
+    education = [row for row in facts.get("education") or [] if isinstance(row, dict)]
+    certifications = [row for row in facts.get("certifications") or [] if isinstance(row, dict)]
+    header = base.get("header") if isinstance(base.get("header"), dict) else {}
+
+    generated_sections = [
+        _generated_section(idx, section_id, _snapshot_from_lane_artifacts(run_root, section_id))
+        for idx, section_id in enumerate(GENERATED_SECTION_IDS)
+    ]
+    early = employment[4] if len(employment) > 4 else {}
+    locked_sections = [
+        {
+            "assemble_order": 11,
+            "section_id": "early_career",
+            "section_kind": "locked_copy_inline",
+            "copied_text_exact": _json_dumps(early),
+        },
+        {
+            "assemble_order": 12,
+            "section_id": "education",
+            "section_kind": "locked_copy_inline",
+            "copied_text_exact": _json_dumps(education),
+        },
+        {
+            "assemble_order": 13,
+            "section_id": "certifications",
+            "section_kind": "locked_copy_inline",
+            "copied_text_exact": _json_dumps(certifications),
+        },
+    ]
+    dates = [
+        {
+            "start_date": row.get("start_date"),
+            "end_date": row.get("end_date"),
+            "is_current": row.get("is_current"),
+        }
+        for row in employment
+    ]
+    return {
+        "schema_version": "apps_rg.final_resume_assembly.v1",
+        "assembly_mode": "mandatory_fallback_from_base_resume_and_run_artifacts",
+        "generated_at_utc": _utc_now(),
+        "candidate_identity": {
+            "candidate_name": header.get("name") or base.get("candidate_name") or "Candidate",
+            "header_contact": {
+                key: header.get(key)
+                for key in ("phone", "email", "linkedin", "github", "location")
+                if header.get(key)
+            },
+        },
+        "sections": generated_sections + locked_sections,
+        "locked_copy_invariants": {
+            "company_names": {
+                "copied_text_exact": _json_dumps([row.get("employer") for row in employment])
+            },
+            "titles": {
+                "copied_text_exact": _json_dumps([row.get("title") for row in employment])
+            },
+            "locations": {
+                "copied_text_exact": _json_dumps([row.get("location") for row in employment])
+            },
+            "dates": {"copied_text_exact": _json_dumps(dates)},
+        },
+        "source_base_resume": str(_base_resume_path(repo_root)),
+        "generated_content_source": "run_artifacts_when_present_else_NOT_GENERATED_BY_RUN_markers",
+    }
+
+
+def _ensure_fallback_final_resume_json(
+    run_root: Path,
+    *,
+    repo_root: Path | None,
+) -> Path:
+    path = run_root / FINAL_RESUME_ASSEMBLY_JSON_RELPATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    blob = _fallback_final_resume_blob(run_root, repo_root)
+    path.write_text(json.dumps(blob, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
 
 
 def _safe_rel_manifest_value(value: Any) -> str:
@@ -325,7 +529,7 @@ def build_final_resume_output_contract(
     docx_certifications_ok, docx_certifications_obs = (
         _locked_lines_gate(docx_text, final_resume, "certifications") if spine_ok else (False, {})
     )
-    no_gaps_ok = "[NOT COMPLETED:" not in text
+    no_gaps_ok = "[NOT COMPLETED:" not in text and "[NOT_GENERATED_BY_RUN:" not in text
 
     gates = [
         _gate(
@@ -408,9 +612,12 @@ def build_final_resume_output_contract(
         _gate(
             "final_resume_no_gap_markers",
             no_gaps_ok,
-            "[NOT COMPLETED:" in text,
+            {
+                "not_completed": "[NOT COMPLETED:" in text,
+                "not_generated_by_run": "[NOT_GENERATED_BY_RUN:" in text,
+            },
             False,
-            "rendered resume contains NOT COMPLETED gap markers",
+            "rendered resume contains generated-content gap markers",
         ),
     ]
     failed = [g["gate_id"] for g in gates if not g["pass"]]
@@ -451,6 +658,8 @@ def emit_final_resume_product_outputs(
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
     final_resume_path = _resolve_final_resume_json(root)
+    if final_resume_path is None and required:
+        final_resume_path = _ensure_fallback_final_resume_json(root, repo_root=repo_root)
     if final_resume_path is not None:
         final_resume = _load_json(final_resume_path)
         if _is_spine_shaped(final_resume):

@@ -11,6 +11,11 @@ from apps_rg.runtime.mandatory_run_outputs import (
     MANDATORY_RUN_OUTPUT_MD,
     emit_mandatory_run_outputs,
 )
+from apps_rg.runtime.run_output_contract import (
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_TXT,
+)
 from tools.apps_rg.render_run_summary import render
 
 
@@ -110,6 +115,12 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert comp["status_bucket"] == "ran_real_llm"
     assert comp["judges"][0]["provider"] == "OpenAI ChatGPT"
     assert comp["l6"]["file_count"] == 1
+    assert payload["final_resume_output"]["required"] is True
+    assert payload["final_resume_output"]["status"] == "FAIL"
+    assert payload["section_lane_table"]
+    assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
+    assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
+    assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
     finding = payload["rca_findings"][0]
     assert finding["section"] == "competencies"
     assert finding["root_cause"].startswith("Visible content can be rendered")
@@ -122,12 +133,16 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert all(row["root_cause_link"] != row["domain"] for row in allocation["allocation"])
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "Executive Answer" in bcg
+    assert "BCG Executive Brief" in bcg
+    assert "P0-P1 Opportunities" in bcg
     assert "Evidence mapping failure" in bcg
     assert "Causal allocation" in bcg
     assert "Retry recoverability" in bcg
     assert "Required implementation plan" in bcg
     assert "Change the section enrichment step" in bcg
+    assert "Section Lane Summary Table" in mandatory
+    assert "Resume DOCX Full Version Inline" in mandatory
+    assert "[NOT_GENERATED_BY_RUN:" in mandatory
     assert "Causal allocation" in mandatory
     assert "Required implementation plan" in mandatory
 
@@ -230,9 +245,9 @@ def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(t
     assert summary["fault"] == ""
     assert summary["decisive_status"] == "PASS"
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "final resume output gate failed" in bcg
-    assert "Fix the P0 blocker sections named above" not in bcg
-    assert "Fix the final resume output gates before treating the run as product-ready" in bcg
+    assert "BCG Executive Brief" in bcg
+    assert "Final resume product output gate is not PASS" in bcg
+    assert "Fix the P0 blocker rows above" in bcg
 
 
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
@@ -292,6 +307,9 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
     assert "Required implementation plan" in out
     assert "Patch enrichment so visible terms require canonical source facts." in out
     assert "real LLM `1`" in out
+    assert "## Locked BCG Output" in out
+    assert "## Locked Section Lane Summary Table" in out
+    assert "## Resume DOCX Full Version Inline" in out
 
 
 def test_render_run_summary_rejects_one_line_rca_action_as_format_gap(tmp_path: Path) -> None:

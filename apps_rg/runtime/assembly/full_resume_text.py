@@ -181,9 +181,9 @@ def render_locked(copied: str, *, header_override: dict[str, Any] | None = None)
     return block
 
 
-def _not_completed_lines(section_id: str, reason: str) -> list[str]:
-    """Explicit gap marker for whole-résumé judges (not scored as prose)."""
-    return [f"[NOT COMPLETED: {section_id} — {reason}]", ""]
+def _not_generated_lines(section_id: str, reason: str) -> list[str]:
+    """Explicit generated-content gap marker for whole-resume gates."""
+    return [f"[NOT_GENERATED_BY_RUN: {section_id} - {reason}]", ""]
 
 
 def _append_generated_role(
@@ -204,17 +204,27 @@ def _append_generated_role(
         narr = str(narr_snap.get("narrative_sentence") or "").strip()
         if narr:
             lines.append(narr)
-        lines.extend(bullets_from_list(bullet_snap.get("bullets") or []))
+        bullets = bullets_from_list(bullet_snap.get("bullets") or [])
+        lines.extend(bullets)
+        if not narr and not bullets:
+            lines.extend(
+                _not_generated_lines(
+                    missing_label,
+                    "generated narrative and bullets were not produced in this run",
+                )
+            )
+            return
         lines.append("")
     else:
-        lines.extend(_not_completed_lines(missing_label, "missing_generated_role_section"))
+        lines.extend(_not_generated_lines(missing_label, "missing_generated_role_section"))
 
 
 def _append_competencies(*, lines: list[str], by_id: dict[str, dict[str, Any]]) -> None:
     comp = (by_id.get("competencies") or {}).get("l2_output_snapshot") or {}
     cats = comp.get("competencies") or []
+    display_text = str(comp.get("resume_display_text") or "").strip()
+    lines.append(ENGINEERING_PLATFORM_COMPETENCIES_HEADING)
     if cats:
-        lines.append(ENGINEERING_PLATFORM_COMPETENCIES_HEADING)
         for cat in cats:
             if not isinstance(cat, dict):
                 continue
@@ -230,9 +240,12 @@ def _append_competencies(*, lines: list[str], by_id: dict[str, dict[str, Any]]) 
             if terms:
                 lines.append(f"{label}: {', '.join(terms)}")
         lines.append("")
+    elif display_text:
+        lines.append(display_text)
+        lines.append("")
     else:
         lines.extend(
-            _not_completed_lines(
+            _not_generated_lines(
                 "competencies",
                 "missing_competencies_or_empty_graph_skills_signal",
             )
@@ -258,20 +271,21 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
 
     snap = (by_id.get("headline") or {}).get("l2_output_snapshot") or {}
     hl = str(snap.get("headline_line") or "").strip()
+    lines.append("HEADLINE")
     if hl:
         lines.append(hl)
         lines.append("")
     else:
-        lines.extend(_not_completed_lines("headline", "missing_or_empty_headline"))
+        lines.extend(_not_generated_lines("headline", "missing_or_empty_headline"))
 
     exec_snap = (by_id.get("executive_summary") or {}).get("l2_output_snapshot") or {}
     es = str(exec_snap.get("resume_display_text") or "").strip()
+    lines.append("EXECUTIVE SUMMARY")
     if es:
-        lines.append("EXECUTIVE SUMMARY")
         lines.append(es)
         lines.append("")
     else:
-        lines.extend(_not_completed_lines("executive_summary", "missing_or_empty_executive_summary"))
+        lines.extend(_not_generated_lines("executive_summary", "missing_or_empty_executive_summary"))
 
     _append_competencies(lines=lines, by_id=by_id)
 
@@ -286,10 +300,19 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
         narr = str(un_n.get("narrative_sentence") or "").strip()
         if narr:
             lines.append(narr)
-        lines.extend(bullets_from_list(un_b.get("bullets") or []))
-        lines.append("")
+        bullets = bullets_from_list(un_b.get("bullets") or [])
+        lines.extend(bullets)
+        if not narr and not bullets:
+            lines.extend(
+                _not_generated_lines(
+                    "unify",
+                    "unify_bullets and unify_narrative did not produce finalized content",
+                )
+            )
+        else:
+            lines.append("")
     else:
-        lines.extend(_not_completed_lines("unify_narrative", "missing_unify_section"))
+        lines.extend(_not_generated_lines("unify_narrative", "missing_unify_section"))
 
     ibm_n = (by_id.get("ibm_narrative") or {}).get("l2_output_snapshot") or {}
     ibm_b = (by_id.get("ibm_bullets") or {}).get("l2_output_snapshot") or {}
@@ -299,10 +322,19 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
         narr = str(ibm_n.get("narrative_sentence") or "").strip()
         if narr:
             lines.append(narr)
-        lines.extend(bullets_from_list(ibm_b.get("bullets") or []))
-        lines.append("")
+        bullets = bullets_from_list(ibm_b.get("bullets") or [])
+        lines.extend(bullets)
+        if not narr and not bullets:
+            lines.extend(
+                _not_generated_lines(
+                    "ibm",
+                    "ibm_bullets and ibm_narrative did not produce finalized content",
+                )
+            )
+        else:
+            lines.append("")
     else:
-        lines.extend(_not_completed_lines("ibm_narrative", "missing_ibm_section"))
+        lines.extend(_not_generated_lines("ibm_narrative", "missing_ibm_section"))
 
     _append_generated_role(
         lines=lines,
@@ -329,7 +361,7 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
             lines.extend(render_locked(copied, header_override=base_headers.get("early_career")))
             lines.append("")
         else:
-            lines.extend(_not_completed_lines(sid, "missing_locked_copy_section"))
+            lines.extend(_not_generated_lines(sid, "missing_locked_copy_section"))
 
     edu_sec = by_id.get("education") or {}
     if edu_sec.get("copied_text_exact"):
@@ -341,7 +373,7 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
                     lines.append(line)
         lines.append("")
     else:
-        lines.extend(_not_completed_lines("education", "missing_locked_education"))
+        lines.extend(_not_generated_lines("education", "missing_locked_education"))
 
     cert_sec = by_id.get("certifications") or {}
     if cert_sec.get("copied_text_exact"):
@@ -353,6 +385,6 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
                     lines.append(line)
         lines.append("")
     else:
-        lines.extend(_not_completed_lines("certifications", "missing_locked_certifications"))
+        lines.extend(_not_generated_lines("certifications", "missing_locked_certifications"))
 
     return "\n".join(lines).rstrip() + "\n"
