@@ -976,16 +976,40 @@ def test_repair_handoff_pointer_validates_exact_receipt(temp_artifacts, monkeypa
 
     pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
     receipt, counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
 
     assert errors == []
     assert receipt is not None
     assert counts["P0_FIX"] == 1
+    assert pointer_payload["downstream_release_status"] == "released"
 
     rc = consume_adg_repair_handoff.main(["--handoff-pointer", str(pointer), "--json"])
     captured = capsys.readouterr()
     assert rc == 0
     assert '"ok": true' in captured.out
     assert '"handoff_pointer":' in captured.out
+
+
+def test_repair_handoff_pointer_rejects_legacy_ready_release_status(temp_artifacts, monkeypatch):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
+    handoff_path = Path(pointer_payload["handoff_path"])
+    handoff_payload = json.loads(handoff_path.read_text(encoding="utf-8"))
+    handoff_payload["downstream_release_status"] = "ready"
+    handoff_path.write_text(json.dumps(handoff_payload, indent=2) + "\n", encoding="utf-8")
+    pointer_payload["handoff_sha256"] = wrapper._sha256(handoff_path)
+    pointer.write_text(json.dumps(pointer_payload, indent=2) + "\n", encoding="utf-8")
+
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert any("downstream_release_status not released" in error for error in errors)
 
 
 def test_repair_handoff_pointer_rejects_overwritten_receipt(temp_artifacts, monkeypatch):

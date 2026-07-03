@@ -1006,8 +1006,10 @@ def validate_repair_handoff_pointer(
         errors.append(
             f"handoff adg_run_id {handoff_run_id!r} does not match expected {expected_adg_run_id!r}"
         )
-    if handoff_doc.get("downstream_release_status") != "ready":
-        errors.append(f"downstream_release_status not ready: {handoff_doc.get('downstream_release_status')!r}")
+    if handoff_doc.get("downstream_release_status") != "released":
+        errors.append(
+            f"downstream_release_status not released: {handoff_doc.get('downstream_release_status')!r}"
+        )
 
     receipt_ref = handoff_doc.get("receipt")
     if not isinstance(receipt_ref, dict):
@@ -1195,7 +1197,7 @@ def _downstream_release_status(result: WrapperResult) -> str:
         return "blocked"
     if handoff.get("validation_errors"):
         return "blocked"
-    return "ready"
+    return "released"
 
 
 def _handoff_paths(adg_run_id: str) -> tuple[Path, Path]:

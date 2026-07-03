@@ -49,6 +49,7 @@ def test_adg_audit_automation_releases_digest_bound_handoff_pointer() -> None:
     assert handoff["requires_digest_bound_handoff_pointer"] is True
     assert "adg-repair-handoff-pointer/v1" in prompt
     assert "immutable adg_repair_handoff_<run_id>.json" in prompt
+    assert "downstream_release_status=released" in prompt
 
 
 def test_adg_audit_contract_paths_match_runtime_ordering_helpers() -> None:

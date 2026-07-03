@@ -4,7 +4,7 @@
     "certification_status": "failed",
     "generator_exit_code": 1,
     "report_exit_code": 0,
-    "runtime_proof_status": "attested",
+    "runtime_proof_status": "view_present_zero_attested",
     "reasons": [
       "generator exit_code=1",
       "required gate 'adg_gate_dispatcher' status=fail",
@@ -17,54 +17,54 @@
   },
   "artifact_status": "repair_ready",
   "artifact_status_source": "direct",
-  "adg_run_id": "07022026_2303",
-  "started_at_utc": "2026-07-03T03:03:04Z",
-  "completed_at_utc": "2026-07-03T03:21:31Z",
+  "adg_run_id": "07032026_0358",
+  "started_at_utc": "2026-07-03T07:58:52Z",
+  "completed_at_utc": "2026-07-03T08:15:30Z",
   "repair_handoff": {
     "status": "repair_ready",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07022026_2303.sqlite",
-        "sha256": "5afcc8ea07e02572a41eff096f8ea8b0029f96fa1726ee5ccd7585eba3dcfc96"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_indexed_07032026_0358.sqlite",
+        "sha256": "d2c17656077e9da77b3dcb21cc761c26c352d5bc4e1d652dc43a4fe19f0e2f23"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260703_031752.json",
-        "sha256": "c67718bd1444aab4aa95a0477877358a572eecdca1234fc58ad86b966ce75d0b"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_gate_results_20260703_081235.json",
+        "sha256": "41362b181a89554df83eda6e014362a40754ab731e53e128ff128a7768ba155f"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07022026_2303.json",
-        "sha256": "2f35ceaba8753e5c867c481049a539a1a193ebf8d58b9bab77fe196b8b677c6c"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_action_queue_07032026_0358.json",
+        "sha256": "de71e570adb7a65daec65d291f28d16a4287e743dadef389b82efde377fbd09b"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07022026_2303.md",
-        "sha256": "28319294729c08777e207a1723b04fc0e6fca71f056ef82e5d07a85516842b78"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_burndown_report_07032026_0358.md",
+        "sha256": "99a388f0e4a17acf7be6dbf37dd545f370d9262111224762bb8c23011d17569c"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07022026_2303.json",
-        "sha256": "ce91fb1447437171aaef8d6bacde6f1e3fd7bba608bb86a5ba7f2f30f7d9f9b3"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_burndown_table_07032026_0358.json",
+        "sha256": "48d20ed247328fa4c92ee0691ca39da6ab968abcf2d14cdd191c1662a607e998"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07022026_2303.json",
-        "sha256": "0d98a7f89697f767c032019633d4df86279f91dea1d7c1eec1d409ad3f050b27"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_generation_manifest_07032026_0358.json",
+        "sha256": "d2368fb168fb2c2574dc0c29205d4cc41990bd3f701e449ac33dec26f7f4d2d7"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07022026_2303.json",
-        "sha256": "91ef8a899ea395e1fbcab7f05b831de9c3e69d0a227eb873beef9dddd9c35ca9"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_gate_invocation_manifest_07032026_0358.json",
+        "sha256": "a60d0efefed7bc3efb06d2a1603483da44454e031d0f6584c03f55166945f3f1"
       }
     },
     "counts": {
-      "P0_FIX": 0,
+      "P0_FIX": 1,
       "P0_WAVE": 3,
       "P0_TRACKED_BACKLOG": 4,
-      "P1_FIX": 1,
-      "P1_RATCHET_REGRESSION": 1,
+      "P1_FIX": 0,
+      "P1_RATCHET_REGRESSION": 0,
       "P1_RATCHET_FLOOR_BACKLOG": 9
     },
     "validation_errors": []

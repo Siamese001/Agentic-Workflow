@@ -1,9 +1,9 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-03T03:20:34+00:00
+- **Generated:** 2026-07-03T08:14:42+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-03T03:17:52.441617+00:00
-- **Work sections:** 16 gate(s) / 11,410 row(s)
+- **Source timestamp:** 2026-07-03T08:12:35.117310+00:00
+- **Work sections:** 16 gate(s) / 11,414 row(s)
 - **KPI/watchlist:** 5 gate(s) / 12,529 row(s)
 
 This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.
@@ -14,7 +14,7 @@ Current blockers, regressions, or missing seeds. These are the only rows that sh
 
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `H1_new_orphans_delta_ratchet` | architecture_backlog | P1 | ratchet | FIX | regr | 1 | Regression +1 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+| `13_core_imports_apps` | core_app_boundary | P0 | block | FIX | block | 5 | BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block. |
 
 ## Burn down / owned backlog
 
@@ -54,7 +54,6 @@ Zero-action rows.
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
 | `10_infra_wiring` | runtime_infra_boundary | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
-| `13_core_imports_apps` | core_app_boundary | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `4_capability_egress` | provider_model_path | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `C2_l5_bypass_pview` | provider_model_path | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `1_critical_path_integrity` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
@@ -65,3 +64,4 @@ Zero-action rows.
 | `C1_uwg_bypass_pview` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `L2_lpg_drift_ratchet` | architecture_backlog | P0 | ratchet | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `W5_waiver_expiry` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
+| `11_architecture_witness` | architecture_backlog | P1 | block | CLEAR | — | 0 | None — gate clean (zero rows). |

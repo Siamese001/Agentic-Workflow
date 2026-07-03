@@ -626,6 +626,9 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     a(f"### {title}")
     a("")
     a(f"- **North star:** {_md(brief.get('north_star') or BCG_NORTH_STAR)}")
+    business_read = str(brief.get("business_read") or "").strip()
+    if business_read:
+        a(f"- **Business read:** {_md(business_read)}")
     status = str(brief.get("status") or "").strip()
     if status:
         status_label = str(brief.get("status_label") or "Status").strip() or "Status"
@@ -633,9 +636,6 @@ def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     for label, value in (brief.get("secondary_statuses") or {}).items():
         if value not in (None, ""):
             a(f"- **{_md(label)}:** {_md(value)}")
-    business_read = str(brief.get("business_read") or "").strip()
-    if business_read:
-        a(f"- **Business read:** {_md(business_read)}")
     technical_read = _text_list(brief.get("technical_read"))
     if technical_read:
         a("- **Technical evidence:**")

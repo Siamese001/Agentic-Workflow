@@ -151,6 +151,7 @@ ADG_REQUIRED_PROMPT_SNIPPETS = (
     "python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0",
     "artifact_status",
     "repair_ready",
+    "downstream_release_status=released",
     "RCA block",
 )
 
@@ -158,6 +159,7 @@ ADG_P0_REQUIRED_PROMPT_SNIPPETS = (
     "artifact_status=certified or artifact_status=repair_ready",
     "P0=0 before merge",
     "Burn down all P0 FIX queue/report items first",
+    "If P0_FIX=0 and P0_WAVE>0",
     "Never consume overwritten latest files as source of truth",
     "Use a non-squash merge method. Do not squash.",
     "codex_main_closeout.py --check --fetch --json",
@@ -224,9 +226,10 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
 
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
 ADG_HANDOFF_RECEIPT_PATH = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
+ADG_HANDOFF_POINTER_PATH = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
 ADG_HANDOFF_VALIDATOR = (
     "python tools/adg/consume_adg_repair_handoff.py "
-    "--receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+    "--handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
 )
 ADG_HANDOFF_STATUSES = ("certified", "repair_ready")
 ADG_HANDOFF_CHAIN = (
@@ -244,9 +247,11 @@ ADG_HANDOFF_CONTRACTS = {
         "order": 0,
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
+        "requires_digest_bound_handoff_pointer": True,
         "depends_on": [],
         "unblocks": ["adg-p0-blocker-burndown"],
         "requires_prior_lane_clean": [],
@@ -259,9 +264,11 @@ ADG_HANDOFF_CONTRACTS = {
         "order": 1,
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
+        "requires_digest_bound_handoff_pointer": True,
         "depends_on": ["weekly-adg-audit-and-burndown"],
         "unblocks": ["adg-p1-ratchet-burndown"],
         "requires_prior_lane_clean": [],
@@ -274,9 +281,11 @@ ADG_HANDOFF_CONTRACTS = {
         "order": 2,
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
+        "requires_digest_bound_handoff_pointer": True,
         "depends_on": ["weekly-adg-audit-and-burndown", "adg-p0-blocker-burndown"],
         "unblocks": ["adg-bcg-p2-next-action"],
         "requires_prior_lane_clean": ["adg-p0-blocker-burndown"],
@@ -289,9 +298,11 @@ ADG_HANDOFF_CONTRACTS = {
         "order": 3,
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
+        "requires_digest_bound_handoff_pointer": True,
         "depends_on": [
             "weekly-adg-audit-and-burndown",
             "adg-p0-blocker-burndown",
@@ -308,9 +319,11 @@ ADG_HANDOFF_CONTRACTS = {
         "order": 4,
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
+        "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
+        "requires_digest_bound_handoff_pointer": True,
         "depends_on": [
             "weekly-adg-audit-and-burndown",
             "adg-p0-blocker-burndown",

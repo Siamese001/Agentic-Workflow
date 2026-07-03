@@ -18,13 +18,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "19 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 1,
           "rank": 1,
-          "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-          "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -40,13 +40,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "12 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 2,
           "rank": 2,
-          "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-          "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+          "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -62,13 +62,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "11 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 3,
           "rank": 3,
-          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+          "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -143,17 +143,17 @@
       "priority_rule": "Deletions require dead-code proof; live unresolved-import cleanup outranks archived noise; P2 ceiling work outranks broad cleanup when over ceiling.",
       "secondary_statuses": {
         "Cleanup status": "PASS",
-        "P2 status": "within_ceiling"
+        "P2 status": "over_ceiling"
       },
-      "status": "PRESENT",
+      "status": "DEGRADED",
       "status_label": "Trace status",
       "table_limit": 6,
       "technical_read": [
         "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-        "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+        "The published snapshot is still 29 over the P2 ceiling, so the ratchet remains blocked.",
         "Live cleanup queue rows: 9",
         "Archived cleanup queue rows: 1",
-        "P2 delta: 0"
+        "P2 delta: 29"
       ],
       "title": "BCG Cleanup + P2 Blocker Brief",
       "why_this_order": [
@@ -202,13 +202,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "19 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 1,
           "rank": 1,
-          "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-          "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -224,13 +224,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "12 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 2,
           "rank": 2,
-          "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-          "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+          "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -246,13 +246,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "11 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 3,
           "rank": 3,
-          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+          "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -332,9 +332,9 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07022026_2303.sqlite (snapshot 07022026_2303)",
-        "Dead code candidates: 949",
-        "Dead imports: 949",
+        "ADG source: artifacts/adg/adg_indexed_07032026_0358.sqlite (snapshot 07032026_0358)",
+        "Dead code candidates: 913",
+        "Dead imports: 913",
         "Unresolved imports: 483",
         "First-party low-confidence ratio: 1.56%",
         "Inferred-symbol ratio: 10.15%",
@@ -507,13 +507,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "19 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "13 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 1,
         "rank": 1,
-        "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-        "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -529,13 +529,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "12 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 2,
         "rank": 2,
-        "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-        "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+        "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -551,13 +551,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "11 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 3,
         "rank": 3,
-        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+        "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -633,11 +633,11 @@
     "status": "PASS",
     "summary": {
       "cleanup_candidate_count": 0,
-      "dead_code_candidates": 949,
-      "dead_imports": 949,
+      "dead_code_candidates": 913,
+      "dead_imports": 913,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5596241402693016,
-      "inferred_symbol_ratio": 10.148089081278123,
+      "first_party_low_confidence_ratio": 1.5607328658674509,
+      "inferred_symbol_ratio": 10.147973480965074,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -647,10 +647,10 @@
       ]
     }
   },
-  "generated_at_utc": "2026-07-03T03:20:34+00:00",
+  "generated_at_utc": "2026-07-03T08:14:43+00:00",
   "p2": {
     "brief": {
-      "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+      "business_read": "The published snapshot is still 29 over the P2 ceiling, so the ratchet remains blocked.",
       "decision_gates": [],
       "next_step": "Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.",
       "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
@@ -754,13 +754,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
-          "evidence": "Current count=29; ceiling=29; delta=0.",
+          "evidence": "Current count=29; ceiling=0; delta=29.",
           "move": "Re-run ADG and keep the ceiling honest",
           "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
           "priority": 5,
           "rank": 5,
-          "scope": "adg_indexed_07022026_2303.sqlite",
-          "technical_reason": "Current count=29; ceiling=29; delta=0.",
+          "scope": "p2_ratchet.json",
+          "technical_reason": "Current count=29; ceiling=0; delta=29.",
           "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
           "why_this_rank": "Re-baselining before cleanup only hides the blocker.",
           "work": "Re-run ADG and keep the ceiling honest"
@@ -768,16 +768,16 @@
       ],
       "priority_rule": "Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.",
       "secondary_statuses": {},
-      "status": "WITHIN_CEILING",
+      "status": "OVER_CEILING",
       "status_label": "P2 ratchet status",
       "table_limit": 6,
       "technical_read": [
-        "Published sqlite snapshot: artifacts/adg/adg_indexed_07022026_2303.sqlite",
-        "P2 ceiling: 29",
+        "Published sqlite snapshot: artifacts/adg/adg_indexed_07032026_0358.sqlite",
+        "P2 ceiling: 0",
         "Current MEDIUM hygiene count: 29",
-        "Delta vs ceiling: +0",
-        "Baseline snapshot: adg_indexed_07022026_2303.sqlite",
-        "Latest failed run: 2026-07-03T03:20:34Z (failed)"
+        "Delta vs ceiling: +29",
+        "Baseline snapshot: missing",
+        "Latest failed run: 2026-07-03T08:14:42Z (failed)"
       ],
       "title": "BCG P2 Ratchet Brief",
       "why_this_order": [
@@ -786,7 +786,7 @@
         "Re-baselining too early hides the blocker instead of paying it down."
       ]
     },
-    "business_read": "The published snapshot is at or below the P2 ceiling, so this blocker is cleared.",
+    "business_read": "The published snapshot is still 29 over the P2 ceiling, so the ratchet remains blocked.",
     "evidence_buckets": [
       {
         "count": 12,
@@ -1173,12 +1173,12 @@
         "decision": "rebaseline_if_intentional",
         "decision_options": [],
         "done_condition": "The published count is at or below the ceiling and the baseline reflects the current intent.",
-        "evidence": "Current count=29; ceiling=29; delta=0.",
+        "evidence": "Current count=29; ceiling=0; delta=29.",
         "move": "Re-run ADG and keep the ceiling honest",
         "next_step": "Re-baseline only after the evidence changes are intentional and approved.",
         "priority": 5,
-        "scope": "adg_indexed_07022026_2303.sqlite",
-        "technical_reason": "Current count=29; ceiling=29; delta=0.",
+        "scope": "p2_ratchet.json",
+        "technical_reason": "Current count=29; ceiling=0; delta=29.",
         "why_it_matters": "Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted.",
         "why_this_rank": "Re-baselining before cleanup only hides the blocker."
       }
@@ -1281,15 +1281,15 @@
         "violation_class": "hygiene"
       }
     ],
-    "status": "within_ceiling",
+    "status": "over_ceiling",
     "summary": {
-      "baseline_snapshot": "adg_indexed_07022026_2303.sqlite",
-      "ceiling": 29,
+      "baseline_snapshot": "",
+      "ceiling": 0,
       "current_medium_hygiene_count": 29,
-      "delta": 0,
+      "delta": 29,
       "failed_run_status": "failed",
-      "failed_run_timestamp": "2026-07-03T03:20:34Z",
-      "published_snapshot": "artifacts/adg/adg_indexed_07022026_2303.sqlite"
+      "failed_run_timestamp": "2026-07-03T08:14:42Z",
+      "published_snapshot": "artifacts/adg/adg_indexed_07032026_0358.sqlite"
     }
   },
   "source_snapshots": {
@@ -1312,13 +1312,13 @@
               "decision_options": [],
               "diagram": null,
               "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-              "evidence": "19 resolved dead-import overlay row(s) point at this file.",
+              "evidence": "13 resolved dead-import overlay row(s) point at this file.",
               "move": "Remove confirmed dead imports",
               "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "priority": 1,
               "rank": 1,
-              "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-              "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+              "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+              "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
               "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
               "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "work": "Remove confirmed dead imports"
@@ -1334,13 +1334,13 @@
               "decision_options": [],
               "diagram": null,
               "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-              "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+              "evidence": "12 resolved dead-import overlay row(s) point at this file.",
               "move": "Remove confirmed dead imports",
               "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "priority": 2,
               "rank": 2,
-              "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-              "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+              "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+              "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
               "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
               "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "work": "Remove confirmed dead imports"
@@ -1356,13 +1356,13 @@
               "decision_options": [],
               "diagram": null,
               "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-              "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+              "evidence": "11 resolved dead-import overlay row(s) point at this file.",
               "move": "Remove confirmed dead imports",
               "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "priority": 3,
               "rank": 3,
-              "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-              "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+              "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+              "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
               "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
               "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
               "work": "Remove confirmed dead imports"
@@ -1442,9 +1442,9 @@
           "status_label": "Deletion status",
           "table_limit": 6,
           "technical_read": [
-            "ADG source: artifacts/adg/adg_indexed_07022026_2303.sqlite (snapshot 07022026_2303)",
-            "Dead code candidates: 949",
-            "Dead imports: 949",
+            "ADG source: artifacts/adg/adg_indexed_07032026_0358.sqlite (snapshot 07032026_0358)",
+            "Dead code candidates: 913",
+            "Dead imports: 913",
             "Unresolved imports: 483",
             "First-party low-confidence ratio: 1.56%",
             "Inferred-symbol ratio: 10.15%",
@@ -1471,13 +1471,13 @@
             "decision_options": [],
             "diagram": null,
             "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-            "evidence": "19 resolved dead-import overlay row(s) point at this file.",
+            "evidence": "13 resolved dead-import overlay row(s) point at this file.",
             "move": "Remove confirmed dead imports",
             "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "priority": 1,
             "rank": 1,
-            "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-            "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
+            "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+            "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
             "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
             "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "work": "Remove confirmed dead imports"
@@ -1493,13 +1493,13 @@
             "decision_options": [],
             "diagram": null,
             "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-            "evidence": "14 resolved dead-import overlay row(s) point at this file.",
+            "evidence": "12 resolved dead-import overlay row(s) point at this file.",
             "move": "Remove confirmed dead imports",
             "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "priority": 2,
             "rank": 2,
-            "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-            "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
+            "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+            "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
             "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
             "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "work": "Remove confirmed dead imports"
@@ -1515,13 +1515,13 @@
             "decision_options": [],
             "diagram": null,
             "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-            "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+            "evidence": "11 resolved dead-import overlay row(s) point at this file.",
             "move": "Remove confirmed dead imports",
             "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "priority": 3,
             "rank": 3,
-            "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-            "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+            "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+            "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
             "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
             "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
             "work": "Remove confirmed dead imports"
@@ -1596,11 +1596,11 @@
         "status": "present",
         "summary": {
           "cleanup_candidate_count": 0,
-          "dead_code_candidates": 949,
-          "dead_imports": 949,
+          "dead_code_candidates": 913,
+          "dead_imports": 913,
           "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-          "first_party_low_confidence_ratio": 1.5596241402693016,
-          "inferred_symbol_ratio": 10.148089081278123,
+          "first_party_low_confidence_ratio": 1.5607328658674509,
+          "inferred_symbol_ratio": 10.147973480965074,
           "unresolved_imports": 483,
           "why_this_order": [
             "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -1636,13 +1636,51 @@
         },
         "dead_code_hotspots": [
           [
-            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-            19
+            "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+            13
           ],
           [
-            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-            14
+            "tests/unit/apps_exec/services/test_brief_assembler_service.py",
+            12
           ],
+          [
+            "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
+            11
+          ],
+          [
+            "tools/demo/apps_evidence_demo.py",
+            10
+          ],
+          [
+            "tests/apps_eval/test_apps_eval_integration.py",
+            9
+          ],
+          [
+            "tests/apps_eval/test_eval_to_bus_roundtrip.py",
+            9
+          ],
+          [
+            "tests/unit/apps_exec/services/test_document_ingestion_service.py",
+            9
+          ],
+          [
+            "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+            8
+          ],
+          [
+            "agentic_core/L4_state/utils/memory/case_library.py",
+            8
+          ],
+          [
+            "tests/apps_eval/test_eval_types.py",
+            8
+          ]
+        ],
+        "source": "dead_import_overlay",
+        "total_dead_code_candidates": 913
+      },
+      "dead_imports": {
+        "dead_import_hotspots": [
           [
             "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
             13
@@ -1674,51 +1712,13 @@
           [
             "agentic_core/L3_orchestration/enforcement/mission_runner.py",
             8
-          ]
-        ],
-        "source": "dead_import_overlay",
-        "total_dead_code_candidates": 949
-      },
-      "dead_imports": {
-        "dead_import_hotspots": [
-          [
-            "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
-            19
           ],
           [
-            "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
-            14
+            "agentic_core/L4_state/utils/memory/case_library.py",
+            8
           ],
           [
-            "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-            13
-          ],
-          [
-            "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-            12
-          ],
-          [
-            "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-            11
-          ],
-          [
-            "tools/demo/apps_evidence_demo.py",
-            10
-          ],
-          [
-            "tests/apps_eval/test_apps_eval_integration.py",
-            9
-          ],
-          [
-            "tests/apps_eval/test_eval_to_bus_roundtrip.py",
-            9
-          ],
-          [
-            "tests/unit/apps_exec/services/test_document_ingestion_service.py",
-            9
-          ],
-          [
-            "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+            "tests/apps_eval/test_eval_types.py",
             8
           ]
         ],
@@ -1733,17 +1733,17 @@
         "overlay_dead_imports_by_severity": {},
         "source_counts": {
           "legacy_dead_import_edges": 0,
-          "overlay_dead_import_resolved": 949
+          "overlay_dead_import_resolved": 913
         },
-        "total_dead_imports": 949
+        "total_dead_imports": 913
       },
       "errors": [],
       "executive_readiness": {
         "executive_metrics": {
-          "dead_code_count": 949,
-          "dead_import_count": 949,
-          "first_party_low_confidence_ratio": 1.5596241402693016,
-          "inferred_symbol_ratio": 10.148089081278123,
+          "dead_code_count": 913,
+          "dead_import_count": 913,
+          "first_party_low_confidence_ratio": 1.5607328658674509,
+          "inferred_symbol_ratio": 10.147973480965074,
           "l4_unresolved_import_count": 0,
           "low_confidence_count": 483,
           "unresolved_import_count": 483
@@ -1779,12 +1779,12 @@
           "L_TOOLS": 2349,
           "L_UNKNOWN": 216
         },
-        "inferred_symbol_ratio": 10.148089081278123,
+        "inferred_symbol_ratio": 10.147973480965074,
         "total_inferred_symbols": 17817,
-        "total_symbols": 175570
+        "total_symbols": 175572
       },
       "low_confidence_zones": {
-        "first_party_low_confidence_ratio": 1.5596241402693016,
+        "first_party_low_confidence_ratio": 1.5607328658674509,
         "governance_low_confidence_ratio": 0.0,
         "low_conf_by_entity_type": {
           "symbol": 483
@@ -1804,8 +1804,8 @@
         "total_low_confidence": 483
       },
       "source": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_07022026_2303.sqlite",
-        "adg_snapshot_ts": "07022026_2303",
+        "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0358.sqlite",
+        "adg_snapshot_ts": "07032026_0358",
         "dead_code_signal_sources": [
           "overlay_violations.category=dead_import_resolved",
           "mv_dead_import_hotspots_overlay",
@@ -1815,14 +1815,14 @@
       },
       "status": "PASS",
       "summary": {
-        "adg_snapshot": "artifacts/adg/adg_indexed_07022026_2303.sqlite",
-        "adg_snapshot_ts": "07022026_2303",
+        "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0358.sqlite",
+        "adg_snapshot_ts": "07032026_0358",
         "executive_ready": true,
-        "first_party_low_confidence_ratio": 1.5596241402693016,
-        "inferred_symbol_ratio": 10.148089081278123,
+        "first_party_low_confidence_ratio": 1.5607328658674509,
+        "inferred_symbol_ratio": 10.147973480965074,
         "l4_unresolved_imports": 0,
-        "total_dead_code_candidates": 949,
-        "total_dead_imports": 949,
+        "total_dead_code_candidates": 913,
+        "total_dead_imports": 913,
         "total_low_confidence": 483,
         "total_unresolved_imports": 483
       },
@@ -1889,15 +1889,15 @@
       "deferred_failures": [
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.01599999999962165,
+          "duration_s": 0.014999999999417923,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:03Z",
+          "finished_at_utc": "2026-07-03T08:12:46Z",
           "kind": "validation",
           "message": "P0_layer_violations",
           "name": "p0_violations",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:03Z",
+          "started_at_utc": "2026-07-03T08:12:46Z",
           "status": "deferred_fail"
         }
       ],
@@ -1906,376 +1906,385 @@
           "blocking_mode": "hard_fail",
           "duration_s": null,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:16:53Z",
+          "finished_at_utc": "2026-07-03T08:11:51Z",
           "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260703_031653.json",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_gate_results_20260703_081150.json",
           "name": "adg_gate_dispatcher",
           "phase": "post-commit-validation",
           "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-07-03T03:16:53Z",
+          "started_at_utc": "2026-07-03T08:11:51Z",
+          "status": "fail"
+        },
+        {
+          "blocking_mode": "warn",
+          "duration_s": null,
+          "exit_code": 1,
+          "finished_at_utc": "2026-07-03T08:13:50Z",
+          "kind": "subprocess",
+          "message": "mandatory JSON/YAML review template",
+          "name": "adg_review_template",
+          "phase": "post-ADG",
+          "script_rel": "tools/reports/adg_review_template.py",
+          "started_at_utc": "2026-07-03T08:13:50Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 11.03099999999904,
+          "duration_s": 11.155999999995402,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 27.53099999999904,
+          "duration_s": 28.25,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.4690000000009604,
+          "duration_s": 0.4680000000007567,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         }
       ],
       "gates": [
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.014999999999417923,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:03:07Z",
+          "finished_at_utc": "2026-07-03T07:58:54Z",
           "kind": "python_function",
           "message": null,
           "name": "mcp_config_drift",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:03:07Z",
+          "started_at_utc": "2026-07-03T07:58:54Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.5940000000009604,
+          "duration_s": 0.5780000000013388,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:03:07Z",
+          "finished_at_utc": "2026-07-03T07:58:55Z",
           "kind": "python_function",
           "message": null,
           "name": "wal_checkpoint",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:03:07Z",
+          "started_at_utc": "2026-07-03T07:58:55Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:03:07Z",
+          "finished_at_utc": "2026-07-03T07:58:55Z",
           "kind": "python_function",
           "message": null,
           "name": "locked_files",
           "phase": "preflight",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:03:07Z",
+          "started_at_utc": "2026-07-03T07:58:55Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.0,
+          "duration_s": 0.01599999999598367,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:04:09Z",
+          "finished_at_utc": "2026-07-03T08:07:28Z",
           "kind": "validation",
           "message": null,
           "name": "p2_ratchet",
           "phase": "build",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:04:09Z",
+          "started_at_utc": "2026-07-03T08:07:28Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": null,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:16:53Z",
+          "finished_at_utc": "2026-07-03T08:11:51Z",
           "kind": "subprocess",
-          "message": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260703_031653.json",
+          "message": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_gate_results_20260703_081150.json",
           "name": "adg_gate_dispatcher",
           "phase": "post-commit-validation",
           "script_rel": "ops_scripts/ci/adg_gates/run.py",
-          "started_at_utc": "2026-07-03T03:16:53Z",
+          "started_at_utc": "2026-07-03T08:11:51Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.01599999999962165,
+          "duration_s": 0.014999999999417923,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:03Z",
+          "finished_at_utc": "2026-07-03T08:12:46Z",
           "kind": "validation",
           "message": "P0_layer_violations",
           "name": "p0_violations",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:03Z",
+          "started_at_utc": "2026-07-03T08:12:46Z",
           "status": "deferred_fail"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:03Z",
+          "finished_at_utc": "2026-07-03T08:12:46Z",
           "kind": "validation",
           "message": null,
           "name": "p1_ratchet",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:03Z",
+          "started_at_utc": "2026-07-03T08:12:46Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.25,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:03Z",
+          "finished_at_utc": "2026-07-03T08:12:47Z",
           "kind": "validation",
           "message": null,
           "name": "dead_production_imports",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:03Z",
+          "started_at_utc": "2026-07-03T08:12:47Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.4219999999986612,
+          "duration_s": 0.4530000000013388,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:04Z",
+          "finished_at_utc": "2026-07-03T08:12:47Z",
           "kind": "validation",
           "message": null,
           "name": "structural_conformance",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:04Z",
+          "started_at_utc": "2026-07-03T08:12:47Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.014999999999417923,
+          "duration_s": 0.01599999999598367,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:04Z",
+          "finished_at_utc": "2026-07-03T08:12:47Z",
           "kind": "validation",
           "message": null,
           "name": "agentic_antipatterns",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:04Z",
+          "started_at_utc": "2026-07-03T08:12:47Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
           "duration_s": 0.0,
           "exit_code": null,
-          "finished_at_utc": "2026-07-03T03:18:14Z",
+          "finished_at_utc": "2026-07-03T08:12:58Z",
           "kind": "validation",
           "message": null,
           "name": "witness_tier_gates",
           "phase": "post-commit-validation",
           "script_rel": null,
-          "started_at_utc": "2026-07-03T03:18:14Z",
+          "started_at_utc": "2026-07-03T08:12:58Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:06Z",
+          "finished_at_utc": "2026-07-03T08:13:50Z",
           "kind": "subprocess",
           "message": "mandatory first BCG gate adapter",
           "name": "adg_bcg_adapter",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_bcg_adapter.py",
-          "started_at_utc": "2026-07-03T03:19:06Z",
+          "started_at_utc": "2026-07-03T08:13:50Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:06Z",
+          "finished_at_utc": "2026-07-03T08:13:50Z",
           "kind": "subprocess",
           "message": "mandatory markdown burndown",
           "name": "adg_burndown_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_burndown_report.py",
-          "started_at_utc": "2026-07-03T03:19:06Z",
+          "started_at_utc": "2026-07-03T08:13:50Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
-          "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:06Z",
+          "exit_code": 1,
+          "finished_at_utc": "2026-07-03T08:13:50Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML review template",
           "name": "adg_review_template",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_review_template.py",
-          "started_at_utc": "2026-07-03T03:19:06Z",
-          "status": "pass"
+          "started_at_utc": "2026-07-03T08:13:50Z",
+          "status": "fail"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:06Z",
+          "finished_at_utc": "2026-07-03T08:13:50Z",
           "kind": "subprocess",
           "message": "mandatory JSON dead-code control report",
           "name": "adg_dead_code_report",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_dead_code_report.py",
-          "started_at_utc": "2026-07-03T03:19:06Z",
+          "started_at_utc": "2026-07-03T08:13:50Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:06Z",
+          "finished_at_utc": "2026-07-03T08:13:50Z",
           "kind": "subprocess",
           "message": "mandatory cleanup queue and P2 blocker trace report",
           "name": "adg_cleanup_queue_and_p2_blocker_trace",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
-          "started_at_utc": "2026-07-03T03:19:06Z",
+          "started_at_utc": "2026-07-03T08:13:50Z",
           "status": "pass"
         },
         {
           "blocking_mode": "warn",
           "duration_s": null,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:19:19Z",
+          "finished_at_utc": "2026-07-03T08:13:59Z",
           "kind": "subprocess",
           "message": "mandatory JSON/YAML/Markdown BCG executive synthesis",
           "name": "adg_bcg_executive_summary",
           "phase": "post-ADG",
           "script_rel": "tools/reports/adg_bcg_executive_synthesis.py",
-          "started_at_utc": "2026-07-03T03:19:19Z",
+          "started_at_utc": "2026-07-03T08:13:59Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.18800000000192085,
+          "duration_s": 0.20300000000133878,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": null,
           "name": "wiring",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_expected_wiring.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 11.03099999999904,
+          "duration_s": 11.155999999995402,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Declare the new flag in .env.example, OR allowlist it in config/config_references_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_config_references.py --regenerate-baseline.",
           "name": "config-ref",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_config_references.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 27.53099999999904,
+          "duration_s": 28.25,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Use a `with` statement, assign the opener to self.<attr>, or call .close() explicitly. OR (debt row) regenerate baseline: python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline.",
           "name": "lifecycle",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_lifecycle_pairs.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.4690000000009604,
+          "duration_s": 0.5,
           "exit_code": 0,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": null,
           "name": "except-contract",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_exception_contract.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "pass"
         },
         {
           "blocking_mode": "hard_fail",
-          "duration_s": 0.4690000000009604,
+          "duration_s": 0.4680000000007567,
           "exit_code": 1,
-          "finished_at_utc": "2026-07-03T03:20:34Z",
+          "finished_at_utc": "2026-07-03T08:14:42Z",
           "kind": "subprocess",
           "message": "Add any test under tests/ that imports the new module, OR allowlist in config/test_harness_coverage_allowlist.yaml, OR (debt row) regenerate baseline: python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline.",
           "name": "test-coverage",
           "phase": "post-ADG-subprocess",
           "script_rel": "ops_scripts/ci/check_test_harness_coverage.py",
-          "started_at_utc": "2026-07-03T03:20:34Z",
+          "started_at_utc": "2026-07-03T08:14:42Z",
           "status": "fail"
         }
       ],
       "generation_exit_code": 1,
       "generator_entrypoint": "tools/generate/generate_full_adg.py",
-      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07022026_2303.sqlite",
-      "timestamp": "2026-07-03T03:20:34Z",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_indexed_07032026_0358.sqlite",
+      "timestamp": "2026-07-03T08:14:42Z",
       "unexpected_skips": []
     },
-    "p2_ratchet": {
-      "absorbed_at": "2026-07-03T03:04:09.762537+00:00",
-      "exception_swallow_ceiling": 29,
-      "snapshot": "adg_indexed_07022026_2303.sqlite"
-    },
+    "p2_ratchet": {},
     "sqlite_manifest": {
       "certification_status": "failed",
       "commit_sha": null,
-      "created_at_utc": "2026-07-03T03:20:34Z",
-      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07022026_2303.json",
+      "created_at_utc": "2026-07-03T08:14:42Z",
+      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_gate_invocation_manifest_07032026_0358.json",
       "generation_exit_code": 1,
       "p0_status": "deferred_fail",
       "registry_bucket_edge_count": 0,
       "repo_state_hash": null,
-      "runtime_attested_edge_count": 3867,
-      "runtime_proof_status": "attested",
-      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07022026_2303.sqlite",
-      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07022026_2303.sqlite",
-      "timestamp": "2026-07-03T03:20:34Z"
+      "runtime_attested_edge_count": 0,
+      "runtime_proof_status": "view_present_zero_attested",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_indexed_07032026_0358.sqlite",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-handoff-contract\\artifacts\\adg\\adg_indexed_07032026_0358.sqlite",
+      "timestamp": "2026-07-03T08:14:42Z"
     }
   },
   "sources": {
     "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
-    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_07022026_2303.json",
-    "ratchet": "artifacts/adg/p2_ratchet.json",
-    "sqlite": "artifacts/adg/adg_indexed_07022026_2303.sqlite",
+    "failed_run_manifest": "artifacts/adg/adg_gate_invocation_manifest_07032026_0358.json",
+    "ratchet": "",
+    "sqlite": "artifacts/adg/adg_indexed_07032026_0358.sqlite",
     "sqlite_manifest": "artifacts/adg/adg_generation_manifest_latest.json"
   },
-  "status": "present"
+  "status": "degraded"
 }

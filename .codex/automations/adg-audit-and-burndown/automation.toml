@@ -15,7 +15,7 @@ Downstream release contract:
 - Downstream lanes must not consume overwritten latest files as source of truth when timestamped paths exist.
 - Downstream lanes must not regenerate full ADG, rewrite the receipt, or infer repair_ready from prompt context, newest files, rewritten docs mirrors, or stale latest files.
 - If this run is incomplete, stale, timestamp-inconsistent, or digest-invalid, mark downstream_release_status=blocked and explicitly state that all downstream severity-lane automations must stop or keep polling.
-- If this run is certified or repair_ready with a valid direct receipt, complete repair_handoff, and digest-bound handoff pointer, mark downstream_release_status=ready and name the exact downstream lanes eligible to start next.
+- If this run is certified or repair_ready with a valid direct receipt, complete repair_handoff, and digest-bound handoff pointer, mark downstream_release_status=released and name the exact downstream lanes eligible to start next.
 
 Severity-lane order:
 1. generate_full_adg / full ADG audit produces the receipt and timestamped artifacts.

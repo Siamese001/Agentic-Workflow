@@ -6,7 +6,7 @@ prompt = """
 Run the Agentic-Workflow P0 ADG blocker burndown after the full ADG audit.
 
 Mission:
-Consume the fresh generate_full_adg handoff and clear only P0 FIX blockers. This lane is all-or-nothing: P0 must be 0 before merge. Do not spend time on P1/P2/P3 while P0 is red.
+Consume the fresh generate_full_adg handoff and clear P0 work before lower-severity lanes run. Burn P0 FIX blockers first; when P0_FIX=0 and P0_WAVE>0, continue with the released P0 wave queue instead of treating the run as a no-op. P0 TRACKED BACKLOG remains tracked backlog unless the released queue promotes it. This lane is all-or-nothing: P0 must be 0 before merge. Do not spend time on P1/P2/P3 while P0 is red.
 
 Generate-full-ADG dependency gate:
 - This automation is downstream of the generate_full_adg lane: weekly-adg-audit-and-burndown.
@@ -24,7 +24,7 @@ Generate-full-ADG dependency gate:
 
 Severity-lane order:
 - This is the first downstream severity lane after generate_full_adg.
-- It owns P0 FIX blockers only.
+- It owns P0 FIX blockers first and P0 WAVE queue items second.
 - P1, P2, P3, and any future P4 automation must not edit from the same audit generation until this lane proves P0=0 or explicitly stops with a blocker.
 
 Authority:
@@ -48,6 +48,8 @@ Automation-owned planning and approval:
 Required P0 blocker plan:
 - Read the exact ADG action queue/report and compute current P0 FIX, P0 WAVE, P0 TRACKED BACKLOG, and P0 gate rows before edits.
 - Burn down all P0 FIX queue/report items first.
+- If P0_FIX=0 and P0_WAVE>0, burn down the released P0 WAVE queue in rank order before declaring this lane a no-op or P0 complete.
+- P0 TRACKED BACKLOG is tracked backlog only; report it separately unless the released action queue promotes a tracked item into P0 FIX or P0 WAVE.
 - The plan must identify receipt, snapshot timestamp, action queue path, burndown table/report paths, gate results path, P0 blocker IDs, file/symbol scope when available, validation commands, rollback/skip criteria, and stop conditions.
 - Generate enough bounded waves to plausibly reach P0=0 while keeping each wave small enough to validate and recover.
 - After every wave, run targeted tests plus ADG validation appropriate to the touched surface, recompute remaining P0 from exact artifacts or regenerated digest-bound post-fix artifacts, and continue while P0 remains above 0 and safe P0 candidates remain.
@@ -55,7 +57,7 @@ Required P0 blocker plan:
 
 Required end state:
 - P0=0 before merge.
-- P0=0 means every released P0 FIX gate/item has been burned down and replayed successfully against the exact consumed ADG artifacts or regenerated digest-bound post-fix artifacts preserved in the run receipt.
+- P0=0 means every released P0 FIX gate/item and P0 WAVE queue item has been burned down and replayed successfully against the exact consumed ADG artifacts or regenerated digest-bound post-fix artifacts preserved in the run receipt.
 - If P0 remains above 0, stop as BLOCKED or PARTIAL, do not publish or merge, and report the remaining P0 items as blockers.
 
 Standing approval and stop conditions:
@@ -80,6 +82,8 @@ End-of-run merge/publication:
 
 Closeout:
 - Emit a JSON run receipt when substantial edits occur.
+- Replay the exact timestamped BCG executive summary markdown inline from artifacts/adg/adg_bcg_executive_summary_<adg_run_id>.md before the closeout summary. Inline means rendered directly in chat as normal Markdown headings, bullets, and tables; never wrap the report in fenced code blocks, never emit links-only, and never replace it with a summary. Derive <adg_run_id> only from the validated handoff pointer/receipt, verify the file exists, compute and report its sha256, and never substitute docs mirrors or latest files.
+- Replay the exact timestamped ADG burndown report markdown inline from the digest-bound repair_handoff burndown_report artifact after the BCG output. Inline means rendered directly in chat as normal Markdown headings, bullets, and tables; never wrap the report in fenced code blocks, never emit links-only, and never replace it with a summary. If either inline replay is missing or digest-invalid, report contract drift/incomplete output instead of silently summarizing.
 - Summarize selected P0 source artifacts, changed files, P0 blockers planned/attempted/cleared/remaining, validation commands and results, artifact paths, branch/commit/PR status, merge/publication result, final main/origin state, and blockers.
 - Include an RCA block for any stop/failure.
 """

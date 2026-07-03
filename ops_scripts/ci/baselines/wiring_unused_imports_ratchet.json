@@ -1,9 +1,9 @@
 {
   "gate_id": "S4_unused_imports_ratchet",
   "count": 10777,
-  "seeded_at": "2026-07-03T03:16:58.363246+00:00",
-  "snapshot": "adg_indexed_07022026_2303.sqlite",
+  "seeded_at": "2026-07-03T08:11:52.177798+00:00",
+  "snapshot": "adg_indexed_07032026_0358.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-03T03:17:27.181454+00:00",
-  "last_run_snapshot": "adg_indexed_07022026_2303.sqlite"
+  "last_run_at": "2026-07-03T08:12:16.055453+00:00",
+  "last_run_snapshot": "adg_indexed_07032026_0358.sqlite"
 }
