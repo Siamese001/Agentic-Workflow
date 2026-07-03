@@ -42,6 +42,67 @@ from apps_rg.runtime.run_output_contract import (
 MANDATORY_RUN_OUTPUT_JSON = APPS_RG_MANDATORY_RUN_OUTPUT_JSON
 MANDATORY_RUN_OUTPUT_MD = APPS_RG_MANDATORY_RUN_OUTPUT_MD
 
+INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION = "apps_rg.inline_required_output.v1"
+INLINE_REQUIRED_OUTPUT_SECTION_ORDER = (
+    "bcg",
+    "section_lane_summary_table",
+    "resume_docx_full_version_inline",
+)
+BCG_LOCKED_SECTION_ORDER = (
+    "executive_answer",
+    "p0_p1_px_recommendations",
+    "board_level_readout",
+    "issue_tree",
+    "recommended_next_move",
+    "evidence_map",
+)
+BCG_OUTPUT_KEYS = ("title", "section_order", *BCG_LOCKED_SECTION_ORDER)
+SECTION_LANE_TABLE_COLUMNS = (
+    "order",
+    "section",
+    "r1a",
+    "r1b",
+    "lane_record",
+    "provider_call_attempted",
+    "primary_provider",
+    "primary_model_observed",
+    "pooling_selector_llm",
+    "secondary_provider",
+    "secondary_model_observed",
+    "generation_status",
+    "judges_run",
+    "judge_models_scores",
+    "judge_retry_fallback",
+    "x2",
+    "x3",
+    "past_fail_blocker",
+    "display_output",
+    "l6_evidence",
+)
+INLINE_REQUIRED_OUTPUT_TOP_LEVEL_KEYS = (
+    "schema_version",
+    "immutable_section_order",
+    "bcg",
+    "section_lane_summary_table",
+    "resume_docx_full_version_inline",
+)
+BCG_RECOMMENDATION_COLUMNS = ("priority", "recommendation", "evidence", "gate_outcome")
+BCG_BOARD_READOUT_COLUMNS = ("question", "answer")
+BCG_RECOMMENDATION_ROW_KEYS = BCG_RECOMMENDATION_COLUMNS
+BCG_BOARD_READOUT_ROW_KEYS = BCG_BOARD_READOUT_COLUMNS
+BCG_ISSUE_TREE_ROW_KEYS = (
+    "section",
+    "classification",
+    "root_cause",
+    "evidence",
+    "causal_allocation",
+    "required_implementation_plan",
+)
+BCG_EVIDENCE_MAP_ROW_KEYS = ("label", "path")
+BCG_NESTED_TABLE_KEYS = ("columns", "rows")
+SECTION_LANE_TABLE_KEYS = ("title", "columns", "rows")
+RESUME_DOCX_INLINE_KEYS = ("title", "source", "text")
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -458,7 +519,7 @@ def _briefing_blob(value: Any) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {"briefing_text": text}
 
 
-def _apps_research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, Any]:
+def _research_briefing_context(run_root: Path) -> dict[str, Any]:
     phase1 = _load_json(run_root / "modular_r4" / "phase1_lane_inventory.json")
     targeting = phase1.get("lane_argv_targeting") if isinstance(phase1.get("lane_argv_targeting"), dict) else {}
     briefing = _briefing_blob(targeting.get("briefing_text"))
@@ -469,6 +530,7 @@ def _apps_research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[s
         if "research_delegation_executed" in spine
         else "NOT_OBSERVED"
     )
+    auto_research_internal = ingress.get("auto_research_internal")
     source = _first_nonempty(
         targeting.get("briefing_source"),
         briefing.get("source"),
@@ -496,44 +558,76 @@ def _apps_research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[s
         ingress.get("target_role"),
     )
     briefing_text = _first_nonempty(briefing.get("briefing_text"), targeting.get("briefing_text"), ingress.get("briefing_text"))
-    briefing_present = bool(briefing_text or ref or digest)
-    primary_provider = (
-        "apps_research"
-        if delegation_observed is True
-        else f"briefing_source:{source}" if source != "NOT_OBSERVED" else "NOT_OBSERVED"
-    )
+    return {
+        "auto_research_internal": auto_research_internal,
+        "research_delegation_executed": delegation_observed,
+        "source": source,
+        "digest": digest,
+        "ref": ref,
+        "target_company": company,
+        "target_title": title,
+        "briefing_text": briefing_text,
+        "briefing_text_chars": len(briefing_text) if briefing_text else 0,
+        "fetched_at": _first_nonempty(briefing.get("fetched_at"), targeting.get("fetched_at")),
+        "source_url": _first_nonempty(briefing.get("source_url"), targeting.get("source_url")),
+        "briefing_present": bool(briefing_text or ref or digest),
+    }
+
+
+def _research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, Any]:
+    context = _research_briefing_context(run_root)
+    delegation_observed = context["research_delegation_executed"]
+    auto_research_internal = context.get("auto_research_internal")
+    source = str(context.get("source") or "NOT_OBSERVED")
+    digest = str(context.get("digest") or "")
+    ref = str(context.get("ref") or "")
+    company = str(context.get("target_company") or "")
+    title = str(context.get("target_title") or "")
+    briefing_present = bool(context.get("briefing_present"))
+    p0_static_manual = auto_research_internal is True and delegation_observed is not True
     evidence_parts = [
+        f"auto_research_internal={auto_research_internal}",
         f"research_delegation_executed={delegation_observed}",
         f"source={source}",
     ]
+    if context.get("fetched_at"):
+        evidence_parts.append(f"fetched_at={context['fetched_at']}")
     if digest:
         evidence_parts.append(f"digest={digest}")
     if ref:
         evidence_parts.append(f"ref={ref}")
     if company or title:
         evidence_parts.append(f"target={company or 'UNKNOWN'} / {title or 'UNKNOWN'}")
-    if briefing_text:
-        evidence_parts.append(f"briefing_text_chars={len(briefing_text)}")
+    if context.get("briefing_text_chars"):
+        evidence_parts.append(f"briefing_text_chars={context['briefing_text_chars']}")
     if not briefing_present:
         evidence_parts.append("briefing missing")
     return {
         "order": 0,
-        "section": "apps_research_briefing",
+        "section": "research_briefing_input",
         "r1a": cache["r1a"],
         "r1b": cache["r1b"],
         "lane_record": "YES" if briefing_present else "NO",
         "provider_call_attempted": delegation_observed,
-        "primary_provider": primary_provider,
+        "primary_provider": (
+            "apps_research"
+            if delegation_observed is True
+            else "STATIC_MANUAL_BRIEF" if briefing_present else "NOT_OBSERVED"
+        ),
         "primary_model_observed": "NOT_OBSERVED",
         "pooling_selector_llm": "N/A",
         "secondary_provider": "N/A",
         "secondary_model_observed": "N/A",
-        "generation_status": f"BRIEFING_PRESENT:{source}" if briefing_present else "MISSING_BRIEFING",
+        "generation_status": (
+            "P0_STATIC_MANUAL_BRIEF_USED"
+            if p0_static_manual
+            else f"BRIEFING_PRESENT:{source}" if briefing_present else "MISSING_BRIEFING"
+        ),
         "judges_run": "N/A",
         "judge_models_scores": "N/A",
         "judge_retry_fallback": "N/A",
         "x2": "N/A",
-        "x3": "PASS" if briefing_present else "FAIL",
+        "x3": "FAIL" if p0_static_manual or not briefing_present else "PASS",
         "past_fail_blocker": "; ".join(evidence_parts),
         "display_output": ref or "MISSING",
         "l6_evidence": "N/A",
@@ -611,7 +705,7 @@ def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) ->
     provider_records = _load_provider_call_records(run_root)
     cache = _cache_preflight(run_root)
     by_id = _section_by_id(sections)
-    rows: list[dict[str, Any]] = [_apps_research_briefing_row(run_root, cache)]
+    rows: list[dict[str, Any]] = [_research_briefing_row(run_root, cache)]
     for idx, section_id in enumerate(_generation_ordered_section_ids(sections, provider_records), 1):
         section = by_id.get(section_id, {})
         record = provider_records.get(section_id, {})
@@ -653,12 +747,133 @@ def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) ->
     return rows
 
 
+def _exact_key_order(value: Any, keys: tuple[str, ...]) -> bool:
+    return isinstance(value, dict) and tuple(value.keys()) == keys
+
+
+def _validate_row_keys(rows: Any, keys: tuple[str, ...], label: str) -> list[str]:
+    if not isinstance(rows, list):
+        return [f"{label}.rows_not_list"]
+    errors: list[str] = []
+    for idx, row in enumerate(rows):
+        if not _exact_key_order(row, keys):
+            observed = list(row.keys()) if isinstance(row, dict) else type(row).__name__
+            errors.append(f"{label}[{idx}].keys={observed}")
+    return errors
+
+
+def _inline_required_output_shape_errors(inline: Any) -> list[str]:
+    errors: list[str] = []
+    if not _exact_key_order(inline, INLINE_REQUIRED_OUTPUT_TOP_LEVEL_KEYS):
+        observed = list(inline.keys()) if isinstance(inline, dict) else type(inline).__name__
+        return [f"inline_required_output.keys={observed}"]
+    if inline.get("schema_version") != INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION:
+        errors.append("schema_version")
+    if inline.get("immutable_section_order") != list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER):
+        errors.append("immutable_section_order")
+
+    bcg = inline.get("bcg")
+    if not _exact_key_order(bcg, BCG_OUTPUT_KEYS):
+        observed = list(bcg.keys()) if isinstance(bcg, dict) else type(bcg).__name__
+        errors.append(f"bcg.keys={observed}")
+    else:
+        if bcg.get("title") != "BCG Executive Output - apps_rg Run":
+            errors.append("bcg.title")
+        if bcg.get("section_order") != list(BCG_LOCKED_SECTION_ORDER):
+            errors.append("bcg.section_order")
+        recs = bcg.get("p0_p1_px_recommendations")
+        if not _exact_key_order(recs, BCG_NESTED_TABLE_KEYS):
+            observed = list(recs.keys()) if isinstance(recs, dict) else type(recs).__name__
+            errors.append(f"bcg.p0_p1_px_recommendations.keys={observed}")
+        else:
+            if recs.get("columns") != list(BCG_RECOMMENDATION_COLUMNS):
+                errors.append("bcg.p0_p1_px_recommendations.columns")
+            errors.extend(
+                _validate_row_keys(
+                    recs.get("rows"),
+                    BCG_RECOMMENDATION_ROW_KEYS,
+                    "bcg.p0_p1_px_recommendations.rows",
+                )
+            )
+        board = bcg.get("board_level_readout")
+        if not _exact_key_order(board, BCG_NESTED_TABLE_KEYS):
+            observed = list(board.keys()) if isinstance(board, dict) else type(board).__name__
+            errors.append(f"bcg.board_level_readout.keys={observed}")
+        else:
+            if board.get("columns") != list(BCG_BOARD_READOUT_COLUMNS):
+                errors.append("bcg.board_level_readout.columns")
+            errors.extend(
+                _validate_row_keys(
+                    board.get("rows"),
+                    BCG_BOARD_READOUT_ROW_KEYS,
+                    "bcg.board_level_readout.rows",
+                )
+            )
+        if not isinstance(bcg.get("executive_answer"), str):
+            errors.append("bcg.executive_answer")
+        issue_tree = bcg.get("issue_tree")
+        if not isinstance(issue_tree, list):
+            errors.append("bcg.issue_tree")
+        else:
+            errors.extend(_validate_row_keys(issue_tree, BCG_ISSUE_TREE_ROW_KEYS, "bcg.issue_tree"))
+        next_moves = bcg.get("recommended_next_move")
+        if not isinstance(next_moves, list) or not all(isinstance(item, str) for item in next_moves):
+            errors.append("bcg.recommended_next_move")
+        evidence_map = bcg.get("evidence_map")
+        if not isinstance(evidence_map, list):
+            errors.append("bcg.evidence_map")
+        else:
+            errors.extend(_validate_row_keys(evidence_map, BCG_EVIDENCE_MAP_ROW_KEYS, "bcg.evidence_map"))
+
+    lane_table = inline.get("section_lane_summary_table")
+    if not _exact_key_order(lane_table, SECTION_LANE_TABLE_KEYS):
+        observed = list(lane_table.keys()) if isinstance(lane_table, dict) else type(lane_table).__name__
+        errors.append(f"section_lane_summary_table.keys={observed}")
+    else:
+        if lane_table.get("title") != "Section Lane Summary Table":
+            errors.append("section_lane_summary_table.title")
+        if lane_table.get("columns") != list(SECTION_LANE_TABLE_COLUMNS):
+            errors.append("section_lane_summary_table.columns")
+        errors.extend(
+            _validate_row_keys(
+                lane_table.get("rows"),
+                SECTION_LANE_TABLE_COLUMNS,
+                "section_lane_summary_table.rows",
+            )
+        )
+
+    resume = inline.get("resume_docx_full_version_inline")
+    if not _exact_key_order(resume, RESUME_DOCX_INLINE_KEYS):
+        observed = list(resume.keys()) if isinstance(resume, dict) else type(resume).__name__
+        errors.append(f"resume_docx_full_version_inline.keys={observed}")
+    else:
+        if resume.get("title") != "Resume DOCX Full Version Inline":
+            errors.append("resume_docx_full_version_inline.title")
+        if not isinstance(resume.get("source"), str) or not resume.get("source"):
+            errors.append("resume_docx_full_version_inline.source")
+        if not isinstance(resume.get("text"), str) or not resume.get("text").strip():
+            errors.append("resume_docx_full_version_inline.text")
+    return errors
+
+
 def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
     final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
     rendered = final_out.get("rendered_resume_text") if isinstance(final_out.get("rendered_resume_text"), dict) else {}
     docx = final_out.get("resume_docx") if isinstance(final_out.get("resume_docx"), dict) else {}
     spine = final_out.get("final_resume_json") if isinstance(final_out.get("final_resume_json"), dict) else {}
     lane_table = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
+    inline = doc.get("inline_required_output") if isinstance(doc.get("inline_required_output"), dict) else {}
+    bcg = inline.get("bcg") if isinstance(inline.get("bcg"), dict) else {}
+    recs = bcg.get("p0_p1_px_recommendations") if isinstance(bcg.get("p0_p1_px_recommendations"), dict) else {}
+    rec_rows = recs.get("rows") if isinstance(recs.get("rows"), list) else []
+    rec_priorities = {str(row.get("priority") or "") for row in rec_rows if isinstance(row, dict)}
+    row0 = lane_table[0] if lane_table and isinstance(lane_table[0], dict) else {}
+    resume_inline = (
+        inline.get("resume_docx_full_version_inline")
+        if isinstance(inline.get("resume_docx_full_version_inline"), dict)
+        else {}
+    )
+    shape_errors = _inline_required_output_shape_errors(inline)
     gates = [
         {
             "gate_id": "mandatory_bcg_inline_output_present",
@@ -689,6 +904,53 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
             "pass": bool(docx.get("exists")) and int(docx.get("bytes") or 0) > 0,
             "observed_value": docx,
             "threshold": FINAL_RESUME_DOCX_RELPATH,
+        },
+        {
+            "gate_id": "mandatory_inline_required_json_shape_locked",
+            "pass": not shape_errors,
+            "observed_value": {
+                "schema_version": inline.get("schema_version"),
+                "immutable_section_order": inline.get("immutable_section_order"),
+                "shape_errors": shape_errors,
+            },
+            "threshold": {
+                "schema_version": INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION,
+                "immutable_section_order": list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER),
+                "top_level_keys": list(INLINE_REQUIRED_OUTPUT_TOP_LEVEL_KEYS),
+            },
+        },
+        {
+            "gate_id": "mandatory_bcg_p0_p1_px_recommendations_locked",
+            "pass": (
+                bcg.get("title") == "BCG Executive Output - apps_rg Run"
+                and bcg.get("section_order") == list(BCG_LOCKED_SECTION_ORDER)
+                and {"P0", "P1", "PX"}.issubset(rec_priorities)
+            ),
+            "observed_value": {
+                "title": bcg.get("title"),
+                "section_order": bcg.get("section_order"),
+                "priorities": sorted(rec_priorities),
+            },
+            "threshold": "BCG title + section order + P0/P1/PX recommendations",
+        },
+        {
+            "gate_id": "mandatory_research_briefing_input_row0_locked",
+            "pass": row0.get("order") == 0 and row0.get("section") == "research_briefing_input",
+            "observed_value": {
+                "order": row0.get("order"),
+                "section": row0.get("section"),
+                "generation_status": row0.get("generation_status"),
+            },
+            "threshold": "row 0 research_briefing_input",
+        },
+        {
+            "gate_id": "mandatory_resume_docx_inline_json_present",
+            "pass": bool(str(resume_inline.get("text") or "").strip()),
+            "observed_value": {
+                "title": resume_inline.get("title"),
+                "text_chars": len(str(resume_inline.get("text") or "")),
+            },
+            "threshold": "resume_docx_full_version_inline.text nonempty",
         },
     ]
     for gate in gates:
@@ -1295,6 +1557,333 @@ def _render_resume_inline_lines(doc: dict[str, Any]) -> list[str]:
     ]
 
 
+def _resume_inline_text(doc: dict[str, Any]) -> str:
+    run_root = Path(str(doc.get("run_root_abs") or ""))
+    resume_path = run_root / FINAL_RESUME_OUTPUT_TXT
+    if not resume_path.is_file():
+        return "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]"
+    try:
+        return resume_path.read_text(encoding="utf-8").rstrip() or "[MANDATORY_OUTPUT_EMPTY: FINAL_RESUME_OUTPUT.txt]"
+    except OSError:
+        return "[MANDATORY_OUTPUT_UNREADABLE: FINAL_RESUME_OUTPUT.txt]"
+
+
+def _research_row(doc: dict[str, Any]) -> dict[str, Any]:
+    rows = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
+    for row in rows:
+        if isinstance(row, dict) and row.get("section") == "research_briefing_input":
+            return row
+    return {}
+
+
+def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    final_status = str(final_out.get("status") or "UNKNOWN")
+    failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+    research = _research_row(doc)
+    rows: list[dict[str, str]] = []
+    if research.get("generation_status") == "P0_STATIC_MANUAL_BRIEF_USED":
+        rows.extend(
+            [
+                {
+                    "priority": "P0",
+                    "recommendation": "Fail closed when auto_research_internal=True but apps_research delegation does not execute.",
+                    "evidence": str(research.get("past_fail_blocker") or "research_delegation_executed=False"),
+                    "gate_outcome": "Block before section generation.",
+                },
+                {
+                    "priority": "P0",
+                    "recommendation": "Keep row 0 named research_briefing_input; do not call it apps_research unless apps_research actually ran.",
+                    "evidence": "No apps_research provider/model/run receipt observed for this run.",
+                    "gate_outcome": "Prevent false provenance.",
+                },
+                {
+                    "priority": "P0",
+                    "recommendation": "Require a fresh research artifact or explicit operator skip before resume lanes run.",
+                    "evidence": str(research.get("past_fail_blocker") or "static manual brief"),
+                    "gate_outcome": "Block stale/manual research.",
+                },
+            ]
+        )
+    first_blocker = next(
+        (
+            finding
+            for finding in doc.get("rca_findings", [])
+            if isinstance(finding, dict) and str(finding.get("section") or "") == "competencies"
+        ),
+        None,
+    )
+    if isinstance(first_blocker, dict):
+        rows.append(
+            {
+                "priority": "P0",
+                "recommendation": "Fix competencies first-lane execution failure before scheduling downstream lanes.",
+                "evidence": str(first_blocker.get("evidence") or first_blocker.get("classification") or "competencies blocked"),
+                "gate_outcome": "No downstream lane without upstream authorization.",
+            }
+        )
+    if final_status != "PASS":
+        rows.append(
+            {
+                "priority": "P0",
+                "recommendation": "Keep final resume product gate failed while generated-section gap markers exist.",
+                "evidence": ", ".join(str(x) for x in failed_final) or final_status,
+                "gate_outcome": "Final resume unauthorized.",
+            }
+        )
+    rows.extend(
+        [
+            {
+                "priority": "P1",
+                "recommendation": "Capture provider attempts, retries, fallback, and observed model IDs for failed lanes.",
+                "evidence": "Primary providers may be listed while observed models remain NOT_OBSERVED.",
+                "gate_outcome": "Make failure RCA auditable.",
+            },
+            {
+                "priority": "P1",
+                "recommendation": "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane.",
+                "evidence": "Downstream lanes report prior lane failed / missing run dir.",
+                "gate_outcome": "Show exact upstream repair order.",
+            },
+            {
+                "priority": "PX",
+                "recommendation": "Add a research freshness-age policy.",
+                "evidence": str(research.get("past_fail_blocker") or "briefing freshness not observed"),
+                "gate_outcome": "Warn or block by age threshold.",
+            },
+            {
+                "priority": "PX",
+                "recommendation": "Add research source class to the locked BCG and lane table.",
+                "evidence": str(research.get("primary_provider") or "NOT_OBSERVED"),
+                "gate_outcome": "Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP.",
+            },
+            {
+                "priority": "PX",
+                "recommendation": "Compare latest run to prior passing research wiring when latest run uses a static/manual research path.",
+                "evidence": "Prior runs may use artifacts/apps_research/.../briefing.md while this run used a static JSON brief.",
+                "gate_outcome": "Surface regression automatically.",
+            },
+        ]
+    )
+    return rows
+
+
+def _build_bcg_issue_tree(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    issue_rows: list[dict[str, Any]] = []
+    research = _research_row(doc)
+    if research.get("generation_status") == "P0_STATIC_MANUAL_BRIEF_USED":
+        issue_rows.append(
+            {
+                "section": "research_briefing_input",
+                "classification": "P0_STATIC_MANUAL_BRIEF_USED",
+                "root_cause": "The run carried auto_research_internal=True but did not execute apps_research delegation.",
+                "evidence": [
+                    "research_delegation_executed=False",
+                    str(research.get("past_fail_blocker") or ""),
+                ],
+                "causal_allocation": {},
+                "required_implementation_plan": [
+                    "Add a fail-closed gate requiring research_delegation_executed=True when auto_research_internal=True.",
+                    "Require a fresh apps_research artifact path and run receipt before apps_rg consumes briefing content.",
+                    "Render briefing source, freshness date, and apps_research execution status in row 0.",
+                    "Block resume lane execution unless research is explicitly skipped or freshly completed.",
+                ],
+            }
+        )
+    for finding in doc.get("rca_findings", []):
+        if not isinstance(finding, dict):
+            continue
+        issue_rows.append(
+            {
+                "section": str(finding.get("section") or ""),
+                "classification": str(finding.get("classification") or ""),
+                "root_cause": str(finding.get("root_cause") or ""),
+                "evidence": [str(finding.get("evidence") or "")],
+                "causal_allocation": finding.get("causal_allocation"),
+                "required_implementation_plan": _validated_plan_items(finding),
+            }
+        )
+    return issue_rows
+
+
+def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
+    summary = doc["result_summary"]
+    counts = doc["section_counts"]
+    research = _research_row(doc)
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    final_status = str(final_out.get("status") or "UNKNOWN")
+    authorized = bool(summary.get("outcome_authorized")) and final_status == "PASS"
+    research_status = str(research.get("generation_status") or "NOT_OBSERVED")
+    if research_status == "P0_STATIC_MANUAL_BRIEF_USED":
+        executive_answer = (
+            "The run is blocked and must not authorize a final resume. The first P0 failure is that "
+            "research was expected but apps_research did not run; the run consumed a static manual "
+            "brief instead. Resume generation also failed to produce authorized content: "
+            f"{counts['ran_real_llm']} sections reported REAL_LLM, {counts['pre_run_blocked']} lanes "
+            "were pre-run blocked, and final resume assembly contains gap markers."
+        )
+    elif authorized:
+        executive_answer = "The run reached an authorized product outcome. Preserve the generated outputs and review the run ledger for section and judge proof."
+    else:
+        executive_answer = (
+            "The run is blocked and must not authorize a final resume. Required generation and/or "
+            "final product gates did not clear; use the P0/P1/PX recommendations below as the repair order."
+        )
+    board_rows = [
+        {"question": "Did apps_research run?", "answer": "Yes" if research.get("provider_call_attempted") is True else "No"},
+        {"question": "Research input used", "answer": str(research.get("primary_provider") or "NOT_OBSERVED")},
+        {"question": "Briefing evidence", "answer": str(research.get("past_fail_blocker") or "NOT_OBSERVED")},
+        {"question": "Did resume generation run?", "answer": f"{counts['ran_real_llm']} REAL_LLM section(s)"},
+        {"question": "Final product authorized?", "answer": str(summary.get("outcome_authorized"))},
+        {"question": "Primary blocker", "answer": str(research.get("generation_status") or summary.get("fault") or "NOT_OBSERVED")},
+        {"question": "Decision", "answer": "Do not authorize; fix P0 gates first." if not authorized else "Authorized; preserve evidence."},
+    ]
+    evidence_map = [
+        {"label": "Mandatory run ledger", "path": f"@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_MD}"},
+        {"label": "Machine-readable ledger", "path": f"@{doc['run_root_abs']}\\{MANDATORY_RUN_OUTPUT_JSON}"},
+        {"label": "Final resume text", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_TXT}"},
+        {"label": "Final resume output contract", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}"},
+        {"label": "Resume DOCX", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}"},
+    ]
+    return {
+        "schema_version": INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION,
+        "immutable_section_order": list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER),
+        "bcg": {
+            "title": "BCG Executive Output - apps_rg Run",
+            "section_order": list(BCG_LOCKED_SECTION_ORDER),
+            "executive_answer": executive_answer,
+            "p0_p1_px_recommendations": {
+                "columns": list(BCG_RECOMMENDATION_COLUMNS),
+                "rows": _build_bcg_recommendations(doc),
+            },
+            "board_level_readout": {
+                "columns": list(BCG_BOARD_READOUT_COLUMNS),
+                "rows": board_rows,
+            },
+            "issue_tree": _build_bcg_issue_tree(doc),
+            "recommended_next_move": [
+                "Fix P0 gates before rerun.",
+                "Rerun the integrated apps_rg path only after research and first-lane generation are product-authorized or explicitly skipped.",
+                "Treat final assembly as valid only when every required section and product output is product-authorized.",
+            ],
+            "evidence_map": evidence_map,
+        },
+        "section_lane_summary_table": {
+            "title": "Section Lane Summary Table",
+            "columns": list(SECTION_LANE_TABLE_COLUMNS),
+            "rows": doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else [],
+        },
+        "resume_docx_full_version_inline": {
+            "title": "Resume DOCX Full Version Inline",
+            "source": "FINAL_RESUME_OUTPUT.txt rendered from the same final-resume spine used for outputs/resume.docx.",
+            "text": _resume_inline_text(doc),
+        },
+    }
+
+
+def _render_locked_bcg_from_inline(inline: dict[str, Any], doc: dict[str, Any]) -> str:
+    bcg = inline.get("bcg") if isinstance(inline.get("bcg"), dict) else {}
+    recs = bcg.get("p0_p1_px_recommendations") if isinstance(bcg.get("p0_p1_px_recommendations"), dict) else {}
+    board = bcg.get("board_level_readout") if isinstance(bcg.get("board_level_readout"), dict) else {}
+    lines = [
+        f"# {bcg.get('title') or 'BCG Executive Output - apps_rg Run'}",
+        "",
+        f"Generated: `{doc['generated_at_utc']}`",
+        f"Run root: `@{doc['run_root_abs']}`",
+        "",
+        "## Executive Answer",
+        "",
+        str(bcg.get("executive_answer") or ""),
+        "",
+        "## P0/P1/PX Recommendations",
+        "",
+        "| Priority | Recommendation | Evidence | Gate / Outcome |",
+        "|---|---|---|---|",
+    ]
+    for row in recs.get("rows") if isinstance(recs.get("rows"), list) else []:
+        if not isinstance(row, dict):
+            continue
+        lines.append(
+            "| "
+            f"`{_markdown_table_escape(row.get('priority'))}` | "
+            f"{_markdown_table_escape(row.get('recommendation'))} | "
+            f"`{_markdown_table_escape(row.get('evidence'))}` | "
+            f"{_markdown_table_escape(row.get('gate_outcome'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Board-Level Readout",
+            "",
+            "| Question | Answer |",
+            "|---|---|",
+        ]
+    )
+    for row in board.get("rows") if isinstance(board.get("rows"), list) else []:
+        if not isinstance(row, dict):
+            continue
+        lines.append(
+            f"| {_markdown_table_escape(row.get('question'))} | `{_markdown_table_escape(row.get('answer'))}` |"
+        )
+    lines.extend(["", "## Issue Tree", ""])
+    issue_tree = bcg.get("issue_tree") if isinstance(bcg.get("issue_tree"), list) else []
+    if not issue_tree:
+        lines.append("- No blocking issue tree was generated from section evidence.")
+    for issue in issue_tree:
+        if not isinstance(issue, dict):
+            continue
+        lines.append(
+            f"- `{issue.get('section')}`: {issue.get('classification')}"
+        )
+        lines.append(f"  - Root cause: {issue.get('root_cause') or '-'}")
+        evidence = issue.get("evidence") if isinstance(issue.get("evidence"), list) else []
+        for item in evidence:
+            if str(item).strip():
+                lines.append(f"  - Evidence: `{_markdown_table_escape(item)}`")
+        allocation = issue.get("causal_allocation") if isinstance(issue.get("causal_allocation"), dict) else {}
+        if allocation:
+            lines.append("  - Causal allocation:")
+            lines.append(f"    - Dominant cause: {allocation.get('dominant_cause') or '-'}")
+            if allocation.get("retry_recoverability") or allocation.get("retry_recoverability_reason"):
+                lines.append(
+                    "    - Retry recoverability: "
+                    f"`{allocation.get('retry_recoverability') or '-'}` - "
+                    f"{allocation.get('retry_recoverability_reason') or '-'}"
+                )
+            alloc_rows = allocation.get("allocation") if isinstance(allocation.get("allocation"), list) else []
+            for row in alloc_rows:
+                if not isinstance(row, dict):
+                    continue
+                evidence_refs = ", ".join(str(ref) for ref in row.get("evidence_refs") or [])
+                lines.append(
+                    "    - "
+                    f"`{row.get('domain')}` / `{row.get('causal_role')}` / "
+                    f"`{row.get('work_share')}`: {row.get('root_cause_link')} "
+                    f"Evidence: `{_markdown_table_escape(evidence_refs)}`. "
+                    f"Required work: {row.get('required_work')}"
+                )
+        plan = (
+            issue.get("required_implementation_plan")
+            if isinstance(issue.get("required_implementation_plan"), list)
+            else issue.get("implementation_plan")
+            if isinstance(issue.get("implementation_plan"), list)
+            else []
+        )
+        if plan:
+            lines.append("  - Required implementation plan:")
+            for item in plan:
+                lines.append(f"    - {item}")
+    lines.extend(["", "## Recommended Next Move", ""])
+    for idx, item in enumerate(bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else [], 1):
+        lines.append(f"{idx}. {item}")
+    lines.extend(["", "## Evidence Map", ""])
+    for item in bcg.get("evidence_map") if isinstance(bcg.get("evidence_map"), list) else []:
+        if not isinstance(item, dict):
+            continue
+        lines.append(f"- {item.get('label')}: `{item.get('path')}`")
+    return "\n".join(lines)
+
+
 def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
     summary = doc["result_summary"]
     sections = doc["sections"]
@@ -1584,6 +2173,9 @@ def _render_bcg_markdown(doc: dict[str, Any]) -> str:
 
 
 def _render_bcg_markdown_locked(doc: dict[str, Any]) -> str:
+    inline = doc.get("inline_required_output") if isinstance(doc.get("inline_required_output"), dict) else {}
+    if inline:
+        return _render_locked_bcg_from_inline(inline, doc)
     summary = doc["result_summary"]
     counts = doc["section_counts"]
     rca = doc["rca_findings"]
@@ -1742,6 +2334,7 @@ def build_mandatory_run_output(
             "canonical_final_resume_json": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
         },
     }
+    doc["inline_required_output"] = _build_inline_required_output(doc)
     doc["mandatory_inline_output_gates"] = _inline_output_gates(doc)
     return doc
 

@@ -119,8 +119,32 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert payload["final_resume_output"]["status"] == "FAIL"
     assert payload["section_lane_table"]
     assert payload["section_lane_table"][0]["order"] == 0
-    assert payload["section_lane_table"][0]["section"] == "apps_research_briefing"
+    assert payload["section_lane_table"][0]["section"] == "research_briefing_input"
     assert payload["section_lane_table"][0]["generation_status"] == "MISSING_BRIEFING"
+    inline = payload["inline_required_output"]
+    assert inline["schema_version"] == "apps_rg.inline_required_output.v1"
+    assert inline["immutable_section_order"] == [
+        "bcg",
+        "section_lane_summary_table",
+        "resume_docx_full_version_inline",
+    ]
+    assert inline["bcg"]["title"] == "BCG Executive Output - apps_rg Run"
+    assert inline["bcg"]["section_order"] == [
+        "executive_answer",
+        "p0_p1_px_recommendations",
+        "board_level_readout",
+        "issue_tree",
+        "recommended_next_move",
+        "evidence_map",
+    ]
+    assert {"P0", "P1", "PX"}.issubset(
+        {row["priority"] for row in inline["bcg"]["p0_p1_px_recommendations"]["rows"]}
+    )
+    assert all(
+        gate["pass"]
+        for gate in payload["mandatory_inline_output_gates"]
+        if gate["gate_id"].startswith("mandatory_")
+    )
     assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
     assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
     assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
@@ -136,8 +160,8 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert all(row["root_cause_link"] != row["domain"] for row in allocation["allocation"])
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "BCG Executive Brief" in bcg
-    assert "P0-P1 Opportunities" in bcg
+    assert "BCG Executive Output - apps_rg Run" in bcg
+    assert "P0/P1/PX Recommendations" in bcg
     assert "Evidence mapping failure" in bcg
     assert "Causal allocation" in bcg
     assert "Retry recoverability" in bcg
@@ -208,6 +232,13 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
             }
         },
     )
+    _write_json(
+        run / "ingress_raw.json",
+        {
+            "auto_research_internal": True,
+            "manual_brief": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+        },
+    )
     _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": False})
     lane = run / "modular_r4" / "sections" / "competencies"
     lane.mkdir(parents=True, exist_ok=True)
@@ -232,14 +263,22 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     payload = emitted["payload"]
     briefing = payload["section_lane_table"][0]
     assert briefing["order"] == 0
-    assert briefing["section"] == "apps_research_briefing"
+    assert briefing["section"] == "research_briefing_input"
     assert briefing["provider_call_attempted"] is False
-    assert briefing["primary_provider"] == "briefing_source:RUN_SPECIFIC"
+    assert briefing["primary_provider"] == "STATIC_MANUAL_BRIEF"
     assert briefing["primary_model_observed"] == "NOT_OBSERVED"
-    assert briefing["generation_status"] == "BRIEFING_PRESENT:RUN_SPECIFIC"
+    assert briefing["generation_status"] == "P0_STATIC_MANUAL_BRIEF_USED"
+    assert briefing["x3"] == "FAIL"
+    assert "auto_research_internal=True" in briefing["past_fail_blocker"]
+    assert "research_delegation_executed=False" in briefing["past_fail_blocker"]
     assert "brief-digest-123" in briefing["past_fail_blocker"]
-    assert "briefing_text_chars=48" in briefing["past_fail_blocker"]
+    assert "briefing_text_chars=" in briefing["past_fail_blocker"]
     assert payload["section_lane_table"][1]["section"] == "competencies"
+    assert payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"][0]["priority"] == "P0"
+    assert (
+        payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"][0]["recommendation"]
+        == "Fail closed when auto_research_internal=True but apps_research delegation does not execute."
+    )
     comp = next(row for row in payload["sections"] if row["section"] == "competencies")
     assert comp["status_bucket"] == "pre_run_blocked"
     assert "temperature" in comp["failure_classification"]
@@ -279,9 +318,10 @@ def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(t
     assert summary["fault"] == ""
     assert summary["decisive_status"] == "PASS"
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "BCG Executive Brief" in bcg
-    assert "Final resume product output gate is not PASS" in bcg
-    assert "Fix the P0 blocker rows above" in bcg
+    assert "BCG Executive Output - apps_rg Run" in bcg
+    assert "P0/P1/PX Recommendations" in bcg
+    assert "Keep final resume product gate failed while generated-section gap markers exist." in bcg
+    assert "Fix P0 gates before rerun" in bcg
 
 
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
