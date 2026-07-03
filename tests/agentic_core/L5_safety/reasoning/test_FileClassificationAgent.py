@@ -9,6 +9,7 @@ import pytest
 
 from agentic_core.L5_safety.config import structure_blueprint as structure_blueprint_pkg
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import get_python_files_fast
+from agentic_core.L5_safety.reasoning.file_classification import classification_core as classification_core_mod
 from agentic_core.utils import fs_util as fs_util_mod
 
 
@@ -87,3 +88,80 @@ def test_get_compliant_name_applies_common_suffix_rules(tmp_path: Path) -> None:
     assert agent.get_compliant_name(base, "UTILITY") == "sample_util.py"
     assert agent.get_compliant_name(base, "CONFIG") == "sample_config.py"
     assert agent.get_compliant_name(base, "SCRIPT") is None
+
+
+def test_classify_file_handles_common_priority_branches(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    agent = FileClassificationHealerAgent(project_root=tmp_path)
+    monkeypatch.setattr(
+        classification_core_mod,
+        "tqdm",
+        lambda iterable, **kwargs: iterable,
+        raising=False,
+    )
+
+    assert agent.classify_file(Path(mod.__file__)) == "AGENT"
+    assert agent.classify_file(_write_python_file(tmp_path, "conftest.py", "x = 1\n")) == "IGNORE"
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "not_an_agent.py",
+                "NOT_AN_AGENT\nclass Stub:\n    pass\n",
+            ),
+        )
+        == "STUB"
+    )
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "tests/test_sample.py",
+                "def test_sample():\n    pass\n",
+            ),
+        )
+        == "TEST"
+    )
+    assert agent.classify_file(_write_python_file(tmp_path, "structure_blueprint.py", "VALUE = 1\n")) == "CONFIG"
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "run_tool.py",
+                'if __name__ == "__main__":\n    pass\n',
+            ),
+        )
+        == "SCRIPT"
+    )
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "base_agents/core.py",
+                "class Core:\n    pass\n",
+            ),
+        )
+        == "CLASS"
+    )
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "validators/sample_validator.py",
+                "VALUE = 1\n",
+            ),
+        )
+        == "VALIDATOR"
+    )
+    assert (
+        agent.classify_file(
+            _write_python_file(
+                tmp_path,
+                "helpers/plain_module.py",
+                "def helper():\n    return 1\n",
+            ),
+        )
+        == "UTILITY"
+    )
