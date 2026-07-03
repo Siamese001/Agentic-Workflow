@@ -17,15 +17,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.final_resume_outputs import (
+    build_final_resume_output_contract,
+    emit_final_resume_product_outputs,
+)
 from apps_rg.runtime.full_run_section_status import (
     FINAL_AGGREGATION_LANE,
     LANE_DISPLAY_TXT_CANDIDATES,
     LaneSectionStatusRow,
     collect_full_run_section_status,
-)
-from apps_rg.runtime.final_resume_outputs import (
-    build_final_resume_output_contract,
-    emit_final_resume_product_outputs,
 )
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
@@ -437,6 +437,109 @@ def _cache_preflight(run_root: Path) -> dict[str, str]:
     }
 
 
+def _first_nonempty(*values: Any) -> str:
+    for value in values:
+        text = str(value or "").strip()
+        if text:
+            return text
+    return ""
+
+
+def _briefing_blob(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    text = str(value or "").strip()
+    if not text:
+        return {}
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        return {"briefing_text": text}
+    return parsed if isinstance(parsed, dict) else {"briefing_text": text}
+
+
+def _apps_research_briefing_row(run_root: Path, cache: dict[str, str]) -> dict[str, Any]:
+    phase1 = _load_json(run_root / "modular_r4" / "phase1_lane_inventory.json")
+    targeting = phase1.get("lane_argv_targeting") if isinstance(phase1.get("lane_argv_targeting"), dict) else {}
+    briefing = _briefing_blob(targeting.get("briefing_text"))
+    ingress = _load_json(run_root / "ingress_raw.json")
+    spine = _load_json(run_root / "spine_run_manifest.json")
+    delegation_observed = (
+        spine.get("research_delegation_executed")
+        if "research_delegation_executed" in spine
+        else "NOT_OBSERVED"
+    )
+    source = _first_nonempty(
+        targeting.get("briefing_source"),
+        briefing.get("source"),
+        ingress.get("research_via"),
+        "NOT_OBSERVED",
+    )
+    digest = _first_nonempty(
+        targeting.get("briefing_digest"),
+        briefing.get("briefing_digest"),
+        briefing.get("digest"),
+        ingress.get("brief_hash"),
+    )
+    ref = _first_nonempty(
+        targeting.get("briefing_ref_used"),
+        targeting.get("briefing_artifact_ref"),
+        ingress.get("manual_brief"),
+        ingress.get("manual_brief_path"),
+        ingress.get("briefing_artifact_ref"),
+    )
+    company = _first_nonempty(targeting.get("target_company"), briefing.get("target_company"), ingress.get("target_company"))
+    title = _first_nonempty(
+        targeting.get("target_title"),
+        briefing.get("target_role"),
+        briefing.get("target_title"),
+        ingress.get("target_role"),
+    )
+    briefing_text = _first_nonempty(briefing.get("briefing_text"), targeting.get("briefing_text"), ingress.get("briefing_text"))
+    briefing_present = bool(briefing_text or ref or digest)
+    primary_provider = (
+        "apps_research"
+        if delegation_observed is True
+        else f"briefing_source:{source}" if source != "NOT_OBSERVED" else "NOT_OBSERVED"
+    )
+    evidence_parts = [
+        f"research_delegation_executed={delegation_observed}",
+        f"source={source}",
+    ]
+    if digest:
+        evidence_parts.append(f"digest={digest}")
+    if ref:
+        evidence_parts.append(f"ref={ref}")
+    if company or title:
+        evidence_parts.append(f"target={company or 'UNKNOWN'} / {title or 'UNKNOWN'}")
+    if briefing_text:
+        evidence_parts.append(f"briefing_text_chars={len(briefing_text)}")
+    if not briefing_present:
+        evidence_parts.append("briefing missing")
+    return {
+        "order": 0,
+        "section": "apps_research_briefing",
+        "r1a": cache["r1a"],
+        "r1b": cache["r1b"],
+        "lane_record": "YES" if briefing_present else "NO",
+        "provider_call_attempted": delegation_observed,
+        "primary_provider": primary_provider,
+        "primary_model_observed": "NOT_OBSERVED",
+        "pooling_selector_llm": "N/A",
+        "secondary_provider": "N/A",
+        "secondary_model_observed": "N/A",
+        "generation_status": f"BRIEFING_PRESENT:{source}" if briefing_present else "MISSING_BRIEFING",
+        "judges_run": "N/A",
+        "judge_models_scores": "N/A",
+        "judge_retry_fallback": "N/A",
+        "x2": "N/A",
+        "x3": "PASS" if briefing_present else "FAIL",
+        "past_fail_blocker": "; ".join(evidence_parts),
+        "display_output": ref or "MISSING",
+        "l6_evidence": "N/A",
+    }
+
+
 def _section_by_id(sections: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return {str(section.get("section") or ""): section for section in sections}
 
@@ -508,7 +611,7 @@ def _build_section_lane_table(run_root: Path, sections: list[dict[str, Any]]) ->
     provider_records = _load_provider_call_records(run_root)
     cache = _cache_preflight(run_root)
     by_id = _section_by_id(sections)
-    rows: list[dict[str, Any]] = []
+    rows: list[dict[str, Any]] = [_apps_research_briefing_row(run_root, cache)]
     for idx, section_id in enumerate(_generation_ordered_section_ids(sections, provider_records), 1):
         section = by_id.get(section_id, {})
         record = provider_records.get(section_id, {})

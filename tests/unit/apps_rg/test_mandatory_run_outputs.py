@@ -118,6 +118,9 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert payload["final_resume_output"]["required"] is True
     assert payload["final_resume_output"]["status"] == "FAIL"
     assert payload["section_lane_table"]
+    assert payload["section_lane_table"][0]["order"] == 0
+    assert payload["section_lane_table"][0]["section"] == "apps_research_briefing"
+    assert payload["section_lane_table"][0]["generation_status"] == "MISSING_BRIEFING"
     assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
     assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
     assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
@@ -185,6 +188,27 @@ def test_full_run_section_status_loads_lane_judges(tmp_path: Path) -> None:
 
 def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     run = tmp_path / "anthropic_custom_run"
+    _write_json(
+        run / "modular_r4" / "phase1_lane_inventory.json",
+        {
+            "lane_argv_targeting": {
+                "target_company": "Anthropic",
+                "target_title": "Manager of Applied AI Architecture, Partnerships",
+                "briefing_source": "RUN_SPECIFIC",
+                "briefing_digest": "brief-digest-123",
+                "briefing_ref_used": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+                "briefing_text": json.dumps(
+                    {
+                        "target_company": "Anthropic",
+                        "target_role": "Manager of Applied AI Architecture, Partnerships",
+                        "source": "RUN_SPECIFIC",
+                        "briefing_text": "Partner-enabled enterprise AI adoption briefing.",
+                    }
+                ),
+            }
+        },
+    )
+    _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": False})
     lane = run / "modular_r4" / "sections" / "competencies"
     lane.mkdir(parents=True, exist_ok=True)
     _write_json(
@@ -206,6 +230,16 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     )
 
     payload = emitted["payload"]
+    briefing = payload["section_lane_table"][0]
+    assert briefing["order"] == 0
+    assert briefing["section"] == "apps_research_briefing"
+    assert briefing["provider_call_attempted"] is False
+    assert briefing["primary_provider"] == "briefing_source:RUN_SPECIFIC"
+    assert briefing["primary_model_observed"] == "NOT_OBSERVED"
+    assert briefing["generation_status"] == "BRIEFING_PRESENT:RUN_SPECIFIC"
+    assert "brief-digest-123" in briefing["past_fail_blocker"]
+    assert "briefing_text_chars=48" in briefing["past_fail_blocker"]
+    assert payload["section_lane_table"][1]["section"] == "competencies"
     comp = next(row for row in payload["sections"] if row["section"] == "competencies")
     assert comp["status_bucket"] == "pre_run_blocked"
     assert "temperature" in comp["failure_classification"]
