@@ -17,20 +17,37 @@ if str(REPO_ROOT) not in sys.path:
 
 from tools.adg.run_full_adg_audit import (  # noqa: E402
     RECEIPT_PATH,
+    validate_repair_handoff_pointer,
     validate_repair_handoff_receipt,
 )
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--receipt", type=Path, default=RECEIPT_PATH)
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--receipt", type=Path, default=RECEIPT_PATH)
+    source.add_argument("--handoff-pointer", type=Path)
+    parser.add_argument("--expected-adg-run-id")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of key=value lines.")
     args = parser.parse_args(argv)
 
-    receipt, counts, errors = validate_repair_handoff_receipt(args.receipt)
+    if args.handoff_pointer:
+        receipt, counts, errors = validate_repair_handoff_pointer(
+            args.handoff_pointer,
+            expected_adg_run_id=args.expected_adg_run_id,
+        )
+        source_path = args.handoff_pointer
+        source_key = "handoff_pointer"
+    else:
+        receipt, counts, errors = validate_repair_handoff_receipt(
+            args.receipt,
+            expected_adg_run_id=args.expected_adg_run_id,
+        )
+        source_path = args.receipt
+        source_key = "receipt"
     payload = {
         "ok": not errors,
-        "receipt": str(args.receipt.resolve()),
+        source_key: str(source_path.resolve()),
         "artifact_status": receipt.get("artifact_status") if receipt else None,
         "adg_run_id": receipt.get("adg_run_id") if receipt else None,
         "counts": counts,
@@ -42,7 +59,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ok={str(payload['ok']).lower()}")
         print(f"artifact_status={payload['artifact_status']}")
         print(f"adg_run_id={payload['adg_run_id']}")
-        for key in ("P0_FIX", "P1_FIX", "P1_RATCHET_REGRESSION", "P1_RATCHET_FLOOR_BACKLOG"):
+        for key in (
+            "P0_FIX",
+            "P0_WAVE",
+            "P0_TRACKED_BACKLOG",
+            "P1_FIX",
+            "P1_RATCHET_REGRESSION",
+            "P1_RATCHET_FLOOR_BACKLOG",
+        ):
             print(f"{key}={counts[key]}")
         for error in errors:
             print(f"error={error}", file=sys.stderr)

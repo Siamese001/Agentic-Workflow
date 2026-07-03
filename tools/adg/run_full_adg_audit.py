@@ -35,6 +35,8 @@ if str(REPO_ROOT) not in sys.path:
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 RECEIPT_PATH = REPO_ROOT / "docs" / "reports" / "adg" / "AUDIT_PIPELINE_RECEIPT.json"
 RECEIPT_SCHEMA_VERSION = "adg-audit-pipeline-receipt/v1"
+REPAIR_HANDOFF_SCHEMA_VERSION = "adg-repair-handoff/v1"
+REPAIR_HANDOFF_POINTER_SCHEMA_VERSION = "adg-repair-handoff-pointer/v1"
 REPAIR_ARTIFACT_KEYS: tuple[str, ...] = (
     "snapshot",
     "gate_results",
@@ -163,6 +165,17 @@ def _artifact_ref(key: str, path: Path) -> dict[str, Any]:
         "artifact_key": key,
         "path": str(resolved),
         "sha256": _sha256(resolved),
+    }
+
+
+def _repair_handoff_counts() -> dict[str, int]:
+    return {
+        "P0_FIX": 0,
+        "P0_WAVE": 0,
+        "P0_TRACKED_BACKLOG": 0,
+        "P1_FIX": 0,
+        "P1_RATCHET_REGRESSION": 0,
+        "P1_RATCHET_FLOOR_BACKLOG": 0,
     }
 
 
@@ -632,22 +645,23 @@ def _p0_p1_fix_count(action_queue: dict[str, Any]) -> int:
 
 
 def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -> dict[str, int]:
-    from tools.reports.gate_signal_catalog import display_verdict_sub  # noqa: PLC0415
+    from tools.reports.gate_signal_catalog import display_verdict, display_verdict_sub  # noqa: PLC0415
 
-    counts = {
-        "P0_FIX": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
-    }
+    counts = _repair_handoff_counts()
     for action in action_queue.get("actions") or []:
-        if action.get("verdict_cluster") != "FIX":
+        cluster = action.get("verdict_cluster")
+        if cluster == "P0_WAVE" and action.get("sort_band") == "P0":
+            counts["P0_WAVE"] += 1
+            continue
+        if cluster != "FIX":
             continue
         if action.get("sort_band") == "P0":
             counts["P0_FIX"] += 1
         elif action.get("sort_band") == "P1":
             counts["P1_FIX"] += 1
     for gate in gate_results.get("gates") or []:
+        if gate.get("band") == "P0" and display_verdict(gate) == "TRACK":
+            counts["P0_TRACKED_BACKLOG"] += 1
         if gate.get("band") != "P1" or gate.get("enforcement") != "ratchet":
             continue
         sub = display_verdict_sub(gate)
@@ -769,12 +783,7 @@ def _build_repair_handoff(
             errors.append(f"{key} is degraded pre-dispatch fallback and not downstream-consumable: {path}")
         artifacts[key] = _artifact_ref(key, path)
 
-    counts = {
-        "P0_FIX": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
-    }
+    counts = _repair_handoff_counts()
     artifact_status = "incomplete"
     if action_queue_path and gate_results_path:
         try:
@@ -800,27 +809,48 @@ def _build_repair_handoff(
     return artifact_status, handoff, errors
 
 
+def _artifact_generator_run_stamp(path: Path, key: str) -> str | None:
+    expected = {
+        "snapshot": ("adg_indexed_", ".sqlite"),
+        "generation_manifest": ("adg_generation_manifest_", ".json"),
+        "gate_manifest": ("adg_gate_invocation_manifest_", ".json"),
+        "action_queue": ("adg_action_queue_", ".json"),
+        "burndown_report": ("adg_burndown_report_", ".md"),
+        "burndown_table": ("adg_burndown_table_", ".json"),
+    }
+    if key not in expected:
+        return None
+    prefix, suffix = expected[key]
+    return _stamp_from_artifact_name(path, prefix=prefix, suffix=suffix)
+
+
 def validate_repair_handoff_receipt(
     receipt_path: Path = RECEIPT_PATH,
+    *,
+    expected_adg_run_id: str | None = None,
+    expected_receipt_sha256: str | None = None,
 ) -> tuple[dict[str, Any] | None, dict[str, int], list[str]]:
     errors: list[str] = []
-    counts = {
-        "P0_FIX": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
-    }
+    counts = _repair_handoff_counts()
     try:
         receipt = _load_json(receipt_path)
     except (OSError, json.JSONDecodeError) as exc:
         return None, counts, [f"receipt unreadable or malformed: {exc}"]
 
+    if expected_receipt_sha256 and _sha256(receipt_path) != expected_receipt_sha256:
+        errors.append("receipt sha256 mismatch with handoff pointer")
     if receipt.get("schema_version") != RECEIPT_SCHEMA_VERSION:
         errors.append("unsupported or missing schema_version")
     if receipt.get("artifact_status") not in {"certified", "repair_ready"}:
         errors.append(f"artifact_status not consumable: {receipt.get('artifact_status')!r}")
     if receipt.get("artifact_status_source") != "direct":
         errors.append("artifact_status_source must be direct")
+    receipt_run_id = receipt.get("adg_run_id")
+    if expected_adg_run_id and receipt_run_id != expected_adg_run_id:
+        errors.append(
+            f"receipt adg_run_id {receipt_run_id!r} does not match expected {expected_adg_run_id!r}"
+        )
+    artifact_run_id = expected_adg_run_id or (receipt_run_id if isinstance(receipt_run_id, str) else None)
 
     handoff = receipt.get("repair_handoff")
     if not isinstance(handoff, dict):
@@ -849,6 +879,9 @@ def validate_repair_handoff_receipt(
             continue
         if not _is_timestamped_artifact(path, key):
             errors.append(f"{key} latest-only or untimestamped path rejected: {path}")
+        stamp = _artifact_generator_run_stamp(path, key)
+        if artifact_run_id and stamp and stamp != artifact_run_id:
+            errors.append(f"{key} run stamp {stamp!r} does not match receipt adg_run_id {artifact_run_id!r}")
         if not isinstance(raw_digest, str) or len(raw_digest) != 64:
             errors.append(f"{key} sha256 missing or malformed")
             continue
@@ -919,6 +952,84 @@ def validate_repair_handoff_receipt(
 
     if handoff.get("validation_errors"):
         errors.append("producer recorded repair_handoff validation_errors")
+    return receipt, counts, sorted(set(errors))
+
+
+def _resolve_handoff_pointer(pointer_path: Path) -> tuple[dict[str, Any] | None, list[str]]:
+    errors: list[str] = []
+    try:
+        pointer = _load_json(pointer_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        return None, [f"handoff pointer unreadable or malformed: {exc}"]
+
+    schema = pointer.get("schema_version")
+    if schema == REPAIR_HANDOFF_SCHEMA_VERSION:
+        return pointer, []
+    if schema != REPAIR_HANDOFF_POINTER_SCHEMA_VERSION:
+        return None, [f"unsupported handoff pointer schema_version: {schema!r}"]
+
+    raw_path = pointer.get("handoff_path")
+    raw_digest = pointer.get("handoff_sha256")
+    if not isinstance(raw_path, str) or not raw_path:
+        return None, ["handoff_path missing"]
+    handoff_path = _abs(Path(raw_path))
+    if not handoff_path.is_file():
+        return None, [f"handoff_path does not exist: {handoff_path}"]
+    if not isinstance(raw_digest, str) or len(raw_digest) != 64:
+        errors.append("handoff_sha256 missing or malformed")
+    elif _sha256(handoff_path) != raw_digest:
+        errors.append("handoff sha256 mismatch")
+    try:
+        handoff_doc = _load_json(handoff_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"handoff document unreadable or malformed: {exc}")
+        return None, errors
+    if handoff_doc.get("schema_version") != REPAIR_HANDOFF_SCHEMA_VERSION:
+        errors.append("handoff document schema_version mismatch")
+    if pointer.get("adg_run_id") != handoff_doc.get("adg_run_id"):
+        errors.append("latest pointer adg_run_id differs from immutable handoff")
+    return handoff_doc, errors
+
+
+def validate_repair_handoff_pointer(
+    pointer_path: Path,
+    *,
+    expected_adg_run_id: str | None = None,
+) -> tuple[dict[str, Any] | None, dict[str, int], list[str]]:
+    handoff_doc, errors = _resolve_handoff_pointer(pointer_path)
+    counts = _repair_handoff_counts()
+    if handoff_doc is None:
+        return None, counts, sorted(set(errors))
+
+    handoff_run_id = handoff_doc.get("adg_run_id")
+    if expected_adg_run_id and handoff_run_id != expected_adg_run_id:
+        errors.append(
+            f"handoff adg_run_id {handoff_run_id!r} does not match expected {expected_adg_run_id!r}"
+        )
+    if handoff_doc.get("downstream_release_status") != "ready":
+        errors.append(f"downstream_release_status not ready: {handoff_doc.get('downstream_release_status')!r}")
+
+    receipt_ref = handoff_doc.get("receipt")
+    if not isinstance(receipt_ref, dict):
+        errors.append("handoff receipt ref missing or malformed")
+        return handoff_doc, counts, sorted(set(errors))
+    raw_receipt_path = receipt_ref.get("path")
+    raw_receipt_digest = receipt_ref.get("sha256")
+    if not isinstance(raw_receipt_path, str) or not raw_receipt_path:
+        errors.append("handoff receipt path missing")
+        return handoff_doc, counts, sorted(set(errors))
+    if not isinstance(raw_receipt_digest, str) or len(raw_receipt_digest) != 64:
+        errors.append("handoff receipt sha256 missing or malformed")
+        raw_receipt_digest = None
+
+    receipt, counts, receipt_errors = validate_repair_handoff_receipt(
+        _abs(Path(raw_receipt_path)),
+        expected_adg_run_id=expected_adg_run_id or (handoff_run_id if isinstance(handoff_run_id, str) else None),
+        expected_receipt_sha256=raw_receipt_digest,
+    )
+    errors.extend(receipt_errors)
+    if receipt and receipt.get("repair_handoff") != handoff_doc.get("repair_handoff"):
+        errors.append("receipt repair_handoff differs from immutable handoff")
     return receipt, counts, sorted(set(errors))
 
 
@@ -1067,6 +1178,73 @@ def _run_report(
     return proc.returncode
 
 
+def _default_incomplete_handoff() -> dict[str, Any]:
+    return {
+        "status": "incomplete",
+        "artifacts": {},
+        "counts": _repair_handoff_counts(),
+        "validation_errors": ["repair_handoff was not built"],
+    }
+
+
+def _downstream_release_status(result: WrapperResult) -> str:
+    handoff = result.repair_handoff or {}
+    if result.artifact_status not in {"certified", "repair_ready"}:
+        return "blocked"
+    if result.artifact_status_source != "direct":
+        return "blocked"
+    if handoff.get("validation_errors"):
+        return "blocked"
+    return "ready"
+
+
+def _handoff_paths(adg_run_id: str) -> tuple[Path, Path]:
+    directory = ARTIFACTS_ADG / "handoffs"
+    return (
+        directory / f"adg_repair_handoff_{adg_run_id}.json",
+        directory / "adg_repair_handoff_latest.json",
+    )
+
+
+def _write_repair_handoff_pointer(result: WrapperResult, receipt_sha256: str) -> None:
+    if not result.adg_run_id:
+        return
+    handoff_path, latest_pointer_path = _handoff_paths(result.adg_run_id)
+    handoff_path.parent.mkdir(parents=True, exist_ok=True)
+    handoff_doc = {
+        "schema_version": REPAIR_HANDOFF_SCHEMA_VERSION,
+        "adg_run_id": result.adg_run_id,
+        "receipt": {
+            "path": str(RECEIPT_PATH.resolve()),
+            "sha256": receipt_sha256,
+        },
+        "artifact_status": result.artifact_status,
+        "artifact_status_source": result.artifact_status_source,
+        "downstream_release_status": _downstream_release_status(result),
+        "started_at_utc": result.started_at_utc,
+        "completed_at_utc": result.completed_at_utc,
+        "repair_handoff": result.repair_handoff or _default_incomplete_handoff(),
+    }
+    handoff_path.write_text(json.dumps(handoff_doc, indent=2) + "\n", encoding="utf-8")
+    handoff_sha256 = _sha256(handoff_path)
+    latest_pointer = {
+        "schema_version": REPAIR_HANDOFF_POINTER_SCHEMA_VERSION,
+        "adg_run_id": result.adg_run_id,
+        "handoff_path": str(handoff_path.resolve()),
+        "handoff_sha256": handoff_sha256,
+        "receipt_path": str(RECEIPT_PATH.resolve()),
+        "receipt_sha256": receipt_sha256,
+        "artifact_status": result.artifact_status,
+        "downstream_release_status": _downstream_release_status(result),
+    }
+    latest_pointer_path.write_text(json.dumps(latest_pointer, indent=2) + "\n", encoding="utf-8")
+    try:
+        display = handoff_path.relative_to(REPO_ROOT)
+    except ValueError:
+        display = handoff_path
+    print(f"[audit] wrote repair handoff pointer: {display}")
+
+
 def _write_receipt(result: WrapperResult) -> None:
     RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -1083,14 +1261,10 @@ def _write_receipt(result: WrapperResult) -> None:
         "adg_run_id": result.adg_run_id,
         "started_at_utc": result.started_at_utc,
         "completed_at_utc": result.completed_at_utc,
-        "repair_handoff": result.repair_handoff or {
-            "status": "incomplete",
-            "artifacts": {},
-            "counts": {},
-            "validation_errors": ["repair_handoff was not built"],
-        },
+        "repair_handoff": result.repair_handoff or _default_incomplete_handoff(),
     }
     RECEIPT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    _write_repair_handoff_pointer(result, _sha256(RECEIPT_PATH))
     try:
         display = RECEIPT_PATH.relative_to(REPO_ROOT)
     except ValueError:

@@ -780,6 +780,67 @@ def _build_test_handoff(
     return status, handoff, receipt
 
 
+def _wrapper_result_for_handoff(
+    *,
+    status: str,
+    handoff: dict,
+    run_id: str = "06252026_0101",
+) -> wrapper.WrapperResult:
+    return wrapper.WrapperResult(
+        certification_status="clean" if status == "certified" else "failed",
+        generator_exit_code=0 if status == "certified" else 1,
+        report_exit_code=0,
+        generation_manifest_path=None,
+        gate_manifest_path=None,
+        runtime_proof_status="attested",
+        reasons=[] if status == "certified" else ["test failure"],
+        artifact_status=status,
+        artifact_status_source="direct",
+        adg_run_id=run_id,
+        started_at_utc="2026-06-25T01:00:00Z",
+        completed_at_utc="2026-06-25T01:02:00Z",
+        repair_handoff=handoff,
+    )
+
+
+def test_repair_counts_split_p0_fix_wave_and_backlog():
+    action_queue = {
+        "actions": [
+            {"verdict_cluster": "FIX", "sort_band": "P0"},
+            {"verdict_cluster": "P0_WAVE", "sort_band": "P0"},
+            {"verdict_cluster": "FIX", "sort_band": "P1"},
+        ]
+    }
+    gate_results = {
+        "gates": [
+            _gate_result(
+                "G_REACH_l0_reachability",
+                band="P0",
+                enforcement="ratchet",
+                classification="pass",
+                violation_count=10,
+                baseline_count=10,
+            ),
+            _gate_result(
+                "O_tool_call_parity_ratchet",
+                band="P1",
+                enforcement="ratchet",
+                classification="regressed",
+                violation_count=2,
+                baseline_count=1,
+            ),
+        ]
+    }
+
+    counts = wrapper._repair_counts(action_queue, gate_results)
+
+    assert counts["P0_FIX"] == 1
+    assert counts["P0_WAVE"] == 1
+    assert counts["P0_TRACKED_BACKLOG"] == 1
+    assert counts["P1_FIX"] == 1
+    assert counts["P1_RATCHET_REGRESSION"] == 1
+
+
 def test_repair_handoff_certified_status(temp_artifacts, monkeypatch):
     status, handoff, receipt = _build_test_handoff(
         temp_artifacts,
@@ -791,6 +852,8 @@ def test_repair_handoff_certified_status(temp_artifacts, monkeypatch):
     assert status == "certified"
     assert handoff["counts"] == {
         "P0_FIX": 0,
+        "P0_WAVE": 0,
+        "P0_TRACKED_BACKLOG": 0,
         "P1_FIX": 0,
         "P1_RATCHET_REGRESSION": 0,
         "P1_RATCHET_FLOOR_BACKLOG": 0,
@@ -830,6 +893,8 @@ def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypat
     assert status == "repair_ready"
     assert handoff["counts"] == {
         "P0_FIX": 1,
+        "P0_WAVE": 0,
+        "P0_TRACKED_BACKLOG": 0,
         "P1_FIX": 1,
         "P1_RATCHET_REGRESSION": 1,
         "P1_RATCHET_FLOOR_BACKLOG": 1,
@@ -876,6 +941,8 @@ def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
     assert Path(handoff["artifacts"]["action_queue"]["path"]).is_file()
     assert handoff["counts"] == {
         "P0_FIX": 1,
+        "P0_WAVE": 0,
+        "P0_TRACKED_BACKLOG": 0,
         "P1_FIX": 0,
         "P1_RATCHET_REGRESSION": 0,
         "P1_RATCHET_FLOOR_BACKLOG": 0,
@@ -896,6 +963,65 @@ def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
     assert rc == 0
     assert '"ok": true' in captured.out
     assert '"artifact_status": "repair_ready"' in captured.out
+
+
+def test_repair_handoff_pointer_validates_exact_receipt(temp_artifacts, monkeypatch, capsys):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    receipt, counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert errors == []
+    assert receipt is not None
+    assert counts["P0_FIX"] == 1
+
+    rc = consume_adg_repair_handoff.main(["--handoff-pointer", str(pointer), "--json"])
+    captured = capsys.readouterr()
+    assert rc == 0
+    assert '"ok": true' in captured.out
+    assert '"handoff_pointer":' in captured.out
+
+
+def test_repair_handoff_pointer_rejects_overwritten_receipt(temp_artifacts, monkeypatch):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+    receipt_payload = json.loads(wrapper.RECEIPT_PATH.read_text(encoding="utf-8"))
+    receipt_payload["adg_run_id"] = "06252026_9999"
+    wrapper.RECEIPT_PATH.write_text(json.dumps(receipt_payload), encoding="utf-8")
+
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert any("receipt sha256 mismatch" in error for error in errors)
+    assert any("receipt adg_run_id" in error for error in errors)
+
+
+def test_repair_handoff_pointer_rejects_missing_timestamped_artifact(temp_artifacts, monkeypatch):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+    action_queue = Path(handoff["artifacts"]["action_queue"]["path"])
+    action_queue.unlink()
+
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert any("action_queue path does not exist" in error for error in errors)
 
 
 def test_repair_handoff_incomplete_when_required_artifact_stale(temp_artifacts, monkeypatch):
