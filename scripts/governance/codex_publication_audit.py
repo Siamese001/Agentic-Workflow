@@ -20,6 +20,7 @@ from worktree_hygiene import (
     summarize_single_main_worktree_issues,
     verify_single_main_worktree,
 )
+import codex_main_closeout
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_AUTOMATION_CONTRACT = REPO_ROOT / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml"
@@ -157,6 +158,7 @@ def build_publication_audit(
     branch_limit: int = 100,
     require_ancestor_cleanup: bool = False,
     require_single_main_worktree: bool = False,
+    require_publication_closeout: bool = False,
     require_pr_flow: bool = False,
     expected_worktree_path: Path | None = None,
     automation_contract_path: Path | None = None,
@@ -188,6 +190,17 @@ def build_publication_audit(
             "rule": "PR flow contract is advisory unless --require-pr-flow is supplied.",
         }
     )
+    closeout = codex_main_closeout.build_closeout_report(
+        root,
+        expected_path=expected_worktree_path,
+        base_ref=base_ref,
+        fetch=False,
+        apply=False,
+    )
+    publication_closeout = dict(closeout.get("publication_closeout") or {})
+    publication_closeout["required"] = require_publication_closeout
+    workspace_topology_closeout = dict(closeout.get("workspace_topology_closeout") or {})
+    workspace_topology_closeout["required"] = require_single_main_worktree
 
     blockers: list[str] = []
     warnings: list[str] = []
@@ -222,6 +235,8 @@ def build_publication_audit(
             blockers.append("single_main_worktree_violation")
         else:
             warnings.append("single_main_worktree_violation")
+    if require_publication_closeout and publication_closeout.get("status") != "PASS":
+        blockers.append("publication_closeout_violation")
     if require_pr_flow and not pr_flow.get("clean"):
         blockers.append("pr_flow_contract_violation")
 
@@ -280,6 +295,8 @@ def build_publication_audit(
             "summary": summarize_single_main_worktree_issues(single_main_issues),
             "rule": "Post-PR local closeout requires exactly one clean main worktree at the expected repo path, with HEAD equal to the base ref.",
         },
+        "publication_closeout": publication_closeout,
+        "workspace_topology_closeout": workspace_topology_closeout,
         "pr_flow": pr_flow,
         "unmerged_branches": unmerged,
     }
@@ -300,6 +317,11 @@ def parse_args() -> argparse.Namespace:
         "--require-single-main-worktree",
         action="store_true",
         help="Fail unless the local repo is exactly one clean main worktree.",
+    )
+    parser.add_argument(
+        "--require-publication-closeout",
+        action="store_true",
+        help="Fail unless publication closeout passes, independent of workspace topology hygiene.",
     )
     parser.add_argument(
         "--require-pr-flow",
@@ -329,6 +351,7 @@ def main() -> int:
         branch_limit=args.branch_limit,
         require_ancestor_cleanup=args.require_ancestor_cleanup,
         require_single_main_worktree=args.require_single_main_worktree,
+        require_publication_closeout=args.require_publication_closeout,
         require_pr_flow=args.require_pr_flow,
         expected_worktree_path=args.expected_worktree_path,
         automation_contract_path=args.automation_contract,

@@ -17,9 +17,9 @@ Unified skill that consolidates `dependency-graph-analysis`, `scope-guard`, and 
 
 | Query type | Required tool | grep allowed? | Degraded fallback |
 |---|---|---|---|
-| imports / consumers / blast radius / fanin / fanout | `adg_sqlite` fanin/fanout | **FORBIDDEN** | Only after `mcp__adg_sqlite__adg_health` red — emit `DEGRADED_FALLBACK: reason=...` |
+| imports / consumers / blast radius / fanin / fanout | `adg_sqlite` fanin/fanout | **FORBIDDEN** | None for ordinary T2/T3 work. If health/transport is red, stop for ADG recovery/RCA. SQLite direct is limited to explicit recovery/diagnostics or named CI parity with `DEGRADED_FALLBACK: reason=...`. |
 | function / class / constant name in `*.py` | `adg_sqlite` find_node | **FORBIDDEN** | Same |
-| Layer analysis (L0–L6) | `adg_sqlite` nodes_by_layer | **FORBIDDEN** | Same |
+| Layer analysis (L0-L6) | `adg_sqlite` nodes_by_layer | **FORBIDDEN** | Same |
 | Refactoring hotspots / centrality / chokepoints / critical paths | `adg_sqlite` SQL query on `mv_*` materialized views (e.g. `mv_graph_reverse_dependency_hotspots`, `mv_hotspot_centrality`, `mv_graph_chokepoint_bridges`, `mv_debt_concentration_hotspots`) | **FORBIDDEN** | Fallback: manual `adg_edge_fanin` walk — must cite why MV is unavailable |
 | Pre-classified concerns (apps→infra, layer bypass, mis-layered, duplicated adapters, etc.) | `adg_sqlite` SQL query on `v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*` P-views | **FORBIDDEN** | — |
 | Dataflow / side-effects / call resolution (what reads/writes X, what triggers Y, who calls Z) | `adg_sqlite` semantic edges: `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite` | **FORBIDDEN** | — |
@@ -33,8 +33,8 @@ pre-built P-views (`v_p0_*`..`v_p3_*`), and semantic edges are the PRIMARY
 analysis primitives. Using only the raw `edges`/`violations` tables is
 **insufficient** and fails the `check_graph_layer_evidence.py` CI gate.
 
-**Health-first rule**: if `adg_sqlite` may be unhealthy, call `mcp__adg_sqlite__adg_health` BEFORE any grep fallback.
-**Silent degraded fallback** (grep for graph queries without health check + reason code) = **policy violation** (`severity: critical`).
+**Health-first rule**: call `mcp__adg_sqlite__adg_health` before graph work. If health or active-session transport is red/closed/callability-unproven, stop for ADG recovery/RCA before ordinary T2/T3 work.
+**Silent degraded fallback** (local inspection, grep, or direct SQLite for graph queries without an explicit permitted recovery/diagnostic/CI-parity reason code) = **policy violation** (`severity: critical`).
 
 **Before calling `grep_search` for ANY dependency/import/consumer/reference query, STOP.**
 **Read `tool_routing_decision_tree.md` and use ADG MCP tools instead.**
@@ -44,7 +44,7 @@ For ALL dependency analysis: `mcp__adg_sqlite__adg_nodes_by_file` → `mcp__adg_
 
 ### Canonical retrieval ladder (ADG)
 
-**One line:** Redis warm projection → **`adg_sqlite` MCP** read-only gateway → SQLite direct only with **`DEGRADED_FALLBACK: reason=<…>`** unless matching a **named CI parity script**.
+**One line:** Redis warm projection -> **`adg_sqlite` MCP** read-only gateway -> SQLite direct only for explicit ADG recovery/RCA, diagnostics, or a **named CI parity script** with **`DEGRADED_FALLBACK: reason=<...>`**. SQLite direct is not green readiness for ordinary T2/T3 work.
 
 **Doctrine (verbatim):** SQLite is canonical truth. Redis is a hot projection/read-through optimization, never authority. MCP is the preferred read-only gateway for agents. Direct sqlite3 or SQLiteBackend access in plans requires either a named CI parity script or an explicit DEGRADED_FALLBACK reason. Warm Redis hits may serve MCP responses only when provenance is visible through backend_used and, where required, rows hydrate or validate against canonical SQLite. Cold, missing, error, empty, or divergent Redis falls back to SQLite. Agents must not silently default to raw sqlite3 for refactor or analysis work.
 
@@ -179,7 +179,7 @@ Justification (if create): <why no existing symbol is suitable>
 **Edge Classes**: <types of edges found>
 **Boundary/Cycle Findings**: <any layer violations or cycles>
 **Scope Justification**: <reason each file is included>
-**Backend Provenance**: <redis_cache | sqlite | degraded_grep>
+**Backend Provenance**: <redis_cache | sqlite | degraded_sqlite>
 ```
 
 ## Backend Provenance Reporting
@@ -189,16 +189,16 @@ Justification (if create): <why no existing symbol is suitable>
 ADG MCP responses include a `backend_used` field in their metadata:
 - **`redis_cache`** — Result served from Redis hot cache (fast path, ~75ms)
 - **`sqlite`** — Result served from canonical SQLite (fallback, ~200ms)
-- **`degraded_grep`** — ADG was unavailable; grep used with `DEGRADED_FALLBACK` reason
+- **`degraded_sqlite`** — ADG MCP transport was unavailable during explicit recovery/diagnostics/CI parity; canonical SQLite was queried with `DEGRADED_FALLBACK` reason
 
 **Reporting format** (include in any ADG analysis output):
 ```
-ADG Provenance: backend_used=<redis_cache|sqlite|degraded_grep>, query_count=<N>, cache_hits=<M>
+ADG Provenance: backend_used=<redis_cache|sqlite|degraded_sqlite>, query_count=<N>, cache_hits=<M>
 ```
 
 **Why this matters:** Provenance makes the data source visible. If all queries
-fall back to SQLite, it signals Redis cache needs warming. If degraded_grep
-appears, it flags an ADG health issue requiring `/mcp-failure-rca`.
+fall back to SQLite, it signals Redis cache needs warming. If `degraded_sqlite`
+appears, it flags an ADG transport or health issue requiring recovery/RCA.
 
 ## Constitutional Requirements Enforced
 

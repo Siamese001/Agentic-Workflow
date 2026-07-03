@@ -57,10 +57,15 @@ class ExposureResult:
     host_exposed: bool | None
     native_ok: bool | None
     expected_tools: list[str]
+    active_transport_ok: bool | None = None
+    active_transport_status: str = ""
     observed_tools: list[str] = field(default_factory=list)
     missing_tools: list[str] = field(default_factory=list)
     reasons: list[str] = field(default_factory=list)
     rca: dict[str, str] = field(default_factory=dict)
+
+
+AdgTransportChecker = Callable[[], tuple[bool, str, str]]
 
 
 def _read_config(path: Path) -> dict[str, Any]:
@@ -198,6 +203,28 @@ def _heartbeat_native_status(
     return False, "python MCP process not reported by heartbeat"
 
 
+def _active_adg_transport_status() -> tuple[bool, str, str]:
+    """Return active-session ADG MCP callability, not just process liveness."""
+    try:
+        from tools.adg.mcp import supervisor
+
+        result = supervisor.transport_status()
+    except Exception as exc:  # noqa: BLE001
+        # guardian: the audit should report a red diagnostic row, not crash.
+        return False, "probe_error", f"active ADG transport probe failed: {type(exc).__name__}: {exc}"
+
+    status = str(result.get("status") or "unknown")
+    if result.get("open") is True:
+        return True, status, "active-session ADG MCP transport open"
+
+    callable_proof = result.get("callable_proof") if isinstance(result, dict) else None
+    proof_required = ""
+    if isinstance(callable_proof, dict):
+        proof_required = str(callable_proof.get("proof_required") or "").strip()
+    suffix = f"; {proof_required}" if proof_required else ""
+    return False, status, f"active-session ADG MCP transport {status}{suffix}"
+
+
 def _host_exposure(
     expected_tools: tuple[str, ...],
     observed_host_tools: set[str] | None,
@@ -215,7 +242,30 @@ def _rca_for_result(
     declared: bool,
     host_ok: bool | None,
     native_ok: bool | None,
+    active_transport_ok: bool | None = None,
+    active_transport_status: str = "",
 ) -> dict[str, str]:
+    if declared and host_ok is True and native_ok is not False:
+        if server_id != "adg_sqlite" or active_transport_ok is not False:
+            return {}
+    if server_id == "adg_sqlite" and active_transport_ok is False:
+        return {
+            "symptom": "ADG MCP is not callable from the active Codex session.",
+            "root_cause": (
+                f"The active Codex ADG MCP transport is {active_transport_status or 'not open'}; "
+                "independent initialize/tools-list probes, heartbeat liveness, and direct SQLite "
+                "inspection do not prove active tool callability."
+            ),
+            "fix_or_next": (
+                "next:repair or reattach the Codex MCP host, then call "
+                "mcp__adg_sqlite.adg_health or adg_runtime_info so the PostToolUse proof hook "
+                "records active-session callability."
+            ),
+            "recurrence_guard": (
+                "Do not mark ADG green from heartbeat, tool_search exposure, protocol probes, "
+                "or direct SQLite; require supervisor open=true."
+            ),
+        }
     if declared and host_ok is True and native_ok is not False:
         return {}
     if not declared:
@@ -254,6 +304,7 @@ def audit(
     observed_host_tools: set[str] | None = None,
     heartbeat_report: dict[str, Any] | None = None,
     native_tool_lister: Callable[[str, dict[str, Any]], tuple[bool, set[str], str]] | None = None,
+    adg_transport_checker: AdgTransportChecker | None = None,
     require_host_exposure: bool = False,
     skip_native_probes: bool = False,
 ) -> list[ExposureResult]:
@@ -268,6 +319,8 @@ def audit(
         host_ok, host_observed, host_missing = _host_exposure(expected, observed_host_tools)
         native_ok: bool | None = None
         native_tools: set[str] = set()
+        active_transport_ok: bool | None = None
+        active_transport_status = ""
 
         if not declared:
             reasons.append("not declared in .mcp.json")
@@ -287,9 +340,19 @@ def audit(
             elif server_id in PYTHON_PROCESS_REQUIRED:
                 native_ok, native_reason = _heartbeat_native_status(server_id, heartbeat_report)
                 reasons.append(native_reason)
+            if server_id == "adg_sqlite":
+                transport_checker = adg_transport_checker or _active_adg_transport_status
+                active_transport_ok, active_transport_status, active_reason = transport_checker()
+                reasons.append(active_reason)
 
         status = "GREEN"
-        if not declared or host_ok is False or native_ok is False or (require_host_exposure and host_ok is None):
+        if (
+            not declared
+            or host_ok is False
+            or native_ok is False
+            or active_transport_ok is False
+            or (require_host_exposure and host_ok is None)
+        ):
             status = "RED"
         elif host_ok is None:
             status = "YELLOW"
@@ -307,6 +370,8 @@ def audit(
                 declared=declared,
                 host_exposed=host_ok,
                 native_ok=native_ok,
+                active_transport_ok=active_transport_ok,
+                active_transport_status=active_transport_status,
                 expected_tools=list(expected),
                 observed_tools=observed_tools,
                 missing_tools=missing_tools,
@@ -316,6 +381,8 @@ def audit(
                     declared=declared,
                     host_ok=host_ok,
                     native_ok=native_ok,
+                    active_transport_ok=active_transport_ok,
+                    active_transport_status=active_transport_status,
                 ),
             )
         )
@@ -332,6 +399,8 @@ def render_table(results: list[ExposureResult]) -> str:
     for result in results:
         host = "unknown" if result.host_exposed is None else str(result.host_exposed).lower()
         native = "n/a" if result.native_ok is None else str(result.native_ok).lower()
+        if result.server_id == "adg_sqlite" and result.active_transport_ok is not None:
+            native = f"{native}/active={str(result.active_transport_ok).lower()}"
         detail = "; ".join(result.reasons) if result.reasons else "ok"
         lines.append(
             f"{result.server_id:<14} {result.status:<7} {str(result.declared).lower():<8} "

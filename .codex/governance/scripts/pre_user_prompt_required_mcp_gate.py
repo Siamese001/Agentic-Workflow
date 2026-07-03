@@ -2,16 +2,18 @@
 """Fail-closed Codex MCP transport gate for UserPromptSubmit.
 
 This gate checks every enabled repo-declared MCP server before a normal user
-prompt is accepted. A server is green only when the Codex-configured transport
-can complete a real MCP JSON-RPC ``initialize`` plus ``tools/list`` exchange.
+prompt is accepted. A server's configured command/url probe is green only when
+it can complete a real MCP JSON-RPC ``initialize`` plus ``tools/list`` exchange.
+That proves protocol viability, not active-session Codex tool callability.
 
 Scope: root ``.mcp.json`` is the repo MCP SSOT. The generated Codex Desktop
 projection marks these servers ``required = true``; this hook enforces the same
 contract per turn instead of relying on stale process health or backend-only
 checks.
 
-Explicit MCP repair/RCA prompts are allowed through so a red transport can be
-fixed from inside Codex.
+Explicit MCP/ADG repair/RCA prompts are allowed through so a red transport can
+be fixed from inside Codex. Active-session ADG callability is enforced by the
+dedicated ADG SSOT gate and Codex readiness checks.
 """
 
 from __future__ import annotations
@@ -45,6 +47,7 @@ MCP_CONFIG = REPO_ROOT / ".mcp.json"
 LOG_PATH = REPO_ROOT / "artifacts" / "mcp" / "required_mcp_gate.jsonl"
 DEFAULT_TIMEOUT_SEC = 30.0
 DEFAULT_MAX_WORKERS = 8
+ADG_PROTOCOL_PROBE_STATE = "artifacts/mcp_heartbeat/adg_sqlite_protocol_probe_launcher.json"
 
 BYPASS_ENV = "REQUIRED_MCP_GATE_BYPASS"
 DISABLE_REPAIR_BYPASS_ENV = "REQUIRED_MCP_GATE_DISABLE_REPAIR_BYPASS"
@@ -69,6 +72,12 @@ _MCP_REPAIR_PHRASES = (
     "mcp transport rca",
     "mcp callability rca",
     "mcp failure rca",
+    "adg transport rca",
+    "adg callability rca",
+    "repair adg transport",
+    "fix adg transport",
+    "debug adg transport",
+    "restore adg transport",
     "restore mcp transport",
     "reconnect mcp transport",
 )
@@ -216,12 +225,22 @@ def _load_enabled_specs(config_path: Path = MCP_CONFIG) -> list[ProbeSpec]:
                 if value:
                     env[key] = value
 
+            probe_args = [str(arg) for arg in args]
+            if str(server_id) == "adg_sqlite":
+                env["ADG_SKIP_ZOMBIE_KILL"] = "1"
+                env["MCP_HEARTBEAT_DISABLE"] = "1"
+                if "tools.mcp.launch_adg_sqlite_mcp" in probe_args:
+                    if "--skip-guard" not in probe_args:
+                        probe_args.append("--skip-guard")
+                    if "--state-path" not in probe_args:
+                        probe_args.extend(["--state-path", ADG_PROTOCOL_PROBE_STATE])
+
             specs.append(
                 ProbeSpec(
                     server_id=str(server_id),
                     transport="stdio",
                     command=command,
-                    args=tuple(str(arg) for arg in args),
+                    args=tuple(probe_args),
                     cwd=str(REPO_ROOT),
                     env=env,
                     missing_env=missing_env,
@@ -652,7 +671,11 @@ def run_gate(
         return 2
 
     summary = ", ".join(f"{result.server_id}:{result.tools_count}" for result in results)
-    print(f"[required_mcp_gate] PASS: all required MCP transports green ({summary}).", file=sys.stderr)
+    print(
+        "[required_mcp_gate] PASS: configured MCP protocol probes green "
+        f"({summary}); active-session ADG callability is enforced separately.",
+        file=sys.stderr,
+    )
     _append_receipt(payload, results, "allow")
     return 0
 

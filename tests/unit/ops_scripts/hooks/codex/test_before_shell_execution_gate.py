@@ -82,22 +82,33 @@ def test_hook_blocks_direct_gh_pr_merge_without_closeout_chain():
     proc = _run_hook("gh pr merge 123 --merge")
 
     assert proc.returncode == 2
-    assert "codex_main_closeout.py --apply --fetch --json" in proc.stdout
+    assert "codex_main_closeout.py --apply --fetch --json --publication-only" in proc.stdout
 
 
 def test_hook_blocks_direct_push_to_main_without_closeout_chain():
     proc = _run_hook("git push origin HEAD:refs/heads/main")
 
     assert proc.returncode == 2
-    assert "PR/main completion commands must chain local main closeout proof" in proc.stdout
+    assert "PR/main completion commands must chain publication closeout proof" in proc.stdout
 
 
-def test_hook_allows_pr_merge_when_closeout_is_chained():
+def test_hook_blocks_pr_merge_with_legacy_strict_only_closeout_chain():
     proc = _run_hook(
         "gh pr merge 123 --merge && "
         "git switch main && "
         "python scripts/governance/codex_main_closeout.py --apply --fetch --json && "
         "python scripts/governance/codex_main_closeout.py --check --fetch --json"
+    )
+
+    assert proc.returncode == 2
+
+
+def test_hook_allows_pr_merge_when_publication_closeout_is_chained():
+    proc = _run_hook(
+        "gh pr merge 123 --merge && "
+        "git switch main && "
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only"
     )
 
     assert proc.returncode == 0

@@ -109,10 +109,12 @@ def _run_adg_ssot_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
 
 
 def _run_required_mcp_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
-    """Dispatch the all-required-MCP Codex transport gate.
+    """Dispatch the all-required-MCP configured protocol gate.
 
     Unlike advisory prompt enrichment, this gate is fail-closed: if the gate
-    cannot run, the hook cannot prove required MCP transports are green.
+    cannot run, the hook cannot prove required MCP command/url protocol probes
+    are green. Active-session ADG callability is enforced immediately afterward
+    by ``pre_user_prompt_adg_ssot_gate.py``.
     """
     if not raw_stdin.strip():
         return 0
@@ -159,8 +161,8 @@ if legacy:
 if raw_stdin.strip():
     _run_grep_for_deps_warning(raw_stdin, payload)
 
-# Required Codex MCP transport green-light: every enabled repo MCP must be
-# callable through its configured Codex transport before normal prompt handling.
+# Required Codex MCP protocol green-light: every enabled repo MCP must complete
+# its configured initialize/tools-list probe before normal prompt handling.
 if _run_required_mcp_gate(raw_stdin, payload) != 0:
     reason = (
         "Required Codex MCP transports unavailable before turn - "

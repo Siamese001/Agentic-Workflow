@@ -153,8 +153,14 @@ def _has_main_closeout_chain(command: str) -> bool:
     return (
         "&&" in normalized
         and normalized.count("codex_main_closeout.py") >= 2
-        and re.search(r"codex_main_closeout\.py\b[^&|;]*--apply\b[^&|;]*--fetch\b", normalized)
-        and re.search(r"codex_main_closeout\.py\b[^&|;]*--check\b[^&|;]*--fetch\b", normalized)
+        and re.search(
+            r"codex_main_closeout\.py\b[^&|;]*--apply\b[^&|;]*--fetch\b[^&|;]*--publication-only\b",
+            normalized,
+        )
+        and re.search(
+            r"codex_main_closeout\.py\b[^&|;]*--check\b[^&|;]*--fetch\b[^&|;]*--publication-only\b",
+            normalized,
+        )
     )
 
 
@@ -164,9 +170,9 @@ def pr_completion_block_reason(command: str) -> str | None:
     if _has_main_closeout_chain(command):
         return None
     return (
-        "PR/main completion commands must chain local main closeout proof in the same command: "
-        "python scripts/governance/codex_main_closeout.py --apply --fetch --json && "
-        "python scripts/governance/codex_main_closeout.py --check --fetch --json"
+        "PR/main completion commands must chain publication closeout proof in the same command: "
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only"
     )
 
 

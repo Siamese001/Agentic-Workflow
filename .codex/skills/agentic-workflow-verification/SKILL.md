@@ -20,7 +20,13 @@ python scripts/governance/verify_codex_primary.py
 For publication closeout, also run:
 
 ```bash
-python scripts/governance/codex_readiness.py --git-publication --require-single-main-worktree --json
+python scripts/governance/codex_readiness.py --git-publication --require-publication-closeout --json
+python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only
+```
+
+For strict workspace topology hygiene, also run:
+
+```bash
 python scripts/governance/verify_single_main_worktree.py --root C:\Git\Agentic-Workflow-FRESH --expected-path C:\Git\Agentic-Workflow-FRESH --fetch --json
 ```
 

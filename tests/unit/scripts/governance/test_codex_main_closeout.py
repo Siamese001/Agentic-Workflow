@@ -23,6 +23,8 @@ def test_closeout_check_passes_for_clean_single_main(monkeypatch, tmp_path: Path
             return 0, "## main...origin/main", ""
         if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
             return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
         if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
             return 0, "abc", ""
         if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
@@ -49,6 +51,8 @@ def test_closeout_check_fails_on_extra_local_branch(monkeypatch, tmp_path: Path)
             return 0, "## main...origin/main", ""
         if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
             return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
         if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
             return 0, "abc", ""
         if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
@@ -77,6 +81,8 @@ def test_closeout_check_passes_when_worktree_staging_root_remains(monkeypatch, t
             return 0, "## main...origin/main", ""
         if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
             return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
         if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
             return 0, "abc", ""
         if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
@@ -92,6 +98,46 @@ def test_closeout_check_passes_when_worktree_staging_root_remains(monkeypatch, t
     assert report["status"] == "PASS"
     assert report["issues"] == []
     assert staging_root.exists()
+
+
+def test_publication_closeout_passes_while_workspace_topology_fails(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    other = tmp_path.parent / "codex-unrelated-work"
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("worktree", "list", "--porcelain"):
+            return (
+                0,
+                f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n"
+                f"worktree {other}\nHEAD def\nbranch refs/heads/codex/unrelated-work\n\n",
+                "",
+            )
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
+            return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
+        if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
+            return 0, "abc", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        if command == ("branch", "--format=%(refname:short)"):
+            return 0, "main\ncodex/unrelated-work", ""
+        raise AssertionError((command, cwd))
+
+    monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+
+    report = mod.build_closeout_report(tmp_path)
+
+    assert report["status"] == "FAIL"
+    assert report["publication_closeout"]["status"] == "PASS"
+    assert report["workspace_topology_closeout"]["status"] == "FAIL"
+    assert {"code": "worktree_count", "detail": "expected=1 actual=2"} in report["workspace_topology_closeout"]["issues"]
+    assert {"code": "extra_local_branches", "detail": "codex/unrelated-work"} in report["workspace_topology_closeout"]["issues"]
 
 
 def test_closeout_apply_preserves_empty_worktree_staging_root(monkeypatch, tmp_path: Path) -> None:

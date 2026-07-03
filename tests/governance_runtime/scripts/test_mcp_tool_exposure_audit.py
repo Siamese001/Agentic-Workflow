@@ -41,6 +41,14 @@ def _native_lister(server_id: str, _config: dict[str, Any]) -> tuple[bool, set[s
     return True, set(audit_mod.MAJOR_MCP_TOOLS["GitKraken"]), "native list-tools ok"
 
 
+def _adg_open() -> tuple[bool, str, str]:
+    return True, "open", "active-session ADG MCP transport open"
+
+
+def _adg_closed() -> tuple[bool, str, str]:
+    return False, "callability_unproven", "active-session ADG MCP transport callability_unproven"
+
+
 def test_tool_search_snapshot_missing_gitkraken_is_red(tmp_path: Path):
     config_path = _write_config(tmp_path)
     observed = {"adg_health", "adg_nodes_by_file", "browser_navigate", "API_query_data_source"}
@@ -50,6 +58,7 @@ def test_tool_search_snapshot_missing_gitkraken_is_red(tmp_path: Path):
         observed_host_tools=observed,
         heartbeat_report={"ok": True, "alive": ["adg_sqlite", "memory", "vector_db"], "dead": []},
         native_tool_lister=_native_lister,
+        adg_transport_checker=_adg_open,
     )
 
     gitkraken = next(item for item in results if item.server_id == "GitKraken")
@@ -70,6 +79,7 @@ def test_tool_search_snapshot_with_major_tools_is_green(tmp_path: Path):
         observed_host_tools=observed,
         heartbeat_report={"ok": True, "alive": ["adg_sqlite", "memory", "vector_db"], "dead": []},
         native_tool_lister=_native_lister,
+        adg_transport_checker=_adg_open,
     )
 
     by_server = {item.server_id: item for item in results}
@@ -85,6 +95,7 @@ def test_python_mcp_dead_is_red_without_host_snapshot(tmp_path: Path):
         config_path=config_path,
         heartbeat_report={"ok": False, "alive": ["adg_sqlite"], "dead": ["memory", "vector_db"]},
         native_tool_lister=_native_lister,
+        adg_transport_checker=_adg_open,
     )
 
     by_server = {item.server_id: item for item in results}
@@ -102,12 +113,35 @@ def test_missing_major_server_declaration_is_red(tmp_path: Path):
         config_path=config_path,
         heartbeat_report={"ok": True, "alive": ["adg_sqlite"], "dead": []},
         native_tool_lister=_native_lister,
+        adg_transport_checker=_adg_open,
     )
 
     gitkraken = next(item for item in results if item.server_id == "GitKraken")
     assert gitkraken.status == "RED"
     assert gitkraken.declared is False
     assert "not declared in .mcp.json" in gitkraken.reasons
+
+
+def test_adg_active_transport_closed_is_red_with_host_snapshot_and_heartbeat(tmp_path: Path):
+    config_path = _write_config(tmp_path)
+    observed = {tool for tools in audit_mod.MAJOR_MCP_TOOLS.values() for tool in tools}
+
+    results = audit_mod.audit(
+        config_path=config_path,
+        observed_host_tools=observed,
+        heartbeat_report={"ok": True, "alive": ["adg_sqlite", "memory", "vector_db"], "dead": []},
+        native_tool_lister=_native_lister,
+        adg_transport_checker=_adg_closed,
+    )
+
+    adg = next(item for item in results if item.server_id == "adg_sqlite")
+    assert adg.status == "RED"
+    assert adg.native_ok is True
+    assert adg.active_transport_ok is False
+    assert adg.active_transport_status == "callability_unproven"
+    assert "active-session ADG MCP transport callability_unproven" in adg.reasons
+    assert "independent initialize/tools-list probes" in adg.rca["root_cause"]
+    assert "supervisor open=true" in adg.rca["recurrence_guard"]
 
 
 def test_native_lister_reports_missing_env_var_before_subprocess(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

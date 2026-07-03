@@ -315,10 +315,20 @@ def test_build_readiness_report_includes_major_mcp_exposure(monkeypatch, tmp_pat
             "mcp.required_protocol_gate",
             "PASS",
             "critical",
-            "All enabled repo MCP transports completed initialize/tools-list.",
+            "All enabled repo MCP protocol probes completed initialize/tools-list.",
         ),
     )
     monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: exposure)
+    monkeypatch.setattr(
+        mod,
+        "_check_adg_transport",
+        lambda root: mod.ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "PASS",
+            "critical",
+            "ADG MCP transport is open in the active Codex session.",
+        ),
+    )
     monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
 
     report = mod.build_readiness_report(tmp_path)
@@ -364,10 +374,20 @@ def test_protocol_gate_pass_does_not_suppress_route_callability_failures(
             "mcp.required_protocol_gate",
             "PASS",
             "critical",
-            "All enabled repo MCP transports completed initialize/tools-list.",
+            "All enabled repo MCP protocol probes completed initialize/tools-list.",
         ),
     )
     monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: {"available": True, "readiness_status": "PASS", "counts": {}})
+    monkeypatch.setattr(
+        mod,
+        "_check_adg_transport",
+        lambda root: mod.ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "PASS",
+            "critical",
+            "ADG MCP transport is open in the active Codex session.",
+        ),
+    )
     monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
 
     report = mod.build_readiness_report(tmp_path)
@@ -379,6 +399,131 @@ def test_protocol_gate_pass_does_not_suppress_route_callability_failures(
         for check in report["checks"]
     )
     assert not any(check["id"] == "mcp.route_contract" for check in report["checks"])
+
+
+def test_protocol_gate_pass_cannot_suppress_closed_adg_transport(monkeypatch, tmp_path: Path) -> None:
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+    monkeypatch.setattr(mod, "_run_git_status", lambda root: (0, "", ""))
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(
+        mod.audit_codex_mcp_transports,
+        "build_report",
+        lambda route_contract=None: _transport_report(
+            {
+                "memory": "CALLABLE",
+                "GitKraken": "SUBSTITUTE_CALLABLE",
+                "adg_sqlite": "CALLABLE",
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        mod,
+        "_check_required_mcp_protocol_gate",
+        lambda root: mod.ReadinessCheck(
+            "mcp.required_protocol_gate",
+            "PASS",
+            "critical",
+            "All enabled repo MCP protocol probes completed initialize/tools-list.",
+        ),
+    )
+    monkeypatch.setattr(
+        mod,
+        "_check_adg_transport",
+        lambda root: mod.ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "FAIL",
+            "critical",
+            "ADG MCP transport is not open in the active Codex session.",
+            '{"status": "closed_transport"}',
+        ),
+    )
+    monkeypatch.setattr(mod, "_build_major_mcp_exposure_summary", lambda: {"available": True, "readiness_status": "PASS", "counts": {}})
+    monkeypatch.setattr(mod, "_check_searxng", lambda restart=False, set_restart_policy=False: mod.ReadinessCheck("docker.searxng", "PASS", "advisory", "ok"))
+
+    report = mod.build_readiness_report(tmp_path)
+
+    assert report["status"] == "FAIL"
+    adg_transport = next(check for check in report["checks"] if check["id"] == "mcp.adg_sqlite.transport")
+    assert adg_transport["status"] == "FAIL"
+    assert "closed_transport" in adg_transport["detail"]
+
+
+def test_adg_transport_check_passes_only_when_supervisor_reports_open(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    from tools.adg.mcp import supervisor
+
+    observed: dict[str, object] = {}
+
+    def fake_transport_status(**kwargs: object) -> dict[str, object]:
+        observed.update(kwargs)
+        return {
+            "status": "open",
+            "open": True,
+            "callable_proof": {"selected_source": "file", "attached_pid": 123},
+        }
+
+    monkeypatch.setattr(supervisor, "transport_status", fake_transport_status)
+
+    check = mod._check_adg_transport(tmp_path)
+
+    assert check.status == "PASS"
+    assert check.id == "mcp.adg_sqlite.transport"
+    assert observed["state_path"] == tmp_path / supervisor.DEFAULT_STATE_RELATIVE_PATH
+    assert observed["proof_path"] == tmp_path / supervisor.DEFAULT_CALLABLE_PROOF_RELATIVE_PATH
+
+
+def test_adg_transport_check_fails_when_callability_unproven(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    from tools.adg.mcp import supervisor
+
+    monkeypatch.setattr(
+        supervisor,
+        "transport_status",
+        lambda **kwargs: {
+            "status": "callability_unproven",
+            "open": False,
+            "heartbeat_authoritative_pids": [123],
+            "proof_pid_matches_heartbeat": False,
+            "callable_proof": {
+                "status": "absent",
+                "selected_source": "none",
+                "env_callable": False,
+                "attached_pid": None,
+                "attached_pid_alive": None,
+                "proof_required": "call mcp__adg_sqlite.adg_health",
+                "file_proof": {
+                    "status": "absent",
+                    "callable": False,
+                    "pid": None,
+                    "pid_alive": None,
+                    "age_s": None,
+                    "max_age_s": 300,
+                    "session_match": None,
+                    "tool": None,
+                },
+            },
+        },
+    )
+
+    check = mod._check_adg_transport(tmp_path)
+
+    assert check.status == "FAIL"
+    assert check.id == "mcp.adg_sqlite.transport"
+    assert "callability_unproven" in check.detail
+    assert "call mcp__adg_sqlite.adg_health" in check.detail
 
 
 def test_searxng_check_passes_when_report_ready(monkeypatch) -> None:
@@ -437,13 +582,14 @@ def test_git_publication_mode_skips_mcp_route_checks(monkeypatch, tmp_path: Path
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_publication_closeout=False, require_pr_flow=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
             "refs": {"origin_main_equals_github_main": True},
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
+            "publication_closeout": {"required": require_publication_closeout, "issues": []},
             "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
             "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
         },
@@ -473,7 +619,7 @@ def test_git_publication_pr_flow_treats_dirty_worktree_as_recovery_warning(
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_publication_closeout=False, require_pr_flow=False: {
             "blockers": [],
             "warnings": ["current_worktree_dirty"],
             "recovery_required": ["current_worktree_dirty"],
@@ -483,6 +629,7 @@ def test_git_publication_pr_flow_treats_dirty_worktree_as_recovery_warning(
             "refs": {"origin_main_equals_github_main": True},
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
+            "publication_closeout": {"required": require_publication_closeout, "issues": []},
             "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
             "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
         },
@@ -514,13 +661,14 @@ def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_publication_closeout=False, require_pr_flow=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
             "refs": {"origin_main_equals_github_main": True},
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
+            "publication_closeout": {"required": require_publication_closeout, "issues": []},
             "single_main_worktree": {
                 "required": require_single_main_worktree,
                 "issues": [{"code": "worktree_count", "detail": "expected=1 actual=2"}],
@@ -552,17 +700,60 @@ def test_git_publication_strict_single_main_fails(monkeypatch, tmp_path: Path) -
     assert "expected=1 actual=2" in check["detail"]
 
 
-def test_git_publication_require_pr_flow_fails_on_direct_push_contract(monkeypatch, tmp_path: Path) -> None:
+def test_git_publication_require_publication_closeout_fails(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
         mod.codex_publication_audit,
         "build_publication_audit",
-        lambda root, fetch=True, require_single_main_worktree=False, require_pr_flow=False: {
+        lambda root, fetch=True, require_single_main_worktree=False, require_publication_closeout=False, require_pr_flow=False: {
             "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
             "dirty_protected_worktrees": [],
             "dirty_protected_summary": "",
             "refs": {"origin_main_equals_github_main": True},
             "fetch": {"ok": True, "stdout": "", "stderr": ""},
             "unmerged_branches": [],
+            "publication_closeout": {
+                "required": require_publication_closeout,
+                "issues": [{"code": "head_not_base_ref", "detail": "HEAD=def origin/main=abc"}],
+            },
+            "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
+            "pr_flow": {"required": require_pr_flow, "clean": True, "issues": []},
+        },
+    )
+    for path in (
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_run_receipt.py",
+        "scripts/governance/audit_codex_mcp_transports.py",
+        "scripts/governance/check_windows_path_budget.py",
+    ):
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("", encoding="utf-8")
+
+    report = mod.build_readiness_report(
+        tmp_path,
+        git_publication=True,
+        require_publication_closeout=True,
+    )
+
+    assert report["status"] == "FAIL"
+    check = next(check for check in report["checks"] if check["id"] == "git.publication.closeout")
+    assert check["status"] == "FAIL"
+    assert "head_not_base_ref" in check["detail"]
+
+
+def test_git_publication_require_pr_flow_fails_on_direct_push_contract(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        mod.codex_publication_audit,
+        "build_publication_audit",
+        lambda root, fetch=True, require_single_main_worktree=False, require_publication_closeout=False, require_pr_flow=False: {
+            "current_worktree": {"dirty": False, "conflicted": False, "raw": ""},
+            "dirty_protected_worktrees": [],
+            "dirty_protected_summary": "",
+            "refs": {"origin_main_equals_github_main": True},
+            "fetch": {"ok": True, "stdout": "", "stderr": ""},
+            "unmerged_branches": [],
+            "publication_closeout": {"required": require_publication_closeout, "issues": []},
             "single_main_worktree": {"required": require_single_main_worktree, "issues": [], "summary": ""},
             "pr_flow": {
                 "required": require_pr_flow,

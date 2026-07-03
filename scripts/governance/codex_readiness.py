@@ -1,10 +1,11 @@
 """Preflight Codex primary execution readiness.
 
 The check is read-only. It composes repo anchors, git state, MCP transport
-evidence, process hygiene, and ADG fallback state before expensive Codex runs.
-Shell scripts cannot directly inspect the live Codex MCP namespace, so callable
-proof is supplied through the existing CODEX_MCP_CALLABLE_* environment values
-or a route contract consumed by audit_codex_mcp_transports.py.
+evidence, process hygiene, and ADG transport state before expensive Codex runs.
+Shell scripts cannot directly invoke Codex MCP tools, so ADG readiness requires
+the active-session PostToolUse callable proof recorded after a successful
+``mcp__adg_sqlite`` health/runtime/process-identity call. Route contracts and
+initialize/tools-list probes are not ADG callability proof.
 
 The ``--git-publication`` mode is narrower: it runs the git publication safety
 gate used before Codex main-publish automation and intentionally excludes MCP
@@ -29,6 +30,8 @@ MCP_TOOL_EXPOSURE_AUDIT_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" /
 REQUIRED_MCP_GATE_PATH = REPO_ROOT / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
 if str(GOVERNANCE_DIR) not in sys.path:
     sys.path.insert(0, str(GOVERNANCE_DIR))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import audit_codex_mcp_transports  # noqa: E402
 import codex_publication_audit  # noqa: E402
@@ -195,6 +198,27 @@ def _checks_from_publication_audit(audit: dict[str, Any]) -> list[ReadinessCheck
             f"branches={len(unmerged)} patch_unique_commits={unique_count}; branch closeout requires ancestry containment, not patch equivalence",
         )
     )
+    publication_closeout = audit.get("publication_closeout") or {}
+    publication_issues = publication_closeout.get("issues") or []
+    publication_required = bool(publication_closeout.get("required"))
+    publication_detail = "\n".join(
+        f"- {issue.get('code')}: {issue.get('detail')}"
+        for issue in publication_issues
+        if isinstance(issue, dict)
+    )
+    checks.append(
+        ReadinessCheck(
+            "git.publication.closeout",
+            "FAIL" if publication_required and publication_issues else ("WARN" if publication_issues else "PASS"),
+            "critical" if publication_required or not publication_issues else "advisory",
+            (
+                "Publication closeout is clean."
+                if not publication_issues
+                else "Publication closeout has outstanding publication issues."
+            ),
+            publication_detail,
+        )
+    )
     single_main = audit.get("single_main_worktree") or {}
     single_main_issues = single_main.get("issues") or []
     single_main_required = bool(single_main.get("required"))
@@ -291,7 +315,7 @@ def _check_required_routes(report: dict[str, Any], required_routes: Sequence[str
 
 
 def _check_required_mcp_protocol_gate(root: Path) -> ReadinessCheck:
-    """Run the per-turn required MCP gate as the Codex transport authority."""
+    """Run the per-turn required MCP gate for configured protocol viability."""
     gate_path = root / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
     if not gate_path.is_file():
         gate_path = REQUIRED_MCP_GATE_PATH
@@ -332,14 +356,14 @@ def _check_required_mcp_protocol_gate(root: Path) -> ReadinessCheck:
             "mcp.required_protocol_gate",
             "PASS",
             "critical",
-            "All enabled repo MCP transports completed initialize/tools-list.",
+            "All enabled repo MCP protocol probes completed initialize/tools-list.",
             detail,
         )
     return ReadinessCheck(
         "mcp.required_protocol_gate",
         "FAIL",
         "critical",
-        "One or more required repo MCP transports failed initialize/tools-list.",
+        "One or more required repo MCP protocol probes failed initialize/tools-list.",
         detail,
     )
 
@@ -420,6 +444,80 @@ def _check_adg(report: dict[str, Any], root: Path, allow_sqlite_fallback: bool) 
         "critical",
         "ADG MCP is not callable and no acceptable SQLite fallback was found.",
         json.dumps(adg_state, sort_keys=True),
+    )
+
+
+def _adg_transport_failure_detail(result: dict[str, Any]) -> str:
+    callable_proof = result.get("callable_proof") if isinstance(result, dict) else None
+    file_proof = callable_proof.get("file_proof") if isinstance(callable_proof, dict) else None
+    detail: dict[str, Any] = {
+        "status": result.get("status"),
+        "open": result.get("open"),
+        "heartbeat_authoritative_pids": result.get("heartbeat_authoritative_pids"),
+        "proof_pid_matches_heartbeat": result.get("proof_pid_matches_heartbeat"),
+    }
+    if isinstance(callable_proof, dict):
+        detail["callable_proof"] = {
+            "status": callable_proof.get("status"),
+            "selected_source": callable_proof.get("selected_source"),
+            "env_callable": callable_proof.get("env_callable"),
+            "attached_pid": callable_proof.get("attached_pid"),
+            "attached_pid_alive": callable_proof.get("attached_pid_alive"),
+            "proof_required": callable_proof.get("proof_required"),
+        }
+    if isinstance(file_proof, dict):
+        detail["file_proof"] = {
+            "status": file_proof.get("status"),
+            "callable": file_proof.get("callable"),
+            "pid": file_proof.get("pid"),
+            "pid_alive": file_proof.get("pid_alive"),
+            "age_s": file_proof.get("age_s"),
+            "max_age_s": file_proof.get("max_age_s"),
+            "session_match": file_proof.get("session_match"),
+            "tool": file_proof.get("tool"),
+        }
+    return json.dumps(detail, sort_keys=True)
+
+
+def _check_adg_transport(root: Path) -> ReadinessCheck:
+    """Require active-session ADG MCP callability, not protocol listing only."""
+    try:
+        from tools.adg.mcp import supervisor
+
+        result = supervisor.transport_status(
+            state_path=root / supervisor.DEFAULT_STATE_RELATIVE_PATH,
+            proof_path=root / supervisor.DEFAULT_CALLABLE_PROOF_RELATIVE_PATH,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "FAIL",
+            "critical",
+            "ADG MCP transport proof could not be checked.",
+            f"{type(exc).__name__}: {exc}",
+        )
+
+    status = str(result.get("status") or "unknown")
+    callable_proof = result.get("callable_proof") if isinstance(result, dict) else None
+    proof_source = ""
+    proof_pid = None
+    if isinstance(callable_proof, dict):
+        proof_source = str(callable_proof.get("selected_source") or "")
+        proof_pid = callable_proof.get("attached_pid")
+    if result.get("open") is True:
+        return ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "PASS",
+            "critical",
+            "ADG MCP transport is open in the active Codex session.",
+            f"status={status} proof_source={proof_source or 'unknown'} pid={proof_pid}",
+        )
+    return ReadinessCheck(
+        "mcp.adg_sqlite.transport",
+        "FAIL",
+        "critical",
+        "ADG MCP transport is not open in the active Codex session.",
+        _adg_transport_failure_detail(result),
     )
 
 
@@ -564,6 +662,7 @@ def build_readiness_report(
     require_clean: bool = False,
     git_publication: bool = False,
     require_single_main_worktree: bool = False,
+    require_publication_closeout: bool = False,
     require_pr_flow: bool = False,
     fail_duplicate_processes: bool = False,
     required_callable_routes: Sequence[str] = DEFAULT_REQUIRED_CALLABLE_ROUTES,
@@ -577,6 +676,7 @@ def build_readiness_report(
             root,
             fetch=True,
             require_single_main_worktree=require_single_main_worktree,
+            require_publication_closeout=require_publication_closeout,
             require_pr_flow=require_pr_flow,
         )
         checks = [*_check_contract_files(root), *_checks_from_publication_audit(audit)]
@@ -603,6 +703,8 @@ def build_readiness_report(
     if vector_guard is not None:
         checks.append(vector_guard)
     checks.append(_check_adg(transport_report, root, allow_adg_sqlite_fallback))
+    if "adg_sqlite" in required_callable_routes:
+        checks.append(_check_adg_transport(root))
     checks.extend(_check_process_hygiene(transport_report, fail_duplicate_processes))
     checks.append(_check_major_mcp_exposure(exposure_summary))
     if check_searxng:
@@ -647,6 +749,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--require-single-main-worktree",
         action="store_true",
         help="In --git-publication mode, fail unless the local repo is one clean main worktree.",
+    )
+    parser.add_argument(
+        "--require-publication-closeout",
+        action="store_true",
+        help="In --git-publication mode, fail unless publication closeout passes independent of workspace topology.",
     )
     parser.add_argument(
         "--require-pr-flow",
@@ -708,6 +815,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         require_clean=args.require_clean_worktree,
         git_publication=args.git_publication,
         require_single_main_worktree=args.require_single_main_worktree,
+        require_publication_closeout=args.require_publication_closeout,
         require_pr_flow=args.require_pr_flow,
         fail_duplicate_processes=args.fail_duplicate_processes,
         required_callable_routes=required_routes,

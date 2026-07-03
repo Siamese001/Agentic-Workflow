@@ -62,7 +62,7 @@ The readiness gate checks:
 - Git state is known, with optional clean-worktree enforcement.
 - `AGENTIC_REPO_ROOT`, `ADG_REDIS_URL`, and pytest plugin-autoload state are sane.
 - Required Codex routes have callable evidence when marked required.
-- ADG is callable or a named direct SQLite fallback exists.
+- ADG active-session transport is open; initialize/tools-list and process liveness are not enough, and direct SQLite is not a green readiness substitute for required ADG work.
 - Duplicate MCP process cohorts are visible before the run starts.
 
 ## Main Publication And Cleanup Contract
@@ -89,32 +89,38 @@ Then rerun `git branch --no-merged origin/main` after pushing. Cleanup may delet
 worktrees only after the exact branch tip is ancestor-contained in `origin/main` and the worktree is
 clean.
 
-The strict local closeout authority is:
+The local closeout authority reports two surfaces:
 
 ```bash
 python scripts/governance/codex_main_closeout.py --check --json
 python scripts/governance/codex_main_closeout.py --apply --json
 ```
 
-The read-only check fails unless local `main` equals `origin/main`, the index and worktree are clean,
-only the expected main worktree remains, and no non-main local branches remain. The apply mode is
-cleanup-only: it may fast-forward clean local `main` and remove clean ancestor-contained non-main
-branches/worktrees, but it never resets, force-pushes, deletes dirty worktrees, or deletes unmerged
-branches.
+`publication_closeout` proves local `main` equals `origin/main`, the root index and worktree are
+clean, and no branch remains unmerged from the base ref. `workspace_topology_closeout` proves only
+the expected main worktree remains and no non-main local branches remain. The top-level status stays
+strict and fails unless both surfaces pass. The apply mode is cleanup-only: it may fast-forward clean
+local `main` and remove clean ancestor-contained non-main branches/worktrees, but it never resets,
+force-pushes, deletes dirty worktrees, or deletes unmerged branches.
 
 The shell hook enforces this for local PR completion commands. A direct `gh pr merge` or push to
 `main` must chain both closeout commands in the same shell command, normally after switching back to
 `main`:
 
 ```bash
-gh pr merge <number> --merge && git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json && python scripts/governance/codex_main_closeout.py --check --fetch --json
+gh pr merge <number> --merge && git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only
 ```
+
+Run the strict `codex_main_closeout.py --check --fetch --json` afterward as workspace-topology
+evidence. A topology failure caused only by unrelated retained worktrees is reported as hygiene debt
+with RCA, not as a publication failure.
 
 The publication audit remains the broader planning view:
 
 ```bash
 python scripts/governance/codex_publication_audit.py --json
 python scripts/governance/codex_publication_audit.py --json --require-ancestor-cleanup
+python scripts/governance/codex_publication_audit.py --json --require-publication-closeout
 ```
 
 The first form reports remaining branches as warnings for planning. The `--require-ancestor-cleanup`
@@ -141,7 +147,7 @@ CODEX_MCP_CALLABLE_ADG_SQLITE=healthy
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.
 
-ADG has an additional hard per-turn gate: ordinary T2/T3 prompts require
+ADG has an additional hard per-turn and readiness gate: ordinary T2/T3 prompts require
 `tools.adg.mcp.supervisor.transport_status().status == "open"`. A readable
 SQLite snapshot and a live ADG process are necessary but not sufficient when the
 active Codex MCP route is closed. The ADG PostToolUse proof hook writes a
@@ -243,7 +249,7 @@ Use live Codex callable routes when exposed. When a route is unavailable, report
 | `memory` | Required for session recall/writeback when available; no honest substitute for claiming Memory MCP compliance. |
 | `GitKraken` | Required git/PR authority when callable; the GitKraken CLI (`gk`) is the substitute proof path when the live MCP surface is unavailable. Raw `git`/`gh` are not primary routes for governed git/PR actions. |
 | `vector_db` | Preferred semantic retrieval route when callable; `rg` is lexical fallback, not semantic parity. |
-| `adg_sqlite` | Preferred structural route. If not callable, direct SQLite against the newest `artifacts/adg/adg_indexed_*.sqlite` is an explicit degraded fallback. |
+| `adg_sqlite` | Required structural route for dependency/refactor work. If closed, stop for ADG transport recovery/RCA; direct SQLite is a named degraded diagnostic or CI-parity path, not a green readiness substitute. |
 | `notion` | Codex plugin substitute is acceptable for manual Plans/Backlog access when schema is fetched first. |
 | `playwright` | Browser/node substitutes are acceptable for UI verification unless raw browser MCP parity is explicitly required. |
 | `deepwiki` and `context7` | Use official docs, GitHub, Tavily, or web only as named degraded substitutes until raw tools are exposed. |

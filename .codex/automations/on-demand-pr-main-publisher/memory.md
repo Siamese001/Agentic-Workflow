@@ -1,5 +1,9 @@
 # On-Demand PR Main Publisher
 
+- run_time: 2026-07-02T00:00:00-04:00
+- policy update: closeout is split into `publication_closeout` and `workspace_topology_closeout`. Publication success is gated by PR merge evidence, GitHub/origin main agreement, clean root main, branch containment, and `--require-publication-closeout`; unrelated retained worktrees are reported as topology hygiene/RCA, not publication failure.
+- strict topology remains a cleanup target through `workspace_topology_closeout.status`, but dirty unrelated worktrees must not be force-removed or merged into publication scope.
+
 - run_time: 2026-06-20T07:25:10.4600688-04:00
 - published PR #428 from codex/automation and merged commit 469a859167 into GitHub main (a4b1656313848c705db59df5d2725b86d01604a).
 - rebased onto origin/main, fixed a stale partnership bundle test call, and re-ran the impacted pytest set successfully (169 passed).

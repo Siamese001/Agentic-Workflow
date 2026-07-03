@@ -194,7 +194,7 @@ Run:
 Run local validation once per committed tree. If the tree hash is unchanged, reuse the validation evidence instead of rerunning the same local checks.
 
 Re-run the non-strict publication audit and checkpoint once before PR creation/update only if a mutation occurred after the intake packet.
-Treat strict single-main closeout as a post-merge gate; before merge, a live publication branch is expected to be ahead of origin/main and must not cause duplicate strict closeout loops.
+Treat publication closeout as the post-merge publication gate; treat strict workspace topology closeout as post-merge hygiene evidence. Before merge, a live publication branch is expected to be ahead of origin/main and must not cause duplicate closeout loops.
 
 Then:
 - push the publication branch to origin.
@@ -233,7 +233,8 @@ Rules:
 - If publication HEAD is already contained in origin/main, verify the PR was merged or close it only after proving the PR artifact records the publication outcome.
 - Rebase only if cleanly replayable and safe; push rewritten publication branch only with --force-with-lease; rerun CI.
 - Merge PRs only if non-draft, mergeable, no requested changes, no unresolved P1/P2 review findings, approved for autopublish, and all current-head checks are green.
-- Merge with gh pr merge <number> --merge. The merge command must chain local closeout proof in the same shell command: git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json && python scripts/governance/codex_main_closeout.py --check --fetch --json.
+- Merge with gh pr merge <number> --merge. The merge command must chain publication closeout proof in the same shell command: git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only.
+- Run strict workspace topology closeout after publication proof; it may fail only for explicitly retained unrelated worktrees with an RCA.
 - Do not use git push origin main as a substitute for PR merge in this automation.
 
 7. Post-publication proof
@@ -243,22 +244,23 @@ Run once after PR merge:
 - gh pr view <number> --json number,state,mergedAt,mergeCommit,headRefName,baseRefName,url
 - containment checks proving selected publication work is in origin/main and GitHub main
 - git branch --no-merged origin/main
-- python scripts/governance/codex_main_closeout.py --apply --fetch --json
+- python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only
+- python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only
 - python scripts/governance/codex_main_closeout.py --check --fetch --json
-- python scripts/governance/codex_publication_audit.py --json --branch-limit 100 --require-ancestor-cleanup --require-single-main-worktree --require-pr-flow
-- python scripts/governance/codex_readiness.py --git-publication --require-single-main-worktree --require-pr-flow --json
+- python scripts/governance/codex_publication_audit.py --json --branch-limit 100 --require-ancestor-cleanup --require-publication-closeout --require-pr-flow
+- python scripts/governance/codex_readiness.py --git-publication --require-publication-closeout --require-pr-flow --json
 
 Runtime simplification:
 - Repeat the full closeout proof stack only after a specific remediation is applied for a failed closeout gate.
 - Do not repeat the full stack while no state has changed.
-- Run codex_main_closeout.py --apply --fetch --json once after PR merge, then codex_main_closeout.py --check --fetch --json once. Repeat that pair only if apply changed state or check reports a concrete blocker that was then remediated.
+- Run codex_main_closeout.py --apply --fetch --json --publication-only once after PR merge, then codex_main_closeout.py --check --fetch --json --publication-only once. Repeat that pair only if apply changed publication state or the publication closeout section reports a concrete blocker that was then remediated.
+- Run strict codex_main_closeout.py --check --fetch --json once as workspace topology evidence; do not treat unrelated retained worktrees as publication failure.
 
 Success requires:
 - a GitHub PR number/URL exists for the selected publication work and is MERGED
 - selected publication work contained in GitHub main
 - origin/main == GitHub main
 - HEAD == origin/main in C:\Git\Agentic-Workflow-FRESH
-- exactly one git worktree remains, and it is C:\Git\Agentic-Workflow-FRESH on branch main
 - git status --short --branch shows only ## main...origin/main
 - git diff --stat has no output
 - git diff --cached --stat has no output
@@ -266,8 +268,10 @@ Success requires:
 - git branch --no-merged origin/main empty, or only explicitly retained branches listed with reason
 - CI green before PR merge
 - no destructive local operations
-- strict single-main and strict publication readiness gates PASS
-- any FAIL in the required pass criteria means the automation must continue working until all required gates pass, unless an external blocker forces an RCA stop
+- publication_closeout.status PASS
+- publication readiness with --require-publication-closeout PASS
+- workspace_topology_closeout.status PASS is a strict hygiene target, not publication success; if it fails only because unrelated dirty worktrees are retained, stop with retained-worktree RCA rather than continuing publication remediation
+- any FAIL in the required publication pass criteria means the automation must continue working until all required publication gates pass, unless an external blocker forces an RCA stop
 
 8. Cleanup
 Use git worktree list --porcelain as authority. Worktrees may be anywhere under C:\Git. Use literal returned paths only.
@@ -281,7 +285,7 @@ For each publication/source branch:
 - never force-remove dirty worktrees
 - never delete patch-equivalent-only branches
 - run git worktree prune
-- continue cleanup until python scripts/governance/codex_main_closeout.py --check --fetch --json reports status PASS, or stop with RCA
+- continue topology cleanup until python scripts/governance/codex_main_closeout.py --check --fetch --json reports workspace_topology_closeout.status PASS, or stop with retained-worktree RCA
 
 9. Final report
 Include:
@@ -293,15 +297,15 @@ Include:
 - ancestry-recording merge commits for every superseded/transplanted branch
 - cherry-pick/restore/ours-merge commands and results
 - checks and CI table for every pushed head SHA
-- a proof table with columns requirement, runtime evidence, and result; render the columns as `requirement`, `runtime evidence`, and `result`; include one row for each exact closeout requirement proven by direct runtime evidence. The table must explicitly include rows proving: GitHub PR exists and is merged; selected publication work is contained in GitHub main; origin/main equals GitHub main; HEAD equals origin/main in `C:\Git\Agentic-Workflow-FRESH`; exactly one git worktree remains and it is `C:\Git\Agentic-Workflow-FRESH` on branch `main`; `git status --short --branch` shows only `## main...origin/main`; `git diff --stat` has no output; `git diff --cached --stat` has no output; every completed source branch exact-tip ancestor-contained in `origin/main`; `git branch --no-merged origin/main` is empty or only explicitly retained branches with reason; CI was green before PR merge; strict single-main gate PASS; and strict publication readiness gate PASS
+- a proof table with columns requirement, runtime evidence, and result; render the columns as `requirement`, `runtime evidence`, and `result`; include one row for each exact closeout requirement proven by direct runtime evidence. The table must explicitly include rows proving: GitHub PR exists and is merged; selected publication work is contained in GitHub main; origin/main equals GitHub main; HEAD equals origin/main in `C:\Git\Agentic-Workflow-FRESH`; publication_closeout.status is PASS; `git status --short --branch` shows only `## main...origin/main`; `git diff --stat` has no output; `git diff --cached --stat` has no output; every completed source branch exact-tip ancestor-contained in `origin/main`; `git branch --no-merged origin/main` is empty or only explicitly retained branches with reason; CI was green before PR merge; publication readiness with --require-publication-closeout PASS; and workspace_topology_closeout.status PASS or retained-worktree RCA
 - failed CI RCA and fixes, if any
 - publication method or stop gate
 - all state checkpoint tables
 - origin/main == GitHub main: yes/no
 - git branch --no-merged origin/main final output
 - local main sync status: synced / blocked
-- strict single-main gate output
-- strict publication readiness output
+- workspace topology closeout output
+- publication readiness output with --require-publication-closeout
 - worktrees removed/retained
 - final GitHub main SHA
 - run receipt path if created

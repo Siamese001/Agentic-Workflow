@@ -5,11 +5,37 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
 
 import codex_publication_audit as mod  # noqa: E402
 from worktree_hygiene import SingleMainWorktreeIssue, WorktreeHygieneIssue  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _stub_closeout_split(monkeypatch) -> None:
+    monkeypatch.setattr(
+        mod.codex_main_closeout,
+        "build_closeout_report",
+        lambda *args, **kwargs: {
+            "publication_closeout": {
+                "name": "publication_closeout",
+                "status": "PASS",
+                "required": False,
+                "issues": [],
+                "rule": "publication",
+            },
+            "workspace_topology_closeout": {
+                "name": "workspace_topology_closeout",
+                "status": "PASS",
+                "required": False,
+                "issues": [],
+                "rule": "workspace",
+            },
+        },
+    )
 
 
 def test_publication_audit_reports_patch_unique_and_equivalent(monkeypatch, tmp_path: Path) -> None:
@@ -122,6 +148,58 @@ def test_publication_audit_can_require_single_main_worktree(monkeypatch, tmp_pat
     assert strict["single_main_worktree"]["issues"] == [
         {"code": "worktree_count", "detail": "expected=1 actual=2"}
     ]
+
+
+def test_publication_audit_can_require_publication_closeout(monkeypatch, tmp_path: Path) -> None:
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("fetch", "origin", "--prune"):
+            return 0, "", ""
+        if command == ("rev-parse", "--verify", "origin/main"):
+            return 0, "abc", ""
+        if command == ("ls-remote", "origin", "refs/heads/main"):
+            return 0, "abc\trefs/heads/main", ""
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(mod, "run_git", fake_git)
+    monkeypatch.setattr(mod, "find_dirty_protected_worktrees", lambda root, skip_paths=(): [])
+    monkeypatch.setattr(mod, "verify_single_main_worktree", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        mod.codex_main_closeout,
+        "build_closeout_report",
+        lambda *args, **kwargs: {
+            "publication_closeout": {
+                "name": "publication_closeout",
+                "status": "FAIL",
+                "required": False,
+                "issues": [{"code": "head_not_base_ref", "detail": "HEAD=def origin/main=abc"}],
+                "rule": "publication",
+            },
+            "workspace_topology_closeout": {
+                "name": "workspace_topology_closeout",
+                "status": "PASS",
+                "required": False,
+                "issues": [],
+                "rule": "workspace",
+            },
+        },
+    )
+
+    advisory = mod.build_publication_audit(tmp_path)
+    required = mod.build_publication_audit(tmp_path, require_publication_closeout=True)
+
+    assert advisory["status"] == "PASS"
+    assert advisory["publication_closeout"]["status"] == "FAIL"
+    assert advisory["publication_closeout"]["required"] is False
+    assert required["status"] == "FAIL"
+    assert "publication_closeout_violation" in required["blockers"]
+    assert required["publication_closeout"]["required"] is True
 
 
 def test_publication_audit_can_require_pr_flow_contract(monkeypatch, tmp_path: Path) -> None:

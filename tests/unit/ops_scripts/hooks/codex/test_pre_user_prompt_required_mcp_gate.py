@@ -211,6 +211,48 @@ def test_disable_repair_bypass_forces_probe_even_for_explicit_repair_prompt(
     assert "transport closed" in err
 
 
+def test_adg_repair_prompt_allows_without_generic_mcp_word(tmp_path: Path, monkeypatch, capsys) -> None:
+    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+
+    def probe(_spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
+        raise AssertionError("ADG repair prompts must not require green transport first")
+
+    assert (
+        gate.run_gate(
+            _payload("ADG transport RCA restart proof"),
+            config_path=config,
+            probe_func=probe,
+            timeout=0.1,
+        )
+        == 0
+    )
+    assert "repair/RCA prompt" in capsys.readouterr().err
+
+
+def test_pass_message_scopes_to_protocol_probes(tmp_path: Path, capsys, monkeypatch) -> None:
+    config = _write_config(tmp_path / ".mcp.json", {"memory": {"command": "python"}})
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+
+    def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
+        return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
+
+    assert (
+        gate.run_gate(
+            _payload(),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 0
+    )
+    err = capsys.readouterr().err
+    assert "configured MCP protocol probes green" in err
+    assert "all required MCP transports green" not in err
+    assert "active-session ADG callability is enforced separately" in err
+
+
 def test_missing_auth_passthrough_env_blocks_before_spawn(
     tmp_path: Path,
     monkeypatch,
@@ -261,6 +303,29 @@ def test_server_filter_env_limits_required_set(tmp_path: Path, monkeypatch) -> N
         == 0
     )
     assert seen == ["memory"]
+
+
+def test_adg_protocol_probe_uses_non_destructive_launcher_args(tmp_path: Path, monkeypatch) -> None:
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {
+            "adg_sqlite": {
+                "command": "python",
+                "args": ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"],
+            }
+        },
+    )
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+
+    [spec] = gate._load_enabled_specs(config)
+
+    assert spec.server_id == "adg_sqlite"
+    assert spec.env["ADG_SKIP_ZOMBIE_KILL"] == "1"
+    assert spec.env["MCP_HEARTBEAT_DISABLE"] == "1"
+    assert "--skip-guard" in spec.args
+    assert "--state-path" in spec.args
+    state_path_index = spec.args.index("--state-path") + 1
+    assert spec.args[state_path_index] == gate.ADG_PROTOCOL_PROBE_STATE
 
 
 def test_sse_http_messages_parse_tools_list() -> None:
