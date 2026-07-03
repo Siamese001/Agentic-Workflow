@@ -1,8 +1,8 @@
 {
   "suite": "quick",
-  "snapshot_id": "snap",
-  "started_at": "2026-07-03T10:53:53.708508+00:00",
-  "finished_at": "2026-07-03T10:54:14.577586+00:00",
+  "snapshot_id": "adg_indexed_07032026_0812",
+  "started_at": "2026-07-03T12:28:12.248639+00:00",
+  "finished_at": "2026-07-03T12:28:31.017594+00:00",
   "strict_mode": true,
   "gates": [
     {
@@ -11,7 +11,7 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "artifacts/adg/adg_indexed_*.sqlite"
       ],
@@ -25,29 +25,33 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "605f5754835ac701",
-      "duration_ms": 0,
-      "started_at": "2026-07-03T10:53:56.109176+00:00"
+      "artifact_hash": "21c891bf6af4f09e",
+      "duration_ms": 3,
+      "started_at": "2026-07-03T12:28:14.156112+00:00"
     },
     {
       "gate_id": "preflight.schema_version",
       "bucket": "preflight",
-      "status": "ERROR",
+      "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "meta"
       ],
-      "counts": {},
-      "thresholds": {},
+      "counts": {
+        "observed_value": 0
+      },
+      "thresholds": {
+        "expect_regex": "^4\\."
+      },
       "sample_failures": [],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
-      "actual_fail_reason": "sqlite_error: no such table: meta",
-      "artifact_hash": "7af102b06e3a3cf4",
-      "duration_ms": 0,
-      "started_at": "2026-07-03T10:53:58.670439+00:00"
+      "actual_fail_reason": "",
+      "artifact_hash": "7518b469969356e4",
+      "duration_ms": 4,
+      "started_at": "2026-07-03T12:28:16.506683+00:00"
     },
     {
       "gate_id": "static.snapshot_has_mvs",
@@ -55,7 +59,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "sqlite_master (mv_*, v_p*, infra views)",
         "meta.artifact_digest"
@@ -68,9 +72,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "ae44e2cc6297aaad",
-      "duration_ms": 45,
-      "started_at": "2026-07-03T10:53:58.966769+00:00"
+      "artifact_hash": "fac7cf37941732f8",
+      "duration_ms": 42,
+      "started_at": "2026-07-03T12:28:16.809658+00:00"
     },
     {
       "gate_id": "static.edge_authority_well_formed",
@@ -78,7 +82,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "edges.authority"
       ],
@@ -90,29 +94,33 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "e7fcd64bde7a8166",
-      "duration_ms": 2575,
-      "started_at": "2026-07-03T10:54:01.542237+00:00"
+      "artifact_hash": "df7db9dfad2a2916",
+      "duration_ms": 2493,
+      "started_at": "2026-07-03T12:28:19.303147+00:00"
     },
     {
       "gate_id": "static.no_null_triplet",
       "bucket": "static",
-      "status": "ERROR",
+      "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "edges (bucket, resolution_status, authority_status)"
       ],
-      "counts": {},
-      "thresholds": {},
+      "counts": {
+        "observed_value": 0
+      },
+      "thresholds": {
+        "expect": 0
+      },
       "sample_failures": [],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
-      "actual_fail_reason": "sqlite_error: no such column: authority_status",
-      "artifact_hash": "1fa12d408e5f49d4",
-      "duration_ms": 0,
-      "started_at": "2026-07-03T10:54:03.819521+00:00"
+      "actual_fail_reason": "",
+      "artifact_hash": "2e0742720ab16401",
+      "duration_ms": 168,
+      "started_at": "2026-07-03T12:28:21.457028+00:00"
     },
     {
       "gate_id": "registry.graph_integrity",
@@ -120,27 +128,27 @@
       "status": "WARN",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_07022026_2303",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "edges WHERE bucket='registry'",
         "nodes WHERE entity_type='registry_node'",
         "meta.artifact_digest"
       ],
       "counts": {
-        "total_registry_edges": 283,
-        "total_registry_nodes": 65,
+        "total_registry_edges": 274,
+        "total_registry_nodes": 45,
         "relation:AGENT_SPEC_DECLARED": 8,
         "relation:MCP_SERVER_DECLARED": 9,
         "relation:PROMPT_SLOT_DECLARED": 2,
         "relation:ROUTE_CONTRACT_DECLARED": 3,
         "relation:references_agent_spec": 16,
-        "relation:references_mcp_server": 245,
+        "relation:references_mcp_server": 236,
         "missing_owner": 22,
         "missing_version": 22,
         "missing_digest": 22,
         "missing_declared_surface": 22,
         "missing_AGENT_SPEC_DECLARED.execution_profile": 8,
-        "missing_references_mcp_server.capability_binding": 245,
+        "missing_references_mcp_server.capability_binding": 236,
         "missing_ROUTE_CONTRACT_DECLARED.gateway_resolution": 3,
         "missing_MCP_SERVER_DECLARED.transport": 9,
         "missing_MCP_SERVER_DECLARED.scope": 9,
@@ -152,90 +160,94 @@
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 187497,
+          "node_id": 187691,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 187497,
+          "node_id": 187691,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 187497,
+          "node_id": 187691,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 187497,
+          "node_id": 187691,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 187498,
+          "node_id": 187692,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 187498,
+          "node_id": 187692,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 187498,
+          "node_id": 187692,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 187498,
+          "node_id": 187692,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 187499,
+          "node_id": 187693,
           "adg_name": "Registry::MCP::deepwiki"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 187499,
+          "node_id": 187693,
           "adg_name": "Registry::MCP::deepwiki"
         }
       ],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "de87c40375a588ed",
-      "duration_ms": 4,
-      "started_at": "2026-07-03T03:21:20.971070+00:00"
+      "artifact_hash": "ae1c62889f285e95",
+      "duration_ms": 0,
+      "started_at": "2026-07-03T12:28:23.766478+00:00"
     },
     {
       "gate_id": "registry.bucket_count_floor",
       "bucket": "registry",
-      "status": "ERROR",
+      "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "edges WHERE bucket='registry'"
       ],
-      "counts": {},
-      "thresholds": {},
+      "counts": {
+        "observed_value": 274
+      },
+      "thresholds": {
+        "expect_min": 1
+      },
       "sample_failures": [],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
-      "actual_fail_reason": "sqlite_error: no such column: bucket",
-      "artifact_hash": "d0872949577163c9",
+      "actual_fail_reason": "",
+      "artifact_hash": "a11e6cd37119aed6",
       "duration_ms": 0,
-      "started_at": "2026-07-03T10:54:08.964127+00:00"
+      "started_at": "2026-07-03T12:28:25.942512+00:00"
     },
     {
       "gate_id": "runtime.proof_view_well_formed",
@@ -243,7 +255,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "v_runtime_proof"
       ],
@@ -255,30 +267,47 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "7b5a3e6379588928",
-      "duration_ms": 65,
-      "started_at": "2026-07-03T10:54:09.309023+00:00"
+      "artifact_hash": "a24da92d5580ed0a",
+      "duration_ms": 51,
+      "started_at": "2026-07-03T12:28:26.232952+00:00"
     },
     {
       "gate_id": "runtime.trace_topology",
       "bucket": "runtime",
-      "status": "SKIP",
+      "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "v_runtime_proof (latest_trace_id, latest_span_id, evidence_refs)",
         "agentic_core/L4_state/memory/runtime_adg/<trace>/spans.json (when present)"
       ],
-      "counts": {},
+      "counts": {
+        "synthetic_count": 0,
+        "traces_total": 0,
+        "traces_with_topology_check": 0,
+        "traces_passing_topology": 0,
+        "traces_with_broken_chain": 0,
+        "traces_with_no_root": 0,
+        "traces_with_multi_root": 0,
+        "traces_with_non_monotonic": 0,
+        "spans_with_missing_fields": 0,
+        "app_path_rows": 0,
+        "missing_app_id": 0,
+        "routed_path_rows": 0,
+        "missing_route_id": 0,
+        "scenario_rows": 0,
+        "missing_scenario_id": 0,
+        "fail_codes_count": 0
+      },
       "thresholds": {},
       "sample_failures": [],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "d3fadc8ec472bda7",
-      "duration_ms": 0,
-      "started_at": "2026-07-03T10:53:37.635039+00:00"
+      "artifact_hash": "1a7409b48bbbbc22",
+      "duration_ms": 9,
+      "started_at": "2026-07-03T12:28:28.110681+00:00"
     },
     {
       "gate_id": "cross_bucket.gap_thresholds",
@@ -286,7 +315,7 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "snap",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "docs/reports/adg/THREE_BUCKET_GAP_REPORT.json"
       ],
@@ -298,9 +327,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "e19ea0eef47e19e3",
-      "duration_ms": 44,
-      "started_at": "2026-07-03T10:54:11.950639+00:00"
+      "artifact_hash": "e15f7be83ee0dcb5",
+      "duration_ms": 50,
+      "started_at": "2026-07-03T12:28:28.458812+00:00"
     },
     {
       "gate_id": "cross_bucket.impossible_states",
@@ -308,7 +337,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_07022026_2303",
+      "snapshot_id": "adg_indexed_07032026_0812",
       "input_refs": [
         "edges (bucket, evidence_refs, source_file)",
         "v_runtime_proof (latest_trace_id, latest_span_id, static_edge_id)",
@@ -321,7 +350,7 @@
         "i4_triplet_missing_ref": 0,
         "i5_auth_runtime_no_span": 0,
         "i6_registry_only_prod_route": 0,
-        "i7_static_critical_unclassified": 188757,
+        "i7_static_critical_unclassified": 189485,
         "fail_codes_count": 0
       },
       "thresholds": {},
@@ -329,38 +358,38 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "b2d0103589c3f846",
-      "duration_ms": 373,
-      "started_at": "2026-07-03T03:21:28.696111+00:00"
+      "artifact_hash": "aa769864dea705b2",
+      "duration_ms": 376,
+      "started_at": "2026-07-03T12:28:30.720716+00:00"
     }
   ],
   "summary_by_bucket": {
     "preflight": {
-      "PASS": 1,
-      "FAIL": 0,
-      "WARN": 0,
-      "SKIP": 0,
-      "ERROR": 1
-    },
-    "static": {
       "PASS": 2,
       "FAIL": 0,
       "WARN": 0,
       "SKIP": 0,
-      "ERROR": 1
+      "ERROR": 0
+    },
+    "static": {
+      "PASS": 3,
+      "FAIL": 0,
+      "WARN": 0,
+      "SKIP": 0,
+      "ERROR": 0
     },
     "registry": {
-      "PASS": 0,
+      "PASS": 1,
       "FAIL": 0,
       "WARN": 1,
       "SKIP": 0,
-      "ERROR": 1
+      "ERROR": 0
     },
     "runtime": {
-      "PASS": 1,
+      "PASS": 2,
       "FAIL": 0,
       "WARN": 0,
-      "SKIP": 1,
+      "SKIP": 0,
       "ERROR": 0
     },
     "cross_bucket": {
@@ -372,15 +401,9 @@
     }
   },
   "summary_by_status": {
-    "PASS": 6,
-    "ERROR": 3,
-    "WARN": 1,
-    "SKIP": 1
+    "PASS": 10,
+    "WARN": 1
   },
-  "overall_status": "ERROR",
-  "overall_fail_reasons": [
-    "preflight.schema_version:ERROR:sqlite_error: no such table: meta",
-    "static.no_null_triplet:ERROR:sqlite_error: no such column: authority_status",
-    "registry.bucket_count_floor:ERROR:sqlite_error: no such column: bucket"
-  ]
+  "overall_status": "WARN",
+  "overall_fail_reasons": []
 }
