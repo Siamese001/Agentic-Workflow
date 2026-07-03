@@ -412,6 +412,8 @@ def test_emit_synthesized_tree_writes_three_contract_files(tmp_path: Path):
     assert paths.package_x3_json().is_file()
     assert paths.package_receipt_json().is_file()
     assert out["resume_package_disposition"]["final_x3_code"] == X3_ALLOW_CODE
+    guarantees = out["resume_package_disposition"]["non_generation_stage_guarantees"]
+    assert guarantees["retired_provider_calls_made"] is False
 
 
 def test_current_workspace_expectation_review_when_not_allow():

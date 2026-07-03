@@ -89,6 +89,7 @@ def build_assembly_manifest(
         "calls": {
             "provider_calls_made": False,
             "PROVIDER_MODEL_calls_made": False,
+            "retired_provider_calls_made": False,
             "judge_calls_made": False,
             "docx_rendered": False,
         },

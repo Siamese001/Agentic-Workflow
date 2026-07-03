@@ -103,7 +103,12 @@ def _merge_non_generation_guarantees(
     fm_calls = final_resume_manifest.get("calls") or {}
     dm_g = docx_manifest.get("guarantees") or {}
     dr_v = docx_render_manifest.get("verification") or {}
-    keys = ("provider_calls_made", "PROVIDER_MODEL_calls_made", "judge_calls_made")
+    keys = (
+        "provider_calls_made",
+        "PROVIDER_MODEL_calls_made",
+        "retired_provider_calls_made",
+        "judge_calls_made",
+    )
     fused: dict[str, bool | None] = {k: None for k in keys}
     contradiction = False
 
@@ -131,6 +136,7 @@ def _merge_non_generation_guarantees(
     all_report_no_calls = (
         fused["provider_calls_made"] is False
         and fused["PROVIDER_MODEL_calls_made"] is False  # noqa: E721
+        and fused["retired_provider_calls_made"] is False  # noqa: E721
         and fused["judge_calls_made"] is False
     )
     ok = (not contradiction) and (not missing) and all_report_no_calls
