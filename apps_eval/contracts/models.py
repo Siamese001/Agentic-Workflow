@@ -18,9 +18,15 @@ CURRENT_RELEASE_GATE_SCHEMA_VERSION = "apps_eval.release_gate.v1"
 CURRENT_SCORER_VERSION = "apps_eval.graders.deterministic.v2"
 CURRENT_SCORECARD_ROW_SCHEMA_VERSION = "apps_eval.scorecard_row.v1"
 CURRENT_APPS_RG_MICROSTEP_CONTRACT_SCHEMA_VERSION = "apps_eval.apps_rg_stage_microstep_contract.v1"
+CURRENT_DIAGNOSTIC_OBSERVATION_SCHEMA_VERSION = "apps_eval.diagnostic_observation.v1"
+CURRENT_DIAGNOSTIC_SUMMARY_SCHEMA_VERSION = "apps_eval.diagnostic_summary.v1"
 
 ScorecardRowVerdict = Literal["PASS", "FAIL", "WARN", "UNKNOWN", "NOT_RUN", "NOT_APPLICABLE"]
 ScorecardRowSeverity = Literal["BLOCK", "MAJOR", "MINOR", "WARN", "INFO"]
+DiagnosticVerdict = Literal["PASS", "WARN", "FAIL", "NOT_OBSERVED"]
+DiagnosticPromotionState = Literal["shadow", "warning", "release_candidate", "blocking"]
+DiagnosticOverlap = Literal["none", "enriches", "duplicates"]
+DiagnosticAuthority = Literal["post_run_l6_shadow_only"]
 AppsRgStageId = Literal[
     "U0",
     "L1",
@@ -215,6 +221,108 @@ class ScorecardRow:
     @property
     def passed(self) -> bool:
         return self.verdict == "PASS"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class DiagnosticSourceArtifactRef:
+    artifact_role: str
+    artifact_ref: str
+    artifact_digest: str
+
+    def __post_init__(self) -> None:
+        if not str(self.artifact_role or "").strip():
+            raise ValueError("diagnostic source artifact_role is required")
+        if not str(self.artifact_ref or "").strip():
+            raise ValueError("diagnostic source artifact_ref is required")
+        if not str(self.artifact_digest or "").strip():
+            raise ValueError("diagnostic source artifact_digest is required")
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class DiagnosticObservationV1:
+    diagnostic_id: str
+    diagnostic_family: str
+    suite_id: str
+    scenario_id: str
+    app_id: str
+    run_id: str
+    lane_id: str
+    stage_id: AppsRgStageId | str
+    depends_on_microstep_id: str
+    source_artifact_refs: list[DiagnosticSourceArtifactRef]
+    diagnostic_verdict: DiagnosticVerdict | str
+    observed_value: Any = None
+    threshold: Any = None
+    reason: str = ""
+    recommended_future_action: str = ""
+    evidence_ref: str = ""
+    evidence_digest: str = ""
+    promotion_state: DiagnosticPromotionState | str = "shadow"
+    existing_row_overlap: DiagnosticOverlap | str = "enriches"
+    authority: DiagnosticAuthority | str = "post_run_l6_shadow_only"
+    schema_version: str = CURRENT_DIAGNOSTIC_OBSERVATION_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        required_fields = {
+            "diagnostic_id": self.diagnostic_id,
+            "diagnostic_family": self.diagnostic_family,
+            "suite_id": self.suite_id,
+            "scenario_id": self.scenario_id,
+            "app_id": self.app_id,
+            "run_id": self.run_id,
+            "stage_id": str(self.stage_id),
+            "depends_on_microstep_id": self.depends_on_microstep_id,
+        }
+        missing = [field for field, value in required_fields.items() if not str(value or "").strip()]
+        if missing:
+            raise ValueError(f"diagnostic observation missing required field(s): {', '.join(missing)}")
+        if not self.source_artifact_refs:
+            raise ValueError("diagnostic observation requires at least one source artifact ref")
+        for ref in self.source_artifact_refs:
+            if not isinstance(ref, DiagnosticSourceArtifactRef):
+                raise TypeError("source_artifact_refs must contain DiagnosticSourceArtifactRef values")
+        if self.diagnostic_verdict not in {"PASS", "WARN", "FAIL", "NOT_OBSERVED"}:
+            raise ValueError(f"unsupported diagnostic_verdict: {self.diagnostic_verdict!r}")
+        if self.promotion_state == "blocking":
+            raise ValueError("diagnostic observations cannot be blocking in this plan")
+        if self.existing_row_overlap == "duplicates":
+            raise ValueError("diagnostic observations cannot duplicate existing scorecard rows")
+        if self.authority != "post_run_l6_shadow_only":
+            raise ValueError("diagnostic authority must be post_run_l6_shadow_only")
+
+    def to_dict(self) -> dict[str, Any]:
+        data = asdict(self)
+        data["source_artifact_refs"] = [ref.to_dict() for ref in self.source_artifact_refs]
+        return data
+
+
+@dataclass(frozen=True)
+class DiagnosticSummaryV1:
+    suite_id: str
+    app_id: str
+    run_id: str
+    observation_count: int
+    family_counts: dict[str, int] = field(default_factory=dict)
+    verdict_counts: dict[str, int] = field(default_factory=dict)
+    promotion_state_counts: dict[str, int] = field(default_factory=dict)
+    authority: DiagnosticAuthority | str = "post_run_l6_shadow_only"
+    current_run_mutated: bool = False
+    future_run_only: bool = True
+    schema_version: str = CURRENT_DIAGNOSTIC_SUMMARY_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        if self.authority != "post_run_l6_shadow_only":
+            raise ValueError("diagnostic summary authority must be post_run_l6_shadow_only")
+        if self.current_run_mutated:
+            raise ValueError("diagnostic summary cannot report current-run mutation")
+        if not self.future_run_only:
+            raise ValueError("diagnostic summary must be future-run-only")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -26,6 +26,8 @@ from apps_eval.contracts import (
     CURRENT_SCORER_VERSION,
     AppOutputSnapshot,
     CompletedEvalRecord,
+    DiagnosticObservationV1,
+    DiagnosticSummaryV1,
     EvalFixture,
     EvalRequest,
     EvalScenario,
@@ -38,6 +40,7 @@ from apps_eval.contracts import (
     ScorecardRow,
 )
 from apps_eval.coverage import apps_rg_contract_digest, build_apps_rg_microstep_evaluation
+from apps_eval.diagnostics import build_apps_rg_diagnostics
 from apps_eval.graders.deterministic import build_default_graders
 from apps_eval.outputs.render import render_report, render_record_markdown
 from apps_eval.registry import OLD_SUITE_NAMES, load_suite, load_thresholds_registry
@@ -392,6 +395,8 @@ def _planned_eval_artifacts(run_dir: Path) -> dict[str, Any]:
     return {
         "eval_record": (run_dir / "eval_record.json").as_posix(),
         "scorecard_rows": (run_dir / "scorecard_rows.jsonl").as_posix(),
+        "diagnostic_rows": (run_dir / "diagnostic_rows.jsonl").as_posix(),
+        "diagnostic_summary": (run_dir / "diagnostic_summary.json").as_posix(),
         "component_scorecards": [
             (run_dir / "component_scorecards.csv").as_posix(),
             (run_dir / "apps_rg_component_scorecard.json").as_posix(),
@@ -549,9 +554,25 @@ def run_current_snapshot_eval(
         created_at=created_at,
         planned_eval_artifacts=planned_eval_artifacts,
     )
-    rows = list(microstep_eval["rows"])
+    rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
     components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
     coverage = microstep_eval["coverage_summary"].to_dict()
+    diagnostic_eval = build_apps_rg_diagnostics(
+        suite_id=suite_id,
+        scenario_id=scenario_id,
+        snapshot=stable_snapshot,
+        run_id=record_id,
+        scorecard_rows=rows,
+        snapshot_ref=stable_snapshot.run_root,
+        snapshot_digest=fixture.provenance.snapshot_digest,
+    )
+    diagnostic_rows = list(diagnostic_eval["rows"])
+    diagnostic_summary = _apps_rg_diagnostic_summary(
+        suite_id=suite_id,
+        app_id=stable_snapshot.app_id,
+        run_id=record_id,
+        observations=diagnostic_rows,
+    )
     scenario_result = _scenario_rollup(
         scenario_id,
         findings,
@@ -613,7 +634,14 @@ def run_current_snapshot_eval(
         comparison=regression,
     )
     record = replace(provisional, regression_flywheel=flywheel)
-    paths = _emit_artifacts(record, findings, run_dir, emit_l6_handoff)
+    paths = _emit_artifacts(
+        record,
+        findings,
+        run_dir,
+        emit_l6_handoff,
+        diagnostic_rows=diagnostic_rows,
+        diagnostic_summary=diagnostic_summary,
+    )
     record = replace(record, artifact_paths=paths)
     _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
     _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
@@ -666,6 +694,32 @@ def _apps_rg_suite_coverage(
     }
 
 
+def _apps_rg_record_rows(rows: list[ScorecardRow]) -> list[ScorecardRow]:
+    """Keep record-level scorecards stable by omitting absent optional evidence rows."""
+    return [row for row in rows if row.required or row.artifact_ref]
+
+
+def _apps_rg_diagnostic_summary(
+    *,
+    suite_id: str,
+    app_id: str,
+    run_id: str,
+    observations: list[DiagnosticObservationV1],
+) -> DiagnosticSummaryV1:
+    family_counts: Counter[str] = Counter(row.diagnostic_family for row in observations)
+    verdict_counts: Counter[str] = Counter(str(row.diagnostic_verdict) for row in observations)
+    promotion_counts: Counter[str] = Counter(str(row.promotion_state) for row in observations)
+    return DiagnosticSummaryV1(
+        suite_id=suite_id,
+        app_id=app_id,
+        run_id=run_id,
+        observation_count=len(observations),
+        family_counts=_sorted_counter(family_counts),
+        verdict_counts=_sorted_counter(verdict_counts),
+        promotion_state_counts=_sorted_counter(promotion_counts),
+    )
+
+
 def _csv_cell(value: Any) -> str:
     if isinstance(value, (dict, list, tuple)):
         return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
@@ -689,7 +743,14 @@ def compare_record_to_baseline(record: dict[str, Any], baseline: dict[str, Any])
     )
 
 
-def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: Path, emit_l6_handoff: bool) -> dict[str, str]:
+def _emit_artifacts(
+    record: CompletedEvalRecord,
+    findings: list[Any],
+    run_dir: Path,
+    emit_l6_handoff: bool,
+    diagnostic_rows: list[DiagnosticObservationV1] | None = None,
+    diagnostic_summary: DiagnosticSummaryV1 | None = None,
+) -> dict[str, str]:
     _wg.ensure_dir(run_dir)
     paths = {
         "eval_record": run_dir / "eval_record.json",
@@ -710,6 +771,8 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
                 "missing_required_components": run_dir / "missing_required_components.csv",
                 "evidence_index": run_dir / "evidence_index.csv",
                 "apps_rg_l6_eval_handoff": run_dir / "apps_rg_l6_eval_handoff.json",
+                "diagnostic_rows": run_dir / "diagnostic_rows.jsonl",
+                "diagnostic_summary": run_dir / "diagnostic_summary.json",
             }
         )
     _wg.write_text(paths["eval_record"], json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
@@ -838,6 +901,23 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
             json.dumps(rg_handoff, indent=2, sort_keys=True),
             encoding="utf-8",
         )
+        diagnostic_row_dicts = [row.to_dict() for row in diagnostic_rows or []]
+        resolved_diagnostic_summary = diagnostic_summary or _apps_rg_diagnostic_summary(
+            suite_id=record.suite_id,
+            app_id=record.app_id,
+            run_id=record.record_id,
+            observations=diagnostic_rows or [],
+        )
+        _wg.write_text(
+            paths["diagnostic_rows"],
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in diagnostic_row_dicts),
+            encoding="utf-8",
+        )
+        _wg.write_text(
+            paths["diagnostic_summary"],
+            json.dumps(resolved_diagnostic_summary.to_dict(), indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
     _wg.write_text(paths["report"], render_report(record, findings), encoding="utf-8")
     manifest = {
         "schema_version": CURRENT_EVAL_MANIFEST_SCHEMA_VERSION,
@@ -952,6 +1032,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     apps_rg_scorecard_rows: list[ScorecardRow] = []
     apps_rg_component_scorecards: list[dict[str, Any]] = []
     apps_rg_scenario_coverages: list[dict[str, Any]] = []
+    apps_rg_diagnostic_rows: list[DiagnosticObservationV1] = []
     scenario_results = []
     rubric_ids = sorted({fixture.scenario.rubric_id for fixture in fixtures})
     planned_eval_artifacts = _planned_eval_artifacts(run_dir) if suite.get("app_id") == "apps_rg" else {}
@@ -976,12 +1057,22 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
                 created_at=created_at,
                 planned_eval_artifacts=planned_eval_artifacts,
             )
-            rows = list(microstep_eval["rows"])
+            rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
             components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
             coverage = microstep_eval["coverage_summary"].to_dict()
+            diagnostic_eval = build_apps_rg_diagnostics(
+                suite_id=request.suite_id,
+                scenario_id=fixture.scenario.scenario_id,
+                snapshot=snapshot,
+                run_id=record_id,
+                scorecard_rows=rows,
+                snapshot_ref=fixture.snapshot_path if request.mode == "snapshot" else str((run_dir / "live_snapshots" / f"{hashlib.sha256(fixture.scenario.scenario_id.encode('utf-8')).hexdigest()[:8]}.json").as_posix()),
+                snapshot_digest=_canonical_digest(snapshot_payload),
+            )
             apps_rg_scorecard_rows.extend(rows)
             apps_rg_component_scorecards.extend(components)
             apps_rg_scenario_coverages.append(coverage)
+            apps_rg_diagnostic_rows.extend(list(diagnostic_eval["rows"]))
             scenario_result["apps_rg_coverage_summary"] = coverage
         scenario_results.append(scenario_result)
     apps_rg_coverage_summary = (
@@ -1051,7 +1142,24 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         baseline_path=request.baseline_path if request.compare_baseline else "",
     )
     record = replace(provisional, regression_flywheel=flywheel)
-    paths = _emit_artifacts(record, findings, run_dir, request.emit_l6_handoff)
+    diagnostic_summary = (
+        _apps_rg_diagnostic_summary(
+            suite_id=request.suite_id,
+            app_id=str(suite["app_id"]),
+            run_id=record_id,
+            observations=apps_rg_diagnostic_rows,
+        )
+        if suite.get("app_id") == "apps_rg"
+        else None
+    )
+    paths = _emit_artifacts(
+        record,
+        findings,
+        run_dir,
+        request.emit_l6_handoff,
+        diagnostic_rows=apps_rg_diagnostic_rows,
+        diagnostic_summary=diagnostic_summary,
+    )
     record = replace(record, artifact_paths=paths)
     _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
     _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
