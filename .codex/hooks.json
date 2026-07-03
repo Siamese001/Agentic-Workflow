@@ -178,6 +178,10 @@
           },
           {
             "type": "command",
+            "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/stop_apps_rg_inline_evidence_gate.py\""
+          },
+          {
+            "type": "command",
             "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/after_agent_governance_dispatch.py\""
           }
         ]
