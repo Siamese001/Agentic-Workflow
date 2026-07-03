@@ -340,6 +340,8 @@ def test_canonical_next_best_actions_prioritizes_p0_over_p3_hygiene(tmp_path: Pa
         "Stop core importing apps",
         "Close UWG bypass regression",
     ]
+    core_import_row = next(r for r in actions["rows"] if r["scope"] == "13_core_imports_apps")
+    assert "35 core-to-app import row(s)" in core_import_row["evidence"]
     assert "S4_unused_imports_ratchet" not in [r["scope"] for r in actions["rows"][:3]]
 
 
@@ -560,35 +562,55 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     for section in [
         "## ADG Executive Brief",
-        "### BCG Executive Brief",
-        "### 1. What ADG Is",
-        "### 2. Patient Size",
-        "### 3. Executive Decision",
-        "### 3A. KPI Scorecard — Decision vs Audit",
-        "### 4. Lens 0 — Foundation Blockers",
-        "### 5. Gap Analysis — Lens 1: Health Gates",
-        "### 6. Gap Analysis — Lens 2: Runtime Proof / Observability",
-        "### 7. Gap Analysis — Lens 3: Product / App Risk",
-        "### 8. Gap Analysis — Lens 4: Testing Control Gaps",
-        "### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact",
-        "### 10. MECE Decision Gate and Work Queue",
-        "### 11. Defer / Delete / Deprecate",
-        "### BCG Deletion Brief",
-        "### 12. Honest Bottom Line",
-        "Action impact:",
+        "| Question | Answer |",
+        "| Can we merge? | No. A P0 FIX gate is red. |",
+        "| What blocks merge? |",
+        "ADG Run Metrics",
+        "| Metric | Value |",
+        "P0-P3 Severity Inventory",
+        "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+        "### 1. Key Findings",
+        "### 2. Recommended Next Steps",
         "No deletions are approved in this run",
-        "| Priority | Move | Why it matters | Evidence | Next step |",
-        "Maintain SVP engineer-level repo standards",
+        "| Finding | What it says |",
+        "| Priority | Action | Evidence | Exit criterion |",
     ]:
         assert section in md
+    assert md.index("| Question | Answer |") < md.index("ADG Run Metrics")
+    assert md.index("| Question | Answer |") < md.index("### 1. Key Findings")
+    assert md.index("ADG Run Metrics") < md.index("P0-P3 Severity Inventory")
+    assert md.index("P0-P3 Severity Inventory") < md.index("### 1. Key Findings")
+    assert "- **Readout:**" not in md
+    assert "### 1. Executive Bottom Line" not in md
+    assert "North star:" not in md
+    assert "Business read:" not in md
+    assert "Technical evidence:" not in md
+    assert "Fix now:" not in md
+    assert "### BCG Executive Brief" not in md
+    assert "### 1. What ADG Is" not in md
+    assert "### 2. Patient Size" not in md
+    assert "### 3. Executive Decision" not in md
+    assert "Patient-size metrics were not available" not in md
+    assert "Risk level:" not in md
+    assert "### 3A. KPI Scorecard — Decision vs Audit" not in md
+    assert "### 4. Lens 0 — Foundation Blockers" not in md
+    assert "### 8. Gap Analysis — Lens 4: Testing Control Gaps" not in md
+    assert "### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact" not in md
+    assert "### BCG Deletion Brief" not in md
+    assert "Action impact:" not in md
     assert "Business reason" not in md
     assert "Technical reason" not in md
     assert "Why this order" not in md
     assert "fix_blocker" not in md
-    assert "ADG source:" in md
-    assert "KPI split:" in md
+    assert "| P0 ledgers |" in md
+    assert "foundation risk inventory=3; audit net backlog=1; live merge drivers=1" in md
+    assert "Classify remaining P0 counts after the rerun" in md
+    assert "Do not open a separate product/app workstream" in md
+    assert "Keep deletion/deprecation cleanup after P0" in md
+    assert "| Finding | What it says | Response |" not in md
+    assert "| P0 | 1 | 0 | 1 | 3 | 1 |" in md
     assert "adg_indexed_run.sqlite" in md
-    assert "(snapshot run)" in md
+    assert "| Snapshot | 2026-06-18T18:02:31+00:00 |" in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
 
 
@@ -619,14 +641,28 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert doc["run"]["decision_grade_status"] == "REPORT_INCONSISTENT"
 
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
-    assert "- **Decision status:** REPORT_INCONSISTENT" in md
-    assert "- **Emit status:** PASS" in md
+    assert "| Audit caveat | REPORT_INCONSISTENT; report consistency=FAIL |" in md
+    assert "- **Emit status:** PASS" not in md
     assert "- **Status:** PASS" not in md
-    assert "Decision gate:" in md
-    assert "| Repair graph/report consistency |" in md
+    assert "Business read:" not in md
+    assert "Technical evidence:" not in md
+    assert "ADG Run Metrics" in md
+    assert "P0-P3 Severity Inventory" in md
+    assert "P0 blocker rows" in md
+    assert "Report consistency" in md
+    assert "| Question | Answer |" in md
+    assert "| Can we merge? | No. A P0 FIX gate is red. |" in md
+    assert "| What blocks merge? | `blocker` has 1 blocking row(s). |" in md
+    assert "### 1. Key Findings" in md
+    assert "| Repair graph/report consistency |" not in md
     assert "| 1 | Repair graph/report consistency |" not in md
-    assert "Fix now:" in md
-    assert "Next step: Repair graph/report consistency first." in md
+    assert "### 2. Recommended Next Steps" in md
+    assert "Fix now:" not in md
+    assert "| Priority | Action | Evidence | Exit criterion |" in md
+    assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." in md
+    assert "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing." in md
+    assert "Post-P0 ADG has report consistency PASS or an explicit waiver." in md
+    assert "Next step: Repair graph/report consistency first." not in md
 
 
 def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:
@@ -882,12 +918,19 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
     assert doc["lens_0_p0_landmines"]["summary"]["foundation_blockers"] == 0
 
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
-    assert "### 3A. KPI Scorecard — Decision vs Audit" in md
-    assert "| Foundation blockers | 0 |" in md
-    assert "| P0 audit net | 3 |" in md
+    assert "P0-P3 Severity Inventory" in md
+    assert "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |" in md
     assert "| P0 | 43 | 40 | 3 | 0 | 1 |" in md
-    assert "Zero foundation blockers can coexist with nonzero P0 audit net" in md
-    assert "### 4. Lens 0 — Foundation Blockers" in md
+    assert "| P1 | 10 | 8 | 2 | n/a | 0 |" in md
+    assert "| P2 | 7 | 2 | 5 | n/a | 0 |" in md
+    assert "| P3 | 0 | 0 | 0 | n/a | 0 |" in md
+    assert "### 1. Key Findings" in md
+    assert "Foundation risk inventory=0; audit net backlog after exemptions=3; live merge-blocking drivers=1." in md
+    assert "| P0 ledgers |" in md
+    assert "Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates." in md
+    assert "Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate." in md
+    assert "### 3A. KPI Scorecard — Decision vs Audit" not in md
+    assert "### 4. Lens 0 — Foundation Blockers" not in md
     assert "### 4. Lens 0 — P0 Landmines / Foundation Cracks" not in md
 
 

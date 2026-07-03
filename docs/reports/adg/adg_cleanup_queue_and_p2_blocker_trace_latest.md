@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-07-02T03:23:44+00:00
+- **Generated:** 2026-07-03T03:20:34+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_07012026_2302.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_07022026_2303.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07012026_2302.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07022026_2303.json`
 
 ### BCG Cleanup Brief
 
@@ -14,7 +14,7 @@
 - **Source report status:** PASS
 - **Business read:** ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_07012026_2302.sqlite (snapshot 07012026_2302)
+  - ADG source: artifacts/adg/adg_indexed_07022026_2303.sqlite (snapshot 07022026_2303)
   - Dead code candidates: 949
   - Dead imports: 949
   - Unresolved imports: 483
@@ -70,12 +70,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **P2 ratchet status:** WITHIN_CEILING
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_07012026_2302.sqlite
-  - P2 ceiling: 28
-  - Current MEDIUM hygiene count: 28
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_07022026_2303.sqlite
+  - P2 ceiling: 29
+  - Current MEDIUM hygiene count: 29
   - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_07012026_2302.sqlite
-  - Latest failed run: 2026-07-02T03:23:43Z (failed)
+  - Baseline snapshot: adg_indexed_07022026_2303.sqlite
+  - Latest failed run: 2026-07-03T03:20:34Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 Fix now:
@@ -86,24 +86,24 @@ Fix now:
 | 2 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 4 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 3 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 4 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=28; ceiling=28; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
+| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=29; ceiling=29; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
 
 Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.
 
 ### Trace Summary
 
-- **Current MEDIUM hygiene count:** 28
-- **Ceiling:** 28
+- **Current MEDIUM hygiene count:** 29
+- **Ceiling:** 29
 - **Delta:** +0
-- **Baseline snapshot:** adg_indexed_07012026_2302.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_07012026_2302.sqlite
-- **Latest failed run:** 2026-07-02T03:23:43Z (failed)
+- **Baseline snapshot:** adg_indexed_07022026_2303.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_07022026_2303.sqlite
+- **Latest failed run:** 2026-07-03T03:20:34Z (failed)
 
 ### Evidence Buckets
 
 | Evidence | Count | Interpretation |
 |---|---:|---|
-| Exception | 11 | Broad exception catch or swallow on a live hygiene path. |
+| Exception | 12 | Broad exception catch or swallow on a live hygiene path. |
 | OSError | 10 | Filesystem / IO error handling needs to be narrowed. |
 | ValueError | 3 | Parsing or validation guard should be tightened. |
 | getattr | 1 | Hygiene debt on the current published snapshot. |

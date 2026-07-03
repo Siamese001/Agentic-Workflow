@@ -1410,6 +1410,9 @@ def build_executive_priority_row(
     }
     decision_options = _format_decision_options(gate, breakout)
     evidence = format_evidence_line(gate, run_id, breakout)
+    if gate_id == "13_core_imports_apps":
+        row_count = _fmt_int(gate.get("violation_count") or gate.get("total_records") or gate.get("records") or 0)
+        evidence = f"ADG `{run_id}` found {row_count} core-to-app import row(s): `agentic_core` imports `apps_*`."
     next_step = _format_adversarial_next_step(copy, breakout, decision_options)
     affected_layers = [
         " -> ".join([part for part in (str(group.get("src_layer") or "").strip(), str(group.get("dst_layer") or "").strip()) if part])
@@ -1592,6 +1595,7 @@ def _product_lens(testing: dict[str, Any], graph: dict[str, Any]) -> dict[str, A
 def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str, Any], artifacts: dict[str, Any], consistency: dict[str, Any] | None = None) -> dict[str, Any]:
     consistency = consistency or {}
     missing_required = [r for r in artifacts.get("rows", []) if not r.get("exists") and r.get("artifact_key") in {"gate_results", "sqlite_snapshot"}]
+    fix_gates = int(health["summary"].get("fix_gates") or 0)
     if missing_required:
         verdict = "DEGRADED"
         crisis = "measurement_gap"
@@ -1604,7 +1608,7 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
         verdict = "RUNTIME_PROOF_FAILING"
         crisis = "material_risk"
         posture = "repair_runtime"
-    elif int(health["summary"].get("fix_gates") or 0):
+    elif fix_gates:
         verdict = "BLOCKED"
         crisis = "routine_nudge" if all(int(r.get("regression_delta") or 0) <= 1 for r in health.get("red_gates", []) or [{"regression_delta": 2}]) else "material_risk"
         posture = "narrow_slice"
@@ -1626,7 +1630,10 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
         posture = "monitor"
     recommendation = "Fund the smallest slice that clears current blockers and attaches tests where hotspot evidence overlaps; keep ratchets after-green."
     if verdict == "REPORT_INCONSISTENT":
-        recommendation = "Repair report consistency first; the executive order of work is not trustworthy until graph and report agree."
+        if fix_gates:
+            recommendation = "Treat report inconsistency as a decision-quality caveat, not the first engineering work item; clear concrete P0 FIX gates first, then rerun ADG and repair report consistency if it persists."
+        else:
+            recommendation = "Repair report consistency before treating lower-severity ranking as authoritative."
     elif verdict == "RUNTIME_PROOF_FAILING":
         recommendation = "Fix the failing runtime-proof path before treating ordinary gate cleanup as the highest-confidence next action."
     elif verdict == "DEGRADED":
@@ -1961,17 +1968,46 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
                 "decision": row.get("decision"),
             }
         )
+    first_priority = priority_rows[0] if priority_rows else {}
+    first_move = str(first_priority.get("move") or first_priority.get("scope") or "the first P0 blocker")
+    first_scope = str(first_priority.get("scope") or first_move)
+    first_evidence = str(first_priority.get("evidence") or "ADG emitted a concrete P0 row").rstrip(".")
+    red_gates_by_id = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
+    first_gate = red_gates_by_id.get(first_scope, {})
+    first_row_count = _fmt_int(first_gate.get("total_records") or first_gate.get("records") or first_gate.get("violation_count") or 0)
+    fix_gate_count = _fmt_int(health.get("summary", {}).get("fix_gates", 0))
+    runtime_signals = runtime.get("runtime_proof_signals") or []
+    runtime_status = str((runtime_signals[0] if runtime_signals else {}).get("status") or runtime.get("status") or "unknown")
+    testing_rows = testing.get("investment_map") or []
+    testing_scope = str((testing_rows[0] if testing_rows else {}).get("production_scope") or "No promoted testing hotspot")
+    testing_risk = str(((testing_rows[0] if testing_rows else {}).get("risk") or {}).get("risk_band") or "unknown")
     if verdict == "REPORT_INCONSISTENT":
-        business_suffix = "Repair report consistency before treating blocker order as authoritative."
-        priority_rule = (
-            "Decision queue: repair consistency, then remove concrete P0 hard stops/regressions; "
-            "do not let high-volume P3 hygiene outrank P0 safety/governance gates."
-        )
-        why_this_order = [
-            "Graph/report mismatch means the action order is not decision-grade yet.",
-            "After that, concrete P0 FIX gates outrank P3 hygiene even when the P3 row count is larger.",
-            "Testing exposure should travel with the relevant fix slice.",
-        ]
+        if priority_rows:
+            business_suffix = (
+                "ADG is giving one safe decision, not a full ranked roadmap: clear the P0 core/app boundary "
+                "violation before merge. The report inconsistency only limits confidence in the lower-priority "
+                "ranking; it does not change the first engineering move."
+            )
+            priority_rule = (
+                "Concrete P0 FIX rows first; graph/report mismatch is a decision-quality caveat, "
+                "not the first engineering work item."
+            )
+            why_this_order = [
+                "Concrete P0 FIX rows are actionable now and still outrank report-maintenance work.",
+                "Graph/report mismatch makes lower-severity ordering provisional, not a reason to defer the P0 blocker.",
+                "After the P0 fix, rerun ADG to prove both the gate and report consistency.",
+            ]
+        else:
+            business_suffix = "Repair report consistency before treating lower-severity order as authoritative."
+            priority_rule = (
+                "Decision queue: repair consistency before ranking lower-severity backlog; "
+                "do not let high-volume P3 hygiene outrank P0 safety/governance gates."
+            )
+            why_this_order = [
+                "Graph/report mismatch means the lower-severity action order is not decision-grade yet.",
+                "Once consistent, concrete P0 FIX gates outrank P3 hygiene even when the P3 row count is larger.",
+                "Testing exposure should travel with the relevant fix slice.",
+            ]
     elif verdict == "DEGRADED":
         business_suffix = "Restore required report inputs before using this summary for prioritization."
         priority_rule = "Restore missing evidence first, then rerun the executive summary."
@@ -1996,22 +2032,26 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             "P3 hygiene only wins when it is tied to the current blocker slice."
         )
         why_this_order = (doc.get("honest_bottom_line") or {}).get("bullets", [])[:4]
-    return build_bcg_brief(
-        title="BCG Executive Brief",
-        status=verdict,
-        status_label="Decision status",
-        secondary_statuses={"Emit status": (doc.get("run") or {}).get("emit_status", "")},
-        business_read=(
-            f"ADG is {d.get('verdict', 'UNKNOWN')}: {recommendation}. "
-            f"{business_suffix}"
-        ),
-        technical_read=[
+    if verdict == "REPORT_INCONSISTENT" and priority_rows:
+        business_read = business_suffix
+        technical_read = [
+            f"P0 gate: `{first_scope}`; rows: {first_row_count}; boundary: `agentic_core` -> `apps_*`.",
+            f"Source: ADG `{doc.get('run', {}).get('run_id') or 'unknown'}` emitted this as a concrete FIX row.",
+            "Report caveat: graph/report consistency is FAIL; only lower-priority ranking is provisional.",
+            f"Run context: {fix_gate_count} FIX gate(s); {_fmt_int(len(actions))} action rows emitted.",
+            f"Runtime signal: {runtime_status}.",
+            f"Testing signal: {testing_scope}; risk={testing_risk}.",
+        ]
+        rendered_decision_gates: list[dict[str, Any]] = []
+    else:
+        business_read = f"ADG is {d.get('verdict', 'UNKNOWN')}: {recommendation}. {business_suffix}"
+        technical_read = [
             (
                 f"ADG source: {sqlite_snapshot} (snapshot {snapshot_ts})"
                 if sqlite_snapshot
                 else f"ADG source: missing (snapshot {doc.get('run', {}).get('snapshot_ts') or doc.get('run', {}).get('run_id') or 'missing'})"
             ),
-            f"FIX gates: {_fmt_int(health.get('summary', {}).get('fix_gates', 0))}; "
+            f"FIX gates: {fix_gate_count}; "
             f"burn-down gates: {_fmt_int(health.get('summary', {}).get('burn_down_gates', health.get('summary', {}).get('track_gates', 0)))}; "
             f"KPI/watchlist gates: {_fmt_int(health.get('summary', {}).get('kpi_watchlist_gates', 0))}",
             "KPI split: "
@@ -2022,13 +2062,25 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             testing.get("executive_read") or testing.get("why_it_matters", ""),
             graph.get("executive_read", ""),
             f"Action rows emitted: {_fmt_int(len(actions))}",
-        ],
-        decision_gates=decision_gate_rows,
+        ]
+        rendered_decision_gates = decision_gate_rows
+    return build_bcg_brief(
+        title="BCG Executive Brief",
+        status=verdict,
+        status_label="Decision status",
+        secondary_statuses={},
+        business_read=business_read,
+        technical_read=technical_read,
+        decision_gates=rendered_decision_gates,
         priority_rule=priority_rule.replace("accepted debt", "owned burn-down debt").replace("ratchets", "owned burn-down backlog"),
         priority_rows=priority_rows,
         why_this_order=why_this_order,
         next_step=(
-            "Repair graph/report consistency first."
+            (
+                f"{priority_rows[0].get('move')}; rerun ADG and repair graph/report consistency before lower-severity ranking."
+                if priority_rows
+                else "Repair graph/report consistency before lower-severity ranking."
+            )
             if verdict == "REPORT_INCONSISTENT"
             else "Restore required report inputs first."
             if verdict == "DEGRADED"
@@ -2044,263 +2096,329 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def _compact_key_findings(doc: dict[str, Any]) -> list[list[Any]]:
+    health = doc.get("lens_1_health_gates") or {}
+    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
+    kpis = {str(row.get("id") or ""): row for row in scorecard.get("kpis", []) or []}
+    p0 = doc.get("lens_0_p0_landmines") or {}
+    runtime = doc.get("lens_2_runtime_proof_observability") or {}
+    product = doc.get("lens_3_product_app_risk") or {}
+    testing = doc.get("lens_4_testing_control_gaps") or {}
+    graph = doc.get("lens_5_graphdb_mv_decision_impact") or {}
+    plan = doc.get("deprecation_deletion_plan") or {}
+    consistency = ((doc.get("audit_notes") or {}).get("artifact_consistency") or {})
+
+    red_gates = health.get("red_gates") or []
+    red_finding = "No red FIX gates."
+    if red_gates:
+        top = red_gates[0]
+        red_finding = (
+            f"{top.get('gate_id')} has {_fmt_int(top.get('total_records'))} blocking row(s)."
+        )
+
+    p0_summary = p0.get("summary") or {}
+    foundation_count = p0_summary.get("foundation_blockers", 0)
+    foundation_finding = (
+        f"{_fmt_int(foundation_count)} foundation blocker(s): "
+        f"{_fmt_int(p0_summary.get('layer_violations'))} layer, "
+        f"{_fmt_int(p0_summary.get('protected_surfaces'))} protected-surface."
+    )
+
+    runtime_signals = runtime.get("runtime_proof_signals") or []
+    runtime_row = next((r for r in runtime_signals if str(r.get("status")) != "present"), runtime_signals[0] if runtime_signals else {})
+    testing_rows = testing.get("investment_map") or []
+    testing_row = testing_rows[0] if testing_rows else {}
+    graph_risks = graph.get("top_graph_risks") or []
+    graph_row = graph_risks[0] if graph_risks else {}
+    plan_summary = plan.get("summary") or {}
+
+    return [
+        [
+            "Merge blocker",
+            red_finding,
+        ],
+        [
+            "P0 ledger definitions",
+            (
+                f"Foundation risk inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+                f"audit net backlog after exemptions={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+                f"live merge-blocking drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}."
+            ),
+        ],
+        [
+            "Report consistency",
+            f"{consistency.get('status', 'unknown')}; lower-priority ordering is provisional.",
+        ],
+        [
+            "Foundation blockers",
+            foundation_finding,
+        ],
+        [
+            "Runtime proof",
+            (
+                f"{runtime_row.get('signal', 'runtime proof')}: "
+                f"{runtime_row.get('status', runtime.get('status', 'unknown'))}."
+            ),
+        ],
+        [
+            "Testing",
+            (
+                f"{testing_row.get('production_scope', 'No mapped testing hotspot promoted')} "
+                f"risk={((testing_row.get('risk') or {}).get('risk_band') or 'unknown')}."
+            ),
+        ],
+        [
+            "Graph / MV",
+            (
+                f"{graph_row.get('scope', 'No graph hotspot promoted')} "
+                f"via {graph_row.get('graph_signal', 'diagnostic signals')}."
+            ),
+        ],
+        [
+            "Product / app",
+            product.get("executive_read") or "No product/app risk promoted.",
+        ],
+        [
+            "Defer / delete",
+            plan_summary.get("executive_read") or "No deletion/deprecation plan loaded.",
+        ],
+    ]
+
+
+def _step_action(row: dict[str, Any]) -> str:
+    move = str(row.get("move") or row.get("action") or row.get("scope") or "No promoted action").rstrip(".")
+    next_step = str(row.get("next_step") or row.get("why_this_rank") or row.get("why_now") or "").strip()
+    if move.startswith("Refactor high-blast-radius seam"):
+        scope = str(row.get("scope") or "the flagged seam")
+        return (
+            f"After P0 is green and mapped tests are decided, open a scoped refactor/test slice for {scope} "
+            "only if ADG still flags it or the P0 fix touches it."
+        )
+    if not next_step:
+        return move
+    return f"{move}. {next_step}"
+
+
+def _step_exit(row: dict[str, Any]) -> str:
+    explicit = row.get("done_condition")
+    if explicit:
+        return str(explicit)
+    scope = str(row.get("scope") or "")
+    if scope == "13_core_imports_apps":
+        return "Post-fix ADG shows this gate green and P0 FIX=0."
+    return "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived."
+
+
+def _insert_step(steps: list[dict[str, Any]], index: int, action: str, evidence: str, exit_criterion: str) -> None:
+    steps.insert(index, {"action": action, "evidence": evidence, "exit": exit_criterion})
+
+
+def _append_step(steps: list[dict[str, Any]], action: str, evidence: str, exit_criterion: str) -> None:
+    steps.append({"action": action, "evidence": evidence, "exit": exit_criterion})
+
+
+def _compact_next_steps(doc: dict[str, Any], brief: dict[str, Any] | None = None) -> list[list[Any]]:
+    source_rows = list((brief or {}).get("priority_rows") or [])
+    table_limit = (brief or {}).get("table_limit")
+    if isinstance(table_limit, int) and table_limit >= 0:
+        source_rows = source_rows[:table_limit]
+    actions = source_rows or list((doc.get("canonical_next_best_actions") or {}).get("rows") or [])[:5]
+    steps: list[dict[str, Any]] = []
+    for row in actions:
+        steps.append(
+            {
+                "action": _step_action(row),
+                "evidence": row.get("evidence") or row.get("technical_reason") or row.get("testing_requirement"),
+                "exit": _step_exit(row),
+            }
+        )
+    decision_rows = (doc.get("gate_mece_summary") or {}).get("decision_gates") or []
+    if decision_rows and not steps:
+        for row in decision_rows[:2]:
+            steps.append(
+                {
+                    "action": _step_action(row),
+                    "evidence": row.get("evidence") or row.get("technical_reason"),
+                    "exit": "Rerun ADG and confirm the decision gate clears.",
+                }
+            )
+    consistency = ((doc.get("audit_notes") or {}).get("artifact_consistency") or {})
+    if str(consistency.get("status") or "").upper() == "FAIL":
+        _insert_step(
+            steps,
+            1 if steps else 0,
+            "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3.",
+            "Report consistency=FAIL.",
+            "Post-P0 ADG has report consistency PASS or an explicit waiver.",
+        )
+    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
+    kpis = {str(row.get("id") or ""): row for row in scorecard.get("kpis", []) or []}
+    if kpis:
+        _insert_step(
+            steps,
+            min(2, len(steps)),
+            "Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates.",
+            (
+                f"Foundation risk inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+                f"audit net backlog={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+                f"live merge drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}."
+            ),
+            "Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate.",
+        )
+    runtime_status = _first_runtime_status(doc)
+    if runtime_status not in {"present", "unknown"}:
+        _insert_step(
+            steps,
+            min(3, len(steps)),
+            "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing.",
+            f"runtime_spine={runtime_status}.",
+            "Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision.",
+        )
+    product = doc.get("lens_3_product_app_risk") or {}
+    product_read = product.get("executive_read") or "No product/app risk promoted."
+    _append_step(
+        steps,
+        "Do not open a separate product/app workstream; validate app-owned wiring only if the P0 adapter fix touches it.",
+        product_read,
+        "Touched app wiring has targeted validation, or no app-owned surface was touched.",
+    )
+    plan = doc.get("deprecation_deletion_plan") or {}
+    plan_summary = plan.get("summary") or {}
+    if plan_summary:
+        _append_step(
+            steps,
+            "Keep deletion/deprecation cleanup after P0, report consistency, and runtime proof are green unless cleanup blocks the P0 fix.",
+            plan_summary.get("executive_read") or "Cleanup signal loaded.",
+            "Cleanup is scheduled as a separate after-green wave or explicitly tied to the P0 fix.",
+        )
+    if not steps:
+        steps = [{"action": "Keep ADG green.", "evidence": "No red gate evidence.", "exit": "No red gate remains."}]
+    return [[idx, row["action"], row["evidence"], row["exit"]] for idx, row in enumerate(steps, start=1)]
+
+
+def _first_runtime_status(doc: dict[str, Any]) -> str:
+    runtime = doc.get("lens_2_runtime_proof_observability") or {}
+    signals = runtime.get("runtime_proof_signals") or []
+    return str((signals[0] if signals else {}).get("status") or runtime.get("status") or "unknown")
+
+
+def _first_testing_signal(doc: dict[str, Any]) -> str:
+    testing = doc.get("lens_4_testing_control_gaps") or {}
+    rows = testing.get("investment_map") or []
+    if not rows:
+        return "none promoted"
+    row = rows[0]
+    risk = ((row.get("risk") or {}).get("risk_band") or "unknown")
+    return f"{row.get('production_scope', 'unknown')}; risk={risk}"
+
+
+def _first_p0_blocker_metric(doc: dict[str, Any], brief: dict[str, Any]) -> str:
+    first = (brief.get("priority_rows") or [{}])[0]
+    scope = str(first.get("scope") or first.get("move") or "none")
+    health = doc.get("lens_1_health_gates") or {}
+    gates = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
+    row = gates.get(scope, {})
+    count = _fmt_int(row.get("total_records") or row.get("records") or row.get("violation_count") or 0)
+    return f"{scope}; rows={count}"
+
+
+def _adg_run_metrics(doc: dict[str, Any], brief: dict[str, Any]) -> list[list[Any]]:
+    health = doc.get("lens_1_health_gates") or {}
+    summary = health.get("summary") or {}
+    consistency = ((doc.get("audit_notes") or {}).get("artifact_consistency") or {})
+    actions = (doc.get("canonical_next_best_actions") or {}).get("rows") or []
+    raw_inputs = doc.get("raw_inputs") or {}
+    artifacts = raw_inputs.get("artifacts") or {}
+    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
+    kpis = {str(row.get("id") or ""): row for row in scorecard.get("kpis", []) or []}
+    return [
+        ["Run ID", (doc.get("run") or {}).get("run_id") or "unknown"],
+        ["Snapshot", (doc.get("run") or {}).get("snapshot_ts") or "unknown"],
+        ["SQLite snapshot", artifacts.get("sqlite_snapshot") or "unknown"],
+        ["Audit caveat", f"{(doc.get('executive_decision') or {}).get('verdict') or 'UNKNOWN'}; report consistency={consistency.get('status') or 'unknown'}"],
+        ["P0 FIX gates", _fmt_int(summary.get("fix_gates", 0))],
+        ["P0 blocker rows", _first_p0_blocker_metric(doc, brief)],
+        ["Action rows", _fmt_int(len(actions))],
+        [
+            "P0 ledgers",
+            (
+                f"foundation risk inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+                f"audit net backlog={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+                f"live merge drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}"
+            ),
+        ],
+        ["Runtime proof", _first_runtime_status(doc)],
+        ["Testing hotspot", _first_testing_signal(doc)],
+    ]
+
+
+def _p0_p3_severity_inventory(doc: dict[str, Any]) -> list[list[Any]]:
+    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
+    rows = scorecard.get("p0_p3_audit_inventory") or []
+    if not rows:
+        return [["P0", "not loaded", "not loaded", "not loaded", "not loaded", "not loaded"]]
+    out: list[list[Any]] = []
+    for row in rows:
+        out.append(
+            [
+                row.get("band"),
+                _display_count(row.get("audit_gross")),
+                _display_count(row.get("guardian_exempted")),
+                _display_count(row.get("audit_net")),
+                row.get("foundation_blockers_display") or _display_count(row.get("foundation_blockers")),
+                _display_count(row.get("live_gate_drivers")),
+            ]
+        )
+    return out
+
+
+def _executive_decision_rows(doc: dict[str, Any], brief: dict[str, Any]) -> list[list[Any]]:
+    first = (brief.get("priority_rows") or [{}])[0]
+    scope = str(first.get("scope") or "none")
+    move = str(first.get("move") or first.get("action") or "No immediate action promoted")
+    next_step = str(first.get("next_step") or brief.get("next_step") or "No next step promoted")
+    health = doc.get("lens_1_health_gates") or {}
+    gates = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
+    row = gates.get(scope, {})
+    count = _fmt_int(row.get("total_records") or row.get("records") or row.get("violation_count") or 0)
+    consistency = (((doc.get("audit_notes") or {}).get("artifact_consistency") or {}).get("status") or "unknown")
+    if scope == "13_core_imports_apps":
+        blocker = f"`{scope}`: `agentic_core` imports `apps_*` in {count} row(s), violating the core/app boundary."
+    else:
+        blocker = f"`{scope}` has {count} blocking row(s)."
+    return [
+        ["Can we merge?", "No. A P0 FIX gate is red."],
+        ["What blocks merge?", blocker],
+        ["First engineering move", f"{move}. {next_step}"],
+        ["What waits?", "P1-P3 work, ratchets, dead-code cleanup, and broad graph ranking."],
+        ["Audit caveat", f"Report consistency is {consistency}; this makes lower-priority ranking provisional, but does not change the P0 decision."],
+    ]
+
+
 def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
-    """Render the locked executive inline markdown structure exactly."""
-    h = doc["lens_1_health_gates"]
+    """Render a compact executive markdown brief for inline chat."""
     lines: list[str] = []
     a = lines.append
     a("## ADG Executive Brief")
     a("")
-    for line in render_bcg_brief_md(_executive_bcg_brief(doc)).splitlines():
-        a(line)
+    brief = _executive_bcg_brief(doc)
+    a(_table(["Question", "Answer"], _executive_decision_rows(doc, brief)))
     a("")
-    a("### 1. What ADG Is")
+    a("ADG Run Metrics")
     a("")
-    a(doc["plain_english_context"]["what_adg_is"]["summary"])
+    a(_table(["Metric", "Value"], _adg_run_metrics(doc, brief)))
     a("")
-    a("### 2. Patient Size")
+    a("P0-P3 Severity Inventory")
     a("")
-    ps = doc.get("patient_size", {})
-    if ps.get("status") == "present":
-        a(f"This patient has {ps.get('total_python_files')} Python files: {ps.get('production_python_files')} production files and {ps.get('test_python_files')} test files. agentic_core contributes {ps.get('agentic_core', {}).get('file_count')} files; apps_* contributes {ps.get('apps', {}).get('total_files')} files. Current snapshot/run ID: {doc.get('run', {}).get('run_id')}.")
-    else:
-        a("Patient-size metrics were not available for this run.")
+    a(_table(["Band", "Gross", "Guardian exempted", "Net", "Foundation blockers", "Live gate drivers"], _p0_p3_severity_inventory(doc)))
     a("")
-    a("### 3. Executive Decision")
+    a("### 1. Key Findings")
     a("")
-    d = doc["executive_decision"]
-    a(f"ADG is {d['verdict']}: {d['recommendation']} This is a {d['crisis_level']}; do not chase {', '.join(d.get('what_not_to_do', [])[:2])}.")
+    a(_table(["Finding", "What it says"], _compact_key_findings(doc)))
     a("")
-    scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
-    a("### 3A. KPI Scorecard — Decision vs Audit")
+    a("### 2. Recommended Next Steps")
     a("")
-    a(scorecard.get("executive_read", "P0-P3 KPI reconciliation was not available for this run."))
-    if scorecard.get("rule"):
-        a("")
-        a(scorecard["rule"])
-    a("")
-    a(_table(
-        ["KPI", "Value", "Plain-English meaning", "Action rule"],
-        [
-            [r.get("kpi"), r.get("display_value"), r.get("meaning"), r.get("action_rule")]
-            for r in scorecard.get("kpis", [])
-        ] or [["KPI scorecard", "not loaded", "No reconciliation rows were emitted.", "Do not infer clean/dirty status from missing KPI rows."]],
-    ))
-    a("")
-    if scorecard.get("reconciliation_note"):
-        a(scorecard["reconciliation_note"])
-        a("")
-    a(_table(
-        ["Band", "Audit gross", "Guardian / exempted", "Audit net", "Foundation blockers", "Live gate drivers", "Action role"],
-        [
-            [
-                r.get("band"),
-                r.get("audit_gross_display") or _display_count(r.get("audit_gross")),
-                r.get("guardian_exempted_display") or _display_count(r.get("guardian_exempted")),
-                r.get("audit_net_display") or _display_count(r.get("audit_net")),
-                r.get("foundation_blockers_display") or _display_count(r.get("foundation_blockers")),
-                r.get("live_gate_drivers_display") or _display_count(r.get("live_gate_drivers")),
-                r.get("action_role"),
-            ]
-            for r in scorecard.get("p0_p3_audit_inventory", [])
-        ] or [["P0", "not loaded", "not loaded", "not loaded", "not loaded", "not loaded", "Burndown audit inventory was not loaded."]],
-    ))
-    a("")
-    p0 = doc.get("lens_0_p0_landmines", {})
-    a("### 4. Lens 0 — Foundation Blockers")
-    a("")
-    a(p0.get("why_it_matters", "Foundation-blocker context was unavailable."))
-    if p0.get("executive_read"):
-        a("")
-        a(p0["executive_read"])
-    a("")
-    p0_summary = p0.get("summary", {})
-    a(_table(["Foundation signal", "Count", "Plain-English meaning"], [
-        ["Layer violations", p0_summary.get("layer_violations", 0), "Wrong-way dependencies across protected architecture layers."],
-        ["Circular imports", p0_summary.get("circular_imports", 0), "Modules depend on each other in a loop, making load order brittle."],
-        ["Dynamic execution", p0_summary.get("dynamic_exec", 0), "Code is executed dynamically, which can make graph evidence incomplete."],
-        ["Protected surfaces", p0_summary.get("protected_surfaces", 0), "Cracks in routing, execution, orchestration, or safety surfaces."],
-    ]))
-    a("")
-    landmines = p0.get("landmines") or [{"landmine": "None", "source_file": "", "line_no": 0, "layer_path": "", "wrong_way_import": False, "protected_surface": False, "direct_fan_in": 0, "recommended_action": "No foundation-blocker action required."}]
-    a(_table(["Foundation blocker", "File", "Line", "Layer path", "Wrong-way?", "Protected?", "Fan-in", "Recommended action"], [[r.get("landmine"), r.get("source_file"), r.get("line_no"), r.get("layer_path"), r.get("wrong_way_import"), r.get("protected_surface"), r.get("direct_fan_in"), r.get("recommended_action")] for r in landmines[:8]]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(p0))
-    a("")
-    a("### 5. Gap Analysis — Lens 1: Health Gates")
-    a("")
-    a(h.get("why_it_matters", "Health gates show whether the run is blocked or green."))
-    a("")
-    a(h["summary"]["executive_read"] + " " + h.get("key_interpretation", ""))
-    a("")
-    a(_table(["Bucket", "Count", "Executive meaning"], [[b["bucket"], b["count"], b["plain_meaning"]] for b in h.get("buckets", [])]))
-    a("")
-    red_rows = h.get("red_gates") or [{"gate_id": "None", "total_records": 0, "regression_delta": 0, "executive_read": "No red gates.", "next_action": "No blocker action."}]
-    a(_table(["Red gate", "Total records", "Regression / new delta", "Executive read", "Next action"], [[r["gate_id"], r["total_records"], r.get("regression_delta"), r["executive_read"], r["next_action"]] for r in red_rows[:8]]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(h))
-    a("")
-    a("KPI / watchlist signals:")
-    a("")
-    kpi = h.get("kpi_watchlist") or {}
-    kpi_rows = kpi.get("top_signals") or [{"gate_id": "None", "records": 0, "executive_read": "No KPI/watchlist signal was promoted.", "recommended_action": "No KPI action."}]
-    a(_table(["Signal", "Rows", "Executive read", "Recommended action"], [[r.get("gate_id"), r.get("records"), r.get("executive_read"), r.get("recommended_action")] for r in kpi_rows[:8]]))
-    a("")
-    a("### 6. Gap Analysis — Lens 2: Runtime Proof / Observability")
-    a("")
-    rt = doc["lens_2_runtime_proof_observability"]
-    a(rt.get("why_it_matters", "Runtime proof distinguishes observed failures from blind spots."))
-    a("")
-    a(rt["measurement_gap_vs_quality_failure"])
-    a("")
-    a(_table(["Runtime proof signal", "Status", "Executive read", "Action"], [[r["signal"], r["status"], r["executive_read"], r["action"]] for r in rt.get("runtime_proof_signals", [])]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(rt))
-    a("")
-    a("### 7. Gap Analysis — Lens 3: Product / App Risk")
-    a("")
-    pr = doc["lens_3_product_app_risk"]
-    a(pr.get("why_it_matters", "Product risk ties structural findings to user-facing behavior."))
-    a("")
-    a(pr["executive_read"])
-    a("")
-    app_rows = pr.get("app_risks") or [{"app_or_scope": "None", "risk": "No app-specific product gap was promoted in this run", "evidence": [], "executive_read": "App risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row.", "next_action": "Monitor."}]
-    a(_table(["App / product scope", "Risk", "Evidence", "Executive read", "Next action"], [[r["app_or_scope"], r["risk"], "; ".join(e.get("signal_name", "") for e in r.get("evidence", [])), r["executive_read"], r["next_action"]] for r in app_rows[:8]]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(pr))
-    a("")
-    a("### 8. Gap Analysis — Lens 4: Testing Control Gaps")
-    a("")
-    tg = doc["lens_4_testing_control_gaps"]
-    a(tg.get("why_it_matters", "Testing gaps reduce confidence in fixes."))
-    a("")
-    a(tg["executive_read"])
-    a("")
-    test_rows = tg.get("investment_map") or [{"rank": 0, "production_scope": "None", "current_tests_found": {}, "missing_test_scope": ["No mapped hotspot rows"], "risk": {}, "recommended_test_investment": "No test investment promoted.", "trigger": "No hotspot evidence"}]
-    a(_table(["Rank", "Production scope", "Current tests found", "Missing test scope", "Risk", "Recommended investment", "Trigger"], [[r["rank"], r["production_scope"], _format_current_tests(r.get("current_tests_found", {})), ", ".join(r.get("missing_test_scope", [])), r.get("risk", {}).get("risk_band", "unknown"), r.get("recommended_test_investment"), r.get("trigger")] for r in test_rows[:10]]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(tg))
-    a("")
-    a("### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact")
-    a("")
-    gr = doc["lens_5_graphdb_mv_decision_impact"]
-    a(gr.get("why_it_matters", "Graph signals show blast radius and dependency risk."))
-    a("")
-    a(gr["executive_read"])
-    a("")
-    impact = sorted(gr.get("decision_impact_rows", []), key=lambda r: (not r.get("used_inline"), r.get("decision_role", "")))[:12]
-    a(_table(["Signal", "Decision role", "Used now?", "Why / why not", "Action"], [[r["signal"], r["decision_role"], r["used_inline"], r["why_or_why_not"], r["action"]] for r in impact]))
-    a("")
-    a("Action impact:")
-    a("")
-    a(_action_impact_markdown(gr))
-    a("")
-    graph_risks = gr.get("top_graph_risks", [])
-    if graph_risks:
-        a("Top structural risks (studied from the graph MVs — centrality / blast radius / reverse deps / cones):")
-        a("")
-        a(_table(["Rank", "Scope", "Graph signal", "Centrality", "Blast radius", "Reverse dep", "Executive read"], [[r.get("rank"), r.get("scope"), r.get("graph_signal"), r.get("centrality"), r.get("blast_radius"), r.get("reverse_dependency"), r.get("executive_read")] for r in graph_risks]))
-        a("")
-    a("### 10. MECE Decision Gate and Work Queue")
-    a("")
-    mece = doc.get("gate_mece_summary") or {}
-    decision_rows = mece.get("decision_gates") or []
-    if decision_rows:
-        a("Decision gate — fixes report/runtime trust before ranking becomes authoritative:")
-        a("")
-        a(
-            _table(
-                ["Gate", "Why it matters", "Evidence", "Required before ranking"],
-                [
-                    [
-                        r.get("move") or r.get("gate_id"),
-                        r.get("why_it_matters"),
-                        r.get("evidence"),
-                        r.get("next_step"),
-                    ]
-                    for r in decision_rows
-                ],
-            )
-        )
-        a("")
-    else:
-        a("Decision gate: none. The work queue below is decision-grade for this run.")
-        a("")
-    a("Fix now — ranked work items only:")
-    a("")
-    a(
-        _table(
-            ["Priority", "Move", "Why it matters", "Evidence", "Next step"],
-            [
-                [
-                    r.get("priority", r.get("rank")),
-                    r.get("move") or r.get("action"),
-                    r.get("why_it_matters") or r.get("business_reason", ""),
-                    r.get("evidence") or r.get("technical_reason", ""),
-                    r.get("next_step") or r.get("why_this_rank", ""),
-                ]
-                for r in doc["canonical_next_best_actions"].get("rows", [])
-            ],
-        )
-    )
-    a("")
-    a("### 11. Defer / Delete / Deprecate")
-    a("")
-    plan = doc.get("deprecation_deletion_plan", {})
-    brief = plan.get("brief") or build_bcg_brief(
-        title="BCG Deletion Brief",
-        status="PLAN_MISSING",
-        status_label="Deletion status",
-        secondary_statuses={"Decision status": str((doc.get("executive_decision") or {}).get("verdict") or "")},
-        business_read=(
-            plan.get("summary", {}).get("executive_read")
-            or "No deprecation/deletion plan was available for this run."
-        ),
-        technical_read=[
-            f"Dead code candidates: {_fmt_int((plan.get('summary') or {}).get('dead_code_candidates', 0))}",
-            f"Dead imports: {_fmt_int((plan.get('summary') or {}).get('dead_imports', 0))}",
-            f"Unresolved imports: {_fmt_int((plan.get('summary') or {}).get('unresolved_imports', 0))}",
-            (
-                "First-party low-confidence ratio: "
-                f"{float((plan.get('summary') or {}).get('first_party_low_confidence_ratio', 0) or 0):.2f}%"
-            ),
-            (
-                "Inferred-symbol ratio: "
-                f"{float((plan.get('summary') or {}).get('inferred_symbol_ratio', 0) or 0):.2f}%"
-            ),
-        ],
-        priority_rule=(
-            "Confirmed dead code first, then unresolved imports, then low-confidence noise, "
-            "then low-value diagnostics."
-        ),
-        priority_rows=plan.get("priority_rows") or [],
-        why_this_order=(plan.get("summary") or {}).get("why_this_order") or [],
-        next_step="Deprecate first, then delete after the evidence stays clean.",
-        table_limit=6,
-    )
-    for line in render_bcg_brief_md(brief).splitlines():
-        a(line)
-    cleanup = plan.get("cleanup_candidates") or doc["defer_delete_deprecate"].get("rows", [])
-    if cleanup:
-        a("")
-        a("Current low-value cleanup candidates:")
-        a("")
-        a(_table(["Item", "Type", "Current value", "Recommendation", "Rationale"], [[r["item"], r["item_type"], r["current_value"], r["recommendation"], r["rationale"]] for r in cleanup[:12]]))
-    a("")
-    a("### 12. Honest Bottom Line")
-    a("")
-    for bullet in doc["honest_bottom_line"].get("bullets", [])[:6]:
-        a(f"- {bullet}")
+    a(_table(["Priority", "Action", "Evidence", "Exit criterion"], _compact_next_steps(doc, brief)))
     a("")
     return "\n".join(lines)
 
