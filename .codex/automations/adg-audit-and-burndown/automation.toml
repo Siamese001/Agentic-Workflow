@@ -11,11 +11,11 @@ python tools/adg/run_full_adg_audit.py --mode certification --format both --cont
 Downstream release contract:
 - This automation is the generate_full_adg lane and the only producer of the ADG handoff for downstream P0, P1, P2, P3, and any future P4 automation.
 - Treat the [handoff] metadata in this TOML as the machine-checkable release contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
-- The downstream handoff is released only through docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json plus digest-bound timestamped repair_handoff artifacts.
+- The downstream handoff is released only through artifacts/adg/handoffs/adg_repair_handoff_latest.json, which must point to an immutable per-run handoff plus docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json and digest-bound timestamped repair_handoff artifacts.
 - Downstream lanes must not consume overwritten latest files as source of truth when timestamped paths exist.
 - Downstream lanes must not regenerate full ADG, rewrite the receipt, or infer repair_ready from prompt context, newest files, rewritten docs mirrors, or stale latest files.
 - If this run is incomplete, stale, timestamp-inconsistent, or digest-invalid, mark downstream_release_status=blocked and explicitly state that all downstream severity-lane automations must stop or keep polling.
-- If this run is certified or repair_ready with a valid direct receipt and complete repair_handoff, mark downstream_release_status=released and name the exact downstream lanes eligible to start next.
+- If this run is certified or repair_ready with a valid direct receipt, complete repair_handoff, and digest-bound handoff pointer, mark downstream_release_status=ready and name the exact downstream lanes eligible to start next.
 
 Severity-lane order:
 1. generate_full_adg / full ADG audit produces the receipt and timestamped artifacts.
@@ -28,6 +28,7 @@ Severity-lane order:
 Zero-loss artifact contract:
 - Treat timestamped artifacts as append-only evidence. Never rely on overwritten latest files for handoff when a timestamped path exists.
 - After the command exits, read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json and require schema_version="adg-audit-pipeline-receipt/v1".
+- Read artifacts/adg/handoffs/adg_repair_handoff_latest.json and require schema_version="adg-repair-handoff-pointer/v1"; it must point to an immutable adg_repair_handoff_<run_id>.json with a matching sha256.
 - Require artifact_status_source="direct" and a repair_handoff with digest-bound timestamped paths for snapshot, gate results, action queue, burndown report, burndown table, generation manifest, and gate manifest.
 - Do not infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
 - If artifact_status is missing, artifact_status_source is not direct, repair_handoff is missing, or any required artifact is missing/stale/timestamp-inconsistent/digest-invalid, report artifact_status=incomplete and stop without editing.
@@ -43,7 +44,7 @@ Status semantics:
 - repair_ready: certification_status may be failed because P0/P1 gates are present, but the timestamped artifacts are complete enough for the P0 blocker and P1 ratchet burndown automations to consume in severity order.
 - incomplete: generator/report/manifests/artifacts are missing, stale, or internally inconsistent.
 
-If repair_ready, produce an explicit P0/P1 handoff block directly from repair_handoff with exact timestamped paths and sha256 digests for snapshot, gate results, action queue, burndown report, burndown table, generation manifest, and gate manifest. State that the P0 blocker automation should start immediately or continue polling if it is already scheduled; the P1 ratchet automation must wait for a fresh post-P0 full ADG receipt proving P0=0. Do not attempt source edits in this automation.
+If repair_ready, produce an explicit P0/P1 handoff block directly from the digest-bound handoff pointer and repair_handoff with exact timestamped paths and sha256 digests for snapshot, gate results, action queue, burndown report, burndown table, generation manifest, and gate manifest. State that the P0 blocker automation should start immediately or continue polling if it is already scheduled; the P1 ratchet automation must wait for a fresh post-P0 full ADG receipt proving P0=0. Do not attempt source edits in this automation.
 
 Closeout must include certification_status, artifact_status, artifact_status_source, downstream_release_status, eligible downstream lanes, whether artifact_status was direct or inferred, blocking gates, top P0/P1 queue items, exact artifact paths, sha256 digests, command exit codes, and an RCA block when the audit is incomplete or failed.
 """
@@ -63,9 +64,11 @@ role = "producer"
 order = 0
 producer_id = "weekly-adg-audit-and-burndown"
 receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
-validator = "python tools/adg/consume_adg_repair_handoff.py --receipt docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json --json"
+handoff_pointer_path = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
+validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
 consumable_artifact_statuses = ["certified", "repair_ready"]
 requires_direct_artifact_status_source = true
+requires_digest_bound_handoff_pointer = true
 depends_on = []
 unblocks = ["adg-p0-blocker-burndown"]
 requires_prior_lane_clean = []

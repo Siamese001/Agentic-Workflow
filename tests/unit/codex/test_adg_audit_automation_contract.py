@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import tomllib
 from pathlib import Path
 
+import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 AUTOMATION_TOML = (
@@ -31,6 +31,24 @@ def test_adg_audit_automation_requires_bcg_before_burndown_inline() -> None:
         "If the run cannot emit BCG first and burndown second, report contract drift or "
         "incomplete output instead of silently changing order."
     ) in prompt
+
+
+def test_adg_audit_automation_releases_digest_bound_handoff_pointer() -> None:
+    payload = tomllib.loads(AUTOMATION_TOML.read_text(encoding="utf-8"))
+    handoff = payload["handoff"]
+    prompt = payload["prompt"]
+
+    pointer_path = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
+    validator = (
+        "python tools/adg/consume_adg_repair_handoff.py "
+        "--handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+    )
+
+    assert handoff["handoff_pointer_path"] == pointer_path
+    assert handoff["validator"] == validator
+    assert handoff["requires_digest_bound_handoff_pointer"] is True
+    assert "adg-repair-handoff-pointer/v1" in prompt
+    assert "immutable adg_repair_handoff_<run_id>.json" in prompt
 
 
 def test_adg_audit_contract_paths_match_runtime_ordering_helpers() -> None:
@@ -72,9 +90,9 @@ def test_adg_audit_contract_paths_match_runtime_ordering_helpers() -> None:
     recovery_inline = generator_source.index("emit_existing_burndown_markdown()", recovery_bcg)
     assert recovery_materialize < recovery_bcg < recovery_inline
 
-    wrapper_bcg = wrapper_source.index("emit_bcg_executive_summary_from_latest(")
+    wrapper_bcg = wrapper_source.index("bcg_rc, _bcg_path = emit_bcg_executive_summary(")
     wrapper_materialize = wrapper_source.index(
-        "_burndown_rc = emit_mandatory_adg_burndown_report(",
+        "burndown_rc = emit_mandatory_adg_burndown_report(",
         wrapper_bcg,
     )
     wrapper_inline = wrapper_source.index("emit_existing_burndown_markdown()", wrapper_materialize)
