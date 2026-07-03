@@ -129,6 +129,8 @@ def validate_apps_research_handoff(
     brief_ref: str,
     jd_ref: str = "",
     now: datetime | None = None,
+    require_observed: bool = False,
+    require_x1_x3_authorization: bool = False,
 ) -> AppsResearchHandoffValidation:
     """Fail-closed validator for apps_research handoff envelopes.
 
@@ -139,10 +141,15 @@ def validate_apps_research_handoff(
     """
     envelope_path = find_apps_research_envelope_for_briefing(brief_ref)
     if envelope_path is None:
+        valid = not require_observed
         return AppsResearchHandoffValidation(
             observed=False,
-            valid=True,
-            reason="no_apps_research_envelope_present",
+            valid=valid,
+            reason=(
+                "missing_apps_research_envelope"
+                if require_observed
+                else "no_apps_research_envelope_present"
+            ),
         )
 
     failures: list[str] = []
@@ -215,6 +222,37 @@ def validate_apps_research_handoff(
     if not str(envelope.get("target_role") or "").strip():
         failures.append("missing_target_role")
 
+    authorization = envelope.get("apps_research_x1_x3_authorization")
+    if require_x1_x3_authorization:
+        if not isinstance(authorization, dict):
+            failures.append("missing_apps_research_x1_x3_authorization")
+        else:
+            if (
+                authorization.get("schema_version")
+                != "apps_research.apps_rg_handoff_x1_x3_authorization.v1"
+            ):
+                failures.append("unsupported_x1_x3_authorization_schema")
+            if str(authorization.get("run_id") or "") != str(envelope.get("run_id") or ""):
+                failures.append("x1_x3_run_id_mismatch")
+            if str(authorization.get("brief_sha256") or "") != expected_brief_sha:
+                failures.append("x1_x3_brief_sha256_mismatch")
+            envelope_jd_sha = str(envelope.get("jd_sha256") or "").strip()
+            if envelope_jd_sha and str(authorization.get("jd_sha256") or "") != envelope_jd_sha:
+                failures.append("x1_x3_jd_sha256_mismatch")
+            x1 = authorization.get("x1")
+            x2 = authorization.get("x2")
+            x3 = authorization.get("x3")
+            if not isinstance(x1, dict) or x1.get("status") != "PASS":
+                failures.append("x1_not_pass")
+            if not isinstance(x2, dict) or x2.get("status") != "PASS":
+                failures.append("x2_not_pass")
+            if not isinstance(x3, dict) or x3.get("status") != "PASS":
+                failures.append("x3_not_pass")
+            else:
+                disposition = str(x3.get("disposition") or "").strip()
+                if disposition not in {"ALLOW", "X3_ALLOW", "X3D_ALLOW_FINISH"}:
+                    failures.append("x3_disposition_not_allow")
+
     receipt = {
         "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v1",
         "observed": True,
@@ -227,6 +265,9 @@ def validate_apps_research_handoff(
         "envelope_brief_sha256": expected_brief_sha,
         "jd_sha256": jd_sha,
         "envelope_jd_sha256": str(envelope.get("jd_sha256") or "").strip(),
+        "require_observed": require_observed,
+        "require_x1_x3_authorization": require_x1_x3_authorization,
+        "x1_x3_authorization_observed": isinstance(authorization, dict),
         "checked_at_utc": observed_now.isoformat(),
     }
     return AppsResearchHandoffValidation(

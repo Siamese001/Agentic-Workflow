@@ -473,18 +473,24 @@ def merge_graph_targeting_jd_alignment(
 ) -> dict[str, Any]:
     """Extend jd_alignment with explicit graph targeting posture for X2.
 
-    When *briefing_source* is ``"RUN_SPECIFIC"`` and *briefing_text* is non-empty,
-    a lightweight supplement of pillar-adjacent terms extracted from the briefing
-    is appended to ``graph_targeting["briefing_targeting_supplement"]``.
+    When *briefing_source* carries an authorized briefing provenance and
+    *briefing_text* is non-empty, a lightweight supplement of pillar-adjacent
+    terms extracted from the briefing is appended to
+    ``graph_targeting["briefing_targeting_supplement"]``.
     This is informational only — ``briefing_used_as_proof`` remains False.
     """
     out = dict(jd_alignment or {})
     out.setdefault("targeting_only", True)
     out.setdefault("jd_used_as_proof", False)
     out.setdefault("briefing_used_as_proof", False)
+    authorized_briefing_sources = {
+        "FRESH_APPS_RESEARCH",
+        "APPS_RESEARCH_AUTHORIZED",
+        "EXPLICIT_OPERATOR_MANUAL",
+    }
     briefing_supplement = (
         extract_briefing_targeting_supplement(briefing_text)
-        if briefing_source == "RUN_SPECIFIC" and briefing_text
+        if briefing_source in authorized_briefing_sources and briefing_text
         else []
     )
     out["graph_targeting"] = {

@@ -271,7 +271,7 @@ def test_extract_briefing_supplement_deduplicates():
     assert terms.count("AI_PLATFORM") == 1
 
 
-def test_merge_graph_targeting_briefing_supplement_present_for_run_specific():
+def test_merge_graph_targeting_briefing_supplement_present_for_authorized_source():
     projection = {
         "role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
         "projection_source": "sqlite_role_family_projection",
@@ -285,12 +285,19 @@ def test_merge_graph_targeting_briefing_supplement_present_for_run_specific():
         None,
         role_family_projection=projection,
         briefing_text="We are investing in cloud and AI governance.",
-        briefing_source="RUN_SPECIFIC",
+        briefing_source="FRESH_APPS_RESEARCH",
     )
     supplement = result["graph_targeting"]["briefing_targeting_supplement"]
     assert isinstance(supplement, list)
     assert len(supplement) >= 1
     assert result["briefing_used_as_proof"] is False
+    blocked = merge_graph_targeting_jd_alignment(
+        None,
+        role_family_projection=projection,
+        briefing_text="We are investing in cloud and AI governance.",
+        briefing_source="RUN_SPECIFIC",
+    )
+    assert blocked["graph_targeting"]["briefing_targeting_supplement"] == []
 
 
 def test_merge_graph_targeting_briefing_supplement_empty_for_default_ssot():

@@ -1,7 +1,9 @@
 """R3R4 whole-run reachability with apps_research delegation enabled."""
 from __future__ import annotations
 
+import hashlib
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -14,6 +16,7 @@ from apps_rg.runtime.dispatch.spine_stage_receipts import (
 )
 from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
     ROUTE_FAMILY_R3R4,
+    apps_research_handoff_authorized,
     briefing_input_present,
     research_delegation_enabled,
     should_delegate_apps_research,
@@ -30,16 +33,165 @@ def test_research_enabled_when_brief_missing_and_auto_research_on() -> None:
     )
 
 
-def test_no_delegation_when_brief_present(tmp_path: Path) -> None:
+def _write_authorized_apps_research_handoff(tmp_path: Path) -> tuple[Path, Path]:
+    brief_text = "Fresh apps_research handoff briefing for route-decision pytest."
+    jd_text = "Target JD text for route-decision pytest."
+    brief = tmp_path / "briefing.md"
+    brief.write_text(brief_text, encoding="utf-8")
+    jd = tmp_path / "jd.txt"
+    jd.write_text(jd_text, encoding="utf-8")
+    brief_sha = hashlib.sha256(brief_text.encode("utf-8")).hexdigest()
+    jd_sha = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()
+    now = datetime.now(timezone.utc)
+    envelope = {
+        "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
+        "producer_app": "apps_research",
+        "consumer_app": "apps_rg",
+        "run_id": "research-run-route-pytest",
+        "target_company": "Anthropic",
+        "target_role": "Manager Applied AI Architecture Partnerships",
+        "generated_at_utc": now.isoformat(),
+        "expires_at_utc": (now + timedelta(days=7)).isoformat(),
+        "dry_run": False,
+        "stub_detected": False,
+        "is_stale": False,
+        "handoff_eligible": True,
+        "brief_sha256": brief_sha,
+        "jd_sha256": jd_sha,
+        "apps_research_x1_x3_authorization": {
+            "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
+            "run_id": "research-run-route-pytest",
+            "brief_sha256": brief_sha,
+            "jd_sha256": jd_sha,
+            "x1": {"gate_id": "X1_TARGETING_BRIEF_CONTRACT", "status": "PASS"},
+            "x2": {"gate_id": "X2_RESEARCH_SEMANTIC_GATE", "status": "PASS"},
+            "x3": {
+                "gate_id": "X3_HANDOFF_AUTHORIZATION",
+                "status": "PASS",
+                "disposition": "ALLOW",
+            },
+        },
+    }
+    (tmp_path / "apps_research_briefing_envelope.json").write_text(
+        json.dumps(envelope, indent=2),
+        encoding="utf-8",
+    )
+    return brief, jd
+
+
+def test_no_delegation_when_auto_research_disabled_and_brief_present(tmp_path: Path) -> None:
     brief = tmp_path / "brief.txt"
     brief.write_text("Existing briefing content.\n", encoding="utf-8")
     assert briefing_input_present(str(brief))
     assert not should_delegate_apps_research(
         route_family=ROUTE_FAMILY_R3R4,
         manual_brief=str(brief),
-        auto_research_internal=True,
+        auto_research_internal=False,
         research_via=None,
     )
+
+
+def test_auto_research_static_brief_requires_delegation() -> None:
+    brief = Path("apps_rg/config/targeting/brief_anthropic_partnerships_2026.json")
+    assert briefing_input_present(str(brief))
+    assert should_delegate_apps_research(
+        route_family=ROUTE_FAMILY_R3R4,
+        manual_brief=str(brief),
+        auto_research_internal=True,
+        research_via=None,
+        jd_ref="apps_rg/config/targeting/jd_anthropic_partnerships_2026.json",
+    )
+
+
+def test_auto_research_authorized_handoff_skips_delegation(tmp_path: Path) -> None:
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
+    assert apps_research_handoff_authorized(str(brief), jd_ref=str(jd))
+    assert not should_delegate_apps_research(
+        route_family=ROUTE_FAMILY_R3R4,
+        manual_brief=str(brief),
+        auto_research_internal=True,
+        research_via=None,
+        jd_ref=str(jd),
+    )
+
+
+def test_whole_run_static_json_is_replaced_by_delegated_brief(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("APPS_RG_MOCK_RESEARCH", "1")
+    monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
+
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    class _FakeResult:
+        run_id = "draft-run-static-json"
+        request_id = "req-static-json"
+        x3_disposition = "X3A"
+        fault = "L2_EXECUTION_ERROR:test"
+        terminal_r5 = False
+
+    from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
+
+    captured: dict[str, object] = {}
+
+    def _fake_spine(**kwargs: object) -> _FakeResult:
+        captured["raw_request"] = kwargs["raw_request"]
+        art = Path(kwargs["artifact_dir"])
+        art.mkdir(parents=True, exist_ok=True)
+        (art / "r4_run_manifest.json").write_text(
+            json.dumps({"chain_kind": "R4_SINGLE_ACTION", "route_family": "R4_SINGLE_ACTION"}),
+            encoding="utf-8",
+        )
+        return _FakeResult()
+
+    monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.run_whole_run_cache_preflight",
+        lambda **kwargs: WholeRunCachePreflightOutcome(
+            entrypoint="canonical_dispatch",
+            generation_required=True,
+        ),
+    )
+    monkeypatch.setattr(orch, "emit_integrated_run_bundle_index", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.maybe_ingest_r1b_post_exit",
+        lambda **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.full_resume_review_bundle.emit_full_resume_review_bundle",
+        lambda run_root: run_root / "review_bundle.zip",
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_whole_run_cache_preflight_artifact",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_cache_miss_receipt",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "static_json_run")
+
+    brief_json = Path("apps_rg/config/targeting/brief_anthropic_partnerships_2026.json")
+    jd_json = Path("apps_rg/config/targeting/jd_anthropic_partnerships_2026.json")
+    result = orch.run_whole_run_with_route_governance(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd=str(jd_json),
+        manual_brief=str(brief_json),
+        generation_mode="strategic_tailor",
+        auto_research_internal=True,
+        artifact_dir=str(tmp_path / "static_json_run"),
+    )
+
+    raw_request = captured["raw_request"]
+    assert isinstance(raw_request, dict)
+    assert result["route_decision"]["research_delegation_executed"] is True
+    assert raw_request["manual_brief"].endswith("research\\delegated_briefing.txt") or raw_request[
+        "manual_brief"
+    ].endswith("research/delegated_briefing.txt")
+    assert raw_request["manual_brief"] != str(brief_json)
+    assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
 
 
 def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -97,13 +249,12 @@ def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytes
         lambda explicit: tmp_path / "full_resume_test01",
     )
 
-    brief = tmp_path / "brief.txt"
-    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Brown & Brown",
         target_role="SVP IT Strategy",
-        jd="Target JD text for testing.",
+        jd=str(jd),
         manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,
@@ -207,13 +358,12 @@ def test_whole_run_custom_artifact_dir_emits_output_gates(monkeypatch: pytest.Mo
     )
     monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "anthropic_custom_run")
 
-    brief = tmp_path / "brief.txt"
-    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
-        jd="Target JD text for testing.",
+        jd=str(jd),
         manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,
@@ -308,13 +458,12 @@ def test_whole_run_fails_when_exec_summary_judge_not_certified(
         lambda explicit: tmp_path / "full_resume_test02",
     )
 
-    brief = tmp_path / "brief.txt"
-    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
-        jd="Target JD text for testing.",
+        jd=str(jd),
         manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,
@@ -408,13 +557,12 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         lambda explicit: tmp_path / "full_resume_success01",
     )
 
-    brief = tmp_path / "brief.txt"
-    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
-        jd="Target JD text for testing.",
+        jd=str(jd),
         manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,
@@ -501,13 +649,12 @@ def test_whole_run_blocks_when_post_x3_l6_bridge_missing(
         lambda explicit: tmp_path / "full_resume_no_l6",
     )
 
-    brief = tmp_path / "brief.txt"
-    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
-        jd="Target JD text for testing.",
+        jd=str(jd),
         manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,

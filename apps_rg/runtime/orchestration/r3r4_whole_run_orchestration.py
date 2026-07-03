@@ -18,6 +18,7 @@ from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from apps_rg.runtime.dispatch import spine_stage_receipts as sr
+from apps_rg.prerequisites.briefing_validator import validate_apps_research_handoff
 from apps_rg.runtime.full_resume_review_bundle import (
     REVIEW_BUNDLE_FILENAME,
     emit_full_resume_review_bundle,
@@ -79,21 +80,34 @@ def briefing_input_present(manual_brief: str) -> bool:
     return bool(_read_optional_brief(manual_brief).strip())
 
 
+def apps_research_handoff_authorized(manual_brief: str, *, jd_ref: str = "") -> bool:
+    validation = validate_apps_research_handoff(
+        brief_ref=manual_brief,
+        jd_ref=jd_ref,
+        require_observed=True,
+        require_x1_x3_authorization=True,
+    )
+    return bool(validation.valid)
+
+
 def should_delegate_apps_research(
     *,
     route_family: str,
     manual_brief: str,
     auto_research_internal: bool,
     research_via: str | None,
+    jd_ref: str = "",
 ) -> bool:
     if route_family != ROUTE_FAMILY_R3R4:
         return False
-    if briefing_input_present(manual_brief):
-        return False
-    return research_delegation_enabled(
+    if not research_delegation_enabled(
         auto_research_internal=auto_research_internal,
         research_via=research_via,
-    )
+    ):
+        return False
+    if not briefing_input_present(manual_brief):
+        return True
+    return not apps_research_handoff_authorized(manual_brief, jd_ref=jd_ref)
 
 
 def _research_bridge() -> Any:
@@ -404,6 +418,25 @@ def run_whole_run_with_route_governance(
         chroma_path_resolved=None,
         research_via=research_via,
     )
+    handoff_jd_ref = (
+        str(job_description_ref or "").strip()
+        or str(jd or "").strip()
+        or str(job_description_text or "").strip()
+    )
+    handoff_validation = validate_apps_research_handoff(
+        brief_ref=manual_brief,
+        jd_ref=handoff_jd_ref,
+        require_observed=research_delegation_enabled(
+            auto_research_internal=auto_research_internal,
+            research_via=research_via,
+        )
+        and briefing_input_present(manual_brief),
+        require_x1_x3_authorization=research_delegation_enabled(
+            auto_research_internal=auto_research_internal,
+            research_via=research_via,
+        )
+        and briefing_input_present(manual_brief),
+    )
     route_decision = {
         "route_profile_ref": route.route_profile_ref,
         "route_family": route.route_family,
@@ -416,6 +449,11 @@ def run_whole_run_with_route_governance(
             research_via=research_via,
         ),
         "briefing_input_present": briefing_input_present(manual_brief),
+        "incoming_apps_research_handoff_authorized": (
+            handoff_validation.observed and handoff_validation.valid
+        ),
+        "incoming_apps_research_handoff_reason": handoff_validation.reason,
+        "incoming_apps_research_handoff_observed": handoff_validation.observed,
     }
 
     sr.write_stage_receipt(
@@ -458,6 +496,7 @@ def run_whole_run_with_route_governance(
         manual_brief=manual_brief,
         auto_research_internal=auto_research_internal,
         research_via=research_via,
+        jd_ref=handoff_jd_ref,
     ):
         ok, research_note, brief_path = _run_r3r4_research_hop(
             route=route,
@@ -720,6 +759,7 @@ def run_whole_run_with_route_governance(
 
 __all__ = [
     "ROUTE_FAMILY_R3R4",
+    "apps_research_handoff_authorized",
     "briefing_input_present",
     "research_delegation_enabled",
     "run_whole_run_with_route_governance",

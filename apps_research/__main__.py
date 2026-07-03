@@ -302,6 +302,31 @@ def _write_apps_rg_handoff_envelope(
     jd_text = str(jd_ctx.get("content") or jd_ctx.get("jd_text") or "")
     emitted_at = datetime.fromisoformat(generated_at_utc.replace("Z", "+00:00"))
     expires_at = emitted_at + timedelta(days=7)
+    jd_sha = _sha256_text(jd_text) if jd_text else ""
+    x1_x3_authorization = {
+        "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
+        "run_id": str(getattr(record, "run_id", "") or getattr(request, "trace_id", "")),
+        "brief_sha256": expected_brief_sha,
+        "jd_sha256": jd_sha,
+        "x1": {
+            "gate_id": "X1_TARGETING_BRIEF_CONTRACT",
+            "status": "PASS",
+            "evidence": "brief text present, non-stub, digest-bound",
+        },
+        "x2": {
+            "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+            "status": "PASS",
+            "score": sidecar.get("briefing_semantic_score"),
+            "judge_name": sidecar.get("judge_name"),
+            "judge_model": sidecar.get("judge_model"),
+        },
+        "x3": {
+            "gate_id": "X3_HANDOFF_AUTHORIZATION",
+            "status": "PASS",
+            "disposition": "ALLOW",
+            "reason": "handoff_eligible_true",
+        },
+    }
     envelope = {
         "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
         "producer_app": "apps_research",
@@ -316,7 +341,8 @@ def _write_apps_rg_handoff_envelope(
         "is_stale": False,
         "handoff_eligible": True,
         "brief_sha256": expected_brief_sha,
-        "jd_sha256": _sha256_text(jd_text) if jd_text else "",
+        "jd_sha256": jd_sha,
+        "apps_research_x1_x3_authorization": x1_x3_authorization,
         "briefing_path": str(briefing_path.resolve()),
         "company_brief_path": str(company_brief_path.resolve()),
         "semantic_assessment": {

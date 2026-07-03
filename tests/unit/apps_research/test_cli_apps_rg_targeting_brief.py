@@ -134,6 +134,15 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
         _VALID_APPS_RG_BRIEF.strip().encode("utf-8")
     ).hexdigest()
     assert envelope["jd_sha256"]
+    auth = envelope["apps_research_x1_x3_authorization"]
+    assert auth["schema_version"] == "apps_research.apps_rg_handoff_x1_x3_authorization.v1"
+    assert auth["run_id"] == envelope["run_id"]
+    assert auth["brief_sha256"] == envelope["brief_sha256"]
+    assert auth["jd_sha256"] == envelope["jd_sha256"]
+    assert auth["x1"]["status"] == "PASS"
+    assert auth["x2"]["status"] == "PASS"
+    assert auth["x3"]["status"] == "PASS"
+    assert auth["x3"]["disposition"] == "ALLOW"
 
 
 def test_cli_jd_path_fails_closed_without_targeting_markdown(

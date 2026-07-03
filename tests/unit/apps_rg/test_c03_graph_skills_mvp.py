@@ -150,15 +150,23 @@ def test_evidence_capsule_emits_graph_targeting_keywords() -> None:
     assert "GRAPH_TARGETING_KEYWORDS=enterprise AI,IT strategy,innovation" in block
 
 
-def test_merge_graph_targeting_briefing_supplement_when_run_specific() -> None:
+def test_merge_graph_targeting_briefing_supplement_requires_authorized_source() -> None:
     merged = merge_graph_targeting_jd_alignment(
+        {},
+        role_family_projection={"role_family_key": "SVP_ENGINEERING_AI_PLATFORM", "pillar_hint_ids": []},
+        briefing_text="Lead digital transformation and cloud modernization for regulated insurers.",
+        briefing_source="FRESH_APPS_RESEARCH",
+    )
+    supplement = merged["graph_targeting"]["briefing_targeting_supplement"]
+    assert supplement, "briefing_targeting_supplement must be non-empty for authorized briefing"
+
+    blocked = merge_graph_targeting_jd_alignment(
         {},
         role_family_projection={"role_family_key": "SVP_ENGINEERING_AI_PLATFORM", "pillar_hint_ids": []},
         briefing_text="Lead digital transformation and cloud modernization for regulated insurers.",
         briefing_source="RUN_SPECIFIC",
     )
-    supplement = merged["graph_targeting"]["briefing_targeting_supplement"]
-    assert supplement, "briefing_targeting_supplement must be non-empty for RUN_SPECIFIC briefing"
+    assert blocked["graph_targeting"]["briefing_targeting_supplement"] == []
 
 
 if __name__ == "__main__":  # pragma: no cover
