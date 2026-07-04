@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.run_output_contract import (
     FULL_RUN_SECTION_STATUS_JSON,
     FULL_RUN_SECTION_STATUS_MD,
@@ -331,7 +332,7 @@ def collect_full_run_section_status(
 ) -> list[LaneSectionStatusRow]:
     """Inspect flat or modular whole-run lane artifacts and build one row per lane."""
     root = Path(run_root).resolve()
-    repo = (repo_root or root).resolve()
+    repo = (repo_root or find_repo_root(root)).resolve()
     rows: list[LaneSectionStatusRow] = []
     rollup_dirs = _rollup_source_run_dirs(root, repo)
 
@@ -416,7 +417,7 @@ def render_full_run_section_status_markdown(
         "| Section | X3 | X2 | Product quality | Runtime | Judges / score | Display text |",
         "|---|---|---|---|---|---|---|",
     ]
-    repo = (repo_root or Path(run_root)).resolve()
+    repo = (repo_root or find_repo_root(Path(run_root))).resolve()
     for row in rows:
         if row.display_txt_rel and row.display_txt_abs:
             link = f"[{row.display_txt_rel}]({_repo_rel(Path(row.display_txt_abs), repo)})"
@@ -441,7 +442,7 @@ def persist_full_run_section_status(
     repo_root: Path | None = None,
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
-    repo = (repo_root or root).resolve()
+    repo = (repo_root or find_repo_root(root)).resolve()
     rows = collect_full_run_section_status(root, repo_root=repo)
     md = render_full_run_section_status_markdown(rows, run_root=root, repo_root=repo)
     md_path = root / FULL_RUN_SECTION_STATUS_MD

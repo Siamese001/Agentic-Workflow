@@ -127,3 +127,36 @@ def test_assemble_from_pinned_requires_full_resume_artifact_context(tmp_path: Pa
     status = _read_status(out_dir)
     assert status["status"] == "blocked"
     assert status["reason"] == "missing_e2e_run_context"
+
+
+def test_new_e2e_start_clears_prior_section_pins_and_writes_receipt(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    _write_pin(repo, "headline", source_run_id="full_resume_yesterday")
+    assembled = repo / "artifacts" / "apps_rg" / "_pinned" / "_assembled"
+    assembled.mkdir(parents=True, exist_ok=True)
+    (assembled / "resume_assembled.md").write_text("old assembled", encoding="utf-8")
+    receipts = repo / "artifacts" / "apps_rg" / "_pinned" / "_cleanup_receipts"
+    receipts.mkdir(parents=True, exist_ok=True)
+    (receipts / "prior.json").write_text("{}", encoding="utf-8")
+
+    receipt = cli._clear_section_pins_for_new_e2e_run(
+        repo,
+        "artifacts/apps_rg/runs/full_resume_today",
+    )
+
+    assert sorted(receipt["removed"]) == ["_assembled", "headline"]
+    assert receipt["pin_validity_scope"] == "current_e2e_run_only"
+    assert not (repo / "artifacts" / "apps_rg" / "_pinned" / "headline").exists()
+    assert not assembled.exists()
+    assert (receipts / "prior.json").is_file()
+    receipt_path = (
+        repo
+        / "artifacts"
+        / "apps_rg"
+        / "runs"
+        / "full_resume_today"
+        / cli._SECTION_PIN_CLEANUP_RECEIPT_FILENAME
+    )
+    assert receipt_path.is_file()
+    persisted = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert persisted["removed_count"] == 2
