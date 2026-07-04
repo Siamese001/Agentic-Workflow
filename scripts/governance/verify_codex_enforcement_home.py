@@ -225,11 +225,13 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
 )
 
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
-ADG_HANDOFF_RECEIPT_PATH = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
-ADG_HANDOFF_POINTER_PATH = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
+ADG_HANDOFF_PRODUCER_ROOT = str(EXPECTED_REPO)
+ADG_HANDOFF_POINTER_BASE = "producer_repo_root"
+ADG_HANDOFF_RECEIPT_PATH = rf"{ADG_HANDOFF_PRODUCER_ROOT}\docs\reports\adg\AUDIT_PIPELINE_RECEIPT.json"
+ADG_HANDOFF_POINTER_PATH = rf"{ADG_HANDOFF_PRODUCER_ROOT}\artifacts\adg\handoffs\adg_repair_handoff_latest.json"
 ADG_HANDOFF_VALIDATOR = (
     "python tools/adg/consume_adg_repair_handoff.py "
-    "--handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+    f"--handoff-pointer {ADG_HANDOFF_POINTER_PATH} --json"
 )
 ADG_HANDOFF_STATUSES = ("certified", "repair_ready")
 ADG_HANDOFF_CHAIN = (
@@ -248,6 +250,8 @@ ADG_HANDOFF_CONTRACTS = {
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
         "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
+        "producer_repo_root": ADG_HANDOFF_PRODUCER_ROOT,
+        "handoff_pointer_base": ADG_HANDOFF_POINTER_BASE,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
@@ -265,6 +269,8 @@ ADG_HANDOFF_CONTRACTS = {
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
         "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
+        "producer_repo_root": ADG_HANDOFF_PRODUCER_ROOT,
+        "handoff_pointer_base": ADG_HANDOFF_POINTER_BASE,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
@@ -282,6 +288,8 @@ ADG_HANDOFF_CONTRACTS = {
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
         "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
+        "producer_repo_root": ADG_HANDOFF_PRODUCER_ROOT,
+        "handoff_pointer_base": ADG_HANDOFF_POINTER_BASE,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
@@ -299,6 +307,8 @@ ADG_HANDOFF_CONTRACTS = {
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
         "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
+        "producer_repo_root": ADG_HANDOFF_PRODUCER_ROOT,
+        "handoff_pointer_base": ADG_HANDOFF_POINTER_BASE,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,
@@ -320,6 +330,8 @@ ADG_HANDOFF_CONTRACTS = {
         "producer_id": "weekly-adg-audit-and-burndown",
         "receipt_path": ADG_HANDOFF_RECEIPT_PATH,
         "handoff_pointer_path": ADG_HANDOFF_POINTER_PATH,
+        "producer_repo_root": ADG_HANDOFF_PRODUCER_ROOT,
+        "handoff_pointer_base": ADG_HANDOFF_POINTER_BASE,
         "validator": ADG_HANDOFF_VALIDATOR,
         "consumable_artifact_statuses": list(ADG_HANDOFF_STATUSES),
         "requires_direct_artifact_status_source": True,

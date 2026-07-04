@@ -651,8 +651,6 @@ def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -
     for action in action_queue.get("actions") or []:
         cluster = action.get("verdict_cluster")
         if cluster == "P0_WAVE" and action.get("sort_band") == "P0":
-            if action.get("action_kind") == "p0_wave_file" and action.get("source_artifact") == "p0_wave_plan":
-                continue
             counts["P0_WAVE"] += 1
             continue
         if cluster != "FIX":
@@ -890,6 +888,7 @@ def validate_repair_handoff_receipt(
         if _sha256(path) != raw_digest:
             errors.append(f"{key} sha256 mismatch")
 
+    counts_recomputed = False
     if all(key in resolved and resolved[key].is_file() for key in ("gate_results", "action_queue")):
         try:
             gate_results = _load_json(resolved["gate_results"])
@@ -914,6 +913,21 @@ def validate_repair_handoff_receipt(
             if "snapshot" in resolved and not _gate_results_matches_snapshot(gate_results, resolved["snapshot"]):
                 errors.append("gate_results snapshot does not match handoff snapshot")
             counts = _repair_counts(action_queue, gate_results)
+            counts_recomputed = True
+
+    recorded_counts = handoff.get("counts")
+    if not isinstance(recorded_counts, dict):
+        errors.append("repair_handoff.counts missing or malformed")
+    elif counts_recomputed:
+        mismatches = [
+            f"{key}: recorded={recorded_counts.get(key)!r} computed={value!r}"
+            for key, value in counts.items()
+            if recorded_counts.get(key) != value
+        ]
+        if mismatches:
+            errors.append(
+                "repair_handoff counts differ from digest-bound artifacts: " + "; ".join(mismatches)
+            )
 
     generation_path = resolved.get("generation_manifest")
     gate_manifest_path = resolved.get("gate_manifest")

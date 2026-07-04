@@ -841,7 +841,7 @@ def test_repair_counts_split_p0_fix_wave_and_backlog():
     counts = wrapper._repair_counts(action_queue, gate_results)
 
     assert counts["P0_FIX"] == 1
-    assert counts["P0_WAVE"] == 1
+    assert counts["P0_WAVE"] == 2
     assert counts["P0_TRACKED_BACKLOG"] == 1
     assert counts["P1_FIX"] == 1
     assert counts["P1_RATCHET_REGRESSION"] == 1
@@ -908,6 +908,32 @@ def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypat
     _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
     assert errors == []
     assert counts == handoff["counts"]
+
+
+def test_repair_handoff_rejects_stale_recorded_counts(temp_artifacts, monkeypatch):
+    gates = [
+        _gate_result(
+            "O_tool_call_parity_ratchet",
+            band="P1",
+            enforcement="ratchet",
+            classification="regressed",
+            violation_count=2,
+            baseline_count=1,
+        ),
+    ]
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=gates,
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    handoff["counts"]["P1_RATCHET_REGRESSION"] = 0
+    receipt = _write_receipt(temp_artifacts / "receipt_stale_counts.json", artifact_status=status, handoff=handoff)
+
+    _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert counts["P1_RATCHET_REGRESSION"] == 1
+    assert any("repair_handoff counts differ from digest-bound artifacts" in error for error in errors)
 
 
 def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
