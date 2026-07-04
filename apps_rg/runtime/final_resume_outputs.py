@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+from importlib import import_module
 import json
 import re
 import zipfile
@@ -667,8 +668,7 @@ def emit_final_resume_product_outputs(
             (root / FINAL_RESUME_OUTPUT_TXT).write_text(text, encoding="utf-8")
             docx_path = root / FINAL_RESUME_DOCX_RELPATH
             docx_path.parent.mkdir(parents=True, exist_ok=True)
-            from ops_scripts.apps_rg.export_final_resume_docx import export
-
+            export = getattr(import_module("ops_scripts.apps_rg.export_final_resume_docx"), "export")
             export(final_resume_path, docx_path)
 
     contract = build_final_resume_output_contract(root, repo_root=repo_root, required=required)

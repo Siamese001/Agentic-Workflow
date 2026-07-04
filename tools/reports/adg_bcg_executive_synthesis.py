@@ -1678,8 +1678,12 @@ def _base_doc(ts: str, sqlite_path: Path, gate_doc: dict[str, Any] | None, degra
     return {"schema_version": "1.0", "artifact_kind": "adg_bcg_executive_summary", "run": {"run_id": ts, "generated_at_utc": _now(), "snapshot_ts": (gate_doc or {}).get("timestamp") or ts, "commit_sha": _git_sha(), "repo_state_hash": "", "emit_status": emit_status, "decision_grade_status": "DEGRADED" if degraded else "PENDING", "degradation_reasons": degraded}, "plain_english_context": {"what_adg_is": {"summary": "ADG is the X-ray of the codebase. It maps code connections and lets the system ask health-check questions automatically. It turns 'is this codebase healthy?' from opinion into measured facts.", "analogy": "ADG is the codebase X-ray: it sees dependency skeletons, health gates, and structural risk.", "measured_scope": {"connections": None, "gates": (gate_doc or {}).get("total_gates"), "files": None}, "caveats": []}}}
 
 
-def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | None]) -> dict[str, Any]:
-    artifacts = {"gate_results": gate_results_path, "bcg_adapter": adg_artifacts_dir / f"adg_bcg_adapter_{ts}.json", "action_queue": action_queue_path, "review_template": review_template_path, "burndown_table": burndown_path, "burndown_report": adg_artifacts_dir / "adg_burndown_report.md", "sqlite_snapshot": sqlite_path, "generation_manifest": adg_artifacts_dir / f"adg_generation_manifest_{ts}.json", **p7_paths}
+def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | str | None]) -> dict[str, Any]:
+    artifacts = {
+        k: Path(v)
+        for k, v in {"gate_results": gate_results_path, "bcg_adapter": adg_artifacts_dir / f"adg_bcg_adapter_{ts}.json", "action_queue": action_queue_path, "review_template": review_template_path, "burndown_table": burndown_path, "burndown_report": adg_artifacts_dir / "adg_burndown_report.md", "sqlite_snapshot": sqlite_path, "generation_manifest": adg_artifacts_dir / f"adg_generation_manifest_{ts}.json", **p7_paths}.items()
+        if v is not None
+    }
     loaded = {
         k: doc
         for k, v in artifacts.items()
@@ -2570,6 +2574,22 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("")
     brief = _executive_bcg_brief(doc)
     a(_table(["Question", "Answer"], _executive_decision_rows(doc, brief)))
+    a("")
+    a("Decision gate:")
+    a("")
+    a(
+        _table(
+            ["Gate", "Status", "Evidence", "Required before ranking"],
+            [
+                ["Merge decision", row[1], row[0], "Resolve before lower-severity ranking."]
+                for row in _executive_decision_rows(doc, brief)
+            ],
+        )
+    )
+    a("")
+    a("Fix now:")
+    a("")
+    a(_table(["Rank", "Move", "Evidence", "Exit criterion"], _compact_next_steps(doc, brief)))
     a("")
     a("ADG Run Metrics")
     a("")
