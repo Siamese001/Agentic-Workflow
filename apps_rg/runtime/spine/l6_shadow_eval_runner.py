@@ -140,6 +140,11 @@ def run_l6_v40_shadow_eval_for_section(
         section_id=section_id,
         run_id=ingest.bundle.run_id,
     )
+    parity_payload = {}
+    try:
+        parity_payload = json.loads(microstep_paths["l6_apps_eval_grain_parity"].read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError, KeyError):
+        parity_payload = {}
 
     package: dict[str, Any] = {
         "schema_version": "apps_rg.l6_v40_shadow_eval.v1",
@@ -164,6 +169,10 @@ def run_l6_v40_shadow_eval_for_section(
             microstep_paths["l6_microstep_future_run_proposals"],
         ),
         "l6_apps_eval_alignment_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_alignment"]),
+        "l6_apps_eval_grain_parity_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_grain_parity"]),
+        "alignment_source": str(parity_payload.get("alignment_source") or "contract_only_pseudo_rows"),
+        "apps_eval_rows_bound": bool(parity_payload.get("apps_eval_rows_bound") is True),
+        "grain_parity_status": str(parity_payload.get("grain_parity_status") or "WARN"),
         "trace_reconciliation_ref": _repo_rel(
             repo_root,
             trace_reconciliation_paths["trace_reconciliation"],

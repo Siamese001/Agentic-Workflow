@@ -164,6 +164,11 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     build_orphan_observation,
     expand_microstep_contract,
 )
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    L6_APPS_EVAL_COVERAGE_JOIN_KEY,
+    L6_APPS_EVAL_GRAIN_PARITY_SCHEMA_VERSION,
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.L6_observability.shadow_eval.observer import (
     FORBIDDEN_WRITE_SURFACES,
     ObserverViolation,
@@ -282,10 +287,13 @@ __all__ = [
     "stratify_outcome",
     # Microstep observations
     "L6_APPS_EVAL_ALIGNMENT_SCHEMA_VERSION",
+    "L6_APPS_EVAL_COVERAGE_JOIN_KEY",
+    "L6_APPS_EVAL_GRAIN_PARITY_SCHEMA_VERSION",
     "L6_MICROSTEP_COVERAGE_SCHEMA_VERSION",
     "L6_MICROSTEP_OBSERVATION_SCHEMA_VERSION",
     "L6MicrostepObservation",
     "build_apps_eval_alignment",
+    "build_l6_apps_eval_grain_parity",
     "build_future_run_proposals",
     "build_microstep_coverage",
     "build_microstep_patterns",
