@@ -125,7 +125,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_burndown_table_07042026_1025.json",
+        "path": "artifacts/adg/adg_burndown_table.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -264,6 +264,19 @@
         ]
       },
       {
+        "artifact_key": "graph_watchlist",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": true,
+        "loaded": true,
+        "path": "artifacts/adg/adg_graph_watchlist_20260704_103126.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
         "artifact_key": "p0_wave_plan",
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
@@ -281,7 +294,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/dead_code_zone_control_report_07042026_1025.json",
+        "path": "artifacts/adg/dead_code_zone_control_report_latest.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -315,6 +328,13 @@
           "file": "artifacts/adg/adg_gate_results_20260704_143105.json",
           "mismatch_type": "artifact_timestamp_mismatch",
           "observed_snapshot_minute": "20260704_1431"
+        },
+        {
+          "artifact_key": "graph_watchlist",
+          "expected_snapshot_minute": "20260704_1025",
+          "file": "artifacts/adg/adg_graph_watchlist_20260704_103126.json",
+          "mismatch_type": "artifact_timestamp_mismatch",
+          "observed_snapshot_minute": "20260704_1031"
         },
         {
           "artifact_key": "action_queue",
@@ -4742,6 +4762,12 @@
       },
       {
         "decision_effect": "Planned-slice / watchlist input for after-green burn-down ordering.",
+        "signal_name": "graph_watchlist",
+        "signal_type": "graphdb_report",
+        "used_for": "used_after_green"
+      },
+      {
+        "decision_effect": "Planned-slice / watchlist input for after-green burn-down ordering.",
         "signal_name": "p0_wave_plan",
         "signal_type": "structural_report",
         "used_for": "used_after_green"
@@ -6452,7 +6478,7 @@
         "action_type": "decision_gate",
         "bucket": "DECISION_GATE",
         "decision": "repair_reporting",
-        "evidence": "6 graph/report mismatch row(s) block decision-grade ordering.",
+        "evidence": "7 graph/report mismatch row(s) block decision-grade ordering.",
         "gate_id": "report_consistency",
         "move": "Repair graph/report consistency",
         "next_step": "Repair report consistency, then rerun ADG before treating the ranked work queue as authoritative.",
@@ -11586,6 +11612,17 @@
         "decision_role": "used_after_green",
         "related_gates": [],
         "related_scopes": [],
+        "row_count": 30,
+        "signal": "graph_watchlist",
+        "signal_type": "graphdb_report",
+        "used_inline": true,
+        "why_or_why_not": "Planned-slice / watchlist input for after-green burn-down ordering."
+      },
+      {
+        "action": "Use for blast-radius / refactor / runtime-path / after-green planning.",
+        "decision_role": "used_after_green",
+        "related_gates": [],
+        "related_scopes": [],
         "row_count": 19,
         "signal": "p0_wave_plan",
         "signal_type": "structural_report",
@@ -11663,7 +11700,7 @@
       "deprecate_candidates": 8,
       "diagnostic_only": 40,
       "low_value_candidates": 0,
-      "ratchet_drivers": 1,
+      "ratchet_drivers": 2,
       "structural_mvs_queried": 7,
       "structural_scopes_ranked": 80,
       "testing_drivers": 4,
@@ -12573,10 +12610,11 @@
       "action_queue": "artifacts/adg/adg_action_queue_07042026_1025.json",
       "bcg_adapter": "artifacts/adg/adg_bcg_adapter_07042026_1025.json",
       "burndown_report": "artifacts/adg/adg_burndown_report.md",
-      "burndown_table": "artifacts/adg/adg_burndown_table_07042026_1025.json",
-      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_07042026_1025.json",
+      "burndown_table": "artifacts/adg/adg_burndown_table.json",
+      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_latest.json",
       "gate_results": "artifacts/adg/adg_gate_results_20260704_143105.json",
       "generation_manifest": "artifacts/adg/adg_generation_manifest_07042026_1025.json",
+      "graph_watchlist": "artifacts/adg/adg_graph_watchlist_20260704_103126.json",
       "graphdb_index": "artifacts/adg/adg_graphdb_index_07042026_1025.json",
       "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_07042026_1025.json",
       "graphdb_projection": "artifacts/adg/adg_graphdb_projection_07042026_1025.json",
@@ -12606,18 +12644,19 @@
         "graphdb_projection",
         "graphdb_metadata",
         "graphdb_index",
+        "graph_watchlist",
         "p0_wave_plan",
         "dead_code_report"
       ]
     }
   },
   "run": {
-    "commit_sha": "281f300769209bc4e852664ddcd35a1e05e3ccaf",
+    "commit_sha": "97657d5a118b9e62dbc86defbc3fa30984990f06",
     "decision_grade_status": "REPORT_INCONSISTENT",
     "degradation_reasons": [],
     "emit_status": "PASS",
-    "generated_at_utc": "2026-07-04T14:34:03+00:00",
-    "repo_state_hash": "3bf6745dadfb0e5e",
+    "generated_at_utc": "2026-07-04T14:43:36+00:00",
+    "repo_state_hash": "0db7f2a0a113890b",
     "run_id": "07042026_1025",
     "snapshot_ts": "2026-07-04T14:31:05.273609+00:00"
   },

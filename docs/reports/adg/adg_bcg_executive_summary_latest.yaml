@@ -2,10 +2,10 @@ schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
   run_id: '07042026_1025'
-  generated_at_utc: '2026-07-04T14:34:03+00:00'
+  generated_at_utc: '2026-07-04T14:43:36+00:00'
   snapshot_ts: '2026-07-04T14:31:05.273609+00:00'
-  commit_sha: 281f300769209bc4e852664ddcd35a1e05e3ccaf
-  repo_state_hash: 3bf6745dadfb0e5e
+  commit_sha: 97657d5a118b9e62dbc86defbc3fa30984990f06
+  repo_state_hash: 0db7f2a0a113890b
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
   degradation_reasons: []
@@ -2814,7 +2814,7 @@ gate_mece_summary:
     move: Repair graph/report consistency
     why_it_matters: The executive order is not decision-grade until graph and report
       agree.
-    evidence: 6 graph/report mismatch row(s) block decision-grade ordering.
+    evidence: 7 graph/report mismatch row(s) block decision-grade ordering.
     next_step: Repair report consistency, then rerun ADG before treating the ranked
       work queue as authoritative.
     scope: mv_graph_vs_report_mismatches
@@ -7807,7 +7807,7 @@ lens_5_graphdb_mv_decision_impact:
     total_mvs: 52
     decision_drivers: 8
     testing_drivers: 4
-    ratchet_drivers: 1
+    ratchet_drivers: 2
     audit_drivers: 0
     diagnostic_only: 40
     low_value_candidates: 0
@@ -8407,6 +8407,15 @@ lens_5_graphdb_mv_decision_impact:
     action: Use for blast-radius / refactor / runtime-path / after-green planning.
     related_gates: []
     related_scopes: []
+  - signal: graph_watchlist
+    signal_type: graphdb_report
+    row_count: 30
+    decision_role: used_after_green
+    used_inline: true
+    why_or_why_not: Planned-slice / watchlist input for after-green burn-down ordering.
+    action: Use for blast-radius / refactor / runtime-path / after-green planning.
+    related_gates: []
+    related_scopes: []
   - signal: p0_wave_plan
     signal_type: structural_report
     row_count: 19
@@ -8790,7 +8799,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_table
-    path: artifacts/adg/adg_burndown_table_07042026_1025.json
+    path: artifacts/adg/adg_burndown_table.json
     exists: true
     loaded: true
     stale: false
@@ -8908,6 +8917,16 @@ artifact_usage_matrix:
     recommendation: keep_hide_inline
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
+  - artifact_key: graph_watchlist
+    path: artifacts/adg/adg_graph_watchlist_20260704_103126.json
+    exists: true
+    loaded: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
   - artifact_key: p0_wave_plan
     path: artifacts/adg/issues/p0_remediation_wave_plan_07042026_1025.json
     exists: true
@@ -8919,7 +8938,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: dead_code_report
-    path: artifacts/adg/dead_code_zone_control_report_07042026_1025.json
+    path: artifacts/adg/dead_code_zone_control_report_latest.json
     exists: true
     loaded: true
     stale: false
@@ -10402,6 +10421,11 @@ audit_notes:
       file: artifacts/adg/adg_gate_results_20260704_143105.json
       expected_snapshot_minute: '20260704_1025'
       observed_snapshot_minute: '20260704_1431'
+    - mismatch_type: artifact_timestamp_mismatch
+      artifact_key: graph_watchlist
+      file: artifacts/adg/adg_graph_watchlist_20260704_103126.json
+      expected_snapshot_minute: '20260704_1025'
+      observed_snapshot_minute: '20260704_1031'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: action_queue
       field: snapshot_ts
@@ -10443,7 +10467,7 @@ raw_inputs:
     bcg_adapter: artifacts/adg/adg_bcg_adapter_07042026_1025.json
     action_queue: artifacts/adg/adg_action_queue_07042026_1025.json
     review_template: artifacts/adg/adg_review_template_07042026_1025.json
-    burndown_table: artifacts/adg/adg_burndown_table_07042026_1025.json
+    burndown_table: artifacts/adg/adg_burndown_table.json
     burndown_report: artifacts/adg/adg_burndown_report.md
     sqlite_snapshot: artifacts/adg/adg_indexed_07042026_1025.sqlite
     generation_manifest: artifacts/adg/adg_generation_manifest_07042026_1025.json
@@ -10454,8 +10478,9 @@ raw_inputs:
     graphdb_projection: artifacts/adg/adg_graphdb_projection_07042026_1025.json
     graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07042026_1025.json
     graphdb_index: artifacts/adg/adg_graphdb_index_07042026_1025.json
+    graph_watchlist: artifacts/adg/adg_graph_watchlist_20260704_103126.json
     p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07042026_1025.json
-    dead_code_report: artifacts/adg/dead_code_zone_control_report_07042026_1025.json
+    dead_code_report: artifacts/adg/dead_code_zone_control_report_latest.json
   loaded_status:
     missing: []
     stale: []
@@ -10474,6 +10499,7 @@ raw_inputs:
     - graphdb_projection
     - graphdb_metadata
     - graphdb_index
+    - graph_watchlist
     - p0_wave_plan
     - dead_code_report
 evidence_trace:
@@ -10539,6 +10565,10 @@ evidence_trace:
     used_for: used_now
     decision_effect: Runtime spine reports 6 semantic failure(s) — present-and-failing
       runtime proof, not a measurement gap.
+  - signal_name: graph_watchlist
+    signal_type: graphdb_report
+    used_for: used_after_green
+    decision_effect: Planned-slice / watchlist input for after-green burn-down ordering.
   - signal_name: p0_wave_plan
     signal_type: structural_report
     used_for: used_after_green

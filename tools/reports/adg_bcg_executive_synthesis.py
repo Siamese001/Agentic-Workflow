@@ -2575,6 +2575,22 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     brief = _executive_bcg_brief(doc)
     a(_table(["Question", "Answer"], _executive_decision_rows(doc, brief)))
     a("")
+    a("Decision gate:")
+    a("")
+    a(
+        _table(
+            ["Gate", "Status", "Evidence", "Required before ranking"],
+            [
+                ["Merge decision", row[1], row[0], "Resolve before lower-severity ranking."]
+                for row in _executive_decision_rows(doc, brief)
+            ],
+        )
+    )
+    a("")
+    a("Fix now:")
+    a("")
+    a(_table(["Rank", "Move", "Evidence", "Exit criterion"], _compact_next_steps(doc, brief)))
+    a("")
     a("ADG Run Metrics")
     a("")
     a(_table(["Metric", "Value"], _adg_run_metrics(doc, brief)))

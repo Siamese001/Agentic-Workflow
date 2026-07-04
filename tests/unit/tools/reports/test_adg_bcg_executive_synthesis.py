@@ -414,6 +414,9 @@ def test_locked_inline_contract_validates_final_bcg_shape() -> None:
     expected_sections = [
         "## ADG Executive Brief",
         "| Question | Answer |",
+        "Decision gate:",
+        "| Gate | Status | Evidence | Required before ranking |",
+        "Fix now:",
         "ADG Run Metrics",
         "| Metric | Value |",
         "P0-P3 Severity Inventory",
@@ -624,7 +627,8 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "North star:" not in md
     assert "Business read:" not in md
     assert "Technical evidence:" not in md
-    assert "Fix now:" not in md
+    assert "Decision gate:" in md
+    assert "Fix now:" in md
     assert "### BCG Executive Brief" not in md
     assert "### 1. What ADG Is" not in md
     assert "### 2. Patient Size" not in md
@@ -701,8 +705,11 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "| Repair graph/report consistency |" not in md
     assert "| 1 | Repair graph/report consistency |" not in md
     assert "### Recommended Next Steps" in md
-    assert "Fix now:" not in md
+    assert "Decision gate:" in md
+    assert "Fix now:" in md
     assert "| Priority | Action | Evidence | Exit criterion |" in md
+    assert md.index("Decision gate:") < md.index("Fix now:")
+    assert md.index("Fix now:") < md.index("ADG Run Metrics")
     assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." in md
     assert "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing." in md
     assert "Post-P0 ADG has report consistency PASS or an explicit waiver." in md
