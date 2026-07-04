@@ -44,8 +44,9 @@ python -m apps_rg --target-company "Anthropic" --target-role "Manager of Applied
 Evidence:
 1. Locate the run directory. Use --artifact-dir if that directory contains the run outputs; otherwise use the most recently modified child under artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e or artifacts/apps_rg/runs.
 2. Verify these mandatory outputs exist in the run directory:
-   - BCG_EXECUTIVE_OUTPUT.md
-   - APPS_RG_MANDATORY_RUN_OUTPUT.md
+   - 01_BCG_executive_output.md
+   - 02_section_lane_summary_table.md
+   - 03_L7_audit_ability_output.md
    - APPS_RG_MANDATORY_RUN_OUTPUT.json
 3. If mandatory outputs are missing but the run directory exists, run:
    python -m apps_rg.runtime.mandatory_run_outputs <run_dir>

@@ -128,7 +128,7 @@ def _write_run(tmp_path: Path) -> tuple[Path, dict]:
                 }
             ],
             "recommended_next_move": ["Fix P0 gates before rerun."],
-            "evidence_map": [{"label": "Mandatory run ledger", "path": str(run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.md")}],
+            "evidence_map": [{"label": "Mandatory run ledger", "path": str(run_dir / "02_section_lane_summary_table.md")}],
         },
         "section_lane_summary_table": {
             "title": "Section Lane Summary Table",
