@@ -24,6 +24,9 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     canonical_digest,
     expand_microstep_contract,
 )
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 
 L6_MICROSTEP_OBSERVATIONS_ARTIFACT = "l6_microstep_observations.jsonl"
 L6_MICROSTEP_COVERAGE_ARTIFACT = "l6_microstep_coverage.json"
@@ -31,6 +34,7 @@ L6_MICROSTEP_RCA_ARTIFACT = "l6_microstep_rca.json"
 L6_MICROSTEP_PATTERNS_ARTIFACT = "l6_microstep_patterns.json"
 L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT = "l6_microstep_future_run_proposals.json"
 L6_APPS_EVAL_ALIGNMENT_ARTIFACT = "l6_apps_eval_alignment.json"
+L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT = "l6_apps_eval_grain_parity.json"
 
 _REGISTRY_FILES = {
     "artifact_contract": "apps_rg_artifact_contract.json",
@@ -253,12 +257,15 @@ def emit_apps_rg_l6_microstep_artifacts(
 ) -> dict[str, Path]:
     """Emit L6 microstep artifacts and the apps_eval/L6 alignment file."""
     output_dir.mkdir(parents=True, exist_ok=True)
+    scorecard_rows = [dict(row) for row in apps_eval_scorecard_rows or []]
+    alignment_source = "apps_eval_scorecard_rows" if scorecard_rows else "contract_only_pseudo_rows"
+    apps_eval_rows_bound = bool(scorecard_rows)
     observations, eval_rows, contract_digest = build_apps_rg_l6_microstep_observations(
         artifact_dir=artifact_dir,
         repo_root=repo_root,
         runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
         section_id=section_id,
-        apps_eval_scorecard_rows=apps_eval_scorecard_rows,
+        apps_eval_scorecard_rows=scorecard_rows,
     )
     observation_dicts = [obs.to_dict() for obs in observations]
     observation_path = _write_jsonl(output_dir / L6_MICROSTEP_OBSERVATIONS_ARTIFACT, observation_dicts)
@@ -279,6 +286,21 @@ def emit_apps_rg_l6_microstep_artifacts(
             l6_observation_ref=observation_path.as_posix(),
             apps_eval_rows=eval_rows,
             l6_observations=observation_dicts,
+            alignment_source=alignment_source,
+            apps_eval_rows_bound=apps_eval_rows_bound,
+        ),
+    )
+    parity_path = _write_json(
+        output_dir / L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT,
+        build_l6_apps_eval_grain_parity(
+            run_id=run_id,
+            runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+            microstep_contract_digest=contract_digest,
+            apps_eval_scorecard_ref=apps_eval_scorecard_ref,
+            l6_observation_ref=observation_path.as_posix(),
+            apps_eval_rows=eval_rows,
+            l6_observations=observation_dicts,
+            alignment_source=alignment_source,
         ),
     )
     return {
@@ -288,11 +310,13 @@ def emit_apps_rg_l6_microstep_artifacts(
         "l6_microstep_patterns": patterns_path,
         "l6_microstep_future_run_proposals": proposals_path,
         "l6_apps_eval_alignment": alignment_path,
+        "l6_apps_eval_grain_parity": parity_path,
     }
 
 
 __all__ = [
     "L6_APPS_EVAL_ALIGNMENT_ARTIFACT",
+    "L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT",
     "L6_MICROSTEP_COVERAGE_ARTIFACT",
     "L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT",
     "L6_MICROSTEP_OBSERVATIONS_ARTIFACT",

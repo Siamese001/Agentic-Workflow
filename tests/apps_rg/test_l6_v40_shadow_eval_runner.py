@@ -32,6 +32,29 @@ def test_apps_rg_v40_runner_writes_package_and_spans(tmp_path: Path) -> None:
     assert outputs["trace_reconciliation_rows"].is_file()
     assert package["trace_reconciliation_ref"] == "trace_reconciliation.json"
     assert package["trace_reconciliation_rows_ref"] == "trace_reconciliation_rows.jsonl"
+    assert outputs["l6_apps_eval_grain_parity"].is_file()
+    assert package["l6_apps_eval_grain_parity_ref"] == "l6_apps_eval_grain_parity.json"
+    assert package["alignment_source"] == "contract_only_pseudo_rows"
+    assert package["apps_eval_rows_bound"] is False
+    assert package["grain_parity_status"] == "WARN"
+
+
+def test_section_l6_contract_only_grain_parity_warns(tmp_path: Path) -> None:
+    _seed_artifacts(tmp_path)
+
+    outputs = run_l6_v40_shadow_eval_for_section(
+        tmp_path,
+        section_id="summary",
+        repo_root=tmp_path,
+        session_id="sess-apps-rg",
+        tenant_id="tenant-apps-rg",
+        l5_certification_ref="l5-cert-ref:apps-rg",
+    )
+
+    parity = json.loads(outputs["l6_apps_eval_grain_parity"].read_text(encoding="utf-8"))
+    assert parity["alignment_source"] == "contract_only_pseudo_rows"
+    assert parity["apps_eval_rows_bound"] is False
+    assert parity["grain_parity_status"] == "WARN"
 
 
 def test_apps_rg_v40_runner_is_env_gated(tmp_path: Path) -> None:

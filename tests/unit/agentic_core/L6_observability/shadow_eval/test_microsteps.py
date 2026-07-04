@@ -6,6 +6,9 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     build_observations_from_eval_rows,
     build_orphan_observation,
 )
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 
 
 def _row(microstep_id: str, verdict: str = "PASS") -> dict[str, object]:
@@ -76,3 +79,84 @@ def test_orphan_observation_is_reported_as_missing_in_apps_eval() -> None:
     assert alignment["missing_in_apps_eval"] == []
     assert alignment["orphan_observations"] == ["headline.X2.extra_shadow_probe"]
     assert coverage["orphan_observations"] == 1
+
+
+def _parity(rows: list[dict[str, object]], observations: list[dict[str, object]], alignment_source: str = "apps_eval_scorecard_rows") -> dict[str, object]:
+    return build_l6_apps_eval_grain_parity(
+        run_id="run-1",
+        runtime_exhaust_bundle_id="reb-1",
+        microstep_contract_digest="sha256:contract",
+        apps_eval_scorecard_ref="scorecard_rows.jsonl",
+        l6_observation_ref="l6_microstep_observations.jsonl",
+        apps_eval_rows=rows,
+        l6_observations=observations,
+        alignment_source=alignment_source,
+    )
+
+
+def test_grain_parity_passes_with_real_apps_eval_rows() -> None:
+    rows = [_row("headline.X2.gates.pass")]
+    observations = [observation.to_dict() for observation in build_observations_from_eval_rows(rows, runtime_exhaust_bundle_id="reb-1")]
+
+    parity = _parity(rows, observations)
+
+    assert parity["alignment_source"] == "apps_eval_scorecard_rows"
+    assert parity["apps_eval_rows_bound"] is True
+    assert parity["grain_parity_status"] == "PASS"
+    assert parity["missing_in_l6"] == []
+    assert parity["missing_in_apps_eval"] == []
+
+
+def test_grain_parity_warns_for_contract_only_pseudo_rows() -> None:
+    rows = [_row("headline.X2.gates.pass", "NOT_RUN")]
+    observations = [observation.to_dict() for observation in build_observations_from_eval_rows(rows, runtime_exhaust_bundle_id="reb-1")]
+
+    parity = _parity(rows, observations, alignment_source="contract_only_pseudo_rows")
+
+    assert parity["apps_eval_rows_bound"] is False
+    assert parity["grain_parity_status"] == "WARN"
+
+
+def test_grain_parity_warns_on_unbound_extra_l6_observation() -> None:
+    rows = [_row("headline.X2.gates.pass", "NOT_RUN")]
+    observations = [
+        observation.to_dict()
+        for observation in build_observations_from_eval_rows(
+            [*rows, _row("headline.L6.trace_reconciliation.present", "NOT_RUN")],
+            runtime_exhaust_bundle_id="reb-1",
+        )
+    ]
+
+    parity = _parity(rows, observations, alignment_source="contract_only_pseudo_rows")
+
+    assert parity["apps_eval_rows_bound"] is False
+    assert parity["missing_in_apps_eval"][0]["microstep_id"] == "headline.L6.trace_reconciliation.present"
+    assert parity["grain_parity_status"] == "WARN"
+
+
+def test_grain_parity_fails_on_missing_l6_observation() -> None:
+    parity = _parity([_row("headline.X2.gates.pass")], [])
+
+    assert parity["grain_parity_status"] == "FAIL"
+    assert parity["missing_in_l6"][0]["microstep_id"] == "headline.X2.gates.pass"
+
+
+def test_grain_parity_fails_on_verdict_mismatch() -> None:
+    rows = [_row("headline.X2.gates.pass", "FAIL")]
+    observations = [observation.to_dict() for observation in build_observations_from_eval_rows([_row("headline.X2.gates.pass", "PASS")], runtime_exhaust_bundle_id="reb-1")]
+
+    parity = _parity(rows, observations)
+
+    assert parity["grain_parity_status"] == "FAIL"
+    assert parity["verdict_mismatches"][0]["apps_eval_verdict"] == "FAIL"
+
+
+def test_grain_parity_fails_on_authority_mismatch() -> None:
+    rows = [_row("headline.X2.gates.pass")]
+    observations = [observation.to_dict() for observation in build_observations_from_eval_rows(rows, runtime_exhaust_bundle_id="reb-1")]
+    observations[0]["current_run_mutation_assertion"] = True
+
+    parity = _parity(rows, observations)
+
+    assert parity["grain_parity_status"] == "FAIL"
+    assert parity["authority_mismatch"] is True

@@ -193,6 +193,38 @@
         "observability/trace_reconciliation.json"
       ]
     },
+    "l6_v40_shadow_eval_package": {
+      "required": false,
+      "source_artifact_schema": "apps_rg.l6_v40_shadow_eval.v1",
+      "relative_paths": [
+        "l6_v40_shadow_eval_package.json",
+        "l6/l6_v40_shadow_eval_package.json"
+      ]
+    },
+    "l6_microstep_observations": {
+      "required": false,
+      "source_artifact_schema": "agentic_core.l6_microstep_observation.v1",
+      "relative_paths": [
+        "l6_microstep_observations.jsonl",
+        "l6_grain_parity/l6_microstep_observations.jsonl"
+      ]
+    },
+    "l6_apps_eval_alignment": {
+      "required": false,
+      "source_artifact_schema": "agentic_core.l6_apps_eval_alignment.v1",
+      "relative_paths": [
+        "l6_apps_eval_alignment.json",
+        "l6_grain_parity/l6_apps_eval_alignment.json"
+      ]
+    },
+    "l6_apps_eval_grain_parity": {
+      "required": false,
+      "source_artifact_schema": "agentic_core.l6_apps_eval_grain_parity.v1",
+      "relative_paths": [
+        "l6_apps_eval_grain_parity.json",
+        "l6_grain_parity/l6_apps_eval_grain_parity.json"
+      ]
+    },
     "eval_record": {
       "required": true,
       "source_artifact_schema": "apps_eval.completed_eval.v3",

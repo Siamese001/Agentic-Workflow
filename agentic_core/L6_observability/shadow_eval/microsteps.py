@@ -350,6 +350,8 @@ def build_apps_eval_alignment(
     l6_observation_ref: str,
     apps_eval_rows: Iterable[Mapping[str, Any]],
     l6_observations: Iterable[L6MicrostepObservation | Mapping[str, Any]],
+    alignment_source: str = "apps_eval_scorecard_rows",
+    apps_eval_rows_bound: bool | None = None,
 ) -> dict[str, Any]:
     eval_rows = [dict(row) for row in apps_eval_rows if row.get("required", True)]
     obs_rows = [obs.to_dict() if isinstance(obs, L6MicrostepObservation) else dict(obs) for obs in l6_observations]
@@ -384,6 +386,11 @@ def build_apps_eval_alignment(
         or row.get("future_run_only") is not True
         for row in obs_rows
     )
+    resolved_rows_bound = (
+        alignment_source == "apps_eval_scorecard_rows"
+        if apps_eval_rows_bound is None
+        else bool(apps_eval_rows_bound)
+    )
     return {
         "schema_version": L6_APPS_EVAL_ALIGNMENT_SCHEMA_VERSION,
         "run_id": run_id,
@@ -391,6 +398,9 @@ def build_apps_eval_alignment(
         "microstep_contract_digest": microstep_contract_digest,
         "apps_eval_scorecard_ref": apps_eval_scorecard_ref,
         "l6_observation_ref": l6_observation_ref,
+        "alignment_source": alignment_source,
+        "apps_eval_rows_bound": resolved_rows_bound,
+        "contract_only_alignment_is_not_eval_proof": not resolved_rows_bound,
         "coverage_join_key": "microstep_id",
         "rows_expected": len(eval_rows),
         "apps_eval_rows_seen": len(eval_rows),
