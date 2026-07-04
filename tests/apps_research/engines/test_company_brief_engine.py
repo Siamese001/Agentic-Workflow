@@ -19,6 +19,20 @@ from apps_research.engines.company_brief_engine import (
     _v2_enabled,
 )
 
+_PASS_X2_RECEIPT = {
+    "schema_version": "apps_research.apps_rg_handoff_x2_judge_receipt.v1",
+    "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+    "judge_name": "gemini_pro",
+    "judge_provider": "gemini_pro",
+    "judge_model": "gemini-3.1-pro-preview",
+    "threshold": 0.75,
+    "model_backed": True,
+    "status": "PASS",
+    "score": 0.91,
+    "verdict": "PASS",
+    "provider_status": "MODEL_BACKED_PASS",
+}
+
 
 def test_v2_flag_off_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
     """V2 retrieval pipeline is opt-in via APPS_RESEARCH_RETRIEVAL_V2 (plan §P1.4)."""
@@ -182,7 +196,7 @@ def test_openai_synthesis_uses_pinned_model_and_output_tokens(monkeypatch: pytes
         APPS_RESEARCH_BRIEF_MODEL,
     ]
     assert all(row["max_completion_tokens"] == 777 for row in captured)
-    assert APPS_RESEARCH_BRIEF_MODEL == "gpt-5.4-mini"
+    assert APPS_RESEARCH_BRIEF_MODEL == "gpt-5.4-mini-2026-03-17"
 
 
 def test_company_brief_model_is_resolved_from_provider_profile() -> None:

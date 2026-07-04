@@ -29,6 +29,8 @@ def test_mock_bridge_default_brief_passes_contract_gate() -> None:
     result = _fetch(MockAppsResearchBridge(confidence_score=0.9))
     assert not result.is_blocked
     assert result.company_brief_text.strip()
+    assert result.apps_research_handoff_envelope is not None
+    assert result.apps_research_handoff_envelope["generation_provider"] == "external_openai"
 
 
 def test_bridge_rejects_missing_brief_text() -> None:
@@ -65,6 +67,26 @@ def test_delegation_returns_ready_with_valid_brief() -> None:
     )
     assert isinstance(outcome, ResumeBriefingReady)
     assert outcome.briefing_text.strip()
+    assert outcome.apps_research_handoff_envelope["apps_research_x1_x3_authorization"]["x2"][
+        "model_backed"
+    ] is True
+
+
+def test_delegation_fails_closed_without_handoff_envelope() -> None:
+    bridge = MockAppsResearchBridge(confidence_score=0.9)
+    bridge._mock_sidecar = lambda _brief: {}  # type: ignore[method-assign]
+    req = RequestForResumeBriefing(
+        request_id="req-1",
+        run_id="run-1",
+        trace_id="trace-1",
+        company_name="Acme Co",
+        job_title="SVP IT Strategy",
+        research_authorized=True,
+    )
+    outcome = dispatch_resume_research_briefing(req, bridge=bridge)
+    assert isinstance(outcome, ResearchDispatchFailure)
+    assert outcome.r5_reason_code == "APPS_RESEARCH_BLOCKED"
+    assert "missing_apps_research_handoff_envelope" in outcome.detail
 
 
 def test_delegation_fails_closed_on_blocked_brief() -> None:

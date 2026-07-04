@@ -21,6 +21,20 @@ _TARGETING_JD_CONTEXT = {
     "jd_context": {"role": "SVP IT Strategy"},
 }
 
+_PASS_X2_RECEIPT = {
+    "schema_version": "apps_research.apps_rg_handoff_x2_judge_receipt.v1",
+    "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+    "judge_name": "gemini_pro",
+    "judge_provider": "gemini_pro",
+    "judge_model": "gemini-3.1-pro-preview",
+    "threshold": 0.75,
+    "model_backed": True,
+    "status": "PASS",
+    "score": 0.91,
+    "verdict": "PASS",
+    "provider_status": "MODEL_BACKED_PASS",
+}
+
 
 def test_prompt_template_required_format_at_most_17_bullets() -> None:
     text = load_targeting_brief_prompt_template()
@@ -81,6 +95,11 @@ def test_synthesis_fails_closed_on_gate_fail() -> None:
 def test_synthesis_seals_valid_markdown(monkeypatch) -> None:
     engine = CompanyBriefEngine()
     monkeypatch.setattr(engine, "_call_llm_plain_markdown", lambda prompt: _VALID_MD)
+    monkeypatch.setattr(
+        engine,
+        "_run_apps_rg_handoff_x2_judge",
+        lambda **_kwargs: dict(_PASS_X2_RECEIPT),
+    )
     synthesized = engine._synthesize_apps_rg_targeting_brief(
         topic="Acme Co",
         findings={"overview": "Acme is a mid-cap insurer with verified scale."},
@@ -91,6 +110,32 @@ def test_synthesis_seals_valid_markdown(monkeypatch) -> None:
     md = synthesized["apps_rg_targeting_brief_markdown"]
     assert md.strip()
     assert len(re.findall(r"(?m)^- ", md)) <= 17
+    sidecar = synthesized["apps_rg_targeting_brief_sidecar"]
+    assert sidecar["generation_provider"] == "external_openai"
+    assert sidecar["generation_model"] == "gpt-5.4-mini-2026-03-17"
+    assert sidecar["x2_judge_receipt"]["model_backed"] is True
+
+
+def test_synthesis_fails_closed_on_missing_model_backed_x2(monkeypatch) -> None:
+    engine = CompanyBriefEngine()
+    monkeypatch.setattr(engine, "_call_llm_plain_markdown", lambda prompt: _VALID_MD)
+    monkeypatch.setattr(
+        engine,
+        "_run_apps_rg_handoff_x2_judge",
+        lambda **_kwargs: {
+            **_PASS_X2_RECEIPT,
+            "status": "FAIL",
+            "score": 0.10,
+            "provider_status": "MODEL_BACKED_FAIL",
+        },
+    )
+    with pytest.raises(CompanyBriefUnavailableError, match="X2 judge failed"):
+        engine._synthesize_apps_rg_targeting_brief(
+            topic="Acme Co",
+            findings={"overview": "Acme is a mid-cap insurer with verified scale."},
+            jd_context=_TARGETING_JD_CONTEXT,
+            jd_anchor=None,
+        )
 
 
 def test_synthesis_rejects_invalid_markdown(monkeypatch) -> None:

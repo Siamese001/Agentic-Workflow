@@ -667,6 +667,9 @@ class CompanyBriefEngine(BaseResearchEngine):
             normalize_targeting_brief_text,
             seal_targeting_brief,
         )
+        from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
+            x2_judge_receipt_passes,
+        )
 
         company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
@@ -754,6 +757,33 @@ class CompanyBriefEngine(BaseResearchEngine):
                 f"{company_name}: apps_rg targeting brief rejected: "
                 f"{sealed.block_reason or 'contract_validation_failed'}; violations={violations}"
             )
+        semantic_assessment = assess_targeting_brief_semantics(
+            sealed.company_brief_text,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            source_family_keys=tuple(findings.keys()),
+            profile="apps_rg",
+        )
+        source_register = [
+            {
+                "family": family,
+                "has_content": bool((blob or "").strip()),
+                "char_count": len((blob or "").strip()),
+            }
+            for family, blob in sorted(findings.items(), key=lambda item: item[0])
+        ]
+        x2_judge_receipt = self._run_apps_rg_handoff_x2_judge(
+            brief_text=sealed.company_brief_text,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            source_register=source_register,
+        )
+        if not x2_judge_receipt_passes(x2_judge_receipt):
+            raise CompanyBriefUnavailableError(
+                f"{company_name}: apps_rg targeting brief X2 judge failed: "
+                f"{x2_judge_receipt.get('status', 'MISSING_RECEIPT')}; "
+                f"reason={x2_judge_receipt.get('reason', 'missing_model_backed_pass')}"
+            )
         return {
             "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
             "apps_rg_targeting_brief_markdown": sealed.company_brief_text,
@@ -766,13 +796,9 @@ class CompanyBriefEngine(BaseResearchEngine):
                 gate_verdict=gate_verdict,
                 gate_reason=gate_reason,
                 model_name=model_name,
-                semantic_override=assess_targeting_brief_semantics(
-                    sealed.company_brief_text,
-                    jd_text=jd_text,
-                    research_notes=research_notes,
-                    source_family_keys=tuple(findings.keys()),
-                    profile="apps_rg",
-                ),
+                semantic_override=semantic_assessment,
+                x2_judge_receipt=x2_judge_receipt,
+                source_register=source_register,
             ),
             "targeting_brief_disposition": BriefStatus.SEALED.value,
             "targeting_brief_char_count": sealed.char_count,
@@ -906,11 +932,17 @@ class CompanyBriefEngine(BaseResearchEngine):
         gate_reason: str,
         model_name: str,
         semantic_override: Any | None = None,
+        x2_judge_receipt: dict[str, Any] | None = None,
+        source_register: list[dict[str, Any]] | None = None,
     ) -> Dict[str, Any]:
         """Build the structured sidecar carried from apps_research to apps_rg."""
         from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
             assess_targeting_brief_semantics,
             validate_targeting_brief_text,
+        )
+        from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
+            APPS_RG_HANDOFF_GENERATION_PROVIDER,
+            x2_judge_receipt_passes,
         )
         from apps_research.integrations.search_retrieval import retrieval_config_snapshot  # noqa: PLC0415
 
@@ -926,7 +958,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             jd_text=jd_text,
             profile="apps_rg",
         )
-        source_register = [
+        resolved_source_register = source_register or [
             {
                 "family": family,
                 "has_content": bool((blob or "").strip()),
@@ -934,17 +966,29 @@ class CompanyBriefEngine(BaseResearchEngine):
             }
             for family, blob in sorted(findings.items(), key=lambda item: item[0])
         ]
+        judge_receipt = dict(x2_judge_receipt or {})
+        model_backed_x2_passed = x2_judge_receipt_passes(judge_receipt)
         digest = hashlib.sha256(brief_text.encode("utf-8")).hexdigest() if brief_text else ""
         retrieval_snapshot = retrieval_config_snapshot(query_families=list(findings.keys()))
+        semantic_score = judge_receipt.get("score", semantics.score)
+        judge_name = judge_receipt.get("judge_name", semantics.judge_name)
+        judge_model = judge_receipt.get("judge_model", semantics.judge_model)
+        handoff_eligible = bool(semantics.handoff_eligible and model_backed_x2_passed)
         return {
             "schema_version": "apps_research.apps_rg_targeting_brief_sidecar/v1",
             "company_name": company_name,
+            "generation_provider": APPS_RG_HANDOFF_GENERATION_PROVIDER,
             "generation_model": model_name,
+            "provider_call_attempted": True,
             "generation_token_budget": _resolved_gemini_max_output_tokens(),
-            "judge_name": semantics.judge_name,
-            "judge_model": semantics.judge_model,
-            "briefing_semantic_score": semantics.score,
-            "handoff_eligible": semantics.handoff_eligible,
+            "judge_name": judge_name,
+            "judge_model": judge_model,
+            "briefing_semantic_score": semantic_score,
+            "semantic_gate_mode": "model_backed_llm_judge",
+            "handoff_eligible": handoff_eligible,
+            "reason": "ok" if handoff_eligible else "x2_model_backed_judge_not_pass",
+            "x2_judge_receipt": judge_receipt,
+            "deterministic_semantic_assessment": semantics.as_dict(),
             "role_archetype": semantics.role_archetype,
             "evidence_intents": list(semantics.evidence_intents),
             "required_sections_present": list(semantics.required_sections_present),
@@ -954,7 +998,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             "signal_terms_present": list(semantics.signal_terms_present),
             "signal_terms_missing": list(semantics.signal_terms_missing),
             "retrieval_config": retrieval_snapshot,
-            "source_register": source_register,
+            "source_register": resolved_source_register,
             "gate_verdict": gate_verdict,
             "gate_reason": gate_reason,
             "text_char_count": validation.char_count,
@@ -962,6 +1006,25 @@ class CompanyBriefEngine(BaseResearchEngine):
             "section_count": validation.section_count,
             "brief_text_sha256": digest,
         }
+
+    def _run_apps_rg_handoff_x2_judge(
+        self,
+        *,
+        brief_text: str,
+        jd_text: str,
+        research_notes: str,
+        source_register: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
+            run_apps_rg_handoff_x2_judge,
+        )
+
+        return run_apps_rg_handoff_x2_judge(
+            brief_text=brief_text,
+            jd_text=jd_text,
+            research_notes=research_notes,
+            source_register=source_register,
+        )
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:
         """OpenAI route for plain-text targeting brief output."""

@@ -21,6 +21,20 @@ _TARGETING_JD_CONTEXT = {
     "jd_context": {"role": "SVP IT Strategy"},
 }
 
+_PASS_X2_RECEIPT = {
+    "schema_version": "apps_research.apps_rg_handoff_x2_judge_receipt.v1",
+    "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+    "judge_name": "gemini_pro",
+    "judge_provider": "gemini_pro",
+    "judge_model": "gemini-3.1-pro-preview",
+    "threshold": 0.75,
+    "model_backed": True,
+    "status": "PASS",
+    "score": 0.91,
+    "verdict": "PASS",
+    "provider_status": "MODEL_BACKED_PASS",
+}
+
 _VALID_TARGETING_BRIEF = (
     "Acme Co (ACME) - SVP IT Strategy targeting brief\n"
     "| SVP IT Strategy | band | Reports to CIO (2026) |\n\n"
@@ -80,6 +94,11 @@ def test_targeting_synthesis_repairs_jd_dense_bullet(monkeypatch) -> None:
         return _VALID_TARGETING_BRIEF if len(calls) > 1 else bad_markdown
 
     monkeypatch.setattr(engine, "_call_llm_plain_markdown", _fake_llm)
+    monkeypatch.setattr(
+        engine,
+        "_run_apps_rg_handoff_x2_judge",
+        lambda **_kwargs: dict(_PASS_X2_RECEIPT),
+    )
 
     synthesized = engine._synthesize_apps_rg_targeting_brief(
         topic="Acme Co",

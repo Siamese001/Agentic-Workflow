@@ -59,12 +59,30 @@ _VALID_APPS_RG_BRIEF = (
 
 def _sidecar_for(brief: str) -> dict:
     normalized = brief.strip()
+    x2_receipt = {
+        "schema_version": "apps_research.apps_rg_handoff_x2_judge_receipt.v1",
+        "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+        "judge_name": "gemini_pro",
+        "judge_provider": "gemini_pro",
+        "judge_model": "gemini-3.1-pro-preview",
+        "threshold": 0.75,
+        "model_backed": True,
+        "status": "PASS",
+        "score": 0.91,
+        "verdict": "PASS",
+        "provider_status": "MODEL_BACKED_PASS",
+    }
     return {
         "brief_text_sha256": hashlib.sha256(normalized.encode("utf-8")).hexdigest(),
+        "generation_provider": "external_openai",
+        "generation_model": "gpt-5.4-mini-2026-03-17",
+        "provider_call_attempted": True,
         "handoff_eligible": True,
         "briefing_semantic_score": 0.91,
         "judge_name": "gemini_pro",
         "judge_model": "gemini-3.1-pro-preview",
+        "semantic_gate_mode": "model_backed_llm_judge",
+        "x2_judge_receipt": x2_receipt,
         "role_archetype": "partnerships",
         "required_sections_present": ["jd complement"],
         "missing_sections": [],
@@ -130,6 +148,8 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
     assert envelope["schema_version"] == "apps_research.apps_rg_briefing_envelope.v1"
     assert envelope["consumer_app"] == "apps_rg"
     assert envelope["handoff_eligible"] is True
+    assert envelope["generation_provider"] == "external_openai"
+    assert envelope["generation_model"] == "gpt-5.4-mini-2026-03-17"
     assert envelope["brief_sha256"] == hashlib.sha256(
         _VALID_APPS_RG_BRIEF.strip().encode("utf-8")
     ).hexdigest()
@@ -141,6 +161,10 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
     assert auth["jd_sha256"] == envelope["jd_sha256"]
     assert auth["x1"]["status"] == "PASS"
     assert auth["x2"]["status"] == "PASS"
+    assert auth["x2"]["model_backed"] is True
+    assert auth["x2"]["judge_provider"] == "gemini_pro"
+    assert auth["x2"]["judge_model"] == "gemini-3.1-pro-preview"
+    assert auth["x2"]["score"] >= auth["x2"]["threshold"]
     assert auth["x3"]["status"] == "PASS"
     assert auth["x3"]["disposition"] == "ALLOW"
 

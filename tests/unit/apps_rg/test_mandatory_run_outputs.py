@@ -399,16 +399,13 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert briefing["order"] == 0
     assert briefing["section"] == "research_briefing_input"
     assert briefing["provider_call_attempted"] is False
+    assert briefing["research_source_class"] == "STATIC_MANUAL_BRIEF"
     assert briefing["primary_provider"] == "STATIC_MANUAL_BRIEF"
     assert briefing["primary_model_observed"] == "NOT_OBSERVED"
     assert briefing["generation_status"] == "P0_STATIC_MANUAL_BRIEF_USED"
+    assert "NOT_OBSERVED" in briefing["x2"]
+    assert "missing_apps_research_envelope" in briefing["x2"]
     assert briefing["x3"] == "FAIL"
-    assert "handoff_observed=False" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "handoff_valid=False" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "missing_apps_research_envelope" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X1=NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X2=NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X3=NOT_OBSERVED/NOT_OBSERVED" in briefing["apps_research_x1_x2_x3_gates"]
     assert "auto_research_internal=True" in briefing["past_fail_blocker"]
     assert "research_delegation_executed=False" in briefing["past_fail_blocker"]
     assert "brief-digest-123" in briefing["past_fail_blocker"]
@@ -426,7 +423,36 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert payload["rca_findings"]
 
 
-def test_mandatory_row0_surfaces_apps_research_x1_x2_x3_gates(tmp_path: Path) -> None:
+def test_mandatory_row0_reports_apps_research_provider_when_handoff_missing(tmp_path: Path) -> None:
+    run = tmp_path / "delegated_research_missing_handoff"
+    run.mkdir()
+    brief = tmp_path / "delegated_briefing.txt"
+    brief.write_text("Fresh delegated briefing text.", encoding="utf-8")
+    _write_json(
+        run / "ingress_raw.json",
+        {
+            "auto_research_internal": True,
+            "manual_brief": str(brief),
+            "research_via": "apps_research",
+        },
+    )
+    _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": True})
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    briefing = emitted["payload"]["section_lane_table"][0]
+    assert briefing["research_source_class"] == "FRESH_APPS_RESEARCH"
+    assert briefing["primary_provider"] == "external_openai"
+    assert briefing["primary_model_observed"] == "gpt-5.4-mini-2026-03-17"
+    assert briefing["x2"] == "NOT_OBSERVED; blocker=missing_apps_research_envelope"
+    assert briefing["x3"] == "NOT_OBSERVED; blocker=missing_apps_research_envelope"
+
+
+def test_mandatory_row0_surfaces_apps_research_source_class_and_x2_x3(tmp_path: Path) -> None:
     run = tmp_path / "authorized_research_handoff"
     run.mkdir()
     brief = tmp_path / "briefing.md"
@@ -453,6 +479,9 @@ def test_mandatory_row0_surfaces_apps_research_x1_x2_x3_gates(tmp_path: Path) ->
             "stub_detected": False,
             "is_stale": False,
             "handoff_eligible": True,
+            "generation_provider": "external_openai",
+            "generation_model": "gpt-5.4-mini-2026-03-17",
+            "provider_call_attempted": True,
             "brief_sha256": brief_sha,
             "jd_sha256": jd_sha,
             "apps_research_x1_x3_authorization": {
@@ -465,7 +494,12 @@ def test_mandatory_row0_surfaces_apps_research_x1_x2_x3_gates(tmp_path: Path) ->
                     "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
                     "status": "PASS",
                     "score": 0.94,
-                    "judge_model": "gpt-5.4-mini",
+                    "threshold": 0.75,
+                    "judge_name": "gemini_pro",
+                    "judge_provider": "gemini_pro",
+                    "judge_model": "gemini-3.1-pro-preview",
+                    "model_backed": True,
+                    "provider_status": "MODEL_BACKED_PASS",
                 },
                 "x3": {
                     "gate_id": "X3_HANDOFF_AUTHORIZATION",
@@ -494,22 +528,20 @@ def test_mandatory_row0_surfaces_apps_research_x1_x2_x3_gates(tmp_path: Path) ->
     briefing = emitted["payload"]["section_lane_table"][0]
     assert briefing["section"] == "research_briefing_input"
     assert briefing["provider_call_attempted"] is True
-    assert briefing["primary_provider"] == "apps_research"
-    assert briefing["x2"] == "PASS"
-    assert briefing["x3"] == "ALLOW"
-    assert "handoff_observed=True" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "handoff_valid=True" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X1=PASS" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X2=PASS score=0.94 judge_model=gpt-5.4-mini" in briefing["apps_research_x1_x2_x3_gates"]
-    assert "X3=PASS/ALLOW" in briefing["apps_research_x1_x2_x3_gates"]
+    assert briefing["research_source_class"] == "FRESH_APPS_RESEARCH"
+    assert briefing["primary_provider"] == "external_openai"
+    assert briefing["primary_model_observed"] == "gpt-5.4-mini-2026-03-17"
+    assert briefing["x2"] == "PASS; 0.94; judge=gemini-3.1-pro-preview"
+    assert briefing["x3"] == "ALLOW; X1=PASS"
     assert all(
         gate["pass"]
         for gate in emitted["payload"]["mandatory_inline_output_gates"]
         if gate["gate_id"] == "mandatory_apps_research_row0_x1_x2_x3_gates_locked"
     )
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
-    assert "apps_research X1/X2/X3 gates" in mandatory
-    assert "X1=PASS" in mandatory
+    assert "Research source class" in mandatory
+    assert "FRESH_APPS_RESEARCH" in mandatory
+    assert "ALLOW; X1=PASS" in mandatory
 
 
 def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(tmp_path: Path) -> None:

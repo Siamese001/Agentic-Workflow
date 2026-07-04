@@ -124,6 +124,13 @@ def _parse_timestamp(value: Any) -> datetime | None:
     return None
 
 
+def _numeric_or_none(value: Any) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def validate_apps_research_handoff(
     *,
     brief_ref: str,
@@ -246,6 +253,24 @@ def validate_apps_research_handoff(
                 failures.append("x1_not_pass")
             if not isinstance(x2, dict) or x2.get("status") != "PASS":
                 failures.append("x2_not_pass")
+            else:
+                score = _numeric_or_none(x2.get("score"))
+                threshold = _numeric_or_none(x2.get("threshold"))
+                if score is None:
+                    failures.append("x2_missing_score")
+                if threshold is None:
+                    failures.append("x2_missing_threshold")
+                if score is not None and threshold is not None and score < threshold:
+                    failures.append("x2_score_below_threshold")
+                if x2.get("model_backed") is not True:
+                    failures.append("x2_not_model_backed")
+                provider_status = str(x2.get("provider_status") or "").strip()
+                if not provider_status.startswith("MODEL_BACKED"):
+                    failures.append("x2_provider_status_not_model_backed")
+                if not str(x2.get("judge_model") or "").strip():
+                    failures.append("x2_missing_judge_model")
+                if not str(x2.get("judge_provider") or x2.get("judge_name") or "").strip():
+                    failures.append("x2_missing_judge_provider")
             if not isinstance(x3, dict) or x3.get("status") != "PASS":
                 failures.append("x3_not_pass")
             else:

@@ -226,6 +226,8 @@ def _run_r3r4_research_hop(
     artifact_dir: Path,
     target_company: str,
     target_role: str,
+    job_description_ref: str = "",
+    job_description_text: str = "",
 ) -> tuple[bool, str, str]:
     import importlib
 
@@ -244,6 +246,8 @@ def _run_r3r4_research_hop(
         company_name=target_company,
         job_title=target_role,
         research_authorized=True,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
     )
     bridge = _research_bridge()
     _write_mock_elimination_proof(artifact_dir, bridge)
@@ -268,11 +272,19 @@ def _run_r3r4_research_hop(
                 "confidence_score": outcome.confidence_score,
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "research_artifact_dir": outcome.research_artifact_dir,
+                "apps_research_handoff_envelope": outcome.apps_research_handoff_envelope,
             },
         )
         brief_path = artifact_dir / sr.FILENAME_DELEGATED_BRIEFING
         brief_path.parent.mkdir(parents=True, exist_ok=True)
         brief_path.write_text(outcome.briefing_text + "\n", encoding="utf-8")
+        handoff_envelope = dict(outcome.apps_research_handoff_envelope)
+        handoff_envelope["briefing_path"] = str(brief_path.resolve())
+        handoff_envelope.setdefault("company_brief_path", "")
+        sr.write_stage_receipt(
+            brief_path.parent / "apps_research_briefing_envelope.json",
+            handoff_envelope,
+        )
         fec_path = artifact_dir / sr.FILENAME_RESEARCH_EVIDENCE_CONTRACT
         sr.write_stage_receipt(
             fec_path,
@@ -282,6 +294,7 @@ def _run_r3r4_research_hop(
                 "result_hash": outcome.result_hash,
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "confidence_score": outcome.confidence_score,
+                "apps_research_handoff_envelope": handoff_envelope,
                 "proof_note": "FEC-shaped contract for external review; full FEC lives under apps_research run when present.",
             },
         )
@@ -504,6 +517,8 @@ def run_whole_run_with_route_governance(
             artifact_dir=art,
             target_company=target_company,
             target_role=target_role,
+            job_description_ref=str(job_description_ref or jd or "").strip(),
+            job_description_text=job_description_text,
         )
         research_ran = True
         route_decision["research_delegation_executed"] = True

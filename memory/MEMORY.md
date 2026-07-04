@@ -73,6 +73,10 @@
   --target-company <company> --target-role <role> --jd <jd-path>` must print an `artifact=<...briefing.md>`
   before apps_rg may consume it. Missing grounded `company_brief_text` is a failure; do not substitute stale
   populated artifacts or dry-run output. Detail: `memory/codex/apps_research_targeting_brief_fail_closed.md`.
+- **apps_research → apps_rg handoff envelope invariant (2026-07-04):** apps_research X3 authorization now
+  requires an external_openai generation lane, a model-backed Gemini X2 receipt, and an envelope beside the
+  delegated briefing; bridge confidence or deterministic semantics alone are not authorization. Detail:
+  `memory/codex/apps_research_apps_rg_handoff_envelope_invariant.md`.
 - **apps_rg competencies graph traversal receipts (2026-06-22):** bundle-mode competencies must prove
   graph traversal breadth/depth, rejected siblings, per-category granularity, JD-critical partnership axes,
   and decomposed confidence before certification. Detail:

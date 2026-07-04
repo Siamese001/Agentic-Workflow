@@ -29,6 +29,8 @@ class RequestForResumeBriefing:
     research_capability_ref: str = "apps_research.v1"
     freshness_ttl_days: int = 7
     min_confidence_threshold: float = 0.60
+    job_description_ref: str = ""
+    job_description_text: str = ""
 
 
 @dataclass(frozen=True)
@@ -43,6 +45,7 @@ class ResumeBriefingReady:
     research_artifact_dir: str
     result_hash: str
     evidence_lineage: tuple[dict[str, Any], ...]
+    apps_research_handoff_envelope: dict[str, Any]
     dispatch_duration_ms: float
 
 
@@ -83,6 +86,8 @@ def dispatch_resume_research_briefing(
             request_id=request.request_id,
             run_id=request.run_id,
             trace_id=request.trace_id,
+            job_description_ref=request.job_description_ref,
+            job_description_text=request.job_description_text,
         )
     except Exception as exc:  # noqa: BLE001
         return ResearchDispatchFailure(
@@ -156,6 +161,37 @@ def dispatch_resume_research_briefing(
             detail="missing company_brief_text (no valid delegated briefing)",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
+    handoff_envelope = research_result.apps_research_handoff_envelope
+    if not isinstance(handoff_envelope, dict) or not handoff_envelope:
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
+            detail="missing_apps_research_handoff_envelope",
+            dispatch_duration_ms=_utc_ms() - t_start,
+        )
+    auth = handoff_envelope.get("apps_research_x1_x3_authorization")
+    x2 = auth.get("x2") if isinstance(auth, dict) and isinstance(auth.get("x2"), dict) else {}
+    x3 = auth.get("x3") if isinstance(auth, dict) and isinstance(auth.get("x3"), dict) else {}
+    if x2.get("status") != "PASS" or x2.get("model_backed") is not True:
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
+            detail="apps_research_x2_judge_not_model_backed_pass",
+            dispatch_duration_ms=_utc_ms() - t_start,
+        )
+    if x3.get("status") != "PASS" or x3.get("disposition") != "ALLOW":
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
+            detail="apps_research_x3_not_allow",
+            dispatch_duration_ms=_utc_ms() - t_start,
+        )
 
     lineage = tuple(
         {
@@ -179,6 +215,7 @@ def dispatch_resume_research_briefing(
         research_artifact_dir=str(research_result.research_artifact_dir or ""),
         result_hash=research_result.result_hash,
         evidence_lineage=lineage,
+        apps_research_handoff_envelope=handoff_envelope,
         dispatch_duration_ms=_utc_ms() - t_start,
     )
 

@@ -142,6 +142,13 @@ def _repo_rel(path: Path) -> str:
     return str(rel)
 
 
+def _codex_file_link(label: str, path: Path) -> str:
+    target = str(path.resolve(strict=False)).replace("\\", "/")
+    if len(target) > 1 and target[1] == ":":
+        target = f"/{target}"
+    return f"[{label}]({target})"
+
+
 def _safe_manifest_rel(value: Any, default: str) -> Path:
     raw = str(value or "").strip().replace("\\", "/") or default
     if raw.startswith(("/", "\\")) or (len(raw) > 1 and raw[1] == ":"):
@@ -287,16 +294,17 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     ledger_md = run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_MD
     bcg_md = run_dir / BCG_EXECUTIVE_OUTPUT_MD
     ledger = _load_json(ledger_path) or {}
-    lines: List[str] = ["## Mandatory BCG / Run-Ledger Outputs", ""]
-    lines.append("| Artifact | Path | Status |")
-    lines.append("|---|---|---|")
-    for label, path in (
-        ("BCG executive output", bcg_md),
-        ("Mandatory run output", ledger_md),
-        ("Mandatory run output JSON", ledger_path),
+    lines: List[str] = ["## Mandatory Outputs (1/2/3)", ""]
+    lines.append("| # | Output | File | Status |")
+    lines.append("|---:|---|---|---|")
+    for number, label, path in (
+        (1, "BCG executive output", bcg_md),
+        (2, "Section lane summary table", ledger_md),
+        (3, "L7 audit ability output", run_dir / "agentic_core_l7_route_family_coverage.json"),
     ):
         lines.append(
-            f"| **{label}** | `{_repo_rel(path)}` | {_artifact_status(path, required=True)} |"
+            f"| `{number}` | **{label}** | {_codex_file_link(path.name, path)} | "
+            f"{_artifact_status(path, required=True)} |"
         )
     bcg_text = _load_text(bcg_md)
     if bcg_text:
@@ -379,10 +387,10 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     lines.append("")
     lines.append("## Locked Section Lane Summary Table")
     lines.append("")
-    lines.append("| # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |")
-    lines.append("|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    lines.append("| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |")
+    lines.append("|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     if not lane_table:
-        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
+        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
     for row in lane_table:
         if not isinstance(row, dict):
             continue
@@ -390,6 +398,7 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             "| "
             f"{row.get('order')} | "
             f"`{_sample_values([row.get('section')], limit=1)}` | "
+            f"`{row.get('research_source_class')}` | "
             f"`{row.get('r1a')}` | "
             f"`{row.get('r1b')}` | "
             f"`{row.get('lane_record')}` | "
@@ -1057,14 +1066,37 @@ def _render_quality_reports(run_report: Optional[Dict[str, Any]]) -> List[str]:
     return lines
 
 
-def _render_l7_certification(l7: Optional[Dict[str, Any]]) -> List[str]:
-    lines: List[str] = ["## L7 Route Family Certification", ""]
+def _render_l7_certification(l7: Optional[Dict[str, Any]], run_dir: Path) -> List[str]:
+    lines: List[str] = ["## 3. L7 Audit Ability Output", ""]
+    how_trace = _load_json(run_dir / "agentic_core_how_trace.json") or {}
+    spine_proof = _load_json(run_dir / "agentic_core_spine_proof.json") or {}
+    lines.append("| Artifact | Path | Status |")
+    lines.append("|---|---|---|")
+    for label, path in (
+        ("HOW trace", run_dir / "agentic_core_how_trace.json"),
+        ("Route-family coverage", run_dir / "agentic_core_l7_route_family_coverage.json"),
+        ("Spine proof", run_dir / "agentic_core_spine_proof.json"),
+    ):
+        lines.append(
+            f"| **{label}** | {_codex_file_link(path.name, path)} | "
+            f"{_artifact_status(path, required=label != 'Spine proof', optional_reason='supplemental spine proof')} |"
+        )
+    lines.append("")
     if not l7:
         lines.append("_agentic_core_l7_route_family_coverage.json not found._")
         lines.append("")
         return lines
     payload = l7.get("payload") if isinstance(l7.get("payload"), dict) else l7
     summary = payload.get("summary") or {}
+    how_payload = how_trace.get("payload") if isinstance(how_trace.get("payload"), dict) else how_trace
+    spine_payload = spine_proof.get("payload") if isinstance(spine_proof.get("payload"), dict) else spine_proof
+    lines.append("| Signal | Value |")
+    lines.append("|---|---|")
+    lines.append(f"| Evidence plane | `{payload.get('evidence_plane') or how_payload.get('evidence_plane') or 'L7_AUDITABILITY'}` |")
+    lines.append(f"| HOW trace class | `{how_payload.get('evidence_class') or how_payload.get('proof_class') or 'NOT_OBSERVED'}` |")
+    lines.append(f"| Spine proof class | `{spine_payload.get('evidence_class') or spine_payload.get('proof_class') or 'NOT_OBSERVED'}` |")
+    lines.append(f"| Certified route families | `{summary.get('certified', 0)} / {summary.get('total_families', 0)}` |")
+    lines.append("")
     lines.append(
         f"Certified: **{summary.get('certified', 0)} / {summary.get('total_families', 0)}** · "
         f"fixture-only: {summary.get('fixture_only', 0)} · "
@@ -1250,7 +1282,7 @@ def render(run_dir: Path) -> str:
     parts += _render_gate_failures(run_report)
     parts += _render_quality_reports(run_report)
     parts += _render_post_x3_completion(run_dir)
-    parts += _render_l7_certification(l7)
+    parts += _render_l7_certification(l7, run_dir)
     parts += _render_artifacts(run_dir, run_report)
     return "\n".join(parts).rstrip() + "\n"
 

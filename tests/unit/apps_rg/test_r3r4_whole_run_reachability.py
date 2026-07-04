@@ -64,7 +64,17 @@ def _write_authorized_apps_research_handoff(tmp_path: Path) -> tuple[Path, Path]
             "brief_sha256": brief_sha,
             "jd_sha256": jd_sha,
             "x1": {"gate_id": "X1_TARGETING_BRIEF_CONTRACT", "status": "PASS"},
-            "x2": {"gate_id": "X2_RESEARCH_SEMANTIC_GATE", "status": "PASS"},
+            "x2": {
+                "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
+                "status": "PASS",
+                "score": 0.91,
+                "threshold": 0.75,
+                "judge_name": "gemini_pro",
+                "judge_provider": "gemini_pro",
+                "judge_model": "gemini-3.1-pro-preview",
+                "model_backed": True,
+                "provider_status": "MODEL_BACKED_PASS",
+            },
             "x3": {
                 "gate_id": "X3_HANDOFF_AUTHORIZATION",
                 "status": "PASS",

@@ -14,7 +14,7 @@ approved_model_lanes:
   primary:
     lane_id: research_synthesis_primary
     provider: external_openai
-    model: gpt-5.4-mini
+    model: gpt-5.4-mini-2026-03-17
     
     capabilities:
       - json_mode

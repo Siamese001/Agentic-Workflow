@@ -62,7 +62,7 @@ BCG_OUTPUT_KEYS = ("title", "section_order", *BCG_LOCKED_SECTION_ORDER)
 SECTION_LANE_TABLE_COLUMNS = (
     "order",
     "section",
-    "apps_research_x1_x2_x3_gates",
+    "research_source_class",
     "r1a",
     "r1b",
     "lane_record",
@@ -105,6 +105,8 @@ BCG_EVIDENCE_MAP_ROW_KEYS = ("label", "path")
 BCG_NESTED_TABLE_KEYS = ("columns", "rows")
 SECTION_LANE_TABLE_KEYS = ("title", "columns", "rows")
 RESUME_DOCX_INLINE_KEYS = ("title", "source", "text")
+APPS_RESEARCH_PRIMARY_GENERATION_PROVIDER = "external_openai"
+APPS_RESEARCH_PRIMARY_GENERATION_MODEL = "gpt-5.4-mini-2026-03-17"
 
 
 def _utc_now() -> str:
@@ -668,6 +670,8 @@ def _apps_research_gate_context(
     x3_disposition = str(x3.get("disposition") or "NOT_OBSERVED")
     x2_score = _score_text(x2.get("score")) if x2.get("score") is not None else "NOT_OBSERVED"
     x2_judge_model = str(x2.get("judge_model") or "NOT_OBSERVED")
+    generation_provider = str(envelope.get("generation_provider") or "NOT_OBSERVED")
+    generation_model = str(envelope.get("generation_model") or "NOT_OBSERVED")
     handoff_eligible = (
         envelope.get("handoff_eligible") if isinstance(envelope, dict) else "NOT_OBSERVED"
     )
@@ -693,7 +697,52 @@ def _apps_research_gate_context(
         "x3_disposition": x3_disposition,
         "x2_judge_model": x2_judge_model,
         "x2_score": x2_score,
+        "generation_provider": generation_provider,
+        "generation_model": generation_model,
     }
+
+
+def _research_source_class(
+    *,
+    auto_research_internal: Any,
+    delegation_observed: Any,
+    briefing_present: bool,
+    research_via: str = "",
+) -> str:
+    via = str(research_via or "").strip().lower()
+    if delegation_observed is True:
+        return "FRESH_APPS_RESEARCH"
+    if via in {"skip", "operator_skip", "none"}:
+        return "OPERATOR_SKIP"
+    if briefing_present:
+        return "STATIC_MANUAL_BRIEF"
+    if auto_research_internal is True:
+        return "MISSING_APPS_RESEARCH"
+    return "NOT_OBSERVED"
+
+
+def _research_x2_cell(gates: dict[str, Any]) -> str:
+    status = str(gates.get("x2_status") or "NOT_OBSERVED")
+    if status == "NOT_OBSERVED":
+        reason = str(gates.get("reason") or "").strip()
+        return f"NOT_OBSERVED; blocker={reason}" if reason else "NOT_OBSERVED"
+    parts = [status]
+    score = str(gates.get("x2_score") or "").strip()
+    judge = str(gates.get("x2_judge_model") or "").strip()
+    if score and score != "NOT_OBSERVED":
+        parts.append(score)
+    if judge and judge != "NOT_OBSERVED":
+        parts.append(f"judge={judge}")
+    return "; ".join(parts)
+
+
+def _research_x3_cell(gates: dict[str, Any]) -> str:
+    disposition = str(gates.get("x3_disposition") or gates.get("x3_status") or "NOT_OBSERVED")
+    x1_status = str(gates.get("x1_status") or "NOT_OBSERVED")
+    if disposition == "NOT_OBSERVED":
+        reason = str(gates.get("reason") or "").strip()
+        return f"NOT_OBSERVED; blocker={reason}" if reason else "NOT_OBSERVED"
+    return f"{disposition}; X1={x1_status}"
 
 
 def _research_briefing_context(run_root: Path, *, repo_root: Path) -> dict[str, Any]:
@@ -711,6 +760,7 @@ def _research_briefing_context(run_root: Path, *, repo_root: Path) -> dict[str, 
         else "NOT_OBSERVED"
     )
     auto_research_internal = ingress.get("auto_research_internal", route_decision.get("research_delegation_enabled"))
+    research_via = _first_nonempty(ingress.get("research_via"), route_decision.get("research_via"))
     source = _first_nonempty(
         targeting.get("briefing_source"),
         briefing.get("source"),
@@ -750,6 +800,7 @@ def _research_briefing_context(run_root: Path, *, repo_root: Path) -> dict[str, 
     return {
         "auto_research_internal": auto_research_internal,
         "research_delegation_executed": delegation_observed,
+        "research_via": research_via,
         "source": source,
         "digest": digest,
         "ref": ref,
@@ -775,6 +826,14 @@ def _research_briefing_row(run_root: Path, *, repo_root: Path, cache: dict[str, 
     title = str(context.get("target_title") or "")
     briefing_present = bool(context.get("briefing_present"))
     gates = context.get("apps_research_gates") if isinstance(context.get("apps_research_gates"), dict) else {}
+    generation_provider = str(gates.get("generation_provider") or "").strip()
+    generation_model = str(gates.get("generation_model") or "").strip()
+    research_source_class = _research_source_class(
+        auto_research_internal=auto_research_internal,
+        delegation_observed=delegation_observed,
+        briefing_present=briefing_present,
+        research_via=str(context.get("research_via") or ""),
+    )
     p0_static_manual = auto_research_internal is True and delegation_observed is not True
     evidence_parts = [
         f"auto_research_internal={auto_research_internal}",
@@ -796,17 +855,25 @@ def _research_briefing_row(run_root: Path, *, repo_root: Path, cache: dict[str, 
     return {
         "order": 0,
         "section": "research_briefing_input",
-        "apps_research_x1_x2_x3_gates": str(gates.get("summary") or "NOT_OBSERVED"),
+        "research_source_class": research_source_class,
         "r1a": cache["r1a"],
         "r1b": cache["r1b"],
         "lane_record": "YES" if briefing_present else "NO",
         "provider_call_attempted": delegation_observed,
         "primary_provider": (
-            "apps_research"
+            generation_provider
+            if delegation_observed is True and generation_provider and generation_provider != "NOT_OBSERVED"
+            else APPS_RESEARCH_PRIMARY_GENERATION_PROVIDER
             if delegation_observed is True
             else "STATIC_MANUAL_BRIEF" if briefing_present else "NOT_OBSERVED"
         ),
-        "primary_model_observed": "NOT_OBSERVED",
+        "primary_model_observed": (
+            generation_model
+            if delegation_observed is True and generation_model and generation_model != "NOT_OBSERVED"
+            else APPS_RESEARCH_PRIMARY_GENERATION_MODEL
+            if delegation_observed is True
+            else "NOT_OBSERVED"
+        ),
         "pooling_selector_llm": "N/A",
         "secondary_provider": "N/A",
         "secondary_model_observed": "N/A",
@@ -818,11 +885,11 @@ def _research_briefing_row(run_root: Path, *, repo_root: Path, cache: dict[str, 
         "judges_run": "N/A",
         "judge_models_scores": "N/A",
         "judge_retry_fallback": "N/A",
-        "x2": str(gates.get("x2_status") or "NOT_OBSERVED"),
+        "x2": _research_x2_cell(gates),
         "x3": (
             "FAIL"
             if p0_static_manual or not briefing_present
-            else str(gates.get("x3_disposition") or gates.get("x3_status") or "PASS")
+            else _research_x3_cell(gates)
         ),
         "past_fail_blocker": "; ".join(evidence_parts),
         "display_output": ref or "MISSING",
@@ -1000,7 +1067,7 @@ def _build_section_lane_table(
             {
                 "order": idx,
                 "section": section_id,
-                "apps_research_x1_x2_x3_gates": "N/A",
+                "research_source_class": "N/A",
                 "r1a": cache["r1a"],
                 "r1b": cache["r1b"],
                 "lane_record": "YES" if record or section or provider_proof.get("has_lane_proof") else "NO",
@@ -1344,13 +1411,16 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
             "pass": (
                 row0.get("order") == 0
                 and row0.get("section") == "research_briefing_input"
-                and "handoff_observed=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
-                and "X1=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
-                and "X2=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
-                and "X3=" in str(row0.get("apps_research_x1_x2_x3_gates") or "")
+                and str(row0.get("research_source_class") or "") not in {"", "NOT_OBSERVED"}
+                and str(row0.get("x2") or "") not in {"", "NOT_OBSERVED"}
+                and str(row0.get("x3") or "") not in {"", "NOT_OBSERVED"}
             ),
-            "observed_value": row0.get("apps_research_x1_x2_x3_gates"),
-            "threshold": "row 0 apps_research handoff_observed + X1/X2/X3 gate summary",
+            "observed_value": {
+                "research_source_class": row0.get("research_source_class"),
+                "x2": row0.get("x2"),
+                "x3": row0.get("x3"),
+            },
+            "threshold": "row 0 research_source_class plus compact X2/X3 handoff cells",
         },
         {
             "gate_id": "mandatory_resume_docx_inline_json_present",
@@ -1917,7 +1987,7 @@ def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
     lines = [
         "## Section Lane Summary Table",
         "",
-        "| # | Section | apps_research X1/X2/X3 gates | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
+        "| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
         "|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     if not rows:
@@ -1928,7 +1998,7 @@ def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
             "| "
             f"{row.get('order')} | "
             f"`{_markdown_table_escape(row.get('section'))}` | "
-            f"`{_markdown_table_escape(row.get('apps_research_x1_x2_x3_gates'))}` | "
+            f"`{_markdown_table_escape(row.get('research_source_class'))}` | "
             f"`{_markdown_table_escape(row.get('r1a'))}` | "
             f"`{_markdown_table_escape(row.get('r1b'))}` | "
             f"`{_markdown_table_escape(row.get('lane_record'))}` | "
@@ -2026,6 +2096,22 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "gate_outcome": "No downstream lane without upstream authorization.",
             }
         )
+    blocked_generated_lanes = [
+        str(row.get("section") or "")
+        for row in lane_rows
+        if isinstance(row, dict)
+        and str(row.get("section") or "") != "research_briefing_input"
+        and str(row.get("x3") or "").startswith("X3_BLOCK")
+    ]
+    if blocked_generated_lanes:
+        rows.append(
+            {
+                "priority": "P0",
+                "recommendation": "Fix X3-blocked generated lanes before authorizing the final resume.",
+                "evidence": ", ".join(blocked_generated_lanes),
+                "gate_outcome": "Outcome remains blocked until every required generated lane clears X3.",
+            }
+        )
     if final_status != "PASS":
         rows.append(
             {
@@ -2056,12 +2142,22 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "gate_outcome": "Make failure RCA auditable.",
             }
         )
+    phase1_no_run_lanes = [
+        str(row.get("section") or "")
+        for row in lane_rows
+        if isinstance(row, dict)
+        and "PHASE1_NO_RUN_DIR" in str(row.get("x3") or row.get("past_fail_blocker") or "")
+    ]
     rows.extend(
         [
             {
                 "priority": "P1",
                 "recommendation": "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane.",
-                "evidence": "Downstream lanes report prior lane failed / missing run dir.",
+                "evidence": (
+                    "PHASE1_NO_RUN_DIR lanes: " + ", ".join(phase1_no_run_lanes)
+                    if phase1_no_run_lanes
+                    else "Downstream lanes report prior lane failed / missing run dir."
+                ),
                 "gate_outcome": "Show exact upstream repair order.",
             },
             {
@@ -2073,7 +2169,7 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
             {
                 "priority": "PX",
                 "recommendation": "Add research source class to the locked BCG and lane table.",
-                "evidence": str(research.get("primary_provider") or "NOT_OBSERVED"),
+                "evidence": str(research.get("research_source_class") or "NOT_OBSERVED"),
                 "gate_outcome": "Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP.",
             },
             {
@@ -2151,6 +2247,7 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         )
     board_rows = [
         {"question": "Did apps_research run?", "answer": "Yes" if research.get("provider_call_attempted") is True else "No"},
+        {"question": "Research source class", "answer": str(research.get("research_source_class") or "NOT_OBSERVED")},
         {"question": "Research input used", "answer": str(research.get("primary_provider") or "NOT_OBSERVED")},
         {"question": "Briefing evidence", "answer": str(research.get("past_fail_blocker") or "NOT_OBSERVED")},
         {"question": "Did resume generation run?", "answer": f"{counts['ran_real_llm']} REAL_LLM section(s)"},
