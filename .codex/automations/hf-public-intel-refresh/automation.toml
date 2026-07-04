@@ -1,0 +1,90 @@
+version = 1
+id = "weekly-hf-public-intel-refresh"
+kind = "cron"
+name = "Hugging Face Public Intelligence Refresh"
+prompt = '''
+Run the Agentic-Workflow Hugging Face public intelligence augmentation lane through Codex automation only.
+
+Mission:
+Pull public Hugging Face signal for agentic AI, evals, reliability, governance, RAG evaluation, observability, and enterprise runtime-control patterns, then produce repo-local markdown and JSON intelligence artifacts that can inform future apps_eval, L6 observability, L7 auditability, L5 safety, route-authority, and programmatic-tool-calling work.
+
+Source contract:
+- Use public Hugging Face metadata only: models, datasets, Spaces, and daily papers where the scanner can reach them.
+- Do not require or inject an HF token.
+- Do not download model weights.
+- Do not download datasets.
+- Do not call Hugging Face Jobs.
+- Do not create, restore, or depend on `.github/workflows/**` for this schedule.
+
+Primary command contract:
+Run from the repo root after startup gates and dependency installation:
+
+python -m pip install --upgrade pip
+python -m pip install huggingface_hub requests python-dateutil
+$env:SCAN_DAYS = "7"
+$env:TOP_N = "10"
+python scripts/hf_public_intel_scan.py
+
+Expected generated outputs:
+- docs/intelligence/huggingface/latest_agentic_public_signal.md
+- docs/intelligence/huggingface/archive/<date>.md
+- data/huggingface/latest_agentic_public_signal.json
+- data/huggingface/archive/<date>.json
+
+Codex automation contract:
+- This schedule is represented by this `.codex/automations/**/automation.toml` file, not by GitHub Actions.
+- Treat `.codex/automations/hf-public-intel-refresh/automation.toml` as the source-of-truth schedule contract.
+- Use branch `codex-hf-public-intel-automation` and worktree `C:\Git\Agentic-Workflow-FRESH-worktrees\codex-hf-public-intel-automation` for edit-capable scheduled runs.
+- Set `WORKTREE_IDE_OWNER=codex` before running repo edit-guard-sensitive work.
+- Start from a clean `origin/main` snapshot. If the primary checkout or durable worktree is dirty, classify the dirty files and stop before editing unless they are proven generated/disposable or preserved with an explicit branch/stash receipt.
+- Never write directly to main.
+- Never force-push.
+- Never squash.
+- Never silently overwrite generated archives from a previous run.
+
+Publication contract:
+- Commit only coherent changes produced by this automation under `data/huggingface/**` and `docs/intelligence/huggingface/**`, plus this automation contract if it is being intentionally revised.
+- Do not include unrelated source, governance, ADG, app, baseline, or local configuration changes.
+- Open or update a PR to `main` for review when generated outputs change.
+- If no output changes are produced, report NOOP with the scanner command, lookback window, and evidence that there was no diff.
+
+Review and validation:
+- Run `git diff --check` before committing.
+- If this automation contract or other `.codex/**` files changed, run `python scripts/governance/verify_codex_primary.py`.
+- Record the scanner exit code and changed files.
+- The final report must include branch, PR URL if created or updated, generated output paths, validation commands, and whether the schedule remained Codex-only.
+
+Closeout semantics:
+- ALLOW_TO_PR: scanner ran, output diff is scoped, validation passed, and a PR was opened or updated.
+- NOOP: scanner ran successfully and produced no repo diff.
+- BLOCK: startup gates, dependency install, scanner execution, validation, or publication failed.
+- ESCALATE_HUMAN: changing source terms, ranking policy, output destinations, or publication semantics requires owner judgment.
+'''
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=8;BYMINUTE=0;BYDAY=FR"
+model = "gpt-5.5"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-hf-public-intel-automation"]
+created_at = 1783162800000
+updated_at = 1783162800000
+
+[source]
+provider = "huggingface"
+visibility = "public"
+requires_token = false
+uses_huggingface_jobs = false
+
+[outputs]
+latest_markdown = "docs/intelligence/huggingface/latest_agentic_public_signal.md"
+latest_json = "data/huggingface/latest_agentic_public_signal.json"
+archive_markdown_glob = "docs/intelligence/huggingface/archive/*.md"
+archive_json_glob = "data/huggingface/archive/*.json"
+
+[publication]
+branch = "codex-hf-public-intel-automation"
+worktree = "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-hf-public-intel-automation"
+mode = "pull_request"
+allow_direct_main_push = false
+allowed_path_prefixes = ["data/huggingface/", "docs/intelligence/huggingface/", ".codex/automations/hf-public-intel-refresh/"]
+forbidden_path_prefixes = [".github/workflows/"]
