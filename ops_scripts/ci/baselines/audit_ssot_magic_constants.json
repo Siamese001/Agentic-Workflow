@@ -1,6 +1,6 @@
 {
   "gate_id": "AUDIT_1_ssot_magic_constants",
   "count": 88,
-  "seeded_at": "2026-07-04T04:37:43.223253+00:00",
-  "snapshot": "adg_indexed_07042026_0028.sqlite"
+  "seeded_at": "2026-07-04T14:18:55.462285+00:00",
+  "snapshot": "adg_indexed_07042026_1013.sqlite"
 }

@@ -12,9 +12,9 @@ ADG Run Metrics
 
 | Metric | Value |
 |---|---|
-| Run ID | 07042026_0851 |
-| Snapshot | 2026-07-04T12:57:12.684969+00:00 |
-| SQLite snapshot | artifacts/adg/adg_indexed_07042026_0851.sqlite |
+| Run ID | 07042026_1025 |
+| Snapshot | 2026-07-04T14:31:05.273609+00:00 |
+| SQLite snapshot | artifacts/adg/adg_indexed_07042026_1025.sqlite |
 | Audit caveat | REPORT_INCONSISTENT; report consistency=FAIL |
 | FIX gates (all bands) | 0 |
 | Live P0 gate drivers | 0 |
@@ -31,8 +31,8 @@ P0-P3 Severity Inventory
 |---|---|---|---|---|---|
 | P0 | 35 | 32 | 3 | 200 | 0 |
 | P1 | 1,147 | 1,143 | 4 | n/a | 0 |
-| P2 | 748 | 716 | 32 | n/a | 0 |
-| P3 | 19,265 | 87 | 19,178 | n/a | 0 |
+| P2 | 747 | 716 | 31 | n/a | 0 |
+| P3 | 19,271 | 87 | 19,184 | n/a | 0 |
 
 ### Recommended Next Steps
 
@@ -44,6 +44,6 @@ P0-P3 Severity Inventory
 | 4 | Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing. | runtime_spine=present_failing. | Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision. |
 | 5 | Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py. Add mapped tests before touching this surface again. | Add mapped tests/regression coverage for agentic_core. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 6 | After P0 is green and mapped tests are decided, open a scoped refactor/test slice for agentic_core/adg/extraction/static_scanner.py only if ADG still flags it or the P0 fix touches it. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 7 | Burn down ratchet C3_silent_writes_ratchet. Burn down the ratchet after the current red gates clear. | 2,061 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 7 | Burn down ratchet C3_silent_writes_ratchet. Burn down the ratchet after the current red gates clear. | 2,062 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 8 | Do not open a separate product/app workstream; validate app-owned wiring only if the P0 adapter fix touches it. | No app-specific product gap was promoted in this run; app risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row. | Touched app wiring has targeted validation, or no app-owned surface was touched. |
 | 9 | Keep deletion/deprecation cleanup after P0, report consistency, and runtime proof are green unless cleanup blocks the P0 fix. | ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics. | Cleanup is scheduled as a separate after-green wave or explicitly tied to the P0 fix. |
