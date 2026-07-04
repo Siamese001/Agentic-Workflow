@@ -599,6 +599,38 @@ def test_registered_worktree_accepts_canonical_repo_cwd(
     assert not any(issue.code == "automation_cwd" for issue in issues)
 
 
+def test_registered_worktree_accepts_primary_root_user_profile_projection(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    worktree = _valid_root(tmp_path / "repo-worktree")
+    primary = _valid_root(tmp_path / "repo-primary")
+    user_codex_home = tmp_path / "user-codex"
+    monkeypatch.setattr(mod, "_git_common_repo_root", lambda root: primary)
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(primary, "adg-p0-blocker-burndown"))
+
+    issues = mod.validate(worktree, user_codex_home)
+
+    assert not any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_registered_worktree_rejects_primary_root_projection_digest_drift(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    worktree = _valid_root(tmp_path / "repo-worktree")
+    primary = _valid_root(tmp_path / "repo-primary")
+    user_codex_home = tmp_path / "user-codex"
+    monkeypatch.setattr(mod, "_git_common_repo_root", lambda root: primary)
+    launcher = user_codex_home / "automations" / "adg-p0-blocker-burndown" / "automation.toml"
+    _write(launcher, _projection_toml(primary, "adg-p0-blocker-burndown", contract_sha256="stale"))
+
+    issues = mod.validate(worktree, user_codex_home)
+
+    assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
 def test_adg_handoff_graph_requires_producer_to_unblock_p0(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = mod._automation_path(root, "weekly-adg-audit-and-burndown")

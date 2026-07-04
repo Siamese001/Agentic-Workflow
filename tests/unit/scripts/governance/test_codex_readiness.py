@@ -72,6 +72,27 @@ def test_required_route_failure_detail_is_actionable_for_missing_host_route() ->
     assert "CODEX_MCP_CALLABLE_GITKRAKEN=healthy" in detail["unblock"]
 
 
+def test_required_route_failure_detail_for_closed_transport_has_reconnect_rca() -> None:
+    report = _transport_report({"adg_sqlite": "EXPOSED_BLOCKED"})
+    report["route_evidence"]["servers"]["adg_sqlite"] = {
+        "classification": "EXPOSED_BLOCKED",
+        "callable_status": "closed_transport",
+        "fallback_message_key": "closed_transport",
+        "process_classification": "single",
+        "process_count": 1,
+    }
+
+    check = mod._check_required_routes(report, ["adg_sqlite"])[0]
+    detail = json.loads(check.detail)
+
+    assert check.status == "FAIL"
+    assert detail["transport_rca"]["shell_reopen_supported"] is False
+    assert "stdio" in detail["transport_rca"]["root_cause"]
+    assert detail["transport_rca"]["fix_or_next"].startswith("next:")
+    assert "host/TUI MCP" in detail["transport_rca"]["fix_or_next"]
+    assert "Do not kill Codex-owned duplicate processes" in detail["transport_rca"]["unsafe_action"]
+
+
 def test_required_route_accepts_callable() -> None:
     checks = mod._check_required_routes(_transport_report({"memory": "CALLABLE"}), ["memory"])
 
@@ -524,6 +545,10 @@ def test_adg_transport_check_fails_when_callability_unproven(
     assert check.id == "mcp.adg_sqlite.transport"
     assert "callability_unproven" in check.detail
     assert "call mcp__adg_sqlite.adg_health" in check.detail
+    detail = json.loads(check.detail)
+    assert detail["transport_rca"]["shell_reopen_supported"] is False
+    assert detail["transport_rca"]["fix_or_next"].startswith("next:")
+    assert "mcp__adg_sqlite.adg_health" in detail["transport_rca"]["proof_command"]
 
 
 def test_searxng_check_passes_when_report_ready(monkeypatch) -> None:

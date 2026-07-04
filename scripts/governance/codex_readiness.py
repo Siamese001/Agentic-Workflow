@@ -382,7 +382,49 @@ def _route_failure_detail(server_id: str, state: dict[str, Any]) -> str:
         f"or set CODEX_MCP_CALLABLE_{server_id.upper()}=healthy only after that API-level proof. "
         "If Codex Desktop exposes no callable API for this server in this session, keep this check failing."
     )
+    if _state_is_closed_transport(state):
+        detail["transport_rca"] = _closed_transport_rca(server_id, state)
     return json.dumps(detail, sort_keys=True)
+
+
+def _state_is_closed_transport(state: dict[str, Any]) -> bool:
+    return (
+        str(state.get("callable_status") or "").strip().lower() == "closed_transport"
+        or str(state.get("fallback_message_key") or "").strip().lower() == "closed_transport"
+        or str(state.get("classification") or "").strip().upper() == "EXPOSED_BLOCKED"
+    )
+
+
+def _closed_transport_rca(server_id: str, evidence: dict[str, Any] | None = None) -> dict[str, Any]:
+    tool_name = "mcp__adg_sqlite.adg_health" if server_id == "adg_sqlite" else f"mcp__{server_id}.<health_or_info_tool>"
+    return {
+        "symptom": f"{server_id} MCP route is exposed or expected but is not callable in the active Codex session.",
+        "root_cause": (
+            "Codex owns the MCP stdio subprocess and JSON-RPC pipes for this session. "
+            "When that active transport is closed or unproven, starting another server process from a shell "
+            "cannot reattach Codex to the closed stdio handle."
+        ),
+        "shell_reopen_supported": False,
+        "operator_recovery": (
+            "Use Codex host/TUI MCP management, such as /mcp or the app server list when available, "
+            "to restart or reconnect only this MCP server."
+        ),
+        "proof_command": tool_name,
+        "fix_or_next": (
+            "next:use Codex host/TUI MCP management to restart or reconnect this server, "
+            f"then prove a live {tool_name} call in the active Codex session before setting any "
+            f"CODEX_MCP_CALLABLE_{server_id.upper()} override."
+        ),
+        "unsafe_action": (
+            "Do not kill Codex-owned duplicate processes or launch replacement stdio servers without "
+            "attached PID proof from the active host."
+        ),
+        "recurrence_guard": (
+            "Keep process liveness, protocol initialize/tools-list probes, and direct SQLite fallback "
+            "separate from active-session MCP callability."
+        ),
+        "evidence": evidence or {},
+    }
 
 
 def _check_vector_semantic_guard(required_routes: Sequence[str]) -> ReadinessCheck | None:
@@ -476,6 +518,8 @@ def _adg_transport_failure_detail(result: dict[str, Any]) -> str:
             "session_match": file_proof.get("session_match"),
             "tool": file_proof.get("tool"),
         }
+    evidence_snapshot = dict(detail)
+    detail["transport_rca"] = _closed_transport_rca("adg_sqlite", evidence_snapshot)
     return json.dumps(detail, sort_keys=True)
 
 
