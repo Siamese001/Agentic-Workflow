@@ -27,9 +27,9 @@ The substrate is shared; no app re-implements routing, retrieval, or governance.
 
 ### Formal exception framework
 
-Two apps cannot adopt the substrate for structural reasons.  
-Instead of silent bypasses, both have `FormalExceptionEntry` records with:
-- Machine-readable reason codes (`CIRCULAR_DEPENDENCY`, `REGULATORY_DOMAIN`)
+Five apps currently cannot adopt the generic substrate directly.
+Instead of silent bypasses, they have `FormalExceptionEntry` records with:
+- Machine-readable reason codes (`CIRCULAR_DEPENDENCY`, `REGULATORY_DOMAIN`, `PENDING_MIGRATION`)
 - Declared blocked/safe layers
 - Compensating controls verified by the conformance gate at CI time
 - Dedicated partial-adoption handlers
@@ -43,14 +43,15 @@ Instead of silent bypasses, both have `FormalExceptionEntry` records with:
 | Shared runtime loop (L1→L0→C0→L2→L5→L6) | ✅ COMPLETE | `apps_shared/integrations/governed_app_runner.py` |
 | Governed app: apps_research | ✅ GOVERNED | `apps_research/integrations/governed_research_run.py` |
 | Governed app: apps_exec | ✅ GOVERNED | `apps_exec/integrations/governed_exec_run.py` |
-| Governed app: apps_rfp | ✅ GOVERNED | `apps_rfp/integrations/governed_rfp_run.py` |
-| Governed app: apps_rg | ✅ GOVERNED | `apps_rg/integrations/governed_rg_run.py` |
-| Governed app: apps_lic | ✅ GOVERNED | `apps_lic/integrations/governed_lic_run.py` |
+| Governed app: apps_rg | ✅ GOVERNED | `agentic_core/runtime/entry/apps_rg_dispatch.py` |
+| Formal exception: apps_architect | ✅ FORMALIZED | `apps_architect/integrations/governed_architect_exception.py` |
 | Formal exception: apps_eval | ✅ FORMALIZED | `apps_eval/integrations/governed_eval_exception.py` |
+| Formal exception: apps_lic | ✅ FORMALIZED | `apps_lic/integrations/governed_lic_exception.py` |
+| Formal exception: apps_qna | ✅ FORMALIZED | `apps_qna/integrations/governed_qna_exception.py` |
 | Formal exception: apps_underwriting_ai | ✅ FORMALIZED | `apps_underwriting_ai/integrations/governed_uw_exception.py` |
 | App registry | ✅ COMPLETE | `apps_shared/integrations/app_registry.py` — 0 ad hoc statuses |
-| Conformance gate (CONF+EXCF) | ✅ GREEN | 36/36 PASS |
-| Behavioral proof harness | ✅ GREEN | ~80 checks — penta + eval/uw exceptions |
+| Conformance gate (CONF+EXCF) | ✅ GREEN | 52/52 PASS |
+| Behavioral proof harness | ✅ GREEN | Governed apps + formal exception controls |
 | Regression baseline | ✅ GREEN | RC01-RC12 PASS |
 | Release gate (one command) | ✅ OPERATIONAL | `ops_scripts/ci/run_architecture_proof.py` |
 | Architecture proof artifact | ✅ COMPLETE | `docs/architecture/architecture-proof-pack.md` |
@@ -63,15 +64,15 @@ Instead of silent bypasses, both have `FormalExceptionEntry` records with:
 
 | Suite | Command | Checks | Status |
 |---|---|---|---|
-| S1 — Conformance Gate | `ops_scripts/ci/check_governed_app_conformance.py` | 36 (CONF01-08, EXCF01-08) | ✅ PASS |
-| S2 — Exception Framework | `tools/eval/retrieval_benchmark.py --exception-framework-proof` | ~80 (penta + EVAL01-10 + UW01-10) | ✅ PASS |
+| S1 — Conformance Gate | `ops_scripts/ci/check_governed_app_conformance.py` | 52 (CONF01-08, EXCF01-08) | ✅ PASS |
+| S2 — Exception Framework | `tools/eval/retrieval_benchmark.py --exception-framework-proof` | Governed apps + exception controls | ✅ PASS |
 | S3 — Regression | `tools/eval/retrieval_benchmark.py --regression-check` | 12 (RC01-12) | ✅ PASS |
 
 ### Targeted proof commands
 
 | Command | App / Scope |
 |---|---|
-| `--penta-app-proof` | All 5 governed apps E2E |
+| `--penta-app-proof` | Historical grouped proof; prefer `--exception-framework-proof` for current registry status |
 | `--eval-exception-proof` | apps_eval formal exception (EVAL01-10) |
 | `--uw-exception-proof` | apps_underwriting_ai formal exception (UW01-10) |
 | `--rg-pilot-proof` | apps_rg standalone (RG01-12) |
@@ -89,7 +90,7 @@ Instead of silent bypasses, both have `FormalExceptionEntry` records with:
 | GAP-01 | LOW | No live vector collections in proof environment → C0 degrades to abstain | No | Deployment team |
 | GAP-02 | LOW | `ClockProvider` kwargs mismatch → L0 graceful fallback | No | Platform team |
 | GAP-03 | LOW | `SovereignLLMGateway` `artifact` arg mismatch → logged, not fatal | No | Platform team |
-| GAP-04 | MEDIUM | No dedicated pytest unit tests for 5 new governed runners + 2 exception handlers | No | Platform team (next sprint) |
+| GAP-04 | MEDIUM | Keep proof-runner summary prose aligned with current registry counts | No | Platform team |
 | GAP-05 | LOW | `ExceptionAppEntry` still exported from registry (backward compat, zero consumers) | No | Platform team (confirm via ADG fan-in) |
 
 Full descriptions and recommended next owners: `docs/architecture/RELEASE_READINESS.md`
@@ -133,8 +134,8 @@ python tools/eval/retrieval_benchmark.py --exception-framework-proof
 
 > **✅ CLOSED — GREEN WITH TRACKED KNOWN GAPS**
 >
-> Five apps governed. Two exceptions formalized. One conformance gate (36/36 PASS).  
-> One release gate (S1+S2+S3, ~17s, exit 0). Zero ad hoc exception statuses.  
+> Three apps governed. Five exceptions formalized. One conformance gate (52/52 PASS).
+> One release gate composes S1+S2+S3. Zero ad hoc exception statuses.
 > All known gaps tracked, non-blocking, and assigned to next owner.
 >
-> The repo is reviewer-ready and release-ready.
+> The registry evidence is reviewer-ready; release decisions remain gated by current command output.
