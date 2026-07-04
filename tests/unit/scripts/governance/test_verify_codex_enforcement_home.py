@@ -639,7 +639,7 @@ def test_adg_handoff_contract_rejects_relative_consumer_pointer(tmp_path: Path) 
             "adg-p0-blocker-burndown",
             _adg_p0_prompt(),
             root,
-            receipt_path="docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json",
+            receipt_path="artifacts/adg/handoffs/adg_audit_pipeline_receipt_<run_id>.json",
             handoff_pointer_path="artifacts/adg/handoffs/adg_repair_handoff_latest.json",
             validator=(
                 "python tools/adg/consume_adg_repair_handoff.py "

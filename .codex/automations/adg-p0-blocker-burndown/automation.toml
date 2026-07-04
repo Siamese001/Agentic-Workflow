@@ -17,6 +17,7 @@ Generate-full-ADG dependency gate:
   python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json
 - Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
 - The validator must resolve the producer-root latest pointer to an immutable timestamped handoff, then verify the receipt SHA, run ID, and artifact digests before the lane may edit.
+- If the validator exits non-zero with dependency_status=dependency_not_ready, stop as DEPENDENCY_NOT_READY and name the upstream generate_full_adg run state instead of regenerating full ADG inside this lane.
 - Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and before this downstream lane starts editing.
 - If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, or not direct, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
 - Never consume overwritten latest files as source of truth when timestamped artifacts exist.
@@ -105,7 +106,7 @@ lane = "p0_blocker_burndown"
 role = "consumer"
 order = 1
 producer_id = "weekly-adg-audit-and-burndown"
-receipt_path = "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\AUDIT_PIPELINE_RECEIPT.json"
+receipt_path = "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_audit_pipeline_receipt_<run_id>.json"
 handoff_pointer_path = "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json"
 producer_repo_root = "C:\\Git\\Agentic-Workflow-FRESH"
 handoff_pointer_base = "producer_repo_root"

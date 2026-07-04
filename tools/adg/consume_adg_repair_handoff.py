@@ -22,6 +22,14 @@ from tools.adg.run_full_adg_audit import (  # noqa: E402
 )
 
 
+def _dependency_status(*, pointer_mode: bool, errors: list[str]) -> str:
+    if not errors:
+        return "ready"
+    if pointer_mode:
+        return "dependency_not_ready"
+    return "receipt_not_ready"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group()
@@ -48,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "ok": not errors,
         source_key: str(source_path.resolve()),
+        "dependency_status": _dependency_status(pointer_mode=bool(args.handoff_pointer), errors=errors),
         "artifact_status": receipt.get("artifact_status") if receipt else None,
         "adg_run_id": receipt.get("adg_run_id") if receipt else None,
         "counts": counts,

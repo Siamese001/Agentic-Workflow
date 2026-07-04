@@ -227,7 +227,9 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
 ADG_HANDOFF_PRODUCER_ROOT = str(EXPECTED_REPO)
 ADG_HANDOFF_POINTER_BASE = "producer_repo_root"
-ADG_HANDOFF_RECEIPT_PATH = rf"{ADG_HANDOFF_PRODUCER_ROOT}\docs\reports\adg\AUDIT_PIPELINE_RECEIPT.json"
+ADG_HANDOFF_RECEIPT_PATH = (
+    rf"{ADG_HANDOFF_PRODUCER_ROOT}\artifacts\adg\handoffs\adg_audit_pipeline_receipt_<run_id>.json"
+)
 ADG_HANDOFF_POINTER_PATH = rf"{ADG_HANDOFF_PRODUCER_ROOT}\artifacts\adg\handoffs\adg_repair_handoff_latest.json"
 ADG_HANDOFF_VALIDATOR = (
     "python tools/adg/consume_adg_repair_handoff.py "

@@ -1224,16 +1224,26 @@ def _handoff_paths(adg_run_id: str) -> tuple[Path, Path]:
     )
 
 
-def _write_repair_handoff_pointer(result: WrapperResult, receipt_sha256: str) -> None:
+def _immutable_receipt_path(adg_run_id: str) -> Path:
+    return ARTIFACTS_ADG / "handoffs" / f"adg_audit_pipeline_receipt_{adg_run_id}.json"
+
+
+def _write_repair_handoff_pointer(
+    result: WrapperResult,
+    *,
+    receipt_path: Path,
+    receipt_sha256: str,
+) -> None:
     if not result.adg_run_id:
         return
     handoff_path, latest_pointer_path = _handoff_paths(result.adg_run_id)
     handoff_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt_resolved = receipt_path.resolve()
     handoff_doc = {
         "schema_version": REPAIR_HANDOFF_SCHEMA_VERSION,
         "adg_run_id": result.adg_run_id,
         "receipt": {
-            "path": str(RECEIPT_PATH.resolve()),
+            "path": str(receipt_resolved),
             "sha256": receipt_sha256,
         },
         "artifact_status": result.artifact_status,
@@ -1250,7 +1260,7 @@ def _write_repair_handoff_pointer(result: WrapperResult, receipt_sha256: str) ->
         "adg_run_id": result.adg_run_id,
         "handoff_path": str(handoff_path.resolve()),
         "handoff_sha256": handoff_sha256,
-        "receipt_path": str(RECEIPT_PATH.resolve()),
+        "receipt_path": str(receipt_resolved),
         "receipt_sha256": receipt_sha256,
         "artifact_status": result.artifact_status,
         "downstream_release_status": _downstream_release_status(result),
@@ -1281,8 +1291,17 @@ def _write_receipt(result: WrapperResult) -> None:
         "completed_at_utc": result.completed_at_utc,
         "repair_handoff": result.repair_handoff or _default_incomplete_handoff(),
     }
-    RECEIPT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    _write_repair_handoff_pointer(result, _sha256(RECEIPT_PATH))
+    receipt_text = json.dumps(payload, indent=2) + "\n"
+    RECEIPT_PATH.write_text(receipt_text, encoding="utf-8")
+    if result.adg_run_id:
+        immutable_receipt = _immutable_receipt_path(result.adg_run_id)
+        immutable_receipt.parent.mkdir(parents=True, exist_ok=True)
+        immutable_receipt.write_text(receipt_text, encoding="utf-8")
+        _write_repair_handoff_pointer(
+            result,
+            receipt_path=immutable_receipt,
+            receipt_sha256=_sha256(immutable_receipt),
+        )
     try:
         display = RECEIPT_PATH.relative_to(REPO_ROOT)
     except ValueError:
