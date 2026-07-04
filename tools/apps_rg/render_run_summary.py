@@ -46,6 +46,9 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_JSON,
+    L7_AUDIT_ABILITY_OUTPUT_MD,
+    LEGACY_APPS_RG_MANDATORY_RUN_OUTPUT_MD,
+    LEGACY_BCG_EXECUTIVE_OUTPUT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
 from apps_rg.runtime.section_display_labels import summary_section_label
@@ -291,8 +294,15 @@ def _render_whole_run_cache_preflight(run_dir: Path) -> List[str]:
 
 def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     ledger_path = run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_JSON
-    ledger_md = run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_MD
-    bcg_md = run_dir / BCG_EXECUTIVE_OUTPUT_MD
+    ledger_md = _first_existing_path(
+        run_dir,
+        [Path(APPS_RG_MANDATORY_RUN_OUTPUT_MD), Path(LEGACY_APPS_RG_MANDATORY_RUN_OUTPUT_MD)],
+    )
+    bcg_md = _first_existing_path(
+        run_dir,
+        [Path(BCG_EXECUTIVE_OUTPUT_MD), Path(LEGACY_BCG_EXECUTIVE_OUTPUT_MD)],
+    )
+    l7_audit_md = run_dir / L7_AUDIT_ABILITY_OUTPUT_MD
     ledger = _load_json(ledger_path) or {}
     lines: List[str] = ["## Mandatory Outputs (1/2/3)", ""]
     lines.append("| # | Output | File | Status |")
@@ -300,7 +310,7 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     for number, label, path in (
         (1, "BCG executive output", bcg_md),
         (2, "Section lane summary table", ledger_md),
-        (3, "L7 audit ability output", run_dir / "agentic_core_l7_route_family_coverage.json"),
+        (3, "L7 audit ability output", l7_audit_md),
     ):
         lines.append(
             f"| `{number}` | **{label}** | {_codex_file_link(path.name, path)} | "
@@ -1118,6 +1128,12 @@ def _render_l7_certification(l7: Optional[Dict[str, Any]], run_dir: Path) -> Lis
     return lines
 
 
+def _write_l7_audit_ability_output(l7: Optional[Dict[str, Any]], run_dir: Path) -> Path:
+    path = run_dir / L7_AUDIT_ABILITY_OUTPUT_MD
+    path.write_text("\n".join(_render_l7_certification(l7, run_dir)).rstrip() + "\n", encoding="utf-8")
+    return path
+
+
 def _render_post_x3_completion(run_dir: Path) -> List[str]:
     receipt = _load_json(run_dir / "apps_rg_post_x3_completion_receipt.json")
     if not receipt:
@@ -1265,6 +1281,7 @@ def render(run_dir: Path) -> str:
     identity = _load_json(run_dir / "runtime_identity_envelope.json")
     terminal = _load_json(run_dir / "terminal_ret_packet.json")
     l7 = _load_json(run_dir / "agentic_core_l7_route_family_coverage.json")
+    _write_l7_audit_ability_output(l7, run_dir)
 
     title = f"# apps_rg Run Summary — `{run_dir.name}`"
     rendered_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

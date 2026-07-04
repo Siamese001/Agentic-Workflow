@@ -1,9 +1,9 @@
 """Mandatory apps_rg run outputs.
 
-Every apps_rg run must leave two human-facing artifacts:
+Every apps_rg run must leave numbered human-facing artifacts:
 
-* ``APPS_RG_MANDATORY_RUN_OUTPUT.md`` - operational ledger of what ran.
-* ``BCG_EXECUTIVE_OUTPUT.md`` - decision-oriented RCA and implementation plan.
+* ``01_BCG_executive_output.md`` - decision-oriented RCA and implementation plan.
+* ``02_section_lane_summary_table.md`` - operational ledger of what ran.
 
 The emitter is intentionally data-driven from run artifacts so failed runs still
 produce useful output.

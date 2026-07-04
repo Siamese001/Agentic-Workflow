@@ -20,6 +20,9 @@ HOOK_NAME = "stop_apps_rg_inline_evidence_gate"
 MANDATORY_JSON = "APPS_RG_MANDATORY_RUN_OUTPUT.json"
 MANDATORY_FILE_NAMES = {
     MANDATORY_JSON,
+    "01_BCG_executive_output.md",
+    "02_section_lane_summary_table.md",
+    "03_L7_audit_ability_output.md",
     "APPS_RG_MANDATORY_RUN_OUTPUT.md",
     "BCG_EXECUTIVE_OUTPUT.md",
     "FINAL_RESUME_OUTPUT.txt",
@@ -38,8 +41,10 @@ MAX_TRANSCRIPT_CONTEXT_CHARS = 4_000_000
 _RUN_ROOT_RE = re.compile(r"Run root:\s*`?@?(?P<path>[^`\n]+)`?", re.IGNORECASE)
 _MANDATORY_PATH_RE = re.compile(
     r"(?P<path>(?:[A-Za-z]:)?[^`'\"\s|<>\]]*"
-    r"(?:APPS_RG_MANDATORY_RUN_OUTPUT\.json|APPS_RG_MANDATORY_RUN_OUTPUT\.md|"
-    r"BCG_EXECUTIVE_OUTPUT\.md|FINAL_RESUME_OUTPUT\.txt|FINAL_RESUME_OUTPUT\.json|"
+    r"(?:APPS_RG_MANDATORY_RUN_OUTPUT\.json|02_section_lane_summary_table\.md|"
+    r"01_BCG_executive_output\.md|03_L7_audit_ability_output\.md|"
+    r"APPS_RG_MANDATORY_RUN_OUTPUT\.md|BCG_EXECUTIVE_OUTPUT\.md|"
+    r"FINAL_RESUME_OUTPUT\.txt|FINAL_RESUME_OUTPUT\.json|"
     r"RUN_SUMMARY_RENDERED\.md))",
     re.IGNORECASE,
 )
@@ -74,6 +79,9 @@ def _appears_to_close_apps_rg_run(text: str) -> bool:
         return True
     hard_tokens = (
         "apps_rg_mandatory_run_output",
+        "01_bcg_executive_output.md",
+        "02_section_lane_summary_table.md",
+        "03_l7_audit_ability_output.md",
         "bcg_executive_output.md",
         "final_resume_output",
         "run_summary_rendered.md",

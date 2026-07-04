@@ -349,8 +349,8 @@ def test_whole_run_custom_artifact_dir_emits_output_gates(monkeypatch: pytest.Mo
         lambda run_root, **kwargs: mandatory_calls.append(Path(run_root))
         or {
             "json_path": Path(run_root) / "APPS_RG_MANDATORY_RUN_OUTPUT.json",
-            "markdown_path": Path(run_root) / "APPS_RG_MANDATORY_RUN_OUTPUT.md",
-            "bcg_markdown_path": Path(run_root) / "BCG_EXECUTIVE_OUTPUT.md",
+            "markdown_path": Path(run_root) / "02_section_lane_summary_table.md",
+            "bcg_markdown_path": Path(run_root) / "01_BCG_executive_output.md",
         },
     )
     monkeypatch.setattr(
@@ -384,7 +384,7 @@ def test_whole_run_custom_artifact_dir_emits_output_gates(monkeypatch: pytest.Mo
     assert status_calls == [art]
     assert mandatory_calls == [art]
     assert review_calls == [art]
-    assert result["bcg_executive_output_md"].endswith("BCG_EXECUTIVE_OUTPUT.md")
+    assert result["bcg_executive_output_md"].endswith("01_BCG_executive_output.md")
 
 
 def test_whole_run_fails_when_exec_summary_judge_not_certified(
