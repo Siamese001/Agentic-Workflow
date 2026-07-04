@@ -28,6 +28,7 @@ from apps_rg.runtime.full_run_section_status import (
     LaneSectionStatusRow,
     collect_full_run_section_status,
 )
+from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
@@ -874,6 +875,90 @@ def _secondary_provider_cell(record: dict[str, Any]) -> str:
     return provider or "NOT_OBSERVED"
 
 
+def _section_lane_abs_dir(section: dict[str, Any], *, repo_root: Path) -> Path | None:
+    lane_dir = str(section.get("lane_dir") or "").strip()
+    if lane_dir:
+        path = Path(lane_dir)
+        return path if path.is_absolute() else repo_root / path
+    display = str(section.get("display_txt_path") or "").strip()
+    if display:
+        return Path(display).parent
+    return None
+
+
+def _lane_provider_proof(section: dict[str, Any], *, repo_root: Path) -> dict[str, Any]:
+    lane_dir = _section_lane_abs_dir(section, repo_root=repo_root)
+    if lane_dir is None:
+        return {}
+    provider_request = _load_json(lane_dir / "provider_request.json")
+    provider_response = _load_json(lane_dir / "provider_response.json")
+    run_manifest = _load_json(lane_dir / "run_manifest.json")
+    l2_output = _load_json(lane_dir / "l2_output.json")
+    return {
+        "provider_request": provider_request,
+        "provider_response": provider_response,
+        "run_manifest": run_manifest,
+        "l2_output": l2_output,
+        "has_lane_proof": any((provider_request, provider_response, run_manifest, l2_output)),
+    }
+
+
+def _lane_provider_attempted(record: dict[str, Any], proof: dict[str, Any]) -> Any:
+    request = proof.get("provider_request") if isinstance(proof.get("provider_request"), dict) else {}
+    if "provider_attempted" in request:
+        return request.get("provider_attempted")
+    if request.get("provider_requested") or request.get("model"):
+        return True
+    if "provider_call_attempted" in record:
+        return record.get("provider_call_attempted")
+    return "NOT_OBSERVED"
+
+
+def _lane_primary_provider(record: dict[str, Any], proof: dict[str, Any]) -> str:
+    request = proof.get("provider_request") if isinstance(proof.get("provider_request"), dict) else {}
+    response = proof.get("provider_response") if isinstance(proof.get("provider_response"), dict) else {}
+    l2_output = proof.get("l2_output") if isinstance(proof.get("l2_output"), dict) else {}
+    return _first_nonempty(
+        request.get("provider_requested"),
+        response.get("provider_requested"),
+        response.get("provider"),
+        l2_output.get("provider_requested"),
+        record.get("provider_profile"),
+    ) or "NOT_OBSERVED"
+
+
+def _lane_primary_model(record: dict[str, Any], proof: dict[str, Any]) -> str:
+    request = proof.get("provider_request") if isinstance(proof.get("provider_request"), dict) else {}
+    response = proof.get("provider_response") if isinstance(proof.get("provider_response"), dict) else {}
+    l2_output = proof.get("l2_output") if isinstance(proof.get("l2_output"), dict) else {}
+    return _first_nonempty(
+        record.get("model_id"),
+        response.get("model_id"),
+        response.get("model"),
+        response.get("model_name"),
+        request.get("model"),
+        request.get("model_id"),
+        l2_output.get("model_id"),
+        l2_output.get("model"),
+        l2_output.get("model_name"),
+    ) or "NOT_OBSERVED"
+
+
+def _lane_generation_status(
+    record: dict[str, Any],
+    section: dict[str, Any],
+    proof: dict[str, Any],
+) -> str:
+    manifest = proof.get("run_manifest") if isinstance(proof.get("run_manifest"), dict) else {}
+    l2_output = proof.get("l2_output") if isinstance(proof.get("l2_output"), dict) else {}
+    return _first_nonempty(
+        section.get("runtime_generation_status"),
+        manifest.get("runtime_generation_status"),
+        l2_output.get("runtime_generation_status"),
+        record.get("generation_status"),
+    ) or "NOT_OBSERVED"
+
+
 def _generation_ordered_section_ids(
     sections: list[dict[str, Any]],
     provider_records: dict[str, dict[str, Any]],
@@ -909,6 +994,7 @@ def _build_section_lane_table(
     for idx, section_id in enumerate(_generation_ordered_section_ids(sections, provider_records), 1):
         section = by_id.get(section_id, {})
         record = provider_records.get(section_id, {})
+        provider_proof = _lane_provider_proof(section, repo_root=repo_root)
         l6 = section.get("l6") if isinstance(section.get("l6"), dict) else {}
         rows.append(
             {
@@ -917,20 +1003,14 @@ def _build_section_lane_table(
                 "apps_research_x1_x2_x3_gates": "N/A",
                 "r1a": cache["r1a"],
                 "r1b": cache["r1b"],
-                "lane_record": "YES" if record or section else "NO",
-                "provider_call_attempted": record.get("provider_call_attempted")
-                if "provider_call_attempted" in record
-                else "NOT_OBSERVED",
-                "primary_provider": _provider_cell(record, "provider_profile"),
-                "primary_model_observed": _provider_cell(record, "model_id"),
+                "lane_record": "YES" if record or section or provider_proof.get("has_lane_proof") else "NO",
+                "provider_call_attempted": _lane_provider_attempted(record, provider_proof),
+                "primary_provider": _lane_primary_provider(record, provider_proof),
+                "primary_model_observed": _lane_primary_model(record, provider_proof),
                 "pooling_selector_llm": _pooling_selector_cell(section_id),
                 "secondary_provider": _secondary_provider_cell(record),
                 "secondary_model_observed": _provider_cell(record, "secondary_model_id"),
-                "generation_status": _provider_cell(
-                    record,
-                    "generation_status",
-                    default=str(section.get("runtime_generation_status") or "NOT_OBSERVED"),
-                ),
+                "generation_status": _lane_generation_status(record, section, provider_proof),
                 "judges_run": "YES" if section.get("judges") else "NO",
                 "judge_models_scores": _judge_model_score_cell(section),
                 "judge_retry_fallback": _judge_retry_fallback_cell(section),
@@ -1057,6 +1137,102 @@ def _inline_required_output_shape_errors(inline: Any) -> list[str]:
     return errors
 
 
+def _non_authorized_section_ids(doc: dict[str, Any]) -> dict[str, list[str]]:
+    blocked: dict[str, list[str]] = {
+        "x3_blocked": [],
+        "pre_run_blocked": [],
+        "not_run": [],
+        "unknown": [],
+    }
+    for section in doc.get("sections", []):
+        if not isinstance(section, dict):
+            continue
+        section_id = str(section.get("section") or "").strip()
+        if not section_id:
+            continue
+        x3_code = str(section.get("x3_code") or "")
+        bucket = str(section.get("status_bucket") or "")
+        if x3_code.startswith("X3_BLOCK"):
+            blocked["x3_blocked"].append(section_id)
+        elif bucket == "pre_run_blocked" or x3_code.startswith("PRE_RUN:"):
+            blocked["pre_run_blocked"].append(section_id)
+        elif bucket == "not_run" or x3_code == "NOT_RUN":
+            blocked["not_run"].append(section_id)
+        elif x3_code not in {"X3_ALLOW", "X3_REVIEW_JUDGE_SOFT_FAIL"}:
+            blocked["unknown"].append(section_id)
+    return blocked
+
+
+def _resume_inline_authorization(doc: dict[str, Any]) -> tuple[bool, list[str]]:
+    summary = doc.get("result_summary") if isinstance(doc.get("result_summary"), dict) else {}
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    rendered = final_out.get("rendered_resume_text") if isinstance(final_out.get("rendered_resume_text"), dict) else {}
+    docx = final_out.get("resume_docx") if isinstance(final_out.get("resume_docx"), dict) else {}
+    spine = final_out.get("final_resume_json") if isinstance(final_out.get("final_resume_json"), dict) else {}
+    reasons: list[str] = []
+    if summary.get("outcome_authorized") is not True:
+        reasons.append("outcome_authorized_false")
+    if str(final_out.get("status") or "") != "PASS":
+        reasons.append(f"final_resume_output_status={final_out.get('status') or 'UNKNOWN'}")
+    failed_gates = final_out.get("failed_gate_ids")
+    if isinstance(failed_gates, list) and failed_gates:
+        reasons.append("failed_final_resume_gates=" + ",".join(str(gate) for gate in failed_gates))
+    for artifact_label, artifact in (
+        ("final_resume_json", spine),
+        ("rendered_resume_text", rendered),
+        ("resume_docx", docx),
+    ):
+        if not artifact.get("exists") or int(artifact.get("bytes") or 0) <= 0:
+            reasons.append(f"{artifact_label}_missing_or_empty")
+    for label, sections in _non_authorized_section_ids(doc).items():
+        if sections:
+            reasons.append(f"{label}=" + ",".join(sections))
+    return not reasons, reasons
+
+
+def _blocked_resume_inline_text(doc: dict[str, Any], reasons: list[str]) -> str:
+    return "\n".join(
+        [
+            "NO_AUTHORIZED_RESUME_OUTPUT",
+            "source_of_truth=current_e2e_run_artifacts_only",
+            f"run_root={doc.get('run_root_abs') or 'UNKNOWN'}",
+            "status=BLOCKED",
+            "reason=" + ("; ".join(reasons) if reasons else "unknown_blocker"),
+            "policy=do_not_inline_FINAL_RESUME_OUTPUT_txt_unless_current_run_authorized",
+        ]
+    )
+
+
+def _resume_inline_source(doc: dict[str, Any], authorized: bool) -> str:
+    if authorized:
+        return (
+            "FINAL_RESUME_OUTPUT.txt rendered from the current E2E run final-resume spine "
+            "used for outputs/resume.docx."
+        )
+    return (
+        "No authorized resume text emitted; this block is derived only from the current E2E "
+        "run ledger and final-resume output contract."
+    )
+
+
+def _authorized_resume_inline_text(doc: dict[str, Any]) -> str:
+    run_root = Path(str(doc.get("run_root_abs") or ""))
+    resume_path = run_root / FINAL_RESUME_OUTPUT_TXT
+    if not resume_path.is_file():
+        return "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]"
+    try:
+        return resume_path.read_text(encoding="utf-8").rstrip() or "[MANDATORY_OUTPUT_EMPTY: FINAL_RESUME_OUTPUT.txt]"
+    except OSError:
+        return "[MANDATORY_OUTPUT_UNREADABLE: FINAL_RESUME_OUTPUT.txt]"
+
+
+def _resume_inline_text(doc: dict[str, Any]) -> str:
+    authorized, reasons = _resume_inline_authorization(doc)
+    if not authorized:
+        return _blocked_resume_inline_text(doc, reasons)
+    return _authorized_resume_inline_text(doc)
+
+
 def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
     final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
     rendered = final_out.get("rendered_resume_text") if isinstance(final_out.get("rendered_resume_text"), dict) else {}
@@ -1074,6 +1250,7 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
         if isinstance(inline.get("resume_docx_full_version_inline"), dict)
         else {}
     )
+    resume_inline_authorized, resume_inline_blockers = _resume_inline_authorization(doc)
     shape_errors = _inline_required_output_shape_errors(inline)
     gates = [
         {
@@ -1090,21 +1267,39 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
         },
         {
             "gate_id": "mandatory_resume_text_inline_present",
-            "pass": bool(rendered.get("exists")) and int(rendered.get("bytes") or 0) > 0,
-            "observed_value": rendered,
-            "threshold": "nonempty FINAL_RESUME_OUTPUT.txt",
+            "pass": resume_inline_authorized
+            and bool(rendered.get("exists"))
+            and int(rendered.get("bytes") or 0) > 0,
+            "observed_value": {
+                "artifact": rendered,
+                "current_run_authorized": resume_inline_authorized,
+                "blockers": resume_inline_blockers,
+            },
+            "threshold": "current-run authorized nonempty FINAL_RESUME_OUTPUT.txt",
         },
         {
             "gate_id": "mandatory_final_resume_json_present",
-            "pass": bool(spine.get("exists")) and int(spine.get("bytes") or 0) > 0,
-            "observed_value": spine,
-            "threshold": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+            "pass": resume_inline_authorized
+            and bool(spine.get("exists"))
+            and int(spine.get("bytes") or 0) > 0,
+            "observed_value": {
+                "artifact": spine,
+                "current_run_authorized": resume_inline_authorized,
+                "blockers": resume_inline_blockers,
+            },
+            "threshold": f"current-run authorized {FINAL_RESUME_ASSEMBLY_JSON_RELPATH}",
         },
         {
             "gate_id": "mandatory_resume_docx_present",
-            "pass": bool(docx.get("exists")) and int(docx.get("bytes") or 0) > 0,
-            "observed_value": docx,
-            "threshold": FINAL_RESUME_DOCX_RELPATH,
+            "pass": resume_inline_authorized
+            and bool(docx.get("exists"))
+            and int(docx.get("bytes") or 0) > 0,
+            "observed_value": {
+                "artifact": docx,
+                "current_run_authorized": resume_inline_authorized,
+                "blockers": resume_inline_blockers,
+            },
+            "threshold": f"current-run authorized {FINAL_RESUME_DOCX_RELPATH}",
         },
         {
             "gate_id": "mandatory_inline_required_json_shape_locked",
@@ -1159,12 +1354,16 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
         },
         {
             "gate_id": "mandatory_resume_docx_inline_json_present",
-            "pass": bool(str(resume_inline.get("text") or "").strip()),
+            "pass": resume_inline_authorized
+            and bool(str(resume_inline.get("text") or "").strip())
+            and "NO_AUTHORIZED_RESUME_OUTPUT" not in str(resume_inline.get("text") or ""),
             "observed_value": {
                 "title": resume_inline.get("title"),
                 "text_chars": len(str(resume_inline.get("text") or "")),
+                "current_run_authorized": resume_inline_authorized,
+                "blockers": resume_inline_blockers,
             },
-            "threshold": "resume_docx_full_version_inline.text nonempty",
+            "threshold": "resume_docx_full_version_inline.text is current-run authorized resume content",
         },
     ]
     for gate in gates:
@@ -1753,34 +1952,23 @@ def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
 
 
 def _render_resume_inline_lines(doc: dict[str, Any]) -> list[str]:
-    run_root = Path(str(doc.get("run_root_abs") or ""))
-    resume_path = run_root / FINAL_RESUME_OUTPUT_TXT
-    text = ""
-    if resume_path.is_file():
-        try:
-            text = resume_path.read_text(encoding="utf-8").rstrip()
-        except OSError:
-            text = ""
+    inline = doc.get("inline_required_output") if isinstance(doc.get("inline_required_output"), dict) else {}
+    resume = (
+        inline.get("resume_docx_full_version_inline")
+        if isinstance(inline.get("resume_docx_full_version_inline"), dict)
+        else {}
+    )
+    source = str(resume.get("source") or "No inline resume source observed.")
+    text = str(resume.get("text") or "").rstrip()
     return [
         "## Resume DOCX Full Version Inline",
         "",
-        "Source: `FINAL_RESUME_OUTPUT.txt` rendered from the same final-resume spine used for `outputs/resume.docx`.",
+        f"Source: `{source}`",
         "",
         "```text",
-        text or "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]",
+        text or "[MANDATORY_OUTPUT_MISSING: resume_docx_full_version_inline.text]",
         "```",
     ]
-
-
-def _resume_inline_text(doc: dict[str, Any]) -> str:
-    run_root = Path(str(doc.get("run_root_abs") or ""))
-    resume_path = run_root / FINAL_RESUME_OUTPUT_TXT
-    if not resume_path.is_file():
-        return "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]"
-    try:
-        return resume_path.read_text(encoding="utf-8").rstrip() or "[MANDATORY_OUTPUT_EMPTY: FINAL_RESUME_OUTPUT.txt]"
-    except OSError:
-        return "[MANDATORY_OUTPUT_UNREADABLE: FINAL_RESUME_OUTPUT.txt]"
 
 
 def _research_row(doc: dict[str, Any]) -> dict[str, Any]:
@@ -1796,6 +1984,7 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
     final_status = str(final_out.get("status") or "UNKNOWN")
     failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
     research = _research_row(doc)
+    lane_rows = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
     rows: list[dict[str, str]] = []
     if research.get("generation_status") == "P0_STATIC_MANUAL_BRIEF_USED":
         rows.extend(
@@ -1846,14 +2035,29 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "gate_outcome": "Final resume unauthorized.",
             }
         )
-    rows.extend(
-        [
+    provider_gap_sections = [
+        str(row.get("section") or "")
+        for row in lane_rows
+        if isinstance(row, dict)
+        and str(row.get("x3") or "").startswith("X3_BLOCK")
+        and str(row.get("generation_status") or "") == "REAL_LLM"
+        and (
+            row.get("provider_call_attempted") is not True
+            or str(row.get("primary_provider") or "") in {"", "NOT_OBSERVED"}
+            or str(row.get("primary_model_observed") or "") in {"", "NOT_OBSERVED"}
+        )
+    ]
+    if provider_gap_sections:
+        rows.append(
             {
                 "priority": "P1",
                 "recommendation": "Capture provider attempts, retries, fallback, and observed model IDs for failed lanes.",
-                "evidence": "Primary providers may be listed while observed models remain NOT_OBSERVED.",
+                "evidence": "Provider proof gap in: " + ", ".join(provider_gap_sections),
                 "gate_outcome": "Make failure RCA auditable.",
-            },
+            }
+        )
+    rows.extend(
+        [
             {
                 "priority": "P1",
                 "recommendation": "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane.",
@@ -1928,6 +2132,7 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
     final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
     final_status = str(final_out.get("status") or "UNKNOWN")
     authorized = bool(summary.get("outcome_authorized")) and final_status == "PASS"
+    resume_inline_authorized, _resume_inline_blockers = _resume_inline_authorization(doc)
     research_status = str(research.get("generation_status") or "NOT_OBSERVED")
     if research_status == "P0_STATIC_MANUAL_BRIEF_USED":
         executive_answer = (
@@ -1990,7 +2195,7 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         },
         "resume_docx_full_version_inline": {
             "title": "Resume DOCX Full Version Inline",
-            "source": "FINAL_RESUME_OUTPUT.txt rendered from the same final-resume spine used for outputs/resume.docx.",
+            "source": _resume_inline_source(doc, resume_inline_authorized),
             "text": _resume_inline_text(doc),
         },
     }
@@ -2520,7 +2725,7 @@ def build_mandatory_run_output(
     section_id: str | None = None,
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
-    repo = (repo_root or root).resolve()
+    repo = (repo_root or find_repo_root(root)).resolve()
     sections = _collect_section_records(root, repo_root=repo, section_id=section_id)
     result_summary = _result_summary(result, root)
     final_required = _final_resume_output_required(root, result_summary)
@@ -2564,17 +2769,18 @@ def emit_mandatory_run_outputs(
 ) -> dict[str, Any]:
     """Write mandatory apps_rg run output artifacts."""
     root = Path(run_root).resolve()
+    repo = (repo_root or find_repo_root(root)).resolve()
     root.mkdir(parents=True, exist_ok=True)
     pre_summary = _result_summary(result, root)
     final_required = _final_resume_output_required(root, pre_summary)
     emit_final_resume_product_outputs(
         root,
-        repo_root=repo_root,
+        repo_root=repo,
         required=final_required,
     )
     doc = build_mandatory_run_output(
         root,
-        repo_root=repo_root,
+        repo_root=repo,
         result=result,
         section_id=section_id,
     )

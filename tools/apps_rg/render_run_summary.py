@@ -317,6 +317,16 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     result = ledger.get("result_summary") if isinstance(ledger.get("result_summary"), dict) else {}
     rca = ledger.get("rca_findings") if isinstance(ledger.get("rca_findings"), list) else []
     final_out = ledger.get("final_resume_output") if isinstance(ledger.get("final_resume_output"), dict) else {}
+    mandatory_gates = (
+        ledger.get("mandatory_inline_output_gates")
+        if isinstance(ledger.get("mandatory_inline_output_gates"), list)
+        else []
+    )
+    gate_by_id = {
+        str(gate.get("gate_id") or ""): gate
+        for gate in mandatory_gates
+        if isinstance(gate, dict)
+    }
     lines.append("")
     lines.append("| Signal | Value |")
     lines.append("|---|---|")
@@ -343,7 +353,19 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             ("Final resume DOCX", "resume_docx"),
         ):
             art = final_out.get(key) if isinstance(final_out.get(key), dict) else {}
-            exists = "PASS" if art.get("exists") else "MISSING"
+            gate_id = {
+                "final_resume_json": "mandatory_final_resume_json_present",
+                "rendered_resume_text": "mandatory_resume_text_inline_present",
+                "resume_docx": "mandatory_resume_docx_present",
+            }.get(key, "")
+            gate = gate_by_id.get(gate_id, {})
+            exists = (
+                "PASS"
+                if art.get("exists") and gate.get("pass") is True
+                else "EXISTS_UNAUTHORIZED"
+                if art.get("exists")
+                else "MISSING"
+            )
             lines.append(
                 f"| **{label}** | `{art.get('relpath') or '—'}` | `{exists}` | {int(art.get('bytes') or 0)} |"
             )
@@ -387,14 +409,21 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             f"`{row.get('display_output')}` | "
             f"`{row.get('l6_evidence')}` |"
         )
-    resume_text = _load_text(run_dir / FINAL_RESUME_OUTPUT_TXT)
+    inline = ledger.get("inline_required_output") if isinstance(ledger.get("inline_required_output"), dict) else {}
+    inline_resume = (
+        inline.get("resume_docx_full_version_inline")
+        if isinstance(inline.get("resume_docx_full_version_inline"), dict)
+        else {}
+    )
+    resume_source = str(inline_resume.get("source") or "No inline resume source observed.")
+    resume_text = str(inline_resume.get("text") or "").strip()
     lines.append("")
     lines.append("## Resume DOCX Full Version Inline")
     lines.append("")
-    lines.append("Source: `FINAL_RESUME_OUTPUT.txt` rendered from the same final-resume spine used for `outputs/resume.docx`.")
+    lines.append(f"Source: `{resume_source}`")
     lines.append("")
     lines.append("```text")
-    lines.append(resume_text or "[MANDATORY_OUTPUT_MISSING: FINAL_RESUME_OUTPUT.txt]")
+    lines.append(resume_text or "[MANDATORY_OUTPUT_MISSING: resume_docx_full_version_inline.text]")
     lines.append("```")
     if rca:
         lines.append("")

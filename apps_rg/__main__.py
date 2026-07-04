@@ -461,6 +461,7 @@ _PINNED_SECTION_TEXT_FILES: tuple[tuple[str, str, str], ...] = (
     ("ibm_narrative", "ibm_narrative_output.txt", "IBM (Narrative)"),
 )
 _SECTION_PIN_MANIFEST_FILENAME = "section_pin_manifest.json"
+_SECTION_PIN_CLEANUP_RECEIPT_FILENAME = "section_pin_cleanup_receipt.json"
 
 
 def _integrated_run_id_for_path(path: Path) -> str | None:
@@ -506,6 +507,62 @@ def _write_section_pin_manifest(
         json.dumps(doc, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+
+
+def _clear_section_pins_for_new_e2e_run(repo_root: Path, artifact_dir: str) -> dict[str, Any]:
+    """Remove stale section pins at the start of a fresh whole-run E2E.
+
+    Section pins are scoped to the E2E run that produced them. Starting a new
+    whole run clears the carry-over cache before any section lane can consult it.
+    """
+    repo = Path(repo_root).resolve()
+    pin_root = (repo / "artifacts" / "apps_rg" / "_pinned").resolve()
+    removed: list[str] = []
+    skipped: list[str] = []
+    if pin_root.exists():
+        for child in sorted(pin_root.iterdir(), key=lambda p: p.name):
+            if child.name == "_cleanup_receipts":
+                skipped.append(child.name)
+                continue
+            try:
+                child.resolve().relative_to(pin_root)
+            except ValueError:
+                skipped.append(child.name)
+                continue
+            if child.is_dir() and not child.is_symlink():
+                _wg.remove_tree(child)
+            else:
+                _wg.remove_file(child)
+            removed.append(child.name)
+
+    now = datetime.now(timezone.utc).isoformat()
+    receipt: dict[str, Any] = {
+        "schema": "apps_rg.section_pin_cleanup.v1",
+        "reason": "new_e2e_run_started",
+        "pin_validity_scope": "current_e2e_run_only",
+        "pin_root": pin_root.as_posix(),
+        "removed": removed,
+        "removed_count": len(removed),
+        "skipped": skipped,
+        "cleared_at_utc": now,
+    }
+    explicit_artifact_dir = str(artifact_dir or "").strip()
+    if explicit_artifact_dir:
+        receipt_dir = Path(explicit_artifact_dir)
+        if not receipt_dir.is_absolute():
+            receipt_dir = repo / receipt_dir
+        receipt_path = receipt_dir / _SECTION_PIN_CLEANUP_RECEIPT_FILENAME
+    else:
+        receipt_dir = pin_root / "_cleanup_receipts"
+        receipt_path = receipt_dir / f"{now.replace(':', '').replace('+', 'Z')}.json"
+    receipt["receipt_path"] = receipt_path.as_posix()
+    _wg.ensure_dir(receipt_dir)
+    _wg.write_text(
+        receipt_path,
+        json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return receipt
 
 
 def _pin_matches_requested_run(sec_dir: Path, expected_run_id: str) -> tuple[bool, str, dict[str, Any] | None]:
@@ -1356,6 +1413,19 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 run_whole_run_with_route_governance,
             )
 
+            pin_cleanup_receipt: dict[str, Any] | None = None
+            if not str(getattr(args, "patch_run", "") or "").strip():
+                pin_cleanup_receipt = _clear_section_pins_for_new_e2e_run(
+                    find_repo_root(),
+                    str(getattr(args, "artifact_dir", "") or ""),
+                )
+                print(
+                    "SECTION_PINS_CLEARED "
+                    f"removed_count={pin_cleanup_receipt.get('removed_count', 0)} "
+                    f"receipt={pin_cleanup_receipt.get('receipt_path', '')}",
+                    flush=True,
+                )
+
             os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
             if bool(getattr(args, "allow_non_allow_exit_zero", False)):
                 os.environ["APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"] = "1"
@@ -1369,6 +1439,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 generation_mode=args.generation_mode,
                 artifact_dir=args.artifact_dir,
             )
+            if pin_cleanup_receipt is not None and isinstance(result, dict):
+                result["section_pin_cleanup_receipt"] = pin_cleanup_receipt
         status = result.get("exit_status", "unknown") if isinstance(result, dict) else "unknown"
         authorized = (
             bool(result.get("outcome_authorized"))
@@ -1391,8 +1463,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
                 ad = Path(str(result["artifact_dir"]))
                 if is_integrated_whole_run_artifact_dir(ad) or result.get("full_run_section_status_md"):
-                    emit_full_run_section_status(ad, print_stdout=True)
-                    emit_mandatory_run_outputs(ad, result=result, print_stdout=True)
+                    repo = find_repo_root()
+                    emit_full_run_section_status(ad, repo_root=repo, print_stdout=True)
+                    emit_mandatory_run_outputs(
+                        ad,
+                        result=result,
+                        repo_root=repo,
+                        print_stdout=True,
+                    )
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
             from apps_rg.runtime.c0.c02_fact_vector_ingest import (

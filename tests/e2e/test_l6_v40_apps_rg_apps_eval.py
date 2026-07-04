@@ -36,6 +36,7 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     )
     eval_bridge = json.loads(Path(eval_record.artifact_paths["l6_shadow_bridge"]).read_text(encoding="utf-8"))
     eval_alignment = json.loads(Path(eval_record.artifact_paths["l6_apps_eval_alignment"]).read_text(encoding="utf-8"))
+    eval_grain_parity = json.loads(Path(eval_record.artifact_paths["l6_apps_eval_grain_parity"]).read_text(encoding="utf-8"))
 
     assert rg_package["valid_v40_shadow_exhaust"] is True
     assert rg_package["g28_audit_completeness"]["verdict"] == "PASS"
@@ -60,6 +61,13 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
         row for row in eval_record.scorecard.scorecard_rows if row.get("required", True)
     ]
     assert eval_alignment["rows_expected"] == len(required_rows)
+    assert eval_alignment["alignment_source"] == "apps_eval_scorecard_rows"
+    assert eval_alignment["apps_eval_rows_bound"] is True
+    assert eval_grain_parity["grain_parity_status"] == "PASS"
     assert eval_alignment["missing_in_l6"] == []
     assert eval_alignment["missing_in_apps_eval"] == []
+    assert eval_grain_parity["missing_in_l6"] == []
+    assert eval_grain_parity["missing_in_apps_eval"] == []
+    assert eval_grain_parity["verdict_mismatches"] == []
+    assert eval_grain_parity["authority_mismatch"] is False
     assert eval_alignment["authority_mismatch"] is False

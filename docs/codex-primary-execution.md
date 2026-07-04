@@ -167,6 +167,18 @@ Use the read-only audit first:
 python scripts/governance/audit_codex_mcp_transports.py --json
 ```
 
+When a specific server reports `Transport closed` or process-only callability,
+use the read-only diagnosis wrapper before any cleanup decision:
+
+```bash
+python scripts/governance/diagnose_codex_mcp_transport.py --server adg_sqlite --json
+```
+
+The diagnosis command does not launch servers, kill processes, or call Codex MCP
+tools. It distinguishes host/TUI reconnect requirements from process-only
+evidence, stale callability proof, duplicate cohorts, and explicitly degraded
+fallbacks.
+
 Then inspect the guarded cleanup plan:
 
 ```bash

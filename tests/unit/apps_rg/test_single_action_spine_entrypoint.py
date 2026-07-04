@@ -209,3 +209,60 @@ def test_section_path_invokes_integrated_spine_with_section_scope(
     assert calls[0]["raw_request"]["execution_scope"] == "section"
     assert calls[0]["raw_request"]["section_id"] == "executive_summary"
     assert calls[0]["cache_preflight_evidence"]["cache_preflight_completed"] is True
+
+
+def test_section_path_uses_nested_section_x3_block_not_wrapper_exit_ok(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import apps_rg.runtime.orchestration.canonical_dispatch as cd
+    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+        ROUTE_ID,
+        SingleActionSpineRunResult,
+    )
+
+    def _fake_spine(**kwargs):  # noqa: ANN003
+        return SingleActionSpineRunResult(
+            run_id="core-run-section",
+            request_id="core-req-section",
+            route_id=ROUTE_ID,
+            x3_disposition="EXIT_OK",
+            terminal_r5=False,
+            terminal_r5_reason="",
+            artifact_dir=kwargs["artifact_dir"],
+            fault="",
+            l2_result={
+                "step_results": [
+                    {
+                        "status": "blocked",
+                        "section_result": {
+                            "section_id": "headline",
+                            "exit_status": "error",
+                            "outcome_authorized": False,
+                            "x3_disposition": "X3_BLOCK",
+                        },
+                    }
+                ]
+            },
+        )
+
+    monkeypatch.setattr(
+        "agentic_core.runtime.entrypoints.integrated_single_action_spine_run.run_integrated_single_action_spine",
+        _fake_spine,
+    )
+    monkeypatch.setattr(cd, "_apps_rg_u0_runtime_package_fields", lambda: {})
+
+    result = cd.run_canonical_apps_rg_from_cli_primitives(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        section="headline",
+        jd="jd",
+        manual_brief="brief",
+        artifact_dir=str(tmp_path),
+    )
+
+    assert result["exit_status"] == "error"
+    assert result["outcome_authorized"] is False
+    assert result["x3_disposition"] == "X3_BLOCK"
+    assert result["fault"] == ""
+    assert result["section_result_blocked"] is True

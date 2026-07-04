@@ -1,6 +1,6 @@
 # apps_lic — Lifecycle Intelligence & Communication
 
-A multi-hop agent application that profiles a target, researches them, grounds the result against canonical state, and authors outbound communication (email / LinkedIn) — through a **governed HOP pipeline** rather than ad-hoc outbound tooling. Replaces "the model writes whatever it wants" with a deterministic, auditable spine.
+A multi-hop agent application that profiles a target, researches them, grounds the result against canonical state, and authors outbound communication (email / LinkedIn) through the **canonical-dispatch spine** recorded in `apps_shared/integrations/app_registry.py`. The app is a formal governed exception to `GovernedAppRunner`, with compensating controls for the canonical `apps_lic` product path.
 
 ## Design Patterns at Work
 
@@ -8,7 +8,7 @@ A multi-hop agent application that profiles a target, researches them, grounds t
 - **Decision-Table Routing** — `validators/policy/` exposes decision tables consumed by `DecisionRouter`, replacing imperative classifier chains. Routing is data, not branching code.
 - **Telemetry Bus + Subscribers** — `services/observability/` is a pub-sub bus with structured event subscribers. The runtime emits, observers consume — no direct logging coupling.
 - **Persistence Service** — `services/persistence/` is a SQLite-backed durability layer. State changes do not bypass it; the HOP executor writes through.
-- **Governed Execution** — entrypoint via `integrations/governed_run.py` ensures L5 policy plane validates each hop transition before commit.
+- **Canonical Dispatch Governed Exception** — `python -m apps_lic` routes through `run_canonical_apps_lic_spine`; the registry records `GovernedAppRunner` / `GovernedLicRun` as blocked layers and tracks compensating controls in `GovernedLicException`.
 - **Threat-Modeled Surface** — `THREAT_MODEL.md` documents the external-input surface (profile YAML, JD markdown, prompt-injection vectors).
 
 ## Quickstart

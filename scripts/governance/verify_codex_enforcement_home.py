@@ -778,6 +778,24 @@ def _automation_toml_references_repo(path: Path, root: Path) -> bool:
         return error is not None
 
 
+def _user_profile_projection_roots(root: Path) -> list[Path]:
+    roots = [root.resolve()]
+    common_root = _git_common_repo_root(root)
+    if common_root is not None and _norm_path(common_root) != _norm_path(root):
+        roots.append(common_root.resolve())
+    return roots
+
+
+def _projection_matches_expected(data: dict[str, Any], root: Path, automation_id: str) -> bool:
+    expected = build_user_profile_projection(root, automation_id)
+    if expected is None:
+        return False
+    for field in AUTOMATION_PROJECTION_FIELDS:
+        if data.get(field) != expected.get(field):
+            return False
+    return True
+
+
 def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
     data, error = _load_toml(path)
     if data is None or error is not None:
@@ -787,13 +805,10 @@ def _is_valid_user_profile_projection(path: Path, root: Path) -> bool:
     automation_id = data.get("automation_id")
     if not isinstance(automation_id, str):
         return False
-    expected = build_user_profile_projection(root, automation_id)
-    if expected is None:
-        return False
-    for field in AUTOMATION_PROJECTION_FIELDS:
-        if data.get(field) != expected.get(field):
-            return False
-    return True
+    return any(
+        _projection_matches_expected(data, candidate_root, automation_id)
+        for candidate_root in _user_profile_projection_roots(root)
+    )
 
 
 def _user_profile_automation_artifacts(user_codex_home: Path, root: Path) -> list[Path]:

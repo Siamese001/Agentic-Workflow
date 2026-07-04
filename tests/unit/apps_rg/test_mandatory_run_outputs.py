@@ -11,11 +11,13 @@ from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
     MANDATORY_RUN_OUTPUT_JSON,
     MANDATORY_RUN_OUTPUT_MD,
+    build_mandatory_run_output,
     emit_mandatory_run_outputs,
 )
 from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
     FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
 )
 from tools.apps_rg.render_run_summary import render
@@ -142,11 +144,12 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert {"P0", "P1", "PX"}.issubset(
         {row["priority"] for row in inline["bcg"]["p0_p1_px_recommendations"]["rows"]}
     )
-    assert all(
-        gate["pass"]
-        for gate in payload["mandatory_inline_output_gates"]
-        if gate["gate_id"].startswith("mandatory_")
-    )
+    gates_by_id = {gate["gate_id"]: gate for gate in payload["mandatory_inline_output_gates"]}
+    assert gates_by_id["mandatory_inline_required_json_shape_locked"]["pass"] is True
+    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["pass"] is False
+    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
+        "current_run_authorized"
+    ] is False
     assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
     assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
     assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
@@ -171,9 +174,138 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert "Change the section enrichment step" in bcg
     assert "Section Lane Summary Table" in mandatory
     assert "Resume DOCX Full Version Inline" in mandatory
-    assert "[NOT_GENERATED_BY_RUN:" in mandatory
+    assert "NO_AUTHORIZED_RESUME_OUTPUT" in mandatory
     assert "Causal allocation" in mandatory
     assert "Required implementation plan" in mandatory
+
+
+def test_blocked_run_does_not_inline_stale_final_resume_text(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_partnership_blocked"
+    run.mkdir()
+    stale_resume = (
+        "SVP Engineering | Governed Distributed Infrastructure | "
+        "Databricks Lakehouse Retrieval Architecture | Alliance Co-Sell Partner Growth"
+    )
+    (run / FINAL_RESUME_OUTPUT_TXT).write_text(stale_resume + "\n", encoding="utf-8")
+    _write_json(
+        run / FINAL_RESUME_OUTPUT_JSON,
+        {
+            "schema_version": "apps_rg.final_resume_output.v1",
+            "required": True,
+            "status": "FAIL",
+            "failed_gate_ids": ["final_resume_no_gap_markers"],
+            "final_resume_json": {
+                "relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+                "exists": True,
+                "bytes": 100,
+                "sha256": "spine",
+            },
+            "rendered_resume_text": {
+                "relpath": FINAL_RESUME_OUTPUT_TXT,
+                "exists": True,
+                "bytes": len(stale_resume),
+                "sha256": "resume",
+            },
+            "resume_docx": {
+                "relpath": FINAL_RESUME_DOCX_RELPATH,
+                "exists": True,
+                "bytes": 100,
+                "sha256": "docx",
+            },
+        },
+    )
+
+    doc = build_mandatory_run_output(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    inline_resume = doc["inline_required_output"]["resume_docx_full_version_inline"]
+    assert inline_resume["text"].startswith("NO_AUTHORIZED_RESUME_OUTPUT")
+    assert "source_of_truth=current_e2e_run_artifacts_only" in inline_resume["text"]
+    assert "final_resume_no_gap_markers" in inline_resume["text"]
+    assert "Databricks Lakehouse" not in inline_resume["text"]
+    gates_by_id = {gate["gate_id"]: gate for gate in doc["mandatory_inline_output_gates"]}
+    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["pass"] is False
+    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
+        "current_run_authorized"
+    ] is False
+
+
+def test_failed_lane_table_hydrates_provider_proof_from_current_run(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_partnership_provider_proof"
+    lane = run / "lanes" / "unify_bullets"
+    lane.mkdir(parents=True)
+    (lane / "unify_bullets_output.txt").write_text("generated but blocked\n", encoding="utf-8")
+    _write_json(
+        lane / "provider_request.json",
+        {
+            "provider_requested": "external_claude",
+            "provider_attempted": True,
+            "model": "claude-sonnet-5",
+        },
+    )
+    _write_json(
+        lane / "l2_output.json",
+        {
+            "section_id": "unify_bullets",
+            "runtime_generation_status": "REAL_LLM",
+        },
+    )
+    _write_json(
+        lane / "x3_disposition.json",
+        {
+            "x3_code": "X3_BLOCK",
+            "product_quality_status": "FAIL",
+            "runtime_generation_status": "REAL_LLM",
+        },
+    )
+    _write_json(
+        lane / "x2_gate_outputs.json",
+        {
+            "gates": [
+                {
+                    "gate_id": "x2_unify_metric_source_required",
+                    "pass": False,
+                    "failure_reason": "missing metric source",
+                }
+            ]
+        },
+    )
+    _write_json(
+        run / "modular_r4" / "section_provider_calls.json",
+        {
+            "schema_version": "apps_rg.section_provider_calls.phase1.v2",
+            "records": [
+                {
+                    "section_lane": "unify_bullets",
+                    "provider_call_attempted": False,
+                    "provider_profile": "external_claude_section_lane",
+                    "model_id": "",
+                    "candidate_index": 1,
+                    "generation_status": "MISSING_LANE_RUN",
+                }
+            ],
+        },
+    )
+
+    doc = build_mandatory_run_output(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    row = next(row for row in doc["section_lane_table"] if row["section"] == "unify_bullets")
+    assert row["provider_call_attempted"] is True
+    assert row["primary_provider"] == "external_claude"
+    assert row["primary_model_observed"] == "claude-sonnet-5"
+    assert row["generation_status"] == "REAL_LLM"
+    recommendations = doc["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
+    assert not any(
+        "Capture provider attempts" in str(row.get("recommendation") or "")
+        for row in recommendations
+    )
 
 
 def test_full_run_section_status_loads_lane_judges(tmp_path: Path) -> None:
@@ -478,6 +610,68 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
     assert "## Locked BCG Output" in out
     assert "## Locked Section Lane Summary Table" in out
     assert "## Resume DOCX Full Version Inline" in out
+
+
+def test_render_run_summary_uses_locked_resume_inline_not_raw_final_resume(tmp_path: Path) -> None:
+    run = tmp_path / "full_resume_render_locked_inline"
+    run.mkdir()
+    stale_resume = "SVP Engineering | Databricks Lakehouse Retrieval Architecture"
+    (run / FINAL_RESUME_OUTPUT_TXT).write_text(stale_resume + "\n", encoding="utf-8")
+    _write_json(
+        run / MANDATORY_RUN_OUTPUT_JSON,
+        {
+            "result_summary": {"exit_status": "error", "outcome_authorized": False},
+            "section_counts": {
+                "total": 1,
+                "ran_real_llm": 1,
+                "allowed": 0,
+                "blocked": 1,
+                "pre_run_blocked": 0,
+                "not_run": 0,
+            },
+            "section_lane_table": [],
+            "final_resume_output": {
+                "status": "FAIL",
+                "failed_gate_ids": ["final_resume_no_gap_markers"],
+                "final_resume_json": {
+                    "relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+                    "exists": True,
+                    "bytes": 10,
+                },
+                "rendered_resume_text": {
+                    "relpath": FINAL_RESUME_OUTPUT_TXT,
+                    "exists": True,
+                    "bytes": len(stale_resume),
+                },
+                "resume_docx": {
+                    "relpath": FINAL_RESUME_DOCX_RELPATH,
+                    "exists": True,
+                    "bytes": 10,
+                },
+            },
+            "mandatory_inline_output_gates": [
+                {"gate_id": "mandatory_resume_text_inline_present", "pass": False},
+                {"gate_id": "mandatory_final_resume_json_present", "pass": False},
+                {"gate_id": "mandatory_resume_docx_present", "pass": False},
+            ],
+            "inline_required_output": {
+                "resume_docx_full_version_inline": {
+                    "title": "Resume DOCX Full Version Inline",
+                    "source": "No authorized resume text emitted; current E2E run only.",
+                    "text": "NO_AUTHORIZED_RESUME_OUTPUT\nsource_of_truth=current_e2e_run_artifacts_only",
+                }
+            },
+            "rca_findings": [],
+        },
+    )
+    (run / MANDATORY_RUN_OUTPUT_MD).write_text("# Ledger\n", encoding="utf-8")
+    (run / BCG_EXECUTIVE_OUTPUT_MD).write_text("# BCG\n", encoding="utf-8")
+
+    out = render(run)
+
+    assert "NO_AUTHORIZED_RESUME_OUTPUT" in out
+    assert "EXISTS_UNAUTHORIZED" in out
+    assert stale_resume not in out
 
 
 def test_render_run_summary_rejects_one_line_rca_action_as_format_gap(tmp_path: Path) -> None:

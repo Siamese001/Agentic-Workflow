@@ -235,6 +235,47 @@ def test_collect_rows_support_flat_lane_pointer_to_sibling_runtime_proof(tmp_pat
     assert "Google Gemini 3.1 Pro Preview" in row.judge_summary
 
 
+def test_persist_infers_repo_root_for_modular_pointers(tmp_path: Path):
+    (tmp_path / "apps_rg" / "resume" / "base").mkdir(parents=True)
+    run_root = tmp_path / "artifacts" / "apps_rg" / "runs" / "whole_run"
+    lane_base = run_root / "modular_r4" / "sections" / "competencies"
+    lane_base.mkdir(parents=True, exist_ok=True)
+    lane_run = tmp_path / "artifacts" / "apps_rg" / "runtime_proofs" / "full_resume_abc123"
+    lane_run.mkdir(parents=True, exist_ok=True)
+    (lane_run / "competencies_display.txt").write_text(
+        "Applied AI Partnerships: partner architecture\n",
+        encoding="utf-8",
+    )
+    (lane_run / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW", "product_quality_status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_run / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_smoke", "pass": True}]}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_run / "run_manifest.json").write_text(
+        json.dumps({"runtime_generation_status": "REAL_LLM"}) + "\n",
+        encoding="utf-8",
+    )
+    (lane_base / "latest_successful_real_run.json").write_text(
+        json.dumps({"run_dir": lane_run.relative_to(tmp_path).as_posix()}) + "\n",
+        encoding="utf-8",
+    )
+
+    out = persist_full_run_section_status(run_root)
+    payload = out["payload"]
+    row = next(lane for lane in payload["lanes"] if lane["lane"] == "competencies")
+
+    assert row["lane_dir"] == lane_run.relative_to(tmp_path).as_posix()
+    assert row["x3_code"] == "X3_ALLOW"
+    assert row["x2_pass"] == "PASS"
+    assert row["runtime_generation_status"] == "REAL_LLM"
+    assert row["display_txt_relpath"] == (
+        lane_run / "competencies_display.txt"
+    ).relative_to(tmp_path).as_posix()
+
+
 def test_collect_rows_prefers_current_generated_rollup_over_stale_pointer(tmp_path: Path):
     run_root = tmp_path / "full_resume_wrapper"
     lane_base = run_root / "lanes" / "executive_summary"

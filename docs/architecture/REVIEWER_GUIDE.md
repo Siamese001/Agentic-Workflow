@@ -45,9 +45,10 @@ the shared substrate and exception model are checked continuously.
 **Solution:**
 1. Built `GovernedAppRunner` — a shared base class that runs the full L1→L0→C0→L2→L5→L6 pipeline.
 2. Classified the current registry as three governed entries: `apps_exec`, `apps_research`, and `apps_rg`.
-3. Formalized three exceptions: `apps_eval` (circular dependency), `apps_lic` (canonical-dispatch product
-   spine), and `apps_underwriting_ai` (regulated domain). Each has reason codes, compensating controls,
-   and gate-verifiable metadata.
+3. Formalized five exceptions: `apps_architect` (pending runner migration), `apps_eval` (circular
+   dependency), `apps_lic` (canonical-dispatch product spine), `apps_qna` (pending runner migration),
+   and `apps_underwriting_ai` (regulated domain). Each has reason codes, compensating controls, and
+   gate-verifiable metadata.
 4. One conformance gate (`check_governed_app_conformance.py`) enforces the schema at CI time.
 5. One proof harness (`retrieval_benchmark.py`) verifies governed behavior and exception controls.
 6. One release gate (`run_architecture_proof.py`) composes all checks into one command.
@@ -68,7 +69,7 @@ python ops_scripts/ci/run_architecture_proof.py
 # 3. Structural checks only (fastest — ~1s)
 python ops_scripts/ci/run_architecture_proof.py --suite S1
 
-# 4. Behavioral checks only (penta-app + exceptions)
+# 4. Behavioral checks only (governed apps + formal exceptions)
 python ops_scripts/ci/run_architecture_proof.py --suite S2
 ```
 
@@ -96,7 +97,7 @@ python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; \
 
 ## What to look for when reviewing
 
-**Structural correctness (S1 — 36 checks):**
+**Structural correctness (S1 — 52 checks):**
 - Registry completeness is checked against `app_registry.py`.
 - Governed apps: runner importable, subclass of `GovernedAppRunner`, versioned capability token.
 - Exception apps: `FormalExceptionEntry` in registry (not ad hoc), valid reason code, blocked/safe
@@ -115,17 +116,20 @@ python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; \
 
 ## Current Validation Posture
 
-The command output is the source of truth. A docs-refresh validation run on this snapshot found S1
-registry/import drift that should be treated as the current gap list until the gate passes:
+The direct conformance-gate output is the source of truth for registry counts. A docs-refresh
+validation run on this snapshot found the direct S1 conformance gate green:
 
-| Gap | Evidence from S1 conformance gate |
-|---|---|
-| Missing registry entries | `apps_architect`, `apps_qna` |
-| Stale governed import | `apps_exec.integrations` not importable |
-| Canonical dispatch mismatch | `apps_rg` entrypoint does not subclass `GovernedAppRunner` |
-| Exception handler drift | `apps_lic` handler class mismatch; `apps_eval` and `apps_underwriting_ai` exception modules not importable |
+```bash
+python ops_scripts/ci/check_governed_app_conformance.py
+```
 
-**Registry state:** 3 governed + 3 formal exceptions + 0 ad hoc, per `apps_shared/integrations/app_registry.py`.
+Result: `PASS 52/52 checks pass`.
+
+**Registry state:** 3 governed + 5 formal exceptions + 0 ad hoc, per `apps_shared/integrations/app_registry.py`.
+
+Known documentation/tooling gap: the top-level `run_architecture_proof.py` runner may still print
+stale summary prose for registry counts. Use the registry and direct conformance gate for the count
+until that executable summary text is updated.
 
 ---
 
