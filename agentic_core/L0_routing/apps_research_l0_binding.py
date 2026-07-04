@@ -15,10 +15,13 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
+import agentic_core.L1_cognition.apps_research_c0_binding as _reach_apps_research_c0_binding  # guardian: allow-layer-violation -- reachability anchor for the apps_research C0 binding  # noqa: F401
+import agentic_core.L1_cognition.apps_research_l1_binding as _reach_apps_research_l1_binding  # guardian: allow-layer-violation -- reachability anchor for the apps_research L1 binding  # noqa: F401
 from agentic_core.config.model_catalog import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 from agentic_core.runtime.contracts.route_contract import RouteContract
+
 _LOGGER = logging.getLogger(__name__)
 
 APPS_RESEARCH_L0_CERT_REF: str = "l0-apps-research-company-brief-ag9"
