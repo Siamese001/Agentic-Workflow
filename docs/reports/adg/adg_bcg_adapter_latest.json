@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-04T03:20:10+00:00",
+  "generated_at_utc": "2026-07-04T14:33:41+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -14,45 +14,8 @@
   "policy_version": "2026-06-28.high_signal_burndown_v1",
   "priority_rows": [
     {
-      "band": "P1",
-      "baseline_count": 0,
-      "classification": "regressed",
-      "delta_vs_baseline": 3,
-      "enforcement": "ratchet",
-      "gate_class": "NewOrphansDeltaGate",
-      "gate_id": "H1_new_orphans_delta_ratchet",
-      "is_burndown_work": true,
-      "is_kpi_or_watchlist": false,
-      "materiality": "architecture_backlog",
-      "next_step": "Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
-      "raw_gate": {
-        "band": "P1",
-        "baseline_count": 0,
-        "classification": "regressed",
-        "dispatch": "in-process",
-        "enforcement": "ratchet",
-        "exit_code": 1,
-        "gate_class": "NewOrphansDeltaGate",
-        "gate_id": "H1_new_orphans_delta_ratchet",
-        "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
-        "owner": "wiring_ci",
-        "source": "sql",
-        "status": "fail",
-        "stderr_tail": [],
-        "violation_count": 3
-      },
-      "reported_for_priority_queue": true,
-      "rows": 3,
-      "section": "fix_now",
-      "section_label": "Fix now",
-      "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +3 vs baseline 0.",
-      "status": "fail",
-      "sub": "regr",
-      "verdict": "FIX"
-    },
-    {
       "band": "P0",
-      "baseline_count": 1608,
+      "baseline_count": 1609,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -64,7 +27,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P0",
-        "baseline_count": 1608,
+        "baseline_count": 1609,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -76,13 +39,13 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 1608
+        "violation_count": 1609
       },
       "reported_for_priority_queue": true,
-      "rows": 1608,
+      "rows": 1609,
       "section": "burn_down",
       "section_label": "Burn down / owned backlog",
-      "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1608 at floor (baseline 1608); no new debt.",
+      "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1609 at floor (baseline 1609); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -200,7 +163,7 @@
     },
     {
       "band": "P1",
-      "baseline_count": 2061,
+      "baseline_count": 2062,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -212,7 +175,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P1",
-        "baseline_count": 2061,
+        "baseline_count": 2062,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -224,13 +187,13 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 2061
+        "violation_count": 2062
       },
       "reported_for_priority_queue": true,
-      "rows": 2061,
+      "rows": 2062,
       "section": "burn_down",
       "section_label": "Burn down / owned backlog",
-      "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2061 at floor (baseline 2061); no new debt.",
+      "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2062 at floor (baseline 2062); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -646,7 +609,7 @@
     },
     {
       "band": "P3",
-      "baseline_count": 10788,
+      "baseline_count": 10792,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -658,7 +621,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P3",
-        "baseline_count": 10788,
+        "baseline_count": 10792,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -670,20 +633,20 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 10788
+        "violation_count": 10792
       },
       "reported_for_priority_queue": false,
-      "rows": 10788,
+      "rows": 10792,
       "section": "kpi_watchlist",
       "section_label": "KPI / watchlist",
-      "signal": "Counts: Unused import edges in production modules. Sub: 10788 at floor (baseline 10788); no new debt.",
+      "signal": "Counts: Unused import edges in production modules. Sub: 10792 at floor (baseline 10792); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
     },
     {
       "band": "P3",
-      "baseline_count": 1187,
+      "baseline_count": 1188,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -695,7 +658,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P3",
-        "baseline_count": 1187,
+        "baseline_count": 1188,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -707,13 +670,13 @@
         "source": "disk",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 1187
+        "violation_count": 1188
       },
       "reported_for_priority_queue": false,
-      "rows": 1187,
+      "rows": 1188,
       "section": "kpi_watchlist",
       "section_label": "KPI / watchlist",
-      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1187 at floor (baseline 1187); no new debt.",
+      "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1188 at floor (baseline 1188); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -799,11 +762,11 @@
       "description": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
       "gate_count": 15,
       "label": "Burn down / owned backlog",
-      "row_count": 11424,
+      "row_count": 11426,
       "rows": [
         {
           "band": "P0",
-          "baseline_count": 1608,
+          "baseline_count": 1609,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -815,7 +778,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P0",
-            "baseline_count": 1608,
+            "baseline_count": 1609,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -827,13 +790,13 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 1608
+            "violation_count": 1609
           },
           "reported_for_priority_queue": true,
-          "rows": 1608,
+          "rows": 1609,
           "section": "burn_down",
           "section_label": "Burn down / owned backlog",
-          "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1608 at floor (baseline 1608); no new debt.",
+          "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1609 at floor (baseline 1609); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -951,7 +914,7 @@
         },
         {
           "band": "P1",
-          "baseline_count": 2061,
+          "baseline_count": 2062,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -963,7 +926,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P1",
-            "baseline_count": 2061,
+            "baseline_count": 2062,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -975,13 +938,13 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 2061
+            "violation_count": 2062
           },
           "reported_for_priority_queue": true,
-          "rows": 2061,
+          "rows": 2062,
           "section": "burn_down",
           "section_label": "Burn down / owned backlog",
-          "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2061 at floor (baseline 2061); no new debt.",
+          "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2062 at floor (baseline 2062); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -1360,7 +1323,7 @@
     },
     "clear": {
       "description": "Zero-action rows.",
-      "gate_count": 28,
+      "gate_count": 29,
       "label": "Clear",
       "row_count": 0,
       "rows": [
@@ -2073,6 +2036,43 @@
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
+          "gate_class": "NewOrphansDeltaGate",
+          "gate_id": "H1_new_orphans_delta_ratchet",
+          "is_burndown_work": false,
+          "is_kpi_or_watchlist": false,
+          "materiality": "architecture_backlog",
+          "next_step": "None \u2014 gate clean (zero rows).",
+          "raw_gate": {
+            "band": "P1",
+            "baseline_count": 0,
+            "classification": "pass",
+            "dispatch": "in-process",
+            "enforcement": "ratchet",
+            "exit_code": 0,
+            "gate_class": "NewOrphansDeltaGate",
+            "gate_id": "H1_new_orphans_delta_ratchet",
+            "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
+            "owner": "wiring_ci",
+            "source": "sql",
+            "status": "pass",
+            "stderr_tail": [],
+            "violation_count": 0
+          },
+          "reported_for_priority_queue": false,
+          "rows": 0,
+          "section": "clear",
+          "section_label": "Clear",
+          "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: No rows.",
+          "status": "pass",
+          "sub": "\u2014",
+          "verdict": "CLEAR"
+        },
+        {
+          "band": "P1",
+          "baseline_count": 0,
+          "classification": "pass",
+          "delta_vs_baseline": 0,
+          "enforcement": "ratchet",
           "gate_class": "FaninCollapseGate",
           "gate_id": "H2_fanin_collapse_ratchet",
           "is_burndown_work": false,
@@ -2404,54 +2404,16 @@
     },
     "fix_now": {
       "description": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
-      "gate_count": 1,
+      "gate_count": 0,
       "label": "Fix now",
-      "row_count": 3,
-      "rows": [
-        {
-          "band": "P1",
-          "baseline_count": 0,
-          "classification": "regressed",
-          "delta_vs_baseline": 3,
-          "enforcement": "ratchet",
-          "gate_class": "NewOrphansDeltaGate",
-          "gate_id": "H1_new_orphans_delta_ratchet",
-          "is_burndown_work": true,
-          "is_kpi_or_watchlist": false,
-          "materiality": "architecture_backlog",
-          "next_step": "Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
-          "raw_gate": {
-            "band": "P1",
-            "baseline_count": 0,
-            "classification": "regressed",
-            "dispatch": "in-process",
-            "enforcement": "ratchet",
-            "exit_code": 1,
-            "gate_class": "NewOrphansDeltaGate",
-            "gate_id": "H1_new_orphans_delta_ratchet",
-            "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
-            "owner": "wiring_ci",
-            "source": "sql",
-            "status": "fail",
-            "stderr_tail": [],
-            "violation_count": 3
-          },
-          "reported_for_priority_queue": true,
-          "rows": 3,
-          "section": "fix_now",
-          "section_label": "Fix now",
-          "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +3 vs baseline 0.",
-          "status": "fail",
-          "sub": "regr",
-          "verdict": "FIX"
-        }
-      ]
+      "row_count": 0,
+      "rows": []
     },
     "kpi_watchlist": {
       "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
       "gate_count": 5,
       "label": "KPI / watchlist",
-      "row_count": 12552,
+      "row_count": 12557,
       "rows": [
         {
           "band": "P2",
@@ -2492,7 +2454,7 @@
         },
         {
           "band": "P3",
-          "baseline_count": 10788,
+          "baseline_count": 10792,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -2504,7 +2466,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P3",
-            "baseline_count": 10788,
+            "baseline_count": 10792,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -2516,20 +2478,20 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 10788
+            "violation_count": 10792
           },
           "reported_for_priority_queue": false,
-          "rows": 10788,
+          "rows": 10792,
           "section": "kpi_watchlist",
           "section_label": "KPI / watchlist",
-          "signal": "Counts: Unused import edges in production modules. Sub: 10788 at floor (baseline 10788); no new debt.",
+          "signal": "Counts: Unused import edges in production modules. Sub: 10792 at floor (baseline 10792); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
         },
         {
           "band": "P3",
-          "baseline_count": 1187,
+          "baseline_count": 1188,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -2541,7 +2503,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P3",
-            "baseline_count": 1187,
+            "baseline_count": 1188,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -2553,13 +2515,13 @@
             "source": "disk",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 1187
+            "violation_count": 1188
           },
           "reported_for_priority_queue": false,
-          "rows": 1187,
+          "rows": 1188,
           "section": "kpi_watchlist",
           "section_label": "KPI / watchlist",
-          "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1187 at floor (baseline 1187); no new debt.",
+          "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1188 at floor (baseline 1188); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -2643,25 +2605,25 @@
   },
   "source": {
     "burndown_schema_version": "2.2",
-    "overall_exit_code": 1,
-    "snapshot": "adg_indexed_07032026_2302.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07032026_2302.sqlite",
-    "timestamp": "2026-07-04T03:17:28.818732+00:00"
+    "overall_exit_code": 0,
+    "snapshot": "adg_indexed_07042026_1025.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07042026_1025.sqlite",
+    "timestamp": "2026-07-04T14:31:05.273609+00:00"
   },
   "summary": {
     "burn_down_gates": 15,
-    "burn_down_rows": 11424,
-    "clear_gates": 28,
-    "fix_now_gates": 1,
-    "fix_now_rows": 3,
+    "burn_down_rows": 11426,
+    "clear_gates": 29,
+    "fix_now_gates": 0,
+    "fix_now_rows": 0,
     "kpi_watchlist_gates": 5,
-    "kpi_watchlist_rows": 12552,
-    "priority_queue_gate_count": 16,
-    "priority_queue_row_count": 11427,
+    "kpi_watchlist_rows": 12557,
+    "priority_queue_gate_count": 15,
+    "priority_queue_row_count": 11426,
     "report_only_gate_count": 5,
-    "report_only_row_count": 12552,
+    "report_only_row_count": 12557,
     "total_gates": 49,
-    "work_section_gate_count": 16,
-    "work_section_row_count": 11427
+    "work_section_gate_count": 15,
+    "work_section_row_count": 11426
   }
 }

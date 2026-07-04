@@ -17,13 +17,15 @@
     "| Finding | What it says | Response |",
     "Business read:",
     "Technical evidence:",
-    "Fix now:",
     "Action impact:"
   ],
   "locked_format_name": "adg_bcg_inline_executive_v1",
   "ordered_sections": [
     "## ADG Executive Brief",
     "| Question | Answer |",
+    "Decision gate:",
+    "| Gate | Status | Evidence | Required before ranking |",
+    "Fix now:",
     "ADG Run Metrics",
     "| Metric | Value |",
     "P0-P3 Severity Inventory",

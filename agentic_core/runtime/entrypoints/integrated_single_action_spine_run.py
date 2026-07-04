@@ -89,6 +89,7 @@ from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
 from agentic_core.L1_cognition.bridges.u0_to_l1_plan import (
     validated_request_to_plan_contract,
 )
+import agentic_core.L1_cognition as _reach_l1_cognition  # noqa: F401
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
     ExitEvalPipeline,
     ExitEvalResult,

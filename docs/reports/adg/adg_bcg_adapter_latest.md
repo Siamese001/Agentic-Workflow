@@ -1,10 +1,10 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-04T03:20:10+00:00
+- **Generated:** 2026-07-04T14:33:41+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-04T03:17:28.818732+00:00
-- **Work sections:** 16 gate(s) / 11,427 row(s)
-- **KPI/watchlist:** 5 gate(s) / 12,552 row(s)
+- **Source timestamp:** 2026-07-04T14:31:05.273609+00:00
+- **Work sections:** 15 gate(s) / 11,426 row(s)
+- **KPI/watchlist:** 5 gate(s) / 12,557 row(s)
 
 This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.
 
@@ -12,9 +12,7 @@ This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one own
 
 Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.
 
-| Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
-|------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `H1_new_orphans_delta_ratchet` | architecture_backlog | P1 | ratchet | FIX | regr | 3 | Regression +3 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+_No rows._
 
 ## Burn down / owned backlog
 
@@ -22,11 +20,11 @@ Accepted debt that is still plausible burn-down work after FIX rows clear.
 
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `S2_uwg_bypass_ratchet` | architecture_backlog | P0 | ratchet | TRACK | floor | 1,608 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `S2_uwg_bypass_ratchet` | architecture_backlog | P0 | ratchet | TRACK | floor | 1,609 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `G_REACH_l0_reachability` | architecture_backlog | P0 | ratchet | TRACK | floor | 1,495 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `3_write_sovereignty` | architecture_backlog | P0 | block | TRACK | inventory | 764 | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
 | `J1_canonical_pipeline_wiring` | architecture_backlog | P0 | block | TRACK | inventory | 1 | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
-| `C3_silent_writes_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 2,061 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `C3_silent_writes_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 2,062 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `E1_trace_stub_module` | architecture_backlog | P1 | ratchet | TRACK | floor | 982 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `B2_layer_skip_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 862 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `I1_exit_disposition_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 695 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
@@ -42,8 +40,8 @@ Trend and hygiene signals. Report separately; do not treat as burn-down work wit
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
 | `D2_role_duplication_warn` | governance_hygiene | P2 | warn | TRACK | advis | 105 | Advisory KPI: watch the trend; no action required to pass CI. |
-| `S4_unused_imports_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 10,788 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
-| `Q2_cyclomatic_complexity_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 1,187 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `S4_unused_imports_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 10,792 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `Q2_cyclomatic_complexity_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 1,188 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `M1_module_loc_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 469 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D1_layer_doc_binding` | governance_hygiene | P3 | warn | TRACK | advis | 3 | Advisory KPI: watch the trend; no action required to pass CI. |
 

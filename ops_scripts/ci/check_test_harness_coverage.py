@@ -49,6 +49,7 @@ __adg_consumer_mode__ = "inventory"
 
 
 import argparse
+import ast
 import fnmatch
 import json
 import sqlite3
@@ -171,6 +172,47 @@ def _load_baseline() -> set[str]:
     return {str(x) for x in entries if isinstance(x, str)}
 
 
+def _module_name_to_prod_rel(module_name: str, prod: set[str]) -> str | None:
+    rel = Path(*module_name.split(".")).with_suffix(".py").as_posix()
+    if rel in prod:
+        return rel
+    package_init = Path(*module_name.split("."), "__init__.py").as_posix()
+    if package_init in prod:
+        return package_init
+    return None
+
+
+def _query_ast_test_imported(prod: set[str]) -> set[str]:
+    """Resolve test imports directly from AST as a no-exec ADG backstop.
+
+    Some ADG snapshots retain an ``imports`` edge from a test file but leave
+    ``tgt.resolved_path`` blank for module-form app imports. The gate's
+    contract is "any test imports the production module", so we union the ADG
+    query with a filesystem AST pass that maps import module names to existing
+    production files without importing or executing code.
+    """
+    covered: set[str] = set()
+    for path in (REPO / "tests").rglob("*.py"):
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except (OSError, SyntaxError):
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if rel := _module_name_to_prod_rel(alias.name, prod):
+                        covered.add(rel)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                if rel := _module_name_to_prod_rel(node.module, prod):
+                    covered.add(rel)
+                for alias in node.names:
+                    if alias.name == "*":
+                        continue
+                    if rel := _module_name_to_prod_rel(f"{node.module}.{alias.name}", prod):
+                        covered.add(rel)
+    return covered
+
+
 def _write_baseline(modules: set[str]) -> None:
     BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -232,6 +274,7 @@ def main() -> int:
         covered = _query_test_imported(conn)
     finally:
         conn.close()
+    covered |= _query_ast_test_imported(prod)
 
     # A module is uncovered if it is in the production surface, not in the
     # allowlist, and does not appear in the covered set.
