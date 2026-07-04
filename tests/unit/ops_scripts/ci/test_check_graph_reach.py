@@ -26,6 +26,13 @@ def _node(conn: sqlite3.Connection, node_id: int, layer: str, path: str) -> None
     )
 
 
+def _symbol(conn: sqlite3.Connection, node_id: int, layer: str, path: str, name: str) -> None:
+    conn.execute(
+        "insert into nodes values (?, ?, ?, ?, ?)",
+        (node_id, layer, "symbol", path, f"ADG::Symbol::{name}"),
+    )
+
+
 def test_graph_reach_ignores_apps_layer_for_core_l0_reachability(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(check_graph_reach, "_source_file_exists", lambda _path: True)
     conn = _conn()
@@ -55,6 +62,27 @@ def test_graph_reach_accepts_core_module_reachable_from_l0(monkeypatch: pytest.M
     _node(conn, 1, "L0", "agentic_core/L0_routing/entry.py")
     _node(conn, 2, "L5", "agentic_core/L5_safety/reachable.py")
     conn.execute("insert into edges values (?, ?, ?)", (1, 2, "imports"))
+
+    violations = check_graph_reach.GraphReachGate().run(conn)
+
+    assert violations == []
+
+
+def test_graph_reach_accepts_module_when_l0_reaches_symbol_in_same_file(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(check_graph_reach, "_source_file_exists", lambda _path: True)
+    conn = _conn()
+    _node(conn, 1, "L0", "agentic_core/L0_routing/entry.py")
+    _node(conn, 2, "L1", "agentic_core/L1_cognition/reachable.py")
+    _symbol(
+        conn,
+        3,
+        "L1",
+        "agentic_core/L1_cognition/reachable.py",
+        "agentic_core.L1_cognition.reachable.ExportedSymbol",
+    )
+    conn.execute("insert into edges values (?, ?, ?)", (1, 3, "imports"))
 
     violations = check_graph_reach.GraphReachGate().run(conn)
 

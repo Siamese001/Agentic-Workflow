@@ -59,6 +59,25 @@ def _write_burndown(path: Path) -> None:
     )
 
 
+def _write_p0_wave_plan(path: Path, issue_kind: str = "l0_reachability_orphan") -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "plan_required": True,
+                "top_files": [
+                    {
+                        "source_file": "agentic_core/L1_cognition/reachable.py",
+                        "issue_count": 1,
+                        "issue_kinds": [issue_kind],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 def test_track_never_in_actions(tmp_path: Path) -> None:
     gate = tmp_path / "gates.json"
     burndown = tmp_path / "burndown.json"
@@ -79,6 +98,82 @@ def test_track_never_in_actions(tmp_path: Path) -> None:
     doc = build_action_queue(gate_results_path=gate, burndown_path=burndown, max_actions=10)
     assert all(a.get("verdict_cluster") != "TRACK" for a in doc["actions"])
     assert display_verdict({"classification": "pass", "violation_count": 2792, "enforcement": "ratchet"}) == "TRACK"
+
+
+def test_p0_wave_does_not_promote_ratchet_floor(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    p0_wave = tmp_path / "p0_wave.json"
+    _write_gate_results(
+        gate,
+        [
+            _gate(
+                "G_REACH_l0_reachability",
+                enforcement="ratchet",
+                classification="pass",
+                violation_count=1495,
+                baseline_count=1495,
+            )
+        ],
+    )
+    _write_burndown(burndown)
+    _write_p0_wave_plan(p0_wave)
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        p0_wave_plan_path=p0_wave,
+    )
+
+    assert doc["summary"]["track_count"] == 1
+    assert all(a.get("verdict_cluster") != "P0_WAVE" for a in doc["actions"])
+
+
+def test_p0_wave_promotes_ratchet_regression(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    p0_wave = tmp_path / "p0_wave.json"
+    _write_gate_results(
+        gate,
+        [
+            _gate(
+                "G_REACH_l0_reachability",
+                enforcement="ratchet",
+                classification="regressed",
+                violation_count=1496,
+                baseline_count=1495,
+            )
+        ],
+    )
+    _write_burndown(burndown)
+    _write_p0_wave_plan(p0_wave)
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        p0_wave_plan_path=p0_wave,
+    )
+
+    p0_wave_actions = [a for a in doc["actions"] if a.get("verdict_cluster") == "P0_WAVE"]
+    assert len(p0_wave_actions) == 1
+    assert p0_wave_actions[0]["file_path"] == "agentic_core/L1_cognition/reachable.py"
+
+
+def test_p0_wave_promotes_non_ratchet_structural_issue(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    p0_wave = tmp_path / "p0_wave.json"
+    _write_gate_results(gate, [])
+    _write_burndown(burndown)
+    _write_p0_wave_plan(p0_wave, issue_kind="dynamic_exec")
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        p0_wave_plan_path=p0_wave,
+    )
+
+    assert any(a.get("verdict_cluster") == "P0_WAVE" for a in doc["actions"])
 
 
 def test_track_never_in_notion_payload(tmp_path: Path) -> None:

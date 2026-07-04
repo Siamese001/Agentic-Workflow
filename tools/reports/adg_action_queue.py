@@ -37,6 +37,10 @@ SUB_TO_SORT_BUCKET = {
     "seed": 2,
 }
 
+P0_WAVE_RATCHET_GATE_BY_KIND = {
+    "l0_reachability_orphan": "G_REACH_l0_reachability",
+}
+
 
 @dataclass(frozen=True)
 class ProvenanceInput:
@@ -253,12 +257,42 @@ def _build_fix_actions(gates: list[dict[str, Any]], source_digest: str) -> list[
     return rows
 
 
-def _build_p0_wave_actions(plan: dict[str, Any], source_digest: str, max_files: int = 3) -> list[dict[str, Any]]:
+def _gate_index(gates: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    return {str(gate.get("gate_id")): gate for gate in gates if gate.get("gate_id")}
+
+
+def _p0_wave_item_promotable(item: dict[str, Any], gates_by_id: dict[str, dict[str, Any]]) -> bool:
+    kinds = [str(kind) for kind in item.get("issue_kinds") or []]
+    if not kinds:
+        return True
+
+    ratchet_gate_ids: set[str] = set()
+    for kind in kinds:
+        gate_id = P0_WAVE_RATCHET_GATE_BY_KIND.get(kind)
+        if gate_id is None:
+            return True
+        ratchet_gate_ids.add(gate_id)
+
+    return any(needs_fix(gates_by_id.get(gate_id, {})) for gate_id in ratchet_gate_ids)
+
+
+def _build_p0_wave_actions(
+    plan: dict[str, Any],
+    source_digest: str,
+    *,
+    gates: list[dict[str, Any]] | None = None,
+    max_files: int = 3,
+) -> list[dict[str, Any]]:
     if not plan.get("plan_required"):
         return []
+    gates_by_id = _gate_index(gates or [])
     top_files = plan.get("top_files") or []
     rows: list[dict[str, Any]] = []
-    for item in top_files[:max_files]:
+    for item in top_files:
+        if len(rows) >= max_files:
+            break
+        if not _p0_wave_item_promotable(item, gates_by_id):
+            continue
         source_file = str(item.get("source_file") or "")
         if not source_file:
             continue
@@ -696,7 +730,13 @@ def build_action_queue(
 
     combined = list(fix_rows)
     if p0_prov.status == "present" and p0_prov.raw:
-        combined.extend(_build_p0_wave_actions(p0_prov.raw, p0_prov.digest_sha256 or ""))
+        combined.extend(
+            _build_p0_wave_actions(
+                p0_prov.raw,
+                p0_prov.digest_sha256 or "",
+                gates=gates,
+            )
+        )
 
     snapshot_path = sqlite_snapshot_path or _resolve_snapshot_from_gate_data(gate_data, repo_root)
     combined.extend(_build_test_hotspot_actions(snapshot_path, gate_prov.digest_sha256))

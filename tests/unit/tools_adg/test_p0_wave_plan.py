@@ -113,6 +113,81 @@ def test_p0_wave_plan_stays_clean_when_modules_are_l0_reachable(tmp_path, monkey
     assert plan["summary"]["l0_reachability_orphans"] == 0
 
 
+def test_p0_wave_plan_stays_clean_when_l0_reaches_symbol_in_module_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(p0_wave_plan, "_REPO_ROOT", tmp_path)
+    _write_source(tmp_path, "agentic_core/L0_routing/entry.py")
+    _write_source(tmp_path, "agentic_core/L1_cognition/reachable.py")
+    sqlite_path = tmp_path / "adg_symbol_reachable.sqlite"
+    con = sqlite3.connect(sqlite_path)
+    try:
+        con.execute(
+            """
+            CREATE TABLE nodes (
+                id INTEGER PRIMARY KEY,
+                layer TEXT,
+                entity_type TEXT,
+                resolved_path TEXT,
+                file_path TEXT,
+                adg_name TEXT
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE edges (
+                id INTEGER PRIMARY KEY,
+                src_id INTEGER,
+                dst_id INTEGER,
+                relation_type TEXT,
+                source_file TEXT,
+                line_no INTEGER
+            )
+            """
+        )
+        con.executemany(
+            "INSERT INTO nodes VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    1,
+                    "L0",
+                    "module",
+                    "agentic_core/L0_routing/entry.py",
+                    "agentic_core/L0_routing/entry.py",
+                    "ADG::Module::agentic_core/L0_routing/entry.py",
+                ),
+                (
+                    2,
+                    "L1",
+                    "module",
+                    "agentic_core/L1_cognition/reachable.py",
+                    "agentic_core/L1_cognition/reachable.py",
+                    "ADG::Module::agentic_core/L1_cognition/reachable.py",
+                ),
+                (
+                    3,
+                    "L1",
+                    "symbol",
+                    "agentic_core/L1_cognition/reachable.py",
+                    "agentic_core/L1_cognition/reachable.py",
+                    "ADG::Symbol::agentic_core.L1_cognition.reachable.ExportedSymbol",
+                ),
+            ],
+        )
+        con.execute(
+            "INSERT INTO edges VALUES (?, ?, ?, ?, ?, ?)",
+            (1, 1, 3, "imports", "agentic_core/L0_routing/entry.py", 1),
+        )
+        con.commit()
+    finally:
+        con.close()
+
+    plan = p0_wave_plan.build_p0_remediation_wave_plan(sqlite_path)
+
+    assert plan["plan_required"] is False
+    assert plan["summary"]["total_p0_issues"] == 0
+    assert plan["summary"]["l0_reachability_orphans"] == 0
+
+
 def test_p0_wave_plan_accepts_nodes_without_file_path_column(tmp_path, monkeypatch):
     monkeypatch.setattr(p0_wave_plan, "_REPO_ROOT", tmp_path)
     _write_source(tmp_path, "agentic_core/L0_routing/entry.py")
