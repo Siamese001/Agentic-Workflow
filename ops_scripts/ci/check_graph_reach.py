@@ -100,6 +100,11 @@ class GraphReachGate(WiringGate):
         reachable: set = set(l0_seeds)
         for seed in l0_seeds:
             reachable.update(nx.descendants(g, seed))
+        reachable_paths = {
+            g.nodes[node_id].get("resolved_path")
+            for node_id in reachable
+            if g.nodes[node_id].get("resolved_path")
+        }
 
         violations: list[Violation] = []
         for node_id, data in g.nodes(data=True):
@@ -110,7 +115,7 @@ class GraphReachGate(WiringGate):
             path = data.get("resolved_path") or data.get("adg_name") or f"node#{node_id}"
             if data.get("resolved_path") and not _source_file_exists(data["resolved_path"]):
                 continue
-            if node_id in reachable:
+            if node_id in reachable or data.get("resolved_path") in reachable_paths:
                 continue
             violations.append(
                 Violation(

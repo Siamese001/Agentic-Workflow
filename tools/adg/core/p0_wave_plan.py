@@ -137,6 +137,11 @@ def _build_l0_reachability_orphans(conn: sqlite3.Connection, limit: int) -> list
                 continue
             reachable.add(dst)
             frontier.append(dst)
+    reachable_paths = {
+        str(nodes[node_id].get("resolved_path") or "")
+        for node_id in reachable
+        if nodes[node_id].get("resolved_path")
+    }
 
     issues: list[dict[str, Any]] = []
     for node_id, data in nodes.items():
@@ -148,7 +153,7 @@ def _build_l0_reachability_orphans(conn: sqlite3.Connection, limit: int) -> list
         source_file = str(data.get("resolved_path") or "")
         if source_file and not _source_file_exists(source_file):
             continue
-        if node_id in reachable:
+        if node_id in reachable or source_file in reachable_paths:
             continue
         protected_surface = _is_protected_surface(source_file, "L0", layer)
         direct_fan_in = int(fan_in.get(node_id, 0))
