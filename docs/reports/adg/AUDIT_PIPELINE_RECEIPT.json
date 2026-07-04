@@ -1,66 +1,58 @@
 {
   "schema_version": "adg-audit-pipeline-receipt/v1",
   "run_state": {
-    "certification_status": "failed",
-    "generator_exit_code": 1,
+    "certification_status": "clean",
+    "generator_exit_code": 0,
     "report_exit_code": 0,
     "runtime_proof_status": "view_present_zero_attested",
-    "reasons": [
-      "generator exit_code=1",
-      "required gate 'adg_gate_dispatcher' status=fail",
-      "required gate 'config-ref' status=fail",
-      "required gate 'lifecycle' status=fail",
-      "required gate 'test-coverage' status=fail",
-      "adg_gate_dispatcher overall_exit_code=1",
-      "enforcement_report certified_rollup=NOT_CERTIFIED"
-    ]
+    "reasons": []
   },
-  "artifact_status": "repair_ready",
+  "artifact_status": "certified",
   "artifact_status_source": "direct",
-  "adg_run_id": "07032026_0812",
-  "started_at_utc": "2026-07-03T12:12:13Z",
-  "completed_at_utc": "2026-07-03T12:28:33Z",
+  "adg_run_id": "07042026_0851",
+  "started_at_utc": "2026-07-04T12:51:32Z",
+  "completed_at_utc": "2026-07-04T13:01:04Z",
   "repair_handoff": {
-    "status": "repair_ready",
+    "status": "certified",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_indexed_07032026_0812.sqlite",
-        "sha256": "45b9ef02ad268da950a40fa7c4f99961a769d6c809f495b3e8b787563401db0e"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07042026_0851.sqlite",
+        "sha256": "031c1f25ed85df2810c8e0b4bca150902c39b110d85896a15147e87952b42906"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_gate_results_20260703_122529.json",
-        "sha256": "cef76ec5aaa58d0b393e3d323851ff01ce814d677ca19d29911d43fa880e2c86"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_gate_results_20260704_125712.json",
+        "sha256": "376aff5157980034daff70aa2853484f1926627ee8c398e1a02adeedb56dcf03"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_action_queue_07032026_0812.json",
-        "sha256": "d62eb2a2479270b404fef4c824a6df88c188728514e511de199375d96fbdeaba"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_action_queue_07042026_0851.json",
+        "sha256": "4e3b5e8a9fb80fac5e0d793d452db05fff94fd1876cd91a42ed2ad5a27ab1d51"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_burndown_report_07032026_0812.md",
-        "sha256": "4ab1501d7806f558745cb3631347e88d8f9508adac202c39654d847d6dce4c5b"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_burndown_report_07042026_0851.md",
+        "sha256": "7828b86d833292d550965d77046fcef805c4e6ea1af1bbf4bec2be9be4b60fbf"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_burndown_table_07032026_0812.json",
-        "sha256": "86cb78270ec10fbcbc53626ac438eec6da6930cfd84d8fa15b70e0488fb153e5"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_burndown_table_07042026_0851.json",
+        "sha256": "2cbb98d3339179abe6de5dfb5860526fcf4b03e323f90813d021ae13cb11640e"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_generation_manifest_07032026_0812.json",
-        "sha256": "67f5f5e01407e5dda49c524332e7a4a7ad916783e1abfd40dad43e20c34f0eb7"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_generation_manifest_07042026_0851.json",
+        "sha256": "567f48196d7e3f11cc24292fff033539eab9f9253bc5bc28dcf1ff16bb51684f"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_gate_invocation_manifest_07032026_0812.json",
-        "sha256": "161d8c0a81b008180ebf1fc23f5c7bd364a5049b15dbd26aff77db28e8dc782e"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_gate_invocation_manifest_07042026_0851.json",
+        "sha256": "dc82df2190e4a5ae0b5800918552bb2b0c73bd176a87f72293dcd6bbe2464206"
       }
     },
     "counts": {
-      "P0_FIX": 1,
+      "P0_FIX": 0,
       "P0_WAVE": 0,
       "P0_TRACKED_BACKLOG": 4,
       "P1_FIX": 0,

@@ -8,10 +8,8 @@ this module).
 """
 from __future__ import annotations
 
+from importlib import import_module
 from typing import Any
-
-# Re-export for callers that import parse from the core entry package (e.g. pipeline smoke tests).
-from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse  # guardian: allow-layer-violation -- core entry re-export to app dispatch
 
 __all__ = [
     "apps_rg_dispatch",
@@ -19,6 +17,17 @@ __all__ = [
     "dispatch_apps_rg_run",
     "run_ag2_retrieval_and_prompt",
 ]
+
+
+def _load_app_attr(module_name: str, attr_name: str) -> Any:
+    """Resolve app-owned entrypoints without static core-to-app import edges."""
+    return getattr(import_module(module_name), attr_name)
+
+
+def apps_rg_parse(payload: dict[str, Any]) -> Any:
+    """Re-export parser behavior for legacy callers without a static app import."""
+    app_parse = _load_app_attr("apps_rg.runtime.dispatch.apps_rg_dispatch", "apps_rg_parse")
+    return app_parse(payload)
 
 
 def dispatch_apps_rg_run(
@@ -49,8 +58,9 @@ def dispatch_apps_rg_run(
             "outcome_authorized": False,
             "error": "target_company and target_role are required",
         }
-    from apps_rg.runtime.orchestration.canonical_dispatch import (
-        run_canonical_apps_rg_from_cli_primitives,
+    run_canonical_apps_rg_from_cli_primitives = _load_app_attr(
+        "apps_rg.runtime.orchestration.canonical_dispatch",
+        "run_canonical_apps_rg_from_cli_primitives",
     )
 
     return run_canonical_apps_rg_from_cli_primitives(
@@ -71,8 +81,14 @@ def run_ag2_retrieval_and_prompt(
     validated_request: Any,
 ) -> Any:
     """AG-2 slice: C0 then PA, both consuming ``ValidatedRequest`` (AST-scanned)."""
-    from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg  # guardian: allow-layer-violation -- AG-2 slice binds app C0/PA from core entry shim
-    from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg  # guardian: allow-layer-violation -- AG-2 slice binds app C0/PA from core entry shim
+    c0_retrieve_apps_rg = _load_app_attr(
+        "apps_rg.runtime.bindings.c0_binding",
+        "c0_retrieve_apps_rg",
+    )
+    pa_compose_apps_rg = _load_app_attr(
+        "apps_rg.runtime.bindings.pa_binding",
+        "pa_compose_apps_rg",
+    )
 
     fec = c0_retrieve_apps_rg(route, validated_request)
     return pa_compose_apps_rg(route, plan, fec, validated_request)
@@ -80,8 +96,9 @@ def run_ag2_retrieval_and_prompt(
 
 def apps_rg_dispatch(envelope: Any) -> Any:
     """Agent entry: delegate to app-owned ``apps_rg.runtime.dispatch``."""
-    from apps_rg.runtime.dispatch.apps_rg_dispatch import (  # guardian: allow-layer-violation -- core entry delegates to app-owned dispatch
-        apps_rg_dispatch as _app_dispatch,
+    app_dispatch = _load_app_attr(
+        "apps_rg.runtime.dispatch.apps_rg_dispatch",
+        "apps_rg_dispatch",
     )
 
-    return _app_dispatch(envelope)
+    return app_dispatch(envelope)

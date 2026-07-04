@@ -147,7 +147,7 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07032026_0812.sqlite (snapshot 07032026_0812)",
+        "ADG source: artifacts/adg/adg_indexed_07042026_0851.sqlite (snapshot 07042026_0851)",
         "Dead code candidates: 913",
         "Dead imports: 913",
         "Unresolved imports: 483",
@@ -304,8 +304,8 @@
       "dead_code_candidates": 913,
       "dead_imports": 913,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5600271309066245,
-      "inferred_symbol_ratio": 10.143146491886847,
+      "first_party_low_confidence_ratio": 1.5593220338983051,
+      "inferred_symbol_ratio": 10.137205956774153,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -447,8 +447,8 @@
     "executive_metrics": {
       "dead_code_count": 913,
       "dead_import_count": 913,
-      "first_party_low_confidence_ratio": 1.5600271309066245,
-      "inferred_symbol_ratio": 10.143146491886847,
+      "first_party_low_confidence_ratio": 1.5593220338983051,
+      "inferred_symbol_ratio": 10.137205956774153,
       "l4_unresolved_import_count": 0,
       "low_confidence_count": 483,
       "unresolved_import_count": 483
@@ -484,12 +484,12 @@
       "L_TOOLS": 2352,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.143146491886847,
+    "inferred_symbol_ratio": 10.137205956774153,
     "total_inferred_symbols": 17828,
-    "total_symbols": 175764
+    "total_symbols": 175867
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.5600271309066245,
+    "first_party_low_confidence_ratio": 1.5593220338983051,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
       "symbol": 483
@@ -509,8 +509,8 @@
     "total_low_confidence": 483
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
-    "adg_snapshot_ts": "07032026_0812",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
+    "adg_snapshot_ts": "07042026_0851",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -520,11 +520,11 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
-    "adg_snapshot_ts": "07032026_0812",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
+    "adg_snapshot_ts": "07042026_0851",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.5600271309066245,
-    "inferred_symbol_ratio": 10.143146491886847,
+    "first_party_low_confidence_ratio": 1.5593220338983051,
+    "inferred_symbol_ratio": 10.137205956774153,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 913,
     "total_dead_imports": 913,

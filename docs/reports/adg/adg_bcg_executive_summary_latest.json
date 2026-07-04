@@ -9,7 +9,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 1,
-        "records": 2059,
+        "records": 2061,
         "scope": "C3_silent_writes_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -21,7 +21,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 2,
-        "records": 1605,
+        "records": 1608,
         "scope": "S2_uwg_bypass_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -45,7 +45,7 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 4,
-        "records": 994,
+        "records": 995,
         "scope": "I2_replay_surface_gaps_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -73,7 +73,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_gate_results_20260703_122529.json",
+        "path": "artifacts/adg/adg_gate_results_20260704_125712.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -86,7 +86,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_bcg_adapter_07032026_0812.json",
+        "path": "artifacts/adg/adg_bcg_adapter_07042026_0851.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -99,7 +99,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_action_queue_07032026_0812.json",
+        "path": "artifacts/adg/adg_action_queue_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -112,7 +112,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_review_template_07032026_0812.json",
+        "path": "artifacts/adg/adg_review_template_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -125,7 +125,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_burndown_table_07032026_0812.json",
+        "path": "artifacts/adg/adg_burndown_table_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -151,7 +151,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": false,
-        "path": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
+        "path": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
         "rationale": "Existing non-JSON artifact or SQLite snapshot mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -164,7 +164,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_generation_manifest_07032026_0812.json",
+        "path": "artifacts/adg/adg_generation_manifest_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -177,7 +177,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_structural_outputs_07032026_0812.json",
+        "path": "artifacts/adg/adg_structural_outputs_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -190,7 +190,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_refactor_accelerator_07032026_0812.json",
+        "path": "artifacts/adg/adg_refactor_accelerator_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -203,7 +203,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_queries_07032026_0812.json",
+        "path": "artifacts/adg/adg_graphdb_queries_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -216,7 +216,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_runtime_spine_07032026_0812.json",
+        "path": "artifacts/adg/adg_runtime_spine_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -229,7 +229,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_projection_07032026_0812.json",
+        "path": "artifacts/adg/adg_graphdb_projection_07042026_0851.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -242,7 +242,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_metadata_07032026_0812.json",
+        "path": "artifacts/adg/adg_graphdb_metadata_07042026_0851.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -255,22 +255,9 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_index_07032026_0812.json",
+        "path": "artifacts/adg/adg_graphdb_index_07042026_0851.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
-        "stale": false,
-        "used_for": [
-          "none"
-        ]
-      },
-      {
-        "artifact_key": "graph_watchlist",
-        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "exists": false,
-        "loaded": false,
-        "path": "",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "refine",
         "stale": false,
         "used_for": [
           "none"
@@ -281,7 +268,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/issues/p0_remediation_wave_plan_07032026_0812.json",
+        "path": "artifacts/adg/issues/p0_remediation_wave_plan_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -294,7 +281,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/dead_code_zone_control_report_07032026_0812.json",
+        "path": "artifacts/adg/dead_code_zone_control_report_07042026_0851.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -310,42 +297,42 @@
       "errors": [
         {
           "delta": 90,
-          "detail": "meta=1088137 actual=1088227",
+          "detail": "meta=1088661 actual=1088751",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_edges"
         },
         {
           "delta": 1,
-          "detail": "meta=187689 actual=187690",
+          "detail": "meta=187796 actual=187797",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_nodes"
         },
         {
           "artifact_key": "gate_results",
-          "expected_snapshot_minute": "20260703_0812",
-          "file": "artifacts/adg/adg_gate_results_20260703_122529.json",
+          "expected_snapshot_minute": "20260704_0851",
+          "file": "artifacts/adg/adg_gate_results_20260704_125712.json",
           "mismatch_type": "artifact_timestamp_mismatch",
-          "observed_snapshot_minute": "20260703_1225"
+          "observed_snapshot_minute": "20260704_1257"
         },
         {
           "artifact_key": "action_queue",
-          "expected_snapshot_minute": "20260703_0812",
+          "expected_snapshot_minute": "20260704_0851",
           "field": "snapshot_ts",
           "mismatch_type": "artifact_embedded_snapshot_mismatch",
-          "observed_snapshot_minute": "20260703_1225"
+          "observed_snapshot_minute": "20260704_1257"
         },
         {
           "artifact_key": "review_template",
-          "expected_snapshot_minute": "20260703_0812",
+          "expected_snapshot_minute": "20260704_0851",
           "field": "snapshot_ts",
           "mismatch_type": "artifact_embedded_snapshot_mismatch",
-          "observed_snapshot_minute": "20260703_1225"
+          "observed_snapshot_minute": "20260704_1257"
         },
         {
           "artifact_key": "generation_manifest",
-          "certification_status": "failed",
+          "certification_status": "clean",
           "mismatch_type": "generation_manifest_not_certified"
         }
       ],
@@ -353,40 +340,40 @@
     },
     "guardian_summary": [
       {
-        "audit_net": 4,
+        "audit_net": 3,
         "band": "P0",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 37,
-        "guardian": 33,
-        "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 4
-      },
-      {
-        "audit_net": 3,
-        "band": "P1",
-        "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 1146,
-        "guardian": 1143,
+        "gross": 35,
+        "guardian": 32,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
         "non_exempt": 3
       },
       {
-        "audit_net": 31,
-        "band": "P2",
+        "audit_net": 4,
+        "band": "P1",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 747,
-        "guardian": 716,
+        "gross": 1147,
+        "guardian": 1143,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 31
+        "non_exempt": 4
       },
       {
-        "audit_net": 19175,
+        "audit_net": 32,
+        "band": "P2",
+        "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
+        "gross": 748,
+        "guardian": 716,
+        "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
+        "non_exempt": 32
+      },
+      {
+        "audit_net": 19178,
         "band": "P3",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 19262,
+        "gross": 19265,
         "guardian": 87,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 19175
+        "non_exempt": 19178
       }
     ],
     "notes": [
@@ -404,11 +391,11 @@
   "bcg_findings": {
     "business_read": "ADG is giving one safe decision, not a full ranked roadmap: clear concrete P0 evidence before lower-severity work. The report inconsistency only limits confidence in the lower-priority ranking; it does not change the first engineering move.",
     "decision_gates": [],
-    "next_step": "Clear P0 FIX rows; rerun ADG and repair graph/report consistency before lower-severity ranking.",
+    "next_step": "Clear P0 foundation wave; rerun ADG and repair graph/report consistency before lower-severity ranking.",
     "north_star": "Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.",
     "priority_rows": [
       {
-        "action": "Clear P0 FIX rows",
+        "action": "Clear P0 foundation wave",
         "action_type": "p0_action_queue",
         "affected_layers": [],
         "affected_system": "ADG P0 lane",
@@ -418,64 +405,16 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm P0 action rows/foundation blockers are zero or explicitly waived.",
-        "evidence": "1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more",
-        "move": "Clear P0 FIX rows",
+        "evidence": "3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, agentic_core/L1_cognition/apps_research_l1_binding.py",
+        "move": "Clear P0 foundation wave",
         "next_step": "Burn down the listed P0 rows first, then rerun ADG before ranking P1-P3.",
         "priority": 1,
         "rank": 1,
         "scope": "P0 action queue",
-        "technical_reason": "1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more",
+        "technical_reason": "3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, agentic_core/L1_cognition/apps_research_l1_binding.py",
         "why_it_matters": "P0 work is the first severity lane; do not let a P1 ratchet or graph/report caveat jump ahead of it.",
         "why_this_rank": "Burn down the listed P0 rows first, then rerun ADG before ranking P1-P3.",
-        "work": "Clear P0 FIX rows"
-      },
-      {
-        "action": "Stop core importing apps",
-        "action_type": "fix_blocker",
-        "affected_layers": [],
-        "affected_system": "",
-        "business_reason": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-        "change_breakout": [],
-        "decision": "fix_blocker",
-        "decision_options": [
-          {
-            "description": "Use when the breakout is too thin to distinguish the options yet.",
-            "label": "Investigate evidence",
-            "required_proof": "More detailed samples, counts, or path concentration from ADG."
-          },
-          {
-            "description": "Use when the dependency is convenience coupling or accidental reach-through.",
-            "label": "Fix",
-            "required_proof": "Code diff removes the direct dependency and ADG rerun clears the delta."
-          },
-          {
-            "description": "Use when cross-layer collaboration is valid but the dependency path is wrong.",
-            "label": "Adapter/interface",
-            "required_proof": "New approved interface or adapter in the owning layer, plus tests that cover the mediated path."
-          },
-          {
-            "description": "Use when the dependency is intentional but temporary or tightly constrained.",
-            "label": "Guardian exemption",
-            "required_proof": "Owner, rationale, expiry or retirement condition, and the scoped path list."
-          },
-          {
-            "description": "Use when the architecture policy intentionally changed.",
-            "label": "Re-baseline",
-            "required_proof": "Approval, new baseline artifact, reason, reviewer, and migration plan."
-          }
-        ],
-        "diagram": null,
-        "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "evidence": "ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core` imports `apps_*`.",
-        "move": "Stop core importing apps",
-        "next_step": "Move app-specific bindings behind an adapter or app-owned wiring surface; core should keep only generic contracts.",
-        "priority": 1,
-        "rank": 1,
-        "scope": "13_core_imports_apps",
-        "technical_reason": "ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core` imports `apps_*`.",
-        "why_it_matters": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-        "why_this_rank": "Move app-specific bindings behind an adapter or app-owned wiring surface; core should keep only generic contracts.",
-        "work": "Stop core importing apps"
+        "work": "Clear P0 foundation wave"
       },
       {
         "action": "Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
@@ -491,8 +430,8 @@
         "evidence": "Add mapped tests/regression coverage for agentic_core.",
         "move": "Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         "next_step": "Add mapped tests before touching this surface again.",
-        "priority": 2,
-        "rank": 2,
+        "priority": 1,
+        "rank": 1,
         "scope": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         "technical_reason": "Add mapped tests/regression coverage for agentic_core.",
         "why_it_matters": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
@@ -513,13 +452,35 @@
         "evidence": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "move": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py",
         "next_step": "Refactor after the blocker and test exposure are explicit.",
-        "priority": 3,
-        "rank": 3,
+        "priority": 2,
+        "rank": 2,
         "scope": "agentic_core/adg/extraction/static_scanner.py",
         "technical_reason": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_it_matters": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_this_rank": "Refactor after the blocker and test exposure are explicit.",
         "work": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py"
+      },
+      {
+        "action": "Burn down ratchet C3_silent_writes_ratchet",
+        "action_type": "burn_down_ratchet",
+        "affected_layers": [],
+        "affected_system": "",
+        "business_reason": "Accepted baseline debt should fall after red gates are clear.",
+        "change_breakout": [],
+        "decision": "burn_down_ratchet",
+        "decision_options": [],
+        "diagram": null,
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "evidence": "2,061 floor-row(s) remain on the ratchet gate.",
+        "move": "Burn down ratchet C3_silent_writes_ratchet",
+        "next_step": "Burn down the ratchet after the current red gates clear.",
+        "priority": 3,
+        "rank": 3,
+        "scope": "C3_silent_writes_ratchet",
+        "technical_reason": "2,061 floor-row(s) remain on the ratchet gate.",
+        "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
+        "why_this_rank": "Burn down the ratchet after the current red gates clear.",
+        "work": "Burn down ratchet C3_silent_writes_ratchet"
       }
     ],
     "priority_rule": "Concrete P0 FIX rows first; graph/report mismatch is a decision-quality caveat, not the first engineering work item.",
@@ -528,10 +489,10 @@
     "status_label": "Decision status",
     "table_limit": 4,
     "technical_read": [
-      "First P0 evidence: `P0 action queue`; rows: 4.",
-      "Source: ADG `07032026_0812` emitted this as decision-linked queue evidence.",
+      "First P0 evidence: `P0 action queue`; rows: 3.",
+      "Source: ADG `07042026_0851` emitted this as decision-linked queue evidence.",
       "Report caveat: graph/report consistency is FAIL; only lower-priority ranking is provisional.",
-      "Run context: 1 FIX gate(s); 5 action rows emitted.",
+      "Run context: 0 FIX gate(s); 4 action rows emitted.",
       "Runtime signal: present_failing.",
       "Testing signal: agentic_core/L5_safety/reasoning/FileClassificationAgent.py; risk=CRITICAL."
     ],
@@ -544,7 +505,7 @@
   },
   "bcg_gate_adapter": {
     "artifact_kind": "adg_bcg_gate_adapter",
-    "generated_at_utc": "2026-07-03T12:27:43+00:00",
+    "generated_at_utc": "2026-07-04T13:00:07+00:00",
     "policy": {
       "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
       "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -559,44 +520,7 @@
     "priority_rows": [
       {
         "band": "P0",
-        "baseline_count": null,
-        "classification": "blocked",
-        "delta_vs_baseline": null,
-        "enforcement": "block",
-        "gate_class": "CoreImportsAppsGate",
-        "gate_id": "13_core_imports_apps",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "core_app_boundary",
-        "next_step": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
-        "raw_gate": {
-          "band": "P0",
-          "baseline_count": null,
-          "classification": "blocked",
-          "dispatch": "in-process",
-          "enforcement": "block",
-          "exit_code": 1,
-          "gate_class": "CoreImportsAppsGate",
-          "gate_id": "13_core_imports_apps",
-          "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
-          "owner": "adg_gates",
-          "source": "sql",
-          "status": "fail",
-          "stderr_tail": [],
-          "violation_count": 5
-        },
-        "reported_for_priority_queue": true,
-        "rows": 5,
-        "section": "fix_now",
-        "section_label": "Fix now",
-        "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
-        "status": "fail",
-        "sub": "block",
-        "verdict": "FIX"
-      },
-      {
-        "band": "P0",
-        "baseline_count": 1605,
+        "baseline_count": 1608,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -608,7 +532,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P0",
-          "baseline_count": 1605,
+          "baseline_count": 1608,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -620,13 +544,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1605
+          "violation_count": 1608
         },
         "reported_for_priority_queue": true,
-        "rows": 1605,
+        "rows": 1608,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1605 at floor (baseline 1605); no new debt.",
+        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1608 at floor (baseline 1608); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -744,7 +668,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 2059,
+        "baseline_count": 2061,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -756,7 +680,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 2059,
+          "baseline_count": 2061,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -768,13 +692,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 2059
+          "violation_count": 2061
         },
         "reported_for_priority_queue": true,
-        "rows": 2059,
+        "rows": 2061,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2059 at floor (baseline 2059); no new debt.",
+        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2061 at floor (baseline 2061); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -892,7 +816,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 684,
+        "baseline_count": 685,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -904,7 +828,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 684,
+          "baseline_count": 685,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -916,13 +840,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 684
+          "violation_count": 685
         },
         "reported_for_priority_queue": true,
-        "rows": 684,
+        "rows": 685,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 684 at floor (baseline 684); no new debt.",
+        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -1077,7 +1001,7 @@
       },
       {
         "band": "P2",
-        "baseline_count": 994,
+        "baseline_count": 995,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1089,7 +1013,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P2",
-          "baseline_count": 994,
+          "baseline_count": 995,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1101,13 +1025,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 994
+          "violation_count": 995
         },
         "reported_for_priority_queue": true,
-        "rows": 994,
+        "rows": 995,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 994 at floor (baseline 994); no new debt.",
+        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -1190,7 +1114,7 @@
       },
       {
         "band": "P3",
-        "baseline_count": 10780,
+        "baseline_count": 10788,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1202,7 +1126,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 10780,
+          "baseline_count": 10788,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1214,20 +1138,20 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 10780
+          "violation_count": 10788
         },
         "reported_for_priority_queue": false,
-        "rows": 10780,
+        "rows": 10788,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Unused import edges in production modules. Sub: 10780 at floor (baseline 10780); no new debt.",
+        "signal": "Counts: Unused import edges in production modules. Sub: 10788 at floor (baseline 10788); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 1185,
+        "baseline_count": 1187,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1239,7 +1163,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 1185,
+          "baseline_count": 1187,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1251,20 +1175,20 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1185
+          "violation_count": 1187
         },
         "reported_for_priority_queue": false,
-        "rows": 1185,
+        "rows": 1187,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1185 at floor (baseline 1185); no new debt.",
+        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1187 at floor (baseline 1187); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 468,
+        "baseline_count": 469,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1276,7 +1200,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 468,
+          "baseline_count": 469,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1288,13 +1212,13 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 468
+          "violation_count": 469
         },
         "reported_for_priority_queue": false,
-        "rows": 468,
+        "rows": 469,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 468 at floor (baseline 468); no new debt.",
+        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -1343,11 +1267,11 @@
         "description": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
         "gate_count": 15,
         "label": "Burn down / owned backlog",
-        "row_count": 11417,
+        "row_count": 11424,
         "rows": [
           {
             "band": "P0",
-            "baseline_count": 1605,
+            "baseline_count": 1608,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1359,7 +1283,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P0",
-              "baseline_count": 1605,
+              "baseline_count": 1608,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1371,13 +1295,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 1605
+              "violation_count": 1608
             },
             "reported_for_priority_queue": true,
-            "rows": 1605,
+            "rows": 1608,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1605 at floor (baseline 1605); no new debt.",
+            "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1608 at floor (baseline 1608); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -1495,7 +1419,7 @@
           },
           {
             "band": "P1",
-            "baseline_count": 2059,
+            "baseline_count": 2061,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1507,7 +1431,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P1",
-              "baseline_count": 2059,
+              "baseline_count": 2061,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1519,13 +1443,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 2059
+              "violation_count": 2061
             },
             "reported_for_priority_queue": true,
-            "rows": 2059,
+            "rows": 2061,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2059 at floor (baseline 2059); no new debt.",
+            "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2061 at floor (baseline 2061); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -1643,7 +1567,7 @@
           },
           {
             "band": "P1",
-            "baseline_count": 684,
+            "baseline_count": 685,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1655,7 +1579,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P1",
-              "baseline_count": 684,
+              "baseline_count": 685,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1667,13 +1591,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 684
+              "violation_count": 685
             },
             "reported_for_priority_queue": true,
-            "rows": 684,
+            "rows": 685,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 684 at floor (baseline 684); no new debt.",
+            "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -1828,7 +1752,7 @@
           },
           {
             "band": "P2",
-            "baseline_count": 994,
+            "baseline_count": 995,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1840,7 +1764,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P2",
-              "baseline_count": 994,
+              "baseline_count": 995,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1852,13 +1776,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 994
+              "violation_count": 995
             },
             "reported_for_priority_queue": true,
-            "rows": 994,
+            "rows": 995,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 994 at floor (baseline 994); no new debt.",
+            "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -1904,7 +1828,7 @@
       },
       "clear": {
         "description": "Zero-action rows.",
-        "gate_count": 28,
+        "gate_count": 29,
         "label": "Clear",
         "row_count": 0,
         "rows": [
@@ -1941,6 +1865,43 @@
             "section": "clear",
             "section_label": "Clear",
             "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: No rows.",
+            "status": "pass",
+            "sub": "\u2014",
+            "verdict": "CLEAR"
+          },
+          {
+            "band": "P0",
+            "baseline_count": null,
+            "classification": "pass",
+            "delta_vs_baseline": null,
+            "enforcement": "block",
+            "gate_class": "CoreImportsAppsGate",
+            "gate_id": "13_core_imports_apps",
+            "is_burndown_work": false,
+            "is_kpi_or_watchlist": false,
+            "materiality": "core_app_boundary",
+            "next_step": "None \u2014 gate clean (zero rows).",
+            "raw_gate": {
+              "band": "P0",
+              "baseline_count": null,
+              "classification": "pass",
+              "dispatch": "in-process",
+              "enforcement": "block",
+              "exit_code": 0,
+              "gate_class": "CoreImportsAppsGate",
+              "gate_id": "13_core_imports_apps",
+              "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
+              "owner": "adg_gates",
+              "source": "sql",
+              "status": "pass",
+              "stderr_tail": [],
+              "violation_count": 0
+            },
+            "reported_for_priority_queue": false,
+            "rows": 0,
+            "section": "clear",
+            "section_label": "Clear",
+            "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: No rows.",
             "status": "pass",
             "sub": "\u2014",
             "verdict": "CLEAR"
@@ -2948,54 +2909,16 @@
       },
       "fix_now": {
         "description": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
-        "gate_count": 1,
+        "gate_count": 0,
         "label": "Fix now",
-        "row_count": 5,
-        "rows": [
-          {
-            "band": "P0",
-            "baseline_count": null,
-            "classification": "blocked",
-            "delta_vs_baseline": null,
-            "enforcement": "block",
-            "gate_class": "CoreImportsAppsGate",
-            "gate_id": "13_core_imports_apps",
-            "is_burndown_work": true,
-            "is_kpi_or_watchlist": false,
-            "materiality": "core_app_boundary",
-            "next_step": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
-            "raw_gate": {
-              "band": "P0",
-              "baseline_count": null,
-              "classification": "blocked",
-              "dispatch": "in-process",
-              "enforcement": "block",
-              "exit_code": 1,
-              "gate_class": "CoreImportsAppsGate",
-              "gate_id": "13_core_imports_apps",
-              "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
-              "owner": "adg_gates",
-              "source": "sql",
-              "status": "fail",
-              "stderr_tail": [],
-              "violation_count": 5
-            },
-            "reported_for_priority_queue": true,
-            "rows": 5,
-            "section": "fix_now",
-            "section_label": "Fix now",
-            "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
-            "status": "fail",
-            "sub": "block",
-            "verdict": "FIX"
-          }
-        ]
+        "row_count": 0,
+        "rows": []
       },
       "kpi_watchlist": {
         "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
         "gate_count": 5,
         "label": "KPI / watchlist",
-        "row_count": 12541,
+        "row_count": 12552,
         "rows": [
           {
             "band": "P2",
@@ -3036,7 +2959,7 @@
           },
           {
             "band": "P3",
-            "baseline_count": 10780,
+            "baseline_count": 10788,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -3048,7 +2971,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 10780,
+              "baseline_count": 10788,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -3060,20 +2983,20 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 10780
+              "violation_count": 10788
             },
             "reported_for_priority_queue": false,
-            "rows": 10780,
+            "rows": 10788,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Unused import edges in production modules. Sub: 10780 at floor (baseline 10780); no new debt.",
+            "signal": "Counts: Unused import edges in production modules. Sub: 10788 at floor (baseline 10788); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
           },
           {
             "band": "P3",
-            "baseline_count": 1185,
+            "baseline_count": 1187,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -3085,7 +3008,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 1185,
+              "baseline_count": 1187,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -3097,20 +3020,20 @@
               "source": "disk",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 1185
+              "violation_count": 1187
             },
             "reported_for_priority_queue": false,
-            "rows": 1185,
+            "rows": 1187,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1185 at floor (baseline 1185); no new debt.",
+            "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1187 at floor (baseline 1187); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
           },
           {
             "band": "P3",
-            "baseline_count": 468,
+            "baseline_count": 469,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -3122,7 +3045,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 468,
+              "baseline_count": 469,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -3134,13 +3057,13 @@
               "source": "disk",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 468
+              "violation_count": 469
             },
             "reported_for_priority_queue": false,
-            "rows": 468,
+            "rows": 469,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 468 at floor (baseline 468); no new debt.",
+            "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -3187,89 +3110,30 @@
     },
     "source": {
       "burndown_schema_version": "2.2",
-      "overall_exit_code": 1,
-      "snapshot": "adg_indexed_07032026_0812.sqlite",
-      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown\\artifacts\\adg\\adg_indexed_07032026_0812.sqlite",
-      "timestamp": "2026-07-03T12:25:29.907040+00:00"
+      "overall_exit_code": 0,
+      "snapshot": "adg_indexed_07042026_0851.sqlite",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07042026_0851.sqlite",
+      "timestamp": "2026-07-04T12:57:12.684969+00:00"
     },
     "summary": {
       "burn_down_gates": 15,
-      "burn_down_rows": 11417,
-      "clear_gates": 28,
-      "fix_now_gates": 1,
-      "fix_now_rows": 5,
+      "burn_down_rows": 11424,
+      "clear_gates": 29,
+      "fix_now_gates": 0,
+      "fix_now_rows": 0,
       "kpi_watchlist_gates": 5,
-      "kpi_watchlist_rows": 12541,
-      "priority_queue_gate_count": 16,
-      "priority_queue_row_count": 11422,
+      "kpi_watchlist_rows": 12552,
+      "priority_queue_gate_count": 15,
+      "priority_queue_row_count": 11424,
       "report_only_gate_count": 5,
-      "report_only_row_count": 12541,
+      "report_only_row_count": 12552,
       "total_gates": 49,
-      "work_section_gate_count": 16,
-      "work_section_row_count": 11422
+      "work_section_gate_count": 15,
+      "work_section_row_count": 11424
     }
   },
   "canonical_next_best_actions": {
     "rows": [
-      {
-        "action": "Stop core importing apps",
-        "action_type": "fix_blocker",
-        "affected_layers": [],
-        "affected_system": "",
-        "business_reason": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-        "change_breakout": [],
-        "confidence": "high",
-        "decision": "fix_blocker",
-        "decision_options": [
-          {
-            "description": "Use when the breakout is too thin to distinguish the options yet.",
-            "label": "Investigate evidence",
-            "required_proof": "More detailed samples, counts, or path concentration from ADG."
-          },
-          {
-            "description": "Use when the dependency is convenience coupling or accidental reach-through.",
-            "label": "Fix",
-            "required_proof": "Code diff removes the direct dependency and ADG rerun clears the delta."
-          },
-          {
-            "description": "Use when cross-layer collaboration is valid but the dependency path is wrong.",
-            "label": "Adapter/interface",
-            "required_proof": "New approved interface or adapter in the owning layer, plus tests that cover the mediated path."
-          },
-          {
-            "description": "Use when the dependency is intentional but temporary or tightly constrained.",
-            "label": "Guardian exemption",
-            "required_proof": "Owner, rationale, expiry or retirement condition, and the scoped path list."
-          },
-          {
-            "description": "Use when the architecture policy intentionally changed.",
-            "label": "Re-baseline",
-            "required_proof": "Approval, new baseline artifact, reason, reviewer, and migration plan."
-          }
-        ],
-        "diagram": null,
-        "done_condition": "Rerun ADG and confirm the gate returns to green or is explicitly waived.",
-        "evidence": "ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core` imports `apps_*`.",
-        "evidence_used": [
-          {
-            "decision_effect": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-            "signal_name": "13_core_imports_apps",
-            "signal_type": "gate"
-          }
-        ],
-        "move": "Stop core importing apps",
-        "next_step": "Move app-specific bindings behind an adapter or app-owned wiring surface; core should keep only generic contracts.",
-        "priority": 1,
-        "rank": 1,
-        "scope": "13_core_imports_apps",
-        "technical_reason": "ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core` imports `apps_*`.",
-        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
-        "timing": "now",
-        "why_it_matters": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-        "why_now": "Core importing apps breaks the core/app boundary and directly weakens provider-agnostic core.",
-        "why_this_rank": "Move app-specific bindings behind an adapter or app-owned wiring surface; core should keep only generic contracts.",
-        "work": "Stop core importing apps"
-      },
       {
         "action": "Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         "action_type": "add_tests",
@@ -3292,12 +3156,12 @@
         ],
         "move": "Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         "next_step": "Add mapped tests before touching this surface again.",
-        "priority": 2,
-        "rank": 2,
+        "priority": 1,
+        "rank": 1,
         "scope": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         "technical_reason": "Add mapped tests/regression coverage for agentic_core.",
         "testing_requirement": "Add mapped tests/regression coverage for agentic_core.",
-        "timing": "if_touched",
+        "timing": "now",
         "why_it_matters": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
         "why_now": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
         "why_this_rank": "Add mapped tests before touching this surface again.",
@@ -3325,12 +3189,12 @@
         ],
         "move": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py",
         "next_step": "Refactor after the blocker and test exposure are explicit.",
-        "priority": 3,
-        "rank": 3,
+        "priority": 2,
+        "rank": 2,
         "scope": "agentic_core/adg/extraction/static_scanner.py",
         "technical_reason": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "testing_requirement": "Add mapped tests before refactoring this seam.",
-        "timing": "if_touched",
+        "timing": "after_green",
         "why_it_matters": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_now": "Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path.",
         "why_this_rank": "Refactor after the blocker and test exposure are explicit.",
@@ -3348,7 +3212,7 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "2,059 floor-row(s) remain on the ratchet gate.",
+        "evidence": "2,061 floor-row(s) remain on the ratchet gate.",
         "evidence_used": [
           {
             "decision_effect": "Accepted baseline debt should fall after red gates are clear.",
@@ -3358,10 +3222,10 @@
         ],
         "move": "Burn down ratchet C3_silent_writes_ratchet",
         "next_step": "Burn down the ratchet after the current red gates clear.",
-        "priority": 4,
-        "rank": 4,
+        "priority": 3,
+        "rank": 3,
         "scope": "C3_silent_writes_ratchet",
-        "technical_reason": "2,059 floor-row(s) remain on the ratchet gate.",
+        "technical_reason": "2,061 floor-row(s) remain on the ratchet gate.",
         "testing_requirement": "Add tests only when touched scope overlaps hotspot.",
         "timing": "after_green",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
@@ -3391,8 +3255,8 @@
         ],
         "move": "Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps",
         "next_step": "Deprecate only after the higher-risk surfaces are handled.",
-        "priority": 5,
-        "rank": 5,
+        "priority": 4,
+        "rank": 4,
         "scope": "mv_capability_and_egress_gaps",
         "technical_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
         "testing_requirement": "No test required unless generator logic changes.",
@@ -3554,7 +3418,7 @@
         "status_label": "Deletion status",
         "table_limit": 6,
         "technical_read": [
-          "ADG source: artifacts/adg/adg_indexed_07032026_0812.sqlite (snapshot 07032026_0812)",
+          "ADG source: artifacts/adg/adg_indexed_07042026_0851.sqlite (snapshot 07042026_0851)",
           "Dead code candidates: 913",
           "Dead imports: 913",
           "Unresolved imports: 483",
@@ -3711,8 +3575,8 @@
         "dead_code_candidates": 913,
         "dead_imports": 913,
         "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-        "first_party_low_confidence_ratio": 1.5600271309066245,
-        "inferred_symbol_ratio": 10.143146491886847,
+        "first_party_low_confidence_ratio": 1.5593220338983051,
+        "inferred_symbol_ratio": 10.137205956774153,
         "unresolved_imports": 483,
         "why_this_order": [
           "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -3854,8 +3718,8 @@
       "executive_metrics": {
         "dead_code_count": 913,
         "dead_import_count": 913,
-        "first_party_low_confidence_ratio": 1.5600271309066245,
-        "inferred_symbol_ratio": 10.143146491886847,
+        "first_party_low_confidence_ratio": 1.5593220338983051,
+        "inferred_symbol_ratio": 10.137205956774153,
         "l4_unresolved_import_count": 0,
         "low_confidence_count": 483,
         "unresolved_import_count": 483
@@ -3891,12 +3755,12 @@
         "L_TOOLS": 2352,
         "L_UNKNOWN": 216
       },
-      "inferred_symbol_ratio": 10.143146491886847,
+      "inferred_symbol_ratio": 10.137205956774153,
       "total_inferred_symbols": 17828,
-      "total_symbols": 175764
+      "total_symbols": 175867
     },
     "low_confidence_zones": {
-      "first_party_low_confidence_ratio": 1.5600271309066245,
+      "first_party_low_confidence_ratio": 1.5593220338983051,
       "governance_low_confidence_ratio": 0.0,
       "low_conf_by_entity_type": {
         "symbol": 483
@@ -3916,8 +3780,8 @@
       "total_low_confidence": 483
     },
     "source": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
-      "adg_snapshot_ts": "07032026_0812",
+      "adg_snapshot": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
+      "adg_snapshot_ts": "07042026_0851",
       "dead_code_signal_sources": [
         "overlay_violations.category=dead_import_resolved",
         "mv_dead_import_hotspots_overlay",
@@ -3927,11 +3791,11 @@
     },
     "status": "PASS",
     "summary": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
-      "adg_snapshot_ts": "07032026_0812",
+      "adg_snapshot": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
+      "adg_snapshot_ts": "07042026_0851",
       "executive_ready": true,
-      "first_party_low_confidence_ratio": 1.5600271309066245,
-      "inferred_symbol_ratio": 10.143146491886847,
+      "first_party_low_confidence_ratio": 1.5593220338983051,
+      "inferred_symbol_ratio": 10.137205956774153,
       "l4_unresolved_imports": 0,
       "total_dead_code_candidates": 913,
       "total_dead_imports": 913,
@@ -3999,7 +3863,7 @@
   "defer_delete_deprecate": {
     "rows": [
       {
-        "current_value": "786 rows; diagnostic_monitor",
+        "current_value": "787 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4039,7 +3903,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "191 rows; diagnostic_monitor",
+        "current_value": "189 rows; diagnostic_monitor",
         "item": "mv_critical_path_segments",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4055,7 +3919,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6608 rows; diagnostic_monitor",
+        "current_value": "6611 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4071,7 +3935,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3180 rows; diagnostic_monitor",
+        "current_value": "3181 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4225,13 +4089,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "13 MV candidates and 6 unused artifacts surfaced by the report.",
+          "evidence": "13 MV candidates and 5 unused artifacts surfaced by the report.",
           "move": "Deprecate low-value ADG signals",
           "next_step": "Deprecate only after higher-confidence cleanup is complete.",
           "priority": 6,
           "rank": 6,
           "scope": "materialized views and unused artifacts",
-          "technical_reason": "13 MV candidates and 6 unused artifacts surfaced by the report.",
+          "technical_reason": "13 MV candidates and 5 unused artifacts surfaced by the report.",
           "why_it_matters": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
           "why_this_rank": "Deprecate only after higher-confidence cleanup is complete.",
           "work": "Deprecate low-value ADG signals"
@@ -4245,13 +4109,13 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07032026_0812.sqlite (snapshot 07032026_0812)",
+        "ADG source: artifacts/adg/adg_indexed_07042026_0851.sqlite (snapshot 07042026_0851)",
         "Dead code candidates: 913",
         "Dead imports: 913",
         "Unresolved imports: 483",
         "First-party low-confidence ratio: 1.56%",
         "Inferred-symbol ratio: 10.14%",
-        "Cleanup candidates surfaced: 19"
+        "Cleanup candidates surfaced: 18"
       ],
       "title": "BCG Deletion Brief",
       "why_this_order": [
@@ -4263,7 +4127,7 @@
     },
     "cleanup_candidates": [
       {
-        "current_value": "786 rows; diagnostic_monitor",
+        "current_value": "787 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4303,7 +4167,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "191 rows; diagnostic_monitor",
+        "current_value": "189 rows; diagnostic_monitor",
         "item": "mv_critical_path_segments",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4319,7 +4183,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6608 rows; diagnostic_monitor",
+        "current_value": "6611 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4335,7 +4199,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3180 rows; diagnostic_monitor",
+        "current_value": "3181 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4481,13 +4345,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "13 MV candidates and 6 unused artifacts surfaced by the report.",
+        "evidence": "13 MV candidates and 5 unused artifacts surfaced by the report.",
         "move": "Deprecate low-value ADG signals",
         "next_step": "Deprecate only after higher-confidence cleanup is complete.",
         "priority": 6,
         "rank": 6,
         "scope": "materialized views and unused artifacts",
-        "technical_reason": "13 MV candidates and 6 unused artifacts surfaced by the report.",
+        "technical_reason": "13 MV candidates and 5 unused artifacts surfaced by the report.",
         "why_it_matters": "Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable.",
         "why_this_rank": "Deprecate only after higher-confidence cleanup is complete.",
         "work": "Deprecate low-value ADG signals"
@@ -4495,12 +4359,12 @@
     ],
     "status": "present",
     "summary": {
-      "cleanup_candidate_count": 19,
+      "cleanup_candidate_count": 18,
       "dead_code_candidates": 913,
       "dead_imports": 913,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5600271309066245,
-      "inferred_symbol_ratio": 10.143146491886847,
+      "first_party_low_confidence_ratio": 1.5593220338983051,
+      "inferred_symbol_ratio": 10.137205956774153,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -4511,13 +4375,7 @@
     }
   },
   "evidence_trace": {
-    "missing_signals": [
-      {
-        "decision_limitation": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "signal_name": "graph_watchlist",
-        "why_needed": "Artifact not present this run."
-      }
-    ],
+    "missing_signals": [],
     "stale_signals": [],
     "suppressed_signals": [
       {
@@ -4894,7 +4752,7 @@
     "crisis_level": "material_risk",
     "funding_posture": "repair_reporting",
     "one_sentence_bottom_line": "ADG is REPORT_INCONSISTENT: act on decision-linked blockers/testing gaps, defer diagnostic-only noise.",
-    "recommendation": "Treat report inconsistency as a decision-quality caveat, not the first engineering work item; clear concrete red FIX/P0 evidence first, then rerun ADG and repair report consistency if it persists.",
+    "recommendation": "Repair report consistency before treating lower-severity ranking as authoritative.",
     "risk_if_ignored": "The organization may chase raw counts while missing a broken report, failing runtime proof, smaller blocker, or under-tested high-blast-radius surface.",
     "verdict": "REPORT_INCONSISTENT",
     "what_not_to_do": [
@@ -4907,16 +4765,16 @@
   "gate_mece_summary": {
     "bucket_counts": {
       "burn_down_after_green": 15,
-      "clear": 28,
+      "clear": 29,
       "decision_gates": 1,
-      "fix_now": 1,
+      "fix_now": 0,
       "kpi_watchlist": 5,
       "severity_inventory": 4
     },
     "burn_down_after_green": [
       {
         "band": "P0",
-        "baseline_count": 1605,
+        "baseline_count": 1608,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -4929,7 +4787,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P0",
-          "baseline_count": 1605,
+          "baseline_count": 1608,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -4941,13 +4799,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1605
+          "violation_count": 1608
         },
         "reported_for_priority_queue": true,
-        "rows": 1605,
+        "rows": 1608,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1605 at floor (baseline 1605); no new debt.",
+        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1608 at floor (baseline 1608); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -5068,7 +4926,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 2059,
+        "baseline_count": 2061,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -5081,7 +4939,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 2059,
+          "baseline_count": 2061,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -5093,13 +4951,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 2059
+          "violation_count": 2061
         },
         "reported_for_priority_queue": true,
-        "rows": 2059,
+        "rows": 2061,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2059 at floor (baseline 2059); no new debt.",
+        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2061 at floor (baseline 2061); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -5220,7 +5078,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 684,
+        "baseline_count": 685,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -5233,7 +5091,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 684,
+          "baseline_count": 685,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -5245,13 +5103,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 684
+          "violation_count": 685
         },
         "reported_for_priority_queue": true,
-        "rows": 684,
+        "rows": 685,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 684 at floor (baseline 684); no new debt.",
+        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -5410,7 +5268,7 @@
       },
       {
         "band": "P2",
-        "baseline_count": 994,
+        "baseline_count": 995,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -5423,7 +5281,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P2",
-          "baseline_count": 994,
+          "baseline_count": 995,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -5435,13 +5293,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 994
+          "violation_count": 995
         },
         "reported_for_priority_queue": true,
-        "rows": 994,
+        "rows": 995,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 994 at floor (baseline 994); no new debt.",
+        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -5520,6 +5378,44 @@
         "section": "clear",
         "section_label": "Clear",
         "signal": "Counts: Infra wiring defects (canonical pipeline / spine reachability). Sub: No rows.",
+        "status": "pass",
+        "sub": "\u2014",
+        "verdict": "CLEAR"
+      },
+      {
+        "band": "P0",
+        "baseline_count": null,
+        "bucket": "CLEAR",
+        "classification": "pass",
+        "delta_vs_baseline": null,
+        "enforcement": "block",
+        "gate_class": "CoreImportsAppsGate",
+        "gate_id": "13_core_imports_apps",
+        "is_burndown_work": false,
+        "is_kpi_or_watchlist": false,
+        "materiality": "core_app_boundary",
+        "next_step": "None \u2014 gate clean (zero rows).",
+        "raw_gate": {
+          "band": "P0",
+          "baseline_count": null,
+          "classification": "pass",
+          "dispatch": "in-process",
+          "enforcement": "block",
+          "exit_code": 0,
+          "gate_class": "CoreImportsAppsGate",
+          "gate_id": "13_core_imports_apps",
+          "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
+          "owner": "adg_gates",
+          "source": "sql",
+          "status": "pass",
+          "stderr_tail": [],
+          "violation_count": 0
+        },
+        "reported_for_priority_queue": false,
+        "rows": 0,
+        "section": "clear",
+        "section_label": "Clear",
+        "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: No rows.",
         "status": "pass",
         "sub": "\u2014",
         "verdict": "CLEAR"
@@ -6564,46 +6460,7 @@
         "why_it_matters": "The executive order is not decision-grade until graph and report agree."
       }
     ],
-    "fix_now": [
-      {
-        "band": "P0",
-        "baseline_count": null,
-        "bucket": "FIX_NOW",
-        "classification": "blocked",
-        "delta_vs_baseline": null,
-        "enforcement": "block",
-        "gate_class": "CoreImportsAppsGate",
-        "gate_id": "13_core_imports_apps",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "core_app_boundary",
-        "next_step": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
-        "raw_gate": {
-          "band": "P0",
-          "baseline_count": null,
-          "classification": "blocked",
-          "dispatch": "in-process",
-          "enforcement": "block",
-          "exit_code": 1,
-          "gate_class": "CoreImportsAppsGate",
-          "gate_id": "13_core_imports_apps",
-          "handler": "ops_scripts.ci.adg_gates.gate_p0_core_imports_apps",
-          "owner": "adg_gates",
-          "source": "sql",
-          "status": "fail",
-          "stderr_tail": [],
-          "violation_count": 5
-        },
-        "reported_for_priority_queue": true,
-        "rows": 5,
-        "section": "fix_now",
-        "section_label": "Fix now",
-        "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
-        "status": "fail",
-        "sub": "block",
-        "verdict": "FIX"
-      }
-    ],
+    "fix_now": [],
     "kpi_watchlist": [
       {
         "band": "P2",
@@ -6645,7 +6502,7 @@
       },
       {
         "band": "P3",
-        "baseline_count": 10780,
+        "baseline_count": 10788,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6658,7 +6515,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 10780,
+          "baseline_count": 10788,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6670,20 +6527,20 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 10780
+          "violation_count": 10788
         },
         "reported_for_priority_queue": false,
-        "rows": 10780,
+        "rows": 10788,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Unused import edges in production modules. Sub: 10780 at floor (baseline 10780); no new debt.",
+        "signal": "Counts: Unused import edges in production modules. Sub: 10788 at floor (baseline 10788); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 1185,
+        "baseline_count": 1187,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6696,7 +6553,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 1185,
+          "baseline_count": 1187,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6708,20 +6565,20 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1185
+          "violation_count": 1187
         },
         "reported_for_priority_queue": false,
-        "rows": 1185,
+        "rows": 1187,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1185 at floor (baseline 1185); no new debt.",
+        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1187 at floor (baseline 1187); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 468,
+        "baseline_count": 469,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6734,7 +6591,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 468,
+          "baseline_count": 469,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6746,13 +6603,13 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 468
+          "violation_count": 469
         },
         "reported_for_priority_queue": false,
-        "rows": 468,
+        "rows": 469,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 468 at floor (baseline 468); no new debt.",
+        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -6800,54 +6657,54 @@
     "schema_version": "adg-report-mece/v1",
     "severity_inventory": [
       {
-        "audit_net": 4,
+        "audit_net": 3,
         "band": "P0",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 37,
-        "guardian": 33,
-        "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 4
-      },
-      {
-        "audit_net": 3,
-        "band": "P1",
-        "bucket": "SEVERITY_INVENTORY",
-        "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 1146,
-        "guardian": 1143,
+        "gross": 35,
+        "guardian": 32,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
         "non_exempt": 3
       },
       {
-        "audit_net": 31,
+        "audit_net": 4,
+        "band": "P1",
+        "bucket": "SEVERITY_INVENTORY",
+        "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
+        "gross": 1147,
+        "guardian": 1143,
+        "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
+        "non_exempt": 4
+      },
+      {
+        "audit_net": 32,
         "band": "P2",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 747,
+        "gross": 748,
         "guardian": 716,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 31
+        "non_exempt": 32
       },
       {
-        "audit_net": 19175,
+        "audit_net": 19178,
         "band": "P3",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 19262,
+        "gross": 19265,
         "guardian": 87,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 19175
+        "non_exempt": 19178
       }
     ]
   },
   "honest_bottom_line": {
     "bullets": [
       "Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.",
-      "Actually blocking now: 1 FIX gates; inspect regression delta before declaring a platform crisis.",
+      "Actually blocking now: 0 FIX gates; inspect regression delta before declaring a platform crisis.",
       "Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.",
       "Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.",
-      "Stop core importing apps",
+      "Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
       "Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role."
     ]
   },
@@ -6856,46 +6713,46 @@
     "kpis": [
       {
         "action_rule": "Stop the line if greater than zero; if not loaded, do not claim clean.",
-        "display_value": "201",
+        "display_value": "200",
         "id": "foundation_blockers",
         "kpi": "Foundation blockers",
         "meaning": "P0 trust hazards that can make ADG evidence incomplete, unstable, or misleading.",
-        "value": 201
+        "value": 200
       },
       {
         "action_rule": "Audit-only unless mapped to a failing gate, runtime failure, hotspot, or changed code.",
-        "display_value": "4",
+        "display_value": "3",
         "id": "p0_audit_net",
         "kpi": "P0 audit net",
         "meaning": "P0 severity audit inventory after guardian exemptions.",
-        "value": 4
+        "value": 3
       },
       {
         "action_rule": "Can drive priority when the gate is FIX/red and decision-linked.",
-        "display_value": "1",
+        "display_value": "0",
         "id": "p0_live_gate_drivers",
         "kpi": "P0 live gate drivers",
         "meaning": "Current red P0 gates that can drive today's work order.",
-        "value": 1
+        "value": 0
       }
     ],
     "p0_p3_audit_inventory": [
       {
         "action_role": "Stop-the-line only if foundation blockers are present; otherwise audit net is evidence to map.",
-        "audit_gross": 37,
-        "audit_net": 4,
-        "audit_net_display": "4",
+        "audit_gross": 35,
+        "audit_net": 3,
+        "audit_net_display": "3",
         "band": "P0",
-        "foundation_blockers": 201,
-        "foundation_blockers_display": "201",
-        "guardian_exempted": 33,
-        "live_gate_drivers": 1
+        "foundation_blockers": 200,
+        "foundation_blockers_display": "200",
+        "guardian_exempted": 32,
+        "live_gate_drivers": 0
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 1146,
-        "audit_net": 3,
-        "audit_net_display": "3",
+        "audit_gross": 1147,
+        "audit_net": 4,
+        "audit_net_display": "4",
         "band": "P1",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -6904,9 +6761,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 747,
-        "audit_net": 31,
-        "audit_net_display": "31",
+        "audit_gross": 748,
+        "audit_net": 32,
+        "audit_net_display": "32",
         "band": "P2",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -6915,9 +6772,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 19262,
-        "audit_net": 19175,
-        "audit_net_display": "19,175",
+        "audit_gross": 19265,
+        "audit_net": 19178,
+        "audit_net_display": "19,178",
         "band": "P3",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -7266,15 +7123,15 @@
     "summary": {
       "circular_imports": 0,
       "dynamic_exec": 0,
-      "foundation_blockers": 201,
+      "foundation_blockers": 200,
       "l0_reachability_orphans": 200,
-      "layer_violations": 1,
-      "max_direct_fan_in": 22,
+      "layer_violations": 0,
+      "max_direct_fan_in": 0,
       "protected_layer_violations": 0,
       "protected_surfaces": 200,
-      "remaining_layer_violations": 1,
-      "total_p0_issues": 201,
-      "wrong_way_imports": 1
+      "remaining_layer_violations": 0,
+      "total_p0_issues": 200,
+      "wrong_way_imports": 0
     },
     "top_files": [
       {
@@ -7433,15 +7290,15 @@
   "lens_1_health_gates": {
     "action_impact_rows": [
       {
-        "impact": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
-        "recommended_action": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
-        "signal": "13_core_imports_apps"
+        "impact": "No immediate action impact.",
+        "recommended_action": "No red-gate action required.",
+        "signal": "none"
       }
     ],
     "buckets": [
       {
         "bucket": "CLEAR",
-        "count": 28,
+        "count": 29,
         "plain_meaning": "No action now."
       },
       {
@@ -7456,32 +7313,32 @@
       },
       {
         "bucket": "FIX",
-        "count": 1,
+        "count": 0,
         "plain_meaning": "Current blocker or regression requiring action before decision-grade green."
       }
     ],
     "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
     "kpi_watchlist": {
       "gate_count": 5,
-      "row_count": 12541,
+      "row_count": 12552,
       "top_signals": [
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "S4_unused_imports_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 10780
+          "records": 10788
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "Q2_cyclomatic_complexity_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 1185
+          "records": 1187
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "M1_module_loc_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 468
+          "records": 469
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
@@ -7499,19 +7356,19 @@
     },
     "managed_debt": {
       "open_non_ratchet_records": 765,
-      "ratchet_floor_records": 10652,
+      "ratchet_floor_records": 10659,
       "top_ratchets": [
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "C3_silent_writes_ratchet",
-          "records": 2059
+          "records": 2061
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "S2_uwg_bypass_ratchet",
-          "records": 1605
+          "records": 1608
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
@@ -7523,7 +7380,7 @@
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "I2_replay_surface_gaps_ratchet",
-          "records": 994
+          "records": 995
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
@@ -7533,28 +7390,15 @@
         }
       ]
     },
-    "red_gates": [
-      {
-        "band": "P0",
-        "baseline_records": null,
-        "done_condition": "Gate leaves the adapter FIX section.",
-        "enforcement": "block",
-        "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
-        "gate_id": "13_core_imports_apps",
-        "next_action": "BLOCKER (P0): clear the zero-tolerance condition before merge. Do NOT re-baseline a P0 block.",
-        "record_type": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
-        "regression_delta": 0,
-        "total_records": 5
-      }
-    ],
+    "red_gates": [],
     "status": "present",
     "summary": {
       "burn_down_gates": 15,
-      "clear_gates": 28,
+      "clear_gates": 29,
       "executive_read": "FIX blocks green; BURN is accepted work; KPI is trend/watchlist; CLEAR needs no action.",
-      "fix_gates": 1,
+      "fix_gates": 0,
       "kpi_watchlist_gates": 5,
-      "overall_verdict": "BLOCKED",
+      "overall_verdict": "PASS",
       "total_gates": 49,
       "track_gates": 15
     },
@@ -9557,6 +9401,7 @@
             "tests/apps_research/test_w2_l1_planning_hints.py",
             "tests/ci/test_test_coverage_mapper.py",
             "tests/conftest.py",
+            "tests/governance/test_adg_harness_import_coverage.py",
             "tests/proof/test_wave_bridges.py"
           ]
         },
@@ -9570,7 +9415,7 @@
         "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
         "recommended_test_investment": "Add mapped tests/regression coverage for agentic_core.",
         "risk": {
-          "combined_risk_score": 115.0,
+          "combined_risk_score": 116.0,
           "coverage_band": "ABSENT",
           "coverage_pct": "-1.0",
           "criticality_score": 113.0,
@@ -9982,7 +9827,7 @@
     "test_scope_inventory": {
       "folders": [
         {
-          "file_count": 3183,
+          "file_count": 3184,
           "folder": "tests/unit",
           "mapped_production_scopes": [
             "agentic_core",
@@ -10824,7 +10669,7 @@
           ]
         },
         {
-          "file_count": 1327,
+          "file_count": 1328,
           "folder": "tests/unknown",
           "mapped_production_scopes": [
             "agentic_core",
@@ -10862,6 +10707,7 @@
             "agentic_core/L3_orchestration/exit_eval/judges",
             "agentic_core/L3_orchestration/exit_eval/v6",
             "agentic_core/L3_orchestration/inference/qwen_vllm",
+            "agentic_core/L3_orchestration/inference/qwen_vllm/reasoning",
             "agentic_core/L3_orchestration/reasoning",
             "agentic_core/L3_orchestration/reasoning/engines",
             "agentic_core/L3_orchestration/registry",
@@ -10891,6 +10737,7 @@
             "agentic_core/L6_observability/execution",
             "agentic_core/L6_observability/runtime_trace",
             "agentic_core/L6_observability/shadow_eval",
+            "agentic_core/L6_observability/shadow_eval/adapters",
             "agentic_core/L6_system_learning",
             "agentic_core/L6_system_learning/future_run_promotion",
             "agentic_core/__pycache__",
@@ -11088,7 +10935,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 786,
+        "row_count": 787,
         "signal": "mv_actionable_surface_without_schema",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11143,7 +10990,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 191,
+        "row_count": 189,
         "signal": "mv_critical_path_segments",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11165,7 +11012,7 @@
         "decision_role": "used_for_testing",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4907,
+        "row_count": 4910,
         "signal": "mv_debt_concentration_hotspots",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11176,7 +11023,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11848,
+        "row_count": 11853,
         "signal": "mv_dependency_cone_risk",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11187,7 +11034,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6608,
+        "row_count": 6611,
         "signal": "mv_determinism_provenance_drift",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11220,7 +11067,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 3180,
+        "row_count": 3181,
         "signal": "mv_exemptions_near_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11253,7 +11100,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 2062,
+        "row_count": 2061,
         "signal": "mv_graph_chokepoint_bridges",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11330,7 +11177,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 10926,
+        "row_count": 10931,
         "signal": "mv_high_fan_in_out_with_defects",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11352,7 +11199,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11848,
+        "row_count": 11853,
         "signal": "mv_hotspot_centrality",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11363,7 +11210,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4428,
+        "row_count": 4431,
         "signal": "mv_hotspot_coverage_risk",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11418,7 +11265,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4927,
+        "row_count": 4929,
         "signal": "mv_modified_area_regressions",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11429,7 +11276,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 177,
+        "row_count": 175,
         "signal": "mv_new_cross_layer_dependencies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11462,7 +11309,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 8530,
+        "row_count": 8534,
         "signal": "mv_newly_introduced_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11484,7 +11331,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11848,
+        "row_count": 11853,
         "signal": "mv_path_criticality_rollup",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11517,7 +11364,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1449,
+        "row_count": 1450,
         "signal": "mv_repeated_p3_near_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11530,7 +11377,7 @@
           "I2_replay_surface_gaps_ratchet"
         ],
         "related_scopes": [],
-        "row_count": 994,
+        "row_count": 995,
         "signal": "mv_replay_surface_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11563,7 +11410,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 400970,
+        "row_count": 401195,
         "signal": "mv_snapshot_integrity_anomalies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11596,7 +11443,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1033,
+        "row_count": 1034,
         "signal": "mv_task_contract_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11629,7 +11476,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6608,
+        "row_count": 6611,
         "signal": "mv_unknown_taxonomy_and_orphans",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11651,7 +11498,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1169,
+        "row_count": 1173,
         "signal": "mv_write_sovereignty_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11706,7 +11553,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 625585,
+        "row_count": 625863,
         "signal": "graphdb_projection",
         "signal_type": "graphdb_report",
         "used_inline": false,
@@ -11765,14 +11612,14 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "cone_risk_score",
-        "total_rows": 11848
+        "total_rows": 11853
       },
       "mv_graph_chokepoint_bridges": {
         "available": true,
         "queried": true,
         "rows_used": 25,
         "score_column": "bridge_score",
-        "total_rows": 2062
+        "total_rows": 2061
       },
       "mv_graph_critical_path_blast_radius": {
         "available": true,
@@ -11800,14 +11647,14 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "betweenness_approx",
-        "total_rows": 11848
+        "total_rows": 11853
       },
       "mv_newly_introduced_critical_paths": {
         "available": true,
         "queried": true,
         "rows_used": 25,
         "score_column": "criticality_score",
-        "total_rows": 8530
+        "total_rows": 8534
       }
     },
     "summary": {
@@ -11826,7 +11673,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 84.0,
-        "centrality": 2.1878,
+        "centrality": 2.1869,
         "chokepoint": 25921.0,
         "dependency_cone": 84.0,
         "executive_read": "High structural risk \u2014 newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot.",
@@ -11841,7 +11688,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 175.93,
-        "centrality": 0.8098,
+        "centrality": 0.8095,
         "chokepoint": 1370.71,
         "dependency_cone": 91.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -11856,7 +11703,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 160.09,
-        "centrality": 0.7437,
+        "centrality": 0.7434,
         "chokepoint": 801.0,
         "dependency_cone": 81.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -11870,8 +11717,8 @@
       },
       {
         "action": "Monitor; promote when it overlaps a blocker or hotspot.",
-        "blast_radius": 3239.46,
-        "centrality": 87.727,
+        "blast_radius": 3239.52,
+        "centrality": 87.69,
         "chokepoint": null,
         "dependency_cone": 1770.0,
         "executive_read": "High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot.",
@@ -11886,7 +11733,7 @@
       {
         "action": "Monitor; promote when it overlaps a blocker or hotspot.",
         "blast_radius": 588.34,
-        "centrality": 1.6271,
+        "centrality": 1.6264,
         "chokepoint": null,
         "dependency_cone": 370.0,
         "executive_read": "High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot.",
@@ -11909,7 +11756,7 @@
         "mv_name": "mv_actionable_surface_without_schema",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 786,
+        "row_count": 787,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11954,7 +11801,7 @@
         "mv_name": "mv_critical_path_segments",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 191,
+        "row_count": 189,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11972,7 +11819,7 @@
         "mv_name": "mv_debt_concentration_hotspots",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 4907,
+        "row_count": 4910,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11981,7 +11828,7 @@
         "mv_name": "mv_dependency_cone_risk",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11848,
+        "row_count": 11853,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11990,7 +11837,7 @@
         "mv_name": "mv_determinism_provenance_drift",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6608,
+        "row_count": 6611,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12017,7 +11864,7 @@
         "mv_name": "mv_exemptions_near_critical_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 3180,
+        "row_count": 3181,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12044,7 +11891,7 @@
         "mv_name": "mv_graph_chokepoint_bridges",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 2062,
+        "row_count": 2061,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -12107,7 +11954,7 @@
         "mv_name": "mv_high_fan_in_out_with_defects",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 10926,
+        "row_count": 10931,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12125,7 +11972,7 @@
         "mv_name": "mv_hotspot_centrality",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11848,
+        "row_count": 11853,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -12134,7 +11981,7 @@
         "mv_name": "mv_hotspot_coverage_risk",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 4428,
+        "row_count": 4431,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -12179,7 +12026,7 @@
         "mv_name": "mv_modified_area_regressions",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 4927,
+        "row_count": 4929,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12188,7 +12035,7 @@
         "mv_name": "mv_new_cross_layer_dependencies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 177,
+        "row_count": 175,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12215,7 +12062,7 @@
         "mv_name": "mv_newly_introduced_critical_paths",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 8530,
+        "row_count": 8534,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -12233,7 +12080,7 @@
         "mv_name": "mv_path_criticality_rollup",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 11848,
+        "row_count": 11853,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12260,7 +12107,7 @@
         "mv_name": "mv_repeated_p3_near_critical_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1449,
+        "row_count": 1450,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12269,7 +12116,7 @@
         "mv_name": "mv_replay_surface_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 994,
+        "row_count": 995,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12296,7 +12143,7 @@
         "mv_name": "mv_snapshot_integrity_anomalies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 400970,
+        "row_count": 401195,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12323,7 +12170,7 @@
         "mv_name": "mv_task_contract_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1033,
+        "row_count": 1034,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12350,7 +12197,7 @@
         "mv_name": "mv_unknown_taxonomy_and_orphans",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6608,
+        "row_count": 6611,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12368,7 +12215,7 @@
         "mv_name": "mv_write_sovereignty_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1169,
+        "row_count": 1173,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       }
     ],
@@ -12387,41 +12234,23 @@
     }
   },
   "p0_action_queue_summary": {
-    "metric": "1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more",
-    "p0_fix_count": 1,
+    "metric": "3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py, agentic_core/L1_cognition/apps_research_l1_binding.py",
+    "p0_fix_count": 0,
     "p0_wave_count": 3,
     "rows": [
-      {
-        "action_kind": "fix_gate",
-        "file_path": null,
-        "gate_id": "13_core_imports_apps",
-        "ordering_reason": "fix_block_p0_violations_asc",
-        "plan_hint": "immediate_session",
-        "rank": 1,
-        "scoped_tests": [],
-        "signal": "Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked (exit 1).",
-        "sort_band": "P0",
-        "sort_bucket": 0,
-        "source_artifact": "gate_results",
-        "source_digest": "cef76ec5aaa58d0b393e3d323851ff01ce814d677ca19d29911d43fa880e2c86",
-        "source_id": null,
-        "symbol": null,
-        "verdict_cluster": "FIX",
-        "violation_count": 5
-      },
       {
         "action_kind": "p0_wave_file",
         "file_path": "agentic_core/L1_cognition/__init__.py",
         "gate_id": null,
         "ordering_reason": "p0_wave_top_files_priority",
         "plan_hint": "p0_wave_session",
-        "rank": 2,
+        "rank": 1,
         "scoped_tests": [],
         "signal": "P0 wave file; issues=1",
         "sort_band": "P0",
         "sort_bucket": 3,
         "source_artifact": "p0_wave_plan",
-        "source_digest": "3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5",
+        "source_digest": "e2d15c62996ab891f54857872010f358886a7a7615f4dcb4f4e2e91407ef4fbb",
         "source_id": "agentic_core/L1_cognition/__init__.py",
         "symbol": null,
         "verdict_cluster": "P0_WAVE",
@@ -12433,13 +12262,13 @@
         "gate_id": null,
         "ordering_reason": "p0_wave_top_files_priority",
         "plan_hint": "p0_wave_session",
-        "rank": 3,
+        "rank": 2,
         "scoped_tests": [],
         "signal": "P0 wave file; issues=1",
         "sort_band": "P0",
         "sort_bucket": 3,
         "source_artifact": "p0_wave_plan",
-        "source_digest": "3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5",
+        "source_digest": "e2d15c62996ab891f54857872010f358886a7a7615f4dcb4f4e2e91407ef4fbb",
         "source_id": "agentic_core/L1_cognition/apps_research_c0_binding.py",
         "symbol": null,
         "verdict_cluster": "P0_WAVE",
@@ -12451,13 +12280,13 @@
         "gate_id": null,
         "ordering_reason": "p0_wave_top_files_priority",
         "plan_hint": "p0_wave_session",
-        "rank": 4,
+        "rank": 3,
         "scoped_tests": [],
         "signal": "P0 wave file; issues=1",
         "sort_band": "P0",
         "sort_bucket": 3,
         "source_artifact": "p0_wave_plan",
-        "source_digest": "3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5",
+        "source_digest": "e2d15c62996ab891f54857872010f358886a7a7615f4dcb4f4e2e91407ef4fbb",
         "source_id": "agentic_core/L1_cognition/apps_research_l1_binding.py",
         "symbol": null,
         "verdict_cluster": "P0_WAVE",
@@ -12465,57 +12294,57 @@
       }
     ],
     "top_scopes": [
-      "13_core_imports_apps",
       "agentic_core/L1_cognition/__init__.py",
-      "agentic_core/L1_cognition/apps_research_c0_binding.py"
+      "agentic_core/L1_cognition/apps_research_c0_binding.py",
+      "agentic_core/L1_cognition/apps_research_l1_binding.py"
     ],
-    "total_p0_rows": 4
+    "total_p0_rows": 3
   },
   "p0_p3_reconciliation": {
     "executive_read": "P0 is split into three ledgers: foundation blockers, audit inventory, and live gate drivers.",
     "kpis": [
       {
         "action_rule": "Stop the line if greater than zero; if not loaded, do not claim clean.",
-        "display_value": "201",
+        "display_value": "200",
         "id": "foundation_blockers",
         "kpi": "Foundation blockers",
         "meaning": "P0 trust hazards that can make ADG evidence incomplete, unstable, or misleading.",
-        "value": 201
+        "value": 200
       },
       {
         "action_rule": "Audit-only unless mapped to a failing gate, runtime failure, hotspot, or changed code.",
-        "display_value": "4",
+        "display_value": "3",
         "id": "p0_audit_net",
         "kpi": "P0 audit net",
         "meaning": "P0 severity audit inventory after guardian exemptions.",
-        "value": 4
+        "value": 3
       },
       {
         "action_rule": "Can drive priority when the gate is FIX/red and decision-linked.",
-        "display_value": "1",
+        "display_value": "0",
         "id": "p0_live_gate_drivers",
         "kpi": "P0 live gate drivers",
         "meaning": "Current red P0 gates that can drive today's work order.",
-        "value": 1
+        "value": 0
       }
     ],
     "p0_p3_audit_inventory": [
       {
         "action_role": "Stop-the-line only if foundation blockers are present; otherwise audit net is evidence to map.",
-        "audit_gross": 37,
-        "audit_net": 4,
-        "audit_net_display": "4",
+        "audit_gross": 35,
+        "audit_net": 3,
+        "audit_net_display": "3",
         "band": "P0",
-        "foundation_blockers": 201,
-        "foundation_blockers_display": "201",
-        "guardian_exempted": 33,
-        "live_gate_drivers": 1
+        "foundation_blockers": 200,
+        "foundation_blockers_display": "200",
+        "guardian_exempted": 32,
+        "live_gate_drivers": 0
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 1146,
-        "audit_net": 3,
-        "audit_net_display": "3",
+        "audit_gross": 1147,
+        "audit_net": 4,
+        "audit_net_display": "4",
         "band": "P1",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -12524,9 +12353,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 747,
-        "audit_net": 31,
-        "audit_net_display": "31",
+        "audit_gross": 748,
+        "audit_net": 32,
+        "audit_net_display": "32",
         "band": "P2",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -12535,9 +12364,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 19262,
-        "audit_net": 19175,
-        "audit_net_display": "19,175",
+        "audit_gross": 19265,
+        "audit_net": 19178,
+        "audit_net_display": "19,178",
         "band": "P3",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -12615,7 +12444,7 @@
         {
           "app": "apps_eval",
           "executive_read": "Product surface; prioritize when high blast radius and missing e2e/regression tests overlap.",
-          "file_count": 45
+          "file_count": 48
         },
         {
           "app": "apps_architect",
@@ -12623,17 +12452,17 @@
           "file_count": 29
         }
       ],
-      "total_files": 1468
+      "total_files": 1471
     },
     "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.",
-    "production_python_files": 7070,
-    "snapshot_ts": "2026-07-03T12:25:29.907040+00:00",
+    "production_python_files": 7074,
+    "snapshot_ts": "2026-07-04T12:57:12.684969+00:00",
     "status": "present",
-    "test_python_files": 5242,
+    "test_python_files": 5244,
     "tests": {
       "folder_breakdown": [
         {
-          "file_count": 3077,
+          "file_count": 3078,
           "folder": "tests/unit"
         },
         {
@@ -12665,13 +12494,13 @@
           "folder": "tests/fixtures"
         },
         {
-          "file_count": 2032,
+          "file_count": 2033,
           "folder": "tests/unknown"
         }
       ],
-      "total_files": 5242
+      "total_files": 5244
     },
-    "total_python_files": 12312
+    "total_python_files": 12318
   },
   "plain_english_context": {
     "what_adg_is": {
@@ -12741,30 +12570,27 @@
   },
   "raw_inputs": {
     "artifacts": {
-      "action_queue": "artifacts/adg/adg_action_queue_07032026_0812.json",
-      "bcg_adapter": "artifacts/adg/adg_bcg_adapter_07032026_0812.json",
+      "action_queue": "artifacts/adg/adg_action_queue_07042026_0851.json",
+      "bcg_adapter": "artifacts/adg/adg_bcg_adapter_07042026_0851.json",
       "burndown_report": "artifacts/adg/adg_burndown_report.md",
-      "burndown_table": "artifacts/adg/adg_burndown_table_07032026_0812.json",
-      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_07032026_0812.json",
-      "gate_results": "artifacts/adg/adg_gate_results_20260703_122529.json",
-      "generation_manifest": "artifacts/adg/adg_generation_manifest_07032026_0812.json",
-      "graph_watchlist": "",
-      "graphdb_index": "artifacts/adg/adg_graphdb_index_07032026_0812.json",
-      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_07032026_0812.json",
-      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_07032026_0812.json",
-      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_07032026_0812.json",
-      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_07032026_0812.json",
-      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_07032026_0812.json",
-      "review_template": "artifacts/adg/adg_review_template_07032026_0812.json",
-      "runtime_spine": "artifacts/adg/adg_runtime_spine_07032026_0812.json",
-      "sqlite_snapshot": "artifacts/adg/adg_indexed_07032026_0812.sqlite",
-      "structural_outputs": "artifacts/adg/adg_structural_outputs_07032026_0812.json"
+      "burndown_table": "artifacts/adg/adg_burndown_table_07042026_0851.json",
+      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_07042026_0851.json",
+      "gate_results": "artifacts/adg/adg_gate_results_20260704_125712.json",
+      "generation_manifest": "artifacts/adg/adg_generation_manifest_07042026_0851.json",
+      "graphdb_index": "artifacts/adg/adg_graphdb_index_07042026_0851.json",
+      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_07042026_0851.json",
+      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_07042026_0851.json",
+      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_07042026_0851.json",
+      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_07042026_0851.json",
+      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_07042026_0851.json",
+      "review_template": "artifacts/adg/adg_review_template_07042026_0851.json",
+      "runtime_spine": "artifacts/adg/adg_runtime_spine_07042026_0851.json",
+      "sqlite_snapshot": "artifacts/adg/adg_indexed_07042026_0851.sqlite",
+      "structural_outputs": "artifacts/adg/adg_structural_outputs_07042026_0851.json"
     },
     "loaded_status": {
       "degraded": [],
-      "missing": [
-        "graph_watchlist"
-      ],
+      "missing": [],
       "stale": [],
       "used": [
         "gate_results",
@@ -12786,14 +12612,14 @@
     }
   },
   "run": {
-    "commit_sha": "de43c8ceaa2b87e911f6929c1a349f033082b7e1",
+    "commit_sha": "07a44be3be27f286caa6f331208529b620372273",
     "decision_grade_status": "REPORT_INCONSISTENT",
     "degradation_reasons": [],
     "emit_status": "PASS",
-    "generated_at_utc": "2026-07-03T12:27:58+00:00",
-    "repo_state_hash": "4ad42c10e9401859",
-    "run_id": "07032026_0812",
-    "snapshot_ts": "2026-07-03T12:25:29.907040+00:00"
+    "generated_at_utc": "2026-07-04T13:00:31+00:00",
+    "repo_state_hash": "688df86358e6c554",
+    "run_id": "07042026_0851",
+    "snapshot_ts": "2026-07-04T12:57:12.684969+00:00"
   },
   "schema_version": "1.0"
 }
