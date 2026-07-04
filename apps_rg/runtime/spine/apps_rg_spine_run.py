@@ -34,10 +34,26 @@ def _section_cache_preflight_evidence(section_id: str) -> dict[str, Any]:
 def _section_result_from_l2_result(l2_result: Any) -> dict[str, Any]:
     if not isinstance(l2_result, dict):
         return {}
+    direct = l2_result.get("section_result")
+    if isinstance(direct, dict):
+        return dict(direct)
     for step in l2_result.get("step_results") or ():
         if isinstance(step, dict) and isinstance(step.get("section_result"), dict):
             return dict(step["section_result"])
     return {}
+
+
+def _section_x3_disposition(section_result: dict[str, Any]) -> str:
+    raw = section_result.get("x3_disposition")
+    if isinstance(raw, dict):
+        return str(raw.get("x3_code") or raw.get("x3_disposition") or "").strip()
+    value = str(raw or "").strip()
+    if value:
+        return value
+    x3_doc = section_result.get("x3")
+    if isinstance(x3_doc, dict):
+        return str(x3_doc.get("x3_code") or x3_doc.get("x3_disposition") or "").strip()
+    return str(section_result.get("x3_code") or "").strip()
 
 
 def run_apps_rg_spine(
@@ -179,9 +195,18 @@ def run_apps_rg_spine(
         out = dict(section_result)
         if section_result.get("run_id"):
             out["lane_run_id"] = section_result.get("run_id")
-        x3 = str(getattr(result, "x3_disposition", "") or "")
+        wrapper_x3 = str(getattr(result, "x3_disposition", "") or "")
+        section_x3 = _section_x3_disposition(section_result)
+        x3 = section_x3 or wrapper_x3
         fault = str(getattr(result, "fault", "") or "")
-        outcome = not fault and (x3 in _SECTION_SUCCESS_X3 or bool(out.get("outcome_authorized")))
+        if section_result:
+            outcome = (
+                not fault
+                and bool(section_result.get("outcome_authorized"))
+                and x3 in _SECTION_SUCCESS_X3
+            )
+        else:
+            outcome = not fault and wrapper_x3 in _SECTION_SUCCESS_X3
         out.update(
             {
                 "exit_status": "success" if outcome else "error",
@@ -189,6 +214,9 @@ def run_apps_rg_spine(
                 "outcome_authorized": outcome,
                 "x3_disposition": x3,
                 "fault": fault,
+                "section_result_blocked": bool(section_result)
+                and not bool(section_result.get("outcome_authorized")),
+                "section_wrapper_x3_disposition": wrapper_x3,
                 "artifact_dir": str(art),
                 "run_id": str(getattr(result, "run_id", "") or ""),
                 "request_id": str(getattr(result, "request_id", "") or ""),

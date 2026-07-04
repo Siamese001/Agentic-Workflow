@@ -303,6 +303,27 @@ class GenerateSectionStep(BaseRecipeStep):
     REQUIRES_PA: bool = False
     STEP_NAME: str = "generate_section"
 
+    @staticmethod
+    def _x3_disposition_from_result(result: dict[str, Any]) -> str:
+        x3 = result.get("x3_disposition")
+        if isinstance(x3, dict):
+            return str(x3.get("x3_code") or x3.get("x3_disposition") or "").strip()
+        x3_str = str(x3 or "").strip()
+        if x3_str:
+            return x3_str
+        x3_doc = result.get("x3")
+        if isinstance(x3_doc, dict):
+            return str(
+                x3_doc.get("x3_code") or x3_doc.get("x3_disposition") or ""
+            ).strip()
+        return str(result.get("x3_code") or "").strip()
+
+    @classmethod
+    def _fatal_pre_x3_fault(cls, result: dict[str, Any]) -> str:
+        if cls._x3_disposition_from_result(result):
+            return ""
+        return str(result.get("fault") or result.get("error") or "").strip()
+
     def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
         raw = context.get("raw_request")
         raw_request = raw if isinstance(raw, dict) else {}
@@ -342,11 +363,27 @@ class GenerateSectionStep(BaseRecipeStep):
             ),
         )
         if not bool(result.get("outcome_authorized")):
-            x3 = str(result.get("x3_disposition") or "")
-            fault = str(result.get("fault") or result.get("error") or "section_not_authorized")
-            raise RuntimeError(
-                f"SECTION_SCOPE_RECIPE_FAILED:{section_id}:{x3}:{fault}"
-            )
+            x3 = self._x3_disposition_from_result(result)
+            fault = self._fatal_pre_x3_fault(result)
+            if fault:
+                raise RuntimeError(
+                    f"SECTION_SCOPE_RECIPE_FAILED:{section_id}:{x3}:{fault}"
+                )
+            try:
+                exit_code = int(result.get("exit_code") or 1)
+            except (TypeError, ValueError):
+                exit_code = 1
+            return {
+                "status": "blocked",
+                "step": self.STEP_NAME,
+                "section_id": section_id,
+                "run_dir": result.get("artifact_dir", ""),
+                "section_result": result,
+                "exit_code": exit_code,
+                "outcome_authorized": False,
+                "x3_disposition": x3,
+                "section_blocked": True,
+            }
 
         return {
             "status": "ok",
