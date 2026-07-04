@@ -631,6 +631,42 @@ def test_registered_worktree_rejects_primary_root_projection_digest_drift(
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
+def test_adg_handoff_contract_rejects_relative_consumer_pointer(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    automation = mod._automation_path(root, "adg-p0-blocker-burndown")
+    automation.write_text(
+        _automation_toml(
+            "adg-p0-blocker-burndown",
+            _adg_p0_prompt(),
+            root,
+            receipt_path="docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json",
+            handoff_pointer_path="artifacts/adg/handoffs/adg_repair_handoff_latest.json",
+            validator=(
+                "python tools/adg/consume_adg_repair_handoff.py "
+                "--handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+            ),
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "adg_handoff_contract" for issue in issues)
+    assert any("handoff_pointer_path" in issue.detail for issue in issues)
+
+
+def test_adg_handoff_contract_uses_single_producer_pointer() -> None:
+    assert Path(mod.ADG_HANDOFF_POINTER_PATH).is_absolute()
+    assert mod.ADG_HANDOFF_POINTER_BASE == "producer_repo_root"
+    for automation_id in mod.ADG_HANDOFF_CHAIN:
+        contract = mod.ADG_HANDOFF_CONTRACTS[automation_id]
+        assert contract["producer_repo_root"] == mod.ADG_HANDOFF_PRODUCER_ROOT
+        assert contract["handoff_pointer_base"] == mod.ADG_HANDOFF_POINTER_BASE
+        assert contract["handoff_pointer_path"] == mod.ADG_HANDOFF_POINTER_PATH
+        assert contract["receipt_path"] == mod.ADG_HANDOFF_RECEIPT_PATH
+        assert mod.ADG_HANDOFF_POINTER_PATH in contract["validator"]
+
+
 def test_adg_handoff_graph_requires_producer_to_unblock_p0(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = mod._automation_path(root, "weekly-adg-audit-and-burndown")

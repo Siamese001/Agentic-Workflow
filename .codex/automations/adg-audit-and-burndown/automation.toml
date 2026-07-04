@@ -13,7 +13,7 @@ python tools/adg/run_full_adg_audit.py --mode certification --format both --cont
 Downstream release contract:
 - This automation is the generate_full_adg lane and the only producer of the ADG handoff for downstream P0, P1, P2, P3, and any future P4 automation.
 - Treat the [handoff] metadata in this TOML as the machine-checkable release contract. If prompt prose and [handoff] metadata conflict, stop and report the contract drift.
-- The downstream handoff is released only through artifacts/adg/handoffs/adg_repair_handoff_latest.json, which must point to an immutable per-run handoff plus docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json and digest-bound timestamped repair_handoff artifacts.
+- The downstream handoff is released only through the producer-root pointer at C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json, which must point to an immutable per-run handoff plus C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\AUDIT_PIPELINE_RECEIPT.json and digest-bound timestamped repair_handoff artifacts.
 - Downstream lanes must not consume overwritten latest files as source of truth when timestamped paths exist.
 - Downstream lanes must not regenerate full ADG, rewrite the receipt, or infer repair_ready from prompt context, newest files, rewritten docs mirrors, or stale latest files.
 - If this run is incomplete, stale, timestamp-inconsistent, or digest-invalid, mark downstream_release_status=blocked and explicitly state that all downstream severity-lane automations must stop or keep polling.
@@ -30,7 +30,7 @@ Severity-lane order:
 Zero-loss artifact contract:
 - Treat timestamped artifacts as append-only evidence. Never rely on overwritten latest files for handoff when a timestamped path exists.
 - After the command exits, read docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json and require schema_version="adg-audit-pipeline-receipt/v1".
-- Read artifacts/adg/handoffs/adg_repair_handoff_latest.json and require schema_version="adg-repair-handoff-pointer/v1"; it must point to an immutable adg_repair_handoff_<run_id>.json with a matching sha256.
+- Read C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json and require schema_version="adg-repair-handoff-pointer/v1"; it must point to an immutable adg_repair_handoff_<run_id>.json with a matching sha256.
 - Require artifact_status_source="direct" and a repair_handoff with digest-bound timestamped paths for snapshot, gate results, action queue, burndown report, burndown table, generation manifest, and gate manifest.
 - Do not infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
 - If artifact_status is missing, artifact_status_source is not direct, repair_handoff is missing, or any required artifact is missing/stale/timestamp-inconsistent/digest-invalid, report artifact_status=incomplete and stop without editing.
@@ -68,9 +68,11 @@ lane = "generate_full_adg"
 role = "producer"
 order = 0
 producer_id = "weekly-adg-audit-and-burndown"
-receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
-handoff_pointer_path = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
-validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+receipt_path = "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\AUDIT_PIPELINE_RECEIPT.json"
+handoff_pointer_path = "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json"
+producer_repo_root = "C:\\Git\\Agentic-Workflow-FRESH"
+handoff_pointer_base = "producer_repo_root"
+validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json"
 consumable_artifact_statuses = ["certified", "repair_ready"]
 requires_direct_artifact_status_source = true
 requires_digest_bound_handoff_pointer = true

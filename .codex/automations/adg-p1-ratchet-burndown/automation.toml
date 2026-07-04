@@ -14,9 +14,11 @@ Generate-full-ADG dependency gate:
 - Do not begin source edits until the latest full ADG audit has completed and released artifacts/adg/handoffs/adg_repair_handoff_latest.json for this run window.
 - The receipt must be produced by the exact command python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0, and the receipt must point to digest-bound timestamped repair_handoff artifacts.
 - Run this exact validator before editing:
-  python tools/adg/consume_adg_repair_handoff.py --handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json
+  python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json
 - Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
-- The validator must resolve the latest pointer to an immutable timestamped handoff, then verify the receipt SHA, run ID, and artifact digests before the lane may edit.
+- The validator must resolve the producer-root latest pointer to an immutable timestamped handoff, then verify the receipt SHA, run ID, and artifact digests before the lane may edit.
+- Treat P0 as clean for this lane only when the validated handoff counts have P0_FIX=0 and P0_WAVE=0 and the digest-bound action queue/burndown report do not promote any P0 FIX or P0 WAVE row. P0_TRACKED_BACKLOG remains tracked backlog and must not be reinterpreted as clearance or as a P1 target.
+- If validator counts conflict with the digest-bound action queue, gate results, or burndown report, stop without source edits and report handoff contract drift.
 - Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and after the P0 blocker lane merge/push that this run depends on.
 - If the generate_full_adg audit is still running, stale, missing, timestamp-inconsistent, digest-invalid, not direct, or older than the P0 blocker publication, wait/poll only within this lane's deadline policy; otherwise stop without editing and report RCA.
 - Never consume overwritten latest files as source of truth when timestamped artifacts exist.
@@ -32,8 +34,8 @@ Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-com
 
 Startup gate:
 - Before any edit, create/use the dedicated P1 worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown on a codex/adg-p1-ratchet-burndown-* branch. Use the canonical repo root only to read the audit receipt and bootstrap the worktree.
-- Read artifacts/adg/handoffs/adg_repair_handoff_latest.json first and run the validator above before editing.
-- Verify P0=0 from the latest released ADG receipt, gate results, and burndown table/report. If P0 is not zero, stop and defer to adg-p0-blocker-burndown.
+- Read the producer-root handoff pointer at C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json first and run the validator above before editing. Do not consume a same-named pointer from the P1 worktree.
+- Verify P0=0 from the latest released ADG receipt, gate results, action queue, and burndown table/report. For this check, P0=0 means P0_FIX=0 and P0_WAVE=0 with no conflicting P0 FIX/WAVE row in the digest-bound artifacts; P0_TRACKED_BACKLOG is non-blocking tracked backlog only when no P0 FIX/WAVE row is promoted. If P0 is not zero, stop and defer to adg-p0-blocker-burndown.
 - Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
 
 Automation-owned planning and approval:
@@ -99,9 +101,11 @@ lane = "p1_ratchet_burndown"
 role = "consumer"
 order = 2
 producer_id = "weekly-adg-audit-and-burndown"
-receipt_path = "docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json"
-handoff_pointer_path = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
-validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+receipt_path = "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\adg\\AUDIT_PIPELINE_RECEIPT.json"
+handoff_pointer_path = "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json"
+producer_repo_root = "C:\\Git\\Agentic-Workflow-FRESH"
+handoff_pointer_base = "producer_repo_root"
+validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json"
 consumable_artifact_statuses = ["certified", "repair_ready"]
 requires_direct_artifact_status_source = true
 requires_digest_bound_handoff_pointer = true
