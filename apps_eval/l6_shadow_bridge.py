@@ -20,6 +20,9 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     build_microstep_rca,
     build_observations_from_eval_rows,
 )
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.L6_observability.shadow_eval.pipeline import (
     L6PipelineState,
     run_6a,
@@ -37,6 +40,7 @@ L6_MICROSTEP_RCA_ARTIFACT = "l6_microstep_rca.json"
 L6_MICROSTEP_PATTERNS_ARTIFACT = "l6_microstep_patterns.json"
 L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT = "l6_microstep_future_run_proposals.json"
 L6_APPS_EVAL_ALIGNMENT_ARTIFACT = "l6_apps_eval_alignment.json"
+L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT = "l6_apps_eval_grain_parity.json"
 
 
 def _jsonable(value: object) -> object:
@@ -128,6 +132,21 @@ def _emit_record_microstep_artifacts(
             l6_observation_ref=observation_path.as_posix(),
             apps_eval_rows=scorecard_rows,
             l6_observations=observation_dicts,
+            alignment_source="apps_eval_scorecard_rows",
+            apps_eval_rows_bound=True,
+        ),
+    )
+    parity_path = _write_json_artifact(
+        run_dir / L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT,
+        build_l6_apps_eval_grain_parity(
+            run_id=record.record_id,
+            runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+            microstep_contract_digest=str(record.record_seed.get("apps_rg_microstep_contract_digest") or ""),
+            apps_eval_scorecard_ref=scorecard_ref,
+            l6_observation_ref=observation_path.as_posix(),
+            apps_eval_rows=scorecard_rows,
+            l6_observations=observation_dicts,
+            alignment_source="apps_eval_scorecard_rows",
         ),
     )
     return {
@@ -137,6 +156,7 @@ def _emit_record_microstep_artifacts(
         "l6_microstep_patterns": patterns_path.as_posix(),
         "l6_microstep_future_run_proposals": proposals_path.as_posix(),
         "l6_apps_eval_alignment": alignment_path.as_posix(),
+        "l6_apps_eval_grain_parity": parity_path.as_posix(),
     }
 
 

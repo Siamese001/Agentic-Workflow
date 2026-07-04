@@ -24,10 +24,16 @@ from agentic_core.L4_state.contracts import (
 )
 from agentic_core.L4_state.contracts.records import stamp_digest
 from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import compute_artifact_hash
 
 from apps_rg.runtime.package.apps_rg_full_resume_x3_eligibility import (
     evaluate_apps_rg_full_success_eligibility,
+)
+from apps_rg.runtime.shadow.l6_microstep_observability import (
+    emit_apps_rg_l6_microstep_artifacts,
 )
 
 POST_X3_COMPLETION_RECEIPT = "apps_rg_post_x3_completion_receipt.json"
@@ -36,6 +42,9 @@ UWG_COMMIT_REQUEST = "commit_request.json"
 UWG_VALIDATION_RECEIPT = "uwg_validation_receipt.json"
 UWG_COMMIT_RECEIPT = "uwg_commit_receipt.json"
 UWG_REFRESH_RECEIPTS = "uwg_refresh_receipts.json"
+POST_X3_FAILURE_L6_SHADOW_BRIDGE = "post_x3_failure_l6_shadow_bridge.json"
+POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY = "post_x3_failure_l6_apps_eval_grain_parity.json"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _utc_now_iso() -> str:
@@ -358,8 +367,10 @@ def _bind_completion_artifacts(
     l6_bridge_hash: str,
     commit_receipt_id: str,
     fact_vector_writeback: Mapping[str, Any] | None = None,
+    l6_shadow_refs: Mapping[str, Any] | None = None,
 ) -> None:
     fv = dict(fact_vector_writeback or {})
+    l6_refs = dict(l6_shadow_refs or {})
     updates = {
         "apps_rg_post_x3_completion_status": "PASS",
         "apps_rg_post_x3_completion_ref": _repo_rel(receipt_path, artifact_dir),
@@ -372,6 +383,13 @@ def _bind_completion_artifacts(
         "apps_eval_record_sha256": f"sha256:{eval_record_hash}",
         "l6_shadow_bridge_ref": l6_bridge_path,
         "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
+        "l6_apps_eval_alignment_ref": str(l6_refs.get("l6_apps_eval_alignment_ref") or ""),
+        "l6_apps_eval_grain_parity_ref": str(l6_refs.get("l6_apps_eval_grain_parity_ref") or ""),
+        "alignment_source": str(l6_refs.get("alignment_source") or ""),
+        "apps_eval_rows_bound": bool(l6_refs.get("apps_eval_rows_bound") is True),
+        "grain_parity_status": str(l6_refs.get("grain_parity_status") or ""),
+        "future_run_only": True,
+        "current_run_mutated": False,
         "fact_vector_writeback_status": str(fv.get("status") or ""),
         "fact_vector_writeback_reason": str(fv.get("reason") or ""),
     }
@@ -395,6 +413,11 @@ def _bind_completion_artifacts(
             "uwg_commit_receipt_ref": updates["uwg_commit_receipt_ref"],
             "apps_eval_record_ref": eval_record_path,
             "l6_shadow_bridge_ref": l6_bridge_path,
+            "l6_apps_eval_alignment_ref": updates["l6_apps_eval_alignment_ref"],
+            "l6_apps_eval_grain_parity_ref": updates["l6_apps_eval_grain_parity_ref"],
+            "alignment_source": updates["alignment_source"],
+            "apps_eval_rows_bound": updates["apps_eval_rows_bound"],
+            "grain_parity_status": updates["grain_parity_status"],
             "fact_vector_writeback": fv,
             "note": "route-family certification is separate from app workflow completion",
         }
@@ -438,6 +461,90 @@ def _run_current_eval(
         deterministic_only=True,
         emit_l6_handoff=True,
     )
+
+
+def _emit_post_x3_failure_l6_shadow_bridge(
+    *,
+    artifact_dir: Path,
+    failure_stage: str,
+    reason: str,
+    partial_payload: Mapping[str, Any],
+) -> dict[str, Any]:
+    bridge_path = artifact_dir / POST_X3_FAILURE_L6_SHADOW_BRIDGE
+    parity_path = artifact_dir / POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY
+    bridge = {
+        "schema_version": "apps_rg.post_x3_failure_l6_shadow_bridge.v1",
+        "failure_stage": failure_stage,
+        "reason": reason,
+        "partial_payload": dict(partial_payload),
+        "alignment_source": "failure_terminal_no_apps_eval_rows",
+        "apps_eval_rows_bound": False,
+        "grain_parity_status": "WARN",
+        "current_run_mutation_assertion": False,
+        "direct_l4_write_assertion": False,
+        "durable_write_assertion": False,
+        "future_run_only": True,
+    }
+    parity = build_l6_apps_eval_grain_parity(
+        run_id=str(partial_payload.get("run_id") or ""),
+        runtime_exhaust_bundle_id="",
+        microstep_contract_digest="",
+        apps_eval_scorecard_ref="",
+        l6_observation_ref=_repo_rel(bridge_path, artifact_dir),
+        apps_eval_rows=[],
+        l6_observations=[],
+        alignment_source="failure_terminal_no_apps_eval_rows",
+    )
+    parity.update(
+        {
+            "direct_l4_write_assertion": False,
+            "durable_write_assertion": False,
+        }
+    )
+    _write_json(bridge_path, bridge)
+    _write_json(parity_path, parity)
+    return {
+        "l6_shadow_bridge_ref": _repo_rel(bridge_path, artifact_dir),
+        "l6_apps_eval_grain_parity_ref": _repo_rel(parity_path, artifact_dir),
+        "alignment_source": "failure_terminal_no_apps_eval_rows",
+        "apps_eval_rows_bound": False,
+        "grain_parity_status": "WARN",
+        "future_run_only": True,
+        "current_run_mutated": False,
+    }
+
+
+def _emit_post_x3_success_l6_grain_parity(
+    *,
+    artifact_dir: Path,
+    eval_record: Any,
+    l6_bridge_path: str,
+) -> dict[str, Any]:
+    bridge = _read_json(Path(l6_bridge_path)) if l6_bridge_path else {}
+    runtime_exhaust_bundle_id = str(bridge.get("runtime_exhaust_bundle_id") or "")
+    scorecard_rows = list(getattr(eval_record.scorecard, "scorecard_rows", []) or [])
+    scorecard_ref = str(eval_record.artifact_paths.get("scorecard_rows") or "")
+    paths = emit_apps_rg_l6_microstep_artifacts(
+        output_dir=artifact_dir / "l6_grain_parity",
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        run_id=str(eval_record.record_id),
+        runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+        section_id="",
+        apps_eval_scorecard_rows=scorecard_rows,
+        apps_eval_scorecard_ref=scorecard_ref,
+    )
+    parity = _read_json(paths["l6_apps_eval_grain_parity"])
+    return {
+        "l6_apps_eval_alignment_ref": _repo_rel(paths["l6_apps_eval_alignment"], artifact_dir),
+        "l6_apps_eval_grain_parity_ref": _repo_rel(paths["l6_apps_eval_grain_parity"], artifact_dir),
+        "l6_microstep_observations_ref": _repo_rel(paths["l6_microstep_observations"], artifact_dir),
+        "alignment_source": str(parity.get("alignment_source") or ""),
+        "apps_eval_rows_bound": bool(parity.get("apps_eval_rows_bound") is True),
+        "grain_parity_status": str(parity.get("grain_parity_status") or ""),
+        "future_run_only": bool(parity.get("future_run_only") is True),
+        "current_run_mutated": False,
+    }
 
 
 def _complete_fact_vector_writeback_after_x3(
@@ -578,6 +685,12 @@ def complete_apps_rg_post_x3(
             "generated_resume_path": _repo_rel(generated, art) if generated else "",
             "eligibility_reasons": reasons,
         }
+        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
+            artifact_dir=art,
+            failure_stage="pre_uwg_product_eligibility",
+            reason=";".join(str(reason) for reason in reasons),
+            partial_payload=payload,
+        )
         _write_json(receipt_path, payload)
         return payload
 
@@ -607,6 +720,12 @@ def complete_apps_rg_post_x3(
             "failure_stage": "uwg_commit",
             "blocked_receipt": blocked_payload,
         }
+        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
+            artifact_dir=art,
+            failure_stage="uwg_commit",
+            reason="uwg_commit_blocked",
+            partial_payload=payload,
+        )
         _write_json(receipt_path, payload)
         return payload
 
@@ -621,6 +740,12 @@ def complete_apps_rg_post_x3(
             "failure_stage": "uwg_validation_receipt_lookup",
             "uwg_validation_receipt_ref": commit_receipt.uwg_validation_receipt_ref,
         }
+        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
+            artifact_dir=art,
+            failure_stage="uwg_validation_receipt_lookup",
+            reason="uwg_validation_receipt_missing",
+            partial_payload=payload,
+        )
         _write_json(receipt_path, payload)
         return payload
 
@@ -652,6 +777,12 @@ def complete_apps_rg_post_x3(
             "failure_stage": "fact_vector_writeback",
             "fact_vector_writeback": fact_vector_writeback,
         }
+        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
+            artifact_dir=art,
+            failure_stage="fact_vector_writeback",
+            reason=str(fact_vector_writeback.get("reason") or "fact_vector_writeback_failed"),
+            partial_payload=payload,
+        )
         _write_json(receipt_path, payload)
         return payload
     eval_record = _run_current_eval(
@@ -663,6 +794,11 @@ def complete_apps_rg_post_x3(
     l6_bridge_path = str(eval_record.artifact_paths.get("l6_shadow_bridge") or "")
     eval_record_hash = _sha256_file(Path(eval_record_path)) if eval_record_path else ""
     l6_bridge_hash = _sha256_file(Path(l6_bridge_path)) if l6_bridge_path and Path(l6_bridge_path).is_file() else ""
+    l6_grain_refs = _emit_post_x3_success_l6_grain_parity(
+        artifact_dir=art,
+        eval_record=eval_record,
+        l6_bridge_path=l6_bridge_path,
+    )
     coverage = dict(eval_record.scorecard.coverage_summary or {})
     eval_pass = coverage.get("release_blocked") is False and coverage.get("coverage_complete") is True
     payload = {
@@ -697,6 +833,7 @@ def complete_apps_rg_post_x3(
         "l6_shadow": {
             "l6_shadow_bridge_ref": l6_bridge_path,
             "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
+            **l6_grain_refs,
             "future_run_only": True,
             "current_run_mutated": False,
         },
@@ -715,11 +852,14 @@ def complete_apps_rg_post_x3(
             l6_bridge_hash=l6_bridge_hash,
             commit_receipt_id=commit_receipt.commit_receipt_id,
             fact_vector_writeback=fact_vector_writeback,
+            l6_shadow_refs=l6_grain_refs,
         )
     return payload
 
 
 __all__ = [
+    "POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY",
+    "POST_X3_FAILURE_L6_SHADOW_BRIDGE",
     "POST_X3_COMPLETION_RECEIPT",
     "complete_apps_rg_post_x3",
     "is_full_resume_product_artifact_dir",

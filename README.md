@@ -220,7 +220,7 @@ The GitHub-facing app portfolio below is a navigation map for active app and sha
 | [`apps_architect`](apps_architect/) | Pattern Collection & Repo Hardening Engine — deterministic pattern scan and hardening-rule emission | — | — | — | — | — |
 | [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | — | — | — | — |
 | [`apps_exec`](apps_exec/) | Executive Brief Generator — governed registry surface with historical product docs | — | — | — | [→](docs/reports/apps_exec/PRODUCT_SPEC.md) | — |
-| [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
+| [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | [→](apps_lic/README.md) | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
 | [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode, plus compact downstream briefs for `apps_rg` and `apps_lic` | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | — | — | — | [→](docs/reports/apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
@@ -256,7 +256,7 @@ python -m apps_eval --all
 python -m apps_research --topic "agentic governance" --mode brief
 python -m apps_underwriting_ai --demo
 
-# Architecture proof pack (exit 0 = green; current output is authoritative)
+# Architecture proof pack (exit 0 = green; inspect current output)
 python ops_scripts/ci/run_architecture_proof.py
 ```
 
@@ -264,9 +264,10 @@ python ops_scripts/ci/run_architecture_proof.py
 
 ## Governed Architecture Proof Pack
 
-Current registry snapshot: three governed entries and five formal exceptions, with one release gate. The proof command is authoritative for current pass/fail status; this README is not a substitute for the gate output.
+Current registry snapshot: three governed entries and five formal exceptions, with one release gate. The direct conformance gate below is authoritative for registry counts; the top-level proof command is the suite entrypoint for current pass/fail status.
 
 ```bash
+python ops_scripts/ci/check_governed_app_conformance.py
 python ops_scripts/ci/run_architecture_proof.py
 ```
 
@@ -355,6 +356,14 @@ See the [Application Portfolio](#application-portfolio) table above.
 
 ---
 
+## Community Health And Public Scope
+
+This repository is published as a public proof asset and reference design. At this docs snapshot, the repo does not yet include root-level `LICENSE`, `SECURITY`, `SUPPORT`, `CONTRIBUTING`, or `CODE_OF_CONDUCT` files. Treat those as explicit community-health gaps rather than implied policy, support, licensing, or disclosure commitments.
+
+For currently supported reviewer evidence, use the proof commands and architecture documents above; for governance process, use `AGENTS.md`, `docs/codex-primary-execution.md`, and `.codex/**`.
+
+---
+
 ## The Public Engineering Arguments
 
 This repository is the evidence behind a small set of public arguments:
@@ -385,4 +394,4 @@ This is not another agent framework. It is a **deterministic AI control plane** 
 
 ---
 
-*Last updated: June 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*
+*Last updated: July 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*

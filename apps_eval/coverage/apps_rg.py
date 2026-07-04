@@ -334,6 +334,32 @@ def _trace_reconciliation_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "UNKNOWN", "trace reconciliation verdict missing or unknown", observed, "TRACE_RECONCILED"
 
 
+def _l6_grain_parity_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    if payload is None:
+        return "UNKNOWN", "l6 grain parity artifact exists but could not be parsed", None, "readable JSON"
+    if not isinstance(payload, dict):
+        return "UNKNOWN", "l6 grain parity artifact is not an object", payload, "object"
+    status = str(payload.get("grain_parity_status") or "").strip().upper()
+    alignment_source = str(payload.get("alignment_source") or "").strip()
+    rows_bound = payload.get("apps_eval_rows_bound") is True
+    observed = {
+        "grain_parity_status": status,
+        "alignment_source": alignment_source,
+        "apps_eval_rows_bound": rows_bound,
+        "missing_in_l6": payload.get("missing_in_l6"),
+        "missing_in_apps_eval": payload.get("missing_in_apps_eval"),
+        "verdict_mismatches": payload.get("verdict_mismatches"),
+        "authority_mismatch": payload.get("authority_mismatch"),
+    }
+    if status == "PASS" and rows_bound:
+        return "PASS", "l6 grain parity is bound to apps_eval scorecard rows", observed, "PASS with apps_eval_rows_bound"
+    if alignment_source in {"contract_only_pseudo_rows", "failure_terminal_no_apps_eval_rows"}:
+        return "WARN", f"l6 grain parity is {alignment_source}", observed, "apps_eval_scorecard_rows"
+    if status == "FAIL":
+        return "FAIL", "l6 grain parity failed", observed, "PASS"
+    return "UNKNOWN", "l6 grain parity status missing or unbound", observed, "PASS with apps_eval_rows_bound"
+
+
 def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if payload is None:
         return "UNKNOWN", "exit artifact exists but could not be parsed", None, "readable JSON with whole-run exit"
@@ -385,6 +411,8 @@ def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[
         verdict, reason, observed, threshold = _uwg_commit_verdict(payload)
     elif gate_id == "trace_reconciliation_consumed":
         verdict, reason, observed, threshold = _trace_reconciliation_verdict(payload)
+    elif gate_id == "l6_apps_eval_grain_parity_verified":
+        verdict, reason, observed, threshold = _l6_grain_parity_verdict(payload)
     else:
         verdict, reason, observed, threshold = "PASS", "artifact-level proof resolved", artifact_ref, "artifact_ref"
     failure_mode = "" if verdict in {"PASS", "WARN"} else f"microstep.{gate_id}"

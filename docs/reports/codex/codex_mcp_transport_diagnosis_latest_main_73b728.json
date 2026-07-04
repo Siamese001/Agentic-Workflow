@@ -1,0 +1,79 @@
+{
+  "schema_version": "codex-mcp-transport-diagnosis-report/v1",
+  "plan_id": "codex-mcp-transport-diagnosis-latest-main-73b728",
+  "generated_at": "2026-07-04T11:49:20Z",
+  "branch": "codex-mcp-transport-diagnosis-latest-main",
+  "base": {
+    "origin_main": "cd55fca88e8fa473120c0f191a9da4d08b5214f6",
+    "local_main_matches_origin_main": true
+  },
+  "latest_main_already_had": [
+    "scripts/governance/audit_codex_mcp_transports.py",
+    "route classifications including CALLABLE, EXPOSED_BLOCKED, PROCESS_ONLY, HOST_MCP_REQUIRED, PLUGIN_SUBSTITUTE, SUBSTITUTE_CALLABLE, and DEGRADED_FALLBACK",
+    "scripts/governance/codex_readiness.py closed-transport RCA",
+    ".codex/governance/scripts/mcp_callability_epoch.py session epoch and callability proof ledger",
+    "tools.adg.mcp.supervisor.transport_status() for out-of-band ADG transport state",
+    "docs/codex-primary-execution.md MCP lifecycle cleanup guard",
+    "plans/codex-mcp-transport-parity-4b9c7e.md"
+  ],
+  "branch_adds": [
+    "plans/codex-mcp-transport-diagnosis-latest-main-73b728.md",
+    "scripts/governance/diagnose_codex_mcp_transport.py",
+    "tests/unit/scripts/governance/test_diagnose_codex_mcp_transport.py",
+    "docs/reports/codex/codex_mcp_transport_diagnosis_latest_main_73b728.md",
+    "docs/reports/codex/codex_mcp_transport_diagnosis_latest_main_73b728.json",
+    "minimal docs/codex-primary-execution.md pointer under MCP Lifecycle Cleanup Guard"
+  ],
+  "stale_evidence": {
+    "path": "docs/reports/codex/codex_mcp_transport_lifecycle_audit.json",
+    "generated": "2026-06-10",
+    "stale": true,
+    "reason": "The lifecycle audit captured W4 parity-plan state, eval-harness-era registry/runtime details, ADG snapshot 06082026_1212, and ADG PIDs 11052/12236. Current diagnosis on 2026-07-04 resolves latest main at cd55fca88e8f, runtime root C:\\Git\\Agentic-Workflow-FRESH, ADG snapshot 07032026_2302, and ADG launcher PID 6104."
+  },
+  "current_adg_sqlite_diagnosis": {
+    "schema_version": "codex-mcp-transport-diagnosis/v1",
+    "server_id": "adg_sqlite",
+    "classification": "server_healthy_codex_transport_closed",
+    "recommended_action": "Host/TUI MCP reconnect is required; a shell cannot reattach Codex to a closed stdio transport. Use Codex host MCP management, then prove a live mcp__adg_sqlite.adg_health call before setting callability overrides.",
+    "codex_restart_required": "unknown",
+    "shell_reopen_supported": false,
+    "safe_to_cleanup_processes": false,
+    "degraded_fallback_available": false,
+    "evidence_summary": {
+      "route_classification": "EXPOSED_BLOCKED",
+      "route_fallback": "closed_transport",
+      "process_classification": "single",
+      "process_count": 1,
+      "launcher_pid": 6104,
+      "transport_status": "closed",
+      "transport_open": false,
+      "callability_epoch_status": "absent",
+      "stale_file_proof_status": "stale_file_proof",
+      "stale_file_proof_pid": 14688,
+      "stale_file_proof_pid_alive": false,
+      "diagnosis_root": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-mcp-transport-diagnosis-latest-main",
+      "runtime_root": "C:\\Git\\Agentic-Workflow-FRESH",
+      "adg_snapshot_id": "07032026_2302",
+      "adg_sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07032026_2302.sqlite"
+    }
+  },
+  "local_runtime_differences": [
+    "The implementation worktree is cleanly based on origin/main, but AGENTIC_REPO_ROOT and ADG supervisor preflight still resolve the active runtime root to C:\\Git\\Agentic-Workflow-FRESH.",
+    "The primary checkout has unrelated dirty ADG/report and baseline files; those were not modified by this branch.",
+    "Readiness fails because active-session MCP callability is missing/closed, not because the diagnostic wrapper failed."
+  ],
+  "validation": {
+    "py_compile_diagnosis": "pass",
+    "focused_diagnosis_pytest": "6 passed",
+    "existing_audit_readiness_pytest": "63 passed",
+    "audit_codex_mcp_transports_json": "exit 0; report contains current duplicate cohorts and access-denied py_compile entries for existing MCP server pycache writes",
+    "diagnose_adg_sqlite_json": "exit 0; classification=server_healthy_codex_transport_closed",
+    "codex_readiness_skip_searxng": "exit 1; expected stop condition due required MCP callability and ADG active-session transport failure"
+  },
+  "remaining_manual_recovery": [
+    "Use Codex host/TUI MCP management to restart or reconnect adg_sqlite.",
+    "Prove a live mcp__adg_sqlite.adg_health or adg_runtime_info call in the active Codex session.",
+    "Do not claim ADG green readiness from direct SQLite or process liveness.",
+    "Do not kill Codex-owned duplicate MCP processes without attached PID proof."
+  ]
+}
